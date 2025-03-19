@@ -678,15 +678,6 @@ static Function/WAVE AB_GetSweepsFromLabNotebook(string dataFolder, string devic
 	return sweepNums
 End
 
-/// @brief Returns the highest referenced sweep number from the labnotebook
-static Function AB_GetHighestPossibleSweepNum(string dataFolder, string device)
-
-	WAVE sweepNums = AB_GetSweepsFromLabNotebook(dataFolder, device, clean = 0)
-	WaveStats/M=1/Q sweepNums
-
-	return V_max
-End
-
 /// @brief Returns a wave containing all present sweep numbers
 ///
 /// Function uses Config Waves from Igor Experiment to determine present sweeps
@@ -696,20 +687,16 @@ End
 /// @param device        device for which to get sweeps.
 static Function AB_LoadSweepsFromExperiment(string discLocation, string device)
 
-	variable highestSweepNumber, sweepNumber, numSweeps, i, numConfigWaves
+	variable sweepNumber, numSweeps, i, numConfigWaves
 	string listSweepConfig, sweepConfig
 	WAVE/T map            = AB_GetMap(discLocation)
 	DFREF  SweepConfigDFR = GetAnalysisDeviceConfigFolder(map[%DataFolder], device)
 	WAVE/I sweeps         = GetAnalysisChannelSweepWave(map[%DataFolder], device)
 
 	// Load Sweep Config Waves
-	highestSweepNumber = AB_GetHighestPossibleSweepNum(map[%DataFolder], device)
-	if(IsFinite(highestSweepNumber))
-		numConfigWaves = AB_LoadSweepConfigData(map[%DiscLocation], map[%DataFolder], device, highestSweepNumber)
-
-		if(!numConfigWaves)
-			return NaN
-		endif
+	numConfigWaves = AB_LoadSweepConfigData(map[%DiscLocation], map[%DataFolder], device)
+	if(!numConfigWaves)
+		return NaN
 	endif
 	listSweepConfig = GetListOfObjects(sweepConfigDFR, ".*")
 
@@ -836,26 +823,13 @@ End
 
 static Function AB_LoadTPStorageFromIgor(string expFilePath, string expFolder, string device)
 
-	string dataFolderPath, wanted, unwanted, all
-	variable numWavesLoaded
+	string dataFolderPath
 
 	DFREF targetDFR = GetAnalysisDeviceTestpulse(expFolder, device)
 	dataFolderPath = GetDeviceTestPulseAsString(device)
 	dataFolderPath = AB_TranslatePath(dataFolderPath, expFolder)
 
-	// we can not determine how many TPStorage waves are in dataFolderPath
-	// therefore we load all waves and throw the ones we don't need away
-	numWavesLoaded = AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, "")
-
-	if(numWavesLoaded)
-		wanted   = GetListOfObjects(targetDFR, TP_STORAGE_REGEXP, fullPath = 1)
-		all      = GetListOfObjects(targetDFR, ".*", fullPath = 1)
-		unwanted = RemoveFromList(wanted, all)
-
-		CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, unwanted)
-	endif
-
-	return numWavesLoaded
+	return AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, "", regex = TP_STORAGE_REGEXP, recursive = 0)
 End
 
 static Function AB_LoadTPStorageFromNWB(string nwbFilePath, string expFolder, string device)
@@ -1295,43 +1269,16 @@ static Function/S AB_TranslatePath(string path, string expFolder)
 	return path
 End
 
-static Constant LOAD_CONFIG_CHUNK_SIZE = 50
-
 /// @brief Load all `Config_Sweep_*` waves from the given experiment file or folder and the given device
-///
-/// The implementation here tries to load `LOAD_CONFIG_CHUNK_SIZE` number of config sweep waves at a time
-/// until there could not be loaded at least one config sweep wave and we have reached highestSweepNumber.
-///
-/// The size of `LOAD_CONFIG_CHUNK_SIZE` is limited by a limitation of LoadData as this operations accepts
-/// only a stringlist of waves shorter than 400 characters.
-static Function AB_LoadSweepConfigData(string expFilePath, string expFolder, string device, variable highestSweepNumber)
+static Function AB_LoadSweepConfigData(string expFilePath, string expFolder, string device)
 
-	string dataFolderPath, listOfWaves
-	variable numWavesLoaded, totalNumWavesLoaded
-	variable start, step, stop, i
-
-	ASSERT(IsFinite(highestSweepNumber), "highestSweepNumber has to be finite")
+	string dataFolderPath
 
 	DFREF targetDFR = GetAnalysisDeviceConfigFolder(expFolder, device)
 	dataFolderPath = GetDeviceDataPathAsString(device)
 	dataFolderPath = AB_TranslatePath(dataFolderPath, expFolder)
 
-	step = 1
-	for(i = 0;; i += 1)
-		start = i * LOAD_CONFIG_CHUNK_SIZE
-		stop  = (i + 1) * LOAD_CONFIG_CHUNK_SIZE
-
-		listOfWaves    = BuildList("Config_Sweep_%d", start, step, stop)
-		numWavesLoaded = AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, listOfWaves, recursive = 0)
-
-		if(numWavesLoaded <= 0 && stop >= highestSweepNumber)
-			break
-		endif
-		totalNumWavesLoaded += AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, listOfWaves, recursive = 0)
-
-	endfor
-
-	return totalNumWavesLoaded
+	return AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, "", regEx = DATA_CONFIG_REGEXP, recursive = 0)
 End
 
 /// @brief Expand all tree views in the given column
