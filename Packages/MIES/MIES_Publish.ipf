@@ -675,12 +675,19 @@ End
 threadsafe static Function PUB_AddTPResultEntry(variable jsonId, string path, variable value, string unit)
 
 	if(IsEmpty(unit))
-		JSON_AddVariable(jsonID, path, value)
+		JSON_AddVariable(jsonId, path, value)
 	else
-		JSON_AddTreeObject(jsonID, path)
-		JSON_AddVariable(jsonID, path + "/value", value)
-		JSON_AddString(jsonID, path + "/unit", unit)
+		PUB_AddValueWithUnit(jsonId, path, value, unit)
 	endif
+End
+
+threadsafe static Function PUB_AddValueWithUnit(variable jsonId, string path, variable value, string unit)
+
+	ASSERT_TS(!IsEmpty(unit), "Expected a non empty unit string")
+
+	JSON_AddTreeObject(jsonID, path)
+	JSON_AddVariable(jsonID, path + "/value", value)
+	JSON_AddString(jsonID, path + "/unit", unit)
 End
 
 /// Filter: #ZMQ_FILTER_TPRESULT_NOW
