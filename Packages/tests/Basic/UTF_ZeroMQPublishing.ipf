@@ -566,6 +566,25 @@ static Function CheckTPData(variable jsonId)
 	CHECK_EQUAL_VAR(var, 2345)
 	stv = JSON_GetString(jsonID, "/results/instantaneous resistance/unit")
 	CHECK_EQUAL_STR(stv, "MΩ")
+
+	var = JSON_GetVariable(jsonID, "/amplifier/HoldingPotential/value")
+	CHECK_EQUAL_VAR(var, 123)
+	stv = JSON_GetString(jsonID, "/amplifier/HoldingPotential/unit")
+	CHECK_EQUAL_STR(stv, "mV")
+	var = JSON_GetVariable(jsonID, "/amplifier/HoldingPotentialEnable/value")
+	CHECK_EQUAL_VAR(var, 1)
+	stv = JSON_GetString(jsonID, "/amplifier/HoldingPotentialEnable/unit")
+	CHECK_EQUAL_STR(stv, "On/Off")
+End
+
+static Function/WAVE GetFakeAmpStorageSlice()
+
+	Make/N=2/FREE=1 fakeAmpStorage
+	SetDimensionLabels(fakeAmpStorage, "HoldingPotential;HoldingPotentialEnable", ROWS)
+	fakeAmpStorage[%HoldingPotential]       = 123
+	fakeAmpStorage[%HoldingPotentialEnable] = 1
+
+	return fakeAmpStorage
 End
 
 // IUTF_TD_GENERATOR DataGenerators#PUB_TPFiltersWithoutData
@@ -573,11 +592,12 @@ static Function CheckTPPublishing([string str])
 
 	variable jsonId
 
-	WAVE tpData = PrepareTPData()
+	WAVE tpData               = PrepareTPData()
+	WAVE ampParamStorageSlice = GetFakeAmpStorageSlice()
 
 	TUFXOP_Clear/Z/N=(str)
 	Make/FREE/N=0/WAVE additionalData
-	PUB_TPResult("TestDevice", tpData, additionalData)
+	PUB_TPResult("TestDevice", tpData, ampParamStorageSlice, additionalData)
 
 	jsonId = FetchAndParseMessage(str)
 	CheckTPData(jsonId)
@@ -588,12 +608,13 @@ static Function CheckTPPublishingWithData()
 
 	variable jsonId
 
-	WAVE tpData = PrepareTPData()
+	WAVE tpData               = PrepareTPData()
+	WAVE ampParamStorageSlice = GetFakeAmpStorageSlice()
 
 	Make/FREE/N=(2, 3) data = (p + q)^2
 	Make/FREE/WAVE additionalData = {data}
 
-	PUB_TPResult("TestDevice", tpData, additionalData)
+	PUB_TPResult("TestDevice", tpData, ampParamStorageSlice, additionalData)
 
 	Make/FREE/WAVE/N=0 receivedData
 	jsonId = FetchAndParseMessage(ZMQ_FILTER_TPRESULT_NOW_WITH_DATA, additionalData = receivedData)
