@@ -59,7 +59,7 @@ static Constant PSX_KEYBOARD_DIR_LR = 1
 
 static Constant PSX_NUMBER_OF_SDS_DEFAULT = 2.5
 
-static Constant PSX_TAU_CALC_FACTOR             = 2.5
+static Constant PSX_TAU_CALC_FACTOR             = 1
 static Constant PSX_BASELINE_RANGE_FACTOR       = 10
 static Constant PSX_FIT_RANGE_FACTOR            = 10
 static Constant PSX_FIT_RANGE_PERC              = 0.9
