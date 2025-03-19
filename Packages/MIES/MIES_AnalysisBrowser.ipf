@@ -551,18 +551,20 @@ End
 ///
 /// This function is special as it does change the CDF!
 ///
-/// @param tmpDFR		  Temporary work folder, function returns with that folder as CDF
+/// @param tmpDFR         Temporary work folder, function returns with that folder as CDF
 /// @param expFilePath    full path to the experiment file on disc
 /// @param datafolderPath igor datafolder to look for the waves inside the experiment
 /// @param listOfNames    list of names of waves/strings/numbers to load
 /// @param typeFlags      [optional, defaults to 1 (waves)] data types to load, valid values
 ///                       are the same as for `LoadData`, see also @ref LoadDataConstants
 /// @param recursive      [optional, defaults to 1] when set loads data recursive from the experiment file
+/// @param regEx          [optional, defaults to ".*"] when set matches the given regular expression to the object names found for deciding what to load
+///                       Can be combined with listOfNames. The matching is case insensitive.
 ///
 /// @returns number of loaded items
-static Function AB_LoadDataWrapper(DFREF tmpDFR, string expFilePath, string datafolderPath, string listOfNames, [variable typeFlags, variable recursive])
+static Function AB_LoadDataWrapper(DFREF tmpDFR, string expFilePath, string datafolderPath, string listOfNames, [variable typeFlags, variable recursive, string regEx])
 
-	variable numEntries, i, debugOnError
+	variable numEntries, i, debugOnError, objectTypeMask
 	string cdf, fileNameWOExtension, baseFolder, extension, expFileOrFolder
 	string str, list, regexp
 
@@ -577,6 +579,12 @@ static Function AB_LoadDataWrapper(DFREF tmpDFR, string expFilePath, string data
 		ASSERT(typeFlags == COUNTOBJECTS_WAVES || typeFlags == COUNTOBJECTS_VAR || typeFlags == COUNTOBJECTS_STR || typeFlags == COUNTOBJECTS_DATAFOLDER, "Unknown typeFlags, bitmasks are not supported")
 	endif
 	recursive = ParamisDefault(recursive) ? 1 : !!recursive
+	if(ParamIsDefault(regEx))
+		regEx = ".*"
+	else
+		regEx = "(?i)" + regEx
+	endif
+	objectTypeMask = 1 << (typeFlags - 1)
 
 	fileNameWOExtension = GetBaseName(expFilePath)
 	baseFolder          = GetFolder(expFilePath)
@@ -600,15 +608,15 @@ static Function AB_LoadDataWrapper(DFREF tmpDFR, string expFilePath, string data
 	try
 		if(FileExists(expFileOrFolder))
 			if(recursive)
-				LoadData/Q/R/L=(typeFlags)/S=dataFolderPath/J=listOfNames/O=1 expFileOrFolder; AbortOnRTE
+				LoadData/Q/R/L=(typeFlags)/S=dataFolderPath/J=listOfNames/GREP={regEx, 1, objectTypeMask, 0}/O=1 expFileOrFolder; AbortOnRTE
 			else
-				LoadData/Q/L=(typeFlags)/S=dataFolderPath/J=listOfNames/O=1 expFileOrFolder; AbortOnRTE
+				LoadData/Q/L=(typeFlags)/S=dataFolderPath/J=listOfNames/GREP={regEx, 1, objectTypeMask, 0}/O=1 expFileOrFolder; AbortOnRTE
 			endif
 		elseif(FolderExists(expFileOrFolder))
 			if(recursive)
-				LoadData/Q/D/R/L=(typeFlags)/J=listOfNames/O=1 expFileOrFolder + ":" + dataFolderPath; AbortOnRTE
+				LoadData/Q/D/R/L=(typeFlags)/J=listOfNames/GREP={regEx, 1, objectTypeMask, 0}/O=1 expFileOrFolder + ":" + dataFolderPath; AbortOnRTE
 			else
-				LoadData/Q/D/L=(typeFlags)/J=listOfNames/O=1 expFileOrFolder + ":" + dataFolderPath; AbortOnRTE
+				LoadData/Q/D/L=(typeFlags)/J=listOfNames/GREP={regEx, 1, objectTypeMask, 0}/O=1 expFileOrFolder + ":" + dataFolderPath; AbortOnRTE
 			endif
 		else
 			sprintf str, "The experiment file/folder \"%s\" could not be found!\r", ParseFilePath(5, expFileOrFolder, "\\", 0, 0)
