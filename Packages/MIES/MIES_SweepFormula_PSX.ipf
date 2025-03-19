@@ -505,6 +505,7 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_FilterEventsKernelAmpSign(WAVE/
 	variable peak, peak_t, baseline, baseline_t, amplitude
 	variable overrideSignQC = NaN
 	string comboKey
+	variable peak_t_prev = -Inf
 
 	if(!WaveExists(peakXUnfiltered) || !WaveExists(peakYUnfiltered))
 		return [$"", $""]
@@ -516,7 +517,7 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_FilterEventsKernelAmpSign(WAVE/
 
 	for(i = 0; i < numCrossings; i += 1)
 
-		[peak, peak_t, baseline, baseline_t, amplitude] = PSX_CalculateEventProperties(peakXUnfiltered, peakYUnfiltered, sweepDataOffFilt, kernelAmp, kernelRiseTau, kernelDecayTau, i)
+		[peak, peak_t, baseline, baseline_t, amplitude] = PSX_CalculateEventProperties(peakXUnfiltered, peakYUnfiltered, sweepDataOffFilt, peak_t_prev, kernelAmp, kernelRiseTau, kernelDecayTau, i)
 
 #ifdef AUTOMATED_TESTING
 		WAVE/Z overrideResults = GetOverrideResults()
@@ -539,7 +540,8 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_FilterEventsKernelAmpSign(WAVE/
 		peakX[idx] = peakXUnfiltered[i]
 		peakY[idx] = peakYUnfiltered[i]
 
-		idx += 1
+		idx        += 1
+		peak_t_prev = peak_t
 	endfor
 
 	if(idx == 0)
@@ -593,11 +595,11 @@ static Function [variable peak_t, variable peak] PSX_CalculateEventPeak(WAVE pea
 	return [peak_t, peak]
 End
 
-static Function [variable baseline_t, variable baseline] PSX_CalculateEventBaseline(WAVE sweepDataOffFilt, variable peak_t, variable kernelAmp, variable kernelRiseTau)
+static Function [variable baseline_t, variable baseline] PSX_CalculateEventBaseline(WAVE sweepDataOffFilt, variable peak_t_prev, variable peak_t, variable kernelAmp, variable kernelRiseTau)
 
 	variable range
 
-	WaveStats/M=1/Q/R=(peak_t - PSX_BASELINE_RANGE_FACTOR * kernelRiseTau, peak_t) sweepDataOffFilt
+	WaveStats/M=1/Q/R=(max(peak_t - PSX_BASELINE_RANGE_FACTOR * kernelRiseTau, peak_t_prev), peak_t) sweepDataOffFilt
 
 	if(kernelAmp > 0)
 		baseline_t = V_minloc
@@ -614,10 +616,10 @@ static Function [variable baseline_t, variable baseline] PSX_CalculateEventBasel
 	return [baseline_t, baseline]
 End
 
-static Function [variable peak, variable peak_t, variable baseline, variable baseline_t, variable amplitude] PSX_CalculateEventProperties(WAVE peakX, WAVE peakY, WAVE sweepDataOffFilt, variable kernelAmp, variable kernelRiseTau, variable kernelDecayTau, variable index)
+static Function [variable peak, variable peak_t, variable baseline, variable baseline_t, variable amplitude] PSX_CalculateEventProperties(WAVE peakX, WAVE peakY, WAVE sweepDataOffFilt, variable peak_t_prev, variable kernelAmp, variable kernelRiseTau, variable kernelDecayTau, variable index)
 
 	[peak_t, peak]         = PSX_CalculateEventPeak(peakX, peakY, sweepDataOffFilt, kernelAmp, kernelRiseTau, kernelDecayTau, index)
-	[baseline_t, baseline] = PSX_CalculateEventBaseline(sweepDataOffFilt, peak_t, kernelAmp, kernelRiseTau)
+	[baseline_t, baseline] = PSX_CalculateEventBaseline(sweepDataOffFilt, peak_t_prev, peak_t, kernelAmp, kernelRiseTau)
 
 	amplitude = peak - baseline
 
@@ -628,6 +630,7 @@ End
 static Function [WAVE/D peakX, WAVE/D peakY] PSX_AnalyzePeaks(WAVE sweepDataOffFiltDeconv, WAVE sweepDataOffFilt, WAVE sweepData, WAVE/Z peakXUnfiltered, WAVE/Z peakYUnfiltered, variable maxTauFactor, variable kernelAmp, variable kernelRiseTau, variable kernelDecayTau, WAVE riseTimeParams, WAVE psxEvent, WAVE eventFit)
 
 	variable i, numCrossings, deconvPeak, deconvPeak_t, peak, peak_t, baseline, baseline_t, amplitude, iei
+	variable peak_t_prev = -Inf
 
 	// we need to first throw away events with invalid amplitude so that
 	// we can then calculate the distance to the neighbour in peakX[i + 1] below
@@ -649,8 +652,8 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_AnalyzePeaks(WAVE sweepDataOffF
 		deconvPeak_t = peakX[i]
 		deconvPeak   = peakY[i]
 
-		[peak, peak_t, baseline, baseline_t, amplitude] = PSX_CalculateEventProperties(peakX, peakY, sweepDataOffFilt,            \
-		                                                                               kernelAmp, kernelRiseTau, kernelDecayTau, i)
+		[peak, peak_t, baseline, baseline_t, amplitude] = PSX_CalculateEventProperties(peakX, peakY, sweepDataOffFilt,                         \
+		                                                                               peak_t_prev, kernelAmp, kernelRiseTau, kernelDecayTau, i)
 
 		if(i == 0)
 			iei = NaN
@@ -667,6 +670,8 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_AnalyzePeaks(WAVE sweepDataOffF
 		psxEvent[i][%baseline_t]   = baseline_t
 		psxEvent[i][%amplitude]    = amplitude
 		psxEvent[i][%iei]          = iei
+
+		peak_t_prev = peak_t
 	endfor
 
 	// safe defaults
