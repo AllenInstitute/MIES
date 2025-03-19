@@ -74,22 +74,22 @@ Function WB_OpenStimulusSetInWaveBuilder()
 			printf "Context menu option \"%s\" could not be find the stimulus set %s.", S_Value, stimset
 			ControlWindowToFront()
 			return NaN
-		else
-			// we might need to load the stimset
-			WAVE  traceWave    = $TUD_GetUserData(graph, trace, "fullPath")
-			DFREF sweepDataDFR = GetWavesDataFolderDFR(traceWave)
-			sbIndex = SB_GetIndexFromSweepDataPath(graph, sweepDataDFR)
+		endif
 
-			DFREF  sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
-			WAVE/T sweepMap        = GetSweepBrowserMap(sweepBrowserDFR)
+		// we might need to load the stimset
+		WAVE  traceWave    = $TUD_GetUserData(graph, trace, "fullPath")
+		DFREF sweepDataDFR = GetWavesDataFolderDFR(traceWave)
+		sbIndex = SB_GetIndexFromSweepDataPath(graph, sweepDataDFR)
 
-			abIndex = SB_TranslateSBMapIndexToABMapIndex(graph, sbIndex)
-			device  = sweepMap[sbIndex][%Device]
-			if(AB_LoadStimsetForSweep(device, abIndex, sweepNo))
-				printf "Context menu option \"%s\" could not load the stimulus set %s.", S_Value, stimset
-				ControlWindowToFront()
-				return NaN
-			endif
+		DFREF  sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
+		WAVE/T sweepMap        = GetSweepBrowserMap(sweepBrowserDFR)
+
+		abIndex = SB_TranslateSBMapIndexToABMapIndex(graph, sbIndex)
+		device  = sweepMap[sbIndex][%Device]
+		if(AB_LoadStimsetForSweep(device, abIndex, sweepNo))
+			printf "Context menu option \"%s\" could not load the stimulus set %s.", S_Value, stimset
+			ControlWindowToFront()
+			return NaN
 		endif
 	endif
 
@@ -1108,9 +1108,9 @@ Function/DF WBP_GetFolderPath()
 	ControlInfo/W=$panel group_WaveBuilder_FolderPath
 	if(IsEmpty(S_value) || !DataFolderExists(S_value))
 		return $"root:"
-	else
-		return $S_value
 	endif
+
+	return $S_value
 End
 
 Function/S WBP_ReturnFoldersList()
@@ -1130,7 +1130,9 @@ Function WBP_PopMenuProc_FolderSelect(STRUCT WMPopupAction &pa) : PopupMenuContr
 
 			if(!CmpStr(popStr, NONE))
 				return 0
-			elseif(!CmpStr(popStr, "root:"))
+			endif
+
+			if(!CmpStr(popStr, "root:"))
 				path = "root:"
 			else
 				ControlInfo/W=$panel group_WaveBuilder_FolderPath

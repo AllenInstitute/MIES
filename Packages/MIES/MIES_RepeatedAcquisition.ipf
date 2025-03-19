@@ -145,9 +145,9 @@ static Function RA_GetTotalNumberOfSweeps(string device)
 
 	if(DAG_GetNumericalValue(device, "Check_DataAcq_Indexing"))
 		return GetValDisplayAsNum(device, "valdisp_DataAcq_SweepsInSet")
-	else
-		return IDX_CalculcateActiveSetCount(device)
 	endif
+
+	return IDX_CalculcateActiveSetCount(device)
 End
 
 /// @brief Update the "Sweeps remaining" control
@@ -440,9 +440,9 @@ static Function RA_SkipSweepCalc(string device, variable skipCount)
 	if(DAG_GetNumericalValue(device, "Check_DataAcq1_RepeatAcq"))
 		// RA_counter and RA_counterMD increment count at initialization, -1 accounts for this and allows a skipping back to sweep 0
 		return DEBUGPRINTv(min(totSweeps - 1, max(count + skipCount, -1)))
-	else
-		return DEBUGPRINTv(0)
 	endif
+
+	return DEBUGPRINTv(0)
 End
 
 static Function RA_PerfInitialize(string device)

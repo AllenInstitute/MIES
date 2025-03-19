@@ -269,7 +269,9 @@ static Function WB_ParameterWvsNewerThanStim(string setName)
 
 		if(lastModWP > lastModStimSet || lastModWPT > lastModStimSet || lastModSegWvType > lastModStimSet)
 			return 1
-		elseif(lastModWP == lastModStimSet || lastModWPT == lastModStimSet || lastModSegWvType == lastModStimSet)
+		endif
+
+		if(lastModWP == lastModStimSet || lastModWPT == lastModStimSet || lastModSegWvType == lastModStimSet)
 			channelType = WB_GetStimSetType(setName)
 			ASSERT(channelType != CHANNEL_TYPE_UNKNOWN, "Invalid channel type")
 

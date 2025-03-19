@@ -72,19 +72,19 @@ Function SCOPE_GetTPTopAxisStart(string device, variable &axisMin)
 	WAVE TPStorage = GetTPStorage(device)
 	count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
 
-	if(count > 0)
-		latest = TPStorage[count - 1][0][%DeltaTimeInSeconds]
-		if(latest >= V_max)
-			axisMin = latest - 0.5 * SCOPE_TIMEAXIS_RESISTANCE_RANGE
-			return 1
-		else
-			axisMin = V_min
-			return 0
-		endif
-	else
+	if(!(count > 0))
 		axisMin = 0
 		return V_Min != 0
 	endif
+
+	latest = TPStorage[count - 1][0][%DeltaTimeInSeconds]
+	if(latest >= V_max)
+		axisMin = latest - 0.5 * SCOPE_TIMEAXIS_RESISTANCE_RANGE
+		return 1
+	endif
+
+	axisMin = V_min
+	return 0
 End
 
 Function SCOPE_UpdateGraph(string device, variable dataAcqOrTP)
@@ -887,7 +887,9 @@ static Function SCOPE_ITC_AdjustFIFOPos(string device, variable fifopos)
 
 	if(fifoPos == 0)
 		return 0
-	elseif(IsNaN(fifoPos))
+	endif
+
+	if(IsNaN(fifoPos))
 		// we are done
 		// return the total length we wanted to acquire
 		stopCollectionPoint = ROVAR(GetStopCollectionPoint(device))

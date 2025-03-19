@@ -274,14 +274,14 @@ static Function AD_FillWaves(string win, WAVE/T list, WAVE/T info)
 
 			FindValue/RMD=[][0]/TXOP=4/TEXT=(AD_FormatListKey(stimsetCycleID, headstage)) info
 			if(V_Value >= 0)
-				if(!cmpstr(info[V_Value][%$"Ongoing DAQ"], "1"))
-					// if DAQ was ongoing we want to overwrite this entry and all later entries
-					index              = V_Value
-					info[index, Inf][] = ""
-				else
+				if(!(!cmpstr(info[V_Value][%$"Ongoing DAQ"], "1")))
 					// otherwise we want to keep it
 					continue
 				endif
+
+				// if DAQ was ongoing we want to overwrite this entry and all later entries
+				index              = V_Value
+				info[index, Inf][] = ""
 			endif
 
 			[anaFuncType, waMode] = AD_GetAnalysisFunctionType(numericalValues, anaFuncTypes, sweepNo, headstage)

@@ -933,9 +933,9 @@ static Function [variable err, variable stimsetEndIndex] EP_AddEpochsFromStimSet
 		if(IsNaN(epochBegin))
 			if(ec.flipping)
 				continue
-			else
-				break
 			endif
+
+			break
 		endif
 
 		// Add Sub Epochs / Sub Sub Epochs
@@ -958,9 +958,9 @@ static Function [variable err, variable stimsetEndIndex] EP_AddEpochsFromStimSet
 					// handle only beyond right limit, as cutoff only happens right
 					if(ec.flipping)
 						continue
-					else
-						break
 					endif
+
+					break
 				endif
 
 				EP_PTAddPTBLTEpoch(ec, shortNameEpTypePT, epSubTags, pulseNr, numPulses, epochBegin, epochEnd, subEpochbegin, subEpochend)

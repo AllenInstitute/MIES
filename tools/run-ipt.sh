@@ -29,6 +29,5 @@ while read -r line; do
 done < <(git ls-files ':(attr:ipt)')
 
 echo "exclude=CodeStyleFallthroughCaseRequireComment" >> config.toml
-echo "exclude=ReadabilityElseAfterReturn" >> config.toml
 
 (cd $top_level && $ipt --arg-file config.toml lint -i)
