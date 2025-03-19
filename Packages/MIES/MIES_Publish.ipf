@@ -25,20 +25,23 @@ static Function PUB_GetJSONTemplate(string device, variable headstage)
 End
 
 /// @brief Publish the given message as given by the JSON and the filter
-static Function PUB_Publish(variable jsonID, string messageFilter)
+threadsafe Function PUB_Publish(variable jsonID, string messageFilter, [variable releaseJSON])
 
 	variable err
 	string   payload
 
-	payload = JSON_Dump(jsonID)
-	JSON_Release(jsonID)
+	releaseJSON = ParamIsDefault(releaseJSON) ? 1 : !!releaseJSON
+	payload     = JSON_Dump(jsonID)
+	if(releaseJSON)
+		JSON_Release(jsonID)
+	endif
 
 	AssertOnAndClearRTError()
 	try
 		zeromq_pub_send(messageFilter, payload); AbortOnRTE
 	catch
 		err = ClearRTError()
-		BUG("Could not publish " + messageFilter + " due to: " + num2str(err))
+		BUG_TS("Could not publish " + messageFilter + " due to: " + num2str(err))
 	endtry
 End
 
