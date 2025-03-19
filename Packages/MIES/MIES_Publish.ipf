@@ -690,6 +690,42 @@ threadsafe static Function PUB_AddValueWithUnit(variable jsonId, string path, va
 	JSON_AddString(jsonID, path + "/unit", unit)
 End
 
+threadsafe static Function PUB_AppendAmplifierSettings(variable jsonID, string path, variable clampMode, WAVE ampParamStorageSlice)
+
+	variable idx, value, nameIndex
+	string name, unit
+
+	WAVE funcs = AI_GetFunctionConstantForClampMode(clampMode)
+
+	Make/FREE/T/N=(DimSize(funcs, ROWS)) names
+
+	for(func : funcs)
+
+		name = AI_MapFunctionConstantToName(func, clampMode)
+		idx  = FindDimLabel(ampParamStorageSlice, ROWS, name)
+
+		if(idx < 0)
+			continue
+		endif
+
+		if(GetRowIndex(names, str = name) >= 0)
+			// some function constants map to the same name
+			continue
+		endif
+
+		names[nameIndex] = name
+		nameIndex       += 1
+
+		value = ampParamStorageSlice[idx]
+		unit  = AI_GetUnitForFunctionConstant(func, clampMode)
+		if(JSON_Exists(jsonID, path + "/" + name))
+			ASSERT_TS(0, "dup: " + name)
+		endif
+
+		PUB_AddValueWithUnit(jsonID, path + "/" + name, value, unit)
+	endfor
+End
+
 /// Filter: #ZMQ_FILTER_TPRESULT_NOW
 /// Filter: #ZMQ_FILTER_TPRESULT_1S
 /// Filter: #ZMQ_FILTER_TPRESULT_5S
@@ -702,6 +738,17 @@ End
 /// .. code-block:: json
 ///
 ///    {
+///    {
+///      "amplifier": {
+///        "HoldingPotential": {
+///          "unit": "mV",
+///          "value": 123
+///        },
+///        "HoldingPotentialEnable": {
+///          "unit": "On/Off",
+///          "value": 1
+///        }
+///      },
 ///      "properties": {
 ///        "baseline fraction": {
 ///          "unit": "%",
@@ -786,7 +833,7 @@ End
 ///    }
 ///
 /// \endrst
-threadsafe Function PUB_TPResult(string device, WAVE tpData, WAVE additionalData)
+threadsafe Function PUB_TPResult(string device, WAVE tpData, WAVE ampParamStorageSlice, WAVE additionalData)
 
 	string path
 	variable jsonId = JSON_New()
@@ -822,6 +869,10 @@ threadsafe Function PUB_TPResult(string device, WAVE tpData, WAVE additionalData
 	PUB_AddTPResultEntry(jsonId, path + "/instantaneous", tpData[%ELEVATED_INST], adUnit)
 	PUB_AddTPResultEntry(jsonId, path + "/steady state resistance", tpData[%STEADYSTATERES], "MΩ")
 	PUB_AddTPResultEntry(jsonId, path + "/instantaneous resistance", tpData[%INSTANTRES], "MΩ")
+
+	path = "amplifier"
+	JSON_AddTreeObject(jsonID, path)
+	PUB_AppendAmplifierSettings(jsonID, path, tpData[%CLAMPMODE], ampParamStorageSlice)
 
 	PUB_Publish(jsonID, ZMQ_FILTER_TPRESULT_NOW, releaseJSON = 0)
 	PUB_Publish(jsonID, ZMQ_FILTER_TPRESULT_NOW_WITH_DATA, releaseJSON = 0, additionalData = additionalData)

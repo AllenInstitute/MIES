@@ -1424,6 +1424,17 @@ static Function TPZerosDAC_REENTRY([STRUCT IUTF_MDATA &md])
 	CHECK_LE_VAR(HW_ReadADC(hardwareType, deviceID, ADC), 0.01)
 End
 
+static Function TestTPPublishing_preAcq(string device)
+
+	// HS 0
+	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = 0)
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_Hold_IC", val = 1.23)
+
+	// HS 1
+	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = 1)
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_Hold_VC", val = 4.56)
+End
+
 /// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function TestTPPublishing([string str])
 
@@ -1445,7 +1456,7 @@ End
 
 static Function TestTPPublishing_REENTRY([string str])
 
-	variable sweepNo, jsonId, var, index, dimMarker, headstage, i, foundHS0, foundHS1
+	variable sweepNo, jsonId, var, index, dimMarker, headstage, i, foundHS0, foundHS1, clampMode
 	string filter, stv, adUnit, daUnit
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
@@ -1476,8 +1487,9 @@ static Function TestTPPublishing_REENTRY([string str])
 
 		stv = JSON_GetString(jsonID, "/properties/device")
 		CHECK_EQUAL_STR(stv, str)
-		var = JSON_GetVariable(jsonID, "/properties/clamp mode")
-		CHECK_EQUAL_VAR(var, tpStorage[index][headstage][%ClampMode])
+		var       = JSON_GetVariable(jsonID, "/properties/clamp mode")
+		clampMode = tpStorage[index][headstage][%ClampMode]
+		CHECK_EQUAL_VAR(var, clampMode)
 		daUnit = GetDAChannelUnit(var)
 		adUnit = GetADChannelUnit(var)
 
@@ -1561,6 +1573,16 @@ static Function TestTPPublishing_REENTRY([string str])
 		CHECK_EQUAL_VAR(var, tpStorage[index][headstage][%PeakResistance])
 		stv = JSON_GetString(jsonID, "/results/instantaneous resistance/unit")
 		CHECK_EQUAL_STR(stv, "MΩ")
+
+		if(clampMode == I_CLAMP_MODE)
+			var = JSON_GetVariable(jsonID, "/amplifier/BiasCurrent/value")
+			CHECK_EQUAL_VAR(var, 1.23)
+		elseif(clampMode == V_CLAMP_MODE)
+			var = JSON_GetVariable(jsonID, "/amplifier/HoldingPotential/value")
+			CHECK_EQUAL_VAR(var, 4.56)
+		else
+			FAIL()
+		endif
 	endfor
 
 	for(i = 0; i < 10; i += 1)
