@@ -11,10 +11,11 @@
 
 Window AnalysisBrowser() : Panel
 	PauseUpdate; Silent 1 // building window...
-	NewPanel/K=1/W=(1270, 72, 2409, 613) as "AnalysisBrowser"
-	ListBox list_experiment_contents, pos={120.00, 200.00}, size={1015.00, 338.00}, proc=AB_ListBoxProc_ExpBrowser
+	NewPanel/K=1/W=(608, 61, 1747, 627) as "AnalysisBrowser"
+	SetDrawLayer UserBack
+	ListBox list_experiment_contents, pos={120.00, 200.00}, size={1015.00, 363.00}, proc=AB_ListBoxProc_ExpBrowser
 	ListBox list_experiment_contents, help={"Various properties of the loaded sweep data"}
-	ListBox list_experiment_contents, userdata(ResizeControlsInfo)=A"!!,FU!!#AW!!#E8^]6a$z!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
+	ListBox list_experiment_contents, userdata(ResizeControlsInfo)=A"!!,FU!!#AW!!#E8^]6a0J,fQL!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
 	ListBox list_experiment_contents, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ListBox list_experiment_contents, userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	ListBox list_experiment_contents, mode=9
@@ -137,8 +138,8 @@ Window AnalysisBrowser() : Panel
 	GroupBox group1, userdata(ResizeControlsInfo)=A"!!,?8!!#B\\!!#@B!!#>rz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group1, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group1, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	GroupBox group2, pos={4.00, 386.00}, size={111.00, 154.00}
-	GroupBox group2, userdata(ResizeControlsInfo)=A"!!,?8!!#C&!!#@B!!#A)z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	GroupBox group2, pos={4.00, 386.00}, size={111.00, 179.00}
+	GroupBox group2, userdata(ResizeControlsInfo)=A"!!,?8!!#C&!!#@B!!#ABz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group2, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group2, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_load_results, pos={15.00, 168.00}, size={79.00, 15.00}
@@ -153,6 +154,12 @@ Window AnalysisBrowser() : Panel
 	PopupMenu popup_SweepBrowserSelect, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_SweepBrowserSelect, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu popup_SweepBrowserSelect, mode=1, popvalue="New", value=#"AB_GetSweepBrowserListForPopup()"
+	Button button_load_history, pos={7.00, 535.00}, size={100.00, 25.00}, proc=AB_ButtonProc_LoadHistoryAndLogs
+	Button button_load_history, title="Load History"
+	Button button_load_history, help={"Load the experiment history and logs"}
+	Button button_load_history, userdata(ResizeControlsInfo)=A"!!,@C!!#Cj^]6^B!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_load_history, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	Button button_load_history, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	DefineGuide splitGuide={FT, 10}, UGVL={FL, 15}
 	SetWindow kwTopWin, hook(windowCoordinateSaving)=StoreWindowCoordinatesHook
 	SetWindow kwTopWin, hook(ResizeControls)=ResizeControlsSafe
@@ -163,7 +170,8 @@ Window AnalysisBrowser() : Panel
 	SetWindow kwTopWin, userdata(ResizeControlsGuides)="splitGuide;UGVL;"
 	SetWindow kwTopWin, userdata(ResizeControlsInfosplitGuide)="NAME:splitGuide;WIN:AnalysisBrowser;TYPE:User;HORIZONTAL:1;POSITION:10.00;GUIDE1:FT;GUIDE2:;RELPOSITION:10;"
 	SetWindow kwTopWin, userdata(ResizeControlsInfoUGVL)="NAME:UGVL;WIN:AnalysisBrowser;TYPE:User;HORIZONTAL:0;POSITION:15.00;GUIDE1:FL;GUIDE2:;RELPOSITION:15;"
-	SetWindow kwTopWin, userdata(ResizeControlsInfo)=A"!!*'\"z!!#EI?iWS\"5QCcazzzzzzzzzzzzzzzzzzzz"
+	SetWindow kwTopWin, userdata(ResizeControlsInfo)=A"!!*'\"z!!#EI?iWS(J,fQLzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
+	Execute/Q/Z "SetWindow kwTopWin sizeLimit={854.25,405,inf,inf}" // sizeLimit requires Igor 7 or later
 EndMacro

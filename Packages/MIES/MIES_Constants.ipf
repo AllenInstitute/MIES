@@ -2034,11 +2034,12 @@ Constant DFREF_FREE  = 0x2
 /// @name Called once names
 /// @anchor CalledOnceNames
 ///@{
-StrConstant CO_EMPTY_DAC_LIST     = "emptyDACList"
-StrConstant CO_SF_TOO_MANY_TRACES = "SF_tooManyTraces"
-StrConstant CO_PSX_CLIPPED_STATS  = "psx_clippedStats"
-StrConstant CO_ARCHIVE_ONCE       = "ArchiveLogs"
-StrConstant CO_PSX_UPGRADE_EVENT  = "psx_updateEvent"
+StrConstant CO_EMPTY_DAC_LIST        = "emptyDACList"
+StrConstant CO_SF_TOO_MANY_TRACES    = "SF_tooManyTraces"
+StrConstant CO_PSX_CLIPPED_STATS     = "psx_clippedStats"
+StrConstant CO_ARCHIVE_ONCE          = "ArchiveLogs"
+StrConstant CO_PSX_UPGRADE_EVENT     = "psx_updateEvent"
+StrConstant CO_AB_LOADHISTORYFROMPXP = "ABLoadHistoryFromPXP"
 ///@}
 
 /// @name Constants for SweepFormula Meta data in JSON format
