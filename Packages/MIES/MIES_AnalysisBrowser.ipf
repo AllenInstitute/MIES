@@ -376,14 +376,14 @@ static Function AB_LoadFile(string discLocation, variable loadOpts)
 		device = deviceWave[i]
 		strswitch(map[%FileType])
 			case ANALYSISBROWSER_FILE_TYPE_IGOR:
-				AB_LoadSweepsFromExperiment(map[%DiscLocation], device)
+				AB_LoadSweepsConfigFromIgor(map[%DiscLocation], device)
 				if(loadOpts & AB_LOADOPT_COMMENTS)
-					AB_LoadUserCommentFromFile(map[%DiscLocation], map[%DataFolder], device)
+					AB_LoadUserCommentFromIgor(map[%DiscLocation], map[%DataFolder], device)
 				endif
 				break
 			case ANALYSISBROWSER_FILE_TYPE_NWBv1:
 			case ANALYSISBROWSER_FILE_TYPE_NWBv2:
-				AB_LoadSweepsFromNWB(map[%DiscLocation], map[%DataFolder], device)
+				AB_LoadSweepsConfigFromNWB(map[%DiscLocation], map[%DataFolder], device)
 				if(loadOpts & AB_LOADOPT_COMMENTS)
 					AB_LoadUserCommentFromNWB(map[%DiscLocation], map[%DataFolder], device)
 				endif
@@ -693,7 +693,7 @@ End
 /// @param discLocation  location of Experiment File on Disc.
 ///                      ID in AnalysisBrowserMap
 /// @param device        device for which to get sweeps.
-static Function AB_LoadSweepsFromExperiment(string discLocation, string device)
+static Function AB_LoadSweepsConfigFromIgor(string discLocation, string device)
 
 	variable sweepNumber, numSweeps, i, numConfigWaves
 	string listSweepConfig, sweepConfig
@@ -727,7 +727,7 @@ End
 ///                      ID in AnalysisBrowserMap
 /// @param dataFolder    datafolder of the project
 /// @param device        device for which to get sweeps.
-static Function AB_LoadSweepsFromNWB(string discLocation, string dataFolder, string device)
+static Function AB_LoadSweepsConfigFromNWB(string discLocation, string dataFolder, string device)
 
 	variable h5_fileID, nwbVersion
 	string channelList
@@ -1031,7 +1031,7 @@ static Function AB_LoadResultsFromNWB(string nwbFilePath, string expFolder)
 	H5_CloseFile(h5_fileID)
 End
 
-static Function AB_LoadUserCommentFromFile(string expFilePath, string expFolder, string device)
+static Function AB_LoadUserCommentFromIgor(string expFilePath, string expFolder, string device)
 
 	string   dataFolderPath
 	variable numStringsLoaded
