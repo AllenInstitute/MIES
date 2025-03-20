@@ -684,8 +684,8 @@ Function/S CreateFakeSweepData(string win, string device, [variable sweepNo, FUN
 	WAVE config        = GetDAQConfigWave(device)
 	hwType = GetHardwareType(device)
 	switch(sweepNo)
-		case 0: // intended drop through
-		case 1:
+		case 0: // intended drop through, FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 1: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 2:
 			numChannels = 4 // from LBN creation in PrepareLBN_IGNORE -> DA2, AD6, DA3, AD7
 			WAVE sweep = sweepGen(sweepTemplate, numChannels)
@@ -778,9 +778,9 @@ Function/WAVE TrackAnalysisFunctionCalls()
 
 	if(WaveExists(wv))
 		return wv
-	else
-		Make/N=(TOTAL_NUM_EVENTS, 2) dfr:anaFuncTracker/WAVE=wv
 	endif
+
+	Make/N=(TOTAL_NUM_EVENTS, 2) dfr:anaFuncTracker/WAVE=wv
 
 	for(i = 0; i < TOTAL_NUM_EVENTS; i += 1)
 		SetDimLabel ROWS, i, $StringFromList(i, EVENT_NAME_LIST), wv
@@ -798,9 +798,9 @@ Function/WAVE TrackAnalysisFunctionOrder([variable numHeadstages])
 
 	if(WaveExists(wv))
 		return wv
-	else
-		Make/N=(TOTAL_NUM_EVENTS, numHeadstages)/D dfr:anaFuncOrder/WAVE=wv
 	endif
+
+	Make/N=(TOTAL_NUM_EVENTS, numHeadstages)/D dfr:anaFuncOrder/WAVE=wv
 
 	wv = NaN
 
@@ -818,9 +818,9 @@ Function/WAVE GetTrackActiveSetCount()
 
 	if(WaveExists(wv))
 		return wv
-	else
-		Make/N=(100) dfr:anaFuncActiveSetCount/WAVE=wv
 	endif
+
+	Make/N=(100) dfr:anaFuncActiveSetCount/WAVE=wv
 
 	wv = NaN
 
@@ -837,9 +837,9 @@ Function/WAVE GetTrackSweepCounts()
 
 	if(WaveExists(wv))
 		return wv
-	else
-		Make/N=(100, TOTAL_NUM_EVENTS, 2) dfr:anaFuncSweepTracker/WAVE=wv
 	endif
+
+	Make/N=(100, TOTAL_NUM_EVENTS, 2) dfr:anaFuncSweepTracker/WAVE=wv
 
 	for(i = 0; i < TOTAL_NUM_EVENTS; i += 1)
 		SetDimLabel COLS, i, $StringFromList(i, EVENT_NAME_LIST), wv
@@ -998,7 +998,8 @@ End
 /// Unwise use of this function can break Igor!
 Function ExhaustMemory(variable amountOfFreeMemoryLeft)
 
-	variable i, expo = 10, err
+	variable i, err
+	variable expo = 10
 	string str
 
 	for(i = expo; i >= 0;)

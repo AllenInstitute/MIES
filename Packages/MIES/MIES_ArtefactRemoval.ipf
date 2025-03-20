@@ -303,7 +303,7 @@ Function AR_MainListBoxProc(STRUCT WMListboxAction &lba) : ListBoxControl
 	string graph
 
 	switch(lba.eventCode)
-		case 4: // cell selection
+		case 4: // cell selection, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 5: // cell selection plus shift key
 			graph = GetMainWindow(lba.win)
 			AR_HighlightArtefactsEntry(graph)
@@ -320,8 +320,8 @@ Function AR_SetVarProcCutoffLength(STRUCT WMSetVariableAction &sva) : SetVariabl
 	string graph, device
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // mouse up, FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 2: // Enter key, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 3: // Live update
 			device = GetMainWindow(sva.win)
 			graph  = GetMainWindow(device)

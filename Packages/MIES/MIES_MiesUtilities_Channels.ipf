@@ -190,7 +190,7 @@ threadsafe static Function/WAVE GetActiveChannelsTTL(WAVE numericalValues, WAVE 
 			return $""
 		endif
 		switch(TTLmode)
-			case TTL_HARDWARE_CHANNEL: // intended drop-through
+			case TTL_HARDWARE_CHANNEL: // intended drop-through, FIXME(CodeStyleFallthroughCaseRequireComment)
 			case TTL_DAEPHYS_CHANNEL:
 				return ListToNumericWave(ttlChannels[index], ";")
 			case TTL_GUITOHW_CHANNEL:
@@ -206,7 +206,7 @@ threadsafe static Function/WAVE GetActiveChannelsTTL(WAVE numericalValues, WAVE 
 				channelMapHWToGUI[][] = NIChannelNumbersHW[p]
 
 				return channelMapHWToGUI
-			default:
+			default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				ASSERT_TS(0, "Invalid TTLmode")
 		endswitch
 	endif
@@ -312,7 +312,7 @@ threadsafe static Function/WAVE GetActiveChannelsTTL(WAVE numericalValues, WAVE 
 				return channelMapHWToGUI
 			endif
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT_TS(0, "Invalid TTLmode")
 	endswitch
 
@@ -392,7 +392,7 @@ threadsafe Function/WAVE GetActiveChannels(WAVE numericalValues, WAVE textualVal
 			break
 		case XOP_CHANNEL_TYPE_TTL:
 			return GetActiveChannelsTTL(numericalValues, textualValues, sweepNo, TTLmode)
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT_TS(0, "Unexpected channelType")
 	endswitch
 

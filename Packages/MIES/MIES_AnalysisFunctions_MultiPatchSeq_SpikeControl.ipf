@@ -764,7 +764,7 @@ static Function SC_ReactToQCFailures(string device, variable sweepNo, string par
 			case SC_SPIKE_COUNT_STATE_STR_TOO_MANY:
 				oorDAScale[i] = SetDAScaleModOp(device, sweepNo, i, daScaleTooManySpikesModifier, daScaleTooManySpikesOperator, limitCheck = limitCheck)
 				break
-			case SC_SPIKE_COUNT_STATE_STR_MIXED:
+			case SC_SPIKE_COUNT_STATE_STR_MIXED: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				printf "The spike count on headstage %d in sweep %d is mixed (some pulses have too few, others too many)\n", i, sweepNo
 				key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SPIKE_COUNTS_STATE, query = 1)
 				WAVE/Z/T spikeCountsRAC = GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, key, i, UNKNOWN_MODE)
@@ -872,16 +872,16 @@ Function/S SC_SpikeControl_CheckParam(string name, STRUCT CheckParametersStruct 
 				return "Invalid value " + num2str(val)
 			endif
 			break
-		case "DAScaleOperator":
-		case "DAScaleSpikePositionOperator":
+		case "DAScaleOperator": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "DAScaleSpikePositionOperator": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "DaScaleTooManySpikesOperator":
 			str = AFH_GetAnalysisParamTextual(name, s.params)
 			if(cmpstr(str, "+") && cmpstr(str, "*"))
 				return "Invalid string " + str
 			endif
 			break
-		case "DAScaleModifier":
-		case "DAScaleSpikePositionModifier":
+		case "DAScaleModifier": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "DAScaleSpikePositionModifier": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "DaScaleTooManySpikesModifier":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val))
@@ -912,7 +912,7 @@ Function/S SC_SpikeControl_CheckParam(string name, STRUCT CheckParametersStruct 
 	endswitch
 
 	strswitch(name)
-		case "DaScaleTooManySpikesModifier":
+		case "DaScaleTooManySpikesModifier": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "DaScaleTooManySpikesOperator":
 			modifier = AFH_GetAnalysisParamNumerical("DaScaleTooManySpikesModifier", s.params)
 			operator = AFH_GetAnalysisParamTextual("DaScaleTooManySpikesOperator", s.params)

@@ -74,10 +74,10 @@ static Function/S AI_GetAmpMCCSerial(string device, variable headStage)
 
 	if(axonSerial == 0)
 		return "Demo"
-	else
-		sprintf mccSerial, "%08d", axonSerial
-		return mccSerial
 	endif
+
+	sprintf mccSerial, "%08d", axonSerial
+	return mccSerial
 End
 
 ///@brief Return the channel of the currently selected head stage
@@ -128,7 +128,7 @@ Function AI_GetMCCScale(variable clampMode, variable func)
 				return ONE_TO_MILLI
 			case MCC_SETPIPETTEOFFSET_FUNC:
 				return MILLI_TO_ONE
-			case MCC_GETPIPETTEOFFSET_FUNC:
+			case MCC_GETPIPETTEOFFSET_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case MCC_AUTOPIPETTEOFFSET_FUNC:
 				return ONE_TO_MILLI
 			case MCC_SETRSCOMPBANDWIDTH_FUNC:
@@ -151,7 +151,7 @@ Function AI_GetMCCScale(variable clampMode, variable func)
 		switch(func)
 			case MCC_SETBRIDGEBALRESIST_FUNC:
 				return ONE_TO_MICRO
-			case MCC_GETBRIDGEBALRESIST_FUNC:
+			case MCC_GETBRIDGEBALRESIST_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case MCC_AUTOBRIDGEBALANCE_FUNC:
 				return MICRO_TO_ONE
 			case MCC_SETHOLDING_FUNC:
@@ -160,7 +160,7 @@ Function AI_GetMCCScale(variable clampMode, variable func)
 				return ONE_TO_PICO
 			case MCC_SETPIPETTEOFFSET_FUNC:
 				return MILLI_TO_ONE
-			case MCC_GETPIPETTEOFFSET_FUNC:
+			case MCC_GETPIPETTEOFFSET_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case MCC_AUTOPIPETTEOFFSET_FUNC:
 				return ONE_TO_MILLI
 			case MCC_SETNEUTRALIZATIONCAP_FUNC:
@@ -243,8 +243,8 @@ Function AI_UpdateAmpModel(string device, string ctrl, variable headStage, [vari
 	endif
 
 	strswitch(ctrl)
-		case "button_DataAcq_AutoPipOffset_IC":
-		case "button_DataAcq_AutoPipOffset_VC":
+		case "button_DataAcq_AutoPipOffset_IC": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "button_DataAcq_AutoPipOffset_VC": // FIXME(CodeStyleFallthroughCaseRequireComment)
 			runMode = TP_StopTestPulseFast(device)
 		default:
 			// do nothing
@@ -340,7 +340,7 @@ Function AI_UpdateAmpModel(string device, string ctrl, variable headStage, [vari
 				AmpStorageWave[%PipetteOffsetVC][0][i] = value
 				AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_SETPIPETTEOFFSET_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				break
-			case "button_DataAcq_AutoPipOffset_IC":
+			case "button_DataAcq_AutoPipOffset_IC": // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case "button_DataAcq_AutoPipOffset_VC":
 				clampMode = DAG_GetHeadstageMode(device, i)
 
@@ -623,9 +623,9 @@ static Function/S AI_AmpStorageControlToRowLabel(string ctrl)
 		case "check_DataAcq_Amp_Chain":
 			return "RSCompChaining"
 			break
-		case "button_DataAcq_AutoBridgeBal_IC":
-		case "button_DataAcq_FastComp_VC":
-		case "button_DataAcq_SlowComp_VC":
+		case "button_DataAcq_AutoBridgeBal_IC": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "button_DataAcq_FastComp_VC": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "button_DataAcq_SlowComp_VC": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "button_DataAcq_AutoPipOffset_VC":
 			// no row exists
 			return ""

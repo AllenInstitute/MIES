@@ -74,22 +74,22 @@ Function WB_OpenStimulusSetInWaveBuilder()
 			printf "Context menu option \"%s\" could not be find the stimulus set %s.", S_Value, stimset
 			ControlWindowToFront()
 			return NaN
-		else
-			// we might need to load the stimset
-			WAVE  traceWave    = $TUD_GetUserData(graph, trace, "fullPath")
-			DFREF sweepDataDFR = GetWavesDataFolderDFR(traceWave)
-			sbIndex = SB_GetIndexFromSweepDataPath(graph, sweepDataDFR)
+		endif
 
-			DFREF  sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
-			WAVE/T sweepMap        = GetSweepBrowserMap(sweepBrowserDFR)
+		// we might need to load the stimset
+		WAVE  traceWave    = $TUD_GetUserData(graph, trace, "fullPath")
+		DFREF sweepDataDFR = GetWavesDataFolderDFR(traceWave)
+		sbIndex = SB_GetIndexFromSweepDataPath(graph, sweepDataDFR)
 
-			abIndex = SB_TranslateSBMapIndexToABMapIndex(graph, sbIndex)
-			device  = sweepMap[sbIndex][%Device]
-			if(AB_LoadStimsetForSweep(device, abIndex, sweepNo))
-				printf "Context menu option \"%s\" could not load the stimulus set %s.", S_Value, stimset
-				ControlWindowToFront()
-				return NaN
-			endif
+		DFREF  sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
+		WAVE/T sweepMap        = GetSweepBrowserMap(sweepBrowserDFR)
+
+		abIndex = SB_TranslateSBMapIndexToABMapIndex(graph, sbIndex)
+		device  = sweepMap[sbIndex][%Device]
+		if(AB_LoadStimsetForSweep(device, abIndex, sweepNo))
+			printf "Context menu option \"%s\" could not load the stimulus set %s.", S_Value, stimset
+			ControlWindowToFront()
+			return NaN
 		endif
 	endif
 
@@ -571,7 +571,7 @@ Function WBP_FinalTabHook(STRUCT WMTabControlAction &tca)
 	ShowControls(tca.win, HIDDEN_CONTROLS_SQUARE_PULSE)
 
 	switch(tca.tab)
-		case EPOCH_TYPE_CUSTOM:
+		case EPOCH_TYPE_CUSTOM: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case EPOCH_TYPE_COMBINE:
 			HideControls(tca.win, HIDDEN_CONTROLS_CUSTOM_COMBINE)
 			break
@@ -716,8 +716,8 @@ End
 Function WBP_SetVarProc_UpdateParam(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // mouse up, FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 2: // Enter key, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 3: // Live update
 
 			if(sva.isStr)
@@ -873,8 +873,8 @@ End
 Function WBP_SetVarProc_SetSearchString(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // mouse up, FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 2: // Enter key, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 3: // Live update
 			break
 		default:
@@ -1046,8 +1046,8 @@ End
 Function WBP_SetVarProc_EpochToEdit(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // mouse up, FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 2: // Enter key, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 3: // Live update
 			WAVE SegWvType = GetSegmentTypeWave()
 			PGC_SetAndActivateControl(panel, "WBP_WaveType", val = SegWvType[sva.dval])
@@ -1108,9 +1108,9 @@ Function/DF WBP_GetFolderPath()
 	ControlInfo/W=$panel group_WaveBuilder_FolderPath
 	if(IsEmpty(S_value) || !DataFolderExists(S_value))
 		return $"root:"
-	else
-		return $S_value
 	endif
+
+	return $S_value
 End
 
 Function/S WBP_ReturnFoldersList()
@@ -1130,7 +1130,9 @@ Function WBP_PopMenuProc_FolderSelect(STRUCT WMPopupAction &pa) : PopupMenuContr
 
 			if(!CmpStr(popStr, NONE))
 				return 0
-			elseif(!CmpStr(popStr, "root:"))
+			endif
+
+			if(!CmpStr(popStr, "root:"))
 				path = "root:"
 			else
 				ControlInfo/W=$panel group_WaveBuilder_FolderPath
@@ -1233,7 +1235,7 @@ static Function WBP_AdjustDeltaControls(string control)
 		case WBP_WAVETYPE_SEGWVTYPE:
 			WAVE loc = GetSegmentTypeWave()
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Invalid control type")
 	endswitch
 
@@ -1292,7 +1294,7 @@ static Function WBP_AdjustDeltaControls(string control)
 			DisableControls(panel, dme)
 			EnableControls(panel, ldelta)
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unknown delta mode")
 	endswitch
 End
@@ -1434,8 +1436,8 @@ Function WBP_SetVarCombineEpochFormula(STRUCT WMSetVariableAction &sva) : SetVar
 	variable currentEpoch, lastSweep, channelType
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // mouse up, FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 2: // Enter key, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 3: // Live update
 			win     = sva.win
 			formula = sva.sval
@@ -2004,9 +2006,9 @@ Function WBP_ListBoxProc_AnalysisParams(STRUCT WMListboxAction &lba) : ListBoxCo
 	variable row, col
 
 	switch(lba.eventCode)
-		case 1: // mouse down
-		case 3: // double click
-		case 4: // cell selection
+		case 1: // mouse down, FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 3: // double click, FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 4: // cell selection, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 5: // cell selection plus shift key
 
 			win = lba.win
@@ -2089,7 +2091,7 @@ static Function/WAVE WBP_ListControlsPerStimulusType(variable epochType)
 	list = ControlNameList(panel)
 
 	switch(epochType)
-		case EPOCH_TYPE_COMBINE:
+		case EPOCH_TYPE_COMBINE: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case EPOCH_TYPE_CUSTOM:
 			hiddenControls = HIDDEN_CONTROLS_CUSTOM_COMBINE
 			break

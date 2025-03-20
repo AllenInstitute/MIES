@@ -872,7 +872,7 @@ threadsafe Function/WAVE FindLevelWrapper(WAVE data, variable level, variable ed
 			endif
 
 			return resultMulti
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT_TS(0, "Impossible case")
 	endswitch
 End
@@ -1009,9 +1009,10 @@ threadsafe Function BinarySearchText(WAVE/T theWave, string theText, [variable c
 			if((iPos == startPos) || (cmpstr(theText, theWave[iPos - 1], caseSensitive) == 1))
 				// then iPos is the first occurence of thetext in theWave from startPos to endPos
 				return iPos
-			else //  there are more copies of theText in theWave before iPos
-				lastPt = iPos - 1
 			endif
+
+			//  there are more copies of theText in theWave before iPos
+			lastPt = iPos - 1
 		elseif(theCmp == 1) //thetext is alphabetically after theWave [iPos]
 			firstPt = iPos + 1
 		else // thetext is alphabetically before theWave [iPos]

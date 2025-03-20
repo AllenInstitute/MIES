@@ -734,16 +734,16 @@ Function PostPlotTransformations(string win, variable mode, [WAVE/Z additionalDa
 	string                    graph
 
 	switch(mode)
-		case POST_PLOT_ADDED_SWEEPS:
+		case POST_PLOT_ADDED_SWEEPS: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case POST_PLOT_REMOVED_SWEEPS:
 			ASSERT(!ParamIsDefault(additionalData), "Missing optional additionalData")
 			break
-		case POST_PLOT_FULL_UPDATE:
+		case POST_PLOT_FULL_UPDATE: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case POST_PLOT_CONSTANT_SWEEPS:
 			ASSERT(ParamIsDefault(additionalData), "Not supported optional additionalData")
 			WAVE/Z additionalData = $""
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Invalid mode")
 	endswitch
 

@@ -29,9 +29,9 @@ Function/S GetTimeStamp([variable secondsSinceIgorEpoch, variable humanReadable]
 
 	if(humanReadable)
 		return Secs2Time(secondsSinceIgorEpoch, 1) + " " + Secs2Date(secondsSinceIgorEpoch, -2, "/")
-	else
-		return Secs2Date(secondsSinceIgorEpoch, -2, "_") + "_" + ReplaceString(":", Secs2Time(secondsSinceIgorEpoch, 3), "")
 	endif
+
+	return Secs2Date(secondsSinceIgorEpoch, -2, "_") + "_" + ReplaceString(":", Secs2Time(secondsSinceIgorEpoch, 3), "")
 End
 
 /// @brief Return the seconds, including fractional part, since Igor Pro epoch (1/1/1904) in UTC time zone

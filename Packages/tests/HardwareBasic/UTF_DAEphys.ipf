@@ -51,11 +51,11 @@ Function CheckIfAllControlsReferStateWv([string str])
 		endif
 
 		switch(abs(V_Flag))
-			case CONTROL_TYPE_BUTTON:
-			case CONTROL_TYPE_LISTBOX:
-			case CONTROL_TYPE_TAB:
-			case CONTROL_TYPE_VALDISPLAY:
-			case CONTROL_TYPE_GROUPBOX:
+			case CONTROL_TYPE_BUTTON: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case CONTROL_TYPE_LISTBOX: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case CONTROL_TYPE_TAB: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case CONTROL_TYPE_VALDISPLAY: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case CONTROL_TYPE_GROUPBOX: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case CONTROL_TYPE_TITLEBOX:
 				// nothing to do
 				break
@@ -163,7 +163,7 @@ Function CheckIfAllControlsReferStateWv([string str])
 				// undo
 				PGC_SetAndActivateControl(str, ctrl, val = oldVal)
 				break
-			default:
+			default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				INFO("Control type = %d", n0 = V_Flag)
 				FAIL()
 		endswitch
@@ -197,11 +197,11 @@ Function CheckStartupSettings([string str])
 		ControlInfo/W=$unlockedDevice $ctrl
 
 		switch(abs(V_Flag))
-			case CONTROL_TYPE_BUTTON:
-			case CONTROL_TYPE_LISTBOX:
-			case CONTROL_TYPE_TAB:
-			case CONTROL_TYPE_VALDISPLAY:
-			case CONTROL_TYPE_GROUPBOX:
+			case CONTROL_TYPE_BUTTON: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case CONTROL_TYPE_LISTBOX: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case CONTROL_TYPE_TAB: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case CONTROL_TYPE_VALDISPLAY: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case CONTROL_TYPE_GROUPBOX: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case CONTROL_TYPE_TITLEBOX:
 				// nothing to do
 				break
@@ -227,7 +227,7 @@ Function CheckStartupSettings([string str])
 
 				SetPopupMenuIndex(unlockedDevice, ctrl, 1 + enoise(2, 2))
 				break
-			default:
+			default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				FAIL()
 		endswitch
 	endfor

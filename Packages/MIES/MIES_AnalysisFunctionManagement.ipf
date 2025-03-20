@@ -79,8 +79,8 @@ Function AFM_CallAnalysisFunctions(string device, variable eventType)
 
 		// @todo Use AS_GetSweepNumber once acquisition state handling supports PRE/POST SET_EVENTS
 		switch(eventType)
-			case PRE_DAQ_EVENT:
-			case PRE_SWEEP_CONFIG_EVENT:
+			case PRE_DAQ_EVENT: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case PRE_SWEEP_CONFIG_EVENT: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case PRE_SET_EVENT: // fallthrough-by-design
 				sweepNo = DAG_GetNumericalValue(device, "SetVar_Sweep")
 				WAVE/Z dataWave = $""
@@ -101,8 +101,8 @@ Function AFM_CallAnalysisFunctions(string device, variable eventType)
 				[sampleIntDA, sampleIntAD] = AFH_GetSampleIntervalsFromSweep(scaledDataWave, config)
 				WAVE dataWave = scaledDataWave
 				break
-			case POST_SWEEP_EVENT:
-			case POST_SET_EVENT:
+			case POST_SWEEP_EVENT: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case POST_SET_EVENT: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case POST_DAQ_EVENT: // fallthrough-by-design
 				sweepNo = DAG_GetNumericalValue(device, "SetVar_Sweep") - 1
 				WAVE/Z/T sweepWave = GetSweepWave(device, sweepNo)
