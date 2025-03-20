@@ -1189,6 +1189,8 @@ Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, 
 	endif
 
 	abWin = AB_OpenAnalysisBrowser(restoreSettings = 0)
+	SetCheckBoxState(abWin, "check_load_pxp", CHECKBOX_SELECTED)
+	SetCheckBoxState(abWin, "check_load_nwb", CHECKBOX_SELECTED)
 
 	for(fullFilePath : filesWithPath)
 		MIES_AB#AB_AddElementToSourceList(fullFilePath)
@@ -1200,6 +1202,7 @@ Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, 
 		return [abWin, ""]
 	endif
 
+	PGC_SetAndActivateControl(abWin, "button_expand_all")
 	sweepBrowsers = ""
 	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
 	WAVE   expBrowserSel  = GetExperimentBrowserGUISel()

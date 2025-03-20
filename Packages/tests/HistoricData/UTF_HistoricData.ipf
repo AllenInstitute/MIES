@@ -295,3 +295,25 @@ Function/WAVE GetHistoricDataNoData()
 
 	return files
 End
+
+Function/WAVE GetHistoricDataLoadResults()
+
+	// Files in list must contain results waves
+	Make/FREE/T files = {"AB_LoadSweepsFromIgorData.pxp", "Gad2-IRES-Cre;Ai14-709273.06.02.02.nwb"}
+
+	DownloadFilesIfRequired(files)
+	SetLabelsForDGWave(files)
+
+	return files
+End
+
+Function/WAVE GetHistoricDataLoadUserComment()
+
+	// Files in list must contain user comment
+	Make/FREE/T files = {"Pvalb-IRES-Cre;Ai14-646904.13.03.02.pxp", "nwb2_H17.03.016.11.09.01.nwb"}
+
+	DownloadFilesIfRequired(files)
+	SetLabelsForDGWave(files)
+
+	return files
+End
