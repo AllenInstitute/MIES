@@ -19,6 +19,9 @@ static Constant AB_LOAD_STIMSET        = 1
 static Constant AB_LOAD_TP_STORAGE     = 2
 static Constant AB_LOAD_HISTORYANDLOGS = 3
 
+static Constant AB_LOADOPT_RESULTS  = 0x01
+static Constant AB_LOADOPT_COMMENTS = 0x02
+
 static StrConstant AB_UDATA_WORKINGDF = "datafolder"
 static StrConstant AB_WORKFOLDER_NAME = "workFolder"
 
@@ -234,10 +237,10 @@ End
 ///
 /// @return 0 if the file was loaded, or 1 if not (usually due to an error
 ///         or because it was already loaded)
-static Function AB_AddFile(string win, string discLocation, string sourceEntry, variable doLoadResults)
+static Function AB_AddFile(string win, string discLocation, string sourceEntry, variable loadOpts)
 
 	variable mapIndex
-	variable firstMapped, lastMapped, loadResults
+	variable firstMapped, lastMapped
 	string baseFolder
 
 	// This allows also that NWB and PXP is selected programmatically that is used in testing
@@ -256,7 +259,7 @@ static Function AB_AddFile(string win, string discLocation, string sourceEntry, 
 	endif
 
 	firstMapped = GetNumberFromWaveNote(list, NOTE_INDEX)
-	AB_LoadFile(discLocation, doLoadResults)
+	AB_LoadFile(discLocation, loadOpts)
 	lastMapped = GetNumberFromWaveNote(list, NOTE_INDEX) - 1
 
 	if(lastMapped >= firstMapped)
@@ -334,7 +337,7 @@ static Function AB_FileHasStimsets(WAVE/T map)
 End
 
 /// @brief function tries to load Data From discLocation.
-static Function AB_LoadFile(string discLocation, variable doLoadResults)
+static Function AB_LoadFile(string discLocation, variable loadOpts)
 
 	string device, deviceList
 	variable numDevices, i, highestSweepNumber
@@ -345,7 +348,7 @@ static Function AB_LoadFile(string discLocation, variable doLoadResults)
 		return NaN
 	endif
 
-	if(doLoadResults)
+	if(loadOpts & AB_LOADOPT_RESULTS)
 		strswitch(map[%FileType])
 			case ANALYSISBROWSER_FILE_TYPE_IGOR:
 				AB_LoadResultsFromIgor(map[%DiscLocation], map[%DataFolder])
@@ -374,12 +377,16 @@ static Function AB_LoadFile(string discLocation, variable doLoadResults)
 		strswitch(map[%FileType])
 			case ANALYSISBROWSER_FILE_TYPE_IGOR:
 				AB_LoadSweepsFromExperiment(map[%DiscLocation], device)
-				AB_LoadUserCommentFromFile(map[%DiscLocation], map[%DataFolder], device)
+				if(loadOpts & AB_LOADOPT_COMMENTS)
+					AB_LoadUserCommentFromFile(map[%DiscLocation], map[%DataFolder], device)
+				endif
 				break
 			case ANALYSISBROWSER_FILE_TYPE_NWBv1:
 			case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 				AB_LoadSweepsFromNWB(map[%DiscLocation], map[%DataFolder], device)
-				AB_LoadUserCommentFromNWB(map[%DiscLocation], map[%DataFolder], device)
+				if(loadOpts & AB_LOADOPT_COMMENTS)
+					AB_LoadUserCommentFromNWB(map[%DiscLocation], map[%DataFolder], device)
+				endif
 				break
 			default:
 				ASSERT(0, "invalid file type")
@@ -2585,11 +2592,21 @@ static Function/WAVE AB_GetCurrentlyOpenNWBFiles()
 	return activeFiles
 End
 
+static Function AB_GetLoadSettings(string win)
+
+	variable loadResults, loadComments
+
+	loadResults  = GetCheckBoxState(win, "check_load_results")
+	loadComments = GetCheckBoxState(win, "check_load_comment")
+
+	return (loadResults * AB_LOADOPT_RESULTS) | (loadComments * AB_LOADOPT_COMMENTS)
+End
+
 static Function AB_AddExperimentEntries(string win, WAVE/T entries)
 
 	string entry, symbPath, fName, panel
 	string pxpList, uxpList, nwbList, title
-	variable sTime, loadResults
+	variable sTime, loadOpts
 
 	WAVE/T activeFiles = AB_GetCurrentlyOpenNWBFiles()
 
@@ -2597,7 +2614,7 @@ static Function AB_AddExperimentEntries(string win, WAVE/T entries)
 	DoUpdate/W=$panel
 
 	PGC_SetAndActivateControl(win, "button_expand_all", val = 1)
-	loadResults = GetCheckBoxState(win, "check_load_results")
+	loadOpts = AB_GetLoadSettings(win)
 
 	sTime = stopMSTimer(-2) * MICRO_TO_ONE + 1
 	for(entry : entries)
@@ -2628,7 +2645,7 @@ static Function AB_AddExperimentEntries(string win, WAVE/T entries)
 				DoWindow/T $panel, title
 				sTime = stopMSTimer(-2) * MICRO_TO_ONE + 1
 			endif
-			AB_AddFile(win, fName, entry, loadResults)
+			AB_AddFile(win, fName, entry, loadOpts)
 		endfor
 	endfor
 	DoWindow/T $panel, panel
@@ -2747,6 +2764,7 @@ Function AB_BrowserStartupSettings()
 	SetCheckBoxState(panel, "check_load_nwb", CHECKBOX_SELECTED)
 	SetCheckBoxState(panel, "check_load_pxp", CHECKBOX_UNSELECTED)
 	SetCheckBoxState(panel, "check_load_results", CHECKBOX_UNSELECTED)
+	SetCheckBoxState(panel, "check_load_comment", CHECKBOX_UNSELECTED)
 
 	Execute/P/Z "DoWindow/R " + panel
 	Execute/P/Q/Z "COMPILEPROCEDURES "
@@ -3325,7 +3343,7 @@ Function AB_ButtonProc_OpenCommentNB(STRUCT WMButtonAction &ba) : ButtonControl
 
 			SVAR/Z/SDFR=GetAnalysisDeviceFolder(dataFolder, device) userComment
 			if(!SVAR_Exists(userComment))
-				comment = "The user comment string does not exist for the given device!"
+				comment = "The user comment string was not loaded or does not exist for the given device!"
 			else
 				comment = userComment
 			endif
@@ -3541,7 +3559,7 @@ End
 static Function BeforeFileOpenHook(variable refNum, string file, string pathName, string type, string creator, variable kind)
 
 	string baseFolder, fileSuffix, entry, win
-	variable numEntries, loadResults
+	variable numEntries, loadOpts
 
 	LOG_AddEntry(PACKAGE_MIES, "start")
 
@@ -3558,7 +3576,7 @@ static Function BeforeFileOpenHook(variable refNum, string file, string pathName
 	// we can not add files to the map if some entries are collapsed
 	// so we have to expand all first.
 	PGC_SetAndActivateControl(win, "button_expand_all", val = 1)
-	loadResults = GetCheckBoxState(win, "check_load_results")
+	loadOpts = AB_GetLoadSettings(win)
 
 	entry = basefolder + file
 
@@ -3570,7 +3588,7 @@ static Function BeforeFileOpenHook(variable refNum, string file, string pathName
 		return 1
 	endif
 
-	if(AB_AddFile(win, entry, entry, loadResults))
+	if(AB_AddFile(win, entry, entry, loadOpts))
 		// already loaded or error
 		LOG_AddEntry(PACKAGE_MIES, "end")
 		return 1
