@@ -623,7 +623,10 @@ static Function [variable baseline_t, variable baseline] PSX_CalculateEventBasel
 	elseif(kernelAmp < 0)
 		baseline_t = V_maxloc
 	else
-		ASSERT(0, "Can't handle kernelAmp of zero")
+		string str
+		sprintf str, "Can't handle kernelAmp of: %g\r", baseline_t //could be Nan, Inf, or zero
+		ASSERT(0, str)
+		ASSERT(isFinite(baseline_t), str)
 	endif
 
 	range = PSX_BASELINE_NUM_POINTS_AVERAGE * DimDelta(sweepDataOffFilt, ROWS)
@@ -780,7 +783,9 @@ static Function [variable first, variable last] PSX_GetSingleEventRange(WAVE psx
 	else
 		last = min(first + offset, psxEvent[index + 1][%baseline_t])
 	endif
-
+	
+	assert(first<=last, "range must have first < last")
+	
 	return [first, last]
 End
 
@@ -794,7 +799,8 @@ static Function [variable start, variable stop] PSX_GetEventFitRange(WAVE sweepD
 	start = psxEvent[eventIndex][%peak_t]
 
 	maxLength = PSX_FIT_RANGE_FACTOR * JWN_GetNumberFromWaveNote(psxEvent, SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/psxKernel/decayTau")
-
+	ASSERT(isFinite(maxLength), "Failed to retrieve finite decay tau")
+	
 	if(eventIndex == (DimSize(psxEvent, ROWS) - 1))
 		calcLength = maxLength
 	else
@@ -807,7 +813,7 @@ static Function [variable start, variable stop] PSX_GetEventFitRange(WAVE sweepD
 
 	stop = min(start + calcLength, IndexToScale(sweepDataOffFilt, DimSize(sweepDataOffFilt, ROWS), ROWS))
 
-	ASSERT(start < stop, "Invalid fit range calculation")
+	ASSERT(start <= stop, "Invalid fit range calculation")
 
 	return [start, stop]
 End
