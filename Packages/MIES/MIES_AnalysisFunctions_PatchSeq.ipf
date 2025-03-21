@@ -6276,7 +6276,7 @@ Function PSQ_Chirp(string device, STRUCT AnalysisFunction_V3 &s)
 				endif
 
 				WAVE result = LBN_GetNumericWave()
-				initLPF = AI_SendToAmp(device, s.headstage, I_CLAMP_MODE, MCC_GETPRIMARYSIGNALLPF_FUNC, NaN)
+				initLPF = AI_ReadFromAmplifier(device, s.headstage, I_CLAMP_MODE, MCC_PRIMARYSIGNALLPF_FUNC)
 				ASSERT(IsFinite(initLPF), "Queried LPF value from MCC amp is non-finite")
 				result[INDEP_HEADSTAGE] = initLPF
 				key                     = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_INIT_LPF)
@@ -6284,7 +6284,7 @@ Function PSQ_Chirp(string device, STRUCT AnalysisFunction_V3 &s)
 
 				ampBesselFilter = AFH_GetAnalysisParamNumerical("AmpBesselFilter", s.params, defValue = PSQ_CR_DEFAULT_LPF)
 
-				ret = AI_SendToAmp(device, s.headstage, I_CLAMP_MODE, MCC_SETPRIMARYSIGNALLPF_FUNC, ampBesselFilter, selectAmp = 0)
+				ret = AI_WriteToAmplifier(device, s.headstage, I_CLAMP_MODE, MCC_PRIMARYSIGNALLPF_FUNC, ampBesselFilter, selectAmp = 0)
 				ASSERT(!ret, "Could not set LPF in MCC")
 			endif
 			break
@@ -6410,7 +6410,7 @@ Function PSQ_Chirp(string device, STRUCT AnalysisFunction_V3 &s)
 				key             = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_INIT_LPF, query = 1)
 				ampBesselFilter = GetLastSettingIndepSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 				ASSERT(IsFinite(ampBesselFilter), "Expected finite value for the amplifier bessel filter")
-				ret = AI_SendToAmp(device, s.headstage, I_CLAMP_MODE, MCC_SETPRIMARYSIGNALLPF_FUNC, ampBesselFilter)
+				ret = AI_WriteToAmplifier(device, s.headstage, I_CLAMP_MODE, MCC_PRIMARYSIGNALLPF_FUNC, ampBesselFilter)
 				ASSERT(IsFinite(ret), "Can not set LPF value in MCC amp")
 			endif
 

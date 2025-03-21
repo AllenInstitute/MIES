@@ -868,10 +868,10 @@ Function ED_TPDocumentation(string device)
 			continue
 		endif
 
-		TPSettingsWave[0][4][i] = AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_GETFASTCOMPCAP_FUNC, NaN, selectAmp = 0)
-		TPSettingsWave[0][5][i] = AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_GETSLOWCOMPCAP_FUNC, NaN, selectAmp = 0)
-		TPSettingsWave[0][6][i] = AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_GETFASTCOMPTAU_FUNC, NaN, selectAmp = 0)
-		TPSettingsWave[0][7][i] = AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_GETSLOWCOMPTAU_FUNC, NaN, selectAmp = 0)
+		TPSettingsWave[0][4][i] = AI_ReadFromAmplifier(device, i, V_CLAMP_MODE, MCC_FASTCOMPCAP_FUNC, selectAmp = 0)
+		TPSettingsWave[0][5][i] = AI_ReadFromAmplifier(device, i, V_CLAMP_MODE, MCC_SLOWCOMPCAP_FUNC, selectAmp = 0)
+		TPSettingsWave[0][6][i] = AI_ReadFromAmplifier(device, i, V_CLAMP_MODE, MCC_FASTCOMPTAU_FUNC, selectAmp = 0)
+		TPSettingsWave[0][7][i] = AI_ReadFromAmplifier(device, i, V_CLAMP_MODE, MCC_SLOWCOMPTAU_FUNC, selectAmp = 0)
 	endfor
 
 	TPSettingsWave[0][1][0, NUM_HEADSTAGES - 1] = (hsProp[r][%ClampMode] == V_CLAMP_MODE) ? TPResults[%BaselineSteadyState][r] : NaN

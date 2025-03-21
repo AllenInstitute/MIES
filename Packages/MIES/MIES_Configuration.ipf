@@ -2208,8 +2208,8 @@ static Function CONF_GetAmplifierSettings(string device)
 			JSON_AddBoolean(jsonID, jsonPath + EXPCONFIG_JSON_AMP_COMP_CHAIN, DAG_GetNumericalValue(device, "check_DataAcq_Amp_Chain"))
 
 			// MCC settings without GUI control
-			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_LPF, AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_GETPRIMARYSIGNALLPF_FUNC, NaN))
-			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_GAIN, AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_GETPRIMARYSIGNALGAIN_FUNC, NaN))
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_LPF, AI_ReadFromAmplifier(device, i, V_CLAMP_MODE, MCC_PRIMARYSIGNALLPF_FUNC))
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_GAIN, AI_ReadFromAmplifier(device, i, V_CLAMP_MODE, MCC_PRIMARYSIGNALGAIN_FUNC))
 
 			jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_ICBLOCK + "/"
 
@@ -2233,8 +2233,8 @@ static Function CONF_GetAmplifierSettings(string device)
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_IC, DAG_GetNumericalValue(device, "setvar_DataAcq_PipetteOffset_IC"))
 
 			// MCC settings without GUI control
-			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_LPF, AI_SendToAmp(device, i, I_CLAMP_MODE, MCC_GETPRIMARYSIGNALLPF_FUNC, NaN))
-			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_GAIN, AI_SendToAmp(device, i, I_CLAMP_MODE, MCC_GETPRIMARYSIGNALGAIN_FUNC, NaN))
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_LPF, AI_ReadFromAmplifier(device, i, I_CLAMP_MODE, MCC_PRIMARYSIGNALLPF_FUNC))
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_GAIN, AI_ReadFromAmplifier(device, i, I_CLAMP_MODE, MCC_PRIMARYSIGNALGAIN_FUNC))
 
 			if(clampMode != I_CLAMP_MODE)
 				DAP_ChangeHeadStageMode(device, clampMode, i, DO_MCC_MIES_SYNCING)
@@ -2307,13 +2307,13 @@ static Function CONF_RestoreAmplifierSettings(string device, variable headStage,
 	// MCC settings without GUI control
 	val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_LPF, ignoreErr = 1)
 	if(!IsNaN(val))
-		ret = AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETPRIMARYSIGNALLPF_FUNC, val)
+		ret = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_PRIMARYSIGNALLPF_FUNC, val)
 		ASSERT(ret == 0, "Could not set LPF primary output")
 	endif
 
 	val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_GAIN, ignoreErr = 1)
 	if(!IsNaN(val))
-		ret = AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETPRIMARYSIGNALGAIN_FUNC, val)
+		ret = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_PRIMARYSIGNALGAIN_FUNC, val)
 		ASSERT(ret == 0, "Could not set primary output gain")
 	endif
 
@@ -2341,13 +2341,13 @@ static Function CONF_RestoreAmplifierSettings(string device, variable headStage,
 	// MCC settings without GUI control
 	val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_LPF, ignoreErr = 1)
 	if(!IsNaN(val))
-		ret = AI_SendToAmp(device, headstage, I_CLAMP_MODE, MCC_SETPRIMARYSIGNALLPF_FUNC, val)
+		ret = AI_WriteToAmplifier(device, headstage, I_CLAMP_MODE, MCC_PRIMARYSIGNALLPF_FUNC, val)
 		ASSERT(ret == 0, "Could not set LPF primary output")
 	endif
 
 	val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_GAIN, ignoreErr = 1)
 	if(!IsNaN(val))
-		ret = AI_SendToAmp(device, headstage, I_CLAMP_MODE, MCC_SETPRIMARYSIGNALGAIN_FUNC, val)
+		ret = AI_WriteToAmplifier(device, headstage, I_CLAMP_MODE, MCC_PRIMARYSIGNALGAIN_FUNC, val)
 		ASSERT(ret == 0, "Could not set LPF primary output")
 	endif
 
@@ -2389,30 +2389,30 @@ static Function CONF_MCC_MidExp(string device, variable headStage, variable json
 
 	if(clampMode == V_CLAMP_MODE)
 
-		settingValue = AI_SendToAmp(device, headStage, V_CLAMP_MODE, MCC_GETPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite = 1)
+		settingValue = AI_ReadFromAmplifier(device, headStage, V_CLAMP_MODE, MCC_PIPETTEOFFSET_FUNC)
 		PGC_SetAndActivateControl(device, "setvar_DataAcq_PipetteOffset_VC", val = settingValue)
 		PGC_SetAndActivateControl(device, "setvar_DataAcq_PipetteOffset_IC", val = settingValue)
-		settingValue = AI_SendToAmp(device, headStage, V_CLAMP_MODE, MCC_GETHOLDING_FUNC, NaN, checkBeforeWrite = 1)
+		settingValue = AI_ReadFromAmplifier(device, headStage, V_CLAMP_MODE, MCC_HOLDING_FUNC)
 		PGC_SetAndActivateControl(device, "setvar_DataAcq_Hold_VC", val = settingValue)
-		settingValue = AI_SendToAmp(device, headStage, V_CLAMP_MODE, MCC_GETHOLDINGENABLE_FUNC, NaN, checkBeforeWrite = 1)
+		settingValue = AI_ReadFromAmplifier(device, headStage, V_CLAMP_MODE, MCC_HOLDINGENABLE_FUNC)
 		PGC_SetAndActivateControl(device, "check_DatAcq_HoldEnableVC", val = settingValue)
 		PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = CHECKBOX_SELECTED)
 		printf "HeadStage %d is in V-Clamp mode and has been configured from the MCC. I-Clamp settings were reset to initial values, check before switching!\r", headStage
 	elseif(clampMode == I_CLAMP_MODE)
-		settingValue = AI_SendToAmp(device, headStage, I_CLAMP_MODE, MCC_GETPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite = 1)
+		settingValue = AI_ReadFromAmplifier(device, headStage, I_CLAMP_MODE, MCC_PIPETTEOFFSET_FUNC)
 		PGC_SetAndActivateControl(device, "setvar_DataAcq_PipetteOffset_VC", val = settingValue)
 		PGC_SetAndActivateControl(device, "setvar_DataAcq_PipetteOffset_IC", val = settingValue)
-		settingValue = AI_SendToAmp(device, headStage, I_CLAMP_MODE, MCC_GETHOLDING_FUNC, NaN, checkBeforeWrite = 1)
+		settingValue = AI_ReadFromAmplifier(device, headStage, I_CLAMP_MODE, MCC_HOLDING_FUNC)
 		PGC_SetAndActivateControl(device, "setvar_DataAcq_Hold_IC", val = settingValue)
-		settingValue = AI_SendToAmp(device, headStage, I_CLAMP_MODE, MCC_GETHOLDINGENABLE_FUNC, NaN, checkBeforeWrite = 1)
+		settingValue = AI_ReadFromAmplifier(device, headStage, I_CLAMP_MODE, MCC_HOLDINGENABLE_FUNC)
 		PGC_SetAndActivateControl(device, "check_DatAcq_HoldEnable", val = settingValue)
-		settingValue = AI_SendToAmp(device, headStage, I_CLAMP_MODE, MCC_GETBRIDGEBALRESIST_FUNC, NaN, checkBeforeWrite = 1)
+		settingValue = AI_ReadFromAmplifier(device, headStage, I_CLAMP_MODE, MCC_BRIDGEBALRESIST_FUNC)
 		PGC_SetAndActivateControl(device, "setvar_DataAcq_BB", val = settingValue)
-		settingValue = AI_SendToAmp(device, headStage, I_CLAMP_MODE, MCC_GETBRIDGEBALENABLE_FUNC, NaN, checkBeforeWrite = 1)
+		settingValue = AI_ReadFromAmplifier(device, headStage, I_CLAMP_MODE, MCC_BRIDGEBALENABLE_FUNC)
 		PGC_SetAndActivateControl(device, "check_DatAcq_BBEnable", val = settingValue)
-		settingValue = AI_SendToAmp(device, headStage, I_CLAMP_MODE, MCC_GETNEUTRALIZATIONCAP_FUNC, NaN, checkBeforeWrite = 1)
+		settingValue = AI_ReadFromAmplifier(device, headStage, I_CLAMP_MODE, MCC_NEUTRALIZATIONCAP_FUNC)
 		PGC_SetAndActivateControl(device, "setvar_DataAcq_CN", val = settingValue)
-		settingValue = AI_SendToAmp(device, headStage, I_CLAMP_MODE, MCC_GETNEUTRALIZATIONENABL_FUNC, NaN, checkBeforeWrite = 1)
+		settingValue = AI_ReadFromAmplifier(device, headStage, I_CLAMP_MODE, MCC_NEUTRALIZATIONENABL_FUNC)
 		PGC_SetAndActivateControl(device, "check_DatAcq_CNEnable", val = settingValue)
 		PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = CHECKBOX_UNSELECTED)
 		PGC_SetAndActivateControl(device, "check_DatAcq_HoldEnableVC", val = CHECKBOX_UNSELECTED)
