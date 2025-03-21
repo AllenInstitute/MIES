@@ -1135,9 +1135,9 @@ static Function TASYNC_RunClassSingle()
 		if(numpnts(returnOrder) == WORK_COUNT_GENERIC)
 			CHECK(ASYNC_IsWorkloadClassDone("WorkLoadSingleClass1"))
 			break
-		else
-			CHECK(!ASYNC_IsWorkloadClassDone("WorkLoadSingleClass1"))
 		endif
+
+		CHECK(!ASYNC_IsWorkloadClassDone("WorkLoadSingleClass1"))
 		if(endtime < datetime)
 			timeout = 1
 			break

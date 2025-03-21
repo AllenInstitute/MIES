@@ -555,7 +555,7 @@ Function PUB_DAQStateChange(string device, variable mode, variable oldState, var
 			oldState  = !(oldState == TEST_PULSE_NOT_RUNNING)
 			newState  = !(newState == TEST_PULSE_NOT_RUNNING)
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Invalid mode")
 	endswitch
 

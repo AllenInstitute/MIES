@@ -277,7 +277,7 @@ Function/WAVE MSQ_CreateOverrideResults(string device, variable headstage, varia
 	ASSERT(WaveExists(wv), "Stimset does not exist")
 
 	switch(type)
-		case MSQ_FAST_RHEO_EST:
+		case MSQ_FAST_RHEO_EST: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			numRows = IDX_NumberOfSweepsInSet(stimset)
 			WAVE activeHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 			numCols    = Sum(activeHS)
@@ -295,7 +295,7 @@ Function/WAVE MSQ_CreateOverrideResults(string device, variable headstage, varia
 			numChunks  = 10
 			typeOfWave = 0 // text wave
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "invalid type")
 	endswitch
 
@@ -368,7 +368,7 @@ static Function/WAVE MSQ_SearchForSpikes(string device, variable type, WAVE swee
 			case MSQ_FAST_RHEO_EST:
 				overrideValue = overrideResults[count][headstage]
 				break
-			default:
+			default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				ASSERT(0, "unsupported type")
 		endswitch
 

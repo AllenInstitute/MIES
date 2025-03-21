@@ -177,7 +177,7 @@ static Function DC_ChannelCalcForDAQConfigWave(string device, variable dataAcqOr
 			endif
 			return numDACs + numADCs + numTTLsRackZero + numTTLsRackOne
 			break
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // intended drop through, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case HARDWARE_SUTTER_DAC:
 			if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 				numDACs = DC_NoOfChannelsSelected(device, CHANNEL_TYPE_DAC)
@@ -311,7 +311,7 @@ Function DC_CalculateDAQDataWaveLengthImpl(variable dataLength, variable hardwar
 			exponent = max(MINIMUM_ITCDATAWAVE_EXPONENT, exponent)
 
 			return 2^exponent
-		case HARDWARE_NI_DAC:
+		case HARDWARE_NI_DAC: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case HARDWARE_SUTTER_DAC: // intended drop-through
 
 			return dataLength
@@ -360,7 +360,7 @@ static Function [WAVE/Z DAQDataWave, WAVE/WAVE NIDataWave] DC_MakeAndGetDAQDataW
 			SetScale/P x, 0, s.samplingIntervalDA * MICRO_TO_MILLI, "ms", ITCDataWave
 
 			return [ITCDataWave, $""]
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // intended drop through, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case HARDWARE_SUTTER_DAC:
 			WAVE/WAVE NISUDataWave = GetDAQDataWave(device, dataAcqOrTP)
 			Redimension/N=(s.numActiveChannels) NISUDataWave
@@ -376,7 +376,7 @@ static Function [WAVE/Z DAQDataWave, WAVE/WAVE NIDataWave] DC_MakeAndGetDAQDataW
 			NISUDataWave = DC_SetDataScaleNISUChannelWave(NISUDataWave[p], config[p][%ChannelType])
 
 			return [$"", NISUDataWave]
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unsupported hardware type")
 	endswitch
 End
@@ -395,7 +395,7 @@ static Function/WAVE DC_SetDataScaleNISUChannelWave(WAVE channel, variable type)
 			break
 		case XOP_CHANNEL_TYPE_TTL:
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unknown channel type")
 	endswitch
 
@@ -422,14 +422,14 @@ static Function/WAVE DC_MakeNIChannelWave(string device, variable dataAcqOrTP, v
 	Redimension/N=(numRows)/Y=(dataType) channel
 	// @todo test
 	switch(channelType)
-		case XOP_CHANNEL_TYPE_DAC:
+		case XOP_CHANNEL_TYPE_DAC: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case XOP_CHANNEL_TYPE_TTL: // intended drop through
 			FastOp channel = 0
 			break
 		case XOP_CHANNEL_TYPE_ADC:
 			FastOp channel = (NaN)
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unsupported channel type")
 	endswitch
 	SetScale/P x, 0, samplingInterval * MICRO_TO_MILLI, "ms", channel
@@ -456,14 +456,14 @@ static Function/WAVE DC_MakeSUTTERChannelWave(string device, variable dataAcqOrT
 	WAVE channel = GetNIDAQChannelWave(device, index, dataAcqOrTP)
 	Redimension/N=(numRows)/Y=(dataType) channel
 	switch(channelType)
-		case XOP_CHANNEL_TYPE_DAC:
+		case XOP_CHANNEL_TYPE_DAC: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case XOP_CHANNEL_TYPE_TTL: // intended drop through
 			FastOp channel = 0
 			break
 		case XOP_CHANNEL_TYPE_ADC:
 			FastOp channel = (NaN)
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unsupported channel type")
 	endswitch
 	SetScale/P x, 0, samplingInterval * MICRO_TO_ONE, "s", channel
@@ -616,7 +616,7 @@ static Function DC_CalculateChannelSizeForScaledData(string device, variable dat
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
 			return (dataAcqOrTP == DATA_ACQUISITION_MODE) ? ROVar(GetStopCollectionPoint(device)) : TPSettingsCalc[%totalLengthPointsTP_ADC]
-		case HARDWARE_NI_DAC: // intended-drop-through
+		case HARDWARE_NI_DAC: // intended-drop-through, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case HARDWARE_SUTTER_DAC:
 			if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 				WAVE/WAVE dataWave = GetDAQDataWave(device, dataAcqOrTP)
@@ -625,7 +625,7 @@ static Function DC_CalculateChannelSizeForScaledData(string device, variable dat
 			endif
 
 			return TPSettingsCalc[%totalLengthPointsTP_ADC]
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unknown hardware type")
 	endswitch
 End
@@ -737,7 +737,7 @@ Function/WAVE DC_GetFilteredChannelState(string device, variable dataAcqOrTP, va
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		switch(channelType)
-			case CHANNEL_TYPE_TTL:
+			case CHANNEL_TYPE_TTL: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case CHANNEL_TYPE_ADC:
 				// DAQChannelType does not matter
 				return statusChannel
@@ -885,7 +885,7 @@ static Function DC_PlaceDataInDAQConfigWave(string device, variable dataAcqOrTP)
 					DAQConfigWave[j][%DAQChannelType] = DAQ_CHANNEL_TYPE_DAQ
 				endif
 				break
-			case HARDWARE_NI_DAC: // intended drop through
+			case HARDWARE_NI_DAC: // intended drop through, FIXME(CodeStyleFallthroughCaseRequireComment)
 			case HARDWARE_SUTTER_DAC:
 				WAVE statusTTL = DAG_GetChannelState(device, CHANNEL_TYPE_TTL)
 				numEntries = DimSize(statusTTL, ROWS)
@@ -1036,14 +1036,14 @@ static Function DC_MakeTTLWave(string device, STRUCT DataConfigurationResult &s)
 	endif
 
 	switch(s.hardwareType)
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // intended drop through, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case HARDWARE_SUTTER_DAC:
 			DC_NI_MakeTTLWave(device, s)
 			break
 		case HARDWARE_ITC_DAC:
 			DC_ITC_MakeTTLWave(device, s)
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unsupported hardware type specified")
 	endswitch
 End
@@ -1066,7 +1066,7 @@ static Function DC_WriteTTLIntoDAQDataWave(string device, STRUCT DataConfigurati
 	[minLimit, maxLimit] = HW_GetDataRange(s.hardwareType, XOP_CHANNEL_TYPE_TTL, 0)
 
 	switch(s.hardwareType)
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // intended drop through, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case HARDWARE_SUTTER_DAC:
 			WAVE/WAVE NIDataWave = GetDAQDataWave(device, s.dataAcqOrTP)
 			WAVE/WAVE TTLWaveNI  = GetTTLWave(device)
@@ -1350,7 +1350,7 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 					WAVE/W ITCDataWave = DAQDataWave
 					Multithread ITCDataWave[][s.numDACEntries, s.numDACEntries + s.numADCEntries - 1] = 0
 					break
-				case HARDWARE_NI_DAC: // intended drop through
+				case HARDWARE_NI_DAC: // intended drop through, FIXME(CodeStyleFallthroughCaseRequireComment)
 				case HARDWARE_SUTTER_DAC:
 					WAVE/WAVE NIDataWave = DAQDataWave
 					for(i = 0; i < s.numADCEntries; i += 1)
@@ -1470,7 +1470,7 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 						ITCDataWave[DimSize(ITCDataWave, ROWS) - cutOff, *][i] = 0
 					endif
 					break
-				case HARDWARE_NI_DAC: // intended drop through
+				case HARDWARE_NI_DAC: // intended drop through, FIXME(CodeStyleFallthroughCaseRequireComment)
 				case HARDWARE_SUTTER_DAC:
 					WAVE NIChannel = NIDataWave[i]
 					Multithread NIChannel[] =                                         \
@@ -1507,7 +1507,7 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 						            limit(tpAmp * s.testPulse[p], minLimit, maxLimit); AbortOnRTE
 					endif
 					break
-				case HARDWARE_NI_DAC: // intended drop through
+				case HARDWARE_NI_DAC: // intended drop through, FIXME(CodeStyleFallthroughCaseRequireComment)
 				case HARDWARE_SUTTER_DAC:
 					// for an index step of 1 in NIChannel, singleStimSet steps decimationFactor
 					// for an index step of 1 in singleStimset, NIChannel steps 1 / decimationFactor
@@ -1855,7 +1855,7 @@ static Function DC_DocumentHardwareProperties(string device, variable hardwareTy
 			DC_DocumentChannelProperty(device, "Digitizer Hardware Name", INDEP_HEADSTAGE, NaN, NaN, str = DEVICE_NAME_NICE_SUTTER)
 			DC_DocumentChannelProperty(device, "Digitizer Serial Numbers", INDEP_HEADSTAGE, NaN, NaN, str = devInfoText[%LISTOFDEVICES])
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unknown hardware")
 	endswitch
 End
@@ -1934,7 +1934,7 @@ static Function [variable result, variable row, variable column] DC_CheckIfDataW
 			endif
 
 			return [0, NaN, NaN]
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // intended drop through, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case HARDWARE_SUTTER_DAC:
 			WAVE/WAVE dataWave = GetDAQDataWave(device, dataAcqOrTP)
 			ASSERT(IsWaveRefWave(dataWave), "Unexpected wave type")
@@ -1962,7 +1962,7 @@ static Function [variable result, variable row, variable column] DC_CheckIfDataW
 			endfor
 
 			return [0, NaN, NaN]
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unsupported hardware type")
 	endswitch
 End
@@ -2266,9 +2266,9 @@ static Function DC_ReturnTotalLengthIncrease(STRUCT DataConfigurationResult &s)
 	if(s.distributedDAQ)
 		ASSERT(s.numDACEntries > 0, "Number of DACs must be at least one")
 		return s.onsetDelayUser + s.onsetDelayAuto + s.terminationDelay + s.distributedDAQDelay * (s.numDACEntries - 1)
-	else
-		return s.onsetDelayUser + s.onsetDelayAuto + s.terminationDelay
 	endif
+
+	return s.onsetDelayUser + s.onsetDelayAuto + s.terminationDelay
 End
 
 /// @brief Calculate the stop collection point, includes all required global adjustments
@@ -2288,18 +2288,18 @@ static Function DC_GetStopCollectionPoint(string device, STRUCT DataConfiguratio
 
 		if(V_Value == -1)
 			return TIME_TP_ONLY_ON_DAQ * ONE_TO_MICRO / s.samplingIntervalDA
-		else
-			totalIncrease = DC_ReturnTotalLengthIncrease(s)
-			TTLlength     = DC_CalculateLongestSweep(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
-
-			if(s.distributedDAQOptOv)
-				DAClength = WaveMax(s.setLength)
-			elseif(s.distributedDAQ)
-				DAClength *= DC_NoOfChannelsSelected(device, CHANNEL_TYPE_DAC)
-			endif
-
-			return max(DAClength, TTLlength) + totalIncrease
 		endif
+
+		totalIncrease = DC_ReturnTotalLengthIncrease(s)
+		TTLlength     = DC_CalculateLongestSweep(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
+
+		if(s.distributedDAQOptOv)
+			DAClength = WaveMax(s.setLength)
+		elseif(s.distributedDAQ)
+			DAClength *= DC_NoOfChannelsSelected(device, CHANNEL_TYPE_DAC)
+		endif
+
+		return max(DAClength, TTLlength) + totalIncrease
 	elseif(s.dataAcqOrTP == TEST_PULSE_MODE)
 		return DAClength
 	endif

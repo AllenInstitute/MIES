@@ -44,33 +44,33 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, s
 	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, str, query = 1)
 
 	switch(mode)
-		case INDEP_EACH_SCI:
+		case INDEP_EACH_SCI: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			if(textualEntry)
 				return GetLastSettingTextIndepEachSCI(numericalValues, textualValues, sweepNo, headstage, key, UNKNOWN_MODE)
-			else
-				return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 			endif
-		case EACH_SCI:
+
+			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+		case EACH_SCI: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			if(textualEntry)
 				return GetLastSettingTextEachSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
-			else
-				return GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 			endif
-		case INDEP:
+
+			return GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+		case INDEP: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			CHECK_EQUAL_VAR(numtype(headstage), 2)
 			if(textualEntry)
 				Make/T/N=1/FREE valText = GetLastSettingTextIndep(textualValues, sweepNo, key, UNKNOWN_MODE)
 				return valText
-			else
-				Make/D/N=1/FREE val = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
-				return val
 			endif
+
+			Make/D/N=1/FREE val = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+			return val
 		case SINGLE_SCI:
 			return GetLastSettingSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 		case INDEP_SINGLE_SCI:
 			Make/D/N=1/FREE val = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 			return val
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			INFO("Invalid mode %g", n0 = mode)
 			FAIL()
 	endswitch

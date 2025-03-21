@@ -138,11 +138,11 @@ threadsafe Function/S RemovePrefix(string str, [string start, variable regExp])
 		AssertOnAndClearRTError()
 		SplitString/E=("^(" + start + ")") str, regExpResult; err = GetRTError(1) // see developer docu section Preventing Debugger Popup
 
-		if(V_flag == 1 && err == 0)
-			skipLength = strlen(regExpResult)
-		else
+		if(!(V_flag == 1 && err == 0))
 			return str
 		endif
+
+		skipLength = strlen(regExpResult)
 	else
 		pos = strsearch(str, start, 0)
 
@@ -274,7 +274,8 @@ End
 /// @returns number of occurences
 Function CountSubstrings(string str, string pattern)
 
-	variable i = -1, position = -1
+	variable i        = -1
+	variable position = -1
 
 	do
 		i        += 1

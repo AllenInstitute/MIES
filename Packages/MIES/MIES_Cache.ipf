@@ -464,7 +464,7 @@ threadsafe Function/S CA_IgorInfoKey(variable selector)
 		case 3:
 			sprintf key, "IgorInfo(%d):Version 1", selector
 			return key
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT_TS(0, "Unimplemented selector")
 	endswitch
 End

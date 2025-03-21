@@ -188,7 +188,7 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 #endif
 		case INVALID_ANALYSIS_FUNCTION:
 			return NOT_AVAILABLE
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unsupported analysis function")
 	endswitch
 End
@@ -274,14 +274,14 @@ static Function AD_FillWaves(string win, WAVE/T list, WAVE/T info)
 
 			FindValue/RMD=[][0]/TXOP=4/TEXT=(AD_FormatListKey(stimsetCycleID, headstage)) info
 			if(V_Value >= 0)
-				if(!cmpstr(info[V_Value][%$"Ongoing DAQ"], "1"))
-					// if DAQ was ongoing we want to overwrite this entry and all later entries
-					index              = V_Value
-					info[index, Inf][] = ""
-				else
+				if(!(!cmpstr(info[V_Value][%$"Ongoing DAQ"], "1")))
 					// otherwise we want to keep it
 					continue
 				endif
+
+				// if DAQ was ongoing we want to overwrite this entry and all later entries
+				index              = V_Value
+				info[index, Inf][] = ""
 			endif
 
 			[anaFuncType, waMode] = AD_GetAnalysisFunctionType(numericalValues, anaFuncTypes, sweepNo, headstage)
@@ -330,16 +330,16 @@ static Function AD_FillWaves(string win, WAVE/T list, WAVE/T info)
 			WAVE sweeps = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
 
 			switch(anaFuncType)
-				case PSQ_ACC_RES_SMOKE:
-				case PSQ_CHIRP:
-				case PSQ_DA_SCALE:
-				case PSQ_PIPETTE_BATH:
-				case PSQ_RAMP:
-				case PSQ_SQUARE_PULSE:
-				case PSQ_SEAL_EVALUATION:
-				case MSQ_DA_SCALE:
-				case MSQ_FAST_RHEO_EST:
-				case SC_SPIKE_CONTROL:
+				case PSQ_ACC_RES_SMOKE: // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case PSQ_CHIRP: // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case PSQ_DA_SCALE: // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case PSQ_PIPETTE_BATH: // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case PSQ_RAMP: // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case PSQ_SQUARE_PULSE: // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case PSQ_SEAL_EVALUATION: // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case MSQ_DA_SCALE: // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case MSQ_FAST_RHEO_EST: // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case SC_SPIKE_CONTROL: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				case PSQ_TRUE_REST_VM:
 					key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SWEEP_PASS, query = 1, waMode = waMode)
 					WAVE/Z sweepPass = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE, defValue = 0)
@@ -519,8 +519,8 @@ static Function/S AD_GetDAScaleFailMsg(WAVE numericalValues, WAVE/T textualValue
 	opMode = AFH_GetAnalysisParamTextual("OperationMode", params[headstage])
 
 	strswitch(opMode)
-		case "": // handle data prior to 0ef300da (PSQ_DaScale: Add new operation mode, 2018-02-15)
-		case PSQ_DS_SUB:
+		case "": // handle data prior to 0ef300da (PSQ_DaScale: Add new operation mode, 2018-02-15), FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_DS_SUB: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PSQ_DS_SUPRA:
 
 			WAVE/Z DAScales = AFH_GetAnalysisParamWave("DAScales", params[headstage])
@@ -597,7 +597,7 @@ static Function/S AD_GetDAScaleFailMsg(WAVE numericalValues, WAVE/T textualValue
 			endif
 
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Invalid opMode")
 	endswitch
 
@@ -745,13 +745,13 @@ static Function [variable qc, string msg] AD_GetBaselineFailMsg(variable anaFunc
 	string key
 
 	switch(anaFuncType)
-		case PSQ_ACC_RES_SMOKE:
-		case PSQ_DA_SCALE:
-		case PSQ_PIPETTE_BATH:
-		case PSQ_SEAL_EVALUATION:
-		case PSQ_RHEOBASE:
-		case PSQ_RAMP:
-		case PSQ_CHIRP:
+		case PSQ_ACC_RES_SMOKE: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_DA_SCALE: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_PIPETTE_BATH: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_SEAL_EVALUATION: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_RHEOBASE: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_RAMP: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_CHIRP: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PSQ_TRUE_REST_VM:
 			key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
 			WAVE/Z baselineQC = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
@@ -812,7 +812,7 @@ static Function [variable qc, string msg] AD_GetBaselineFailMsg(variable anaFunc
 				BUG("Could not find a failing chunk")
 			endif
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			BUG("No support for analysis function type: " + num2str(anaFuncType))
 	endswitch
 
@@ -1089,7 +1089,7 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 				endif
 
 				break
-			default:
+			default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				ASSERT(0, "Unsupported analysis function")
 		endswitch
 
@@ -1352,8 +1352,8 @@ End
 Function AD_ListBoxProc(STRUCT WMListboxAction &lba) : ListBoxControl
 
 	switch(lba.eventCode)
-		case 3: // double click
-		case 4: // cell selection
+		case 3: // double click, FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 4: // cell selection, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 5: // cell selection plus Shift key
 			AD_SelectResult(lba.win)
 			break

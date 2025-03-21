@@ -543,12 +543,12 @@ static Function/S DAG_GetSpecificCtrlNum(string device, string list)
 		[recMacro, controlType] = GetRecreationMacroAndType(device, controlName)
 
 		switch(controlType)
-			case CONTROL_TYPE_CHECKBOX:
-			case CONTROL_TYPE_POPUPMENU:
+			case CONTROL_TYPE_CHECKBOX: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case CONTROL_TYPE_POPUPMENU: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case CONTROL_TYPE_SLIDER: // fallthrough by design
 				subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)
 				break
-			case CONTROL_TYPE_VALDISPLAY:
+			case CONTROL_TYPE_VALDISPLAY: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case CONTROL_TYPE_SETVARIABLE: // fallthrough by design
 				if(!DoesControlHaveInternalString(recMacro))
 					subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)
@@ -580,7 +580,7 @@ static Function/S DAG_GetSpecificCtrlTxT(string device, string list)
 			case CONTROL_TYPE_POPUPMENU:
 				subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)
 				break
-			case CONTROL_TYPE_VALDISPLAY:
+			case CONTROL_TYPE_VALDISPLAY: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case CONTROL_TYPE_SETVARIABLE: // fallthrough by design
 				if(DoesControlHaveInternalString(recMacro))
 					subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)

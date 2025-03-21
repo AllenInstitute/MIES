@@ -52,7 +52,7 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(variable sweepNo, string device, s
 			return val
 		case SINGLE_SCI:
 			return GetLastSettingSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			INFO("Invalid mode %g", n0 = mode)
 			FAIL()
 	endswitch

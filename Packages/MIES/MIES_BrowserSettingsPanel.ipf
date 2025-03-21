@@ -468,7 +468,7 @@ static Function BSP_ParseBrowserMode(string mode)
 			return BROWSER_MODE_AUTOMATION
 		case "All":
 			return BROWSER_MODE_ALL
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Invalid mode")
 	endswitch
 End
@@ -482,7 +482,7 @@ static Function/S BSP_SerializeBrowserMode(variable mode)
 			return "Automation"
 		case BROWSER_MODE_ALL:
 			return "All"
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Invalid mode")
 	endswitch
 End
@@ -800,8 +800,8 @@ End
 Function BSP_TimeAlignmentLevel(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // mouse up, FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 2: // Enter key, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 3: // Live update
 			UpdateSettingsPanel(sva.win)
 			break
@@ -874,8 +874,8 @@ Function BSP_AxisScalingLevelCross(STRUCT WMSetVariableAction &sva) : SetVariabl
 	string graph, bsPanel
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // mouse up, FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 2: // Enter key, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 3: // Live update
 			graph   = GetMainWindow(sva.win)
 			bsPanel = BSP_GetPanel(graph)
@@ -1566,19 +1566,19 @@ Function BSP_AddTracesForEpochs(string win)
 
 	if(!WaveExists(traceInfosHS) && !WaveExists(traceInfosUnassocDA) && !WaveExists(traceInfosTTL))
 		return NaN
-	else
-		WAVE/T traceInfosFull = GetGraphUserData(win)
-		Duplicate/FREE/T traceInfosFull, traceInfos
-		Redimension/N=(0, -1) traceInfos
-		if(WaveExists(traceInfosHS))
-			Concatenate/FREE/T/NP=(ROWS) {traceInfosHS}, traceInfos
-		endif
-		if(WaveExists(traceInfosUnassocDA))
-			Concatenate/FREE/T/NP=(ROWS) {traceInfosUnassocDA}, traceInfos
-		endif
-		if(WaveExists(traceInfosTTL))
-			Concatenate/FREE/T/NP=(ROWS) {traceInfosTTL}, traceInfos
-		endif
+	endif
+
+	WAVE/T traceInfosFull = GetGraphUserData(win)
+	Duplicate/FREE/T traceInfosFull, traceInfos
+	Redimension/N=(0, -1) traceInfos
+	if(WaveExists(traceInfosHS))
+		Concatenate/FREE/T/NP=(ROWS) {traceInfosHS}, traceInfos
+	endif
+	if(WaveExists(traceInfosUnassocDA))
+		Concatenate/FREE/T/NP=(ROWS) {traceInfosUnassocDA}, traceInfos
+	endif
+	if(WaveExists(traceInfosTTL))
+		Concatenate/FREE/T/NP=(ROWS) {traceInfosTTL}, traceInfos
 	endif
 
 	traceIndex = GetNextTraceIndex(win)
@@ -1878,6 +1878,7 @@ Function BSP_WindowHook(STRUCT WMWinHookStruct &s)
 
 			if(BSP_IsSweepBrowser(win))
 				BSP_MemoryFreeMappedDF(win)
+				AB_OnCloseSweepBrowserUpdatePopup(win)
 			endif
 
 			if(!BSP_HasBoundDevice(win))
@@ -1911,7 +1912,7 @@ End
 Function/S BSP_RenameAndSetTitle(string win, string newName)
 
 	variable numOtherBrowser
-	string newTitle, suffix
+	string newTitle, suffix, wList, wTitles
 	string modeSuffix = ""
 
 	if(BSP_IsDataBrowser(win) && BSP_HasBoundDevice(win))
@@ -1935,13 +1936,26 @@ Function/S BSP_RenameAndSetTitle(string win, string newName)
 			break
 	endswitch
 
-	numOtherBrowser += ItemsInList(WinList(SWEEPBROWSER_WINDOW_NAME + "*", ";", "WIN:1"))
-	numOtherBrowser += ItemsInList(WinList(DATABROWSER_WINDOW_NAME + "*", ";", "WIN:1"))
-	numOtherBrowser += ItemsInList(WinList("DB_*", ";", "WIN:1"))
-	numOtherBrowser  = max(0, numOtherBrowser - 1)
+	wList = WinList(SWEEPBROWSER_WINDOW_NAME + "*", ";", "WIN:1")
+	wList = AddListItem(WinList(DATABROWSER_WINDOW_NAME + "*", ";", "WIN:1"), wList)
+	wList = AddListItem(WinList("DB_*", ";", "WIN:1"), wList)
+	WAVE/T wListw = ListToTextWave(wList, ";")
 
-	sprintf newTitle, "Browser%s%s%s", SelectString(numOtherBrowser, "", " [" + num2str(numOtherBrowser) + "]"), suffix, modeSuffix
-	DoWindow/T $win, newTitle
+	wTitles = ""
+	for(wName : wListw)
+		if(!IsEmpty(wName))
+			GetWindow $wName, title
+			wTitles = AddListItem(S_Value, wTitles)
+		endif
+	endfor
+
+	for(numOtherBrowser = 0;; numOtherBrowser += 1)
+		sprintf newTitle, "Browser%s%s%s", SelectString(numOtherBrowser, "", " [" + num2str(numOtherBrowser) + "]"), suffix, modeSuffix
+		if(WhichListItem(newTitle, wTitles) == -1)
+			DoWindow/T $win, newTitle
+			break
+		endif
+	endfor
 
 	return win
 End

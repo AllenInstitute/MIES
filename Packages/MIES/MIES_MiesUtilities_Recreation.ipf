@@ -328,7 +328,7 @@ static Function GetSamplingIntervalFromLBN(WAVE numericalValues, variable sweepN
 		case XOP_CHANNEL_TYPE_TTL:
 			key = "Sampling interval TTL"
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Invalid Channel Type")
 	endswitch
 

@@ -96,7 +96,7 @@ threadsafe static Function/S GetAllObjects(DFREF dfr, variable typeFlag)
 		case COUNTOBJECTS_DATAFOLDER:
 			list = DataFolderList("*", ";", dfr)
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT_TS(0, "Invalid type flag")
 	endswitch
 

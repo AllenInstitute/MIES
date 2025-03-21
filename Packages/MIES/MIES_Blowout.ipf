@@ -25,7 +25,9 @@ Function BWO_SelectDevice()
 
 	if(noOfLockedDevices == 0)
 		return NaN
-	elseif(noOfLockedDevices == 1)
+	endif
+
+	if(noOfLockedDevices == 1)
 		if(interactiveMode)
 			DoAlert 1, "Proceed with automated blowout routine?"
 			if(V_flag != 1)
@@ -233,7 +235,7 @@ static Function BWO_SetClampModeAll(string device, variable mode)
 		case I_EQUAL_ZERO_MODE:
 			PGC_SetAndActivateControl(device, "Radio_ClampMode_AllIZero", val = CHECKBOX_SELECTED)
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "unhandled case")
 	endswitch
 End

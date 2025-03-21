@@ -431,7 +431,8 @@ End
 
 Function/S SB_GetSweepList(string win)
 
-	string list = "", str
+	string str
+	string list = ""
 	variable numRows, i
 
 	WAVE/T map = SB_GetSweepBrowserMapFromGraph(win)
@@ -574,7 +575,7 @@ Function/WAVE SB_GetLogbookWave(string win, variable logbookType, variable logbo
 				case LBN_TEXTUAL_VALUES:
 					FUNCREF ANALYSIS_LBN_GETTER_PROTO func = GetAnalysLBTextualValues
 					break
-				default:
+				default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 					ASSERT(0, "Invalid logbookWaveType")
 			endswitch
 
@@ -613,7 +614,7 @@ Function/WAVE SB_GetLogbookWave(string win, variable logbookType, variable logbo
 			endif
 
 			return GetAnalysisResultsWave(dataFolder, logbookWaveType)
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unsupported logbookType")
 	endswitch
 End

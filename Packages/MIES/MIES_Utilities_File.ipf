@@ -201,9 +201,9 @@ Function/S ResolveAlias(string path, [string pathName])
 
 	if(ParamIsDefault(pathName))
 		return ResolveAlias(S_aliasPath)
-	else
-		return ResolveAlias(S_aliasPath, pathName = pathName)
 	endif
+
+	return ResolveAlias(S_aliasPath, pathName = pathName)
 End
 
 /// @brief Return a unique symbolic path name
@@ -453,7 +453,9 @@ Function/WAVE LoadTextFileToWave(string fullFilePath, string sep)
 	if(!V_flag)
 		SetDataFolder saveDFR
 		return $""
-	elseif(V_flag > 1)
+	endif
+
+	if(V_flag > 1)
 		SetDataFolder saveDFR
 		ASSERT(0, "Expected to load a single text wave")
 	endif
