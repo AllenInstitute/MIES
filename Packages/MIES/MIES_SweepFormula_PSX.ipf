@@ -625,7 +625,7 @@ static Function [variable baseline_t, variable baseline] PSX_CalculateEventBasel
 	else
 		string str
 		sprintf str, "Can't handle kernelAmp of: %g\r", baseline_t //could be Nan, Inf, or zero
-		ASSERT(0, str)
+		ASSERT(baseline_t, str)
 		ASSERT(isFinite(baseline_t), str)
 	endif
 
