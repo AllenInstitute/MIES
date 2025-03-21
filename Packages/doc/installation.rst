@@ -151,9 +151,10 @@ install via the Installer package.
 Windows (with hardware support)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  Install the `Visual C++ Redistributable package <https://github.com/AllenInstitute/MIES/blob/main/tools/installer/vc_redist.x64.exe>`__
--  Quit Igor Pro
--  Get the MIES source code, see :ref:`getting MIES`
+-  Install the `Visual C++ Redistributable package
+   <https://github.com/AllenInstitute/MIES/blob/main/tools/installer/vc_redist.x64.exe>`__
+-  Quit Igor Pro. If you have never opened it, open it once and then close it.
+-  Get the MIES source code and initialize the repo, see :ref:`getting MIES`
 -  Create the following shortcuts in ``C:\Users\$username\Documents\WaveMetrics\Igor Pro 9 User Files``
 
    -  In ``User Procedures`` a shortcut pointing to
@@ -162,11 +163,31 @@ Windows (with hardware support)
       -  ``Packages\MIES``
 
    -  In ``Igor Procedures`` a shortcut pointing to ``Packages\MIES_Include.ipf``
-
    -  In ``Igor Extensions (64-bit)`` a shortcut pointing to ``XOPs-IP9-64bit``
-
    -  In ``Igor Help Files`` a shortcut pointing to ``HelpFiles-IP9``
 
+-  ITC hardware:
+
+   -  Open a powershell console as administrator and execute the following script:
+
+      -  ``Packages\ITCXOP2\tools\Disable-ASLR-for-Igor64.ps1``. This script can also be executed from within
+         Igor Pro via ``Mies Panels->Advanced->Turn off ASLR (requires UAC elevation)`` which as the name
+         suggests needs an Igor Pro instance started as Administrator.
+
+   -  Install the ITC drivers from Heka
+   -  Execute their ``ITCDemoG64.exe`` program as administrator. You should see some cute sinuses.
+   -  Open regedit, go to ``HKEY_LOCAL_MACHINE\SOFTWARE\Instrutech``, select ``Permissions...`` from the
+      context menu. In the opened window select ``Full Control`` in the ``Allow`` column for ``ALL APPLICATION
+      PACKAGES`` for this key and close with ``OK``.
+
+-  NI hardware:
+
+  -  Install the `NI-DAQ mx
+     <https://www.ni.com/de/support/downloads/drivers/download.ni-daq-mx.html#559060>`__ package from NI.
+  -  Get and install the `NIDAQ Tool MX <https://www.wavemetrics.com/products/nidaqtools/nidaqtools.htm>`__
+     package from Wavemetrics.
+
+-  Install version 2.2.2 of the Multiclamp Commander (64bit) from `here <http://mdc.custhelp.com/app/answers/detail/a_id/20059>`__.
 -  Start Igor Pro
 
 Windows (without hardware)
