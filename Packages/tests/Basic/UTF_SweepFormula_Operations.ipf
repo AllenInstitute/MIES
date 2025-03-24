@@ -1948,6 +1948,23 @@ static Function TestOperationData()
 
 	CHECK(GrepString(traceInfos, "\bmode\(x\)=0\b"))
 
+	// but markers for a single point
+	// we inherit line style from the data operation
+	str     = "min(data(select(selsweeps(0), selchannels(AD6))))"
+	winBase = ExecuteSweepFormulaCode(win, str)
+	graph   = winBase + "#Graph0"
+
+	traces = TraceNameList(graph, ";", 1 + 2)
+	CHECK_EQUAL_VAR(ItemsInList(traces), 1)
+
+	trace = StringFromList(0, traces)
+	CHECK_PROPER_STR(trace)
+
+	traceInfos = TraceInfo(graph, trace, 0)
+	CHECK_PROPER_STR(traceInfos)
+
+	CHECK(GrepString(traceInfos, "\bmode\(x\)=3\b"))
+
 	// workaround permanent waves being present
 	wvList = GetListOfObjects(GetDataFolderDFR(), "data*")
 	CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, wvList)
