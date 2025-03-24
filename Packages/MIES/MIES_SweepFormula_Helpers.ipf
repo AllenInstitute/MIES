@@ -818,8 +818,8 @@ End
 /// @param keepX [optional, default=0] When set then xvalues and xlabel of output are kept.
 Function SFH_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE output, string opShort, string newDataType, [WAVE/T argSetup, variable keepX])
 
-	variable sweepNo, numResults, i, setXLabel, size
-	string opStack, argSetupStr, inDataType
+	variable sweepNo, numResults, i, setXLabel, size, oldJSONId, newJSONId
+	string opStack, argSetupStr, inDataType, key
 	string xLabel = ""
 
 	numResults = DimSize(input, ROWS)
@@ -865,7 +865,22 @@ Function SFH_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE outpu
 			endif
 		endif
 
+		oldJSONId = JWN_GetWaveNoteAsJSON(outData)
+		newJSONId = JWN_GetWaveNoteAsJSON(inData)
+
+		// wave note of the outData wave consists of:
+		// - non-JWN header from inData
+		// - JWN from inData (optional)
+		// - plus all toplevel keys from outData (duplicates from inData are overwritten, also optional)
 		Note/K outData, note(inData)
+
+		if(cmpstr(WAVE_NOTE_EMPTY_JSON, JSON_Dump(newJSONId)))
+			JSON_SyncJSON(oldJSONId, newJSONId, "", "", JSON_SYNC_OVERWRITE_IN_TARGET)
+			JWN_SetWaveNoteFromJSON(outData, newJSONId, release = 0)
+		endif
+
+		JSON_Release(oldJSONId)
+		JSON_Release(newJSONId)
 
 		if(keepX && WaveExists(xValues))
 			JWN_SetWaveInWaveNote(outData, SF_META_XVALUES, xValues)

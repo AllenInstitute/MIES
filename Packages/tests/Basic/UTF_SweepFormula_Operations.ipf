@@ -545,6 +545,16 @@ static Function TestOperationText()
 	str      = "text(wave(" + wavePath + "))"
 	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	str = note(output)
+	INFO("note: %s", s0 = str)
+	CHECK_EQUAL_STR(strRef, str)
+
+	// check that JWN notes also survive
+	JWN_SetStringInWaveNote(testData, "abcd", "efgh")
+	strRef = "WaveNoteCopyTest\rJSON_BEGIN\r{\n\"abcd\": \"efgh\"\n}"
+	str    = "text(wave(" + wavePath + "))"
+	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	str = note(output)
+	INFO("note: %s", s0 = str)
 	CHECK_EQUAL_STR(strRef, str)
 
 	KillWaves testData
