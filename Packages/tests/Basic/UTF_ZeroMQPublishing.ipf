@@ -3,47 +3,11 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=ZeroMQPublishingTests
 
-// #define OUTPUT_DOCUMENTATION_JSON_DUMP
-
 static Function TEST_CASE_BEGIN_OVERRIDE(string testname)
 
 	TestCaseBeginCommon(testname)
 
 	PrepareForPublishTest()
-End
-
-static Function FetchAndParseMessage(string filter)
-
-	variable jsonID
-	string   msg
-
-	msg = FetchPublishedMessage(filter)
-
-	CHECK_PROPER_STR(msg)
-
-	jsonID = JSON_Parse(msg)
-	CHECK_GE_VAR(jsonID, 0)
-
-#ifdef OUTPUT_DOCUMENTATION_JSON_DUMP
-	WAVE/T contents = ListToTextWave(JSON_Dump(jsonID, indent = 2), "\n")
-
-	contents[] = "///    " + contents[p]
-
-	print "/// Filter: #XXXX"
-	print "///"
-	print "/// Example:"
-	print "///"
-	print "/// \\rst"
-	print "/// .. code-block:: json"
-	print "///"
-	for(s : contents)
-		print s
-	endfor
-	print "///"
-	print "/// \\endrst"
-#endif // OUTPUT_DOCUMENTATION_JSON_DUMP
-
-	return jsonID
 End
 
 static Function CheckPressureState()
@@ -413,7 +377,7 @@ End
 
 static Function CheckAccessResSmoke()
 
-	string device, msg, expected, actual
+	string device, expected, actual
 	variable headstage, i, jsonID, value, sweepNo
 
 	device    = "my_device"
@@ -439,9 +403,7 @@ static Function CheckAccessResSmoke()
 
 	MIES_PUB#PUB_AccessResistanceSmoke(device, sweepNo, headstage)
 
-	msg = FetchPublishedMessage(ANALYSIS_FUNCTION_AR)
-
-	jsonID = JSON_Parse(msg)
+	jsonID = FetchAndParseMessage(ANALYSIS_FUNCTION_AR)
 
 	expected = LABNOTEBOOK_BINARY_UNIT
 	actual   = JSON_GetString(jsonID, "/results/USER_Access Res. Smoke Set QC/unit")
