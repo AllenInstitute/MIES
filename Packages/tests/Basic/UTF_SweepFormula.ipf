@@ -2031,3 +2031,30 @@ static Function HelperMoveDatasetToHigherIfCompatible()
 	WAVE/WAVE moved = SFH_MoveDatasetHigherIfCompatible(output)
 	CHECK(SFH_IsArray(moved))
 End
+
+static Function TestVariablePlottingDoesNotModifyData()
+
+	string graphBase, win, graph, code
+
+	code = "data=wave(root:testData)\r$data"
+
+	KillWaves/Z root:testData
+	Make/N=10 root:testData
+
+	win = GetDataBrowserWithData()
+
+	graphBase = BSP_GetFormulaGraph(win)
+	graph     = graphBase + "_#Graph" + "0"
+
+	ExecuteSweepFormulaInDB(code, win)
+	REQUIRE_EQUAL_VAR(WindowExists(graph), 1)
+
+	WAVE/WAVE varStorage = GetSFVarStorage(win)
+	WAVE/WAVE dataRef    = SFH_AttemptDatasetResolve(WaveText(WaveRef(varStorage, row = FindDimLabel(varStorage, ROWS, "data")), row = 0))
+	WAVE      data       = dataRef[0]
+
+	WAVE dataOrig = root:testData
+	CHECK_EQUAL_WAVES(dataOrig, data)
+
+	KillWaves/Z root:testData
+End
