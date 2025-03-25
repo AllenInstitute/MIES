@@ -732,8 +732,9 @@ static Function/WAVE ValidUnits()
 	Make/FREE/T wv0 = {"s", "", "NaN", "s"}
 	Make/FREE/T wv1 = {"Gs", "G", "1e9", "s"}
 	Make/FREE/T wv2 = {"m 	Ω", "m", "1e-3", "Ω"}
+	Make/FREE/T wv3 = {"μA", "μ", "1e-6", "A"}
 
-	Make/FREE/WAVE/N=1 result = {wv0, wv1, wv2}
+	Make/FREE/WAVE/N=1 result = {wv0, wv1, wv2, wv3}
 
 	return result
 End
@@ -1003,4 +1004,12 @@ Function/WAVE GetNoAmplifierFuncs()
 	CHECK_EQUAL_VAR(DimSize(funcs, ROWS), 5)
 
 	return funcs
+End
+
+static Function/WAVE PUB_TPFiltersWithoutData()
+
+	Make/FREE/T wv = {ZMQ_FILTER_TPRESULT_NOW, ZMQ_FILTER_TPRESULT_1S, ZMQ_FILTER_TPRESULT_5S, ZMQ_FILTER_TPRESULT_10S}
+	SetDimensionLabels(wv, "period_now;period_1s;period_5s;period_10s", ROWS)
+
+	return wv
 End
