@@ -5647,11 +5647,13 @@ Function PSX_PlotStartupSettings()
 
 		WAVE/Z/T userDataKeys = GetUserdataKeys(WinRecreation(subWin, 0))
 
-		for(ud : userDataKeys)
-			if(!GrepString(ud, "^ResizeControls.*$"))
-				SetWindow $subWin, userdata($ud)=""
-			endif
-		endfor
+		if(WaveExists(userDataKeys))
+			for(ud : userDataKeys)
+				if(!GrepString(ud, "^ResizeControls.*$"))
+					SetWindow $subWin, userdata($ud)=""
+				endif
+			endfor
+		endif
 
 		if(WinType(subwin) == WINTYPE_GRAPH)
 			if(ItemsInList(subwin, "#") <= 2)
