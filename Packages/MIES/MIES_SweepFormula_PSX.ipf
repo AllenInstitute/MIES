@@ -728,20 +728,26 @@ End
 // @brief Returns a good tau which does capture a lot of the tau events
 static Function PSX_GetGoodTauImpl(WAVE psxEvent)
 
-	variable numEvents, err, xVal, idx
+	variable numEvents, err, xVal, idx, tau
 
 	idx = FindDimLabel(psxEvent, COLS, "tau")
 	Duplicate/FREE/RMD=[][idx] psxEvent, tauWithNaN
 
-	WAVE/Z tau = ZapNaNs(tauWithNaN)
+	WAVE/Z taus = ZapNaNs(tauWithNaN)
 
-	if(!WaveExists(tau))
+	if(!WaveExists(taus))
 		return PSX_DEFAULT_X_START_OFFSET
 	endif
 
-	WaveStats/Q tau
+	WaveStats/Q taus
 
-	return V_avg + PSX_TAU_CALC_FACTOR * V_sdev
+	tau = V_avg + PSX_TAU_CALC_FACTOR * V_sdev
+
+	if(IsFinite(tau))
+		return tau
+	endif
+
+	return PSX_DEFAULT_X_START_OFFSET
 End
 
 /// @brief Return the x-axis range useful for displaying and extracting a single event
