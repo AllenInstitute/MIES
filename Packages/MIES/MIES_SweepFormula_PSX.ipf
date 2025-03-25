@@ -123,7 +123,7 @@ static StrConstant PSX_TUD_COMBO_KEY   = "comboKey"
 static StrConstant PSX_TUD_COMBO_INDEX = "comboIndex"
 static StrConstant PSX_TUD_BLOCK_INDEX = "blockIndex"
 
-static Constant PSX_GUI_SETTINGS_VERSION = 1
+static Constant PSX_GUI_SETTINGS_VERSION = 2
 
 static StrConstant PSX_GUI_SETTINGS_PSX = "GuiSettingsPSX"
 
@@ -2251,14 +2251,14 @@ static Function PSX_UpdateAverageTraces(string win, WAVE/T eventIndexFromTraces,
 
 	variable i, idx, numEvents, eventState, start, stop
 	variable acceptIndex, rejectIndex, undetIndex, extractStartAbs, extractStopAbs, fitStartAbs
-	string extAllGraph, name
+	string extAllGraph, name, path
 
 	extAllGraph = PSX_GetAllEventGraph(win)
 
 	numEvents = DimSize(eventIndexFromTraces, ROWS)
 
 	Make/WAVE/FREE/N=(numEvents) contAverageAll, contAverageAccept, contAverageReject, contAverageUndet
-	Make/FREE/D/N=(numEvents) eventStopTime, eventPeakTime
+	Make/FREE/D/N=(numEvents) eventOnsetTime, eventPeakTime, eventStopTime, eventKernelAmp
 
 	for(i = 0; i < numEvents; i += 1)
 		idx = str2num(eventIndexFromTraces[i])
@@ -2281,7 +2281,11 @@ static Function PSX_UpdateAverageTraces(string win, WAVE/T eventIndexFromTraces,
 				// single event waves are zeroed in x-direction to extractStartAbs
 				[extractStartAbs, extractStopAbs] = PSX_GetSingleEventRange(psxEvent, sweepDataOffFilt, idx)
 				eventStopTime[acceptIndex]        = extractStopAbs - extractStartAbs
+				eventOnsetTime[acceptIndex]       = psxEvent[idx][%$"Onset Time"] - extractStartAbs
 				eventPeakTime[acceptIndex]        = psxEvent[idx][%peak_t] - extractStartAbs
+
+				path                        = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX_KERNEL
+				eventKernelAmp[acceptIndex] = JWN_GetNumberFromWaveNote(psxEvent, path + "/amp")
 
 				acceptIndex += 1
 				break
@@ -2307,8 +2311,8 @@ static Function PSX_UpdateAverageTraces(string win, WAVE/T eventIndexFromTraces,
 	PSX_UpdateAverageWave(contAverageUndet, undetIndex, averageDFR, PSX_UNDET)
 	PSX_UpdateAverageWave(contAverageAll, numEvents, averageDFR, PSX_ALL)
 
-	Redimension/N=(acceptIndex) eventStopTime
-	PSX_FitAcceptAverage(win, averageDFR, eventPeakTime, eventStopTime)
+	Redimension/N=(acceptIndex) eventOnsetTime, eventPeakTime, eventStopTime, eventKernelAmp
+	PSX_FitAcceptAverage(win, averageDFR, eventOnsetTime, eventPeakTime, eventStopTime, eventKernelAmp)
 End
 
 /// @brief Helper function to update the average waves for the all event graph
@@ -2332,10 +2336,12 @@ static Function/DF PSX_GetAverageFolder(string win)
 	return PSX_GetWorkingFolder(win)
 End
 
-static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventPeakTime, WAVE eventStopTime)
+static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventOnsetTime, WAVE eventPeakTime, WAVE eventStopTime, WAVE eventKernelAmp)
 
 	string specialEventPanel, str, htmlStr, rawCode, browser, msg, fitFunc
-	variable err, numAveragePoints, start, stop, meanStopTime, meanPeakTime
+	variable err, numAveragePoints, start, stop, meanStopTime, meanOnsetTime, meanPeakTime, meanKernelAmp
+	variable xStart, xEnd, yStart, yEnd, lowerThreshold, upperThreshold
+	variable extrema, extrema_t, edge
 
 	WAVE acceptedAverageFit = GetPSXAcceptedAverageFitWaveFromDFR(averageDFR)
 
@@ -2361,6 +2367,13 @@ static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventPea
 	FastOp acceptedAverageFit = (NaN)
 	CopyScales average, acceptedAverageFit
 
+	WAVE/Z eventOnsetTimeClean = ZapNaNs(eventOnsetTime)
+	if(WaveExists(eventOnsetTimeClean))
+		meanOnsetTime = mean(eventOnsetTimeClean)
+	else
+		meanOnsetTime = Inf
+	endif
+
 	WAVE/Z eventStopTimeClean = ZapNaNs(eventStopTime)
 	if(WaveExists(eventStopTimeClean))
 		meanStopTime = mean(eventStopTimeClean)
@@ -2368,14 +2381,33 @@ static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventPea
 		meanStopTime = Inf
 	endif
 
+	WAVE/Z eventKernelAmpClean = ZapNaNs(eventKernelAmp)
+	ASSERT(WaveExists(eventKernelAmpClean), "Could not find any events with finite kernelAmp")
+	meanKernelAmp = mean(eventKernelAmpClean)
+
 	WAVE/Z eventPeakTimeClean = ZapNaNs(eventPeakTime)
-	if(WaveExists(eventPeakTimeClean))
-		meanPeakTime = mean(eventPeakTime)
+	ASSERT(WaveExists(eventPeakTimeClean), "Could not find any events with finite peak_t")
+	meanPeakTime = mean(eventPeakTime)
+
+	WaveStats/M=1/Q average
+
+	if(meanKernelAmp > 0)
+		extrema   = V_max
+		extrema_t = V_maxLoc
+		edge      = FINDLEVEL_EDGE_INCREASING
+	elseif(meanKernelAmp < 0)
+		extrema   = V_min
+		extrema_t = V_minLoc
+		edge      = FINDLEVEL_EDGE_DECREASING
 	else
-		FATAL_ERROR("Could not find any events with finite peak_t")
+		FATAL_ERROR("Invalid kernel amp")
 	endif
 
-	start = 0.1 * meanPeakTime
+	lowerThreshold = GetSetVariable(specialEventPanel, "setvar_fit_start_amplitude") * PERCENT_TO_ONE
+
+	FindLevel/EDGE=(edge)/Q average, (lowerThreshold * extrema)
+
+	start = V_LevelX
 	stop  = min(IndexToScale(average, DimSize(average, ROWS) - 1, ROWS), meanStopTime)
 
 	AssertOnAndClearRTError()
@@ -3586,6 +3618,7 @@ static Function PSX_StoreGuiState(string win, string browser)
 
 	JSON_SetVariable(jsonID, "/specialEventPanel/popup_block", GetPopupMenuIndex(specialEventPanel, "popup_block"))
 	JSON_SetVariable(jsonID, "/specialEventPanel/setvar_event_block_size", GetSetVariable(specialEventPanel, "setvar_event_block_size"))
+	JSON_SetVariable(jsonID, "/specialEventPanel/setvar_fit_start_amplitude", GetSetVariable(specialEventPanel, "setvar_fit_start_amplitude"))
 
 	mainWindow = GetMainWindow(win)
 	JSON_SetVariable(jsonID, "/mainPanel/checkbox_suppress_update", GetCheckBoxState(mainWindow, "checkbox_suppress_update"))
@@ -5608,6 +5641,19 @@ Function PSX_CheckboxProcFitAcceptAverage(STRUCT WMCheckboxAction &cba) : Checkb
 	endswitch
 End
 
+Function PSX_FitStartAmplitude(STRUCT WMSetVariableAction &sva) : SetVariableControl
+
+	switch(sva.eventCode)
+		case 1: // fallthrough, mouse up
+		case 2: // fallthrough, Enter key
+		case 3: // Live update
+			PSX_UpdateAllEventGraph(sva.win, forceSingleEventUpdate = 1, forceAverageUpdate = 1)
+			break
+		default:
+			break
+	endswitch
+End
+
 Function PSX_PopupMenuBlockNumber(STRUCT WMPopupAction &cba) : PopupMenuControl
 
 	switch(cba.eventCode)
@@ -5719,6 +5765,7 @@ Function PSX_PlotStartupSettings()
 	PopupMenu popupmenu_accept_fit_function, mode=1, win=$specialEventPanel
 	SetVariable setvar_event_block_size, value=_NUM:100, win=$specialEventPanel
 	PopupMenu popup_block, mode=1, value="", win=$specialEventPanel, userdata($PSX_UD_NUM_BLOCKS)="1"
+	SetVariable setvar_fit_start_amplitude, value=_NUM:20, win=$specialEventPanel
 
 	StoreCurrentPanelsResizeInfo(win)
 
