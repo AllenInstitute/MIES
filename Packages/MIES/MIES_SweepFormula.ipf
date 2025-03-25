@@ -1836,13 +1836,14 @@ End
 static Function/WAVE SF_PrepareResultWaveForPlotting(DFREF dfr, WAVE wvResult, variable dataCnt, variable forAxis)
 
 	variable mXn
+	string   fullWavePath
 
 	WAVE wv = GetSweepFormula(dfr, dataCnt, forAxis)
-	if(WaveType(wvResult, 1) == WaveType(wv, 1))
-		Duplicate/O wvResult, $GetWavesDataFolder(wv, 2)
-	else
-		MoveWaveWithOverWrite(wv, wvResult)
+	fullWavePath = GetWavesDataFolder(wv, 2)
+	if(WaveType(wvResult, 1) != WaveType(wv, 1))
+		KillOrMoveToTrash(wv = wv)
 	endif
+	Duplicate/O wvResult, $fullWavePath
 
 	WAVE plotWave = GetSweepFormula(dfr, dataCnt, forAxis)
 
