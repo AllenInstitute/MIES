@@ -8,7 +8,7 @@
 
 Window PSXPanel() : Panel
 	PauseUpdate; Silent 1 // building window...
-	NewPanel/K=1/W=(1251, 700, 2391, 1532) as "SweepFormula plot from <Browser>"
+	NewPanel/K=1/W=(100, 633, 1354, 1113) as "SweepFormula plot from <Browser >"
 	SetDrawLayer UserBack
 	SetDrawEnv pop
 	DrawText 47, 475, "UI"
@@ -56,15 +56,15 @@ Window PSXPanel() : Panel
 	ListBox listbox_select_combo, userdata(ResizeControlsInfo)=A"!!,B9!!#@<!!#@<!!#BdJ,fQL!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	ListBox listbox_select_combo, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ListBox listbox_select_combo, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	ListBox listbox_select_combo, mode=2, selRow=0
+	ListBox listbox_select_combo, row=26, mode=2, selRow=0
 	SetWindow kwTopWin, hook(resetScaling)=IH_ResetScaling
 	SetWindow kwTopWin, hook(ctrl)=PSX_PlotInteractionHook
 	SetWindow kwTopWin, hook(traceUserDataCleanup)=TUD_RemoveUserDataWave
-	SetWindow kwTopWin, userdata(ResizeControlsInfo)=A"!!*'\"z!!#EIJ,hu6zzzzzzzzzzzzzzzzzzzzz"
+	SetWindow kwTopWin, userdata(ResizeControlsInfo)=A"!!*'\"z!!#EW^]6akzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={750,360,inf,inf}" // sizeLimit requires Igor 7 or later
-	NewPanel/HOST=#/EXT=3/W=(0, 241, 1154, 0)/K=2 as " "
+	NewPanel/HOST=#/EXT=3/W=(0, 415, 1107, 0)/K=2 as " "
 	ModifyPanel fixedSize=0
 	CheckBox checkbox_single_events_accept, pos={21.00, 33.00}, size={53.00, 15.00}, proc=PSX_CheckboxProcAllEventPlotUpdate
 	CheckBox checkbox_single_events_accept, title="Accept"
@@ -115,11 +115,11 @@ Window PSXPanel() : Panel
 	Button button_fit_results, userdata="- none -"
 	GroupBox group_event, pos={14.00, 13.00}, size={69.00, 122.00}, title="Event"
 	GroupBox group_event, help={"Toggle the display of the event traces"}
-	SetVariable setvar_event_block_size, pos={0.00, 193.00}, size={120.00, 18.00}, bodyWidth=44, proc=PSX_SetVarBlockSize
+	SetVariable setvar_event_block_size, pos={13.00, 215.00}, size={120.00, 18.00}, bodyWidth=44, proc=PSX_SetVarBlockSize
 	SetVariable setvar_event_block_size, title="Block size [%]"
 	SetVariable setvar_event_block_size, help={"Allows to restrict the all event graph to only a percentage of the events."}
 	SetVariable setvar_event_block_size, limits={0, 100, 1}, value=_NUM:100
-	PopupMenu popup_block, pos={17.00, 218.00}, size={82.00, 19.00}, bodyWidth=50, proc=PSX_PopupMenuBlockNumber
+	PopupMenu popup_block, pos={51.00, 238.00}, size={82.00, 19.00}, bodyWidth=50, proc=PSX_PopupMenuBlockNumber
 	PopupMenu popup_block, title="Block"
 	PopupMenu popup_block, help={"Select which of the event blocks to display"}
 	PopupMenu popup_block, userdata(NumberOfBlocks)="1"
@@ -127,6 +127,10 @@ Window PSXPanel() : Panel
 	PopupMenu popupmenu_event_offset, pos={136.00, 168.00}, size={53.00, 19.00}, proc=PSX_PopupMenuState
 	PopupMenu popupmenu_event_offset, help={"Select the time point in x direction for aligning the single event traces in the all event graph"}
 	PopupMenu popupmenu_event_offset, mode=1, popvalue="Onset", value=#"\"Onset;Peak;Slew\""
+	SetVariable setvar_fit_start_amplitude, pos={13.00, 193.00}, size={144.00, 18.00}, bodyWidth=44
+	SetVariable setvar_fit_start_amplitude, title="Fit start amplitude"
+	SetVariable setvar_fit_start_amplitude, help={"Percentage of the amplitude used to define the fit start point."}
+	SetVariable setvar_fit_start_amplitude, limits={0, 100, 1}, value=_NUM:20, proc=PSX_FitStartAmplitude
 	DefineGuide leftMenu={FL, 0.2, FR}, horizCenter={leftMenu, 0.5, FR}
 	SetWindow kwTopWin, hook(resetScaling)=IH_ResetScaling
 	SetWindow kwTopWin, hook(ctrl)=PSX_AllEventGraphHook
