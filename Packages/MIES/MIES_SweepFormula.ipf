@@ -1837,11 +1837,6 @@ static Function/WAVE SF_PrepareResultWaveForPlotting(DFREF dfr, WAVE wvResult, v
 
 	variable mXn
 
-	mXn = max(1, DimSize(wvResult, COLS)) * max(1, DimSize(wvResult, LAYERS))
-	if(mXn)
-		Redimension/N=(-1, mXn)/E=1 wvResult
-	endif
-
 	WAVE wv = GetSweepFormula(dfr, dataCnt, forAxis)
 	if(WaveType(wvResult, 1) == WaveType(wv, 1))
 		Duplicate/O wvResult, $GetWavesDataFolder(wv, 2)
@@ -1849,7 +1844,12 @@ static Function/WAVE SF_PrepareResultWaveForPlotting(DFREF dfr, WAVE wvResult, v
 		MoveWaveWithOverWrite(wv, wvResult)
 	endif
 
-	return GetSweepFormula(dfr, dataCnt, forAxis)
+	WAVE plotWave = GetSweepFormula(dfr, dataCnt, forAxis)
+
+	mXn = max(1, DimSize(plotWave, COLS)) * max(1, DimSize(plotWave, LAYERS))
+	Redimension/N=(-1, mXn)/E=1 plotWave
+
+	return plotWave
 End
 
 /// @brief  Plot the formula using the data from graph
