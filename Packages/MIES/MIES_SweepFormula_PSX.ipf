@@ -5681,6 +5681,7 @@ Function PSX_PlotStartupSettings()
 	PopupMenu popupmenu_accept_fit_function, mode=1, win=$specialEventPanel
 	SetVariable setvar_event_block_size, value=_NUM:100, win=$specialEventPanel
 	PopupMenu popup_block, mode=1, value="", win=$specialEventPanel, userdata($PSX_UD_NUM_BLOCKS)="1"
+	SetVariable setvar_fit_start_amplitude, value=_NUM:20, win=$specialEventPanel
 
 	StoreCurrentPanelsResizeInfo(win)
 
