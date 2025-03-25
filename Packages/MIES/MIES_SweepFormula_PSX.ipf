@@ -702,10 +702,10 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_AnalyzePeaks(WAVE sweepDataOffF
 	                                                                riseTimeParams[%$"Differentiate Threshold"], \
 	                                                                p)
 
-	Multithread psxEvent[][%$"Rise Time"] = PSX_CalculateRiseTime(sweepDataOffFilt, psxEvent, kernelAmp, \
-	                                                              riseTimeParams[%$"Lower Threshold"],   \
-	                                                              riseTimeParams[%$"Upper Threshold"],   \
-	                                                              p)
+	Multithread psxEvent[][%$"Rise Time"] = PSX_CalculateRiseTimeWrapper(sweepDataOffFilt, psxEvent, kernelAmp, \
+	                                                                     riseTimeParams[%$"Lower Threshold"],   \
+	                                                                     riseTimeParams[%$"Upper Threshold"],   \
+	                                                                     p)
 
 	psxEvent[][%tau] = PSX_FitEventDecay(sweepDataOffFilt, psxEvent, maxTauFactor, eventFit, p)
 
@@ -1739,24 +1739,39 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE s
 	return output
 End
 
-threadsafe static Function PSX_CalculateRiseTime(WAVE sweepDataOffFilt, WAVE psxEvent, variable kernelAmp, variable lowerThreshold, variable upperThreshold, variable index)
+threadsafe static Function PSX_CalculateRiseTimeWrapper(WAVE sweepDataOffFilt, WAVE psxEvent, variable kernelAmp, variable lowerThreshold, variable upperThreshold, variable index)
 
-	variable dY, xStart, xEnd, yStart, yEnd, xlt, xupt, lowerLevel, upperLevel, riseTime
-	variable printDebug
-	string   comboKey
+	variable error, xStart, xEnd, yStart, yEnd, riseTime
+	string comboKey
 
 	// deconvPeak is defined in the deconvoluted wave,
 	// so we can't use %deconvPeak as y-value
 	xStart = psxEvent[index][%$"Onset Time"]
-
-	if(IsNaN(xStart))
-		return NaN
-	endif
-
-	yStart = sweepDataOffFilt(xStart)
+	yStart = IsNaN(xStart) ? NaN : sweepDataOffFilt(xStart)
 
 	xEnd = psxEvent[index][%peak_t]
 	yEnd = psxEvent[index][%peak]
+
+	[riseTime, error] = PSX_CalculateRiseTime(sweepDataOffFilt, xStart, xEnd, yStart, yEnd, lowerThreshold, upperThreshold, kernelAmp)
+
+#ifdef DEBUGGING_ENABLED
+	if(error)
+		comboKey = JWN_GetStringFromWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE)
+
+		printf "comboKey: %s, x: [%g, %g], y: [%g, %g], index: %d, thresholds: [%g, %g], risetime: %g\r", comboKey, xStart, xEnd, yStart, yEnd, index, lowerThreshold, upperThreshold, risetime
+	endif
+#endif // DEBUGGING_ENABLED
+
+	return riseTime
+End
+
+threadsafe static Function [variable riseTime, variable error] PSX_CalculateRiseTime(WAVE data, variable xStart, variable xEnd, variable yStart, variable yEnd, variable lowerThreshold, variable upperThreshold, variable kernelAmp)
+
+	variable dY, xlt, xupt, lowerLevel, upperLevel
+
+	if(IsNaN(xStart))
+		return [NaN, 0]
+	endif
 
 	dY = abs(yStart - yEnd)
 
@@ -1767,34 +1782,26 @@ threadsafe static Function PSX_CalculateRiseTime(WAVE sweepDataOffFilt, WAVE psx
 	xlt      = NaN
 	xupt     = NaN
 
-	FindLevel/R=(xStart, xEnd)/Q sweepDataOffFilt, lowerLevel
+	FindLevel/R=(xStart, xEnd)/Q data, lowerLevel
 
 	if(!V_flag)
 		xlt = V_levelX
 	else
-		printDebug = 1
+		error = 1
 	endif
 
-	FindLevel/R=(xStart, xEnd)/Q sweepDataOffFilt, upperLevel
+	FindLevel/R=(xStart, xEnd)/Q data, upperLevel
 
 	if(!V_flag)
 		xupt = V_levelX
 	else
-		printDebug = 1
+		error = 1
 	endif
 
 	ASSERT_TS(kernelAmp != 0 && IsFinite(kernelAmp), "kernelAmp must be finite and not zero")
 	riseTime = (xlt - xupt) * sign(kernelAmp) * (-1)
 
-#ifdef DEBUGGING_ENABLED
-	if(printDebug)
-		comboKey = JWN_GetStringFromWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE)
-
-		printf "comboKey: %s, x: [%g, %g], y: [%g, %g], index: %d, dY: %g, thresholds: [%g, %g], levels: [%g, %g], risetime: %g, xlt: %g, xupt: %g\r", comboKey, xStart, xEnd, yStart, yEnd, index, dY, lowerThreshold, upperThreshold, lowerLevel, upperLevel, risetime, xlt, xupt
-	endif
-#endif // DEBUGGING_ENABLED
-
-	return riseTime
+	return [riseTime, error]
 End
 
 threadsafe static Function PSX_CalculateOnsetTime(WAVE sweepDataDiff, WAVE psxEvent, variable kernelAmp, variable diffThreshPerc, variable index)
