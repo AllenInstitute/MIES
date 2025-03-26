@@ -59,7 +59,7 @@ static Constant PSX_KEYBOARD_DIR_LR = 1
 
 static Constant PSX_NUMBER_OF_SDS_DEFAULT = 2.5
 
-static Constant PSX_TAU_CALC_FACTOR             = 2.5
+static Constant PSX_TAU_CALC_FACTOR             = 1 // 2.5
 static Constant PSX_BASELINE_RANGE_FACTOR       = 10
 static Constant PSX_FIT_RANGE_FACTOR            = 10
 static Constant PSX_FIT_RANGE_PERC              = 0.9
@@ -158,6 +158,15 @@ Menu "GraphMarquee"
 	"PSX: Accept Fit", /Q, PSX_MouseEventSelection(PSX_ACCEPT, PSX_STATE_FIT)
 	"PSX: Reject Fit", /Q, PSX_MouseEventSelection(PSX_REJECT, PSX_STATE_FIT)
 	"PSX: Jump to Events", /Q, PSX_JumpToEvents()
+End
+
+static Function PSX_GetFindPeakBoxSize()
+
+#ifdef AUTOMATED_TESTING
+	return 10
+#endif // AUTOMATED_TESTING
+
+	return 100
 End
 
 static Function/S PSX_GetUserDataForWorkingFolder()
@@ -367,7 +376,7 @@ static Function/WAVE PSX_DeconvoluteSweepData(WAVE sweepData, WAVE/C psxKernelFF
 	// no window function on purpose
 	WAVE/C outputFFT = DoFFT(sweepData, padSize = numPoints)
 
-	Multithread outputFFT[] = outputFFT[p] / psxKernelFFT[p]
+	Multithread outputFFT[] = outputFFT[p] / (psxKernelFFT[p] + 1e-5)
 
 	IFFT/DEST=Deconv/FREE outputFFT
 
@@ -459,7 +468,7 @@ End
 /// @retval peakY y-coordinates of peaks
 static Function [WAVE/D peakX, WAVE/D peakY] PSX_FindPeaks(WAVE sweepDataOffFiltDeconv, variable threshold, [variable numPeaksMax, variable start, variable stop])
 
-	variable i
+	variable i, boxSize
 
 	if(ParamIsDefault(numPeaksMax))
 		numPeaksMax = PSX_NUM_PEAKS_MAX
@@ -473,10 +482,12 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_FindPeaks(WAVE sweepDataOffFilt
 		stop = rightx(sweepDataOffFiltDeconv)
 	endif
 
+	boxSize = PSX_GetFindPeakBoxSize()
+
 	Make/FREE/D/N=(numPeaksMax) peakX, peakY
 
 	for(i = 0; i < numPeaksMax; i += 1)
-		FindPeak/B=10/M=(threshold)/Q/R=(start, stop) sweepDataOffFiltDeconv
+		FindPeak/B=(boxSize)/M=(threshold)/Q/R=(start, stop) sweepDataOffFiltDeconv
 
 		if(V_Flag != 0)
 			break
@@ -505,6 +516,7 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_FilterEventsKernelAmpSign(WAVE/
 	variable peak, peak_t, baseline, baseline_t, amplitude
 	variable overrideSignQC = NaN
 	string comboKey
+	variable peak_t_prev = -Inf
 
 	if(!WaveExists(peakXUnfiltered) || !WaveExists(peakYUnfiltered))
 		return [$"", $""]
@@ -516,7 +528,7 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_FilterEventsKernelAmpSign(WAVE/
 
 	for(i = 0; i < numCrossings; i += 1)
 
-		[peak, peak_t, baseline, baseline_t, amplitude] = PSX_CalculateEventProperties(peakXUnfiltered, peakYUnfiltered, sweepDataOffFilt, kernelAmp, kernelRiseTau, kernelDecayTau, i)
+		[peak, peak_t, baseline, baseline_t, amplitude] = PSX_CalculateEventProperties(peakXUnfiltered, peakYUnfiltered, sweepDataOffFilt, peak_t_prev, kernelAmp, kernelRiseTau, kernelDecayTau, i)
 
 #ifdef AUTOMATED_TESTING
 		WAVE/Z overrideResults = GetOverrideResults()
@@ -539,7 +551,8 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_FilterEventsKernelAmpSign(WAVE/
 		peakX[idx] = peakXUnfiltered[i]
 		peakY[idx] = peakYUnfiltered[i]
 
-		idx += 1
+		idx        += 1
+		peak_t_prev = peak_t
 	endfor
 
 	if(idx == 0)
@@ -551,14 +564,12 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_FilterEventsKernelAmpSign(WAVE/
 	return [peakX, peakY]
 End
 
-static Function [variable peak_t, variable peak] PSX_CalculateEventPeak(WAVE peakX, WAVE peakY, WAVE sweepDataOffFilt, variable kernelAmp, variable kernelRiseTau, variable kernelDecayTau, variable index)
+static Function [variable peak_t, variable peak] PSX_CalculateEventPeak(WAVE peakX, WAVE peakY, WAVE sweepDataOffFilt, variable baseline_t, variable kernelAmp, variable kernelRiseTau, variable kernelDecayTau, variable index)
 
-	variable numCrossings, deconvPeak_t, prevDeconvPeak_t, nextDeconvPeak_t
+	variable numCrossings, prevDeconvPeak_t, nextDeconvPeak_t
 	variable peak_start_search, peak_end_search
 
 	numCrossings = DimSize(peakX, ROWS)
-
-	deconvPeak_t = peakX[index]
 
 	// lower bound
 	if(index > 0)
@@ -567,7 +578,7 @@ static Function [variable peak_t, variable peak] PSX_CalculateEventPeak(WAVE pea
 		prevDeconvPeak_t = -Inf
 	endif
 
-	peak_start_search = max(deconvPeak_t - PSX_PEAK_RANGE_FACTOR_LEFT * kernelRiseTau, prevDeconvPeak_t)
+	peak_start_search = max(baseline_t - PSX_PEAK_RANGE_FACTOR_LEFT * kernelRiseTau, prevDeconvPeak_t)
 
 	// upper bound
 	if(index < (numCrossings - 1))
@@ -576,7 +587,7 @@ static Function [variable peak_t, variable peak] PSX_CalculateEventPeak(WAVE pea
 		nextDeconvPeak_t = Inf
 	endif
 
-	peak_end_search = min(deconvPeak_t + PSX_PEAK_RANGE_FACTOR_RIGHT * kernelDecayTau, nextDeconvPeak_t)
+	peak_end_search = min(baseline_t + PSX_PEAK_RANGE_FACTOR_RIGHT * kernelDecayTau, nextDeconvPeak_t)
 
 	WaveStats/M=1/Q/R=(peak_start_search, peak_end_search) sweepDataOffFilt
 
@@ -593,18 +604,20 @@ static Function [variable peak_t, variable peak] PSX_CalculateEventPeak(WAVE pea
 	return [peak_t, peak]
 End
 
-static Function [variable baseline_t, variable baseline] PSX_CalculateEventBaseline(WAVE sweepDataOffFilt, variable peak_t, variable kernelAmp, variable kernelRiseTau)
+static Function [variable baseline_t, variable baseline] PSX_CalculateEventBaseline(WAVE sweepDataOffFilt, variable peak_t_prev, variable deconvPeak_t, variable kernelAmp, variable kernelRiseTau)
 
 	variable range
+	string   str
 
-	WaveStats/M=1/Q/R=(peak_t - PSX_BASELINE_RANGE_FACTOR * kernelRiseTau, peak_t) sweepDataOffFilt
+	WaveStats/M=1/Q/R=(max(deconvPeak_t - PSX_BASELINE_RANGE_FACTOR * kernelRiseTau, peak_t_prev), deconvPeak_t) sweepDataOffFilt
 
 	if(kernelAmp > 0)
 		baseline_t = V_minloc
 	elseif(kernelAmp < 0)
 		baseline_t = V_maxloc
 	else
-		ASSERT(0, "Can't handle kernelAmp of zero")
+		sprintf str, "Can't handle kernelAmp of: %g\r", kernelAmp // could be Nan, Inf, or zero
+		ASSERT(0, str)
 	endif
 
 	range = PSX_BASELINE_NUM_POINTS_AVERAGE * DimDelta(sweepDataOffFilt, ROWS)
@@ -614,10 +627,14 @@ static Function [variable baseline_t, variable baseline] PSX_CalculateEventBasel
 	return [baseline_t, baseline]
 End
 
-static Function [variable peak, variable peak_t, variable baseline, variable baseline_t, variable amplitude] PSX_CalculateEventProperties(WAVE peakX, WAVE peakY, WAVE sweepDataOffFilt, variable kernelAmp, variable kernelRiseTau, variable kernelDecayTau, variable index)
+static Function [variable peak, variable peak_t, variable baseline, variable baseline_t, variable amplitude] PSX_CalculateEventProperties(WAVE peakX, WAVE peakY, WAVE sweepDataOffFilt, variable peak_t_prev, variable kernelAmp, variable kernelRiseTau, variable kernelDecayTau, variable index)
 
-	[peak_t, peak]         = PSX_CalculateEventPeak(peakX, peakY, sweepDataOffFilt, kernelAmp, kernelRiseTau, kernelDecayTau, index)
-	[baseline_t, baseline] = PSX_CalculateEventBaseline(sweepDataOffFilt, peak_t, kernelAmp, kernelRiseTau)
+	variable deconvPeak_t
+
+	deconvPeak_t = peakX[index]
+
+	[baseline_t, baseline] = PSX_CalculateEventBaseline(sweepDataOffFilt, peak_t_prev, deconvPeak_t, kernelAmp, kernelRiseTau)
+	[peak_t, peak]         = PSX_CalculateEventPeak(peakX, peakY, sweepDataOffFilt, baseline_t, kernelAmp, kernelRiseTau, kernelDecayTau, index)
 
 	amplitude = peak - baseline
 
@@ -628,6 +645,7 @@ End
 static Function [WAVE/D peakX, WAVE/D peakY] PSX_AnalyzePeaks(WAVE sweepDataOffFiltDeconv, WAVE sweepDataOffFilt, WAVE sweepData, WAVE/Z peakXUnfiltered, WAVE/Z peakYUnfiltered, variable maxTauFactor, variable kernelAmp, variable kernelRiseTau, variable kernelDecayTau, WAVE riseTimeParams, WAVE psxEvent, WAVE eventFit)
 
 	variable i, numCrossings, deconvPeak, deconvPeak_t, peak, peak_t, baseline, baseline_t, amplitude, iei
+	variable peak_t_prev = -Inf
 
 	// we need to first throw away events with invalid amplitude so that
 	// we can then calculate the distance to the neighbour in peakX[i + 1] below
@@ -649,8 +667,8 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_AnalyzePeaks(WAVE sweepDataOffF
 		deconvPeak_t = peakX[i]
 		deconvPeak   = peakY[i]
 
-		[peak, peak_t, baseline, baseline_t, amplitude] = PSX_CalculateEventProperties(peakX, peakY, sweepDataOffFilt,            \
-		                                                                               kernelAmp, kernelRiseTau, kernelDecayTau, i)
+		[peak, peak_t, baseline, baseline_t, amplitude] = PSX_CalculateEventProperties(peakX, peakY, sweepDataOffFilt,                         \
+		                                                                               peak_t_prev, kernelAmp, kernelRiseTau, kernelDecayTau, i)
 
 		if(i == 0)
 			iei = NaN
@@ -667,6 +685,8 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_AnalyzePeaks(WAVE sweepDataOffF
 		psxEvent[i][%baseline_t]   = baseline_t
 		psxEvent[i][%amplitude]    = amplitude
 		psxEvent[i][%iei]          = iei
+
+		peak_t_prev = peak_t
 	endfor
 
 	// safe defaults
@@ -682,10 +702,10 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_AnalyzePeaks(WAVE sweepDataOffF
 	                                                                riseTimeParams[%$"Differentiate Threshold"], \
 	                                                                p)
 
-	Multithread psxEvent[][%$"Rise Time"] = PSX_CalculateRiseTime(sweepDataOffFilt, psxEvent, kernelAmp, \
-	                                                              riseTimeParams[%$"Lower Threshold"],   \
-	                                                              riseTimeParams[%$"Upper Threshold"],   \
-	                                                              p)
+	Multithread psxEvent[][%$"Rise Time"] = PSX_CalculateRiseTimeWrapper(sweepDataOffFilt, psxEvent, kernelAmp, \
+	                                                                     riseTimeParams[%$"Lower Threshold"],   \
+	                                                                     riseTimeParams[%$"Upper Threshold"],   \
+	                                                                     p)
 
 	psxEvent[][%tau] = PSX_FitEventDecay(sweepDataOffFilt, psxEvent, maxTauFactor, eventFit, p)
 
@@ -712,20 +732,26 @@ End
 // @brief Returns a good tau which does capture a lot of the tau events
 static Function PSX_GetGoodTauImpl(WAVE psxEvent)
 
-	variable numEvents, err, xVal, idx
+	variable numEvents, err, xVal, idx, tau
 
 	idx = FindDimLabel(psxEvent, COLS, "tau")
 	Duplicate/FREE/RMD=[][idx] psxEvent, tauWithNaN
 
-	WAVE/Z tau = ZapNaNs(tauWithNaN)
+	WAVE/Z taus = ZapNaNs(tauWithNaN)
 
-	if(!WaveExists(tau))
+	if(!WaveExists(taus))
 		return PSX_DEFAULT_X_START_OFFSET
 	endif
 
-	WaveStats/Q tau
+	WaveStats/Q taus
 
-	return V_avg + PSX_TAU_CALC_FACTOR * V_sdev
+	tau = V_avg + PSX_TAU_CALC_FACTOR * V_sdev
+
+	if(IsFinite(tau))
+		return tau
+	endif
+
+	return PSX_DEFAULT_X_START_OFFSET
 End
 
 /// @brief Return the x-axis range useful for displaying and extracting a single event
@@ -754,6 +780,8 @@ static Function [variable first, variable last] PSX_GetSingleEventRange(WAVE psx
 		last = min(first + offset, psxEvent[index + 1][%baseline_t])
 	endif
 
+	ASSERT(first <= last, "range must have first < last")
+
 	return [first, last]
 End
 
@@ -764,23 +792,24 @@ static Function [variable start, variable stop] PSX_GetEventFitRange(WAVE sweepD
 
 	variable calcLength, maxLength
 
-	start = psxEvent[eventIndex][%deconvPeak_t]
+	start = psxEvent[eventIndex][%peak_t]
 
 	maxLength = PSX_FIT_RANGE_FACTOR * JWN_GetNumberFromWaveNote(psxEvent, SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/psxKernel/decayTau")
+	ASSERT(isFinite(maxLength), "Failed to retrieve finite decay tau")
 
 	if(eventIndex == (DimSize(psxEvent, ROWS) - 1))
 		calcLength = maxLength
 	else
-		calcLength = min((psxEvent[eventIndex + 1][%deconvPeak_t] - start) * PSX_FIT_RANGE_PERC, maxLength)
+		calcLength = min((psxEvent[eventIndex + 1][%peak_t] - start) * PSX_FIT_RANGE_PERC, maxLength)
 	endif
 
-	if(calcLength == 0)
+	if(calcLength <= 0)
 		calcLength = maxLength
 	endif
 
 	stop = min(start + calcLength, IndexToScale(sweepDataOffFilt, DimSize(sweepDataOffFilt, ROWS), ROWS))
 
-	ASSERT(start < stop, "Invalid fit range calculation")
+	ASSERT(start <= stop, "Invalid fit range calculation")
 
 	return [start, stop]
 End
@@ -1710,24 +1739,39 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE s
 	return output
 End
 
-threadsafe static Function PSX_CalculateRiseTime(WAVE sweepDataOffFilt, WAVE psxEvent, variable kernelAmp, variable lowerThreshold, variable upperThreshold, variable index)
+threadsafe static Function PSX_CalculateRiseTimeWrapper(WAVE sweepDataOffFilt, WAVE psxEvent, variable kernelAmp, variable lowerThreshold, variable upperThreshold, variable index)
 
-	variable dY, xStart, xEnd, yStart, yEnd, xlt, xupt, lowerLevel, upperLevel, riseTime
-	variable printDebug
-	string   comboKey
+	variable error, xStart, xEnd, yStart, yEnd, riseTime
+	string comboKey
 
 	// deconvPeak is defined in the deconvoluted wave,
 	// so we can't use %deconvPeak as y-value
 	xStart = psxEvent[index][%$"Onset Time"]
-
-	if(IsNaN(xStart))
-		return NaN
-	endif
-
 	yStart = sweepDataOffFilt(xStart)
 
 	xEnd = psxEvent[index][%peak_t]
 	yEnd = psxEvent[index][%peak]
+
+	[riseTime, error] = PSX_CalculateRiseTime(sweepDataOffFilt, xStart, xEnd, yStart, yEnd, lowerThreshold, upperThreshold, kernelAmp)
+
+#ifdef DEBUGGING_ENABLED
+	if(error)
+		comboKey = JWN_GetStringFromWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE)
+
+		printf "comboKey: %s, x: [%g, %g], y: [%g, %g], index: %d, dY: %g, thresholds: [%g, %g], levels: [%g, %g], risetime: %g, xlt: %g, xupt: %g\r", comboKey, xStart, xEnd, yStart, yEnd, index, dY, lowerThreshold, upperThreshold, lowerLevel, upperLevel, risetime, xlt, xupt
+	endif
+#endif // DEBUGGING_ENABLED
+
+	return riseTime
+End
+
+threadsafe static Function [variable riseTime, variable error] PSX_CalculateRiseTime(WAVE data, variable xStart, variable xEnd, variable yStart, variable yEnd, variable lowerThreshold, variable upperThreshold, variable kernelAmp)
+
+	variable dY, xlt, xupt, lowerLevel, upperLevel
+
+	if(IsNaN(xStart))
+		return [NaN, 1]
+	endif
 
 	dY = abs(yStart - yEnd)
 
@@ -1738,34 +1782,26 @@ threadsafe static Function PSX_CalculateRiseTime(WAVE sweepDataOffFilt, WAVE psx
 	xlt      = NaN
 	xupt     = NaN
 
-	FindLevel/R=(xStart, xEnd)/Q sweepDataOffFilt, lowerLevel
+	FindLevel/R=(xStart, xEnd)/Q data, lowerLevel
 
 	if(!V_flag)
 		xlt = V_levelX
 	else
-		printDebug = 1
+		error = 1
 	endif
 
-	FindLevel/R=(xStart, xEnd)/Q sweepDataOffFilt, upperLevel
+	FindLevel/R=(xStart, xEnd)/Q data, upperLevel
 
 	if(!V_flag)
 		xupt = V_levelX
 	else
-		printDebug = 1
+		error = 1
 	endif
 
 	ASSERT_TS(kernelAmp != 0 && IsFinite(kernelAmp), "kernelAmp must be finite and not zero")
 	riseTime = (xlt - xupt) * sign(kernelAmp) * (-1)
 
-#ifdef DEBUGGING_ENABLED
-	if(printDebug)
-		comboKey = JWN_GetStringFromWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE)
-
-		printf "comboKey: %s, x: [%g, %g], y: [%g, %g], index: %d, dY: %g, thresholds: [%g, %g], levels: [%g, %g], risetime: %g, xlt: %g, xupt: %g\r", comboKey, xStart, xEnd, yStart, yEnd, index, dY, lowerThreshold, upperThreshold, lowerLevel, upperLevel, risetime, xlt, xupt
-	endif
-#endif // DEBUGGING_ENABLED
-
-	return riseTime
+	return [riseTime, error]
 End
 
 threadsafe static Function PSX_CalculateOnsetTime(WAVE sweepDataDiff, WAVE psxEvent, variable kernelAmp, variable diffThreshPerc, variable index)
@@ -2219,14 +2255,14 @@ static Function PSX_UpdateAverageTraces(string win, WAVE/T eventIndexFromTraces,
 
 	variable i, idx, numEvents, eventState, start, stop
 	variable acceptIndex, rejectIndex, undetIndex, extractStartAbs, extractStopAbs, fitStartAbs
-	string extAllGraph, name
+	string extAllGraph, name, path
 
 	extAllGraph = PSX_GetAllEventGraph(win)
 
 	numEvents = DimSize(eventIndexFromTraces, ROWS)
 
 	Make/WAVE/FREE/N=(numEvents) contAverageAll, contAverageAccept, contAverageReject, contAverageUndet
-	Make/FREE/D/N=(numEvents) eventStopTime
+	Make/FREE/D/N=(numEvents) eventOnsetTime, eventPeakTime, eventStopTime, eventKernelAmp
 
 	for(i = 0; i < numEvents; i += 1)
 		idx = str2num(eventIndexFromTraces[i])
@@ -2249,6 +2285,11 @@ static Function PSX_UpdateAverageTraces(string win, WAVE/T eventIndexFromTraces,
 				// single event waves are zeroed in x-direction to extractStartAbs
 				[extractStartAbs, extractStopAbs] = PSX_GetSingleEventRange(psxEvent, sweepDataOffFilt, idx)
 				eventStopTime[acceptIndex]        = extractStopAbs - extractStartAbs
+				eventOnsetTime[acceptIndex]       = psxEvent[idx][%$"Onset Time"] - extractStartAbs
+				eventPeakTime[acceptIndex]        = psxEvent[idx][%peak_t] - extractStartAbs
+
+				path = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX_KERNEL
+				eventKernelAmp[acceptIndex] = JWN_GetNumberFromWaveNote(psxEvent, path + "/amp")
 
 				acceptIndex += 1
 				break
@@ -2274,8 +2315,8 @@ static Function PSX_UpdateAverageTraces(string win, WAVE/T eventIndexFromTraces,
 	PSX_UpdateAverageWave(contAverageUndet, undetIndex, averageDFR, PSX_UNDET)
 	PSX_UpdateAverageWave(contAverageAll, numEvents, averageDFR, PSX_ALL)
 
-	Redimension/N=(acceptIndex) eventStopTime
-	PSX_FitAcceptAverage(win, averageDFR, eventStopTime)
+	Redimension/N=(acceptIndex) eventOnsetTime, eventPeakTime, eventStopTime, eventKernelAmp
+	PSX_FitAcceptAverage(win, averageDFR, eventOnsetTime, eventPeakTime, eventStopTime, eventKernelAmp)
 End
 
 /// @brief Helper function to update the average waves for the all event graph
@@ -2299,10 +2340,11 @@ static Function/DF PSX_GetAverageFolder(string win)
 	endif
 End
 
-static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventStopTime)
+static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventOnsetTime, WAVE eventPeakTime, WAVE eventStopTime, WAVE eventKernelAmp)
 
 	string specialEventPanel, str, htmlStr, rawCode, browser, msg, fitFunc
-	variable err, numAveragePoints, start, stop, meanStopTime
+	variable err, numAveragePoints, start, stop, meanStopTime, meanOnsetTime, meanPeakTime, meanKernelAmp
+	variable xStart, xEnd, yStart, yEnd, lowerThreshold, upperThreshold
 
 	WAVE acceptedAverageFit = GetPSXAcceptedAverageFitWaveFromDFR(averageDFR)
 
@@ -2327,15 +2369,39 @@ static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventSto
 	FastOp acceptedAverageFit = (NaN)
 	CopyScales average, acceptedAverageFit
 
+	WAVE/Z eventOnsetTimeClean = ZapNaNs(eventOnsetTime)
+	if(WaveExists(eventOnsetTimeClean))
+		meanOnsetTime = mean(eventOnsetTimeClean)
+	else
+		meanOnsetTime = Inf
+	endif
+
 	WAVE/Z eventStopTimeClean = ZapNaNs(eventStopTime)
 	if(WaveExists(eventStopTimeClean))
-		meanStopTime = mean(eventStopTime)
+		meanStopTime = mean(eventStopTimeClean)
 	else
 		meanStopTime = Inf
 	endif
 
-	start = 0
-	stop  = min(IndexToScale(average, DimSize(average, ROWS) - 1, ROWS), meanStopTime)
+	WAVE/Z eventKernelAmpClean = ZapNaNs(eventKernelAmp)
+	ASSERT(WaveExists(eventKernelAmpClean), "Could not find any events with finite kernelAmp")
+	meanKernelAmp = mean(eventKernelAmpClean)
+
+	WAVE/Z eventPeakTimeClean = ZapNaNs(eventPeakTime)
+	ASSERT(WaveExists(eventPeakTimeClean), "Could not find any events with finite peak_t")
+	meanPeakTime = mean(eventPeakTime)
+
+	xStart = max(IndexToScale(average, 0, ROWS), meanOnsetTime)
+	xEnd   = min(IndexToScale(average, DimSize(average, ROWS) - 1, ROWS), meanPeakTime)
+	ASSERT(xStart < xEnd, "xStart must be smaller than xEnd")
+	yStart = average(xStart)
+	yEnd   = average(xEnd)
+
+	lowerThreshold = GetSetVariable(specialEventPanel, "setvar_fit_start_amplitude") * PERCENT_TO_ONE
+	upperThreshold = 0.80
+
+	[start, err] = PSX_CalculateRiseTime(average, xStart, xEnd, yStart, yEnd, lowerThreshold, upperThreshold, meanKernelAmp)
+	stop         = min(IndexToScale(average, DimSize(average, ROWS) - 1, ROWS), meanStopTime)
 
 	AssertOnAndClearRTError()
 	fitFunc = GetPopupMenuString(specialEventPanel, "popupmenu_accept_fit_function")
@@ -5606,11 +5672,13 @@ Function PSX_PlotStartupSettings()
 
 		WAVE/Z/T userDataKeys = GetUserdataKeys(WinRecreation(subWin, 0))
 
-		for(ud : userDataKeys)
-			if(!GrepString(ud, "^ResizeControls.*$"))
-				SetWindow $subWin, userdata($ud)=""
-			endif
-		endfor
+		if(WaveExists(userDataKeys))
+			for(ud : userDataKeys)
+				if(!GrepString(ud, "^ResizeControls.*$"))
+					SetWindow $subWin, userdata($ud)=""
+				endif
+			endfor
+		endif
 
 		if(WinType(subwin) == WINTYPE_GRAPH)
 			if(ItemsInList(subwin, "#") <= 2)
@@ -5650,6 +5718,7 @@ Function PSX_PlotStartupSettings()
 	PopupMenu popupmenu_accept_fit_function, mode=1, win=$specialEventPanel
 	SetVariable setvar_event_block_size, value=_NUM:100, win=$specialEventPanel
 	PopupMenu popup_block, mode=1, value="", win=$specialEventPanel, userdata($PSX_UD_NUM_BLOCKS)="1"
+	SetVariable setvar_fit_start_amplitude, value=_NUM:20, win=$specialEventPanel
 
 	StoreCurrentPanelsResizeInfo(win)
 
