@@ -485,7 +485,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 						if(hasPhysUnit)
 							unit = AFH_GetChannelUnit(config, chan, channelType)
 						else
-							unit = "a.u."
+							unit = "logical"
 						endif
 
 						axisLabel = "\Zr085" + traceType + "\r(" + unit + ")"
@@ -1224,7 +1224,7 @@ static Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 		EnableAxis(graph, axes, spacePerSlot, first, last)
 
 		axis = axes[0]
-		ModifyGraph/W=$graph nticks($axis)=2, manTick($axis)={0, 1, 0, 0}, manMinor($axis)={0, 50}
+		ModifyGraph/W=$graph nticks($axis)=2, manTick($axis)={0, 1, 0, 0}, manMinor($axis)={0, 50}, zapTZ($axis)=1
 	endfor
 
 	ASSERT(first < 1e-15, "Left over space")
