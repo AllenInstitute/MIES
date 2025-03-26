@@ -1770,7 +1770,7 @@ threadsafe static Function [variable riseTime, variable error] PSX_CalculateRise
 	variable dY, xlt, xupt, lowerLevel, upperLevel
 
 	if(IsNaN(xStart))
-		return [NaN, 0]
+		return [NaN, 1]
 	endif
 
 	dY = abs(yStart - yEnd)
