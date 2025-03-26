@@ -2255,14 +2255,14 @@ static Function PSX_UpdateAverageTraces(string win, WAVE/T eventIndexFromTraces,
 
 	variable i, idx, numEvents, eventState, start, stop
 	variable acceptIndex, rejectIndex, undetIndex, extractStartAbs, extractStopAbs, fitStartAbs
-	string extAllGraph, name
+	string extAllGraph, name, path
 
 	extAllGraph = PSX_GetAllEventGraph(win)
 
 	numEvents = DimSize(eventIndexFromTraces, ROWS)
 
 	Make/WAVE/FREE/N=(numEvents) contAverageAll, contAverageAccept, contAverageReject, contAverageUndet
-	Make/FREE/D/N=(numEvents) eventStopTime, eventPeakTime
+	Make/FREE/D/N=(numEvents) eventOnsetTime, eventPeakTime, eventStopTime, eventKernelAmp
 
 	for(i = 0; i < numEvents; i += 1)
 		idx = str2num(eventIndexFromTraces[i])
@@ -2285,7 +2285,11 @@ static Function PSX_UpdateAverageTraces(string win, WAVE/T eventIndexFromTraces,
 				// single event waves are zeroed in x-direction to extractStartAbs
 				[extractStartAbs, extractStopAbs] = PSX_GetSingleEventRange(psxEvent, sweepDataOffFilt, idx)
 				eventStopTime[acceptIndex]        = extractStopAbs - extractStartAbs
+				eventOnsetTime[acceptIndex]       = psxEvent[idx][%$"Onset Time"] - extractStartAbs
 				eventPeakTime[acceptIndex]        = psxEvent[idx][%peak_t] - extractStartAbs
+
+				path = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX_KERNEL
+				eventKernelAmp[acceptIndex] = JWN_GetNumberFromWaveNote(psxEvent, path + "/amp")
 
 				acceptIndex += 1
 				break
@@ -2311,8 +2315,8 @@ static Function PSX_UpdateAverageTraces(string win, WAVE/T eventIndexFromTraces,
 	PSX_UpdateAverageWave(contAverageUndet, undetIndex, averageDFR, PSX_UNDET)
 	PSX_UpdateAverageWave(contAverageAll, numEvents, averageDFR, PSX_ALL)
 
-	Redimension/N=(acceptIndex) eventStopTime
-	PSX_FitAcceptAverage(win, averageDFR, eventPeakTime, eventStopTime)
+	Redimension/N=(acceptIndex) eventOnsetTime, eventPeakTime, eventStopTime, eventKernelAmp
+	PSX_FitAcceptAverage(win, averageDFR, eventOnsetTime, eventPeakTime, eventStopTime, eventKernelAmp)
 End
 
 /// @brief Helper function to update the average waves for the all event graph
@@ -2336,10 +2340,11 @@ static Function/DF PSX_GetAverageFolder(string win)
 	endif
 End
 
-static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventPeakTime, WAVE eventStopTime)
+static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventOnsetTime, WAVE eventPeakTime, WAVE eventStopTime, WAVE eventKernelAmp)
 
 	string specialEventPanel, str, htmlStr, rawCode, browser, msg, fitFunc
-	variable err, numAveragePoints, start, stop, meanStopTime, meanPeakTime
+	variable err, numAveragePoints, start, stop, meanStopTime, meanOnsetTime, meanPeakTime, meanKernelAmp
+	variable xStart, xEnd, yStart, yEnd, lowerThreshold, upperThreshold
 
 	WAVE acceptedAverageFit = GetPSXAcceptedAverageFitWaveFromDFR(averageDFR)
 
@@ -2364,6 +2369,13 @@ static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventPea
 	FastOp acceptedAverageFit = (NaN)
 	CopyScales average, acceptedAverageFit
 
+	WAVE/Z eventOnsetTimeClean = ZapNaNs(eventOnsetTime)
+	if(WaveExists(eventOnsetTimeClean))
+		meanOnsetTime = mean(eventOnsetTimeClean)
+	else
+		meanOnsetTime = Inf
+	endif
+
 	WAVE/Z eventStopTimeClean = ZapNaNs(eventStopTime)
 	if(WaveExists(eventStopTimeClean))
 		meanStopTime = mean(eventStopTimeClean)
@@ -2371,15 +2383,25 @@ static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventPea
 		meanStopTime = Inf
 	endif
 
-	WAVE/Z eventPeakTimeClean = ZapNaNs(eventPeakTime)
-	if(WaveExists(eventPeakTimeClean))
-		meanPeakTime = mean(eventPeakTime)
-	else
-		ASSERT(0, "Could not find any events with finite peak_t")
-	endif
+	WAVE/Z eventKernelAmpClean = ZapNaNs(eventKernelAmp)
+	ASSERT(WaveExists(eventKernelAmpClean), "Could not find any events with finite kernelAmp")
+	meanKernelAmp = mean(eventKernelAmpClean)
 
-	start = 0.1 * meanPeakTime
-	stop  = min(IndexToScale(average, DimSize(average, ROWS) - 1, ROWS), meanStopTime)
+	WAVE/Z eventPeakTimeClean = ZapNaNs(eventPeakTime)
+	ASSERT(WaveExists(eventPeakTimeClean), "Could not find any events with finite peak_t")
+	meanPeakTime = mean(eventPeakTime)
+
+	xStart = max(IndexToScale(average, 0, ROWS), meanOnsetTime)
+	xEnd   = min(IndexToScale(average, DimSize(average, ROWS) - 1, ROWS), meanPeakTime)
+	ASSERT(xStart < xEnd, "xStart must be smaller than xEnd")
+	yStart = average(xStart)
+	yEnd   = average(xEnd)
+
+	lowerThreshold = GetSetVariable(specialEventPanel, "setvar_fit_start_amplitude") * PERCENT_TO_ONE
+	upperThreshold = 0.80
+
+	[start, err] = PSX_CalculateRiseTime(average, xStart, xEnd, yStart, yEnd, lowerThreshold, upperThreshold, meanKernelAmp)
+	stop         = min(IndexToScale(average, DimSize(average, ROWS) - 1, ROWS), meanStopTime)
 
 	AssertOnAndClearRTError()
 	fitFunc = GetPopupMenuString(specialEventPanel, "popupmenu_accept_fit_function")
