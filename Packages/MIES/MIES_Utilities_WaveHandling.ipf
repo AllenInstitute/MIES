@@ -974,6 +974,22 @@ threadsafe Function/WAVE RemoveUnusedRows(WAVE wv)
 	return dup
 End
 
+/// @brief If cond is true return a free deep copy of the wave otherwise the original wave is returned
+threadsafe Function/WAVE FreeCopyOnTrue(variable cond, WAVE w)
+
+	cond = !!cond
+
+	if(!cond)
+		return w
+	endif
+
+	if(!IsWaveRefWave(w))
+		return DuplicateWaveToFree(w)
+	endif
+
+	return DeepCopyWaveRefWave(w)
+End
+
 /// @brief Duplicates the input wave to a free wave and returns the free wave reference.
 threadsafe Function/WAVE DuplicateWaveToFree(WAVE w)
 
