@@ -7,6 +7,8 @@ static StrConstant PGCT_POPUPMENU_ENTRIES = "Entry1;Entry2;Entry3"
 
 static Function TEST_CASE_BEGIN_OVERRIDE(string testCase)
 
+	TestCaseBeginCommon(testCase)
+
 	CreatePGCTestPanel_IGNORE()
 
 	CA_FlushCache()
