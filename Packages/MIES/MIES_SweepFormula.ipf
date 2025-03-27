@@ -4411,25 +4411,18 @@ End
 /// `butterworth(data, lowPassCutoff, highPassCutoff, order)`
 static Function/WAVE SF_OperationButterworth(variable jsonId, string jsonPath, string graph)
 
-	variable numArgs
+	variable lowPassCutoff, highPassCutoff, order
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
-	SFH_ASSERT(numArgs == 4, "The butterworth filter requires 4 arguments")
+	SFH_CheckArgumentCount(jsonID, jsonPath, SF_OP_BUTTERWORTH, 4, maxArgs = 4)
 
-	WAVE/WAVE input         = SF_ResolveDatasetFromJSON(jsonID, jsonPath, graph, 0)
-	WAVE      lowPassCutoff = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 1, checkExist = 1)
-	SFH_ASSERT(DimSize(lowPassCutoff, ROWS) == 1, "Too many input values for parameter lowPassCutoff")
-	SFH_ASSERT(IsNumericWave(lowPassCutoff), "lowPassCutoff parameter must be numeric")
-	WAVE highPassCutoff = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 2, checkExist = 1)
-	SFH_ASSERT(DimSize(highPassCutoff, ROWS) == 1, "Too many input values for parameter highPassCutoff")
-	SFH_ASSERT(IsNumericWave(highPassCutoff), "highPassCutoff parameter must be numeric")
-	WAVE order = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 3, checkExist = 1)
-	SFH_ASSERT(DimSize(order, ROWS) == 1, "Too many input values for parameter order")
-	SFH_ASSERT(IsNumericWave(order), "order parameter must be numeric")
+	WAVE/WAVE input = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 0, copy = 1)
+	lowPassCutoff  = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 1)
+	highPassCutoff = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 2)
+	order          = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 3)
 
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_BUTTERWORTH, DimSize(input, ROWS))
 
-	output[] = SF_OperationButterworthImpl(input[p], lowPassCutoff[0], highPassCutoff[0], order[0])
+	output[] = SF_OperationButterworthImpl(input[p], lowPassCutoff, highPassCutoff, order)
 
 	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_BUTTERWORTH, SF_DATATYPE_BUTTERWORTH)
 
