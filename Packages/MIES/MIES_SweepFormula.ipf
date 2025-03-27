@@ -7175,11 +7175,15 @@ Function/DF SF_GetBrowserDF(string graph)
 End
 
 /// @brief Executes the part of the argument part of the JSON and parses the resulting data to a waveRef type
-Function/WAVE SF_ResolveDatasetFromJSON(variable jsonId, string jsonPath, string graph, variable argNum)
+Function/WAVE SF_ResolveDatasetFromJSON(variable jsonId, string jsonPath, string graph, variable argNum, [variable copy])
+
+	copy = ParamIsDefault(copy) ? 0 : !!copy
 
 	WAVE wv = SF_FormulaExecutor(graph, jsonID, jsonPath = jsonPath + "/" + num2istr(argNum))
 
-	return SF_ResolveDataset(wv)
+	WAVE dataset = SF_ResolveDataset(wv)
+
+	return SFH_CopyDataIfRequired(copy, dataset, dataset)
 End
 
 static Function/WAVE SF_ResolveDataset(WAVE input)
