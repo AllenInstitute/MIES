@@ -4393,8 +4393,10 @@ static Function/WAVE SF_OperationAreaImpl(WAVE/Z input, variable zero)
 	SFH_ASSERT(IsNumericWave(input), "area requires numeric input data.")
 	if(zero)
 		SFH_ASSERT(DimSize(input, ROWS) >= 3, "Requires at least three points of data.")
-		Differentiate/DIM=(ROWS)/EP=1 input
-		Integrate/DIM=(ROWS) input
+		WAVE out_differentiate = NewFreeWave(IGOR_TYPE_64BIT_FLOAT, 0)
+		Differentiate/DIM=(ROWS)/EP=1 input/D=out_differentiate
+		Integrate/DIM=(ROWS) out_differentiate
+		WAVE input = out_differentiate
 	endif
 	SFH_ASSERT(DimSize(input, ROWS) >= 1, "integrate requires at least one data point.")
 
