@@ -4666,60 +4666,21 @@ End
 
 static Function/WAVE SF_OperationPowerSpectrum(variable jsonId, string jsonPath, string graph)
 
-	variable i, numArgs, doAvg, debugVal
-	string errMsg
-	string   avg     = SF_POWERSPECTRUM_AVG_OFF
-	string   unit    = SF_POWERSPECTRUM_UNIT_DEFAULT
-	string   winFunc = FFT_WINF_DEFAULT
-	variable cutoff  = 1000
-	variable ratioFreq
+	variable i, doAvg, debugVal
+	string unit, avg, winFunc
+	variable cutoff, ratioFreq
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
-	SFH_ASSERT(numArgs >= 1 && numArgs <= 6, "The powerspectrum operation requires 1 to 6 arguments")
+	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_POWERSPECTRUM, 1, maxArgs = 6)
 
-	WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonID, jsonPath, graph, 0)
-	if(numArgs > 1)
-		WAVE/T wUnit = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 1, checkExist = 1)
-		sprintf errMsg, "Second argument (unit) can not be a number. Use %s, %s or %s.", SF_POWERSPECTRUM_UNIT_DEFAULT, SF_POWERSPECTRUM_UNIT_DB, SF_POWERSPECTRUM_UNIT_NORMALIZED
-		SFH_ASSERT(IsTextWave(wUnit), errMsg)
-		SFH_ASSERT(!DimSize(wUnit, COLS) && DimSize(wUnit, ROWS) == 1, "Second argument (unit) must not be an array with multiple options.")
-		unit = wUnit[0]
-		sprintf errMsg, "Second argument (unit) must be %s, %s or %s.", SF_POWERSPECTRUM_UNIT_DEFAULT, SF_POWERSPECTRUM_UNIT_DB, SF_POWERSPECTRUM_UNIT_NORMALIZED
-		SFH_ASSERT(!CmpStr(unit, SF_POWERSPECTRUM_UNIT_DEFAULT) || !CmpStr(unit, SF_POWERSPECTRUM_UNIT_DB) || !CmpStr(unit, SF_POWERSPECTRUM_UNIT_NORMALIZED), errMsg)
-	endif
-	if(numArgs > 2)
-		WAVE/T wAvg = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 2, checkExist = 1)
-		sprintf errMsg, "Third argument (avg) can not be a number. Use %s or %s.", SF_POWERSPECTRUM_AVG_ON, SF_POWERSPECTRUM_AVG_OFF
-		SFH_ASSERT(IsTextWave(wAvg), errMsg)
-		SFH_ASSERT(!DimSize(wAvg, COLS) && DimSize(wAvg, ROWS) == 1, "Third argument (avg) must not be an array with multiple options.")
-		avg = wAvg[0]
-		sprintf errMsg, "Third argument (avg) must be %s or %s.", SF_POWERSPECTRUM_AVG_ON, SF_POWERSPECTRUM_AVG_OFF
-		SFH_ASSERT(!CmpStr(avg, SF_POWERSPECTRUM_AVG_ON) || !CmpStr(avg, SF_POWERSPECTRUM_AVG_OFF), errMsg)
-	endif
-	if(numArgs > 3)
-		WAVE wRatioFreq = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 3, checkExist = 1)
-		SFH_ASSERT(IsNumericWave(wRatioFreq), "Fourth argument (frequency for ratio) must be a number.")
-		SFH_ASSERT(!DimSize(wRatioFreq, COLS) && DimSize(wRatioFreq, ROWS) == 1, "Fourth argument (frequency for ratio) must not be an array with multiple options.")
-		ratioFreq = wRatioFreq[0]
-		sprintf errMsg, "Fourth argument (Frequency for ratio) must >= %f.", 0
-		SFH_ASSERT(ratioFreq >= 0, errMsg)
-	endif
-	if(numArgs > 4)
-		WAVE wCutoff = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 4, checkExist = 1)
-		SFH_ASSERT(IsNumericWave(wCutoff), "Fifth argument (cutoff frequency) must be a number.")
-		SFH_ASSERT(!DimSize(wCutoff, COLS) && DimSize(wCutoff, ROWS) == 1, "Fifth argument (cutoff frequency) must not be an array with multiple options.")
-		cutoff = wCutoff[0]
-		SFH_ASSERT(cutoff > 0, "Fifth argument (cutoff frequency) must be > 0.")
-	endif
-	if(numArgs > 5)
-		WAVE/T wWinf = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 5, checkExist = 1)
-		SFH_ASSERT(IsTextWave(wWinf), "Sixth argument (window function) can not be a number.")
-		SFH_ASSERT(!DimSize(wWinf, COLS) && DimSize(wWinf, ROWS) == 1, "Sixth argument (window function) must not be an array with multiple options.")
-		winFunc = wWinf[0]
-		SFH_ASSERT(WhichListItem(winFunc, FFT_WINF) >= 0 || !CmpStr(winFunc, SF_POWERSPECTRUM_WINFUNC_NONE), "Sixth argument (window function) is invalid.")
-		if(!CmpStr(winFunc, SF_POWERSPECTRUM_WINFUNC_NONE))
-			winFunc = ""
-		endif
+	WAVE/WAVE input = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_POWERSPECTRUM, 0, copy = 1)
+	unit      = SFH_GetArgumentAsText(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 1, defValue = SF_POWERSPECTRUM_UNIT_DEFAULT, allowedValues = {SF_POWERSPECTRUM_UNIT_DEFAULT, SF_POWERSPECTRUM_UNIT_DB, SF_POWERSPECTRUM_UNIT_NORMALIZED})
+	avg       = SFH_GetArgumentAsText(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 2, defValue = SF_POWERSPECTRUM_AVG_OFF, allowedValues = {SF_POWERSPECTRUM_AVG_ON, SF_POWERSPECTRUM_AVG_OFF})
+	ratioFreq = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 3, defValue = 0, checkFunc = IsNullOrPositiveAndFinite)
+	cutoff    = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 4, defValue = 1000, checkFunc = IsStrictlyPositiveAndFinite)
+	WAVE/T allowedWinFuncs = ListToTextWave(AddListItem(SF_POWERSPECTRUM_WINFUNC_NONE, FFT_WINF), ";")
+	winFunc = SFH_GetArgumentAsText(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 5, defValue = FFT_WINF_DEFAULT, allowedValues = allowedWinFuncs)
+	if(!CmpStr(winFunc, SF_POWERSPECTRUM_WINFUNC_NONE))
+		winFunc = ""
 	endif
 
 	for(data : input)

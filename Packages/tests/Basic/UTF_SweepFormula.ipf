@@ -2095,3 +2095,30 @@ static Function TestVariablePlottingDifferentSubsequentBaseTypes()
 
 	KillWaves/Z root:testData
 End
+
+static Function TestVariableReadOnly()
+
+	string graphBase, win, graph, code
+	variable offset = 10
+
+	win       = GetDataBrowserWithData()
+	graphBase = BSP_GetFormulaGraph(win)
+	graph     = graphBase + "_#Graph" + "0"
+
+	KillWaves/Z root:testData
+	Make/N=100 root:testData = p + offset
+
+	code = "data=wave(root:testData)\rpowerspectrum($data)"
+	ExecuteSweepFormulaInDB(code, win)
+
+	WAVE/WAVE varStorage = GetSFVarStorage(win)
+	WAVE/WAVE dataRef    = SFH_AttemptDatasetResolve(WaveText(WaveRef(varStorage, row = FindDimLabel(varStorage, ROWS, "data")), row = 0))
+	WAVE      data       = dataRef[0]
+	WAVE      dataRN     = root:testData
+	CHECK_EQUAL_VAR(WaveRefsEqual(data, dataRN), 1)
+
+	Make/FREE/N=100 refData = p + offset
+	CHECK_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
+
+	KillWaves/Z root:testData
+End
