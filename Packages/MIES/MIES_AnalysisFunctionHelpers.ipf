@@ -135,10 +135,10 @@ threadsafe Function/WAVE AFH_GetChannelUnits(WAVE DAQConfigWave)
 	if(IsValidConfigWave(DAQConfigWave, version = 1))
 		units = GetStringFromWaveNote(DAQConfigWave, CHANNEL_UNIT_KEY, keySep = "=")
 		return ListToTextWave(units, ",")
-	else
-		units = note(DAQConfigWave)
-		return ListToTextWave(units, ";")
 	endif
+
+	units = note(DAQConfigWave)
+	return ListToTextWave(units, ";")
 End
 
 /// @brief Return the channel unit
@@ -272,9 +272,10 @@ threadsafe Function/WAVE AFH_GetSweepsFromSameRACycle(WAVE numericalValues, vari
 		if(DimSize(sweeps, ROWS) > 0) // valid cached entry
 			ChangeWaveLock(sweeps, 1)
 			return sweeps
-		else // non-existant entry
-			return $""
 		endif
+
+		// non-existant entry
+		return $""
 	endif
 
 	// uncached entry
@@ -308,9 +309,10 @@ threadsafe Function/WAVE AFH_GetSweepsFromSameSCI(WAVE numericalValues, variable
 		if(DimSize(sweeps, ROWS) > 0) // valid cached entry
 			ChangeWaveLock(sweeps, 1)
 			return sweeps
-		else // non-existant entry
-			return $""
 		endif
+
+		// non-existant entry
+		return $""
 	endif
 
 	// uncached entry
@@ -398,7 +400,7 @@ Function/WAVE AFH_ExtractOneDimDataFromSweep(string device, WAVE sweep, variable
 		case XOP_CHANNEL_TYPE_TTL:
 			channelNum = headstageOrChannelNum
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Invalid channeltype")
 	endswitch
 
@@ -1063,7 +1065,7 @@ Function/S AFH_GetAnalysisParameterAsText(string name, string params)
 			break
 		case "": // unknown name
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "invalid type")
 	endswitch
 
@@ -1225,11 +1227,11 @@ Function AFH_LastSweepInSet(string device, variable sweepNo, variable headstage,
 	variable DAC, sweepsInSet, nextStimsetColumn, sweepOffset
 
 	switch(eventType)
-		case PRE_DAQ_EVENT:
+		case PRE_DAQ_EVENT: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PRE_SWEEP_CONFIG_EVENT:
 			// no valid setup yet
 			return NaN
-		case PRE_SET_EVENT:
+		case PRE_SET_EVENT: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case MID_SWEEP_EVENT:
 			// we need to look at the last acquired sweep
 			sweepNo    -= 1

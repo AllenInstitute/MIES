@@ -45,7 +45,7 @@ Function ValidFunc_V1(string device, variable eventType, WAVE DAQDataWave, varia
 		case HARDWARE_NI_DAC:
 			CHECK_WAVE(DAQDataWave, WAVE_WAVE)
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unsupported hardware type")
 	endswitch
 
@@ -77,7 +77,7 @@ Function ValidFunc_V2(string device, variable eventType, WAVE DAQDataWave, varia
 		case HARDWARE_NI_DAC:
 			CHECK_WAVE(DAQDataWave, WAVE_WAVE)
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unsupported hardware type")
 	endswitch
 
@@ -119,11 +119,11 @@ Function ValidMultHS_V1(string device, variable eventType, WAVE DAQDataWave, var
 		case HARDWARE_ITC_DAC:
 			CHECK_WAVE(DAQDataWave, NUMERIC_WAVE)
 			break
-		case HARDWARE_NI_DAC: // intended drop-through
+		case HARDWARE_NI_DAC: // intended drop-through, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case HARDWARE_SUTTER_DAC:
 			CHECK_WAVE(DAQDataWave, WAVE_WAVE)
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unsupported hardware type")
 	endswitch
 
@@ -296,7 +296,7 @@ Function ValidFunc_V3(string device, STRUCT AnalysisFunction_V3 &s)
 					endfor
 				endif
 				break
-			case HARDWARE_NI_DAC: // intended drop through
+			case HARDWARE_NI_DAC: // intended drop through, FIXME(CodeStyleFallthroughCaseRequireComment)
 			case HARDWARE_SUTTER_DAC:
 				WAVE/WAVE DAQDataWaveRef = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
 				CHECK_EQUAL_VAR(DimSize(s.scaledDACWave, ROWS), DimSize(DAQDataWaveRef, ROWS))
@@ -309,7 +309,7 @@ Function ValidFunc_V3(string device, STRUCT AnalysisFunction_V3 &s)
 				endif
 				CHECK_EQUAL_WAVES(sizesDAQ, sizesScaled, mode = WAVE_DATA)
 				break
-			default:
+			default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				FAIL()
 		endswitch
 	elseif(s.eventType == POST_DAQ_EVENT)
@@ -351,7 +351,7 @@ Function ValidFunc_V3(string device, STRUCT AnalysisFunction_V3 &s)
 				CHECK_EQUAL_VAR(s.sampleIntervalDA, DimDelta(DAQDataWave, ROWS))
 				CHECK_EQUAL_VAR(s.sampleIntervalAD, DimDelta(DAQDataWave, ROWS))
 				break
-			case HARDWARE_NI_DAC: // intended drop-through
+			case HARDWARE_NI_DAC: // intended drop-through, FIXME(CodeStyleFallthroughCaseRequireComment)
 			case HARDWARE_SUTTER_DAC:
 				WAVE/WAVE DAQDataWaveRef = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
 				Make/FREE/N=(DimSize(DAQDataWaveRef, ROWS)) sizes = DimSize(DAQDataWaveRef[p], ROWS)
@@ -366,7 +366,7 @@ Function ValidFunc_V3(string device, STRUCT AnalysisFunction_V3 &s)
 				CHECK_GT_VAR(s.sampleIntervalDA, 0)
 				CHECK_GT_VAR(s.sampleIntervalAD, 0)
 				break
-			default:
+			default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				FAIL()
 		endswitch
 	elseif(s.eventType == POST_DAQ_EVENT || s.eventType == POST_SET_EVENT || s.eventType == POST_SWEEP_EVENT)
@@ -388,8 +388,8 @@ Function ValidFunc_V3(string device, STRUCT AnalysisFunction_V3 &s)
 			CHECK_EQUAL_VAR(s.sweepNo, 0)
 			CHECK_WAVE(GetSweepWave(device, s.sweepNo), NULL_WAVE)
 			break
-		case PRE_SWEEP_CONFIG_EVENT:
-		case PRE_SET_EVENT:
+		case PRE_SWEEP_CONFIG_EVENT: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PRE_SET_EVENT: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case MID_SWEEP_EVENT:
 			CHECK_EQUAL_VAR(s.sweepNo, anaFuncTracker[POST_SWEEP_EVENT])
 			CHECK_WAVE(GetSweepWave(device, s.sweepNo), NULL_WAVE)
@@ -406,7 +406,7 @@ Function ValidFunc_V3(string device, STRUCT AnalysisFunction_V3 &s)
 			CHECK_EQUAL_VAR(s.sweepNo, anaFuncTracker[POST_SWEEP_EVENT] - 1)
 			CHECK_WAVE(GetSweepWave(device, s.sweepNo), TEXT_WAVE)
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unsupported hardware type")
 	endswitch
 
@@ -501,7 +501,7 @@ Function/S Params5_V3_CheckParam(string name, string params)
 				return "Nope that is not valid content"
 			endif
 			break
-		case "MyNum":
+		case "MyNum": // FIXME(CodeStyleFallthroughCaseRequireComment)
 			var = AFH_GetAnalysisParamNumerical(name, params)
 			if(!IsFinite(var))
 				ASSERT(0, "trying to bug out")
@@ -591,7 +591,7 @@ Function/S Params7_V3_CheckParam(string name, STRUCT CheckParametersStruct &s)
 	strswitch(name)
 		case "MyVar":
 			return "Encountered expected check"
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			FAIL()
 	endswitch
 
@@ -657,9 +657,9 @@ Function AbortPreSet(string device, STRUCT AnalysisFunction_V3 &s)
 	if(s.eventType == PRE_SET_EVENT)
 		// aborts DAQ
 		return 1
-	else
-		return 0
 	endif
+
+	return 0
 End
 
 Function TotalOrdering(string device, STRUCT AnalysisFunction_V3 &s)
@@ -825,7 +825,7 @@ Function AcquisitionStateTrackingFunc(string device, STRUCT AnalysisFunction_V3 
 		case MID_SWEEP_EVENT:
 			expectedAcqState = AS_MID_SWEEP
 			break
-		case POST_SWEEP_EVENT:
+		case POST_SWEEP_EVENT: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case POST_SET_EVENT:
 			// AS_POST_SET does not yet exist
 			expectedAcqState = AS_POST_SWEEP
@@ -833,7 +833,7 @@ Function AcquisitionStateTrackingFunc(string device, STRUCT AnalysisFunction_V3 
 		case POST_DAQ_EVENT:
 			expectedAcqState = AS_POST_DAQ
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Invalid event")
 	endswitch
 
@@ -992,7 +992,7 @@ Function/S ComplainWithProperString_GetHelp(string name)
 	strswitch(name)
 		case "param":
 			return "Hi there!"
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			FAIL()
 	endswitch
 End
@@ -1000,11 +1000,11 @@ End
 Function/S ComplainWithProperString_CheckParam(string name, string params)
 
 	strswitch(name)
-		case "param":
+		case "param": // FIXME(CodeStyleFallthroughCaseRequireComment)
 			if(!IsEmpty(name))
 				return "wrong value"
 			endif
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			FAIL()
 	endswitch
 End
@@ -1036,7 +1036,7 @@ Function AddUserEpochsForTPLike(string device, STRUCT AnalysisFunction_V3 &s)
 	variable ret
 
 	switch(s.eventType)
-		case PRE_SWEEP_CONFIG_EVENT:
+		case PRE_SWEEP_CONFIG_EVENT: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ret = MIES_PSQ#PSQ_CreateTestpulseEpochs(device, s.headstage, 3)
 			if(ret)
 				return 1

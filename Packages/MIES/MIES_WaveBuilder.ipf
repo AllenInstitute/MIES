@@ -269,7 +269,9 @@ static Function WB_ParameterWvsNewerThanStim(string setName)
 
 		if(lastModWP > lastModStimSet || lastModWPT > lastModStimSet || lastModSegWvType > lastModStimSet)
 			return 1
-		elseif(lastModWP == lastModStimSet || lastModWPT == lastModStimSet || lastModSegWvType == lastModStimSet)
+		endif
+
+		if(lastModWP == lastModStimSet || lastModWPT == lastModStimSet || lastModSegWvType == lastModStimSet)
 			channelType = WB_GetStimSetType(setName)
 			ASSERT(channelType != CHANNEL_TYPE_UNKNOWN, "Invalid channel type")
 
@@ -1422,7 +1424,7 @@ static Function [WAVE/D inflectionPoints, WAVE/D inflectionIndices] WB_TrigCalcu
 		case WB_TRIG_TYPE_COS:
 			offset = 1 / 2
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unknown trigFuncType")
 	endswitch
 
@@ -1657,7 +1659,7 @@ Function/S WB_GetWaveNoteEntry(string text, variable entryType, [string key, var
 			ASSERT(!ParamIsDefault(key) && !IsEmpty(key), "Missing key")
 			re = "^Stimset;"
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unknown entryType")
 	endswitch
 

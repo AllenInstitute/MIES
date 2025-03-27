@@ -42,7 +42,7 @@ static Function CheckThatTheyAllAssertOut()
 					STRUCT CheckParametersStruct cp
 					AFP_PARAM_CHECK_V2("", cp)
 					break
-				default:
+				default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 					FAIL()
 			endswitch
 			FAIL()

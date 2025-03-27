@@ -114,23 +114,23 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, s
 	type = PSQ_DA_SCALE
 
 	strswitch(name)
-		case PSQ_FMT_LBN_SWEEP_PASS:
-		case PSQ_FMT_LBN_SAMPLING_PASS:
-		case PSQ_FMT_LBN_ASYNC_PASS:
-		case PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES_PASS:
-		case PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS:
-		case PSQ_FMT_LBN_DA_AT_ENOUGH_FI_POINTS_PASS:
-		case PSQ_FMT_LBN_DA_AT_MIN_DASCALE_NORM:
+		case PSQ_FMT_LBN_SWEEP_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_SAMPLING_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_ASYNC_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_DA_AT_ENOUGH_FI_POINTS_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_DA_AT_MIN_DASCALE_NORM: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PSQ_FMT_LBN_DA_AT_MAX_DASCALE_NORM:
 			key = CreateAnaFuncLBNKey(type, name, query = 1)
 			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
-		case PSQ_FMT_LBN_DA_AT_FREQ:
-		case PSQ_FMT_LBN_DA_AT_VALID_SLOPE_PASS:
-		case PSQ_FMT_LBN_DA_AT_RSA_VALID_SLOPE_PASS:
-		case PSQ_FMT_LBN_DA_AT_MAX_SLOPE:
-		case PSQ_FMT_LBN_DA_AT_FI_OFFSET:
-		case PSQ_FMT_LBN_DA_FI_SLOPE:
-		case PSQ_FMT_LBN_BL_QC_PASS:
+		case PSQ_FMT_LBN_DA_AT_FREQ: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_DA_AT_VALID_SLOPE_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_DA_AT_RSA_VALID_SLOPE_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_DA_AT_MAX_SLOPE: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_DA_AT_FI_OFFSET: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_DA_FI_SLOPE: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_BL_QC_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PSQ_FMT_LBN_DASCALE_OOR:
 			key = CreateAnaFuncLBNKey(type, name, query = 1)
 			return GetLastSettingEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
@@ -139,21 +139,21 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, s
 			val = GetLastSettingIndepSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 			Make/D/FREE wv = {val}
 			return wv
-		case PSQ_FMT_LBN_RMS_SHORT_PASS:
+		case PSQ_FMT_LBN_RMS_SHORT_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PSQ_FMT_LBN_RMS_LONG_PASS:
 			key = CreateAnaFuncLBNKey(type, name, chunk = 0, query = 1)
 			return GetLastSettingEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 		case PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES:
 			key = CreateAnaFuncLBNKey(type, name, query = 1)
 			return GetLastSettingTextEachSCI(numericalValues, textualValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
-		case PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES:
-		case PSQ_FMT_LBN_DA_AT_RSA_FI_OFFSETS:
-		case PSQ_FMT_LBN_DA_AT_RSA_FREQ:
+		case PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_DA_AT_RSA_FI_OFFSETS: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_DA_AT_RSA_FREQ: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PSQ_FMT_LBN_DA_AT_RSA_DASCALE:
 			key = CreateAnaFuncLBNKey(type, name, query = 1)
 			WAVE/T settings = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 			return ListToNumericWave(settings[PSQ_TEST_HEADSTAGE], ";")
-		case PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES_PASS:
+		case PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PSQ_FMT_LBN_DA_AT_RSA_SWEEPS:
 			key = CreateAnaFuncLBNKey(type, name, query = 1)
 			WAVE/T settings = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
@@ -165,7 +165,7 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, s
 			str = GetLastSettingTextIndepSCI(numericalValues, textualValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 			Make/T/FREE wvTxt = {str}
 			return wvTxt
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			INFO("Missing case statement for LBN entry %s", s0 = name)
 			FAIL()
 	endswitch

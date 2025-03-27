@@ -328,9 +328,9 @@ Function/S LBV_GetExperiments(string win)
 
 	if(BSP_IsDataBrowser(win))
 		return NONE + ";" + GetExperimentName()
-	else
-		return NONE + ";" + SB_GetListOfExperiments(win)
 	endif
+
+	return NONE + ";" + SB_GetListOfExperiments(win)
 End
 
 Function/S LBV_GetAllDevicesForExperiment(string win)
@@ -338,13 +338,7 @@ Function/S LBV_GetAllDevicesForExperiment(string win)
 	string dataFolder, shPanel
 	variable index
 
-	if(BSP_IsDataBrowser(win))
-		if(BSP_HasBoundDevice(win))
-			return NONE + ";" + BSP_GetDevice(win)
-		else
-			return NONE
-		endif
-	else
+	if(!(BSP_IsDataBrowser(win)))
 		shPanel    = LBV_GetSettingsHistoryPanel(win)
 		dataFolder = GetPopupMenuString(shPanel, "popup_experiment")
 
@@ -364,6 +358,12 @@ Function/S LBV_GetAllDevicesForExperiment(string win)
 
 		return NONE + ";" + TextWaveToList(devicesClean, ";")
 	endif
+
+	if(BSP_HasBoundDevice(win))
+		return NONE + ";" + BSP_GetDevice(win)
+	endif
+
+	return NONE
 End
 
 Function LBV_ClearGraph(string win)
@@ -510,7 +510,7 @@ static Function LBV_AddTraceToLBGraph(string graph, WAVE keys, WAVE values, stri
 		case LBT_RESULTS:
 			axisBaseName = "results_" + VERT_AXIS_BASE_NAME
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unexpected logbook type")
 	endswitch
 
@@ -883,7 +883,7 @@ static Function LBV_SwitchLBGraphXAxis(string graph)
 		logbookType = GetLogbookType(values)
 
 		switch(logbookType)
-			case LBT_LABNOTEBOOK:
+			case LBT_LABNOTEBOOK: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case LBT_RESULTS:
 				if(isTimeAxis)
 					if(isTextData)
@@ -906,7 +906,7 @@ static Function LBV_SwitchLBGraphXAxis(string graph)
 
 				keysToReadd = AddListItem(key, keysToReadd, ";", Inf)
 				break
-			default:
+			default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				ASSERT(0, "Invalid logbook type")
 		endswitch
 	endfor
@@ -952,12 +952,12 @@ static Function LBV_CheckIfXAxisIsTime(string graph, [variable logbookType])
 	if(isEmpty(list))
 		if(!ParamIsDefault(logbookType))
 			switch(logbookType)
-				case LBT_RESULTS:
+				case LBT_RESULTS: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				case LBT_TPSTORAGE:
 					return 1
 				case LBT_LABNOTEBOOK:
 					return 0
-				default:
+				default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 					ASSERT(0, "Invalid logbookType")
 			endswitch
 		endif

@@ -160,7 +160,7 @@ Function WB_RegressionTest([string stimset])
 						case 6:
 							Make/D/FREE refInflectionPoints = {13.8634120431695, 55.5281095180012, 197.212830141239}
 							break
-						default:
+						default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 							FAIL()
 					endswitch
 

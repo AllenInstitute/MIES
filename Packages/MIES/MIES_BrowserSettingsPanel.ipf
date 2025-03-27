@@ -468,7 +468,7 @@ static Function BSP_ParseBrowserMode(string mode)
 			return BROWSER_MODE_AUTOMATION
 		case "All":
 			return BROWSER_MODE_ALL
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Invalid mode")
 	endswitch
 End
@@ -482,7 +482,7 @@ static Function/S BSP_SerializeBrowserMode(variable mode)
 			return "Automation"
 		case BROWSER_MODE_ALL:
 			return "All"
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Invalid mode")
 	endswitch
 End
@@ -800,8 +800,8 @@ End
 Function BSP_TimeAlignmentLevel(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // mouse up, FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 2: // Enter key, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 3: // Live update
 			UpdateSettingsPanel(sva.win)
 			break
@@ -874,8 +874,8 @@ Function BSP_AxisScalingLevelCross(STRUCT WMSetVariableAction &sva) : SetVariabl
 	string graph, bsPanel
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // mouse up, FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 2: // Enter key, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 3: // Live update
 			graph   = GetMainWindow(sva.win)
 			bsPanel = BSP_GetPanel(graph)
@@ -1566,19 +1566,19 @@ Function BSP_AddTracesForEpochs(string win)
 
 	if(!WaveExists(traceInfosHS) && !WaveExists(traceInfosUnassocDA) && !WaveExists(traceInfosTTL))
 		return NaN
-	else
-		WAVE/T traceInfosFull = GetGraphUserData(win)
-		Duplicate/FREE/T traceInfosFull, traceInfos
-		Redimension/N=(0, -1) traceInfos
-		if(WaveExists(traceInfosHS))
-			Concatenate/FREE/T/NP=(ROWS) {traceInfosHS}, traceInfos
-		endif
-		if(WaveExists(traceInfosUnassocDA))
-			Concatenate/FREE/T/NP=(ROWS) {traceInfosUnassocDA}, traceInfos
-		endif
-		if(WaveExists(traceInfosTTL))
-			Concatenate/FREE/T/NP=(ROWS) {traceInfosTTL}, traceInfos
-		endif
+	endif
+
+	WAVE/T traceInfosFull = GetGraphUserData(win)
+	Duplicate/FREE/T traceInfosFull, traceInfos
+	Redimension/N=(0, -1) traceInfos
+	if(WaveExists(traceInfosHS))
+		Concatenate/FREE/T/NP=(ROWS) {traceInfosHS}, traceInfos
+	endif
+	if(WaveExists(traceInfosUnassocDA))
+		Concatenate/FREE/T/NP=(ROWS) {traceInfosUnassocDA}, traceInfos
+	endif
+	if(WaveExists(traceInfosTTL))
+		Concatenate/FREE/T/NP=(ROWS) {traceInfosTTL}, traceInfos
 	endif
 
 	traceIndex = GetNextTraceIndex(win)

@@ -104,9 +104,9 @@ static Function/S PA_GetGraphName(string win, STRUCT PulseAverageSettings &pa, v
 
 	if(pa.multipleGraphs)
 		return name + "_AD" + num2str(channelNumber) + "_R" + num2str(activeRegionCount)
-	else
-		return name
 	endif
+
+	return name
 End
 
 // @brief Return the window name prefix of all PA graphs for the given Browser window
@@ -119,7 +119,7 @@ static Function/S PA_GetGraphPrefix(string win, variable displayMode)
 			return GetMainWindow(win) + "_" + PA_GRAPH_PREFIX + "_images"
 		case PA_DISPLAYMODE_ALL:
 			return GetMainWindow(win) + "_" + PA_GRAPH_PREFIX
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "invalid display mode")
 	endswitch
 End
@@ -212,7 +212,7 @@ static Function/S PA_GetGraph(string mainWin, STRUCT PulseAverageSettings &pa, v
 			case PA_DISPLAYMODE_TRACES:
 				SetWindow $win, hook(resizeHookAndScalebar)=PA_TraceWindowHook
 				break
-			default:
+			default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				ASSERT(0, "Invalid display mode")
 		endswitch
 	endif
@@ -453,7 +453,7 @@ static Function/WAVE PA_RetrievePulseInfosFromEpochs(string epochInfo)
 		level = str2num(epochs[i][EPOCH_COL_TREELEVEL])
 
 		switch(level)
-			case 2:
+			case 2: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case 3:
 				pulseNo = NumberByKey("Pulse", tags, "=")
 
@@ -1208,7 +1208,7 @@ threadsafe static Function PA_ApplyPulseSortingOrder(WAVE setIndices, variable c
 			// first pulse then sweep
 			SortColumns/KNDX={1, 0} sortWaves={elems}
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT_TS(0, "Invalid sorting order")
 	endswitch
 
@@ -2398,7 +2398,7 @@ static Function PA_DrawScaleBarsHelper(string win, variable axisMode, variable d
 					vert_min                                   = -0.5
 					vert_max                                   = NaN
 					break
-				default:
+				default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 					ASSERT(0, "Invalid display mode")
 			endswitch
 			break
@@ -2406,7 +2406,7 @@ static Function PA_DrawScaleBarsHelper(string win, variable axisMode, variable d
 			[vert_min, vert_max]   = GetAxisRange(graph, vertAxis, mode = AXIS_RANGE_INC_AUTOSCALED)
 			[horiz_min, horiz_max] = GetAxisRange(graph, horizAxis, mode = AXIS_RANGE_INC_AUTOSCALED)
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unknown mode")
 	endswitch
 
@@ -2563,7 +2563,7 @@ threadsafe static Function PA_PulseHasFailed(WAVE pulseWave, WAVE noteWave, STRU
 	clampMode = GetNumberFromWaveNote(noteWave, NOTE_KEY_CLAMP_MODE)
 
 	switch(clampMode)
-		case V_CLAMP_MODE:
+		case V_CLAMP_MODE: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case I_EQUAL_ZERO_MODE:
 			numSpikes = 0
 			Make/D/FREE/N=(numSpikes) spikePositions
@@ -2576,7 +2576,7 @@ threadsafe static Function PA_PulseHasFailed(WAVE pulseWave, WAVE noteWave, STRU
 
 			hasFailed = !((numSpikes == s.failedNumberOfSpikes) || (numSpikes > 0 && IsNaN(s.failedNumberOfSpikes)))
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT_TS(0, "Invalid clamp mode:" + num2str(clampMode))
 	endswitch
 
@@ -2713,8 +2713,8 @@ End
 Function PA_SetVarProc_Common(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // mouse up, FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 2: // Enter key, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 3: // Live update
 			if(!cmpstr(sva.ctrlName, "setvar_pulseAver_numberOfSpikes"))
 				// switch to 1 on up/down buttons only
@@ -3693,7 +3693,7 @@ Function PA_TraceWindowHook(STRUCT WMWinHookStruct &s)
 	string traceGraph
 
 	switch(s.eventcode)
-		case EVENT_WINDOW_HOOK_MOUSEWHEEL:
+		case EVENT_WINDOW_HOOK_MOUSEWHEEL: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case EVENT_WINDOW_HOOK_RESIZE:
 			traceGraph = s.winName
 			Execute/P/Q/Z "PA_UpdateScaleBars(\"" + traceGraph + "\", 0)"

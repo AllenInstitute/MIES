@@ -209,7 +209,7 @@ Function TestAnalysisFunction_V3(string device, STRUCT AnalysisFunction_V3 &s)
 			case "variable":
 				print AFH_GetAnalysisParamTextual(name, s.params)
 				break
-			case "wave":
+			case "wave": // FIXME(CodeStyleFallthroughCaseRequireComment)
 				WAVE/Z wv = AFH_GetAnalysisParamWave(name, s.params)
 				print wv
 			case "textwave":
@@ -564,7 +564,9 @@ Function TestPrematureSweepStop(string device, variable eventType, WAVE DAQDataW
 	if(eventType == PRE_DAQ_EVENT || eventType == POST_SWEEP_EVENT)
 		temp = "0"
 		return NaN
-	elseif(eventType == MID_SWEEP_EVENT)
+	endif
+
+	if(eventType == MID_SWEEP_EVENT)
 		num = str2numSafe(temp)
 		ASSERT(IsFinite(num), "Missing variable initialization, this analysis function must be set as pre daq, mid sweeep and post sweep")
 		num += 1
@@ -1097,13 +1099,13 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 				endif
 
 				if(CheckIfClose(holdingPotential, -70, tol = 1) != 1)
-					if(holdingPotential > -75 && holdingPotential < -65)
-						printf "Warning: Holding potential for headstage %d is not -70mV but is within acceptable range, targetV continuing.\r", i
-					else
+					if(!(holdingPotential > -75 && holdingPotential < -65))
 						printf "Abort: Holding potential for headstage %d is set outside of the acceptable range for targetV.\r", i
 						ControlWindowToFront()
 						return 1
 					endif
+
+					printf "Warning: Holding potential for headstage %d is not -70mV but is within acceptable range, targetV continuing.\r", i
 				endif
 			endfor
 
@@ -1298,16 +1300,16 @@ Function ReportOutOfRangeDAScale(string device, variable sweepNo, variable anaFu
 	ASSERT(GetHardwareType(device) != HARDWARE_SUTTER_DAC, "Missing support for Sutter amplifier")
 
 	switch(anaFuncType)
-		case PSQ_CHIRP:
-		case PSQ_RAMP:
-		case PSQ_DA_SCALE:
-		case PSQ_SQUARE_PULSE:
+		case PSQ_CHIRP: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_RAMP: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_DA_SCALE: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_SQUARE_PULSE: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PSQ_RHEOBASE:
 			key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_DASCALE_OOR)
 			ED_AddEntryToLabnotebook(device, key, oorDAScale, overrideSweepNo = sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
 			break
-		case MSQ_FAST_RHEO_EST:
-		case MSQ_DA_SCALE:
+		case MSQ_FAST_RHEO_EST: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case MSQ_DA_SCALE: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case SC_SPIKE_CONTROL:
 			key = CreateAnaFuncLBNKey(anaFuncType, MSQ_FMT_LBN_DASCALE_OOR)
 			ED_AddEntryToLabnotebook(device, key, oorDAScale, overrideSweepNo = sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
@@ -1315,7 +1317,7 @@ Function ReportOutOfRangeDAScale(string device, variable sweepNo, variable anaFu
 		case INVALID_ANALYSIS_FUNCTION: // ReachTargetVoltage
 			ED_AddEntryToLabnotebook(device, LBN_DASCALE_OUT_OF_RANGE, oorDAScale, unit = LABNOTEBOOK_BINARY_UNIT)
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unknown analysis function")
 	endswitch
 
@@ -1503,7 +1505,7 @@ Function SetControlInEvent(string device, STRUCT AnalysisFunction_V3 &s)
 				win = StringFromList(k, windowsWithGUIElement)
 
 				switch(WinType(win))
-					case WINTYPE_GRAPH:
+					case WINTYPE_GRAPH: // FIXME(CodeStyleFallthroughCaseRequireComment)
 					case WINTYPE_PANEL:
 						if(IsControlDisabled(win, guiElem))
 							printf "(%s): The analysis parameter %s is a control which is disabled. Therefore it can not be set.\r", device, guiElem
@@ -1513,13 +1515,13 @@ Function SetControlInEvent(string device, STRUCT AnalysisFunction_V3 &s)
 
 						controlType = GetControlType(win, guiElem)
 						switch(controlType)
-							case CONTROL_TYPE_SETVARIABLE:
+							case CONTROL_TYPE_SETVARIABLE: // FIXME(CodeStyleFallthroughCaseRequireComment)
 							case CONTROL_TYPE_POPUPMENU:
 								PGC_SetAndActivateControl(win, guiElem, str = valueStr)
 								break
-							case CONTROL_TYPE_VALDISPLAY:
-							case CONTROL_TYPE_CHART:
-							case CONTROL_TYPE_GROUPBOX:
+							case CONTROL_TYPE_VALDISPLAY: // FIXME(CodeStyleFallthroughCaseRequireComment)
+							case CONTROL_TYPE_CHART: // FIXME(CodeStyleFallthroughCaseRequireComment)
+							case CONTROL_TYPE_GROUPBOX: // FIXME(CodeStyleFallthroughCaseRequireComment)
 							case CONTROL_TYPE_TITLEBOX:
 								printf "(%s): The analysis parameter %s is a control which can not be set. Please fix the stimulus set.\r", device, guiElem
 								ControlWindowToFront()
@@ -1532,7 +1534,7 @@ Function SetControlInEvent(string device, STRUCT AnalysisFunction_V3 &s)
 					case WINTYPE_NOTEBOOK:
 						ReplaceNotebookText(win, NormalizeToEOL(valueStr, "\r"))
 						break
-					default:
+					default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 						ASSERT(0, "Unexpected window type")
 				endswitch
 			endfor

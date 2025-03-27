@@ -681,43 +681,43 @@ Function P_GetUserAccess(string device, variable headStage, variable pressureMod
 			case PRESSURE_METHOD_APPROACH:
 				if(DAG_GetNumericalValue(device, "check_Settings_UserP_Approach"))
 					return ACCESS_USER
-				else
-					return ACCESS_REGULATOR
 				endif
+
+				return ACCESS_REGULATOR
 				break
 			case PRESSURE_METHOD_SEAL:
 				if(DAG_GetNumericalValue(device, "check_Settings_UserP_Seal"))
 					return ACCESS_USER
-				else
-					return ACCESS_REGULATOR
 				endif
+
+				return ACCESS_REGULATOR
 				break
 			case PRESSURE_METHOD_BREAKIN:
 				if(DAG_GetNumericalValue(device, "check_Settings_UserP_BreakIn"))
 					return ACCESS_USER
-				else
-					return ACCESS_ATM
 				endif
+
+				return ACCESS_ATM
 				break
 			case PRESSURE_METHOD_CLEAR:
 				if(DAG_GetNumericalValue(device, "check_Settings_UserP_Clear"))
 					return ACCESS_USER
-				else
-					return ACCESS_ATM
 				endif
+
+				return ACCESS_ATM
 				break
 			case PRESSURE_METHOD_MANUAL:
 				return ACCESS_REGULATOR
 				break
-			default:
+			default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				ASSERT(0, "Invalid pressure mode")
 		endswitch
 	else
 		if(pressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] == PRESSURE_METHOD_ATM)
 			return ACCESS_ATM
-		else
-			return ACCESS_REGULATOR
 		endif
+
+		return ACCESS_REGULATOR
 	endif
 End
 
@@ -739,7 +739,7 @@ Function P_SetPressureValves(string device, variable headStage, variable Access)
 			ONorOFFA = 0
 			ONorOFFB = 1
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Invalid case")
 	endswitch
 
@@ -1281,10 +1281,10 @@ static Function/WAVE P_NI_GetDAWave(string device, variable headStage)
 
 	if(WaveExists(wv))
 		return wv
-	else
-		Make/O dfr:$wvName/WAVE=wv
-		return wv
 	endif
+
+	Make/O dfr:$wvName/WAVE=wv
+	return wv
 End
 
 static Function/WAVE P_NI_GetADWave(string device, variable headStage)
@@ -1303,10 +1303,10 @@ static Function/WAVE P_NI_GetADWave(string device, variable headStage)
 
 	if(WaveExists(wv))
 		return wv
-	else
-		Make/O dfr:$wvName/WAVE=wv
-		return wv
 	endif
+
+	Make/O dfr:$wvName/WAVE=wv
+	return wv
 End
 
 static Function P_FillDAQWaves(string device, variable headStage, STRUCT P_PressureDA &p)
@@ -1465,9 +1465,9 @@ static Function P_UpdateTTLdecimal(string pressureDevice, variable dec, variable
 	if(ONorOFF != binary[ttlBit])
 		if(ONorOFF)
 			return SetBit(dec, 2^ttlBit)
-		else
-			return ClearBit(dec, 2^ttlBit)
 		endif
+
+		return ClearBit(dec, 2^ttlBit)
 	endif
 
 	return dec
@@ -1591,8 +1591,8 @@ Function P_SetPressureOffset(string device, variable headstage, variable userOff
 
 	switch(method)
 		// pulse based methods
-		case PRESSURE_METHOD_BREAKIN:
-		case PRESSURE_METHOD_CLEAR:
+		case PRESSURE_METHOD_BREAKIN: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PRESSURE_METHOD_CLEAR: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PRESSURE_METHOD_MANUAL:
 			// wait till next time point or ignore
 			break
@@ -2506,7 +2506,7 @@ Function/S P_PressureMethodToString(variable method)
 			return "Clear"
 		case PRESSURE_METHOD_MANUAL:
 			return "Manual"
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			if(IsNaN(method))
 				return "None"
 			endif

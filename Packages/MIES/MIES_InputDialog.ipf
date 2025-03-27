@@ -144,8 +144,8 @@ Function ID_SetVarProc(STRUCT WMSetVariableAction &sva) : SetVariableControl
 	variable idx
 
 	switch(sva.eventCode)
-		case 1:
-		case 2:
+		case 1: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 2: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 3:
 			idx = str2num(GetUserData(sva.win, sva.ctrlName, "index"))
 			ASSERT(IsFinite(idx), "Invalid index")

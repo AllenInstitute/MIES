@@ -3202,7 +3202,7 @@ static Function BasicMathMismatchedWaves([string str])
 		case "-":
 			opShort = "minus"
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			FAIL()
 	endswitch
 

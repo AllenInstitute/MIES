@@ -331,7 +331,7 @@ Function TestDecimateWithMethodDec8()
 			case 2:
 				CHECK_EQUAL_WAVES(output, {0.1, 4, 0.5, 8}, mode = WAVE_DATA, tol = 1e-10)
 				break
-			default:
+			default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				FAIL()
 		endswitch
 	endfor

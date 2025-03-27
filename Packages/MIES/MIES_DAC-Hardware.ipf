@@ -123,7 +123,7 @@ Function HW_PrepareAcq(variable hardwareType, variable deviceID, variable mode, 
 			break
 		case HARDWARE_SUTTER_DAC:
 			return HW_SU_PrepareAcq(deviceID, mode, flags = flags)
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unsupported hardware type")
 	endswitch
 
@@ -146,7 +146,7 @@ Function HW_SelectDevice(variable hardwareType, variable deviceID, [variable fla
 		case HARDWARE_ITC_DAC:
 			return HW_ITC_SelectDevice(deviceID, flags = flags)
 			break
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // intended drop through, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case HARDWARE_SUTTER_DAC:
 			// nothing to do
 			return 0
@@ -316,11 +316,11 @@ Function HW_ReadDigital(variable hardwareType, variable deviceID, variable chann
 			HW_NI_AssertOnInvalid(realDeviceOrPressure)
 			if(ParamisDefault(line))
 				return HW_NI_ReadDigital(realDeviceOrPressure, DIOPort = channel, flags = flags)
-			else
-				return HW_NI_ReadDigital(realDeviceOrPressure, DIOPort = channel, DIOline = line, flags = flags)
 			endif
+
+			return HW_NI_ReadDigital(realDeviceOrPressure, DIOPort = channel, DIOline = line, flags = flags)
 			break
-		case HARDWARE_SUTTER_DAC:
+		case HARDWARE_SUTTER_DAC: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Not yet implemented")
 		default:
 			ASSERT(0, "Unsupported hardware type")
@@ -363,7 +363,7 @@ Function HW_WriteDigital(variable hardwareType, variable deviceID, variable chan
 				HW_NI_WriteDigital(realDeviceOrPressure, value, DIOPort = channel, DIOline = line, flags = flags)
 			endif
 			break
-		case HARDWARE_SUTTER_DAC:
+		case HARDWARE_SUTTER_DAC: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Not yet implemented")
 		default:
 			ASSERT(0, "Unsupported hardware type")
@@ -384,7 +384,7 @@ Function HW_EnableYoking(variable hardwareType, variable deviceID, [variable fla
 		case HARDWARE_ITC_DAC:
 			HW_ITC_EnableYoking(deviceID, flags = flags)
 			break
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // intended drop through, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case HARDWARE_SUTTER_DAC:
 			ASSERT(0, "Not implemented")
 			break
@@ -407,7 +407,7 @@ Function HW_DisableYoking(variable hardwareType, variable deviceID, [variable fl
 		case HARDWARE_ITC_DAC:
 			HW_ITC_DisableYoking(deviceID, flags = flags)
 			break
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // intended drop through, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case HARDWARE_SUTTER_DAC:
 			ASSERT(0, "Not implemented")
 			break
@@ -537,7 +537,7 @@ Function/WAVE HW_GetDeviceInfoUnregistered(variable hardwareType, string device,
 		case HARDWARE_SUTTER_DAC:
 			WAVE/Z devInfo = GetSUDeviceInfo()
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unsupported hardware")
 	endswitch
 
@@ -651,7 +651,7 @@ Function HW_StartAcq(variable hardwareType, variable deviceID, [variable trigger
 		case HARDWARE_SUTTER_DAC:
 			HW_SU_StartAcq(deviceID, flags = flags)
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unknown hardware type")
 	endswitch
 End
@@ -677,7 +677,7 @@ Function HW_ResetDevice(variable hardwareType, variable deviceID, [variable flag
 		case HARDWARE_SUTTER_DAC:
 			HW_SU_ResetDevice(flags = flags)
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unknown hardware type")
 	endswitch
 End
@@ -860,7 +860,7 @@ Function HW_GetDAFifoPosition(string device, variable dataAcqOrTP)
 	variable fifoPositionAD = ROVar(GetFifoPosition(device))
 
 	switch(hwType)
-		case HARDWARE_ITC_DAC: // intended drop through
+		case HARDWARE_ITC_DAC: // intended drop through, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case HARDWARE_NI_DAC:
 			return fifoPositionAD
 		case HARDWARE_SUTTER_DAC:
@@ -871,7 +871,7 @@ Function HW_GetDAFifoPosition(string device, variable dataAcqOrTP)
 
 			return trunc(fifoPositionAD * DimDelta(channelAD, ROWS) / DimDelta(channelDA, ROWS))
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unsupported hardware type")
 	endswitch
 End
@@ -886,7 +886,7 @@ End
 Function [variable minimum, variable maximum] HW_GetDataRange(variable hardwareType, variable channelType, variable isAssociated)
 
 	switch(hardwareType)
-		case HARDWARE_NI_DAC:
+		case HARDWARE_NI_DAC: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			switch(channelType)
 				case XOP_CHANNEL_TYPE_DAC:
 					return [NI_DAC_MIN, NI_DAC_MAX]
@@ -894,12 +894,12 @@ Function [variable minimum, variable maximum] HW_GetDataRange(variable hardwareT
 					return [NI_ADC_MIN, NI_ADC_MAX]
 				case XOP_CHANNEL_TYPE_TTL:
 					return [NI_TTL_MIN, NI_TTL_MAX]
-				default:
+				default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 					ASSERT(0, "Not implemented")
 			endswitch
 		case HARDWARE_ITC_DAC:
 			return [SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX]
-		case HARDWARE_SUTTER_DAC:
+		case HARDWARE_SUTTER_DAC: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			if(isAssociated)
 				ASSERT(channelType != XOP_CHANNEL_TYPE_TTL, "Associated must be 0 for TTL")
 				return [SU_HS_OUT_MIN, SU_HS_OUT_MAX]
@@ -912,10 +912,10 @@ Function [variable minimum, variable maximum] HW_GetDataRange(variable hardwareT
 					return [SU_ADC_MIN, SU_ADC_MAX]
 				case XOP_CHANNEL_TYPE_TTL:
 					return [SU_TTL_MIN, SU_TTL_MAX]
-				default:
+				default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 					ASSERT(0, "Not implemented")
 			endswitch
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unsupported hardware type")
 	endswitch
 End
@@ -2087,9 +2087,9 @@ Function HW_ITC_ClipTTLBit(string device, variable ttlBit)
 
 	if(HW_ITC_GetRackForTTLBit(device, ttlBit) == RACK_ONE)
 		return ttlBit - NUM_ITC_TTL_BITS_PER_RACK
-	else
-		return ttlBit
 	endif
+
+	return ttlBit
 End
 
 /// @brief Return the rack number for the given ttlBit (the ttlBit is
@@ -2101,9 +2101,9 @@ Function HW_ITC_GetRackForTTLBit(string device, variable ttlBit)
 	if(ttlBit >= NUM_ITC_TTL_BITS_PER_RACK)
 		ASSERT(IsITC1600(device), "Only the ITC1600 has multiple racks")
 		return RACK_ONE
-	else
-		return RACK_ZERO
 	endif
+
+	return RACK_ZERO
 End
 
 /// @brief Return the ITC XOP channel for the given rack
@@ -2115,9 +2115,9 @@ Function HW_ITC_GetITCXOPChannelForRack(string device, variable rack)
 	if(rack == RACK_ZERO)
 		if(IsITC1600(device))
 			return HARDWARE_ITC_TTL_1600_RACK_ZERO
-		else
-			return HARDWARE_ITC_TTL_DEF_RACK_ZERO
 		endif
+
+		return HARDWARE_ITC_TTL_DEF_RACK_ZERO
 	elseif(rack == RACK_ONE)
 		ASSERT(IsITC1600(device), "Only the ITC1600 has multiple racks")
 		return HARDWARE_ITC_TTL_1600_RACK_ONE
@@ -3283,7 +3283,7 @@ Function HW_SU_GetDeviceInfo(WAVE/T deviceInfo)
 				numHeadstages += 2
 				numHSList      = AddListItem("2", numHSList, ";", Inf)
 				break
-			default:
+			default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				ASSERT(0, "Error parsing IPA serial: " + serial)
 		endswitch
 	endfor

@@ -90,19 +90,19 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, s
 	type = PSQ_SEAL_EVALUATION
 
 	strswitch(name)
-		case PSQ_FMT_LBN_SWEEP_PASS:
-		case PSQ_FMT_LBN_SE_RESISTANCE_A:
-		case PSQ_FMT_LBN_SE_RESISTANCE_B:
-		case PSQ_FMT_LBN_SE_RESISTANCE_MAX:
-		case PSQ_FMT_LBN_SE_RESISTANCE_PASS:
-		case PSQ_FMT_LBN_SAMPLING_PASS:
+		case PSQ_FMT_LBN_SWEEP_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_SE_RESISTANCE_A: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_SE_RESISTANCE_B: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_SE_RESISTANCE_MAX: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_SE_RESISTANCE_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_SAMPLING_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PSQ_FMT_LBN_ASYNC_PASS:
 			key = CreateAnaFuncLBNKey(type, name, query = 1)
 			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 		case PSQ_FMT_LBN_BL_QC_PASS:
 			key = CreateAnaFuncLBNKey(type, name, query = 1)
 			return GetLastSettingEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
-		case PSQ_FMT_LBN_SET_PASS:
+		case PSQ_FMT_LBN_SET_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PSQ_FMT_LBN_SE_TESTPULSE_GROUP:
 			key = CreateAnaFuncLBNKey(type, name, query = 1)
 			val = GetLastSettingIndepSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
@@ -111,7 +111,7 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, s
 		case PSQ_FMT_LBN_CHUNK_PASS:
 			key = CreateAnaFuncLBNKey(type, name, chunk = chunk, query = 1)
 			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			FAIL()
 	endswitch
 End
@@ -183,7 +183,7 @@ static Function CheckTestPulseLikeEpochs(string device, variable testpulseGroupS
 			CheckUserEpochs(device, {525, 535, 545, 555, 565, 575, 1145, 1155, 1165, 1175, 1185, 1195}, EPOCH_SHORTNAME_USER_PREFIX + "TP%d_P")
 			CheckUserEpochs(device, {535, 540, 555, 560, 575, 580, 1155, 1160, 1175, 1180, 1195, 1200}, EPOCH_SHORTNAME_USER_PREFIX + "TP%d_B1")
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Invalid testpulseGroupSel")
 	endswitch
 
@@ -204,7 +204,7 @@ static Function CheckBaselineChunks(string device, variable testpulseGroupSel)
 			CheckUserEpochs(device, {20, 520, 640, 1140}, EPOCH_SHORTNAME_USER_PREFIX + "BLS%d", sweep = 0)
 			CheckPSQChunkTimes(device, {20, 520, 640, 1140})
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Invalid testpulseGroupSel")
 	endswitch
 
