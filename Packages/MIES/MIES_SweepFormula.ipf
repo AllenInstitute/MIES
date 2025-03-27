@@ -7284,8 +7284,7 @@ Function/WAVE SF_OperationFit(variable jsonId, string jsonPath, string graph)
 	numElements = DimSize(yData, ROWS)
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_FIT, numElements)
 
-	WAVE/Z constraints
-	output[p] = SF_OperationFitImpl(xData[p], yData[p], fitType[0], holdWave, initialValues)
+	output[] = SF_OperationFitImpl(xData[p], yData[p], fitType[0], holdWave, initialValues)
 
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_FIT)
 End
