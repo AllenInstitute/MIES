@@ -680,10 +680,15 @@ Function/WAVE SFH_CreateSFRefWave(string win, string opShort, variable size)
 	return wv
 End
 
+Function SFH_IsVariable(WAVE dataset)
+
+	return JWN_GetNumberFromWaveNote(dataset, SF_VARIABLE_MARKER) == 1
+End
+
 Function SFH_CleanUpInput(WAVE input)
 
 #ifndef SWEEPFORMULA_DEBUG
-	if(JWN_GetNumberFromWaveNote(input, SF_VARIABLE_MARKER) == 1)
+	if(SFH_IsVariable(input))
 		return NaN
 	endif
 	KillOrMoveToTrash(wv = input)
