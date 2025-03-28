@@ -2031,3 +2031,67 @@ static Function HelperMoveDatasetToHigherIfCompatible()
 	WAVE/WAVE moved = SFH_MoveDatasetHigherIfCompatible(output)
 	CHECK(SFH_IsArray(moved))
 End
+
+static Function TestVariablePlottingDoesNotModifyData()
+
+	string graphBase, win, graph, code
+
+	code = "data=wave(root:testData)\r$data"
+
+	KillWaves/Z root:testData
+	Make/N=10 root:testData
+
+	win = GetDataBrowserWithData()
+
+	graphBase = BSP_GetFormulaGraph(win)
+	graph     = graphBase + "_#Graph" + "0"
+
+	ExecuteSweepFormulaInDB(code, win)
+	REQUIRE_EQUAL_VAR(WindowExists(graph), 1)
+
+	WAVE/WAVE varStorage = GetSFVarStorage(win)
+	WAVE/WAVE dataRef    = SFH_AttemptDatasetResolve(WaveText(WaveRef(varStorage, row = FindDimLabel(varStorage, ROWS, "data")), row = 0))
+	WAVE      data       = dataRef[0]
+
+	WAVE dataOrig = root:testData
+	CHECK_EQUAL_WAVES(dataOrig, data)
+
+	KillWaves/Z root:testData
+End
+
+static Function TestVariablePlottingDifferentSubsequentBaseTypes()
+
+	string graphBase, win, graph, code
+
+	KillWaves/Z root:testData
+	Make/T root:testData = {"a", "b", "c"}
+
+	code = "data=wave(root:testData)\r$data vs [1,2,3]"
+
+	win       = GetDataBrowserWithData()
+	graphBase = BSP_GetFormulaGraph(win)
+	graph     = graphBase + "_#Graph" + "0"
+
+	ExecuteSweepFormulaInDB(code, win)
+	REQUIRE_EQUAL_VAR(WindowExists(graph), 1)
+	WAVE/WAVE varStorage = GetSFVarStorage(win)
+	WAVE/WAVE dataRef    = SFH_AttemptDatasetResolve(WaveText(WaveRef(varStorage, row = FindDimLabel(varStorage, ROWS, "data")), row = 0))
+	WAVE      data       = dataRef[0]
+	WAVE/T    dataRT     = root:testData
+	CHECK_EQUAL_VAR(WaveRefsEqual(data, dataRT), 1)
+
+	KillWaves/Z root:testData
+
+	Make/N=3 root:testData = p
+
+	code = "data=wave(root:testData)\r$data"
+	ExecuteSweepFormulaInDB(code, win)
+
+	WAVE/WAVE varStorage = GetSFVarStorage(win)
+	WAVE/WAVE dataRef    = SFH_AttemptDatasetResolve(WaveText(WaveRef(varStorage, row = FindDimLabel(varStorage, ROWS, "data")), row = 0))
+	WAVE      data       = dataRef[0]
+	WAVE      dataRN     = root:testData
+	CHECK_EQUAL_VAR(WaveRefsEqual(data, dataRN), 1)
+
+	KillWaves/Z root:testData
+End
