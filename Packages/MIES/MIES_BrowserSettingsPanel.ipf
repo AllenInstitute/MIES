@@ -1878,6 +1878,7 @@ Function BSP_WindowHook(STRUCT WMWinHookStruct &s)
 
 			if(BSP_IsSweepBrowser(win))
 				BSP_MemoryFreeMappedDF(win)
+				AB_OnCloseSweepBrowserUpdatePopup(win)
 			endif
 
 			if(!BSP_HasBoundDevice(win))
@@ -1911,7 +1912,7 @@ End
 Function/S BSP_RenameAndSetTitle(string win, string newName)
 
 	variable numOtherBrowser
-	string newTitle, suffix
+	string newTitle, suffix, wList, wTitles
 	string modeSuffix = ""
 
 	if(BSP_IsDataBrowser(win) && BSP_HasBoundDevice(win))
@@ -1935,13 +1936,26 @@ Function/S BSP_RenameAndSetTitle(string win, string newName)
 			break
 	endswitch
 
-	numOtherBrowser += ItemsInList(WinList(SWEEPBROWSER_WINDOW_NAME + "*", ";", "WIN:1"))
-	numOtherBrowser += ItemsInList(WinList(DATABROWSER_WINDOW_NAME + "*", ";", "WIN:1"))
-	numOtherBrowser += ItemsInList(WinList("DB_*", ";", "WIN:1"))
-	numOtherBrowser  = max(0, numOtherBrowser - 1)
+	wList = WinList(SWEEPBROWSER_WINDOW_NAME + "*", ";", "WIN:1")
+	wList = AddListItem(WinList(DATABROWSER_WINDOW_NAME + "*", ";", "WIN:1"), wList)
+	wList = AddListItem(WinList("DB_*", ";", "WIN:1"), wList)
+	WAVE/T wListw = ListToTextWave(wList, ";")
 
-	sprintf newTitle, "Browser%s%s%s", SelectString(numOtherBrowser, "", " [" + num2str(numOtherBrowser) + "]"), suffix, modeSuffix
-	DoWindow/T $win, newTitle
+	wTitles = ""
+	for(wName : wListw)
+		if(!IsEmpty(wName))
+			GetWindow $wName, title
+			wTitles = AddListItem(S_Value, wTitles)
+		endif
+	endfor
+
+	for(numOtherBrowser = 0;; numOtherBrowser += 1)
+		sprintf newTitle, "Browser%s%s%s", SelectString(numOtherBrowser, "", " [" + num2str(numOtherBrowser) + "]"), suffix, modeSuffix
+		if(WhichListItem(newTitle, wTitles) == -1)
+			DoWindow/T $win, newTitle
+			break
+		endif
+	endfor
 
 	return win
 End
