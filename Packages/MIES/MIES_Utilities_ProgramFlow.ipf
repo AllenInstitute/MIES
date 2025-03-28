@@ -77,10 +77,10 @@ Function DoAbortNow(string msg)
 
 	if(NVAR_Exists(interactiveMode) && interactiveMode)
 		Abort msg
-	else
-		printf "Abort: %s\r", RemoveEnding(msg, "\r")
-		Abort
 	endif
+
+	printf "Abort: %s\r", RemoveEnding(msg, "\r")
+	Abort
 End
 
 /// @brief Return a nicely formatted multiline stacktrace

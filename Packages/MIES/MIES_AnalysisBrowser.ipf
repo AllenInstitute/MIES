@@ -403,19 +403,19 @@ static Function AB_HasCompatibleVersion(string discLocation)
 			if(numWavesLoaded == 0)
 				DEBUGPRINT("Experiment has no pxp version so we can load it.")
 				return 1
-			else
-				NVAR/Z pxpVersion = targetDFR:pxpVersion
-				ASSERT(NVAR_Exists(pxpVersion), "Expected existing pxpVersion")
-
-				if(IsFinite(pxpVersion) && pxpVersion <= ANALYSIS_BROWSER_SUPP_VERSION)
-					DEBUGPRINT("Experiment has a compatible pxp version.", var = pxpVersion)
-					return 1
-				else
-					printf "The experiment %s has the pxpVersion %d which this version of MIES can not handle.\r", map[%DiscLocation], pxpVersion
-					ControlWindowToFront()
-					return 0
-				endif
 			endif
+
+			NVAR/Z pxpVersion = targetDFR:pxpVersion
+			ASSERT(NVAR_Exists(pxpVersion), "Expected existing pxpVersion")
+
+			if(IsFinite(pxpVersion) && pxpVersion <= ANALYSIS_BROWSER_SUPP_VERSION)
+				DEBUGPRINT("Experiment has a compatible pxp version.", var = pxpVersion)
+				return 1
+			endif
+
+			printf "The experiment %s has the pxpVersion %d which this version of MIES can not handle.\r", map[%DiscLocation], pxpVersion
+			ControlWindowToFront()
+			return 0
 			break
 		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
 		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
@@ -433,10 +433,10 @@ static Function/S AB_GetSettingNumFiniteVals(WAVE wv, string device, variable sw
 	if(!WaveExists(settings))
 		printf "Could not query the labnotebook of device %s for the setting %s\r", device, name
 		return "unknown"
-	else
-		WaveStats/Q/M=1 settings
-		return num2str(V_npnts)
 	endif
+
+	WaveStats/Q/M=1 settings
+	return num2str(V_npnts)
 End
 
 /// @brief Creates list-view for AnalysisBrowser
@@ -656,9 +656,9 @@ static Function/WAVE AB_GetSweepsFromLabNotebook(string dataFolder, string devic
 
 	if(clean)
 		return GetUniqueEntries(sweepNums)
-	else
-		return sweepNums
 	endif
+
+	return sweepNums
 End
 
 /// @brief Returns the highest referenced sweep number from the labnotebook
@@ -1588,9 +1588,9 @@ static Function AB_LoadFromExpandedRange(variable row, variable subSectionColumn
 
 	if(oneValidLoad)
 		return 0
-	else
-		return 1
 	endif
+
+	return 1
 End
 
 /// @brief Return the row with treeview in the column col starting from startRow
@@ -2014,9 +2014,9 @@ static Function AB_LoadSweepFromNWBgeneric(variable h5_groupID, variable nwbVers
 
 	if(!waveNoteLoaded)
 		return 1 // nothing was loaded
-	else
-		return 0 // no error
 	endif
+
+	return 0 // no error
 End
 
 /// @brief Sorts the faked Config Sweeps Wave to get correct display order in Sweep Browser
@@ -2185,11 +2185,11 @@ static Function/S AB_LoadStimsets(string expFilePath, string stimsets, variable 
 				// parent corrupt
 				// load other parents, no children needed.
 				continue
-			else
-				// if a (dependent) stimset is missing
-				// the corresponding parent can not be created with Parameter Waves
-				return loadedStimsets
 			endif
+
+			// if a (dependent) stimset is missing
+			// the corresponding parent can not be created with Parameter Waves
+			return loadedStimsets
 		endif
 		loadedStimsets = AddListItem(stimset, loadedStimsets)
 		numMoved      += WB_StimsetFamilyNames(totalStimsets, parent = stimset)

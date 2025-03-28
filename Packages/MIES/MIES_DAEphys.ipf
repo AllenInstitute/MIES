@@ -1676,10 +1676,10 @@ Function DAP_GetSampInt(string device, variable dataAcqOrTP, variable channelTyp
 			endif
 
 			return sampInt
-		else
-			multiplier = str2num(DAG_GetTextualValue(device, "Popup_Settings_SampIntMult"))
-			return SI_CalculateMinSampInterval(device, dataAcqOrTP, channelType) * multiplier
 		endif
+
+		multiplier = str2num(DAG_GetTextualValue(device, "Popup_Settings_SampIntMult"))
+		return SI_CalculateMinSampInterval(device, dataAcqOrTP, channelType) * multiplier
 	elseif(dataAcqOrTP == TEST_PULSE_MODE)
 		return SI_CalculateMinSampInterval(device, dataAcqOrTP, channelType)
 	else
@@ -3341,7 +3341,9 @@ Function DAP_ChangeHeadStageMode(string device, variable clampMode, variable hea
 	if(options == MCC_SKIP_UPDATES)
 		// we are done
 		return NaN
-	elseif(options == DO_MCC_MIES_SYNCING)
+	endif
+
+	if(options == DO_MCC_MIES_SYNCING)
 		PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = newSliderPos)
 	elseif(options == NO_SLIDER_MOVEMENT)
 		// do nothing

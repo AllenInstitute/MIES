@@ -647,11 +647,11 @@ threadsafe Function WaveModCountWrapper(WAVE wv)
 		ASSERT_TS(!IsFreeWave(wv), "Can not work with free waves")
 
 		return WaveModCount(wv)
-	else
-		ASSERT_TS(IsFreeWave(wv), "Can only work with free waves")
-
-		return NaN
 	endif
+
+	ASSERT_TS(IsFreeWave(wv), "Can only work with free waves")
+
+	return NaN
 End
 
 /// @brief Merge two floating point waves labnotebook waves
@@ -676,7 +676,9 @@ Function/WAVE MergeTwoWaves(WAVE wv1, WAVE wv2)
 
 		if(!validEntryOne && !validEntryTwo)
 			continue
-		elseif(validEntryOne)
+		endif
+
+		if(validEntryOne)
 			result[i] = wv1[i]
 		elseif(validEntryTwo)
 			result[i] = wv2[i]
@@ -944,9 +946,9 @@ threadsafe Function/WAVE SelectWave(variable condition, WAVE/Z waveIfFalse, WAVE
 
 	if(!!condition != 0)
 		return waveIfTrue
-	else
-		return waveIfFalse
 	endif
+
+	return waveIfFalse
 End
 
 /// @brief Remove unused rows from the passed wave and return a copy of it.

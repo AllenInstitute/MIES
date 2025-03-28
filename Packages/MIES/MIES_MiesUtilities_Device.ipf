@@ -147,12 +147,14 @@ threadsafe Function GetHardwareType(string device)
 
 	if(WhichListItem(deviceType, DEVICE_TYPES_ITC) != -1)
 		return HARDWARE_ITC_DAC
-	elseif(IsEmpty(deviceNumber))
+	endif
+
+	if(IsEmpty(deviceNumber))
 		if(IsDeviceNameFromSutter(deviceType))
 			return HARDWARE_SUTTER_DAC
-		else
-			return HARDWARE_NI_DAC
 		endif
+
+		return HARDWARE_NI_DAC
 	endif
 
 	return HARDWARE_UNSUPPORTED_DAC

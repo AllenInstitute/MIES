@@ -1293,89 +1293,88 @@ Function SFH_EnrichAnnotations(WAVE/T annotations, WAVE/T formulaArgSetup)
 		// stacksize different -> all different
 		SFH_EnrichAnnotationsRelease(formulaIds)
 		return 1
-	else
-		numOps = stackSize[0]
-		Make/FREE/WAVE/N=(numFormulas, numOps) argSetup
-		argSetup[][] = SFH_DeSerializeArgSetup(formulaIds[p], "/" + num2istr(q))
+	endif
 
-		Make/FREE/T/N=(numFormulas, numOps) opIds
-		opIds[][] = SFH_GetArgSetupValueByKey(argSetup[p][q], SFH_ARGSETUP_OPERATION_KEY)
-		for(i = 0; i < numOps; i += 1)
-			Duplicate/FREE/RMD=[][i] opIds, opRow
-			Redimension/N=(-1) opRow
-			WAVE opRowUniques = GetUniqueEntries(opRow)
-			if(DimSize(opRowUniques, ROWS) > 1)
-				// At least one operation is different
-				SFH_EnrichAnnotationsRelease(formulaIds)
-				return 1
-			endif
+	numOps = stackSize[0]
+	Make/FREE/WAVE/N=(numFormulas, numOps) argSetup
+	argSetup[][] = SFH_DeSerializeArgSetup(formulaIds[p], "/" + num2istr(q))
+
+	Make/FREE/T/N=(numFormulas, numOps) opIds
+	opIds[][] = SFH_GetArgSetupValueByKey(argSetup[p][q], SFH_ARGSETUP_OPERATION_KEY)
+	for(i = 0; i < numOps; i += 1)
+		Duplicate/FREE/RMD=[][i] opIds, opRow
+		Redimension/N=(-1) opRow
+		WAVE opRowUniques = GetUniqueEntries(opRow)
+		if(DimSize(opRowUniques, ROWS) > 1)
+			// At least one operation is different
+			SFH_EnrichAnnotationsRelease(formulaIds)
+			return 1
+		endif
+	endfor
+
+	Make/FREE/T/N=(numFormulas, numOps) shrinkedDiff
+	Make/FREE/T/N=(numFormulas) opStackStr
+	for(i = 0; i < numOps; i += 1)
+		Make/FREE/T/N=0 allKeys
+		for(j = 0; j < numFormulas; j += 1)
+			WAVE/T argOpSetup = argSetup[j][i]
+			dim = FindDimLabel(argOpSetup, COLS, "KEY")
+			Duplicate/FREE/RMD=[][dim] argOpSetup, argOpSetupKeys
+			Redimension/N=(-1) argOpSetupKeys
+			Concatenate/NP/T {argOpSetupKeys}, allKeys
 		endfor
-
-		Make/FREE/T/N=(numFormulas, numOps) shrinkedDiff
-		Make/FREE/T/N=(numFormulas) opStackStr
-		for(i = 0; i < numOps; i += 1)
-			Make/FREE/T/N=0 allKeys
-			for(j = 0; j < numFormulas; j += 1)
-				WAVE/T argOpSetup = argSetup[j][i]
-				dim = FindDimLabel(argOpSetup, COLS, "KEY")
-				Duplicate/FREE/RMD=[][dim] argOpSetup, argOpSetupKeys
-				Redimension/N=(-1) argOpSetupKeys
-				Concatenate/NP/T {argOpSetupKeys}, allKeys
-			endfor
-			WAVE/T uniqueKeys = GetUniqueEntries(allKeys)
-			numKeys = DimSize(uniqueKeys, ROWS)
-			Make/FREE/N=(numKeys) markDiff
-			if(numKeys > 1)
-				for(j = 0; j < numKeys; j += 1)
-					testKey   = uniqueKeys[j]
-					testValue = ""
-					for(k = 0; k < numFormulas; k += 1)
-						WAVE/T argOpSetup = argSetup[k][i]
-						if(IsEmpty(testValue))
-							testValue = SFH_GetArgSetupValueByKey(argOpSetup, testKey)
-							continue
-						endif
-						if(CmpStr(testValue, SFH_GetArgSetupValueByKey(argOpSetup, testKey), 1))
-							markDiff[j] = 1
-						endif
-					endfor
-				endfor
-			endif
-			// build nice string per formula
-			shrinkedDiff[][i] = SFH_GetArgSetupValueByKey(WaveRef(argSetup, row = p, col = i), SFH_ARGSETUP_OPERATION_KEY)
-			opStackStr[]      = shrinkedDiff[p][i] + " " + opStackStr[p]
-			for(j = 0; j < numFormulas; j += 1)
-				WAVE/T argOpSetup = argSetup[j][i]
-
-				if(sum(markDiff) == 0)
-					continue
-				endif
-
-				isDifferent = 1
-
-				buildDiffArgsStr = ""
-				for(k = 0; k < numKeys; k += 1)
-					if(!markDiff[k])
+		WAVE/T uniqueKeys = GetUniqueEntries(allKeys)
+		numKeys = DimSize(uniqueKeys, ROWS)
+		Make/FREE/N=(numKeys) markDiff
+		if(numKeys > 1)
+			for(j = 0; j < numKeys; j += 1)
+				testKey   = uniqueKeys[j]
+				testValue = ""
+				for(k = 0; k < numFormulas; k += 1)
+					WAVE/T argOpSetup = argSetup[k][i]
+					if(IsEmpty(testValue))
+						testValue = SFH_GetArgSetupValueByKey(argOpSetup, testKey)
 						continue
 					endif
-					buildDiffArgsStr += uniqueKeys[k] + ":" + SFH_GetArgSetupValueByKey(argOpSetup, uniqueKeys[k]) + " "
+					if(CmpStr(testValue, SFH_GetArgSetupValueByKey(argOpSetup, testKey), 1))
+						markDiff[j] = 1
+					endif
 				endfor
-				buildDiffArgsStr    = RemoveEnding(buildDiffArgsStr, " ")
-				shrinkedDiff[j][i] += "(" + buildDiffArgsStr + ")"
 			endfor
-		endfor
+		endif
+		// build nice string per formula
+		shrinkedDiff[][i] = SFH_GetArgSetupValueByKey(WaveRef(argSetup, row = p, col = i), SFH_ARGSETUP_OPERATION_KEY)
+		opStackStr[]      = shrinkedDiff[p][i] + " " + opStackStr[p]
+		for(j = 0; j < numFormulas; j += 1)
+			WAVE/T argOpSetup = argSetup[j][i]
 
-		opStackStr[] = RemoveEnding(opStackStr[p], " ")
-		for(i = 0; i < numFormulas; i += 1)
-			newAnnotation = ""
-			for(j = 0; j < numOps; j += 1)
-				newAnnotation = shrinkedDiff[i][j] + " " + newAnnotation
+			if(sum(markDiff) == 0)
+				continue
+			endif
+
+			isDifferent = 1
+
+			buildDiffArgsStr = ""
+			for(k = 0; k < numKeys; k += 1)
+				if(!markDiff[k])
+					continue
+				endif
+				buildDiffArgsStr += uniqueKeys[k] + ":" + SFH_GetArgSetupValueByKey(argOpSetup, uniqueKeys[k]) + " "
 			endfor
-			newAnnotation  = RemoveEnding(newAnnotation, " ")
-			annotations[i] = ReplaceString(opStackStr[i], annotations[i], newAnnotation)
+			buildDiffArgsStr    = RemoveEnding(buildDiffArgsStr, " ")
+			shrinkedDiff[j][i] += "(" + buildDiffArgsStr + ")"
 		endfor
+	endfor
 
-	endif
+	opStackStr[] = RemoveEnding(opStackStr[p], " ")
+	for(i = 0; i < numFormulas; i += 1)
+		newAnnotation = ""
+		for(j = 0; j < numOps; j += 1)
+			newAnnotation = shrinkedDiff[i][j] + " " + newAnnotation
+		endfor
+		newAnnotation  = RemoveEnding(newAnnotation, " ")
+		annotations[i] = ReplaceString(opStackStr[i], annotations[i], newAnnotation)
+	endfor
 
 	SFH_EnrichAnnotationsRelease(formulaIds)
 
@@ -1832,7 +1831,9 @@ Function/S SFH_CreateLegendFromRanges(WAVE selectData, WAVE/WAVE ranges)
 
 	if(!DimSize(ranges, ROWS))
 		return ""
-	elseif(DimSize(ranges, ROWS) == 1)
+	endif
+
+	if(DimSize(ranges, ROWS) == 1)
 		prefix = "All sweeps "
 	elseif(DimSize(ranges, ROWS) == DimSize(selectData, ROWS))
 		prefixPerSelect = 1

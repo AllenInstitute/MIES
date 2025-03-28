@@ -1947,7 +1947,9 @@ static Function CONF_RestoreHeadstageAssociation(string device, variable jsonID,
 		type         = JSON_GetType(jsonID, jsonBasePath)
 		if(type == JSON_NULL)
 			continue
-		elseif(type == JSON_OBJECT)
+		endif
+
+		if(type == JSON_OBJECT)
 			jsonPath = jsonBasePath + "/" + EXPCONFIG_JSON_AMPBLOCK
 			if(JSON_GetType(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPSERIAL) == JSON_NULL)
 				continue

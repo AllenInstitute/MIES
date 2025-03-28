@@ -95,7 +95,9 @@ Function/WAVE GetChanAmpAssign(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		Redimension/D/N=(10, NUM_HEADSTAGES, -1, -1) wv
 	else
 		Make/D/N=(10, NUM_HEADSTAGES) dfr:ChanAmpAssign/WAVE=wv
@@ -156,7 +158,9 @@ Function/WAVE GetChanAmpAssignUnit(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// do nothing
 	else
 		Make/T/N=(4, NUM_HEADSTAGES) dfr:ChanAmpAssignUnit/WAVE=wv
@@ -461,12 +465,12 @@ Function/WAVE UpgradeWaveLocationAndGetIt(STRUCT WaveLocationMod &p)
 		if(!WaveExists(src))
 			// and src also not, the wave was not yet created
 			return $""
-		else
-			ASSERT(IsValidObjectName(p.newName), "Invalid/Liberal wave name for newName")
-			MoveWave src, p.newDFR:$p.newName
-			RemoveEmptyDataFolder(p.dfr)
-			return src
 		endif
+
+		ASSERT(IsValidObjectName(p.newName), "Invalid/Liberal wave name for newName")
+		MoveWave src, p.newDFR:$p.newName
+		RemoveEmptyDataFolder(p.dfr)
+		return src
 	endif
 
 	ASSERT(0, "impossible case")
@@ -505,7 +509,9 @@ Function/WAVE GetTPResultAsyncBuffer(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		Redimension/N=(-1, 9, -1) wv
 	else
 		Make/N=(0, 9, NUM_HEADSTAGES)/D dfr:TPResultAsyncBuffer/WAVE=wv
@@ -554,7 +560,9 @@ Function/WAVE GetChannelClampMode(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		Redimension/N=(-1, -1, 2) wv
 
 		// prefill with existing algorithm for easier upgrades
@@ -588,7 +596,9 @@ Function/WAVE GetHSProperties(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 	else
 		Make/R/N=(NUM_HEADSTAGES, 4) dfr:HSProperties/WAVE=wv
@@ -1012,7 +1022,9 @@ Function/WAVE GetEpochsWave(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, EPOCHS_WAVE_VERSION))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		if(WaveVersionIsSmaller(wv, 2))
 			Redimension/N=(MINIMUM_WAVE_SIZE, 4, NUM_DA_TTL_CHANNELS) wv
 		endif
@@ -1116,7 +1128,9 @@ Function/WAVE GetDAQConfigWave(string device)
 	// On version upgrade also adapt function IsValidConfigWave
 	if(ExistsWithCorrectLayoutVersion(wv, DAQ_CONFIG_WAVE_VERSION))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// do sequential version upgrade
 		if(WaveVersionIsSmaller(wv, 1))
 			// this version adds the Offset column
@@ -1181,7 +1195,9 @@ Function/WAVE GetDQMActiveDeviceList()
 
 	if(ExistsWithCorrectLayoutVersion(wv, DQM_ACTIVE_DEV_WAVE_VERSION))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// do sequential version upgrade
 		if(WaveVersionIsSmaller(wv, 1))
 			Redimension/N=(-1, 5) wv
@@ -2536,7 +2552,9 @@ Function/WAVE GetSweepSettingsKeyWave(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		Redimension/N=(-1, 63) wv
 	else
 		Make/T/N=(3, 63) newDFR:$newName/WAVE=wv
@@ -2925,7 +2943,9 @@ Function/WAVE GetSweepSettingsTextKeyWave(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		Redimension/N=(-1, 50, 0) wv
 	else
 		Make/T/N=(1, 50) newDFR:$newName/WAVE=wv
@@ -3049,7 +3069,9 @@ Function/WAVE GetTPStorage(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		Redimension/N=(-1, NUM_HEADSTAGES, 31)/D wv
 
 		if(WaveVersionIsSmaller(wv, 10))
@@ -3190,7 +3212,9 @@ Function/WAVE GetScaledDataWave(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, version))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		if(!IsWaveVersioned(wv))
 			KillOrMoveToTrash(wv = wv)
 			Make/WAVE/N=0 dfr:ScaledData/WAVE=wv1
@@ -3302,7 +3326,9 @@ Function/WAVE GetTPResults(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, version))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		Redimension/D/N=(10, NUM_HEADSTAGES) wv
 		wv = NaN
 	else
@@ -3341,7 +3367,9 @@ Function/WAVE GetTPResultsBuffer(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, version))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// do upgrade
 	else
 		WAVE TPResults  = GetTPResults(device)
@@ -3407,7 +3435,9 @@ Function/WAVE GetAmplifierParamStorageWave(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// nothing to do
 	else
 		Make/N=(31, 1, NUM_HEADSTAGES)/D newDFR:$device/WAVE=wv
@@ -3755,9 +3785,9 @@ Function/WAVE GetAmplifierTelegraphServers()
 
 	if(WaveExists(wv))
 		return wv
-	else
-		Make/I/N=(0) dfr:W_TelegraphServers/WAVE=wv
 	endif
+
+	Make/I/N=(0) dfr:W_TelegraphServers/WAVE=wv
 
 	return wv
 End
@@ -3774,9 +3804,9 @@ Function/WAVE GetAmplifierMultiClamps()
 
 	if(WaveExists(wv))
 		return wv
-	else
-		Make/I/N=(0) dfr:W_MultiClamps/WAVE=wv
 	endif
+
+	Make/I/N=(0) dfr:W_MultiClamps/WAVE=wv
 
 	return wv
 End
@@ -5067,7 +5097,9 @@ Function/WAVE P_GetPressureDataWaveRef(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		Redimension/D/N=(8, 48) wv
 		SetPressureWaveDimLabels(wv)
 	else
@@ -5132,7 +5164,9 @@ Function/WAVE P_PressureDataTxtWaveRef(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		Redimension/N=(8, 3) wv
 	else
 		Make/T/N=(8, 3) dfr:PressureDataTextWv/WAVE=wv
@@ -5415,7 +5449,9 @@ Function/WAVE GetAnalysisChannelStorage(string dataFolder, string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
 		return wv
-	elseif(ExistsWithCorrectLayoutVersion(wv, 1))
+	endif
+
+	if(ExistsWithCorrectLayoutVersion(wv, 1))
 		// update Dimension label
 	else
 		Make/R/O/N=(MINIMUM_WAVE_SIZE, 1)/WAVE dfr:channelStorage/WAVE=wv
@@ -5542,7 +5578,9 @@ Function/WAVE GetAnalysisBrowserMap()
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
 		return wv
-	elseif(ExistsWithCorrectLayoutVersion(wv, 1))
+	endif
+
+	if(ExistsWithCorrectLayoutVersion(wv, 1))
 		// update dimension labels
 	elseif(ExistsWithCorrectLayoutVersion(wv, 2))
 		// clear file type as this now holds nwb version as well
@@ -5576,7 +5614,9 @@ Function/WAVE GetAnalysisBrowserGUIFolderList()
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// Upgrade here
 	else
 		Make/N=0/T dfr:$name/WAVE=wv
@@ -5598,7 +5638,9 @@ Function/WAVE GetAnalysisBrowserGUIFolderSelection()
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// Upgrade here
 	else
 		Make/N=(1, 1, 3) dfr:$name/WAVE=wv
@@ -5622,7 +5664,9 @@ Function/WAVE GetAnalysisBrowserGUIFolderColors()
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// Upgrade here
 	else
 		Make/W/U/N=(3, 3) dfr:$name/WAVE=wv
@@ -5660,7 +5704,9 @@ Function/WAVE GetExperimentBrowserGUIList()
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		Redimension/N=(-1, NUM_COLUMNS_LIST_WAVE, -1) wv
 		wv = ""
 	else
@@ -5697,7 +5743,9 @@ Function/WAVE GetExperimentBrowserGUISel()
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		Redimension/N=(-1, NUM_COLUMNS_LIST_WAVE, -1) wv
 		wv = 0
 	else
@@ -5894,7 +5942,9 @@ Function/WAVE GetActiveDevicesTPMD()
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 	else
 		Make/R/N=(MINIMUM_WAVE_SIZE, 3) dfr:ActiveDevicesTPMD/WAVE=wv
@@ -5955,7 +6005,9 @@ Function/WAVE GetDA_EphysGuiStateNum(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, DA_EPHYS_PANEL_VERSION))
 		return wv
-	elseif(WaveExists(wv)) // handle upgrade
+	endif
+
+	if(WaveExists(wv)) // handle upgrade
 		// change the required dimensions and leave all others untouched with -1
 		// the extended dimensions are initialized with zero
 		uniqueCtrlList  = DAG_GetUniqueSpecCtrlListNum(device)
@@ -6023,7 +6075,9 @@ Function/WAVE GetDA_EphysGuiStateTxT(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, DA_EPHYS_PANEL_VERSION))
 		return wv
-	elseif(WaveExists(wv)) // handle upgrade
+	endif
+
+	if(WaveExists(wv)) // handle upgrade
 		// change the required dimensions and leave all others untouched with -1
 		// the extended dimensions are initialized with zero
 		uniqueCtrlList  = DAG_GetUniqueSpecCtrlListTxt(device)
@@ -6092,7 +6146,9 @@ Function/WAVE GetDeviceMapping()
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		if(WaveVersionIsSmaller(wv, 2))
 			Redimension/N=(HARDWARE_MAX_DEVICES, -1, 2) wv
 			SetWaveVersion(wv, 2)
@@ -6147,9 +6203,9 @@ threadsafe Function/WAVE GetCacheValueWave()
 
 	if(WaveExists(wv))
 		return wv
-	else
-		Make/WAVE/N=(MINIMUM_WAVE_SIZE) dfr:values/WAVE=wv
 	endif
+
+	Make/WAVE/N=(MINIMUM_WAVE_SIZE) dfr:values/WAVE=wv
 
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 
@@ -6168,9 +6224,9 @@ threadsafe Function/WAVE GetCacheKeyWave()
 
 	if(WaveExists(wv))
 		return wv
-	else
-		Make/T/N=(MINIMUM_WAVE_SIZE) dfr:keys/WAVE=wv
 	endif
+
+	Make/T/N=(MINIMUM_WAVE_SIZE) dfr:keys/WAVE=wv
 
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 
@@ -6200,34 +6256,34 @@ threadsafe Function/WAVE GetCacheStatsWave()
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	else
-		WAVE/T    keys   = GetCacheKeyWave()
-		WAVE/WAVE values = GetCacheValueWave()
-		numRows = DimSize(values, ROWS)
-		ASSERT_TS(DimSize(keys, ROWS) == numRows, "Mismatched row sizes")
-
-		if(WaveExists(wv))
-			// experiments prior to efebc382 (Merge pull request #490 from AllenInstitute/mh_fix_uniquedatafoldername, 2020-03-16)
-			// have the wrong value of NOTE_INDEX of the stats wave
-			if(WaveVersionIsAtLeast(wv, 1))
-				index = GetNumberFromWaveNote(keys, NOTE_INDEX)
-				SetNumberInWaveNote(wv, NOTE_INDEX, index)
-			endif
-
-			oldNumRows = DimSize(wv, ROWS)
-			if(numRows != oldNumRows)
-				Redimension/D/N=(numRows, 4) wv
-				wv[oldNumRows, numRows - 1][] = NaN
-			endif
-
-			SetWaveVersion(wv, versionOfNewWave)
-			return wv
-		else
-			// experiments prior to ab795b55 (Cache: Add statistics for each entry, 2018-03-23)
-			// don't hold this wave, but we still have to ensure that the stats wave has the right number of rows
-			Make/D/N=(numRows, 4) dfr:stats/WAVE=wv
-		endif
 	endif
+
+	WAVE/T    keys   = GetCacheKeyWave()
+	WAVE/WAVE values = GetCacheValueWave()
+	numRows = DimSize(values, ROWS)
+	ASSERT_TS(DimSize(keys, ROWS) == numRows, "Mismatched row sizes")
+
+	if(WaveExists(wv))
+		// experiments prior to efebc382 (Merge pull request #490 from AllenInstitute/mh_fix_uniquedatafoldername, 2020-03-16)
+		// have the wrong value of NOTE_INDEX of the stats wave
+		if(WaveVersionIsAtLeast(wv, 1))
+			index = GetNumberFromWaveNote(keys, NOTE_INDEX)
+			SetNumberInWaveNote(wv, NOTE_INDEX, index)
+		endif
+
+		oldNumRows = DimSize(wv, ROWS)
+		if(numRows != oldNumRows)
+			Redimension/D/N=(numRows, 4) wv
+			wv[oldNumRows, numRows - 1][] = NaN
+		endif
+
+		SetWaveVersion(wv, versionOfNewWave)
+		return wv
+	endif
+
+	// experiments prior to ab795b55 (Cache: Add statistics for each entry, 2018-03-23)
+	// don't hold this wave, but we still have to ensure that the stats wave has the right number of rows
+	Make/D/N=(numRows, 4) dfr:stats/WAVE=wv
 
 	wv = NaN
 
@@ -6259,10 +6315,10 @@ Function/WAVE GetCellElectrodeNames(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	else
-		Make/T/N=(NUM_HEADSTAGES) dfr:cellElectrodeNames/WAVE=wv
-		wv = GetDefaultElectrodeName(p)
 	endif
+
+	Make/T/N=(NUM_HEADSTAGES) dfr:cellElectrodeNames/WAVE=wv
+	wv = GetDefaultElectrodeName(p)
 
 	SetWaveVersion(wv, versionOfNewWave)
 	return wv
@@ -6345,7 +6401,9 @@ Function/WAVE GetPulseAverageWave(DFREF dfr, variable length, variable channelTy
 	WAVE/Z/SDFR=dfr wv = $wvName
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// clear the wave note so that it is invalidated for cache checks through mod
 		Note/K wv
 	else
@@ -6376,7 +6434,9 @@ Function/WAVE GetPulseAverageWaveNoteWave(DFREF dfr, variable length, variable c
 	WAVE/Z/SDFR=dfr wv = $wvName
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// clear the wave note so that it is regenerated
 		// by PA_CreateAndFillPulseWaveIfReq()
 		Note/K wv
@@ -6405,7 +6465,9 @@ Function/WAVE GetPulseAverageSetIndizes(DFREF dfr, variable channelNumber, varia
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 	else
 		Make/R/N=(MINIMUM_WAVE_SIZE, 1) dfr:$name/WAVE=wv
@@ -6439,7 +6501,9 @@ Function/WAVE GetPulseAverageSetImageWave(DFREF dfr, variable channelNumber, var
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 	else
 		Make/R/N=(1, MINIMUM_WAVE_SIZE) dfr:$name/WAVE=wv
@@ -6464,7 +6528,9 @@ Function/WAVE GetPulseAverageProperties(DFREF dfr)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		Redimension/N=(-1, 8) wv
 	else
 		Make/R/N=(MINIMUM_WAVE_SIZE_LARGE, 8) dfr:properties/WAVE=wv
@@ -6500,7 +6566,9 @@ Function/WAVE GetPulseAveragePropertiesWaves(DFREF dfr)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 	else
 		Make/WAVE/N=(MINIMUM_WAVE_SIZE_LARGE, 2) dfr:propertiesWaves/WAVE=wv
@@ -6526,7 +6594,9 @@ Function/WAVE GetPulseAverageDisplayMapping(DFREF dfr)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 	else
 		Make/D/N=(NUM_HEADSTAGES, NUM_MAX_CHANNELS, 2) dfr:displayMapping/WAVE=wv
@@ -6550,7 +6620,9 @@ Function/WAVE GetArtefactRemovalListWave(DFREF dfr)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 	else
 		Make/T/N=(MINIMUM_WAVE_SIZE, 2) dfr:artefactRemovalListBoxWave/WAVE=wv
@@ -6574,7 +6646,9 @@ Function/WAVE GetArtefactRemovalDataWave(DFREF dfr)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		Redimension/D/N=(MINIMUM_WAVE_SIZE, 4) wv
 	else
 		Make/D/N=(MINIMUM_WAVE_SIZE, 4) dfr:artefactRemovalDataWave/WAVE=wv
@@ -6600,7 +6674,9 @@ Function/WAVE GetOverlaySweepsListWave(DFREF dfr)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 	else
 		Make/T/N=(MINIMUM_WAVE_SIZE, 2) dfr:overlaySweepsListBoxWave/WAVE=wv
@@ -6624,7 +6700,9 @@ Function/WAVE GetOverlaySweepsListSelWave(DFREF dfr)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 	else
 		Make/B/N=(MINIMUM_WAVE_SIZE, 2) dfr:overlaySweepsListBoxSelWave/WAVE=wv
@@ -6654,7 +6732,9 @@ Function/WAVE GetOverlaySweepHeadstageRemoval(DFREF dfr)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 	else
 		Make/R/N=(MINIMUM_WAVE_SIZE, NUM_HEADSTAGES) dfr:overlaySweepsHeadstageRemoval/WAVE=wv
@@ -6693,7 +6773,9 @@ Function/WAVE GetOverlaySweepSelectionChoices(string win, DFREF dfr, [variable s
 			OVS_UpdateSweepSelectionChoices(win, wv)
 		endif
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		Redimension/N=(-1, -1, 7) wv
 	else
 		ASSERT(NUM_HEADSTAGES == NUM_DA_TTL_CHANNELS, "Unexpected channel count")
@@ -6721,7 +6803,9 @@ Function/WAVE GetChannelSelectionWave(DFREF dfr)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		Redimension/N=(max(NUM_DA_TTL_CHANNELS, NUM_AD_CHANNELS, NUM_HEADSTAGES), 3) wv
 	else
 		Make/R/N=(max(NUM_DA_TTL_CHANNELS, NUM_AD_CHANNELS, NUM_HEADSTAGES), 3) dfr:channelSelection/WAVE=wv
@@ -6761,10 +6845,10 @@ Function/WAVE GetSweepBrowserMap(DFREF dfr)
 	WAVE/Z/T/SDFR=dfr wv = map
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	else
-		Make/T/N=(MINIMUM_WAVE_SIZE, 4) dfr:map/WAVE=wv
-		SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 	endif
+
+	Make/T/N=(MINIMUM_WAVE_SIZE, 4) dfr:map/WAVE=wv
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 
 	SetDimLabel COLS, 0, FileName, wv
 	SetDimLabel COLS, 1, DataFolder, wv
@@ -6803,7 +6887,9 @@ Function/WAVE GetDebugPanelListWave()
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 	else
 		Make/T/N=(MINIMUM_WAVE_SIZE) dfr:fileSelectionListWave/WAVE=wv
@@ -6821,7 +6907,9 @@ Function/WAVE GetDebugPanelListSelWave()
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 	else
 		Make/B/N=(MINIMUM_WAVE_SIZE) dfr:fileSelectionListSelWave/WAVE=wv
@@ -6845,7 +6933,9 @@ Function/WAVE GetAnalysisFuncIndexingHelper(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 	else
 		Make/D/N=(NUM_HEADSTAGES) dfr:analysisFuncIndexing/WAVE=wv
@@ -6872,7 +6962,9 @@ Function/WAVE GetAnalysisFuncDAScaleDeltaV(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 	else
 		Make/D/N=(MINIMUM_WAVE_SIZE, NUM_HEADSTAGES) dfr:analysisFuncDAScaleDeltaV/WAVE=wv
@@ -6905,7 +6997,9 @@ Function/WAVE GetAnalysisFuncDAScaleDeltaI(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 	else
 		Make/D/N=(MINIMUM_WAVE_SIZE, NUM_HEADSTAGES) dfr:analysisFuncDAScaleDeltaI/WAVE=wv
@@ -6936,7 +7030,9 @@ Function/WAVE GetAnalysisFuncDAScaleRes(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 	else
 		Make/D/N=(NUM_HEADSTAGES, 2) dfr:analysisFuncDAScaleRes/WAVE=wv
@@ -6966,7 +7062,9 @@ Function/WAVE GetAnalysisFuncDAScaleResFit(string device, variable headstage)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 	else
 		Make/D/N=(2) dfr:$name/WAVE=wv
@@ -6994,7 +7092,9 @@ Function/WAVE GetAnalysisFuncDAScaleSpikeFreq(string device, variable headstage)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 	else
 		Make/D/N=(0) dfr:$name/WAVE=wv
@@ -7021,7 +7121,9 @@ Function/WAVE GetAnalysisFuncDAScaleFreqFit(string device, variable headstage)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 	else
 		Make/D/N=(2) dfr:$name/WAVE=wv
@@ -7048,7 +7150,9 @@ Function/WAVE GetAnalysisFuncDAScales(string device, variable headstage)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 	else
 		Make/D/N=(0) dfr:$name/WAVE=wv
@@ -7082,7 +7186,9 @@ Function/WAVE GetAnalysisFunctionStorage(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 		Redimension/N=(NUM_HEADSTAGES, TOTAL_NUM_EVENTS + 1) wv
 	else
@@ -7111,7 +7217,9 @@ Function/WAVE GetSetEventFlag(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 	else
 		Make/D/N=(NUM_DA_TTL_CHANNELS, 2) dfr:setEventFlag/WAVE=wv
@@ -7135,7 +7243,9 @@ Function/WAVE GetRAPerfWave(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 	else
 		Make/D/N=(MINIMUM_WAVE_SIZE) dfr:perfingRA/WAVE=wv
@@ -7159,7 +7269,9 @@ Function/WAVE WBP_GetAnalysisParamGUIListWave()
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		Redimension/N=(-1, 5) wv
 	else
 		Make/T/N=(0, 5) dfr:analysisGUIListWave/WAVE=wv
@@ -7229,7 +7341,9 @@ Function/WAVE GetAnaFuncDashboardListWave(DFREF dfr)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		Redimension/N=(-1, 4) wv
 	else
 		Make/T/N=(MINIMUM_WAVE_SIZE, 4) dfr:dashboardListWave/WAVE=wv
@@ -7257,7 +7371,9 @@ Function/WAVE GetAnaFuncDashboardInfoWave(DFREF dfr)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 		Redimension/N=(-1, 4) wv
 	else
@@ -7285,7 +7401,9 @@ Function/WAVE GetAnaFuncDashboardSelWave(DFREF dfr)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		Redimension/N=(-1, 4, -1) wv
 	else
 		Make/B/N=(MINIMUM_WAVE_SIZE, 4, 2) dfr:dashboardSelWave/WAVE=wv
@@ -7308,7 +7426,9 @@ Function/WAVE GetAnaFuncDashboardColorWave(DFREF dfr)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		Redimension/N=(4, -1) wv
 	else
 		Make/W/U/N=(4, 3) dfr:dashboardColorWave/WAVE=wv
@@ -7334,7 +7454,9 @@ Function/WAVE GetAnaFuncDashboardHelpWave(DFREF dfr)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 	else
 		Make/T/N=(0) dfr:dashboardHelpWave/WAVE=wv
@@ -7367,7 +7489,9 @@ Function/WAVE GetDeviceInfoWave(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		if(WaveVersionIsSmaller(wv, 2))
 			Redimension/N=7 wv
 			SetWaveVersion(wv, 2)
@@ -7407,7 +7531,9 @@ Function/WAVE GetElapsedTimeWave()
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 	else
 		Make/D/N=(MINIMUM_WAVE_SIZE) dfr:elapsedTime/WAVE=wv
@@ -7464,7 +7590,9 @@ Function/WAVE GetPopupExtMenuWave()
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 	else
 		Make/T/N=1 dfr:popupExtMenuInfo/WAVE=wv
@@ -7517,7 +7645,9 @@ Function/WAVE GetGraphUserData(string graph)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 	else
 		Make/T/N=(MINIMUM_WAVE_SIZE_LARGE, 0) dfr:$name/WAVE=wv
@@ -7547,7 +7677,9 @@ Function/WAVE GetPAGraphData()
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 	else
 		Make/T/N=(0, 3) dfr:$name/WAVE=wv
@@ -7619,7 +7751,9 @@ Function/WAVE GetAcqStateTracking()
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// handle upgrade
 	else
 		Make/N=(MINIMUM_WAVE_SIZE, 2) dfr:$name/WAVE=wv
@@ -7650,7 +7784,9 @@ Function/WAVE GetValidAcqStateTransitions()
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		Redimension/N=(AS_NUM_STATES, AS_NUM_STATES) wv
 	else
 		Make/R/N=(AS_NUM_STATES, AS_NUM_STATES) dfr:$name/WAVE=wv
@@ -7840,7 +7976,9 @@ Function/WAVE GetTPSettings(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		Redimension/N=(14, -1) wv
 		SetDimensionLabels(wv, TP_SETTINGS_LABELS, ROWS)
 	else
@@ -7951,7 +8089,9 @@ Function/WAVE GetTPSettingsLabnotebookKeyWave(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		Redimension/N=(-1, 15) wv
 	else
 		Make/T/N=(3, 15) dfr:TPSettingsKeyWave/WAVE=wv
@@ -8517,7 +8657,9 @@ Function/WAVE GetSUDeviceInfo()
 
 	if(ExistsWithCorrectLayoutVersion(wv, version))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// upgrade here
 	else
 		Make/T/N=8 dfr:$name/WAVE=wv
@@ -8549,7 +8691,9 @@ Function/WAVE GetSUDeviceInput(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, version))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// upgrade here
 	else
 		Make/T/N=(0, 3) dfr:$name/WAVE=wv
@@ -8580,7 +8724,9 @@ Function/WAVE GetSUDeviceOutput(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, version))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// upgrade here
 	else
 		Make/T/N=(0, 3) dfr:$name/WAVE=wv
@@ -8610,7 +8756,9 @@ Function/WAVE GetSUDeviceInputGains(string device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, version))
 		return wv
-	elseif(WaveExists(wv))
+	endif
+
+	if(WaveExists(wv))
 		// upgrade here
 	else
 		Make/D/N=(0, 2) dfr:$name/WAVE=wv

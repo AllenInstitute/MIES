@@ -2266,9 +2266,9 @@ static Function DC_ReturnTotalLengthIncrease(STRUCT DataConfigurationResult &s)
 	if(s.distributedDAQ)
 		ASSERT(s.numDACEntries > 0, "Number of DACs must be at least one")
 		return s.onsetDelayUser + s.onsetDelayAuto + s.terminationDelay + s.distributedDAQDelay * (s.numDACEntries - 1)
-	else
-		return s.onsetDelayUser + s.onsetDelayAuto + s.terminationDelay
 	endif
+
+	return s.onsetDelayUser + s.onsetDelayAuto + s.terminationDelay
 End
 
 /// @brief Calculate the stop collection point, includes all required global adjustments
@@ -2288,18 +2288,18 @@ static Function DC_GetStopCollectionPoint(string device, STRUCT DataConfiguratio
 
 		if(V_Value == -1)
 			return TIME_TP_ONLY_ON_DAQ * ONE_TO_MICRO / s.samplingIntervalDA
-		else
-			totalIncrease = DC_ReturnTotalLengthIncrease(s)
-			TTLlength     = DC_CalculateLongestSweep(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
-
-			if(s.distributedDAQOptOv)
-				DAClength = WaveMax(s.setLength)
-			elseif(s.distributedDAQ)
-				DAClength *= DC_NoOfChannelsSelected(device, CHANNEL_TYPE_DAC)
-			endif
-
-			return max(DAClength, TTLlength) + totalIncrease
 		endif
+
+		totalIncrease = DC_ReturnTotalLengthIncrease(s)
+		TTLlength     = DC_CalculateLongestSweep(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
+
+		if(s.distributedDAQOptOv)
+			DAClength = WaveMax(s.setLength)
+		elseif(s.distributedDAQ)
+			DAClength *= DC_NoOfChannelsSelected(device, CHANNEL_TYPE_DAC)
+		endif
+
+		return max(DAClength, TTLlength) + totalIncrease
 	elseif(s.dataAcqOrTP == TEST_PULSE_MODE)
 		return DAClength
 	endif

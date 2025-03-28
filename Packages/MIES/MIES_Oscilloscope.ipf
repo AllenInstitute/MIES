@@ -77,14 +77,14 @@ Function SCOPE_GetTPTopAxisStart(string device, variable &axisMin)
 		if(latest >= V_max)
 			axisMin = latest - 0.5 * SCOPE_TIMEAXIS_RESISTANCE_RANGE
 			return 1
-		else
-			axisMin = V_min
-			return 0
 		endif
-	else
-		axisMin = 0
-		return V_Min != 0
+
+		axisMin = V_min
+		return 0
 	endif
+
+	axisMin = 0
+	return V_Min != 0
 End
 
 Function SCOPE_UpdateGraph(string device, variable dataAcqOrTP)
@@ -887,7 +887,9 @@ static Function SCOPE_ITC_AdjustFIFOPos(string device, variable fifopos)
 
 	if(fifoPos == 0)
 		return 0
-	elseif(IsNaN(fifoPos))
+	endif
+
+	if(IsNaN(fifoPos))
 		// we are done
 		// return the total length we wanted to acquire
 		stopCollectionPoint = ROVAR(GetStopCollectionPoint(device))

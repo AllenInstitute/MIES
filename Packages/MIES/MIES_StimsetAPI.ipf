@@ -329,9 +329,9 @@ Function/WAVE ST_GetStimsetParameters(string setName, [variable epochType])
 
 	if(ParamIsDefault(epochType))
 		return ST_GetStimsetParametersGlobal(setName)
-	else
-		return ST_GetStimsetParametersEpochType(setName, epochType)
 	endif
+
+	return ST_GetStimsetParametersEpochType(setName, epochType)
 End
 
 /// @brief Return the given stimset numeric parameter
@@ -393,12 +393,12 @@ Function/S ST_GetStimsetParameterAsString(string setName, string entry, [variabl
 	if(WaveExists(wvText))
 		if(IsTextWave(wvText))
 			return wvText[row][col][layer]
-		else
-			entryStringValues = ST_ParameterStringValues(entry)
+		endif
 
-			if(!IsEmpty(entryStringValues))
-				return StringFromList(wv[row][col][layer], entryStringValues)
-			endif
+		entryStringValues = ST_ParameterStringValues(entry)
+
+		if(!IsEmpty(entryStringValues))
+			return StringFromList(wv[row][col][layer], entryStringValues)
 		endif
 	endif
 

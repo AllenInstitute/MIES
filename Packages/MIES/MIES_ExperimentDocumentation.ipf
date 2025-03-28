@@ -345,7 +345,9 @@ static Function ED_WriteChangedValuesToNote(string device, variable sweepNo)
 		// and 1. needs no special treatment
 		if(!WaveExists(currentSetting))
 			continue
-		elseif(!WaveExists(lastSetting))
+		endif
+
+		if(!WaveExists(lastSetting))
 			Duplicate/FREE currentSetting, lastSetting
 			lastSetting = NaN
 		endif
@@ -438,7 +440,9 @@ static Function ED_WriteChangedValuesToNoteText(string device, variable sweepNo)
 		// and 1. needs no special treatment
 		if(!WaveExists(currentSetting))
 			continue
-		elseif(!WaveExists(lastSetting))
+		endif
+
+		if(!WaveExists(lastSetting))
 			Duplicate/T/FREE currentSetting, lastSetting
 			lastSetting = ""
 		endif
