@@ -47,24 +47,24 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, s
 		case INDEP_EACH_SCI:
 			if(textualEntry)
 				return GetLastSettingTextIndepEachSCI(numericalValues, textualValues, sweepNo, headstage, key, UNKNOWN_MODE)
-			else
-				return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 			endif
+
+			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 		case EACH_SCI:
 			if(textualEntry)
 				return GetLastSettingTextEachSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
-			else
-				return GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 			endif
+
+			return GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 		case INDEP:
 			CHECK_EQUAL_VAR(numtype(headstage), 2)
 			if(textualEntry)
 				Make/T/N=1/FREE valText = GetLastSettingTextIndep(textualValues, sweepNo, key, UNKNOWN_MODE)
 				return valText
-			else
-				Make/D/N=1/FREE val = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
-				return val
 			endif
+
+			Make/D/N=1/FREE val = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+			return val
 		case SINGLE_SCI:
 			return GetLastSettingSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 		case INDEP_SINGLE_SCI:

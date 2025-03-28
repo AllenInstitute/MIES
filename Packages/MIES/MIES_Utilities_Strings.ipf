@@ -274,7 +274,8 @@ End
 /// @returns number of occurences
 Function CountSubstrings(string str, string pattern)
 
-	variable i = -1, position = -1
+	variable i        = -1
+	variable position = -1
 
 	do
 		i        += 1

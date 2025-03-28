@@ -1529,7 +1529,8 @@ End
 /// @returns jsonID            ID of json containing the serialized GUI data
 Function CONF_WindowToJSON(string wName, variable saveMask, [string excCtrlTypes])
 
-	string ctrlList, ctrlName, radioList, tmpList, wList, cbCtrlName, coupledIndexKeys = "", excUserKeys, radioFunc, str, errMsg
+	string ctrlList, ctrlName, radioList, tmpList, wList, cbCtrlName, excUserKeys, radioFunc, str, errMsg
+	string coupledIndexKeys = ""
 	variable numCtrl, i, j, jsonID, numCoupled, setRadioPos, ctrlType, coupledCnt, numUniqueCtrlArray, numDupCheck
 	variable rbcIndex, wType
 
@@ -1946,7 +1947,9 @@ static Function CONF_RestoreHeadstageAssociation(string device, variable jsonID,
 		type         = JSON_GetType(jsonID, jsonBasePath)
 		if(type == JSON_NULL)
 			continue
-		elseif(type == JSON_OBJECT)
+		endif
+
+		if(type == JSON_OBJECT)
 			jsonPath = jsonBasePath + "/" + EXPCONFIG_JSON_AMPBLOCK
 			if(JSON_GetType(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPSERIAL) == JSON_NULL)
 				continue

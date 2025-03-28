@@ -1566,19 +1566,19 @@ Function BSP_AddTracesForEpochs(string win)
 
 	if(!WaveExists(traceInfosHS) && !WaveExists(traceInfosUnassocDA) && !WaveExists(traceInfosTTL))
 		return NaN
-	else
-		WAVE/T traceInfosFull = GetGraphUserData(win)
-		Duplicate/FREE/T traceInfosFull, traceInfos
-		Redimension/N=(0, -1) traceInfos
-		if(WaveExists(traceInfosHS))
-			Concatenate/FREE/T/NP=(ROWS) {traceInfosHS}, traceInfos
-		endif
-		if(WaveExists(traceInfosUnassocDA))
-			Concatenate/FREE/T/NP=(ROWS) {traceInfosUnassocDA}, traceInfos
-		endif
-		if(WaveExists(traceInfosTTL))
-			Concatenate/FREE/T/NP=(ROWS) {traceInfosTTL}, traceInfos
-		endif
+	endif
+
+	WAVE/T traceInfosFull = GetGraphUserData(win)
+	Duplicate/FREE/T traceInfosFull, traceInfos
+	Redimension/N=(0, -1) traceInfos
+	if(WaveExists(traceInfosHS))
+		Concatenate/FREE/T/NP=(ROWS) {traceInfosHS}, traceInfos
+	endif
+	if(WaveExists(traceInfosUnassocDA))
+		Concatenate/FREE/T/NP=(ROWS) {traceInfosUnassocDA}, traceInfos
+	endif
+	if(WaveExists(traceInfosTTL))
+		Concatenate/FREE/T/NP=(ROWS) {traceInfosTTL}, traceInfos
 	endif
 
 	traceIndex = GetNextTraceIndex(win)

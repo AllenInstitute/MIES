@@ -383,9 +383,9 @@ static Function CalculateFeatureLoc(WAVE wv, variable mode, variable level, vari
 
 		if(mode == TIME_ALIGNMENT_MAX)
 			return V_maxLoc
-		else
-			return V_minLoc
 		endif
+
+		return V_minLoc
 	elseif(mode == TIME_ALIGNMENT_LEVEL_RISING || mode == TIME_ALIGNMENT_LEVEL_FALLING)
 		if(mode == TIME_ALIGNMENT_LEVEL_RISING)
 			edgeType = 1
@@ -685,9 +685,9 @@ Function/WAVE GetPlainSweepList(string win)
 
 	if(BSP_IsDataBrowser(win))
 		return DB_GetPlainSweepList(win)
-	else
-		return SB_GetPlainSweepList(win)
 	endif
+
+	return SB_GetPlainSweepList(win)
 End
 
 /// @brief Return the graph user data as 2D text wave
