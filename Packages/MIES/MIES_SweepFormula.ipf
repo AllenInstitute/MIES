@@ -2299,14 +2299,23 @@ End
 
 static Function SF_DeriveTraceDisplayMode(WAVE/Z wvX, WAVE wvY)
 
-	variable traceMode
+	variable traceMode, numYPoints
 
-	traceMode = JWN_GetNumberFromWaveNote(wvY, SF_META_TRACE_MODE)
+	numYPoints = DimSize(wvY, ROWS)
+	traceMode  = JWN_GetNumberFromWaveNote(wvY, SF_META_TRACE_MODE)
 	if(IsValidTraceDisplayMode(traceMode))
+		if(traceMode == TRACE_DISPLAY_MODE_LINES)
+			if(numYPoints > 1)
+				return traceMode
+			endif
+
+			return TRACE_DISPLAY_MODE_MARKERS
+		endif
+
 		return traceMode
 	endif
 
-	if(DimSize(wvY, ROWS) < SF_MAX_NUMPOINTS_FOR_MARKERS        \
+	if(numYPoints < SF_MAX_NUMPOINTS_FOR_MARKERS                \
 	   && (!WaveExists(wvX)                                     \
 	       || DimSize(wvx, ROWS) < SF_MAX_NUMPOINTS_FOR_MARKERS))
 		return TRACE_DISPLAY_MODE_MARKERS

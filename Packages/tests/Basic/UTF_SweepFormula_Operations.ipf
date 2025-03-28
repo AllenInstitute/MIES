@@ -545,6 +545,16 @@ static Function TestOperationText()
 	str      = "text(wave(" + wavePath + "))"
 	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	str = note(output)
+	INFO("note: %s", s0 = str)
+	CHECK_EQUAL_STR(strRef, str)
+
+	// check that JWN notes also survive
+	JWN_SetStringInWaveNote(testData, "abcd", "efgh")
+	strRef = "WaveNoteCopyTest\rJSON_BEGIN\r{\n\"abcd\": \"efgh\"\n}"
+	str    = "text(wave(" + wavePath + "))"
+	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	str = note(output)
+	INFO("note: %s", s0 = str)
 	CHECK_EQUAL_STR(strRef, str)
 
 	KillWaves testData
@@ -1589,7 +1599,7 @@ static Function TestOperationData()
 
 	variable i, j, numChannels, sweepNo, sweepCnt, numResultsRef, clampMode
 	string str, strSelect, epochStr, name, trace, wvList, traces, traceInfos
-	string win, device, winBase
+	string win, device, winBase, graph
 	variable mode              = DATA_ACQUISITION_MODE
 	variable numSweeps         = 2
 	variable dataSize          = 10
@@ -1925,18 +1935,35 @@ static Function TestOperationData()
 	// check that we use line style even for a couple of points
 	str     = "data(select(selrange([2, 6]), selsweeps(0), selchannels(AD6)))"
 	winBase = ExecuteSweepFormulaCode(win, str)
-	win     = winBase + "#Graph0"
+	graph   = winBase + "#Graph0"
 
-	traces = TraceNameList(win, ";", 1 + 2)
+	traces = TraceNameList(graph, ";", 1 + 2)
 	CHECK_EQUAL_VAR(ItemsInList(traces), 1)
 
 	trace = StringFromList(0, traces)
 	CHECK_PROPER_STR(trace)
 
-	traceInfos = TraceInfo(win, trace, 0)
+	traceInfos = TraceInfo(graph, trace, 0)
 	CHECK_PROPER_STR(traceInfos)
 
 	CHECK(GrepString(traceInfos, "\bmode\(x\)=0\b"))
+
+	// but markers for a single point
+	// we inherit line style from the data operation
+	str     = "min(data(select(selsweeps(0), selchannels(AD6))))"
+	winBase = ExecuteSweepFormulaCode(win, str)
+	graph   = winBase + "#Graph0"
+
+	traces = TraceNameList(graph, ";", 1 + 2)
+	CHECK_EQUAL_VAR(ItemsInList(traces), 1)
+
+	trace = StringFromList(0, traces)
+	CHECK_PROPER_STR(trace)
+
+	traceInfos = TraceInfo(graph, trace, 0)
+	CHECK_PROPER_STR(traceInfos)
+
+	CHECK(GrepString(traceInfos, "\bmode\(x\)=3\b"))
 
 	// workaround permanent waves being present
 	wvList = GetListOfObjects(GetDataFolderDFR(), "data*")
