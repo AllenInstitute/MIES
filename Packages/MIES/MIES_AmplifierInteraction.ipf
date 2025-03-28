@@ -715,13 +715,13 @@ Function AI_UpdateChanAmpAssign(string device, variable headStage, variable clam
 End
 
 /// @brief Assert on invalid clamp modes, does nothing otherwise
-Function AI_AssertOnInvalidClampMode(variable clampMode)
+threadsafe Function AI_AssertOnInvalidClampMode(variable clampMode)
 
-	ASSERT(AI_IsValidClampMode(clampMode), "invalid clamp mode")
+	ASSERT_TS(AI_IsValidClampMode(clampMode), "invalid clamp mode")
 End
 
 /// @brief Return true if the given clamp mode is valid
-Function AI_IsValidClampMode(variable clampMode)
+threadsafe Function AI_IsValidClampMode(variable clampMode)
 
 	return clampMode == V_CLAMP_MODE || clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE
 End
@@ -842,7 +842,7 @@ static Function/S AI_GetMCCWinFilePath()
 End
 
 /// @brief Map from amplifier control names to @ref AI_SendToAmpConstants constants and clamp mode
-Function [variable func, variable clampMode] AI_MapControlNameToFunctionConstant(string ctrl)
+threadsafe Function [variable func, variable clampMode] AI_MapControlNameToFunctionConstant(string ctrl)
 
 	strswitch(ctrl)
 		// begin VC controls
@@ -904,7 +904,7 @@ Function [variable func, variable clampMode] AI_MapControlNameToFunctionConstant
 			return [MCC_PIPETTEOFFSET_FUNC, I_CLAMP_MODE]
 		// end IC controls
 		default:
-			ASSERT(0, "Unknown control " + ctrl)
+			ASSERT_TS(0, "Unknown control " + ctrl)
 			break
 	endswitch
 End
@@ -999,7 +999,7 @@ Function/S AI_MapFunctionConstantToControl(variable func, variable clampMode)
 End
 
 /// @brief Map constants from @ref AI_SendToAmpConstants to human readable names
-Function/S AI_MapFunctionConstantToName(variable func, variable clampMode)
+threadsafe Function/S AI_MapFunctionConstantToName(variable func, variable clampMode)
 
 	AI_AssertOnInvalidClampMode(clampMode)
 
@@ -1097,7 +1097,95 @@ Function/S AI_MapFunctionConstantToName(variable func, variable clampMode)
 			return "AutoBiasEnable"
 		// end others
 		default:
-			ASSERT(0, "Invalid func: " + num2str(func))
+			ASSERT_TS(0, "Invalid func: " + num2str(func))
+	endswitch
+End
+
+/// @brief Map human readable names to functions constants from @ref AI_SendToAmpConstants
+threadsafe Function AI_MapNameToFunctionConstant(string name)
+
+	strswitch(name)
+		// begin AmpStorageWave row labels
+		case "BiasCurrent":
+		case "HoldingPotential":
+			return MCC_HOLDING_FUNC
+		case "BiasCurrentEnable":
+		case "HoldingPotentialEnable":
+			return MCC_HOLDINGENABLE_FUNC
+		case "WholeCellCap":
+			return MCC_WHOLECELLCOMPCAP_FUNC
+		case "WholeCellRes":
+			return MCC_WHOLECELLCOMPRESIST_FUNC
+		case "WholeCellEnable":
+			return MCC_WHOLECELLCOMPENABLE_FUNC
+		case "Correction":
+			return MCC_RSCOMPCORRECTION_FUNC
+		case "Prediction":
+			return MCC_RSCOMPPREDICTION_FUNC
+		case "RsCompEnable":
+			return MCC_RSCOMPENABLE_FUNC
+		case "PipetteOffsetVC":
+		case "PipetteOffsetIC":
+			return MCC_PIPETTEOFFSET_FUNC
+		case "FastCapacitanceComp":
+			return MCC_AUTOFASTCOMP_FUNC
+		case "SlowCapacitanceComp":
+			return MCC_AUTOSLOWCOMP_FUNC
+		case "BridgeBalance":
+			return MCC_BRIDGEBALRESIST_FUNC
+		case "BridgeBalanceEnable":
+			return MCC_BRIDGEBALENABLE_FUNC
+		case "CapNeut":
+			return MCC_NEUTRALIZATIONCAP_FUNC
+		case "CapNeutEnable":
+			return MCC_NEUTRALIZATIONENABL_FUNC
+		// end AmpStorageWave row labels
+		// begin others
+		case "RsCompBandWidth":
+			return MCC_RSCOMPBANDWIDTH_FUNC
+		case "OscKillerEnable":
+			return MCC_OSCKILLERENABLE_FUNC
+		case "AutoPipetteOffset":
+			return MCC_AUTOPIPETTEOFFSET_FUNC
+		case "FastCompCap":
+			return MCC_FASTCOMPCAP_FUNC
+		case "FastCompTau":
+			return MCC_FASTCOMPTAU_FUNC
+		case "SlowCompCap":
+			return MCC_SLOWCOMPCAP_FUNC
+		case "SlowCompTau":
+			return MCC_SLOWCOMPTAU_FUNC
+		case "SlowCompTauX20":
+			return MCC_SLOWCOMPTAUX20ENAB_FUNC
+		case "SlowCurrentInjectEnable":
+			return MCC_SLOWCURRENTINJENABL_FUNC
+		case "SlowCurrentInjectLevel":
+			return MCC_SLOWCURRENTINJLEVEL_FUNC
+		case "SlowCurrentInjectSettleTime":
+			return MCC_SLOWCURRENTINJSETLT_FUNC
+		case "SetPrimarySignalGain":
+			return MCC_PRIMARYSIGNALGAIN_FUNC
+		case "SetSecondaySignalGain":
+			return MCC_SECONDARYSIGNALGAIN_FUNC
+		case "SetPrimarySignalHPF":
+			return MCC_PRIMARYSIGNALHPF_FUNC
+		case "SetPrimarySignalLPF":
+			return MCC_PRIMARYSIGNALLPF_FUNC
+		case "SetSecondaySignalLPF":
+			return MCC_SECONDARYSIGNALLPF_FUNC
+		case "RSCompChaining":
+			return MCC_NO_AMPCHAIN_FUNC
+		case "AutoBiasVcom":
+			return MCC_NO_AUTOBIAS_V_FUNC
+		case "AutoBiasVcomVariance":
+			return MCC_NO_AUTOBIAS_VRANGE_FUNC
+		case "AutoBiasIbiasmax":
+			return MCC_NO_AUTOBIAS_IBIASMAX_FUNC
+		case "AutoBiasEnable":
+			return MCC_NO_AUTOBIAS_ENABLE_FUNC
+		// end others
+		default:
+			ASSERT_TS(0, "Invalid name: " + name)
 	endswitch
 End
 
@@ -1205,6 +1293,139 @@ static Function/S AI_AmpStorageControlToRowLabel(string ctrl)
 			ASSERT(0, "Unknown control " + ctrl)
 			break
 	endswitch
+End
+
+/// @brief Return the unit with prefix of the given function constant and clampMode
+///
+/// This uses the MIES internal units i.e. with prefixes.
+threadsafe Function/S AI_GetUnitForFunctionConstant(variable func, variable clampMode)
+
+	AI_AssertOnInvalidClampMode(clampMode)
+
+	switch(func)
+		// begin AmpStorageWave row labels
+		case MCC_HOLDING_FUNC:
+
+			if(clampMode == V_CLAMP_MODE)
+				return "mV"
+			endif
+
+			return "pA"
+		case MCC_HOLDINGENABLE_FUNC:
+			return "On/Off"
+		case MCC_WHOLECELLCOMPCAP_FUNC:
+			return "pF"
+		case MCC_WHOLECELLCOMPRESIST_FUNC:
+			return "MΩ"
+		case MCC_WHOLECELLCOMPENABLE_FUNC:
+			return "On/Off"
+		case MCC_RSCOMPCORRECTION_FUNC:
+			return "%"
+		case MCC_RSCOMPPREDICTION_FUNC:
+			return "%"
+		case MCC_RSCOMPENABLE_FUNC:
+			return "On/Off"
+		case MCC_PIPETTEOFFSET_FUNC:
+			return "mV"
+		case MCC_AUTOFASTCOMP_FUNC:
+			return "a.u."
+		case MCC_AUTOSLOWCOMP_FUNC:
+			return "a.u."
+		case MCC_AUTOBRIDGEBALANCE_FUNC:
+			return "a.u."
+		case MCC_BRIDGEBALRESIST_FUNC:
+			return "MΩ"
+		case MCC_BRIDGEBALENABLE_FUNC:
+			return "On/Off"
+		case MCC_NEUTRALIZATIONCAP_FUNC:
+			return "pF"
+		case MCC_NEUTRALIZATIONENABL_FUNC:
+			return "On/Off"
+		// end AmpStorageWave row labels
+		// begin others
+		case MCC_AUTOWHOLECELLCOMP_FUNC:
+			return "a.u."
+		case MCC_RSCOMPBANDWIDTH_FUNC:
+			return "kHz"
+		case MCC_OSCKILLERENABLE_FUNC:
+			return "On/Off"
+		case MCC_AUTOPIPETTEOFFSET_FUNC:
+			return "a.u."
+		case MCC_FASTCOMPCAP_FUNC:
+			return "pF"
+		case MCC_FASTCOMPTAU_FUNC:
+			return "μs"
+		case MCC_SLOWCOMPCAP_FUNC:
+			return "pF"
+		case MCC_SLOWCOMPTAU_FUNC:
+			return "μs"
+		case MCC_SLOWCOMPTAUX20ENAB_FUNC:
+			return "On/Off"
+		case MCC_SLOWCURRENTINJENABL_FUNC:
+			return "On/Off"
+		case MCC_SLOWCURRENTINJLEVEL_FUNC:
+			return "mV"
+		case MCC_SLOWCURRENTINJSETLT_FUNC:
+			return "ms"
+		case MCC_PRIMARYSIGNALGAIN_FUNC:
+			return "a.u."
+		case MCC_SECONDARYSIGNALGAIN_FUNC:
+			return "a.u."
+		case MCC_PRIMARYSIGNALHPF_FUNC:
+			return "kHz"
+		case MCC_PRIMARYSIGNALLPF_FUNC:
+			return "kHz"
+		case MCC_SECONDARYSIGNALLPF_FUNC:
+			return "kHz"
+		case MCC_NO_AMPCHAIN_FUNC:
+			return "On/Off"
+		case MCC_NO_AUTOBIAS_V_FUNC:
+			return "mV"
+		case MCC_NO_AUTOBIAS_VRANGE_FUNC:
+			return "mV"
+		case MCC_NO_AUTOBIAS_IBIASMAX_FUNC:
+			return "pA"
+		case MCC_NO_AUTOBIAS_ENABLE_FUNC:
+			return "On/Off"
+		// end others
+		default:
+			ASSERT_TS(0, "Invalid func: " + num2str(func))
+	endswitch
+End
+
+/// @brief Return a wave with all function constants for the given clamp mode
+threadsafe Function/WAVE AI_GetFunctionConstantForClampMode(variable clampMode)
+
+	string list, ctrl
+	variable func, clampModeRet, numEntries, i
+
+	AI_AssertOnInvalidClampMode(clampMode)
+
+	switch(clampMode)
+		case V_CLAMP_MODE:
+			list = AMPLIFIER_CONTROLS_VC
+			break
+		case I_CLAMP_MODE:
+			list = AMPLIFIER_CONTROLS_IC
+			break
+		default:
+			ASSERT_TS(0, "Invalid clamp mode")
+	endswitch
+
+	numEntries = ItemsInList(list)
+	Make/FREE/N=(numEntries) funcs
+	for(i = 0; i < numEntries; i += 1)
+		ctrl                 = StringFromList(i, list)
+		[func, clampModeRet] = AI_MapControlNameToFunctionConstant(ctrl)
+
+		ASSERT_TS(clampMode == clampModeRet, "Non-matching clamp mode")
+
+		funcs[i] = func
+	endfor
+
+	WAVE uniqueFuncs = GetUniqueEntries(funcs)
+
+	return uniqueFuncs
 End
 
 #ifdef AMPLIFIER_XOPS_PRESENT
@@ -1523,6 +1744,10 @@ static Function AI_SendToAmp(string device, variable headStage, variable mode, v
 				ret = AI_WriteToMCC(func, value)
 			endif
 	endswitch
+
+	if(accessType == MCC_WRITE)
+		PUB_AmplifierSettingChange(device, headstage, mode, func, value)
+	endif
 
 	if(!IsFinite(ret))
 		print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"

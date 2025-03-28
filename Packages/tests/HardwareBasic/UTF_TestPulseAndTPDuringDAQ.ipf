@@ -1247,6 +1247,114 @@ static Function TPDuringDAQwithPS_PreAcq(string device)
 	PGC_SetAndActivateControl(device, "check_settings_show_power", val = 1)
 End
 
+/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function GetStoredTPTest([string str])
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_STP1_TP1"        + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:TestPulse:" + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:TestPulse:")
+
+	AcquireData_NG(s, str)
+
+	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
+End
+
+static Function GetStoredTPTest_REENTRY([string str])
+
+	variable i, sweepNo, marker, cycleId, headstage, numHS
+
+	Make/FREE/D headstages = {0, 1}
+	numHS = DimSize(headstages, ROWS)
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, NaN)
+
+	WaitAndCheckStoredTPs_IGNORE(str, numHS)
+
+	WAVE/Z TPStorage = GetTPStorage(str)
+	CHECK_WAVE(TPStorage, NUMERIC_WAVE)
+	marker = TPStorage[0][0][%TPMarker]
+	CHECK_NEQ_VAR(marker, NaN)
+
+	// Check GetStoredTP
+	WAVE/Z storedTPData = TP_GetStoredTP(str, NaN, 0, 1)
+	CHECK_WAVE(storedTPData, NULL_WAVE)
+
+	try
+		WAVE/Z storedTPData = TP_GetStoredTP(str, marker, NaN, 1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE/WAVE/N=(numHS) tpDACsRef, tpResultsRef
+	for(headstage : headstages)
+		WAVE/Z storedTPData = TP_GetStoredTP(str, marker, headstage, 1)
+		CHECK_WAVE(storedTPData, WAVE_WAVE)
+		CHECK_EQUAL_VAR(DimSize(storedTPData, ROWS), 3)
+
+		WAVE/WAVE tpData = storedTPData
+		WAVE/Z    tpADC  = tpData[0]
+		WAVE/Z    tpDAC  = tpData[1]
+		WAVE/Z    tpInfo = tpData[2]
+
+		CHECK_WAVE(tpADC, NUMERIC_WAVE)
+		CHECK_GE_VAR(DimSize(tpADC, ROWS), 1)
+		CHECK_WAVE(tpDAC, NUMERIC_WAVE)
+		CHECK_GE_VAR(DimSize(tpDAC, ROWS), 1)
+
+		WAVE tpResult = MIES_TP#TP_GetTPMetaData(tpStorage, marker, headstage)
+		CHECK_EQUAL_WAVES(tpInfo, tpResult)
+
+		tpDACsRef[i]    = tpDAC
+		tpResultsRef[i] = tpInfo
+		i              += 1
+	endfor
+
+	// Check TP_GetStoredTPsFromCycle
+	cycleId = TPStorage[0][0][%TPCycleID]
+	CHECK_NEQ_VAR(cycleId, NaN)
+
+	WAVE/Z storedTPData = TP_GetStoredTPsFromCycle(str, NaN, 0, 1)
+	CHECK_WAVE(storedTPData, NULL_WAVE)
+
+	try
+		WAVE/Z storedTPData = TP_GetStoredTPsFromCycle(str, cycleId, NaN, 1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	i = 0
+	for(headstage : headstages)
+		WAVE/Z storedTPData = TP_GetStoredTPsFromCycle(str, cycleId, headstage, 1)
+		CHECK_WAVE(storedTPData, WAVE_WAVE)
+		CHECK_EQUAL_VAR(DimSize(storedTPData, ROWS), 3)
+
+		WAVE/WAVE   tpData     = storedTPData
+		WAVE/Z/WAVE tpADCs     = tpData[0]
+		WAVE/Z/WAVE tpDACs     = tpData[1]
+		WAVE/Z/WAVE tpInfoWref = tpData[2]
+
+		CHECK_WAVE(tpADCs, WAVE_WAVE)
+		CHECK_GE_VAR(DimSize(tpADCs, ROWS), 1)
+		CHECK_WAVE(tpDACs, WAVE_WAVE)
+		CHECK_GE_VAR(DimSize(tpDACs, ROWS), 1)
+		CHECK_WAVE(tpInfoWref, WAVE_WAVE)
+		CHECK_EQUAL_VAR(DimSize(tpADCs, ROWS), DimSize(tpInfoWref, ROWS))
+		CHECK_EQUAL_VAR(DimSize(tpADCs, ROWS), DimSize(tpDACs, ROWS))
+
+		WAVE tpInfo0 = tpInfoWref[0]
+		CHECK_EQUAL_WAVES(tpInfo0, tpResultsRef[i])
+		WAVE tpDAC0 = tpDACs[0]
+		CHECK_EQUAL_WAVES(tpDAC0, tpDACsRef[i])
+		i += 1
+	endfor
+End
+
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function TPDuringDAQwithPS([string str])
 
@@ -1314,4 +1422,209 @@ static Function TPZerosDAC_REENTRY([STRUCT IUTF_MDATA &md])
 	ADC          = settings[index]
 
 	CHECK_LE_VAR(HW_ReadADC(hardwareType, deviceID, ADC), 0.01)
+End
+
+static Function TestTPPublishing_preAcq(string device)
+
+	// HS 0
+	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = 0)
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_Hold_IC", val = 1.23)
+
+	// HS 1
+	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = 1)
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_Hold_VC", val = 4.56)
+End
+
+/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function TestTPPublishing([string str])
+
+	TUFXOP_Clear/Z/N=(ZMQ_FILTER_TPRESULT_1S)
+	TUFXOP_Clear/Z/N=(ZMQ_FILTER_TPRESULT_5S)
+	TUFXOP_Clear/Z/N=(ZMQ_FILTER_TPRESULT_10S)
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_STP1_TP1"        + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:TestPulse:" + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:TestPulse:")
+
+	AcquireData_NG(s, str)
+
+	PrepareForPublishTest()
+
+	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
+End
+
+static Function TestTPPublishing_REENTRY([string str])
+
+	variable sweepNo, jsonId, var, index, dimMarker, headstage, i, foundHS0, foundHS1, clampMode
+	string filter, stv, adUnit, daUnit
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, NaN)
+
+	WaitAndCheckStoredTPs_IGNORE(str, 2)
+
+	WAVE tpStorage = GetTPStorage(str)
+	dimMarker = FindDimLabel(tpStorage, LAYERS, "TPMarker")
+
+	WAVE/T filters = DataGenerators#PUB_TPFiltersWithoutData()
+	for(filter : filters)
+		jsonId = FetchAndParseMessage(filter)
+
+		var = JSON_GetVariable(jsonID, "/properties/tp marker")
+		CHECK_NEQ_VAR(var, NaN)
+
+		FindValue/RMD=[][0][dimMarker]/V=(var) tpStorage
+		ASSERT(V_row >= 0, "Inconsistent TP data")
+		index = V_row
+
+		var = JSON_GetVariable(jsonID, "/properties/headstage")
+		CHECK_GE_VAR(var, 0)
+		CHECK_LE_VAR(var, 1)
+		headstage = var
+
+		stv = JSON_GetString(jsonID, "/properties/device")
+		CHECK_EQUAL_STR(stv, str)
+		var       = JSON_GetVariable(jsonID, "/properties/clamp mode")
+		clampMode = tpStorage[index][headstage][%ClampMode]
+		CHECK_EQUAL_VAR(var, clampMode)
+		daUnit = GetDAChannelUnit(var)
+		adUnit = GetADChannelUnit(var)
+
+		var = JSON_GetVariable(jsonID, "/properties/time of tp acquisition/value")
+		CHECK_EQUAL_VAR(var, tpStorage[index][headstage][%TimeInSeconds])
+		stv = JSON_GetString(jsonID, "/properties/time of tp acquisition/unit")
+		CHECK_EQUAL_STR(stv, "s")
+		var = JSON_GetVariable(jsonID, "/properties/clamp amplitude/value")
+		CHECK_EQUAL_VAR(var, tpStorage[index][headstage][%CLAMPAMP])
+		stv = JSON_GetString(jsonID, "/properties/clamp amplitude/unit")
+		CHECK_EQUAL_STR(stv, daUnit)
+		var = JSON_GetVariable(jsonID, "/properties/tp length ADC/value")
+		CHECK_EQUAL_VAR(var, tpStorage[index][headstage][%TPLENGTHPOINTSADC])
+		stv = JSON_GetString(jsonID, "/properties/tp length ADC/unit")
+		CHECK_EQUAL_STR(stv, "points")
+		var = JSON_GetVariable(jsonID, "/properties/pulse duration ADC/value")
+		CHECK_EQUAL_VAR(var, tpStorage[index][headstage][%PULSELENGTHPOINTSADC])
+		stv = JSON_GetString(jsonID, "/properties/pulse duration ADC/unit")
+		CHECK_EQUAL_STR(stv, "points")
+		var = JSON_GetVariable(jsonID, "/properties/pulse start point ADC/value")
+		CHECK_EQUAL_VAR(var, tpStorage[index][headstage][%PULSESTARTPOINTSADC])
+		stv = JSON_GetString(jsonID, "/properties/pulse start point ADC/unit")
+		CHECK_EQUAL_STR(stv, "point")
+		var = JSON_GetVariable(jsonID, "/properties/sample interval ADC/value")
+		CHECK_EQUAL_VAR(var, tpStorage[index][headstage][%SAMPLINGINTERVALADC])
+		stv = JSON_GetString(jsonID, "/properties/sample interval ADC/unit")
+		CHECK_EQUAL_STR(stv, "ms")
+		var = JSON_GetVariable(jsonID, "/properties/tp length DAC/value")
+		CHECK_EQUAL_VAR(var, tpStorage[index][headstage][%TPLENGTHPOINTSDAC])
+		stv = JSON_GetString(jsonID, "/properties/tp length DAC/unit")
+		CHECK_EQUAL_STR(stv, "points")
+		var = JSON_GetVariable(jsonID, "/properties/pulse duration DAC/value")
+		CHECK_EQUAL_VAR(var, tpStorage[index][headstage][%PULSELENGTHPOINTSDAC])
+		stv = JSON_GetString(jsonID, "/properties/pulse duration DAC/unit")
+		CHECK_EQUAL_STR(stv, "points")
+		var = JSON_GetVariable(jsonID, "/properties/pulse start point DAC/value")
+		CHECK_EQUAL_VAR(var, tpStorage[index][headstage][%PULSESTARTPOINTSDAC])
+		stv = JSON_GetString(jsonID, "/properties/pulse start point DAC/unit")
+		CHECK_EQUAL_STR(stv, "point")
+		var = JSON_GetVariable(jsonID, "/properties/sample interval DAC/value")
+		CHECK_EQUAL_VAR(var, tpStorage[index][headstage][%SAMPLINGINTERVALDAC])
+		stv = JSON_GetString(jsonID, "/properties/sample interval DAC/unit")
+		CHECK_EQUAL_STR(stv, "ms")
+		var = JSON_GetVariable(jsonID, "/properties/baseline fraction/value")
+		CHECK_EQUAL_VAR(var, 35)
+		stv = JSON_GetString(jsonID, "/properties/baseline fraction/unit")
+		CHECK_EQUAL_STR(stv, "%")
+		var = JSON_GetVariable(jsonID, "/properties/timestamp/value")
+		CHECK_EQUAL_VAR(var, tpStorage[index][headstage][%TimeStamp])
+		stv = JSON_GetString(jsonID, "/properties/timestamp/unit")
+		CHECK_EQUAL_STR(stv, "s")
+		var = JSON_GetVariable(jsonID, "/properties/timestampUTC/value")
+		CHECK_EQUAL_VAR(var, tpStorage[index][headstage][%TimeStampSinceIgorEpochUTC])
+		stv = JSON_GetString(jsonID, "/properties/timestampUTC/unit")
+		CHECK_EQUAL_STR(stv, "s")
+
+		var = JSON_GetVariable(jsonID, "/properties/tp cycle id")
+		CHECK_EQUAL_VAR(var, tpStorage[index][headstage][%TPCycleID])
+
+		var = JSON_GetVariable(jsonID, "/results/average baseline steady state/value")
+		if(tpStorage[index][headstage][%ClampMode] == V_CLAMP_MODE)
+			CHECK_EQUAL_VAR(var, tpStorage[index][headstage][%Baseline_VC])
+		else
+			CHECK_EQUAL_VAR(var, tpStorage[index][headstage][%Baseline_IC])
+		endif
+		stv = JSON_GetString(jsonID, "/results/average baseline steady state/unit")
+		CHECK_EQUAL_STR(stv, adUnit)
+		var = JSON_GetVariable(jsonID, "/results/average tp steady state/value")
+		CHECK_NEQ_VAR(var, NaN)
+		stv = JSON_GetString(jsonID, "/results/average tp steady state/unit")
+		CHECK_EQUAL_STR(stv, adUnit)
+		var = JSON_GetVariable(jsonID, "/results/instantaneous/value")
+		CHECK_NEQ_VAR(var, NaN)
+		stv = JSON_GetString(jsonID, "/results/instantaneous/unit")
+		CHECK_EQUAL_STR(stv, adUnit)
+		var = JSON_GetVariable(jsonID, "/results/steady state resistance/value")
+		CHECK_EQUAL_VAR(var, tpStorage[index][headstage][%SteadyStateResistance])
+		stv = JSON_GetString(jsonID, "/results/steady state resistance/unit")
+		CHECK_EQUAL_STR(stv, "MΩ")
+		var = JSON_GetVariable(jsonID, "/results/instantaneous resistance/value")
+		CHECK_EQUAL_VAR(var, tpStorage[index][headstage][%PeakResistance])
+		stv = JSON_GetString(jsonID, "/results/instantaneous resistance/unit")
+		CHECK_EQUAL_STR(stv, "MΩ")
+
+		if(clampMode == I_CLAMP_MODE)
+			var = JSON_GetVariable(jsonID, "/amplifier/BiasCurrent/value")
+			CHECK_EQUAL_VAR(var, 1.23)
+		elseif(clampMode == V_CLAMP_MODE)
+			var = JSON_GetVariable(jsonID, "/amplifier/HoldingPotential/value")
+			CHECK_EQUAL_VAR(var, 4.56)
+		else
+			FAIL()
+		endif
+	endfor
+
+	for(i = 0; i < 10; i += 1)
+		Make/FREE/N=0/WAVE receivedData
+		jsonId = FetchAndParseMessage(ZMQ_FILTER_TPRESULT_NOW_WITH_DATA, additionalData = receivedData)
+		CHECK_WAVE(receivedData, WAVE_WAVE | FREE_WAVE)
+
+		var = JSON_GetVariable(jsonID, "/properties/tp marker")
+		CHECK_NEQ_VAR(var, NaN)
+
+		WAVE/WAVE storedTP = TP_GetStoredTP(str, var, 0, 0)
+		CHECK_WAVE(storedTP, WAVE_WAVE | FREE_WAVE)
+
+		WAVE/WAVE tpAD = storedTP[0]
+		CHECK_WAVE(tpAD, NUMERIC_WAVE | FREE_WAVE)
+
+		Duplicate/FREE/RMD=[][0] tpAD, HS0
+		Duplicate/FREE/RMD=[][1] tpAD, HS1
+		Redimension/N=(-1, 0) HS0, HS1
+
+		WAVE data = receivedData[2]
+		Redimension/N=(DimSize(HS0, ROWS))/E=1/S data
+
+		var = JSON_GetVariable(jsonID, "/properties/headstage")
+		switch(var)
+			case 0:
+				CHECK(EqualWaves(data, HS0, WAVE_DATA))
+				foundHS0 = 1
+				break
+			case 1:
+				CHECK(EqualWaves(data, HS1, WAVE_DATA))
+				foundHS1 = 1
+				break
+			default:
+				FAIL()
+		endswitch
+
+		if(foundHS0 && foundHS1)
+			break
+		endif
+	endfor
+
+	CHECK(foundHS0)
+	CHECK(foundHS1)
 End
