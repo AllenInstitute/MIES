@@ -785,7 +785,7 @@ Function [STRUCT RGBColor s] GetTraceColorAlternative(variable index)
 		case 7:
 			s.red = 52428; s.green = 31097; s.blue = 42919
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Invalid index")
 	endswitch
 
@@ -1041,13 +1041,13 @@ Function SetAxesProperties(string graph, WAVE props, [string axesRegexp, variabl
 				logMode = AXIS_MODE_NO_LOG
 			elseif(mode == AXIS_RANGE_DEFAULT)
 				// probably just name has changed, try the axis at the current index and check if the orientation is correct
-				if(i < numRows && axisOrientation == props[i][%axisType])
-					minimum = props[i][%minimum]
-					maximum = props[i][%maximum]
-					logMode = props[i][%logMode]
-				else
+				if(!(i < numRows && axisOrientation == props[i][%axisType]))
 					continue
 				endif
+
+				minimum = props[i][%minimum]
+				maximum = props[i][%maximum]
+				logMode = props[i][%logMode]
 			else
 				ASSERT(0, "Unknown mode from AxisPropModeConstants for this function")
 			endif
@@ -1664,9 +1664,9 @@ Function GetCheckBoxMode(string win, string checkBoxName)
 	first = strsearch(S_recreation, "mode=", 0, 2)
 	if(first == -1)
 		return 0
-	else
-		sscanf S_recreation[first, first + 5], "mode=%d", mode
 	endif
+
+	sscanf S_recreation[first, first + 5], "mode=%d", mode
 	ASSERT(IsFinite(mode), "Unexpected checkbox mode")
 	return mode
 End
@@ -2108,11 +2108,11 @@ Function/S GetPopupMenuList(string value, variable type)
 	string path, cmd
 
 	switch(type)
-		case POPUPMENULIST_TYPE_BUILTIN:
+		case POPUPMENULIST_TYPE_BUILTIN: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			strswitch(value)
 				case "COLORTABLEPOP":
 					return CTabList()
-				default:
+				default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 					ASSERT(0, "Not implemented")
 			endswitch
 		case POPUPMENULIST_TYPE_OTHER:
@@ -2128,7 +2128,7 @@ Function/S GetPopupMenuList(string value, variable type)
 
 			SVAR str = $path
 			return str
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Missing popup menu list type")
 	endswitch
 End

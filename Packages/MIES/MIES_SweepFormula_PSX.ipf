@@ -1169,33 +1169,33 @@ static Function [WAVE/D results, WAVE eventIndex, WAVE marker, WAVE/T comboKeys]
 		case "onsettime":
 			propLabel = "Onset Time"
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Impossible prop: " + prop)
 	endswitch
 
 	// use the correct event/fit state for the property
 	strswitch(propLabel)
-		case "amplitude":
-		case "peak":
-		case "peak_t":
-		case "deconvPeak":
-		case "deconvPeak_t":
-		case "baseline":
-		case "baseline_t":
-		case "iei":
-		case "Event manual QC call":
-		case "Slew Rate":
-		case "Slew Rate Time":
-		case "Rise Time":
+		case "amplitude": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "peak": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "peak_t": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "deconvPeak": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "deconvPeak_t": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "baseline": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "baseline_t": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "iei": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "Event manual QC call": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "Slew Rate": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "Slew Rate Time": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "Rise Time": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "Onset Time":
 			stateType = "Event manual QC call"
 			break
-		case "Fit result":
-		case "tau":
+		case "Fit result": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "tau": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "Fit manual QC call":
 			stateType = "Fit manual QC call"
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unknown propLabel: " + propLabel)
 	endswitch
 
@@ -1510,7 +1510,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE s
 				propLabelAxis = "Onset time" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_X_DATA_UNIT) + ")"
 				break
 
-			default:
+			default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				ASSERT(0, "Impossible prop: " + prop)
 		endswitch
 
@@ -1640,7 +1640,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE s
 
 					JWN_SetWaveInWaveNote(results, SF_META_XVALUES, eventIndex)
 					break
-				default:
+				default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 					ASSERT(0, "Impossible postProc state")
 			endswitch
 
@@ -1703,7 +1703,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE s
 			JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, "Event")
 			JWN_SetStringInWaveNote(output, SF_META_YAXISLABEL, "Log10 " + LowerStr(propLabelAxis))
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Impossible state")
 	endswitch
 
@@ -1844,7 +1844,7 @@ static Function PSX_ParseState(string state)
 			return PSX_UNDET
 		case "All":
 			return PSX_ACCEPT | PSX_REJECT | PSX_UNDET
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Impossible state")
 	endswitch
 End
@@ -1860,7 +1860,7 @@ Function/S PSX_StateToString(variable state)
 			return "Undetermined"
 		case PSX_ALL:
 			return "All"
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "invalid state")
 	endswitch
 End
@@ -2041,7 +2041,7 @@ static Function PSX_UpdateOffsetInAllEventGraph(string win)
 					xOffset = first - psxEvent[i][%$"Slew Rate Time"]
 					yOffset = 0
 					break
-				default:
+				default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 					ASSERT(0, "Invalid offset mode")
 			endswitch
 
@@ -2146,7 +2146,7 @@ static Function PSX_AdaptColorsInAllEventGraph(string win, [variable forceAverag
 			WAVE   stateNew = eventStateNew
 			WAVE/T stateOld = eventStateFromTraces
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Invalid state type")
 	endswitch
 
@@ -2260,7 +2260,7 @@ static Function PSX_UpdateAverageTraces(string win, WAVE/T eventIndexFromTraces,
 				contAverageUndet[undetIndex] = singleEvent
 				undetIndex                  += 1
 				break
-			default:
+			default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				ASSERT(0, "impossible state")
 		endswitch
 
@@ -2294,9 +2294,9 @@ static Function/DF PSX_GetAverageFolder(string win)
 
 	if(PSX_GetRestrictEventsToCurrentCombo(win))
 		return PSX_GetCurrentComboFolder(win)
-	else
-		return PSX_GetWorkingFolder(win)
 	endif
+
+	return PSX_GetWorkingFolder(win)
 End
 
 static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventStopTime)
@@ -2350,7 +2350,7 @@ static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventSto
 			Make/FREE/T coeffNames = {"y0", "A1", "tau1", "A2", "tau2"}
 			CurveFit/M=0/Q/N=2 dblexp_XOffset, kwCWave=coefWave, average(start, stop)/D=acceptedAverageFit; err = GetRTError(1)
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unknown fit function")
 	endswitch
 
@@ -2419,11 +2419,11 @@ static Function/S PSX_GetPSXParameters(variable jsonID, variable cacheKeyType)
 	subJsonID = JSON_GetJSON(jsonID, SF_META_USER_GROUP + PSX_JWN_PARAMETERS, ignoreErr = 1)
 
 	switch(cacheKeyType)
-		case PSX_CACHE_KEY_EVENTS:
+		case PSX_CACHE_KEY_EVENTS: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PSX_CACHE_KEY_ANALYZE_PEAKS:
 			// do nothing
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unknown cache key type")
 	endswitch
 
@@ -2500,7 +2500,7 @@ static Function [WAVE/T keys, WAVE/T values] PSX_GetTraceSelectionWaves(string w
 				Make/FREE/T keys = {PSX_TUD_TYPE_KEY, PSX_TUD_COMBO_KEY}
 				Make/FREE/T values = {traceType, PSX_TUD_AVERAGE_ALL_COMBO_KEY}
 				break
-			default:
+			default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				ASSERT(0, "Invalid state type")
 		endswitch
 	endif
@@ -3047,7 +3047,7 @@ static Function PSX_GetMoveDirection(string psxGraph)
 			return -1
 		case PSX_KEYBOARD_DIR_LR:
 			return +1
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unsupported direction")
 	endswitch
 End
@@ -3062,7 +3062,7 @@ threadsafe static Function/WAVE PSX_SelectColor(variable state, WAVE acceptColor
 			return rejectColors
 		case PSX_UNDET:
 			return undetColors
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT_TS(0, "Invalid state")
 	endswitch
 End
@@ -3077,7 +3077,7 @@ threadsafe static Function PSX_SelectMarker(variable state)
 			return PSX_MARKER_REJECT
 		case PSX_UNDET:
 			return PSX_MARKER_UNDET
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT_TS(0, "Invalid state")
 	endswitch
 End
@@ -3174,7 +3174,7 @@ static Function PSX_UpdateEventWaves(string win, [variable val, variable index, 
 			stateCol1   = FindDimLabel(psxEvent, COLS, "Fit manual QC call")
 			oldStateCol = stateCol0
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unknown state type")
 	endswitch
 
@@ -3189,7 +3189,7 @@ static Function PSX_UpdateEventWaves(string win, [variable val, variable index, 
 			case PSX_REJECT:
 				val = PSX_UNDET
 				break
-			default:
+			default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				ASSERT(0, "Unknown state")
 		endswitch
 	endif
@@ -4041,7 +4041,7 @@ static Function PSX_AddLegend(string win, WAVE/WAVE results)
 
 					sprintf line, "%s: %s", param, RemoveEnding(str, sep)
 					break
-				default:
+				default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 					ASSERT(0, "Unsupported type")
 			endswitch
 
@@ -4131,7 +4131,7 @@ static Function [variable eventIndex, variable waveIndex, variable comboIndex] P
 	comboIndex   = PSX_GetComboIndexForComboKey(win, comboKeys[yPointNumber])
 
 	strswitch(postProc)
-		case "nothing":
+		case "nothing": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "log10":
 			eventIndex = xWave[yPointNumber]
 			break
@@ -4364,7 +4364,7 @@ static Function PSX_GetDirectionFromKeyCode(string psxGraph, variable keyCode)
 			return -1
 		case RIGHT_KEY:
 			return +1
-		case UP_KEY:
+		case UP_KEY: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case DOWN_KEY:
 			return PSX_GetMoveDirection(psxGraph)
 		default:
@@ -4377,9 +4377,9 @@ static Function PSX_MoveMouseForKeyPress(string win, variable keyCode, variable 
 	variable direction
 
 	switch(keycode)
-		case LEFT_KEY:
-		case RIGHT_KEY:
-		case UP_KEY:
+		case LEFT_KEY: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case RIGHT_KEY: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case UP_KEY: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case DOWN_KEY:
 			direction = PSX_GetDirectionFromKeyCode(win, keyCode)
 			PSX_MoveAndCenterCursor(win, eventIndex, direction = direction)
@@ -4446,7 +4446,7 @@ static Function PSX_ReactToKeyPressWithoutMouse(string win, variable keyCode, va
 				case PSX_KEYBOARD_DIR_LR:
 					keyboardDir = PSX_KEYBOARD_DIR_RL
 					break
-				default:
+				default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 					ASSERT(0, "Unknown direction")
 			endswitch
 
@@ -5017,7 +5017,7 @@ Function PSX_MouseEventSelection(variable newState, variable stateType)
 	strswitch(bottomLabel)
 		// PSX decision plot
 		// we match an empty string as well as AxisLabel returns that for auto labels (reported as #4353)
-		case "ms":
+		case "ms": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "":
 			WAVE peakX = GetPSXPeakXWaveFromDFR(comboDFR)
 
@@ -5054,7 +5054,7 @@ Function PSX_MouseEventSelection(variable newState, variable stateType)
 			needsUpdate = 1
 			break
 		// PSX stats plot
-		case "Event":
+		case "Event": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "Non-finite values":
 			[bottom, top] = GetMarqueeHelper("left", vert = 1, doAssert = 0, kill = 1)
 
@@ -5099,7 +5099,7 @@ static Function PSX_GetIndexOrientation(string axisLbl)
 		case "Non-finite values":
 			return EVENT_INDEX_VERTICAL
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Not supported")
 	endswitch
 End
@@ -5176,7 +5176,7 @@ static Function/WAVE PSX_GetEventsInsideMarqueeForStatsPlot(string win, variable
 				case EVENT_INDEX_VERTICAL:
 					MatrixOP/FREE eventIndizes = waveMap(yWave, waveMap(matchesClean, indizes))
 					break
-				default:
+				default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 					ASSERT(0, "Unsupported index orientation")
 			endswitch
 
@@ -5452,7 +5452,7 @@ Function PSX_ListBoxSelectCombo(STRUCT WMListBoxAction &lba) : ListboxControl
 	variable row
 
 	switch(lba.eventCode)
-		case 3: // double click (PGC_SetAndActivateControl uses that)
+		case 3: // double click (PGC_SetAndActivateControl uses that), FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 4: // cell selection
 
 			// workaround IP bug where lba.row can be out of range
@@ -5556,8 +5556,8 @@ End
 Function PSX_SetVarBlockSize(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // mouse up, FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 2: // Enter key, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 3: // Live update
 			PSX_UpdateAllEventGraph(sva.win, forceAverageUpdate = 1, forceBlockIndexUpdate = 1)
 			break

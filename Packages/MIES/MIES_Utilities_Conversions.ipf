@@ -705,7 +705,7 @@ Function WaveTypeStringToNumber(string type)
 			return 0x10
 		case "NT_I8":
 			return 0x08
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Type is not supported: " + type)
 	endswitch
 End
@@ -751,10 +751,10 @@ Function/WAVE JSONToWave(string str, [string path])
 	type = JSON_GetString(jsonID, path + "/type", ignoreErr = 1)
 
 	strswitch(type)
-		case "NT_FP64":
-		case "NT_FP32":
-		case "NT_I32":
-		case "NT_I16":
+		case "NT_FP64": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NT_FP32": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NT_I32": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NT_I16": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "NT_I8":
 			WAVE/Z data = JSON_GetWave(jsonID, path + "/data/raw", waveMode = 1)
 			ASSERT(WaveExists(data), "Missing data")
@@ -769,7 +769,7 @@ Function/WAVE JSONToWave(string str, [string path])
 			Make/N=(size)/FREE/WAVE container = JSONToWave(str, path = path + "/data/raw/" + num2str(p))
 			WAVE data = container
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Type is not supported: " + type)
 	endswitch
 
@@ -822,7 +822,7 @@ Function/WAVE JSONToWave(string str, [string path])
 				case 3:
 					SetScale/P t, dimOffsets[i], dimDeltas[i], dimUnits[i], data
 					break
-				default:
+				default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 					ASSERT(0, "Unsupported dimension")
 			endswitch
 		endfor

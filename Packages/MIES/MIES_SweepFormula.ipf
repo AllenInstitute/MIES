@@ -296,7 +296,7 @@ static Function/S SF_StringifyState(variable state)
 			return "SF_STATE_STRINGTERMINATOR"
 		case SF_STATE_UNINITIALIZED:
 			return "SF_STATE_UNINITIALIZED"
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "unknown state")
 	endswitch
 End
@@ -322,7 +322,7 @@ static Function/S SF_StringifyAction(variable action)
 			return "SF_ACTION_ARRAY"
 		case SF_ACTION_UNINITIALIZED:
 			return "SF_ACTION_UNINITIALIZED"
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unknown action")
 	endswitch
 End
@@ -486,15 +486,15 @@ static Function [variable jsonId, string jsonPath, variable lastCalculation, var
 			subId = SF_FormulaParser(buffer[1, Inf], createdArray = wasArrayCreated, indentLevel = indentLevel + 1)
 			SF_FPAddArray(jsonId, jsonPath, subId, wasArrayCreated)
 			break
-		case SF_ACTION_LOWERORDER:
+		case SF_ACTION_LOWERORDER: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			jsonPath = SF_ParserAdaptSubPath(jsonId, jsonPath, token)
-		case SF_ACTION_ARRAYELEMENT:
+		case SF_ACTION_ARRAYELEMENT: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			// - "," was encountered, thus we have multiple elements, we need to set an array at current path
 			// The actual content is added in the case fall-through
 			SFH_ASSERT(!(IsEmpty(buffer) && (lastAction == SF_ACTION_COLLECT || lastAction == SF_ACTION_SKIP || lastAction == SF_ACTION_HIGHERORDER)), "array element has no value", jsonId = jsonId)
 			JSON_AddTreeArray(jsonID, jsonPath)
 			lastCalculation = state
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			if(!IsEmpty(buffer))
 				SF_ParserAddJSON(jsonId, jsonPath, buffer, indentLevel)
 			endif
@@ -533,8 +533,8 @@ static Function [variable action, variable lastState, variable collectedSign] SF
 			switch(state)
 				// *, / before +, - (as well as *, / here) and /, - are non-commutative
 				// resulting in *, /, - are handled as higher order
-				case SF_STATE_ADDITION:
-				case SF_STATE_SUBTRACTION:
+				case SF_STATE_ADDITION: // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case SF_STATE_SUBTRACTION: // FIXME(CodeStyleFallthroughCaseRequireComment)
 					if(bufferIsEmpty || lastCalculation == SF_STATE_SUBTRACTION || lastCalculation == SF_STATE_MULTIPLICATION || lastCalculation == SF_STATE_DIVISION)
 						action = SF_ACTION_HIGHERORDER
 						break
@@ -550,8 +550,8 @@ static Function [variable action, variable lastState, variable collectedSign] SF
 
 					ASSERT(0, "Unhandled state")
 
-				case SF_STATE_MULTIPLICATION:
-				case SF_STATE_DIVISION:
+				case SF_STATE_MULTIPLICATION: // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case SF_STATE_DIVISION: // FIXME(CodeStyleFallthroughCaseRequireComment)
 
 					// if the buffer is empty and we are either at the start of a new parse or at a new array element (which is basically the start of a new parse of a subsequent part)
 					// and the left side is not a function, braces or brackets then we do not allow * and /.
@@ -596,7 +596,7 @@ static Function [variable action, variable lastState, variable collectedSign] SF
 				case SF_STATE_ARRAY:
 					action = SF_ACTION_ARRAY
 					break
-				case SF_STATE_NEWLINE:
+				case SF_STATE_NEWLINE: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				case SF_STATE_WHITESPACE:
 					action = SF_ACTION_SKIP
 					break
@@ -609,7 +609,7 @@ static Function [variable action, variable lastState, variable collectedSign] SF
 					endif
 					action = SF_ACTION_COLLECT
 					break
-				default:
+				default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 					sprintf errMsg, "Encountered undefined transition from %s to %s.", SF_StringifyState(lastState), SF_StringifyState(state)
 					SFH_ASSERT(0, errMsg, jsonId = jsonId)
 			endswitch
@@ -673,11 +673,11 @@ static Function [variable state, variable arrayLevel, variable level] SF_ParserG
 		case "\r":
 			state = SF_STATE_NEWLINE
 			break
-		case " ":
+		case " ": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "\t":
 			state = SF_STATE_WHITESPACE
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			state = SF_STATE_COLLECT
 			SFH_ASSERT(GrepString(token, SF_PARSER_REGEX_OTHER_VALID_CHARS), "undefined pattern in formula near: " + buffer + token, jsonId = jsonId)
 	endswitch
@@ -811,10 +811,10 @@ static Function/WAVE SF_FormulaExecutorStringOrVariable(string graph, variable j
 		dim = FindDimLabel(varStorage, ROWS, str[1, Inf])
 		SFH_ASSERT(dim != -2, "Unknown variable " + str[1, Inf])
 		return varStorage[dim]
-	else
-		Make/FREE/T outT = {str}
-		return SFH_GetOutputForExecutorSingle(outT, graph, "ExecutorStringReturn")
 	endif
+
+	Make/FREE/T outT = {str}
+	return SFH_GetOutputForExecutorSingle(outT, graph, "ExecutorStringReturn")
 End
 
 /// @brief Execute the formula parsed by SF_FormulaParser
@@ -1009,10 +1009,10 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 	opName = LowerStr(operations[0])
 #ifdef AUTOMATED_TESTING
 	strswitch(opName)
-		case SF_OP_MINUS:
-		case SF_OP_PLUS:
-		case SF_OP_DIV:
-		case SF_OP_MULT:
+		case SF_OP_MINUS: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case SF_OP_PLUS: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case SF_OP_DIV: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case SF_OP_MULT: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case SF_OP_RANGESHORT:
 			break
 		default:
@@ -1037,7 +1037,7 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 		case SF_OP_MULT:
 			WAVE out = SF_OperationMult(jsonId, jsonPath, graph)
 			break
-		case SF_OP_RANGE:
+		case SF_OP_RANGE: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case SF_OP_RANGESHORT:
 			WAVE out = SF_OperationRange(jsonId, jsonPath, graph)
 			break
@@ -1047,7 +1047,7 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 		case SF_OP_MAX:
 			WAVE out = SF_OperationMax(jsonId, jsonPath, graph)
 			break
-		case SF_OP_AVG:
+		case SF_OP_AVG: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case SF_OP_MEAN:
 			WAVE out = SF_OperationAvg(jsonId, jsonPath, graph)
 			break
@@ -1075,7 +1075,7 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 		case SF_OP_BUTTERWORTH:
 			WAVE out = SF_OperationButterworth(jsonId, jsonPath, graph)
 			break
-		case SF_OP_TIME:
+		case SF_OP_TIME: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case SF_OP_XVALUES:
 			WAVE out = SF_OperationXValues(jsonId, jsonPath, graph)
 			break
@@ -1214,7 +1214,7 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 		case SF_OP_SELECTRANGE:
 			WAVE out = SF_OperationSelectRange(jsonId, jsonPath, graph)
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			SFH_ASSERT(0, "Undefined Operation", jsonId = jsonId)
 	endswitch
 	///@}
@@ -1320,7 +1320,7 @@ static Function/S SF_GetAnnotationPrefix(string dataType)
 			return "LB "
 		case SF_DATATYPE_ANAFUNCPARAM:
 			return "AFP "
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Invalid dataType")
 	endswitch
 End
@@ -2203,7 +2203,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 						case 4:
 							ModifyGraph/W=$win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2], traceColor[3])
 							break
-						default:
+						default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 							ASSERT(0, "Invalid size of trace color wave")
 					endswitch
 				endif
@@ -2389,7 +2389,7 @@ static Function SF_FormulaWaveScaleTransfer(WAVE source, WAVE dest, variable dim
 		case CHUNKS:
 			SetScale/P t, DimOffset(source, dimSource), DimDelta(source, dimSource), WaveUnits(source, dimSource), dest
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Invalid dimDest")
 	endswitch
 End
@@ -2776,7 +2776,7 @@ static Function SF_MapClampModeToSelectCM(variable clampMode)
 		case I_EQUAL_ZERO_MODE:
 			return SF_OP_SELECT_CLAMPCODE_IZERO
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unknown clamp mode")
 	endswitch
 End
@@ -3867,7 +3867,7 @@ static Function/WAVE SF_IndexOverDataSetsForPrimitiveOperation(variable jsonId, 
 			case SF_OPSHORT_MULT:
 				output[] = SF_OperationMultImplDataSets(arg0[p], arg1[p])
 				break
-			default:
+			default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				ASSERT(0, "Unsupported primitive operation")
 		endswitch
 	elseif(dataSetNum1 == 1)
@@ -3886,7 +3886,7 @@ static Function/WAVE SF_IndexOverDataSetsForPrimitiveOperation(variable jsonId, 
 			case SF_OPSHORT_MULT:
 				output[] = SF_OperationMultImplDataSets(arg0[p], arg1[0])
 				break
-			default:
+			default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				ASSERT(0, "Unsupported primitive operation")
 		endswitch
 	elseif(dataSetNum0 == 1)
@@ -3905,7 +3905,7 @@ static Function/WAVE SF_IndexOverDataSetsForPrimitiveOperation(variable jsonId, 
 			case SF_OPSHORT_MULT:
 				output[] = SF_OperationMultImplDataSets(arg0[0], arg1[p])
 				break
-			default:
+			default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				ASSERT(0, "Unsupported primitive operation")
 		endswitch
 	else
@@ -4122,7 +4122,7 @@ static Function/WAVE SF_OperationAvg(variable jsonId, string jsonPath, string gr
 		case SF_OP_AVG_OVERSWEEPS:
 			return SF_OperationAvgImplOver(input, graph, opShort)
 
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unknown avg operation mode")
 	endswitch
 
@@ -4383,8 +4383,10 @@ static Function/WAVE SF_OperationAreaImpl(WAVE/Z input, variable zero)
 	SFH_ASSERT(IsNumericWave(input), "area requires numeric input data.")
 	if(zero)
 		SFH_ASSERT(DimSize(input, ROWS) >= 3, "Requires at least three points of data.")
-		Differentiate/DIM=(ROWS)/EP=1 input
-		Integrate/DIM=(ROWS) input
+		WAVE out_differentiate = NewFreeWave(IGOR_TYPE_64BIT_FLOAT, 0)
+		Differentiate/DIM=(ROWS)/EP=1 input/D=out_differentiate
+		Integrate/DIM=(ROWS) out_differentiate
+		WAVE input = out_differentiate
 	endif
 	SFH_ASSERT(DimSize(input, ROWS) >= 1, "integrate requires at least one data point.")
 
@@ -4399,25 +4401,19 @@ End
 /// `butterworth(data, lowPassCutoff, highPassCutoff, order)`
 static Function/WAVE SF_OperationButterworth(variable jsonId, string jsonPath, string graph)
 
-	variable numArgs
+	variable numArgs, lowPassCutoff, highPassCutoff, order
 
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
 	SFH_ASSERT(numArgs == 4, "The butterworth filter requires 4 arguments")
 
-	WAVE/WAVE input         = SF_ResolveDatasetFromJSON(jsonID, jsonPath, graph, 0)
-	WAVE      lowPassCutoff = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 1, checkExist = 1)
-	SFH_ASSERT(DimSize(lowPassCutoff, ROWS) == 1, "Too many input values for parameter lowPassCutoff")
-	SFH_ASSERT(IsNumericWave(lowPassCutoff), "lowPassCutoff parameter must be numeric")
-	WAVE highPassCutoff = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 2, checkExist = 1)
-	SFH_ASSERT(DimSize(highPassCutoff, ROWS) == 1, "Too many input values for parameter highPassCutoff")
-	SFH_ASSERT(IsNumericWave(highPassCutoff), "highPassCutoff parameter must be numeric")
-	WAVE order = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 3, checkExist = 1)
-	SFH_ASSERT(DimSize(order, ROWS) == 1, "Too many input values for parameter order")
-	SFH_ASSERT(IsNumericWave(order), "order parameter must be numeric")
+	WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonID, jsonPath, graph, 0, copy = 1)
+	lowPassCutoff  = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 1)
+	highPassCutoff = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 2)
+	order          = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 3)
 
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_BUTTERWORTH, DimSize(input, ROWS))
 
-	output[] = SF_OperationButterworthImpl(input[p], lowPassCutoff[0], highPassCutoff[0], order[0])
+	output[] = SF_OperationButterworthImpl(input[p], lowPassCutoff, highPassCutoff, order)
 
 	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_BUTTERWORTH, SF_DATATYPE_BUTTERWORTH)
 
@@ -4657,59 +4653,23 @@ End
 static Function/WAVE SF_OperationPowerSpectrum(variable jsonId, string jsonPath, string graph)
 
 	variable i, numArgs, doAvg, debugVal
-	string errMsg
-	string   avg     = SF_POWERSPECTRUM_AVG_OFF
-	string   unit    = SF_POWERSPECTRUM_UNIT_DEFAULT
-	string   winFunc = FFT_WINF_DEFAULT
-	variable cutoff  = 1000
-	variable ratioFreq
+	string unit, avg, winFunc
+	variable cutoff, ratioFreq
 
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
 	SFH_ASSERT(numArgs >= 1 && numArgs <= 6, "The powerspectrum operation requires 1 to 6 arguments")
 
-	WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonID, jsonPath, graph, 0)
-	if(numArgs > 1)
-		WAVE/T wUnit = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 1, checkExist = 1)
-		sprintf errMsg, "Second argument (unit) can not be a number. Use %s, %s or %s.", SF_POWERSPECTRUM_UNIT_DEFAULT, SF_POWERSPECTRUM_UNIT_DB, SF_POWERSPECTRUM_UNIT_NORMALIZED
-		SFH_ASSERT(IsTextWave(wUnit), errMsg)
-		SFH_ASSERT(!DimSize(wUnit, COLS) && DimSize(wUnit, ROWS) == 1, "Second argument (unit) must not be an array with multiple options.")
-		unit = wUnit[0]
-		sprintf errMsg, "Second argument (unit) must be %s, %s or %s.", SF_POWERSPECTRUM_UNIT_DEFAULT, SF_POWERSPECTRUM_UNIT_DB, SF_POWERSPECTRUM_UNIT_NORMALIZED
-		SFH_ASSERT(!CmpStr(unit, SF_POWERSPECTRUM_UNIT_DEFAULT) || !CmpStr(unit, SF_POWERSPECTRUM_UNIT_DB) || !CmpStr(unit, SF_POWERSPECTRUM_UNIT_NORMALIZED), errMsg)
-	endif
-	if(numArgs > 2)
-		WAVE/T wAvg = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 2, checkExist = 1)
-		sprintf errMsg, "Third argument (avg) can not be a number. Use %s or %s.", SF_POWERSPECTRUM_AVG_ON, SF_POWERSPECTRUM_AVG_OFF
-		SFH_ASSERT(IsTextWave(wAvg), errMsg)
-		SFH_ASSERT(!DimSize(wAvg, COLS) && DimSize(wAvg, ROWS) == 1, "Third argument (avg) must not be an array with multiple options.")
-		avg = wAvg[0]
-		sprintf errMsg, "Third argument (avg) must be %s or %s.", SF_POWERSPECTRUM_AVG_ON, SF_POWERSPECTRUM_AVG_OFF
-		SFH_ASSERT(!CmpStr(avg, SF_POWERSPECTRUM_AVG_ON) || !CmpStr(avg, SF_POWERSPECTRUM_AVG_OFF), errMsg)
-	endif
-	if(numArgs > 3)
-		WAVE wRatioFreq = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 3, checkExist = 1)
-		SFH_ASSERT(IsNumericWave(wRatioFreq), "Fourth argument (frequency for ratio) must be a number.")
-		SFH_ASSERT(!DimSize(wRatioFreq, COLS) && DimSize(wRatioFreq, ROWS) == 1, "Fourth argument (frequency for ratio) must not be an array with multiple options.")
-		ratioFreq = wRatioFreq[0]
-		sprintf errMsg, "Fourth argument (Frequency for ratio) must >= %f.", 0
-		SFH_ASSERT(ratioFreq >= 0, errMsg)
-	endif
-	if(numArgs > 4)
-		WAVE wCutoff = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 4, checkExist = 1)
-		SFH_ASSERT(IsNumericWave(wCutoff), "Fifth argument (cutoff frequency) must be a number.")
-		SFH_ASSERT(!DimSize(wCutoff, COLS) && DimSize(wCutoff, ROWS) == 1, "Fifth argument (cutoff frequency) must not be an array with multiple options.")
-		cutoff = wCutoff[0]
-		SFH_ASSERT(cutoff > 0, "Fifth argument (cutoff frequency) must be > 0.")
-	endif
-	if(numArgs > 5)
-		WAVE/T wWinf = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 5, checkExist = 1)
-		SFH_ASSERT(IsTextWave(wWinf), "Sixth argument (window function) can not be a number.")
-		SFH_ASSERT(!DimSize(wWinf, COLS) && DimSize(wWinf, ROWS) == 1, "Sixth argument (window function) must not be an array with multiple options.")
-		winFunc = wWinf[0]
-		SFH_ASSERT(WhichListItem(winFunc, FFT_WINF) >= 0 || !CmpStr(winFunc, SF_POWERSPECTRUM_WINFUNC_NONE), "Sixth argument (window function) is invalid.")
-		if(!CmpStr(winFunc, SF_POWERSPECTRUM_WINFUNC_NONE))
-			winFunc = ""
-		endif
+	WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonID, jsonPath, graph, 0, copy = 1)
+	unit      = SFH_GetArgumentAsText(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 1, defValue = SF_POWERSPECTRUM_UNIT_DEFAULT, allowedValues = {SF_POWERSPECTRUM_UNIT_DEFAULT, SF_POWERSPECTRUM_UNIT_DB, SF_POWERSPECTRUM_UNIT_NORMALIZED})
+	avg       = SFH_GetArgumentAsText(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 2, defValue = SF_POWERSPECTRUM_AVG_OFF, allowedValues = {SF_POWERSPECTRUM_AVG_ON, SF_POWERSPECTRUM_AVG_OFF})
+	ratioFreq = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 3, defValue = 0)
+	SFH_ASSERT(ratioFreq >= 0, "Fourth argument (Frequency for ratio) must >= 0.")
+	cutoff = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 4, defValue = 1000)
+	SFH_ASSERT(cutoff > 0, "Fifth argument (cutoff frequency) must be > 0.")
+	WAVE/T allowedWinFuncs = ListToTextWave(AddListItem(SF_POWERSPECTRUM_WINFUNC_NONE, FFT_WINF), ";")
+	winFunc = SFH_GetArgumentAsText(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 5, defValue = FFT_WINF_DEFAULT, allowedValues = allowedWinFuncs)
+	if(!CmpStr(winFunc, SF_POWERSPECTRUM_WINFUNC_NONE))
+		winFunc = ""
 	endif
 
 	for(data : input)
@@ -5056,7 +5016,7 @@ static Function/WAVE SF_OperationSelectCM(variable jsonId, string jsonPath, stri
 				case SF_OP_SELECTCM_CLAMPMODE_VC:
 					mode = mode | SF_OP_SELECT_CLAMPCODE_VC
 					break
-				default:
+				default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 					ASSERT(0, "Unsupported mode")
 			endswitch
 		endfor
@@ -5310,7 +5270,7 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 					WAVE/Z filter.selects = SF_GetSetIntersectionSelect(filter.selects, arg)
 				endif
 				break
-			default:
+			default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				SFH_ASSERT(0, "Unsupported select argument")
 		endswitch
 	endfor
@@ -5512,7 +5472,7 @@ static Function/WAVE SF_GetSelectDataWithRACorSCIIndex(string graph, WAVE select
 			return SF_GetSelectDataWithRACIndex(selectData, cycleIdsZapped, sweepMap, index)
 		case SELECTDATA_MODE_SCI:
 			return SF_GetSelectDataWithSCIIndex(selectData, cycleIdsZapped, headStagesZapped, sweepMap, index)
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unknown mode")
 	endswitch
 End
@@ -5969,8 +5929,8 @@ static Function/WAVE SF_OperationAnaFuncParamImpl(string graph, WAVE/T names, WA
 				case "variable":
 					Make/FREE/D out = {AFH_GetAnalysisParamNumerical(name, params)}
 					break
-				case "string":
-				case "wave":
+				case "string": // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case "wave": // FIXME(CodeStyleFallthroughCaseRequireComment)
 				case "textwave":
 					Make/FREE/D out = {0.0}
 					JWN_SetWaveInWaveNote(out, SF_META_TRACECOLOR, {0, 0, 0, 0})
@@ -5980,7 +5940,7 @@ static Function/WAVE SF_OperationAnaFuncParamImpl(string graph, WAVE/T names, WA
 					// unknown name or labnotebook entry not present
 					Make/FREE/D out = {NaN}
 					break
-				default:
+				default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 					ASSERT(0, "Unsupported parameter type: " + type)
 			endswitch
 
@@ -6620,7 +6580,7 @@ static Function/S SF_OperationApFrequencyMethodToString(variable method)
 			return "Instantaneous Pair"
 		case SF_APFREQUENCY_APCOUNT:
 			return "APCount"
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unknown apfrequency method")
 	endswitch
 End
@@ -7165,11 +7125,15 @@ Function/DF SF_GetBrowserDF(string graph)
 End
 
 /// @brief Executes the part of the argument part of the JSON and parses the resulting data to a waveRef type
-Function/WAVE SF_ResolveDatasetFromJSON(variable jsonId, string jsonPath, string graph, variable argNum)
+Function/WAVE SF_ResolveDatasetFromJSON(variable jsonId, string jsonPath, string graph, variable argNum, [variable copy])
+
+	copy = ParamIsDefault(copy) ? 0 : !!copy
 
 	WAVE wv = SF_FormulaExecutor(graph, jsonID, jsonPath = jsonPath + "/" + num2istr(argNum))
 
-	return SF_ResolveDataset(wv)
+	WAVE dataset = SF_ResolveDataset(wv)
+
+	return SFH_CopyDataIfRequired(copy, dataset, dataset)
 End
 
 static Function/WAVE SF_ResolveDataset(WAVE input)
@@ -7314,8 +7278,7 @@ Function/WAVE SF_OperationFit(variable jsonId, string jsonPath, string graph)
 	numElements = DimSize(yData, ROWS)
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_FIT, numElements)
 
-	WAVE/Z constraints
-	output[p] = SF_OperationFitImpl(xData[p], yData[p], fitType[0], holdWave, initialValues)
+	output[] = SF_OperationFitImpl(xData[p], yData[p], fitType[0], holdWave, initialValues)
 
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_FIT)
 End
@@ -7333,7 +7296,7 @@ Function/WAVE SF_OperationFitImpl(WAVE xData, WAVE yData, string fitFunc, WAVE h
 			CurveFit/Q/N=1/NTHR=1/M=0/W=2/G/H=holdString line, kwCWave=coefWave, yData[*][0]/X=xData[*][0]/D; err = GetRTError(1)
 			Make/T/FREE params = {"Offset;Slope"}
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			SFH_ASSERT(0, "Invalid fit function: " + fitFunc)
 	endswitch
 

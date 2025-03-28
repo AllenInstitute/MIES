@@ -246,7 +246,7 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 						val = WhichListItem(str, popupMenuList)
 						ASSERT(val >= 0 && val < ItemsInList(popupMenuList), "Invalid value for popupmenu: " + num2str(val))
 						break
-					default:
+					default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 						ASSERT(0, "Invalid popup menu type")
 				endswitch
 			endif

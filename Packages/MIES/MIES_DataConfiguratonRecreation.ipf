@@ -489,10 +489,10 @@ static Function [variable startIndex, variable endIndex] DCR_FindTestPulse(WAVE 
 	if(IsNaN(startIndexHigh) || IsNaN(endIndexHigh))
 		if(IsNaN(startIndexLow) || IsNaN(endIndexLow))
 			return [NaN, NaN]
-		else
-			startIndex = startIndexLow
-			endIndex   = endIndexLow
 		endif
+
+		startIndex = startIndexLow
+		endIndex   = endIndexLow
 	elseif(IsNaN(startIndexLow) || IsNaN(endIndexLow))
 		startIndex = startIndexHigh
 		endIndex   = endIndexHigh

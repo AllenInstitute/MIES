@@ -275,7 +275,7 @@ static Function/WAVE TP_CreateOverrideResults(string device, variable type)
 			numLayers = 3
 			labels    = "Factor;Voltage;BaselineFitResult"
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Invalid type")
 	endswitch
 
@@ -359,12 +359,12 @@ static Function TP_AutoBaseline(string device, variable headstage, WAVE TPResult
 		case TP_BASELINE_FIT_RESULT_OK:
 			// nothing to do
 			break
-		case TP_BASELINE_FIT_RESULT_ERROR:
+		case TP_BASELINE_FIT_RESULT_ERROR: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case TP_BASELINE_FIT_RESULT_TOO_NOISY:
 			TPResults[%AutoTPBaseline][headstage]              = 0
 			TPResults[%AutoTPBaselineRangeExceeded][headstage] = 0
 			return NaN
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unknown return value from TP_AutoFitBaseline")
 	endswitch
 
@@ -1590,7 +1590,7 @@ Function/S TP_AutoTPLabelToLabnotebookName(string lbl)
 			return "TP Auto interval"
 		case "sendToAllHS":
 			return "Send TP settings to all headstages"
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Invalid value: " + lbl)
 	endswitch
 End

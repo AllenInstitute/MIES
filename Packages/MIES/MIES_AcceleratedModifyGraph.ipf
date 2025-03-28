@@ -53,7 +53,7 @@ static Function/S GenerateValueString(variable type, variable keywordIndex, vari
 
 			result += ")"
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unknown type")
 	endswitch
 

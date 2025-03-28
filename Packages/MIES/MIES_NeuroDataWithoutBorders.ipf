@@ -333,7 +333,7 @@ threadsafe static Function/S NWB_GenerateDeviceDescription(string device, WAVE n
 		case HARDWARE_SUTTER_DAC:
 			sprintf desc, "Sutter Instrument Company: %s", hardwareName
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT_TS(0, "Invalid hardwareType")
 	endswitch
 
@@ -542,13 +542,7 @@ static Function NWB_HandleFileOverwrite(string fullFilePath, variable overwrite,
 	endif
 
 	if(FileExists(fullFilePath))
-		if(overwrite)
-			if(!IsEmpty(device))
-				NWB_CloseNWBFile(device)
-			endif
-			DeleteFile/Z fullFilePath
-			ASSERT(!FileExists(fullFilePath), "File could not be deleted")
-		else
+		if(!(overwrite))
 			if(verbose)
 				printf "The given path %s for the NWB export points to an existing file and overwrite is disabled.\r", fullFilePath
 				ControlWindowToFront()
@@ -556,6 +550,12 @@ static Function NWB_HandleFileOverwrite(string fullFilePath, variable overwrite,
 
 			return 1
 		endif
+
+		if(!IsEmpty(device))
+			NWB_CloseNWBFile(device)
+		endif
+		DeleteFile/Z fullFilePath
+		ASSERT(!FileExists(fullFilePath), "File could not be deleted")
 	endif
 
 	return 0
@@ -1591,11 +1591,11 @@ Function NWB_LoadCustomWave(variable locationID, string fullPath, variable overw
 
 	WAVE/Z wv = $fullPath
 	if(WaveExists(wv))
-		if(overwrite)
-			KillOrMoveToTrash(wv = wv)
-		else
+		if(!(overwrite))
 			return 0
 		endif
+
+		KillOrMoveToTrash(wv = wv)
 	endif
 
 	pathInNWB = RemovePrefix(fullPath, start = "root:")

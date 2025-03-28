@@ -91,7 +91,8 @@ End
 Function/S GetPopupMenuDeviceListWithData()
 
 	variable i, j, k
-	string path, deviceType, deviceNumber, list = ""
+	string path, deviceType, deviceNumber
+	string list = ""
 	string deviceString
 
 	variable numDeviceTypes = ItemsInList(DEVICE_TYPES_ITC)
@@ -188,7 +189,8 @@ End
 static Function UpdateCurrentSize(string win)
 
 	WAVE/WAVE dataRef = GetDownsampleDataRefWave()
-	variable i, size = 0
+	variable i
+	variable size     = 0
 	variable numWaves = DimSize(dataRef, ROWS)
 
 	for(i = 0; i < numWaves; i += 1)
@@ -219,7 +221,8 @@ static Function UpdateEstimatedSizeAfterwards(string win)
 
 	WAVE/WAVE dataRef = GetDownsampleDataRefWave()
 	WAVE      rate    = GetDownsampleRateWave()
-	variable i, size = 0
+	variable i
+	variable size       = 0
 	variable numWaves   = DimSize(dataRef, ROWS)
 	variable targetRate = GetTargetRate(win)
 
@@ -259,8 +262,9 @@ End
 /// @param constantRates boolean switch, defaults to false
 static Function/S ExpandRateToList(string win, variable var, [variable constantRates])
 
-	variable i, count = 10
-	string list = ""
+	variable i
+	variable count = 10
+	string   list  = ""
 
 	if(ParamIsDefault(constantRates))
 		constantRates = 0
@@ -468,11 +472,11 @@ End
 Function PopupMenuTargetRate(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	switch(pa.eventCode)
-		case 1:
-		case 2:
-		case 3:
-		case 4:
-		case 5:
+		case 1: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 2: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 3: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 4: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 5: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 6:
 			UpdateEstimatedSizeAfterwards(pa.win)
 			break

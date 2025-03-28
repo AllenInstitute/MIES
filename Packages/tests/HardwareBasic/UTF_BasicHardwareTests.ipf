@@ -457,7 +457,7 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([string str])
 				case HARDWARE_NI_DAC:
 					CHECK_EQUAL_VAR(DimSize(config, ROWS), 3 + 3 + 4)
 					break
-				default:
+				default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 					FAIL()
 			endswitch
 
@@ -658,7 +658,7 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([string str])
 					CHECK(GrepString(stimWaveChecksums[INDEP_HEADSTAGE], ";[[:digit:]]+;;[[:digit:]]+;;[[:digit:]]+;[[:digit:]]+;;"))
 					CHECK_EQUAL_TEXTWAVES(stimSetLengths, {"", "", "", "", "", "", "", "", ";158333;;154166;;168749;217499;;"})
 					break
-				default:
+				default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 					FAIL()
 			endswitch
 
@@ -1676,7 +1676,7 @@ static Function CheckAcquisitionStates_REENTRY([STRUCT IUTF_MDATA &md])
 				CheckLBNEntries_IGNORE(device, 0, i, missing = 1)
 				CheckLBNEntries_IGNORE(device, 1, i)
 				break
-			default:
+			default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				FAIL()
 		endswitch
 	endfor

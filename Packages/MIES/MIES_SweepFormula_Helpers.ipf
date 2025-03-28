@@ -235,7 +235,7 @@ End
 /// returned.
 ///
 /// The second argument `birdTypes` is optional, if not present the operation `birdTypes()` is called and its result returned. Alternatively `defWave` can be supplied which is then returned if the argument is not present.
-Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defOp, WAVE/Z defWave, variable singleResult, variable expectedWaveType])
+Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defOp, WAVE/Z defWave, variable singleResult, variable expectedWaveType, variable copy])
 
 	variable checkExist, numArgs, checkWaveType, realWaveType
 	string msg
@@ -257,6 +257,7 @@ Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string gra
 	else
 		singleResult = !!singleResult
 	endif
+	copy = ParamIsDefault(copy) ? 0 : !!copy
 
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
 
@@ -288,7 +289,7 @@ Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string gra
 			SFH_ASSERT(IsConstant(types, realWaveType), msg)
 		endif
 
-		return data
+		return SFH_CopyDataIfRequired(copy, input, data)
 	endif
 
 	sprintf msg, "Argument #%d of operation %s is mandatory", argNum, opShort
@@ -680,10 +681,15 @@ Function/WAVE SFH_CreateSFRefWave(string win, string opShort, variable size)
 	return wv
 End
 
+Function SFH_IsVariable(WAVE dataset)
+
+	return JWN_GetNumberFromWaveNote(dataset, SF_VARIABLE_MARKER) == 1
+End
+
 Function SFH_CleanUpInput(WAVE input)
 
 #ifndef SWEEPFORMULA_DEBUG
-	if(JWN_GetNumberFromWaveNote(input, SF_VARIABLE_MARKER) == 1)
+	if(SFH_IsVariable(input))
 		return NaN
 	endif
 	KillOrMoveToTrash(wv = input)
@@ -774,16 +780,31 @@ static Function SFH_ConvertAllReturnDataToPermanent(WAVE/WAVE output, string win
 	endfor
 End
 
+/// @brief If the copy condition is met and dataset is a variable then returns a free copy of data
+///        dataset and data can refer to the same wave
+Function/WAVE SFH_CopyDataIfRequired(variable copy, WAVE/Z dataset, WAVE/Z data)
+
+	if(!WaveExists(data) || !WaveExists(dataset))
+		// There are cases where the caller calls SFH_CleanUpInput on the dataset before this function is called
+		// Datasets are only cleaned if they are not a variable.
+		return data
+	endif
+
+	return FreeCopyIf(SFH_IsVariable(dataset) && copy, data)
+End
+
 /// @brief Retrieves from an argument the datatype and the first dataset and disposes the argument
-Function [WAVE data, string dataType] SFH_ResolveDatasetElementFromJSONAndType(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [variable checkExist])
+Function [WAVE data, string dataType] SFH_ResolveDatasetElementFromJSONAndType(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [variable checkExist, variable copy])
 
 	checkExist = ParamIsDefault(checkExist) ? 0 : !!checkExist
+	copy       = ParamIsDefault(copy) ? 0 : !!copy
 
 	WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
 	dataType = JWN_GetStringFromWaveNote(input, SF_META_DATATYPE)
-	WAVE/Z data = SFH_CheckForSingleDSAndGetData(input, checkExist, opShort, argNum)
+	WAVE/Z data         = SFH_CheckForSingleDSAndGetData(input, checkExist, opShort, argNum)
+	WAVE/Z possDataCopy = SFH_CopyDataIfRequired(copy, input, data)
 
-	return [data, dataType]
+	return [possDataCopy, dataType]
 End
 
 static Function/WAVE SFH_CheckForSingleDSAndGetData(WAVE/WAVE input, variable checkExist, string opShort, variable argNum)
@@ -797,14 +818,15 @@ static Function/WAVE SFH_CheckForSingleDSAndGetData(WAVE/WAVE input, variable ch
 End
 
 /// @brief Retrieves from an argument the first dataset and disposes the argument
-Function/WAVE SFH_ResolveDatasetElementFromJSON(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [variable checkExist])
+Function/WAVE SFH_ResolveDatasetElementFromJSON(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [variable checkExist, variable copy])
 
 	checkExist = ParamIsDefault(checkExist) ? 0 : !!checkExist
+	copy       = ParamIsDefault(copy) ? 0 : !!copy
 
 	WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
 	WAVE/Z    data  = SFH_CheckForSingleDSAndGetData(input, checkExist, opShort, argNum)
 
-	return data
+	return SFH_CopyDataIfRequired(copy, input, data)
 End
 
 /// @brief Transfer wavenote from input data sets to output data sets
@@ -842,6 +864,7 @@ Function SFH_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE outpu
 	endif
 
 	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, newDataType)
+	JWN_SetNumberInWaveNote(output, SF_VARIABLE_MARKER, 0)
 
 	opStack = JWN_GetStringFromWaveNote(input, SF_META_OPSTACK)
 	SFH_AddOpToOpStack(output, opStack, opShort)
@@ -1016,7 +1039,7 @@ Function/S SFH_ResultTypeToString(variable resultType)
 			return "psx events"
 		case SFH_RESULT_TYPE_PSX_MISC:
 			return "psx misc"
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Invalid resultType")
 	endswitch
 End
@@ -1293,89 +1316,88 @@ Function SFH_EnrichAnnotations(WAVE/T annotations, WAVE/T formulaArgSetup)
 		// stacksize different -> all different
 		SFH_EnrichAnnotationsRelease(formulaIds)
 		return 1
-	else
-		numOps = stackSize[0]
-		Make/FREE/WAVE/N=(numFormulas, numOps) argSetup
-		argSetup[][] = SFH_DeSerializeArgSetup(formulaIds[p], "/" + num2istr(q))
+	endif
 
-		Make/FREE/T/N=(numFormulas, numOps) opIds
-		opIds[][] = SFH_GetArgSetupValueByKey(argSetup[p][q], SFH_ARGSETUP_OPERATION_KEY)
-		for(i = 0; i < numOps; i += 1)
-			Duplicate/FREE/RMD=[][i] opIds, opRow
-			Redimension/N=(-1) opRow
-			WAVE opRowUniques = GetUniqueEntries(opRow)
-			if(DimSize(opRowUniques, ROWS) > 1)
-				// At least one operation is different
-				SFH_EnrichAnnotationsRelease(formulaIds)
-				return 1
-			endif
+	numOps = stackSize[0]
+	Make/FREE/WAVE/N=(numFormulas, numOps) argSetup
+	argSetup[][] = SFH_DeSerializeArgSetup(formulaIds[p], "/" + num2istr(q))
+
+	Make/FREE/T/N=(numFormulas, numOps) opIds
+	opIds[][] = SFH_GetArgSetupValueByKey(argSetup[p][q], SFH_ARGSETUP_OPERATION_KEY)
+	for(i = 0; i < numOps; i += 1)
+		Duplicate/FREE/RMD=[][i] opIds, opRow
+		Redimension/N=(-1) opRow
+		WAVE opRowUniques = GetUniqueEntries(opRow)
+		if(DimSize(opRowUniques, ROWS) > 1)
+			// At least one operation is different
+			SFH_EnrichAnnotationsRelease(formulaIds)
+			return 1
+		endif
+	endfor
+
+	Make/FREE/T/N=(numFormulas, numOps) shrinkedDiff
+	Make/FREE/T/N=(numFormulas) opStackStr
+	for(i = 0; i < numOps; i += 1)
+		Make/FREE/T/N=0 allKeys
+		for(j = 0; j < numFormulas; j += 1)
+			WAVE/T argOpSetup = argSetup[j][i]
+			dim = FindDimLabel(argOpSetup, COLS, "KEY")
+			Duplicate/FREE/RMD=[][dim] argOpSetup, argOpSetupKeys
+			Redimension/N=(-1) argOpSetupKeys
+			Concatenate/NP/T {argOpSetupKeys}, allKeys
 		endfor
-
-		Make/FREE/T/N=(numFormulas, numOps) shrinkedDiff
-		Make/FREE/T/N=(numFormulas) opStackStr
-		for(i = 0; i < numOps; i += 1)
-			Make/FREE/T/N=0 allKeys
-			for(j = 0; j < numFormulas; j += 1)
-				WAVE/T argOpSetup = argSetup[j][i]
-				dim = FindDimLabel(argOpSetup, COLS, "KEY")
-				Duplicate/FREE/RMD=[][dim] argOpSetup, argOpSetupKeys
-				Redimension/N=(-1) argOpSetupKeys
-				Concatenate/NP/T {argOpSetupKeys}, allKeys
-			endfor
-			WAVE/T uniqueKeys = GetUniqueEntries(allKeys)
-			numKeys = DimSize(uniqueKeys, ROWS)
-			Make/FREE/N=(numKeys) markDiff
-			if(numKeys > 1)
-				for(j = 0; j < numKeys; j += 1)
-					testKey   = uniqueKeys[j]
-					testValue = ""
-					for(k = 0; k < numFormulas; k += 1)
-						WAVE/T argOpSetup = argSetup[k][i]
-						if(IsEmpty(testValue))
-							testValue = SFH_GetArgSetupValueByKey(argOpSetup, testKey)
-							continue
-						endif
-						if(CmpStr(testValue, SFH_GetArgSetupValueByKey(argOpSetup, testKey), 1))
-							markDiff[j] = 1
-						endif
-					endfor
-				endfor
-			endif
-			// build nice string per formula
-			shrinkedDiff[][i] = SFH_GetArgSetupValueByKey(WaveRef(argSetup, row = p, col = i), SFH_ARGSETUP_OPERATION_KEY)
-			opStackStr[]      = shrinkedDiff[p][i] + " " + opStackStr[p]
-			for(j = 0; j < numFormulas; j += 1)
-				WAVE/T argOpSetup = argSetup[j][i]
-
-				if(sum(markDiff) == 0)
-					continue
-				endif
-
-				isDifferent = 1
-
-				buildDiffArgsStr = ""
-				for(k = 0; k < numKeys; k += 1)
-					if(!markDiff[k])
+		WAVE/T uniqueKeys = GetUniqueEntries(allKeys)
+		numKeys = DimSize(uniqueKeys, ROWS)
+		Make/FREE/N=(numKeys) markDiff
+		if(numKeys > 1)
+			for(j = 0; j < numKeys; j += 1)
+				testKey   = uniqueKeys[j]
+				testValue = ""
+				for(k = 0; k < numFormulas; k += 1)
+					WAVE/T argOpSetup = argSetup[k][i]
+					if(IsEmpty(testValue))
+						testValue = SFH_GetArgSetupValueByKey(argOpSetup, testKey)
 						continue
 					endif
-					buildDiffArgsStr += uniqueKeys[k] + ":" + SFH_GetArgSetupValueByKey(argOpSetup, uniqueKeys[k]) + " "
+					if(CmpStr(testValue, SFH_GetArgSetupValueByKey(argOpSetup, testKey), 1))
+						markDiff[j] = 1
+					endif
 				endfor
-				buildDiffArgsStr    = RemoveEnding(buildDiffArgsStr, " ")
-				shrinkedDiff[j][i] += "(" + buildDiffArgsStr + ")"
 			endfor
-		endfor
+		endif
+		// build nice string per formula
+		shrinkedDiff[][i] = SFH_GetArgSetupValueByKey(WaveRef(argSetup, row = p, col = i), SFH_ARGSETUP_OPERATION_KEY)
+		opStackStr[]      = shrinkedDiff[p][i] + " " + opStackStr[p]
+		for(j = 0; j < numFormulas; j += 1)
+			WAVE/T argOpSetup = argSetup[j][i]
 
-		opStackStr[] = RemoveEnding(opStackStr[p], " ")
-		for(i = 0; i < numFormulas; i += 1)
-			newAnnotation = ""
-			for(j = 0; j < numOps; j += 1)
-				newAnnotation = shrinkedDiff[i][j] + " " + newAnnotation
+			if(sum(markDiff) == 0)
+				continue
+			endif
+
+			isDifferent = 1
+
+			buildDiffArgsStr = ""
+			for(k = 0; k < numKeys; k += 1)
+				if(!markDiff[k])
+					continue
+				endif
+				buildDiffArgsStr += uniqueKeys[k] + ":" + SFH_GetArgSetupValueByKey(argOpSetup, uniqueKeys[k]) + " "
 			endfor
-			newAnnotation  = RemoveEnding(newAnnotation, " ")
-			annotations[i] = ReplaceString(opStackStr[i], annotations[i], newAnnotation)
+			buildDiffArgsStr    = RemoveEnding(buildDiffArgsStr, " ")
+			shrinkedDiff[j][i] += "(" + buildDiffArgsStr + ")"
 		endfor
+	endfor
 
-	endif
+	opStackStr[] = RemoveEnding(opStackStr[p], " ")
+	for(i = 0; i < numFormulas; i += 1)
+		newAnnotation = ""
+		for(j = 0; j < numOps; j += 1)
+			newAnnotation = shrinkedDiff[i][j] + " " + newAnnotation
+		endfor
+		newAnnotation  = RemoveEnding(newAnnotation, " ")
+		annotations[i] = ReplaceString(opStackStr[i], annotations[i], newAnnotation)
+	endfor
 
 	SFH_EnrichAnnotationsRelease(formulaIds)
 
@@ -1832,7 +1854,9 @@ Function/S SFH_CreateLegendFromRanges(WAVE selectData, WAVE/WAVE ranges)
 
 	if(!DimSize(ranges, ROWS))
 		return ""
-	elseif(DimSize(ranges, ROWS) == 1)
+	endif
+
+	if(DimSize(ranges, ROWS) == 1)
 		prefix = "All sweeps "
 	elseif(DimSize(ranges, ROWS) == DimSize(selectData, ROWS))
 		prefixPerSelect = 1

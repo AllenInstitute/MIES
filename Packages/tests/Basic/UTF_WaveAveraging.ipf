@@ -20,7 +20,7 @@ static Function IgorTypeToUTFType_IGNORE(variable igor_type)
 			return FLOAT_WAVE
 		case IGOR_TYPE_64BIT_FLOAT:
 			return DOUBLE_WAVE
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			FAIL()
 	endswitch
 End

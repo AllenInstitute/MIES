@@ -1867,7 +1867,7 @@ static Function AdaptForPostProc(string postProc, variable val)
 			return val
 		case "log10":
 			return log(val)
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unknown postProc value")
 	endswitch
 End
@@ -2059,7 +2059,7 @@ static Function CheckTraceColors(string win, WAVE/T traces, variable state)
 			// black
 			Make/FREE refColors = {1, 1, 1}
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Invalid state")
 	endswitch
 

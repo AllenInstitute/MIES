@@ -119,7 +119,7 @@ static Function AB_AddMapEntry(string baseFolder, string discLocation)
 
 	// %FileType = igor
 	strswitch(extension)
-		case ".pxp":
+		case ".pxp": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case ".uxp":
 			fileType = ANALYSISBROWSER_FILE_TYPE_IGOR
 			break
@@ -134,11 +134,11 @@ static Function AB_AddMapEntry(string baseFolder, string discLocation)
 				case 2:
 					fileType = ANALYSISBROWSER_FILE_TYPE_NWBv2
 					break
-				default:
+				default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 					ASSERT(0, "Unknown NWB version")
 			endswitch
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "invalid file type")
 	endswitch
 	map[writeIndex][%FileType] = fileType
@@ -249,13 +249,14 @@ static Function AB_AddFile(string discLocation, string sourceEntry)
 	AB_LoadFile(discLocation)
 	lastMapped = GetNumberFromWaveNote(list, NOTE_INDEX) - 1
 
-	if(lastMapped >= firstMapped)
-		list[firstMapped, lastMapped][%file][1] = num2str(mapIndex)
-		list[firstMapped, lastMapped][%type][1] = sourceEntry
-	else // experiment could not be loaded
+	if(!(lastMapped >= firstMapped))
+		// experiment could not be loaded
 		AB_RemoveMapEntry(mapIndex)
 		return 1
 	endif
+
+	list[firstMapped, lastMapped][%file][1] = num2str(mapIndex)
+	list[firstMapped, lastMapped][%type][1] = sourceEntry
 
 	return 0
 End
@@ -308,7 +309,7 @@ static Function AB_FileHasStimsets(WAVE/T map)
 			endif
 
 			return !!AB_LoadDataWrapper(tmpDFR, map[%DiscLocation], GetWBSvdStimSetPathAsString(), "")
-		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 
 			h5_fileID   = H5_OpenFile(map[%DiscLocation])
@@ -316,7 +317,7 @@ static Function AB_FileHasStimsets(WAVE/T map)
 			H5_CloseFile(h5_fileID)
 
 			return !IsEmpty(stimSetList)
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "invalid file type")
 	endswitch
 
@@ -345,7 +346,7 @@ static Function AB_LoadFile(string discLocation)
 		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 			AB_LoadResultsFromNWB(map[%DiscLocation], map[%DataFolder])
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "invalid file type")
 	endswitch
 
@@ -365,13 +366,13 @@ static Function AB_LoadFile(string discLocation)
 				AB_LoadTPStorageFromIgor(map[%DiscLocation], map[%DataFolder], device)
 				AB_LoadUserCommentFromFile(map[%DiscLocation], map[%DataFolder], device)
 				break
-			case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+			case ANALYSISBROWSER_FILE_TYPE_NWBv1: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 				AB_LoadSweepsFromNWB(map[%DiscLocation], map[%DataFolder], device)
 				AB_LoadTPStorageFromNWB(map[%DiscLocation], map[%DataFolder], device)
 				AB_LoadUserCommentAndHistoryFromNWB(map[%DiscLocation], map[%DataFolder], device)
 				break
-			default:
+			default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				ASSERT(0, "invalid file type")
 		endswitch
 
@@ -403,24 +404,24 @@ static Function AB_HasCompatibleVersion(string discLocation)
 			if(numWavesLoaded == 0)
 				DEBUGPRINT("Experiment has no pxp version so we can load it.")
 				return 1
-			else
-				NVAR/Z pxpVersion = targetDFR:pxpVersion
-				ASSERT(NVAR_Exists(pxpVersion), "Expected existing pxpVersion")
-
-				if(IsFinite(pxpVersion) && pxpVersion <= ANALYSIS_BROWSER_SUPP_VERSION)
-					DEBUGPRINT("Experiment has a compatible pxp version.", var = pxpVersion)
-					return 1
-				else
-					printf "The experiment %s has the pxpVersion %d which this version of MIES can not handle.\r", map[%DiscLocation], pxpVersion
-					ControlWindowToFront()
-					return 0
-				endif
 			endif
+
+			NVAR/Z pxpVersion = targetDFR:pxpVersion
+			ASSERT(NVAR_Exists(pxpVersion), "Expected existing pxpVersion")
+
+			if(IsFinite(pxpVersion) && pxpVersion <= ANALYSIS_BROWSER_SUPP_VERSION)
+				DEBUGPRINT("Experiment has a compatible pxp version.", var = pxpVersion)
+				return 1
+			endif
+
+			printf "The experiment %s has the pxpVersion %d which this version of MIES can not handle.\r", map[%DiscLocation], pxpVersion
+			ControlWindowToFront()
+			return 0
 			break
-		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 			return 1
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "invalid file type")
 	endswitch
 End
@@ -433,10 +434,10 @@ static Function/S AB_GetSettingNumFiniteVals(WAVE wv, string device, variable sw
 	if(!WaveExists(settings))
 		printf "Could not query the labnotebook of device %s for the setting %s\r", device, name
 		return "unknown"
-	else
-		WaveStats/Q/M=1 settings
-		return num2str(V_npnts)
 	endif
+
+	WaveStats/Q/M=1 settings
+	return num2str(V_npnts)
 End
 
 /// @brief Creates list-view for AnalysisBrowser
@@ -656,9 +657,9 @@ static Function/WAVE AB_GetSweepsFromLabNotebook(string dataFolder, string devic
 
 	if(clean)
 		return GetUniqueEntries(sweepNums)
-	else
-		return sweepNums
 	endif
+
+	return sweepNums
 End
 
 /// @brief Returns the highest referenced sweep number from the labnotebook
@@ -1004,7 +1005,7 @@ static Function/S AB_LoadLabNotebookFromFile(string discLocation)
 		case ANALYSISBROWSER_FILE_TYPE_IGOR:
 			deviceList = AB_LoadLabNotebookFromIgor(map[%DiscLocation])
 			break
-		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 			deviceList = AB_LoadLabNotebookFromNWB(map[%DiscLocation])
 			break
@@ -1588,9 +1589,9 @@ static Function AB_LoadFromExpandedRange(variable row, variable subSectionColumn
 
 	if(oneValidLoad)
 		return 0
-	else
-		return 1
 	endif
+
+	return 1
 End
 
 /// @brief Return the row with treeview in the column col starting from startRow
@@ -1794,13 +1795,13 @@ static Function AB_LoadSweepFromFile(string discLocation, string dataFolder, str
 				return 1
 			endif
 			break
-		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 			if(AB_LoadSweepFromNWB(discLocation, sweepDFR, device, sweep))
 				return 1
 			endif
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "fileType not handled")
 	endswitch
 
@@ -1831,7 +1832,7 @@ static Function AB_LoadStimsetFromFile(string discLocation, string dataFolder, s
 				return 1
 			endif
 			break
-		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 			stimsets  = AB_GetStimsetList(fileType, discLocation, dataFolder, device, sweep)
 			h5_fileID = H5_OpenFile(discLocation)
@@ -1850,7 +1851,7 @@ static Function AB_LoadStimsetFromFile(string discLocation, string dataFolder, s
 			endif
 			H5_CloseFile(h5_fileID)
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "fileType not handled")
 	endswitch
 
@@ -1970,7 +1971,7 @@ static Function AB_LoadSweepFromNWBgeneric(variable h5_groupID, variable nwbVers
 				endif
 
 				break
-			default:
+			default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				ASSERT(0, "unknown channel type " + num2str(p.channelType))
 		endswitch
 		ASSERT(WaveExists(loaded), "No Wave loaded")
@@ -2014,9 +2015,9 @@ static Function AB_LoadSweepFromNWBgeneric(variable h5_groupID, variable nwbVers
 
 	if(!waveNoteLoaded)
 		return 1 // nothing was loaded
-	else
-		return 0 // no error
 	endif
+
+	return 0 // no error
 End
 
 /// @brief Sorts the faked Config Sweeps Wave to get correct display order in Sweep Browser
@@ -2185,11 +2186,11 @@ static Function/S AB_LoadStimsets(string expFilePath, string stimsets, variable 
 				// parent corrupt
 				// load other parents, no children needed.
 				continue
-			else
-				// if a (dependent) stimset is missing
-				// the corresponding parent can not be created with Parameter Waves
-				return loadedStimsets
 			endif
+
+			// if a (dependent) stimset is missing
+			// the corresponding parent can not be created with Parameter Waves
+			return loadedStimsets
 		endif
 		loadedStimsets = AddListItem(stimset, loadedStimsets)
 		numMoved      += WB_StimsetFamilyNames(totalStimsets, parent = stimset)
@@ -2719,7 +2720,7 @@ End
 Function AB_ButtonProc_LoadBoth(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventcode)
-		case 2:
+		case 2: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			PGC_SetAndActivateControl(ba.win, "button_load_stimsets")
 			PGC_SetAndActivateControl(ba.win, "button_load_sweeps")
 		default:
@@ -3045,7 +3046,7 @@ Function AB_ListBoxProc_ExpBrowser(STRUCT WMListboxAction &lba) : ListBoxControl
 	variable mask, numRows, row, col
 
 	switch(lba.eventCode)
-		case 5: // cell selection + shift key
+		case 5: // cell selection + shift key, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 4: // cell selection
 			AB_CheckPanelVersion(lba.win)
 			AB_UpdateColors()
@@ -3452,10 +3453,10 @@ Function/S AB_GetStimsetList(string fileType, string discLocation, string dataFo
 		strswitch(fileType)
 			case ANALYSISBROWSER_FILE_TYPE_IGOR:
 				return AB_GetStimsetListFromIgorFile(discLocation)
-			case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+			case ANALYSISBROWSER_FILE_TYPE_NWBv1: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 				return NWB_ReadStimSetList(discLocation)
-			default:
+			default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				ASSERT(0, "fileType not handled")
 		endswitch
 	endif

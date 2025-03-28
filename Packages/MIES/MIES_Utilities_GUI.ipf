@@ -240,10 +240,10 @@ Function GetNumFromModifyStr(string info, string key, string listChar, variable 
 
 	if(item == 0)
 		return str2num(list)
-	else
-		ASSERT(item >= 0 && item < ItemsInList(list, ","), "Invalid index")
-		return NumberFromList(item, list, sep = ",")
 	endif
+
+	ASSERT(item >= 0 && item < ItemsInList(list, ","), "Invalid index")
+	return NumberFromList(item, list, sep = ",")
 End
 
 /// @brief Return the list of axis sorted from highest

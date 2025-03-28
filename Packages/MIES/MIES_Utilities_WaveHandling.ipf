@@ -647,11 +647,11 @@ threadsafe Function WaveModCountWrapper(WAVE wv)
 		ASSERT_TS(!IsFreeWave(wv), "Can not work with free waves")
 
 		return WaveModCount(wv)
-	else
-		ASSERT_TS(IsFreeWave(wv), "Can only work with free waves")
-
-		return NaN
 	endif
+
+	ASSERT_TS(IsFreeWave(wv), "Can only work with free waves")
+
+	return NaN
 End
 
 /// @brief Merge two floating point waves labnotebook waves
@@ -676,7 +676,9 @@ Function/WAVE MergeTwoWaves(WAVE wv1, WAVE wv2)
 
 		if(!validEntryOne && !validEntryTwo)
 			continue
-		elseif(validEntryOne)
+		endif
+
+		if(validEntryOne)
 			result[i] = wv1[i]
 		elseif(validEntryTwo)
 			result[i] = wv2[i]
@@ -944,9 +946,9 @@ threadsafe Function/WAVE SelectWave(variable condition, WAVE/Z waveIfFalse, WAVE
 
 	if(!!condition != 0)
 		return waveIfTrue
-	else
-		return waveIfFalse
 	endif
+
+	return waveIfFalse
 End
 
 /// @brief Remove unused rows from the passed wave and return a copy of it.
@@ -972,6 +974,20 @@ threadsafe Function/WAVE RemoveUnusedRows(WAVE wv)
 	Duplicate/FREE/RMD=[0, max(0, index - 1)] wv, dup
 
 	return dup
+End
+
+/// @brief If cond is true return a free deep copy of the wave otherwise the original wave is returned
+threadsafe Function/WAVE FreeCopyIf(variable cond, WAVE w)
+
+	if(!cond)
+		return w
+	endif
+
+	if(!IsWaveRefWave(w))
+		return DuplicateWaveToFree(w)
+	endif
+
+	return DeepCopyWaveRefWave(w)
 End
 
 /// @brief Duplicates the input wave to a free wave and returns the free wave reference.
@@ -1201,7 +1217,7 @@ Function DuplicateWaveAndKeepTargetRef(WAVE/Z source, WAVE/Z target)
 	ASSERT(wTypeTgt == wTypeSrc, "Source and Target wave have different base types")
 
 	switch(WaveDims(source))
-		case 0: // intended drop through
+		case 0: // intended drop through, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 1:
 			Redimension/N=(DimSize(source, ROWS)) target
 			break
@@ -1238,7 +1254,7 @@ Function DuplicateWaveAndKeepTargetRef(WAVE/Z source, WAVE/Z target)
 			WAVE/WAVE targetW = target
 			Multithread targetW[][][][] = sourceW[p][q][r][s]
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT(0, "Unknown wave type")
 	endswitch
 

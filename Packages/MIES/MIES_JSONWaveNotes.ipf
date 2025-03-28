@@ -157,7 +157,7 @@ threadsafe static Function/WAVE JWN_GetWaveRefFromWaveNote_Impl(WAVE wv, string 
 		case IGOR_TYPE_TEXT_WAVE:
 			container[] = JSON_GetTextWave(jsonID, jsonPath + "/" + num2str(p), ignoreErr = 1)
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT_TS(0, "Invalid type")
 	endswitch
 

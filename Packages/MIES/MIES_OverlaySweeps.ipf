@@ -996,8 +996,8 @@ Function OVS_SetVarProc_SelectionRange(STRUCT WMSetVariableAction &sva) : SetVar
 	string popStr, win
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // mouse up, FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 2: // Enter key, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 3: // Live update
 			win    = sva.win
 			popStr = GetPopupMenuString(win, "popup_overlaySweeps_select")

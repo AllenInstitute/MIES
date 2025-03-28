@@ -319,7 +319,7 @@ static Function GetHWChannelNumber(WAVE config, variable channelType, variable i
 		case XOP_CHANNEL_TYPE_TTL:
 			WAVE TTLs = GetTTLListFromConfig(config)
 			return (index < DimSize(TTLs, ROWS)) ? TTLs[index] : NaN
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			FAIL()
 	endswitch
 End
@@ -850,11 +850,11 @@ static Function EP_TestUserEpochs_REENTRY([string str])
 				FindValue/TEXT=tags/RMD=[][EPOCH_COL_TAGS][DAC] epochWave
 
 				switch(k)
-					case PRE_SET_EVENT:
-					case POST_SET_EVENT:
-					case PRE_SWEEP_CONFIG_EVENT:
-					case MID_SWEEP_EVENT:
-					case POST_SWEEP_EVENT:
+					case PRE_SET_EVENT: // FIXME(CodeStyleFallthroughCaseRequireComment)
+					case POST_SET_EVENT: // FIXME(CodeStyleFallthroughCaseRequireComment)
+					case PRE_SWEEP_CONFIG_EVENT: // FIXME(CodeStyleFallthroughCaseRequireComment)
+					case MID_SWEEP_EVENT: // FIXME(CodeStyleFallthroughCaseRequireComment)
+					case POST_SWEEP_EVENT: // FIXME(CodeStyleFallthroughCaseRequireComment)
 						if((k == PRE_SET_EVENT && i == 0) ||          \
 						   (k == POST_SET_EVENT && i == 2) ||         \
 						   (k != PRE_SET_EVENT && k != POST_SET_EVENT))

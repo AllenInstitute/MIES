@@ -18,7 +18,7 @@ threadsafe Function/S ListMatchesExpr(string list, string matchExpr, variable ex
 			return GrepList(list, matchExpr)
 		case MATCH_WILDCARD:
 			return ListMatch(list, matchExpr)
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ASSERT_TS(0, "invalid exprType")
 	endswitch
 End
