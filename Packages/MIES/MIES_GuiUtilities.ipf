@@ -1664,9 +1664,9 @@ Function GetCheckBoxMode(string win, string checkBoxName)
 	first = strsearch(S_recreation, "mode=", 0, 2)
 	if(first == -1)
 		return 0
-	else
-		sscanf S_recreation[first, first + 5], "mode=%d", mode
 	endif
+
+	sscanf S_recreation[first, first + 5], "mode=%d", mode
 	ASSERT(IsFinite(mode), "Unexpected checkbox mode")
 	return mode
 End

@@ -216,58 +216,58 @@ threadsafe Function/WAVE MIES_fWaveAverage(WAVE/Z yWaves, variable ignoreNaNs, v
 
 		result = {AveW, SumW, CntW}
 		return result
-	else
-		// can't do point-for-point because of different point range or scaling
-		variable firstAvePoint, lastAvePoint, point, xVal, yVal
-
-		variable newLength = 1 + round(abs(maxXmax - minXmin) / minDeltaX)
-		maxLength = min(maxLength * 4, newLength) // avoid the case where one very small deltaX in an XY pair causes a huge wave to be created.
-
-		Make/FREE/N=(maxLength)/Y=(averageWaveType) AveW, TempNWave, TempYWave
-		WAVE w = waves[0]
-		CopyScales w, AveW // just to get the data and x units
-		SetScale/I x, minXmin, maxXmax, AveW // set X scaling to all-encompassing range
-
-		for(i = 0; i < numWaves; i += 1)
-			thisXMin = xRange[i][0]
-			thisXMax = xRange[i][1]
-			if(thisXMin > thisXMax) // swapped X range (X values decrease with increasing point number)
-				tmp      = thisXMin
-				thisXMin = thisXMax
-				thisXMax = tmp
-			endif
-			firstAvePoint = ceil(x2pntWithFrac(AveW, thisXMin))  // truncate the partial point numbers...
-			lastAvePoint  = floor(x2pntWithFrac(AveW, thisXMax)) // ... by indenting slightly
-			WAVE wy = waves[i]
-			MultiThread TempYWave[firstAvePoint, lastAvePoint] = wy(limit(pnt2x(AveW, p), thisXMin, thisXMax))
-
-			if(ignoreNaNs)
-				MultiThread AveW[firstAvePoint, lastAvePoint] += !IsNaN(TempYWave[p]) ? TempYWave[p] : 0
-				MultiThread TempNWave[firstAvePoint, lastAvePoint] += !IsNaN(TempYWave[p])
-			else
-				MultiThread AveW[firstAvePoint, lastAvePoint] += TempYWave[p]
-				MultiThread TempNWave[firstAvePoint, lastAvePoint] += 1
-			endif
-		endfor
-
-		if(getComponents)
-			Duplicate/FREE AveW, SumW
-			CopyScales/P AveW, TempNWave
-		endif
-
-		if(gotPrevAvgData)
-			WAVE prevCnt = prevAvgData[1]
-			Make/FREE/N=(maxLength)/Y=(averageWaveType) prevCntXAdapt
-			MultiThread prevCntXAdapt[firstAvePoint, lastAvePoint] = prevCnt(limit(pnt2x(AveW, p), thisXMin, thisXMax))
-			MultiThread TempNWave[firstAvePoint, lastAvePoint] += prevCntXAdapt - 1
-		endif
-
-		//  points with no values added are set to NaN here:
-		MultiThread AveW = (TempNWave[p] == 0) ? NaN : (AveW[p] / TempNWave[p])
-
-		result = {AveW, SumW, TempNWave}
-		return result
 	endif
+
+	// can't do point-for-point because of different point range or scaling
+	variable firstAvePoint, lastAvePoint, point, xVal, yVal
+
+	variable newLength = 1 + round(abs(maxXmax - minXmin) / minDeltaX)
+	maxLength = min(maxLength * 4, newLength) // avoid the case where one very small deltaX in an XY pair causes a huge wave to be created.
+
+	Make/FREE/N=(maxLength)/Y=(averageWaveType) AveW, TempNWave, TempYWave
+	WAVE w = waves[0]
+	CopyScales w, AveW // just to get the data and x units
+	SetScale/I x, minXmin, maxXmax, AveW // set X scaling to all-encompassing range
+
+	for(i = 0; i < numWaves; i += 1)
+		thisXMin = xRange[i][0]
+		thisXMax = xRange[i][1]
+		if(thisXMin > thisXMax) // swapped X range (X values decrease with increasing point number)
+			tmp      = thisXMin
+			thisXMin = thisXMax
+			thisXMax = tmp
+		endif
+		firstAvePoint = ceil(x2pntWithFrac(AveW, thisXMin))  // truncate the partial point numbers...
+		lastAvePoint  = floor(x2pntWithFrac(AveW, thisXMax)) // ... by indenting slightly
+		WAVE wy = waves[i]
+		MultiThread TempYWave[firstAvePoint, lastAvePoint] = wy(limit(pnt2x(AveW, p), thisXMin, thisXMax))
+
+		if(ignoreNaNs)
+			MultiThread AveW[firstAvePoint, lastAvePoint] += !IsNaN(TempYWave[p]) ? TempYWave[p] : 0
+			MultiThread TempNWave[firstAvePoint, lastAvePoint] += !IsNaN(TempYWave[p])
+		else
+			MultiThread AveW[firstAvePoint, lastAvePoint] += TempYWave[p]
+			MultiThread TempNWave[firstAvePoint, lastAvePoint] += 1
+		endif
+	endfor
+
+	if(getComponents)
+		Duplicate/FREE AveW, SumW
+		CopyScales/P AveW, TempNWave
+	endif
+
+	if(gotPrevAvgData)
+		WAVE prevCnt = prevAvgData[1]
+		Make/FREE/N=(maxLength)/Y=(averageWaveType) prevCntXAdapt
+		MultiThread prevCntXAdapt[firstAvePoint, lastAvePoint] = prevCnt(limit(pnt2x(AveW, p), thisXMin, thisXMax))
+		MultiThread TempNWave[firstAvePoint, lastAvePoint] += prevCntXAdapt - 1
+	endif
+
+	//  points with no values added are set to NaN here:
+	MultiThread AveW = (TempNWave[p] == 0) ? NaN : (AveW[p] / TempNWave[p])
+
+	result = {AveW, SumW, TempNWave}
+	return result
 End
 
 // We need the fractional point number but x2pnt

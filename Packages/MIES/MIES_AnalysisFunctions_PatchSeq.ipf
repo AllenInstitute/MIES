@@ -438,7 +438,9 @@ static Function [variable ret, variable chunk] PSQ_EvaluateBaselineChunks(string
 			endif
 
 			break
-		elseif(ret)
+		endif
+
+		if(ret)
 			// != 0: failed with special mid sweep return value (on first failure) or PSQ_BL_FAILED
 			if(type == PSQ_TRUE_REST_VM || type == PSQ_ACC_RES_SMOKE)
 				// every failed chunk is fatal
@@ -458,11 +460,11 @@ static Function [variable ret, variable chunk] PSQ_EvaluateBaselineChunks(string
 				// pre pulse baseline
 				// try next chunks, or for PSQ_PIPETTE_BATH/PSQ_TRUE_REST_VM/PSQ_ACC_RES_SMOKE we are done
 				continue
-			else
-				// post baseline
-				// we're done!
-				break
 			endif
+
+			// post baseline
+			// we're done!
+			break
 		endif
 	endfor
 
@@ -901,13 +903,13 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	elseif(baselineType == PSQ_BL_POST_PULSE || baselineType == PSQ_BL_GENERIC)
 		if(chunkPassed)
 			return 0
-		else
-			if(type == PSQ_ACC_RES_SMOKE)
-				return ANALYSIS_FUNC_RET_EARLY_STOP
-			else
-				return PSQ_BL_FAILED
-			endif
 		endif
+
+		if(type == PSQ_ACC_RES_SMOKE)
+			return ANALYSIS_FUNC_RET_EARLY_STOP
+		endif
+
+		return PSQ_BL_FAILED
 	else
 		ASSERT(0, "unknown baseline type")
 	endif
@@ -4184,7 +4186,9 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 
 					if(ret == PSQ_RESULTS_DONE)
 						break
-					elseif(sweepPassed && ret == PSQ_RESULTS_CONT)
+					endif
+
+					if(sweepPassed && ret == PSQ_RESULTS_CONT)
 						DAScalesIndex[s.headstage] += 1
 					endif
 					break
@@ -4305,7 +4309,9 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 			if(index > DimSize(DAScales, ROWS))
 				printf "(%s): The stimset has too many sweeps, increase the size of DAScales.\r", GetRTStackInfo(1)
 				continue
-			elseif(index < DimSize(DAScales, ROWS))
+			endif
+
+			if(index < DimSize(DAScales, ROWS))
 				ASSERT(IsFinite(daScaleOffset), "DAScale offset is non-finite")
 				ASSERT(IsFinite(daScaleModifier), "DAScale modifier is non-finite")
 
@@ -4921,7 +4927,9 @@ Function PSQ_Rheobase(string device, STRUCT AnalysisFunction_V3 &s)
 
 					DEBUGPRINT("Set has failed")
 					break
-				elseif(CheckIfClose(stepSize, PSQ_RB_DASCALE_STEP_LARGE))
+				endif
+
+				if(CheckIfClose(stepSize, PSQ_RB_DASCALE_STEP_LARGE))
 					// retry with much smaller values
 					PSQ_StoreStepSizeInLBN(device, PSQ_RHEOBASE, s.sweepNo, PSQ_RB_DASCALE_STEP_SMALL, future = 1)
 

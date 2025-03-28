@@ -316,9 +316,9 @@ Function HW_ReadDigital(variable hardwareType, variable deviceID, variable chann
 			HW_NI_AssertOnInvalid(realDeviceOrPressure)
 			if(ParamisDefault(line))
 				return HW_NI_ReadDigital(realDeviceOrPressure, DIOPort = channel, flags = flags)
-			else
-				return HW_NI_ReadDigital(realDeviceOrPressure, DIOPort = channel, DIOline = line, flags = flags)
 			endif
+
+			return HW_NI_ReadDigital(realDeviceOrPressure, DIOPort = channel, DIOline = line, flags = flags)
 			break
 		case HARDWARE_SUTTER_DAC:
 			ASSERT(0, "Not yet implemented")
@@ -2087,9 +2087,9 @@ Function HW_ITC_ClipTTLBit(string device, variable ttlBit)
 
 	if(HW_ITC_GetRackForTTLBit(device, ttlBit) == RACK_ONE)
 		return ttlBit - NUM_ITC_TTL_BITS_PER_RACK
-	else
-		return ttlBit
 	endif
+
+	return ttlBit
 End
 
 /// @brief Return the rack number for the given ttlBit (the ttlBit is
@@ -2101,9 +2101,9 @@ Function HW_ITC_GetRackForTTLBit(string device, variable ttlBit)
 	if(ttlBit >= NUM_ITC_TTL_BITS_PER_RACK)
 		ASSERT(IsITC1600(device), "Only the ITC1600 has multiple racks")
 		return RACK_ONE
-	else
-		return RACK_ZERO
 	endif
+
+	return RACK_ZERO
 End
 
 /// @brief Return the ITC XOP channel for the given rack
@@ -2115,9 +2115,9 @@ Function HW_ITC_GetITCXOPChannelForRack(string device, variable rack)
 	if(rack == RACK_ZERO)
 		if(IsITC1600(device))
 			return HARDWARE_ITC_TTL_1600_RACK_ZERO
-		else
-			return HARDWARE_ITC_TTL_DEF_RACK_ZERO
 		endif
+
+		return HARDWARE_ITC_TTL_DEF_RACK_ZERO
 	elseif(rack == RACK_ONE)
 		ASSERT(IsITC1600(device), "Only the ITC1600 has multiple racks")
 		return HARDWARE_ITC_TTL_1600_RACK_ONE

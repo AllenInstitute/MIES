@@ -425,9 +425,9 @@ Function DB_UpdateSweepPlot(string win)
 	if(!WaveExists(sweepsToOverlay))
 		if(tgs.overlaySweep)
 			return NaN
-		else
-			Make/FREE/N=1 sweepsToOverlay = GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")
 		endif
+
+		Make/FREE/N=1 sweepsToOverlay = GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")
 	endif
 
 	WAVE  axisLabelCache = GetAxisLabelCacheWave()

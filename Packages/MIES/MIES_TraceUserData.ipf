@@ -156,9 +156,9 @@ Function/WAVE TUD_GetUserDataAsWave(string graph, string key, [WAVE/T keys, WAVE
 		if(returnIndizes)
 			Make/FREE/D/N=(DimSize(result, ROWS)) matches = p
 			return matches
-		else
-			return result
 		endif
+
+		return result
 	endif
 
 	ASSERT((ParamIsDefault(keys) + ParamIsDefault(values)) != 1, "Unexpected optional paramters")
