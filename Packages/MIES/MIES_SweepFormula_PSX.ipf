@@ -4021,6 +4021,11 @@ static Function PSX_MoveWavesToDataFolders(DFREF workDFR, WAVE/Z/WAVE results, v
 
 		Make/D/N=(numEvents) dfr:eventLocationTicks/WAVE=eventLocationTicks
 		eventLocationTicks[] = peakX[p]
+		
+		// TODO add vertical dashed lines at positions
+		// 3 checkboxes to turn all of these on/off below suppress update
+		// peak_t
+		// baseline_t
 
 		PSX_CreateSingleEventWaves(dfr, psxEvent, sweepDataOffFilt)
 
