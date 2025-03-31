@@ -864,6 +864,7 @@ Function SFH_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE outpu
 	endif
 
 	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, newDataType)
+	JWN_SetNumberInWaveNote(output, SF_VARIABLE_MARKER, 0)
 
 	opStack = JWN_GetStringFromWaveNote(input, SF_META_OPSTACK)
 	SFH_AddOpToOpStack(output, opStack, opShort)
