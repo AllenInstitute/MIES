@@ -130,7 +130,7 @@ Window PSXPanel() : Panel
 	SetVariable setvar_fit_start_amplitude, pos={13.00, 193.00}, size={144.00, 18.00}, bodyWidth=44
 	SetVariable setvar_fit_start_amplitude, title="Fit start amplitude"
 	SetVariable setvar_fit_start_amplitude, help={"Allows to restrict the all event graph to only a percentage of the events."}
-	SetVariable setvar_fit_start_amplitude, limits={0, 100, 1}, value=_NUM:20
+	SetVariable setvar_fit_start_amplitude, limits={0, 100, 1}, value=_NUM:20,proc=PSX_FitStartAmplitude
 	DefineGuide leftMenu={FL, 0.2, FR}, horizCenter={leftMenu, 0.5, FR}
 	SetWindow kwTopWin, hook(resetScaling)=IH_ResetScaling
 	SetWindow kwTopWin, hook(ctrl)=PSX_AllEventGraphHook

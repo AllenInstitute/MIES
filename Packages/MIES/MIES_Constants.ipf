@@ -2336,6 +2336,8 @@ Constant PSX_MARKER_UNDET  = 18
 /// @anchor FitEventDecayCustomErrors
 ///@{
 Constant PSX_DECAY_FIT_ERROR = -10000
+Constant PSX_DECAY_FIT_INVALID_RANGE_ERROR = -10001
+
 ///@}
 
 StrConstant PSX_STATS_LABELS = "Average;Median;Average Deviation;Standard deviation;Skewness;Kurtosis"
