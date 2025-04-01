@@ -3590,18 +3590,15 @@ static Function PSX_RestoreGuiState(string win)
 		SetCheckBoxState(specialEventPanel, ctrl, JSON_GetVariable(jsonID, "/specialEventPanel/" + ctrl))
 	endfor
 
-	// first block size, as that recalculates the number of blocks
-	PGC_SetAndActivateControl(specialEventPanel, "setvar_event_block_size", val = JSON_GetVariable(jsonID, "/specialEventPanel/setvar_event_block_size"))
+	SetSetVariable(specialEventPanel, "setvar_event_block_size", JSON_GetVariable(jsonID, "/specialEventPanel/setvar_event_block_size"))
+	SetSetVariable(specialEventPanel, "setvar_fit_start_amplitude", JSON_GetVariable(jsonID, "/specialEventPanel/setvar_fit_start_amplitude"))
 
-	selectedBlock = JSON_GetVariable(jsonID, "/specialEventPanel/popup_block")
-	allBlocks     = PSX_GetAllEventBlockNumbers(specialEventPanel)
-	lastBlock     = NumberFromList(ItemsInList(allBlocks) - 1, allBlocks)
-	PGC_SetAndActivateControl(specialEventPanel, "popup_block", val = limit(selectedBlock, 0, lastBlock))
+	SetPopupMenuIndex(specialEventPanel, "popup_block", JSON_GetVariable(jsonID, "/specialEventPanel/popup_block"))
 
 	WAVE/T popups = PSX_GetSpecialEventPanelPopups(specialEventPanel)
 
 	for(popMenu : popups)
-		PGC_SetAndActivateControl(specialEventPanel, popMenu, val = JSON_GetVariable(jsonID, "/specialEventPanel/" + popMenu))
+		SetPopupMenuIndex(specialEventPanel, popMenu, JSON_GetVariable(jsonID, "/specialEventPanel/" + popMenu))
 	endfor
 
 	mainWindow = GetMainWindow(win)
