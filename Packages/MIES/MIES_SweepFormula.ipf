@@ -219,6 +219,9 @@ static Constant SWEEPPROP_END           = 3
 
 static StrConstant DB_EXPNAME_DUMMY = "|DataBrowserExperiment|"
 
+static Constant SF_SWEEPFORMULA_AXIS_X = 0
+static Constant SF_SWEEPFORMULA_AXIS_Y = 1
+
 Menu "GraphPopup"
 	"Bring browser to front", /Q, SF_BringBrowserToFront()
 End
@@ -1818,6 +1821,38 @@ static Function SF_KillWorkingDF(string graph)
 	KillOrMoveToTrash(dfr = dfrWork)
 End
 
+/// @brief Return the X or Y wave for the sweep formula
+static Function/WAVE GetSweepFormula(DFREF dfr, variable graphNr, variable forAxis)
+
+	if(forAxis == SF_SWEEPFORMULA_AXIS_X)
+		return GetSweepFormulaX(dfr, graphNr)
+	elseif(forAxis == SF_SWEEPFORMULA_AXIS_Y)
+		return GetSweepFormulaY(dfr, graphNr)
+	endif
+
+	ASSERT(0, "Unknown SF axis")
+End
+
+static Function/WAVE SF_PrepareResultWaveForPlotting(DFREF dfr, WAVE wvResult, variable dataCnt, variable forAxis)
+
+	variable mXn
+	string   fullWavePath
+
+	WAVE wv = GetSweepFormula(dfr, dataCnt, forAxis)
+	fullWavePath = GetWavesDataFolder(wv, 2)
+	if(WaveType(wvResult, 1) != WaveType(wv, 1))
+		KillOrMoveToTrash(wv = wv)
+	endif
+	Duplicate/O wvResult, $fullWavePath
+
+	WAVE plotWave = GetSweepFormula(dfr, dataCnt, forAxis)
+
+	mXn = max(1, DimSize(plotWave, COLS)) * max(1, DimSize(plotWave, LAYERS))
+	Redimension/N=(-1, mXn)/E=1 plotWave
+
+	return plotWave
+End
+
 /// @brief  Plot the formula using the data from graph
 ///
 /// @param graph  graph to pass to SF_FormulaExecutor
@@ -1827,7 +1862,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 
 	string trace, customLegend
 	variable i, j, k, l, numTraces, splitTraces, splitY, splitX, numGraphs, numWins, numData, dataCnt, traceCnt
-	variable dim1Y, dim2Y, dim1X, dim2X, winDisplayMode, showLegend, tagCounter, overrideMarker
+	variable winDisplayMode, showLegend, tagCounter, overrideMarker
 	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection, numAnnotations, formulasAreDifferent, postPlotPSX
 	variable formulaCounter, gdIndex, markerCode, lineCode, lineStyle, traceToFront, isCategoryAxis
 	string win, wList, winNameTemplate, exWList, wName, annotation, yAxisLabel, wvName, info, xAxis
@@ -1929,41 +1964,16 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 				endif
 
 				if(WaveExists(wvResultX))
-
 					SFH_ASSERT(!(IsTextWave(wvResultX) && WaveDims(wvResultX) > 1), "Plotter got 2d+ text wave as x data.")
-
-					xPoints = DimSize(wvResultX, ROWS)
-					dim1X   = max(1, DimSize(wvResultX, COLS))
-					dim2X   = max(1, DimSize(wvResultX, LAYERS))
-					xMxN    = dim1X * dim2X
-					if(xMxN)
-						Redimension/N=(-1, xMxN)/E=1 wvResultX
-					endif
-
-					WAVE wvX = GetSweepFormulaX(dfr, dataCnt)
-					if(WaveType(wvResultX, 1) == WaveType(wvX, 1))
-						Duplicate/O wvResultX, $GetWavesDataFolder(wvX, 2)
-					else
-						MoveWaveWithOverWrite(wvX, wvResultX)
-					endif
-					WAVE wvX = GetSweepFormulaX(dfr, dataCnt)
+					WAVE wvX = SF_PrepareResultWaveForPlotting(dfr, wvResultX, dataCnt, SF_SWEEPFORMULA_AXIS_X)
+					xPoints = DimSize(wvX, ROWS)
+					xMxN    = DimSize(wvX, COLS)
 				endif
 
-				yPoints = DimSize(wvResultY, ROWS)
-				dim1Y   = max(1, DimSize(wvResultY, COLS))
-				dim2Y   = max(1, DimSize(wvResultY, LAYERS))
-				yMxN    = dim1Y * dim2Y
-				if(yMxN)
-					Redimension/N=(-1, yMxN)/E=1 wvResultY
-				endif
+				WAVE wvY = SF_PrepareResultWaveForPlotting(dfr, wvResultY, dataCnt, SF_SWEEPFORMULA_AXIS_Y)
+				yPoints = DimSize(wvY, ROWS)
+				yMxN    = DimSize(wvY, COLS)
 
-				WAVE wvY = GetSweepFormulaY(dfr, dataCnt)
-				if(WaveType(wvResultY, 1) == WaveType(wvY, 1))
-					Duplicate/O wvResultY, $GetWavesDataFolder(wvY, 2)
-				else
-					MoveWaveWithOverWrite(wvY, wvResultY)
-				endif
-				WAVE wvY = GetSweepFormulaY(dfr, dataCnt)
 				SFH_ASSERT(!(IsTextWave(wvY) && (WaveExists(wvX) && IsTextWave(wvX))), "One wave needs to be numeric for plotting")
 
 				if(IsTextWave(wvY))
