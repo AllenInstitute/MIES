@@ -270,14 +270,17 @@ Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string gra
 
 			WAVE/Z data = input[0]
 			SFH_CleanUpInput(input)
-
-			Make/FREE types = {WaveType(data)}
 		else
 			WAVE data = input
-			Make/FREE/N=(DimSize(input, ROWS)) types = WaveType(input[p])
 		endif
 
 		if(checkWaveType)
+			if(singleResult)
+				Make/FREE types = {WaveType(data)}
+			else
+				WAVE/WAVE dataAsRef = data
+				Make/FREE/N=(DimSize(data, ROWS)) types = WaveType(dataAsRef[p])
+			endif
 			if(expectedWaveType == IGOR_TYPE_TEXT_WAVE)
 				// we are using selector 0 for WaveType
 				realWaveType = 0
