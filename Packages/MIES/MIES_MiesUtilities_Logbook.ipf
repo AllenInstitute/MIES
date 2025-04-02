@@ -1278,7 +1278,7 @@ End
 /// @param[in]  entrySourceType   type of the labnotebook entry, one of @ref DataAcqModes
 /// @param[out] first             point index of the beginning of the range
 /// @param[out] last              point index of the end of the range
-threadsafe static Function FindRange(WAVE wv, variable col, variable val, variable entrySourceType, variable &first, variable &last)
+threadsafe Function FindRange(WAVE wv, variable col, variable val, variable entrySourceType, variable &first, variable &last)
 
 	variable numRows, i, j, sourceTypeCol, firstRow, lastRow, isNumeric, index, startRow, endRow
 
@@ -1879,6 +1879,13 @@ Function GetTotalOnsetDelayFromDevice(string device)
 	WAVE TPSettingsCalculated = GetTPSettingsCalculated(device)
 
 	return DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") + TPSettingsCalculated[%totalLengthMS]
+End
+
+/// @brief Invalidates the row and index cache for the given LBN
+Function InvalidateLBIndexAndRowCache(WAVE values)
+
+	CA_DeleteCacheEntry(CA_CreateLBIndexCacheKey(values))
+	CA_DeleteCacheEntry(CA_CreateLBRowCacheKey(values))
 End
 
 /// @brief Retrieve the analysis function that was run for a given sweep / channelNumber / channelType
