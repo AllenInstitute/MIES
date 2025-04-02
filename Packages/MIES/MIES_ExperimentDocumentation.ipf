@@ -125,6 +125,7 @@ static Function ED_InsertRowAfterSweepBlock(WAVE values, variable sweepNo, varia
 		values[rowIndex][][] = NaN
 	endif
 	SetNumberInWaveNote(values, NOTE_INDEX, GetNumberFromWaveNote(values, NOTE_INDEX) + 1)
+	InvalidateLBIndexAndRowCache(values)
 
 	return rowIndex
 End
