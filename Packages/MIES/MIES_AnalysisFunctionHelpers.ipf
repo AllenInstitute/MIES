@@ -50,6 +50,25 @@ Function AFH_GetHeadstageFromDAC(string device, variable DA)
 	return channelClampMode[DA][%DAC][%Headstage]
 End
 
+/// @brief Return the headstage from a given channelNumber / channelType
+///
+/// @param device device
+/// @param channelType   channel type see @ref XopChannelConstants
+/// @param channelNumber logical channel number
+///
+/// @return headstage or NaN for non-associated channels (including TTL channel type)
+Function AFH_GetHeadstageFromChannelNumberAndType(string device, variable channelType, variable channelNumber)
+
+	if(channelType == XOP_CHANNEL_TYPE_DAC)
+		return AFH_GetHeadstageFromDAC(device, channelNumber)
+	endif
+	if(channelType == XOP_CHANNEL_TYPE_ADC)
+		return AFH_GetHeadstageFromADC(device, channelNumber)
+	endif
+
+	return NaN
+End
+
 /// @brief Return the AD channel assigned to the headstage
 ///
 /// @param device device
