@@ -679,6 +679,8 @@ Function NWB_ExportAllData(variable nwbVersion, [string device, string overrideF
 
 	for(device : devicesWithContent)
 
+		UpgradeLabNotebook(device)
+
 		if(ParamIsDefault(overrideFullFilePath) && ParamIsDefault(overrideFileTemplate))
 			[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion, device)
 		elseif(!ParamIsDefault(overrideFullFilePath))

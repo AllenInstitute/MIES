@@ -421,9 +421,7 @@ Function DB_UpdateSweepPlot(string win)
 		return NaN
 	endif
 
-	// fetch keys waves to trigger a potential labnotebook upgrade
-	WAVE numericalKeys = DB_GetLBNWave(win, LBN_NUMERICAL_KEYS)
-	WAVE textualKeys   = DB_GetLBNWave(win, LBN_TEXTUAL_KEYS)
+	UpgradeLabNotebook(device)
 
 	WAVE numericalValues = DB_GetLBNWave(win, LBN_NUMERICAL_VALUES)
 	WAVE textualValues   = DB_GetLBNWave(win, LBN_TEXTUAL_VALUES)
