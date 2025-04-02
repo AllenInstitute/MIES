@@ -979,6 +979,7 @@ StrConstant EPOCH_LENGTH_INDEX_KEY      = "Epoch Length Indices"
 StrConstant STIMSET_SIZE_KEY            = "Stimset Size"
 StrConstant STIMSET_ERROR_KEY           = "Wavebuilder Error"
 StrConstant AUTOBIAS_PERC_KEY           = "Autobias %"
+StrConstant POSTPROCESSED_ENTRY_KEY     = "PostProcessed"
 
 Constant WAVEBUILDER_STATUS_ERROR = 1
 
