@@ -1281,7 +1281,7 @@ End
 /// @param[in]  entrySourceType   type of the labnotebook entry, one of @ref DataAcqModes
 /// @param[out] first             point index of the beginning of the range
 /// @param[out] last              point index of the end of the range
-threadsafe static Function FindRange(WAVE wv, variable col, variable val, variable entrySourceType, variable &first, variable &last)
+threadsafe Function FindRange(WAVE wv, variable col, variable val, variable entrySourceType, variable &first, variable &last)
 
 	variable numRows, i, j, sourceTypeCol, firstRow, lastRow, isNumeric, index, startRow, endRow
 
