@@ -8437,15 +8437,15 @@ End
 /// @name SweepFormula PSX
 ///@{
 
-static Constant PSX_WAVE_VERSION       = 3
-static Constant PSX_EVENT_WAVE_COLUMNS = 17
+static Constant PSX_WAVE_VERSION       = 4
+static Constant PSX_EVENT_WAVE_COLUMNS = 19
 
 /// @brief Return the upgraded psxEvent wave
 Function/WAVE UpgradePSXEventWave(WAVE psxEvent)
 
 	if(WaveVersionIsAtLeast(psxEvent, PSX_WAVE_VERSION))
 		return psxEvent
-	elseif(WaveVersionIsAtLeast(psxEvent, 2))
+	elseif(WaveVersionIsAtLeast(psxEvent, 2)) // Version 2 and 3
 
 		if(!AlreadyCalledOnce(CO_PSX_UPGRADE_EVENT))
 			print "The algorithm for psp/psc event detection was heavily overhauled, therefore we are very sorry " \
@@ -8483,16 +8483,18 @@ End
 /// -  6/baseline_t: baseline time
 /// -  7/amplitude: Relative amplitude: [3] - [5]
 /// -  8/iei: Time difference to previous event (inter event interval) [ms]
-/// -  9/tau: Decay constant tau of exponential fit
-/// - 10/Fit manual QC call: One of @ref PSXStates
-/// - 11/Fit result: 1 for success, everything smaller than 0 is failure:
+/// -  9/weightedTau: Weighted tau of the double exponential fit
+/// - 11/slowTau: Slow tau of the double exponential fit
+/// - 10/fastTau: Fast tau of the double exponential fit
+/// - 12/Fit manual QC call: One of @ref PSXStates
+/// - 13/Fit result: 1 for success, everything smaller than 0 is failure:
 ///   - `]-10000, 0[`: CurveFit error codes
 ///   - `]-inf, -10000]`: Custom error codes, one of @ref FitEventDecayCustomErrors
-/// - 12/Event manual QC call: One of @ref PSXStates
-/// - 13/Onset time as calculated by PSX_CalculateOnsetTime
-/// - 14/Rise Time as calculated by PSX_CalculateRiseTime
-/// - 15/Slew Rate
-/// - 16/Slew Rate Time
+/// - 14/Event manual QC call: One of @ref PSXStates
+/// - 15/Onset time as calculated by PSX_CalculateOnsetTime
+/// - 16/Rise Time as calculated by PSX_CalculateRiseTime
+/// - 17/Slew Rate
+/// - 18/Slew Rate Time
 Function/WAVE GetPSXEventWaveAsFree()
 
 	variable versionOfWave = PSX_WAVE_VERSION
@@ -8517,14 +8519,16 @@ static Function SetPSXEventDimensionLabels(WAVE wv)
 	SetDimLabel COLS, 6, baseline_t, wv
 	SetDimLabel COLS, 7, amplitude, wv
 	SetDimLabel COLS, 8, iei, wv
-	SetDimLabel COLS, 9, tau, wv
-	SetDimLabel COLS, 10, $"Fit manual QC call", wv
-	SetDimLabel COLS, 11, $"Fit result", wv
-	SetDimLabel COLS, 12, $"Event manual QC call", wv
-	SetDimLabel COLS, 13, $"Onset Time", wv
-	SetDimLabel COLS, 14, $"Rise Time", wv
-	SetDimLabel COLS, 15, $"Slew Rate", wv
-	SetDimLabel COLS, 16, $"Slew Rate Time", wv
+	SetDimLabel COLS, 9, weightedTau, wv
+	SetDimLabel COLS, 10, slowTau, wv
+	SetDimLabel COLS, 11, fastTau, wv
+	SetDimLabel COLS, 12, $"Fit manual QC call", wv
+	SetDimLabel COLS, 13, $"Fit result", wv
+	SetDimLabel COLS, 14, $"Event manual QC call", wv
+	SetDimLabel COLS, 15, $"Onset Time", wv
+	SetDimLabel COLS, 16, $"Rise Time", wv
+	SetDimLabel COLS, 17, $"Slew Rate", wv
+	SetDimLabel COLS, 18, $"Slew Rate Time", wv
 End
 
 Function/WAVE GetPSXSingleEventFitWaveFromDFR(DFREF dfr)
