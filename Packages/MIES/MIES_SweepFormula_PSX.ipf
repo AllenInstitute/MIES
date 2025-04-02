@@ -1013,6 +1013,15 @@ static Function PSX_FitEventDecay(WAVE sweepDataOffFilt, WAVE psxEvent, variable
 	SetDataFolder currDFR
 	decayTau = ((coefWave[1]*coefWave[2] + coefWave[3]*coefWave[4]) / (coefWave[1] + coefWave[3])) // weighted tau computed from double exponential fit
 //	decayTau = coefWave[2]
+// TODO decayTau -> weightedTau
+// new: fastTau (K2), slowTau (K4)
+// TODO two more psxEvent columns, add support to query that in psxStats (no compatibility mode for the old names)
+
+//  	y0  	= -1.178 ± 4.49
+//  	A1  	= 31.867 ± 4.78e+06
+//  	K2: tau1	= 7.5137 ± 1.71e+04
+//  	A2  	= 30.921 ± 4.78e+06
+//  	K4: tau2	= 7.7452 ± 1.81e+04
 
 #ifdef AUTOMATED_TESTING
 	WAVE/Z overrideResults = GetOverrideResults()
@@ -2514,10 +2523,12 @@ static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventOns
 
 	string specialEventPanel, str, htmlStr, rawCode, browser, msg, fitFunc
 	variable err, numAveragePoints, start, stop, meanStopTime, meanOnsetTime, meanPeakTime, meanKernelAmp
-	variable xStart, xEnd, yStart, yEnd, lowerThreshold, upperThreshold, xlt, xupt, riseTime
-	variable extrema, extrema_t, edge
+	variable xStart, xEnd, yStart, yEnd, riselowerThreshold, riseAndDecayUpperThreshold, xlt, xupt, riseTime
+	variable extrema, extrema_t, edge, riseStart, riseStop, decayStart, decayStop, wTau, backwardEdge
 
 	WAVE acceptedAverageFit = GetPSXAcceptedAverageFitWaveFromDFR(averageDFR)
+	WAVE acceptedRiseAverageFit = GetPSXAcceptedRiseAverageFitWaveFromDFR(averageDFR)
+	WAVE acceptedDecayAverageFit = GetPSXAcceptedDecayAverageFitWaveFromDFR(averageDFR)
 
 	specialEventPanel = PSX_GetSpecialPanel(win)
 
@@ -2525,6 +2536,8 @@ static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventOns
 
 	if(!GetCheckBoxState(specialEventPanel, "checkbox_average_events_fit"))
 		FastOp acceptedAverageFit = (NaN)
+		FastOp acceptedRiseAverageFit = (NaN)
+		FastOp acceptedDecayAverageFit = (NaN)
 		return NaN
 	endif
 
@@ -2533,12 +2546,16 @@ static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventOns
 
 	if(numAveragePoints == 0 || !HasOneValidEntry(average))
 		FastOp acceptedAverageFit = (NaN)
+		FastOp acceptedRiseAverageFit = (NaN)
+		FastOp acceptedDecayAverageFit = (NaN)
 		return NaN
 	endif
 
-	Redimension/N=(numAveragePoints) acceptedAverageFit
+	Redimension/N=(numAveragePoints) acceptedAverageFit, acceptedRiseAverageFit, acceptedDecayAverageFit
 	FastOp acceptedAverageFit = (NaN)
-	CopyScales average, acceptedAverageFit
+	FastOp acceptedRiseAverageFit = (NaN)
+	FastOp acceptedDecayAverageFit = (NaN)
+	CopyScales average, acceptedAverageFit, acceptedRiseAverageFit, acceptedDecayAverageFit
 
 	WAVE/Z eventOnsetTimeClean = ZapNaNs(eventOnsetTime)
 	if(WaveExists(eventOnsetTimeClean))
@@ -2574,60 +2591,88 @@ static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventOns
 		extrema = V_max
 		extrema_t = V_maxLoc
 		edge = FINDLEVEL_EDGE_INCREASING
+		backwardEdge = FINDLEVEL_EDGE_DECREASING
 	elseif(meanKernelAmp < 0)
 		extrema = V_min
 		extrema_t = V_minLoc
 		edge = FINDLEVEL_EDGE_DECREASING
+		backwardEdge = FINDLEVEL_EDGE_INCREASING
 	else
 		ASSERT(0, "Invalid kernel amp")
 	endif
 	
-	lowerThreshold = GetSetVariable(specialEventPanel, "setvar_fit_start_amplitude") * PERCENT_TO_ONE
-
-	FindLevel/EDGE=(edge)/Q average, (lowerThreshold * extrema)
+	riselowerThreshold = GetSetVariable(specialEventPanel, "setvar_fit_start_amplitude") * PERCENT_TO_ONE
+	riseAndDecayUpperThreshold  = 0.9
+	FindLevel/EDGE=(edge)/Q average, (riselowerThreshold * extrema)
 
 //
 //	upperThreshold = 0.80
 //
 //	[xlt, xupt, riseTime, err] = PSX_CalculateRiseTime(average, xStart, xEnd, yStart, yEnd, lowerThreshold, upperThreshold, meanKernelAmp)
 
-	start = V_LevelX
-	stop  = min(IndexToScale(average, DimSize(average, ROWS) - 1, ROWS), meanStopTime)
+	riseStart = V_LevelX
+	FindLevel/EDGE=(edge)/Q average, (riseAndDecayUpperThreshold * extrema)
+	riseStop = V_levelX
+	
+	FindLevel/EDGE=(backwardEdge)/R=(inf, 0) /Q average, (riseAndDecayUpperThreshold * extrema)
+	decayStart = V_levelX
+
+	decayStop  = min(IndexToScale(average, DimSize(average, ROWS) - 1, ROWS), meanStopTime)
 
 	AssertOnAndClearRTError()
-	fitFunc = GetPopupMenuString(specialEventPanel, "popupmenu_accept_fit_function")
-	strswitch(fitFunc)
-		case "dblexp_peak":
-			Make/FREE/D/N=5 coefWave
-			Make/FREE/T coeffNames = {"y0", "A", "tau1", "tau2", "X0"}
-			CurveFit/M=0/Q/N=2 dblexp_peak, kwCWave=coefWave, average(start, stop)/D=acceptedAverageFit; err = GetRTError(1)
-			break
-		case "dblexp_XOffset":
-			Make/FREE/D/N=5 coefWave
-			Make/FREE/T coeffNames = {"y0", "A1", "tau1", "A2", "tau2"}
-			CurveFit/M=0/Q/N=2 dblexp_XOffset, kwCWave=coefWave, average(start, stop)/D=acceptedAverageFit; err = GetRTError(1)
-			break
-		default:
-			ASSERT(0, "Unknown fit function")
-	endswitch
 
-	sprintf msg, "Fit in the range [%g, %g] finished with %d (%s)\r", start, stop, err, GetErrMessage(err)
+	Make/FREE/T/N=(10, 2) InputAvg, InputRise, InputDecay
+
+	Make/FREE/D/N=5 coefWave
+	Make/FREE/T coeffNames = {"y0", "A", "tau1", "tau2", "X0"}
+	CurveFit/M=0/Q/N=2 dblexp_peak, kwCWave=coefWave, average(riseStart, decayStop)/D=acceptedAverageFit; err = GetRTError(1)
+
+	InputAvg[0][0, 1] = {{"Function"}, {"dblexp_peak"}}
+	InputAvg[1][0, 1] = {{"ChiSq"}, {num2strHighPrec(V_chiSq)}}
+	InputAvg[2, 6][0] = coeffNames[p - 2]
+	InputAvg[2, 6][1] = num2strHighPrec(coefWave[p - 2])
+	InputAvg[8][0, 1] = {{"State source"}, {PSX_GetStateTypeFromSpecialPanel(win)}}
+	InputAvg[9][0, 1] = {{"Current combo"}, {ToTrueFalse(PSX_GetrestrictEventsToCurrentCombo(win))}}
+
+	Make/FREE/D/N=5 coefWave
+	Make/FREE/T coeffNames = {"y0", "A1", "tau1", "A2", "tau2"}
+	CurveFit/M=0/Q/N=1 dblexp_XOffset, kwCWave=coefWave, average(riseStart, riseStop)/D=acceptedRiseAverageFit; err = GetRTError(1)
+	
+	wTau = ((coefWave[1]*coefWave[2] + coefWave[3]*coefWave[4]) / (coefWave[1] + coefWave[3]))
+	
+	InputRise[0][0, 1] = {{"Function"}, {"dblexp_XOffset rise"}}
+	InputRise[1][0, 1] = {{"ChiSq"}, {num2strHighPrec(V_chiSq)}}
+	InputRise[2, 6][0] = coeffNames[p - 2]
+	InputRise[2, 6][1] = num2strHighPrec(coefWave[p - 2])
+	InputRise[7][0, 1]	= {{"weighted tau"}, {num2strHighPrec(wTau)}}
+	InputRise[8][0, 1] = {{"State source"}, {PSX_GetStateTypeFromSpecialPanel(win)}}
+	InputRise[9][0, 1] = {{"Current combo"}, {ToTrueFalse(PSX_GetrestrictEventsToCurrentCombo(win))}}
+
+	Make/FREE/D/N=5 coefWave
+	Make/FREE/T coeffNames = {"y0", "A1", "tau1", "A2", "tau2"}
+	CurveFit/M=0/Q/N=1 dblexp_XOffset, kwCWave=coefWave, average(decayStart, decayStop)/D=acceptedDecayAverageFit; err = GetRTError(1)			
+
+	wTau = ((coefWave[1]*coefWave[2] + coefWave[3]*coefWave[4]) / (coefWave[1] + coefWave[3]))
+
+	InputDecay[0][0, 1] = {{"Function"}, {"dblexp_XOffset decay"}}
+	InputDecay[1][0, 1] = {{"ChiSq"}, {num2strHighPrec(V_chiSq)}}
+	InputDecay[2, 6][0] = coeffNames[p - 2]
+	InputDecay[2, 6][1] = num2strHighPrec(coefWave[p - 2])
+	InputDecay[7][0, 1]	= {{"weighted tau"}, {num2strHighPrec(wTau)}}
+	InputDecay[8][0, 1] = {{"State source"}, {PSX_GetStateTypeFromSpecialPanel(win)}}
+	InputDecay[9][0, 1] = {{"Current combo"}, {ToTrueFalse(PSX_GetrestrictEventsToCurrentCombo(win))}}
+
+	sprintf msg, "Fit in the range [%g, %g] finished with %d (%s)\r", riseStart, decayStop, err, GetErrMessage(err)
 	DEBUGPRINT(msg)
 
 	if(err)
 		return NaN
 	endif
 
-	Make/FREE/T/N=(9, 2) input
-
-	input[0][0, 1] = {{"Function"}, {fitFunc}}
-	input[1][0, 1] = {{"ChiSq"}, {num2strHighPrec(V_chiSq)}}
-	input[2, 6][0] = coeffNames[p - 2]
-	input[2, 6][1] = num2strHighPrec(coefWave[p - 2])
-	input[7][0, 1] = {{"State source"}, {PSX_GetStateTypeFromSpecialPanel(win)}}
-	input[8][0, 1] = {{"Current combo"}, {ToTrueFalse(PSX_GetrestrictEventsToCurrentCombo(win))}}
+	concatenate/O/NP/FREE {InputAvg, InputRise, InputDecay}, input
 
 	str = FormatTextWaveForLegend(input)
+	print str
 	UpdateInfoButtonHelp(specialEventPanel, "button_fit_results", str)
 
 	browser = SFH_GetBrowserForFormulaGraph(win)
@@ -2936,7 +2981,7 @@ End
 /// @brief Add the total number of required traces to the all event graph
 ///
 /// The number of average waves is 4 due to the number of different states, see @ref PSXStates.
-///
+/// TODO adapt comment
 /// - Single event traces for all combinations
 /// - 4 average waves for *each* combination
 /// - 4 average waves for the global average across all combinations
@@ -3005,7 +3050,7 @@ End
 static Function PSX_AppendAverageTraces(string extAllGraph, DFREF averageDFR, string traceSuffix, variable idx, string comboKey, variable comboIndex, WAVE traceUserDataKeys, WAVE states, WAVE acceptColors, WAVE rejectColors, WAVE undetColors)
 
 	variable state
-	string   trace
+	string   trace, traceAvgFit,  traceRiseAvgFit, traceDecayAvgFit
 
 	for(state : states)
 
@@ -3027,13 +3072,30 @@ static Function PSX_AppendAverageTraces(string extAllGraph, DFREF averageDFR, st
 		idx += 1
 	endfor
 
+	// TODO add other global average waves here and set possible color
 	WAVE acceptedAverageFit = GetPSXAcceptedAverageFitWaveFromDFR(averageDFR)
+	WAVE acceptedRiseAverageFit = GetPSXAcceptedRiseAverageFitWaveFromDFR(averageDFR)
+	WAVE acceptedDecayAverageFit = GetPSXAcceptedDecayAverageFitWaveFromDFR(averageDFR)
 
-	trace = PSX_GetAverageTraceName(idx, "acceptAverageFit", comboIndex, traceSuffix)
+	traceAvgFit = PSX_GetAverageTraceName(idx, "acceptAverageFit", comboIndex, traceSuffix)
+	traceRiseAvgFit = PSX_GetAverageTraceName(idx, "acceptRiseAverageFit", comboIndex, traceSuffix)
+	traceDecayAvgFit = PSX_GetAverageTraceName(idx, "acceptDecayAverageFit", comboIndex, traceSuffix)
+
+
 	idx  += 1
 
-	AppendToGraph/W=$extAllGraph acceptedAverageFit/TN=$trace
-	TUD_SetUserDataFromWaves(extAllGraph, trace,                                                                                               \
+	AppendToGraph/W=$extAllGraph acceptedAverageFit/TN=$traceAvgFit, acceptedRiseAverageFit/TN=$traceRiseAvgFit, acceptedDecayAverageFit/TN=$traceDecayAvgFit
+
+
+	TUD_SetUserDataFromWaves(extAllGraph, traceAvgFit,                                                                                               \
+	                         traceUserDataKeys,                                                                                                \
+	                         {"NaN", num2str(PSX_ACCEPT), num2str(PSX_ACCEPT), "0", PSX_TUD_TYPE_AVERAGE, comboKey, "NaN", num2str(comboIndex)})
+	                         
+	TUD_SetUserDataFromWaves(extAllGraph, traceRiseAvgFit,                                                                                               \
+	                         traceUserDataKeys,                                                                                                \
+	                         {"NaN", num2str(PSX_ACCEPT), num2str(PSX_ACCEPT), "0", PSX_TUD_TYPE_AVERAGE, comboKey, "NaN", num2str(comboIndex)})
+	                         
+	TUD_SetUserDataFromWaves(extAllGraph, traceDecayAvgFit,                                                                                               \
 	                         traceUserDataKeys,                                                                                                \
 	                         {"NaN", num2str(PSX_ACCEPT), num2str(PSX_ACCEPT), "0", PSX_TUD_TYPE_AVERAGE, comboKey, "NaN", num2str(comboIndex)})
 
@@ -5996,7 +6058,6 @@ Function PSX_PlotStartupSettings()
 	CheckBox checkbox_average_events_fit, value=0, win=$specialEventPanel
 
 	CheckBox checkbox_restrict_events_to_current_combination, value=0, win=$specialEventPanel
-	PopupMenu popupmenu_accept_fit_function, mode=1, win=$specialEventPanel
 	SetVariable setvar_event_block_size, value=_NUM:100, win=$specialEventPanel
 	PopupMenu popup_block, mode=1, value="", win=$specialEventPanel, userdata($PSX_UD_NUM_BLOCKS)="1"
 	SetVariable setvar_fit_start_amplitude, value=_NUM:20, win=$specialEventPanel
