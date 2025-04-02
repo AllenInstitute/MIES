@@ -100,15 +100,16 @@ Function/WAVE LBV_GetAllLogbookParamNames(WAVE/Z/T textualValues, WAVE/Z/T numer
 
 	key = CA_GetLabnotebookNamesKey(textualValues, numericalValues)
 
-	WAVE/Z result = CA_TryFetchingEntryFromCache(key)
+	WAVE/Z/WAVE resultEncap = CA_TryFetchingEntryFromCache(key)
 
-	if(!WaveExists(result))
-		WAVE result = LBV_GetAllLogbookParamNames_NoCache(textualValues, numericalValues)
+	if(!WaveExists(resultEncap))
+		WAVE/Z result = LBV_GetAllLogbookParamNames_NoCache(textualValues, numericalValues)
+		Make/FREE/WAVE resultEncap = {result}
 
-		CA_StoreEntryIntoCache(key, result)
+		CA_StoreEntryIntoCache(key, resultEncap)
 	endif
 
-	return result
+	return resultEncap[0]
 End
 
 static Function/WAVE LBV_GetAllLogbookParamNames_NoCache(WAVE/Z/T textualValues, WAVE/Z/T numericalValues)
