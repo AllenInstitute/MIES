@@ -162,6 +162,48 @@ Function/WAVE ExtractLogbookSliceEmpty(WAVE values)
 	return wv
 End
 
+/// @brief Insert a row of the labnotebook/results values wave into its existing slices
+///
+/// Inserting a row into the logbook shifts all following rows, so the slices, see ExtractLogbookSlice(), must get
+/// the row inserted as well.
+///
+/// @param values labnotebook/results values wave, with the row already inserted and initialized
+/// @param row    inserted row
+Function InsertRowIntoLogbookSlices(WAVE values, variable row)
+
+	variable i, numSlices
+	string suffix
+
+	DFREF dfr = $(GetWavesDataFolder(values, 1) + LOGBOOK_WAVE_TEMP_FOLDER)
+	if(!DataFolderExistsDFR(dfr))
+		return NaN
+	endif
+
+	// suffix and column of the slices, see ExtractLogbookSliceTimeStamp(), ExtractLogbookSliceSweep() and ExtractLogbookSliceEmpty()
+	Make/FREE/T suffixes = {"Dat", "Sweep", "Null"}
+	Make/FREE/D columns = {1, 0, NaN}
+
+	numSlices = DimSize(suffixes, ROWS)
+	for(i = 0; i < numSlices; i += 1)
+		suffix = suffixes[i]
+		WAVE/Z/SDFR=dfr slice = $(NameOfWave(values) + suffix)
+		if(!WaveExists(slice) || row >= DimSize(slice, ROWS))
+			continue
+		endif
+
+		InsertPoints/M=(ROWS) row, 1, slice
+
+		if(IsNaN(columns[i]))
+			slice[row] = 0
+		elseif(IsTextWave(values))
+			WAVE/T valuesText = values
+			slice[row] = str2num(valuesText[row][columns[i]])
+		else
+			slice[row] = values[row][columns[i]]
+		endif
+	endfor
+End
+
 /// @brief Extract a single column/layer of the labnotebook/TPStorage values wave
 ///
 /// This is useful if you want to plot values against e.g time and let
@@ -1291,7 +1333,7 @@ End
 /// @param[in]  entrySourceType   type of the labnotebook entry, one of @ref DataAcqModes
 /// @param[out] first             point index of the beginning of the range
 /// @param[out] last              point index of the end of the range
-threadsafe static Function FindRange(WAVE wv, variable col, variable val, variable entrySourceType, variable &first, variable &last)
+threadsafe Function FindRange(WAVE wv, variable col, variable val, variable entrySourceType, variable &first, variable &last)
 
 	variable numRows, i, j, sourceTypeCol, firstRow, lastRow, isNumeric, index, startRow, endRow
 
