@@ -8692,6 +8692,32 @@ Function/WAVE GetPSXAverageWave(DFREF dfr, variable state)
 	return wv
 End
 
+Function/WAVE GetPSXAcceptedRiseAverageFitWaveFromDFR(DFREF dfr)
+
+	WAVE/Z/D/SDFR=dfr wv = acceptedRiseAverageFit
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/D/N=(0) dfr:acceptedRiseAverageFit/WAVE=wv
+
+	return wv
+End
+
+Function/WAVE GetPSXAcceptedDecayAverageFitWaveFromDFR(DFREF dfr)
+
+	WAVE/Z/D/SDFR=dfr wv = acceptedDecayAverageFit
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/D/N=(0) dfr:acceptedDecayAverageFit/WAVE=wv
+
+	return wv
+End
+
 Function/WAVE GetPSXAcceptedAverageFitWaveFromDFR(DFREF dfr)
 
 	WAVE/Z/D/SDFR=dfr wv = acceptedAverageFit
