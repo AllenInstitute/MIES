@@ -2584,7 +2584,7 @@ static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventOns
 //	ASSERT(xStart < xEnd, "xStart must be smaller than xEnd")
 //	yStart = average(xStart)
 //	yEnd   = average(xEnd)
-
+//todo add the amplitude of the average event to the help popup
 	WaveStats/M=1/Q average
 	
 	if(meanKernelAmp > 0)
@@ -2672,7 +2672,7 @@ static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventOns
 	concatenate/O/NP/FREE {InputAvg, InputRise, InputDecay}, input
 
 	str = FormatTextWaveForLegend(input)
-	print str
+	
 	UpdateInfoButtonHelp(specialEventPanel, "button_fit_results", str)
 
 	browser = SFH_GetBrowserForFormulaGraph(win)
@@ -3085,7 +3085,7 @@ static Function PSX_AppendAverageTraces(string extAllGraph, DFREF averageDFR, st
 	idx  += 1
 
 	AppendToGraph/W=$extAllGraph acceptedAverageFit/TN=$traceAvgFit, acceptedRiseAverageFit/TN=$traceRiseAvgFit, acceptedDecayAverageFit/TN=$traceDecayAvgFit
-
+	
 
 	TUD_SetUserDataFromWaves(extAllGraph, traceAvgFit,                                                                                               \
 	                         traceUserDataKeys,                                                                                                \
