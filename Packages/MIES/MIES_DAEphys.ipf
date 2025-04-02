@@ -4023,7 +4023,7 @@ static Function DAP_AddUserComment(string device)
 		return NaN
 	endif
 
-	comment = DAG_GetTextualValue(device, "SetVar_DataAcq_Comment")
+	comment = GetSetVariableString(device, "SetVar_DataAcq_Comment")
 
 	if(isEmpty(comment))
 		return NaN
