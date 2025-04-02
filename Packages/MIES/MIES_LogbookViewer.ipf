@@ -103,7 +103,10 @@ Function/WAVE LBV_GetAllLogbookParamNames(WAVE/Z/T textualValues, WAVE/Z/T numer
 	WAVE/Z result = CA_TryFetchingEntryFromCache(key)
 
 	if(!WaveExists(result))
-		WAVE result = LBV_GetAllLogbookParamNames_NoCache(textualValues, numericalValues)
+		WAVE/Z result = LBV_GetAllLogbookParamNames_NoCache(textualValues, numericalValues)
+		if(!WaveExists(result))
+			return result
+		endif
 
 		CA_StoreEntryIntoCache(key, result)
 	endif
