@@ -1379,7 +1379,7 @@ End
 /// - Making dimension labels valid liberal object names
 /// - Extending the row dimension to 6 for the key waves
 /// - Fixing empty column dimension labels in key waves
-static Function UpgradeLabNotebook(string device)
+Function UpgradeLabNotebook(string device)
 
 	variable numCols, i, col, numEntries, sourceCol, timeStampColumn, nextFreeRow
 	string list, key
