@@ -1002,16 +1002,17 @@ static Function PSX_FitEventDecay(WAVE sweepDataOffFilt, WAVE psxEvent, variable
 	// require a converging exponential
 	Make/FREE/T constraints = {"K2 > 0"}
 
-	Make/FREE/D/N=3 coefWave
+	Make/FREE/D/N=5 coefWave
 
 	AssertOnAndClearRTError()
-	CurveFit/Q/N=1/NTHR=1/M=0/W=2 exp_XOffset, kwCWave=coefWave, sweepDataOffFilt(startTime, endTime)/D/C=constraints; err = GetRTError(1)
+//	CurveFit/Q/N=1/NTHR=1/M=0/W=2 exp_XOffset, kwCWave=coefWave, sweepDataOffFilt(startTime, endTime)/D/C=constraints; err = GetRTError(1)
+	CurveFit/Q/N=1/NTHR=1/M=0/W=2 dblexp_XOffset, kwCWave=coefWave, sweepDataOffFilt(startTime, endTime)/D/C=constraints; err = GetRTError(1)
 
 	WAVE fit = MakeWaveFree($"fit__free_")
 
 	SetDataFolder currDFR
-
-	decayTau = coefWave[2]
+	decayTau = ((coefWave[1]*coefWave[2] + coefWave[3]*coefWave[4]) / (coefWave[1] + coefWave[3])) // weighted tau computed from double exponential fit
+//	decayTau = coefWave[2]
 
 #ifdef AUTOMATED_TESTING
 	WAVE/Z overrideResults = GetOverrideResults()
