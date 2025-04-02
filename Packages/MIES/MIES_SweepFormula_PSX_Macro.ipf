@@ -104,9 +104,6 @@ Window PSXPanel() : Panel
 	PopupMenu popupmenu_state_type, pos={113.00, 143.00}, size={80.00, 19.00}, proc=PSX_PopupMenuState
 	PopupMenu popupmenu_state_type, help={"Select which state is used for plotting. Can be either \"event\" or \"fit\" state."}
 	PopupMenu popupmenu_state_type, mode=1, popvalue="Event State", value=#"PSX_GetEventStateNames()"
-	PopupMenu popupmenu_accept_fit_function, pos={12.00, 167.00}, size={115.00, 19.00}, bodyWidth=115, proc=PSX_PopupFitAcceptAverageFunc
-	PopupMenu popupmenu_accept_fit_function, help={"Select which fit function to use for accepted average fitting. Can be one of \"dblexp_peak\" or \"dblexp_XOffset\"."}
-	PopupMenu popupmenu_accept_fit_function, mode=1, popvalue="dblexp_peak", value=#"PSX_GetAverageFitAcceptNames()"
 	CheckBox checkbox_average_events_fit, pos={104.00, 111.00}, size={29.00, 15.00}, proc=PSX_CheckboxProcFitAcceptAverage
 	CheckBox checkbox_average_events_fit, title="Fit"
 	CheckBox checkbox_average_events_fit, help={"Fit the accept average with a double exponential and store the outcome in the results wave"}
