@@ -12,14 +12,16 @@
 /// @brief Add numerical/textual entries to the labnotebook
 ///
 /// @see ED_createTextNotes, ED_createWaveNote
-Function ED_AddEntriesToLabnotebook(WAVE vals, WAVE/T keys, variable sweepNo, string device, variable entrySourceType)
+Function ED_AddEntriesToLabnotebook(WAVE vals, WAVE/T keys, variable sweepNo, string device, variable entrySourceType, [variable insertAsPostProc])
+
+	insertAsPostProc = ParamIsDefault(insertAsPostProc) ? 0 : !!insertAsPostProc
 
 	ED_CheckValuesAndKeys(vals, keys)
 
 	if(IsTextWave(vals))
-		ED_createTextNotes(vals, keys, sweepNo, entrySourceType, LBT_LABNOTEBOOK, device = device)
+		ED_createTextNotes(vals, keys, sweepNo, entrySourceType, LBT_LABNOTEBOOK, insertAsPostProc, device = device)
 	else
-		ED_createWaveNotes(vals, keys, sweepNo, entrySourceType, LBT_LABNOTEBOOK, device = device)
+		ED_createWaveNotes(vals, keys, sweepNo, entrySourceType, LBT_LABNOTEBOOK, insertAsPostProc, device = device)
 	endif
 End
 
@@ -29,9 +31,9 @@ Function ED_AddEntriesToResults(WAVE vals, WAVE/T keys, variable entrySourceType
 	ED_CheckValuesAndKeys(vals, keys)
 
 	if(IsTextWave(vals))
-		ED_createTextNotes(vals, keys, NaN, entrySourceType, LBT_RESULTS)
+		ED_createTextNotes(vals, keys, NaN, entrySourceType, LBT_RESULTS, 0)
 	else
-		ED_createWaveNotes(vals, keys, NaN, entrySourceType, LBT_RESULTS)
+		ED_createWaveNotes(vals, keys, NaN, entrySourceType, LBT_RESULTS, 0)
 	endif
 End
 
@@ -46,6 +48,34 @@ static Function ED_CheckValuesAndKeys(WAVE vals, WAVE keys)
 	Duplicate/FREE/RMD=[0][][0][0] keys, checkKeysForDupes
 	Redimension/N=(DimSize(checkKeysForDupes, COLS))/E=1 checkKeysForDupes
 	ASSERT(!SearchForDuplicates(checkKeysForDupes), "keys contain duplicate entries")
+End
+
+static Function ED_SetLabnotebookRowToPostProcessed(WAVE values, variable row)
+
+	variable col, unused
+
+	WAVE keys = GetLogbookKeysFromValues(values)
+
+	if(IsTextWave(values))
+		Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) incomingValuesT
+		WAVE incomingValues = incomingValuesT
+	else
+		Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) incomingValuesNum
+		WAVE incomingValues = incomingValuesNum
+	endif
+	Make/FREE/T/N=(3, 1) incomingKeys
+	incomingKeys[0]        = POSTPROCESSED_ENTRY_KEY
+	incomingKeys[1]        = LABNOTEBOOK_BINARY_UNIT
+	incomingKeys[2]        = LABNOTEBOOK_NO_TOLERANCE
+	[WAVE indizes, unused] = ED_FindIndizesAndRedimension(incomingKeys, incomingValues, keys, values, LBT_LABNOTEBOOK)
+	ASSERT(WaveExists(indizes), "Missing indizes")
+	col = indizes[0]
+	if(IsTextWave(values))
+		WAVE/T valuesT = values
+		valuesT[row][col][] = "1"
+	else
+		values[row][col][] = 1
+	endif
 End
 
 static Function ED_InitNewRow(WAVE values, variable rowIndex, variable sweepNo, variable entrySourceType, variable acqState)
@@ -81,6 +111,24 @@ static Function ED_InitNewRow(WAVE values, variable rowIndex, variable sweepNo, 
 	endif
 End
 
+/// @brief Inserts a row after the sweep block and returns the inserted row number
+static Function ED_InsertRowAfterSweepBlock(WAVE values, variable sweepNo, variable entrySourceType)
+
+	variable sweepCol, firstRow, lastRow, rowIndex
+
+	sweepCol = GetSweepColumn(values)
+	FindRange(values, sweepCol, sweepNo, entrySourceType, firstRow, lastRow)
+	ASSERT(!IsNaN(firstRow) && !IsNaN(lastRow), "FindRange could not determine start and/or end of sweep block")
+	rowIndex = lastRow + 1
+	InsertPoints/M=(ROWS) rowIndex, 1, values
+	if(!IsTextWave(values))
+		values[rowIndex][][] = NaN
+	endif
+	SetNumberInWaveNote(values, NOTE_INDEX, GetNumberFromWaveNote(values, NOTE_INDEX) + 1)
+
+	return rowIndex
+End
+
 /// @brief Add textual entries to the logbook
 ///
 /// The text documentation wave will use layers to report the different headstages.
@@ -95,9 +143,11 @@ End
 /// @param device                [optional for logbookType LBT_RESULTS only] device
 /// @param entrySourceType       type of reporting subsystem, one of @ref DataAcqModes
 /// @param logbookType           type of the logbook, one of @ref LogbookTypes
-static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incomingTextualKeys, variable sweepNo, variable entrySourceType, variable logbookType, [string device])
+/// @param insertAsPostProc      when set to 1 then the values are inserted at the end of the sweep block flagged as postprocessed data
+static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incomingTextualKeys, variable sweepNo, variable entrySourceType, variable logbookType, variable insertAsPostProc, [string device])
 
 	variable rowIndex, numCols, i, lastValidIncomingLayer, state
+	variable addIndex, insertIndex
 
 	if(ParamIsDefault(device))
 		ASSERT(logbookType == LBT_RESULTS, "Invalid logbook type")
@@ -112,8 +162,14 @@ static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incoming
 		state = ROVar(GetAcquisitionState(device))
 	endif
 
-	[WAVE indizes, rowIndex] = ED_FindIndizesAndRedimension(incomingTextualKeys, incomingTextualValues, keys, values, logbookType)
+	if(insertAsPostProc)
+		insertIndex = ED_InsertRowAfterSweepBlock(values, sweepNo, entrySourceType)
+		ED_SetLabnotebookRowToPostProcessed(values, insertIndex)
+	endif
+
+	[WAVE indizes, addIndex] = ED_FindIndizesAndRedimension(incomingTextualKeys, incomingTextualValues, keys, values, logbookType)
 	ASSERT(WaveExists(indizes), "Missing indizes")
+	rowIndex = insertAsPostProc ? insertIndex : addIndex
 
 	ED_InitNewRow(values, rowIndex, sweepNo, entrySourceType, state)
 
@@ -135,7 +191,9 @@ static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incoming
 		values[rowIndex][indizes[i]][0, lastValidIncomingLayer] = NormalizeToEOL(incomingTextualValues[0][i][r], "\n")
 	endfor
 
-	SetNumberInWaveNote(values, NOTE_INDEX, rowIndex + 1)
+	if(!insertAsPostProc)
+		SetNumberInWaveNote(values, NOTE_INDEX, rowIndex + 1)
+	endif
 End
 
 static Function ED_ParseHeadstageContigencyMode(string str)
@@ -205,9 +263,11 @@ End
 /// @param device                  [optional for logbooktype LBT_RESULTS only] device
 /// @param entrySourceType         type of reporting subsystem, one of @ref DataAcqModes
 /// @param logbookType             one of @ref LogbookTypes
-static Function ED_createWaveNotes(WAVE incomingNumericalValues, WAVE/T incomingNumericalKeys, variable sweepNo, variable entrySourceType, variable logbookType, [string device])
+/// @param insertAsPostProc        when set to 1 then the values are inserted at the end of the sweep block flagged as postprocessed data
+static Function ED_createWaveNotes(WAVE incomingNumericalValues, WAVE/T incomingNumericalKeys, variable sweepNo, variable entrySourceType, variable logbookType, variable insertAsPostProc, [string device])
 
 	variable rowIndex, numCols, lastValidIncomingLayer, i, state
+	variable addIndex, insertIndex
 
 	if(ParamIsDefault(device))
 		ASSERT(logbookType == LBT_RESULTS, "Invalid logbook type")
@@ -223,8 +283,14 @@ static Function ED_createWaveNotes(WAVE incomingNumericalValues, WAVE/T incoming
 		state = ROVar(GetAcquisitionState(device))
 	endif
 
-	[WAVE indizes, rowIndex] = ED_FindIndizesAndRedimension(incomingNumericalKeys, incomingNumericalValues, keys, values, logbookType)
+	if(insertAsPostProc)
+		insertIndex = ED_InsertRowAfterSweepBlock(values, sweepNo, entrySourceType)
+		ED_SetLabnotebookRowToPostProcessed(values, insertIndex)
+	endif
+
+	[WAVE indizes, addIndex] = ED_FindIndizesAndRedimension(incomingNumericalKeys, incomingNumericalValues, keys, values, logbookType)
 	ASSERT(WaveExists(indizes), "Missing indizes")
+	rowIndex = insertAsPostProc ? insertIndex : addIndex
 
 	ED_InitNewRow(values, rowIndex, sweepNo, entrySourceType, state)
 
@@ -238,7 +304,9 @@ static Function ED_createWaveNotes(WAVE incomingNumericalValues, WAVE/T incoming
 		values[rowIndex][indizes[i]][0, lastValidIncomingLayer] = incomingNumericalValues[0][i][r]
 	endfor
 
-	SetNumberInWaveNote(values, NOTE_INDEX, rowIndex + 1)
+	if(!insertAsPostProc)
+		SetNumberInWaveNote(values, NOTE_INDEX, rowIndex + 1)
+	endif
 End
 
 /// @brief Add custom entries to the numerical/textual labnotebook for the very last sweep acquired.
