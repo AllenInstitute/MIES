@@ -744,7 +744,8 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_AnalyzePeaks(WAVE sweepDataOffF
 	                                                                     riseTimeParams[%$"Upper Threshold"],   \
 	                                                                     p)
 
-	psxEvent[][%tau] = PSX_FitEventDecay(sweepDataOffFilt, psxEvent, maxTauFactor, eventFit, p)
+	Make/FREE/N=(DimSize(psxEvent, ROWS)) indexHelper
+	indexHelper[] = PSX_FitEventDecay(sweepDataOffFilt, psxEvent, maxTauFactor, eventFit, p)
 
 	return [peakX, peakY]
 End
@@ -855,12 +856,12 @@ End
 ///
 /// \rst
 ///
-/// exp_XOffset: :math:`y = K0 + K1 \cdot exp(-(x - x0)/K2)`
+/// dblexp_XOffset: :math:`y = K0 + K1 \cdot exp(-(x - x0) / K2) + K3 * exp(-(x - x0) / K4)`
 ///
 /// \endrst
 static Function PSX_FitEventDecay(WAVE sweepDataOffFilt, WAVE psxEvent, variable maxTauFactor, WAVE/WAVE eventFit, variable eventIndex)
 
-	variable startTime, endTime, err, decayTau, fitRange, overrideTau
+	variable startTime, endTime, err, weightedTau, slowTau, fastTau, fitRange, overrideTau
 	string comboKey
 
 	[startTime, endTime] = PSX_GetEventFitRange(sweepDataOffFilt, psxEvent, eventIndex)
@@ -868,6 +869,10 @@ static Function PSX_FitEventDecay(WAVE sweepDataOffFilt, WAVE psxEvent, variable
 	if(IsNaN(startTime) && IsNaN(endTime))
 		psxEvent[eventIndex][%$"Fit manual QC call"] = PSX_REJECT
 		psxEvent[eventIndex][%$"Fit result"]         = PSX_DECAY_FIT_INVALID_RANGE_ERROR
+		psxEvent[eventIndex][%weightedTau]           = NaN
+		psxEvent[eventIndex][%slowTau]               = NaN
+		psxEvent[eventIndex][%fastTau]               = NaN
+
 		return NaN
 	endif
 
@@ -886,7 +891,8 @@ static Function PSX_FitEventDecay(WAVE sweepDataOffFilt, WAVE psxEvent, variable
 
 	SetDataFolder currDFR
 	// weighted tau computed from double exponential fit
-	decayTau = ((coefWave[1] * coefWave[2] + coefWave[3] * coefWave[4]) / (coefWave[1] + coefWave[3]))
+	[fastTau, slowTau] = MinMax(coefWave[2], coefWave[4])
+	weightedTau        = ((coefWave[1] * slowTau + coefWave[3] * fastTau) / (coefWave[1] + coefWave[3]))
 
 #ifdef AUTOMATED_TESTING
 	WAVE/Z overrideResults = GetOverrideResults()
@@ -900,7 +906,7 @@ static Function PSX_FitEventDecay(WAVE sweepDataOffFilt, WAVE psxEvent, variable
 		overrideTau = overrideResults[eventIndex][%$comboKey][%Tau]
 
 		if(!IsNaN(overrideTau))
-			decayTau = overrideTau
+			weightedTau = overrideTau
 		endif
 	endif
 #endif // AUTOMATED_TESTING
@@ -908,14 +914,22 @@ static Function PSX_FitEventDecay(WAVE sweepDataOffFilt, WAVE psxEvent, variable
 	if(err)
 		psxEvent[eventIndex][%$"Fit manual QC call"] = PSX_REJECT
 		psxEvent[eventIndex][%$"Fit result"]         = -err
+		psxEvent[eventIndex][%weightedTau]           = NaN
+		psxEvent[eventIndex][%slowTau]               = NaN
+		psxEvent[eventIndex][%fastTau]               = NaN
+
 		return NaN
 	endif
 
 	fitRange = endTime - startTime
 
-	if(IsFinite(decayTau) && decayTau > (maxTauFactor * fitRange))
+	if((IsFinite(weightedTau) && weightedTau > (maxTauFactor * fitRange)) || fastTau <= 0 || SlowTau <= 0 || weightedTau <= 0)
 		psxEvent[eventIndex][%$"Fit manual QC call"] = PSX_REJECT
 		psxEvent[eventIndex][%$"Fit result"]         = PSX_DECAY_FIT_ERROR
+		psxEvent[eventIndex][%weightedTau]           = NaN
+		psxEvent[eventIndex][%slowTau]               = NaN
+		psxEvent[eventIndex][%fastTau]               = NaN
+
 		return NaN
 	endif
 
@@ -925,8 +939,9 @@ static Function PSX_FitEventDecay(WAVE sweepDataOffFilt, WAVE psxEvent, variable
 	eventFit[eventIndex]                         = fit
 	psxEvent[eventIndex][%$"Fit result"]         = 1
 	psxEvent[eventIndex][%$"Fit manual QC call"] = PSX_UNDET
-
-	return decayTau
+	psxEvent[eventIndex][%weightedTau]           = weightedTau
+	psxEvent[eventIndex][%slowTau]               = slowTau
+	psxEvent[eventIndex][%fastTau]               = fastTau
 End
 
 /// @brief Create the override results 2D wave
@@ -1216,8 +1231,14 @@ static Function [WAVE/D results, WAVE eventIndex, WAVE marker, WAVE/T comboKeys]
 		case "xinterval":
 			propLabel = "iei"
 			break
-		case "tau":
-			propLabel = "tau"
+		case "slowtau":
+			propLabel = "slowTau"
+			break
+		case "fasttau":
+			propLabel = "fastTau"
+			break
+		case "weightedtau":
+			propLabel = "weightedTau"
 			break
 		case "estate":
 			propLabel = "Event manual QC call"
@@ -1262,7 +1283,9 @@ static Function [WAVE/D results, WAVE eventIndex, WAVE marker, WAVE/T comboKeys]
 			stateType = "Event manual QC call"
 			break
 		case "Fit result": // fallthrough
-		case "tau": // fallthrough
+		case "slowtau": // fallthrough
+		case "fasttau": // fallthrough
+		case "weightedtau": // fallthrough
 		case "Fit manual QC call":
 			stateType = "Fit manual QC call"
 			break
@@ -1556,8 +1579,14 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE s
 			case "xinterval":
 				propLabelAxis = "Event interval" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_X_DATA_UNIT) + ")"
 				break
-			case "tau":
-				propLabelAxis = "Decay tau" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_X_DATA_UNIT) + ")"
+			case "slowtau":
+				propLabelAxis = "Slow tau" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_X_DATA_UNIT) + ")"
+				break
+			case "fasttau":
+				propLabelAxis = "Fast tau" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_X_DATA_UNIT) + ")"
+				break
+			case "weightedtau":
+				propLabelAxis = "Weighted tau" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_X_DATA_UNIT) + ")"
 				break
 			case "estate":
 				propLabelAxis = "Event manual QC" + " (enum)"
@@ -3001,9 +3030,9 @@ static Function PSX_UpdateSingleEventTextbox(string win, [variable eventIndex])
 	DFREF comboDFR = PSX_GetCurrentComboFolder(win)
 	WAVE  psxEvent = GetPSXEventWaveFromDFR(comboDFR)
 
-	Make/FREE/T/N=(8, 2) input
+	Make/FREE/T/N=(10, 2) input
 
-	input[0][0] = {"Event State:", "Fit State:", "Fit Result:", "Event:", "Deconv Peak:", "Peak:", "Baseline:", "IeI:", "Amp (rel.):", "Tau:", "Onset time:", "Rise time:"}
+	input[0][0] = {"Event State:", "Fit State:", "Fit Result:", "Event:", "Deconv Peak:", "Peak:", "Baseline:", "IeI:", "Amp (rel.):", "Slow tau:", "Fast tau:", "Weighted tau:", "Onset time:", "Rise time:"}
 	input[0][1] = {PSX_StateToString(psxEvent[eventIndex][%$"Event manual QC call"]),        \
 	               PSX_StateToString(psxEvent[eventIndex][%$"Fit manual QC call"]),          \
 	               PSX_FitResultToString(psxEvent[eventIndex][%$"Fit Result"]),              \
@@ -3013,7 +3042,9 @@ static Function PSX_UpdateSingleEventTextbox(string win, [variable eventIndex])
 	               num2str(psxEvent[eventIndex][%baseline_t], "%8.02f") + " [ms]",           \
 	               num2str(psxEvent[eventIndex][%iei], "%8.02f") + " [ms]",                  \
 	               num2str(psxEvent[eventIndex][%amplitude], "%8.02f") + " [" + yUnit + "]", \
-	               num2str(psxEvent[eventIndex][%tau], "%8.02f") + " [ms]",                  \
+	               num2str(psxEvent[eventIndex][%slowTau], "%8.02f") + " [ms]",              \
+	               num2str(psxEvent[eventIndex][%fastTau], "%8.02f") + " [ms]",              \
+	               num2str(psxEvent[eventIndex][%weightedTau], "%8.02f") + " [ms]",          \
 	               num2str(psxEvent[eventIndex][%$"Onset Time"], "%8.02f") + " [ms]",        \
 	               num2str(psxEvent[eventIndex][%$"Rise Time"], "%8.02f") + " [ms]"}
 
@@ -5165,14 +5196,14 @@ End
 
 static Function/WAVE PSX_GetAllStatsProperties()
 
-	Make/FREE/T allProps = {"amp",                           \
-	                        "peak", "peaktime",              \
-	                        "deconvpeak", "deconvpeaktime",  \
-	                        "baseline", "baselinetime",      \
-	                        "xinterval",                     \
-	                        "tau",                           \
-	                        "estate", "fstate", "fitresult", \
-	                        "slewrate", "slewratetime",      \
+	Make/FREE/T allProps = {"amp",                               \
+	                        "peak", "peaktime",                  \
+	                        "deconvpeak", "deconvpeaktime",      \
+	                        "baseline", "baselinetime",          \
+	                        "xinterval",                         \
+	                        "slowtau", "fasttau", "weightedtau", \
+	                        "estate", "fstate", "fitresult",     \
+	                        "slewrate", "slewratetime",          \
 	                        "risetime", "onsettime"}
 
 	return allProps
