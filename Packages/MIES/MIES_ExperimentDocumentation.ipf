@@ -45,6 +45,39 @@ static Function ED_CheckValuesAndKeys(WAVE vals, WAVE keys)
 	ASSERT(DimSize(keys, LAYERS) <= 1, "Mismatched layer count")
 End
 
+static Function ED_InitNewRow(WAVE values, variable rowIndex, variable sweepNo, variable entrySourceType, variable acqState)
+
+	variable timestamp
+	string   timestampStr
+
+	if(IsTextWave(values))
+		WAVE/T valuesT = values
+		valuesT[rowIndex][0][] = num2istr(sweepNo)
+		valuesT[rowIndex][3][] = num2istr(entrySourceType)
+
+		valuesT[rowIndex][4][] = num2istr(acqState)
+
+		// store the current time in a variable first
+		// so that all layers have the same timestamp
+		timestampStr           = num2strHighPrec(DateTime, precision = 3)
+		valuesT[rowIndex][1][] = timestampStr
+		timestampStr           = num2strHighPrec(DateTimeInUTC(), precision = 3)
+		valuesT[rowIndex][2][] = timestampStr
+	else
+		values[rowIndex][0][] = sweepNo
+		values[rowIndex][3][] = entrySourceType
+
+		values[rowIndex][4][] = acqState
+
+		// store the current time in a variable first
+		// so that all layers have the same timestamp
+		timestamp             = DateTime
+		values[rowIndex][1][] = timestamp
+		timestamp             = DateTimeInUTC()
+		values[rowIndex][2][] = timestamp
+	endif
+End
+
 /// @brief Add textual entries to the logbook
 ///
 /// The text documentation wave will use layers to report the different headstages.
@@ -62,7 +95,6 @@ End
 static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incomingTextualKeys, variable sweepNo, variable entrySourceType, variable logbookType, [string device])
 
 	variable rowIndex, numCols, i, lastValidIncomingLayer, state
-	string timestamp
 
 	if(ParamIsDefault(device))
 		ASSERT(logbookType == LBT_RESULTS, "Invalid logbook type")
@@ -80,17 +112,7 @@ static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incoming
 	[WAVE indizes, rowIndex] = ED_FindIndizesAndRedimension(incomingTextualKeys, incomingTextualValues, keys, values, logbookType)
 	ASSERT(WaveExists(indizes), "Missing indizes")
 
-	values[rowIndex][0][] = num2istr(sweepNo)
-	values[rowIndex][3][] = num2istr(entrySourceType)
-
-	values[rowIndex][4][] = num2istr(state)
-
-	// store the current time in a variable first
-	// so that all layers have the same timestamp
-	timestamp             = num2strHighPrec(DateTime, precision = 3)
-	values[rowIndex][1][] = timestamp
-	timestamp             = num2strHighPrec(DateTimeInUTC(), precision = 3)
-	values[rowIndex][2][] = timestamp
+	ED_InitNewRow(values, rowIndex, sweepNo, entrySourceType, state)
 
 	WAVE valuesDat = ExtractLogbookSliceTimeStamp(values)
 	EnsureLargeEnoughWave(valuesDat, indexShouldExist = rowIndex, dimension = ROWS)
@@ -182,7 +204,7 @@ End
 /// @param logbookType             one of @ref LogbookTypes
 static Function ED_createWaveNotes(WAVE incomingNumericalValues, WAVE/T incomingNumericalKeys, variable sweepNo, variable entrySourceType, variable logbookType, [string device])
 
-	variable rowIndex, numCols, lastValidIncomingLayer, i, timestamp, state
+	variable rowIndex, numCols, lastValidIncomingLayer, i, state
 
 	if(ParamIsDefault(device))
 		ASSERT(logbookType == LBT_RESULTS, "Invalid logbook type")
@@ -201,17 +223,7 @@ static Function ED_createWaveNotes(WAVE incomingNumericalValues, WAVE/T incoming
 	[WAVE indizes, rowIndex] = ED_FindIndizesAndRedimension(incomingNumericalKeys, incomingNumericalValues, keys, values, logbookType)
 	ASSERT(WaveExists(indizes), "Missing indizes")
 
-	values[rowIndex][0][] = sweepNo
-	values[rowIndex][3][] = entrySourceType
-
-	values[rowIndex][4][] = state
-
-	// store the current time in a variable first
-	// so that all layers have the same timestamp
-	timestamp             = DateTime
-	values[rowIndex][1][] = timestamp
-	timestamp             = DateTimeInUTC()
-	values[rowIndex][2][] = timestamp
+	ED_InitNewRow(values, rowIndex, sweepNo, entrySourceType, state)
 
 	WAVE valuesDat = ExtractLogbookSliceTimeStamp(values)
 	EnsureLargeEnoughWave(valuesDat, indexShouldExist = rowIndex, dimension = ROWS, initialValue = NaN)
