@@ -37,12 +37,26 @@ End
 
 static Function ED_CheckValuesAndKeys(WAVE vals, WAVE keys)
 
+	string msg
+
 	ASSERT(DimSize(vals, ROWS) == 1, "Mismatched row count")
 	ASSERT(DimSize(vals, COLS) == DimSize(keys, COLS), "Mismatched column count")
 	ASSERT(DimSize(vals, LAYERS) <= LABNOTEBOOK_LAYER_COUNT, "Mismatched layer count")
 
 	ASSERT(DimSize(keys, ROWS) == 1 || DimSize(keys, ROWS) == 3 || DimSize(keys, ROWS) == 6, "Mismatched row count")
 	ASSERT(DimSize(keys, LAYERS) <= 1, "Mismatched layer count")
+
+	if(DimSize(keys, COLS) == 1)
+		return NaN
+	endif
+	Duplicate/FREE/RMD=[0][][0][0] keys, checkKeysForDupes
+	Redimension/N=(DimSize(checkKeysForDupes, COLS))/E=1 checkKeysForDupes
+	if(SearchForDuplicates(checkKeysForDupes))
+		FindDuplicates/Z/FREE/DT=dups checkKeysForDupes
+		wfprintf msg, "%s", dups
+		sprintf msg, "Keywave contains duplicate keys: %s", msg
+		FATAL_ERROR(msg)
+	endif
 End
 
 static Function ED_InitNewRow(WAVE values, variable rowIndex, variable sweepNo, variable entrySourceType, variable acqState)
