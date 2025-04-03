@@ -235,9 +235,9 @@ End
 /// returned.
 ///
 /// The second argument `birdTypes` is optional, if not present the operation `birdTypes()` is called and its result returned. Alternatively `defWave` can be supplied which is then returned if the argument is not present.
-Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defOp, WAVE/Z defWave, variable singleResult, variable expectedWaveType, variable copy])
+Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defOp, WAVE/Z defWave, variable singleResult, variable expectedMinorType, variable expectedMajorType, variable copy])
 
-	variable checkExist, numArgs, checkWaveType, realWaveType
+	variable checkExist, numArgs, checkMinorType, checkMajorType
 	string msg
 
 	if(ParamIsDefault(defOp) && ParamIsDefault(defWave))
@@ -246,11 +246,8 @@ Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string gra
 		checkExist = 0
 	endif
 
-	if(ParamIsDefault(expectedWaveType))
-		checkWaveType = 0
-	else
-		checkWaveType = 1
-	endif
+	checkMinorType = !ParamIsDefault(expectedMinorType)
+	checkMajorType = !ParamIsDefault(expectedMajorType)
 
 	if(ParamIsDefault(singleResult))
 		singleResult = 0
@@ -274,22 +271,31 @@ Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string gra
 			WAVE data = input
 		endif
 
-		if(checkWaveType)
+		if(checkMinorType)
 			if(singleResult)
 				Make/FREE types = {WaveType(data)}
 			else
 				WAVE/WAVE dataAsRef = data
 				Make/FREE/N=(DimSize(data, ROWS)) types = WaveType(dataAsRef[p])
 			endif
-			if(expectedWaveType == IGOR_TYPE_TEXT_WAVE)
-				// we are using selector 0 for WaveType
-				realWaveType = 0
+			sprintf msg, "Argument #%d of operation %s: Expected minor wave type %d", argNum, opShort, expectedMinorType
+			if(expectedMinorType)
+				types[] = !!(types[p] & expectedMinorType)
+				SFH_ASSERT(sum(types) == DimSize(types, ROWS), msg)
 			else
-				realWaveType = expectedWaveType
+				SFH_ASSERT(IsConstant(types, expectedMinorType), msg)
+			endif
+		endif
+		if(checkMajorType)
+			if(singleResult)
+				Make/FREE types = {WaveType(data, 1)}
+			else
+				WAVE/WAVE dataAsRef = data
+				Make/FREE/N=(DimSize(data, ROWS)) types = WaveType(dataAsRef[p], 1)
 			endif
 
-			sprintf msg, "Argument #%d of operation %s: Expected wave type %d", argNum, opShort, expectedWaveType
-			SFH_ASSERT(IsConstant(types, realWaveType), msg)
+			sprintf msg, "Argument #%d of operation %s: Expected major wave type %d", argNum, opShort, expectedMajorType
+			SFH_ASSERT(IsConstant(types, expectedMajorType), msg)
 		endif
 
 		return SFH_CopyDataIfRequired(copy, input, data)
