@@ -43,6 +43,9 @@ static Function ED_CheckValuesAndKeys(WAVE vals, WAVE keys)
 
 	ASSERT(DimSize(keys, ROWS) == 1 || DimSize(keys, ROWS) == 3 || DimSize(keys, ROWS) == 6, "Mismatched row count")
 	ASSERT(DimSize(keys, LAYERS) <= 1, "Mismatched layer count")
+	Duplicate/FREE/RMD=[0][][0][0] keys, checkKeysForDupes
+	Redimension/N=(DimSize(checkKeysForDupes, COLS))/E=1 checkKeysForDupes
+	ASSERT(!SearchForDuplicates(checkKeysForDupes), "keys contain duplicate entries")
 End
 
 static Function ED_InitNewRow(WAVE values, variable rowIndex, variable sweepNo, variable entrySourceType, variable acqState)
