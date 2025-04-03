@@ -505,11 +505,10 @@ End
 /// @retval rowIndex   returns the row index into values at which the new values should be written
 static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimension(WAVE/T incomingKey, WAVE incomingValues, WAVE/T key, WAVE values, variable logbookType)
 
-	variable numCols, numKeyRows, numKeyCols, i, j, numAdditions, idx
+	variable numCols, numKeyCols, i, j, numAdditions, idx
 	variable lastValidIncomingKeyRow, descIndex, isUserEntry, headstageCont, headstageContDesc, isUnAssoc
 	string msg, searchStr
 
-	numKeyRows              = DimSize(key, ROWS)
 	numKeyCols              = DimSize(key, COLS)
 	lastValidIncomingKeyRow = DimSize(incomingKey, ROWS) - 1
 
