@@ -1983,6 +1983,26 @@ The operation currently throws away all metadata.
 
    merge(4, 7, 8) == [4, 7, 8]
 
+concat
+""""""
+
+The concat operation allows to concatenate multiple arrays together.
+
+.. code-block:: bash
+
+   concat(array data1, array data2, ...)
+
+data1, data2, ...
+  data waves (numeric and text)
+
+The operation accepts 1 to unlimited arguments. The dimensionality of all input
+waves and their types must match.
+
+.. code-block:: bash
+
+   concat([1, 5, [3, 8]) == [1, 5, 3, 8]
+   concat(["a", "b], ["e", "f"]) == [a, b, e, f]
+
 dataset
 """""""
 
