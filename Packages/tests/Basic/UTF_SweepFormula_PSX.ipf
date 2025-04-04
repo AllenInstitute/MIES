@@ -1697,6 +1697,50 @@ static Function MouseSelectionStatsPostProcNonFinite()
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_ACCEPT)
 End
 
+static Function KeyboardSelectionPSXStatsVS()
+
+	string win, browser, code, psxGraph, psxStatsGraph, postProc, comboKey, tracenames, trace
+	variable numEvents, logMode
+
+	Make/FREE/T/N=2 combos
+	sprintf comboKey, "Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[0] = comboKey
+	sprintf comboKey, "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[1] = comboKey
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
+
+	browser = SetupDatabrowserWithSomeData()
+
+	code = GetTestCode("nothing") + "\n vs [1, 2]"
+
+	// combo0 is the current one
+
+	win = ExecuteSweepFormulaCode(browser, code)
+
+	psxGraph      = MIES_PSX#PSX_GetPSXGraph(win)
+	psxStatsGraph = MIES_PSX#PSX_GetPSXStatsGraph(psxGraph)
+
+	REQUIRE(WindowExists(psxStatsGraph))
+
+	SetActiveSubwindow $psxStatsGraph
+
+	tracenames = TraceNameList(psxStatsGraph, ";", 1)
+	trace      = StringFromList(0, tracenames)
+	CHECK_PROPER_STR(trace)
+
+	Cursor/W=$psxStatsGraph/P A, $trace, 0
+
+	CheckCurrentEvent(psxStatsGraph, 0, 0, 0)
+
+	SendKey(psxGraph, LEFT_KEY)
+	SendKey(psxGraph, LEFT_KEY)
+	CHECK_NO_RTE()
+End
+
 static Function/WAVE GetTracesHelper(string win, variable options)
 
 	return ListToTextWave(SortList(TraceNameList(win, ";", options)), ";")
