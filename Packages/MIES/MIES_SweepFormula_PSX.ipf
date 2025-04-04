@@ -4065,7 +4065,7 @@ End
 static Function [variable eventIndex, variable waveIndex, variable comboIndex] PSX_GetEventIndexAndComboIndex(string win, [variable direction])
 
 	string psxGraph, info, trace, postProc
-	variable idx, yPointNumber, numEntries
+	variable idx, yPointNumber, yNumRows, xNumRows
 
 	psxGraph = PSX_GetPSXGraph(win)
 
@@ -4120,16 +4120,28 @@ static Function [variable eventIndex, variable waveIndex, variable comboIndex] P
 
 	WAVE/T comboKeys = JWN_GetTextWaveFromWaveNote(yWave, SF_META_USER_GROUP + PSX_JWN_COMBO_KEYS_NAME)
 
-	numEntries = DimSize(yWave, ROWS)
-	ASSERT(numEntries == DimSize(xWave, ROWS), "Unmatching wave sizes")
+	yNumRows = DimSize(yWave, ROWS)
+	xNumRows = DimSize(xWave, ROWS)
 
-	yPointNumber = limit(yPointNumber + direction, 0, numEntries - 1)
+	if(xNumRows == yNumRows)
+		// x wave is from the psx yWave
+		WAVE refxWave = xWave
+	else
+		// yWave vs something else
+		WAVE refxWave = JWN_GetNumericWaveFromWaveNote(yWave, SF_META_XVALUES)
+		xNumRows = DimSize(refxWave, ROWS)
+	endif
+	WaveClear xWave
+
+	ASSERT(xNumRows == yNumRows, "Unmatching wave sizes")
+
+	yPointNumber = limit(yPointNumber + direction, 0, yNumRows - 1)
 	comboIndex   = PSX_GetComboIndexForComboKey(win, comboKeys[yPointNumber])
 
 	strswitch(postProc)
 		case "nothing":
 		case "log10":
-			eventIndex = xWave[yPointNumber]
+			eventIndex = refxWave[yPointNumber]
 			break
 		case "nonfinite":
 			eventIndex = yWave[yPointNumber]
@@ -4229,7 +4241,10 @@ Function PSX_PlotInteractionHook(STRUCT WMWinHookStruct &s)
 				direction                           = PSX_GetDirectionFromKeyCode(psxGraph, s.keyCode)
 				[eventIndex, waveIndex, comboIndex] = PSX_GetEventIndexAndComboIndex(win, direction = direction)
 
-				ASSERT(IsFinite(eventIndex) && IsFinite(waveIndex) && IsFinite(comboIndex), "Invalid event index")
+				if(IsNaN(eventIndex) || IsNaN(waveIndex) || IsNaN(comboIndex))
+					BUG("Could not get new eventIndex after direction application")
+					break
+				endif
 
 				if(PSX_GetCurrentComboIndex(win) != comboIndex)
 					mainWindow = GetMainWindow(win)
