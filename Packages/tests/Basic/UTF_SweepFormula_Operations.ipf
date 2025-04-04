@@ -990,6 +990,40 @@ static Function TestOperationRange()
 	endtry
 End
 
+static Function TestOperationConcat()
+
+	string str, strRef, dataType, error
+	string win
+
+	win = GetDataBrowserWithData()
+
+	str = "concat([1, 2], [4, 5])"
+	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	Make/FREE floatWave = {1, 2, 4, 5}
+	REQUIRE_EQUAL_WAVES(output, floatWave, mode = WAVE_DATA)
+
+	str = "concat([a, b], [e, f])"
+	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	Make/FREE/T textWave = {"a", "b", "e", "f"}
+	REQUIRE_EQUAL_TEXTWAVES(output, textWave, mode = WAVE_DATA)
+
+	str = "concat([[1, 2], [4, 5]], [[10, 20], [40, 50]])"
+	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	// IP is column major, SF row major
+	Make/FREE floatWave = {{1, 4}, {2, 5}, {10, 40}, {20, 50}}
+	REQUIRE_EQUAL_WAVES(output, floatWave, mode = WAVE_DATA)
+
+	try
+		str = "concat(1, a)"
+		SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+		error = ROStr(GetSweepFormulaParseErrorMessage())
+		CHECK_EQUAL_STR(error, "Error concatenating waves: An attempt was made to treat a text wave as if it were a numeric wave.")
+	endtry
+End
+
 static Function TestOperationFindLevel()
 
 	string str, strRef, dataType

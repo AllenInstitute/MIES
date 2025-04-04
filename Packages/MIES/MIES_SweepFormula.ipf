@@ -64,6 +64,7 @@ static StrConstant SF_OP_PLUS                = "+"
 static StrConstant SF_OP_MULT                = "*"
 static StrConstant SF_OP_DIV                 = "~1"
 static StrConstant SF_OP_RANGE               = "range"
+static StrConstant SF_OP_CONCAT              = "concat"
 static StrConstant SF_OP_RANGESHORT          = "…"
 static StrConstant SF_OP_MIN                 = "min"
 static StrConstant SF_OP_MAX                 = "max"
@@ -255,7 +256,7 @@ Function/WAVE SF_GetNamedOperations()
 	                  SF_OP_MERGE, SF_OP_FIT, SF_OP_FITLINE, SF_OP_DATASET, SF_OP_SELECTVIS, SF_OP_SELECTCM, SF_OP_SELECTSTIMSET,       \
 	                  SF_OP_SELECTIVSCCSWEEPQC, SF_OP_SELECTIVSCCSETQC, SF_OP_SELECTRANGE, SF_OP_SELECTEXP, SF_OP_SELECTDEV,            \
 	                  SF_OP_SELECTEXPANDSCI, SF_OP_SELECTEXPANDRAC, SF_OP_SELECTSETCYCLECOUNT, SF_OP_SELECTSETSWEEPCOUNT,               \
-	                  SF_OP_SELECTSCIINDEX, SF_OP_SELECTRACINDEX, SF_OP_ANAFUNCPARAM}
+	                  SF_OP_SELECTSCIINDEX, SF_OP_SELECTRACINDEX, SF_OP_ANAFUNCPARAM, SF_OP_CONCAT}
 
 	return wt
 End
@@ -1043,6 +1044,9 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 		case SF_OP_RANGE:
 		case SF_OP_RANGESHORT:
 			WAVE out = SF_OperationRange(jsonId, jsonPath, graph)
+			break
+		case SF_OP_CONCAT:
+			WAVE out = SF_OperationConcat(jsonId, jsonPath, graph)
 			break
 		case SF_OP_MIN:
 			WAVE out = SF_OperationMin(jsonId, jsonPath, graph)
@@ -4038,6 +4042,25 @@ static Function/WAVE SF_OperationRange(variable jsonId, string jsonPath, string 
 	endif
 
 	return SFH_GetOutputForExecutorSingle(range, graph, SF_OP_RANGE, dataType = SF_DATATYPE_RANGE)
+End
+
+static Function/WAVE SF_OperationConcat(variable jsonId, string jsonPath, string graph)
+
+	variable numArgs, i, err
+
+	numArgs = SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_CONCAT, 1)
+
+	// TODO request copy
+	WAVE result = SFH_GetArgumentAsWave(jsonId, jsonpath, graph, SF_OP_CONCAT, 0, singleResult = 1)
+
+	for(i = 1; i < numArgs; i += 1)
+		WAVE slice = SFH_GetArgumentAsWave(jsonId, jsonpath, graph, SF_OP_CONCAT, i, singleResult = 1)
+
+		Concatenate/FREE/NP {slice}, result; err = GetRTError(1)
+		SFH_ASSERT(!err, "Error concatenating waves: " + GetErrMessage(err))
+	endfor
+
+	return SFH_GetOutputForExecutorSingle(result, graph, SF_OP_CONCAT, dataType = SF_DATATYPE_CONCAT)
 End
 
 static Function/WAVE SF_OperationMin(variable jsonId, string jsonPath, string graph)
