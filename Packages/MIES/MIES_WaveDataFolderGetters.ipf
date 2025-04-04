@@ -2192,15 +2192,12 @@ End
 threadsafe Function/WAVE GetLBRowCache(WAVE values)
 
 	variable actual, sweepNo, first, last
-	string key, name
+	string key
 
 	variable versionOfNewWave = 6
 
 	actual = WaveModCountWrapper(values)
-	name   = GetWavesDataFolder(values, 2)
-	ASSERT_TS(!isEmpty(name), "Invalid path to wave, free waves won't work.")
-
-	key = name + "_RowCache"
+	key    = CA_CreateLBRowCacheKey(values)
 
 	WAVE/Z/D wv = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
 
@@ -2270,15 +2267,12 @@ End
 threadsafe Function/WAVE GetLBIndexCache(WAVE values)
 
 	variable actual, sweepNo, first, last
-	string key, name
+	string key
 
 	variable versionOfNewWave = 5
 
 	actual = WaveModCountWrapper(values)
-	name   = GetWavesDataFolder(values, 2)
-	ASSERT_TS(!isEmpty(name), "Invalid path to wave, free waves won't work.")
-
-	key = name + "_IndexCache"
+	key    = CA_CreateLBIndexCacheKey(values)
 
 	WAVE/Z/D wv = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
 

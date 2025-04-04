@@ -175,6 +175,24 @@ threadsafe Function/S CA_GenKeyGetActiveChannels(WAVE numericalValues, WAVE text
 	return num2istr(crc) + version
 End
 
+/// @brief Cache key generator for LBN index cache
+threadsafe Function/S CA_CreateLBIndexCacheKey(WAVE values)
+
+	string name = GetWavesDataFolder(values, 2)
+	ASSERT_TS(!isEmpty(name), "Invalid path to wave, free waves won't work.")
+
+	return name + "_IndexCache"
+End
+
+/// @brief Cache key generator for LBN row cache
+threadsafe Function/S CA_CreateLBRowCacheKey(WAVE values)
+
+	string name = GetWavesDataFolder(values, 2)
+	ASSERT_TS(!isEmpty(name), "Invalid path to wave, free waves won't work.")
+
+	return name + "_RowCache"
+End
+
 /// @brief Cache key generator for Logbook sortedKeyWave
 threadsafe Function/S CA_GenKeyLogbookSortedKeys(WAVE keys)
 
