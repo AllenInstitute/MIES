@@ -4023,33 +4023,26 @@ End
 /// range (start[, stop[, step]])
 static Function/WAVE SF_OperationRange(variable jsonId, string jsonPath, string graph)
 
-	variable numArgs
+	variable start, stop, step, stopDefault
 
-	numArgs = SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_RANGE, 1, maxArgs = 3)
+	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_RANGE, 1, maxArgs = 3)
 
-	WAVE arg0 = SFH_ResolveDatasetElementFromJSON(jsonId, jsonpath, graph, SF_OP_RANGE, 0, checkExist = 1)
-	if(numArgs == 1)
-		SFH_ASSERT(IsNumericWave(arg0), "range first argument must be numeric")
-		Make/FREE/D/N=(abs(trunc(arg0[0]))) range
-		MultiThread range = p
-	elseif(numArgs == 2)
-		WAVE arg1 = SFH_ResolveDatasetElementFromJSON(jsonId, jsonpath, graph, SF_OP_RANGE, 1, checkExist = 1)
-		SFH_ASSERT(IsNumericWave(arg1), "range second argument must be numeric")
-		Make/FREE/D/N=(abs(trunc(arg0[0]) - trunc(arg1[0]))) range
-		MultiThread range[] = arg0[0] + p
-		SFH_CleanUpInput(arg1)
-	elseif(numArgs == 3)
-		WAVE arg1 = SFH_ResolveDatasetElementFromJSON(jsonId, jsonpath, graph, SF_OP_RANGE, 1, checkExist = 1)
-		WAVE arg2 = SFH_ResolveDatasetElementFromJSON(jsonId, jsonpath, graph, SF_OP_RANGE, 2, checkExist = 1)
-		SFH_ASSERT(IsNumericWave(arg1), "range second argument must be numeric")
-		SFH_ASSERT(IsNumericWave(arg2), "range third argument must be numeric")
-		Make/FREE/D/N=(ceil(abs((arg0[0] - arg1[0]) / arg2[0]))) range
-		MultiThread range[] = arg0[0] + p * arg2[0]
-		SFH_CleanUpInput(arg1)
-		SFH_CleanUpInput(arg2)
+	start = SFH_GetArgumentAsNumeric(jsonId, jsonpath, graph, SF_OP_RANGE, 0)
+	stop  = SFH_GetArgumentAsNumeric(jsonId, jsonpath, graph, SF_OP_RANGE, 1, defValue = NaN)
+	step  = SFH_GetArgumentAsNumeric(jsonId, jsonpath, graph, SF_OP_RANGE, 2, defValue = 1)
+
+	if(IsNaN(stop))
+		stop        = 0
+		stopDefault = 1
 	endif
 
-	SFH_CleanUpInput(arg0)
+	Make/FREE/D/N=(ceil(abs((start - stop) / step))) range
+
+	if(stopDefault)
+		MultiThread range[] = p * step
+	else
+		MultiThread range[] = start + p * step
+	endif
 
 	return SFH_GetOutputForExecutorSingle(range, graph, SF_OP_RANGE, dataType = SF_DATATYPE_RANGE)
 End
