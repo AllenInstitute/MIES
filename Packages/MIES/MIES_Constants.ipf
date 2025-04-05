@@ -471,7 +471,8 @@ Constant CHECKBOX_UNSELECTED = 0
 ///
 /// @anchor IgorTypes
 ///@{
-Constant IGOR_TYPE_COMPLEX          = 0x001
+Constant IGOR_TYPE_TEXT_WREF_DFR    = 0x000 /// applies for WaveType only when called with selector 0 (default)
+Constant IGOR_TYPE_COMPLEX          = 0x001 ///< Can be combined, using bitwise or, with all numeric types
 Constant IGOR_TYPE_32BIT_FLOAT      = 0x002
 Constant IGOR_TYPE_64BIT_FLOAT      = 0x004
 Constant IGOR_TYPE_8BIT_INT         = 0x008

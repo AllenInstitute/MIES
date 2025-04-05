@@ -4393,8 +4393,10 @@ static Function/WAVE SF_OperationAreaImpl(WAVE/Z input, variable zero)
 	SFH_ASSERT(IsNumericWave(input), "area requires numeric input data.")
 	if(zero)
 		SFH_ASSERT(DimSize(input, ROWS) >= 3, "Requires at least three points of data.")
-		Differentiate/DIM=(ROWS)/EP=1 input
-		Integrate/DIM=(ROWS) input
+		WAVE out_differentiate = NewFreeWave(IGOR_TYPE_64BIT_FLOAT, 0)
+		Differentiate/DIM=(ROWS)/EP=1 input/D=out_differentiate
+		Integrate/DIM=(ROWS) out_differentiate
+		WAVE input = out_differentiate
 	endif
 	SFH_ASSERT(DimSize(input, ROWS) >= 1, "integrate requires at least one data point.")
 
@@ -4409,25 +4411,18 @@ End
 /// `butterworth(data, lowPassCutoff, highPassCutoff, order)`
 static Function/WAVE SF_OperationButterworth(variable jsonId, string jsonPath, string graph)
 
-	variable numArgs
+	variable lowPassCutoff, highPassCutoff, order
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
-	SFH_ASSERT(numArgs == 4, "The butterworth filter requires 4 arguments")
+	SFH_CheckArgumentCount(jsonID, jsonPath, SF_OP_BUTTERWORTH, 4, maxArgs = 4)
 
-	WAVE/WAVE input         = SF_ResolveDatasetFromJSON(jsonID, jsonPath, graph, 0)
-	WAVE      lowPassCutoff = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 1, checkExist = 1)
-	SFH_ASSERT(DimSize(lowPassCutoff, ROWS) == 1, "Too many input values for parameter lowPassCutoff")
-	SFH_ASSERT(IsNumericWave(lowPassCutoff), "lowPassCutoff parameter must be numeric")
-	WAVE highPassCutoff = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 2, checkExist = 1)
-	SFH_ASSERT(DimSize(highPassCutoff, ROWS) == 1, "Too many input values for parameter highPassCutoff")
-	SFH_ASSERT(IsNumericWave(highPassCutoff), "highPassCutoff parameter must be numeric")
-	WAVE order = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 3, checkExist = 1)
-	SFH_ASSERT(DimSize(order, ROWS) == 1, "Too many input values for parameter order")
-	SFH_ASSERT(IsNumericWave(order), "order parameter must be numeric")
+	WAVE/WAVE input = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 0, copy = 1)
+	lowPassCutoff  = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 1)
+	highPassCutoff = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 2)
+	order          = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 3)
 
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_BUTTERWORTH, DimSize(input, ROWS))
 
-	output[] = SF_OperationButterworthImpl(input[p], lowPassCutoff[0], highPassCutoff[0], order[0])
+	output[] = SF_OperationButterworthImpl(input[p], lowPassCutoff, highPassCutoff, order)
 
 	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_BUTTERWORTH, SF_DATATYPE_BUTTERWORTH)
 
@@ -4650,7 +4645,7 @@ static Function/WAVE SF_OperationSelectSweeps(variable jsonId, string jsonPath, 
 		WAVE/Z/D sweeps = OVS_GetSelectedSweeps(graph, OVS_SWEEP_ALL_SWEEPNO)
 	else
 		for(i = 0; i < numArgs; i += 1)
-			WAVE data = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_SELECTSWEEPS, i, singleResult = 1, expectedWaveType = IGOR_TYPE_64BIT_FLOAT)
+			WAVE data = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_SELECTSWEEPS, i, singleResult = 1, expectedMinorType = IGOR_TYPE_64BIT_FLOAT)
 			SFH_ASSERT(!DimSize(data, COLS), "Argument of selsweeps must be a number or a 1d numeric array")
 			Concatenate/FREE/D/NP {data}, sweeps
 		endfor
@@ -4666,60 +4661,21 @@ End
 
 static Function/WAVE SF_OperationPowerSpectrum(variable jsonId, string jsonPath, string graph)
 
-	variable i, numArgs, doAvg, debugVal
-	string errMsg
-	string   avg     = SF_POWERSPECTRUM_AVG_OFF
-	string   unit    = SF_POWERSPECTRUM_UNIT_DEFAULT
-	string   winFunc = FFT_WINF_DEFAULT
-	variable cutoff  = 1000
-	variable ratioFreq
+	variable i, doAvg, debugVal
+	string unit, avg, winFunc
+	variable cutoff, ratioFreq
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
-	SFH_ASSERT(numArgs >= 1 && numArgs <= 6, "The powerspectrum operation requires 1 to 6 arguments")
+	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_POWERSPECTRUM, 1, maxArgs = 6)
 
-	WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonID, jsonPath, graph, 0)
-	if(numArgs > 1)
-		WAVE/T wUnit = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 1, checkExist = 1)
-		sprintf errMsg, "Second argument (unit) can not be a number. Use %s, %s or %s.", SF_POWERSPECTRUM_UNIT_DEFAULT, SF_POWERSPECTRUM_UNIT_DB, SF_POWERSPECTRUM_UNIT_NORMALIZED
-		SFH_ASSERT(IsTextWave(wUnit), errMsg)
-		SFH_ASSERT(!DimSize(wUnit, COLS) && DimSize(wUnit, ROWS) == 1, "Second argument (unit) must not be an array with multiple options.")
-		unit = wUnit[0]
-		sprintf errMsg, "Second argument (unit) must be %s, %s or %s.", SF_POWERSPECTRUM_UNIT_DEFAULT, SF_POWERSPECTRUM_UNIT_DB, SF_POWERSPECTRUM_UNIT_NORMALIZED
-		SFH_ASSERT(!CmpStr(unit, SF_POWERSPECTRUM_UNIT_DEFAULT) || !CmpStr(unit, SF_POWERSPECTRUM_UNIT_DB) || !CmpStr(unit, SF_POWERSPECTRUM_UNIT_NORMALIZED), errMsg)
-	endif
-	if(numArgs > 2)
-		WAVE/T wAvg = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 2, checkExist = 1)
-		sprintf errMsg, "Third argument (avg) can not be a number. Use %s or %s.", SF_POWERSPECTRUM_AVG_ON, SF_POWERSPECTRUM_AVG_OFF
-		SFH_ASSERT(IsTextWave(wAvg), errMsg)
-		SFH_ASSERT(!DimSize(wAvg, COLS) && DimSize(wAvg, ROWS) == 1, "Third argument (avg) must not be an array with multiple options.")
-		avg = wAvg[0]
-		sprintf errMsg, "Third argument (avg) must be %s or %s.", SF_POWERSPECTRUM_AVG_ON, SF_POWERSPECTRUM_AVG_OFF
-		SFH_ASSERT(!CmpStr(avg, SF_POWERSPECTRUM_AVG_ON) || !CmpStr(avg, SF_POWERSPECTRUM_AVG_OFF), errMsg)
-	endif
-	if(numArgs > 3)
-		WAVE wRatioFreq = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 3, checkExist = 1)
-		SFH_ASSERT(IsNumericWave(wRatioFreq), "Fourth argument (frequency for ratio) must be a number.")
-		SFH_ASSERT(!DimSize(wRatioFreq, COLS) && DimSize(wRatioFreq, ROWS) == 1, "Fourth argument (frequency for ratio) must not be an array with multiple options.")
-		ratioFreq = wRatioFreq[0]
-		sprintf errMsg, "Fourth argument (Frequency for ratio) must >= %f.", 0
-		SFH_ASSERT(ratioFreq >= 0, errMsg)
-	endif
-	if(numArgs > 4)
-		WAVE wCutoff = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 4, checkExist = 1)
-		SFH_ASSERT(IsNumericWave(wCutoff), "Fifth argument (cutoff frequency) must be a number.")
-		SFH_ASSERT(!DimSize(wCutoff, COLS) && DimSize(wCutoff, ROWS) == 1, "Fifth argument (cutoff frequency) must not be an array with multiple options.")
-		cutoff = wCutoff[0]
-		SFH_ASSERT(cutoff > 0, "Fifth argument (cutoff frequency) must be > 0.")
-	endif
-	if(numArgs > 5)
-		WAVE/T wWinf = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 5, checkExist = 1)
-		SFH_ASSERT(IsTextWave(wWinf), "Sixth argument (window function) can not be a number.")
-		SFH_ASSERT(!DimSize(wWinf, COLS) && DimSize(wWinf, ROWS) == 1, "Sixth argument (window function) must not be an array with multiple options.")
-		winFunc = wWinf[0]
-		SFH_ASSERT(WhichListItem(winFunc, FFT_WINF) >= 0 || !CmpStr(winFunc, SF_POWERSPECTRUM_WINFUNC_NONE), "Sixth argument (window function) is invalid.")
-		if(!CmpStr(winFunc, SF_POWERSPECTRUM_WINFUNC_NONE))
-			winFunc = ""
-		endif
+	WAVE/WAVE input = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_POWERSPECTRUM, 0, copy = 1)
+	unit      = SFH_GetArgumentAsText(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 1, defValue = SF_POWERSPECTRUM_UNIT_DEFAULT, allowedValues = {SF_POWERSPECTRUM_UNIT_DEFAULT, SF_POWERSPECTRUM_UNIT_DB, SF_POWERSPECTRUM_UNIT_NORMALIZED})
+	avg       = SFH_GetArgumentAsText(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 2, defValue = SF_POWERSPECTRUM_AVG_OFF, allowedValues = {SF_POWERSPECTRUM_AVG_ON, SF_POWERSPECTRUM_AVG_OFF})
+	ratioFreq = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 3, defValue = 0, checkFunc = IsNullOrPositiveAndFinite)
+	cutoff    = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 4, defValue = 1000, checkFunc = IsStrictlyPositiveAndFinite)
+	WAVE/T allowedWinFuncs = ListToTextWave(AddListItem(SF_POWERSPECTRUM_WINFUNC_NONE, FFT_WINF), ";")
+	winFunc = SFH_GetArgumentAsText(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 5, defValue = FFT_WINF_DEFAULT, allowedValues = allowedWinFuncs)
+	if(!CmpStr(winFunc, SF_POWERSPECTRUM_WINFUNC_NONE))
+		winFunc = ""
 	endif
 
 	for(data : input)
@@ -6037,7 +5993,7 @@ static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, s
 
 	WAVE/Z selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 1)
 
-	WAVE/T lbnKeys = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 0, expectedWaveType = IGOR_TYPE_TEXT_WAVE, singleResult = 1)
+	WAVE/T lbnKeys = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 0, expectedMajorType = IGOR_TYPE_TEXT_WAVE, singleResult = 1)
 
 	WAVE/Z/WAVE output = SF_OperationLabnotebookIterate(graph, lbnKeys, selectData, mode, SF_OP_LABNOTEBOOK)
 	if(!WaveExists(output))
@@ -7175,11 +7131,15 @@ Function/DF SF_GetBrowserDF(string graph)
 End
 
 /// @brief Executes the part of the argument part of the JSON and parses the resulting data to a waveRef type
-Function/WAVE SF_ResolveDatasetFromJSON(variable jsonId, string jsonPath, string graph, variable argNum)
+Function/WAVE SF_ResolveDatasetFromJSON(variable jsonId, string jsonPath, string graph, variable argNum, [variable copy])
+
+	copy = ParamIsDefault(copy) ? 0 : !!copy
 
 	WAVE wv = SF_FormulaExecutor(graph, jsonID, jsonPath = jsonPath + "/" + num2istr(argNum))
 
-	return SF_ResolveDataset(wv)
+	WAVE dataset = SF_ResolveDataset(wv)
+
+	return SFH_CopyDataIfRequired(copy, dataset, dataset)
 End
 
 static Function/WAVE SF_ResolveDataset(WAVE input)
@@ -7324,8 +7284,7 @@ Function/WAVE SF_OperationFit(variable jsonId, string jsonPath, string graph)
 	numElements = DimSize(yData, ROWS)
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_FIT, numElements)
 
-	WAVE/Z constraints
-	output[p] = SF_OperationFitImpl(xData[p], yData[p], fitType[0], holdWave, initialValues)
+	output[] = SF_OperationFitImpl(xData[p], yData[p], fitType[0], holdWave, initialValues)
 
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_FIT)
 End

@@ -235,9 +235,9 @@ End
 /// returned.
 ///
 /// The second argument `birdTypes` is optional, if not present the operation `birdTypes()` is called and its result returned. Alternatively `defWave` can be supplied which is then returned if the argument is not present.
-Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defOp, WAVE/Z defWave, variable singleResult, variable expectedWaveType])
+Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defOp, WAVE/Z defWave, variable singleResult, variable expectedMinorType, variable expectedMajorType, variable copy])
 
-	variable checkExist, numArgs, checkWaveType, realWaveType
+	variable checkExist, numArgs, checkMinorType, checkMajorType
 	string msg
 
 	if(ParamIsDefault(defOp) && ParamIsDefault(defWave))
@@ -246,17 +246,15 @@ Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string gra
 		checkExist = 0
 	endif
 
-	if(ParamIsDefault(expectedWaveType))
-		checkWaveType = 0
-	else
-		checkWaveType = 1
-	endif
+	checkMinorType = !ParamIsDefault(expectedMinorType)
+	checkMajorType = !ParamIsDefault(expectedMajorType)
 
 	if(ParamIsDefault(singleResult))
 		singleResult = 0
 	else
 		singleResult = !!singleResult
 	endif
+	copy = ParamIsDefault(copy) ? 0 : !!copy
 
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
 
@@ -269,26 +267,38 @@ Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string gra
 
 			WAVE/Z data = input[0]
 			SFH_CleanUpInput(input)
-
-			Make/FREE types = {WaveType(data)}
 		else
 			WAVE data = input
-			Make/FREE/N=(DimSize(input, ROWS)) types = WaveType(input[p])
 		endif
 
-		if(checkWaveType)
-			if(expectedWaveType == IGOR_TYPE_TEXT_WAVE)
-				// we are using selector 0 for WaveType
-				realWaveType = 0
+		if(checkMinorType)
+			if(singleResult)
+				Make/FREE types = {WaveType(data)}
 			else
-				realWaveType = expectedWaveType
+				WAVE/WAVE dataAsRef = data
+				Make/FREE/N=(DimSize(data, ROWS)) types = WaveType(dataAsRef[p])
+			endif
+			sprintf msg, "Argument #%d of operation %s: Expected minor wave type %d", argNum, opShort, expectedMinorType
+			if(expectedMinorType)
+				types[] = !!(types[p] & expectedMinorType)
+				SFH_ASSERT(sum(types) == DimSize(types, ROWS), msg)
+			else
+				SFH_ASSERT(IsConstant(types, expectedMinorType), msg)
+			endif
+		endif
+		if(checkMajorType)
+			if(singleResult)
+				Make/FREE types = {WaveType(data, 1)}
+			else
+				WAVE/WAVE dataAsRef = data
+				Make/FREE/N=(DimSize(data, ROWS)) types = WaveType(dataAsRef[p], 1)
 			endif
 
-			sprintf msg, "Argument #%d of operation %s: Expected wave type %d", argNum, opShort, expectedWaveType
-			SFH_ASSERT(IsConstant(types, realWaveType), msg)
+			sprintf msg, "Argument #%d of operation %s: Expected major wave type %d", argNum, opShort, expectedMajorType
+			SFH_ASSERT(IsConstant(types, expectedMajorType), msg)
 		endif
 
-		return data
+		return SFH_CopyDataIfRequired(copy, input, data)
 	endif
 
 	sprintf msg, "Argument #%d of operation %s is mandatory", argNum, opShort
@@ -680,10 +690,15 @@ Function/WAVE SFH_CreateSFRefWave(string win, string opShort, variable size)
 	return wv
 End
 
+Function SFH_IsVariable(WAVE dataset)
+
+	return JWN_GetNumberFromWaveNote(dataset, SF_VARIABLE_MARKER) == 1
+End
+
 Function SFH_CleanUpInput(WAVE input)
 
 #ifndef SWEEPFORMULA_DEBUG
-	if(JWN_GetNumberFromWaveNote(input, SF_VARIABLE_MARKER) == 1)
+	if(SFH_IsVariable(input))
 		return NaN
 	endif
 	KillOrMoveToTrash(wv = input)
@@ -774,16 +789,31 @@ static Function SFH_ConvertAllReturnDataToPermanent(WAVE/WAVE output, string win
 	endfor
 End
 
+/// @brief If the copy condition is met and dataset is a variable then returns a free copy of data
+///        dataset and data can refer to the same wave
+Function/WAVE SFH_CopyDataIfRequired(variable copy, WAVE/Z dataset, WAVE/Z data)
+
+	if(!WaveExists(data) || !WaveExists(dataset))
+		// There are cases where the caller calls SFH_CleanUpInput on the dataset before this function is called
+		// Datasets are only cleaned if they are not a variable.
+		return data
+	endif
+
+	return FreeCopyOnTrue(copy && SFH_IsVariable(dataset), data)
+End
+
 /// @brief Retrieves from an argument the datatype and the first dataset and disposes the argument
-Function [WAVE data, string dataType] SFH_ResolveDatasetElementFromJSONAndType(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [variable checkExist])
+Function [WAVE data, string dataType] SFH_ResolveDatasetElementFromJSONAndType(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [variable checkExist, variable copy])
 
 	checkExist = ParamIsDefault(checkExist) ? 0 : !!checkExist
+	copy       = ParamIsDefault(copy) ? 0 : !!copy
 
 	WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
 	dataType = JWN_GetStringFromWaveNote(input, SF_META_DATATYPE)
-	WAVE/Z data = SFH_CheckForSingleDSAndGetData(input, checkExist, opShort, argNum)
+	WAVE/Z data         = SFH_CheckForSingleDSAndGetData(input, checkExist, opShort, argNum)
+	WAVE/Z possDataCopy = SFH_CopyDataIfRequired(copy, input, data)
 
-	return [data, dataType]
+	return [possDataCopy, dataType]
 End
 
 static Function/WAVE SFH_CheckForSingleDSAndGetData(WAVE/WAVE input, variable checkExist, string opShort, variable argNum)
@@ -797,14 +827,15 @@ static Function/WAVE SFH_CheckForSingleDSAndGetData(WAVE/WAVE input, variable ch
 End
 
 /// @brief Retrieves from an argument the first dataset and disposes the argument
-Function/WAVE SFH_ResolveDatasetElementFromJSON(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [variable checkExist])
+Function/WAVE SFH_ResolveDatasetElementFromJSON(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [variable checkExist, variable copy])
 
 	checkExist = ParamIsDefault(checkExist) ? 0 : !!checkExist
+	copy       = ParamIsDefault(copy) ? 0 : !!copy
 
 	WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
 	WAVE/Z    data  = SFH_CheckForSingleDSAndGetData(input, checkExist, opShort, argNum)
 
-	return data
+	return SFH_CopyDataIfRequired(copy, input, data)
 End
 
 /// @brief Transfer wavenote from input data sets to output data sets
@@ -842,6 +873,7 @@ Function SFH_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE outpu
 	endif
 
 	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, newDataType)
+	JWN_SetNumberInWaveNote(output, SF_VARIABLE_MARKER, 0)
 
 	opStack = JWN_GetStringFromWaveNote(input, SF_META_OPSTACK)
 	SFH_AddOpToOpStack(output, opStack, opShort)
