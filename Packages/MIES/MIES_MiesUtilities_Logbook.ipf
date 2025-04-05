@@ -1278,7 +1278,7 @@ End
 /// @param[in]  entrySourceType   type of the labnotebook entry, one of @ref DataAcqModes
 /// @param[out] first             point index of the beginning of the range
 /// @param[out] last              point index of the end of the range
-threadsafe static Function FindRange(WAVE wv, variable col, variable val, variable entrySourceType, variable &first, variable &last)
+threadsafe Function FindRange(WAVE wv, variable col, variable val, variable entrySourceType, variable &first, variable &last)
 
 	variable numRows, i, j, sourceTypeCol, firstRow, lastRow, isNumeric, index, startRow, endRow
 
@@ -1937,4 +1937,57 @@ Function ParseLogbookMode(string modeText)
 			ASSERT(0, "Unsupported labnotebook mode")
 			break
 	endswitch
+End
+
+Function InsertRecreatedEpochsIntoLBN(WAVE numericalValues, WAVE/T textualValues, string device, variable sweepNo)
+
+	string epochList
+	variable channelNumber, channelType, headstage, gotAssocValues
+
+	DFREF  deviceDFR = GetDeviceDataPath(device)
+	DFREF  sweepDFR  = GetSingleSweepFolder(deviceDFR, sweepNo)
+	WAVE/Z recEpochs = EP_RecreateEpochsFromLoadedData(numericalValues, textualValues, sweepDFR, sweepNo)
+	if(!WaveExists(recEpochs))
+		print "Could not recreate Epochs."
+		return NaN
+	endif
+
+	Make/FREE/T/N=(1, 1) keys
+	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values, unAssocValues
+
+	for(channelType = 0; channelType < XOP_CHANNEL_TYPE_COUNT; channelType += 1)
+		for(channelNumber = 0; channelNumber < NUM_DA_TTL_CHANNELS; channelNumber += 1)
+			// Currently only implemented for DAC channel type
+			if(channelType != XOP_CHANNEL_TYPE_DAC)
+				continue
+			endif
+
+			epochList = EP_EpochWaveToStr(recEpochs, channelNumber, channelType)
+			if(IsEmpty(epochList))
+				continue
+			endif
+
+			headstage = AFH_GetHeadstageFromChannelNumberAndType(device, channelType, channelNumber)
+			if(IsValidHeadstage(headstage))
+				values[0][0][headstage] = epochList
+				gotAssocValues          = 1
+				continue
+			endif
+			// unassoc channel
+			unAssocValues[0][0][INDEP_HEADSTAGE] = epochList
+			keys[0][0]                           = CreateLBNUnassocKey(EPOCHS_ENTRY_KEY, channelNumber, channelType)
+			ED_AddEntriesToLabnotebook(unAssocValues, keys, sweepNo, device, DATA_ACQUISITION_MODE, insertAsPostProc = 1)
+
+		endfor
+	endfor
+	if(gotAssocValues)
+		keys[0][0] = EPOCHS_ENTRY_KEY
+		ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE, insertAsPostProc = 1)
+	endif
+End
+
+Function InvalidateLBIndexAndRowCache(WAVE values)
+
+	CA_DeleteCacheEntry(CA_CreateLBIndexCacheKey(values))
+	CA_DeleteCacheEntry(CA_CreateLBRowCacheKey(values))
 End
