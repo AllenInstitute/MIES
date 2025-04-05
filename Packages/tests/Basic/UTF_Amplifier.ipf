@@ -55,3 +55,33 @@ static Function TestFuncMapping()
 		endfor
 	endfor
 End
+
+// UTF_TD_GENERATOR GetClampModesWithoutIZero
+static Function TestAmplifierUnits([variable clampMode])
+
+	string unit, prefix, unitWithPrefix
+	variable func, numPrefix
+
+	WAVE/Z funcs = AI_GetFunctionConstantForClampMode(clampMode)
+	CHECK_WAVE(funcs, FREE_WAVE | NUMERIC_WAVE)
+
+	CHECK_GT_VAR(DimSize(funcs, ROWS), 0)
+	for(func : funcs)
+
+		unitWithPrefix = AI_GetUnitForFunctionConstant(func, clampMode)
+		CHECK_PROPER_STR(unitWithPrefix)
+
+		strswitch(unitWithPrefix)
+			case "On/Off": // fallthrough
+			case "%":
+				PASS()
+				break
+			default:
+				INFO("unitWithPrefix = %s", s0 = unitWithPrefix)
+				// ParseUnit asserts out on invalid units
+				ParseUnit(unitWithPrefix, prefix, numPrefix, unit)
+				PASS()
+				break
+		endswitch
+	endfor
+End

@@ -1853,18 +1853,23 @@ StrConstant LOGBOOK_WAVE_TEMP_FOLDER = "Temp"
 /// @name All available ZeroMQ message filters
 /// @anchor ZeroMQMessageFilters
 ///@{
-StrConstant IVS_PUB_FILTER                = "ivscc"
-StrConstant PRESSURE_STATE_FILTER         = "pressure:state"
-StrConstant PRESSURE_SEALED_FILTER        = "pressure:sealed"
-StrConstant PRESSURE_BREAKIN_FILTER       = "pressure:break in"
-StrConstant AUTO_TP_FILTER                = "testpulse:autotune result"
-StrConstant AMPLIFIER_CLAMP_MODE_FILTER   = "amplifier:clamp mode"
-StrConstant AMPLIFIER_AUTO_BRIDGE_BALANCE = "amplifier:auto bridge balance"
-StrConstant ANALYSIS_FUNCTION_PB          = "analysis function:pipette in bath"
-StrConstant ANALYSIS_FUNCTION_SE          = "analysis function:seal evaluation"
-StrConstant ANALYSIS_FUNCTION_VM          = "analysis function:true resting membrane potential"
-StrConstant DAQ_TP_STATE_CHANGE_FILTER    = "data acquisition:state change"
-StrConstant ANALYSIS_FUNCTION_AR          = "analysis function:access resistance smoke"
+StrConstant IVS_PUB_FILTER                    = "ivscc"
+StrConstant PRESSURE_STATE_FILTER             = "pressure:state"
+StrConstant PRESSURE_SEALED_FILTER            = "pressure:sealed"
+StrConstant PRESSURE_BREAKIN_FILTER           = "pressure:break in"
+StrConstant AUTO_TP_FILTER                    = "testpulse:autotune result"
+StrConstant ZMQ_FILTER_TPRESULT_NOW           = "testpulse:results live"
+StrConstant ZMQ_FILTER_TPRESULT_1S            = "testpulse:results 1s update"
+StrConstant ZMQ_FILTER_TPRESULT_5S            = "testpulse:results 5s update"
+StrConstant ZMQ_FILTER_TPRESULT_10S           = "testpulse:results 10s update"
+StrConstant ZMQ_FILTER_TPRESULT_NOW_WITH_DATA = "testpulse:results live with data"
+StrConstant AMPLIFIER_CLAMP_MODE_FILTER       = "amplifier:clamp mode"
+StrConstant AMPLIFIER_AUTO_BRIDGE_BALANCE     = "amplifier:auto bridge balance"
+StrConstant ANALYSIS_FUNCTION_PB              = "analysis function:pipette in bath"
+StrConstant ANALYSIS_FUNCTION_SE              = "analysis function:seal evaluation"
+StrConstant ANALYSIS_FUNCTION_VM              = "analysis function:true resting membrane potential"
+StrConstant DAQ_TP_STATE_CHANGE_FILTER        = "data acquisition:state change"
+StrConstant ANALYSIS_FUNCTION_AR              = "analysis function:access resistance smoke"
 ///@}
 
 /// which is sufficient to represent each sample point time with a distinctive number up to rates of 10 MHz.
@@ -1999,9 +2004,9 @@ StrConstant DEFAULT_LIST_SEP = ";"
 /// \endrst
 ///
 /// From: 9th edition of the SI Brochure (2019), https://www.bipm.org/en/publications/si-brochure
-StrConstant PREFIX_SHORT_LIST = ";Y;Z;E;P;T;G;M;k;h;da;d;c;m;mu;n;p;f;a;z;y"
-StrConstant PREFIX_LONG_LIST  = "one;yotta;zetta;exa;peta;tera;giga;mega;kilo;hecto;deca;deci;centi;milli;micro;nano;pico;femto;atto;zepto;yocto"
-StrConstant PREFIX_VALUE_LIST = "1;1e24;1e21;1e18;1e15;1e12;1e9;1e6;1e3;1e2;1e1;1e-1;1e-2;1e-3;1e-6;1e-9;1e-12;1e-15;1e-18;1e-21;1e-24"
+StrConstant PREFIX_SHORT_LIST = ";Y;Z;E;P;T;G;M;k;h;da;d;c;m;mu;μ;n;p;f;a;z;y"
+StrConstant PREFIX_LONG_LIST  = "one;yotta;zetta;exa;peta;tera;giga;mega;kilo;hecto;deca;deci;centi;milli;micro;micro;nano;pico;femto;atto;zepto;yocto"
+StrConstant PREFIX_VALUE_LIST = "1;1e24;1e21;1e18;1e15;1e12;1e9;1e6;1e3;1e2;1e1;1e-1;1e-2;1e-3;1e-6;1e-6;1e-9;1e-12;1e-15;1e-18;1e-21;1e-24"
 
 /// @name Possible return values for PSQ_DetermineSweepQCResults()
 /// @anchor DetermineSweepQCReturns
@@ -2385,3 +2390,10 @@ Constant ABORTCODE_USERABORT     = -1
 ///@}
 
 StrConstant CONF_DEFAULT_SAVE_LOCATION = "C:MiesSave"
+
+// If this constant with dimLabels is changed the following functions should be verified:
+//
+// TP_TSAnalysis
+// GetTPResultAsyncBuffer
+// GetTPResults (reuses same dimlabels partially)
+StrConstant TP_ANALYSIS_DATA_LABELS = "BASELINE;STEADYSTATERES;INSTANTRES;ELEVATED_SS;ELEVATED_INST;NOW;HEADSTAGE;MARKER;NUMBER_OF_TP_CHANNELS;TIMESTAMP;TIMESTAMPUTC;CLAMPMODE;CLAMPAMP;BASELINEFRAC;CYCLEID;TPLENGTHPOINTSADC;PULSELENGTHPOINTSADC;PULSESTARTPOINTSADC;SAMPLINGINTERVALADC;TPLENGTHPOINTSDAC;PULSELENGTHPOINTSDAC;PULSESTARTPOINTSDAC;SAMPLINGINTERVALDAC;"
