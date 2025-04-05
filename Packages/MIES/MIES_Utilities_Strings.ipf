@@ -306,7 +306,7 @@ threadsafe Function ParseUnit(string unitWithPrefix, string &prefix, variable &n
 
 	ASSERT_TS(!isEmpty(unitWithPrefix), "empty unit")
 
-	expr = "^(Y|Z|E|P|T|G|M|k|h|d|c|m|mu|n|p|f|a|z|y)?[[:space:]]*(m|kg|s|A|K|mol|cd|Hz|V|N|W|J|F|Ω|a.u.)$"
+	expr = "^(Y|Z|E|P|T|G|M|k|h|d|c|m|mu|μ|n|p|f|a|z|y)?[[:space:]]*(m|kg|s|A|K|mol|cd|Hz|V|N|W|J|F|Ω|a.u.)$"
 
 	SplitString/E=(expr) unitWithPrefix, prefixInt, unitInt
 	ASSERT_TS(V_flag >= 1, "Could not parse unit string")
