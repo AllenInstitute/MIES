@@ -75,10 +75,10 @@ static Function/S AI_GetAmpMCCSerial(string device, variable headStage)
 
 	if(axonSerial == 0)
 		return "Demo"
-	else
-		sprintf mccSerial, "%08d", axonSerial
-		return mccSerial
 	endif
+
+	sprintf mccSerial, "%08d", axonSerial
+	return mccSerial
 End
 
 ///@brief Return the channel of the currently selected head stage
@@ -1390,9 +1390,9 @@ Function AI_WriteToAmplifier(string device, variable headStage, variable mode, v
 
 	if(ParamIsDefault(sendToAll))
 		return AI_UpdateAmpModel(device, headStage, clampMode = mode, func = func, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = selectAmp, GUIWrite = GUIWrite)
-	else
-		return AI_UpdateAmpModel(device, headStage, clampMode = mode, func = func, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = selectAmp, GUIWrite = GUIWrite, sendToAll = !!sendToAll)
 	endif
+
+	return AI_UpdateAmpModel(device, headStage, clampMode = mode, func = func, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = selectAmp, GUIWrite = GUIWrite, sendToAll = !!sendToAll)
 End
 
 /// @brief Read from amplifier
@@ -1417,9 +1417,9 @@ Function AI_ReadFromAmplifier(string device, variable headStage, variable mode, 
 
 	if(ParamIsdefault(usePrefixes))
 		return AI_SendToAmp(device, headStage, mode, func, MCC_READ, selectAmp = selectAmp)
-	else
-		return AI_SendToAmp(device, headStage, mode, func, MCC_READ, usePrefixes = usePrefixes, selectAmp = selectAmp)
 	endif
+
+	return AI_SendToAmp(device, headStage, mode, func, MCC_READ, usePrefixes = usePrefixes, selectAmp = selectAmp)
 End
 
 /// @brief Generic interface to call MCC amplifier functions

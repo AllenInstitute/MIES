@@ -564,7 +564,9 @@ Function TestPrematureSweepStop(string device, variable eventType, WAVE DAQDataW
 	if(eventType == PRE_DAQ_EVENT || eventType == POST_SWEEP_EVENT)
 		temp = "0"
 		return NaN
-	elseif(eventType == MID_SWEEP_EVENT)
+	endif
+
+	if(eventType == MID_SWEEP_EVENT)
 		num = str2numSafe(temp)
 		ASSERT(IsFinite(num), "Missing variable initialization, this analysis function must be set as pre daq, mid sweeep and post sweep")
 		num += 1

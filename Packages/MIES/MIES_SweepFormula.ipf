@@ -814,10 +814,10 @@ static Function/WAVE SF_FormulaExecutorStringOrVariable(string graph, variable j
 		dim = FindDimLabel(varStorage, ROWS, str[1, Inf])
 		SFH_ASSERT(dim != -2, "Unknown variable " + str[1, Inf])
 		return varStorage[dim]
-	else
-		Make/FREE/T outT = {str}
-		return SFH_GetOutputForExecutorSingle(outT, graph, "ExecutorStringReturn")
 	endif
+
+	Make/FREE/T outT = {str}
+	return SFH_GetOutputForExecutorSingle(outT, graph, "ExecutorStringReturn")
 End
 
 /// @brief Execute the formula parsed by SF_FormulaParser

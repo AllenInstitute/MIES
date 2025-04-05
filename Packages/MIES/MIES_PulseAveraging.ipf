@@ -104,9 +104,9 @@ static Function/S PA_GetGraphName(string win, STRUCT PulseAverageSettings &pa, v
 
 	if(pa.multipleGraphs)
 		return name + "_AD" + num2str(channelNumber) + "_R" + num2str(activeRegionCount)
-	else
-		return name
 	endif
+
+	return name
 End
 
 // @brief Return the window name prefix of all PA graphs for the given Browser window

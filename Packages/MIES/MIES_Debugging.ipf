@@ -165,7 +165,8 @@ End
 /// @param format format string overrides the default of "%g" for variables and "%s" for strings
 Function DEBUGPRINT(string msg, [variable var, string str, WAVE/Z wv, string format])
 
-	string file, line, func, caller, stacktrace, formatted = ""
+	string file, line, func, caller, stacktrace
+	string formatted = ""
 	variable numSuppliedOptParams, idx, numCallers
 
 	// check parameters

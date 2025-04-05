@@ -431,7 +431,8 @@ End
 
 Function/S SB_GetSweepList(string win)
 
-	string list = "", str
+	string str
+	string list = ""
 	variable numRows, i
 
 	WAVE/T map = SB_GetSweepBrowserMapFromGraph(win)

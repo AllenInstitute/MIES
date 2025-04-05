@@ -25,7 +25,9 @@ Function BWO_SelectDevice()
 
 	if(noOfLockedDevices == 0)
 		return NaN
-	elseif(noOfLockedDevices == 1)
+	endif
+
+	if(noOfLockedDevices == 1)
 		if(interactiveMode)
 			DoAlert 1, "Proceed with automated blowout routine?"
 			if(V_flag != 1)

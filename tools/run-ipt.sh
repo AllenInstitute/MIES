@@ -28,4 +28,7 @@ while read -r line; do
     echo "files = \"$line\"" >> config.toml
 done < <(git ls-files ':(attr:ipt)')
 
+# fixing this is postponed until upstream issue #347 is resolved
+echo "exclude=CodeStyleFallthroughCaseRequireComment" >> config.toml
+
 (cd $top_level && $ipt --arg-file config.toml lint -i)

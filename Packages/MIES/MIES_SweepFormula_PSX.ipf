@@ -2294,9 +2294,9 @@ static Function/DF PSX_GetAverageFolder(string win)
 
 	if(PSX_GetRestrictEventsToCurrentCombo(win))
 		return PSX_GetCurrentComboFolder(win)
-	else
-		return PSX_GetWorkingFolder(win)
 	endif
+
+	return PSX_GetWorkingFolder(win)
 End
 
 static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventStopTime)

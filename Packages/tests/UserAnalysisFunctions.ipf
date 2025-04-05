@@ -657,9 +657,9 @@ Function AbortPreSet(string device, STRUCT AnalysisFunction_V3 &s)
 	if(s.eventType == PRE_SET_EVENT)
 		// aborts DAQ
 		return 1
-	else
-		return 0
 	endif
+
+	return 0
 End
 
 Function TotalOrdering(string device, STRUCT AnalysisFunction_V3 &s)

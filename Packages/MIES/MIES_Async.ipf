@@ -648,9 +648,9 @@ static Function ASYNC_IsThreadDF(DFREF dfr)
 	NVAR/Z marker = dfr:$ASYNC_THREAD_MARKER_STR
 	if(NVAR_Exists(marker))
 		return marker == ASYNC_THREAD_MARKER
-	else
-		return 0
 	endif
+
+	return 0
 End
 
 /// @brief returns 1 if ASYNC framework is running, 0 otherwise

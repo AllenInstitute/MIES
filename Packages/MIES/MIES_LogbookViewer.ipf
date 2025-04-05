@@ -328,9 +328,9 @@ Function/S LBV_GetExperiments(string win)
 
 	if(BSP_IsDataBrowser(win))
 		return NONE + ";" + GetExperimentName()
-	else
-		return NONE + ";" + SB_GetListOfExperiments(win)
 	endif
+
+	return NONE + ";" + SB_GetListOfExperiments(win)
 End
 
 Function/S LBV_GetAllDevicesForExperiment(string win)
@@ -341,29 +341,29 @@ Function/S LBV_GetAllDevicesForExperiment(string win)
 	if(BSP_IsDataBrowser(win))
 		if(BSP_HasBoundDevice(win))
 			return NONE + ";" + BSP_GetDevice(win)
-		else
-			return NONE
-		endif
-	else
-		shPanel    = LBV_GetSettingsHistoryPanel(win)
-		dataFolder = GetPopupMenuString(shPanel, "popup_experiment")
-
-		if(!cmpstr(dataFolder, NONE))
-			return NONE
 		endif
 
-		WAVE devices = GetAnalysisDeviceWave(dataFolder)
-
-		index = GetNumberFromWaveNote(devices, NOTE_INDEX)
-
-		if(index == 0)
-			return NONE
-		endif
-
-		Duplicate/FREE/RMD=[0, index - 1] devices, devicesClean
-
-		return NONE + ";" + TextWaveToList(devicesClean, ";")
+		return NONE
 	endif
+
+	shPanel    = LBV_GetSettingsHistoryPanel(win)
+	dataFolder = GetPopupMenuString(shPanel, "popup_experiment")
+
+	if(!cmpstr(dataFolder, NONE))
+		return NONE
+	endif
+
+	WAVE devices = GetAnalysisDeviceWave(dataFolder)
+
+	index = GetNumberFromWaveNote(devices, NOTE_INDEX)
+
+	if(index == 0)
+		return NONE
+	endif
+
+	Duplicate/FREE/RMD=[0, index - 1] devices, devicesClean
+
+	return NONE + ";" + TextWaveToList(devicesClean, ";")
 End
 
 Function LBV_ClearGraph(string win)
