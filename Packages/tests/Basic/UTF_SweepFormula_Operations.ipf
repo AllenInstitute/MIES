@@ -934,7 +934,7 @@ static Function TestOperationRange()
 
 	variable jsonID0, jsonID1
 
-	string str, strRef, dataType
+	string str, strRef, dataType, error
 	string win
 
 	win = GetDataBrowserWithData()
@@ -967,12 +967,61 @@ static Function TestOperationRange()
 	Make/N=9/FREE floatwave = 1.5 + p
 	REQUIRE_EQUAL_WAVES(output, floatwave, mode = WAVE_DATA)
 
+	str = "range(1, 5, 0.7)"
+	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	Make/FREE floatwave = {1, 1.7, 2.4, 3.1, 3.8, 4.5}
+	REQUIRE_EQUAL_WAVES(output, floatwave, mode = WAVE_DATA, tol = 1e-6)
+
 	// check meta data
 	str = "range(1,10)"
 	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
 	dataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
 	strRef   = SF_DATATYPE_RANGE
 	CHECK_EQUAL_STR(strRef, dataType)
+
+	try
+		str = "range([1,2])"
+		SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+		error = ROStr(GetSweepFormulaParseErrorMessage())
+		CHECK_EQUAL_STR(error, "Argument #0 of operation range: Too many input values")
+	endtry
+End
+
+static Function TestOperationConcat()
+
+	string str, strRef, dataType, error
+	string win
+
+	win = GetDataBrowserWithData()
+
+	str = "concat([1, 2], [4, 5])"
+	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	Make/FREE floatWave = {1, 2, 4, 5}
+	REQUIRE_EQUAL_WAVES(output, floatWave, mode = WAVE_DATA)
+
+	str = "concat([a, b], [e, f])"
+	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	Make/FREE/T textWave = {"a", "b", "e", "f"}
+	REQUIRE_EQUAL_TEXTWAVES(output, textWave, mode = WAVE_DATA)
+
+	str = "concat([[1, 2], [4, 5]], [[10, 20], [40, 50]])"
+	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	// IP is column major, SF row major
+	Make/FREE floatWave = {{1, 4}, {2, 5}, {10, 40}, {20, 50}}
+	REQUIRE_EQUAL_WAVES(output, floatWave, mode = WAVE_DATA)
+
+	try
+		str = "concat(1, a)"
+		SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+		error = ROStr(GetSweepFormulaParseErrorMessage())
+		CHECK_EQUAL_STR(error, "Error concatenating waves: An attempt was made to treat a text wave as if it were a numeric wave.")
+	endtry
 End
 
 static Function TestOperationFindLevel()
