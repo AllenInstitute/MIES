@@ -57,7 +57,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          name: BuildInstaller-user-assets
+          name: BuildInstaller-assets
       - name: Deploy release assets to github
         run: tools/upload-github-release-asset.sh "${{ github.token }}"
 
