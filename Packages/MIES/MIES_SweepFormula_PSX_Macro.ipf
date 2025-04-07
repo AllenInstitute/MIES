@@ -8,7 +8,7 @@
 
 Window PSXPanel() : Panel
 	PauseUpdate; Silent 1 // building window...
-	NewPanel/K=1/W=(100, 633, 1354, 1113) as "SweepFormula plot from <Browser >"
+	NewPanel/K=1/W=(196, 1011, 1450, 1491) as "SweepFormula plot from <Browser >"
 	SetDrawLayer UserBack
 	SetDrawEnv pop
 	DrawText 47, 475, "UI"
@@ -32,13 +32,13 @@ Window PSXPanel() : Panel
 	Button button_jump_first_undet, userdata(ResizeControlsInfo)=A"!!,EN!!#=c!!#>V!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_jump_first_undet, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button button_jump_first_undet, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox checkbox_suppress_update, pos={23.00, 81.00}, size={104.00, 15.00}, proc=PSX_CheckboxProcSuppressUpdate
-	CheckBox checkbox_suppress_update, title="Suppress Update"
-	CheckBox checkbox_suppress_update, help={"Suppress updating the single/all event graphs on state changes"}
-	CheckBox checkbox_suppress_update, userdata(ResizeControlsInfo)=A"!!,Bq!!#?[!!#@4!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox checkbox_suppress_update, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	CheckBox checkbox_suppress_update, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox checkbox_suppress_update, value=0
+	CheckBox checkbox_show_deconv_lines, pos={20.00, 73.00}, size={115.00, 15.00}, proc=PSX_UpdateVisualizationHelpers
+	CheckBox checkbox_show_deconv_lines, title="Show Deconv lines"
+	CheckBox checkbox_show_deconv_lines, help={"Show the x position of the peak in the deconvolution wave"}
+	CheckBox checkbox_show_deconv_lines, userdata(ResizeControlsInfo)=A"!!,BY!!#?K!!#@J!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox checkbox_show_deconv_lines, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox checkbox_show_deconv_lines, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox checkbox_show_deconv_lines, value=1
 	Button button_psx_info, pos={18.00, 458.00}, size={19.00, 19.00}, proc=PSX_CopyHelpToClipboard
 	Button button_psx_info, title="i", help={"<pre>- none -</pre>"}
 	Button button_psx_info, userdata="- none -"
@@ -51,12 +51,33 @@ Window PSXPanel() : Panel
 	GroupBox group_UI, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_UI, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	GroupBox group_UI, font="Lucida Console"
-	ListBox listbox_select_combo, pos={16.00, 108.00}, size={108.00, 341.00}, proc=PSX_ListBoxSelectCombo
+	ListBox listbox_select_combo, pos={16.00, 154.00}, size={109.00, 295.00}, proc=PSX_ListBoxSelectCombo
 	ListBox listbox_select_combo, help={"Select the combination (concatenated string of: range, sweep, channel, device) for doing QC data on."}
-	ListBox listbox_select_combo, userdata(ResizeControlsInfo)=A"!!,B9!!#@<!!#@<!!#BdJ,fQL!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	ListBox listbox_select_combo, userdata(ResizeControlsInfo)=A"!!,B9!!#A)!!#@>!!#BMJ,fQL!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	ListBox listbox_select_combo, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ListBox listbox_select_combo, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	ListBox listbox_select_combo, row=26, mode=2, selRow=0
+	CheckBox checkbox_show_peak_lines, pos={20.00, 92.00}, size={100.00, 15.00}, proc=PSX_UpdateVisualizationHelpers
+	CheckBox checkbox_show_peak_lines, title="Show Peak lines"
+	CheckBox checkbox_show_peak_lines, help={"Show the x position of the peak in the offsetted and filtered data wave"}
+	CheckBox checkbox_show_peak_lines, userdata(ResizeControlsInfo)=A"!!,BY!!#?q!!#@,!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox checkbox_show_peak_lines, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox checkbox_show_peak_lines, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox checkbox_show_peak_lines, value=0
+	CheckBox checkbox_show_baseline_lines, pos={20.00, 110.00}, size={118.00, 15.00}, proc=PSX_UpdateVisualizationHelpers
+	CheckBox checkbox_show_baseline_lines, title="Show Baseline lines"
+	CheckBox checkbox_show_baseline_lines, help={"Show the x position of the baseline in the offsetted and filtered data wave"}
+	CheckBox checkbox_show_baseline_lines, userdata(ResizeControlsInfo)=A"!!,BY!!#@@!!#@P!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox checkbox_show_baseline_lines, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox checkbox_show_baseline_lines, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox checkbox_show_baseline_lines, value=0
+	CheckBox checkbox_suppress_update, pos={20.00, 133.00}, size={104.00, 15.00}, proc=PSX_CheckboxProcSuppressUpdate
+	CheckBox checkbox_suppress_update, title="Suppress Update"
+	CheckBox checkbox_suppress_update, help={"Suppress updating the single/all event graphs on state changes"}
+	CheckBox checkbox_suppress_update, userdata(ResizeControlsInfo)=A"!!,BY!!#@i!!#@4!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox checkbox_suppress_update, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox checkbox_suppress_update, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox checkbox_suppress_update, value=0
 	SetWindow kwTopWin, hook(resetScaling)=IH_ResetScaling
 	SetWindow kwTopWin, hook(ctrl)=PSX_PlotInteractionHook
 	SetWindow kwTopWin, hook(traceUserDataCleanup)=TUD_RemoveUserDataWave
@@ -124,7 +145,7 @@ Window PSXPanel() : Panel
 	PopupMenu popupmenu_event_offset, pos={136.00, 168.00}, size={53.00, 19.00}, proc=PSX_PopupMenuState
 	PopupMenu popupmenu_event_offset, help={"Select the time point in x direction for aligning the single event traces in the all event graph"}
 	PopupMenu popupmenu_event_offset, mode=1, popvalue="Onset", value=#"\"Onset;Peak;Slew\""
-	SetVariable setvar_fit_start_amplitude, pos={13.00, 193.00}, size={144.00, 18.00}, bodyWidth=44
+	SetVariable setvar_fit_start_amplitude, pos={13.00, 193.00}, size={144.00, 18.00}, bodyWidth=44, proc=PSX_FitStartAmplitude
 	SetVariable setvar_fit_start_amplitude, title="Fit start amplitude"
 	SetVariable setvar_fit_start_amplitude, help={"Percentage of the amplitude used to define the fit start point."}
 	SetVariable setvar_fit_start_amplitude, limits={0, 100, 1}, value=_NUM:20, proc=PSX_FitStartAmplitude
