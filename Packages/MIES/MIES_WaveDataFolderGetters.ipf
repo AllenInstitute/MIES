@@ -8473,12 +8473,12 @@ End
 /// -  1/deconvPeak: event amplitude in deconvoluted data [y unit of data]
 /// -  2/deconvPeak_t: deconvolved peak time [ms]
 /// -  3/peak: Maximum (positive kernel amp sign) or minimum (negative kernel amp sign) in the range of
-///            [baseline_t – 5 * kernelRiseTau or devonvPeak_t of the previous event (whichever comes later),
+///            [baseline_t – 5 * kernelRiseTau or baseline_t or devonvPeak_t/peak_t of the previous event (whichever comes later),
 ///             baseline_t + 0.33 * kernelDecayTau or deconvPeak_t of the next event (which ever comes first)]
 ///            in the filtered sweep wave
 /// -  4/peak_t: peak time
 /// -  5/baseline: Maximum (negative kernel amp sign) or minimum (positive kernel amp sign) in the range of
-///                    [deconvPeak_t – 10 * kernelRiseTau or peak_t of previous event (whichever comes later),
+///                    [deconvPeak_t – 10 * kernelRiseTau or the minimum of peak_t and deconvPeak_t of previous event (whichever comes later),
 ///                     deconvPeak_t], averaged over +/- 5 points, in the filtered sweep wave
 /// -  6/baseline_t: baseline time
 /// -  7/amplitude: Relative amplitude: [3] - [5]

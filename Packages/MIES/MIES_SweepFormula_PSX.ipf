@@ -60,7 +60,7 @@ static Constant PSX_KEYBOARD_DIR_LR = 1
 static Constant PSX_NUMBER_OF_SDS_DEFAULT = 2.5
 
 static Constant PSX_TAU_CALC_FACTOR             = 1
-static Constant PSX_BASELINE_RANGE_FACTOR       = 10
+static Constant PSX_BASELINE_RANGE_FACTOR       = 5
 static Constant PSX_FIT_RANGE_FACTOR            = 10
 static Constant PSX_FIT_RANGE_PERC              = 0.9
 static Constant PSX_BASELINE_NUM_POINTS_AVERAGE = 5
@@ -166,7 +166,7 @@ static Function PSX_GetFindPeakBoxSize()
 	return 10
 #endif // AUTOMATED_TESTING
 
-	return 100
+	return 10
 End
 
 static Function/S PSX_GetUserDataForWorkingFolder()
@@ -564,21 +564,13 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_FilterEventsKernelAmpSign(WAVE/
 	return [peakX, peakY]
 End
 
-static Function [variable peak_t, variable peak] PSX_CalculateEventPeak(WAVE peakX, WAVE peakY, WAVE sweepDataOffFilt, variable baseline_t, variable kernelAmp, variable kernelRiseTau, variable kernelDecayTau, variable index)
+static Function [variable peak_t, variable peak] PSX_CalculateEventPeak(WAVE peakX, WAVE peakY, WAVE sweepDataOffFilt, variable baseline_t, variable kernelAmp, variable kernelRiseTau, variable kernelDecayTau, variable index, variable peak_t_prev, variable prevDeconvPeak_t)
 
-	variable numCrossings, prevDeconvPeak_t, nextDeconvPeak_t
-	variable peak_start_search, peak_end_search
+	variable numCrossings, nextDeconvPeak_t
+	variable peak_start_search, peak_end_search, threshold, range
 
-	numCrossings = DimSize(peakX, ROWS)
-
-	// lower bound
-	if(index > 0)
-		prevDeconvPeak_t = peakX[index - 1]
-	else
-		prevDeconvPeak_t = -Inf
-	endif
-
-	peak_start_search = max(baseline_t - PSX_PEAK_RANGE_FACTOR_LEFT * kernelRiseTau, prevDeconvPeak_t)
+	numCrossings    = DimSize(peakX, ROWS)
+	peak_end_search = max(peakX[index] - PSX_PEAK_RANGE_FACTOR_LEFT * kernelRiseTau, baseline_t, prevDeconvPeak_t, peak_t_prev)
 
 	// upper bound
 	if(index < (numCrossings - 1))
@@ -587,36 +579,63 @@ static Function [variable peak_t, variable peak] PSX_CalculateEventPeak(WAVE pea
 		nextDeconvPeak_t = Inf
 	endif
 
-	peak_end_search = min(baseline_t + PSX_PEAK_RANGE_FACTOR_RIGHT * kernelDecayTau, nextDeconvPeak_t)
+	peak_start_search = min(peakX[index] + PSX_PEAK_RANGE_FACTOR_RIGHT * kernelDecayTau, nextDeconvPeak_t)
 
 	WaveStats/M=1/Q/R=(peak_start_search, peak_end_search) sweepDataOffFilt
-
+	variable boxSize   = 10
+	variable ampFactor = 0.25
 	if(kernelAmp > 0)
-		peak   = V_max
-		peak_t = V_maxloc
+		threshold = sweepDataOffFilt(baseline_t) + ampFactor * (V_max - sweepDataOffFilt(baseline_t))
+		FindPeak/B=(boxSize)/M=(threshold)/Q/R=(peak_start_search, peak_end_search) sweepDataOffFilt
+
+		if(!V_flag)
+			peak_t = V_PeakLoc
+			peak   = V_PeakVal
+		else
+			range = 2 * DimDelta(sweepDataOffFilt, ROWS)
+			WaveStats/M=1/Q/R=(peakX[index] - range, peakX[index] + range) sweepDataOffFilt
+			peak_t = peakX[index]
+			peak   = V_avg
+		endif
 	elseif(kernelAmp < 0)
-		peak   = V_min
-		peak_t = V_minloc
+		threshold = sweepDataOffFilt(baseline_t) + ampFactor * (V_min - sweepDataOffFilt(baseline_t))
+		FindPeak/B=(boxSize)/N/M=(threshold)/Q/R=(peak_start_search, peak_end_search) sweepDataOffFilt
+
+		if(!V_flag)
+			peak_t = V_PeakLoc
+			peak   = V_PeakVal
+		else
+			range = 2 * DimDelta(sweepDataOffFilt, ROWS)
+			WaveStats/M=1/Q/R=(peakX[index] - range, peakX[index] + range) sweepDataOffFilt
+			peak_t = peakX[index]
+			peak   = V_avg
+		endif
 	else
 		FATAL_ERROR("Can't handle kernelAmp of zero")
 	endif
 
+	ASSERT(IsFinite(peak_t), "peak_t is not finite")
+	ASSERT(IsFinite(peak), "peak is not finite")
+
 	return [peak_t, peak]
 End
 
-static Function [variable baseline_t, variable baseline] PSX_CalculateEventBaseline(WAVE sweepDataOffFilt, variable peak_t_prev, variable deconvPeak_t, variable kernelAmp, variable kernelRiseTau)
+static Function [variable baseline_t, variable baseline] PSX_CalculateEventBaseline(WAVE sweepDataOffFilt, variable peak_t_prev, variable deconvPeak_t, variable kernelAmp, variable kernelRiseTau, variable prevDeconvPeak_t)
 
-	variable range
-	string   str
+	variable range, start
+	string str
 
-	WaveStats/M=1/Q/R=(max(deconvPeak_t - PSX_BASELINE_RANGE_FACTOR * kernelRiseTau, peak_t_prev), deconvPeak_t) sweepDataOffFilt
+	start = max(deconvPeak_t - PSX_BASELINE_RANGE_FACTOR * kernelRiseTau, min(peak_t_prev, prevDeconvPeak_t))
+
+	// the end of the search window for the baseline time is the deconvolved peak time of the current event
+	WaveStats/M=1/Q/R=(start, deconvPeak_t) sweepDataOffFilt
 
 	if(kernelAmp > 0)
 		baseline_t = V_minloc
 	elseif(kernelAmp < 0)
 		baseline_t = V_maxloc
 	else
-		sprintf str, "Can't handle kernelAmp of: %g\r", kernelAmp // could be Nan, Inf, or zero
+		sprintf str, "Can't handle kernelAmp of: %g\r", kernelAmp
 		FATAL_ERROR(str)
 	endif
 
@@ -624,17 +643,24 @@ static Function [variable baseline_t, variable baseline] PSX_CalculateEventBasel
 	WaveStats/M=1/Q/R=(baseline_t - range, baseline_t + range) sweepDataOffFilt
 	baseline = V_avg
 
+	ASSERT(isFinite(baseline), "basline is not finite")
+
 	return [baseline_t, baseline]
 End
 
 static Function [variable peak, variable peak_t, variable baseline, variable baseline_t, variable amplitude] PSX_CalculateEventProperties(WAVE peakX, WAVE peakY, WAVE sweepDataOffFilt, variable peak_t_prev, variable kernelAmp, variable kernelRiseTau, variable kernelDecayTau, variable index)
 
-	variable deconvPeak_t
+	variable deconvPeak_t, prevdeconvPeak_t
 
 	deconvPeak_t = peakX[index]
+	if(index == 0)
+		prevdeconvPeak_t = 0
+	else
+		prevdeconvPeak_t = peakX[index - 1]
+	endif
 
-	[baseline_t, baseline] = PSX_CalculateEventBaseline(sweepDataOffFilt, peak_t_prev, deconvPeak_t, kernelAmp, kernelRiseTau)
-	[peak_t, peak]         = PSX_CalculateEventPeak(peakX, peakY, sweepDataOffFilt, baseline_t, kernelAmp, kernelRiseTau, kernelDecayTau, index)
+	[baseline_t, baseline] = PSX_CalculateEventBaseline(sweepDataOffFilt, peak_t_prev, deconvPeak_t, kernelAmp, kernelRiseTau, prevdeconvPeak_t)
+	[peak_t, peak]         = PSX_CalculateEventPeak(peakX, peakY, sweepDataOffFilt, baseline_t, kernelAmp, kernelRiseTau, kernelDecayTau, index, peak_t_prev, prevdeconvPeak_t)
 
 	amplitude = peak - baseline
 
@@ -645,7 +671,7 @@ End
 static Function [WAVE/D peakX, WAVE/D peakY] PSX_AnalyzePeaks(WAVE sweepDataOffFiltDeconv, WAVE sweepDataOffFilt, WAVE sweepData, WAVE/Z peakXUnfiltered, WAVE/Z peakYUnfiltered, variable maxTauFactor, variable kernelAmp, variable kernelRiseTau, variable kernelDecayTau, WAVE riseTimeParams, WAVE psxEvent, WAVE eventFit)
 
 	variable i, numCrossings, deconvPeak, deconvPeak_t, peak, peak_t, baseline, baseline_t, amplitude, iei
-	variable peak_t_prev = -Inf
+	variable peak_t_prev = -Inf // sets the previous peak time to the start of the range
 
 	// we need to first throw away events with invalid amplitude so that
 	// we can then calculate the distance to the neighbour in peakX[i + 1] below
