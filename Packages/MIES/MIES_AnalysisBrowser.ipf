@@ -91,11 +91,11 @@ End
 /// @brief Create relation (map) between file on disk and datafolder in current experiment
 ///
 /// @return index into mapping wave of the newly added entry or -1 if the file
-///         is already in the map
+///         is already in the map or an error occurred parsing the file
 static Function AB_AddMapEntry(string baseFolder, string discLocation)
 
-	variable nextFreeIndex, fileID, nwbVersion, dim, writeIndex
-	string dataFolder, fileType, relativePath, extension
+	variable nextFreeIndex, fileID, majorNWBVersion, dim, writeIndex
+	string dataFolder, fileType, relativePath, extension, nwbVersionStr
 	WAVE/T map = GetAnalysisBrowserMap()
 
 	WAVE/Z indizes = FindIndizes(map, colLabel = "DiscLocation", str = discLocation)
@@ -131,10 +131,16 @@ static Function AB_AddMapEntry(string baseFolder, string discLocation)
 			fileType = ANALYSISBROWSER_FILE_TYPE_IGOR
 			break
 		case ".nwb":
-			fileID     = H5_OpenFile(discLocation)
-			nwbVersion = GetNWBMajorVersion(ReadNWBVersion(fileID))
+			fileID        = H5_OpenFile(discLocation)
+			nwbVersionStr = ReadNWBVersion(fileID)
+			try
+				majorNWBVersion = GetNWBMajorVersion(nwbVersionStr)
+			catch
+				printf "Could not parse read NWB version.\rFile: %s\rRead version: %s", discLocation, nwbVersionStr
+				return -1
+			endtry
 			H5_CloseFile(fileID)
-			switch(nwbVersion)
+			switch(majorNWBVersion)
 				case 1:
 					fileType = ANALYSISBROWSER_FILE_TYPE_NWBv1
 					break
