@@ -2973,7 +2973,7 @@ End
 /// @brief Button "Remove folder(s)"
 Function AB_ButtonProc_Remove(STRUCT WMButtonAction &ba) : ButtonControl
 
-	variable size, i
+	variable size, i, selCode
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -2983,7 +2983,8 @@ Function AB_ButtonProc_Remove(STRUCT WMButtonAction &ba) : ButtonControl
 			WAVE   folderSelection = GetAnalysisBrowserGUIFolderSelection()
 			size = DimSize(folderSelection, ROWS)
 			for(i = size - 1; i >= 0; i -= 1)
-				if(folderSelection[i] == 1)
+				selCode = folderSelection[i]
+				if(selCode & LISTBOX_SELECT_OR_SHIFT_SELECTION)
 					AB_RemoveExperimentEntry(ba.win, folderList[i])
 					DeleteWavePoint(folderSelection, ROWS, index = i)
 					DeleteWavePoint(folderList, ROWS, index = i)
