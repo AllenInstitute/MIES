@@ -2861,8 +2861,8 @@ End
 /// The number of average waves is 4 due to the number of different states, see @ref PSXStates.
 ///
 /// - Single event traces for all combinations
-/// - 4 average waves for *each* combination
-/// - 4 average waves for the global average across all combinations
+/// - 4 average waves plus 3 waves for the accepted fits for *each* combination
+/// - 4 average waves plus 3 waves for the accepted fits for the global average across all combinations
 static Function PSX_AppendTracesToAllEventGraph(string win)
 
 	variable i, numEvents, state, idx, comboIndex
