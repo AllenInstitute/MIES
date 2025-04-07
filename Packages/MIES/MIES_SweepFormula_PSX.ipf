@@ -2025,7 +2025,7 @@ End
 static Function PSX_UpdateOffsetInAllEventGraph(string win)
 
 	string extAllGraph, specialEventPanel
-	variable i, numEvents, offsetMode, first, last, xOffset, yOffset
+	variable i, numEvents, offsetMode, first, last, xOffset
 
 	extAllGraph = PSX_GetAllEventGraph(win)
 
@@ -2062,26 +2062,22 @@ static Function PSX_UpdateOffsetInAllEventGraph(string win)
 
 			[first, last] = PSX_GetSingleEventRange(psxEvent, sweepDataOffFilt, i)
 
-			Duplicate/FREE/R=(first, last) sweepDataOffFilt, singleEventRaw
+			Duplicate/O/R=(first, last) sweepDataOffFilt, singleEvent
 
 			switch(offsetMode)
 				case PSX_HORIZ_OFFSET_ONSET:
 					xOffset = IsFinite(psxEvent[i][%$"Onset Time"]) ? (first - psxEvent[i][%$"Onset Time"]) : 0
-					yOffset = 0
 					break
 				case PSX_HORIZ_OFFSET_PEAK:
 					xOffset = first - psxEvent[i][%peak_t]
-					yOffset = 0
 					break
 				case PSX_HORIZ_OFFSET_SLEW:
 					xOffset = first - psxEvent[i][%$"Slew Rate Time"]
-					yOffset = 0
 					break
 				default:
 					FATAL_ERROR("Invalid offset mode")
 			endswitch
 
-			MultiThread singleEvent[] = singleEventRaw[p] - yOffset
 			SetScale/P x, xOffset, DimDelta(singleEvent, ROWS), singleEvent
 		endfor
 	endfor
