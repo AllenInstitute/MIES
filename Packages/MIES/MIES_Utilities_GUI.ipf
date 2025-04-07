@@ -387,11 +387,15 @@ Function IsValidTraceDisplayMode(variable traceDisplayCode)
 End
 
 /// @brief Update the help and user data of a button used as info/copy button
-Function UpdateInfoButtonHelp(string win, string ctrl, string content)
+Function UpdateInfoButtonHelp(string win, string ctrl, WAVE info)
 
-	string htmlStr = "<pre>" + content + "</pre>"
+	string gui, calc, htmlStr
 
-	Button $ctrl, win=$win, help={htmlStr}, userdata=content
+	calc    = TextWaveToList(info, "\r\n", colSep = "\t")
+	gui     = FormatTextWaveForLegend(info)
+	htmlStr = "<pre>" + gui + "</pre>"
+
+	Button $ctrl, win=$win, help={htmlStr}, userdata=calc
 End
 
 /// @brief Custom graph marquee
