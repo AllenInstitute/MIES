@@ -2001,7 +2001,7 @@ static Function AB_LoadSweepFromNWB(string discLocation, DFREF sweepDFR, string 
 	h5_fileID = H5_OpenFile(discLocation)
 	version   = GetNWBMajorVersion(ReadNWBVersion(h5_fileID))
 
-	// load acquisition
+	// load acquisition (AD channels)
 	WAVE/T acquisition = GetAnalysisChannelAcqWave(nwb[%DataFolder], device)
 	channelList = acquisition[V_Value]
 	h5_groupID  = OpenAcquisition(h5_fileID, version)
@@ -2009,7 +2009,7 @@ static Function AB_LoadSweepFromNWB(string discLocation, DFREF sweepDFR, string 
 		return 1
 	endif
 
-	// load stimulus
+	// load stimulus (DA channels)
 	WAVE/T stimulus = GetAnalysisChannelStimWave(nwb[%DataFolder], device)
 	channelList = stimulus[V_Value]
 	h5_groupID  = OpenStimulus(h5_fileID)
