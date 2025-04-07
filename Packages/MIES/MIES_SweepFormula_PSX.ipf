@@ -123,7 +123,7 @@ static StrConstant PSX_TUD_COMBO_KEY   = "comboKey"
 static StrConstant PSX_TUD_COMBO_INDEX = "comboIndex"
 static StrConstant PSX_TUD_BLOCK_INDEX = "blockIndex"
 
-static Constant PSX_GUI_SETTINGS_VERSION = 2
+static Constant PSX_GUI_SETTINGS_VERSION = 3
 
 static StrConstant PSX_GUI_SETTINGS_PSX = "GuiSettingsPSX"
 
@@ -151,6 +151,15 @@ static Constant PSX_CACHE_KEY_ANALYZE_PEAKS = 0x3
 
 static Constant EVENT_INDEX_HORIZONTAL = 0x1
 static Constant EVENT_INDEX_VERTICAL   = 0x2
+
+static StrConstant PSX_FREE_AXIS_DECONV = "freeDeconvAxis"
+static StrConstant PSX_COLORS_DECONV    = "65535,16385,36045"
+
+static StrConstant PSX_FREE_AXIS_PEAK = "freePeakAxis"
+static StrConstant PSX_COLORS_PEAK    = "65535,43690,0"
+
+static StrConstant PSX_FREE_AXIS_BASELINE = "freeBaselineAxis"
+static StrConstant PSX_COLORS_BASELINE    = "0,0,0"
 
 Menu "GraphMarquee"
 	"PSX: Accept Event && Fit", /Q, PSX_MouseEventSelection(PSX_ACCEPT, PSX_STATE_EVENT | PSX_STATE_FIT)
@@ -3708,7 +3717,13 @@ static Function PSX_StoreGuiState(string win, string browser)
 	JSON_SetVariable(jsonID, "/specialEventPanel/setvar_fit_start_amplitude", GetSetVariable(specialEventPanel, "setvar_fit_start_amplitude"))
 
 	mainWindow = GetMainWindow(win)
-	JSON_SetVariable(jsonID, "/mainPanel/checkbox_suppress_update", GetCheckBoxState(mainWindow, "checkbox_suppress_update"))
+
+	WAVE/T checkboxes = PSX_GetSpecialEventPanelCheckboxes(mainWindow)
+
+	for(ctrl : checkboxes)
+		JSON_SetVariable(jsonID, "/mainPanel/" + ctrl, GetCheckBoxState(mainWindow, ctrl))
+	endfor
+
 	JSON_SetVariable(jsonID, "/mainPanel/listbox_select_combo", GetListBoxSelRow(mainWindow, "listbox_select_combo"))
 
 	WAVE axesProps = GetAxesProperties(extAllGraph)
@@ -3762,7 +3777,11 @@ static Function PSX_RestoreGuiState(string win)
 	endfor
 
 	mainWindow = GetMainWindow(win)
-	SetCheckBoxState(mainWindow, "checkbox_suppress_update", JSON_GetVariable(jsonID, "/mainPanel/checkbox_suppress_update"))
+	WAVE/T controls = PSX_GetSpecialEventPanelCheckboxes(mainWindow)
+
+	for(ctrl : controls)
+		SetCheckBoxState(mainWindow, ctrl, JSON_GetVariable(jsonID, "/mainPanel/" + ctrl))
+	endfor
 
 	lastActiveCombo = JSON_GetVariable(jsonID, "/mainPanel/listbox_select_combo")
 
@@ -3914,12 +3933,26 @@ static Function PSX_MoveWavesToDataFolders(DFREF workDFR, WAVE/Z/WAVE results, v
 		Duplicate peakY, dfr:peakYAtFilt/WAVE=peakYAtFilt
 		peakYAtFilt[] = sweepDataOffFilt(peakX[p])
 
-		Make/T/N=(numEvents, 2) dfr:eventLocationLabels/WAVE=eventLocationLabels
-		SetDimLabel COLS, 1, $"Tick Type", eventLocationLabels
-		eventLocationLabels[][1] = "Major"
+		WAVE eventLabelsDeconv = GetPSXEventLabelsAsFree(numEvents, PSX_FREE_AXIS_DECONV)
+		MoveWave eventLabelsDeconv, dfr
 
-		Make/D/N=(numEvents) dfr:eventLocationTicks/WAVE=eventLocationTicks
-		eventLocationTicks[] = peakX[p]
+		WAVE eventTicksDeconv = GetPSXEventTicksAsFree(numEvents, PSX_FREE_AXIS_DECONV)
+		MoveWave eventTicksDeconv, dfr
+		eventTicksDeconv[] = psxEvent[p][%deconvPeak_t]
+
+		WAVE eventLabelsPeak = GetPSXEventLabelsAsFree(numEvents, PSX_FREE_AXIS_PEAK)
+		MoveWave eventLabelsPeak, dfr
+
+		WAVE eventTicksPeak = GetPSXEventTicksAsFree(numEvents, PSX_FREE_AXIS_PEAK)
+		MoveWave eventTicksPeak, dfr
+		eventTicksPeak[] = psxEvent[p][%peak_t]
+
+		WAVE eventLabelsBaseline = GetPSXEventLabelsAsFree(numEvents, PSX_FREE_AXIS_BASELINE)
+		MoveWave eventLabelsBaseline, dfr
+
+		WAVE eventTicksBaseline = GetPSXEventTicksAsFree(numEvents, PSX_FREE_AXIS_BASELINE)
+		MoveWave eventTicksBaseline, dfr
+		eventTicksBaseline[] = psxEvent[p][%baseline_t]
 
 		PSX_CreateSingleEventWaves(dfr, psxEvent, sweepDataOffFilt)
 
@@ -4066,19 +4099,12 @@ static Function PSX_CreatePSXGraphAndSubwindows(string win, string graph, WAVE/T
 
 	PSX_MarkGraphForPSX(win)
 
-	WAVE eventLocationLabels = GetPSXEventLocationLabels(comboDFR)
-	WAVE eventLocationTicks  = GetPSXEventLocationTicks(comboDFR)
-	WAVE eventColors         = GetPSXEventColorsWaveFromDFR(comboDFR)
-	WAVE eventMarker         = GetPSXEventMarkerWaveFromDFR(comboDFR)
+	WAVE eventColors = GetPSXEventColorsWaveFromDFR(comboDFR)
+	WAVE eventMarker = GetPSXEventMarkerWaveFromDFR(comboDFR)
 
-	NewFreeAxis/W=$win/O/T eventLocAxis
-	ModifyFreeAxis/W=$win/Z eventLocAxis, master=bottom
-	ModifyGraph/W=$win grid(eventLocAxis)=1
-	ModifyGraph/W=$win tick(eventLocAxis)=3
-	ModifyGraph/W=$win lblPos(eventLocAxis)=43
-	ModifyGraph/W=$win noLabel(eventLocAxis)=2
-	ModifyGraph/W=$win freePos(eventLocAxis)={0, kwFraction}
-	Label/W=$win eventLocAxis, "\\u#2"
+	PSX_AppendVisualizationAxis(win, PSX_FREE_AXIS_DECONV)
+	PSX_AppendVisualizationAxis(win, PSX_FREE_AXIS_PEAK)
+	PSX_AppendVisualizationAxis(win, PSX_FREE_AXIS_BASELINE)
 
 	ModifyGraph/W=$win zColor(peakYAtFilt)={eventColors, *, *, directRGB, 0}
 	ModifyGraph/W=$win mode(peakYAtFilt)=3
@@ -4109,6 +4135,47 @@ static Function PSX_CreatePSXGraphAndSubwindows(string win, string graph, WAVE/T
 	PS_InitCoordinates(JSONid, mainWin, recursive = 1)
 End
 
+static Function/WAVE PSX_GetColorsForFreeAxis(string axis)
+
+	string list
+
+	strswitch(axis)
+		case PSX_FREE_AXIS_BASELINE:
+			list = PSX_COLORS_BASELINE
+			break
+		case PSX_FREE_AXIS_DECONV:
+			list = PSX_COLORS_DECONV
+			break
+		case PSX_FREE_AXIS_PEAK:
+			list = PSX_COLORS_PEAK
+			break
+		default:
+			FATAL_ERROR("Invalid axis type")
+	endswitch
+
+	WAVE wv = ListToNumericWave(list, ",")
+
+	return wv
+End
+
+/// @brief Appends a free axis overlayed with the bottom axis name
+static Function PSX_AppendVisualizationAxis(string win, string axis)
+
+	NewFreeAxis/W=$win/O/T $axis
+	ModifyFreeAxis/W=$win/Z $axis, master=bottom
+	ModifyGraph/W=$win grid($axis)=1
+	ModifyGraph/W=$win tick($axis)=3
+	ModifyGraph/W=$win lblPos($axis)=43
+	ModifyGraph/W=$win noLabel($axis)=2
+	ModifyGraph/W=$win freePos($axis)={0, kwFraction}
+	ModifyGraph/W=$win nticks($axis)=0
+
+	WAVE RGBcolors = PSX_GetColorsForFreeAxis(axis)
+	ModifyGraph/W=$win gridRGB($axis)=(RGBcolors[0], RGBcolors[1], RGBcolors[2])
+
+	Label/W=$win $axis, "\\u#2"
+End
+
 /// @brief Mark `win` as being an psx graph
 static Function PSX_MarkGraphForPSX(string win)
 
@@ -4116,9 +4183,33 @@ static Function PSX_MarkGraphForPSX(string win)
 End
 
 /// @brief Apply plot properties which have to be reapplied on every combo index change
-static Function PSX_ApplySpecialPlotProperties(string win, WAVE eventLocationTicks, WAVE eventLocationLabels)
+static Function PSX_ApplySpecialPlotProperties(string win)
 
-	ModifyGraph/W=$win userticks(eventLocAxis)={eventLocationTicks, eventLocationLabels}
+	DFREF comboDFR = PSX_GetCurrentComboFolder(win)
+
+	PSX_ApplySpecialPlotPropertiesImpl(win, comboDFR, PSX_FREE_AXIS_DECONV, "checkbox_show_deconv_lines")
+	PSX_ApplySpecialPlotPropertiesImpl(win, comboDFR, PSX_FREE_AXIS_BASELINE, "checkbox_show_baseline_lines")
+	PSX_ApplySpecialPlotPropertiesImpl(win, comboDFR, PSX_FREE_AXIS_PEAK, "checkbox_show_peak_lines")
+End
+
+static Function PSX_ApplySpecialPlotPropertiesImpl(string win, DFREF comboDFR, string name, string checkBoxControl)
+
+	variable enabled
+	string panel, psxGraph
+
+	panel    = GetMainWindow(win)
+	psxGraph = PSX_GetPSXGraph(win)
+
+	enabled = GetCheckboxState(panel, checkBoxControl)
+
+	WAVE eventLabels = GetPSXEventLabelsFromDFR(comboDFR, name)
+	WAVE eventTicks  = GetPSXEventTicksFromDFR(comboDFR, name)
+
+	if(enabled)
+		ModifyGraph/W=$psxGraph userticks($name)={eventTicks, eventLabels}
+	else
+		ModifyGraph/W=$psxGraph userticks($name)=0, nticks($name)=0
+	endif
 End
 
 /// @brief Read the user JWN from results and create a legend from all operation parameters
@@ -4729,11 +4820,25 @@ Function PSX_PostPlot(string win)
 
 	PSX_UpdateAllEventGraph(win, forceAverageUpdate = 1, forceSingleEventUpdate = 1, forceBlockIndexUpdate = 1, forceSingleEventOffsetUpdate = 1)
 
-	DFREF comboDFR            = PSX_GetCurrentComboFolder(win)
-	WAVE  eventLocationLabels = GetPSXEventLocationLabels(comboDFR)
-	WAVE  eventLocationTicks  = GetPSXEventLocationTicks(comboDFR)
+	PSX_SetCheckboxTitleColors(win)
 
-	PSX_ApplySpecialPlotProperties(win, eventLocationTicks, eventLocationLabels)
+	PSX_ApplySpecialPlotProperties(win)
+End
+
+static Function PSX_SetCheckboxTitleColors(string win)
+
+	string str, mainWindow
+
+	mainWindow = GetMainWindow(win)
+
+	sprintf str, "Show Deconv \\[0\\K(%s)lines\\]0", PSX_COLORS_DECONV
+	SetControlTitle(mainWindow, "checkbox_show_deconv_lines", str)
+
+	sprintf str, "Show Peak \\[0\\K(%s)lines\\]0", PSX_COLORS_PEAK
+	SetControlTitle(mainWindow, "checkbox_show_peak_lines", str)
+
+	sprintf str, "Show Baseline \\[0\\K(%s)lines\\]0", PSX_COLORS_BASELINE
+	SetControlTitle(mainWindow, "checkbox_show_baseline_lines", str)
 End
 
 static Function PSX_OperationSetDimensionLabels(WAVE/WAVE output, variable numCombos, WAVE/T labels, WAVE/T labelsTemplate)
@@ -5497,10 +5602,7 @@ static Function PSX_SetCombo(string win, variable comboIndex)
 	ReplaceWave/W=$extSingleGraph allinCDF
 	SetDataFolder currentDFR
 
-	WAVE eventLocationTicks  = GetPSXEventLocationTicks(comboDFR)
-	WAVE eventLocationLabels = GetPSXEventLocationLabels(comboDFR)
-
-	PSX_ApplySpecialPlotProperties(psxGraph, eventLocationTicks, eventLocationLabels)
+	PSX_ApplySpecialPlotProperties(psxGraph)
 
 	if(PSX_GetRestrictEventsToCurrentCombo(win))
 		PSX_UpdateAllEventGraph(win, forceAverageUpdate = 1, forceBlockIndexUpdate = 1)
@@ -5832,6 +5934,9 @@ Function PSX_PlotStartupSettings()
 	endfor
 
 	// default GUI values
+	CheckBox checkbox_show_deconv_lines, value=1, win=$win
+	CheckBox checkbox_show_peak_lines, value=0, win=$win
+	CheckBox checkbox_show_baseline_lines, value=0, win=$win
 	CheckBox checkbox_suppress_update, value=0, win=$win
 
 	ListBox listbox_select_combo, win=$win, listWave=$"", selWave=$"", helpWave=$"", selRow=0
@@ -5910,4 +6015,17 @@ static Function PSX_ApplyMacroToExistingPanel(string win, string mac)
 
 	KillVariables/Z V_flag
 	KillStrings/Z S_name
+End
+
+Function PSX_UpdateVisualizationHelpers(STRUCT WMCheckboxAction &cba) : CheckBoxControl
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			PSX_ApplySpecialPlotProperties(cba.win)
+			break
+		default:
+			break
+	endswitch
+
+	return 0
 End
