@@ -548,11 +548,13 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_FilterEventsKernelAmpSign(WAVE/
 			continue
 		endif
 
-		peakX[idx] = peakXUnfiltered[i]
-		peakY[idx] = peakYUnfiltered[i]
+		if(isFinite(peakXUnfiltered[i]) && isFinite(peakYUnfiltered[i]))
+			peakX[idx] = peakXUnfiltered[i]
+			peakY[idx] = peakYUnfiltered[i]
 
-		idx        += 1
-		peak_t_prev = peak_t
+			idx        += 1
+			peak_t_prev = peak_t
+		endif
 	endfor
 
 	if(idx == 0)
