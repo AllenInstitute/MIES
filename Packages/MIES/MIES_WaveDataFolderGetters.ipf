@@ -8570,14 +8570,41 @@ Function/WAVE GetPSXSweepDataOffFiltDeconvWaveFromDFR(DFREF dfr)
 	return GetWaveFromFolder(dfr, "sweepDataOffFiltDeconv")
 End
 
-Function/WAVE GetPSXEventLocationLabels(DFREF dfr)
+Function/WAVE GetPSXEventLabelsAsFree(variable numEvents, string suffix)
 
-	return GetWaveFromFolder(dfr, "eventLocationLabels")
+	string name = "eventLabels_" + CleanupName(suffix, 0)
+
+	Make/FREE/T/N=(numEvents, 2) wv
+	ChangeFreeWaveName(wv, name)
+
+	SetDimLabel COLS, 1, $"Tick Type", wv
+	wv[][1] = "Major"
+
+	return wv
 End
 
-Function/WAVE GetPSXEventLocationTicks(DFREF dfr)
+Function/WAVE GetPSXEventLabelsFromDFR(DFREF dfr, string suffix)
 
-	return GetWaveFromFolder(dfr, "eventLocationTicks")
+	string name = "eventLabels_" + CleanupName(suffix, 0)
+
+	return GetWaveFromFolder(dfr, name)
+End
+
+Function/WAVE GetPSXEventTicksAsFree(variable numEvents, string suffix)
+
+	string name = "eventTicks_" + CleanupName(suffix, 0)
+
+	Make/D/FREE/N=(numEvents) wv
+	ChangeFreeWaveName(wv, name)
+
+	return wv
+End
+
+Function/WAVE GetPSXEventTicksFromDFR(DFREF dfr, string suffix)
+
+	string name = "eventTicks_" + CleanupName(suffix, 0)
+
+	return GetWaveFromFolder(dfr, name)
 End
 
 Function/S GetPSXFolderForComboAsString(DFREF dfr, variable index)
