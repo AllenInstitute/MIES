@@ -816,26 +816,25 @@ End
 /// x-zero is taken from sweepData
 static Function [variable start, variable stop] PSX_GetEventFitRange(WAVE sweepDataOffFilt, WAVE psxEvent, variable eventIndex)
 
-	variable calcLength, maxLength
+	variable calcLength, maxLength, decayTau
 
 	start = psxEvent[eventIndex][%peak_t]
 
-	maxLength = PSX_FIT_RANGE_FACTOR * JWN_GetNumberFromWaveNote(psxEvent, SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/psxKernel/decayTau")
+	decayTau  = JWN_GetNumberFromWaveNote(psxEvent, SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/psxKernel/decayTau")
+	maxLength = PSX_FIT_RANGE_FACTOR * decayTau
 	ASSERT(isFinite(maxLength), "Failed to retrieve finite decay tau")
 
 	if(eventIndex == (DimSize(psxEvent, ROWS) - 1))
-		calcLength = maxLength
+		stop = start + maxLength
 	else
-		calcLength = min((psxEvent[eventIndex + 1][%peak_t] - start) * PSX_FIT_RANGE_PERC, maxLength)
+		stop = min(start + 5 * decayTau, psxEvent[eventIndex + 1][%baseline_t]) // min(psxEvent[eventIndex + 1][%peak_t] * PSX_FIT_RANGE_PERC, psxEvent[eventIndex + 1][%baseline_t])
 	endif
 
-	if(calcLength <= 0)
-		calcLength = maxLength
+	stop = min(stop, IndexToScale(sweepDataOffFilt, DimSize(sweepDataOffFilt, ROWS), ROWS))
+
+	if(start > stop)
+		return [NaN, NaN]
 	endif
-
-	stop = min(start + calcLength, IndexToScale(sweepDataOffFilt, DimSize(sweepDataOffFilt, ROWS), ROWS))
-
-	ASSERT(start <= stop, "Invalid fit range calculation")
 
 	return [start, stop]
 End
@@ -854,6 +853,12 @@ static Function PSX_FitEventDecay(WAVE sweepDataOffFilt, WAVE psxEvent, variable
 	string comboKey
 
 	[startTime, endTime] = PSX_GetEventFitRange(sweepDataOffFilt, psxEvent, eventIndex)
+
+	if(IsNaN(startTime) && IsNaN(endTime))
+		psxEvent[eventIndex][%$"Fit manual QC call"] = PSX_REJECT
+		psxEvent[eventIndex][%$"Fit result"]         = PSX_DECAY_FIT_INVALID_RANGE_ERROR
+		return NaN
+	endif
 
 	DFREF currDFR = GetDataFolderDFR()
 	SetDataFolder NewFreeDataFolder()
@@ -1936,6 +1941,8 @@ Function/S PSX_FitResultToString(variable fitResult)
 		return UpperCaseFirstChar(GetErrMessage(abs(fitResult)))
 	elseif(fitResult == PSX_DECAY_FIT_ERROR)
 		return "Too large tau"
+	elseif(fitResult == PSX_DECAY_FIT_INVALID_RANGE_ERROR)
+		return "Invalid fit range"
 	endif
 
 	BUG("Unknown fitResult")
