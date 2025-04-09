@@ -80,7 +80,8 @@ End
 
 static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAVE numericalValues, WAVE/T textualValues, variable sweepNo, DFREF sweepDFR, variable headstage, variable ongoingDAQ, variable waMode)
 
-	variable stopReason
+	variable stopReason, requiredPassingSweeps
+	string params
 
 	if(passed)
 		return "Pass"
@@ -170,7 +171,10 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 		case PSQ_DA_SCALE:
 			return AD_GetDaScaleFailMsg(numericalValues, textualValues, sweepNo, sweepDFR, headstage)
 		case PSQ_RAMP:
-			return AD_GetPerSweepFailMessage(PSQ_RAMP, numericalValues, textualValues, sweepNo, sweepDFR, headstage, numRequiredPasses = PSQ_RA_NUM_SWEEPS_PASS)
+			params                = LBN_GetAnalysisFunctionParameters(textualValues, sweepNo, headstage)
+			requiredPassingSweeps = AFH_GetAnalysisParamNumerical("NumberOfPassingSweeps", params, defValue = PSQ_RA_NUM_SWEEPS_PASS)
+
+			return AD_GetPerSweepFailMessage(PSQ_RAMP, numericalValues, textualValues, sweepNo, sweepDFR, headstage, numRequiredPasses = requiredPassingSweeps)
 		case PSQ_PIPETTE_BATH:
 			return AD_GetPerSweepFailMessage(PSQ_PIPETTE_BATH, numericalValues, textualValues, sweepNo, sweepDFR, headstage, numRequiredPasses = PSQ_PB_NUM_SWEEPS_PASS)
 		case PSQ_RHEOBASE:

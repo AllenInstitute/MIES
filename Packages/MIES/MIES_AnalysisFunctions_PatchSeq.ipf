@@ -5066,6 +5066,7 @@ Function/S PSQ_Ramp_GetParams()
 	       "[BaselineRMSLongThreshold:variable],"  + \
 	       "[BaselineRMSShortThreshold:variable]," + \
 	       "[BaselineTargetVThreshold:variable],"  + \
+	       "[NumberOfPassingSweeps:variable],"     + \
 	       "NumberOfSpikes:variable,"              + \
 	       "[SamplingFrequency:variable],"         + \
 	       "SamplingMultiplier:variable"
@@ -5084,6 +5085,9 @@ Function/S PSQ_Ramp_GetHelp(string name)
 		case "NumberOfSpikes":
 			return "Number of spikes required to be found after the pulse onset " \
 			       + "in order to label the cell as having \"spiked\"."
+		case "NumberOfPassingSweeps":
+			return "Number of ramp sweeps that must pass for the set to pass.\r" \
+			       + "Defaults to " + num2str(PSQ_RA_NUM_SWEEPS_PASS) + "."
 		default:
 			ASSERT(0, "Unimplemented for parameter " + name)
 	endswitch
@@ -5105,6 +5109,13 @@ Function/S PSQ_Ramp_CheckParam(string name, STRUCT CheckParametersStruct &s)
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0))
 				return "Invalid value " + num2str(val)
+			endif
+			break
+		case "NumberOfPassingSweeps":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!(val >= 1 && val <= IDX_NumberOfSweepsInSet(s.setName)))
+				return "NumberOfPassingSweeps must be at least 1 and no more "    \
+				       + "than total sweeps in the stimset. Found: " + num2str(val)
 			endif
 			break
 		default:
@@ -5160,11 +5171,12 @@ Function PSQ_Ramp(string device, STRUCT AnalysisFunction_V3 &s)
 	variable DAC, sweepPassed, sweepsInSet, passesInSet, acquiredSweepsInSet, enoughSpikesFound
 	variable pulseStart, pulseDuration, fifoPos, fifoOffset, numberOfSpikes, multiplier, chunk
 	string key, msg, stimset
-	string   fifoname
-	variable hardwareType
+	string fifoname
+	variable hardwareType, requiredPassingSweeps
 
-	numberOfSpikes = AFH_GetAnalysisParamNumerical("NumberOfSpikes", s.params)
-	multiplier     = AFH_GetAnalysisParamNumerical("SamplingMultiplier", s.params)
+	numberOfSpikes        = AFH_GetAnalysisParamNumerical("NumberOfSpikes", s.params)
+	multiplier            = AFH_GetAnalysisParamNumerical("SamplingMultiplier", s.params)
+	requiredPassingSweeps = AFH_GetAnalysisParamNumerical("NumberOfPassingSweeps", s.params, defValue = PSQ_RA_NUM_SWEEPS_PASS)
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
@@ -5212,8 +5224,8 @@ Function PSQ_Ramp(string device, STRUCT AnalysisFunction_V3 &s)
 
 			DAC     = AFH_GetDACFromHeadstage(device, s.headstage)
 			stimset = AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
-			if(IDX_NumberOfSweepsInSet(stimset) < PSQ_RA_NUM_SWEEPS_PASS)
-				printf "(%s): The stimset must have at least %d sweeps\r", device, PSQ_RA_NUM_SWEEPS_PASS
+			if(IDX_NumberOfSweepsInSet(stimset) < requiredPassingSweeps)
+				printf "(%s): The stimset must have at least %d sweeps\r", device, requiredPassingSweeps
 				ControlWindowToFront()
 				return 1
 			endif
@@ -5260,7 +5272,7 @@ Function PSQ_Ramp(string device, STRUCT AnalysisFunction_V3 &s)
 			key                     = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SWEEP_PASS)
 			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 
-			ret = PSQ_DetermineSweepQCResults(device, PSQ_RAMP, s.sweepNo, s.headstage, PSQ_RA_NUM_SWEEPS_PASS, Inf)
+			ret = PSQ_DetermineSweepQCResults(device, PSQ_RAMP, s.sweepNo, s.headstage, requiredPassingSweeps, Inf)
 
 			if(ret == PSQ_RESULTS_DONE)
 				break
@@ -5270,7 +5282,7 @@ Function PSQ_Ramp(string device, STRUCT AnalysisFunction_V3 &s)
 		case POST_SET_EVENT:
 			WAVE numericalValues = GetLBNumericalValues(device)
 
-			setPassed = PSQ_NumPassesInSet(numericalValues, PSQ_RAMP, s.sweepNo, s.headstage) >= PSQ_RA_NUM_SWEEPS_PASS
+			setPassed = PSQ_NumPassesInSet(numericalValues, PSQ_RAMP, s.sweepNo, s.headstage) >= requiredPassingSweeps
 
 			sprintf msg, "Set has %s\r", ToPassFail(setPassed)
 			DEBUGPRINT(msg)
