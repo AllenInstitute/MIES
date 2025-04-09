@@ -1268,7 +1268,7 @@ Function EP_WriteEpochInfoIntoSweepSettings(string device, variable sweepNo, var
 		endif
 	endfor
 
-	DC_DocumentChannelProperty(device, "Epochs Version", INDEP_HEADSTAGE, NaN, NaN, var = SWEEP_EPOCH_VERSION)
+	DC_DocumentChannelProperty(device, SWEEP_EPOCH_VERSION_ENTRY_KEY, INDEP_HEADSTAGE, NaN, NaN, var = SWEEP_EPOCH_VERSION)
 End
 
 /// @brief Convert the epochs wave layer given by `channel` and `channelType` to a string suitable for storing the labnotebook
