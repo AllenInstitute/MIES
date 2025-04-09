@@ -235,6 +235,18 @@ End
 /// returned.
 ///
 /// The second argument `birdTypes` is optional, if not present the operation `birdTypes()` is called and its result returned. Alternatively `defWave` can be supplied which is then returned if the argument is not present.
+///
+/// @param jsonId            JSON identifier
+/// @param jsonPath          Location in the AST
+/// @param graph             Databrowser graph
+/// @param opShort           Short name of the operation
+/// @param argNum            Argument index
+/// @param defOp             [optional, defaults to None] SF code to execute in case the argument is not present
+/// @param defWave           [optional] wave to return in case the argument is not present and defOp is not supplied
+/// @param singleResult      [optional, defaults to 0] Return the first wave of the dataset if it has only one entry
+/// @param expectedMinorType [optional, defaults to None] Expected minor wave type, possible values are from WaveType(wv, 0)
+/// @param expectedMajorType [optional, defaults to None] Expected major wave type, possible values are from WaveType(wv, 1)
+/// @param copy              [optional, defaults to 0] If the returned data should be safe for modification (true) or is only read (false)
 Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defOp, WAVE/Z defWave, variable singleResult, variable expectedMinorType, variable expectedMajorType, variable copy])
 
 	variable checkExist, numArgs, checkMinorType, checkMajorType
