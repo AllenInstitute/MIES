@@ -255,6 +255,7 @@ Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string gra
 	if(ParamIsDefault(defOp) && ParamIsDefault(defWave))
 		checkExist = 1
 	else
+		ASSERT((ParamIsDefault(defOp) + ParamIsDefault(defWave)) == 1, "Can only supply one of defOp and defWave")
 		checkExist = 0
 	endif
 
