@@ -9,15 +9,12 @@
 static Constant JWN_DEFAULT_RELEASE = 1
 
 /// @brief Gets the JSON wave note part as string
-threadsafe Function/S JWN_GetWaveNoteAsString(WAVE wv)
+threadsafe static Function/S JWN_GetWaveNoteAsString(string noteStr)
 
 	variable pos, len
-	string noteStr
 
-	ASSERT_TS(WaveExists(wv), "Missing wave")
-	noteStr = note(wv)
-	pos     = strsearch(noteStr, WAVE_NOTE_JSON_SEPARATOR, 0)
-	len     = strlen(WAVE_NOTE_JSON_SEPARATOR)
+	pos = strsearch(noteStr, WAVE_NOTE_JSON_SEPARATOR, 0)
+	len = strlen(WAVE_NOTE_JSON_SEPARATOR)
 	if(pos >= 0 && strlen(noteStr) > (pos + len))
 		return noteStr[pos + len, Inf]
 	endif
@@ -25,13 +22,21 @@ threadsafe Function/S JWN_GetWaveNoteAsString(WAVE wv)
 	return WAVE_NOTE_EMPTY_JSON
 End
 
+threadsafe static Function JWN_Parse(string noteStr)
+
+	return JSON_Parse(JWN_GetWaveNoteAsString(noteStr))
+End
+
 /// @brief Gets the JSON wave note part as JSON object
 ///        The caller is responsible to release the returned jsonId after use.
 threadsafe Function JWN_GetWaveNoteAsJSON(WAVE wv)
 
-	ASSERT_TS(WaveExists(wv), "Missing wave")
+	string noteStr
 
-	return JSON_Parse(JWN_GetWaveNoteAsString(wv))
+	ASSERT_TS(WaveExists(wv), "Missing wave")
+	noteStr = note(wv)
+
+	return JWN_Parse(noteStr)
 End
 
 /// @brief Set the JSON json document as JSON wave note. Releases json if `release` is true (default).
