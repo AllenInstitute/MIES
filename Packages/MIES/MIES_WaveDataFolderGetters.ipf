@@ -2767,7 +2767,7 @@ Function/WAVE GetSweepSettingsKeyWave(string device)
 	wv[%Units][54]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][54] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][55] = "Epochs version"
+	wv[%Parameter][55] = SWEEP_EPOCH_VERSION_ENTRY_KEY
 	wv[%Units][55]     = ""
 	wv[%Tolerance][55] = "1"
 
