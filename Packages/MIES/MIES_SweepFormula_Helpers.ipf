@@ -247,10 +247,17 @@ End
 /// @param expectedMinorType [optional, defaults to None] Expected minor wave type, possible values are from WaveType(wv, 0)
 /// @param expectedMajorType [optional, defaults to None] Expected major wave type, possible values are from WaveType(wv, 1)
 /// @param copy              [optional, defaults to 0] If the returned data should be safe for modification (true) or is only read (false)
-Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defOp, WAVE/Z defWave, variable singleResult, variable expectedMinorType, variable expectedMajorType, variable copy])
+/// @param[out] wvNote       [optional, defaults to None] Wave note of the dataset, useful for single result cases where you still need
+///                          to query JSON wave note entries
+Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defOp, WAVE/Z defWave, variable singleResult, variable expectedMinorType, variable expectedMajorType, variable copy, string &wvNote])
 
 	variable checkExist, numArgs, checkMinorType, checkMajorType
 	string msg
+
+	if(!ParamIsDefault(wvNote))
+		ASSERT(ParamIsDefault(defOp) && ParamIsDefault(defWave),                        \
+		       "The optional parameters wvNote and defOp/defWave can't be used together")
+	endif
 
 	if(ParamIsDefault(defOp) && ParamIsDefault(defWave))
 		checkExist = 1
@@ -277,6 +284,10 @@ Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string gra
 		if(singleResult)
 			sprintf msg, "Argument #%d of operation %s: Too many input values", argNum, opShort
 			SFH_ASSERT(DimSize(input, ROWS) == 1, msg)
+
+			if(!ParamIsDefault(wvNote))
+				wvNote = note(input)
+			endif
 
 			WAVE/Z data = input[0]
 			SFH_CleanUpInput(input)
