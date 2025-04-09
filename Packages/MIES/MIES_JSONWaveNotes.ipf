@@ -181,12 +181,17 @@ End
 /// @returns the value on success. An empty string is returned if it could not be found
 threadsafe Function/S JWN_GetStringFromWaveNote(WAVE wv, string jsonPath)
 
+	return JWN_GetStringFromNote(note(wv), jsonPath)
+End
+
+threadsafe Function/S JWN_GetStringFromNote(string noteStr, string jsonPath)
+
 	variable jsonID
 	string   str
 
 	ASSERT_TS(!IsEmpty(jsonPath), "Empty jsonPath")
 
-	jsonID = JWN_GetWaveNoteAsJSON(wv)
+	jsonID = JWN_Parse(noteStr)
 	str    = JSON_GetString(jsonID, jsonPath, ignoreErr = 1)
 	JSON_Release(jsonID)
 
