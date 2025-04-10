@@ -270,7 +270,7 @@ static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incoming
 	endif
 End
 
-static Function ED_ParseHeadstageContigencyMode(string str)
+static Function ED_ParseHeadstageContingencyMode(string str)
 
 	if(!cmpstr(str, "ALL"))
 		return (HCM_DEPEND | HCM_INDEP)
@@ -283,7 +283,7 @@ static Function ED_ParseHeadstageContigencyMode(string str)
 	return HCM_EMPTY
 End
 
-static Function/S ED_HeadstageContigencyModeToString(variable mode)
+static Function/S ED_HeadstageContingencyModeToString(variable mode)
 
 	switch(mode)
 		case HCM_INDEP:
@@ -299,7 +299,7 @@ static Function/S ED_HeadstageContigencyModeToString(variable mode)
 	endswitch
 End
 
-/// @brief Return the headstage contigency mode for values
+/// @brief Return the headstage contingency mode for values
 static Function ED_GetHeadstageContingency(WAVE values)
 
 	if(IsTextWave(values))
@@ -752,14 +752,14 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 		// check for correct headstage contingency
 		Duplicate/FREE/RMD=[0][i][*] incomingValues, valuesSlice
 		headstageCont     = ED_GetHeadstageContingency(valuesSlice)
-		headstageContDesc = ED_ParseHeadstageContigencyMode(desc[%HeadstageContingency][descIndex])
+		headstageContDesc = ED_ParseHeadstageContingencyMode(desc[%HeadstageContingency][descIndex])
 
 		if(isUnAssoc)
 			headstageContDesc = HCM_INDEP
 		endif
 
 		if(headstageCont != HCM_EMPTY && !(headstageCont & headstageContDesc))
-			sprintf msg, "Headstage contingency for entry \"%s\": stock: \"%s\", incoming: \"%s\"", searchStr, desc[%HeadstageContingency][descIndex], ED_HeadstageContigencyModeToString(headstageCont)
+			sprintf msg, "Headstage contingency for entry \"%s\": stock: \"%s\", incoming: \"%s\"", searchStr, desc[%HeadstageContingency][descIndex], ED_HeadstageContingencyModeToString(headstageCont)
 			BUG(msg)
 		endif
 
