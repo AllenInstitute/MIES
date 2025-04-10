@@ -1752,26 +1752,39 @@ End
 ///                        These epochs usually originate from exported recreated epochs used for test case @ref TestEpochRecreationShortNames
 Function CompareEpochsOfSweep(WAVE/Z numericalValues, WAVE/Z/T textualValues, variable sweepNo, DFREF sweepDFR, WAVE epochRec, [variable historic, WAVE/Z userEpochRef])
 
-	variable channelNumber, index, type
+	variable channelNumber, channelType, index, type
 	string anaFunc
 
 	historic = ParamIsDefault(historic) ? 0 : !!historic
 
-	for(channelNumber = 0; channelNumber < NUM_DA_TTL_CHANNELS; channelNumber += 1)
+	Make/FREE/D channelTypes = {XOP_CHANNEL_TYPE_DAC, XOP_CHANNEL_TYPE_TTL}
 
-		WAVE/Z/T epochChannelRef = EP_FetchEpochs(numericalValues, textualValues, sweepNo, sweepDFR, channelNumber, XOP_CHANNEL_TYPE_DAC)
-		WAVE/Z/T epochChannelRec = EP_FetchEpochsFromRecreated(epochRec, channelNumber, XOP_CHANNEL_TYPE_DAC)
+	for(channelType : channelTypes)
+		for(channelNumber = 0; channelNumber < NUM_DA_TTL_CHANNELS; channelNumber += 1)
 
-		if(WaveExists(epochChannelRef))
-			[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "Generic function", channelNumber, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
-			if(WaveExists(settings))
-				WAVE/T settingsT = settings
-				type = MapAnaFuncToConstant(settingsT[index])
-				TestEpochRecreationRemoveUnsupportedUserEpochs(epochChannelRef, type)
+			INFO("Channel type %d, channel %d", n0 = channelType, n1 = channelNumber)
+
+			WAVE/Z/T epochChannelRef = EP_FetchEpochs(numericalValues, textualValues, sweepNo, sweepDFR, channelNumber, channelType)
+			WAVE/Z/T epochChannelRec = EP_FetchEpochsFromRecreated(epochRec, channelNumber, channelType)
+
+			if(!WaveExists(epochChannelRef))
+				CHECK_WAVE(epochChannelRec, NULL_WAVE)
+				continue
 			endif
+
+			// user epochs exist only for DA channels
+			if(channelType == XOP_CHANNEL_TYPE_DAC)
+				[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "Generic function", channelNumber, channelType, DATA_ACQUISITION_MODE)
+				if(WaveExists(settings))
+					WAVE/T settingsT = settings
+					type = MapAnaFuncToConstant(settingsT[index])
+					TestEpochRecreationRemoveUnsupportedUserEpochs(epochChannelRef, type)
+				endif
+			endif
+
 			if(historic)
-				if(WaveExists(userEpochRef))
-					WAVE/T epochChannelRecUser = EP_FetchEpochsFromRecreated(userEpochRef, channelNumber, XOP_CHANNEL_TYPE_DAC)
+				if(WaveExists(userEpochRef) && channelType == XOP_CHANNEL_TYPE_DAC)
+					WAVE/T epochChannelRecUser = EP_FetchEpochsFromRecreated(userEpochRef, channelNumber, channelType)
 					ExtendRefEpochsWithUserEpochs(epochChannelRef, epochChannelRecUser)
 				endif
 				CompareEpochsHistoricChannel(epochChannelRef, epochChannelRec)
@@ -1780,9 +1793,7 @@ Function CompareEpochsOfSweep(WAVE/Z numericalValues, WAVE/Z/T textualValues, va
 				AdaptRecEpoch_U_RA_UD(epochChannelRec, epochChannelRef)
 				CHECK_EQUAL_WAVES(epochChannelRec, epochChannelRef)
 			endif
-		else
-			CHECK_WAVE(epochChannelRec, NULL_WAVE)
-		endif
+		endfor
 	endfor
 End
 
