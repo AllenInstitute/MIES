@@ -1794,6 +1794,7 @@ Function/WAVE EP_RecreateEpochsFromLoadedData(WAVE numericalValues, WAVE/T textu
 
 	WAVE/T recEpochWave = GetEpochsWaveAsFree()
 	EP_CollectEpochInfoDA(recEpochWave, s)
+	EP_CollectEpochInfoTTL(recEpochWave, s)
 	EP_AddRecreatedUserEpochs(numericalValues, textualValues, sweepDFR, sweepNo, s, recEpochWave)
 
 	WAVE/Z channelDA = GetDAQDataSingleColumnWaveNG(numericalValues, textualValues, sweepNo, sweepDFR, XOP_CHANNEL_TYPE_DAC, s.DACList[0])
