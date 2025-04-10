@@ -11,6 +11,56 @@
 
 /// @brief Add numerical/textual entries to the labnotebook
 ///
+/// This function adds one or more new entries to the LBN.
+/// The new entries are given through a vals, keys combination. Depending on the type of
+/// vals the textual or numerical LBN is targeted. The function determines the correct
+/// target LBN automatically through sweepNo and device.
+///
+/// The entrySourceType specifies to which logical block of the LBN the entries get added
+///
+/// Specification of vals and keys:
+/// Multiple entries can be written with one call.
+/// vals: text or numerical WAVE of size (1, numberOfNewEntries, LABNOTEBOOK_LAYER_COUNT)
+///       The layers index the target headstage or INDEP_HEADSTAGE.
+///       The elements of the wave must be filled with the values that should be written.
+///       Based on  the column number key/value pairs are defined from vals/keys.
+///       numeric vals waves must be initialized with NaN
+/// keys: text WAVE in one of three possible layouts:
+///       - size (1, numberOfNewEntries)
+///         one key is specified per column
+///       - size (3, numberOfNewEntries)
+///         row 0: key
+///         row 1: LBN unit
+///         row 2: LNB tolerance
+///       - size (6, numberOfNewEntries)
+///         row 0: key
+///         row 1: unit
+///         row 2: tolerance
+///         row 3: description
+///         row 4: Headstage Contingency
+///         row 5: ClampMode
+///       optionally the keys wave may have a layer size of 1.
+///
+/// Key specification:
+/// Duplicated keys are not allowed and will give an error.
+///
+/// Correct filling of entry keys and corresponding values:
+/// for associated DA/AD channels use the regular key and the headstage as layer for vals
+/// for unassociated DA/AD channels create the correct key with CreateLBNUnassocKey with
+///   layer INDEP_HEADSTAGE in vals
+/// for some TTL channels the correct key is created through CreateTTLChannelLBNKey with layer INDEP_HEADSTAGE in vals
+///
+/// In the LBN one new row is added at the end where all entries that should be written are placed.
+/// (As no keys are duplicated, all data can be written to one row)
+/// LBN columns for new keys are created automatically.
+///
+/// If insertAsPostProc is set to 1:
+/// Instead of the above: In the LBN a new row is inserted after the block specified by sweepNo/entrySourceType.
+/// The new entries are placed in this row and implicitly an entry with key "PostProcessed"
+/// and value "1" or 1 respectively is set in the same row.
+///
+/// It is recommended to gather all entries to be written in keys/values and call ED_AddEntriesToLabnotebook then once.
+///
 /// @see ED_createTextNotes, ED_createWaveNote
 Function ED_AddEntriesToLabnotebook(WAVE vals, WAVE/T keys, variable sweepNo, string device, variable entrySourceType)
 
