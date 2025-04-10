@@ -309,6 +309,7 @@ static Function/S DB_LockToDevice(string win, string device)
 		BSP_UnsetDynamicStartupSettings(win)
 	else
 		newWindow = "DB_" + device
+		UpgradeLabNotebook(device)
 	endif
 
 	DB_SetUserData(win, device)
@@ -412,8 +413,6 @@ Function DB_UpdateSweepPlot(string win)
 	endif
 
 	device = BSP_GetDevice(win)
-
-	UpgradeLabNotebook(BSP_GetDevice(win))
 
 	WAVE numericalValues = DB_GetLBNWave(win, LBN_NUMERICAL_VALUES)
 	WAVE textualValues   = DB_GetLBNWave(win, LBN_TEXTUAL_VALUES)
