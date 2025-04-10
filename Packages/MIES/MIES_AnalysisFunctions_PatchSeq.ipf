@@ -3031,7 +3031,7 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 						WAVE/Z dataCurrentSCI = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 						break
 					default:
-						FATAL_ERROR("Unsupported headstageContigencyMode")
+						FATAL_ERROR("Unsupported headstageContingencyMode")
 				endswitch
 				break
 		endswitch
@@ -3056,7 +3056,7 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 			idx = INDEP_HEADSTAGE
 			break
 		default:
-			FATAL_ERROR("Unsupported headstageContigencyMode")
+			FATAL_ERROR("Unsupported headstageContingencyMode")
 	endswitch
 
 	WAVE dataRhSuAd = ListToNumericWave(dataRhSuAdLBN[idx], ";")
