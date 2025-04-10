@@ -2096,13 +2096,16 @@ Function InsertRecreatedEpochsIntoLBN(WAVE numericalValues, WAVE/T textualValues
 
 	for(channelType : channelTypes)
 		for(channelNumber = 0; channelNumber < NUM_DA_TTL_CHANNELS; channelNumber += 1)
-			// Currently only implemented for DAC channel type
-			if(channelType != XOP_CHANNEL_TYPE_DAC)
-				continue
-			endif
 
 			epochList = EP_EpochWaveToStr(recEpochs, channelNumber, channelType)
 			if(IsEmpty(epochList))
+				continue
+			endif
+
+			if(channelType == XOP_CHANNEL_TYPE_TTL)
+				keys[0][colCount]                    = CreateTTLChannelLBNKey(EPOCHS_ENTRY_KEY, channelNumber)
+				values[0][colCount][INDEP_HEADSTAGE] = epochList
+				colCount                            += 1
 				continue
 			endif
 
