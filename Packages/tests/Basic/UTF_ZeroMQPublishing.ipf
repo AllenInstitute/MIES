@@ -10,6 +10,11 @@ static Function TEST_CASE_BEGIN_OVERRIDE(string testname)
 	PrepareForPublishTest()
 End
 
+static Function TEST_CASE_END_OVERRIDE(string testname)
+
+	TestCaseEndCommon(testname)
+End
+
 static Function CheckPressureState()
 
 	string device, expected, actual
