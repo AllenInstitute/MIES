@@ -11,8 +11,7 @@
 
 Window AnalysisBrowser() : Panel
 	PauseUpdate; Silent 1 // building window...
-	NewPanel/K=1/W=(322, 308, 1461, 900) as "AnalysisBrowser"
-	SetDrawLayer UserBack
+	NewPanel/K=1/W=(53, 86, 1192, 678) as "AnalysisBrowser"
 	ListBox list_experiment_contents, pos={120.00, 217.00}, size={1015.00, 372.00}, proc=AB_ListBoxProc_ExpBrowser
 	ListBox list_experiment_contents, help={"Various properties of the loaded sweep data"}
 	ListBox list_experiment_contents, userdata(ResizeControlsInfo)=A"!!,FU!!#Ah!!#E8^]6a5z!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
@@ -70,7 +69,7 @@ Window AnalysisBrowser() : Panel
 	Button button_show_resaveAsNWB, userdata(ResizeControlsInfo)=A"!!,@C!!#Bj!!#@,!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_show_resaveAsNWB, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button button_show_resaveAsNWB, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	ListBox listbox_AB_Folders, pos={120.00, 3.00}, size={1015.00, 199.00}
+	ListBox listbox_AB_Folders, pos={120.00, 3.00}, size={1015.00, 199.00}, proc=AB_ListBoxProc_FileFolderList
 	ListBox listbox_AB_Folders, help={"Source folders for sweep/stimset files"}
 	ListBox listbox_AB_Folders, userdata(ResizeControlsInfo)=A"!!,FU!!#8L!!#E8^]6_lz!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
 	ListBox listbox_AB_Folders, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -180,5 +179,5 @@ Window AnalysisBrowser() : Panel
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)=A"!!*'\"z!!#EI?iWS/zzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
-	Execute/Q/Z "SetWindow kwTopWin sizeLimit={854.25,423.75,inf,inf}" // sizeLimit requires Igor 7 or later
+	Execute/Q/Z "SetWindow kwTopWin sizeLimit={854.25,444,inf,inf}" // sizeLimit requires Igor 7 or later
 EndMacro

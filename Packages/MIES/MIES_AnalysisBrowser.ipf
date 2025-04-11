@@ -3237,6 +3237,12 @@ Function AB_ListBoxProc_ExpBrowser(STRUCT WMListboxAction &lba) : ListBoxControl
 	variable mask, numRows, row, col
 
 	switch(lba.eventCode)
+		case 2:
+			if(!(lba.eventMod & WINDOW_HOOK_EMOD_RIGHTCLICK))
+				return 0
+			endif
+			AB_ShowFileContextMenu(AB_GetFilePathFromExpBrowserListboxRow(lba.row))
+			break
 		case 5: // cell selection + shift key
 		case 4: // cell selection
 			AB_CheckPanelVersion(lba.win)
@@ -3279,6 +3285,17 @@ Function AB_ListBoxProc_ExpBrowser(STRUCT WMListboxAction &lba) : ListBoxControl
 	endswitch
 
 	return 0
+End
+
+static Function/S AB_GetFilePathFromExpBrowserListboxRow(variable row)
+
+	variable mapIndex
+
+	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
+	WAVE/T map            = GetAnalysisBrowserMap()
+	mapIndex = str2num(expBrowserList[row][%file][1])
+
+	return map[mapIndex][%DiscLocation]
 End
 
 static Function AB_UpdateColors()
@@ -3798,4 +3815,38 @@ Function AB_OnCloseSweepBrowserUpdatePopup(string closingSweepBrowser)
 	if(!CmpStr(sbWin, closingSweepBrowser))
 		SetPopupMenuIndex(ANALYSIS_BROWSER_NAME, "popup_SweepBrowserSelect", 0)
 	endif
+End
+
+static Function AB_ShowFileContextMenu(string filePath)
+
+	string symbPath
+
+	PopupContextualMenu "Show in explorer;Path to clipboard;"
+	switch(V_flag)
+		case 1:
+			OpenExplorerAtFile(filePath)
+			break
+		case 2:
+			PutScrapText GetWindowsPath(filePath)
+			break
+		default:
+			return NaN
+	endswitch
+End
+
+Function AB_ListBoxProc_FileFolderList(STRUCT WMListboxAction &lba) : ListBoxControl
+
+	switch(lba.eventCode)
+		case 2: // mouse up
+			if(!(lba.eventMod & WINDOW_HOOK_EMOD_RIGHTCLICK))
+				return 0
+			endif
+			WAVE/T folderList = GetAnalysisBrowserGUIFolderList()
+			AB_ShowFileContextMenu(folderList[lba.row])
+			break
+		default:
+			break
+	endswitch
+
+	return 0
 End
