@@ -3515,7 +3515,8 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 			SFH_ASSERT(IsFinite(tpInput.clampAmp), "Could not find amplitude entry in epoch tags")
 
 			// values not required for calculation result
-			tpInput.device = graph
+			tpInput.device        = graph
+			tpInput.sendTPMessage = 0
 
 			DFREF dfrTPAnalysis      = TP_PrepareAnalysisDF(graph, tpInput)
 			DFREF dfrTPAnalysisInput = dfrTPAnalysis:input

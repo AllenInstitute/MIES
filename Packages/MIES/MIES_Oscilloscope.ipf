@@ -574,8 +574,9 @@ Function SCOPE_UpdateOscilloscopeData(string device, variable dataAcqOrTP, [vari
 			endif
 
 			// Use same time for all headstages
-			tpInput.timeStamp    = DateTime
-			tpInput.timeStampUTC = DateTimeInUTC()
+			tpInput.timeStamp     = DateTime
+			tpInput.timeStampUTC  = DateTimeInUTC()
+			tpInput.sendTPMessage = 1
 
 			for(j = 0; j < numADCs; j += 1)
 				if(ADCmode[j] == DAQ_CHANNEL_TYPE_TP)

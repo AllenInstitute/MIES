@@ -316,6 +316,7 @@ Structure TPAnalysisInput
 	variable timeStamp
 	variable timeStampUTC
 	variable cycleId
+	variable sendTPMessage
 EndStructure
 
 /// @brief Helper structure for GetPlotArea()

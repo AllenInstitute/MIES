@@ -1054,6 +1054,7 @@ threadsafe Function/DF TP_TSAnalysis(DFREF dfrInp)
 	variable pulseLengthPointsDAC = ASYNC_FetchVariable(dfrInp, "pulseLengthPointsDAC")
 	variable pulseStartPointsDAC  = ASYNC_FetchVariable(dfrInp, "pulseStartPointsDAC")
 	variable samplingIntervalDAC  = ASYNC_FetchVariable(dfrInp, "samplingIntervalDAC")
+	variable sendTPMessage        = ASYNC_FetchVariable(dfrInp, "sendTPMessage")
 
 #if defined(TP_ANALYSIS_DEBUGGING)
 	DEBUGPRINT_TS("Marker: ", var = marker)
@@ -1158,8 +1159,10 @@ threadsafe Function/DF TP_TSAnalysis(DFREF dfrInp)
 	tpData[%PULSESTARTPOINTSDAC]   = pulseStartPointsDAC
 	tpData[%SAMPLINGINTERVALDAC]   = samplingIntervalDAC
 
-	Make/FREE/WAVE additionalData = {data}
-	PUB_TPResult(device, tpData, ampParamStorageSlice, additionalData)
+	if(sendTPMessage)
+		Make/FREE/WAVE additionalData = {data}
+		PUB_TPResult(device, tpData, ampParamStorageSlice, additionalData)
+	endif
 
 	return dfrOut
 End
@@ -1690,6 +1693,7 @@ Function/DF TP_PrepareAnalysisDF(string device, STRUCT TPAnalysisInput &tpInput)
 	ASYNC_AddParam(threadDF, var = tpInput.pulseLengthPointsDAC, name = "pulseLengthPointsDAC")
 	ASYNC_AddParam(threadDF, var = tpInput.pulseStartPointsDAC, name = "pulseStartPointsDAC")
 	ASYNC_AddParam(threadDF, var = tpInput.samplingIntervalDAC, name = "samplingIntervalDAC")
+	ASYNC_AddParam(threadDF, var = tpInput.sendTPMessage, name = "sendTPMessage")
 
 	return threadDF
 End
