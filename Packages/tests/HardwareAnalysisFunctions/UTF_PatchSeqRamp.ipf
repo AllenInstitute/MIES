@@ -413,6 +413,72 @@ static Function PS_RA2a_REENTRY([string str])
 	CheckPSQChunkTimes(str, chunkTimes, sweep = 0)
 End
 
+static Function PS_RA2b_preAcq(string device)
+
+	Make/FREE asyncChannels = {2, 3}
+	AFH_AddAnalysisParameter("Ramp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	AFH_AddAnalysisParameter("Ramp_DA_0", "NumberOfPassingSweeps", var = 1)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function PS_RA2b([string str])
+
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
+	// baseline QC passes, no spikes at all, async QC passes
+	wv            = 0
+	wv[0, 2][][0] = 1
+	wv[][][2]     = 1
+End
+
+static Function PS_RA2b_REENTRY([string str])
+
+	variable sweepNo, i, numEntries
+
+	sweepNo = 0
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+
+	WAVE/Z setPassed = GetSetQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(setPassed, {1}, mode = WAVE_DATA)
+
+	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(baselineQCWave, {1}, mode = WAVE_DATA)
+
+	WAVE/Z sweepQCWave = GetSweepQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(sweepQCWave, {1}, mode = WAVE_DATA)
+
+	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncQCWave = GetAsyncQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(asyncQCWave, {1}, mode = WAVE_DATA)
+
+	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(spikeDetectionWave, {0}, mode = WAVE_DATA)
+
+	WAVE/Z spikePositionWave = GetSpikePosition_IGNORE(sweepNo, str)
+	CHECK_WAVE(spikePositionWave, NULL_WAVE)
+
+	WAVE/Z/T userEpochs = GetUserEpochs_IGNORE(sweepNo, str)
+	CHECK_WAVE(userEpochs, TEXT_WAVE)
+
+	WAVE/Z foundUserEpochs = FindUserEpochs(userEpochs)
+	CHECK_WAVE(foundUserEpochs, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(foundUserEpochs, {0})
+
+	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(durations, {15000}, mode = WAVE_DATA, tol = 1)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
+	CheckPSQChunkTimes(str, {20, 520, 16020, 16520})
+End
+
 static Function PS_RA3_preAcq(string device)
 
 	Make/FREE asyncChannels = {2, 3}
