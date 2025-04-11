@@ -31,7 +31,7 @@ digraph G {
 	"Start DAQ/RA" -> "Prepare DAQ/Pre Set Event";
 	"Mid Sweep Event" -> "BL QC passed?";
 	"Mid Sweep Event" -> "Search spike result in labnotebook";
-	"Post Set Event" -> "Mark set as passed if 3 sweeps passed, as failure otherwise";
+	"Post Set Event" -> "Mark set as passed if \"NumberOfPassingSweeps\" sweeps passed, as failure otherwise";
 	n92	[URL="../_static/images/async-qc-channels.svg",
 		label="Standard AsyncQCChannels handling",
 		target=_graphviz];
@@ -79,8 +79,8 @@ digraph G {
 	"Requested number of spikes detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)" -> "Write spike result (true/false) into labnotebook"	[label=Yes];
 	"Check if the Set can still pass" -> "Skip to end"	[label=No];
 	n68	[label="Mark sweep as passed"];
-	"Check if 3 sweeps passed from RA cycle"	[label="Check if three sweeps\n passed from the SCI"];
-	n68 -> "Check if 3 sweeps passed from RA cycle";
+	"Check if \"NumberOfPassingSweeps\" sweeps passed from RA cycle"	[label="Check if three sweeps\n passed from the SCI"];
+	n68 -> "Check if \"NumberOfPassingSweeps\" sweeps passed from RA cycle";
 	"Enable \"TP during ITI\"" -> "Disable \"dDAQ\"/\"oodDAQ\"";
 	"Stimset has at least three sweeps" -> "Stimset is large enough";
 	"Check RMS short" -> "Mark Sweep/BL QC as failed"	[label=Failed];
@@ -88,7 +88,7 @@ digraph G {
 	"Check target voltage [2]" -> "Mark chunk as passed/failed [2]";
 	"After pulse" -> "Write spike result \"failed\" into LBN"	[label=Yes];
 	"Write spike result (true/false) into labnotebook" -> "Write spike position in ms into labnotebook";
-	"Check if 3 sweeps passed from RA cycle" -> "Skip to end of active set"	[label=Yes];
+	"Check if \"NumberOfPassingSweeps\" sweeps passed from RA cycle" -> "Skip to end of active set"	[label=Yes];
 	"Disable \"dDAQ\"/\"oodDAQ\"" -> "Set ITI to zero";
 	"Stimset is large enough" -> "Check if mode is IC";
 	"Check RMS long" -> "Mark Sweep/BL QC as failed"	[label=Failed];
