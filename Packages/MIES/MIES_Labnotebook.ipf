@@ -143,3 +143,20 @@ Function/S LBN_GetAnalysisFunctionParametersForDAC(WAVE numericalValues, WAVE/T 
 
 	return WaveText(settings, row = index)
 End
+
+/// @brief Return the analysis function parameters for the given labnotebooks, sweep and headstage
+threadsafe Function/S LBN_GetAnalysisFunctionParameters(WAVE textualValues, variable sweepNo, variable headstage)
+
+	WAVE/Z/T params = GetLastSetting(textualValues, sweepNo, ANALYSIS_FUNCTION_PARAMS_LBN, DATA_ACQUISITION_MODE)
+
+	if(!WaveExists(params))
+		// fallback to old names before 8ae0d8de7 (Labnotebook: Change the name of the analysis function parameters entry, 2019-12-12)
+		WAVE/Z/T params = GetLastSetting(textualValues, sweepNo, "Function params", DATA_ACQUISITION_MODE)
+	endif
+
+	if(!WaveExists(params))
+		return ""
+	endif
+
+	return params[headstage]
+End

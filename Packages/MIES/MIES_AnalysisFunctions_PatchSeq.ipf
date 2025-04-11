@@ -1630,7 +1630,7 @@ End
 static Function PSQ_GetPreviousSetQCFailingAdaptive(string device, variable headstage, string params)
 
 	variable sweepNo, setQC, currentAutoBiasV
-	string key, opMode
+	string key, opMode, previousAnalysisParams
 
 	sweepNo = AFH_GetLastSweepAcquired(device)
 
@@ -1655,9 +1655,9 @@ static Function PSQ_GetPreviousSetQCFailingAdaptive(string device, variable head
 		return INVALID_SWEEP_NUMBER
 	endif
 
-	WAVE/T previousAnalysisParams = GetLastSetting(textualValues, sweepNo, ANALYSIS_FUNCTION_PARAMS_LBN, DATA_ACQUISITION_MODE)
+	previousAnalysisParams = LBN_GetAnalysisFunctionParameters(textualValues, sweepNo, headstage)
 
-	if(cmpstr(previousAnalysisParams[headstage], params))
+	if(cmpstr(previousAnalysisParams, params))
 		return INVALID_SWEEP_NUMBER
 	endif
 
