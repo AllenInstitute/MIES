@@ -1667,7 +1667,7 @@ static Function CheckEventDataHelper(WAVE/Z/WAVE dataWref, variable index, varia
 	comp = sign(psxEvent[p][%$"Rise Time"])
 	CHECK_EQUAL_VAR(Sum(comp), numEvents)
 
-	WaveStats/M=0/Q psxEvent
+	WaveStats/M=1/Q psxEvent
 	CHECK_EQUAL_VAR(V_numInfs, 0)
 
 	INFO("index = %d, V_numNaNs = %d, kernelAmpSign = %d", n0 = index, n1 = V_numNans, n2 = kernelAmpSign)
