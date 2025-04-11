@@ -131,10 +131,14 @@ Function/S LBN_GetAnalysisFunctionParametersForDAC(WAVE numericalValues, WAVE/T 
 
 	variable index
 
-	string key = "Function params (encoded)"
-	[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, key, DAC, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
+	[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, ANALYSIS_FUNCTION_PARAMS_LBN, DAC, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
+
 	if(!WaveExists(settings))
-		return ""
+		[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "Function Params", DAC, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
+
+		if(!WaveExists(settings))
+			return ""
+		endif
 	endif
 
 	return WaveText(settings, row = index)
