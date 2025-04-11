@@ -1595,8 +1595,8 @@ End
 /// @returns 0 if at least one sweep or stimset could be loaded, 1 otherwise
 static Function AB_LoadFromExpandedRange(variable row, variable subSectionColumn, variable loadType, [variable overwrite, DFREF sweepBrowserDFR, WAVE/T dfCollect])
 
-	variable j, endRow, mapIndex, sweep, oneValidLoad, index
-	string device, discLocation, dataFolder, fileName, fileType
+	variable j, endRow, mapIndex, sweep, oneValidLoad, index, err, sweepLoadError
+	string device, discLocation, dataFolder, fileName, fileType, errMsg
 
 	WAVE   expBrowserSel  = GetExperimentBrowserGUISel()
 	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
@@ -1663,7 +1663,21 @@ static Function AB_LoadFromExpandedRange(variable row, variable subSectionColumn
 				oneValidLoad = 1
 				break
 			case AB_LOAD_SWEEP:
-				if(AB_LoadSweepFromFile(discLocation, dataFolder, fileType, device, sweep, overwrite = overwrite) == 1)
+				err    = 0
+				errMsg = ""
+				try
+					err = AB_LoadSweepFromFile(discLocation, dataFolder, fileType, device, sweep, overwrite = overwrite)
+				catch
+					errMsg = GetRTErrMessage()
+					ClearRTError()
+					err = 1
+				endtry
+				if(err)
+					printf "Error loading file: %s\r", discLocation
+					if(!IsEmpty(errMsg))
+						printf "with error: %s\r", errMsg
+					endif
+					sweepLoadError = 1
 					continue
 				endif
 				oneValidLoad = 1
@@ -1682,6 +1696,10 @@ static Function AB_LoadFromExpandedRange(variable row, variable subSectionColumn
 
 	if(oneValidLoad)
 		return 0
+	endif
+	if(sweepLoadError)
+		printf "There occurred errors when loading sweep data. See history output for details.\r"
+		ControlWindowToFront()
 	endif
 
 	return 1
