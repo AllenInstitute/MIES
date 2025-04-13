@@ -348,6 +348,8 @@ threadsafe Function GetRowIndex(WAVE wv, [variable val, string str, WAVE/Z refWa
 			if(V_Value >= 0)
 				return V_Value
 			endif
+		else
+			ASSERT_TS(0, "Unsupported wave type")
 		endif
 	endif
 
@@ -1168,4 +1170,108 @@ Function/WAVE SplitLogDataBySize(WAVE/T logData, string sep, variable lim, [vari
 	Redimension/N=(resultCnt) result
 
 	return result
+End
+
+Function [WAVE keySorted, WAVE dataSorted] SortKeyAndData(WAVE key, WAVE data)
+
+	ASSERT(EqualWaves(key, data, EQWAVES_DIMSIZE), "Non-matching dimension sizes for key and data")
+
+	Concatenate/FREE/NP=1 {key, data}, comb
+	MergeSortStableInplace(comb, col = 0)
+
+	/// @todo workaround IP issue 4979 (singleWaves is not a free wave)
+	Make/FREE/WAVE/N=0 singleWaves
+	SplitWave/FREE/OREF=singleWaves/SDIM=(COLS) comb
+	return [singleWaves[0], singleWaves[1]]
+End
+
+/// Sort the given wave in ascending order
+/// Passing in a 2D wave also to sort all columns according to `col`
+///
+/// Straight from wikipedia, top-down implementation, https://en.wikipedia.org/wiki/Merge_sort
+/// with the addition of `col`
+Function MergeSortStableInplace(WAVE A, [variable col])
+
+	/// Array A[] has the items to sort; array B[] is a work array.
+	variable numRows, numCols
+
+	numRows = DimSize(A, ROWS)
+	numCols = DimSize(A, COLS)
+
+	if(ParamIsDefault(col))
+		col = 0
+	else
+		ASSERT(col >= 0 && col < numCols, "col is out of range")
+	endif
+
+	if(numRows <= 1)
+		return NaN
+	endif
+
+	Duplicate/FREE A, B // one time copy of A[] to B[]
+
+	TopDownSplitMerge(A, 0, numRows, B, col) // sort data from B[] into A[]
+End
+
+// Split A[] into 2 runs, sort both runs into B[], merge both runs from B[] to A[]
+// iBegin is inclusive iEnd is exclusive (A[iEnd] is not in the set).
+static Function TopDownSplitMerge(WAVE B, variable iBegin, variable iEnd, WAVE A, variable col)
+
+	variable iMiddle
+
+	if((iEnd - iBegin) <= 1) // if run size == 1
+		return NaN //   consider it sorted
+	endif
+
+	// split the run longer than 1 item into halves
+	iMiddle = ceil((iEnd + iBegin) / 2) // iMiddle = mid point
+
+	// recursively sort both runs from array A[] into B[]
+	TopDownSplitMerge(A, iBegin, iMiddle, B, col) // sort the left  run
+	TopDownSplitMerge(A, iMiddle, iEnd, B, col) // sort the right run
+	// merge the resulting runs from array B[] into A[]
+	TopDownMerge(B, iBegin, iMiddle, iEnd, A, col)
+End
+
+// Left source half is A[ iBegin:iMiddle-1].
+// Right source half is A[iMiddle:iEnd-1   ].
+// Result is            B[ iBegin:iEnd-1   ].
+static Function TopDownMerge(WAVE B, variable iBegin, variable iMiddle, variable iEnd, WAVE A, variable col)
+
+	variable i, j, k
+
+	i = iBegin
+	j = iMiddle
+
+	// While there are elements in the left or right runs...
+	for(k = iBegin; k < iEnd; k++)
+		// If left run head exists and is <= existing right run head.
+		if(i < iMiddle && (j >= iEnd || A[i][col] <= A[j][col]))
+			B[k][] = A[i][q]
+			i      = i + 1
+		else
+			B[k][] = A[j][q]
+			j      = j + 1
+		endif
+	endfor
+End
+
+/// @brief Return the index of the last sequence in source
+///
+/// @todo helper function for FindSequence/R breakage in IP9, see #6435
+Function FindSequenceReverseWrapper(WAVE sequence, WAVE source)
+
+	variable foundIndex = -1
+	variable start      = 0
+
+	for(;;)
+		FindSequence/V=sequence/S=(start) source
+
+		if(V_Value < 0)
+			return foundIndex
+		endif
+
+		foundIndex = V_Value
+		start      = foundIndex + 1
+	endfor
 End

@@ -333,12 +333,28 @@ Function StringEndsWith(string str, string suffix)
 	return 0
 End
 
-/// @brief Check wether `val1` and `val2` are equal or both NaN
+/// @brief Check wether `val1` and `val2` are equal or both are NaN
 ///
 /// UTF_NOINSTRUMENTATION
 threadsafe Function EqualValuesOrBothNaN(variable left, variable right)
 
 	return (IsNaN(left) && IsNaN(right)) || (left == right)
+End
+
+/// @brief Check wether `val1` <= `val2` holds or both are NaN
+///
+/// UTF_NOINSTRUMENTATION
+threadsafe Function LesserEqualValuesOrBothNaN(variable left, variable right)
+
+	return (IsNaN(left) && IsNaN(right)) || (left <= right)
+End
+
+/// @brief Check wether `val1` >= `val2` holds or both are NaN
+///
+/// UTF_NOINSTRUMENTATION
+threadsafe Function LargerEqualValuesOrBothNaN(variable left, variable right)
+
+	return (IsNaN(left) && IsNaN(right)) || (left >= right)
 End
 
 /// @brief Checks wether `wv` is constant and has the value `val`

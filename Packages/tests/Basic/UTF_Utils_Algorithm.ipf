@@ -259,6 +259,15 @@ static Function TestGetRowIndex()
 	CHECK_EQUAL_VAR(GetRowIndex(doubleWave, str = strToSearch), NaN)
 	CHECK_EQUAL_VAR(GetRowIndex(doubleWave, val = valueToSearch, reverseSearch = 1), NaN)
 	CHECK_EQUAL_VAR(GetRowIndex(doubleWave, str = strToSearch, reverseSearch = 1), NaN)
+
+	// unsupported wave type
+	try
+		Make/FREE/DF wv
+		GetRowIndex(wv, val = 1)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
 End
 
 /// @}
@@ -1247,6 +1256,73 @@ static Function TestSplitLogDataBySize()
 	CHECK_EQUAL_WAVES(result[0], ref[0], mode = -1 %^ WAVE_SCALING)
 	WAVE data = result[1]
 	CHECK_EQUAL_WAVES(result[1], ref[1], mode = -1 %^ WAVE_SCALING)
+End
+
+/// @}
+
+// MergeSortStableInplace
+/// @{
+
+static Function TestMergeSortStableInPlace()
+
+	Make/FREE data = {4, 6, 1, -5, 10, 5}
+	MergeSortStableInplace(data)
+	CHECK_EQUAL_WAVES(data, {-5, 1, 4, 5, 6, 10})
+
+	Make/FREE data = {1}
+	MergeSortStableInplace(data)
+	CHECK_EQUAL_WAVES(data, {1})
+
+	Make/FREE/N=0 empty
+	MergeSortStableInplace(data)
+	Make/FREE/N=0 emptyRef
+	CHECK_EQUAL_WAVES(empty, emptyRef)
+
+	// maintains the order of neighbouring elements with the same keys
+
+	Make/FREE data = {{4, 6, 5, 5, 10, 5}, {0, 1, 2, 3, 4, 5}}
+	MergeSortStableInplace(data, col = 0)
+	CHECK_EQUAL_WAVES(data, {{4, 5, 5, 5, 6, 10}, {0, 2, 3, 5, 1, 4}})
+
+	// different column
+	Make/FREE data = {{0, 1, 2, 3, 4, 5}, {4, 6, 5, 5, 10, 5}}
+	MergeSortStableInplace(data, col = 1)
+	CHECK_EQUAL_WAVES(data, {{0, 2, 3, 5, 1, 4}, {4, 5, 5, 5, 6, 10}})
+
+End
+
+/// @}
+
+static Function TestSortKeyAndData()
+
+	Make/FREE key = {3, 1, 2}
+	Make/FREE data = {-1, -2, -3}
+	[WAVE keySorted, WAVE dataSorted] = SortKeyAndData(key, data)
+
+	CHECK_EQUAL_WAVES(keySorted, {1, 2, 3})
+	CHECK_EQUAL_VAR(DimSize(KeySorted, COLS), 0)
+	CHECK_EQUAL_WAVES(dataSorted, {-2, -3, -1})
+	CHECK_EQUAL_VAR(DimSize(dataSorted, COLS), 0)
+End
+
+// FindSequenceReverseWrapper
+/// @{
+
+static Function TestFindSequenceReverseWrapper()
+
+	variable idx
+
+	// works
+	Make/FREE/D seq = {0, 1}
+	Make/FREE/D source = {0, 1, 0, 1}
+	idx = FindSequenceReverseWrapper(seq, source)
+	CHECK_EQUAL_VAR(idx, 2)
+
+	// no match
+	Make/FREE/D seq = {0, 0}
+	Make/FREE/D source = {0, 1, 0, 1}
+	idx = FindSequenceReverseWrapper(seq, source)
+	CHECK_EQUAL_VAR(idx, -1)
 End
 
 /// @}
