@@ -299,14 +299,24 @@ Structure TPAnalysisInput
 	WAVE data
 	variable clampAmp
 	variable clampMode
-	variable duration // [points]
+	variable tpLengthPointsADC
+	variable pulseLengthPointsADC
+	variable pulseStartPointsADC
+	variable samplingIntervalADC
+	variable tpLengthPointsDAC
+	variable pulseLengthPointsDAC
+	variable pulseStartPointsDAC
+	variable samplingIntervalDAC
 	variable baselineFrac
-	variable tpLengthPoints
 	variable readTimeStamp
 	variable headstage
 	string device
 	variable measurementMarker
 	variable activeADCs
+	variable timeStamp
+	variable timeStampUTC
+	variable cycleId
+	variable sendTPMessage
 EndStructure
 
 /// @brief Helper structure for GetPlotArea()

@@ -190,6 +190,10 @@ End
 Function TEST_BEGIN_OVERRIDE(string name)
 
 	TestBeginCommon()
+
+	if(DoExpensiveChecks())
+		PrepareForPublishTest()
+	endif
 End
 
 Function TEST_END_OVERRIDE(string name)
@@ -205,4 +209,8 @@ End
 Function TEST_CASE_END_OVERRIDE(string testcase)
 
 	TestCaseEndCommon(testcase)
+
+	if(DoExpensiveChecks())
+		CheckPubMessagesHeartbeatOnly()
+	endif
 End

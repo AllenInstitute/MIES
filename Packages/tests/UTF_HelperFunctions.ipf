@@ -172,12 +172,18 @@ Function AdditionalExperimentCleanup()
 	KillOrMoveToTrash(wv = GetOverrideResults())
 End
 
-Function FetchAndParseMessage(string expectedFilter)
+Function FetchAndParseMessage(string expectedFilter, [WAVE/Z/WAVE additionalData])
 
 	variable jsonID
 
 	[WAVE/WAVE receivedData, string msg, string filter] = FetchPublishedMessage(expectedFilter)
 	CHECK_WAVE(receivedData, WAVE_WAVE)
+
+	if(!ParamIsDefault(additionalData))
+		Redimension/N=(DimSize(receivedData, ROWS)) additionalData
+		additionalData[] = receivedData[p]
+		Duplicate/FREE receivedData, additionalData
+	endif
 
 	CHECK_PROPER_STR(msg)
 
@@ -1739,4 +1745,28 @@ threadsafe static Function ParseConstantValues_Impl(string entry)
 	ASSERT_TS(V_Flag == 1, "Unexpected number of matches")
 
 	return str2num(str)
+End
+
+Function CheckPubMessagesHeartbeatOnly()
+
+	string   filter
+	variable i
+
+	// heartbeat is sent every 5s
+	// so we accomodate 30h of running the tests here
+	variable numRuns = 20000
+
+	for(i = 0; i < numRuns; i += 1)
+		Make/WAVE/N=0/FREE receivedData
+		zeromq_sub_recv_multi(receivedData)
+		if(DimSize(receivedData, ROWS) == 0)
+			// no more messages
+			break
+		endif
+
+		CHECK_GE_VAR(DimSize(receivedData, ROWS), 2)
+
+		filter = WaveText(receivedData[0], row = 0)
+		CHECK_EQUAL_STR(filter, ZEROMQ_HEARTBEAT)
+	endfor
 End

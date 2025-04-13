@@ -3502,9 +3502,10 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 
 			// Assemble TP data
 			WAVE tpInput.data = SF_AverageTPFromSweep(epochMatches, sweepData)
-			tpInput.tpLengthPoints = DimSize(tpInput.data, ROWS)
-			tpInput.duration       = (str2num(epochTPPulse[0][EPOCH_COL_ENDTIME]) - str2num(epochTPPulse[0][EPOCH_COL_STARTTIME])) * ONE_TO_MILLI / DimDelta(sweepData, ROWS)
-			tpInput.baselineFrac   = TP_CalculateBaselineFraction(tpInput.duration, tpInput.duration + 2 * tpBaseLinePoints)
+			tpInput.tpLengthPointsADC    = DimSize(tpInput.data, ROWS)
+			tpInput.samplingIntervalADC  = DimDelta(tpInput.data, ROWS)
+			tpInput.pulseLengthPointsADC = (str2num(epochTPPulse[0][EPOCH_COL_ENDTIME]) - str2num(epochTPPulse[0][EPOCH_COL_STARTTIME])) * ONE_TO_MILLI / DimDelta(sweepData, ROWS)
+			tpInput.baselineFrac         = TP_CalculateBaselineFraction(tpInput.pulseLengthPointsADC, tpInput.pulseLengthPointsADC + 2 * tpBaseLinePoints)
 
 			[WAVE settings, settingsIndex] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, CLAMPMODE_ENTRY_KEY, dacChannelNr, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
 			SFH_ASSERT(WaveExists(settings), "Failed to retrieve TP Clamp Mode from LBN")
@@ -3514,12 +3515,13 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 			SFH_ASSERT(IsFinite(tpInput.clampAmp), "Could not find amplitude entry in epoch tags")
 
 			// values not required for calculation result
-			tpInput.device = graph
+			tpInput.device        = graph
+			tpInput.sendTPMessage = 0
 
 			DFREF dfrTPAnalysis      = TP_PrepareAnalysisDF(graph, tpInput)
 			DFREF dfrTPAnalysisInput = dfrTPAnalysis:input
 			DFREF dfr                = TP_TSAnalysis(dfrTPAnalysisInput)
-			WAVE  tpOutData          = dfr:outData
+			WAVE  tpOutData          = dfr:tpData
 
 			// handle waves sent out when TP_ANALYSIS_DEBUGGING is defined
 			if(WaveExists(dfr:data) && WaveExists(dfr:colors))

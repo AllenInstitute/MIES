@@ -103,45 +103,184 @@ Function TP_StoreTP(string device, WAVE TPWave, variable tpMarker, string hsList
 	SetNumberInWaveNote(storedTP, NOTE_INDEX, index)
 End
 
-/// @brief Return a number of consecutive test pulses ending with the TP
-/// identified by tpMarker.
-///
-/// The wave reference wave will have as many columns as active headstages were used.
-Function/WAVE TP_GetStoredTPs(string device, variable tpMarker, variable number)
+static Function TP_GetStoredTPIndex(string device, variable tpMarker)
 
 	variable numEntries
 
 	WAVE/WAVE storedTP = GetStoredTestPulseWave(device)
 	numEntries = GetNumberFromWaveNote(storedTP, NOTE_INDEX)
-
 	if(numEntries == 0)
-		return $""
+		return NaN
 	endif
 
 	Make/FREE/N=(numEntries) matches
-
 	Multithread matches[0, numEntries - 1] = GetNumberFromWaveNote(storedTP[p], "TPMarker") == tpMarker
-
 	FindValue/V=1 matches
-
 	if(V_row == -1)
+		return NaN
+	endif
+
+	return V_row
+End
+
+static Function/WAVE TP_RecreateDACWave(variable tpLengthPointsDAC, variable pulseStartPointsDAC, variable pulseLengthPointsDAC, variable clampMode, variable clampAmp, variable samplingInterval)
+
+	Make/FREE/D/N=0 tpDAC
+	TP_CreateTestPulseWaveImpl(tpDAC, tpLengthPointsDAC, pulseStartPointsDAC, pulseLengthPointsDAC)
+	tpDAC *= clampAmp
+	SetScale/P x, 0, samplingInterval, "ms", tpDAC
+	SetScale d, 0, 0, GetADChannelUnit(clampMode), tpDAC
+
+	return tpDAC
+End
+
+static Function/WAVE TP_GetTPMetaData(WAVE tpStorage, variable tpMarker, variable headstage)
+
+	variable i
+	variable numEntries = GetNumberFromWaveNote(tpStorage, NOTE_INDEX)
+	variable numlayers  = DimSize(tpStorage, LAYERS)
+	variable dimMarker  = FindDimLabel(tpStorage, LAYERS, "TPMarker")
+
+	FindValue/RMD=[][headstage][dimMarker]/V=(tpMarker) tpStorage
+	ASSERT(V_row >= 0, "Inconsistent TP data")
+	Duplicate/FREE/RMD=[V_row][headstage][] tpStorage, tpResult
+	Redimension/E=1/N=(numLayers) tpResult
+	for(i = 0; i < numLayers; i += 1)
+		SetDimLabel ROWS, i, $GetDimLabel(tpStorage, LAYERS, i), tpResult
+	endfor
+
+	return tpResult
+End
+
+/// @brief Returns data about a stored TestPulse from a given tpMarker
+///
+/// Returns a wave reference wave with 3 entries:
+/// 0 : numeric wave with the acquired AD data of the test pulse (signal) in the format as created by @ref TP_StoreTP
+/// 1 : numeric wave with the recreated DA data of the test pulse (command)
+/// 2 : Additional information for the test pulse from creation and analysis in the format described for @ref GetTPStorage
+///     As the information is for a single TP only, the wave contains a single slice (1 row)
+///
+/// @param device     device name
+/// @param tpMarker   testpulse marker
+/// @param headstage  headstage number
+/// @param includeDAC flag, when set the DAC wave of the testpulse is recreated
+Function/WAVE TP_GetStoredTP(string device, variable tpMarker, variable headstage, variable includeDAC)
+
+	variable tpIndex
+	variable i, numlayers
+
+	ASSERT(IsValidHeadstage(headstage), "Invalid headstage number")
+	includeDAC = !!includeDAC
+
+	tpIndex = TP_GetStoredTPIndex(device, tpMarker)
+	if(IsNaN(tpIndex))
+		return $""
+	endif
+
+	WAVE/WAVE tpStored = GetStoredTestPulseWave(device)
+	WAVE      tpADC    = tpStored[tpIndex]
+
+	WAVE tpStorage = GetTPStorage(device)
+	WAVE tpResult  = TP_GetTPMetaData(tpStorage, tpMarker, headstage)
+
+	if(includeDAC)
+		WAVE tpDAC = TP_RecreateDACWave(tpResult[%TPLENGTHPOINTSDAC], tpResult[%PULSESTARTPOINTSDAC], tpResult[%PULSELENGTHPOINTSDAC], tpResult[%ClampMode], tpResult[%CLAMPAMP], tpResult[%SAMPLINGINTERVALADC])
+	else
+		WAVE/Z tpDAC = $""
+	endif
+
+	Make/FREE/WAVE tpAll = {tpADC, tpDAC, tpResult}
+
+	return tpAll
+End
+
+/// @brief Returns data about stored TestPulses from a given cycle id
+///
+/// Returns a wave reference wave with 3 entries:
+/// 0 : wave ref wave that stores numeric waves with the acquired AD data of the test pulse (signal) in the format as created by @ref TP_StoreTP
+///     The number of elements in the wave ref wave equals the number of test pulses in the cycle.
+/// 1 : numeric wave with the recreated DA data of the test pulse (command)
+///     Note: here only a single wave is recreated because the DA data for all test pulses of that cycle is identical
+/// 2 : wave ref wave that stores additional information for the test pulses from creation and analysis in the format described for @ref GetTPStorage
+///     The number of elements in the wave ref wave equals the number of test pulses in the cycle and has the same order as the signal waves from index 0.
+///     Each element is a single slice (1 row) of tpStorage.
+///
+/// If no test pulses exist for the given cycle id a null wave is returned.
+///
+/// @param device     device name
+/// @param cycleId    test pulse cycle id
+/// @param headstage  headstage number
+/// @param includeDAC flag, when set the DAC wave of the testpulse is recreated
+Function/WAVE TP_GetStoredTPsFromCycle(string device, variable cycleId, variable headstage, variable includeDAC)
+
+	variable i, numStored, numIndices
+
+	ASSERT(IsValidHeadstage(headstage), "Invalid headstage number")
+	includeDAC = !!includeDAC
+
+	WAVE/WAVE tpStored = GetStoredTestPulseWave(device)
+	numStored = GetNumberFromWaveNote(tpStored, NOTE_INDEX)
+	Make/FREE/D/N=(numStored) matchCycleId
+	matchCycleId[] = (cycleId == GetNumberFromWaveNote(tpStored[p], "TPCycleID")) ? p : NaN
+	WAVE/Z tpIndices = ZapNaNs(matchCycleId)
+	if(!WaveExists(tpIndices))
+		return $""
+	endif
+
+	numIndices = DimSize(tpIndices, ROWS)
+	Make/FREE/WAVE/N=(numIndices) tpsADC, tpsresult
+	for(i = 0; i < numIndices; i += 1)
+		Duplicate/FREE/RMD=[][headstage] tpStored[tpIndices[i]], tpADCSliced
+		Redimension/N=(-1) tpADCSliced
+		tpsADC[i] = tpADCSliced
+	endfor
+
+	Make/FREE/D/N=(numIndices) tpMarkers
+	tpMarkers[] = GetNumberFromWaveNote(tpsADC[p], "TPMarker")
+
+	WAVE tpStorage = GetTPStorage(device)
+	tpsResult[] = TP_GetTPMetaData(tpStorage, tpMarkers[p], headstage)
+
+	if(includeDAC)
+		Make/FREE/WAVE/N=(numIndices) tpsDAC
+		tpsDAC[] = TP_RecreateDACWave(WaveRef(tpsResult[p])[%TPLENGTHPOINTSDAC], WaveRef(tpsResult[p])[%PULSESTARTPOINTSDAC], WaveRef(tpsResult[p])[%PULSELENGTHPOINTSDAC], WaveRef(tpsResult[p])[%ClampMode], WaveRef(tpsResult[p])[%CLAMPAMP], WaveRef(tpsResult[p])[%SAMPLINGINTERVALADC])
+	else
+		WAVE/Z tpsDAC = $""
+	endif
+
+	Make/FREE/WAVE tpAll = {tpsADC, tpsDAC, tpsResult}
+
+	return tpAll
+End
+
+/// @brief Return a number of consecutive test pulses ending with the TP
+/// identified by tpMarker.
+///
+/// The wave reference wave will have as many columns as active headstages were used.
+Function/WAVE TP_GetConsecutiveTPsUptoMarker(string device, variable tpMarker, variable number)
+
+	variable tpIndex, tpCycleId
+
+	tpIndex = TP_GetStoredTPIndex(device, tpMarker)
+	if(IsNaN(tpIndex))
+		return $""
+	endif
+
+	if(number > (tpIndex + 1))
+		// too few TPs available
 		return $""
 	endif
 
 	Make/FREE/N=(number)/WAVE result
 
-	if(number > (V_row + 1))
-		// too few TPs available
-		return $""
-	endif
-
-	result[] = storedTP[V_row - number + 1 + p]
+	WAVE/WAVE storedTP = GetStoredTestPulseWave(device)
+	result[] = storedTP[tpIndex - number + 1 + p]
 
 	// check that they all belong to the same TP cycle
-	Redimension/N=(number) matches
-	matches[] = GetNumberFromWaveNote(result[0], "TPCycleID") == GetNumberFromWaveNote(result[p], "TPCycleID")
-
-	if(Sum(matches) < number)
+	Make/FREE/N=(number) matches
+	tpCycleId = GetNumberFromWaveNote(result[0], "TPCycleID")
+	matches[] = tpCycleId == GetNumberFromWaveNote(result[p], "TPCycleID")
+	if(sum(matches) < number)
 		return $""
 	endif
 
@@ -178,10 +317,9 @@ End
 /// @param ar ASYNC_ReadOutStruct structure with dfr with input data
 Function TP_ROAnalysis(STRUCT ASYNC_ReadOutStruct &ar)
 
-	variable i, j, bufSize
-	variable posMarker, posAsync, tpBufferSize
-	variable posBaseline, posSSRes, posInstRes
-	variable posElevSS, posElevInst
+	variable i, j, bufSize, headstage, marker
+	variable posMarker, posAsync
+	string lbl
 
 	if(ar.rtErr || ar.abortCode)
 		ASSERT(!ar.rtErr, "TP analysis thread encountered RTE " + ar.rtErrMsg)
@@ -190,23 +328,16 @@ Function TP_ROAnalysis(STRUCT ASYNC_ReadOutStruct &ar)
 
 	DFREF dfr = ar.dfr
 
-	WAVE/SDFR=dfr inData     = outData
-	NVAR/SDFR=dfr now        = now
-	NVAR/SDFR=dfr headstage  = headstage
-	SVAR/SDFR=dfr device     = device
-	NVAR/SDFR=dfr marker     = marker
-	NVAR/SDFR=dfr activeADCs = activeADCs
+	WAVE/SDFR=dfr inData = tpData
+	SVAR/SDFR=dfr device = device
+	headstage = inData[%HEADSTAGE]
+	marker    = inData[%MARKER]
 
 	WAVE asyncBuffer = GetTPResultAsyncBuffer(device)
 
-	bufSize     = DimSize(asyncBuffer, ROWS)
-	posMarker   = FindDimLabel(asyncBuffer, LAYERS, "MARKER")
-	posAsync    = FindDimLabel(asyncBuffer, COLS, "ASYNCDATA")
-	posBaseline = FindDimLabel(asyncBuffer, COLS, "BASELINE")
-	posSSRes    = FindDimLabel(asyncBuffer, COLS, "STEADYSTATERES")
-	posInstRes  = FindDimLabel(asyncBuffer, COLS, "INSTANTRES")
-	posElevSS   = FindDimLabel(asyncBuffer, COLS, "ELEVATED_SS")
-	posElevInst = FindDimLabel(asyncBuffer, COLS, "ELEVATED_INST")
+	bufSize   = DimSize(asyncBuffer, ROWS)
+	posMarker = FindDimLabel(asyncBuffer, LAYERS, "MARKER")
+	posAsync  = FindDimLabel(asyncBuffer, COLS, "ASYNCDATA")
 
 	FindValue/RMD=[][posAsync][posMarker, posMarker]/V=(marker)/T=0 asyncBuffer
 	i = (V_Value >= 0) ? V_Row : bufSize
@@ -218,26 +349,41 @@ Function TP_ROAnalysis(STRUCT ASYNC_ReadOutStruct &ar)
 		asyncBuffer[bufSize][posAsync][posMarker]     = marker
 	endif
 
-	asyncBuffer[i][posBaseline][headstage] = inData[%BASELINE]
-	asyncBuffer[i][posSSRes][headstage]    = inData[%STEADYSTATERES]
-	asyncBuffer[i][posInstRes][headstage]  = inData[%INSTANTRES]
-	asyncBuffer[i][posElevSS][headstage]   = inData[%ELEVATED_SS]
-	asyncBuffer[i][posElevInst][headstage] = inData[%ELEVATED_INST]
-
-	asyncBuffer[i][posAsync][%NOW]           = now
+	WAVE/T dimLabels = ListToTextWave(TP_ANALYSIS_DATA_LABELS, ";")
+	for(lbl : dimLabels)
+		asyncBuffer[i][%$lbl][headstage] = inData[%$lbl]
+	endfor
 	asyncBuffer[i][posAsync][%REC_CHANNELS] += 1
 
 	// got one set of results ready
-	if(asyncBuffer[i][posAsync][%REC_CHANNELS] == activeADCs)
+	if(asyncBuffer[i][posAsync][%REC_CHANNELS] == inData[%NUMBER_OF_TP_CHANNELS])
 
 		WAVE TPResults  = GetTPResults(device)
 		WAVE TPSettings = GetTPSettings(device)
 
-		MultiThread TPResults[%BaselineSteadyState][] = asyncBuffer[i][posBaseline][q]
-		MultiThread TPResults[%ResistanceSteadyState][] = asyncBuffer[i][posSSRes][q]
-		MultiThread TPResults[%ResistanceInst][] = asyncBuffer[i][posInstRes][q]
-		MultiThread TPResults[%ElevatedSteadyState][] = asyncBuffer[i][posElevSS][q]
-		MultiThread TPResults[%ElevatedInst][] = asyncBuffer[i][posElevInst][q]
+		MultiThread TPResults[%BaselineSteadyState][] = asyncBuffer[i][%BASELINE][q]
+		MultiThread TPResults[%ResistanceSteadyState][] = asyncBuffer[i][%STEADYSTATERES][q]
+		MultiThread TPResults[%ResistanceInst][] = asyncBuffer[i][%INSTANTRES][q]
+		MultiThread TPResults[%ElevatedSteadyState][] = asyncBuffer[i][%ELEVATED_SS][q]
+		MultiThread TPResults[%ElevatedInst][] = asyncBuffer[i][%ELEVATED_INST][q]
+		MultiThread TPResults[%NOW][] = asyncBuffer[i][%NOW][q]
+		MultiThread TPResults[%HEADSTAGE][] = asyncBuffer[i][%HEADSTAGE][q]
+		MultiThread TPResults[%MARKER][] = asyncBuffer[i][%MARKER][q]
+		MultiThread TPResults[%NUMBER_OF_TP_CHANNELS][] = asyncBuffer[i][%NUMBER_OF_TP_CHANNELS][q]
+		MultiThread TPResults[%TIMESTAMP][] = asyncBuffer[i][%TIMESTAMP][q]
+		MultiThread TPResults[%TIMESTAMPUTC][] = asyncBuffer[i][%TIMESTAMPUTC][q]
+		MultiThread TPResults[%CLAMPMODE][] = asyncBuffer[i][%CLAMPMODE][q]
+		MultiThread TPResults[%CLAMPAMP][] = asyncBuffer[i][%CLAMPAMP][q]
+		MultiThread TPResults[%BASELINEFRAC][] = asyncBuffer[i][%BASELINEFRAC][q]
+		MultiThread TPResults[%CYCLEID][] = asyncBuffer[i][%CYCLEID][q]
+		MultiThread TPResults[%TPLENGTHPOINTSADC][] = asyncBuffer[i][%TPLENGTHPOINTSADC][q]
+		MultiThread TPResults[%PULSELENGTHPOINTSADC][] = asyncBuffer[i][%PULSELENGTHPOINTSADC][q]
+		MultiThread TPResults[%PULSESTARTPOINTSADC][] = asyncBuffer[i][%PULSESTARTPOINTSADC][q]
+		MultiThread TPResults[%SAMPLINGINTERVALADC][] = asyncBuffer[i][%SAMPLINGINTERVALADC][q]
+		MultiThread TPResults[%TPLENGTHPOINTSDAC][] = asyncBuffer[i][%TPLENGTHPOINTSDAC][q]
+		MultiThread TPResults[%PULSELENGTHPOINTSDAC][] = asyncBuffer[i][%PULSELENGTHPOINTSDAC][q]
+		MultiThread TPResults[%PULSESTARTPOINTSDAC][] = asyncBuffer[i][%PULSESTARTPOINTSDAC][q]
+		MultiThread TPResults[%SAMPLINGINTERVALDAC][] = asyncBuffer[i][%SAMPLINGINTERVALDAC][q]
 
 		// Remove finished results from buffer
 		DeletePoints i, 1, asyncBuffer
@@ -259,7 +405,7 @@ Function TP_ROAnalysis(STRUCT ASYNC_ReadOutStruct &ar)
 
 		TP_AutoAmplitudeAndBaseline(device, TPResults, marker)
 		DQ_ApplyAutoBias(device, TPResults)
-		TP_RecordTP(device, TPResults, now, marker)
+		TP_RecordTP(device, TPResults, inData[%NOW])
 	endif
 End
 
@@ -303,7 +449,7 @@ End
 /// - Active headstages
 static Function/WAVE TP_GetTPWaveForAutoTP(string device, variable marker)
 
-	WAVE/Z/WAVE TPs = TP_GetStoredTPs(device, marker, 2)
+	WAVE/Z/WAVE TPs = TP_GetConsecutiveTPsUptoMarker(device, marker, 2)
 
 	if(!WaveExists(TPs))
 		return $""
@@ -882,22 +1028,33 @@ End
 threadsafe Function/DF TP_TSAnalysis(DFREF dfrInp)
 
 	variable evalRange, refTime, refPoint, tpStartPoint
-	variable sampleInt
+	variable jsonId
 	variable avgBaselineSS, avgTPSS, instVal, evalOffsetPointsCorrected, instPoint
 
 	DFREF dfrOut = NewFreeDataFolder()
 
-	WAVE             data             = dfrInp:param0
-	NVAR/SDFR=dfrInp clampAmp         = param1
-	NVAR/SDFR=dfrInp clampMode        = param2
-	NVAR/SDFR=dfrInp duration         = param3
-	NVAR/SDFR=dfrInp baselineFrac     = param4
-	NVAR/SDFR=dfrInp lengthTPInPoints = param5
-	NVAR/SDFR=dfrInp now              = param6
-	NVAR/SDFR=dfrInp headstage        = param7
-	SVAR/SDFR=dfrInp device           = param8
-	NVAR/SDFR=dfrInp marker           = param9
-	NVAR/SDFR=dfrInp activeADCs       = param10
+	WAVE     data                 = ASYNC_FetchWave(dfrInp, "data")
+	WAVE     ampParamStorageSlice = ASYNC_FetchWave(dfrInp, "ampParamStorageSlice")
+	variable clampAmp             = ASYNC_FetchVariable(dfrInp, "clampAmp")
+	variable clampMode            = ASYNC_FetchVariable(dfrInp, "clampMode")
+	variable pulseLengthPointsADC = ASYNC_FetchVariable(dfrInp, "pulseLengthPointsADC")
+	variable baselineFrac         = ASYNC_FetchVariable(dfrInp, "baselineFrac")
+	variable tpLengthPointsADC    = ASYNC_FetchVariable(dfrInp, "tpLengthPointsADC")
+	variable now                  = ASYNC_FetchVariable(dfrInp, "now")
+	variable headstage            = ASYNC_FetchVariable(dfrInp, "headstage")
+	string   device               = ASYNC_FetchString(dfrInp, "device")
+	variable marker               = ASYNC_FetchVariable(dfrInp, "marker")
+	variable activeADCs           = ASYNC_FetchVariable(dfrInp, "numTPChannels")
+	variable timeStamp            = ASYNC_FetchVariable(dfrInp, "timeStamp")
+	variable timeStampUTC         = ASYNC_FetchVariable(dfrInp, "timeStampUTC")
+	variable cycleId              = ASYNC_FetchVariable(dfrInp, "cycleId")
+	variable pulseStartPointsADC  = ASYNC_FetchVariable(dfrInp, "pulseStartPointsADC")
+	variable samplingIntervalADC  = ASYNC_FetchVariable(dfrInp, "samplingIntervalADC")
+	variable tpLengthPointsDAC    = ASYNC_FetchVariable(dfrInp, "tpLengthPointsDAC")
+	variable pulseLengthPointsDAC = ASYNC_FetchVariable(dfrInp, "pulseLengthPointsDAC")
+	variable pulseStartPointsDAC  = ASYNC_FetchVariable(dfrInp, "pulseStartPointsDAC")
+	variable samplingIntervalDAC  = ASYNC_FetchVariable(dfrInp, "samplingIntervalDAC")
+	variable sendTPMessage        = ASYNC_FetchVariable(dfrInp, "sendTPMessage")
 
 #if defined(TP_ANALYSIS_DEBUGGING)
 	DEBUGPRINT_TS("Marker: ", var = marker)
@@ -908,43 +1065,32 @@ threadsafe Function/DF TP_TSAnalysis(DFREF dfrInp)
 	colors[0, lengthTPInPoints - 1] = 100
 #endif
 
-	// Rows:
-	// 0: base line level
-	// 1: steady state resistance
-	// 2: instantaneous resistance
-	// 3: averaged elevated level (steady state)
-	// 4: averaged elevated level (instantaneous)
-	Make/N=5/D dfrOut:outData/WAVE=outData
-	SetDimLabel ROWS, 0, BASELINE, outData
-	SetDimLabel ROWS, 1, STEADYSTATERES, outData
-	SetDimLabel ROWS, 2, INSTANTRES, outData
-	SetDimLabel ROWS, 3, ELEVATED_SS, outData
-	SetDimLabel ROWS, 4, ELEVATED_INST, outData
+	WAVE tpData = GetTPAnalysisDataWave()
+	MoveWave tpData, dfrOut
 
-	sampleInt    = DimDelta(data, ROWS)
-	tpStartPoint = baseLineFrac * lengthTPInPoints
-	evalRange    = min(5 / sampleInt, min(duration * 0.2, tpStartPoint * 0.2)) * sampleInt
+	tpStartPoint = baseLineFrac * tpLengthPointsADC
+	evalRange    = min(5 / samplingIntervalADC, min(pulseLengthPointsADC * 0.2, tpStartPoint * 0.2)) * samplingIntervalADC
 
 	// correct TP_EVAL_POINT_OFFSET for the non-standard sampling interval
-	evalOffsetPointsCorrected = (TP_EVAL_POINT_OFFSET / sampleInt) * HARDWARE_ITC_MIN_SAMPINT
+	evalOffsetPointsCorrected = (TP_EVAL_POINT_OFFSET / samplingIntervalADC) * HARDWARE_ITC_MIN_SAMPINT
 
-	refTime       = (tpStartPoint - evalOffsetPointsCorrected) * sampleInt
+	refTime       = (tpStartPoint - evalOffsetPointsCorrected) * samplingIntervalADC
 	AvgBaselineSS = mean(data, refTime - evalRange, refTime)
 
 #if defined(TP_ANALYSIS_DEBUGGING)
 	// color BASE
-	variable refpt = refTime / sampleInt
-	colors[refpt - evalRange / sampleInt, refpt] = 50
-	DEBUGPRINT_TS("SampleInt: ", var = sampleInt)
+	variable refpt = refTime / samplingIntervalADC
+	colors[refpt - evalRange / samplingIntervalADC, refpt] = 50
+	DEBUGPRINT_TS("SampleInt: ", var = samplingIntervalADC)
 	DEBUGPRINT_TS("tpStartPoint: ", var = tpStartPoint)
 	DEBUGPRINT_TS("evalRange (ms): ", var = evalRange)
-	DEBUGPRINT_TS("evalRange in points: ", var = evalRange / sampleInt)
+	DEBUGPRINT_TS("evalRange in points: ", var = evalRange / samplingIntervalADC)
 	DEBUGPRINT_TS("Base range begin (ms): ", var = refTime - evalRange)
 	DEBUGPRINT_TS("Base range eng (ms): ", var = refTime)
 	DEBUGPRINT_TS("average BaseLine: ", var = AvgBaselineSS)
 #endif
 
-	refTime = (lengthTPInPoints - tpStartPoint - evalOffsetPointsCorrected) * sampleInt
+	refTime = (tpLengthPointsADC - tpStartPoint - evalOffsetPointsCorrected) * samplingIntervalADC
 	avgTPSS = mean(data, refTime - evalRange, refTime)
 
 #if defined(TP_ANALYSIS_DEBUGGING)
@@ -952,16 +1098,16 @@ threadsafe Function/DF TP_TSAnalysis(DFREF dfrInp)
 	DEBUGPRINT_TS("steady state range eng (ms): ", var = refTime)
 	DEBUGPRINT_TS("steady state average: ", var = avgTPSS)
 	// color steady state
-	refpt                                        = lengthTPInPoints - tpStartPoint - evalOffsetPointsCorrected
-	colors[refpt - evalRange / sampleInt, refpt] = 50
+	refpt                                                  = lengthTPInPoints - tpStartPoint - evalOffsetPointsCorrected
+	colors[refpt - evalRange / samplingIntervalADC, refpt] = 50
 	// color instantaneous
-	refpt                                   = tpStartPoint + evalOffsetPointsCorrected
-	colors[refpt, refpt + 0.25 / sampleInt] = 50
+	refpt                                             = tpStartPoint + evalOffsetPointsCorrected
+	colors[refpt, refpt + 0.25 / samplingIntervalADC] = 50
 #endif
 
 	refPoint = tpStartPoint + evalOffsetPointsCorrected
 	// as data is always too small for threaded execution, the values of V_minRowLoc/V_maxRowLoc are reproducible
-	WaveStats/P/Q/M=1/R=[refPoint, refPoint + 0.25 / sampleInt] data
+	WaveStats/P/Q/M=1/R=[refPoint, refPoint + 0.25 / samplingIntervalADC] data
 	instPoint = (clampAmp < 0) ? V_minRowLoc : V_maxRowLoc
 	if(instPoint == -1)
 		// all wave data is NaN
@@ -977,27 +1123,46 @@ threadsafe Function/DF TP_TSAnalysis(DFREF dfrInp)
 #endif
 
 	if(clampMode == I_CLAMP_MODE)
-		outData[1] = (avgTPSS - avgBaselineSS) * MILLI_TO_ONE / (clampAmp * PICO_TO_ONE) * ONE_TO_MEGA
-		outData[2] = (instVal - avgBaselineSS) * MILLI_TO_ONE / (clampAmp * PICO_TO_ONE) * ONE_TO_MEGA
+		tpData[%STEADYSTATERES] = (avgTPSS - avgBaselineSS) * MILLI_TO_ONE / (clampAmp * PICO_TO_ONE) * ONE_TO_MEGA
+		tpData[%INSTANTRES]     = (instVal - avgBaselineSS) * MILLI_TO_ONE / (clampAmp * PICO_TO_ONE) * ONE_TO_MEGA
 	else
-		outData[1] = (clampAmp * MILLI_TO_ONE) / ((avgTPSS - avgBaselineSS) * PICO_TO_ONE) * ONE_TO_MEGA
-		outData[2] = (clampAmp * MILLI_TO_ONE) / ((instVal - avgBaselineSS) * PICO_TO_ONE) * ONE_TO_MEGA
+		tpData[%STEADYSTATERES] = (clampAmp * MILLI_TO_ONE) / ((avgTPSS - avgBaselineSS) * PICO_TO_ONE) * ONE_TO_MEGA
+		tpData[%INSTANTRES]     = (clampAmp * MILLI_TO_ONE) / ((instVal - avgBaselineSS) * PICO_TO_ONE) * ONE_TO_MEGA
 	endif
-	outData[0] = avgBaselineSS
-	outData[3] = avgTPSS
-	outData[4] = instVal
+	tpData[%BASELINE]      = avgBaselineSS
+	tpData[%ELEVATED_SS]   = avgTPSS
+	tpData[%ELEVATED_INST] = instVal
 
 #if defined(TP_ANALYSIS_DEBUGGING)
-	DEBUGPRINT_TS("instantaneous resistance: ", var = outData[2])
-	DEBUGPRINT_TS("steady state resistance: ", var = outData[1])
+	DEBUGPRINT_TS("instantaneous resistance: ", var = tpData[%INSTANTRES])
+	DEBUGPRINT_TS("steady state resistance: ", var = tpData[%STEADYSTATERES])
 #endif
 
 	// additional data copy
-	variable/G dfrOut:now        = now
-	variable/G dfrOut:headstage  = headstage
-	string/G   dfrOut:device     = device
-	variable/G dfrOut:marker     = marker
-	variable/G dfrOut:activeADCs = activeADCs
+	string/G dfrOut:device = device
+	tpData[%NOW]                   = now
+	tpData[%HEADSTAGE]             = headstage
+	tpData[%MARKER]                = marker
+	tpData[%NUMBER_OF_TP_CHANNELS] = activeADCs
+	tpData[%TIMESTAMP]             = timestamp
+	tpData[%TIMESTAMPUTC]          = timestampUTC
+	tpData[%CLAMPMODE]             = clampMode
+	tpData[%CLAMPAMP]              = clampAmp
+	tpData[%BASELINEFRAC]          = baselineFrac
+	tpData[%CYCLEID]               = cycleId
+	tpData[%TPLENGTHPOINTSADC]     = tpLengthPointsADC
+	tpData[%PULSELENGTHPOINTSADC]  = pulseLengthPointsADC
+	tpData[%PULSESTARTPOINTSADC]   = pulseStartPointsADC
+	tpData[%SAMPLINGINTERVALADC]   = samplingIntervalADC
+	tpData[%TPLENGTHPOINTSDAC]     = tpLengthPointsDAC
+	tpData[%PULSELENGTHPOINTSDAC]  = pulseLengthPointsDAC
+	tpData[%PULSESTARTPOINTSDAC]   = pulseStartPointsDAC
+	tpData[%SAMPLINGINTERVALDAC]   = samplingIntervalDAC
+
+	if(sendTPMessage)
+		Make/FREE/WAVE additionalData = {data}
+		PUB_TPResult(device, tpData, ampParamStorageSlice, additionalData)
+	endif
 
 	return dfrOut
 End
@@ -1030,9 +1195,9 @@ End
 /// @brief Records values from TPResults into TPStorage at defined intervals.
 ///
 /// Used for analysis of TP over time.
-static Function TP_RecordTP(string device, WAVE TPResults, variable now, variable tpMarker)
+static Function TP_RecordTP(string device, WAVE TPResults, variable now)
 
-	variable delta, i, ret, lastPressureCtrl, timestamp, cycleID
+	variable delta, i, ret, lastPressureCtrl
 	WAVE     TPStorage     = GetTPStorage(device)
 	WAVE     hsProp        = GetHSProperties(device)
 	variable count         = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
@@ -1072,14 +1237,9 @@ static Function TP_RecordTP(string device, WAVE TPResults, variable now, variabl
 		                                     : TPStorage[count][q][%HoldingCmd_IC]
 	endif
 
-	TPStorage[count][][%TimeInSeconds] = now
-
-	// store the current time in a variable first
-	// so that all columns have the same timestamp
-	timestamp                                       = DateTime
-	TPStorage[count][][%TimeStamp]                  = timestamp
-	timestamp                                       = DateTimeInUTC()
-	TPStorage[count][][%TimeStampSinceIgorEpochUTC] = timestamp
+	TPStorage[count][][%TimeInSeconds]              = TPResults[%NOW][q]
+	TPStorage[count][][%TimeStamp]                  = TPResults[%TIMESTAMP][q]
+	TPStorage[count][][%TimeStampSinceIgorEpochUTC] = TPResults[%TIMESTAMPUTC][q]
 
 	TPStorage[count][][%PeakResistance]        = min(TPResults[%ResistanceInst][q], TP_MAX_VALID_RESISTANCE)
 	TPStorage[count][][%SteadyStateResistance] = min(TPResults[%ResistanceSteadyState][q], TP_MAX_VALID_RESISTANCE)
@@ -1090,21 +1250,29 @@ static Function TP_RecordTP(string device, WAVE TPResults, variable now, variabl
 	TPStorage[count][][%ADC]       = hsProp[q][%ADC]
 	TPStorage[count][][%Headstage] = hsProp[q][%Enabled] ? q : NaN
 	TPStorage[count][][%ClampMode] = hsProp[q][%ClampMode]
+	TPStorage[count][][%CLAMPAMP]  = TPResults[%CLAMPAMP][q]
 
 	TPStorage[count][][%Baseline_VC] = (hsProp[q][%ClampMode] == V_CLAMP_MODE) ? TPResults[%BaselineSteadyState][q] : NaN
 	TPStorage[count][][%Baseline_IC] = (hsProp[q][%ClampMode] == I_CLAMP_MODE) ? TPResults[%BaselineSteadyState][q] : NaN
 
 	TPStorage[count][][%DeltaTimeInSeconds] = (count > 0) ? (now - TPStorage[0][0][%TimeInSeconds]) : 0
-	TPStorage[count][][%TPMarker]           = tpMarker
+	TPStorage[count][][%TPMarker]           = TPResults[%MARKER][q]
 
-	cycleID                        = ROVAR(GetTestpulseCycleID(device))
-	TPStorage[count][][%TPCycleID] = cycleID
+	TPStorage[count][][%TPCycleID] = TPResults[%CYCLEID][q]
 
 	TPStorage[count][][%AutoTPAmplitude]             = TPResults[%AutoTPAmplitude][q]
 	TPStorage[count][][%AutoTPBaseline]              = TPResults[%AutoTPBaseline][q]
 	TPStorage[count][][%AutoTPBaselineRangeExceeded] = TPResults[%AutoTPBaselineRangeExceeded][q]
 	TPStorage[count][][%AutoTPBaselineFitResult]     = TPResults[%AutoTPBaselineFitResult][q]
 	TPStorage[count][][%AutoTPDeltaV]                = TPResults[%AutoTPDeltaV][q]
+	TPStorage[count][][%TPLENGTHPOINTSADC]           = TPResults[%TPLENGTHPOINTSADC][q]
+	TPStorage[count][][%PULSELENGTHPOINTSADC]        = TPResults[%PULSELENGTHPOINTSADC][q]
+	TPStorage[count][][%PULSESTARTPOINTSADC]         = TPResults[%PULSESTARTPOINTSADC][q]
+	TPStorage[count][][%SAMPLINGINTERVALADC]         = TPResults[%SAMPLINGINTERVALADC][q]
+	TPStorage[count][][%TPLENGTHPOINTSDAC]           = TPResults[%TPLENGTHPOINTSDAC][q]
+	TPStorage[count][][%PULSELENGTHPOINTSDAC]        = TPResults[%PULSELENGTHPOINTSDAC][q]
+	TPStorage[count][][%PULSESTARTPOINTSDAC]         = TPResults[%PULSESTARTPOINTSDAC][q]
+	TPStorage[count][][%SAMPLINGINTERVALDAC]         = TPResults[%SAMPLINGINTERVALDAC][q]
 
 	WAVE TPSettings = GetTPSettings(device)
 	TPStorage[count][][%AutoTPCycleID] = hsProp[q][%Enabled] ? TPSettings[%autoTPCycleID][q] : NaN
@@ -1497,18 +1665,35 @@ Function/DF TP_PrepareAnalysisDF(string device, STRUCT TPAnalysisInput &tpInput)
 
 	wlName = GetWorkLoadName(WORKLOADCLASS_TP, device)
 
+	WAVE ampStorage = GetAmplifierParamStorageWave(device)
+	Duplicate/FREE/RMD=[][][tpInput.headstage] ampStorage, ampParamStorageSlice
+	ASSERT(DimSize(ampParamStorageSlice, COLS) == 1, "Expected only one column")
+	ASSERT(DimSize(ampParamStorageSlice, LAYERS) == 1, "Expected only one layer")
+	Redimension/N=(-1, 0, 0)/E=1 ampParamStorageSlice
+
 	DFREF threadDF = ASYNC_PrepareDF("TP_TSAnalysis", "TP_ROAnalysis", wlName, inOrder = 0)
-	ASYNC_AddParam(threadDF, w = tpInput.data)
-	ASYNC_AddParam(threadDF, var = tpInput.clampAmp)
-	ASYNC_AddParam(threadDF, var = tpInput.clampMode)
-	ASYNC_AddParam(threadDF, var = tpInput.duration)
-	ASYNC_AddParam(threadDF, var = tpInput.baselineFrac)
-	ASYNC_AddParam(threadDF, var = tpInput.tpLengthPoints)
-	ASYNC_AddParam(threadDF, var = tpInput.readTimeStamp)
-	ASYNC_AddParam(threadDF, var = tpInput.headstage)
-	ASYNC_AddParam(threadDF, str = tpInput.device)
-	ASYNC_AddParam(threadDF, var = tpInput.measurementMarker)
-	ASYNC_AddParam(threadDF, var = tpInput.activeADCs)
+	ASYNC_AddParam(threadDF, w = tpInput.data, name = "data")
+	ASYNC_AddParam(threadDF, w = ampParamStorageSlice, name = "ampParamStorageSlice")
+	ASYNC_AddParam(threadDF, var = tpInput.clampAmp, name = "clampAmp")
+	ASYNC_AddParam(threadDF, var = tpInput.clampMode, name = "clampMode")
+	ASYNC_AddParam(threadDF, var = tpInput.pulseLengthPointsADC, name = "pulseLengthPointsADC")
+	ASYNC_AddParam(threadDF, var = tpInput.baselineFrac, name = "baselineFrac")
+	ASYNC_AddParam(threadDF, var = tpInput.tpLengthPointsADC, name = "tpLengthPointsADC")
+	ASYNC_AddParam(threadDF, var = tpInput.readTimeStamp, name = "now")
+	ASYNC_AddParam(threadDF, var = tpInput.headstage, name = "headstage")
+	ASYNC_AddParam(threadDF, str = tpInput.device, name = "device")
+	ASYNC_AddParam(threadDF, var = tpInput.measurementMarker, name = "marker")
+	ASYNC_AddParam(threadDF, var = tpInput.activeADCs, name = "numTPChannels")
+	ASYNC_AddParam(threadDF, var = tpInput.timeStamp, name = "timeStamp")
+	ASYNC_AddParam(threadDF, var = tpInput.timeStampUTC, name = "timeStampUTC")
+	ASYNC_AddParam(threadDF, var = tpInput.cycleId, name = "cycleId")
+	ASYNC_AddParam(threadDF, var = tpInput.pulseStartPointsADC, name = "pulseStartPointsADC")
+	ASYNC_AddParam(threadDF, var = tpInput.samplingIntervalADC, name = "samplingIntervalADC")
+	ASYNC_AddParam(threadDF, var = tpInput.tpLengthPointsDAC, name = "tpLengthPointsDAC")
+	ASYNC_AddParam(threadDF, var = tpInput.pulseLengthPointsDAC, name = "pulseLengthPointsDAC")
+	ASYNC_AddParam(threadDF, var = tpInput.pulseStartPointsDAC, name = "pulseStartPointsDAC")
+	ASYNC_AddParam(threadDF, var = tpInput.samplingIntervalDAC, name = "samplingIntervalDAC")
+	ASYNC_AddParam(threadDF, var = tpInput.sendTPMessage, name = "sendTPMessage")
 
 	return threadDF
 End
