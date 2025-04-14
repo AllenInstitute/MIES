@@ -1594,7 +1594,7 @@ static Function InsertRowForPostProcessingTextual([variable sweepNo])
 	WAVE/Z/T settings = GetLastSetting(textualValues, sweepNo, POSTPROCESSED_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_STR(settings[INDEP_HEADSTAGE], "1")
 
-	FindValue/TEXT=keyItem/TXOP=4 textualValues
+	FindValue/TEXT=keyItem/TXOP=(TXOP_WHOLE_ELEM) textualValues
 	CHECK_NEQ_VAR(V_value, -1)
 	row = V_row
 	col = FindDimlabel(textualValues, COLS, POSTPROCESSED_ENTRY_KEY)
