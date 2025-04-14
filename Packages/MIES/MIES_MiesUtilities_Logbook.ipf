@@ -1707,6 +1707,50 @@ threadsafe Function ReverseEntrySourceTypeMapper(variable mapped)
 	return ((mapped == 0) ? NaN : --mapped)
 End
 
+/// @brief Tests if the LBN value wave supports the EntrySourceType column
+///        Only used in UpgradeLabNotebook
+///        returns 0 if not, 1 is yes
+Function HasLBNEntrySourceTypeCapability(WAVE values)
+
+	variable entryCol
+
+	entryCol = FindDimLabel(values, COLS, "EntrySourceType")
+	if(entryCol == -2)
+		return 0
+	endif
+
+	if(!DimSize(values, ROWS))
+		return 1
+	endif
+
+	if(IsNumericWave(values))
+		WaveStats/Q/M=1/RMD=[][entryCol][] values
+		return !IsNaN(V_max)
+	endif
+
+	Duplicate/FREE/RMD=[][entryCol][] values, entrySourceTypeValues
+	return HasOneValidEntry(entrySourceTypeValues)
+End
+
+/// @brief Returns a labnotebook capability
+///
+/// @param values        LBN values wave
+/// @param capabilityKey Capabilities key, one of @ref LabnotebookCapabilityKeys
+///
+/// @returns capability value
+threadsafe Function GetLBNCapability(WAVE values, string capabilityKey)
+
+	variable cap
+
+	WAVE/Z keys = GetLogbookKeysFromValues(values)
+	ASSERT_TS(WaveExists(keys), "Can not resolve LBN keys wave")
+	cap = GetNumberFromWaveNote(keys, capabilityKey)
+	// Triggers if LBN was not correctly upgraded in UpgradeLabNotebook
+	ASSERT_TS(!IsNaN(cap), "Requested LBN capability not found: " + capabilityKey)
+
+	return cap
+End
+
 /// @brief Return labnotebook keys for patch seq analysis functions
 ///
 /// @param type                                One of @ref SpecialAnalysisFunctionTypes
