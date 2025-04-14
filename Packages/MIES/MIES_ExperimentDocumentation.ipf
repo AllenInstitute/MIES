@@ -143,7 +143,7 @@ static Function ED_SetLabnotebookRowToPostProcessed(WAVE values, variable row)
 	endif
 End
 
-static Function ED_InitNewRow(WAVE values, variable rowIndex, variable sweepNo, variable entrySourceType, variable acqState)
+static Function ED_InitNewRow(WAVE values, variable rowIndex, variable sweepNo, variable entrySourceType, variable acqState, variable insertAsPostProc)
 
 	variable timestamp
 	string   timestampStr
@@ -151,7 +151,9 @@ static Function ED_InitNewRow(WAVE values, variable rowIndex, variable sweepNo, 
 	if(IsTextWave(values))
 		WAVE/T valuesT = values
 		valuesT[rowIndex][0][] = num2istr(sweepNo)
-		valuesT[rowIndex][3][] = num2istr(entrySourceType)
+		if(GetLBNCapability(values, LBN_CAP_SUPPORTS_ENTRYSOURCETYPE))
+			valuesT[rowIndex][3][] = num2istr(entrySourceType)
+		endif
 
 		valuesT[rowIndex][4][] = num2istr(acqState)
 
@@ -163,7 +165,9 @@ static Function ED_InitNewRow(WAVE values, variable rowIndex, variable sweepNo, 
 		valuesT[rowIndex][2][] = timestampStr
 	else
 		values[rowIndex][0][] = sweepNo
-		values[rowIndex][3][] = entrySourceType
+		if(GetLBNCapability(values, LBN_CAP_SUPPORTS_ENTRYSOURCETYPE))
+			values[rowIndex][3][] = entrySourceType
+		endif
 
 		values[rowIndex][4][] = acqState
 
@@ -241,7 +245,7 @@ static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incoming
 	ASSERT(WaveExists(indizes), "Missing indizes")
 	rowIndex = insertAsPostProc ? insertIndex : addIndex
 
-	ED_InitNewRow(values, rowIndex, sweepNo, entrySourceType, state)
+	ED_InitNewRow(values, rowIndex, sweepNo, entrySourceType, state, insertAsPostProc)
 
 	WAVE valuesDat = ExtractLogbookSliceTimeStamp(values)
 	EnsureLargeEnoughWave(valuesDat, indexShouldExist = rowIndex, dimension = ROWS)
@@ -364,7 +368,7 @@ static Function ED_createWaveNotes(WAVE incomingNumericalValues, WAVE/T incoming
 	ASSERT(WaveExists(indizes), "Missing indizes")
 	rowIndex = insertAsPostProc ? insertIndex : addIndex
 
-	ED_InitNewRow(values, rowIndex, sweepNo, entrySourceType, state)
+	ED_InitNewRow(values, rowIndex, sweepNo, entrySourceType, state, insertAsPostProc)
 
 	WAVE valuesDat = ExtractLogbookSliceTimeStamp(values)
 	EnsureLargeEnoughWave(valuesDat, indexShouldExist = rowIndex, dimension = ROWS, initialValue = NaN)

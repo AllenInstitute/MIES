@@ -39,8 +39,8 @@ Constant SWEEP_EPOCH_VERSION = 9
 /// - New/Changed layers of entries
 ///
 ///@{
-Constant LABNOTEBOOK_VERSION = 86
-Constant RESULTS_VERSION     = 4
+Constant LABNOTEBOOK_VERSION = 87
+Constant RESULTS_VERSION     = 5
 ///@}
 
 /// @name Analysis function versions
@@ -2688,9 +2688,7 @@ StrConstant BSP_USER_DATA_SF_CONTENT_HASH = "SweepFormulaContentHash"
 
 Constant HM_HASHMAP_WAVE_VERSION = 1
 
-/// @name Characters allowed in the SF PrepareFit operation to hold a coefficient
 ///
-/// @anchor SFPrepareFitHoldStringCharacters
 ///@{
 StrConstant SF_PREPAREFIT_HOLDCHAR_HOLD = "X"
 StrConstant SF_PREPAREFIT_HOLDCHAR_FREE = "O"
@@ -2730,7 +2728,6 @@ Constant SF_PREPAREFIT_CONFIDENCELEVEL_DEFAULT = 85
 /// @anchor SFPrepareFitErrorbarTypes
 ///@{
 StrConstant SF_PREPAREFIT_ERRORBARTYPE_STANDARD   = "standard"
-StrConstant SF_PREPAREFIT_ERRORBARTYPE_CONFIDENCE = "conf"
 StrConstant SF_PREPAREFIT_ERRORBARTYPE_PREDICTION = "pred"
 ///@}
 
