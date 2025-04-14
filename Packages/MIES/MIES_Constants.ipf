@@ -39,8 +39,8 @@ Constant SWEEP_EPOCH_VERSION = 9
 /// - New/Changed layers of entries
 ///
 ///@{
-Constant LABNOTEBOOK_VERSION = 82
-Constant RESULTS_VERSION     = 3
+Constant LABNOTEBOOK_VERSION = 83
+Constant RESULTS_VERSION     = 4
 ///@}
 
 /// @name Analysis function versions
@@ -2536,4 +2536,10 @@ Constant CAP_INVALID_TYPE       = 5
 Constant CAP_INVALID_WAVE       = 6
 Constant CAP_FAILED_CHECK_FUNC  = 7
 Constant CAP_ABORTED_CHECK_FUNC = 8
+///@}
+
+/// Labnotebook capabilities are stored in the key wave note
+/// @anchor LabnotebookCapabilityKeys
+///@{
+StrConstant LBN_CAP_SUPPORTS_ENTRYSOURCETYPE = "SupportsEntrySourceType" // since 81
 ///@}
