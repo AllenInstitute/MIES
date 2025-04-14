@@ -123,11 +123,17 @@ End
 
 static Function TestGetAllFilesRecursivelyFromPath()
 
-	string folder, symbPath, list
+	string folder, symbPath, list, cmd
 
 	folder = GetFolder(FunctionPath("")) + "testFolder:"
 
 	symbPath = GetUniqueSymbolicPath()
+	NewPath/Q/O/C/Z $symbPath, folder
+	CHECK(!V_Flag)
+
+	// start with a fresh folder
+	DeleteFolder/P=$symbPath/Z
+
 	NewPath/Q/O/C/Z $symbPath, folder
 	CHECK(!V_Flag)
 
@@ -147,6 +153,34 @@ static Function TestGetAllFilesRecursivelyFromPath()
 	WAVE/T result = ListToTextWave(list, FILE_LIST_SEP)
 	result[] = RemovePrefix(result[p], start = folder)
 	CHECK_EQUAL_TEXTWAVES(result, {"file.txt", "b:file1.txt", "c:file2.txt"})
+
+	list = GetAllFilesRecursivelyFromPath(symbPath)
+	WAVE/T result = ListToTextWave(list, FILE_LIST_SEP)
+	result[] = RemovePrefix(result[p], start = folder)
+	// alias.txt.lnk points to file.txt
+	CHECK_EQUAL_TEXTWAVES(result, {"file.txt", "file.txt", "b:file1.txt", "c:file2.txt"})
+
+	// shortcut to non-existing file (created above)
+	CHECK(!V_flag)
+	DeleteFile/P=$symbPath "file.txt"
+	CHECK(!V_flag)
+
+	list = GetAllFilesRecursivelyFromPath(symbPath)
+	WAVE/T result = ListToTextWave(list, FILE_LIST_SEP)
+	result[] = RemovePrefix(result[p], start = folder)
+	// file.txt is not included as alias.txt.lnk is invalid
+	CHECK_EQUAL_TEXTWAVES(result, {"b:file1.txt", "c:file2.txt"})
+
+	// shortcut to non-existing folder
+	CreateAliasShortcut/Z/P=$symbPath/D "b" as "someFolder"
+	CHECK(!V_flag)
+	DeleteFolder/P=$symbPath/Z "b"
+	CHECK(!V_flag)
+
+	list = GetAllFilesRecursivelyFromPath(symbPath)
+	WAVE/T result = ListToTextWave(list, FILE_LIST_SEP)
+	result[] = RemovePrefix(result[p], start = folder)
+	CHECK_EQUAL_TEXTWAVES(result, {"c:file2.txt"})
 
 	// no matches
 	list = GetAllFilesRecursivelyFromPath(symbPath, extension = ".abc")

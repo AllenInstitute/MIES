@@ -237,7 +237,11 @@ Function/S GetAllFilesRecursivelyFromPath(string pathName, [string extension])
 	string files, allFilesList
 	string allFiles         = ""
 	string foldersFromAlias = ""
-	variable err
+	variable err, isWindows
+
+#ifdef WINDOWS
+	isWindows = 1
+#endif // WINDOWS
 
 	PathInfo $pathName
 	ASSERT(V_flag, "Given symbolic path does not exist")
@@ -248,27 +252,47 @@ Function/S GetAllFilesRecursivelyFromPath(string pathName, [string extension])
 
 	AssertOnAndClearRTError()
 	allFilesList = IndexedFile($pathName, -1, extension, "????", FILE_LIST_SEP); err = GetRTError(1)
-	WAVE/T allFilesInDir = ListToTextWave(allFilesList, FILE_LIST_SEP)
-	for(fileName : allFilesInDir)
 
-		fileOrPath = ResolveAlias(fileName, pathName = pathName)
+	if(isWindows && cmpstr(extension, "????") && cmpstr(extension, ".lnk"))
+		allFiles = AddPrefixToEachListItem(S_path, allFilesList, sep = FILE_LIST_SEP)
+	else
+		// try to resolve aliases/shortcuts when we can have them
+		WAVE/T allFilesInDir = ListToTextWave(allFilesList, FILE_LIST_SEP)
+		for(fileName : allFilesInDir)
 
-		if(isEmpty(fileOrPath))
-			// invalid shortcut, try next file
-			continue
-		endif
+			GetFileFolderInfo/P=$pathName/Q/Z fileName
 
-		GetFileFolderInfo/P=$pathName/Q/Z fileOrPath
-		ASSERT(!V_Flag, "Error in GetFileFolderInfo")
+			if(V_Flag != 0)
+				// error querying file
+				continue
+			endif
 
-		if(V_isFile)
-			allFiles = AddListItem(S_path, allFiles, FILE_LIST_SEP, Inf)
-		elseif(V_isFolder)
-			foldersFromAlias = AddListItem(S_path, foldersFromAlias, FILE_LIST_SEP, Inf)
-		else
-			ASSERT(0, "Unexpected file type")
-		endif
-	endfor
+			if(V_IsAliasShortcut)
+				fileOrPath = ResolveAlias(fileName, pathName = pathName)
+
+				if(IsEmpty(fileOrPath))
+					// dead alias
+					continue
+				endif
+
+				// redo the check
+				GetFileFolderInfo/P=$pathName/Q/Z fileOrPath
+
+				if(V_Flag != 0)
+					// error querying file/folder pointed to by alias
+					continue
+				endif
+			endif
+
+			if(V_isFile)
+				allFiles = AddListItem(S_path, allFiles, FILE_LIST_SEP, Inf)
+			elseif(V_isFolder)
+				foldersFromAlias = AddListItem(S_path, foldersFromAlias, FILE_LIST_SEP, Inf)
+			else
+				ASSERT(0, "Unexpected file type")
+			endif
+		endfor
+	endif
 
 	AssertOnAndClearRTError()
 	folders = IndexedDir($pathName, -1, 1, FILE_LIST_SEP); err = GetRTError(1)
