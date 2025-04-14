@@ -39,8 +39,8 @@ Constant SWEEP_EPOCH_VERSION = 9
 /// - New/Changed layers of entries
 ///
 ///@{
-Constant LABNOTEBOOK_VERSION = 83
-Constant RESULTS_VERSION     = 3
+Constant LABNOTEBOOK_VERSION = 84
+Constant RESULTS_VERSION     = 4
 ///@}
 
 /// @name Analysis function versions
@@ -2628,3 +2628,9 @@ Constant TRACECOLORMAX = 21
 ///@}
 
 StrConstant BSP_USER_DATA_SF_CONTENT_HASH = "SweepFormulaContentHash"
+
+/// Labnotebook capabilities are stored in the key wave note
+/// @anchor LabnotebookCapabilityKeys
+///@{
+StrConstant LBN_CAP_SUPPORTS_ENTRYSOURCETYPE = "SupportsEntrySourceType"
+///@}
