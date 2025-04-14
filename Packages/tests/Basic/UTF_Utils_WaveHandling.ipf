@@ -1982,3 +1982,108 @@ Function GWD_Works()
 End
 
 /// @}
+
+/// WaveTypeToStringXXX
+/// @{
+
+Function WTSZero()
+
+	string result
+
+	Make/FREE/T text
+	Make/FREE/DF dfr
+	Make/FREE/WAVE wvRef
+
+	result = WaveTypeToStringSelectorZero(WaveType(text, 0))
+	CHECK_EQUAL_STR(result, "non-numeric (text, wave ref, dfref)")
+
+	result = WaveTypeToStringSelectorZero(WaveType(dfr, 0))
+	CHECK_EQUAL_STR(result, "non-numeric (text, wave ref, dfref)")
+
+	result = WaveTypeToStringSelectorZero(WaveType(wvRef, 0))
+	CHECK_EQUAL_STR(result, "non-numeric (text, wave ref, dfref)")
+
+	Make/FREE/R SPFloat
+	result = WaveTypeToStringSelectorZero(WaveType(SPFloat, 0))
+	CHECK_EQUAL_STR(result, "32-bit float")
+
+	Make/FREE/D FPFloat
+	result = WaveTypeToStringSelectorZero(WaveType(FPFloat, 0))
+	CHECK_EQUAL_STR(result, "64-bit float")
+
+	Make/FREE/B X_8bitInt
+	result = WaveTypeToStringSelectorZero(WaveType(X_8bitInt, 0))
+	CHECK_EQUAL_STR(result, "8-bit int")
+
+	Make/FREE/B/U X_8bitUInt
+	result = WaveTypeToStringSelectorZero(WaveType(X_8bitUInt, 0))
+	CHECK_EQUAL_STR(result, "8-bit int unsigned")
+
+	Make/FREE/W X_16bitInt
+	result = WaveTypeToStringSelectorZero(WaveType(X_16bitInt, 0))
+	CHECK_EQUAL_STR(result, "16-bit int")
+
+	Make/FREE/W/U X_16bitUInt
+	result = WaveTypeToStringSelectorZero(WaveType(X_16bitUInt, 0))
+	CHECK_EQUAL_STR(result, "16-bit int unsigned")
+
+	Make/FREE/I X_32bitInt
+	result = WaveTypeToStringSelectorZero(WaveType(X_32bitInt, 0))
+	CHECK_EQUAL_STR(result, "32-bit int")
+
+	Make/FREE/I/U X_32bitUInt
+	result = WaveTypeToStringSelectorZero(WaveType(X_32bitUInt, 0))
+	CHECK_EQUAL_STR(result, "32-bit int unsigned")
+
+	Make/FREE/L X_64bitInt
+	result = WaveTypeToStringSelectorZero(WaveType(X_64bitInt, 0))
+	CHECK_EQUAL_STR(result, "64-bit int")
+
+	Make/FREE/L/U X_64bitUInt
+	result = WaveTypeToStringSelectorZero(WaveType(X_64bitUInt, 0))
+	CHECK_EQUAL_STR(result, "64-bit int unsigned")
+
+	Make/FREE/R/C SPFloatComplex
+	result = WaveTypeToStringSelectorZero(WaveType(SPFloatComplex, 0))
+	CHECK_EQUAL_STR(result, "complex 32-bit float")
+
+	// support partial type information
+	result = WaveTypeToStringSelectorZero(IGOR_TYPE_COMPLEX)
+	CHECK_EQUAL_STR(result, "complex")
+
+	result = WaveTypeToStringSelectorZero(IGOR_TYPE_UNSIGNED)
+	CHECK_EQUAL_STR(result, "unsigned")
+End
+
+Function WTSOne()
+
+	string result
+
+	Make/FREE/T text
+	Make/FREE/DF dfr
+	Make/FREE/WAVE wvRef
+
+	result = WaveTypeToStringSelectorOne(WaveType($"", 1))
+	CHECK_EQUAL_STR(result, "null")
+
+	Make/FREE/R floatWave
+	result = WaveTypeToStringSelectorOne(WaveType(floatWave, 1))
+	CHECK_EQUAL_STR(result, "numeric")
+
+	result = WaveTypeToStringSelectorOne(WaveType(text, 1))
+	CHECK_EQUAL_STR(result, "text")
+
+	result = WaveTypeToStringSelectorOne(WaveType(dfr, 1))
+	CHECK_EQUAL_STR(result, "datafolder reference")
+
+	result = WaveTypeToStringSelectorOne(WaveType(wvRef, 1))
+	CHECK_EQUAL_STR(result, "wave reference")
+
+	try
+		WaveTypeToStringSelectorOne(1 << 32)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+End
+/// @}
