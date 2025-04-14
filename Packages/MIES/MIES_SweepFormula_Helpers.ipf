@@ -303,7 +303,7 @@ Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string gra
 				Make/FREE/N=(DimSize(data, ROWS)) types = WaveType(dataAsRef[p])
 			endif
 			sprintf msg, "Argument #%d of operation %s: Expected minor wave type %d", argNum, opShort, expectedMinorType
-			if(expectedMinorType)
+			if(expectedMinorType > 0)
 				types[] = !!(types[p] & expectedMinorType)
 				SFH_ASSERT(sum(types) == DimSize(types, ROWS), msg)
 			else
