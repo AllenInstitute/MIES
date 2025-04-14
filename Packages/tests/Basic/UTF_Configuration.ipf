@@ -28,8 +28,9 @@ End
 static Function TEST_CASE_END_OVERRIDE(string testCase)
 
 	KillWindow/Z MainPanel
+	KillVariables/Z priorityFlag
 
-	CheckForBugMessages()
+	TestCaseEndCommon(testCase)
 End
 
 Window MainPanel() : Panel
@@ -204,6 +205,8 @@ static Function TCONF_Load()
 	CONF_SaveWindow(PrependExperimentFolder_IGNORE(fName1))
 
 	TCONF_CompareTextFiles(fName1, REF_CONFIG_FILE)
+
+	KillVariables setvarTest
 End
 
 /// @brief Save Window with all relevant mask bits - Change Window - Restore it, compare to initial state
