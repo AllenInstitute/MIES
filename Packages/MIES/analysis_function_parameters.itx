@@ -1,5 +1,5 @@
 IGOR
-WAVES/T/N=(67,5)	analysis_function_parameters
+WAVES/T/N=(68,5)	analysis_function_parameters
 BEGIN
 	"Name"	"Type"	"Optionality"	"Used by"	"Help"
 	"AbsFrequencyMinDistance"	"variable"	"optional"	"DA"	"Minimum absolute frequency distance for DAScale estimation. Only for \"AdaptiveSupra\"."
@@ -45,6 +45,7 @@ BEGIN
 	"NextStimSetName"	"string"	"optional"	"AR, PB, SE, VM"	"Next stimulus set which should be set in case of success"
 	"NumberOfChirpCycles"	"variable"	"optional"	"CR"	"Number of acquired chirp cycles before the bounds evaluation starts. Defaults to 1."
 	"NumberOfFailedSweeps"	"variable"	"required"	"AR, CR, PB, SE, VM"	"Number of failed sweeps which marks the set as failed."
+	"NumberOfPassingSweeps"	"variable"	"optional"	"RA"	"Number of ramp sweeps that must pass for the set to pass.\rDefaults to 3."
 	"NumberOfSpikes"	"variable"	"required"	"RA"	"Number of spikes required to be found after the pulse onset in order to label the cell as having \"spiked\"."
 	"NumberOfTestpulses"	"variable"	"required"	"AR, PB"	"Expected number of testpulses in the stimset"
 	"NumInvalidSlopeSweepsAllowed"	"variable"	"optional"	"DA"	"Number of allowed sweeps with invalid f-I fit slope. Only for \"AdaptiveSupra\"."

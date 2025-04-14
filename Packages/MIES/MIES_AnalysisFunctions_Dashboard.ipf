@@ -80,7 +80,8 @@ End
 
 static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAVE numericalValues, WAVE/T textualValues, variable sweepNo, DFREF sweepDFR, variable headstage, variable ongoingDAQ, variable waMode)
 
-	variable stopReason
+	variable stopReason, requiredPassingSweeps
+	string params
 
 	if(passed)
 		return "Pass"
@@ -170,7 +171,10 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 		case PSQ_DA_SCALE:
 			return AD_GetDaScaleFailMsg(numericalValues, textualValues, sweepNo, sweepDFR, headstage)
 		case PSQ_RAMP:
-			return AD_GetPerSweepFailMessage(PSQ_RAMP, numericalValues, textualValues, sweepNo, sweepDFR, headstage, numRequiredPasses = PSQ_RA_NUM_SWEEPS_PASS)
+			params                = LBN_GetAnalysisFunctionParameters(textualValues, sweepNo, headstage)
+			requiredPassingSweeps = AFH_GetAnalysisParamNumerical("NumberOfPassingSweeps", params, defValue = PSQ_RA_NUM_SWEEPS_PASS)
+
+			return AD_GetPerSweepFailMessage(PSQ_RAMP, numericalValues, textualValues, sweepNo, sweepDFR, headstage, numRequiredPasses = requiredPassingSweeps)
 		case PSQ_PIPETTE_BATH:
 			return AD_GetPerSweepFailMessage(PSQ_PIPETTE_BATH, numericalValues, textualValues, sweepNo, sweepDFR, headstage, numRequiredPasses = PSQ_PB_NUM_SWEEPS_PASS)
 		case PSQ_RHEOBASE:
@@ -310,7 +314,7 @@ static Function AD_FillWaves(string win, WAVE/T list, WAVE/T info)
 
 			// decorate the analysis function name with the operation mode if present
 			if(anaFuncType == PSQ_DA_SCALE)
-				opMode = AD_GetDAScaleOperationMode(numericalValues, textualValues, sweepNo, headstage)
+				opMode = AD_GetDAScaleOperationMode(textualValues, sweepNo, headstage)
 
 				if(PSQ_DS_IsValidMode(opMode))
 					anaFunc += " (" + opMode + ")"
@@ -481,33 +485,24 @@ static Function/S AD_GetSquarePulseFailMsg(WAVE numericalValues, variable sweepN
 	return "Failure"
 End
 
-static Function/S AD_GetDAScaleOperationMode(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, variable headstage)
+static Function/S AD_GetDAScaleOperationMode(WAVE/T textualValues, variable sweepNo, variable headstage)
 
-	WAVE/Z/T params = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, "Function params (encoded)", headstage, DATA_ACQUISITION_MODE)
+	string params
 
-	// fallback to old names
-	if(!WaveExists(params))
-		WAVE/T params = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, "Function params", headstage, DATA_ACQUISITION_MODE)
-	endif
+	params = LBN_GetAnalysisFunctionParameters(textualValues, sweepNo, headstage)
 
 	// present since 0ef300da (PSQ_DaScale: Add new operation mode, 2018-02-15)
-	return AFH_GetAnalysisParamTextual("OperationMode", params[headstage])
+	return AFH_GetAnalysisParamTextual("OperationMode", params)
 End
 
 static Function/S AD_GetDAScaleFailMsg(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, DFREF sweepDFR, variable headstage)
 
-	string msg, key, fISlopeStr, opMode
+	string msg, key, fISlopeStr, opMode, params
 	variable numPasses, numRequiredPasses, finalSlopePercent, slopePercentage, measuredAllFutureDAScales
 	variable numInvalidSlopeSweepsAllowed, numFailedSweeps, numRequiredFISlopeReached, numFISlopeReached
 
 	numPasses = PSQ_NumPassesInSet(numericalValues, PSQ_DA_SCALE, sweepNo, headstage)
-
-	WAVE/Z/T params = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, "Function params (encoded)", headstage, DATA_ACQUISITION_MODE)
-
-	// fallback to old names
-	if(!WaveExists(params))
-		WAVE/T params = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, "Function params", headstage, DATA_ACQUISITION_MODE)
-	endif
+	params    = LBN_GetAnalysisFunctionParameters(textualValues, sweepNo, headstage)
 
 	key = CreateAnaFuncLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_DASCALE_OOR, query = 1)
 	WAVE/Z oorDASCale = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
@@ -516,14 +511,14 @@ static Function/S AD_GetDAScaleFailMsg(WAVE numericalValues, WAVE/T textualValue
 		return AD_OOR_DASCALE_MSG
 	endif
 
-	opMode = AFH_GetAnalysisParamTextual("OperationMode", params[headstage])
+	opMode = AFH_GetAnalysisParamTextual("OperationMode", params)
 
 	strswitch(opMode)
 		case "": // handle data prior to 0ef300da (PSQ_DaScale: Add new operation mode, 2018-02-15)
 		case PSQ_DS_SUB:
 		case PSQ_DS_SUPRA:
 
-			WAVE/Z DAScales = AFH_GetAnalysisParamWave("DAScales", params[headstage])
+			WAVE/Z DAScales = AFH_GetAnalysisParamWave("DAScales", params)
 			ASSERT(WaveExists(DASCales), "analysis function parameters don't have a DAScales entry")
 			numRequiredPasses = DimSize(DAScales, ROWS)
 
@@ -545,7 +540,7 @@ static Function/S AD_GetDAScaleFailMsg(WAVE numericalValues, WAVE/T textualValue
 				WAVE fISlope = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 				fISlopeStr = NumericWaveToList(fISlope, "%, ", format = "%.15g", trailSep = 0)
 
-				finalSlopePercent = AFH_GetAnalysisParamNumerical("FinalSlopePercent", params[headstage])
+				finalSlopePercent = AFH_GetAnalysisParamNumerical("FinalSlopePercent", params)
 				sprintf msg, "Failure as we did not reach the required fI slope (target: %g%% reached: %s%%)", finalSlopePercent, fISlopeStr
 			endif
 
@@ -565,7 +560,7 @@ static Function/S AD_GetDAScaleFailMsg(WAVE numericalValues, WAVE/T textualValue
 			WAVE slopePasses = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 			numFailedSweeps = DimSize(slopePasses, ROWS) - Sum(slopePasses)
 
-			numInvalidSlopeSweepsAllowed = AFH_GetAnalysisParamNumerical("NumInvalidSlopeSweepsAllowed", params[headstage], defValue = PSQ_DA_NUM_INVALID_SLOPE_SWEEPS_ALLOWED)
+			numInvalidSlopeSweepsAllowed = AFH_GetAnalysisParamNumerical("NumInvalidSlopeSweepsAllowed", params, defValue = PSQ_DA_NUM_INVALID_SLOPE_SWEEPS_ALLOWED)
 
 			if(numFailedSweeps >= numInvalidSlopeSweepsAllowed)
 				sprintf msg, "Encountered %g sweeps with invalid slopes, but only %g are allowed.", numFailedSweeps, numInvalidSlopeSweepsAllowed
@@ -575,7 +570,7 @@ static Function/S AD_GetDAScaleFailMsg(WAVE numericalValues, WAVE/T textualValue
 				return msg
 			endif
 
-			numRequiredFISlopeReached = AFH_GetAnalysisParamNumerical("NumSweepsWithSaturation", params[headstage], defValue = PSQ_DA_NUM_SWEEPS_SATURATION)
+			numRequiredFISlopeReached = AFH_GetAnalysisParamNumerical("NumSweepsWithSaturation", params, defValue = PSQ_DA_NUM_SWEEPS_SATURATION)
 
 			if(numFISlopeReached < numRequiredFISlopeReached)
 				sprintf msg, "Failure as we did not reach enough sweeps with passing fISlope QC (target: %d reached: %d)", numRequiredFISlopeReached, numFISlopeReached
@@ -1135,7 +1130,7 @@ End
 
 static Function/S AD_HasAsyncQCFailed(WAVE numericalValues, WAVE/T textualValues, variable anaFuncType, variable sweepNo, variable headstage)
 
-	string key, msg, str
+	string key, msg, str, params
 	string text = ""
 	variable chan, asyncAlarm
 
@@ -1146,8 +1141,9 @@ static Function/S AD_HasAsyncQCFailed(WAVE numericalValues, WAVE/T textualValues
 		return ""
 	endif
 
-	WAVE/T params        = GetLastSetting(textualValues, sweepNo, "Function params (encoded)", DATA_ACQUISITION_MODE)
-	WAVE/Z asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", params[headstage])
+	params = LBN_GetAnalysisFunctionParameters(textualValues, sweepNo, headstage)
+
+	WAVE/Z asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", params)
 
 	if(!WaveExists(asyncChannelQC))
 		if(WaveExists(asyncChannels))
@@ -1283,7 +1279,7 @@ End
 /// Requires that the sweep is displayed.
 Function AD_PlotBounds(string browser, variable sweepNo)
 
-	string key, graph, leftAxis
+	string key, graph, leftAxis, params
 	variable outerRelativeBound, innerRelativeBound, baselineVoltage, lastX, headstage
 
 	WAVE/Z   numericalValues = BSP_GetLogbookWave(browser, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
@@ -1298,10 +1294,10 @@ Function AD_PlotBounds(string browser, variable sweepNo)
 	headstage = indizes[0]
 
 	WAVE/T stimsets = GetLastSetting(textualValues, sweepNo, stim_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
-	WAVE/T params   = GetLastSetting(textualValues, sweepNo, "Function params (encoded)", DATA_ACQUISITION_MODE)
+	params = LBN_GetAnalysisFunctionParameters(textualValues, sweepNo, headstage)
 
-	outerRelativeBound = AFH_GetAnalysisParamNumerical("OuterRelativeBound", params[headstage])
-	innerRelativeBound = AFH_GetAnalysisParamNumerical("InnerRelativeBound", params[headstage])
+	outerRelativeBound = AFH_GetAnalysisParamNumerical("OuterRelativeBound", params)
+	innerRelativeBound = AFH_GetAnalysisParamNumerical("InnerRelativeBound", params)
 
 	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_TARGETV, query = 1, chunk = 0)
 

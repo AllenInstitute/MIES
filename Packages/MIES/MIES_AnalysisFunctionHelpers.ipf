@@ -1167,25 +1167,6 @@ Function [variable sampleIntDA, variable sampleIntAD] AFH_GetSampleIntervalsFrom
 	return [sampleIntDA, sampleIntDA]
 End
 
-/// @brief Returns the analysis function parameters string from the given LNB
-///
-/// @param numericalValues numerical labnotebook
-/// @param textualValues   textual labnotebook
-/// @param sweepNo         sweep number
-/// @param DAC             DA channel number
-Function/S AFH_GetAnaFuncParamsFromLNB(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, variable DAC)
-
-	variable index
-
-	string key = "Function params (encoded)"
-	[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, key, DAC, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
-	if(!WaveExists(settings))
-		return ""
-	endif
-
-	return WaveText(settings, row = index)
-End
-
 /// @brief Only for PSQ_RHEOBASE, returns a wave with passing and failing sweep numbers for sweepQC with all sweep numbers of the same SCI range
 ///        This is a workaround and uses a different approach as for other analysis functions.
 ///

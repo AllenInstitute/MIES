@@ -609,10 +609,7 @@ static Function CheckDAStimulusSets(string device, variable sweepNo, variable ty
 	WAVE textualValues   = GetLBTextualValues(device)
 	WAVE numericalValues = GetLBNumericalValues(device)
 
-	WAVE/Z/T paramsLBN = GetLastSetting(textualValues, sweepNo, ANALYSIS_FUNCTION_PARAMS_LBN, DATA_ACQUISITION_MODE)
-	CHECK_WAVE(paramsLBN, TEXT_WAVE)
-
-	params = paramsLBN[PSQ_TEST_HEADSTAGE]
+	params = LBN_GetAnalysisFunctionParameters(textualValues, sweepNo, PSQ_TEST_HEADSTAGE)
 
 	names = AFH_GetListOfAnalysisParamNames(params)
 

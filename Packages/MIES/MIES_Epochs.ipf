@@ -1888,7 +1888,7 @@ static Function EP_AddRecreatedUserEpochs_Baseline(WAVE numericalValues, WAVE/T 
 			PSQ_AddBaselineEpoch(epochWave, DAC, chunk, chunkStartTimeMax, chunkLengthTime)
 		endfor
 	else
-		params = AFH_GetAnaFuncParamsFromLNB(numericalValues, textualValues, sweepNo, DAC)
+		params = LBN_GetAnalysisFunctionParametersForDAC(numericalValues, textualValues, sweepNo, DAC)
 		ASSERT(!IsEmpty(params), "Could not retrieve analysis function parameters from LNB")
 		setName   = s.setName[0]
 		numEpochs = ST_GetStimsetParameterAsVariable(setName, "Total number of epochs")
@@ -2028,7 +2028,7 @@ static Function EP_AddRecreatedUserEpochs_PSQ_PipetteInBath(WAVE numericalValues
 	EP_AddRecreatedUserEpochs_Baseline(numericalValues, textualValues, waMode, sweepDFR, PSQ_PIPETTE_BATH, sweepNo, s, epochWave)
 
 	DAC    = s.DACList[0]
-	params = AFH_GetAnaFuncParamsFromLNB(numericalValues, textualValues, sweepNo, DAC)
+	params = LBN_GetAnalysisFunctionParametersForDAC(numericalValues, textualValues, sweepNo, DAC)
 	ASSERT(!IsEmpty(params), "Could not retrieve analysis function parameters from LNB")
 	EP_AddRecreatedUserEpochs_AddTPUserEpochs(epochWave, s, params, PSQ_PIPETTE_BATH)
 End
@@ -2051,7 +2051,7 @@ static Function EP_AddRecreatedUserEpochs_PSQ_AccessResistanceSmoke(WAVE numeric
 	EP_AddRecreatedUserEpochs_Baseline(numericalValues, textualValues, waMode, sweepDFR, PSQ_ACC_RES_SMOKE, sweepNo, s, epochWave)
 
 	DAC    = s.DACList[0]
-	params = AFH_GetAnaFuncParamsFromLNB(numericalValues, textualValues, sweepNo, DAC)
+	params = LBN_GetAnalysisFunctionParametersForDAC(numericalValues, textualValues, sweepNo, DAC)
 	ASSERT(!IsEmpty(params), "Could not retrieve analysis function parameters from LNB")
 	EP_AddRecreatedUserEpochs_AddTPUserEpochs(epochWave, s, params, PSQ_ACC_RES_SMOKE)
 End
@@ -2064,7 +2064,7 @@ static Function EP_AddRecreatedUserEpochs_PSQ_Chirp(WAVE numericalValues, WAVE/T
 	string key, params
 
 	DAC    = s.DACList[0]
-	params = AFH_GetAnaFuncParamsFromLNB(numericalValues, textualValues, sweepNo, DAC)
+	params = LBN_GetAnalysisFunctionParametersForDAC(numericalValues, textualValues, sweepNo, DAC)
 	ASSERT(!IsEmpty(params), "Could not retrieve analysis function parameters from LNB")
 
 	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_PULSE_DUR, query = 1, waMode = waMode)
