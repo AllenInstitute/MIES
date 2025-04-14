@@ -39,8 +39,8 @@ Constant SWEEP_EPOCH_VERSION = 9
 /// - New/Changed layers of entries
 ///
 ///@{
-Constant LABNOTEBOOK_VERSION = 82
-Constant RESULTS_VERSION     = 3
+Constant LABNOTEBOOK_VERSION = 83
+Constant RESULTS_VERSION     = 4
 ///@}
 
 /// @name Analysis function versions
@@ -2448,4 +2448,10 @@ StrConstant ITC_THREAD_TIMESTAMP = "timestamp"
 Constant SF_MSG_OK    = 1
 Constant SF_MSG_ERROR = 0
 Constant SF_MSG_WARN  = -1
+///@}
+
+/// Labnotebook capabilities are stored in the key wave note
+/// @anchor LabnotebookCapabilityKeys
+///@{
+StrConstant LBN_CAP_SUPPORTS_ENTRYSOURCETYPE = "SupportsEntrySourceType" // since 81
 ///@}
