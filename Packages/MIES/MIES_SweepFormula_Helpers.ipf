@@ -251,7 +251,7 @@ End
 ///                          to query JSON wave note entries
 Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defOp, WAVE/Z defWave, variable singleResult, variable expectedMinorType, variable expectedMajorType, variable copy, string &wvNote])
 
-	variable checkExist, numArgs, checkMinorType, checkMajorType
+	variable checkExist, numArgs, checkMinorType, checkMajorType, result
 	string msg
 
 	if(!ParamIsDefault(wvNote))
@@ -302,12 +302,18 @@ Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string gra
 				WAVE/WAVE dataAsRef = data
 				Make/FREE/N=(DimSize(data, ROWS)) types = WaveType(dataAsRef[p])
 			endif
-			sprintf msg, "Argument #%d of operation %s: Expected minor wave type %d", argNum, opShort, expectedMinorType
+
 			if(expectedMinorType > 0)
 				types[] = !!(types[p] & expectedMinorType)
-				SFH_ASSERT(sum(types) == DimSize(types, ROWS), msg)
+				result  = sum(types) == DimSize(types, ROWS)
 			else
-				SFH_ASSERT(IsConstant(types, expectedMinorType), msg)
+				result = IsConstant(types, expectedMinorType)
+			endif
+
+			if(!result)
+				Make/T/FREE/N=(DimSize(types, ROWS)) typesText = WaveTypeToStringSelectorZero(types[p])
+				sprintf msg, "Argument #%d of operation %s: Expected minor wave type %s but got %s", argNum, opShort, WaveTypeToStringSelectorZero(expectedMinorType), TextWaveToList(typesText, ", ", trailSep = 0)
+				SFH_ASSERT(result, msg)
 			endif
 		endif
 		if(checkMajorType)
@@ -318,8 +324,11 @@ Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string gra
 				Make/FREE/N=(DimSize(data, ROWS)) types = WaveType(dataAsRef[p], 1)
 			endif
 
-			sprintf msg, "Argument #%d of operation %s: Expected major wave type %d", argNum, opShort, expectedMajorType
-			SFH_ASSERT(IsConstant(types, expectedMajorType), msg)
+			if(!IsConstant(types, expectedMajorType))
+				Make/T/FREE/N=(DimSize(types, ROWS)) typesText = WaveTypeToStringSelectorOne(types[p])
+				sprintf msg, "Argument #%d of operation %s: Expected major wave type %s but got %s", argNum, opShort, WaveTypeToStringSelectorOne(expectedMajorType), TextWaveToList(typesText, ", ", trailSep = 0)
+				SFH_ASSERT(0, msg)
+			endif
 		endif
 
 		return SFH_CopyDataIfRequired(copy, input, data)
