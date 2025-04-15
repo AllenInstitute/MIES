@@ -196,7 +196,7 @@ Function/S ResolveAlias(string path, [string pathName])
 	endif
 
 	if(!V_IsAliasShortcut)
-		return path
+		return S_path
 	endif
 
 	if(ParamIsDefault(pathName))

@@ -268,6 +268,9 @@ static Function TestResolveAlias()
 	result = ResolveAlias(filePath)
 	CHECK_EQUAL_STR(result, filePath)
 
+	result = ResolveAlias("file.txt", pathName = symbPath)
+	CHECK_EQUAL_STR(result, filePath)
+
 	// plain folder
 	result = ResolveAlias(folder)
 	CHECK_EQUAL_STR(result, folder)
