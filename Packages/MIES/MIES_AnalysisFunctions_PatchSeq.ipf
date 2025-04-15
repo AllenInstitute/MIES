@@ -3314,15 +3314,13 @@ static Function PSQ_DS_AdaptiveIsFinished(string device, variable sweepNo, varia
 		return 0
 	endif
 
-	if(!fromRhSuAd)
-		key                       = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES_PASS, query = 1)
-		measuredAllFutureDAScales = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
-		ASSERT(IsFinite(measuredAllFutureDAScales), "Invalid measured all future DAScales QC")
+	key                       = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES_PASS, query = 1)
+	measuredAllFutureDAScales = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	ASSERT(IsFinite(measuredAllFutureDAScales), "Invalid measured all future DAScales QC")
 
-		// still work to do
-		if(!measuredAllFutureDAScales)
-			return 0
-		endif
+	// still work to do
+	if(!measuredAllFutureDAScales)
+		return 0
 	endif
 
 	if(PSQ_DS_NegativefISlopePassingCriteria(numericalValues, textualValues, sweepNo, headstage, fromRhSuAd = fromRhSuAd))
@@ -4474,7 +4472,15 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 
 					PSQ_DS_CreateSurveyPlotForUser(device, s.sweepNo, s.headstage, fromRhSuAd = 1)
 
-					WAVE/Z/T futureDAScales = PSQ_DS_GatherDAScaleFillin(cdp, PSQ_DS_AD_FILLIN_RHSUAD, apfreqRhSuAd, DAScalesRhSuAd, $"")
+					WAVE numericalValues = GetLBNumericalValues(device)
+					WAVE textualValues   = GetLBTextualValues(device)
+
+					WAVE/T futureDAScalesRhSuAd = PSQ_DS_GetFutureDAScalesFromLBN(numericalValues, textualValues, RhSuAdSweeps[Inf], s.headstage)
+
+					WAVE/T futureDAScales = PSQ_DS_GatherDAScaleFillin(cdp, PSQ_DS_AD_FILLIN_RHSUAD, apfreqRhSuAd, DAScalesRhSuAd, futureDAScalesRhSuAd)
+					WAVEClear futureDAScalesRhSuAd
+
+					PSQ_DS_CalcFutureDAScalesAndStoreInLBN(device, s.sweepNo, s.headstage, futureDAScales)
 
 					Make/FREE/N=(DimSize(DAScalesRhSuAd, ROWS)) fillinQCfromRhSuAd = PSQ_DS_CalculateFillinQC(DAScalesRhSuAd, DAScalesRhSuAd[p])
 
@@ -4504,8 +4510,6 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 					ED_AddEntryToLabnotebook(device, key, negFitSlopeQCLBN, overrideSweepNo = s.sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
 
 					// generate slopes and offsets for DAScale estimation
-					WAVE numericalValues = GetLBNumericalValues(device)
-					WAVE textualValues   = GetLBTextualValues(device)
 
 					[WAVE DAScalesRhSuAdForDAScale, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, s.sweepNo, s.headstage, PSQ_DS_DASCALE, filterPassing = 1, filterNegSlopeAndNaN = 1, fromRhSuAd = 1)
 					[WAVE apfreqRhSuAdForDAScale, emptySCI]   = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, s.sweepNo, s.headstage, PSQ_DS_APFREQ, filterPassing = 1, filterNegSlopeAndNaN = 1, fromRhSuAd = 1)
