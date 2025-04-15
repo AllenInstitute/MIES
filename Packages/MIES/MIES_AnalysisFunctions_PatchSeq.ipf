@@ -905,6 +905,8 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 
 			if(type == PSQ_CHIRP)
 				repurposedTime = 6 - LeftOverSweepTime(device, fifoInStimsetTime + totalOnsetDelay)
+			elseif(type == PSQ_DA_SCALE)
+				repurposedTime = 5
 			else
 				repurposedTime = 10
 			endif
