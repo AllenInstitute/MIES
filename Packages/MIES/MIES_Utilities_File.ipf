@@ -195,15 +195,11 @@ Function/S ResolveAlias(string path, [string pathName])
 		return ""
 	endif
 
-	if(!V_IsAliasShortcut)
-		return S_path
+	if(V_IsAliasShortcut)
+		return S_aliasPath
 	endif
 
-	if(ParamIsDefault(pathName))
-		return ResolveAlias(S_aliasPath)
-	endif
-
-	return ResolveAlias(S_aliasPath, pathName = pathName)
+	return S_path
 End
 
 /// @brief Return a unique symbolic path name
