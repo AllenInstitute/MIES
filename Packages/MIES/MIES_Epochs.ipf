@@ -1778,7 +1778,7 @@ End
 /// @param sweepDFR        single sweep folder, e.g. for measurement with a device this wold be DFREF sweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
 /// @param sweepNo         sweep number
 /// @returns recreated 4D epoch wave
-static Function/WAVE EP_RecreateEpochsFromLoadedData(WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo)
+Function/WAVE EP_RecreateEpochsFromLoadedData(WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo)
 
 	STRUCT DataConfigurationResult s
 	variable channelNr, plannedTime, acquiredTime, adSize, firstUnacquiredIndex
