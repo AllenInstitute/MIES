@@ -196,6 +196,8 @@ static Constant PSQ_DA_FALLBACK_DASCALE_RANGE_FAC            = 1.5
 static Constant PSQ_DA_FALLBACK_DASCALE_NEG_SLOPE_PERC       = 50
 static Constant PSQ_DA_FALLBACK_MINIMUM_SPIKES_FOR_MAX_SLOPE = 4
 
+static StrConstant PSQ_DA_AT_SLOPE_UNIT = "% of Hz/pA"
+
 /// @name Type constants for PSQ_DS_GetLabnotebookData
 /// @anchor PSQDAScaleAdaptiveLBNTypeConstants
 ///@{
@@ -2680,7 +2682,7 @@ static Function [variable maxSlope, WAVE fitSlopes, WAVE DAScales] PSQ_DS_Calcul
 	WAVE maxSlopeLBN = LBN_GetNumericWave()
 	maxSlopeLBN[headstage] = maxSlope
 	key                    = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_MAX_SLOPE)
-	ED_AddEntryToLabnotebook(device, key, maxSlopeLBN, overrideSweepNo = sweepNo, unit = "% of Hz/pA")
+	ED_AddEntryToLabnotebook(device, key, maxSlopeLBN, overrideSweepNo = sweepNo, unit = PSQ_DA_AT_SLOPE_UNIT)
 
 	return [maxSlope, fitSlopes, DAScales]
 End
@@ -2820,7 +2822,7 @@ static Function [variable fitOffset, variable fitSlope] PSQ_DS_StoreFitOffsetAnd
 	WAVE fitSlopeLBN = LBN_GetNumericWave()
 	fitSlopeLBN[headstage] = fitSlope
 	key                    = CreateAnaFuncLBNKey(PSQ_DA_SCALE, lbnKeySlope)
-	ED_AddEntryToLabnotebook(device, key, fitSlopeLBN, overrideSweepNo = sweepNo, unit = "% of Hz/pA")
+	ED_AddEntryToLabnotebook(device, key, fitSlopeLBN, overrideSweepNo = sweepNo, unit = PSQ_DA_AT_SLOPE_UNIT)
 
 	return [fitOffset, fitSlope]
 End
@@ -4468,7 +4470,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 					WAVE/T fitSlopeLBN = LBN_GetTextWave()
 					fitSlopeLBN[s.headstage] = NumericWaveToList(fitSlopeFromRhSuAd, ";", format = "%.15g")
 					key                      = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES)
-					ED_AddEntryToLabnotebook(device, key, fitSlopeLBN, overrideSweepNo = s.sweepNo, unit = "% of Hz/pA")
+					ED_AddEntryToLabnotebook(device, key, fitSlopeLBN, overrideSweepNo = s.sweepNo, unit = PSQ_DA_AT_SLOPE_UNIT)
 
 					PSQ_DS_CreateSurveyPlotForUser(device, s.sweepNo, s.headstage, fromRhSuAd = 1)
 
@@ -4493,7 +4495,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 					maxSlope                 = PSQ_DS_CalculateMaxSlope(fitSlopeFromRhSuAd, apfreqRhSuAd, minimumSpikeCountForMaxSlope)
 					maxSlopeLBN[s.headstage] = maxSlope
 					key                      = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_MAX_SLOPE)
-					ED_AddEntryToLabnotebook(device, key, maxSlopeLBN, overrideSweepNo = s.sweepNo, unit = "% of Hz/pA")
+					ED_AddEntryToLabnotebook(device, key, maxSlopeLBN, overrideSweepNo = s.sweepNo, unit = PSQ_DA_AT_SLOPE_UNIT)
 
 					Make/FREE/N=(DimSize(fitSlopeFromRhSuAd, ROWS)) fitSlopeQCfromRhSuAd = PSQ_DS_CalculateReachedFinalSlope(fitSlopeFromRhSuAd, DAScalesRhSuAd, fillinQCfromRhSuAd, fitSlopeFromRhSuAd[p], maxSlope, cdp.slopePercentage)
 
@@ -4524,7 +4526,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 					WAVE/T fitSlopeForDAScaleLBN = LBN_GetTextWave()
 					fitSlopeForDAScaleLBN[s.headstage] = NumericWaveToList(fitSlopeForDAScaleFromRhSuAd, ";", format = "%.15g")
 					key                                = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES_DASCALE)
-					ED_AddEntryToLabnotebook(device, key, fitSlopeForDAScaleLBN, overrideSweepNo = s.sweepNo, unit = "% of Hz/pA")
+					ED_AddEntryToLabnotebook(device, key, fitSlopeForDAScaleLBN, overrideSweepNo = s.sweepNo, unit = PSQ_DA_AT_SLOPE_UNIT)
 
 					if(PSQ_DS_AdaptiveIsFinished(device, s.sweepNo, s.headstage, numSweepsWithSaturation, fromRhSuAd = 1))
 						PSQ_ForceSetEvent(device, s.headstage)
