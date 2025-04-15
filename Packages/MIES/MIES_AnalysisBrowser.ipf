@@ -2630,7 +2630,7 @@ static Function AB_AddExperimentEntries(string win, WAVE/T entries)
 
 	string entry, symbPath, fName, panel
 	string pxpList, uxpList, nwbList, title
-	variable sTime, loadOpts
+	variable sTime, loadOpts, i, size
 
 	WAVE/T activeFiles = AB_GetCurrentlyOpenNWBFiles()
 
@@ -2644,6 +2644,8 @@ static Function AB_AddExperimentEntries(string win, WAVE/T entries)
 	for(entry : entries)
 
 		if(FolderExists(entry))
+			sprintf title, "%s, Looking for files in %s", panel, entry
+			DoWindow/T $panel, title
 			symbPath = GetUniqueSymbolicPath()
 			NewPath/O/Q/Z $symbPath, entry
 			if(GetCheckBoxState(win, "check_load_pxp"))
@@ -2666,15 +2668,16 @@ static Function AB_AddExperimentEntries(string win, WAVE/T entries)
 			printf "AnalysisBrowser: Can not find location %s. Skipped it.\r", entry
 			continue
 		endif
-		for(fName : fileList)
-
+		size = DimSize(filelist, ROWS)
+		for(i = 0; i < size; i += 1)
+			fName = fileList[i]
 			if(!IsNaN(GetRowIndex(activeFiles, str = fName)))
 				printf "Ignore %s for adding into the analysis browser\ras we currently export data into it!\r", fName
 				ControlWindowToFront()
 				continue
 			endif
 			if(sTime < (stopMSTimer(-2) * MICRO_TO_ONE))
-				sprintf title, "%s, Reading %s", panel, GetFile(fName)
+				sprintf title, "%s, Reading %d / %d -> %s", panel, i, size, GetFile(fName)
 				DoWindow/T $panel, title
 				sTime = stopMSTimer(-2) * MICRO_TO_ONE + 1
 			endif
