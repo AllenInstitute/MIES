@@ -2646,9 +2646,18 @@ static Function AB_AddExperimentEntries(string win, WAVE/T entries)
 		if(FolderExists(entry))
 			symbPath = GetUniqueSymbolicPath()
 			NewPath/O/Q/Z $symbPath, entry
-			pxpList = GetAllFilesRecursivelyFromPath(symbPath, extension = ".pxp")
-			uxpList = GetAllFilesRecursivelyFromPath(symbPath, extension = ".uxp")
-			nwbList = GetAllFilesRecursivelyFromPath(symbPath, extension = ".nwb")
+			if(GetCheckBoxState(win, "check_load_pxp"))
+				pxpList = GetAllFilesRecursivelyFromPath(symbPath, extension = ".pxp")
+				uxpList = GetAllFilesRecursivelyFromPath(symbPath, extension = ".uxp")
+			else
+				pxpList = ""
+				uxpList = ""
+			endif
+			if(GetCheckBoxState(win, "check_load_nwb"))
+				nwbList = GetAllFilesRecursivelyFromPath(symbPath, extension = ".nwb")
+			else
+				nwbList = ""
+			endif
 			KillPath/Z $symbPath
 			WAVE/T fileList = ListToTextWave(SortList(pxpList + uxpList + nwbList, FILE_LIST_SEP), FILE_LIST_SEP)
 		elseif(FileExists(entry))
