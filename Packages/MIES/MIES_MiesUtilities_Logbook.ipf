@@ -2084,3 +2084,74 @@ Function InvalidateLBIndexAndRowCache(WAVE values)
 		CA_DeleteCacheEntry(key)
 	endfor
 End
+
+/// @brief Recreate the epochs of a sweep from the loaded data and insert them into the labnotebook
+///
+/// The epochs and the current epoch version are inserted as post-processed entries after the
+/// DATA_ACQUISITION_MODE block of the sweep, see ED_AddEntriesToLabnotebook(). The labnotebook is changed in place.
+///
+/// @param numericalValues numerical labnotebook
+/// @param textualValues   textual labnotebook
+/// @param device          device
+/// @param sweepNo         sweep number
+Function InsertRecreatedEpochsIntoLBN(WAVE numericalValues, WAVE/T textualValues, string device, variable sweepNo)
+
+	string epochList
+	variable channelNumber, channelType, headstage, numChannelTypes, colCount, allocatedCols
+	variable assocCol = NaN
+
+	DFREF  deviceDFR = GetDeviceDataPath(device)
+	DFREF  sweepDFR  = GetSingleSweepFolder(deviceDFR, sweepNo)
+	WAVE/T recEpochs = EP_RecreateEpochsFromLoadedData(numericalValues, textualValues, sweepDFR, sweepNo)
+
+	Make/FREE/D channelTypes = {XOP_CHANNEL_TYPE_DAC, XOP_CHANNEL_TYPE_TTL}
+
+	numChannelTypes = DimSize(channelTypes, ROWS)
+	allocatedCols   = numChannelTypes * NUM_DA_TTL_CHANNELS
+	Make/FREE/T/N=(1, allocatedCols) keys
+	Make/FREE/T/N=(1, allocatedCols, LABNOTEBOOK_LAYER_COUNT) values
+
+	for(channelType : channelTypes)
+		for(channelNumber = 0; channelNumber < NUM_DA_TTL_CHANNELS; channelNumber += 1)
+			// Currently only implemented for DAC channel type
+			if(channelType != XOP_CHANNEL_TYPE_DAC)
+				continue
+			endif
+
+			epochList = EP_EpochWaveToStr(recEpochs, channelNumber, channelType)
+			if(IsEmpty(epochList))
+				continue
+			endif
+
+			headstage = GetHeadstageForChannel(numericalValues, sweepNo, channelType, channelNumber, DATA_ACQUISITION_MODE)
+			if(IsAssociatedChannel(headstage))
+				if(IsNaN(assocCol))
+					assocCol          = colCount
+					colCount         += 1
+					keys[0][assocCol] = EPOCHS_ENTRY_KEY
+				endif
+				values[0][assocCol][headstage] = epochList
+				continue
+			endif
+
+			values[0][colCount][INDEP_HEADSTAGE] = epochList
+			keys[0][colCount]                    = CreateLBNUnassocKey(EPOCHS_ENTRY_KEY, channelNumber, channelType)
+			colCount                            += 1
+		endfor
+	endfor
+	if(!colCount)
+		// No Epochs could be recreated for any channel
+		return NaN
+	endif
+
+	Redimension/N=(-1, colCount) keys
+	Redimension/N=(-1, colCount, -1) values
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE, insertAsPostProc = 1)
+
+	Redimension/N=(-1, 1) keys
+	keys[0][0] = SWEEP_EPOCH_VERSION_ENTRY_KEY
+	Make/FREE/D/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) valuesNum
+	FastOp valuesNum = (NaN)
+	valuesNum[0][0][INDEP_HEADSTAGE] = SWEEP_EPOCH_VERSION
+	ED_AddEntriesToLabnotebook(valuesNum, keys, sweepNo, device, DATA_ACQUISITION_MODE, insertAsPostProc = 1)
+End
