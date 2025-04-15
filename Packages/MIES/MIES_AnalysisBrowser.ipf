@@ -3245,7 +3245,7 @@ Function AB_ButtonProc_SelectStimSets(STRUCT WMButtonAction &ba) : ButtonControl
 				break
 			endif
 
-			WAVE indizes = FindIndizes(expBrowserList, col = 0, colLabel = "stim sets", str = selectedStimSet)
+			WAVE indizes = FindIndizes(expBrowserList, colLabel = "stim sets", str = selectedStimSet)
 			expBrowserSel[][] = expBrowserSel[p][q] & ~(LISTBOX_SELECT_OR_SHIFT_SELECTION)
 
 			numEntries = DimSize(indizes, ROWS)
