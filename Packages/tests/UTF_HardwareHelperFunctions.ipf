@@ -809,7 +809,7 @@ static Function CheckRangeOfUserLabnotebookKeys(string device, variable type, va
 					case "% of Hz/pA":
 						value = abs(value)
 						CHECK_GE_VAR(value, 0)
-						CHECK_LE_VAR(value, 100)
+						CHECK_LE_VAR(value, 1e4)
 						break
 					case "Hz":
 						if(!cmpstr(entry, "USER_DA Scale f-I offset") || !cmpstr(entry, "USER_DA Scale f-I offset for DAScale estimation"))

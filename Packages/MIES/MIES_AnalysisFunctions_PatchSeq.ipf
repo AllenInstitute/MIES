@@ -2274,7 +2274,7 @@ static Function [WAVE/D fitOffset, WAVE/D fitSlope, string errMsg] PSQ_DS_FitFre
 		SetDimensionLabels(fitCoeff, TextWaveToList(fitParams, ";"), ROWS)
 
 		fitOffset[i] = fitCoeff[%Offset]
-		fitSlope[i]  = fitCoeff[%Slope] / ONE_TO_PICO * ONE_TO_PERCENT // % Hz / pA
+		fitSlope[i]  = fitCoeff[%Slope] * ONE_TO_PERCENT // % Hz / pA
 	endfor
 
 	if(!HasOneValidEntry(fitOffset) && !HasOneValidEntry(fitSlope))
@@ -2598,7 +2598,7 @@ static Function/WAVE PSQ_DS_CalculateDAScalePlain(STRUCT PSQ_DS_DAScaleParams &c
 	absDAScaleStepMin = cdp.daScaleStepMinNorm * y
 	absDAScaleStepMax = cdp.daScaleStepMaxNorm * y
 
-	m = m / PICO_TO_ONE * PERCENT_TO_ONE
+	m = m * PERCENT_TO_ONE
 
 	ASSERT(cdp.maxFrequencyChangePercent > PSQ_DS_MAX_FREQ_OFFSET, "Invalid PSQ_DS_MAX_FREQ_OFFSET")
 	yp = y * (1 + (cdp.maxFrequencyChangePercent - PSQ_DS_MAX_FREQ_OFFSET) * PERCENT_TO_ONE)
