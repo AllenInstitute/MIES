@@ -2398,8 +2398,8 @@ End
 ///        addition so that the AP frequency differences between consecutive points is
 ///        smaller than `maxFrequencyChangePercent`.
 ///
-/// @return combined dascale with one of the types from @ref FutureDAScaleReason
-static Function/WAVE PSQ_DS_GatherDAScaleFillin(STRUCT PSQ_DS_DAScaleParams &cdp, string type, WAVE apfreqParam, WAVE DAScalesParam, WAVE/Z futureDAScalesHistoric)
+/// @return combined dascale with one of the types from @ref FutureDAScaleReason including the historic future DAScales at the front
+static Function/WAVE PSQ_DS_GatherDAScaleFillin(STRUCT PSQ_DS_DAScaleParams &cdp, string type, WAVE apfreqParam, WAVE DAScalesParam, WAVE/Z/T futureDAScalesHistoric)
 
 	variable numEntries, numIterations, x, xp, y, yp, idx, i, xm, xs, frac
 	variable maxFreqRelCond, minDaScaleCond, minFreqDistCond, alreadyMeasured, newDAScaleValue, DAScaleStepMin
@@ -2466,12 +2466,14 @@ static Function/WAVE PSQ_DS_GatherDAScaleFillin(STRUCT PSQ_DS_DAScaleParams &cdp
 	endfor
 
 	if(idx == 0)
-		return $""
+		return futureDAScalesHistoric
 	endif
 
 	Redimension/N=(idx) results
 
-	return results
+	Concatenate/FREE/NP=(ROWS)/T {results}, futureDAScalesHistoric
+
+	return futureDAScalesHistoric
 End
 
 static Function/WAVE PSQ_DS_CalculateDAScale(STRUCT PSQ_DS_DAScaleParams &cdp, WAVE numericalValues, WAVE textualValues, variable sweepNo, variable headstage, [variable fromRhSuAd, variable alreadyDone])
@@ -3457,17 +3459,13 @@ static Function [WAVE/T futureDAScales, WAVE apfreq, WAVE DAScales] PSQ_DS_Gathe
 	[WAVE apfreq, emptySCI]   = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_APFREQ, filterPassing = 1, beforeSweepQCResult = 1)
 
 	if(!emptySCI)
-		WAVE/Z/T futureDAScalesFromLastSweep = PSQ_DS_GatherDAScaleFillin(cdp, PSQ_DS_AD_FILLIN, apfreq, DAScales, futureDAScalesHistoric)
-
-		if(WaveExists(futureDAScalesFromLastSweep))
-			Concatenate/FREE/NP=(ROWS)/T {futureDAScalesFromLastSweep}, futureDAScalesHistoric
-		endif
+		WAVE/T futureDAScales = PSQ_DS_GatherDAScaleFillin(cdp, PSQ_DS_AD_FILLIN, apfreq, DAScales, futureDAScalesHistoric)
 	else
+		WAVE/T futureDAScales = futureDAScalesHistoric
 		WaveClear apfreq, DAScales
 	endif
 
-	WAVE/T futureDAScales = futureDAScalesHistoric
-	WaveClear futureDAScalesHistoric, futureDAScalesFromLastSweep
+	WaveClear futureDAScalesHistoric
 
 	return [futureDAScales, apfreq, DAScales]
 End
