@@ -2087,3 +2087,157 @@ Function WTSOne()
 	endtry
 End
 /// @}
+
+/// ConcatenateWavesWithNoteIndex
+/// @{
+Function TestConcat_MissingDest()
+
+	try
+		ConcatenateWavesWithNoteIndex($"", $"")
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+		PASS()
+	endtry
+End
+
+Function TestConcat_NoNote()
+
+	try
+		Make/FREE dest
+		ConcatenateWavesWithNoteIndex(dest, $"")
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+		PASS()
+	endtry
+End
+
+Function TestConcat_UnmatchedTypes0()
+
+	try
+		Make/FREE dest
+		SetNumberInWaveNote(dest, NOTE_INDEX, 0)
+
+		Make/FREE/T src
+		ConcatenateWavesWithNoteIndex(dest, src)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+		PASS()
+	endtry
+End
+
+Function TestConcat_UnmatchedTypes1()
+
+	try
+		Make/FREE/D dest
+		SetNumberInWaveNote(dest, NOTE_INDEX, 0)
+
+		Make/FREE/R src
+		ConcatenateWavesWithNoteIndex(dest, src)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+		PASS()
+	endtry
+End
+
+Function TestConcat_OneDWaves()
+
+	try
+		Make/FREE dest
+		SetNumberInWaveNote(dest, NOTE_INDEX, 0)
+
+		Make/FREE/N=(1, 1) src
+		ConcatenateWavesWithNoteIndex(dest, src)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+		PASS()
+	endtry
+
+	try
+		Make/FREE/N=(1, 1) dest
+		SetNumberInWaveNote(dest, NOTE_INDEX, 0)
+
+		Make/FREE src
+		ConcatenateWavesWithNoteIndex(dest, src)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+		PASS()
+	endtry
+End
+
+Function TestConcat_NullSrc()
+
+	variable index
+
+	Make/FREE/N=1 dest
+	SetNumberInWaveNote(dest, NOTE_INDEX, 0)
+
+	index = ConcatenateWavesWithNoteIndex(dest, $"")
+	CHECK_EQUAL_VAR(index, 0)
+	CHECK_EQUAL_VAR(dest[0], 0)
+	CHECK_EQUAL_VAR(DimSize(dest, ROWS), 1)
+End
+
+Function TestConcat_EmptySrc()
+
+	variable index
+
+	Make/FREE/N=1 dest
+	SetNumberInWaveNote(dest, NOTE_INDEX, 0)
+
+	Make/FREE/N=0 src
+	index = ConcatenateWavesWithNoteIndex(dest, src)
+	CHECK_EQUAL_VAR(index, 0)
+	CHECK_EQUAL_VAR(dest[0], 0)
+	CHECK_EQUAL_VAR(DimSize(dest, ROWS), 1)
+End
+
+// UTF_TD_GENERATOR DataGenerators#GetConcatSingleElementWaves
+Function TestConcat_AddingSingleElement([WAVE src])
+
+	variable index
+
+	Duplicate/FREE src, dest
+	Redimension/N=(1) dest
+	SetNumberInWaveNote(dest, NOTE_INDEX, 0)
+
+	index = ConcatenateWavesWithNoteIndex(dest, src)
+	CHECK_EQUAL_VAR(index, 1)
+
+	CHECK_EQUAL_WAVES(dest, src, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DimSize(dest, ROWS), 1)
+End
+
+Function TestConcat_AddingMoreElements()
+
+	variable index
+
+	Make/N=(1)/FREE dest
+	SetNumberInWaveNote(dest, NOTE_INDEX, 0)
+
+	Make/FREE src = p
+
+	index = ConcatenateWavesWithNoteIndex(dest, src)
+	CHECK_EQUAL_VAR(index, 128)
+
+	CHECK_EQUAL_WAVES(dest, src, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DimSize(dest, ROWS), 128)
+
+	// and again
+	index = ConcatenateWavesWithNoteIndex(dest, src)
+	CHECK_EQUAL_VAR(index, 256)
+	CHECK_EQUAL_VAR(DimSize(dest, ROWS), 256)
+
+	Duplicate/FREE/R=[0, 127] dest, slice
+	CHECK_EQUAL_WAVES(slice, src, mode = WAVE_DATA)
+
+	Duplicate/FREE/R=[128, 255] dest, slice
+	CHECK_EQUAL_WAVES(slice, src, mode = WAVE_DATA)
+End
+
+/// @}
