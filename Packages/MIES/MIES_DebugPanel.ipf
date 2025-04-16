@@ -75,7 +75,7 @@ End
 
 static Function DP_FillDebugPanelWaves()
 
-	string symbPath, path, allProcFiles
+	string symbPath, path
 
 	WAVE/T listWave    = GetDebugPanelListWave()
 	WAVE   listSelWave = GetDebugPanelListSelWave()
@@ -84,15 +84,17 @@ static Function DP_FillDebugPanelWaves()
 
 	path = FunctionPath("") + "::"
 	NewPath/Q/O $symbPath, path
-	allProcFiles = GetAllFilesRecursivelyFromPath(symbPath, extension = ".ipf")
+	WAVE/Z allProcFilesMIES = GetAllFilesRecursivelyFromPath(symbPath, regex = "(?i)\.ipf$")
+	ASSERT(WaveExists(allProcFilesMIES), "Expected some MIES procedure files")
 
 	path += ":IPNWB"
 	NewPath/Q/O $symbPath, path
-	allProcFiles = AddListItem(allProcFiles, GetAllFilesRecursivelyFromPath(symbPath, extension = ".ipf"), FILE_LIST_SEP)
+	WAVE/Z allProcFilesIPNWB = GetAllFilesRecursivelyFromPath(symbPath, regex = "(?i)\.ipf$")
+	ASSERT(WaveExists(allProcFilesIPNWB), "Expected some IPNWB procedure files")
 
 	KillPath $symbPath
 
-	WAVE/T list = ListToTextWave(allProcFiles, FILE_LIST_SEP)
+	Concatenate/FREE/NP=(ROWS)/T {allProcFilesMIES, allProcFilesIPNWB}, list
 	// remove path components
 	list = GetFile(list[p])
 	// remove non mies files

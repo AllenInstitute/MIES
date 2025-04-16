@@ -82,13 +82,13 @@ static Function CHI_CheckITCXOPVersion(STRUCT CHI_InstallationState &state)
 End
 
 /// @brief Search list for matches of item and print the results
-static Function CHI_CheckXOP(string &list, string item, string name, STRUCT CHI_InstallationState &state, [string expectedHash])
+static Function CHI_CheckXOP(WAVE/T list, string item, string name, STRUCT CHI_InstallationState &state, [string expectedHash])
 
 	variable numMatches, i, hashMatches
-	string matches, fileVersion, filepath, existingHash, hashMsg
+	string fileVersion, filepath, existingHash, hashMsg
 
-	matches    = ListMatch(list, "*" + item, FILE_LIST_SEP)
-	numMatches = ItemsInList(matches, FILE_LIST_SEP)
+	WAVE/Z/T matches = GrepTextWave(list, "(?i)" + item)
+	numMatches = WaveExists(matches) ? DimSize(matches, ROWS) : 0
 
 	if(numMatches > 1)
 		if(CheckIfPathsRefIdenticalFiles(matches))
@@ -106,7 +106,7 @@ static Function CHI_CheckXOP(string &list, string item, string name, STRUCT CHI_
 			state.numErrors += 1
 			break
 		case 1:
-			filepath    = StringFromList(0, matches, FILE_LIST_SEP)
+			filepath    = matches[0]
 			fileVersion = GetFileVersion(filepath)
 			if(ParamIsDefault(expectedHash))
 				printf "%s: Found version %s (Nice!)\r", name, fileVersion
@@ -119,10 +119,10 @@ static Function CHI_CheckXOP(string &list, string item, string name, STRUCT CHI_
 			endif
 			break
 		default:
-			printf "%s: Found multiple versions in \"%s\" (Might create problems)\r", name, matches
+			printf "%s: Found multiple versions in \"%s\" (Might create problems)\r", name, TextWaveToList(matches, ", ", trailSep = 0)
 			printf "%s: Duplicates are:\r", name
 			for(i = 0; i < numMatches; i += 1)
-				filepath    = StringFromList(i, matches, FILE_LIST_SEP)
+				filepath    = matches[i]
 				fileVersion = GetFileVersion(filepath)
 				if(ParamIsDefault(expectedHash))
 					printf "%s: Found version %s\r", name, fileVersion
@@ -224,7 +224,6 @@ End
 Function CHI_CheckInstallation()
 
 	string symbPath, allFiles, path, extName, info, igorBuild
-	string allFilesSystem, allFilesUser, listOfXOPs
 	variable aslrEnabled, archBits, installedWithHW
 
 	symbPath = GetUniqueSymbolicPath()
@@ -232,18 +231,25 @@ Function CHI_CheckInstallation()
 
 	path = SpecialDirPath("Igor Pro User Files", 0, 0, 0) + extName
 	NewPath/Q/O $symbPath, path
-	allFilesUser = GetAllFilesRecursivelyFromPath(symbPath)
+	WAVE/Z/T allFilesUser = GetAllFilesRecursivelyFromPath(symbPath, regex = "(?i)\.xop$", resolveAliases = 1)
 
 	path = SpecialDirPath("Igor Application", 0, 0, 0) + extName
 	NewPath/Q/O $symbPath, path
-	allFilesSystem = GetAllFilesRecursivelyFromPath(symbPath)
+	WAVE/Z/T allFilesSystem = GetAllFilesRecursivelyFromPath(symbPath, regex = "(?i)\.xop$", resolveAliases = 1)
 
 	KillPath $symbPath
 
-	listOfXOPs = ListMatch(allFilesUser + FILE_LIST_SEP + allFilesSystem, "*.xop", FILE_LIST_SEP)
-	WAVE/T list       = ListToTextWave(listOfXOPs, FILE_LIST_SEP)
-	WAVE/T listNoDups = GetUniqueEntries(list)
-	listOfXOPs = TextWaveToList(listNoDups, FILE_LIST_SEP)
+	if(WaveExists(allFilesUser) && WaveExists(allFilesSystem))
+		Concatenate/T/FREE/NP=(ROWS) {allFilesUser, allFilesSystem}, listWithDuplicates
+	elseif(WaveExists(allFilesUser))
+		WAVE/T listWithDuplicates = allFilesUser
+	elseif(WaveExists(allFilesSystem))
+		WAVE/T listWithDuplicates = allFilesSystem
+	else
+		Make/FREE/N=0/T listWithDuplicates
+	endif
+
+	WAVE/T listOfXOPs = GetUniqueEntries(listWithDuplicates)
 
 	STRUCT CHI_InstallationState state
 	CHI_InitInstallationState(state)

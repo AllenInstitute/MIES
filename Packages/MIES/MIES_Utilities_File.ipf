@@ -223,95 +223,161 @@ Function/S GetUniqueSymbolicPath([string prefix])
 End
 
 /// @brief Return a list of all files from the given symbolic path
-///        and its subfolders. The list is pipe (`FILE_LIST_SEP`) separated as
-///        the semicolon (`;`) is a valid character in filenames.
-///
-/// Note: This function does *not* work on MacOSX as there filenames are allowed
-///       to have pipe symbols in them.
+///        and its subfolders.
 ///
 /// @param pathName igor symbolic path to search recursively
-/// @param extension [optional, defaults to all files] file suffixes to search for
-Function/S GetAllFilesRecursivelyFromPath(string pathName, [string extension])
+/// @param regex [optional, defaults to all files] regular expression to match the absolute file path against
+/// @param resolveAliases [optional, defaults to false] attempt to resolve aliases/shortcuts (slows down execution!)
+Function/WAVE GetAllFilesRecursivelyFromPath(string pathName, [string regex, variable resolveAliases])
 
-	string fileOrPath, folders, subFolderPathName, fileName
-	string files, allFilesList
-	string allFiles         = ""
-	string foldersFromAlias = ""
-	variable err, isWindows
+	string files, subFoldersList, subFilesList, cdf, workPath
+	variable err
+	variable numFolders, numFiles, needsAliasResolving, i, needsFiltering
 
-#ifdef WINDOWS
-	isWindows = 1
-#endif // WINDOWS
+	if(ParamIsDefault(regex))
+		regex = ".*"
+	else
+		ASSERT(IsValidRegexp(regex), "Expected a valid regex")
+		needsFiltering = 1
+	endif
+
+	if(ParamIsDefault(resolveAliases))
+		resolveAliases = 0
+	else
+		resolveAliases = !!resolveAliases
+	endif
+
+	Make/FREE/N=(MINIMUM_WAVE_SIZE_LARGE)/T resultFiles
+	SetNumberInWaveNote(resultFiles, NOTE_INDEX, 0)
+
+	Make/FREE/N=(MINIMUM_WAVE_SIZE)/T folders
+	SetNumberInWaveNote(folders, NOTE_INDEX, 0)
 
 	PathInfo $pathName
 	ASSERT(V_flag, "Given symbolic path does not exist")
+	Make/T/FREE startFolder = {S_path}
+	numFolders = ConcatenateWavesWithNoteIndex(folders, startFolder)
 
-	if(ParamIsDefault(extension))
-		extension = "????"
-	endif
+	workPath = GetUniqueSymbolicPath()
 
 	AssertOnAndClearRTError()
-	allFilesList = IndexedFile($pathName, -1, extension, "????", FILE_LIST_SEP); err = GetRTError(1)
+	for(i = 0; i < numFolders; i += 1)
 
-	if(isWindows && cmpstr(extension, "????") && cmpstr(extension, ".lnk"))
-		allFiles = AddPrefixToEachListItem(S_path, allFilesList, sep = FILE_LIST_SEP)
-	else
-		// try to resolve aliases/shortcuts when we can have them
-		WAVE/T allFilesInDir = ListToTextWave(allFilesList, FILE_LIST_SEP)
-		for(fileName : allFilesInDir)
+		cdf = folders[i]
+		NewPath/Q/O/Z $workPath, cdf
 
-			GetFileFolderInfo/P=$pathName/Q/Z fileName
+		subFoldersList = IndexedDir($workPath, -1, 1, FILE_LIST_SEP); err = GetRTError(1)
+		if(!err)
+			WAVE/T subFolders = ListToTextWave(subFoldersList, FILE_LIST_SEP)
+			// add trailing colon
+			Multithread subFolders[] += ":"
 
-			if(V_Flag != 0)
-				// error querying file
-				continue
-			endif
+			ConcatenateWavesWithNoteIndex(folders, subFolders)
+		endif
 
-			if(V_IsAliasShortcut)
-				fileOrPath = ResolveAlias(fileName, pathName = pathName)
+		subFilesList = IndexedFile($workPath, -1, "????", "????", FILE_LIST_SEP); err = GetRTError(1)
+		if(!err)
+			WAVE/T subFiles = ListToTextWave(subFilesList, FILE_LIST_SEP)
+			// make them absolute
+			Multithread subFiles[] = cdf + subFiles[p]
 
-				if(IsEmpty(fileOrPath))
-					// dead alias
-					continue
-				endif
-
-				// redo the check
-				GetFileFolderInfo/P=$pathName/Q/Z fileOrPath
-
-				if(V_Flag != 0)
-					// error querying file/folder pointed to by alias
-					continue
-				endif
-			endif
-
-			if(V_isFile)
-				allFiles = AddListItem(S_path, allFiles, FILE_LIST_SEP, Inf)
-			elseif(V_isFolder)
-				foldersFromAlias = AddListItem(S_path, foldersFromAlias, FILE_LIST_SEP, Inf)
+			if(resolveAliases)
+				[WAVE/T filesResolved, WAVE/T foldersResolved] = GetAllFilesAliasHelper(subFiles)
 			else
-				ASSERT(0, "Unexpected file type")
+				WAVE/T filesResolved = subFiles
+				WAVE/ZZ/T foldersResolved
 			endif
-		endfor
-	endif
 
-	AssertOnAndClearRTError()
-	folders = IndexedDir($pathName, -1, 1, FILE_LIST_SEP); err = GetRTError(1)
-	folders = folders + foldersFromAlias
-	WAVE/T wFolders = ListToTextWave(folders, FILE_LIST_SEP)
-	for(folder : wFolders)
-
-		subFolderPathName = GetUniqueSymbolicPath()
-
-		NewPath/Q/O $subFolderPathName, folder
-		files = GetAllFilesRecursivelyFromPath(subFolderPathName, extension = extension)
-		KillPath/Z $subFolderPathName
-
-		if(!isEmpty(files))
-			allFiles = AddListItem(RemoveEnding(files, FILE_LIST_SEP), allFiles, FILE_LIST_SEP, Inf)
+			numFiles   = ConcatenateWavesWithNoteIndex(resultFiles, filesResolved)
+			numFolders = ConcatenateWavesWithNoteIndex(folders, foldersResolved)
 		endif
 	endfor
 
-	return allFiles
+	if(!numFiles)
+		return $""
+	endif
+
+	Redimension/N=(numFiles) resultFiles
+	Note/K resultFiles
+
+	if(needsFiltering)
+		WAVE/Z/T resultFilesFiltered = GrepTextWave(resultFiles, regex)
+	else
+		WAVE/T resultFilesFiltered = resultFiles
+	endif
+
+	return resultFilesFiltered
+End
+
+static Function [WAVE/Z/T filesResolved, WAVE/Z/T foldersResolved] GetAllFilesAliasHelper(WAVE/T files)
+
+	string fileName, fileOrPath
+	variable numFiles, numFolders
+
+	if(DimSize(files, ROWS) == 0)
+		return [$"", $""]
+	endif
+
+#ifdef WINDOWS
+	WAVE/Z/T aliasFiles = GrepTextWave(files, "\.lnk$")
+
+	if(!WaveExists(aliasFiles))
+		return [files, $""]
+	endif
+
+	WAVE/Z/T filesWithoutAliases = GrepTextWave(files, "\.lnk$", invert = 1)
+#else
+	WAVE aliasFiles = files
+	WAVE/ZZ filesWithoutAliases
+#endif // WINDOWS
+
+	Make/T/FREE/N=(MINIMUM_WAVE_SIZE) filesResolved, foldersResolved
+
+	for(fileName : aliasFiles)
+		fileOrPath = ResolveAlias(fileName)
+
+		if(IsEmpty(fileOrPath))
+			// broken alias
+			continue
+		elseif(!cmpstr(fileOrPath, fileName))
+			EnsureLargeEnoughWave(filesResolved, indexShouldExist = numFiles)
+			filesResolved[numFiles++] = fileOrPath
+			continue
+		endif
+
+		GetFileFolderInfo/Q/Z fileOrPath
+		ASSERT(!V_Flag, "Expected fileOrPath to exist")
+
+		if(V_isFile)
+			EnsureLargeEnoughWave(filesResolved, indexShouldExist = numFiles)
+			filesResolved[numFiles++] = S_path
+		elseif(V_isFolder)
+			EnsureLargeEnoughWave(foldersResolved, indexShouldExist = numFolders)
+			foldersResolved[numFolders++] = S_path
+		else
+			ASSERT(0, "Unexpected file type")
+		endif
+	endfor
+
+	if(numFiles == 0)
+		KillWaves filesResolved
+	else
+		Redimension/N=(numFiles) filesResolved
+	endif
+
+	if(numFolders == 0)
+		KillWaves foldersResolved
+	else
+		Redimension/N=(numFolders) foldersResolved
+	endif
+
+#ifdef WINDOWS
+	if(WaveExists(filesWithoutAliases))
+		Concatenate/NP=(ROWS)/FREE/T {filesWithoutAliases}, filesResolved
+	endif
+#endif // WINDOWS
+
+	return [filesResolved, foldersResolved]
 End
 
 /// @brief Open a folder selection dialog
@@ -727,18 +793,19 @@ End
 
 /// @brief Check if the file paths referenced in `list` are pointing
 ///        to identical files
-Function CheckIfPathsRefIdenticalFiles(string list)
+Function CheckIfPathsRefIdenticalFiles(WAVE/T list)
 
 	variable i, numEntries
 	string path, refHash, newHash
 
-	if(ItemsInList(list, FILE_LIST_SEP) <= 1)
+	numEntries = DimSize(list, ROWS)
+
+	if(numEntries <= 1)
 		return 1
 	endif
 
-	numEntries = ItemsInList(list, FILE_LIST_SEP)
 	for(i = 0; i < numEntries; i += 1)
-		path = StringFromList(i, list, FILE_LIST_SEP)
+		path = list[i]
 
 		if(i == 0)
 			refHash = CalcHashForFile(path)

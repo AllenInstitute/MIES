@@ -12,12 +12,12 @@
 /// @brief Helper function for UploadCrashDumps
 ///
 /// Fill `payload` array with content from files
-Function AddPayloadEntriesFromFiles(variable jsonID, WAVE/T paths, [variable isBinary])
+Function AddPayloadEntriesFromFiles(variable jsonID, WAVE/Z/T paths, [variable isBinary])
 
 	string data, fName, filepath, jsonpath
 	variable numEntries, i, offset
 
-	numEntries = DimSize(paths, ROWS)
+	numEntries = WaveExists(paths) ? DimSize(paths, ROWS) : 0
 	Make/FREE/N=(numEntries)/T values, keys
 
 	for(i = 0; i < numEntries; i += 1)

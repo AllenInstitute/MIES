@@ -26,7 +26,7 @@ End
 static Function RestoreAndSaveConfiguration([string str])
 
 	string settingsIPath, settingsFolder, templateFolder, workingFolder
-	string fileList, fName, fContent, fContentRig, wList
+	string fName, fContent, fContentRig, wList
 	variable jsonId
 	string templateIPath    = "templateConf"
 	string tempIPath        = "tempConf"
@@ -48,9 +48,9 @@ static Function RestoreAndSaveConfiguration([string str])
 	NewPath/O/Q $tempIPath, workingFolder
 
 	NewPath/O/Q $templateIPath, templateFolder
-	fileList = GetAllFilesRecursivelyFromPath(templateIPath, extension = ".json")
-	WAVE/T wFileList = ListToTextWave(fileList, "|")
-	for(fileName : wFileList)
+	WAVE/Z/T fileList = GetAllFilesRecursivelyFromPath(templateIPath, regex = "(?i)\.json$")
+	CHECK_WAVE(fileList, TEXT_WAVE | FREE_WAVE)
+	for(fileName : fileList)
 		[fContent, fName] = LoadTextFile(fileName)
 		jsonId            = JSON_Parse(fContent)
 

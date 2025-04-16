@@ -123,7 +123,7 @@ End
 
 static Function TestGetAllFilesRecursivelyFromPath()
 
-	string folder, symbPath, list, cmd
+	string folder, symbPath, list, cmd, symbPathSub
 
 	folder = GetFolder(FunctionPath("")) + "testFolder:"
 
@@ -139,6 +139,7 @@ static Function TestGetAllFilesRecursivelyFromPath()
 
 	CreateFolderOnDisk(folder + "b:")
 	CreateFolderOnDisk(folder + "c:")
+	CreateFolderOnDisk(folder + "d:")
 
 	SaveTextFile("", folder + "file.txt")
 	SaveTextFile("", folder + "b:file1.txt")
@@ -147,15 +148,20 @@ static Function TestGetAllFilesRecursivelyFromPath()
 	CreateAliasShortcut/Z/P=$symbPath "file.txt" as "alias.txt"
 	CHECK(!V_flag)
 
-	list = GetAllFilesRecursivelyFromPath(symbPath, extension = ".txt")
-	CHECK_PROPER_STR(list)
-
-	WAVE/T result = ListToTextWave(list, FILE_LIST_SEP)
+	WAVE/Z/T result = GetAllFilesRecursivelyFromPath(symbPath, regex = "\.txt$")
+	CHECK_WAVE(result, TEXT_WAVE)
 	result[] = RemovePrefix(result[p], start = folder)
 	CHECK_EQUAL_TEXTWAVES(result, {"file.txt", "b:file1.txt", "c:file2.txt"})
 
-	list = GetAllFilesRecursivelyFromPath(symbPath)
-	WAVE/T result = ListToTextWave(list, FILE_LIST_SEP)
+	WAVE/Z/T result = GetAllFilesRecursivelyFromPath(symbPath, regex = "\.txt$", resolveAliases = 1)
+	CHECK_WAVE(result, TEXT_WAVE)
+	result[] = RemovePrefix(result[p], start = folder)
+	// alias.txt.lnk points to file.txt
+	CHECK_EQUAL_TEXTWAVES(result, {"file.txt", "file.txt", "b:file1.txt", "c:file2.txt"})
+
+	WAVE/Z/T result = GetAllFilesRecursivelyFromPath(symbPath, resolveAliases = 1)
+	CHECK_WAVE(result, TEXT_WAVE)
+
 	result[] = RemovePrefix(result[p], start = folder)
 	// alias.txt.lnk points to file.txt
 	CHECK_EQUAL_TEXTWAVES(result, {"file.txt", "file.txt", "b:file1.txt", "c:file2.txt"})
@@ -165,8 +171,16 @@ static Function TestGetAllFilesRecursivelyFromPath()
 	DeleteFile/P=$symbPath "file.txt"
 	CHECK(!V_flag)
 
-	list = GetAllFilesRecursivelyFromPath(symbPath)
-	WAVE/T result = ListToTextWave(list, FILE_LIST_SEP)
+	WAVE/Z/T result = GetAllFilesRecursivelyFromPath(symbPath)
+	CHECK_WAVE(result, TEXT_WAVE)
+
+	result[] = RemovePrefix(result[p], start = folder)
+	// although alias.txt.lnk is invalid, we don't resolve it
+	CHECK_EQUAL_TEXTWAVES(result, {"alias.txt.lnk", "b:file1.txt", "c:file2.txt"})
+
+	WAVE/Z/T result = GetAllFilesRecursivelyFromPath(symbPath, resolveAliases = 1)
+	CHECK_WAVE(result, TEXT_WAVE)
+
 	result[] = RemovePrefix(result[p], start = folder)
 	// file.txt is not included as alias.txt.lnk is invalid
 	CHECK_EQUAL_TEXTWAVES(result, {"b:file1.txt", "c:file2.txt"})
@@ -177,16 +191,32 @@ static Function TestGetAllFilesRecursivelyFromPath()
 	DeleteFolder/P=$symbPath/Z "b"
 	CHECK(!V_flag)
 
-	list = GetAllFilesRecursivelyFromPath(symbPath)
-	WAVE/T result = ListToTextWave(list, FILE_LIST_SEP)
+	WAVE/Z/T result = GetAllFilesRecursivelyFromPath(symbPath)
+	CHECK_WAVE(result, TEXT_WAVE)
+
+	result[] = RemovePrefix(result[p], start = folder)
+	CHECK_EQUAL_TEXTWAVES(result, {"alias.txt.lnk", "someFolder.lnk", "c:file2.txt"})
+
+	WAVE/Z/T result = GetAllFilesRecursivelyFromPath(symbPath, resolveAliases = 1)
+	CHECK_WAVE(result, TEXT_WAVE)
+
 	result[] = RemovePrefix(result[p], start = folder)
 	CHECK_EQUAL_TEXTWAVES(result, {"c:file2.txt"})
 
 	// no matches
-	list = GetAllFilesRecursivelyFromPath(symbPath, extension = ".abc")
-	CHECK_EMPTY_STR(list)
+	WAVE/Z/T result = GetAllFilesRecursivelyFromPath(symbPath, regex = "\.abc$")
+	CHECK_WAVE(result, NULL_WAVE)
+
+	// empty directory
+	symbPathSub = GetUniqueSymbolicPath()
+	NewPath/Q/O/C/Z $symbPathSub, (folder + ":d")
+	CHECK(!V_Flag)
+
+	WAVE/Z/T result = GetAllFilesRecursivelyFromPath(symbPathSub, resolveAliases = 1)
+	CHECK_WAVE(result, NULL_WAVE)
 
 	KillPath $symbPath
+	KillPath $symbPathSub
 	CHECK_NO_RTE()
 End
 

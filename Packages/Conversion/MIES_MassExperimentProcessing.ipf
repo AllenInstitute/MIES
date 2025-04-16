@@ -296,17 +296,16 @@ Function StartMultiExperimentProcessWrapper()
 	outputFolder = S_Path
 	ASSERT(V_flag, "Invalid path")
 
-	files = GetAllFilesRecursivelyFromPath("MultiExperimentInputFolder", extension = ".pxp")
+	WAVE/Z files = GetAllFilesRecursivelyFromPath("MultiExperimentInputFolder", regex = "(?i)\.pxp$")
 
-	// 16: Case-insensitive alphanumeric sort that sorts wave0 and wave9 before wave10.
-	// ...
-	// 64: Ignore + and - in the alphanumeric sort so that "Text-09" sorts before "Text-10". Set options to 80 or 81.
-	files = SortList(files, FILE_LIST_SEP, 80)
-
-	WAVE/Z/T inputPXPs = ListToTextWave(files, FILE_LIST_SEP)
+	if(WaveExists(files))
+		Sort/A=2 files, files
+	else
+		Make/FREE/T/N=0 files
+	endif
 
 	jsonID = JSON_New()
-	JSON_AddWave(jsonID, "/inputFiles", inputPXPs)
+	JSON_AddWave(jsonID, "/inputFiles", files)
 	JSON_AddString(jsonID, "/inputFolder", inputFolder)
 	JSON_AddString(jsonID, "/outputFolder", outputFolder)
 	JSON_AddVariable(jsonID, "/index", 0)

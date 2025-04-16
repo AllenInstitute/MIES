@@ -2649,19 +2649,24 @@ static Function AB_AddExperimentEntries(string win, WAVE/T entries)
 			symbPath = GetUniqueSymbolicPath()
 			NewPath/O/Q/Z $symbPath, entry
 			if(GetCheckBoxState(win, "check_load_pxp"))
-				pxpList = GetAllFilesRecursivelyFromPath(symbPath, extension = ".pxp")
-				uxpList = GetAllFilesRecursivelyFromPath(symbPath, extension = ".uxp")
-			else
-				pxpList = ""
-				uxpList = ""
+				WAVE/Z/T pxps = GetAllFilesRecursivelyFromPath(symbPath, regex = "(?i)\.(pxp|uxp)$")
 			endif
 			if(GetCheckBoxState(win, "check_load_nwb"))
-				nwbList = GetAllFilesRecursivelyFromPath(symbPath, extension = ".nwb")
-			else
-				nwbList = ""
+				WAVE/Z/T nwbs = GetAllFilesRecursivelyFromPath(symbPath, regex = "(?i)\.nwb$")
 			endif
 			KillPath/Z $symbPath
-			WAVE/T fileList = ListToTextWave(SortList(pxpList + uxpList + nwbList, FILE_LIST_SEP), FILE_LIST_SEP)
+
+			if(WaveExists(pxps) && WaveExists(nwbs))
+				Concatenate/NP=(ROWS)/FREE/T {nwbs, pxps}, fileList
+			elseif(WaveExists(pxps))
+				WAVE/T fileList = pxps
+			elseif(WaveExists(nwbs))
+				WAVE/T fileList = nwbs
+			else
+				break
+			endif
+
+			Sort fileList, fileList
 		elseif(FileExists(entry))
 			Make/FREE/T fileList = {entry}
 		else

@@ -297,25 +297,26 @@ End
 /// @brief Return a text wave with absolute paths to the JSON configuration files
 static Function/WAVE CONF_GetConfigFiles([string customIPath])
 
-	string settingsPath, fileList
+	string settingsPath
 
 	if(ParamIsDefault(customIPath))
 		settingsPath = CONF_GetSettingsPath(CONF_AUTO_LOADER_GLOBAL)
 	else
 		settingsPath = customIPath
 	endif
-	fileList = GetAllFilesRecursivelyFromPath(settingsPath, extension = ".json")
 
-	if(IsEmpty(fileList) && !ParamIsDefault(customIPath))
+	WAVE/Z/T fileList = GetAllFilesRecursivelyFromPath(settingsPath, regex = "(?i)\.json$")
+
+	if(!WaveExists(fileList) && !ParamIsDefault(customIPath))
 		settingsPath = CONF_GetSettingsPath(CONF_AUTO_LOADER_USER)
-		fileList     = GetAllFilesRecursivelyFromPath(settingsPath, extension = ".json")
+		WAVE/Z/T fileList = GetAllFilesRecursivelyFromPath(settingsPath, regex = "(?i)\.json$")
 	endif
 
-	if(IsEmpty(fileList))
+	if(!WaveExists(fileList))
 		return $""
 	endif
 
-	return ListToTextWave(fileList, FILE_LIST_SEP)
+	return fileList
 End
 
 /// @brief Automatically loads all *.json files from MIES Settings folder and opens and restores the corresponding windows
