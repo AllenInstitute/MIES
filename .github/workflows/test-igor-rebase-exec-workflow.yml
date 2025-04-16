@@ -29,7 +29,7 @@ on:
         description: A JSON string with the tags for the target runner
       installer_artifact_name:
         required: false
-        default: BuildInstaller-dev-assets
+        default: BuildInstaller-assets
         type: string
         description: The name of the artifact that holds the installer
       installer_flags:

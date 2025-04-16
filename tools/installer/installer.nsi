@@ -42,6 +42,26 @@
 !define IGOR9DEFPATH "$PROGRAMFILES64\WaveMetrics\Igor Pro 9 Folder"
 !define IGOR10DEFPATH "$PROGRAMFILES64\WaveMetrics\Igor Pro 10 Folder"
 
+# Temp file for command execution output for ExecDos::Exec
+!define EXECDOSOUTPUT "ExecOutput.log"
+
+# Return codes
+!define ERROR_INSTALLER_ALREADY_RUNNING 1
+!define ERROR_UNINSTALLER_ALREADY_RUNNING 2
+!define ERROR_CANNOT_GET_TASKLIST 3
+!define ERROR_ADMIN_INSTALLATION_PRESENT 4
+!define ERROR_IGORPRO_IS_RUNNING 5
+!define ERROR_IGORPRO64_IS_RUNNING 6
+!define ERROR_64BIT_OS_REQUIRED 7
+!define ERROR_ADMIN_REQUIRED 8
+!define ERROR_MIES_ALREADY_INSTALLED 9
+!define ERROR_NO_IGOR9_PATH 10
+!define ERROR_NO_IGOR10_PATH 11
+!define ERROR_CANNOT_CREATE_UNINSTALL_FILELIST 12
+!define ERROR_CANNOT_DISABLE_ASLR 13
+!define ERROR_CANNOT_CREATE_INSTALLCONFIG 14
+!define ERROR_ELEVATION_REQUIRED 740
+
 #Unicode true
 SetCompressor /SOLID lzma
 !include "${NSISREQUEST}"
@@ -110,32 +130,70 @@ Var NSD_IF_CB4
 
 !include "browsefolder.nsh"
 
-!macro PreventMultipleInstaller
+!macro QuitWithCode code
+  SetErrorLevel code
+  Quit
+!macroend
+
+!macro PreventMultipleInstaller uid
   System::Call 'kernel32::CreateMutex(p 0, i 0, t "MIESINSTALLMutex") p .r1 ?e'
   Pop $R0
-  StrCmp $R0 0 +4
+  StrCmp $R0 0 MacroEnd_${uid}
     IfSilent +2
       MessageBox MB_OK|MB_ICONEXCLAMATION "The installer is already running."
-    Quit
+    !insertmacro QuitWithCode ERROR_INSTALLER_ALREADY_RUNNING
+  MacroEnd_${uid}:
 !macroend
 
-!macro PreventMultipleUninstaller
+!macro PreventMultipleUninstaller uid
   System::Call 'kernel32::CreateMutex(p 0, i 0, t "MIESUNINSTALLMutex") p .r1 ?e'
   Pop $R0
-  StrCmp $R0 0 +4
+  StrCmp $R0 0 MacroEnd_${uid}
     IfSilent +2
       MessageBox MB_OK|MB_ICONEXCLAMATION "The uninstaller is already running."
-    Quit
+    !insertmacro QuitWithCode ERROR_UNINSTALLER_ALREADY_RUNNING
+  MacroEnd_${uid}:
 !macroend
 
-!macro FindProc result processName
-  ExecCmd::exec "%SystemRoot%\System32\tasklist /NH /FI $\"IMAGENAME eq ${processName}$\" | %SystemRoot%\System32\find /I $\"${processName}$\""
-  Pop $0 ; The handle for the process
-  ExecCmd::wait $0
+!macro FindProc result processName uid
+  ReadEnvStr $0 SYSTEMROOT
+  Push "ExecDos::End"
+; In contradiction to the docs the two empty strings at the end are mandatory. Otherwise the stack gets cleared.
+; The logfile name (third string) is put on the stack before the command output.
+; I could not get the plugin to generate any logfile output by itself.
+; Stack:
+;   <command output>
+;   ...
+;   <logfile name>
+;   <Marker> if pushed before
+; I found no way that allows piping to a second application
+  ExecDos::exec /NOUNLOAD /TOSTACK "$0\System32\tasklist.exe /NH /FI $\"IMAGENAME eq ${processName}$\"" "" ""
+  Pop $0
+  ${if} $0 <> 0
+    IfSilent +2
+      MessageBox MB_OK|MB_ICONEXCLAMATION "Can not get current task list through tasklist.exe."
+    !insertmacro QuitWithCode ERROR_CANNOT_GET_TASKLIST
+  ${EndIf}
+
+  ReadEnvStr $0 TEMP
+  FileOpen $4 "$0\${EXECDOSOUTPUT}" w
+  Loop_${uid}:
+    Pop $1
+    StrCmp $1 "ExecDos::End" LoopEnd_${uid}
+    FileWrite $4 $1
+    Goto Loop_${uid}
+  LoopEnd_${uid}:
+  FileClose $4
+
+  ReadEnvStr $0 SYSTEMROOT
+  ReadEnvStr $1 TEMP
+  ExecDos::exec /NOUNLOAD "$0\System32\find.exe /I $\"${processName}$\" $1\${EXECDOSOUTPUT}" "" ""
+
   Pop ${result} ; The exit code
+  Delete $1\${EXECDOSOUTPUT}
 !macroend
 
-!macro CheckAllUninstalled
+!macro CheckAllUninstalled uid
   StrCpy $2 "0"
   ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "DisplayName"
   StrLen $1 $0
@@ -152,10 +210,11 @@ Var NSD_IF_CB4
   IfFileExists "${USERINSTDIR}\uninstall.exe" 0 +2
     StrCpy $2 "1"
 
-  IntCmp $2 0 +4
+  IntCmp $2 0 MacroEnd_${uid}
     ifSilent +2
       MessageBox MB_OK|MB_ICONSTOP "There is a already a installation of MIES present that was installed with administrative privileges. Uninstallation requires administrative privileges as well and can not be done with your current rights. Please contact an administrator to uninstall MIES through Add/Remove Programs first."
-      Quit
+      !insertmacro QuitWithCode ERROR_ADMIN_INSTALLATION_PRESENT
+  MacroEnd_${uid}:
 !macroend
 
 !macro UninstallAttemptAdmin
@@ -165,7 +224,10 @@ Var NSD_IF_CB4
   ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "QuietUninstallString"
   StrLen $1 $0
   ${If} $1 <> 0
-    ExecWait '$0'
+    ExecWait '$0 _?=$INSTDIR'
+    Delete "$INSTDIR\uninstall.exe"
+    RMDir $INSTDIR
+    BringToFront
   ${EndIf}
 !macroend
 
@@ -174,12 +236,14 @@ Var NSD_IF_CB4
 !define UODUID ${__LINE__}
   IfFileExists "${USERINSTDIR}\uninstall.exe" 0 UODUEnd_{UODUID}
     IfSilent +3
-      ExecWait "${USERINSTDIR}\uninstall.exe"
+      ExecWait "${USERINSTDIR}\uninstall.exe _?=${USERINSTDIR}"
       Goto +2
-    ExecWait '"${USERINSTDIR}\uninstall.exe" /S'
+    ExecWait '"${USERINSTDIR}\uninstall.exe" /S _?=${USERINSTDIR}'
+    Delete "${USERINSTDIR}\uninstall.exe"
+    RMDir "${USERINSTDIR}"
+    BringToFront
   UODUEnd_{UODUID}:
 !undef UODUID
-  !insertmacro WaitForUninstaller
 
 # this is the current check against registry
   IfSilent +3
@@ -188,24 +252,22 @@ Var NSD_IF_CB4
   ReadRegStr $0 HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "QuietUninstallString"
   StrLen $1 $0
   ${If} $1 <> 0
-    ExecWait '$0'
+    ExecWait '$0 _?=${USERINSTDIR}'
+    Delete "${USERINSTDIR}\uninstall.exe"
+    RMDir "${USERINSTDIR}"
+    BringToFront
   ${EndIf}
 !macroend
 
 !macro WaitForProc ProcName
 !define WFPID ${__LINE__}
 WFUWaitUninstA_${WFPID}:
-    !insertmacro FindProc $processFound "${ProcName}"
+    !insertmacro FindProc $processFound "${ProcName}" ${__LINE__}
     IntCmp $processFound ${FindProc_NOT_FOUND} WFUEndWaitUninstA_${WFPID}
       Sleep 100
       Goto WFUWaitUninstA_${WFPID}
 WFUEndWaitUninstA_${WFPID}:
 !undef WFPID
-!macroend
-
-!macro WaitForUninstaller
-  !insertmacro WaitForProc "uninstall.exe"
-  !insertmacro WaitForProc "Un_A.exe"
 !macroend
 
 !macro CheckIgor64
@@ -218,20 +280,22 @@ WFUEndWaitUninstA_${WFPID}:
   ${EndIf}
 !macroend
 
-!macro StopOnIgor32
-  !insertmacro FindProc $processFound "Igor.exe"
-  IntCmp $processFound ${FindProc_NOT_FOUND} +4
+!macro StopOnIgor32 uid
+  !insertmacro FindProc $processFound "Igor.exe" ${__LINE__}
+  IntCmp $processFound ${FindProc_NOT_FOUND} MacroEnd_${uid}
     IfSilent +2
       MessageBox MB_OK|MB_ICONEXCLAMATION "Igor Pro is running. Please close it first" /SD IDOK
-    Quit
+    !insertmacro QuitWithCode ERROR_IGORPRO_IS_RUNNING
+  MacroEnd_${uid}:
 !macroend
 
-!macro StopOnIgor64
-  !insertmacro FindProc $processFound "Igor64.exe"
-  IntCmp $processFound ${FindProc_NOT_FOUND} +4
+!macro StopOnIgor64 uid
+  !insertmacro FindProc $processFound "Igor64.exe" ${__LINE__}
+  IntCmp $processFound ${FindProc_NOT_FOUND} MacroEnd_${uid}
     IfSilent +2
       MessageBox MB_OK|MB_ICONEXCLAMATION "Igor Pro (64-bit) is running. Please close it first" /SD IDOK
-    Quit
+    !insertmacro QuitWithCode ERROR_IGORPRO64_IS_RUNNING
+  MacroEnd_${uid}:
 !macroend
 
 !macro SetInstallPath
@@ -423,9 +487,6 @@ Function DialogInstallFor910
   NoIGOR1064:
   ${NSD_OnClick} $NSD_IF_CB4 ClickedIGOR1064
 
-  ${NSD_CreateLabel} 5u 88u 100% 26u "The 32-bit version of MIES is discontinued. If you REALLY need a 32-bit version, you can grab the now unsupported version 2.3 from https://github.com/AllenInstitute/MIES/releases/tag/Release_2.3_20210908."
-  Pop $NSD_IF_Label
-
   nsDialogs::Show
 FunctionEnd
 
@@ -433,7 +494,7 @@ function .onInit
   ${IfNot} ${RunningX64}
     IfSilent +2
       MessageBox MB_OK|MB_ICONEXCLAMATION "Aborting: MIES requires a 64-bit Windows OS."
-    Quit
+    !insertmacro QuitWithCode ERROR_64BIT_OS_REQUIRED
   ${EndIf}
 
   ClearErrors
@@ -463,7 +524,7 @@ function .onInit
 QuitCantAlluser:
     IfSilent +2
       MessageBox MB_OK|MB_ICONEXCLAMATION "Aborting: You need to administrator privileges for /ALLUSER installation."
-    Quit
+    !insertmacro QuitWithCode ERROR_ADMIN_REQUIRED
   ${EndIf}
 
 CheckIgorPaths:
@@ -520,17 +581,15 @@ IGOR10CheckEnd:
   ${If} ${Errors}
     # normal installation
 
-    !insertmacro PreventMultipleInstaller
-    !insertmacro StopOnIgor32
-    !insertmacro StopOnIgor64
-
-    !insertmacro UninstallAttemptAdmin
-    !insertmacro WaitForUninstaller
-
+    !insertmacro PreventMultipleInstaller ${__LINE__}
+    !insertmacro StopOnIgor32 ${__LINE__}
+    !insertmacro StopOnIgor64 ${__LINE__}
+    IntCmp $ISADMIN 0 SkipAdminUninstall
+      !insertmacro UninstallAttemptAdmin
+SkipAdminUninstall:
     !insertmacro UninstallAttemptUser
-    !insertmacro WaitForUninstaller
 
-    !insertmacro CheckAllUninstalled
+    !insertmacro CheckAllUninstalled ${__LINE__}
   ${EndIf}
 
   !insertmacro SetInstallPath
@@ -562,13 +621,14 @@ CLTDone_${CLTID}:
 !undef CLTID
 !macroend
 
-!macro CheckMIESPresent Path NiceInfo
+!macro CheckMIESPresent Path NiceInfo uid
   !insertmacro CheckLinkTarget "${Path}\Igor Procedures" "MIES_Include.ipf"
   Pop $1
-  IntCmp $1 0 +4
+  IntCmp $1 0 MacroEnd_${uid}
     IfSilent +2
       MessageBox MB_OK|MB_ICONSTOP "It appears that there is already MIES for ${NiceInfo} installed. Please remove MIES manually first."
-    Quit
+    !insertmacro QuitWithCode ERROR_MIES_ALREADY_INSTALLED
+  MacroEnd_${uid}:
 !macroend
 
 !macro CreateIgorDirs
@@ -640,11 +700,11 @@ MIESCheck9:
       StrLen $0 $INSTALL_I9PATH
       ${If} $0 = 0
         IfSilent +2
-        MessageBox MB_OK "Bug: I have no Igor 9 Path."
-        Quit
+          MessageBox MB_OK "Bug: I have no Igor 9 Path."
+        !insertmacro QuitWithCode ERROR_NO_IGOR9_PATH
       ${EndIf}
-      !insertmacro CheckMIESPresent "$DOCUMENTS\WaveMetrics\Igor Pro 9 User Files" "Igor Pro 9"
-      !insertmacro CheckMIESPresent "$INSTALL_I9PATH" "Igor Pro 9"
+      !insertmacro CheckMIESPresent "$DOCUMENTS\WaveMetrics\Igor Pro 9 User Files" "Igor Pro 9" ${__LINE__}
+      !insertmacro CheckMIESPresent "$INSTALL_I9PATH" "Igor Pro 9" ${__LINE__}
 MIESCheck9End:
   IntCmp $INSTALL_I1064 1 MIESCheck10
   Goto MIESCheck10End
@@ -652,19 +712,18 @@ MIESCheck10:
     StrLen $0 $INSTALL_I10PATH
     ${If} $0 = 0
       IfSilent +2
-      MessageBox MB_OK "Bug: I have no Igor 10 Path."
-      Quit
+        MessageBox MB_OK "Bug: I have no Igor 10 Path."
+      !insertmacro QuitWithCode ERROR_NO_IGOR10_PATH
     ${EndIf}
-    !insertmacro CheckMIESPresent "$DOCUMENTS\WaveMetrics\Igor Pro 10 User Files" "Igor Pro 10"
-    !insertmacro CheckMIESPresent "$INSTALL_I10PATH" "Igor Pro 10"
+    !insertmacro CheckMIESPresent "$DOCUMENTS\WaveMetrics\Igor Pro 10 User Files" "Igor Pro 10" ${__LINE__}
+    !insertmacro CheckMIESPresent "$INSTALL_I10PATH" "Igor Pro 10" ${__LINE__}
 MIESCheck10End:
 
   IntCmp $ALLUSER 0 AdminCheckDone
     IntCmp $ISADMIN 1 AdminCheckDone
     IfSilent +2
       MessageBox mb_iconstop "You selected installation for All Users, but you don't have Administrator rights."
-    SetErrorLevel 740 ;ERROR_ELEVATION_REQUIRED
-    Quit
+    !insertmacro QuitWithCode ERROR_ELEVATION_REQUIRED
 AdminCheckDone:
 
   !include "${NSISINSTDIRLIST}"
@@ -736,7 +795,7 @@ InstallAEnd1064:
 FileError:
   IfSilent +2
     MessageBox MB_OK "Can not create $INSTDIR\uninstall.lst."
-  Quit
+  !insertmacro QuitWithCode ERROR_CANNOT_CREATE_UNINSTALL_FILELIST
 
 EndOfLinks:
   FileClose $FILEHANDLE
@@ -792,12 +851,17 @@ SkipVCRedistInstallation:
 
   IntCmp $ISADMIN 0 SkipASLRSetup
     IntCmp $XOPINST 0  SkipASLRSetup
-      ExecWait 'Powershell.exe -executionPolicy bypass -File "$INSTDIR\Packages\ITCXOP2\tools\Disable-ASLR-for-Igor64.ps1"'
+      # This special execution is required because we need to run 64-bit powershell here
+      ExecWait '$WINDIR\sysnative\windowspowershell\v1.0\powershell.exe -executionPolicy bypass -File "$INSTDIR\Packages\ITCXOP2\tools\Disable-ASLR-for-Igor64.ps1"' $0
+      IntCmp $0 0 SkipASLRSetup
+        IfSilent +2
+          MessageBox MB_OK "Can not disable ASLR for Igor64.exe."
+        !insertmacro QuitWithCode ERROR_CANNOT_DISABLE_ASLR
+
 SkipASLRSetup:
 
   IntCmp $ISADMIN 0 SkipITCSetup
     IntCmp $XOPINST 0  SkipITCSetup
-      ExecWait 'Powershell.exe -executionPolicy bypass -File "$INSTDIR\Packages\ITCXOP2\tools\FixOffice365.ps1"'
       !insertmacro WriteITCRegistry
       ${If} ${RunningX64}
         SetRegView 64
@@ -805,23 +869,46 @@ SkipASLRSetup:
         SetRegView default
       ${EndIf}
 SkipITCSetup:
+; Write out installed configuration
+; Format of the json file:
+; /Installation/User : <string> ; for what user target the installation was done, either "current" or "all"
+; /Installation/WithHardware : <number> ; if the installation was done with hardware XOPs, either "1" or "0"
+  ClearErrors
+  FileOpen $FILEHANDLE "$INSTDIR\installation_configuration.json" w
+  IfErrors FileErrorInstallConfig
+  FileWrite $FILEHANDLE '{$\n'
+  FileWrite $FILEHANDLE '$\t"Installation" : {$\n'
+  IntCmp $ALLUSER 1 ConfigWriteUserAll
+    FileWrite $FILEHANDLE '$\t$\t"User" : "current",$\n'
+    Goto ConfigWriteUserEnd
+ConfigWriteUserAll:
+    FileWrite $FILEHANDLE '$\t$\t"User" : "all",$\n'
+ConfigWriteUserEnd:
+  IntCmp $XOPINST 1 ConfigWriteWithHardwareYes
+  FileWrite $FILEHANDLE '$\t$\t"WithHardware" : 0$\n'
+  Goto ConfigWriteWithHardwareEnd
+ConfigWriteWithHardwareYes:
+  FileWrite $FILEHANDLE '$\t$\t"WithHardware" : 1$\n'
+ConfigWriteWithHardwareEnd:
+  FileWrite $FILEHANDLE '$\t}$\n'
+  FileWrite $FILEHANDLE '}'
+  FileClose $FILEHANDLE
+  Goto EndOfInstallation
+FileErrorInstallConfig:
+  IfSilent +2
+    MessageBox MB_OK "Can not create installation configuration file."
+  !insertmacro QuitWithCode ERROR_CANNOT_CREATE_INSTALLCONFIG
+
+EndOfInstallation:
 
 SectionEnd
 
 # Uninstaller
 
 function un.onInit
-  !insertmacro PreventMultipleUninstaller
-  UserInfo::GetAccountType
-  pop $0
-  ${If} $0 == "admin"
-    IfSilent Next
-      MessageBox MB_OKCANCEL "Permanently remove ${APPNAME}?" IDOK Next
-    Quit
-Next:
-  ${EndIf}
-  !insertmacro StopOnIgor32
-  !insertmacro StopOnIgor64
+  !insertmacro PreventMultipleUninstaller ${__LINE__}
+  !insertmacro StopOnIgor32 ${__LINE__}
+  !insertmacro StopOnIgor64 ${__LINE__}
 functionEnd
 
 Section "uninstall"
@@ -833,9 +920,9 @@ ReadLoop:
   FileRead $FILEHANDLE $LINESTR
   IfErrors +1 +2
     Goto EndReadLoop
-  ExecCmd::exec "cmd.exe /Cdel $\"$LINESTR$\""
+  ExecDos::exec /NOUNLOAD "cmd.exe /Cdel $\"$LINESTR$\"" "" ""
   Pop $0
-  ExecCmd::wait $0
+  ExecDos::wait $0
   Pop $0
   Goto ReadLoop
 EndReadLoop:

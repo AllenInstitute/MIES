@@ -66,14 +66,7 @@ jobs:
           if-no-files-found: warn
 
   BuildInstaller:
-    name: 🏗 Build ${{ matrix.kind }} installer
-    strategy:
-      matrix:
-        kind:
-          # the normal installer
-          - user
-          # This installer is *only* intended for developer internal use!
-          - dev
+    name: 🏗 Build installer
     runs-on: [ self-hosted, Windows, Certificate ]
     steps:
       - name: Checkout repository
@@ -84,14 +77,14 @@ jobs:
       - name: Initial repo config
         run: tools/initial-repo-config.sh
       - name: Create release package and installer
-        run: tools/create-installer.sh ${{ fromJSON('["", "dev"]')[ matrix.kind == 'dev' ] }}
+        run: tools/create-installer.sh unelevated
       - name: Sign installer
         run: tools/sign-installer.sh -p '${{ secrets.GHA_MIES_CERTIFICATE_PIN }}'
       - name: upload artifacts
         uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: BuildInstaller-${{ matrix.kind }}-assets
+          name: BuildInstaller-assets
           path: |
             *.zip
             tools/installer/MIES-*.exe
@@ -132,7 +125,7 @@ jobs:
       job_name: 👩🏾‍🔬 Compilation of ${{ matrix.source }} ${{ fromJSON('["","with XOP"]')[matrix.hardware] }}
       overwrite_job_name: ${{ inputs.is_called_workflow || false }}
       experiment: Packages/tests/Compilation/CompilationTester.pxp
-      installer_artifact_name: BuildInstaller-dev-assets
+      installer_artifact_name: BuildInstaller-assets
       installer_flags: ${{ fromJSON('["-x skipHardwareXOPs",""]')[matrix.hardware] }} -s ${{ matrix.source }}
       artifact_name: CompilationTest-${{ matrix.source }}-${{ fromJSON('["no-hardware","hardware"]')[matrix.hardware] }}-assets
       timeout_minutes: 60

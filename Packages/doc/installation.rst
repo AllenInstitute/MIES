@@ -66,8 +66,7 @@ Silent installation
 ~~~~~~~~~~~~~~~~~~~
 
 The installer is developed using `NSIS <https://nsis.sourceforge.io>`__ which also
-supports silent installation. The installer requires admin privileges also with
-silent installation.
+supports silent installation.
 
 To perform a silent installation pass the `/S` command line option which will
 install with the following settings:
@@ -83,54 +82,81 @@ Installer details and limitations
 
 The installer uses the Nullsoft Installer System `NSIS <https://nsis.sourceforge.io>`__.
 NSIS allows to create installers that require admin privileges and installers that
-run with user privileges only. By default an installer requiring admin privileges
-is created by executing ``tools/create-installer.sh`` from a MingW64 bash.
-With ``tools/create-installer.sh 1`` a user mode installer can be created.
+run with user privileges only. When executing ``tools/create-installer.sh`` from a MingW64 bash
+an installer is build that requests elevated privileges when run.
+With an additional argument, like ``tools/create-installer.sh 1``, a user mode installer is created.
+
+It is recommended to use the user mode installer, that is also provided in the regular MIES release.
+Elevation can be achieved by running the user mode installer as a user with admin privileges.
 
 The installer tries to detect if and where the required Igor Pro versions are is installed.
-It defaults then to the 64-bit version if the found Igor Pro(s) which is reflected
-in the default selection of the corresponding installer dialog. In silent mode the
-found defaults are automatically used. If in silent mode no Igor Pro installations are
-detected then only the main MIES files get installed.
+If in silent mode no Igor Pro installations are detected then only the main MIES files get installed.
 
-Installer with admin privileges
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Installing with admin privileges
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-When run as user the installer asks for privilege elevation.
+For installation with admin privileges the installer needs to be run as user that is admin.
 
-Installs by default to the user folder e.g. `\\Users\\Admin\\Documents\\MIES folder`.
-Igor Pro integration through shortcuts is put to the user Igor Pro procedures/extension folders in
+Thus, the default user mode installer must be run as admin.
+If an admin installer was created then it will ask for privilege elevation if required.
+
+Installs by default to the admin user folder e.g. `\\Users\\Admin\\Documents\\MIES folder`.
+Igor Pro integration through shortcuts is put to the user Igor Pro procedures/extensions folders in
 `\\Users\\Admin\\Documents\\WaveMetrics\\Igor Pro X Folder`.
 
-Installs with `/ALLUSER` or corresponding dialog selection to the `\\Program Files\\MIES folder`.
-Igor Pro integration through shortcuts is put to the global Igor Pro procedures/extension folders in
+Installs with `/ALLUSER` or corresponding dialog selection to the `\\Program Files\\MIES` folder.
+Igor Pro integration through shortcuts is put to the global Igor Pro procedures/extensions folders in
 `\\Program Files\\Wavemetrics\\Igor Pro X Folder`.
 
 Prior installation it is detected by checking the installed programs list of windows (Apps & Features)
-if MIES is already installed. If it is installed then the uninstaller is called first.
+if MIES is already installed. If MIES is already installed then the uninstaller is called first without user interaction.
 If the installation was run silent then the uninstaller is also called silent.
 
 A limitation is that the installer can not detect if another user has a user installation of MIES.
-Thus such installation will remain in parallel and result in a double installation for that user (global and local).
+Thus, such installation will remain in parallel and result in a double installation for that user (global and local).
 The local installation of this user has to be uninstalled. This can be done when the user is logged in through
-windows Apps & Features.
+windows Apps & Features or Administrative Templates.
 
-Installer with user privileges
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Installing with user privileges
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Installs by default to the user folder e.g. `\\Users\\User\\Documents\\MIES folder`.
-Igor Pro integration through shortcuts is put to the user Igor Pro procedures/extension folders in
+Installs by default to the user folder e.g. `\\Users\\User\\Documents\\MIES` folder.
+Igor Pro integration through shortcuts is put to the users Igor Pro procedures/extensions folders in
 `\\Users\\User\\Documents\\WaveMetrics\\Igor Pro X Folder`.
 
 Installation for all users is not supported as it would require administrative privileges.
-Thus the dialog option is greyed out. When `/ALLUSER` is specified an error message is shown.
+Thus, the dialog option is greyed out. When `/ALLUSER` is specified an error message is shown.
 If `/ALLUSER` and `/S` for silent installation is specified the installer silently quits.
 
 Prior installation it is detected by checking the installed programs list of windows (Apps & Features)
-if MIES is already installed. If it is installed then the uninstaller is called first.
+if MIES is already installed. If MIES is already installed then the uninstaller is called first.
 If the installation was run silent then the uninstaller is also called silent.
 The user can only uninstall previous installations from himself. If the previous installation
-was done by an admin the uninstaller will ask for privilege elevation.
+was done by an admin for all users the uninstaller quits without uninstalling due to insufficient rights.
+
+List of Installer Return Codes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
++-------------+---------------------------------------------------------------------------------------------------------------------------------+
+| Return Code | Description                                                                                                                     |
++=============+=================================================================================================================================+
+| 0           | No Error                                                                                                                        |
+| 1           | Another instance of the installer is already running                                                                            |
+| 2           | Another instance of the uninstaller is already running                                                                          |
+| 3           | Can not retrieve list of currently running processes                                                                            |
+| 4           | The installation is run as non-admin user but a MIES installation that was installed with admin privileges is already present.  |
+| 5           | Igor.exe is currently running                                                                                                   |
+| 6           | Igor64.exe is currently running                                                                                                 |
+| 7           | MIES requires a 64-bit operating system                                                                                         |
+| 8           | Admin privileges required                                                                                                       |
+| 9           | MIES was already manually installed. It needs a manual deinstallation before it can be installed.                               |
+| 10          | Could not determine path to Igor 9 executable.                                                                                  |
+| 11          | Could not determine path to Igor 10 executable.                                                                                 |
+| 12          | The file list for deinstallation could not be written                                                                           |
+| 13          | An error occurred when trying to disable ASLR for Igor64.exe (requires for ITC XOP)                                             |
+| 14          | The installation configuration could not be written                                                                             |
+| 740         | Admin privileges required. The installer was run as regular user with the argument /ALLUSER                                     |
++-------------+---------------------------------------------------------------------------------------------------------------------------------+
 
 Corrupted installations
 ^^^^^^^^^^^^^^^^^^^^^^^
