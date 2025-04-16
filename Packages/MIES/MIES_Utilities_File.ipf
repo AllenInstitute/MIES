@@ -748,3 +748,14 @@ Function/S GetProgramFilesFolder()
 	return "C:\\Program Files (x86)\\"
 #endif
 End
+
+/// @brief Opens the target filepath and selects the file or folder in the explorer.
+Function OpenExplorerAtFile(string fullFilePath)
+
+	string cmdline
+
+	fullFilepath = GetWindowsPath(fullFilePath)
+	sprintf cmdLine, "explorer /select, \"%s\"", fullFilepath
+
+	ExecuteScriptText/Z cmdLine
+End

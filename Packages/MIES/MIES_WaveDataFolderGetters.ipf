@@ -5281,6 +5281,22 @@ Function/S GetAnalysisExpFolderAS(string expFolder)
 	return GetAnalysisFolderAS() + ":" + expFolder
 End
 
+/// @brief Return the datafolder reference to the per experiment general folder
+///
+/// UTF_NOINSTRUMENTATION
+Function/DF GetAnalysisExpGeneralFolder(string expFolder)
+
+	return createDFWithAllParents(GetAnalysisExpGeneralFolderAS(expFolder))
+End
+
+/// @brief Return the full path to the per experiment geneal folder, e.g. root:MIES:Analysis:my_experiment:general
+///
+/// UTF_NOINSTRUMENTATION
+Function/S GetAnalysisExpGeneralFolderAS(string expFolder)
+
+	return GetAnalysisExpFolderAS(expFolder) + ":general"
+End
+
 /// @brief Return the datafolder reference to the per device folder of an experiment
 ///
 /// UTF_NOINSTRUMENTATION

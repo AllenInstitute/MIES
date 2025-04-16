@@ -21,7 +21,7 @@ Constant DAQ_CONFIG_WAVE_VERSION = 3
 Constant DA_EPHYS_PANEL_VERSION           = 66
 Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 52
 Constant WAVEBUILDER_PANEL_VERSION        = 14
-Constant ANALYSISBROWSER_PANEL_VERSION    = 6
+Constant ANALYSISBROWSER_PANEL_VERSION    = 8
 Constant PSX_PLOT_PANEL_VERSION           = 1
 
 /// Version of the stimset wave note
@@ -2034,11 +2034,12 @@ Constant DFREF_FREE  = 0x2
 /// @name Called once names
 /// @anchor CalledOnceNames
 ///@{
-StrConstant CO_EMPTY_DAC_LIST     = "emptyDACList"
-StrConstant CO_SF_TOO_MANY_TRACES = "SF_tooManyTraces"
-StrConstant CO_PSX_CLIPPED_STATS  = "psx_clippedStats"
-StrConstant CO_ARCHIVE_ONCE       = "ArchiveLogs"
-StrConstant CO_PSX_UPGRADE_EVENT  = "psx_updateEvent"
+StrConstant CO_EMPTY_DAC_LIST        = "emptyDACList"
+StrConstant CO_SF_TOO_MANY_TRACES    = "SF_tooManyTraces"
+StrConstant CO_PSX_CLIPPED_STATS     = "psx_clippedStats"
+StrConstant CO_ARCHIVE_ONCE          = "ArchiveLogs"
+StrConstant CO_PSX_UPGRADE_EVENT     = "psx_updateEvent"
+StrConstant CO_AB_LOADHISTORYFROMPXP = "ABLoadHistoryFromPXP"
 ///@}
 
 /// @name Constants for SweepFormula Meta data in JSON format

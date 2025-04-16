@@ -11,12 +11,19 @@
 ///
 /// Has no dependencies on any hardware related functions.
 
-static Constant    EXPERIMENT_TREEVIEW_COLUMN = 0
-static Constant    DEVICE_TREEVIEW_COLUMN     = 3
-static Constant    AB_LOAD_SWEEP              = 0
-static Constant    AB_LOAD_STIMSET            = 1
-static StrConstant AB_UDATA_WORKINGDF         = "datafolder"
-static StrConstant AB_WORKFOLDER_NAME         = "workFolder"
+static Constant EXPERIMENT_TREEVIEW_COLUMN = 0
+static Constant DEVICE_TREEVIEW_COLUMN     = 3
+
+static Constant AB_LOAD_SWEEP          = 0
+static Constant AB_LOAD_STIMSET        = 1
+static Constant AB_LOAD_TP_STORAGE     = 2
+static Constant AB_LOAD_HISTORYANDLOGS = 3
+
+static Constant AB_LOADOPT_RESULTS  = 0x01
+static Constant AB_LOADOPT_COMMENTS = 0x02
+
+static StrConstant AB_UDATA_WORKINGDF = "datafolder"
+static StrConstant AB_WORKFOLDER_NAME = "workFolder"
 
 static Function AB_ResetListBoxWaves()
 
@@ -84,11 +91,11 @@ End
 /// @brief Create relation (map) between file on disk and datafolder in current experiment
 ///
 /// @return index into mapping wave of the newly added entry or -1 if the file
-///         is already in the map
+///         is already in the map or an error occurred parsing the file
 static Function AB_AddMapEntry(string baseFolder, string discLocation)
 
-	variable nextFreeIndex, fileID, nwbVersion, dim, writeIndex
-	string dataFolder, fileType, relativePath, extension
+	variable nextFreeIndex, fileID, majorNWBVersion, dim, writeIndex
+	string dataFolder, fileType, relativePath, extension, nwbVersionStr
 	WAVE/T map = GetAnalysisBrowserMap()
 
 	WAVE/Z indizes = FindIndizes(map, colLabel = "DiscLocation", str = discLocation)
@@ -124,10 +131,16 @@ static Function AB_AddMapEntry(string baseFolder, string discLocation)
 			fileType = ANALYSISBROWSER_FILE_TYPE_IGOR
 			break
 		case ".nwb":
-			fileID     = H5_OpenFile(discLocation)
-			nwbVersion = GetNWBMajorVersion(ReadNWBVersion(fileID))
+			fileID        = H5_OpenFile(discLocation)
+			nwbVersionStr = ReadNWBVersion(fileID)
+			try
+				majorNWBVersion = GetNWBMajorVersion(nwbVersionStr)
+			catch
+				printf "Could not parse read NWB version.\rFile: %s\rRead version: %s", discLocation, nwbVersionStr
+				return -1
+			endtry
 			H5_CloseFile(fileID)
-			switch(nwbVersion)
+			switch(majorNWBVersion)
 				case 1:
 					fileType = ANALYSISBROWSER_FILE_TYPE_NWBv1
 					break
@@ -230,11 +243,17 @@ End
 ///
 /// @return 0 if the file was loaded, or 1 if not (usually due to an error
 ///         or because it was already loaded)
-static Function AB_AddFile(string discLocation, string sourceEntry)
+static Function AB_AddFile(string win, string discLocation, string sourceEntry, variable loadOpts)
 
 	variable mapIndex
 	variable firstMapped, lastMapped
 	string baseFolder
+
+	// This allows also that NWB and PXP is selected programmatically that is used in testing
+	if(!((GetCheckBoxState(win, "check_load_pxp") && StringEndsWith(discLocation, ".pxp")) || \
+	     (GetCheckBoxState(win, "check_load_nwb") && StringEndsWith(discLocation, ".nwb"))))
+		return 1
+	endif
 
 	WAVE/T list = GetExperimentBrowserGUIList()
 
@@ -246,7 +265,7 @@ static Function AB_AddFile(string discLocation, string sourceEntry)
 	endif
 
 	firstMapped = GetNumberFromWaveNote(list, NOTE_INDEX)
-	AB_LoadFile(discLocation)
+	AB_LoadFile(discLocation, loadOpts)
 	lastMapped = GetNumberFromWaveNote(list, NOTE_INDEX) - 1
 
 	if(lastMapped >= firstMapped)
@@ -324,7 +343,7 @@ static Function AB_FileHasStimsets(WAVE/T map)
 End
 
 /// @brief function tries to load Data From discLocation.
-static Function AB_LoadFile(string discLocation)
+static Function AB_LoadFile(string discLocation, variable loadOpts)
 
 	string device, deviceList
 	variable numDevices, i, highestSweepNumber
@@ -335,19 +354,21 @@ static Function AB_LoadFile(string discLocation)
 		return NaN
 	endif
 
-	strswitch(map[%FileType])
-		case ANALYSISBROWSER_FILE_TYPE_IGOR:
-			AB_LoadResultsFromIgor(map[%DiscLocation], map[%DataFolder])
-			break
-		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
-			// nothing to load
-			break
-		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
-			AB_LoadResultsFromNWB(map[%DiscLocation], map[%DataFolder])
-			break
-		default:
-			ASSERT(0, "invalid file type")
-	endswitch
+	if(loadOpts & AB_LOADOPT_RESULTS)
+		strswitch(map[%FileType])
+			case ANALYSISBROWSER_FILE_TYPE_IGOR:
+				AB_LoadResultsFromIgor(map[%DiscLocation], map[%DataFolder])
+				break
+			case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+				// nothing to load
+				break
+			case ANALYSISBROWSER_FILE_TYPE_NWBv2:
+				AB_LoadResultsFromNWB(map[%DiscLocation], map[%DataFolder])
+				break
+			default:
+				ASSERT(0, "invalid file type")
+		endswitch
+	endif
 
 	deviceList = AB_LoadLabNotebook(discLocation)
 	WAVE/T deviceWave = AB_SaveDeviceList(deviceList, map[%DataFolder])
@@ -361,15 +382,17 @@ static Function AB_LoadFile(string discLocation)
 		device = deviceWave[i]
 		strswitch(map[%FileType])
 			case ANALYSISBROWSER_FILE_TYPE_IGOR:
-				AB_LoadSweepsFromExperiment(map[%DiscLocation], device)
-				AB_LoadTPStorageFromIgor(map[%DiscLocation], map[%DataFolder], device)
-				AB_LoadUserCommentFromFile(map[%DiscLocation], map[%DataFolder], device)
+				AB_LoadSweepsConfigFromIgor(map[%DiscLocation], device)
+				if(loadOpts & AB_LOADOPT_COMMENTS)
+					AB_LoadUserCommentFromIgor(map[%DiscLocation], map[%DataFolder], device)
+				endif
 				break
 			case ANALYSISBROWSER_FILE_TYPE_NWBv1:
 			case ANALYSISBROWSER_FILE_TYPE_NWBv2:
-				AB_LoadSweepsFromNWB(map[%DiscLocation], map[%DataFolder], device)
-				AB_LoadTPStorageFromNWB(map[%DiscLocation], map[%DataFolder], device)
-				AB_LoadUserCommentAndHistoryFromNWB(map[%DiscLocation], map[%DataFolder], device)
+				AB_LoadSweepsConfigFromNWB(map[%DiscLocation], map[%DataFolder], device)
+				if(loadOpts & AB_LOADOPT_COMMENTS)
+					AB_LoadUserCommentFromNWB(map[%DiscLocation], map[%DataFolder], device)
+				endif
 				break
 			default:
 				ASSERT(0, "invalid file type")
@@ -396,7 +419,7 @@ static Function AB_HasCompatibleVersion(string discLocation)
 			DFREF targetDFR = GetAnalysisExpFolder(map[%DataFolder])
 			dataFolderPath = GetMiesPathAsString()
 
-			numWavesLoaded = AB_LoadDataWrapper(targetDFR, map[%DiscLocation], dataFolderPath, "pxpVersion", typeFlags = LOAD_DATA_TYPE_NUMBERS)
+			numWavesLoaded = AB_LoadDataWrapper(targetDFR, map[%DiscLocation], dataFolderPath, "pxpVersion", typeFlags = LOAD_DATA_TYPE_NUMBERS, recursive = 0)
 
 			// no pxpVersion present
 			// we can load the file
@@ -551,18 +574,20 @@ End
 ///
 /// This function is special as it does change the CDF!
 ///
-/// @param tmpDFR		  Temporary work folder, function returns with that folder as CDF
+/// @param tmpDFR         Temporary work folder, function returns with that folder as CDF
 /// @param expFilePath    full path to the experiment file on disc
 /// @param datafolderPath igor datafolder to look for the waves inside the experiment
 /// @param listOfNames    list of names of waves/strings/numbers to load
 /// @param typeFlags      [optional, defaults to 1 (waves)] data types to load, valid values
 ///                       are the same as for `LoadData`, see also @ref LoadDataConstants
 /// @param recursive      [optional, defaults to 1] when set loads data recursive from the experiment file
+/// @param regEx          [optional, defaults to ".*"] when set matches the given regular expression to the object names found for deciding what to load
+///                       Can be combined with listOfNames. The matching is case insensitive.
 ///
 /// @returns number of loaded items
-static Function AB_LoadDataWrapper(DFREF tmpDFR, string expFilePath, string datafolderPath, string listOfNames, [variable typeFlags, variable recursive])
+static Function AB_LoadDataWrapper(DFREF tmpDFR, string expFilePath, string datafolderPath, string listOfNames, [variable typeFlags, variable recursive, string regEx])
 
-	variable numEntries, i, debugOnError
+	variable numEntries, i, debugOnError, objectTypeMask
 	string cdf, fileNameWOExtension, baseFolder, extension, expFileOrFolder
 	string str, list, regexp
 
@@ -577,6 +602,12 @@ static Function AB_LoadDataWrapper(DFREF tmpDFR, string expFilePath, string data
 		ASSERT(typeFlags == COUNTOBJECTS_WAVES || typeFlags == COUNTOBJECTS_VAR || typeFlags == COUNTOBJECTS_STR || typeFlags == COUNTOBJECTS_DATAFOLDER, "Unknown typeFlags, bitmasks are not supported")
 	endif
 	recursive = ParamisDefault(recursive) ? 1 : !!recursive
+	if(ParamIsDefault(regEx))
+		regEx = ".*"
+	else
+		regEx = "(?i)" + regEx
+	endif
+	objectTypeMask = 1 << (typeFlags - 1)
 
 	fileNameWOExtension = GetBaseName(expFilePath)
 	baseFolder          = GetFolder(expFilePath)
@@ -600,15 +631,15 @@ static Function AB_LoadDataWrapper(DFREF tmpDFR, string expFilePath, string data
 	try
 		if(FileExists(expFileOrFolder))
 			if(recursive)
-				LoadData/Q/R/L=(typeFlags)/S=dataFolderPath/J=listOfNames/O=1 expFileOrFolder; AbortOnRTE
+				LoadData/Q/R/L=(typeFlags)/S=dataFolderPath/J=listOfNames/GREP={regEx, 1, objectTypeMask, 0}/O=1 expFileOrFolder; AbortOnRTE
 			else
-				LoadData/Q/L=(typeFlags)/S=dataFolderPath/J=listOfNames/O=1 expFileOrFolder; AbortOnRTE
+				LoadData/Q/L=(typeFlags)/S=dataFolderPath/J=listOfNames/GREP={regEx, 1, objectTypeMask, 0}/O=1 expFileOrFolder; AbortOnRTE
 			endif
 		elseif(FolderExists(expFileOrFolder))
 			if(recursive)
-				LoadData/Q/D/R/L=(typeFlags)/J=listOfNames/O=1 expFileOrFolder + ":" + dataFolderPath; AbortOnRTE
+				LoadData/Q/D/R/L=(typeFlags)/J=listOfNames/GREP={regEx, 1, objectTypeMask, 0}/O=1 expFileOrFolder + ":" + dataFolderPath; AbortOnRTE
 			else
-				LoadData/Q/D/L=(typeFlags)/J=listOfNames/O=1 expFileOrFolder + ":" + dataFolderPath; AbortOnRTE
+				LoadData/Q/D/L=(typeFlags)/J=listOfNames/GREP={regEx, 1, objectTypeMask, 0}/O=1 expFileOrFolder + ":" + dataFolderPath; AbortOnRTE
 			endif
 		else
 			sprintf str, "The experiment file/folder \"%s\" could not be found!\r", ParseFilePath(5, expFileOrFolder, "\\", 0, 0)
@@ -661,15 +692,6 @@ static Function/WAVE AB_GetSweepsFromLabNotebook(string dataFolder, string devic
 	return sweepNums
 End
 
-/// @brief Returns the highest referenced sweep number from the labnotebook
-static Function AB_GetHighestPossibleSweepNum(string dataFolder, string device)
-
-	WAVE sweepNums = AB_GetSweepsFromLabNotebook(dataFolder, device, clean = 0)
-	WaveStats/M=1/Q sweepNums
-
-	return V_max
-End
-
 /// @brief Returns a wave containing all present sweep numbers
 ///
 /// Function uses Config Waves from Igor Experiment to determine present sweeps
@@ -677,22 +699,18 @@ End
 /// @param discLocation  location of Experiment File on Disc.
 ///                      ID in AnalysisBrowserMap
 /// @param device        device for which to get sweeps.
-static Function AB_LoadSweepsFromExperiment(string discLocation, string device)
+static Function AB_LoadSweepsConfigFromIgor(string discLocation, string device)
 
-	variable highestSweepNumber, sweepNumber, numSweeps, i, numConfigWaves
+	variable sweepNumber, numSweeps, i, numConfigWaves
 	string listSweepConfig, sweepConfig
 	WAVE/T map            = AB_GetMap(discLocation)
 	DFREF  SweepConfigDFR = GetAnalysisDeviceConfigFolder(map[%DataFolder], device)
 	WAVE/I sweeps         = GetAnalysisChannelSweepWave(map[%DataFolder], device)
 
 	// Load Sweep Config Waves
-	highestSweepNumber = AB_GetHighestPossibleSweepNum(map[%DataFolder], device)
-	if(IsFinite(highestSweepNumber))
-		numConfigWaves = AB_LoadSweepConfigData(map[%DiscLocation], map[%DataFolder], device, highestSweepNumber)
-
-		if(!numConfigWaves)
-			return NaN
-		endif
+	numConfigWaves = AB_LoadSweepConfigData(map[%DiscLocation], map[%DataFolder], device)
+	if(!numConfigWaves)
+		return NaN
 	endif
 	listSweepConfig = GetListOfObjects(sweepConfigDFR, ".*")
 
@@ -715,7 +733,7 @@ End
 ///                      ID in AnalysisBrowserMap
 /// @param dataFolder    datafolder of the project
 /// @param device        device for which to get sweeps.
-static Function AB_LoadSweepsFromNWB(string discLocation, string dataFolder, string device)
+static Function AB_LoadSweepsConfigFromNWB(string discLocation, string dataFolder, string device)
 
 	variable h5_fileID, nwbVersion
 	string channelList
@@ -786,31 +804,128 @@ static Function AB_StoreChannelsBySweep(variable groupID, variable nwbVersion, s
 	SetNumberInWaveNote(storage, NOTE_INDEX, numSweeps)
 End
 
+static Function AB_LoadHistoryAndLogsFromFile(string discLocation, string dataFolder, string fileType, [variable overwrite])
+
+	overwrite = ParamIsDefault(overwrite) ? 0 : !!overwrite
+
+	DFREF targetDFR = GetAnalysisExpGeneralFolder(dataFolder)
+	if(overwrite)
+		KillOrMoveToTrash(dfr = targetDFR)
+	else
+		if(!IsDataFolderEmpty(targetDFR))
+			AB_ShowHistoryAndLogs(discLocation, dataFolder)
+			return 0
+		endif
+	endif
+
+	strswitch(fileType)
+		case ANALYSISBROWSER_FILE_TYPE_IGOR:
+			if(!AlreadyCalledOnce(CO_AB_LOADHISTORYFROMPXP))
+				print "Loading of history from Igor Pro PXP files is not supported."
+				ControlWindowToFront()
+			endif
+			break
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv2: // intended fallthrough
+			AB_LoadHistoryAndLogsFromNWB(discLocation, dataFolder, fileType)
+			break
+		default:
+			ASSERT(0, "invalid file type")
+	endswitch
+
+	AB_ShowHistoryAndLogs(discLocation, dataFolder)
+End
+
+static Function AB_ShowHistoryAndLogs(string discLocation, string expFolder)
+
+	string win, title, fName
+
+	DFREF targetDFR = GetAnalysisExpGeneralFolder(expFolder)
+	fName = ParseFilePath(0, discLocation, ":", 1, 0)
+
+	WAVE/T w = targetDFR:HistoryAndLogs
+	win = CleanupName(discLocation, 0)
+	if(!WindowExists(win))
+		title = fName + "->HistoryAndLogs"
+		NewNotebook/F=0/K=1/OPTS=8/N=$win as title
+		Notebook $win, text=w[0]
+	else
+		DoWindow/F $win
+	endif
+End
+
+static Function AB_LoadHistoryAndLogsFromNWB(string nwbFilePath, string expFolder, string fileType)
+
+	variable h5_fileID, generalGroup
+	string historyName, groupName
+
+	h5_fileID = H5_OpenFile(nwbFilePath)
+
+	groupName    = "/general"
+	generalGroup = H5_OpenGroup(h5_fileID, groupName)
+
+	DFREF targetDFR = GetAnalysisExpGeneralFolder(expFolder)
+	strswitch(fileType)
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+			historyName = GetHistoryAndLogFileDatasetName(1)
+			break
+		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
+			historyName = GetHistoryAndLogFileDatasetName(2)
+			break
+		default:
+			ASSERT(0, "Unknown NWB file type")
+	endswitch
+
+	WAVE wv = H5_LoadDataset(generalGroup, historyName)
+	MoveWave wv, targetDFR:HistoryAndLogs
+
+	HDF5CloseGroup/Z generalGroup
+	H5_CloseFile(h5_fileID)
+End
+
+static Function AB_LoadTPStorageFromFile(string discLocation, string dataFolder, string fileType, string device, [variable overwrite])
+
+	if(ParamIsDefault(overwrite))
+		overwrite = 0
+	else
+		overwrite = !!overwrite
+	endif
+
+	DFREF targetDFR = GetAnalysisDeviceTestpulse(dataFolder, device)
+
+	if(overwrite)
+		KillOrMoveToTrash(dfr = targetDFR)
+	else
+		if(!IsDataFolderEmpty(targetDFR))
+			return 0
+		endif
+	endif
+
+	strswitch(fileType)
+		case ANALYSISBROWSER_FILE_TYPE_IGOR:
+			return AB_LoadTPStorageFromIgor(discLocation, dataFolder, device)
+			break
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
+			return AB_LoadTPStorageFromNWB(discLocation, dataFolder, device)
+			break
+		default:
+			ASSERT(0, "Invalid file type")
+	endswitch
+End
+
 static Function AB_LoadTPStorageFromIgor(string expFilePath, string expFolder, string device)
 
-	string dataFolderPath, wanted, unwanted, all
-	variable numWavesLoaded
+	string dataFolderPath
 
 	DFREF targetDFR = GetAnalysisDeviceTestpulse(expFolder, device)
 	dataFolderPath = GetDeviceTestPulseAsString(device)
 	dataFolderPath = AB_TranslatePath(dataFolderPath, expFolder)
 
-	// we can not determine how many TPStorage waves are in dataFolderPath
-	// therefore we load all waves and throw the ones we don't need away
-	numWavesLoaded = AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, "")
-
-	if(numWavesLoaded)
-		wanted   = GetListOfObjects(targetDFR, TP_STORAGE_REGEXP, fullPath = 1)
-		all      = GetListOfObjects(targetDFR, ".*", fullPath = 1)
-		unwanted = RemoveFromList(wanted, all)
-
-		CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, unwanted)
-	endif
-
-	return numWavesLoaded
+	return AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, "", regex = TP_STORAGE_REGEXP, recursive = 0)
 End
 
-Function AB_LoadTPStorageFromNWB(string nwbFilePath, string expFolder, string device)
+static Function AB_LoadTPStorageFromNWB(string nwbFilePath, string expFolder, string device)
 
 	variable h5_fileID, testpulseGroup, numEntries, i
 	string dataFolderPath, list, name, groupName
@@ -922,7 +1037,7 @@ static Function AB_LoadResultsFromNWB(string nwbFilePath, string expFolder)
 	H5_CloseFile(h5_fileID)
 End
 
-static Function AB_LoadUserCommentFromFile(string expFilePath, string expFolder, string device)
+static Function AB_LoadUserCommentFromIgor(string expFilePath, string expFolder, string device)
 
 	string   dataFolderPath
 	variable numStringsLoaded
@@ -931,15 +1046,15 @@ static Function AB_LoadUserCommentFromFile(string expFilePath, string expFolder,
 	dataFolderPath = GetDevicePathAsString(device)
 	dataFolderPath = AB_TranslatePath(dataFolderPath, expFolder)
 
-	numStringsLoaded = AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, "userComment", typeFlags = LOAD_DATA_TYPE_STRING)
+	numStringsLoaded = AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, "userComment", typeFlags = LOAD_DATA_TYPE_STRING, recursive = 0)
 
 	return numStringsLoaded
 End
 
-static Function AB_LoadUserCommentAndHistoryFromNWB(string nwbFilePath, string expFolder, string device)
+static Function AB_LoadUserCommentFromNWB(string nwbFilePath, string expFolder, string device)
 
-	string groupName, comment, datasetName, history
-	variable h5_fileID, commentGroup, version
+	string groupName, comment, datasetName
+	variable h5_fileID, commentGroup
 
 	DFREF targetDFR = GetAnalysisDeviceFolder(expFolder, device)
 	h5_fileID = H5_OpenFile(nwbFilePath)
@@ -950,15 +1065,9 @@ static Function AB_LoadUserCommentAndHistoryFromNWB(string nwbFilePath, string e
 	comment = ReadTextDataSetAsString(commentGroup, "userComment")
 	HDF5CloseGroup/Z commentGroup
 
-	version = GetNWBMajorVersion(ReadNWBVersion(h5_fileID))
-
-	datasetName = "/general/" + GetHistoryAndLogFileDatasetName(version)
-	history     = ReadTextDataSetAsString(h5_fileID, datasetName)
-
 	H5_CloseFile(h5_fileID)
 
-	string/G targetDFR:userComment       = comment
-	string/G targetDFR:historyAndLogFile = history
+	string/G targetDFR:userComment = comment
 End
 
 static Function/S AB_LoadLabNotebook(string discLocation)
@@ -1247,43 +1356,16 @@ static Function/S AB_TranslatePath(string path, string expFolder)
 	return path
 End
 
-static Constant LOAD_CONFIG_CHUNK_SIZE = 50
-
 /// @brief Load all `Config_Sweep_*` waves from the given experiment file or folder and the given device
-///
-/// The implementation here tries to load `LOAD_CONFIG_CHUNK_SIZE` number of config sweep waves at a time
-/// until there could not be loaded at least one config sweep wave and we have reached highestSweepNumber.
-///
-/// The size of `LOAD_CONFIG_CHUNK_SIZE` is limited by a limitation of LoadData as this operations accepts
-/// only a stringlist of waves shorter than 400 characters.
-static Function AB_LoadSweepConfigData(string expFilePath, string expFolder, string device, variable highestSweepNumber)
+static Function AB_LoadSweepConfigData(string expFilePath, string expFolder, string device)
 
-	string dataFolderPath, listOfWaves
-	variable numWavesLoaded, totalNumWavesLoaded
-	variable start, step, stop, i
-
-	ASSERT(IsFinite(highestSweepNumber), "highestSweepNumber has to be finite")
+	string dataFolderPath
 
 	DFREF targetDFR = GetAnalysisDeviceConfigFolder(expFolder, device)
 	dataFolderPath = GetDeviceDataPathAsString(device)
 	dataFolderPath = AB_TranslatePath(dataFolderPath, expFolder)
 
-	step = 1
-	for(i = 0;; i += 1)
-		start = i * LOAD_CONFIG_CHUNK_SIZE
-		stop  = (i + 1) * LOAD_CONFIG_CHUNK_SIZE
-
-		listOfWaves    = BuildList("Config_Sweep_%d", start, step, stop)
-		numWavesLoaded = AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, listOfWaves)
-
-		if(numWavesLoaded <= 0 && stop >= highestSweepNumber)
-			break
-		endif
-
-		totalNumWavesLoaded += numWavesLoaded
-	endfor
-
-	return totalNumWavesLoaded
+	return AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, "", regEx = DATA_CONFIG_REGEXP, recursive = 0)
 End
 
 /// @brief Expand all tree views in the given column
@@ -1513,8 +1595,8 @@ End
 /// @returns 0 if at least one sweep or stimset could be loaded, 1 otherwise
 static Function AB_LoadFromExpandedRange(variable row, variable subSectionColumn, variable loadType, [variable overwrite, DFREF sweepBrowserDFR, WAVE/T dfCollect])
 
-	variable j, endRow, mapIndex, sweep, oneValidLoad, index
-	string device, discLocation, dataFolder, fileName, fileType
+	variable j, endRow, mapIndex, sweep, oneValidLoad, index, err, sweepLoadError
+	string device, discLocation, dataFolder, fileName, fileType, errMsg
 
 	WAVE   expBrowserSel  = GetExperimentBrowserGUISel()
 	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
@@ -1535,7 +1617,7 @@ static Function AB_LoadFromExpandedRange(variable row, variable subSectionColumn
 	for(j = row; j < endRow; j += 1)
 
 		if(AB_GUIRowIsStimsetsOnly(row))
-			if(loadType != AB_LOAD_STIMSET)
+			if(loadType == AB_LOAD_SWEEP)
 				return 1
 			endif
 			device = ""
@@ -1568,8 +1650,34 @@ static Function AB_LoadFromExpandedRange(variable row, variable subSectionColumn
 				endif
 				oneValidLoad = 1
 				break
+			case AB_LOAD_TP_STORAGE:
+				if(AB_LoadTPStorageFromFile(discLocation, dataFolder, fileType, device, overwrite = overwrite) == 1)
+					continue
+				endif
+				oneValidLoad = 1
+				break
+			case AB_LOAD_HISTORYANDLOGS:
+				if(AB_LoadHistoryAndLogsFromFile(discLocation, dataFolder, fileType, overwrite = overwrite) == 1)
+					continue
+				endif
+				oneValidLoad = 1
+				break
 			case AB_LOAD_SWEEP:
-				if(AB_LoadSweepFromFile(discLocation, dataFolder, fileType, device, sweep, overwrite = overwrite) == 1)
+				err    = 0
+				errMsg = ""
+				try
+					err = AB_LoadSweepFromFile(discLocation, dataFolder, fileType, device, sweep, overwrite = overwrite)
+				catch
+					errMsg = GetRTErrMessage()
+					ClearRTError()
+					err = 1
+				endtry
+				if(err)
+					printf "Error loading file: %s\r", discLocation
+					if(!IsEmpty(errMsg))
+						printf "with error: %s\r", errMsg
+					endif
+					sweepLoadError = 1
 					continue
 				endif
 				oneValidLoad = 1
@@ -1582,12 +1690,16 @@ static Function AB_LoadFromExpandedRange(variable row, variable subSectionColumn
 				SB_AddToSweepBrowser(sweepBrowserDFR, fileName, dataFolder, device, sweep)
 				break
 			default:
-				break
+				ASSERT(0, "Unexpected loadType")
 		endswitch
 	endfor
 
 	if(oneValidLoad)
 		return 0
+	endif
+	if(sweepLoadError)
+		printf "There occurred errors when loading sweep data. See history output for details.\r"
+		ControlWindowToFront()
 	endif
 
 	return 1
@@ -1639,6 +1751,8 @@ static Function AB_LoadFromFile(variable loadType, [DFREF sweepBrowserDFR])
 		// handle not expanded EXPERIMENT and DEVICE COLUMNS
 		switch(loadType)
 			case AB_LOAD_STIMSET:
+			case AB_LOAD_TP_STORAGE:
+			case AB_LOAD_HISTORYANDLOGS:
 				if(!AB_LoadFromExpandedRange(row, EXPERIMENT_TREEVIEW_COLUMN, loadType, overwrite = overwrite))
 					oneValidLoad = 1
 					continue
@@ -1659,7 +1773,7 @@ static Function AB_LoadFromFile(variable loadType, [DFREF sweepBrowserDFR])
 				endif
 				break
 			default:
-				break
+				ASSERT(0, "Invalid loadType")
 		endswitch
 
 		sweep = str2num(GetLastNonEmptyEntry(expBrowserList, "sweep", row))
@@ -1694,8 +1808,20 @@ static Function AB_LoadFromFile(variable loadType, [DFREF sweepBrowserDFR])
 				dfCollect[index] = dataFolder
 				SetNumberInWaveNote(dfCollect, NOTE_INDEX, index + 1)
 				break
-			default:
+			case AB_LOAD_TP_STORAGE:
+				if(AB_LoadTPStorageFromFile(discLocation, dataFolder, fileType, device, overwrite = overwrite))
+					continue
+				endif
+				oneValidLoad = 1
 				break
+			case AB_LOAD_HISTORYANDLOGS:
+				if(AB_LoadHistoryAndLogsFromFile(discLocation, dataFolder, fileType, overwrite = overwrite) == 1)
+					continue
+				endif
+				oneValidLoad = 1
+				break
+			default:
+				ASSERT(0, "Invalid loadType")
 		endswitch
 	endfor
 
@@ -1893,7 +2019,7 @@ static Function AB_LoadSweepFromNWB(string discLocation, DFREF sweepDFR, string 
 	h5_fileID = H5_OpenFile(discLocation)
 	version   = GetNWBMajorVersion(ReadNWBVersion(h5_fileID))
 
-	// load acquisition
+	// load acquisition (AD channels)
 	WAVE/T acquisition = GetAnalysisChannelAcqWave(nwb[%DataFolder], device)
 	channelList = acquisition[V_Value]
 	h5_groupID  = OpenAcquisition(h5_fileID, version)
@@ -1901,7 +2027,7 @@ static Function AB_LoadSweepFromNWB(string discLocation, DFREF sweepDFR, string 
 		return 1
 	endif
 
-	// load stimulus
+	// load stimulus (DA channels)
 	WAVE/T stimulus = GetAnalysisChannelStimWave(nwb[%DataFolder], device)
 	channelList = stimulus[V_Value]
 	h5_groupID  = OpenStimulus(h5_fileID)
@@ -2092,7 +2218,7 @@ static Function AB_LoadSweepFromIgor(string discLocation, string expFolder, DFRE
 		endfor
 		channelWaveList = TextWaveToList(sweepT, ";")
 		DFREF sweepComponentsDFR = NewFreeDataFolder()
-		numComponentsLoaded = AB_LoadDataWrapper(sweepComponentsDFR, discLocation, dataPath + ":" + componentsDataPath, channelWaveList)
+		numComponentsLoaded = AB_LoadDataWrapper(sweepComponentsDFR, discLocation, dataPath + ":" + componentsDataPath, channelWaveList, recursive = 0)
 		if(numComponentsLoaded != DimSize(sweepT, ROWS))
 			printf "Error loading all sweep components. Sweep %d of device %s and %s\r", sweep, device, discLocation
 			return 1
@@ -2265,7 +2391,7 @@ static Function AB_LoadStimsetRAW(string expFilePath, string stimset, variable o
 	dataPath = GetDataFolder(1, setDFR)
 	data     = AddListItem(stimset, "")
 
-	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, dataPath, data)
+	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, dataPath, data, recursive = 0)
 
 	if(numWavesLoaded != 1)
 		KillOrMoveToTrash(dfr = newDFR)
@@ -2302,7 +2428,7 @@ static Function AB_LoadStimsetTemplateWaves(string expFilePath, string stimset)
 
 	dataPath = GetSetParamFolderAsString(channelType)
 
-	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, dataPath, parameterWaves)
+	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, dataPath, parameterWaves, recursive = 0)
 
 	if(numWavesLoaded != 3)
 		KillOrMoveToTrash(dfr = newDFR)
@@ -2490,27 +2616,50 @@ static Function/WAVE AB_GetCurrentlyOpenNWBFiles()
 	return activeFiles
 End
 
+static Function AB_GetLoadSettings(string win)
+
+	variable loadResults, loadComments
+
+	loadResults  = GetCheckBoxState(win, "check_load_results")
+	loadComments = GetCheckBoxState(win, "check_load_comment")
+
+	return (loadResults * AB_LOADOPT_RESULTS) | (loadComments * AB_LOADOPT_COMMENTS)
+End
+
 static Function AB_AddExperimentEntries(string win, WAVE/T entries)
 
 	string entry, symbPath, fName, panel
 	string pxpList, uxpList, nwbList, title
-	variable sTime
+	variable sTime, loadOpts, i, size
 
 	WAVE/T activeFiles = AB_GetCurrentlyOpenNWBFiles()
 
 	panel = AB_GetPanelName()
+	DoUpdate/W=$panel
 
 	PGC_SetAndActivateControl(win, "button_expand_all", val = 1)
+	loadOpts = AB_GetLoadSettings(win)
 
-	sTime = stopMSTimer(-2) * MILLI_TO_ONE + 1
+	sTime = stopMSTimer(-2) * MICRO_TO_ONE + 1
 	for(entry : entries)
 
 		if(FolderExists(entry))
+			sprintf title, "%s, Looking for files in %s", panel, entry
+			DoWindow/T $panel, title
 			symbPath = GetUniqueSymbolicPath()
 			NewPath/O/Q/Z $symbPath, entry
-			pxpList = GetAllFilesRecursivelyFromPath(symbPath, extension = ".pxp")
-			uxpList = GetAllFilesRecursivelyFromPath(symbPath, extension = ".uxp")
-			nwbList = GetAllFilesRecursivelyFromPath(symbPath, extension = ".nwb")
+			if(GetCheckBoxState(win, "check_load_pxp"))
+				pxpList = GetAllFilesRecursivelyFromPath(symbPath, extension = ".pxp")
+				uxpList = GetAllFilesRecursivelyFromPath(symbPath, extension = ".uxp")
+			else
+				pxpList = ""
+				uxpList = ""
+			endif
+			if(GetCheckBoxState(win, "check_load_nwb"))
+				nwbList = GetAllFilesRecursivelyFromPath(symbPath, extension = ".nwb")
+			else
+				nwbList = ""
+			endif
 			KillPath/Z $symbPath
 			WAVE/T fileList = ListToTextWave(SortList(pxpList + uxpList + nwbList, FILE_LIST_SEP), FILE_LIST_SEP)
 		elseif(FileExists(entry))
@@ -2519,20 +2668,20 @@ static Function AB_AddExperimentEntries(string win, WAVE/T entries)
 			printf "AnalysisBrowser: Can not find location %s. Skipped it.\r", entry
 			continue
 		endif
-		for(fName : fileList)
-
+		size = DimSize(filelist, ROWS)
+		for(i = 0; i < size; i += 1)
+			fName = fileList[i]
 			if(!IsNaN(GetRowIndex(activeFiles, str = fName)))
 				printf "Ignore %s for adding into the analysis browser\ras we currently export data into it!\r", fName
 				ControlWindowToFront()
 				continue
 			endif
-			if(sTime < (stopMSTimer(-2) * MILLI_TO_ONE))
-				sprintf title, "%s, Reading %s", panel, GetFile(fName)
+			if(sTime < (stopMSTimer(-2) * MICRO_TO_ONE))
+				sprintf title, "%s, Reading %d / %d -> %s", panel, i, size, GetFile(fName)
 				DoWindow/T $panel, title
-				DoUpdate/W=$panel
-				sTime = stopMSTimer(-2) * MILLI_TO_ONE + 1
+				sTime = stopMSTimer(-2) * MICRO_TO_ONE + 1
 			endif
-			AB_AddFile(fName, entry)
+			AB_AddFile(win, fName, entry, loadOpts)
 		endfor
 	endfor
 	DoWindow/T $panel, panel
@@ -2648,6 +2797,10 @@ Function AB_BrowserStartupSettings()
 
 	ListBox list_experiment_contents, win=$panel, listWave=$"", selWave=$"", colorWave=$""
 	ListBox listbox_AB_Folders, win=$panel, listWave=$"", selWave=$"", colorWave=$""
+	SetCheckBoxState(panel, "check_load_nwb", CHECKBOX_SELECTED)
+	SetCheckBoxState(panel, "check_load_pxp", CHECKBOX_UNSELECTED)
+	SetCheckBoxState(panel, "check_load_results", CHECKBOX_UNSELECTED)
+	SetCheckBoxState(panel, "check_load_comment", CHECKBOX_UNSELECTED)
 
 	Execute/P/Z "DoWindow/R " + panel
 	Execute/P/Q/Z "COMPILEPROCEDURES "
@@ -2676,8 +2829,7 @@ Function AB_ButtonProc_CollapseAll(STRUCT WMButtonAction &ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2:
 			AB_CheckPanelVersion(ba.win)
-			AB_CollapseListColumn(DEVICE_TREEVIEW_COLUMN)
-			AB_CollapseListColumn(EXPERIMENT_TREEVIEW_COLUMN)
+			AB_CollapseAll()
 			break
 		default:
 			break
@@ -2690,13 +2842,19 @@ End
 Function AB_ButtonProc_LoadSweeps(STRUCT WMButtonAction &ba) : ButtonControl
 
 	variable oneValidSweep
-	string   panel
+	string panel, sbTitle, sbWin
 
 	switch(ba.eventcode)
 		case 2:
 			AB_CheckPanelVersion(ba.win)
 
-			DFREF dfr = SB_OpenSweepBrowser()
+			sbTitle = GetPopupMenuString(ANALYSIS_BROWSER_NAME, "popup_SweepBrowserSelect")
+			if(!CmpStr(sbTitle, "New"))
+				DFREF dfr = SB_OpenSweepBrowser()
+			else
+				sbWin = AB_GetSweepBrowserWindowFromTitle(sbTitle)
+				DFREF dfr = SB_GetSweepBrowserFolder(sbWin)
+			endif
 			oneValidSweep = AB_LoadFromFile(AB_LOAD_SWEEP, sweepBrowserDFR = dfr)
 			SVAR/SDFR=dfr graph
 			if(oneValidSweep)
@@ -2707,6 +2865,7 @@ Function AB_ButtonProc_LoadSweeps(STRUCT WMButtonAction &ba) : ButtonControl
 			else
 				KillWindow $graph
 			endif
+			AB_CollapseAll()
 			break
 		default:
 			break
@@ -2742,6 +2901,7 @@ Function AB_ButtonProc_LoadStimsets(STRUCT WMButtonAction &ba) : ButtonControl
 			if(oneValidStimset)
 				WBP_CreateWaveBuilderPanel()
 			endif
+			AB_CollapseAll()
 			break
 		default:
 			break
@@ -2795,6 +2955,7 @@ Function AB_ButtonProc_Refresh(STRUCT WMButtonAction &ba) : ButtonControl
 			AB_AddExperimentEntries(ba.win, refreshInverted)
 
 			AB_UpdateColors()
+			AB_CollapseAll()
 			break
 		default:
 			break
@@ -2842,7 +3003,7 @@ End
 /// @brief Button "Remove folder(s)"
 Function AB_ButtonProc_Remove(STRUCT WMButtonAction &ba) : ButtonControl
 
-	variable size, i
+	variable size, i, selCode
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -2852,14 +3013,15 @@ Function AB_ButtonProc_Remove(STRUCT WMButtonAction &ba) : ButtonControl
 			WAVE   folderSelection = GetAnalysisBrowserGUIFolderSelection()
 			size = DimSize(folderSelection, ROWS)
 			for(i = size - 1; i >= 0; i -= 1)
-				if(folderSelection[i] == 1)
+				selCode = folderSelection[i]
+				if(selCode & LISTBOX_SELECT_OR_SHIFT_SELECTION)
 					AB_RemoveExperimentEntry(ba.win, folderList[i])
 					DeleteWavePoint(folderSelection, ROWS, index = i)
 					DeleteWavePoint(folderList, ROWS, index = i)
 				endif
 			endfor
 			AB_SaveSourceListInSettings()
-
+			AB_CollapseAll()
 			break
 		default:
 			break
@@ -2900,6 +3062,7 @@ Function AB_ButtonProc_AddFolder(STRUCT WMButtonAction &ba) : ButtonControl
 
 			Make/FREE/T wFolder = {folder}
 			AB_AddExperimentEntries(ba.win, wFolder)
+			AB_CollapseAll()
 			break
 		default:
 			break
@@ -2940,6 +3103,7 @@ Function AB_ButtonProc_AddFiles(STRUCT WMButtonAction &ba) : ButtonControl
 			endif
 			WAVE/T selFiles = ListToTextWave(fileList, "\r")
 			AB_AddFiles(ba.win, selFiles)
+			AB_CollapseAll()
 			break
 		default:
 			break
@@ -2994,6 +3158,64 @@ static Function AB_SaveSourceListInSettings()
 	JSON_SetWave(jsonID, SETTINGS_AB_FOLDER, setFolderList)
 End
 
+Function AB_CheckboxProc_NWB(STRUCT WMCheckboxAction &cba) : CheckBoxControl
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			AB_CheckPanelVersion(cba.win)
+			SetCheckBoxState(cba.win, "check_load_pxp", !cba.checked)
+			PGC_SetAndActivateControl(cba.win, "button_AB_refresh")
+			break
+		default:
+			break
+	endswitch
+
+	return 0
+End
+
+Function AB_CheckboxProc_PXP(STRUCT WMCheckboxAction &cba) : CheckBoxControl
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			AB_CheckPanelVersion(cba.win)
+			SetCheckBoxState(cba.win, "check_load_nwb", !cba.checked)
+			PGC_SetAndActivateControl(cba.win, "button_AB_refresh")
+			break
+		default:
+			break
+	endswitch
+
+	return 0
+End
+
+Function/S AB_GetSweepBrowserListForPopup()
+
+	string wName
+	string sbList = ""
+
+	WAVE/T wList = ListToTextWave(WinList(SWEEPBROWSER_WINDOW_NAME + "*", ";", "WIN:1"), ";")
+	for(wName : wList)
+		GetWindow $wName, title
+		sbList = AddListItem(S_Value, sbList, ";", Inf)
+	endfor
+	sbList = AddListItem("New", sbList)
+
+	return sbList
+End
+
+static Function/S AB_GetSweepBrowserWindowFromTitle(string winTitle)
+
+	WAVE/T wList = ListToTextWave(WinList(SWEEPBROWSER_WINDOW_NAME + "*", ";", "WIN:1"), ";")
+	for(wName : wList)
+		GetWindow $wName, title
+		if(!CmpStr(winTitle, S_Value, 1))
+			return wName
+		endif
+	endfor
+
+	ASSERT(0, "Could not find SweepBrowser with given title: " + winTitle)
+End
+
 /// @brief Button "Select same stim set sweeps"
 Function AB_ButtonProc_SelectStimSets(STRUCT WMButtonAction &ba) : ButtonControl
 
@@ -3023,7 +3245,7 @@ Function AB_ButtonProc_SelectStimSets(STRUCT WMButtonAction &ba) : ButtonControl
 				break
 			endif
 
-			WAVE indizes = FindIndizes(expBrowserList, col = 0, colLabel = "stim sets", str = selectedStimSet)
+			WAVE indizes = FindIndizes(expBrowserList, colLabel = "stim sets", str = selectedStimSet)
 			expBrowserSel[][] = expBrowserSel[p][q] & ~(LISTBOX_SELECT_OR_SHIFT_SELECTION)
 
 			numEntries = DimSize(indizes, ROWS)
@@ -3045,6 +3267,12 @@ Function AB_ListBoxProc_ExpBrowser(STRUCT WMListboxAction &lba) : ListBoxControl
 	variable mask, numRows, row, col
 
 	switch(lba.eventCode)
+		case 2:
+			if(!(lba.eventMod & WINDOW_HOOK_EMOD_RIGHTCLICK))
+				return 0
+			endif
+			AB_ShowFileContextMenu(AB_GetFilePathFromExpBrowserListboxRow(lba.row))
+			break
 		case 5: // cell selection + shift key
 		case 4: // cell selection
 			AB_CheckPanelVersion(lba.win)
@@ -3087,6 +3315,17 @@ Function AB_ListBoxProc_ExpBrowser(STRUCT WMListboxAction &lba) : ListBoxControl
 	endswitch
 
 	return 0
+End
+
+static Function/S AB_GetFilePathFromExpBrowserListboxRow(variable row)
+
+	variable mapIndex
+
+	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
+	WAVE/T map            = GetAnalysisBrowserMap()
+	mapIndex = str2num(expBrowserList[row][%file][1])
+
+	return map[mapIndex][%DiscLocation]
 End
 
 static Function AB_UpdateColors()
@@ -3158,7 +3397,7 @@ Function AB_ButtonProc_OpenCommentNB(STRUCT WMButtonAction &ba) : ButtonControl
 
 			SVAR/Z/SDFR=GetAnalysisDeviceFolder(dataFolder, device) userComment
 			if(!SVAR_Exists(userComment))
-				comment = "The user comment string does not exist for the given device!"
+				comment = "The user comment string was not loaded or does not exist for the given device!"
 			else
 				comment = userComment
 			endif
@@ -3373,8 +3612,8 @@ End
 /// @brief Load dropped NWB files into the analysis browser
 static Function BeforeFileOpenHook(variable refNum, string file, string pathName, string type, string creator, variable kind)
 
-	string baseFolder, fileSuffix, entry
-	variable numEntries
+	string baseFolder, fileSuffix, entry, win
+	variable numEntries, loadOpts
 
 	LOG_AddEntry(PACKAGE_MIES, "start")
 
@@ -3387,10 +3626,11 @@ static Function BeforeFileOpenHook(variable refNum, string file, string pathName
 	Pathinfo $pathName
 	baseFolder = S_path
 
-	AB_OpenAnalysisBrowser(restoreSettings = 0)
+	win = AB_OpenAnalysisBrowser(restoreSettings = 0)
 	// we can not add files to the map if some entries are collapsed
 	// so we have to expand all first.
-	PGC_SetAndActivateControl("AnalysisBrowser", "button_expand_all", val = 1)
+	PGC_SetAndActivateControl(win, "button_expand_all", val = 1)
+	loadOpts = AB_GetLoadSettings(win)
 
 	entry = basefolder + file
 
@@ -3402,7 +3642,7 @@ static Function BeforeFileOpenHook(variable refNum, string file, string pathName
 		return 1
 	endif
 
-	if(AB_AddFile(entry, entry))
+	if(AB_AddFile(win, entry, entry, loadOpts))
 		// already loaded or error
 		LOG_AddEntry(PACKAGE_MIES, "end")
 		return 1
@@ -3553,4 +3793,90 @@ static Function AB_MemoryFreeMappedDF()
 	for(i = 0; i < size; i += 1)
 		AB_RemoveMapEntry(i)
 	endfor
+End
+
+Function AB_ButtonProc_LoadTPStorage(STRUCT WMButtonAction &ba) : ButtonControl
+
+	switch(ba.eventcode)
+		case 2:
+			AB_CheckPanelVersion(ba.win)
+
+			AB_LoadFromFile(AB_LOAD_TP_STORAGE)
+		default:
+			break
+	endswitch
+
+	return 0
+End
+
+Function AB_ButtonProc_LoadHistoryAndLogs(STRUCT WMButtonAction &ba) : ButtonControl
+
+	switch(ba.eventcode)
+		case 2:
+			AB_CheckPanelVersion(ba.win)
+
+			AB_LoadFromFile(AB_LOAD_HISTORYANDLOGS)
+		default:
+			break
+	endswitch
+
+	return 0
+End
+
+static Function AB_CollapseAll()
+
+	AB_CollapseListColumn(DEVICE_TREEVIEW_COLUMN)
+	AB_CollapseListColumn(EXPERIMENT_TREEVIEW_COLUMN)
+End
+
+Function AB_OnCloseSweepBrowserUpdatePopup(string closingSweepBrowser)
+
+	string sbTitle, sbWin
+
+	if(!WindowExists(ANALYSIS_BROWSER_NAME))
+		return NaN
+	endif
+	sbTitle = GetPopupMenuString(ANALYSIS_BROWSER_NAME, "popup_SweepBrowserSelect")
+	if(!CmpStr(sbTitle, "New"))
+		return NaN
+	endif
+
+	sbWin = AB_GetSweepBrowserWindowFromTitle(sbTitle)
+	if(!CmpStr(sbWin, closingSweepBrowser))
+		SetPopupMenuIndex(ANALYSIS_BROWSER_NAME, "popup_SweepBrowserSelect", 0)
+	endif
+End
+
+static Function AB_ShowFileContextMenu(string filePath)
+
+	string symbPath
+
+	PopupContextualMenu "Show in explorer;Path to clipboard;"
+	switch(V_flag)
+		case 1:
+			OpenExplorerAtFile(filePath)
+			break
+		case 2:
+			PutScrapText GetWindowsPath(filePath)
+			break
+		default:
+			return NaN
+	endswitch
+End
+
+Function AB_ListBoxProc_FileFolderList(STRUCT WMListboxAction &lba) : ListBoxControl
+
+	switch(lba.eventCode)
+		case 2: // mouse up
+			if(!(lba.eventMod & WINDOW_HOOK_EMOD_RIGHTCLICK))
+				return 0
+			endif
+			WAVE/T folderList = GetAnalysisBrowserGUIFolderList()
+			AB_ShowFileContextMenu(folderList[lba.row])
+			break
+		default:
+			break
+	endswitch
+
+	return 0
 End
