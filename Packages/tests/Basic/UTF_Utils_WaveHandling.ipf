@@ -160,6 +160,33 @@ Function ELE_AbortsWithTooLargeValue()
 	endtry
 End
 
+Function ELE_DoesNothingIfIndexIsGood()
+
+	Make/FREE/N=(1) wv
+	EnsurelargeEnoughWave(wv, indexShouldExist = 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 1)
+End
+
+Function ELE_ResizesGeometrically()
+
+	Make/FREE/N=(MINIMUM_WAVE_SIZE) wv
+	EnsurelargeEnoughWave(wv, indexShouldExist = MINIMUM_WAVE_SIZE + 1)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 2 * MINIMUM_WAVE_SIZE)
+
+	EnsurelargeEnoughWave(wv, indexShouldExist = 2 * MINIMUM_WAVE_SIZE + 1)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 4 * MINIMUM_WAVE_SIZE)
+
+	EnsurelargeEnoughWave(wv, indexShouldExist = 9 * MINIMUM_WAVE_SIZE)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 16 * MINIMUM_WAVE_SIZE)
+End
+
+Function ELE_WorksWithEmtpyInitialSize()
+
+	Make/FREE/N=(0) wv
+	EnsurelargeEnoughWave(wv, indexShouldExist = 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), MINIMUM_WAVE_SIZE)
+End
+
 /// @}
 
 // GetWaveSize

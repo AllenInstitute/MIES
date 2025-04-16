@@ -45,6 +45,8 @@ threadsafe Function EnsureLargeEnoughWave(WAVE wv, [variable indexShouldExist, v
 
 	if(ParamIsDefault(dimension))
 		dimension = ROWS
+	else
+		ASSERT_TS(dimension == ROWS || dimension == COLS || dimension == LAYERS || dimension == CHUNKS, "Invalid dimension")
 	endif
 
 	if(ParamIsDefault(checkFreeMemory))
@@ -53,21 +55,18 @@ threadsafe Function EnsureLargeEnoughWave(WAVE wv, [variable indexShouldExist, v
 		checkFreeMemory = !!checkFreeMemory
 	endif
 
-	ASSERT_TS(dimension == ROWS || dimension == COLS || dimension == LAYERS || dimension == CHUNKS, "Invalid dimension")
 	ASSERT_TS(WaveExists(wv), "Wave does not exist")
 	ASSERT_TS(IsFinite(indexShouldExist) && indexShouldExist >= 0, "Invalid minimum size")
 
 	if(ParamIsDefault(indexShouldExist))
 		indexShouldExist = MINIMUM_WAVE_SIZE - 1
-	else
-		indexShouldExist = max(MINIMUM_WAVE_SIZE - 1, indexShouldExist)
 	endif
 
 	if(indexShouldExist < DimSize(wv, dimension))
 		return 0
 	endif
 
-	indexShouldExist *= 2
+	indexShouldExist = max(max(2^FindNextPower(indexShouldExist, 2), 2 * DimSize(wv, dimension)), MINIMUM_WAVE_SIZE)
 
 	if(checkFreeMemory)
 		if((GetWaveSize(wv) * (indexShouldExist / DimSize(wv, dimension)) / 1024 / 1024 / 1024) >= GetFreeMemory())
