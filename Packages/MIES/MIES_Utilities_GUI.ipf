@@ -749,3 +749,21 @@ Function RemoveAllDrawLayers(string win)
 		SetDrawLayer/W=$win/K UserAxes
 	endif
 End
+
+Function/S GetUnusedWindowName(string baseName)
+
+	variable i
+	string   wName
+
+	if(!WindowExists(baseName))
+		return baseName
+	endif
+
+	for(;;)
+		wName = baseName + num2istr(i)
+		if(!WindowExists(wName))
+			return wName
+		endif
+		i += 1
+	endfor
+End
