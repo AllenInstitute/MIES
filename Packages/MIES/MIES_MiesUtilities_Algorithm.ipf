@@ -595,3 +595,78 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 
 	return result
 End
+
+//@brief Band‑pass filters a wave while automatically reducing IIR filter order until the output contains no NaNs/Infs and its SEM is not larger than the original (simple ringing detection).
+
+// -----------------------------------------------------------------------------
+// BandPassWithRingingDetection(src, fHigh, fLow, maxOrder)
+// -----------------------------------------------------------------------------
+//  * src        – input wave (is **not** modified; a filtered copy called <src>_BPF is produced)
+//  * fHigh/fLow – pass‑band edge frequencies in Hz (Igor’s band‑pass requires fLow > fHigh; the routine swaps them if needed)
+//  * maxOrder   – starting (maximum) IIR filter order to try (>0)
+//
+//  Logic: iteratively lowers the filter order until three conditions are met:
+//           1. FilterIIR executes without error.
+//           2. WaveStats reports       V_numNaNs = 0 and V_numInfs = 0.
+//           3. SEM(filtered) ≤ SEM(original).
+//
+//  Return value: filter order that finally succeeded (0 if every order failed).
+// -----------------------------------------------------------------------------
+Function bandpass_with_RingingDetection(WAVE src, variable fHigh, variable fLow, variable maxOrder)
+
+    // ---- parameter sanity ---------------------------------------------------
+    ASSERT(maxOrder > 0, "maxOrder must be positive")
+    if(fLow <= fHigh)            // Igor band‑pass expects fLow > fHigh
+        variable tmp = fLow
+        fLow  = fHigh
+        fHigh = tmp
+    endif
+
+    // Sampling rate (Hz) – assumes X scaling is in milliseconds
+    variable samp = 1 / (DeltaX(src) * MILLI_TO_ONE)
+
+    // Pre‑compute SEM(original) once
+    WaveStats/Q src
+    variable semOrig = V_sem
+
+    // Prepare destination wave (same name every call → convenient overwrite)
+    duplicate/O src, src_BPF
+    WAVE filtered = src_BPF
+
+    variable curOrder = maxOrder, err
+    do
+        // -------- copy fresh data into filtered ------------------------------
+        filtered = src          // avoids repeated duplicate/O allocations
+
+        // -------- attempt current order --------------------------------------
+        FilterIIR/LO=(fLow/samp)/HI=(fHigh/samp)/DIM=(ROWS)/ORD=(curOrder) filtered
+        err = GetRTError(1)
+        if(err)
+            Print "FilterIIR failed (order="+num2str(curOrder)+"): "+GetErrMessage(err)
+            curOrder -= 1
+            continue
+        endif
+
+        // -------- WaveStats: NaN/Inf + SEM in one call ------------------------
+        WaveStats/Q filtered
+        if(V_numNaNs > 0 || V_numInfs > 0)
+            curOrder -= 1
+            continue        // bad numerical output → lower order
+        endif
+
+        if(V_sem > semOrig)              // noisier than original → ringing
+            curOrder -= 1
+            continue
+        endif
+
+        // -------- success -----------------------------------------------------
+
+        break
+    while(curOrder > 0)
+
+    if(curOrder <= 0)
+        Print "bandpass_with_RingingDetection(): all orders down to 1 produced NaNs/Infs or increased SEM."
+    endif
+
+    return curOrder
+End
