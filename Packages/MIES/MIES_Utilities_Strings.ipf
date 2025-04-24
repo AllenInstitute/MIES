@@ -514,3 +514,66 @@ threadsafe Function/S UpperCaseFirstChar(string str)
 
 	return UpperStr(str[0]) + str[1, len - 1]
 End
+
+/// @brief Human readable name for possible return values of WaveType(wv, 0)
+///
+/// We don't do any error checking if the given type really exists.
+threadsafe Function/S WaveTypeToStringSelectorZero(variable type)
+
+	string result = ""
+	variable trim
+
+	if(type == IGOR_TYPE_TEXT_WREF_DFR)
+		return "non-numeric (text, wave ref, dfref)"
+	endif
+
+	if(type & IGOR_TYPE_COMPLEX)
+		result += "complex "
+	endif
+
+	if(type & IGOR_TYPE_32BIT_FLOAT)
+		result += "32-bit float"
+	elseif(type & IGOR_TYPE_64BIT_FLOAT)
+		result += "64-bit float"
+	elseif(type & IGOR_TYPE_8BIT_INT)
+		result += "8-bit int"
+	elseif(type & IGOR_TYPE_16BIT_INT)
+		result += "16-bit int"
+	elseif(type & IGOR_TYPE_32BIT_INT)
+		result += "32-bit int"
+	elseif(type & IGOR_TYPE_64BIT_INT)
+		result += "64-bit int"
+	else
+		// do nothing here
+		trim = 1
+	endif
+
+	if(type & IGOR_TYPE_UNSIGNED)
+		result += " unsigned"
+	endif
+
+	if(trim)
+		return trimstring(result)
+	endif
+
+	return result
+End
+
+/// @brief Human readable name for possible return values of WaveType(wv, 1)
+threadsafe Function/S WaveTypeToStringSelectorOne(variable type)
+
+	switch(type)
+		case IGOR_TYPE_NULL_WAVE:
+			return "null"
+		case IGOR_TYPE_NUMERIC_WAVE:
+			return "numeric"
+		case IGOR_TYPE_TEXT_WAVE:
+			return "text"
+		case IGOR_TYPE_DFREF_WAVE:
+			return "datafolder reference"
+		case IGOR_TYPE_WAVEREF_WAVE:
+			return "wave reference"
+		default:
+			ASSERT_TS(0, "Unknown constant: " + num2str(type, "%d"))
+	endswitch
+End

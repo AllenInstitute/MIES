@@ -64,6 +64,7 @@ static StrConstant SF_OP_PLUS                = "+"
 static StrConstant SF_OP_MULT                = "*"
 static StrConstant SF_OP_DIV                 = "~1"
 static StrConstant SF_OP_RANGE               = "range"
+static StrConstant SF_OP_CONCAT              = "concat"
 static StrConstant SF_OP_RANGESHORT          = "…"
 static StrConstant SF_OP_MIN                 = "min"
 static StrConstant SF_OP_MAX                 = "max"
@@ -255,7 +256,7 @@ Function/WAVE SF_GetNamedOperations()
 	                  SF_OP_MERGE, SF_OP_FIT, SF_OP_FITLINE, SF_OP_DATASET, SF_OP_SELECTVIS, SF_OP_SELECTCM, SF_OP_SELECTSTIMSET,       \
 	                  SF_OP_SELECTIVSCCSWEEPQC, SF_OP_SELECTIVSCCSETQC, SF_OP_SELECTRANGE, SF_OP_SELECTEXP, SF_OP_SELECTDEV,            \
 	                  SF_OP_SELECTEXPANDSCI, SF_OP_SELECTEXPANDRAC, SF_OP_SELECTSETCYCLECOUNT, SF_OP_SELECTSETSWEEPCOUNT,               \
-	                  SF_OP_SELECTSCIINDEX, SF_OP_SELECTRACINDEX, SF_OP_ANAFUNCPARAM}
+	                  SF_OP_SELECTSCIINDEX, SF_OP_SELECTRACINDEX, SF_OP_ANAFUNCPARAM, SF_OP_CONCAT}
 
 	return wt
 End
@@ -1043,6 +1044,9 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 		case SF_OP_RANGE:
 		case SF_OP_RANGESHORT:
 			WAVE out = SF_OperationRange(jsonId, jsonPath, graph)
+			break
+		case SF_OP_CONCAT:
+			WAVE out = SF_OperationConcat(jsonId, jsonPath, graph)
 			break
 		case SF_OP_MIN:
 			WAVE out = SF_OperationMin(jsonId, jsonPath, graph)
@@ -4023,35 +4027,66 @@ End
 /// range (start[, stop[, step]])
 static Function/WAVE SF_OperationRange(variable jsonId, string jsonPath, string graph)
 
-	variable numArgs
+	variable start, stop, step, stopDefault
 
-	numArgs = SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_RANGE, 1, maxArgs = 3)
+	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_RANGE, 1, maxArgs = 3)
 
-	WAVE arg0 = SFH_ResolveDatasetElementFromJSON(jsonId, jsonpath, graph, SF_OP_RANGE, 0, checkExist = 1)
-	if(numArgs == 1)
-		SFH_ASSERT(IsNumericWave(arg0), "range first argument must be numeric")
-		Make/FREE/D/N=(abs(trunc(arg0[0]))) range
-		MultiThread range = p
-	elseif(numArgs == 2)
-		WAVE arg1 = SFH_ResolveDatasetElementFromJSON(jsonId, jsonpath, graph, SF_OP_RANGE, 1, checkExist = 1)
-		SFH_ASSERT(IsNumericWave(arg1), "range second argument must be numeric")
-		Make/FREE/D/N=(abs(trunc(arg0[0]) - trunc(arg1[0]))) range
-		MultiThread range[] = arg0[0] + p
-		SFH_CleanUpInput(arg1)
-	elseif(numArgs == 3)
-		WAVE arg1 = SFH_ResolveDatasetElementFromJSON(jsonId, jsonpath, graph, SF_OP_RANGE, 1, checkExist = 1)
-		WAVE arg2 = SFH_ResolveDatasetElementFromJSON(jsonId, jsonpath, graph, SF_OP_RANGE, 2, checkExist = 1)
-		SFH_ASSERT(IsNumericWave(arg1), "range second argument must be numeric")
-		SFH_ASSERT(IsNumericWave(arg2), "range third argument must be numeric")
-		Make/FREE/D/N=(ceil(abs((arg0[0] - arg1[0]) / arg2[0]))) range
-		MultiThread range[] = arg0[0] + p * arg2[0]
-		SFH_CleanUpInput(arg1)
-		SFH_CleanUpInput(arg2)
+	start = SFH_GetArgumentAsNumeric(jsonId, jsonpath, graph, SF_OP_RANGE, 0)
+	stop  = SFH_GetArgumentAsNumeric(jsonId, jsonpath, graph, SF_OP_RANGE, 1, defValue = NaN)
+	step  = SFH_GetArgumentAsNumeric(jsonId, jsonpath, graph, SF_OP_RANGE, 2, defValue = 1)
+
+	if(IsNaN(stop))
+		stop        = 0
+		stopDefault = 1
 	endif
 
-	SFH_CleanUpInput(arg0)
+	Make/FREE/D/N=(ceil(abs((start - stop) / step))) range
+
+	if(stopDefault)
+		MultiThread range[] = p * step
+	else
+		MultiThread range[] = start + p * step
+	endif
 
 	return SFH_GetOutputForExecutorSingle(range, graph, SF_OP_RANGE, dataType = SF_DATATYPE_RANGE)
+End
+
+/// concat(array0, array1, array2, ...)
+static Function/WAVE SF_OperationConcat(variable jsonId, string jsonPath, string graph)
+
+	variable numArgs, i, err, majorType, sliceMajorType
+	variable constantDataType
+	string refDataType, dataType, wvNote, errMsg
+
+	numArgs = SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_CONCAT, 1)
+
+	WAVE result = SFH_GetArgumentAsWave(jsonId, jsonpath, graph, SF_OP_CONCAT, 0, copy = 1, singleResult = 1, wvNote = wvNote)
+	majorType = WaveType(result, 1)
+
+	refDataType      = JWN_GetStringFromNote(wvNote, SF_META_DATATYPE)
+	dataType         = refDataType
+	constantDataType = !IsEmpty(refDataType)
+	Note/K result
+
+	AssertOnAndClearRTError()
+	for(i = 1; i < numArgs; i += 1)
+		WAVE slice = SFH_GetArgumentAsWave(jsonId, jsonpath, graph, SF_OP_CONCAT, i, singleResult = 1, wvNote = wvNote)
+		sliceMajorType = WaveType(slice, 1)
+
+		if(majorType != sliceMajorType)
+			sprintf errMsg, "Concatenate failed as the wave types of the first argument and #%d don't match: %s vs %s", i, WaveTypeToStringSelectorOne(majorType), WaveTypeToStringSelectorOne(sliceMajorType)
+			SFH_ASSERT(0, errMsg)
+		endif
+
+		dataType         = JWN_GetStringFromNote(wvNote, SF_META_DATATYPE)
+		constantDataType = constantDataType && !CmpStr(refDataType, dataType)
+
+		Concatenate/FREE/NP {slice}, result; errMsg = GetRTErrMessage(); err = GetRTError(1)
+		SFH_ASSERT(!err, "Error concatenating waves: " + errMsg)
+	endfor
+
+	dataType = SelectString(constantDataType, SF_DATATYPE_CONCAT, dataType)
+	return SFH_GetOutputForExecutorSingle(result, graph, SF_OP_CONCAT, discardOpStack = 1, dataType = dataType)
 End
 
 static Function/WAVE SF_OperationMin(variable jsonId, string jsonPath, string graph)

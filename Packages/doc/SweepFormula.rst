@@ -1722,13 +1722,13 @@ the Unicode Character 'HORIZONTAL ELLIPSIS' (U+2026). Writing "..." is automatic
 The function generally accepts 1 to 3 arguments. The operation is intended to be
 used with two arguments.
 
-The operation accepts also multiple data waves as first argument. Each data wave content must follow the operation argument order and size in that case.
-For this case the operation is applied on each input data wave independently and returns the same number of data waves.
 The returned data type is `SF_DATATYPE_RANGE`.
 
 .. code-block:: bash
 
    range(1, 5, 0.7) == [1, 1.7, 2.4, 3.1, 3.8, 4.5]
+   range(3) == [0, 1, 2]
+   range(1, 4) == [1, 2, 3]
 
 epochs
 """"""
@@ -1982,6 +1982,26 @@ The operation currently throws away all metadata.
 .. code-block:: bash
 
    merge(4, 7, 8) == [4, 7, 8]
+
+concat
+""""""
+
+The concat operation allows to concatenate multiple arrays together.
+
+.. code-block:: bash
+
+   concat(array data1, array data2, ...)
+
+data1, data2, ...
+  data waves (numeric and text)
+
+The operation accepts 1 to unlimited arguments. The dimensionality of all input
+waves and their types must match.
+
+.. code-block:: bash
+
+   concat([1, 5, [3, 8]) == [1, 5, 3, 8]
+   concat(["a", "b], ["e", "f"]) == [a, b, e, f]
 
 dataset
 """""""

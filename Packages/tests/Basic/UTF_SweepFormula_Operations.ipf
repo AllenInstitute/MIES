@@ -934,7 +934,7 @@ static Function TestOperationRange()
 
 	variable jsonID0, jsonID1
 
-	string str, strRef, dataType
+	string str, strRef, dataType, error
 	string win
 
 	win = GetDataBrowserWithData()
@@ -967,12 +967,84 @@ static Function TestOperationRange()
 	Make/N=9/FREE floatwave = 1.5 + p
 	REQUIRE_EQUAL_WAVES(output, floatwave, mode = WAVE_DATA)
 
+	str = "range(1, 5, 0.7)"
+	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	Make/FREE floatwave = {1, 1.7, 2.4, 3.1, 3.8, 4.5}
+	REQUIRE_EQUAL_WAVES(output, floatwave, mode = WAVE_DATA, tol = 1e-6)
+
+	str = "range(3,0,-1)"
+	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	Make/FREE floatwave = {3, 2, 1}
+	REQUIRE_EQUAL_WAVES(output, floatWave, mode = WAVE_DATA)
+
 	// check meta data
 	str = "range(1,10)"
 	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
 	dataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
 	strRef   = SF_DATATYPE_RANGE
 	CHECK_EQUAL_STR(strRef, dataType)
+
+	try
+		str = "range([1,2])"
+		SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+		error = ROStr(GetSweepFormulaParseErrorMessage())
+		CHECK_EQUAL_STR(error, "Argument #0 of operation range: Too many input values")
+	endtry
+End
+
+static Function TestOperationConcat()
+
+	string str, strRef, dataType, error
+	string win
+
+	win = GetDataBrowserWithData()
+
+	str = "concat([1, 2], [4, 5])"
+	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	Make/FREE floatWave = {1, 2, 4, 5}
+	REQUIRE_EQUAL_WAVES(output, floatWave, mode = WAVE_DATA)
+
+	str = "concat([a, b], [e, f])"
+	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	Make/FREE/T textWave = {"a", "b", "e", "f"}
+	REQUIRE_EQUAL_TEXTWAVES(output, textWave, mode = WAVE_DATA)
+
+	str = "concat([[1, 2], [4, 5]], [[10, 20], [40, 50]])"
+	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	// IP is column major, SF row major
+	Make/FREE floatWave = {{1, 4}, {2, 5}, {10, 40}, {20, 50}}
+	REQUIRE_EQUAL_WAVES(output, floatWave, mode = WAVE_DATA)
+
+	// check meta data
+	str = "concat(1)"
+	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	dataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
+	CHECK_EQUAL_STR(dataType, SF_DATATYPE_CONCAT)
+
+	// preserved from input
+	str = "concat(selsweeps(1), selsweeps(2))"
+	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	dataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
+	CHECK_EQUAL_STR(dataType, SF_DATATYPE_SWEEPNO)
+
+	// but only if equal
+	str = "concat(selsweeps(1), 2)"
+	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	dataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
+	CHECK_EQUAL_STR(dataType, SF_DATATYPE_CONCAT)
+
+	try
+		str = "concat(1, a)"
+		SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+		error = ROStr(GetSweepFormulaParseErrorMessage())
+		CHECK_EQUAL_STR(error, "Concatenate failed as the wave types of the first argument and #1 don't match: numeric vs text")
+	endtry
 End
 
 static Function TestOperationFindLevel()
