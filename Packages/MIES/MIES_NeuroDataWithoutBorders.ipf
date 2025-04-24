@@ -282,11 +282,23 @@ static Function NWB_AddSpecifications(variable fileID, variable nwbVersion)
 	WriteSpecifications(fileID)
 End
 
+Function/S NWB_ReadSessionStartTimeImpl(variable fileID)
+
+	string str
+
+	str = ReadTextDataSetAsString(fileID, "/session_start_time")
+	if(!CmpStr(str, IPNWB_PLACEHOLDER))
+		return ""
+	endif
+
+	return str
+End
+
 static Function NWB_ReadSessionStartTime(variable fileID)
 
-	string str = ReadTextDataSetAsString(fileID, "/session_start_time")
+	string str = NWB_ReadSessionStartTimeImpl(fileID)
 
-	ASSERT(cmpstr(str, IPNWB_PLACEHOLDER), "Could not read session_start_time back from the NWB file")
+	ASSERT(!IsEmpty(str), "Could not read session_start_time back from the NWB file")
 
 	return ParseISO8601TimeStamp(str)
 End
