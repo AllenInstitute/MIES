@@ -462,6 +462,53 @@ static Function/S AB_GetSettingNumFiniteVals(WAVE wv, string device, variable sw
 	return num2str(V_npnts)
 End
 
+/// @brief Returns the Session Start Time as ISO8601 timestamp string
+///        The required data must have been loaded before.
+///
+/// @param device       device name
+/// @param firstSweepNo first sweep number of experiment
+/// @param dataFolder   dataFolder reference of the specific loaded experiment data in AB
+/// @param fileType     file type @ref AnalysisBrowserFileTypes
+///
+/// @returns session Start Time as ISO8601 timestamp string, an empty string if this information is not present
+static Function/S AB_GetSessionStartTime(string device, variable firstSweepNo, string dataFolder, string fileType)
+
+	string sessionStartTime
+	variable sweepNo, size
+
+	strswitch(fileType)
+		case ANALYSISBROWSER_FILE_TYPE_IGOR:
+			WAVE textualValues = GetAnalysLBTextualValues(dataFolder, device)
+			sessionStartTime = GetLastSettingTextIndep(textualValues, firstSweepNo, HIGH_PREC_SWEEP_START_KEY, DATA_ACQUISITION_MODE)
+			if(IsEmpty(sessionStartTime))
+				WAVE/I sweeps = GetAnalysisChannelSweepWave(dataFolder, device)
+				size = GetNumberFromWaveNote(sweeps, NOTE_INDEX)
+				if(size == 0)
+					return ""
+				endif
+
+				sweepNo = sweeps[0]
+				if(!IsValidSweepNumber(sweepNo))
+					return ""
+				endif
+
+				DFREF  sweepConfigDFR   = GetAnalysisDeviceConfigFolder(dataFolder, device)
+				WAVE/Z firstSweepConfig = sweepConfigDFR:$GetConfigWaveName(sweepNo)
+				if(!WaveExists(firstSweepConfig))
+					return ""
+				endif
+				sessionStartTime = GetISO8601TimeStamp(secondsSinceIgorEpoch = LocalTimeToUTC(CreationDate(firstSweepConfig)))
+			endif
+			return sessionStartTime
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv2: // intended fallthrough
+			sessionStartTime = ROStr(GetAnalysisExpSessionStartTime(dataFolder))
+			return sessionStartTime
+		default:
+			ASSERT(0, "invalid file type")
+	endswitch
+End
+
 /// @brief Creates list-view for AnalysisBrowser
 ///
 /// Depends on LabNoteBook to be loaded prior to call.
@@ -497,16 +544,17 @@ static Function AB_FillListWave(string diskLocation, string fileName, string dev
 
 	ASSERT(WaveExists(sweepNums), "sweepNums wave is empty.")
 
+	WAVE numericalValues = GetAnalysLBNumericalValues(dataFolder, device)
+	WAVE textualValues   = GetAnalysLBTextualValues(dataFolder, device)
+
 	EnsureLargeEnoughWave(list, indexShouldExist = index, dimension = ROWS)
 	list[index][%device][0] = device
 
 	numWaves = GetNumberFromWaveNote(sweepNums, NOTE_INDEX)
 
-	list[index][%'#sweeps'][0] = num2istr(numWaves)
-	index                     += 1
-
-	WAVE numericalValues = GetAnalysLBNumericalValues(dataFolder, device)
-	WAVE textualValues   = GetAnalysLBTextualValues(dataFolder, device)
+	list[index][%'#sweeps'][0]    = num2istr(numWaves)
+	list[index][%'start time'][0] = AB_GetSessionStartTime(device, sweepNums[0], dataFolder, fileType)
+	index                        += 1
 
 	for(i = 0; i < numWaves; i += 1)
 		EnsureLargeEnoughWave(list, indexShouldExist = index, dimension = ROWS)
@@ -753,6 +801,9 @@ static Function AB_LoadSweepsConfigFromNWB(string discLocation, string dataFolde
 	channelList = ReadStimulus(h5_fileID)
 	WAVE/T stimulus = GetAnalysisChannelStimWave(dataFolder, device)
 	AB_StoreChannelsBySweep(h5_fileID, nwbVersion, channelList, sweeps, stimulus)
+
+	SVAR sessionStartTime = $GetAnalysisExpSessionStartTime(dataFolder)
+	sessionStartTime = NWB_ReadSessionStartTimeImpl(h5_fileID)
 
 	// close hdf5 file
 	H5_CloseFile(h5_fileID)
