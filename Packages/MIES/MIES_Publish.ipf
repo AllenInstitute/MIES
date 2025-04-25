@@ -989,3 +989,18 @@ Function PUB_AmplifierSettingChange(string device, variable headstage, variable 
 
 	PUB_Publish(jsonID, AMPLIFIER_SET_VALUE)
 End
+
+Function PUB_TPSettingChange(string device, variable headstage, string name, variable value, string unit)
+
+	variable jsonID
+	string   path
+
+	jsonID = PUB_GetJSONTemplate(device, headstage)
+
+	path = "/testpulse setting"
+	JSON_AddTreeObject(jsonID, path)
+
+	PUB_AddValueWithUnit(jsonID, path + "/" + name, value, unit)
+
+	PUB_Publish(jsonID, TESTPULSE_SET_VALUE_FILTER)
+End
