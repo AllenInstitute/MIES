@@ -466,7 +466,7 @@ Function SCOPE_UpdateOscilloscopeData(string device, variable dataAcqOrTP, [vari
 	STRUCT TPAnalysisInput tpInput
 	variable i, j
 	variable tpChannels, numADCs, numDACs, tpLengthPointsADC, tpStart, tpEnd, tpStartPos
-	variable TPChanIndex, saveTP, clampAmp
+	variable TPChanIndex, saveTP, clampAmp, timeSinceAcqStart, timeOfAcqStartUTC, tpCounter
 	variable headstage, fifoLatest, channelIndex
 	string hsList
 
@@ -478,6 +478,7 @@ Function SCOPE_UpdateOscilloscopeData(string device, variable dataAcqOrTP, [vari
 					chunk = 0
 				endif
 				ASSERT(ParamIsDefault(fifoPos), "optional parameter fifoPos is not possible with TEST_PULSE_MODE")
+				tpCounter = chunk
 			elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
 				ASSERT(!ParamIsDefault(fifoPos), "optional parameter fifoPos missing")
 				ASSERT(ParamIsDefault(chunk), "optional parameter chunk is not possible with DATA_ACQUISITION_MODE")
@@ -489,11 +490,15 @@ Function SCOPE_UpdateOscilloscopeData(string device, variable dataAcqOrTP, [vari
 		case HARDWARE_NI_DAC:
 			ASSERT(!ParamIsDefault(deviceID), "optional parameter deviceID missing (required for NI devices in TP mode)")
 			SCOPE_NI_UpdateOscilloscope(device, dataAcqOrTP, deviceID, fifoPos)
+			if(dataAcqOrTP == TEST_PULSE_MODE)
+				tpCounter = ROVar(GetNITestPulseCounter(device))
+			endif
 			break
 		case HARDWARE_SUTTER_DAC:
 			if(dataAcqOrTP == TEST_PULSE_MODE)
 				ASSERT(!ParamIsDefault(chunk), "optional parameter chunk is missing with TEST_PULSE_MODE")
 				ASSERT(ParamIsDefault(fifoPos), "optional parameter fifoPos is not possible with TEST_PULSE_MODE")
+				tpCounter = chunk
 			elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
 				ASSERT(!ParamIsDefault(fifoPos), "optional parameter fifoPos missing")
 				ASSERT(ParamIsDefault(chunk), "optional parameter chunk is not possible with DATA_ACQUISITION_MODE")
@@ -528,6 +533,8 @@ Function SCOPE_UpdateOscilloscopeData(string device, variable dataAcqOrTP, [vari
 		WAVE/WAVE scaledDataWave = GetScaledDataWave(device)
 		numDACs = DimSize(DACs, ROWS)
 		numADCs = DimSize(ADCs, ROWS)
+
+		timeOfAcqStartUTC = ParseISO8601TimeStamp(ROStr(GetLastAcquisitionStartTime(device)))
 
 		// note: currently this works for multiplier = 1 only, see DC_PlaceDataInDAQDataWave
 		Make/FREE/N=(tpLengthPointsADC) channelData
@@ -577,8 +584,9 @@ Function SCOPE_UpdateOscilloscopeData(string device, variable dataAcqOrTP, [vari
 			endif
 
 			// Use same time for all headstages
-			tpInput.timeStamp     = DateTime
-			tpInput.timeStampUTC  = DateTimeInUTC()
+			timeSinceAcqStart     = (tpCounter + i) * tpInput.samplingIntervalDAC * tpInput.tpLengthPointsDAC * MILLI_TO_ONE
+			tpInput.timeStampUTC  = timeOfAcqStartUTC + timeSinceAcqStart
+			tpInput.timeStamp     = UTCTimeToLocal(tpInput.timeStampUTC)
 			tpInput.sendTPMessage = 1
 
 			for(j = 0; j < numADCs; j += 1)
