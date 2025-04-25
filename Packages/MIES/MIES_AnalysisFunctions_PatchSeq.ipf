@@ -4052,7 +4052,7 @@ Function/S PSQ_DAScale_GetHelp(string name)
 		case "MinimumSpikeCount":
 			return "Supra: The lower limit of the number of spikes."
 		case "MinimumSpikeCountForMaxSlope":
-			return "Adaptive: The minimum number of spikes required for a sweep to be considered as having the maximum f-I slope."
+			return "Adaptive: The minimum number of spikes required for a sweep to be considered as having the maximum f-I slope, defaults to 4."
 		case "OffsetOperator":
 			return "Supra: Set the math operator to use for "                             \
 			       + "combining the rheobase DAScale value from the previous run and "    \
