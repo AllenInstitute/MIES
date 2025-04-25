@@ -557,6 +557,9 @@ Function SCOPE_UpdateOscilloscopeData(string device, variable dataAcqOrTP, [vari
 		DEBUGPRINT("tpChannels: ", var = tpChannels)
 		DEBUGPRINT("tpLength: ", var = tpLengthPointsADC)
 
+		// In TP mode the loop only runs once. Only the last TP is evaluated for ITC and SUTTER.
+		// For NI the caller loops over all pending TPs.
+		// In DAQ mode all TPs are evaluated in this loop
 		for(i = tpStart; i < tpEnd; i += 1)
 
 			tpInput.measurementMarker = tpMarker[i - tpStart]
