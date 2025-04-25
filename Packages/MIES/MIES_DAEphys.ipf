@@ -5515,11 +5515,47 @@ static Function/S DAP_TPControlToLabel(string ctrl)
 	endswitch
 End
 
+/// @brief Get the physical unit for the control name
+static Function/S DAP_TPControlToUnit(string ctrl)
+
+	strswitch(ctrl)
+		case "SetVar_DataAcq_TPDuration":
+			return "ms"
+		case "SetVar_DataAcq_TPBaselinePerc":
+			return "%"
+		case "SetVar_DataAcq_TPAmplitude":
+			return "pA"
+		case "SetVar_DataAcq_TPAmplitudeIC":
+			return "mV"
+		case "setvar_Settings_TPBuffer":
+			return "a.u."
+		case "setvar_Settings_TP_RTolerance":
+			return "MΩ"
+		case "check_DataAcq_AutoTP":
+			return "On/Off"
+		case "setvar_DataAcq_IinjMax":
+			return "pA"
+		case "setvar_DataAcq_targetVoltage":
+			return "mV"
+		case "setvar_DataAcq_targetVoltageRange":
+			return "mV"
+		case "Check_TP_SendToAllHS":
+			return "On/Off"
+		case "setvar_Settings_autoTP_perc":
+			return "%"
+		case "setvar_Settings_autoTP_int":
+			return "s"
+		default:
+			ASSERT(0, "invalid control")
+			break
+	endswitch
+End
+
 /// @brief Write a new TP setting value to the wave
 static Function DAP_TPGUISettingToWave(string device, string ctrl, variable val)
 
-	string lbl, entry
-	variable first, last, TPState, needsTPRestart
+	string lbl, entry, unit
+	variable first, last, TPState, needsTPRestart, headstage, i
 
 	needsTPRestart = WhichListItem(ctrl, DAEPHYS_TP_CONTROLS_NO_RESTART) == -1
 
@@ -5547,6 +5583,12 @@ static Function DAP_TPGUISettingToWave(string device, string ctrl, variable val)
 	endif
 
 	TPSettings[%$lbl][first, last] = val
+
+	unit = DAP_TPControlToUnit(ctrl)
+	for(i = first; i <= last; i += 1)
+		headstage = IsValidHeadstage(i) ? i : NaN
+		PUB_TPSettingChange(device, headstage, lbl, val, unit)
+	endfor
 
 	if(!cmpstr(lbl, "autoTPEnable"))
 		TP_AutoTPGenerateNewCycleID(device, first = first, last = last)

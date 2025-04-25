@@ -703,3 +703,65 @@ static Function CheckAmplifierSettingChange()
 
 	JSON_Release(jsonID)
 End
+
+/// Filter: #TESTPULSE_SET_VALUE_FILTER
+///
+/// Example:
+///
+/// \rst
+/// .. code-block:: json
+///
+///    {
+///      "device": "my_device",
+///      "headstage": 1,
+///      "sweep number": "NaN",
+///      "testpulse setting": {
+///        "my name": {
+///          "unit": "On/Off",
+///          "value": 1
+///        }
+///      },
+///      "timestamp": "2025-04-25T20:26:44Z"
+///    }
+///
+/// \endrst
+static Function CheckTestpulseSettingChange()
+
+	string device, name, unit, actual, expected, path
+	variable value, headstage, jsonID, valActual, valExpected
+
+	device    = "my_device"
+	headstage = 1
+	name      = "my name"
+	unit      = "On/Off"
+	value     = 1
+
+	PUB_TPSettingChange(device, headstage, name, value, unit)
+
+	jsonID = FetchAndParseMessage(TESTPULSE_SET_VALUE_FILTER)
+
+	actual   = JSON_GetString(jsonID, "/device")
+	expected = device
+	CHECK_EQUAL_STR(actual, expected)
+
+	valActual   = JSON_GetVariable(jsonID, "/headstage")
+	valExpected = headstage
+	CHECK_EQUAL_VAR(valActual, valExpected)
+
+	path        = "/testpulse setting/" + name
+	valActual   = JSON_GetType(jsonID, path)
+	valExpected = JSON_OBJECT
+	CHECK_EQUAL_VAR(valActual, valExpected)
+
+	CHECK_EQUAL_STR(actual, expected)
+
+	valActual   = JSON_GetVariable(jsonID, path + "/value")
+	valExpected = value
+	CHECK_EQUAL_VAR(valActual, valExpected)
+
+	actual   = JSON_GetString(jsonID, path + "/unit")
+	expected = unit
+	CHECK_EQUAL_STR(actual, expected)
+
+	JSON_Release(jsonID)
+End
