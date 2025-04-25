@@ -110,7 +110,7 @@ then
   fi
 fi
 
-versions="9"
+versions="9 10"
 
 for i in $versions
 do
@@ -150,11 +150,11 @@ do
   then
     cp -r  "$base_folder"/XOPs-IP${i}-64bit/*  "$xops64"
   else
-    cp -r  "$base_folder"/XOPs-IP${i}-64bit/MIESUtils*  "$xops64"
-    cp -r  "$base_folder"/XOPs-IP${i}-64bit/JSON*  "$xops64"
-    cp -r  "$base_folder"/XOPs-IP${i}-64bit/ZeroMQ*  "$xops64"
-    cp -r  "$base_folder"/XOPs-IP${i}-64bit/TUF*  "$xops64"
-    cp -r  "$base_folder"/XOPs-IP${i}-64bit/libzmq*  "$xops64"
+    cp -r  "$base_folder"/XOPs-IP9-64bit/MIESUtils*  "$xops64"
+    cp -r  "$base_folder"/XOPs-IP9-64bit/JSON*  "$xops64"
+    cp -r  "$base_folder"/XOPs-IP9-64bit/ZeroMQ*  "$xops64"
+    cp -r  "$base_folder"/XOPs-IP9-64bit/TUF*  "$xops64"
+    cp -r  "$base_folder"/XOPs-IP9-64bit/libzmq*  "$xops64"
   fi
 
   if [ "$sourceLoc" = "git" ]
