@@ -34,10 +34,22 @@ Function/S GetTimeStamp([variable secondsSinceIgorEpoch, variable humanReadable]
 	return Secs2Date(secondsSinceIgorEpoch, -2, "_") + "_" + ReplaceString(":", Secs2Time(secondsSinceIgorEpoch, 3), "")
 End
 
+/// @brief Convert UTC time in Local time
+threadsafe Function UTCTimeToLocal(variable utcTime)
+
+	return utcTime + date2secs(-1, -1, -1)
+End
+
+/// @brief Convert Local time in secs to UTC
+threadsafe Function LocalTimeToUTC(variable localTime)
+
+	return localTime - date2secs(-1, -1, -1)
+End
+
 /// @brief Return the seconds, including fractional part, since Igor Pro epoch (1/1/1904) in UTC time zone
 threadsafe Function DateTimeInUTC()
 
-	return DateTime - date2secs(-1, -1, -1)
+	return LocalTimeToUTC(DateTime)
 End
 
 /// @brief Return a string in ISO 8601 format with timezone UTC

@@ -1228,8 +1228,8 @@ static Function LBV_LimitXRangeToSelected(string browser)
 		endif
 
 		// convert to local time zone
-		first += date2secs(-1, -1, -1)
-		last  += date2secs(-1, -1, -1)
+		first = UTCTimeToLocal(first)
+		last  = UTCTimeToLocal(last)
 
 		ASSERT(IsFinite(first) && IsFinite(last), "Invalid first/last")
 	else
