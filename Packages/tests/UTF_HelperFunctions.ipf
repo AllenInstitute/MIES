@@ -251,6 +251,7 @@ static Function CheckMessageFilters_IGNORE(string filter)
 	WAVE/Z/T allFilters = FFI_GetAvailableMessageFilters()
 	CHECK_WAVE(allFilters, TEXT_WAVE)
 
+	INFO("FFI_GetAvailableMessageFilters() needs updating as %s is missing.", s0 = filter)
 	FindValue/TXOP=4/TEXT=(filter) allFilters
 	CHECK_GE_VAR(V_Value, 0)
 End
