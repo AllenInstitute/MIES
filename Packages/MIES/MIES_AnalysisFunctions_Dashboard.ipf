@@ -556,13 +556,15 @@ static Function/S AD_GetDAScaleFailMsg(WAVE numericalValues, WAVE/T textualValue
 				return msg
 			endif
 
+			// labnotebook key was removed
 			key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_VALID_SLOPE_PASS, query = 1)
-			WAVE slopePasses = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
-			numFailedSweeps = DimSize(slopePasses, ROWS) - Sum(slopePasses)
+
+			WAVE/Z slopePasses = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+			numFailedSweeps = WaveExists(slopePasses) ? (DimSize(slopePasses, ROWS) - Sum(slopePasses)) : NaN
 
 			numInvalidSlopeSweepsAllowed = AFH_GetAnalysisParamNumerical("NumInvalidSlopeSweepsAllowed", params, defValue = PSQ_DA_NUM_INVALID_SLOPE_SWEEPS_ALLOWED)
 
-			if(numFailedSweeps >= numInvalidSlopeSweepsAllowed)
+			if(IsFinite(numFailedSweeps) && numFailedSweeps >= numInvalidSlopeSweepsAllowed)
 				sprintf msg, "Encountered %g sweeps with invalid slopes, but only %g are allowed.", numFailedSweeps, numInvalidSlopeSweepsAllowed
 			endif
 
