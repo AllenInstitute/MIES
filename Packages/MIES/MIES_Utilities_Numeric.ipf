@@ -110,8 +110,11 @@ End
 threadsafe Function FindNextPower(variable a, variable p)
 
 	ASSERT_TS(p > 1, "Invalid power")
-	ASSERT_TS(a > 0, "Invalid value")
 	ASSERT_TS(IsInteger(a), "Value has to be an integer")
+
+	if(a == 0)
+		return 1
+	endif
 
 	return ceil(log(a) / log(p))
 End
