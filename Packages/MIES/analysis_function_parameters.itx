@@ -41,7 +41,7 @@ BEGIN
 	"MaxPipetteResistance"	"variable"	"required"	"PB"	"Maximum allowed pipette resistance [MΩ]"
 	"MaxTrials"	"variable"	"optional"	"SC"	"[Optional, defaults to infinity] A sweep is rerun this many times on a failed headstage."
 	"MinimumSpikeCount"	"variable"	"optional"	"DA"	"Supra: The lower limit of the number of spikes."
-	"MinimumSpikeCountForMaxSlope"	"variable"	"optional"	"DA"	"Adaptive: The minimum number of spikes required for a sweep to be considered as having the maximum f-I slope."
+	"MinimumSpikeCountForMaxSlope"	"variable"	"optional"	"DA"	"Adaptive: The minimum number of spikes required for a sweep to be considered as having the maximum f-I slope, defaults to 4."
 	"MinimumSpikePosition"	"variable"	"required"	"SC"	"Minimum allowed spike positions in pulse active coordinate system (0 - 100)."
 	"MinPipetteResistance"	"variable"	"required"	"PB"	"Minimum allowed pipette resistance [MΩ]"
 	"NextIndexingEndStimSetName"	"string"	"optional"	"AR, PB, SE, VM"	"Next indexing end stimulus set which should be set in case of success.\r Also enables indexing."
