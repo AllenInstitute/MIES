@@ -1769,6 +1769,8 @@ Function CheckPubMessagesHeartbeatOnly()
 
 		CHECK_GE_VAR(DimSize(receivedData, ROWS), 2)
 
+		INFO("Message: filter=%s, payload=%s", s0 = WaveText(WaveRef(receivedData, row = 0), row = 0), s1 = WaveText(WaveRef(receivedData, row = 1), row = 0))
+
 		filter = WaveText(receivedData[0], row = 0)
 		CHECK_EQUAL_STR(filter, ZEROMQ_HEARTBEAT)
 	endfor
