@@ -293,5 +293,7 @@ End
 #include "MIES_WaveBuilderPanel"
 #include "MIES_WaveBuilder_Macro"
 #include "MIES_WaveDataFolderGetters"
+#include "MIES_WaverefBrowser"
+#include "MIES_WaverefBrowser_Macro"
 
 #endif // TOO_OLD_IGOR

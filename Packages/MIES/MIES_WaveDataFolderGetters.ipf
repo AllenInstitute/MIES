@@ -8934,3 +8934,137 @@ threadsafe Function/WAVE GetTPAnalysisDataWave()
 
 	return tpData
 End
+
+/// @name Waveref Browser
+///@{
+
+/// @brief Returns string path to Waveref Browser home data folder
+///
+/// UTF_NOINSTRUMENTATION
+Function/S GetWaverefBrowserHomeStr()
+
+	return "root:Packages:WaverefBrowser"
+End
+
+/// @brief Returns reference to Waveref Browser home data folder
+///
+/// UTF_NOINSTRUMENTATION
+Function/DF GetWaverefBRowserHomeDF()
+
+	return createDFWithAllParents(GetWaverefBrowserHomeStr())
+End
+
+Function/WAVE GetWaverefBRowserListWave()
+
+	variable version = 1
+	string   name    = "listWave"
+
+	DFREF dfr = GetWaverefBRowserHomeDF()
+
+	WAVE/Z/T/SDFR=dfr wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, version))
+		return wv
+	endif
+
+	if(WaveExists(wv))
+		// upgrade here
+	else
+		Make/T/N=(0) dfr:$name/WAVE=wv
+	endif
+
+	return wv
+End
+
+Function/WAVE GetWaverefBRowserSelectionWave()
+
+	variable version = 1
+	string   name    = "selectionWave"
+
+	DFREF dfr = GetWaverefBRowserHomeDF()
+
+	WAVE/Z/SDFR=dfr wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, version))
+		return wv
+	endif
+
+	if(WaveExists(wv))
+		// upgrade here
+	else
+		Make/N=(0, 1, 3) dfr:$name/WAVE=wv
+	endif
+
+	SetDimLabel LAYERS, 1, $LISTBOX_LAYER_FOREGROUND, wv
+	SetDimLabel LAYERS, 2, $LISTBOX_LAYER_BACKGROUND, wv
+
+	return wv
+End
+
+Function/WAVE GetWaverefBRowserColorWave()
+
+	variable version = 1
+	string   name    = "colorWave"
+
+	DFREF dfr = GetWaverefBRowserHomeDF()
+
+	WAVE/Z/U/W/SDFR=dfr wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, version))
+		return wv
+	endif
+
+	if(WaveExists(wv))
+		// upgrade here
+	else
+		Make/W/U/N=(5, 3) dfr:$name/WAVE=wv
+	endif
+
+	SetDimLabel COLS, 0, R, wv
+	SetDimLabel COLS, 1, G, wv
+	SetDimLabel COLS, 2, B, wv
+
+	wv[1][%R] = 255
+	wv[1][%G] = 255
+	wv[1][%B] = 229
+
+	wv[2][%R] = 229
+	wv[2][%G] = 255
+	wv[2][%B] = 229
+
+	wv[3][%R] = 255
+	wv[3][%G] = 229
+	wv[3][%B] = 229
+
+	wv[4][%R] = 229
+	wv[4][%G] = 255
+	wv[4][%B] = 255
+
+	wv = wv << 8
+
+	return wv
+End
+
+Function/WAVE GetWaverefBRowserReferenceWave()
+
+	variable version = 1
+	string   name    = "referenceWave"
+
+	DFREF dfr = GetWaverefBRowserHomeDF()
+
+	WAVE/Z/WAVE/SDFR=dfr wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, version))
+		return wv
+	endif
+
+	if(WaveExists(wv))
+		// upgrade here
+	else
+		Make/WAVE/N=(0) dfr:$name/WAVE=wv
+	endif
+
+	return wv
+End
+
+///@}
