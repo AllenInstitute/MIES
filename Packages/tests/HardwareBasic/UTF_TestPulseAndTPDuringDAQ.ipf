@@ -1469,7 +1469,7 @@ static Function TestTPPublishing_REENTRY([string str])
 	WAVE tpStorage = GetTPStorage(str)
 	dimMarker = FindDimLabel(tpStorage, LAYERS, "TPMarker")
 
-	WAVE/T filters = DataGenerators#PUB_TPFiltersWithoutData()
+	WAVE/T filters = DataGenerators#PUB_TPFilters()
 	for(filter : filters)
 		jsonId = FetchAndParseMessage(filter)
 

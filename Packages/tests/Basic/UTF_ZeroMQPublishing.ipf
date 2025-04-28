@@ -592,42 +592,41 @@ static Function/WAVE GetFakeAmpStorageSlice()
 	return fakeAmpStorage
 End
 
-// IUTF_TD_GENERATOR DataGenerators#PUB_TPFiltersWithoutData
-static Function CheckTPPublishing([string str])
+static Function ClearTPMessageCounters_IGNORE()
 
-	variable jsonId
-
-	WAVE tpData               = PrepareTPData()
-	WAVE ampParamStorageSlice = GetFakeAmpStorageSlice()
-
-	TUFXOP_Clear/Z/N=(str)
-	Make/FREE/N=0/WAVE additionalData
-	PUB_TPResult("TestDevice", tpData, ampParamStorageSlice, additionalData)
-
-	jsonId = FetchAndParseMessage(str)
-	CheckTPData(jsonId)
-	JSON_Release(jsonID)
+	TUFXOP_Clear/Z/N=(ZMQ_FILTER_TPRESULT_1S)
+	TUFXOP_Clear/Z/N=(ZMQ_FILTER_TPRESULT_5S)
+	TUFXOP_Clear/Z/N=(ZMQ_FILTER_TPRESULT_10S)
 End
 
-static Function CheckTPPublishingWithData()
+static Function CheckTPPublishing()
 
 	variable jsonId
+	string   filter
 
 	WAVE tpData               = PrepareTPData()
 	WAVE ampParamStorageSlice = GetFakeAmpStorageSlice()
+
+	ClearTPMessageCounters_IGNORE()
 
 	Make/FREE/N=(2, 3) data = (p + q)^2
 	Make/FREE/WAVE additionalData = {data}
-
 	PUB_TPResult("TestDevice", tpData, ampParamStorageSlice, additionalData)
 
-	Make/FREE/WAVE/N=0 receivedData
-	jsonId = FetchAndParseMessage(ZMQ_FILTER_TPRESULT_NOW_WITH_DATA, additionalData = receivedData)
-	CheckTPData(jsonId)
-	// first two: filter and message
-	WAVE wv = receivedData[2]
-	Redimension/N=(2, 3)/E=1/S wv
-	CHECK_EQUAL_WAVES(data, wv, mode = WAVE_DATA)
+	WAVE/T filters = DataGenerators#PUB_TPFilters()
+	for(filter : filters)
+		Make/FREE/WAVE/N=0 receivedData
+		jsonId = FetchAndParseMessage(filter, additionalData = receivedData)
+		CheckTPData(jsonId)
+		JSON_Release(jsonID)
 
-	JSON_Release(jsonID)
+		if(!cmpstr(filter, ZMQ_FILTER_TPRESULT_NOW_WITH_DATA))
+			// first two: filter and message
+			WAVE wv = receivedData[2]
+			Redimension/N=(2, 3)/E=1/S wv
+			CHECK_EQUAL_WAVES(data, wv, mode = WAVE_DATA)
+		else
+			CHECK_EQUAL_VAR(DimSize(receivedData, ROWS), 2)
+		endif
+	endfor
 End
