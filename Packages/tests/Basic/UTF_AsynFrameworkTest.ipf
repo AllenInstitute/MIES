@@ -26,7 +26,7 @@ static Function TEST_CASE_END_OVERRIDE(string testCase)
 	DFREF dfr = GetAsyncHomeDF()
 	KillDataFolder/Z dfr
 
-	CheckForBugMessages()
+	TestCaseEndCommon(testCase, restartAsyncFramework = 0, emptyFolderCheck = 0)
 End
 
 /// @brief Test to start Framework with zero threads
