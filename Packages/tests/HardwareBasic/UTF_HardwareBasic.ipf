@@ -3,25 +3,7 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=HardwareBasic
 
-#include "UTF_HardwareHelperFunctions"
-
-// keep sorted
-#include "UTF_AnalysisFunctionManagement"
-#include "UTF_AutoTestpulse"
-#include "UTF_BasicHardwareTests"
-#include "UTF_ConfigurationHardware"
-#include "UTF_DAEphys"
-#include "UTF_Dashboard"
-#include "UTF_Databrowser"
-#include "UTF_Epochs"
-#include "UTF_HardwareTestsWithBUG"
-#include "UTF_SweepFormulaHardware"
-#include "UTF_SweepSkipping"
-#include "UTF_TestPulseAndTPDuringDAQ"
-#include "UTF_TrackSweepCounts"
-#include "UTF_VeryBasicHardwareTests"
-
-#include "UTF_VeryLastTestSuite"
+#include "UTF_HardwareBasic_Includes"
 
 // Entry point for UTF
 Function run()

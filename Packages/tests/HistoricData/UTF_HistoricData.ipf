@@ -3,17 +3,7 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=HistoricData
 
-#include "UTF_HelperFunctions"
-#include "UTF_HistoricDataHelpers"
-
-// keep sorted
-#include "UTF_AttemptNWB2ExportOnOldData"
-#include "UTF_EpochRecreation"
-#include "UTF_HistoricAnalysisBrowser"
-#include "UTF_HistoricDashboard"
-#include "UTF_HistoricEpochClipping"
-#include "UTF_HistoricSweepBrowser"
-#include "UTF_HistoricSweepUpgrade"
+#include "UTF_HistoricData_Includes"
 
 // Entry point for UTF
 Function run()

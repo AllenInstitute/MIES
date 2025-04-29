@@ -3,9 +3,7 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=PAPlot
 
-#include "UTF_HelperFunctions"
-
-#include "UTF_PA_Tests"
+#include "UTF_PAPlot_Includes"
 
 // Entry point for UTF
 Function run()
