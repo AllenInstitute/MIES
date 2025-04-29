@@ -86,3 +86,34 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 		RunTest(testsuite, name = name, enableJU = enableJU, enableRegExp = enableRegExp, debugMode = debugMode, testcase = testcase, traceOptions = traceOptions, traceWinList = traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
 	endif
 End
+
+Function TEST_BEGIN_OVERRIDE(string name)
+
+	TestBeginCommon()
+End
+
+Function TEST_END_OVERRIDE(string name)
+
+	TestEndCommon()
+End
+
+// use copy of mies folder and restore it each time
+Function TEST_CASE_BEGIN_OVERRIDE(string name)
+
+	variable err
+	string   miesPath
+
+	TestCaseBeginCommon(name)
+
+	miesPath = GetMiesPathAsString()
+	DuplicateDataFolder/O=1 root:MIES_backup, $miesPath
+
+	// monkey patch the labnotebook to claim it holds IC data instead of VC
+	WAVE numericalValues = root:MIES:LabNoteBook:Dev1:numericalValues
+	MultiThread numericalValues[][%$CLAMPMODE_ENTRY_KEY][] = ((numericalValues[p][%$CLAMPMODE_ENTRY_KEY][r] == V_CLAMP_MODE) ? I_CLAMP_MODE : numericalValues[p][%$CLAMPMODE_ENTRY_KEY][r])
+End
+
+Function TEST_CASE_END_OVERRIDE(string testcase)
+
+	TestCaseEndCommon(testcase)
+End

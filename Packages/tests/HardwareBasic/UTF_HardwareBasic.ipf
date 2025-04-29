@@ -127,3 +127,23 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 		RunTest(testsuite, name = name, enableJU = enableJU, enableRegExp = enableRegExp, debugMode = debugMode, testcase = testcase, traceOptions = traceOptions, traceWinList = traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
 	endif
 End
+
+Function TEST_BEGIN_OVERRIDE(string name)
+
+	HardwareTestBeginCommon(name)
+End
+
+Function TEST_END_OVERRIDE(string name)
+
+	TestEndCommon()
+End
+
+Function TEST_CASE_BEGIN_OVERRIDE(string name)
+
+	HardwareTestCaseBeginCommon(name)
+End
+
+Function TEST_CASE_END_OVERRIDE(string name)
+
+	HardwareTestCaseEndCommon(name)
+End
