@@ -1059,8 +1059,8 @@ threadsafe Function/DF TP_TSAnalysis(DFREF dfrInp)
 	Duplicate data, dfrOut:colors
 	Duplicate data, dfrOut:data
 	WAVE colors = dfrOut:colors
-	colors                          = 0
-	colors[0, lengthTPInPoints - 1] = 100
+	colors                           = 0
+	colors[0, tpLengthPointsADC - 1] = 100
 #endif
 
 	WAVE tpData = GetTPAnalysisDataWave()
@@ -1096,7 +1096,7 @@ threadsafe Function/DF TP_TSAnalysis(DFREF dfrInp)
 	DEBUGPRINT_TS("steady state range eng (ms): ", var = refTime)
 	DEBUGPRINT_TS("steady state average: ", var = avgTPSS)
 	// color steady state
-	refpt                                                  = lengthTPInPoints - tpStartPoint - evalOffsetPointsCorrected
+	refpt                                                  = tpLengthPointsADC - tpStartPoint - evalOffsetPointsCorrected
 	colors[refpt - evalRange / samplingIntervalADC, refpt] = 50
 	// color instantaneous
 	refpt                                             = tpStartPoint + evalOffsetPointsCorrected
