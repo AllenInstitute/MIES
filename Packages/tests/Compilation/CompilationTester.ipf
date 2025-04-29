@@ -40,11 +40,7 @@ End
 Function/WAVE GetIncludes()
 
 	// keep sorted
-	Make/FREE/T includes = {"MIES_Include",                  \
-	                        "UTF_Basic",                     \
-	                        "UTF_PAPlot",                    \
-	                        "UTF_HardwareAnalysisFunctions", \
-	                        "UTF_HardwareBasic"}
+	Make/FREE/T includes = {"UTF_All_Includes"}
 
 	SetDimensionLabelsFromWaveContents(includes)
 
