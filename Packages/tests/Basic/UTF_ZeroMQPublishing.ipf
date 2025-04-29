@@ -443,7 +443,6 @@ End
 static Function/WAVE PrepareTPData()
 
 	WAVE tpData = GetTPAnalysisDataWave()
-	tpData[%NOW]                   = 1E6
 	tpData[%HEADSTAGE]             = 1
 	tpData[%MARKER]                = 1234
 	tpData[%NUMBER_OF_TP_CHANNELS] = 2
@@ -488,10 +487,6 @@ static Function CheckTPData(variable jsonId)
 	CHECK_EQUAL_STR(stv, "TestDevice")
 	var = JSON_GetVariable(jsonID, "/properties/clamp mode")
 	CHECK_EQUAL_VAR(var, clampMode)
-	var = JSON_GetVariable(jsonID, "/properties/time of tp acquisition/value")
-	CHECK_EQUAL_VAR(var, 1E6)
-	stv = JSON_GetString(jsonID, "/properties/time of tp acquisition/unit")
-	CHECK_EQUAL_STR(stv, "s")
 	var = JSON_GetVariable(jsonID, "/properties/clamp amplitude/value")
 	CHECK_EQUAL_VAR(var, 10)
 	stv = JSON_GetString(jsonID, "/properties/clamp amplitude/unit")

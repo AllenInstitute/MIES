@@ -550,7 +550,6 @@ Function SCOPE_UpdateOscilloscopeData(string device, variable dataAcqOrTP, [vari
 		tpInput.pulseStartPointsDAC  = (dataAcqOrTP == TEST_PULSE_MODE) ? TPSettingsCalc[%pulseStartPointsTP] : TPSettingsCalc[%pulseStartPointsDAQ]
 		tpInput.samplingIntervalDAC  = DimDelta(scaledDataWave[0], ROWS)
 		tpInput.baselineFrac         = TPSettingsCalc[%baselineFrac]
-		tpInput.readTimeStamp        = ticks * TICKS_TO_SECONDS
 		tpInput.activeADCs           = tpChannels
 		tpInput.cycleId              = ROVAR(GetTestpulseCycleID(device))
 

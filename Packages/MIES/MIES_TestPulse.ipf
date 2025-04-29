@@ -366,7 +366,6 @@ Function TP_ROAnalysis(STRUCT ASYNC_ReadOutStruct &ar)
 		MultiThread TPResults[%ResistanceInst][] = asyncBuffer[i][%INSTANTRES][q]
 		MultiThread TPResults[%ElevatedSteadyState][] = asyncBuffer[i][%ELEVATED_SS][q]
 		MultiThread TPResults[%ElevatedInst][] = asyncBuffer[i][%ELEVATED_INST][q]
-		MultiThread TPResults[%NOW][] = asyncBuffer[i][%NOW][q]
 		MultiThread TPResults[%HEADSTAGE][] = asyncBuffer[i][%HEADSTAGE][q]
 		MultiThread TPResults[%MARKER][] = asyncBuffer[i][%MARKER][q]
 		MultiThread TPResults[%NUMBER_OF_TP_CHANNELS][] = asyncBuffer[i][%NUMBER_OF_TP_CHANNELS][q]
@@ -405,7 +404,7 @@ Function TP_ROAnalysis(STRUCT ASYNC_ReadOutStruct &ar)
 
 		TP_AutoAmplitudeAndBaseline(device, TPResults, marker)
 		DQ_ApplyAutoBias(device, TPResults)
-		TP_RecordTP(device, TPResults, inData[%NOW])
+		TP_RecordTP(device, TPResults)
 	endif
 End
 
@@ -1040,7 +1039,6 @@ threadsafe Function/DF TP_TSAnalysis(DFREF dfrInp)
 	variable pulseLengthPointsADC = ASYNC_FetchVariable(dfrInp, "pulseLengthPointsADC")
 	variable baselineFrac         = ASYNC_FetchVariable(dfrInp, "baselineFrac")
 	variable tpLengthPointsADC    = ASYNC_FetchVariable(dfrInp, "tpLengthPointsADC")
-	variable now                  = ASYNC_FetchVariable(dfrInp, "now")
 	variable headstage            = ASYNC_FetchVariable(dfrInp, "headstage")
 	string   device               = ASYNC_FetchString(dfrInp, "device")
 	variable marker               = ASYNC_FetchVariable(dfrInp, "marker")
@@ -1140,7 +1138,6 @@ threadsafe Function/DF TP_TSAnalysis(DFREF dfrInp)
 
 	// additional data copy
 	string/G dfrOut:device = device
-	tpData[%NOW]                   = now
 	tpData[%HEADSTAGE]             = headstage
 	tpData[%MARKER]                = marker
 	tpData[%NUMBER_OF_TP_CHANNELS] = activeADCs
@@ -1195,18 +1192,15 @@ End
 /// @brief Records values from TPResults into TPStorage at defined intervals.
 ///
 /// Used for analysis of TP over time.
-static Function TP_RecordTP(string device, WAVE TPResults, variable now)
+static Function TP_RecordTP(string device, WAVE TPResults)
 
-	variable delta, i, ret, lastPressureCtrl
+	variable delta, i, ret, lastPressureCtrl, now
 	WAVE     TPStorage     = GetTPStorage(device)
 	WAVE     hsProp        = GetHSProperties(device)
 	variable count         = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
 	variable lastRescaling = GetNumberFromWaveNote(TPStorage, DIMENSION_SCALING_LAST_INVOC)
 
 	if(!count)
-		// time of the first sweep
-		TPStorage[0][][%TimeInSeconds] = now
-
 		WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
 		for(i = 0; i < NUM_HEADSTAGES; i += 1)
@@ -1237,7 +1231,6 @@ static Function TP_RecordTP(string device, WAVE TPResults, variable now)
 		                                     : TPStorage[count][q][%HoldingCmd_IC]
 	endif
 
-	TPStorage[count][][%TimeInSeconds]              = TPResults[%NOW][q]
 	TPStorage[count][][%TimeStamp]                  = TPResults[%TIMESTAMP][q]
 	TPStorage[count][][%TimeStampSinceIgorEpochUTC] = TPResults[%TIMESTAMPUTC][q]
 
@@ -1255,7 +1248,7 @@ static Function TP_RecordTP(string device, WAVE TPResults, variable now)
 	TPStorage[count][][%Baseline_VC] = (hsProp[q][%ClampMode] == V_CLAMP_MODE) ? TPResults[%BaselineSteadyState][q] : NaN
 	TPStorage[count][][%Baseline_IC] = (hsProp[q][%ClampMode] == I_CLAMP_MODE) ? TPResults[%BaselineSteadyState][q] : NaN
 
-	TPStorage[count][][%DeltaTimeInSeconds] = (count > 0) ? (now - TPStorage[0][0][%TimeInSeconds]) : 0
+	TPStorage[count][][%DeltaTimeInSeconds] = TPResults[%TIMESTAMP][q] - TPStorage[0][q][%TimeStamp]
 	TPStorage[count][][%TPMarker]           = TPResults[%MARKER][q]
 
 	TPStorage[count][][%TPCycleID] = TPResults[%CYCLEID][q]
@@ -1278,6 +1271,7 @@ static Function TP_RecordTP(string device, WAVE TPResults, variable now)
 	TPStorage[count][][%AutoTPCycleID] = hsProp[q][%Enabled] ? TPSettings[%autoTPCycleID][q] : NaN
 
 	lastPressureCtrl = GetNumberFromWaveNote(TPStorage, PRESSURE_CTRL_LAST_INVOC)
+	now              = DateTime
 	if((now - lastPressureCtrl) > TP_PRESSURE_INTERVAL)
 		P_PressureControl(device)
 		SetNumberInWaveNote(TPStorage, PRESSURE_CTRL_LAST_INVOC, now, format = "%.06f")
@@ -1312,7 +1306,7 @@ threadsafe static Function TP_FitResistance(WAVE TPStorage, variable startRow, v
 	try
 		V_FitError  = 0
 		V_AbortCode = 0
-		CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, kwCWave=coefWave, TPStorage[startRow, endRow][headstage][%SteadyStateResistance]/X=TPStorage[startRow, endRow][headstage][%TimeInSeconds]/AD=0/AR=0; AbortOnRTE
+		CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, kwCWave=coefWave, TPStorage[startRow, endRow][headstage][%SteadyStateResistance]/X=TPStorage[startRow, endRow][headstage][%TimeStamp]/AD=0/AR=0; AbortOnRTE
 		return coefWave[1]
 	catch
 		ClearRTError()
@@ -1679,7 +1673,6 @@ Function/DF TP_PrepareAnalysisDF(string device, STRUCT TPAnalysisInput &tpInput)
 	ASYNC_AddParam(threadDF, var = tpInput.pulseLengthPointsADC, name = "pulseLengthPointsADC")
 	ASYNC_AddParam(threadDF, var = tpInput.baselineFrac, name = "baselineFrac")
 	ASYNC_AddParam(threadDF, var = tpInput.tpLengthPointsADC, name = "tpLengthPointsADC")
-	ASYNC_AddParam(threadDF, var = tpInput.readTimeStamp, name = "now")
 	ASYNC_AddParam(threadDF, var = tpInput.headstage, name = "headstage")
 	ASYNC_AddParam(threadDF, str = tpInput.device, name = "device")
 	ASYNC_AddParam(threadDF, var = tpInput.measurementMarker, name = "marker")
