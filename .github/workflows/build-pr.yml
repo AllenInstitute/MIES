@@ -175,6 +175,10 @@ jobs:
         version:
           - 9
           - 10
+        name:
+          - Basic
+          - PAPlot
+          - HistoricData
         include:
           - experiment: Packages/tests/Basic/Basic.pxp
             name: Basic
