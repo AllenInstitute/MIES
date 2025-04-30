@@ -57,6 +57,11 @@ on:
         default: 360
         type: number
         description: Defines the job timeout in minutes
+      major_igorpro_version:
+        required: false
+        default: 9
+        type: number
+        description: The major Igor Pro version to use
 defaults:
   run:
     shell: bash
@@ -95,7 +100,7 @@ jobs:
         run: |
              git rebase --exec "git log --pretty=ref -n1"                                                \
                         --exec "tools/clean_mies_installation.sh ${{ inputs.installer_flags }}"          \
-                        --exec "tools/autorun-test.sh -p ${{ inputs.experiment }} -v IP_9_64" ${{ env.CI_BASE_BRANCH }}
+                        --exec "tools/autorun-test.sh -p ${{ inputs.experiment }} -v IP_${{ inputs.major_igorpro_version }}_64" ${{ env.CI_BASE_BRANCH }}
       - name: Gather log files and crash dumps
         if: always()
         run: tools/gather-logfiles-and-crashdumps.sh
