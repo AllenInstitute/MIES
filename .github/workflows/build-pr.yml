@@ -172,6 +172,7 @@ jobs:
       # - CompilationTest
     strategy:
       matrix:
+        include:
           - experiment: Packages/tests/Basic/Basic.pxp
             name: Basic
           - experiment: Packages/tests/PAPlot/PAPlot.pxp
