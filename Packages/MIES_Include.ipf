@@ -7,8 +7,9 @@
 ///
 /// Developer instructions for raising the required nightly versions:
 ///
-/// - Update the revision numbers for IP9 below in the expression involving
-///   `BUILD`, and also `CI_IGOR_REVISION` in .github/workflows/test-igor-workflow.yml
+/// - Update the revision numbers for IP9/10 below in the expression involving
+///   `BUILD`, `CI_IGOR9_REVISION`, `CI_IGOR10_REVISION` in .github/workflows/test-igor-workflow.yml
+///   and .github/workflows/test-igor-rebase-exec-workflow.yml
 /// - Upload the nightly zip packages to the FTP (Thomas' job). Don't delete the
 ///   old zip packages, we still need them.
 /// - Update the below URLs
