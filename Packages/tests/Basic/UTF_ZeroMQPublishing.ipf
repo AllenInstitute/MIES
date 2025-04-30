@@ -3,16 +3,9 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=ZeroMQPublishingTests
 
-static Function TEST_CASE_BEGIN_OVERRIDE(string testname)
-
-	TestCaseBeginCommon(testname)
+static Function TEST_SUITE_BEGIN_OVERRIDE(string testsuite)
 
 	PrepareForPublishTest()
-End
-
-static Function TEST_CASE_END_OVERRIDE(string testname)
-
-	TestCaseEndCommon(testname)
 End
 
 static Function CheckPressureState()
