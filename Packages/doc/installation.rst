@@ -38,6 +38,9 @@ In that case please perform the following steps:
 - MacOSX: Install from image as usual
 - Restart Igor Pro
 
+For Igor Pro 10, download the installer for |IgorPro10WindowsNightly|. This requires access to the beta
+program of WaveMetrics.
+
 Installation using the installer (preferred)
 --------------------------------------------
 
