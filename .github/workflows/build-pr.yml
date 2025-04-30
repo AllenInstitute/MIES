@@ -172,6 +172,9 @@ jobs:
       # - CompilationTest
     strategy:
       matrix:
+        version:
+          - 9
+          - 10
         include:
           - experiment: Packages/tests/Basic/Basic.pxp
             name: Basic
@@ -179,7 +182,6 @@ jobs:
             name: PAPlot
           - experiment: Packages/tests/HistoricData/HistoricData.pxp
             name: HistoricData
-          - version: [9, 10]
         exclude:
           - version: 10
             name: PAPlot
