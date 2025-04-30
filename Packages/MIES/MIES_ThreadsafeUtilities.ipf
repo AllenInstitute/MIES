@@ -19,7 +19,7 @@ static Constant TS_ERROR_INVALID_TGID       = 980 // Invalid Thread Group ID or 
 /// Throws away anything else in the datafolder from the thread queue.
 Function TS_GetNewestFromThreadQueue(variable tgID, string varName, [variable timeout_default, variable timeout_tries])
 
-	variable var, err, i
+	variable var, err, i, timeout
 
 	ASSERT_TS(!isEmpty(varName), "varName must not be empty")
 
@@ -41,7 +41,7 @@ Function TS_GetNewestFromThreadQueue(variable tgID, string varName, [variable ti
 
 	for(i = 0; i < timeout_tries; i += 1)
 		AssertOnAndClearRTError()
-		DFREF dfr = ThreadGroupGetDFR(tgID, TS_GET_REPEAT_TIMEOUT_IN_MS); err = GetRTError(1)
+		DFREF dfr = ThreadGroupGetDFR(tgID, timeout); err = GetRTError(1)
 
 		if(err)
 			ASSERT(err == TS_ERROR_INVALID_TGID, "Unexpected error value of " + num2str(err))
@@ -54,8 +54,11 @@ Function TS_GetNewestFromThreadQueue(variable tgID, string varName, [variable ti
 			elseif(TS_ThreadGroupFinished(tgID))
 				return NaN
 			else
+				timeout = TS_GET_REPEAT_TIMEOUT_IN_MS
 				continue
 			endif
+		else
+			timeout = 0
 		endif
 
 		NVAR/Z/SDFR=dfr var_thread = $varName
@@ -77,7 +80,7 @@ End
 /// Throws away anything else in the datafolder from the thread queue.
 Function/WAVE TS_GetNewestFromThreadQueueMult(variable tgID, WAVE/T varNames, [variable timeout_default, variable timeout_tries])
 
-	variable numEntries, i, j, oneValidEntry, err
+	variable numEntries, i, j, oneValidEntry, err, timeout
 	string varName
 
 	ASSERT_TS(DimSize(varNames, COLS) == 0, "Expected a 1D wave")
@@ -108,7 +111,7 @@ Function/WAVE TS_GetNewestFromThreadQueueMult(variable tgID, WAVE/T varNames, [v
 
 	for(i = 0; i < timeout_tries; i += 1)
 		AssertOnAndClearRTError()
-		DFREF dfr = ThreadGroupGetDFR(tgID, TS_GET_REPEAT_TIMEOUT_IN_MS); err = GetRTError(1)
+		DFREF dfr = ThreadGroupGetDFR(tgID, timeout); err = GetRTError(1)
 
 		if(err)
 			ASSERT(err == TS_ERROR_INVALID_TGID, "Unexpected error value of " + num2str(err))
@@ -119,11 +122,14 @@ Function/WAVE TS_GetNewestFromThreadQueueMult(variable tgID, WAVE/T varNames, [v
 			if(TS_ThreadGroupFinished(tgID))
 				return $""
 			elseif(!oneValidEntry)
+				timeout = TS_GET_REPEAT_TIMEOUT_IN_MS
 				continue
 			endif
 
 			return result
 		endif
+
+		timeout = 0
 
 		for(j = 0; j < numEntries; j += 1)
 			NVAR/Z/SDFR=dfr var = $GetDimLabel(result, ROWS, j)
