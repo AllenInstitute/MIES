@@ -10,10 +10,22 @@ versionString=$1
 version=$(echo $versionString | cut -f 2 -d "_")
 bitness=$(echo $versionString | cut -f 3 -d "_")
 
-if [ "$CI_IGOR_REVISION" = "" ]; then
+if [ "$CI_IGOR9_REVISION" = "" -a "$CI_IGOR10_REVISION" = "" ]
+then
   revision=""
 else
-  revision="_$CI_IGOR_REVISION"
+  # not using indirection here, see https://mywiki.wooledge.org/BashFAQ/006#Indirection
+  # as that seems to be not stable enough
+  if [ $version -eq 9 ]
+  then
+    revision="_$CI_IGOR9_REVISION"
+  elif [ $version -eq 10 ]
+  then
+    revision="_$CI_IGOR10_REVISION"
+  else
+    echo "Invalid version" > /dev/stderr
+    exit 1
+  fi
 fi
 
 if [ $bitness -eq 32 ]
