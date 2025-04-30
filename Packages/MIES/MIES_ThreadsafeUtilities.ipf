@@ -19,7 +19,7 @@ static Constant TS_ERROR_INVALID_TGID       = 980 // Invalid Thread Group ID or 
 /// Throws away anything else in the datafolder from the thread queue.
 Function TS_GetNewestFromThreadQueue(variable tgID, string varName, [variable timeout_default, variable timeout_tries])
 
-	variable var, err, i, timeout
+	variable var, err, i, timeout, readValidVar
 
 	ASSERT_TS(!isEmpty(varName), "varName must not be empty")
 
@@ -37,8 +37,6 @@ Function TS_GetNewestFromThreadQueue(variable tgID, string varName, [variable ti
 		ASSERT(IsInteger(timeout_tries) && timeout_tries > 0, "Invalid timeout_tries")
 	endif
 
-	var = NaN
-
 	for(i = 0; i < timeout_tries; i += 1)
 		AssertOnAndClearRTError()
 		DFREF dfr = ThreadGroupGetDFR(tgID, timeout); err = GetRTError(1)
@@ -49,7 +47,7 @@ Function TS_GetNewestFromThreadQueue(variable tgID, string varName, [variable ti
 		endif
 
 		if(!DataFolderRefStatus(dfr))
-			if(IsFinite(var))
+			if(readValidVar)
 				return var
 			elseif(TS_ThreadGroupFinished(tgID))
 				return NaN
@@ -66,7 +64,8 @@ Function TS_GetNewestFromThreadQueue(variable tgID, string varName, [variable ti
 		ASSERT_TS(NVAR_Exists(var_thread), "Expected variable from thread does not exist: " + varName)
 
 		// overwrite old values
-		var = var_thread
+		var          = var_thread
+		readValidVar = 1
 	endfor
 
 	return timeout_default
