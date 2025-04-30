@@ -440,7 +440,10 @@ End
 
 Function LeftOverSweepTime(string device, variable fifoPos)
 
-	ASSERT(IsFinite(fifoPos), "Unexpected non-finite fifoPos")
+	if(IsNaN(fifopos))
+		// TFH_FifoLoop thread finished -> sweep finished regular (or manually stopped)
+		return 0
+	endif
 
 	WAVE DAQDataWave         = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(device)
