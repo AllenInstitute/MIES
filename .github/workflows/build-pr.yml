@@ -196,7 +196,7 @@ jobs:
       job_name: 🧪 Test ${{ matrix.name }}
       overwrite_job_name: ${{ inputs.is_called_workflow || false }}
       experiment: ${{ matrix.experiment }}
-      artifact_name: TestWithoutHardware-${{ matrix.name }}-assets
+      artifact_name: TestWithoutHardware-${{ matrix.name }}-${{ matrix.version }}-assets
       expensive_checks: "1"
       instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
       timeout_minutes: 60
