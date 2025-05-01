@@ -3,6 +3,413 @@ Release notes
 
 .. toctree::
 
+Release 2.9
+===========
+
+Controls
+--------
+
+All added, removed or renamed controls of the main GUIs are listed. These lists are intended to help upgrading
+the JSON configuration files. Controls, like GroupBox'es, which can not be read/written with the configuration
+code are not included.
+
+AnalysisBrowser
+~~~~~~~~~~~~~~~
+
+Added
+^^^^^
+
+- ``button_load_history``
+- ``button_load_tpstorage``
+- ``check_load_comment``
+- ``check_load_nwb``
+- ``check_load_pxp``
+- ``check_load_results``
+- ``popup_SweepBrowserSelect``
+
+Removed
+^^^^^^^
+
+None
+
+Renamed
+^^^^^^^
+
+None
+
+DA\_Ephys
+~~~~~~~~~
+
+Added
+^^^^^
+
+None
+
+Removed
+^^^^^^^
+
+None
+
+Renamed
+^^^^^^^
+
+None
+
+Databrowser
+~~~~~~~~~~~
+
+Added
+^^^^^
+
+None
+
+Removed
+^^^^^^^
+
+None
+
+Renamed
+^^^^^^^
+
+None
+
+Wavebuilder
+~~~~~~~~~~~
+
+Added
+^^^^^
+
+None
+
+Removed
+^^^^^^^
+
+None
+
+Renamed
+^^^^^^^
+
+None
+
+Sweep Formula
+-------------
+
+- Revise ``select`` operation and add the following sub-operations:
+
+  - ``selsweeps``
+  - ``selchannels``
+  - ``selvis``
+  - ``selcm``
+  - ``selrange``
+  - ``selstimset``
+  - ``selivsccsetqc``
+  - ``selivsccsweepqc``
+  - ``selexp``
+  - ``seldev``
+  - ``selexpandsci``
+  - ``selexpandrac``
+  - ``selsetcyclecount``
+  - ``selsetsweepcount``
+  - ``selRACIndex``
+  - ``selSCIIndex``
+
+- Fix fetching of labnotebooks for sweeps from different experiments loaded into one SweepBrowser
+- ``labnotebook``: Support multiple names including wildcard syntax
+- Add ``anafuncparam`` to allow querying the analysis function parameters, supports mutiple names including wildcard syntax
+- Add window hook to visualize x/y values for ``labnotebook`` and ``anafuncparam``
+- Use color groups for ``labnotebook`` and ``anafuncparam`` to make traces look different
+- Always use linestyle for sweep data
+- ``psx``:
+
+  - Completely overhaul the detection algorithm
+  - Skip kernel creation for too large decayTau
+  - Handle partial results better
+  - Ignore events with different sign than the kernel amplitude
+  - Switch to first offsetting and then filtering the sweep data
+  - Check for intersecting ranges
+
+- ``psxstats``:
+
+  - Change data gathering logic to collect event data from all sweeps for a range
+  - Support multiple epochs and epoch wildcards for the range
+
+- Fix displaying data in variables which is changed in subsequent operation calls
+- Fix ``range`` to not accept arrays anymore. This never worked.
+- Add ``concat`` operation
+
+AnalysisBrowser
+---------------
+
+- Make it much faster
+- Save list of files and folders on panel closing
+- Make the listbox behave more intuitive on Windows
+- Make panel resizable and add NWB/PXP/Load TPStorage/Results checkboxes
+- Add popup menu to loading sweeps into a specific SweepBrowser
+- Add button that loads history from NWB files to a notebook
+- Add checkbox to select if user comments are loaded or not
+- Handle broken NWB/PXP files gracefully with message to the history area instead of asserting out
+- Add right-click context menu to listboxes to show folder/file in explorer
+
+DataBrowser
+-----------
+
+None
+
+DataBrowser/SweepBrowser
+------------------------
+
+- Add metadata to traces for identifying the source experiment of each sweep
+- Fix some more sweep/index confusion
+- Make the listbox behave more intuitive on Windows
+- Fix displaying very old data where the labnotebook only had 8 layers
+- Use ``logical`` as unit for TTL
+- Zap trailing zeros for the y-axis labels in TTL graphs
+
+Dashboard
+~~~~~~~~~
+
+- Bring the newest dashboard entry into view on update
+
+DA\_Ephys
+---------
+
+- Sync MIES to MCC on checkbox click
+- Use valid initial values for some more amplifier controls
+- Rework amplififer getting and setting
+
+JSON Configuration
+------------------
+
+None
+
+Downsample
+----------
+
+None
+
+Analysis Functions
+------------------
+
+- ``ReachTargetVoltage``: Fix the initial response check to really only work on the first sweep
+- Respect the DAScale limits when possible
+- ``PSQ_Ramp``: Add ``NumberOfPassingSweeps`` analysis parameter
+- ``PSQ_DAScale (Adapt)``:
+
+  - Add ``FailingAdaptiveSCIRange`` analysis parameter which allows to look back further
+  - Add ``MinimumSpikeCountForMaxSlope`` analysis parameter
+  - Round calculated DAscale to integer values
+  - Add the type to the stored future DAScale values
+  - Ignore sweeps with negative f-I slopes for the DAScale estimation
+  - Set QC now also passes if we have two negative f-I slopes, or a passing f-I slope and a consecutive
+    negative f-I slope value
+  - Gather future DAScale values from the last adaptive sweep of RhSuAd sweeps
+  - Fix numerical value of f-I slopes by multiplying by 1e12
+
+- ``PSQ_DAScale``: Change repurposed time to 5s
+
+Foreign Function interface
+--------------------------
+
+None
+
+Pulse Average Plot
+------------------
+
+None
+
+Publisher
+---------
+
+- Add more publishers:
+
+  - ``ZMQ_FILTER_TPRESULT_NOW_WITH_DATA``
+  - ``ZMQ_FILTER_TPRESULT_NOW``
+  - ``ZMQ_FILTER_TPRESULT_1S``
+  - ``ZMQ_FILTER_TPRESULT_5S``
+  - ``ZMQ_FILTER_TPRESULT_10S``
+
+General
+-------
+
+- Handle failed uploads gracefully
+- Fixed compilation on MacOSX
+- Enhance manual installation instructions
+- CheckInstallation is now aware of the installation configuration saved
+- Add browsing capability for waveref waves
+- Make fetching list of files from storage much faster
+
+TUF XOP
+-------
+
+None
+
+ITC XOP 2
+----------
+
+None
+
+ZeroMQ XOP
+----------
+
+- Add two new functions ``zeromq_pub_send_multi`` and ``zeromq_sub_recv_multi``
+- Turn off logging due to excessive log file sizes
+
+MCC XOP
+-------
+
+None
+
+MIESUtils XOP
+-------------
+
+None
+
+JSON XOP
+--------
+
+None
+
+Labnotebook
+-----------
+
+- Add upgrade path for very old labnotebooks without ``NOTE_INDEX``-style wave note
+- Fix querying data before the first sweep with ``UNKNOWN_MODE`` entry source type
+- Handle old labnotebooks without entry source type better
+
+New numerical keys
+~~~~~~~~~~~~~~~~~~
+
+- ``TP power spectrum``
+- ``PSQ_FMT_LBN_DA_AT_RSA_VALID_SLOPE_PASS``
+- ``PSQ_FMT_LBN_SWEEP_EXCEPT_BL_PP_PASS``
+- ``PSQ_FMT_LBN_SWEEP_EXCEPT_BL_PASS``
+- ``PSQ_FMT_LBN_DA_AT_FI_OFFSET_DASCALE``
+- ``PSQ_FMT_LBN_DA_AT_FI_SLOPE_DASCALE``
+- ``PSQ_FMT_LBN_DA_AT_NEG_SLOPE_FILLIN``
+- ``PSQ_FMT_LBN_DA_AT_FILLIN_PASS``
+- ``PSQ_FMT_LBN_DA_AT_FI_NEG_SLOPE_PASS``
+- ``PSQ_FMT_LBN_DASCALE_OOR``
+- ``MSQ_FMT_LBN_DASCALE_OOR``
+- ``PSQ_FMT_LBN_RMS_SHORT``
+- ``PSQ_FMT_LBN_RMS_LONG``
+
+New textual keys
+~~~~~~~~~~~~~~~~
+
+- ``PSQ_FMT_LBN_DA_AT_RSA_FI_NEG_SLOPES_PASS``
+- ``PSQ_FMT_LBN_DA_AT_RSA_FI_OFFSETS_DASCALE``
+- ``PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES_DASCALE``
+- ``PSQ_FMT_LBN_DA_AT_RSA_FILLIN_PASS``
+
+Changed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Changed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Renamed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Renamed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Removed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Removed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Epoch information
+-----------------
+
+None
+
+NWB/IPNWB
+---------
+
+None
+
+File format
+~~~~~~~~~~~
+
+None
+
+Pressure Control
+----------------
+
+None
+
+WaveBuilder
+-----------
+
+- Add per sweep minimum/maximum values to the wave note
+- Make the listbox behave more intuitive on Windows
+
+Work Sequencing Engine
+----------------------
+
+None
+
+Internal
+--------
+
+- Fix path gathering logic for the git binary on Windows
+- Various fixes for upcoming Igor Pro 10
+
+CI
+--
+
+- Add formatting and linting with `IPT <https://docs.byte-physics.de/ipt/>`__
+- Update ReportGenerator
+- Update pynwb and dandi
+- Don't write into ``C:\\MIES`` when testing
+- Check that we don't get unexpected zeromq PUB messages in Basic.pxp
+
+Tests
+-----
+
+- Fix requirements.txt for reproducible CI execution to not include extras
+
+Async Framework
+---------------
+
+None
+
+Logging
+-------
+
+None
+
+Installer
+---------
+
+- Update the shipped VC redistributable package
+- Update NSIS to version 3.10
+- Undust the installer layout, no more mentioning of 32-bit Igor Pro
+- Always remove existing MIES installations when reinstalling
+- Add JSON configuration file with the settings for All/User installation and With/Without hardware
+- Build installer as unelevated. This means that an All installation now requires
+  to run the installer as administrator
+- Fix disabling ASRL for Igor Pro
+- Remove FixOffice365 script as it is not needed anymore
+
+Release package
+---------------
+
+- Readd it
+
 Release 2.8
 ===========
 
