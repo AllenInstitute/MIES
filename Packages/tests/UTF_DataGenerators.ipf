@@ -1013,3 +1013,24 @@ static Function/WAVE PUB_TPFiltersWithoutData()
 
 	return wv
 End
+
+static Function/WAVE GetConcatSingleElementWaves()
+
+	Make/FREE/N=4/WAVE waves
+
+	Make/FREE srcNum = {4711}
+	waves[0] = srcNum
+
+	Make/FREE/T srcText = {"baccab"}
+	waves[1] = srcText
+
+	Make/FREE/DF srcDFR = {NewfreeDataFolder()}
+	waves[2] = srcDFR
+
+	Make/FREE/WAVE srcWv = {NewFreeWave(IGOR_TYPE_16BIT_INT, 0)}
+	waves[3] = srcWv
+
+	SetDimensionLabels(waves, "Numeric;Text;DFREF;WAVE", ROWS)
+
+	return waves
+End

@@ -182,12 +182,10 @@ Function UploadCrashDumps()
 
 	diagSymbPath = GetSymbolicPathForDiagnosticsDirectory()
 
-	WAVE/T files = ListTotextWave(GetAllFilesRecursivelyFromPath(diagSymbPath, extension = ".dmp"), FILE_LIST_SEP)
-	WAVE/T logs  = ListTotextWave(GetAllFilesRecursivelyFromPath(diagSymbPath, extension = ".txt"), FILE_LIST_SEP)
-	numFiles = DimSize(files, ROWS)
-	numLogs  = DimSize(logs, ROWS)
+	WAVE/Z/T files = GetAllFilesRecursivelyFromPath(diagSymbPath, regex = "(?i)\.dmp$")
+	WAVE/Z/T logs  = GetAllFilesRecursivelyFromPath(diagSymbPath, regex = "(?i)\.txt$")
 
-	if(!numFiles && !numLogs)
+	if(!WaveExists(files) && !WaveExists(logs))
 		return NaN
 	endif
 

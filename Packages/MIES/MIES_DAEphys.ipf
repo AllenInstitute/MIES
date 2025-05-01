@@ -4711,8 +4711,7 @@ End
 
 static Function DAP_LoadBuiltinStimsets()
 
-	string symbPath, stimset, files, filename
-	variable i, numEntries
+	string symbPath, filename
 
 	symbPath = GetUniqueSymbolicPath()
 	NewPath/Q $symbPath, GetFolder(FunctionPath("")) + ":Stimsets"
@@ -4723,10 +4722,13 @@ static Function DAP_LoadBuiltinStimsets()
 		return NaN
 	endif
 
-	files      = GetAllFilesRecursivelyFromPath(symbPath, extension = ".nwb")
-	numEntries = ItemsInList(files, FILE_LIST_SEP)
-	for(i = 0; i < numEntries; i += 1)
-		filename = StringFromList(i, files, FILE_LIST_SEP)
+	WAVE/Z/T files = GetAllFilesRecursivelyFromPath(symbPath, regex = "(?i)\.nwb$")
+
+	if(!WaveExists(files))
+		return NaN
+	endif
+
+	for(filename : files)
 		NWB_LoadAllStimsets(filename = filename, overwrite = 1, loadOnlyBuiltins = 1)
 	endfor
 

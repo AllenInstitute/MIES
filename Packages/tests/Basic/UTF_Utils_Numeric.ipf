@@ -10,7 +10,6 @@
 // SetBit
 // ClearBit
 // MinMax
-// FindNextPower
 // FindPreviousPower
 // GetAlignment
 // CalculateLCM
@@ -157,4 +156,31 @@ static Function TestIndexAfterDecimation([STRUCT IUTF_mData &md])
 	CHECK_EQUAL_VAR(edgeLeft, edgeLeftCalculated)
 End
 
+/// @}
+
+/// FindNextPower
+/// @{
+static Function TestFindNextPower()
+
+	// invalid a (fractional)
+	try
+		FindNextPower(1.5, 2)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// invalid p
+	try
+		FindNextPower(1, 1)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// works
+	CHECK_EQUAL_VAR(1, FindNextPower(0, 100))
+	CHECK_EQUAL_VAR(2, FindNextPower(3, 2))
+	CHECK_EQUAL_VAR(3, FindNextPower(25, 3))
+End
 /// @}

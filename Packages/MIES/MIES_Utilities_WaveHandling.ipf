@@ -45,6 +45,8 @@ threadsafe Function EnsureLargeEnoughWave(WAVE wv, [variable indexShouldExist, v
 
 	if(ParamIsDefault(dimension))
 		dimension = ROWS
+	else
+		ASSERT_TS(dimension == ROWS || dimension == COLS || dimension == LAYERS || dimension == CHUNKS, "Invalid dimension")
 	endif
 
 	if(ParamIsDefault(checkFreeMemory))
@@ -53,21 +55,18 @@ threadsafe Function EnsureLargeEnoughWave(WAVE wv, [variable indexShouldExist, v
 		checkFreeMemory = !!checkFreeMemory
 	endif
 
-	ASSERT_TS(dimension == ROWS || dimension == COLS || dimension == LAYERS || dimension == CHUNKS, "Invalid dimension")
 	ASSERT_TS(WaveExists(wv), "Wave does not exist")
 	ASSERT_TS(IsFinite(indexShouldExist) && indexShouldExist >= 0, "Invalid minimum size")
 
 	if(ParamIsDefault(indexShouldExist))
 		indexShouldExist = MINIMUM_WAVE_SIZE - 1
-	else
-		indexShouldExist = max(MINIMUM_WAVE_SIZE - 1, indexShouldExist)
 	endif
 
 	if(indexShouldExist < DimSize(wv, dimension))
 		return 0
 	endif
 
-	indexShouldExist *= 2
+	indexShouldExist = max(max(2^FindNextPower(indexShouldExist, 2), 2 * DimSize(wv, dimension)), MINIMUM_WAVE_SIZE)
 
 	if(checkFreeMemory)
 		if((GetWaveSize(wv) * (indexShouldExist / DimSize(wv, dimension)) / 1024 / 1024 / 1024) >= GetFreeMemory())
@@ -1439,4 +1438,65 @@ Function/S GetLastNonEmptyEntry(WAVE/T wv, string colLabel, variable endRow)
 	endif
 
 	return wv[indizes[DimSize(indizes, ROWS) - 1]][%$colLabel]
+End
+
+/// @brief Concatenate src into dest where dest uses NOTE_INDEX for free space management
+Function ConcatenateWavesWithNoteIndex(WAVE/Z dest, WAVE/Z src)
+
+	variable srcLength, newIndex, index, newLastIndex, waveTypeOne
+
+	ASSERT_TS(WaveExists(dest), "Missing dest wave")
+
+	index = GetNumberFromWaveNote(dest, NOTE_INDEX)
+	ASSERT_TS(IsFinite(index), "Missing NOTE_INDEX")
+
+	if(!WaveExists(src))
+		return index
+	endif
+
+	waveTypeOne = WaveType(dest, 1)
+
+	ASSERT_TS(WaveType(dest, 0) == WaveType(src, 0) && waveTypeOne == WaveType(src, 1), "Non-matching wave types")
+	ASSERT_TS(DimSize(dest, COLS) == 0 && DimSize(src, COLS) == 0, "Expected 1D waves")
+
+	srcLength = DimSize(src, ROWS)
+
+	if(srcLength == 0)
+		// nothing to do
+		return index
+	endif
+
+	newLastIndex = index + (srcLength - 1)
+	EnsureLargeEnoughWave(dest, dimension = ROWS, indexShouldExist = newLastIndex)
+
+	switch(waveTypeOne)
+		case IGOR_TYPE_NUMERIC_WAVE:
+			Multithread dest[index, newLastIndex] = src[p - index]
+			break
+		case IGOR_TYPE_TEXT_WAVE:
+			WAVE/T destText = dest
+			WAVE/T srcText  = src
+
+			Multithread destText[index, newLastIndex] = srcText[p - index]
+			break
+		case IGOR_TYPE_DFREF_WAVE:
+			WAVE/DF destDF = dest
+			WAVE/DF srcDF  = src
+
+			Multithread destDF[index, newLastIndex] = srcDF[p - index]
+			break
+		case IGOR_TYPE_WAVEREF_WAVE:
+			WAVE/WAVE destWAVE = dest
+			WAVE/WAVE srcWAVE  = src
+
+			Multithread destWAVE[index, newLastIndex] = srcWAVE[p - index]
+			break
+		default:
+			ASSERT_TS(0, "Unsupported type: " + num2istr(waveTypeOne))
+	endswitch
+
+	index = newLastIndex + 1
+	SetNumberInWaveNote(dest, NOTE_INDEX, index)
+
+	return index
 End
