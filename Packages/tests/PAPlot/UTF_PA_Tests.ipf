@@ -419,12 +419,12 @@
 // data is properly NaNed on the left and right edge.
 static Constant PA_TEST_FP_EPSILON = 1E-6
 
-static Function TEST_BEGIN_OVERRIDE(string name)
+Function TEST_BEGIN_OVERRIDE(string name)
 
 	TestBeginCommon()
 End
 
-static Function TEST_END_OVERRIDE(string name)
+Function TEST_END_OVERRIDE(string name)
 
 	TestEndCommon()
 End
