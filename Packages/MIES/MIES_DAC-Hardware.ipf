@@ -1515,7 +1515,7 @@ threadsafe Function HW_ITC_StartAcq_TS(variable deviceID, variable triggerMode, 
 End
 
 /// @see HW_StartAcq
-Function HW_ITC_StartAcq(variable deviceID, variable triggerMode, [variable flags])
+static Function HW_ITC_StartAcq(variable deviceID, variable triggerMode, [variable flags])
 
 	variable tries
 
@@ -2224,7 +2224,7 @@ static Constant HW_NI_FIFO_MIN_FREE_DISK_SPACE = 960000000
 ///
 
 /// @see HW_StartAcq
-Function HW_NI_StartAcq(variable deviceID, variable triggerMode, [variable flags, variable repeat])
+static Function HW_NI_StartAcq(variable deviceID, variable triggerMode, [variable flags, variable repeat])
 
 	string device, realDeviceOrPressure, FIFONote, noteID, fifoName, errMsg
 	variable i, pos, endpos, channelTimeOffset, err
@@ -3499,7 +3499,7 @@ static Function [variable hwChannel, string encode] HW_SU_GetEncodeFromUnassocDA
 	return [hwChannel, encode]
 End
 
-Function HW_SU_StartAcq(variable deviceId, [variable flags])
+static Function HW_SU_StartAcq(variable deviceId, [variable flags])
 
 	string device, cmdError, cmdDone
 
