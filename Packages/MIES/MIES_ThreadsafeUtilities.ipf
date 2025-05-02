@@ -94,7 +94,7 @@ Function/WAVE TS_GetNewestFromThreadQueueMult(variable tgID, WAVE/T varNames, [v
 	if(ParamIsDefault(timeout_tries))
 		timeout_tries = Inf
 	else
-		ASSERT(IsInteger(timeout_tries) && timeout_tries > 0, "Invalid timeout_tries")
+		ASSERT(IsInf(timeout_tries) || (IsInteger(timeout_tries) && timeout_tries > 0), "Invalid timeout_tries")
 	endif
 
 	numEntries = DimSize(varNames, ROWS)

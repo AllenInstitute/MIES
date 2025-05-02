@@ -626,9 +626,13 @@ Function HW_WriteDeviceInfo(variable hardwareType, string device, WAVE deviceInf
 	endswitch
 End
 
-threadsafe Function/S HW_GetAcquisitionStartTimestamp()
+threadsafe Function/S HW_GetAcquisitionStartTimestamp([variable secondsSinceIgorEpoch])
 
-	return GetIso8601TimeStamp(numFracSecondsDigits = 9)
+	if(ParamIsDefault(secondsSinceIgorEpoch))
+		return GetIso8601TimeStamp(numFracSecondsDigits = 9)
+	endif
+
+	return GetIso8601TimeStamp(secondsSinceIgorEpoch = secondsSinceIgorEpoch, numFracSecondsDigits = 9)
 End
 
 /// @brief Start data acquisition
@@ -2167,15 +2171,23 @@ End
 /// @brief Read out the fifopos from the ITC fifothread
 Function HW_ITC_ReadFifoPos(string device, [variable timeout_tries, variable timeout_default])
 
-	variable fifopos
-
 	timeout_default = ParamIsDefault(timeout_default) ? NaN : timeout_default
 	timeout_tries   = ParamIsDefault(timeout_tries) ? Inf : timeout_tries
 
-	NVAR tgID = $GetThreadGroupIDFIFO(device)
-	fifoPos = TS_GetNewestFromThreadQueue(tgID, "fifoPos", timeout_tries = timeout_tries, timeout_default = timeout_default)
+	Make/FREE/T varNames = {ITC_THREAD_FIFOPOS, ITC_THREAD_TIMESTAMP}
 
-	return fifoPos
+	NVAR   tgID = $GetThreadGroupIDFIFO(device)
+	WAVE/Z data = TS_GetNewestFromThreadQueueMult(tgID, varNames, timeout_tries = timeout_tries, timeout_default = timeout_default)
+	if(!WaveExists(data))
+		// ITC TFH_FifoLoop thread stopped
+		return NaN
+	endif
+	if(!IsNaN(data[%$ITC_THREAD_TIMESTAMP]))
+		SVAR lastAcqStartTime = $GetLastAcquisitionStartTime(device)
+		lastAcqStartTime = HW_GetAcquisitionStartTimestamp(secondsSinceIgorEpoch = data[%$ITC_THREAD_TIMESTAMP])
+	endif
+
+	return data[%$ITC_THREAD_FIFOPOS]
 End
 
 ///@}

@@ -81,12 +81,15 @@ End
 /// - An error during ITC operation calls
 /// - The input queue is not empty
 ///
-/// Pushes the following entries into the thread queue:
-/// - fifoPos:       fifo position (relative to offset)
+/// Pushes the following entries into the thread queue in a free DFR dfrOut if the entries have updated values
+/// Otherwise an entry does not get pushed
+/// - $ITC_THREAD_FIFOPOS:       fifo position (relative to offset)
+/// - $ITC_THREAD_TIMESTAMP:     timestamp of acquisition start
 threadsafe static Function TFH_FifoLoop(WAVE config, variable deviceID, variable stopCollectionPoint, variable ADChannelToMonitor, variable mode)
 
-	variable flags, moreData, fifoPos
+	variable flags, moreData, fifoPos, timestamp
 
+	DFREF dfrOut = NewFreeDataFolder()
 	flags = HARDWARE_ABORT_ON_ERROR
 
 	do
@@ -97,9 +100,9 @@ threadsafe static Function TFH_FifoLoop(WAVE config, variable deviceID, variable
 		endif
 
 		moreData = HW_ITC_MoreData_TS(deviceID, ADChannelToMonitor, stopCollectionPoint, config, fifoPos = fifoPos, flags = flags)
-		fifoPos  = limit(fifoPos, 0, stopCollectionPoint)
 
-		TS_ThreadGroupPutVariable(MAIN_THREAD, "fifoPos", fifoPos)
+		timestamp = NaN
+		fifoPos   = limit(fifoPos, 0, stopCollectionPoint)
 
 		if(!moreData)
 			switch(mode)
@@ -107,6 +110,7 @@ threadsafe static Function TFH_FifoLoop(WAVE config, variable deviceID, variable
 
 					HW_ITC_StopAcq_TS(deviceID, prepareForDAQ = 1, flags = flags)
 					HW_ITC_ResetFifo_TS(deviceID, config, flags = flags)
+					timestamp = ParseISO8601TimeStamp(HW_GetAcquisitionStartTimestamp())
 					HW_ITC_StartAcq_TS(deviceID, HARDWARE_DAC_DEFAULT_TRIGGER, flags = flags)
 					break
 				case TFH_STOP_ACQ:
@@ -120,6 +124,14 @@ threadsafe static Function TFH_FifoLoop(WAVE config, variable deviceID, variable
 					break
 			endswitch
 		endif
+
+		variable/G dfrOut:$ITC_THREAD_FIFOPOS = fifopos
+		if(IsNaN(timestamp))
+			KillVariables/Z dfrOut:$ITC_THREAD_TIMESTAMP
+		else
+			variable/G dfrOut:$ITC_THREAD_TIMESTAMP = timestamp
+		endif
+		TS_ThreadGroupPutDFR(MAIN_THREAD, dfrOut)
 	while(1)
 
 	return 0
