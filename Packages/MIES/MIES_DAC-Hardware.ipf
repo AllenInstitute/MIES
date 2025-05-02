@@ -626,6 +626,11 @@ Function HW_WriteDeviceInfo(variable hardwareType, string device, WAVE deviceInf
 	endswitch
 End
 
+threadsafe Function/S HW_GetAcquisitionStartTimestamp()
+
+	return GetIso8601TimeStamp(numFracSecondsDigits = 9)
+End
+
 /// @brief Start data acquisition
 ///
 /// @param hardwareType One of @ref HardwareDACTypeConstants
@@ -635,11 +640,17 @@ End
 /// @param repeat       [optional, default 0] for NI devices, repeats the scan after it ends
 Function HW_StartAcq(variable hardwareType, variable deviceID, [variable triggerMode, variable flags, variable repeat])
 
+	string device
+
 	HW_AssertOnInvalid(hardwareType, deviceID)
 
 	if(ParamIsDefault(triggerMode))
 		triggerMode = HARDWARE_DAC_DEFAULT_TRIGGER
 	endif
+
+	device = HW_GetMainDeviceName(hardwareType, deviceID, flags = flags)
+	SVAR lastAcqStartTime = $GetLastAcquisitionStartTime(device)
+	lastAcqStartTime = HW_GetAcquisitionStartTimestamp()
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:

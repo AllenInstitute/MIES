@@ -524,6 +524,12 @@ Function/S GetAnalysisExpSessionStartTime(string dataFolder)
 	return GetSVARAsString(GetAnalysisExpFolder(dataFolder), "sessionStartTime", initialValue = "")
 End
 
+/// @brief Returns the global that stores the last acquisition start time
+Function/S GetLastAcquisitionStartTime(string device)
+
+	return GetSVARAsString(GetDevicePath(device), "LastAcquisitionStartTime", initialValue = "")
+End
+
 /// @brief Return the experiment session start time in NWB-speech
 ///
 /// This is the time when the last device was locked.
