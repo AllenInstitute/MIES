@@ -215,8 +215,7 @@ Function TPM_BkrdTPFuncMD(STRUCT BackgroundStruct &s)
 			case HARDWARE_ITC_DAC:
 				WAVE ITCDataWave = GetDAQDataWave(device, TEST_PULSE_MODE)
 
-				NVAR tgID = $GetThreadGroupIDFIFO(device)
-				fifoPos = TS_GetNewestFromThreadQueue(tgID, "fifoPos", timeout_tries = THREAD_QUEUE_TRIES)
+				fifoPos = HW_ITC_ReadFifoPos(device, timeout_tries = THREAD_QUEUE_TRIES)
 
 				// should never be hit
 				if(!IsFinite(fifoPos))

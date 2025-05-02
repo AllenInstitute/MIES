@@ -87,8 +87,7 @@ Function DQM_FIFOMonitor(STRUCT BackgroundStruct &s)
 				endtry
 				break
 			case HARDWARE_ITC_DAC:
-				NVAR tgID = $GetThreadGroupIDFIFO(device)
-				fifoLatest = TS_GetNewestFromThreadQueue(tgID, "fifoPos", timeout_default = HARDWARE_ITC_FIFO_ERROR, timeout_tries = THREAD_QUEUE_TRIES)
+				fifoLatest = HW_ITC_ReadFifoPos(device, timeout_default = HARDWARE_ITC_FIFO_ERROR, timeout_tries = THREAD_QUEUE_TRIES)
 
 				if(fifoLatest != s.lastReceivedFifoPos)
 					s.ticksLastReceivedFifoPos = ticks
@@ -126,7 +125,7 @@ Function DQM_FIFOMonitor(STRUCT BackgroundStruct &s)
 				endif
 
 				// once TFH_FifoLoop is finished the thread is done as well and
-				// therefore we get NaN from TS_GetNewestFromThreadQueue
+				// therefore we get NaN from HW_ITC_ReadFifoPos
 				isFinished = IsNaN(fifoLatest)
 
 				// Update ActiveChunk Entry for ITC, not used in DAQ mode

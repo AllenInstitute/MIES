@@ -2153,6 +2153,20 @@ Function HW_ITC_IsValidDeviceName(string deviceName)
 	return !isEmpty(deviceName)
 End
 
+/// @brief Read out the fifopos from the ITC fifothread
+Function HW_ITC_ReadFifoPos(string device, [variable timeout_tries, variable timeout_default])
+
+	variable fifopos
+
+	timeout_default = ParamIsDefault(timeout_default) ? NaN : timeout_default
+	timeout_tries   = ParamIsDefault(timeout_tries) ? Inf : timeout_tries
+
+	NVAR tgID = $GetThreadGroupIDFIFO(device)
+	fifoPos = TS_GetNewestFromThreadQueue(tgID, "fifoPos", timeout_tries = timeout_tries, timeout_default = timeout_default)
+
+	return fifoPos
+End
+
 ///@}
 ///@}
 
