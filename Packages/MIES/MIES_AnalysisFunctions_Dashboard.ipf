@@ -201,7 +201,7 @@ End
 static Function AD_FillWaves(string win, WAVE/T list, WAVE/T info)
 
 	variable i, j, headstage, passed, sweepNo, numEntries, ongoingDAQ, acqState
-	variable index, anaFuncType, stimsetCycleID, waMode
+	variable index, anaFuncType, stimsetCycleID, waMode, isDataBrowser
 	string key, anaFunc, stimset, msg, device, opMode
 
 	WAVE/Z totalSweepsPresent = GetPlainSweepList(win)
@@ -214,7 +214,9 @@ static Function AD_FillWaves(string win, WAVE/T list, WAVE/T info)
 		return 0
 	endif
 
-	if(BSP_IsDataBrowser(win))
+	isDataBrowser = BSP_IsDataBrowser(win)
+
+	if(isDataBrowser)
 		device   = BSP_GetDevice(win)
 		acqState = ROVar(GetAcquisitionState(device))
 		DFREF sweepDFR = GetDeviceDataPath(device)
@@ -303,7 +305,7 @@ static Function AD_FillWaves(string win, WAVE/T list, WAVE/T info)
 				ongoingDAQ = IsNaN(passed) && (acqState != AS_INACTIVE)
 			endif
 
-			if(BSP_IsSweepBrowser(win))
+			if(!isDataBrowser)
 				DFREF sweepDFR = SB_GetSweepDataFolder(sweepMap, sweepNo = sweepNo)
 			endif
 
