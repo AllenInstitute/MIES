@@ -1217,7 +1217,6 @@ Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, 
 		return [abWin, ""]
 	endif
 
-	PGC_SetAndActivateControl(abWin, "button_expand_all")
 	sweepBrowsers = ""
 	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
 	WAVE   expBrowserSel  = GetExperimentBrowserGUISel()
