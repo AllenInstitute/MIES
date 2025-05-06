@@ -7004,6 +7004,7 @@ static Function/WAVE SF_AverageDataOverSweeps(WAVE/WAVE input)
 	for(i = 0; i < numGroups; i += 1)
 		WAVE wData = output[i]
 		JWN_SetNumberInWaveNote(wData, SF_META_ISAVERAGED, 1)
+		JWN_SetNumberInWaveNote(wData, SF_META_TRACE_MODE, TRACE_DISPLAY_MODE_LINES)
 		if(CmpStr(GetDimLabel(groupWaves, ROWS, i), SF_AVERAGING_NONSWEEPDATA_LBL))
 			WAVE group = groupWaves[i]
 			JWN_SetNumberInWaveNote(wData, SF_META_CHANNELNUMBER, JWN_GetNumberFromWaveNote(group, SF_META_CHANNELNUMBER))
