@@ -201,3 +201,21 @@ Function TestDashboardSelections()
 	WAVE/Z sweeps = OVS_GetSelectedSweeps(bsPanel, OVS_SWEEP_SELECTION_SWEEPNO)
 	CHECK_EQUAL_WAVES(sweeps, {4, 8, 9, 10, 11, 20, 21}, mode = WAVE_DATA)
 End
+
+static Function TestOngoingDAQBugWithoutAnalysisFunction()
+
+	string sweepBrowsers, sweepBrowser, bsPanel, abWin
+
+	Make/FREE/T files = {"input:H22.03.311.11.08.01.06.nwb", "input:NWB_V1_single_device.nwb"}
+	DownloadFilesIfRequired(files)
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser(files, loadSweeps = 1, multipleSweepBrowser = 0)
+	CHECK_NO_RTE()
+
+	sweepBrowser = StringFromList(0, sweepBrowsers)
+
+	bsPanel = BSP_GetPanel(sweepBrowser)
+	CHECK(WindowExists(bsPanel))
+
+	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DS", val = CHECKBOX_SELECTED)
+	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DB_Passed", val = CHECKBOX_SELECTED)
+End
