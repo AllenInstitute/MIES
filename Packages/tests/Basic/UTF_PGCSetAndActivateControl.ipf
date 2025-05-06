@@ -21,7 +21,7 @@ static Function TEST_CASE_END_OVERRIDE(string testCase)
 		KillWindow/Z $panel
 	endif
 
-	CheckForBugMessages()
+	TestCaseEndCommon(testCase, emptyFolderCheck = 0)
 End
 
 Function CreatePGCTestPanel_IGNORE()

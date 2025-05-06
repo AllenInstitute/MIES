@@ -1006,10 +1006,10 @@ Function/WAVE GetNoAmplifierFuncs()
 	return funcs
 End
 
-static Function/WAVE PUB_TPFiltersWithoutData()
+static Function/WAVE PUB_TPFilters()
 
-	Make/FREE/T wv = {ZMQ_FILTER_TPRESULT_NOW, ZMQ_FILTER_TPRESULT_1S, ZMQ_FILTER_TPRESULT_5S, ZMQ_FILTER_TPRESULT_10S}
-	SetDimensionLabels(wv, "period_now;period_1s;period_5s;period_10s", ROWS)
+	Make/FREE/T wv = {ZMQ_FILTER_TPRESULT_NOW, ZMQ_FILTER_TPRESULT_NOW_WITH_DATA, ZMQ_FILTER_TPRESULT_1S, ZMQ_FILTER_TPRESULT_5S, ZMQ_FILTER_TPRESULT_10S}
+	SetDimensionLabels(wv, "period_now;period_now with data;period_1s;period_5s;period_10s", ROWS)
 
 	return wv
 End

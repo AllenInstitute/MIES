@@ -934,6 +934,10 @@ Function TestBeginCommon()
 	RetrieveAllWindowsInCI()
 
 	MEN_ClearPackageSettings()
+
+	if(DoExpensiveChecks())
+		PrepareForPublishTest()
+	endif
 End
 
 Function TestEndCommon()
@@ -946,19 +950,24 @@ Function TestCaseBeginCommon(string testcase)
 	AdditionalExperimentCleanup()
 End
 
-Function TestCaseEndCommon(string testcase, [variable restartAsyncFramework])
+Function TestCaseEndCommon(string testcase, [variable restartAsyncFramework, variable emptyFolderCheck, variable experimentCleanup, variable zeromqMessageCheck])
 
 	string contents
 
 	restartAsyncFramework = ParamIsDefault(restartAsyncFramework) ? 0 : !!restartAsyncFramework
+	emptyFolderCheck      = ParamIsDefault(emptyFolderCheck) ? 1 : !!emptyFolderCheck
+	experimentCleanup     = ParamIsDefault(experimentCleanup) ? 1 : !!experimentCleanup
+	zeromqMessageCheck    = ParamIsDefault(zeromqMessageCheck) ? 1 : !!zeromqMessageCheck
 
-	contents = GetListOfObjects(GetDataFolderDFR(), ".*", recursive = 1, typeFlag = COUNTOBJECTS_WAVES)      \
-	           + GetListOfObjects(GetDataFolderDFR(), ".*", recursive = 1, typeFlag = COUNTOBJECTS_VAR)      \
-	           + GetListOfObjects(GetDataFolderDFR(), ".*", recursive = 1, typeFlag = COUNTOBJECTS_STR)      \
-	           + GetListOfObjects(GetDataFolderDFR(), ".*", recursive = 1, typeFlag = COUNTOBJECTS_DATAFOLDER)
+	if(emptyFolderCheck)
+		contents = GetListOfObjects(GetDataFolderDFR(), ".*", recursive = 1, typeFlag = COUNTOBJECTS_WAVES)      \
+		           + GetListOfObjects(GetDataFolderDFR(), ".*", recursive = 1, typeFlag = COUNTOBJECTS_VAR)      \
+		           + GetListOfObjects(GetDataFolderDFR(), ".*", recursive = 1, typeFlag = COUNTOBJECTS_STR)      \
+		           + GetListOfObjects(GetDataFolderDFR(), ".*", recursive = 1, typeFlag = COUNTOBJECTS_DATAFOLDER)
 
-	INFO("Testcase: %s, Contents: %s", s0 = testcase, s1 = contents)
-	CHECK_EMPTY_FOLDER()
+		INFO("Testcase: %s, Contents: %s", s0 = testcase, s1 = contents)
+		CHECK_EMPTY_FOLDER()
+	endif
 
 	CheckForBugMessages()
 
@@ -967,7 +976,9 @@ Function TestCaseEndCommon(string testcase, [variable restartAsyncFramework])
 			ASYNC_Stop()
 		endif
 
-		AdditionalExperimentCleanup()
+		if(experimentCleanup)
+			AdditionalExperimentCleanup()
+		endif
 
 		if(restartAsyncFramework)
 			ASYNC_Start(ThreadProcessorCount, disableTask = 1)
@@ -976,6 +987,10 @@ Function TestCaseEndCommon(string testcase, [variable restartAsyncFramework])
 
 	INFO("The default save location for MIES json configuration \"%s\" must not exist for the tests.", s0 = CONF_DEFAULT_SAVE_LOCATION)
 	REQUIRE(!FolderExists(CONF_DEFAULT_SAVE_LOCATION))
+
+	if(zeromqMessageCheck && DoExpensiveChecks())
+		CheckPubMessagesHeartbeatOnly()
+	endif
 End
 
 Function SetAsyncChannelProperties(string device, WAVE asyncChannels, variable minValue, variable maxValue)
@@ -1028,7 +1043,7 @@ Function/WAVE ExtractSweepsFromSFPairs(WAVE/Z/T wv)
 	return wv
 End
 
-Function CheckForBugMessages()
+static Function CheckForBugMessages()
 
 	variable bugCount_ts
 

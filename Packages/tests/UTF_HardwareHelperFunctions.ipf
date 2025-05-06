@@ -176,7 +176,7 @@ Function TEST_CASE_END_OVERRIDE(string name)
 		endif
 	endif
 
-	TestCaseEndCommon(name, restartAsyncFramework = 1)
+	TestCaseEndCommon(name, restartAsyncFramework = 1, zeromqMessageCheck = 0)
 End
 
 /// @brief Checks user epochs for consistency

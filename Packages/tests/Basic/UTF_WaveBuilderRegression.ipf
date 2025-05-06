@@ -20,7 +20,7 @@ End
 
 static Function TEST_CASE_END_OVERRIDE(string testCase)
 
-	CheckForBugMessages()
+	TestCaseEndCommon(testCase, emptyFolderCheck = 0, experimentCleanup = 0)
 End
 
 // Copy stimset parameter waves and data waves into our own permanent location

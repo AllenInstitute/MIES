@@ -14,9 +14,9 @@ End
 
 static Function TEST_CASE_END_OVERRIDE(string testname)
 
-	TestCaseEndCommon(testname)
-
 	TUFXOP_Clear/N=(KEY)/Q/Z
+
+	TestCaseEndCommon(testname)
 End
 
 static Function ChecksParams()
