@@ -1181,7 +1181,7 @@ Function/S LoadSweeps(string winAB)
 End
 
 /// @brief Open the given files in the analysis browser. By default files are located relative to the symbolic path `home` unless absolutePaths is set
-Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, [variable loadSweeps, variable loadStimsets, variable absolutePaths])
+Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, [variable loadSweeps, variable loadStimsets, variable absolutePaths, variable multipleSweepBrowser])
 
 	variable idx
 	string filePath, fullFilePath
@@ -1193,6 +1193,8 @@ Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, 
 		loadSweeps = !!loadSweeps
 	endif
 	loadStimsets = ParamIsDefault(loadStimsets) ? 0 : !!loadStimsets
+
+	multipleSweepBrowser = ParamIsDefault(multipleSweepBrowser) ? 1 : !!multipleSweepBrowser
 
 	if(absolutePaths)
 		WAVE/T filesWithPath = files
@@ -1224,10 +1226,18 @@ Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, 
 	WAVE/Z indizes = FindIndizes(expBrowserList, colLabel = "file", prop = PROP_EMPTY | PROP_NOT)
 
 	if(loadSweeps)
-		for(idx : indizes)
-			expBrowserSel[idx][0][0] = LISTBOX_TREEVIEW | LISTBOX_SELECTED
+		if(multipleSweepBrowser)
+			for(idx : indizes)
+				expBrowserSel[idx][0][0] = LISTBOX_TREEVIEW | LISTBOX_SELECTED
+				PGC_SetAndActivateControl(abWin, "button_load_sweeps")
+			endfor
+		else
+			for(idx : indizes)
+				expBrowserSel[idx][0][0] = LISTBOX_TREEVIEW | LISTBOX_SELECTED
+			endfor
+
 			PGC_SetAndActivateControl(abWin, "button_load_sweeps")
-		endfor
+		endif
 
 		sweepBrowsers = WinList("*", ";", "WIN:" + num2istr(WINTYPE_GRAPH))
 	endif
