@@ -518,6 +518,12 @@ Function/S GetNI_TTLTaskID(string device)
 	return GetNVARAsString(GetDevicePath(device), "NI_TTL_taskID", initialValue = NaN)
 End
 
+/// @brief Return the Analysis Browser experiment session start time (only used for NWB type experiments)
+Function/S GetAnalysisExpSessionStartTime(string dataFolder)
+
+	return GetSVARAsString(GetAnalysisExpFolder(dataFolder), "sessionStartTime", initialValue = "")
+End
+
 /// @brief Return the experiment session start time in NWB-speech
 ///
 /// This is the time when the last device was locked.

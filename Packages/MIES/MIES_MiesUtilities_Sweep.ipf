@@ -303,7 +303,7 @@ threadsafe static Function UpgradeSweepWave(WAVE sweepWave, WAVE/T componentName
 		// we also have to preserve the original modification time
 		ASSERT_TS(!CmpStr(WaveUnits(sweepWave, ROWS), "ms"), "Expected ms as wave units")
 		modTimeStr            = StringByKeY("MODTIME", WaveInfo(sweepWave, 0))
-		sweepCreationTimeUTC  = str2num(modTimeStr) - date2secs(-1, -1, -1)
+		sweepCreationTimeUTC  = LocalTimeToUTC(str2num(modTimeStr))
 		sweepCreationTimeUTC -= DimSize(sweepWave, ROWS) * DimDelta(sweepWave, ROWS) * MILLI_TO_ONE
 
 		oldSweepName = UniqueWaveName(sweepWaveDFR, sweepWaveName + "_preUpgrade")
