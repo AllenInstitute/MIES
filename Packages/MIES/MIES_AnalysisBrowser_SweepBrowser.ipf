@@ -482,6 +482,25 @@ Function/WAVE SB_GetPlainSweepList(string win)
 	return sweeps
 End
 
+/// @brief Returns a numeric wave with all sweep map indizes
+///
+/// Compared to SB_GetPlainSweepList this never has duplicates.
+Function/WAVE SB_GetMapIndizes(string win)
+
+	variable numRows
+
+	WAVE/T map = SB_GetSweepBrowserMapFromGraph(win)
+	numRows = GetNumberFromWaveNote(map, NOTE_INDEX)
+
+	if(numRows == 0)
+		return $""
+	endif
+
+	Make/FREE/R/N=(numRows) mapIndizes = p
+
+	return mapIndizes
+End
+
 /// @brief Gets sweep numbers for a given device
 Function/WAVE SB_GetSweepsFromDevice(string win, string device)
 

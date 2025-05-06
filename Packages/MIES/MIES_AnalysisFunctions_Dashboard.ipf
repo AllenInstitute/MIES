@@ -201,7 +201,7 @@ End
 static Function AD_FillWaves(string win, WAVE/T list, WAVE/T info)
 
 	variable i, j, headstage, passed, sweepNo, numEntries, ongoingDAQ, acqState
-	variable index, anaFuncType, stimsetCycleID, waMode, isDataBrowser
+	variable index, anaFuncType, stimsetCycleID, waMode, isDataBrowser, mapIndex
 	string key, anaFunc, stimset, msg, device, opMode
 
 	WAVE/Z totalSweepsPresent = GetPlainSweepList(win)
@@ -224,6 +224,9 @@ static Function AD_FillWaves(string win, WAVE/T list, WAVE/T info)
 		acqState = AS_INACTIVE
 		DFREF  sweepBrowserDFR = SB_GetSweepBrowserFolder(win)
 		WAVE/T sweepMap        = GetSweepBrowserMap(sweepBrowserDFR)
+
+		WAVE totalMapIndizes = SB_GetMapIndizes(win)
+		ASSERT(DimSize(totalSweepsPresent, ROWS) == DimSize(totalMapIndizes, ROWS), "Expected equal number of sweeps and map indizes")
 	endif
 
 	index = GetNumberFromWaveNote(list, NOTE_INDEX)
@@ -231,6 +234,12 @@ static Function AD_FillWaves(string win, WAVE/T list, WAVE/T info)
 	numEntries = DimSize(totalSweepsPresent, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 		sweepNo = totalSweepsPresent[i]
+
+		if(isDataBrowser)
+			mapIndex = NaN
+		else
+			mapIndex = totalMapIndizes[i]
+		endif
 
 		WAVE textualValues   = textualValuesWave[i]
 		WAVE numericalValues = numericalValuesWave[i]
@@ -306,7 +315,7 @@ static Function AD_FillWaves(string win, WAVE/T list, WAVE/T info)
 			endif
 
 			if(!isDataBrowser)
-				DFREF sweepDFR = SB_GetSweepDataFolder(sweepMap, sweepNo = sweepNo)
+				DFREF sweepDFR = SB_GetSweepDataFolder(sweepMap, index = mapIndex)
 			endif
 
 			msg = AD_GetResultMessage(anaFuncType, passed, numericalValues, textualValues, sweepNo, sweepDFR, headstage, ongoingDAQ, waMode)
