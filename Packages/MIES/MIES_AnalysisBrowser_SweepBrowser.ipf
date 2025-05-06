@@ -31,43 +31,13 @@ Function SB_TranslateSBMapIndexToABMapIndex(string win, variable sbIndex)
 	return V_row
 End
 
-static Function SB_GetSweepIndexFromMap(WAVE/T sweepMap, variable sweepNo)
-
-	variable cIndex
-
-	cIndex = FindDimLabel(sweepMap, COLS, "Sweep")
-	FindValue/RMD=[][cIndex]/TEXT=(num2istr(sweepNo))/TXOP=4 sweepMap
-
-#ifdef AUTOMATED_TESTING
-	variable dummy = V_row
-	if(V_row >= 0)
-		FindValue/RMD=[dummy + 1,][cIndex]/TEXT=(num2istr(sweepNo))/TXOP=4 sweepMap
-		ASSERT(V_row == -1, "Found results for multiple experiments")
-	endif
-	V_row = dummy
-#endif // AUTOMATED_TESTING
-
-	return (V_row == -1) ? NaN : V_row
-End
-
-/// @brief Return the sweep data folder for either a given index or sweepNo
-///        If a sweepNo is given then the result for the first sweep found with that number is returned
-Function/DF SB_GetSweepDataFolder(WAVE/T sweepMap, [variable sweepNo, variable index])
+/// @brief Return the sweep data folder for the given index
+Function/DF SB_GetSweepDataFolder(WAVE/T sweepMap, variable mapIndex)
 
 	string dataFolder, device
-	variable cIndex
 
-	if(!ParamIsDefault(index) && ParamIsDefault(sweepNo))
-		ASSERT(index >= 0 && index < DimSize(sweepMap, ROWS), "Invalid index")
-	elseif(ParamIsDefault(index) && !ParamIsDefault(sweepNo))
-		index = SB_GetSweepIndexFromMap(sweepMap, sweepNo)
-		if(IsNaN(index))
-			return $""
-		endif
-	endif
-
-	dataFolder = sweepMap[index][%DataFolder]
-	device     = sweepMap[index][%Device]
+	dataFolder = sweepMap[mapIndex][%DataFolder]
+	device     = sweepMap[mapIndex][%Device]
 
 	return GetAnalysisSweepPath(dataFolder, device)
 End

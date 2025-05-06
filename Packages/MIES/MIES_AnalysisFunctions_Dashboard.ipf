@@ -320,7 +320,7 @@ static Function AD_FillWaves(string win, WAVE/T list, WAVE/T info)
 			endif
 
 			if(!isDataBrowser)
-				DFREF sweepDFR = SB_GetSweepDataFolder(sweepMap, index = mapIndex)
+				DFREF sweepDFR = SB_GetSweepDataFolder(sweepMap, mapIndex)
 			endif
 
 			msg = AD_GetResultMessage(anaFuncType, passed, numericalValues, textualValues, sweepNo, sweepDFR, headstage, ongoingDAQ, waMode)
