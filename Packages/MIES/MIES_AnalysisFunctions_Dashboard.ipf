@@ -219,11 +219,14 @@ static Function AD_FillWaves(string win, WAVE/T list, WAVE/T info)
 	if(isDataBrowser)
 		device   = BSP_GetDevice(win)
 		acqState = ROVar(GetAcquisitionState(device))
-		DFREF sweepDFR = GetDeviceDataPath(device)
+		DFREF sweepDFR                 = GetDeviceDataPath(device)
+		WAVE  lastSweepStimsetCycleIDs = GetLastSetting(numericalValuesWave[0], WaveMax(totalSweepsPresent), STIMSET_ACQ_CYCLE_ID_KEY, DATA_ACQUISITION_MODE)
+		ASSERT(WaveExists(lastSweepStimsetCycleIDs), "Missing last sweep SCIs")
 	else
 		acqState = AS_INACTIVE
 		DFREF  sweepBrowserDFR = SB_GetSweepBrowserFolder(win)
 		WAVE/T sweepMap        = GetSweepBrowserMap(sweepBrowserDFR)
+		WAVE/ZZ lastSweepStimsetCycleIDs
 
 		WAVE totalMapIndizes = SB_GetMapIndizes(win)
 		ASSERT(DimSize(totalSweepsPresent, ROWS) == DimSize(totalMapIndizes, ROWS), "Expected equal number of sweeps and map indizes")
@@ -256,8 +259,6 @@ static Function AD_FillWaves(string win, WAVE/T list, WAVE/T info)
 		if(!WaveExists(stimsetCycleIDs)) // TP during DAQ or data before d6046561 (Add a stimset acquisition cycle ID, 2018-05-30)
 			continue
 		endif
-
-		WAVE/Z lastSweepStimsetCycleIDs = GetLastSetting(numericalValues, WaveMax(totalSweepsPresent), STIMSET_ACQ_CYCLE_ID_KEY, DATA_ACQUISITION_MODE)
 
 		key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
 		WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
@@ -305,9 +306,13 @@ static Function AD_FillWaves(string win, WAVE/T list, WAVE/T info)
 
 			if(anaFuncType == INVALID_ANALYSIS_FUNCTION)
 				passed = NaN
-				// current sweep is from the same SCI than the last acquired sweep and DAQ is not inactive
-				ASSERT(WaveExists(lastSweepStimsetCycleIDs), "Missing last sweep SCIs")
-				ongoingDAQ = (lastSweepStimsetCycleIDs[headstage] == stimsetCycleID) && (acqState != AS_INACTIVE)
+
+				if(isDataBrowser)
+					// current sweep is from the same SCI than the last acquired sweep and DAQ is not inactive
+					ongoingDAQ = (lastSweepStimsetCycleIDs[headstage] == stimsetCycleID) && (acqState != AS_INACTIVE)
+				else
+					ongoingDAQ = 0
+				endif
 			else
 				key        = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SET_PASS, query = 1, waMode = waMode)
 				passed     = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
