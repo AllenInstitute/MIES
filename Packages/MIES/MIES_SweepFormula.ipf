@@ -1514,11 +1514,16 @@ Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE
 		return [s]
 	endif
 
+	isAveraged = JWN_GetNumberFromWaveNote(data, SF_META_ISAVERAGED)
+	if(isAveraged)
+		[s] = GetTraceColorForAverage()
+		return [s]
+	endif
+
 	channelNumber = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
 	channelType   = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
-	isAveraged    = JWN_GetNumberFromWaveNote(data, SF_META_ISAVERAGED)
 	mapIndex      = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPMAPINDEX)
-	sweepNo       = (isAveraged == 1) ? JWN_GetNumberFromWaveNote(data, SF_META_AVERAGED_FIRST_SWEEP) : JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
+	sweepNo       = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
 	if(!IsValidSweepNumber(sweepNo))
 		return [s]
 	endif
@@ -6976,7 +6981,6 @@ static Function/WAVE SF_AverageDataOverSweeps(WAVE/WAVE input)
 			if(isSweepData)
 				JWN_SetNumberInWaveNote(group, SF_META_CHANNELNUMBER, channelNumber)
 				JWN_SetNumberInWaveNote(group, SF_META_CHANNELTYPE, channelType)
-				JWN_SetNumberInWaveNote(group, SF_META_AVERAGED_FIRST_SWEEP, sweepNo)
 			endif
 			groupWaves[pos] = group
 
@@ -7004,7 +7008,6 @@ static Function/WAVE SF_AverageDataOverSweeps(WAVE/WAVE input)
 			WAVE group = groupWaves[i]
 			JWN_SetNumberInWaveNote(wData, SF_META_CHANNELNUMBER, JWN_GetNumberFromWaveNote(group, SF_META_CHANNELNUMBER))
 			JWN_SetNumberInWaveNote(wData, SF_META_CHANNELTYPE, JWN_GetNumberFromWaveNote(group, SF_META_CHANNELTYPE))
-			JWN_SetNumberInWaveNote(wData, SF_META_AVERAGED_FIRST_SWEEP, JWN_GetNumberFromWaveNote(group, SF_META_AVERAGED_FIRST_SWEEP))
 		endif
 	endfor
 
