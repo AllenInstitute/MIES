@@ -2263,15 +2263,17 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 			endfor
 		endfor
 
-		if(!IsEmpty(plotMetaData.xAxisLabel) && traceCnt > 0)
-			Label/W=$win bottom, plotMetaData.xAxisLabel
-			ModifyGraph/W=$win tickUnit(bottom)=1
-		endif
-		if(!IsEmpty(yAxisLabel) && traceCnt > 0)
-			Label/W=$win left, yAxisLabel
-			ModifyGraph/W=$win tickUnit(left)=1
-		endif
 		if(traceCnt > 0)
+			if(!IsEmpty(plotMetaData.xAxisLabel))
+				Label/W=$win bottom, plotMetaData.xAxisLabel
+				ModifyGraph/W=$win tickUnit(bottom)=1
+			endif
+
+			if(!IsEmpty(yAxisLabel))
+				Label/W=$win left, yAxisLabel
+				ModifyGraph/W=$win tickUnit(left)=1
+			endif
+
 			ModifyGraph/W=$win zapTZ(bottom)=1
 		endif
 
