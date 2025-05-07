@@ -2111,8 +2111,6 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 			formulaCounter                  += 1
 		while(1)
 
-		yAxisLabel = SF_CombineAxisLabels(yAxisLabels)
-
 		if(showLegend)
 			customLegend = JWN_GetStringFromWaveNote(formulaResults, SF_META_CUSTOM_LEGEND)
 
@@ -2258,6 +2256,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 				ModifyGraph/W=$win tickUnit(bottom)=1
 			endif
 
+			yAxisLabel = SF_CombineAxisLabels(yAxisLabels)
 			if(!IsEmpty(yAxisLabel))
 				Label/W=$win left, yAxisLabel
 				ModifyGraph/W=$win tickUnit(left)=1
