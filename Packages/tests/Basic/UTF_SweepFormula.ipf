@@ -2122,3 +2122,26 @@ static Function TestVariableReadOnly()
 
 	KillWaves/Z root:testData
 End
+
+static Function TestAxisLabelGathering()
+
+	string win, graph, yAxis, code
+
+	win   = GetDataBrowserWithData()
+	graph = SFH_GetFormulaGraphForBrowser(win)
+
+	Make/O data1 = {1}
+	SetScale/P y, 0, 1, "y1", data1
+
+	Make/O data2 = {2}
+	SetScale/P y, 0, 1, "y2", data2
+
+	code = "wave(root:data1)\r" + \
+	       "with \r"            + \
+	       "wave(root:data2)\r"
+	ExecuteSweepFormulaInDB(code, win)
+	yAxis = AxisLabel(graph, "left")
+	CHECK_EQUAL_STR(yAxis, "(y1) / (y2)")
+
+	KillWaves/Z data1, data2
+End
