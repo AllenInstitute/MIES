@@ -1744,19 +1744,15 @@ static Function SF_CommonWindowSetup(string win, string graph)
 	DoWindow/T $win, newTitle
 End
 
-static Function/WAVE SF_GatherYUnits(WAVE/WAVE formulaResults, string explicitLbl, WAVE/Z/T yUnits)
+static Function SF_GatherYUnits(WAVE/WAVE formulaResults, string explicitLbl, WAVE/T yUnits)
 
 	variable i, size, numData
-
-	if(!WaveExists(yUnits))
-		Make/FREE/T/N=0 yUnits
-	endif
 
 	size = DimSize(yUnits, ROWS)
 	if(!isEmpty(explicitLbl))
 		Redimension/N=(size + 1) yUnits
 		yUnits[size] = explicitLbl
-		return yUnits
+		return NaN
 	endif
 
 	numData = DimSize(formulaResults, ROWS)
@@ -1771,8 +1767,6 @@ static Function/WAVE SF_GatherYUnits(WAVE/WAVE formulaResults, string explicitLb
 		size        += 1
 	endfor
 	Redimension/N=(size) yUnits
-
-	return yUnits
 End
 
 static Function/S SF_CombineYUnits(WAVE/T units)
@@ -1891,8 +1885,9 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 		postPlotPSX    = 0
 		showLegend     = 1
 		formulaCounter = 0
-		WAVE/Z   wvX    = $""
-		WAVE/Z/T yUnits = $""
+		WAVE/Z wvX = $""
+
+		Make/FREE/T/N=0 yUnits
 
 		formulasRemain = graphCode[j]
 
@@ -1924,8 +1919,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 				Abort
 			endtry
 
-			WAVE/T yUnitsResult = SF_GatherYUnits(formulaResults, plotMetaData.yAxisLabel, yUnits)
-			WAVE/T yUnits       = yUnitsResult
+			SF_GatherYUnits(formulaResults, plotMetaData.yAxisLabel, yUnits)
 
 			if(!cmpstr(plotMetaData.dataType, SF_DATATYPE_PSX))
 				PSX_Plot(win, graph, formulaResults, plotMetaData)
