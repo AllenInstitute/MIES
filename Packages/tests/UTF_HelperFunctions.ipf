@@ -1799,3 +1799,212 @@ Function CheckPubMessagesHeartbeatOnly()
 		CHECK_EQUAL_STR(filter, ZEROMQ_HEARTBEAT)
 	endfor
 End
+
+// Entry point for igortest
+Function run()
+
+	return RunWithOpts(instru = DoInstrumentation())
+End
+
+static Function/S GetDefaultTestSuitesForExperiment()
+
+	string procs, match
+	string list = ""
+
+	procs = WinList("UTF_*.ipf", ";", "WIN:128")
+
+	match = GrepList(procs, "(?i)^UTF_(Basic|PAPlot|HistoricData|HardwareBasic|HardwareAnalysisFunctions)\.ipf$")
+	match = RemoveEnding(match, ";")
+
+	strswitch(match)
+		case "UTF_Basic.ipf":
+			// sorted list
+			list = AddListItem("UTF_Amplifier.ipf", list, ";", Inf)
+			list = AddListItem("UTF_AnalysisBrowserTest.ipf", list, ";", Inf)
+			list = AddListItem("UTF_AnalysisFunctionHelpers.ipf", list, ";", Inf)
+			list = AddListItem("UTF_AnalysisFunctionParameters.ipf", list, ";", Inf)
+			list = AddListItem("UTF_AnalysisFunctionPrototypes.ipf", list, ";", Inf)
+			list = AddListItem("UTF_AsynFrameworkTest.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Debugging.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Configuration.ipf", list, ";", Inf)
+			list = AddListItem("UTF_DAEphyswoHardware.ipf", list, ";", Inf)
+			list = AddListItem("UTF_EpochswoHardware.ipf", list, ";", Inf)
+			list = AddListItem("UTF_ForeignFunctionInterface.ipf", list, ";", Inf)
+			list = AddListItem("UTF_GuiUtilities.ipf", list, ";", Inf)
+			list = AddListItem("UTF_JSONWaveNotes.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Labnotebook.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Macros.ipf", list, ";", Inf)
+			list = AddListItem("UTF_oodDAQ.ipf", list, ";", Inf)
+			list = AddListItem("UTF_PGCSetAndActivateControl.ipf", list, ";", Inf)
+			list = AddListItem("UTF_StimsetAPI.ipf", list, ";", Inf)
+			list = AddListItem("UTF_SweepFormula.ipf", list, ";", Inf)
+			list = AddListItem("UTF_SweepFormula_Operations.ipf", list, ";", Inf)
+			list = AddListItem("UTF_SweepFormula_PSX.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Testpulse.ipf", list, ";", Inf)
+			list = AddListItem("UTF_TraceUserData.ipf", list, ";", Inf)
+			list = AddListItem("UTF_ThreadsafeDataSharing.ipf", list, ";", Inf)
+			list = AddListItem("UTF_UpgradeDataFolderLocation.ipf", list, ";", Inf)
+			list = AddListItem("UTF_UpgradeWaveLocationAndGetIt.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Utils_Algorithm.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Utils_Checks.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Utils_Conversions.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Utils_DataFolder.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Utils_File.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Utils_GUI.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Utils_List.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Utils_Mies_Algorithm.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Utils_Mies_BackupWaves.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Utils_Mies_Config.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Utils_Mies_Logging.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Utils_Mies_Sweep.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Utils_Numeric.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Utils_ProgramFlow.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Utils_Strings.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Utils_Settings.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Utils_System.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Utils_Time.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Utils_WaveHandling.ipf", list, ";", Inf)
+			list = AddListItem("UTF_UtilsChecks.ipf", list, ";", Inf)
+			list = AddListItem("UTF_WaveAveraging.ipf", list, ";", Inf)
+			list = AddListItem("UTF_WaveBuilder.ipf", list, ";", Inf)
+			list = AddListItem("UTF_WaveBuilderRegression.ipf", list, ";", Inf)
+			list = AddListItem("UTF_WaveVersioning.ipf", list, ";", Inf)
+			list = AddListItem("UTF_ZeroMQPublishing.ipf", list, ";", Inf)
+			break
+		case "UTF_HistoricData.ipf":
+			// sorted list
+			list = AddListItem("UTF_AttemptNWB2ExportOnOldData.ipf", list, ";", Inf)
+			list = AddListItem("UTF_EpochRecreation.ipf", list, ";", Inf)
+			list = AddListItem("UTF_HistoricAnalysisBrowser.ipf", list, ";", Inf)
+			list = AddListItem("UTF_HistoricDashboard.ipf", list, ";", Inf)
+			list = AddListItem("UTF_HistoricEpochClipping.ipf", list, ";", Inf)
+			list = AddListItem("UTF_HistoricSweepBrowser.ipf", list, ";", Inf)
+			list = AddListItem("UTF_HistoricSweepUpgrade.ipf", list, ";", Inf)
+			break
+		case "UTF_HardwareAnalysisFunctions.ipf":
+			// sorted list
+			list = AddListItem("UTF_MultiPatchSeqDAScale.ipf", list, ";", Inf)
+			list = AddListItem("UTF_MultiPatchSeqFastRheoEstimate.ipf", list, ";", Inf)
+			list = AddListItem("UTF_MultiPatchSeqSpikeControl.ipf", list, ";", Inf)
+			list = AddListItem("UTF_PatchSeqAccessResistanceSmoke.ipf", list, ";", Inf)
+			list = AddListItem("UTF_PatchSeqChirp.ipf", list, ";", Inf)
+			list = AddListItem("UTF_PatchSeqDAScale_Adapt.ipf", list, ";", Inf)
+			list = AddListItem("UTF_PatchSeqDAScale_Sub.ipf", list, ";", Inf)
+			list = AddListItem("UTF_PatchSeqDAScale_Supra.ipf", list, ";", Inf)
+			list = AddListItem("UTF_PatchSeqPipetteInBath.ipf", list, ";", Inf)
+			list = AddListItem("UTF_PatchSeqRamp.ipf", list, ";", Inf)
+			list = AddListItem("UTF_PatchSeqRheobase.ipf", list, ";", Inf)
+			list = AddListItem("UTF_PatchSeqSealEvaluation.ipf", list, ";", Inf)
+			list = AddListItem("UTF_PatchSeqSquarePulse.ipf", list, ";", Inf)
+			list = AddListItem("UTF_PatchSeqTrueRestingMembranePotential.ipf", list, ";", Inf)
+			list = AddListItem("UTF_ReachTargetVoltage.ipf", list, ";", Inf)
+			list = AddListItem("UTF_SetControls.ipf", list, ";", Inf)
+			break
+		case "UTF_HardwareBasic.ipf":
+			list = AddListItem("UTF_VeryBasicHardwareTests.ipf", list, ";", Inf)
+			list = AddListItem("UTF_TrackSweepCounts.ipf", list, ";", Inf)
+			list = AddListItem("UTF_BasicHardwareTests.ipf", list, ";", Inf)
+			list = AddListItem("UTF_ConfigurationHardware.ipf", list, ";", Inf)
+			list = AddListItem("UTF_SweepSkipping.ipf", list, ";", Inf)
+			list = AddListItem("UTF_TestPulseAndTPDuringDAQ.ipf", list, ";", Inf)
+			list = AddListItem("UTF_DAEphys.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Dashboard.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Databrowser.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Epochs.ipf", list, ";", Inf)
+			list = AddListItem("UTF_SweepFormulaHardware.ipf", list, ";", Inf)
+			list = AddListItem("UTF_AnalysisFunctionManagement.ipf", list, ";", Inf)
+			list = AddListItem("UTF_AutoTestpulse.ipf", list, ";", Inf)
+			list = AddListItem("UTF_VeryLastTestSuite.ipf", list, ";", Inf)
+
+			// tests which BUG out must come after the test-all tests in UTF_VeryLastTestSuite.ipf
+			list = AddListItem("UTF_HardwareTestsWithBUG.ipf", list, ";", Inf)
+			break
+		case "UTF_PAPlot.ipf":
+			list = AddListItem("UTF_PA_Tests.ipf", list, ";", Inf)
+			break
+		default:
+			ASSERT(0, "Missing case for " + match)
+	endswitch
+
+	return list
+End
+
+// Examples:
+// - RunWithOpts()
+// - RunWithOpts(testsuite = "UTF_Configuration.ipf")
+// - RunWithOpts(testcase = "TestFindLevel")
+Function RunWithOpts([string testcase, string testsuite, variable allowdebug, variable instru, string traceWinList, variable ITCXOP2Debug, variable keepDataFolder, variable enableJU, variable enableRegExp])
+
+	variable debugMode
+	string   traceOptions
+	string   list             = ""
+	string   name             = GetTestName()
+	variable waveTrackingMode = GetWaveTrackingMode()
+
+	// speeds up testing to start with a fresh copy
+	KillWindow/Z HistoryCarbonCopy
+
+	if(ParamIsDefault(allowdebug))
+		debugMode = 0
+	else
+		debugMode = IUTF_DEBUG_FAILED_ASSERTION | IUTF_DEBUG_ENABLE | IUTF_DEBUG_ON_ERROR | IUTF_DEBUG_NVAR_SVAR_WAVE
+	endif
+
+	if(ParamIsDefault(testcase))
+		testcase = ""
+	endif
+
+	if(ParamIsDefault(instru))
+		instru = 0
+	else
+		instru = !!instru
+	endif
+
+	if(ParamIsDefault(traceWinList))
+		traceWinList = "MIES_.*\.ipf"
+	endif
+
+	if(ParamIsDefault(ITCXOP2Debug))
+		ITCXOP2Debug = 0
+	else
+		ITCXOP2Debug = !!ITCXOP2Debug
+	endif
+
+	if(ParamIsDefault(keepDataFolder))
+		keepDataFolder = 0
+	else
+		keepDataFolder = !!keepDataFolder
+	endif
+
+	if(ParamIsDefault(enableJU))
+		enableJU = IsRunningInCI()
+	else
+		enableJU = !!enableJU
+	endif
+
+	if(ParamIsDefault(enableRegExp))
+		enableRegExp = 0
+	else
+		enableRegExp = !!enableRegExp
+	endif
+
+	if(!instru)
+		traceWinList = ""
+	endif
+
+	HW_ITC_DebugMode(ITCXOP2Debug)
+
+	traceOptions = GetDefaultTraceOptions()
+
+	if(ParamIsDefault(testsuite))
+		testsuite = GetDefaultTestSuitesForExperiment()
+	else
+		// do nothing
+	endif
+
+	if(IsEmpty(testcase))
+		RunTest(testsuite, name = name, enableJU = enableJU, enableRegExp = enableRegExp, debugMode = debugMode, traceOptions = traceOptions, traceWinList = traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
+	else
+		RunTest(testsuite, name = name, enableJU = enableJU, enableRegExp = enableRegExp, debugMode = debugMode, testcase = testcase, traceOptions = traceOptions, traceWinList = traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
+	endif
+End

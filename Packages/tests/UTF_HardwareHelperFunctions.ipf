@@ -11,7 +11,7 @@
 /// @file UTF_HardwareHelperFunctions.ipf
 /// @brief This file holds helper functions for the hardware tests
 
-Function TEST_BEGIN_OVERRIDE(string name)
+Function HardwareTestBeginCommon(string name)
 
 	variable needsLoading
 	string   filepath
@@ -44,12 +44,7 @@ Function TEST_BEGIN_OVERRIDE(string name)
 	TestBeginCommon()
 End
 
-Function TEST_END_OVERRIDE(string name)
-
-	TestEndCommon()
-End
-
-Function TEST_CASE_BEGIN_OVERRIDE(string name)
+Function HardwareTestCaseBeginCommon(string name)
 
 	variable numWindows, i
 	string list, reentryFuncName, win, experimentName
@@ -87,7 +82,7 @@ Function TEST_CASE_BEGIN_OVERRIDE(string name)
 	DeleteFile/Z GetExperimentNWBFileForExport()
 End
 
-Function TEST_CASE_END_OVERRIDE(string name)
+Function HardwareTestCaseEndCommon(string name)
 
 	string dev, experimentNWBFile, baseFolder, nwbFile, wlName
 	variable numEntries, i, fileID, nwbVersion, expensiveChecks

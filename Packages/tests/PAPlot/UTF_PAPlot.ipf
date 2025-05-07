@@ -3,86 +3,35 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=PAPlot
 
-#include "UTF_HelperFunctions"
+#include "UTF_PAPlot_Includes"
 
-#include "UTF_PA_Tests"
+Function TEST_BEGIN_OVERRIDE(string name)
 
-// Entry point for UTF
-Function run()
-
-	return RunWithOpts(instru = DoInstrumentation())
+	TestBeginCommon()
 End
 
-// Examples:
-// - RunWithOpts()
-// - RunWithOpts(testsuite = "UTF_PA_Tests.ipf")
-// - RunWithOpts(testcase = "PAT_ZeroPulses")
-Function RunWithOpts([string testcase, string testsuite, variable allowdebug, variable instru, string traceWinList, variable keepDataFolder, variable enableJU, variable enableRegExp])
+Function TEST_END_OVERRIDE(string name)
 
-	variable debugMode
-	string   traceOptions
-	string   list             = ""
-	string   name             = GetTestName()
-	variable waveTrackingMode = GetWaveTrackingMode()
+	TestEndCommon()
+End
 
-	// speeds up testing to start with a fresh copy
-	KillWindow/Z HistoryCarbonCopy
+// use copy of mies folder and restore it each time
+Function TEST_CASE_BEGIN_OVERRIDE(string name)
 
-	if(ParamIsDefault(allowdebug))
-		debugMode = 0
-	else
-		debugMode = IUTF_DEBUG_FAILED_ASSERTION | IUTF_DEBUG_ENABLE | IUTF_DEBUG_ON_ERROR | IUTF_DEBUG_NVAR_SVAR_WAVE
-	endif
+	variable err
+	string   miesPath
 
-	if(ParamIsDefault(testcase))
-		testcase = ""
-	endif
+	TestCaseBeginCommon(name)
 
-	if(ParamIsDefault(instru))
-		instru = 0
-	else
-		instru = !!instru
-	endif
+	miesPath = GetMiesPathAsString()
+	DuplicateDataFolder/O=1 root:MIES_backup, $miesPath
 
-	if(ParamIsDefault(traceWinList))
-		traceWinList = "MIES_.*\.ipf"
-	endif
+	// monkey patch the labnotebook to claim it holds IC data instead of VC
+	WAVE numericalValues = root:MIES:LabNoteBook:Dev1:numericalValues
+	MultiThread numericalValues[][%$CLAMPMODE_ENTRY_KEY][] = ((numericalValues[p][%$CLAMPMODE_ENTRY_KEY][r] == V_CLAMP_MODE) ? I_CLAMP_MODE : numericalValues[p][%$CLAMPMODE_ENTRY_KEY][r])
+End
 
-	if(ParamIsDefault(keepDataFolder))
-		keepDataFolder = 0
-	else
-		keepDataFolder = !!keepDataFolder
-	endif
+Function TEST_CASE_END_OVERRIDE(string testcase)
 
-	if(ParamIsDefault(enableJU))
-		enableJU = IsRunningInCI()
-	else
-		enableJU = !!enableJU
-	endif
-
-	if(ParamIsDefault(enableRegExp))
-		enableRegExp = 0
-	else
-		enableRegExp = !!enableRegExp
-	endif
-
-	if(!instru)
-		traceWinList = ""
-	endif
-
-	traceOptions = GetDefaultTraceOptions()
-
-	list = AddListItem("UTF_PA_Tests.ipf", list, ";", Inf)
-
-	if(ParamIsDefault(testsuite))
-		testsuite = list
-	else
-		// do nothing
-	endif
-
-	if(IsEmpty(testcase))
-		RunTest(testsuite, name = name, enableJU = enableJU, enableRegExp = enableRegExp, debugMode = debugMode, traceOptions = traceOptions, traceWinList = traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
-	else
-		RunTest(testsuite, name = name, enableJU = enableJU, enableRegExp = enableRegExp, debugMode = debugMode, testcase = testcase, traceOptions = traceOptions, traceWinList = traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
-	endif
+	TestCaseEndCommon(testcase)
 End
