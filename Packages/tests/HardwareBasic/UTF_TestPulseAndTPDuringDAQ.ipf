@@ -125,7 +125,20 @@ End
 
 static Function CheckTPEntriesFromLBN_PreAcq(string device)
 
+	variable jsonID
+	string   path
+
+	PrepareForPublishTest()
+
 	PGC_SetAndActivateControl(device, "setvar_Settings_TP_RTolerance", val = 2)
+
+	jsonID = FetchAndParseMessage(TESTPULSE_SET_VALUE_FILTER)
+	CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, "/headstage"), NaN)
+	path = "/testpulse setting/resistanceTol"
+	CHECK_EQUAL_STR(JSON_GetString(jsonID, path + "/unit"), "MΩ")
+	CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, path + "/value"), 2)
+	JSON_Release(jsonID)
+
 	PGC_SetAndActivateControl(device, "setvar_Settings_TPBuffer", val = 3)
 
 	// turn off send to all HS

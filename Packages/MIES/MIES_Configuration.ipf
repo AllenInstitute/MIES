@@ -513,6 +513,9 @@ Function CONF_RestoreWindow(string fName, [string rigFile])
 			Abort
 		endif
 	endtry
+
+	PUB_ConfigurationFinished(wName, panelType, fName, rigFile)
+
 	JSON_Release(jsonID)
 End
 
