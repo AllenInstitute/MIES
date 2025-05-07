@@ -2075,36 +2075,35 @@ StrConstant CO_AB_LOADHISTORYFROMPXP = "ABLoadHistoryFromPXP"
 /// @name Constants for SweepFormula Meta data in JSON format
 /// @anchor SFMetaDataConstants
 ///@{
-StrConstant SF_META_DATATYPE             = "/DataType"           // string
-StrConstant SF_META_SWEEPNO              = "/SweepNumber"        // number
-StrConstant SF_META_RANGE                = "/Range"              // numeric wave
-StrConstant SF_META_CHANNELTYPE          = "/ChannelType"        // number
-StrConstant SF_META_CHANNELNUMBER        = "/ChannelNumber"      // number
-StrConstant SF_META_DEVICE               = "/Device"             // string
-StrConstant SF_META_EXPERIMENT           = "/Experiment"         // string
-StrConstant SF_META_SWEEPMAPINDEX        = "/SweepMapIndex"      // number
-StrConstant SF_META_ISAVERAGED           = "/IsAveraged"         // number
-StrConstant SF_META_AVERAGED_FIRST_SWEEP = "/AveragedFirstSweep" // number
-StrConstant SF_META_XVALUES              = "/XValues"            // numeric wave
-StrConstant SF_META_XTICKLABELS          = "/XTickLabels"        // text wave
-StrConstant SF_META_XTICKPOSITIONS       = "/XTickPositions"     // numeric wave
-StrConstant SF_META_YTICKLABELS          = "/YTickLabels"        // text wave
-StrConstant SF_META_YTICKPOSITIONS       = "/YTickPositions"     // numeric wave
-StrConstant SF_META_XAXISLABEL           = "/XAxisLabel"         // string
-StrConstant SF_META_YAXISLABEL           = "/YAxisLabel"         // string
-StrConstant SF_META_LEGEND_LINE_PREFIX   = "/LegendLinePrefix"   // string
-StrConstant SF_META_TAG_TEXT             = "/TagText"            // string
-StrConstant SF_META_OPSTACK              = "/OperationStack"     // string
-StrConstant SF_META_MOD_MARKER           = "/Marker"             // numeric wave (per point) or number (all points)
-StrConstant SF_META_SHOW_LEGEND          = "/ShowLegend"         // numeric, boolean, defaults to true (1)
-StrConstant SF_META_CUSTOM_LEGEND        = "/CustomLegend"       // string with custom legend text, honours /ShowLegend
-StrConstant SF_META_ARGSETUPSTACK        = "/ArgSetupStack"      // string
-StrConstant SF_META_TRACECOLOR           = "/TraceColor"         // numeric wave, applies to markers and lines
-StrConstant SF_META_LINESTYLE            = "/LineStyle"          // number
-StrConstant SF_META_TRACE_MODE           = "/TraceMode"          // number, one of @ref TraceDisplayTypes
-StrConstant SF_META_TRACETOFRONT         = "/TraceToFront"       // number, boolean, defaults to false (0)
-StrConstant SF_META_DONOTPLOT            = "/DoNotPlot"          // number, boolean, defaults to false (0)
-StrConstant SF_META_WINDOW_HOOK          = "/WindowHook"         // string
+StrConstant SF_META_DATATYPE           = "/DataType"         // string
+StrConstant SF_META_SWEEPNO            = "/SweepNumber"      // number
+StrConstant SF_META_RANGE              = "/Range"            // numeric wave
+StrConstant SF_META_CHANNELTYPE        = "/ChannelType"      // number
+StrConstant SF_META_CHANNELNUMBER      = "/ChannelNumber"    // number
+StrConstant SF_META_DEVICE             = "/Device"           // string
+StrConstant SF_META_EXPERIMENT         = "/Experiment"       // string
+StrConstant SF_META_SWEEPMAPINDEX      = "/SweepMapIndex"    // number
+StrConstant SF_META_ISAVERAGED         = "/IsAveraged"       // number
+StrConstant SF_META_XVALUES            = "/XValues"          // numeric wave
+StrConstant SF_META_XTICKLABELS        = "/XTickLabels"      // text wave
+StrConstant SF_META_XTICKPOSITIONS     = "/XTickPositions"   // numeric wave
+StrConstant SF_META_YTICKLABELS        = "/YTickLabels"      // text wave
+StrConstant SF_META_YTICKPOSITIONS     = "/YTickPositions"   // numeric wave
+StrConstant SF_META_XAXISLABEL         = "/XAxisLabel"       // string
+StrConstant SF_META_YAXISLABEL         = "/YAxisLabel"       // string
+StrConstant SF_META_LEGEND_LINE_PREFIX = "/LegendLinePrefix" // string
+StrConstant SF_META_TAG_TEXT           = "/TagText"          // string
+StrConstant SF_META_OPSTACK            = "/OperationStack"   // string
+StrConstant SF_META_MOD_MARKER         = "/Marker"           // numeric wave (per point) or number (all points)
+StrConstant SF_META_SHOW_LEGEND        = "/ShowLegend"       // numeric, boolean, defaults to true (1)
+StrConstant SF_META_CUSTOM_LEGEND      = "/CustomLegend"     // string with custom legend text, honours /ShowLegend
+StrConstant SF_META_ARGSETUPSTACK      = "/ArgSetupStack"    // string
+StrConstant SF_META_TRACECOLOR         = "/TraceColor"       // numeric wave, applies to markers and lines
+StrConstant SF_META_LINESTYLE          = "/LineStyle"        // number
+StrConstant SF_META_TRACE_MODE         = "/TraceMode"        // number, one of @ref TraceDisplayTypes
+StrConstant SF_META_TRACETOFRONT       = "/TraceToFront"     // number, boolean, defaults to false (0)
+StrConstant SF_META_DONOTPLOT          = "/DoNotPlot"        // number, boolean, defaults to false (0)
+StrConstant SF_META_WINDOW_HOOK        = "/WindowHook"       // string
 
 /// A color group allows to have matching colors for sweep data with the same channel type/number and sweep.
 /// It is applied before the matching headstage/average colors in #SF_GetTraceColor().
