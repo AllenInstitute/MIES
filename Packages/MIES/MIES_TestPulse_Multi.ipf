@@ -156,7 +156,7 @@ Function TPM_BkrdTPFuncMD(STRUCT BackgroundStruct &s)
 					HW_SU_StopAcq(deviceId)
 					ActiveDeviceList[i][%ActiveChunk] = NaN
 					HW_SU_PrepareAcq(deviceId, TEST_PULSE_MODE)
-					HW_SU_StartAcq(deviceId)
+					HW_StartAcq(HARDWARE_SUTTER_DAC, deviceId)
 				endif
 
 				break
@@ -207,7 +207,7 @@ Function TPM_BkrdTPFuncMD(STRUCT BackgroundStruct &s)
 					if(V_FIFOChunks > TPM_NI_FIFO_THRESHOLD_SIZE)
 						HW_NI_StopAcq(deviceID)
 						HW_NI_PrepareAcq(deviceID, TEST_PULSE_MODE)
-						HW_NI_StartAcq(deviceID, HARDWARE_DAC_DEFAULT_TRIGGER)
+						HW_StartAcq(HARDWARE_NI_DAC, deviceID, triggerMode = HARDWARE_DAC_DEFAULT_TRIGGER)
 						tpCounter = 0
 					endif
 				while(checkAgain)
@@ -215,8 +215,7 @@ Function TPM_BkrdTPFuncMD(STRUCT BackgroundStruct &s)
 			case HARDWARE_ITC_DAC:
 				WAVE ITCDataWave = GetDAQDataWave(device, TEST_PULSE_MODE)
 
-				NVAR tgID = $GetThreadGroupIDFIFO(device)
-				fifoPos = TS_GetNewestFromThreadQueue(tgID, "fifoPos", timeout_tries = THREAD_QUEUE_TRIES)
+				fifoPos = HW_ITC_ReadFifoPos(device, timeout_tries = THREAD_QUEUE_TRIES)
 
 				// should never be hit
 				if(!IsFinite(fifoPos))

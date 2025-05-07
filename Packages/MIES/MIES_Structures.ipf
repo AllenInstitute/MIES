@@ -308,7 +308,6 @@ Structure TPAnalysisInput
 	variable pulseStartPointsDAC
 	variable samplingIntervalDAC
 	variable baselineFrac
-	variable readTimeStamp
 	variable headstage
 	string device
 	variable measurementMarker

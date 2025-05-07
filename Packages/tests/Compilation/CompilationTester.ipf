@@ -67,6 +67,7 @@ Function/WAVE GetDefines()
 	                       "TESTS_WITH_NI_HARDWARE",       \
 	                       "TESTS_WITH_SUTTER_HARDWARE",   \
 	                       "WAVECACHE_DISABLED",           \
+	                       "TP_ANALYSIS_DEBUGGING",        \
 	                       "THREADING_DISABLED"}
 
 	SetDimensionLabelsFromWaveContents(defines)
