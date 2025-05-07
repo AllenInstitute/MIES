@@ -1744,34 +1744,35 @@ static Function SF_CommonWindowSetup(string win, string graph)
 	DoWindow/T $win, newTitle
 End
 
-static Function SF_GatherYUnits(WAVE/WAVE formulaResults, string explicitLbl, WAVE/T yUnits)
+static Function SF_GatherAxisLabels(WAVE/WAVE formulaResults, string explicitLbl, WAVE/T axisLabels)
 
 	variable i, size, numData
-
-	size = DimSize(yUnits, ROWS)
+	size = DimSize(axisLabels, ROWS)
 	if(!isEmpty(explicitLbl))
-		Redimension/N=(size + 1) yUnits
-		yUnits[size] = explicitLbl
+		Redimension/N=(size + 1) axisLabels
+		axisLabels[size] = explicitLbl
 		return NaN
 	endif
 
 	numData = DimSize(formulaResults, ROWS)
-	Redimension/N=(size + numData) yUnits
+	Redimension/N=(size + numData) axisLabels
 
 	for(i = 0; i < numData; i += 1)
 		WAVE/Z wvResultY = formulaResults[i][%FORMULAY]
 		if(!WaveExists(wvResultY))
 			continue
 		endif
-		yUnits[size] = WaveUnits(wvResultY, COLS)
-		size        += 1
+		// fallback to the y data unit
+		axisLabels[size] = WaveUnits(wvResultY, COLS)
+		size            += 1
 	endfor
-	Redimension/N=(size) yUnits
+
+	Redimension/N=(size) axisLabels
 End
 
-static Function/S SF_CombineYUnits(WAVE/T units)
+static Function/S SF_CombineAxisLabels(WAVE/T axisLabels)
 
-	WAVE/T unique = GetUniqueEntries(units, dontDuplicate = 1)
+	WAVE/T unique = GetUniqueEntries(axisLabels, dontDuplicate = 1)
 
 	return TextWaveToList(unique, " / ", trailSep = 0)
 End
@@ -1887,7 +1888,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 		formulaCounter = 0
 		WAVE/Z wvX = $""
 
-		Make/FREE/T/N=0 yUnits
+		Make/FREE/T/N=0 yAxisLabels
 
 		formulasRemain = graphCode[j]
 
@@ -1919,7 +1920,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 				Abort
 			endtry
 
-			SF_GatherYUnits(formulaResults, plotMetaData.yAxisLabel, yUnits)
+			SF_GatherAxisLabels(formulaResults, plotMetaData.yAxisLabel, yAxisLabels)
 
 			if(!cmpstr(plotMetaData.dataType, SF_DATATYPE_PSX))
 				PSX_Plot(win, graph, formulaResults, plotMetaData)
@@ -2110,7 +2111,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 			formulaCounter                  += 1
 		while(1)
 
-		yAxisLabel = SF_CombineYUnits(yUnits)
+		yAxisLabel = SF_CombineAxisLabels(yAxisLabels)
 
 		if(showLegend)
 			customLegend = JWN_GetStringFromWaveNote(formulaResults, SF_META_CUSTOM_LEGEND)
