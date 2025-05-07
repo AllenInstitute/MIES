@@ -1257,7 +1257,7 @@ Function BSP_ButtonProc_RestoreData(STRUCT WMButtonAction &ba) : ButtonControl
 
 				numEntries = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
 				for(i = 0; i < numEntries; i += 1)
-					DFREF sweepDFR       = SB_GetSweepDataFolder(sweepMap, index = i)
+					DFREF sweepDFR       = SB_GetSweepDataFolder(sweepMap, i)
 					DFREF singleSweepDFR = GetSingleSweepFolder(sweepDFR, sweepNo)
 					ReplaceWaveWithBackupForAll(singleSweepDFR)
 				endfor
