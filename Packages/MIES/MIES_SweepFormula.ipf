@@ -1777,15 +1777,9 @@ End
 
 static Function/S SF_CombineYUnits(WAVE/T units)
 
-	string separator = " / "
-	string result    = ""
-
 	WAVE/T unique = GetUniqueEntries(units, dontDuplicate = 1)
-	for(unit : unique)
-		result += unit + separator
-	endfor
 
-	return RemoveEndingRegExp(result, separator)
+	return TextWaveToList(unique, " / ", trailSep = 0)
 End
 
 static Function SF_CheckNumTraces(string graph, variable numTraces)
