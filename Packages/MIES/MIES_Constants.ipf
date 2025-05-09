@@ -2349,6 +2349,7 @@ StrConstant SF_OP_PSX_STATS            = "psxStats"
 StrConstant SF_OP_PSX_RISETIME         = "psxRiseTime"
 StrConstant SF_OP_PSX_PREP             = "psxPrep"
 StrConstant SF_OP_PSX_DECONV_BP_FILTER = "psxDeconvBPFilter"
+StrConstant SF_OP_PSX_SWEEP_BP_FILTER  = "psxSweepBPFilter"
 
 /// @name Available PSX states
 /// @anchor PSXStates
@@ -2397,6 +2398,7 @@ Constant PSX_HORIZ_OFFSET_SLEW  = 2
 
 Constant PSX_DECONV_FILTER_DEF_LOW   = 500
 Constant PSX_DECONV_FILTER_DEF_HIGH  = 50
+Constant PSX_SWEEP_FILTER_DEF_ORDER  = 6
 Constant PSX_DECONV_FILTER_DEF_ORDER = 7
 
 StrConstant PSX_JWN_COMBO_KEYS_NAME = "ComboKeys"
