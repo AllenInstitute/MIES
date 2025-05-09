@@ -7,8 +7,8 @@
 ///
 /// Developer instructions for raising the required nightly versions:
 ///
-/// - Update the revision numbers for IP9 below in the expression involving
-///   `BUILD`, and also `CI_IGOR_REVISION` in .github/workflows/test-igor-workflow.yml
+/// - Update the revision numbers for IP9/10 below in the expression involving
+///   `BUILD`, `CI_IGOR9_REVISION`, `CI_IGOR10_REVISION` in .github/workflows/test-igor-workflow.yml
 /// - Upload the nightly zip packages to the FTP (Thomas' job). Don't delete the
 ///   old zip packages, we still need them.
 /// - Update the below URLs
@@ -19,11 +19,14 @@
 // They are defined here so that we can parse them from within IP.
 //
 // .. |IgorPro9WindowsNightly| replace:: `Igor Pro 9 (Windows) <https://www.byte-physics.de/Downloads/WinIgor9_01Dec2023.zip>`__
+// .. |IgorPro10WindowsNightly| replace:: `Igor Pro 10 (Windows) <https://www.wavemetrics.net/Downloads/latest10/>`__
 // .. |IgorPro9MacOSXNightly| replace:: `Igor Pro 9 (MacOSX) <https://www.byte-physics.de/Downloads/MacIgor9_01Dec2023.dmg>`__
 
 #pragma IgorVersion=9.00
 
-#if IgorVersion() < 10 && (NumberByKey("BUILD", IgorInfo(0)) < 56565)
+#if IgorVersion() == 9 && (NumberByKey("BUILD", IgorInfo(0)) < 56565)
+#define TOO_OLD_IGOR
+#elif IgorVersion() == 10 && (NumberByKey("BUILD", IgorInfo(0)) < 29303)
 #define TOO_OLD_IGOR
 #endif
 
@@ -71,6 +74,10 @@ static Function/S GetDownloadLink()
 #else
 	ASSERT_TS(0, "Unsupported OS")
 #endif
+
+	if(cmpstr(igorMajorVersion, "9"))
+		Abort "Download for Igor Pro 10 is not yet supported.\r Please manually download the nightly build from the documentation link."
+	endif
 
 	text         = ProcedureText("", 0, "MIES_Include.ipf")
 	lineWithLink = GrepList(text, "\\Q|IgorPro" + igorMajorVersion + os + "Nightly|\\E", 0, "\r")
