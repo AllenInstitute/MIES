@@ -165,7 +165,7 @@ jobs:
   #         if-no-files-found: error
 
   TestWithoutHardware:
-    name: 🧪 Test ${{ matrix.name }}
+    name: 🧪 Test ${{ matrix.name }} v${{ matrix.version }}
     needs:
       - BuildInstaller
       # - Linting
@@ -196,6 +196,7 @@ jobs:
       job_name: 🧪 Test ${{ matrix.name }}
       overwrite_job_name: ${{ inputs.is_called_workflow || false }}
       experiment: ${{ matrix.experiment }}
+      target: "[ 'self-hosted', 'Windows', 'IgorPro10']"
       artifact_name: TestWithoutHardware-${{ matrix.name }}-${{ matrix.version }}-assets
       expensive_checks: "1"
       instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
