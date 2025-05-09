@@ -26,10 +26,10 @@
 !define IGOR64EXTENSIONPATH "Igor Extensions (64-bit)"
 # Endings for Helpfiles
 !define IGOR9DIRTEMPL "IP9"
-!define IGOR10DIRTEMPL "IP10"
+!define IGOR10DIRTEMPL "IP9"
 # source folder name for installation with XOPs
 !define IGOR964XOPSOURCETEMPL "XOPs-IP9-64bit"
-!define IGOR1064XOPSOURCETEMPL "XOPs-IP10-64bit"
+!define IGOR1064XOPSOURCETEMPL "XOPs-IP9-64bit"
 
 # source file names for XOPs for installation without Hardware XOPs
 !define IGORUTILXOPSOURCETEMPL "MIESUtils-64.xop"
