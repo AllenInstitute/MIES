@@ -2308,7 +2308,8 @@ static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventSto
 
 	specialEventPanel = PSX_GetSpecialPanel(win)
 
-	UpdateInfoButtonHelp(specialEventPanel, "button_fit_results", PSX_AVERAGE_FIT_RESULT_DEFAULT_HELP)
+	Make/T/FREE help = {PSX_AVERAGE_FIT_RESULT_DEFAULT_HELP}
+	UpdateInfoButtonHelp(specialEventPanel, "button_fit_results", help)
 
 	if(!GetCheckBoxState(specialEventPanel, "checkbox_average_events_fit"))
 		FastOp acceptedAverageFit = (NaN)
@@ -2370,8 +2371,7 @@ static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventSto
 	input[7][0, 1] = {{"State source"}, {PSX_GetStateTypeFromSpecialPanel(win)}}
 	input[8][0, 1] = {{"Current combo"}, {ToTrueFalse(PSX_GetrestrictEventsToCurrentCombo(win))}}
 
-	str = FormatTextWaveForLegend(input)
-	UpdateInfoButtonHelp(specialEventPanel, "button_fit_results", str)
+	UpdateInfoButtonHelp(specialEventPanel, "button_fit_results", input)
 
 	browser = SFH_GetBrowserForFormulaGraph(win)
 	PSX_StoreIntoResultsWave(browser, SFH_RESULT_TYPE_PSX_MISC, input, "accepted average fit results")
@@ -4051,9 +4051,8 @@ static Function PSX_AddLegend(string win, WAVE/WAVE results)
 
 	JSON_Release(jsonID)
 
-	str        = FormatTextWaveForLegend(input)
 	mainWindow = GetMainWindow(win)
-	UpdateInfoButtonHelp(mainWindow, "button_psx_info", str)
+	UpdateInfoButtonHelp(mainWindow, "button_psx_info", input)
 End
 
 /// @brief Return the event, wave and combo index
@@ -5624,7 +5623,8 @@ Function PSX_PlotStartupSettings()
 
 		for(ctrl : infoButtons)
 			if(ControlExists(subwin, ctrl))
-				UpdateInfoButtonHelp(subwin, ctrl, NONE)
+				Make/T/FREE help = {NONE}
+				UpdateInfoButtonHelp(subwin, ctrl, help)
 			endif
 		endfor
 	endfor
