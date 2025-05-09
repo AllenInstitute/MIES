@@ -107,29 +107,32 @@ jobs:
   #         key: pre-commit|${{ env.PY }}|${{ hashFiles('.pre-commit-config.yaml') }}
   #     - name: Pre commit
   #       run: tools/pre-commit/run.sh
-  #
-  # CompilationTest:
-  #   name: 👩🏾‍🔬 Compilation of ${{ matrix.source }} ${{ fromJSON('["","with XOP"]')[matrix.hardware] }}
-  #   needs:
-  #     - BuildInstaller
-  #   strategy:
-  #     matrix:
-  #       source: [ git, installer ]
-  #       hardware: [ false, true ]
-  #       exclude:
-  #         # the git source is always checked with hardware support
-  #         - source: git
-  #           hardware: false
-  #   uses: ./.github/workflows/test-igor-workflow.yml
-  #   with:
-  #     job_name: 👩🏾‍🔬 Compilation of ${{ matrix.source }} ${{ fromJSON('["","with XOP"]')[matrix.hardware] }}
-  #     overwrite_job_name: ${{ inputs.is_called_workflow || false }}
-  #     experiment: Packages/tests/Compilation/CompilationTester.pxp
-  #     installer_artifact_name: BuildInstaller-assets
-  #     installer_flags: ${{ fromJSON('["-x skipHardwareXOPs",""]')[matrix.hardware] }} -s ${{ matrix.source }}
-  #     artifact_name: CompilationTest-${{ matrix.source }}-${{ fromJSON('["no-hardware","hardware"]')[matrix.hardware] }}-assets
-  #     timeout_minutes: 60
-  #
+
+  CompilationTest:
+    name: 👩🏾‍🔬 Compilation of ${{ matrix.source }} ${{ fromJSON('["","with XOP"]')[matrix.hardware] }} v${{ matrix.version }}
+    needs:
+      - BuildInstaller
+    strategy:
+      matrix:
+        source: [ git, installer ]
+        hardware: [ false, true ]
+        version: [9, 10]
+        exclude:
+          # the git source is always checked with hardware support
+          - source: git
+            hardware: false
+    uses: ./.github/workflows/test-igor-workflow.yml
+    with:
+      job_name: 👩🏾‍🔬 Compilation of ${{ matrix.source }} ${{ fromJSON('["","with XOP"]')[matrix.hardware] }}
+      overwrite_job_name: ${{ inputs.is_called_workflow || false }}
+      experiment: Packages/tests/Compilation/CompilationTester.pxp
+      target: "[ 'self-hosted', 'Windows', 'IgorPro10']"
+      installer_artifact_name: BuildInstaller-assets
+      installer_flags: ${{ fromJSON('["-x skipHardwareXOPs",""]')[matrix.hardware] }} -s ${{ matrix.source }}
+      artifact_name: CompilationTest-${{ matrix.source }}-${{ fromJSON('["no-hardware","hardware"]')[matrix.hardware] }}-v${{ matrix.version }}-assets
+      timeout_minutes: 60
+      major_igorpro_version: ${{ matrix.version }}
+
   # CompilationEachCommitTest:
   #   name: 👩🏾‍🔬 Compilation of each commit
   #   if: ${{ !inputs.is_called_workflow }}
@@ -169,7 +172,7 @@ jobs:
     needs:
       - BuildInstaller
       # - Linting
-      # - CompilationTest
+      - CompilationTest
     strategy:
       matrix:
         version:
@@ -197,7 +200,7 @@ jobs:
       overwrite_job_name: ${{ inputs.is_called_workflow || false }}
       experiment: ${{ matrix.experiment }}
       target: "[ 'self-hosted', 'Windows', 'IgorPro10']"
-      artifact_name: TestWithoutHardware-${{ matrix.name }}-${{ matrix.version }}-assets
+      artifact_name: TestWithoutHardware-${{ matrix.name }}-v${{ matrix.version }}-assets
       expensive_checks: "1"
       instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
       timeout_minutes: 60
