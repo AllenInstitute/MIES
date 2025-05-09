@@ -4949,7 +4949,7 @@ End
 // Output[1] = sweepDataOffFilt(1)
 // ...
 //
-// psx(id, [psxKernel(...), numSDs, sweepFilterLow, sweepFilterHigh, maxTauFactor, psxRiseTime(...), psxDeconvFilter(...)])
+// psx(id, [psxKernel(...), numSDs, sweepFilterLow, sweepFilterHigh, maxTauFactor, psxRiseTime(...), psxDeconvBPFilter(...)])
 Function/WAVE PSX_Operation(STRUCT SF_ExecutionData &exd)
 
 	variable numberOfSDs, sweepFilterLow, sweepFilterHigh, parameterJsonID, numCombos, i, addedData, kernelAmp
