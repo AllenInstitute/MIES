@@ -1267,15 +1267,8 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 				if(numResultsX == 1)
 					WAVE/Z wvXdata = wvXRef[0]
 					if(WaveExists(wvXdata) && DimSize(wvXdata, ROWS) == numResultsY && numpnts(wvYdata) == 1 && numpnts(wvXdata) != 1)
-						if(IsTextWave(wvXdata))
-							WAVE/T wT = wvXdata
-							Make/FREE/T wvXnewDataT = {wT[i]}
-							formulaResults[i][%FORMULAX] = wvXnewDataT
-						else
-							WAVE wv = wvXdata
-							Make/FREE/D wvXnewDataD = {wv[i]}
-							formulaResults[i][%FORMULAX] = wvXnewDataD
-						endif
+						Duplicate/FREE/T/RMD=[i] wvXdata, wvXnewData
+						formulaResults[i][%FORMULAX] = wvXnewData
 					else
 						formulaResults[i][%FORMULAX] = wvXRef[0]
 					endif

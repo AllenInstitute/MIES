@@ -2123,6 +2123,31 @@ static Function TestVariableReadOnly()
 	KillWaves/Z root:testData
 End
 
+static Function TestKeepsUnitsWhenMappingMultipleYToOne()
+
+	string win, graph, xAxis, yAxis, code
+
+	win   = GetDataBrowserWithData()
+	graph = SFH_GetFormulaGraphForBrowser(win)
+
+	Make/O data1 = {1}
+	SetScale/P x, 0, 1, "x1", data1
+	SetScale/P y, 0, 1, "y1", data1
+
+	Make/O data2 = {2, 3}
+	SetScale/P x, 0, 1, "x2", data2
+	SetScale/P y, 0, 1, "y2", data2
+
+	code = "dataset(wave(data1), wave(data1)) vs dataset(wave(data2))"
+	ExecuteSweepFormulaInDB(code, win)
+	yAxis = AxisLabel(graph, "left")
+	CHECK_EQUAL_STR(yAxis, "(y1)")
+	xAxis = AxisLabel(graph, "bottom")
+	CHECK_EQUAL_STR(xAxis, "(x2)")
+
+	KillWaves/Z data1, data2
+End
+
 static Function TestAxisLabelGathering()
 
 	string win, graph, yAxis, code
