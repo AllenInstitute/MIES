@@ -442,7 +442,7 @@ End
 /// @param psxParameters JSON dump of the psx/psxKernel operation parameters
 Function/S CA_PSXEventsKey(string comboKey, string psxParameters)
 
-	return CA_PSXBaseKey(comboKey, psxParameters) + " Events " + ":Version 2"
+	return CA_PSXBaseKey(comboKey, psxParameters) + " Events " + ":Version 3"
 End
 
 Function/S CA_PSXOperationKey(string comboKey, string psxParameters)
