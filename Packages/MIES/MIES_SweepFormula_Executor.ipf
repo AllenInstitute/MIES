@@ -457,6 +457,9 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLoc
 		case SF_OP_PSX_DECONV_BP_FILTER:
 			WAVE out = PSX_OperationDeconvBPFilter(exdop)
 			break
+		case SF_OP_PSX_SWEEP_BP_FILTER:
+			WAVE out = PSX_OperationSweepBPFilter(exdop)
+			break
 		case SF_OP_MERGE:
 			WAVE out = SFO_OperationMerge(exdop)
 			break
