@@ -614,61 +614,61 @@ End
 // -----------------------------------------------------------------------------
 Function [variable curOrder, WAVE filtered] bandpass_with_RingingDetection(WAVE src, variable fHigh, variable fLow, variable maxOrder)
 
-    // ---- parameter sanity ---------------------------------------------------
+	// ---- parameter sanity ---------------------------------------------------
 	ASSERT(maxOrder > 0, "maxOrder must be positive")
-	if(fLow <= fHigh)            // Igor band‑pass expects fLow > fHigh
+	if(fLow <= fHigh) // Igor band‑pass expects fLow > fHigh
 		variable tmp = fLow
 		fLow  = fHigh
 		fHigh = tmp
 	endif
-	
+
 	// Sampling rate (Hz) – assumes X scaling is in milliseconds
 	variable samp = 1 / (DeltaX(src) * MILLI_TO_ONE)
-	
+
 	// Pre‑compute SEM(original) once
 	WaveStats/Q src
 	variable semOrig = V_sem
-	variable offset = v_avg
+	variable offset  = v_avg
 
 	// Prepare destination wave (same name every call → convenient overwrite)
 	duplicate/FREE src, src_BPF
-	WAVE/z filtered = src_BPF
-	
+	WAVE/Z filtered = src_BPF
+
 	// remove offset from src copy
 	filtered -= offset
-	
+
 	curOrder = maxOrder
 	variable err
 	do
 		// -------- copy fresh data into filtered ------------------------------
-		filtered = src          // avoids repeated duplicate/O allocations
-		
+		filtered = src // avoids repeated duplicate/O allocations
+
 		// -------- attempt current order --------------------------------------
-		FilterIIR/LO=(fLow/samp)/HI=(fHigh/samp)/DIM=(ROWS)/ORD=(curOrder) filtered
+		FilterIIR/LO=(fLow / samp)/HI=(fHigh / samp)/DIM=(ROWS)/ORD=(curOrder) filtered
 		err = GetRTError(1)
 		if(err)
-			Print "FilterIIR failed (order="+num2str(curOrder)+"): "+GetErrMessage(err)
+			Print "FilterIIR failed (order=" + num2str(curOrder) + "): " + GetErrMessage(err)
 			curOrder -= 1
 			continue
 		endif
-		
+
 		// -------- WaveStats: NaN/Inf + SEM in one call ------------------------
 		WaveStats/Q filtered
 		if(V_numNaNs > 0 || V_numInfs > 0)
 			curOrder -= 1
-			continue        // bad numerical output → lower order
+			continue // bad numerical output → lower order
 		endif
-		
-		if(V_sem > semOrig)              // noisier than original → ringing
+
+		if(V_sem > semOrig) // noisier than original → ringing
 			curOrder -= 1
 			continue
 		endif
-		
+
 		// -------- success -----------------------------------------------------
-		
+
 		break
 	while(curOrder > 0)
-	
+
 	if(curOrder <= 0)
 		Print "bandpass_with_RingingDetection(): all orders down to 1 produced NaNs/Infs or increased SEM."
 	endif
