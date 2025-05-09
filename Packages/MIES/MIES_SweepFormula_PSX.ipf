@@ -4949,7 +4949,7 @@ End
 // Output[1] = sweepDataOffFilt(1)
 // ...
 //
-// psx(id, [psxKernel(...), numSDs, sweepFilterLow, sweepFilterHigh, maxTauFactor, psxRiseTime(...), psxDeconvFilter(...)])
+// psx(id, [psxKernel(...), numSDs, sweepFilterLow, sweepFilterHigh, maxTauFactor, psxRiseTime(...), psxDeconvBPFilter(...)])
 Function/WAVE PSX_Operation(STRUCT SF_ExecutionData &exd)
 
 	variable numberOfSDs, sweepFilterLow, sweepFilterHigh, parameterJsonID, numCombos, i, addedData, kernelAmp
@@ -4969,7 +4969,7 @@ Function/WAVE PSX_Operation(STRUCT SF_ExecutionData &exd)
 		maxTauFactor    = SFH_GetArgumentAsNumeric(exd, SF_OP_PSX, 5, defValue = PSX_DEFAULT_MAX_TAU_FACTOR, checkFunc = IsStrictlyPositiveAndFinite)
 		WAVE riseTime = SFH_GetArgumentAsWave(exd, SF_OP_PSX, 6, defOp = "psxRiseTime()", expectedMinorType = IGOR_TYPE_64BIT_FLOAT, singleResult = 1)
 		ASSERT(IsNumericWave(riseTime), "Invalid return from psxRiseTime")
-		WAVE deconvFilter = SFH_GetArgumentAsWave(exd, SF_OP_PSX, 7, defOp = "psxDeconvFilter()", singleResult = 1)
+		WAVE deconvFilter = SFH_GetArgumentAsWave(exd, SF_OP_PSX, 7, defOp = "psxDeconvBPFilter()", singleResult = 1)
 
 		parameterJsonID = JWN_GetWaveNoteAsJSON(psxKernelDataset)
 		parameterPath   = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX
@@ -4984,7 +4984,7 @@ Function/WAVE PSX_Operation(STRUCT SF_ExecutionData &exd)
 		JSON_AddVariable(parameterJsonID, parameterPath + "/upperThreshold", riseTime[%$"Upper Threshold"])
 		JSON_AddVariable(parameterJsonID, parameterPath + "/lowerThreshold", riseTime[%$"Lower Threshold"])
 		JSON_AddVariable(parameterJsonID, parameterPath + "/differentiateThreshold", riseTime[%$"Differentiate Threshold"])
-		parameterPath = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX_DECONV_FILTER
+		parameterPath = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX_DECONV_BP_FILTER
 		JSON_AddTreeObject(parameterJsonID, parameterPath)
 		JSON_AddVariable(parameterJsonID, parameterPath + "/filterLow", deconvFilter[%$"Filter Low"])
 		JSON_AddVariable(parameterJsonID, parameterPath + "/filterHigh", deconvFilter[%$"Filter High"])
@@ -5173,25 +5173,32 @@ Function/WAVE PSX_OperationRiseTime(STRUCT SF_ExecutionData &exd)
 	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_PSX_RISETIME)
 End
 
-// psxDeconvFilter([low, high, order])
-Function/WAVE PSX_OperationDeconvFilter(STRUCT SF_ExecutionData &exd)
+// psxDeconvBPFilter([low, high, order])
+Function/WAVE PSX_OperationDeconvBPFilter(STRUCT SF_ExecutionData &exd)
 
-	variable low, high, order
+	variable low, high, first, second, order
 
-	SFH_CheckArgumentCount(exd, SF_OP_PSX_DECONV_FILTER, 0, maxArgs = 3)
+	SFH_CheckArgumentCount(exd, SF_OP_PSX_DECONV_BP_FILTER, 0, maxArgs = 3)
 
-	low   = SFH_GetArgumentAsNumeric(exd, SF_OP_PSX_DECONV_FILTER, 0, defValue = NaN, checkFunc = IsNullOrPositiveAndFinite, checkDefault = 0)
-	high  = SFH_GetArgumentAsNumeric(exd, SF_OP_PSX_DECONV_FILTER, 1, defValue = NaN, checkFunc = IsNullOrPositiveAndFinite, checkDefault = 0)
-	order = SFH_GetArgumentAsNumeric(exd, SF_OP_PSX_DECONV_FILTER, 2, defValue = NaN, checkFunc = IsStrictlyPositiveAndFinite, checkDefault = 0)
+	first  = SFH_GetArgumentAsNumeric(exd, SF_OP_PSX_DECONV_BP_FILTER, 0, defValue = NaN, checkFunc = IsNullOrPositiveAndFinite, checkDefault = 0)
+	second = SFH_GetArgumentAsNumeric(exd, SF_OP_PSX_DECONV_BP_FILTER, 1, defValue = NaN, checkFunc = IsNullOrPositiveAndFinite, checkDefault = 0)
+	order  = SFH_GetArgumentAsNumeric(exd, SF_OP_PSX_DECONV_BP_FILTER, 2, defValue = NaN, checkFunc = IsStrictlyPositiveAndFinite, checkDefault = 0)
+
+	if(!IsNaN(first) && !IsNaN(second))
+		[high, low] = MinMax(first, second)
+	else
+		low  = first
+		high = second
+	endif
 
 	Make/D/FREE params = {low, high, order}
 	SetDimensionLabels(params, "Filter Low;Filter High;Filter Order", ROWS)
 
-	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_PSX_DECONV_FILTER, 1)
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_PSX_DECONV_BP_FILTER, 1)
 
 	output[0] = params
 
-	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_PSX_DECONV_FILTER)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_PSX_DECONV_BP_FILTER)
 End
 
 static Function/WAVE PSX_GetAllStatsProperties()
