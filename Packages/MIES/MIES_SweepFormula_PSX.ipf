@@ -4947,6 +4947,8 @@ End
 // Output[0] = sweepData(1)
 // Output[1] = sweepDataOffFilt(1)
 // ...
+//
+// psx(id, [psxKernel(...), numSDs, sweepFilterLow, sweepFilterHigh, maxTauFactor, psxRiseTime(...), psxDeconvBPFilter(...)])
 Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 
 	variable numberOfSDs, sweepFilterLow, sweepFilterHigh, parameterJsonID, numCombos, i, addedData, kernelAmp
@@ -5054,6 +5056,8 @@ End
 // Output[2] = sweepData(0)
 // Output[3] = psx_kernel(1)
 // ...
+//
+// psxKernel([select(...), riseTau, decayTau, amp])
 Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph)
 
 	variable riseTau, decayTau, amp, dt, numPoints, numCombos, i, offset, idx
@@ -5143,6 +5147,7 @@ Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_PSX_KERNEL)
 End
 
+// psxRiseTime([lowerThreshold, upperThreshold, differentiateThreshold])
 Function/WAVE PSX_OperationRiseTime(variable jsonId, string jsonPath, string graph)
 
 	variable lowerThreshold, upperThreshold, differentiateThreshold
@@ -5163,6 +5168,7 @@ Function/WAVE PSX_OperationRiseTime(variable jsonId, string jsonPath, string gra
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_PSX_RISETIME)
 End
 
+// psxDeconvBPFilter([low, high, order])
 Function/WAVE PSX_OperationDeconvBPFilter(variable jsonId, string jsonPath, string graph)
 
 	variable low, high, first, second, order
@@ -5205,6 +5211,7 @@ static Function/WAVE PSX_GetAllStatsProperties()
 	return allProps
 End
 
+// psxStats(id, select(...), prop, state, [postProc])
 Function/WAVE PSX_OperationStats(variable jsonId, string jsonPath, string graph)
 
 	string stateAsStr, postProc, id, prop
@@ -5228,6 +5235,7 @@ Function/WAVE PSX_OperationStats(variable jsonId, string jsonPath, string graph)
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_PSX_STATS)
 End
 
+// psxPrep(data(...), [numSDs])
 Function/WAVE PSX_OperationPrep(variable jsonId, string jsonPath, string graph)
 
 	variable numSDs, threshold, numCombos
