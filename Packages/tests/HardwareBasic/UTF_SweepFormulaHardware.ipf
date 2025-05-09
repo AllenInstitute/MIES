@@ -136,7 +136,7 @@ static Function TestSweepFormulaAxisLabels(string device)
 
 	// Test combine of different data unit in multiple data waves
 	str    = AxisLabel(plotWin, "left")
-	strRef = "mV / pA"
+	strRef = "(mV) / (pA)"
 	CHECK_EQUAL_STR(strRef, str)
 
 	str    = AxisLabel(plotWin, "bottom")

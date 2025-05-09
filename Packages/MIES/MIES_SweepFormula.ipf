@@ -1742,9 +1742,11 @@ static Function SF_CommonWindowSetup(string win, string graph)
 	DoWindow/T $win, newTitle
 End
 
-static Function SF_GatherAxisLabels(WAVE/WAVE formulaResults, string explicitLbl, WAVE/T axisLabels)
+static Function SF_GatherAxisLabels(WAVE/WAVE formulaResults, string explicitLbl, string formulaLabel, WAVE/T axisLabels)
 
 	variable i, size, numData
+	string unit
+
 	size = DimSize(axisLabels, ROWS)
 	if(!isEmpty(explicitLbl))
 		Redimension/N=(size + 1) axisLabels
@@ -1760,9 +1762,29 @@ static Function SF_GatherAxisLabels(WAVE/WAVE formulaResults, string explicitLbl
 		if(!WaveExists(wvResultY))
 			continue
 		endif
-		// fallback to the y data unit
-		axisLabels[size] = WaveUnits(wvResultY, COLS)
-		size            += 1
+
+		strswitch(formulaLabel)
+			case "FORMULAY":
+				unit = WaveUnits(wvResultY, COLS)
+				break
+			case "FORMULAX":
+				WAVE/Z wvResultX = formulaResults[i][%FORMULAX]
+				if(WaveExists(wvResultX))
+					unit = WaveUnits(wvResultX, ROWS)
+				else
+					unit = WaveUnits(wvResultY, ROWS)
+				endif
+				break
+			default:
+				ASSERT(0, "Unsupported formulaLabel: " + formulaLabel)
+				break
+		endswitch
+
+		// fallback to the unit if present
+		if(!IsEmpty(unit))
+			axisLabels[size] = SF_FormatUnit(unit)
+			size            += 1
+		endif
 	endfor
 
 	Redimension/N=(size) axisLabels
@@ -1856,7 +1878,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 	variable winDisplayMode, showLegend, tagCounter, overrideMarker
 	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection, numAnnotations, formulasAreDifferent, postPlotPSX
 	variable formulaCounter, gdIndex, markerCode, lineCode, lineStyle, traceToFront, isCategoryAxis
-	string win, wList, winNameTemplate, exWList, wName, annotation, yAxisLabel, wvName, info, xAxis
+	string win, wList, winNameTemplate, exWList, wName, annotation, xAxisLabel, yAxisLabel, wvName, info, xAxis
 	string formulasRemain, yAndXFormula, xFormula, yFormula, tagText, name, winHook
 	STRUCT SF_PlotMetaData plotMetaData
 	STRUCT RGBColor        color
@@ -1886,7 +1908,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 		formulaCounter = 0
 		WAVE/Z wvX = $""
 
-		Make/FREE/T/N=0 yAxisLabels
+		Make/FREE/T/N=0 xAxisLabels, yAxisLabels
 
 		formulasRemain = graphCode[j]
 
@@ -1918,7 +1940,8 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 				Abort
 			endtry
 
-			SF_GatherAxisLabels(formulaResults, plotMetaData.yAxisLabel, yAxisLabels)
+			SF_GatherAxisLabels(formulaResults, plotMetaData.xAxisLabel, "FORMULAX", xAxisLabels)
+			SF_GatherAxisLabels(formulaResults, plotMetaData.yAxisLabel, "FORMULAY", yAxisLabels)
 
 			if(!cmpstr(plotMetaData.dataType, SF_DATATYPE_PSX))
 				PSX_Plot(win, graph, formulaResults, plotMetaData)
@@ -2249,8 +2272,9 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 		endfor
 
 		if(traceCnt > 0)
-			if(!IsEmpty(plotMetaData.xAxisLabel))
-				Label/W=$win bottom, plotMetaData.xAxisLabel
+			xAxisLabel = SF_CombineAxisLabels(xAxisLabels)
+			if(!IsEmpty(xAxisLabel))
+				Label/W=$win bottom, xAxisLabel
 				ModifyGraph/W=$win tickUnit(bottom)=1
 			endif
 
