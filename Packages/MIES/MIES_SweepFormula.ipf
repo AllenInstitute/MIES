@@ -1295,7 +1295,7 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 
 	dataUnits = ""
 	if(!IsNull(dataUnitCheck))
-		dataUnits = SelectString(addDataUnitsInAnnotation && !IsEmpty(dataUnitCheck), "", "(" + dataUnitCheck + ")")
+		dataUnits = SelectString(addDataUnitsInAnnotation && !IsEmpty(dataUnitCheck), "", SF_FormatUnit(dataUnitCheck))
 	endif
 
 	plotMetaData.dataType      = JWN_GetStringFromWaveNote(wvYRef, SF_META_DATATYPE)
@@ -1305,6 +1305,11 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 	plotMetaData.yAxisLabel    = JWN_GetStringFromWaveNote(wvYRef, SF_META_YAXISLABEL) + dataUnits
 
 	return [formulaResults, plotMetaData]
+End
+
+static Function/S SF_FormatUnit(string unit)
+
+	return "(" + unit + ")"
 End
 
 static Function/S SF_GetAnnotationPrefix(string dataType)
