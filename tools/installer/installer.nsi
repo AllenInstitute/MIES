@@ -24,7 +24,7 @@
 
 # This section defines paths
 !define IGOR64EXTENSIONPATH "Igor Extensions (64-bit)"
-# Endings for Helpfiles- and Packages\HDF- folders
+# Endings for Helpfiles
 !define IGOR9DIRTEMPL "IP9"
 !define IGOR10DIRTEMPL "IP10"
 # source folder name for installation with XOPs
