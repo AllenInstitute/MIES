@@ -1275,7 +1275,7 @@ The `psx` operation allows to classify miniature PSC/PSP's interactively.
 
 .. code-block:: bash
 
-   psx(id, [psxKernel(), numSDs, filterLow, filterHigh, maxTauFactor, psxRiseTime(), psxDeconvFilter()])
+   psx(id, [psxKernel(), numSDs, filterLow, filterHigh, maxTauFactor, psxRiseTime(), psxDeconvBPFilter()])
 
 The function accepts one to seven arguments.
 
@@ -1302,8 +1302,8 @@ maxTauFactor
 psxRiseTime
   results from the `psxRiseTime` operation
 
-psxDeconvFilter
-  results from the `psxDeconvFilter` operation
+psxDeconvBPFilter
+  results from the `psxDeconvBPFilter` operation
 
 The plotting is implemented in a custom way. Due to that multiple `psx`
 operations can only be separated by `with` and not `and`.
@@ -1390,13 +1390,13 @@ diffThreshold
    psxRiseTime(0.5, 0.9)
    psxRiseTime(0.5, 0.9, 0.15)
 
-psxDeconvFilter
-"""""""""""""""
+psxDeconvBPFilter
+"""""""""""""""""
 
-The `psxDeconvFilter` operation is a helper operation for `psx` to manage the deconvolution filter settings.
+The `psxDeconvBPFilter` operation is a helper operation for `psx` to manage the deconvolution filter settings.
 This filter is a bandpass filter.
 
-   psxDeconvFilter([lowFreq, highFreq, order])
+   psxDeconvBPFilter([lowFreq, highFreq, order])
 
 The function accepts zero to three arguments.
 
@@ -1416,8 +1416,8 @@ passband, see also the description of `/LO` and `/HI` from `FilterIIR`.
 
 .. code-block:: bash
 
-   psxDeconvFilter(800, 100)
-   psxDeconvFilter(400, 50, 11)
+   psxDeconvBPFilter(800, 100)
+   psxDeconvBPFilter(400, 50, 11)
 
 psxstats
 """"""""
