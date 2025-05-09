@@ -2375,12 +2375,12 @@ Constant SECONDS_PER_DAY = 86400
 StrConstant DB_AXIS_PART_EPOCHS = "_EP"
 ///@}
 
-StrConstant SF_OP_PSX               = "psx"
-StrConstant SF_OP_PSX_KERNEL        = "psxKernel"
-StrConstant SF_OP_PSX_STATS         = "psxStats"
-StrConstant SF_OP_PSX_RISETIME      = "psxRiseTime"
-StrConstant SF_OP_PSX_PREP          = "psxPrep"
-StrConstant SF_OP_PSX_DECONV_FILTER = "psxDeconvFilter"
+StrConstant SF_OP_PSX                  = "psx"
+StrConstant SF_OP_PSX_KERNEL           = "psxKernel"
+StrConstant SF_OP_PSX_STATS            = "psxStats"
+StrConstant SF_OP_PSX_RISETIME         = "psxRiseTime"
+StrConstant SF_OP_PSX_PREP             = "psxPrep"
+StrConstant SF_OP_PSX_DECONV_BP_FILTER = "psxDeconvBPFilter"
 
 /// @name Available PSX states
 /// @anchor PSXStates

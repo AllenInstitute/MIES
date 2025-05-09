@@ -3441,44 +3441,46 @@ static Function [variable filterLow, variable filterHigh, variable filterOrder] 
 	return [filterLow, filterHigh, filterOrder]
 End
 
-static Function TestOperationDeconvFilter()
+static Function TestOperationDeconvBPFilter()
 
 	string win, str
 	variable filterLow, filterHigh, filterOrder
 
 	win = SetupDatabrowserWithSomeData()
 
-	str = "psxDeconvFilter()"
+	str = "psxDeconvBPFilter()"
 	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	[filterLow, filterHigh, filterOrder] = TestDevonvFilterContainer(dataWref)
 	CHECK_EQUAL_VAR(filterLow, NaN)
 	CHECK_EQUAL_VAR(filterHigh, NaN)
 	CHECK_EQUAL_VAR(filterOrder, NaN)
 
-	str = "psxDeconvFilter(40)"
+	str = "psxDeconvBPFilter(40)"
 	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	[filterLow, filterHigh, filterOrder] = TestDevonvFilterContainer(dataWref)
 	CHECK_EQUAL_VAR(filterLow, 40)
 	CHECK_EQUAL_VAR(filterHigh, NaN)
 	CHECK_EQUAL_VAR(filterOrder, NaN)
 
-	str = "psxDeconvFilter(40, 50)"
+	str = "psxDeconvBPFilter(40, 50)"
 	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	[filterLow, filterHigh, filterOrder] = TestDevonvFilterContainer(dataWref)
-	CHECK_EQUAL_VAR(filterLow, 40)
-	CHECK_EQUAL_VAR(filterHigh, 50)
+	// we automatically fixup the order for the user
+	CHECK_EQUAL_VAR(filterLow, 50)
+	CHECK_EQUAL_VAR(filterHigh, 40)
 	CHECK_EQUAL_VAR(filterOrder, NaN)
 
-	str = "psxDeconvFilter(40, 50, 11)"
+	str = "psxDeconvBPFilter(40, 50, 11)"
 	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	[filterLow, filterHigh, filterOrder] = TestDevonvFilterContainer(dataWref)
-	CHECK_EQUAL_VAR(filterLow, 40)
-	CHECK_EQUAL_VAR(filterHigh, 50)
+	// we automatically fixup the order for the user
+	CHECK_EQUAL_VAR(filterLow, 50)
+	CHECK_EQUAL_VAR(filterHigh, 40)
 	CHECK_EQUAL_VAR(filterOrder, 11)
 
 	// check parameters
 	try
-		str = "psxDeconvFilter(-1)"
+		str = "psxDeconvBPFilter(-1)"
 		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
@@ -3486,7 +3488,7 @@ static Function TestOperationDeconvFilter()
 	endtry
 
 	try
-		str = "psxDeconvFilter(1, -1)"
+		str = "psxDeconvBPFilter(1, -1)"
 		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
@@ -3494,7 +3496,7 @@ static Function TestOperationDeconvFilter()
 	endtry
 
 	try
-		str = "psxDeconvFilter(1, 1, -1)"
+		str = "psxDeconvBPFilter(1, 1, -1)"
 		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
