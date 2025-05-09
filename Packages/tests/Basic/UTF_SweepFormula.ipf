@@ -2150,23 +2150,31 @@ End
 
 static Function TestAxisLabelGathering()
 
-	string win, graph, yAxis, code
+	string win, graph, xAxis, yAxis, code
 
 	win   = GetDataBrowserWithData()
 	graph = SFH_GetFormulaGraphForBrowser(win)
 
 	Make/O data1 = {1}
+	SetScale/P x, 0, 1, "x1", data1
 	SetScale/P y, 0, 1, "y1", data1
 
 	Make/O data2 = {2}
+	SetScale/P x, 0, 1, "x2", data2
 	SetScale/P y, 0, 1, "y2", data2
 
-	code = "wave(root:data1)\r" + \
-	       "with \r"            + \
-	       "wave(root:data2)\r"
+	Make/O data3 = {3}
+	SetScale/P x, 0, 1, "x3", data3
+	SetScale/P y, 0, 1, "y3", data3
+
+	code = "wave(data1)\r"            + \
+	       "with \r"                  + \
+	       "wave(data2) vs wave(data3)\r"
 	ExecuteSweepFormulaInDB(code, win)
 	yAxis = AxisLabel(graph, "left")
 	CHECK_EQUAL_STR(yAxis, "(y1) / (y2)")
+	xAxis = AxisLabel(graph, "bottom")
+	CHECK_EQUAL_STR(xAxis, "(x1) / (x3)")
 
-	KillWaves/Z data1, data2
+	KillWaves/Z data1, data2, data3
 End
