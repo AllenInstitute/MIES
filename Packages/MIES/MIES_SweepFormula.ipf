@@ -252,7 +252,7 @@ Function/WAVE SF_GetNamedOperations()
 	                  SF_OP_LOG10, SF_OP_APFREQUENCY, SF_OP_CURSORS, SF_OP_SELECTSWEEPS, SF_OP_AREA, SF_OP_SETSCALE, SF_OP_BUTTERWORTH, \
 	                  SF_OP_SELECTCHANNELS, SF_OP_DATA, SF_OP_LABNOTEBOOK, SF_OP_WAVE, SF_OP_FINDLEVEL, SF_OP_EPOCHS, SF_OP_TP,         \
 	                  SF_OP_STORE, SF_OP_SELECT, SF_OP_POWERSPECTRUM, SF_OP_TPSS, SF_OP_TPBASE, SF_OP_TPINST, SF_OP_TPFIT,              \
-	                  SF_OP_PSX, SF_OP_PSX_KERNEL, SF_OP_PSX_STATS, SF_OP_PSX_RISETIME, SF_OP_PSX_PREP, SF_OP_PSX_DECONV_FILTER,        \
+	                  SF_OP_PSX, SF_OP_PSX_KERNEL, SF_OP_PSX_STATS, SF_OP_PSX_RISETIME, SF_OP_PSX_PREP, SF_OP_PSX_DECONV_BP_FILTER,     \
 	                  SF_OP_MERGE, SF_OP_FIT, SF_OP_FITLINE, SF_OP_DATASET, SF_OP_SELECTVIS, SF_OP_SELECTCM, SF_OP_SELECTSTIMSET,       \
 	                  SF_OP_SELECTIVSCCSWEEPQC, SF_OP_SELECTIVSCCSETQC, SF_OP_SELECTRANGE, SF_OP_SELECTEXP, SF_OP_SELECTDEV,            \
 	                  SF_OP_SELECTEXPANDSCI, SF_OP_SELECTEXPANDRAC, SF_OP_SELECTSETCYCLECOUNT, SF_OP_SELECTSETSWEEPCOUNT,               \
@@ -1164,8 +1164,8 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 		case SF_OP_PSX_PREP:
 			WAVE out = PSX_OperationPrep(jsonId, jsonPath, graph)
 			break
-		case SF_OP_PSX_DECONV_FILTER:
-			WAVE out = PSX_OperationDeconvFilter(jsonId, jsonPath, graph)
+		case SF_OP_PSX_DECONV_BP_FILTER:
+			WAVE out = PSX_OperationDeconvBPFilter(jsonId, jsonPath, graph)
 			break
 		case SF_OP_MERGE:
 			WAVE out = SF_OperationMerge(jsonId, jsonPath, graph)

@@ -4964,7 +4964,7 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 		maxTauFactor    = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 5, defValue = PSX_DEFAULT_MAX_TAU_FACTOR, checkFunc = IsStrictlyPositiveAndFinite)
 		WAVE riseTime = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_PSX, 6, defOp = "psxRiseTime()", expectedMinorType = IGOR_TYPE_64BIT_FLOAT, singleResult = 1)
 		ASSERT(IsNumericWave(riseTime), "Invalid return from psxRiseTime")
-		WAVE deconvFilter = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_PSX, 7, defOp = "psxDeconvFilter()", singleResult = 1)
+		WAVE deconvFilter = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_PSX, 7, defOp = "psxDeconvBPFilter()", singleResult = 1)
 
 		parameterJsonID = JWN_GetWaveNoteAsJSON(psxKernelDataset)
 		parameterPath   = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX
@@ -4979,7 +4979,7 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 		JSON_AddVariable(parameterJsonID, parameterPath + "/upperThreshold", riseTime[%$"Upper Threshold"])
 		JSON_AddVariable(parameterJsonID, parameterPath + "/lowerThreshold", riseTime[%$"Lower Threshold"])
 		JSON_AddVariable(parameterJsonID, parameterPath + "/differentiateThreshold", riseTime[%$"Differentiate Threshold"])
-		parameterPath = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX_DECONV_FILTER
+		parameterPath = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX_DECONV_BP_FILTER
 		JSON_AddTreeObject(parameterJsonID, parameterPath)
 		JSON_AddVariable(parameterJsonID, parameterPath + "/filterLow", deconvFilter[%$"Filter Low"])
 		JSON_AddVariable(parameterJsonID, parameterPath + "/filterHigh", deconvFilter[%$"Filter High"])
@@ -5163,24 +5163,31 @@ Function/WAVE PSX_OperationRiseTime(variable jsonId, string jsonPath, string gra
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_PSX_RISETIME)
 End
 
-Function/WAVE PSX_OperationDeconvFilter(variable jsonId, string jsonPath, string graph)
+Function/WAVE PSX_OperationDeconvBPFilter(variable jsonId, string jsonPath, string graph)
 
-	variable low, high, order
+	variable low, high, first, second, order
 
-	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_PSX_DECONV_FILTER, 0, maxArgs = 3)
+	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_PSX_DECONV_BP_FILTER, 0, maxArgs = 3)
 
-	low   = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_DECONV_FILTER, 0, defValue = NaN, checkFunc = IsNullOrPositiveAndFinite, checkDefault = 0)
-	high  = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_DECONV_FILTER, 1, defValue = NaN, checkFunc = IsNullOrPositiveAndFinite, checkDefault = 0)
-	order = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_DECONV_FILTER, 2, defValue = NaN, checkFunc = IsStrictlyPositiveAndFinite, checkDefault = 0)
+	first  = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_DECONV_BP_FILTER, 0, defValue = NaN, checkFunc = IsNullOrPositiveAndFinite, checkDefault = 0)
+	second = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_DECONV_BP_FILTER, 1, defValue = NaN, checkFunc = IsNullOrPositiveAndFinite, checkDefault = 0)
+	order  = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_DECONV_BP_FILTER, 2, defValue = NaN, checkFunc = IsStrictlyPositiveAndFinite, checkDefault = 0)
+
+	if(!IsNaN(first) && !IsNaN(second))
+		[high, low] = MinMax(first, second)
+	else
+		low  = first
+		high = second
+	endif
 
 	Make/D/FREE params = {low, high, order}
 	SetDimensionLabels(params, "Filter Low;Filter High;Filter Order", ROWS)
 
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_PSX_DECONV_FILTER, 1)
+	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_PSX_DECONV_BP_FILTER, 1)
 
 	output[0] = params
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_PSX_DECONV_FILTER)
+	return SFH_GetOutputForExecutor(output, graph, SF_OP_PSX_DECONV_BP_FILTER)
 End
 
 static Function/WAVE PSX_GetAllStatsProperties()
