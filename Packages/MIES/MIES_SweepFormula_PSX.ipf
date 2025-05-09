@@ -4638,6 +4638,8 @@ End
 // Output[0] = sweepData(1)
 // Output[1] = sweepDataOffFilt(1)
 // ...
+//
+// psx(id, [psxKernel(...), numSDs, sweepFilterLow, sweepFilterHigh, maxTauFactor, psxRiseTime(...), psxDeconvFilter(...)])
 Function/WAVE PSX_Operation(STRUCT SF_ExecutionData &exd)
 
 	variable numberOfSDs, sweepFilterLow, sweepFilterHigh, parameterJsonID, numCombos, i, addedData, kernelAmp
@@ -4745,6 +4747,8 @@ End
 // Output[2] = sweepData(0)
 // Output[3] = psx_kernel(1)
 // ...
+//
+// psxKernel([select(...), riseTau, decayTau, amp])
 Function/WAVE PSX_OperationKernel(STRUCT SF_ExecutionData &exd)
 
 	variable riseTau, decayTau, amp, dt, numPoints, numCombos, i, offset, idx
@@ -4834,6 +4838,7 @@ Function/WAVE PSX_OperationKernel(STRUCT SF_ExecutionData &exd)
 	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_PSX_KERNEL)
 End
 
+// psxRiseTime([lowerThreshold, upperThreshold, differentiateThreshold])
 Function/WAVE PSX_OperationRiseTime(STRUCT SF_ExecutionData &exd)
 
 	variable lowerThreshold, upperThreshold, differentiateThreshold
@@ -4854,6 +4859,7 @@ Function/WAVE PSX_OperationRiseTime(STRUCT SF_ExecutionData &exd)
 	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_PSX_RISETIME)
 End
 
+// psxDeconvFilter([low, high, order])
 Function/WAVE PSX_OperationDeconvFilter(STRUCT SF_ExecutionData &exd)
 
 	variable low, high, order
@@ -4889,6 +4895,7 @@ static Function/WAVE PSX_GetAllStatsProperties()
 	return allProps
 End
 
+// psxStats(id, select(...), prop, state, [postProc])
 Function/WAVE PSX_OperationStats(STRUCT SF_ExecutionData &exd)
 
 	string stateAsStr, postProc, id, prop
@@ -4912,6 +4919,7 @@ Function/WAVE PSX_OperationStats(STRUCT SF_ExecutionData &exd)
 	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_PSX_STATS)
 End
 
+// psxPrep(data(...), [numSDs])
 Function/WAVE PSX_OperationPrep(STRUCT SF_ExecutionData &exd)
 
 	variable numSDs, threshold, numCombos
