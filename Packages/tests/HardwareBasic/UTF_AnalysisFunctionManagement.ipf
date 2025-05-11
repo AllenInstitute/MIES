@@ -48,6 +48,7 @@ static Function ChangeAnalysisFunctions_IGNORE()
 	ST_SetStimsetParameter("AnaFuncInvalid2_DA_0", "Analysis post DAQ function", str = "InvalidSignatureAndReturnType")
 
 	ST_SetStimsetParameter("AnaFuncStopMid_DA_0", "Analysis mid sweep function", str = "StopMidSweep")
+	ST_SetStimsetParameter("AnaFuncWaitMid_DA_0", "Analysis mid sweep function", str = "WaitMidSweep")
 
 	ST_SetStimsetParameter("AnaFuncValidMult_DA_0", "Analysis pre DAQ function", str = "ValidMultHS_V1")
 	ST_SetStimsetParameter("AnaFuncValidMult_DA_0", "Analysis pre set function", str = "ValidMultHS_V1")
@@ -80,6 +81,9 @@ static Function ChangeAnalysisFunctions_IGNORE()
 	ST_SetStimsetParameter("AnaFuncParams3_DA_0", "Analysis function (generic)", str = "Params3_V3")
 	ST_SetStimsetParameter("AnaFuncParams4_DA_0", "Analysis function (generic)", str = "Params4_V3")
 
+	// first set the generic analysis function, so that the clearing logic from WB_SetAnalysisFunctionGeneric
+	// does not remove the entries for the per event functions
+	ST_SetStimsetParameter("AnaFuncGeneric_DA_0", "Analysis function (generic)", str = "ValidFunc_V3")
 	ST_SetStimsetParameter("AnaFuncGeneric_DA_0", "Analysis pre DAQ function", str = "NotCalled_V1")
 	ST_SetStimsetParameter("AnaFuncGeneric_DA_0", "Analysis pre set function", str = "NotCalled_V1")
 	ST_SetStimsetParameter("AnaFuncGeneric_DA_0", "Analysis pre sweep function", str = "NotCalled_V1")
@@ -87,7 +91,6 @@ static Function ChangeAnalysisFunctions_IGNORE()
 	ST_SetStimsetParameter("AnaFuncGeneric_DA_0", "Analysis post sweep function", str = "NotCalled_V1")
 	ST_SetStimsetParameter("AnaFuncGeneric_DA_0", "Analysis post set function", str = "NotCalled_V1")
 	ST_SetStimsetParameter("AnaFuncGeneric_DA_0", "Analysis post DAQ function", str = "NotCalled_V1")
-	ST_SetStimsetParameter("AnaFuncGeneric_DA_0", "Analysis function (generic)", str = "ValidFunc_V3")
 
 	ST_SetStimsetParameter("AnaFuncTTLNot_TTL_0", "Analysis pre DAQ function", str = "NotCalled_V1")
 	ST_SetStimsetParameter("AnaFuncTTLNot_TTL_0", "Analysis pre set function", str = "NotCalled_V1")
@@ -1049,6 +1052,27 @@ End
 
 static Function AFT13_REENTRY([string str])
 
+	AFT13x_Checks(str, "StopMidSweep")
+End
+
+// Delay acquisition background task call until sweep already finished and ITC fifopos returned == NaN
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function AFT13a([string str])
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                           + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncWaitMid_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:IC:_ST:AnaFuncWaitMid_DA_0:")
+	AcquireData_NG(s, str)
+End
+
+static Function AFT13a_REENTRY([string str])
+
+	AFT13x_Checks(str, "WaitMidSweep")
+End
+
+static Function AFT13x_Checks(string str, string funcName)
+
 	variable sweepNo
 	string   key
 
@@ -1085,7 +1109,7 @@ static Function AFT13_REENTRY([string str])
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
 	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
-	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"StopMidSweep", "StopMidSweep", "", "", "", "", "", "", ""})
+	CHECK_EQUAL_TEXTWAVES(anaFuncs, {funcName, funcName, "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
 	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
