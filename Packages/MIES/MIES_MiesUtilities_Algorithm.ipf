@@ -631,13 +631,10 @@ Function [variable curOrder, WAVE filtered] BandPassWithRingingDetection(WAVE sr
 	// Prepare destination wave
 	duplicate/FREE src, filtered
 
-	// remove offset from src copy
-	filtered -= offset
-
 	curOrder = maxOrder
 	do
 		// -------- copy fresh data into filtered ------------------------------
-		filtered = src // avoids repeated duplicate/O allocations
+		filtered = src - offset
 
 		// -------- attempt current order --------------------------------------
 		FilterIIR/LO=(fLow / samp)/HI=(fHigh / samp)/DIM=(ROWS)/ORD=(curOrder) filtered
