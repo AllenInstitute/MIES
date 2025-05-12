@@ -596,49 +596,45 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 	return result
 End
 
-// @brief Band‑pass filters a wave while automatically reducing IIR filter order until the output contains no NaNs/Infs and its SEM is not larger than the original (simple ringing detection).
+/// @brief Band‑pass filters a wave while automatically reducing IIR filter
+/// order until the output contains no NaNs/Infs and its SEM is not larger than
+/// the original (simple ringing detection).
+///
+/// @param src      – input wave
+/// @param fHigh    – pass‑band edge frequencies in Hz (Igor’s band‑pass requires fLow > fHigh; the routine swaps them if needed)
+/// @param fLow     – low part
+/// @param maxOrder – starting (maximum) IIR filter order to try (>0)
+///
+///  Logic: iteratively lowers the filter order until three conditions are met:
+///           1. FilterIIR executes without error.
+///           2. WaveStats reports       V_numNaNs = 0 and V_numInfs = 0.
+///           3. SEM(filtered) ≤ SEM(original).
+///
+/// @retval curOrder filter order that finally succeeded (0 if every order failed)
+/// @retval filtered filtered data
+Function [variable curOrder, WAVE filtered] BandPassWithRingingDetection(WAVE src, variable fHigh, variable fLow, variable maxOrder)
 
-// -----------------------------------------------------------------------------
-// BandPassWithRingingDetection(src, fHigh, fLow, maxOrder)
-// -----------------------------------------------------------------------------
-// @param src        – input wave (is **not** modified; a filtered copy called <src>_BPF is produced)
-// @param fHigh/fLow – pass‑band edge frequencies in Hz (Igor’s band‑pass requires fLow > fHigh; the routine swaps them if needed)
-// @param maxOrder   – starting (maximum) IIR filter order to try (>0)
-//
-//  Logic: iteratively lowers the filter order until three conditions are met:
-//           1. FilterIIR executes without error.
-//           2. WaveStats reports       V_numNaNs = 0 and V_numInfs = 0.
-//           3. SEM(filtered) ≤ SEM(original).
-//
-//  Return value: filter order that finally succeeded (0 if every order failed).
-// -----------------------------------------------------------------------------
-Function [variable curOrder, WAVE filtered] bandpass_with_RingingDetection(WAVE src, variable fHigh, variable fLow, variable maxOrder)
+	variable err, samp, semOrig, offset
 
-	// ---- parameter sanity ---------------------------------------------------
 	ASSERT(maxOrder > 0, "maxOrder must be positive")
-	if(fLow <= fHigh) // Igor band‑pass expects fLow > fHigh
-		variable tmp = fLow
-		fLow  = fHigh
-		fHigh = tmp
-	endif
+	// Igor band‑pass expects fLow > fHigh
+	[fHigh, fLow] = MinMax(fLow, fHigh)
 
 	// Sampling rate (Hz) – assumes X scaling is in milliseconds
-	variable samp = 1 / (DeltaX(src) * MILLI_TO_ONE)
+	samp = 1 / (DeltaX(src) * MILLI_TO_ONE)
 
-	// Pre‑compute SEM(original) once
+	// Pre-compute SEM(original) once
 	WaveStats/Q src
-	variable semOrig = V_sem
-	variable offset  = v_avg
+	semOrig = V_sem
+	offset  = v_avg
 
-	// Prepare destination wave (same name every call → convenient overwrite)
-	duplicate/FREE src, src_BPF
-	WAVE/Z filtered = src_BPF
+	// Prepare destination wave
+	duplicate/FREE src, filtered
 
 	// remove offset from src copy
 	filtered -= offset
 
 	curOrder = maxOrder
-	variable err
 	do
 		// -------- copy fresh data into filtered ------------------------------
 		filtered = src // avoids repeated duplicate/O allocations
