@@ -610,14 +610,16 @@ End
 ///           2. WaveStats reports       V_numNaNs = 0 and V_numInfs = 0.
 ///           3. SEM(filtered) ≤ SEM(original).
 ///
-/// @retval curOrder filter order that finally succeeded (0 if every order failed)
+/// @retval realOrder filter order that finally succeeded (NaN if every order failed)
 /// @retval filtered filtered data
-Function [variable curOrder, WAVE filtered] BandPassWithRingingDetection(WAVE src, variable fHigh, variable fLow, variable maxOrder)
+Function [variable realOrder, WAVE filtered] BandPassWithRingingDetection(WAVE src, variable fHigh, variable fLow, variable maxOrder)
 
-	variable err, samp, semOrig, offset
+	variable err, samp, semOrig, offset, i
+	string msg
 
-	ASSERT(maxOrder > 0, "maxOrder must be positive")
-	// Igor band‑pass expects fLow > fHigh
+	ASSERT(IsInteger(maxOrder) && maxOrder > 0 && isEven(maxOrder), "maxOrder must be a positive and even integer")
+
+	// Igor band-pass expects fLow > fHigh
 	[fHigh, fLow] = MinMax(fLow, fHigh)
 
 	// Sampling rate (Hz) – assumes X scaling is in milliseconds
@@ -627,47 +629,46 @@ Function [variable curOrder, WAVE filtered] BandPassWithRingingDetection(WAVE sr
 	WaveStats/Q src
 	semOrig = V_sem
 	offset  = v_avg
+	ASSERT(V_numNaNs == 0 && V_numInfs == 0, "Expected only finite value in input data")
 
 	// Prepare destination wave
-	duplicate/FREE src, filtered
+	Duplicate/FREE src, filtered
 
-	curOrder = maxOrder
-	do
-		// -------- copy fresh data into filtered ------------------------------
-		filtered = src - offset
+	for(i = maxOrder; i > 0; i -= 2)
+		Multithread filtered = src - offset
 
-		// -------- attempt current order --------------------------------------
-		FilterIIR/LO=(fLow / samp)/HI=(fHigh / samp)/DIM=(ROWS)/ORD=(curOrder) filtered
-		err = GetRTError(1)
+		FilterIIR/LO=(fLow / samp)/HI=(fHigh / samp)/DIM=(ROWS)/ORD=(i) filtered; err = GetRTError(1)
 		if(err)
-			Print "FilterIIR failed (order=" + num2str(curOrder) + "): " + GetErrMessage(err)
-			curOrder -= 1
 			continue
 		endif
 
-		// -------- WaveStats: NaN/Inf + SEM in one call ------------------------
 		WaveStats/Q filtered
 		if(V_numNaNs > 0 || V_numInfs > 0)
-			curOrder -= 1
-			continue // bad numerical output → lower order
-		endif
+			sprintf msg, "V_numNaNs: %g, V_numInfs: %g", V_numNaNs, V_numInfs
+			DEBUGPRINT(msg)
 
-		if(V_sem > semOrig) // noisier than original → ringing
-			curOrder -= 1
+			// bad numerical output → lower order
 			continue
 		endif
 
-		// -------- success -----------------------------------------------------
+		if(V_sem > semOrig)
+			sprintf msg, "V_sem: %g,semOrig: %g", V_sem, semOrig
+			DEBUGPRINT(msg)
 
-		break
-	while(curOrder > 0)
+			// noisier than original → ringing
+			continue
+		endif
 
-	if(curOrder <= 0)
-		Print "bandpass_with_RingingDetection(): all orders down to 1 produced NaNs/Infs or increased SEM."
-	endif
+		Multithread filtered += offset
 
-	// add offset back to filtered wave
-	filtered += offset
+		sprintf msg, "maxOrder: %g, realOrder: %g", maxOrder, i
+		DEBUGPRINT(msg)
 
-	return [curOrder, filtered]
+		return [i, filtered]
+	endfor
+
+	sprintf msg, "maxOrder: %g, realOrder: NaN", maxOrder
+	DEBUGPRINT(msg)
+
+	return [NaN, $""]
 End
