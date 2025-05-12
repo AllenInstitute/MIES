@@ -288,6 +288,7 @@ static Function/WAVE PSX_FilterSweepData(WAVE/Z sweepDataOff, WAVE sweepFilter)
 
 	Duplicate/FREE sweepDataOff, filtered
 
+	// order needs to be even, as odd values are increased to the next even number
 	FilterIIR/LO=(low / samp)/HI=(high / samp)/DIM=(ROWS)/ORD=(order) filtered; err = GetRTError(1)
 	SFH_ASSERT(!err, "Error filtering the data, msg: " + GetErrMessage(err))
 
@@ -399,6 +400,7 @@ static Function/WAVE PSX_DeconvoluteSweepData(WAVE sweepData, WAVE/C psxKernelFF
 	ASSERT(V_Value == -1, "Can not handle NaN in the deconvoluted wave")
 
 	CopyScales sweepData, Deconv
+	// order needs to be even, as odd values are increased to the next even number
 	FilterIIR/LO=(lowFrac)/HI=(highFrac)/ORD=(order) Deconv; err = GetRTError(0)
 
 	if(err)
@@ -5199,6 +5201,10 @@ Function/WAVE PSX_OperationDeconvBPFilter(STRUCT SF_ExecutionData &exd)
 		high = second
 	endif
 
+	if(IsOdd(order))
+		order += 1
+	endif
+
 	Make/D/FREE params = {low, high, order}
 	SetDimensionLabels(params, "Filter Low;Filter High;Filter Order", ROWS)
 
@@ -5225,6 +5231,10 @@ Function/WAVE PSX_OperationSweepBPFilter(STRUCT SF_ExecutionData &exd)
 	else
 		low  = first
 		high = second
+	endif
+
+	if(IsOdd(order))
+		order += 1
 	endif
 
 	Make/D/FREE params = {low, high, order}
