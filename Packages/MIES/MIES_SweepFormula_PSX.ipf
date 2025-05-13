@@ -982,14 +982,15 @@ static Function/WAVE PSX_CreateOverrideResults(variable numEvents, WAVE/T combos
 End
 
 /// @return 0 on success, 1 otherwise
-static Function PSX_OperationSweepGathering(string graph, WAVE/WAVE psxKernelDataset, variable parameterJsonID, WAVE sweepFilter, WAVE deconvFilter, variable index, WAVE/WAVE output)
+static Function PSX_OperationSweepGathering(string graph, WAVE/WAVE psxKernelDataset, variable parameterJsonID, WAVE sweepFilter, WAVE deconvFilter, variable readIndex, variable writeIndex, WAVE/WAVE output)
 
 	string key, comboKey, psxParametersAnalyzePeaks, cacheKey
+	variable realOrderSweep, realOrderDeconv
 
-	key = PSX_GenerateKey("psxKernelFFT", index)
+	key = PSX_GenerateKey("psxKernelFFT", readIndex)
 	WAVE psxKernelFFT = psxKernelDataset[%$key]
 
-	key = PSX_GenerateKey("sweepData", index)
+	key = PSX_GenerateKey("sweepData", readIndex)
 	WAVE sweepData = psxKernelDataset[%$key]
 
 	[WAVE selectData, WAVE range] = SFH_ParseToSelectDataWaveAndRange(sweepData)
@@ -1027,13 +1028,13 @@ static Function PSX_OperationSweepGathering(string graph, WAVE/WAVE psxKernelDat
 		endif
 	endif
 
-	key           = PSX_GenerateKey("sweepData", index)
+	key           = PSX_GenerateKey("sweepData", writeIndex)
 	output[%$key] = sweepData
 
-	key           = PSX_GenerateKey("sweepDataOffFilt", index)
+	key           = PSX_GenerateKey("sweepDataOffFilt", writeIndex)
 	output[%$key] = sweepDataOffFilt
 
-	key           = PSX_GenerateKey("sweepDataOffFiltDeconv", index)
+	key           = PSX_GenerateKey("sweepDataOffFiltDeconv", writeIndex)
 	output[%$key] = sweepDataOffFiltDeconv
 
 	return 0
@@ -4959,8 +4960,8 @@ End
 // psx(id, [psxKernel(...), numSDs, psxSweepBPFilter(...), maxTauFactor, psxRiseTime(...), psxDeconvBPFilter(...)])
 Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 
-	variable numberOfSDs, parameterJsonID, numCombos, i, addedData, kernelAmp
-	variable maxTauFactor, peakThresh, idx, success, kernelRiseTau, kernelDecayTau
+	variable numberOfSDs, parameterJsonID, numCombos, i, readIndex, writeIndex, addedData, kernelAmp
+	variable maxTauFactor, peakThresh, success, kernelRiseTau, kernelDecayTau
 	string parameterPath, id, psxParameters, dataUnit, path
 
 	id = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX, 0, checkFunc = IsValidObjectName)
@@ -5017,11 +5018,12 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 		PSX_OperationSetDimensionLabels(output, numCombos, labels, labelsTemplate)
 
 		for(i = 0; i < numCombos; i += 1)
-			success = !PSX_OperationSweepGathering(graph, psxKernelDataset, parameterJsonID, sweepFilter, deconvFilter, idx, output)
-			idx    += success
+			readIndex   = i
+			success     = !PSX_OperationSweepGathering(graph, psxKernelDataset, parameterJsonID, sweepFilter, deconvFilter, readIndex, writeIndex, output)
+			writeIndex += success
 		endfor
 
-		numCombos = idx
+		numCombos = writeIndex
 
 		if(numCombos == 0)
 			Abort
