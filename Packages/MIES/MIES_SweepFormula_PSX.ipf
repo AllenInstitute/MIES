@@ -4989,7 +4989,6 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 	JSON_AddVariable(parameterJsonID, parameterPath + "/filterLow", deconvFilter[%$"Filter Low"])
 	JSON_AddVariable(parameterJsonID, parameterPath + "/filterHigh", deconvFilter[%$"Filter High"])
 	JSON_AddVariable(parameterJsonID, parameterPath + "/filterOrder", deconvFilter[%$"Filter Order"])
-
 	parameterPath = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX_SWEEP_BP_FILTER
 	JSON_AddTreeObject(parameterJsonID, parameterPath)
 	JSON_AddVariable(parameterJsonID, parameterPath + "/filterLow", sweepFilter[%$"Filter Low"])
