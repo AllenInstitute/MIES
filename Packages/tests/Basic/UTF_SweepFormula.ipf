@@ -1265,6 +1265,13 @@ static Function TestInputCodeCheck()
 	JSON_Release(jsonId)
 	CHECK_EQUAL_STR(jsonRef, jsonTxt)
 
+	formula = "# comment\r var = 1\r\r $var"
+	jsonRef = "{\n\"graph_0\": {\n\"pair_0\": {\n\"formula_y\": \"$var\"\n}\n},\n\"variable:var\": 1\n}"
+	MIES_SF#SF_CheckInputCode(formula, win)
+	jsonTxt = JSON_Dump(jsonId)
+	JSON_Release(jsonId)
+	CHECK_EQUAL_STR(jsonRef, jsonTxt)
+
 	formula = "[*]"
 	try
 		MIES_SF#SF_CheckInputCode(formula, win)
