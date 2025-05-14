@@ -1267,6 +1267,13 @@ static Function TestInputCodeCheck()
 	JSON_Release(jsonId)
 	CHECK_EQUAL_STR(jsonRef, jsonTxt)
 
+	formula = "# comment\r var = 1\r\r $var"
+	jsonRef = "{\n\"graph_0\": {\n\"pair_0\": {\n\"formula_y\": \"$var\"\n}\n},\n\"variable:var\": 1\n}"
+	MIES_SF#SF_CheckInputCode(formula, win)
+	jsonTxt = JSON_Dump(jsonId)
+	JSON_Release(jsonId)
+	CHECK_EQUAL_STR(jsonRef, jsonTxt)
+
 	formula = "[*]"
 	try
 		MIES_SF#SF_CheckInputCode(formula, win)
@@ -2122,3 +2129,60 @@ static Function TestVariableReadOnly()
 
 	KillWaves/Z root:testData
 End
+
+static Function TestKeepsUnitsWhenMappingMultipleYToOne()
+
+	string win, graph, xAxis, yAxis, code
+
+	win   = GetDataBrowserWithData()
+	graph = SFH_GetFormulaGraphForBrowser(win)
+
+	Make/O data1 = {1}
+	SetScale/P x, 0, 1, "x1", data1
+	SetScale/P y, 0, 1, "y1", data1
+
+	Make/O data2 = {2, 3}
+	SetScale/P x, 0, 1, "x2", data2
+	SetScale/P y, 0, 1, "y2", data2
+
+	code = "dataset(wave(data1), wave(data1)) vs dataset(wave(data2))"
+	ExecuteSweepFormulaInDB(code, win)
+	yAxis = AxisLabel(graph, "left")
+	CHECK_EQUAL_STR(yAxis, "(y1)")
+	xAxis = AxisLabel(graph, "bottom")
+	CHECK_EQUAL_STR(xAxis, "(x2)")
+
+	KillWaves/Z data1, data2
+End
+
+static Function TestAxisLabelGathering()
+
+	string win, graph, xAxis, yAxis, code
+
+	win   = GetDataBrowserWithData()
+	graph = SFH_GetFormulaGraphForBrowser(win)
+
+	Make/O data1 = {1}
+	SetScale/P x, 0, 1, "x1", data1
+	SetScale/P y, 0, 1, "y1", data1
+
+	Make/O data2 = {2}
+	SetScale/P x, 0, 1, "x2", data2
+	SetScale/P y, 0, 1, "y2", data2
+
+	Make/O data3 = {3}
+	SetScale/P x, 0, 1, "x3", data3
+	SetScale/P y, 0, 1, "y3", data3
+
+	code = "wave(data1)\r"            + \
+	       "with \r"                  + \
+	       "wave(data2) vs wave(data3)\r"
+	ExecuteSweepFormulaInDB(code, win)
+	yAxis = AxisLabel(graph, "left")
+	CHECK_EQUAL_STR(yAxis, "(y1) / (y2)")
+	xAxis = AxisLabel(graph, "bottom")
+	CHECK_EQUAL_STR(xAxis, "(x1) / (x3)")
+
+	KillWaves/Z data1, data2, data3
+End
+
