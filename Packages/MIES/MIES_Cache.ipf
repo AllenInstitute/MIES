@@ -472,7 +472,7 @@ End
 
 Function/S CA_PSXAnalyzePeaks(string comboKey, string psxParameters)
 
-	return CA_PSXBaseKey(comboKey, psxParameters) + " Analyze Peaks " + ":Version 2"
+	return CA_PSXBaseKey(comboKey, psxParameters) + " Analyze Peaks " + ":Version 3"
 End
 
 /// @brief Return the key for the igor info entries
