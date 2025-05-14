@@ -4960,6 +4960,8 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 	variable minFilterOrderSweep, minFilterOrderDeconv
 	string parameterPath, id, psxParameters, dataUnit, path, msg
 
+	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_PSX, 1, maxArgs = 7)
+
 	id = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX, 0, checkFunc = IsValidObjectName)
 
 	WAVE/WAVE psxKernelDataset = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_PSX, 1, defOp = "psxKernel()")
@@ -5135,6 +5137,8 @@ Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph
 
 	variable riseTau, decayTau, amp, dt, numPoints, numCombos, i, offset, idx
 	string parameterPath, key
+
+	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_PSX_KERNEL, 0, maxArgs = 4)
 
 	WAVE/Z/WAVE selectDataCompArray = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 0)
 	SFH_ASSERT(WaveExists(selectDataCompArray), "Could not gather sweep data from select statement")
@@ -5324,6 +5328,8 @@ End
 Function/WAVE PSX_OperationStats(variable jsonId, string jsonPath, string graph)
 
 	string stateAsStr, postProc, id, prop
+
+	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_PSX_STATS, 4, maxArgs = 5)
 
 	id = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX, 0, checkFunc = IsValidObjectName)
 
