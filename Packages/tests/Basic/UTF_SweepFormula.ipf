@@ -2185,3 +2185,4 @@ static Function TestAxisLabelGathering()
 
 	KillWaves/Z data1, data2, data3
 End
+

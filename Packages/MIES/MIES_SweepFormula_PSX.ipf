@@ -4955,7 +4955,86 @@ End
 // psx(id, [psxKernel(...), numSDs, psxSweepBPFilter(...), maxTauFactor, psxRiseTime(...), psxDeconvBPFilter(...)])
 Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 
-	variable numberOfSDs, parameterJsonID, numCombos, i, readIndex, writeIndex, addedData, kernelAmp
+	variable kernelIterations = NaN
+	variable numCombos, medianAmp, medianDecayTau, avgRiseTau
+
+	for(;;)
+		if(IsFinite(kernelIterations))
+			kernelIterations -= 1
+		endif
+
+		[WAVE output, numCombos, kernelIterations] = PSX_OperationIterationImpl(jsonId, jsonPath, graph)
+
+		if(kernelIterations == 0)
+			return SFH_GetOutputForExecutor(output, graph, SF_OP_PSX)
+		endif
+
+		medianDecayTau = PSX_CalculateMedianFromEvents(output, numCombos, "weightedTau")
+		medianAmp      = PSX_CalculateMedianFromEvents(output, numCombos, "amplitude")
+		avgRiseTau     = PSX_CalculateAverageRiseTau(output, numCombos)
+	endfor
+End
+
+static Function PSX_CalculateAverageRiseTau(WAVE/WAVE output, variable numCombos)
+
+	variable i
+	string   key
+
+	WAVE/ZZ result
+
+	for(i = 0; i < numCombos; i += 1)
+		key = PSX_GenerateKey("psxEvent", i)
+		WAVE psxEvent = output[%$key]
+
+		Make/FREE/N=(DimSize(psxEvent, ROWS))/D data
+		data = psxEvent[p][%$"Rise Time"]
+
+		WAVE/Z dataClean = ZapNaNs(data)
+		WaveClear data
+
+		if(WaveExists(dataClean))
+			Concatenate/FREE {dataClean}, result
+		endif
+	endfor
+
+	ASSERT(WaveExists(result), "Could not gather rise time data")
+	return mean(result)
+End
+
+static Function PSX_CalculateMedianFromEvents(WAVE/WAVE output, variable numCombos, string lbl)
+
+	variable i
+	string   key
+
+	WAVE/ZZ result
+
+	for(i = 0; i < numCombos; i += 1)
+		key = PSX_GenerateKey("psxEvent", i)
+		WAVE psxEvent = output[%$key]
+
+		Make/FREE/N=(DimSize(psxEvent, ROWS))/D data
+		data = (psxEvent[p][%$"Fit Result"] == 1) ? psxEvent[p][%$lbl] : NaN
+
+		WAVE/Z dataClean = ZapNaNs(data)
+		WaveClear data
+
+		if(WaveExists(dataClean))
+			Concatenate/FREE {dataClean}, result
+		endif
+	endfor
+
+	ASSERT(WaveExists(result), "Could not gather data for " + lbl)
+
+	StatsQuantiles/Q/Z result
+	ASSERT(!V_flag, "Could not calculate median values for " + lbl)
+	MakeWaveFree($"W_StatsQuantiles")
+
+	return V_Median
+End
+
+Function [WAVE output, variable numCombos, variable kernelIterations] PSX_OperationIterationImpl(variable jsonId, string jsonPath, string graph)
+
+	variable numberOfSDs, parameterJsonID, i, readIndex, writeIndex, addedData, kernelAmp
 	variable maxTauFactor, peakThresh, success, kernelRiseTau, kernelDecayTau, constFilterOrderSweep, constFilterOrderDeconv
 	variable minFilterOrderSweep, minFilterOrderDeconv
 	string parameterPath, id, psxParameters, dataUnit, path, msg
@@ -5062,6 +5141,8 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 		ASSERT(IsFinite(kernelRiseTau), "riseTau must be finite")
 		kernelDecayTau = JWN_GetNumberFromWaveNote(psxKernelDataset, path + "/decayTau")
 		ASSERT(IsFinite(kernelDecayTau), "decayTau must be finite")
+		kernelIterations = JWN_GetNumberFromWaveNote(psxKernelDataset, path + "/iterations")
+		ASSERT(IsInteger(kernelIterations), "decayTau must be an integer")
 
 		for(i = 0; i < numCombos; i += 1)
 			PSX_OperationImpl(graph, parameterJsonID, id, peakThresh, maxTauFactor, riseTime, kernelAmp, kernelRiseTau, kernelDecayTau, i, output)
@@ -5084,7 +5165,7 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 
 	SFH_CleanUpInput(psxKernelDataset)
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_PSX)
+	return [output, numCombos, kernelIterations]
 End
 
 Function [variable constFilterOrder, variable minFilterOrder] PSX_HasConstantFilterOrder(WAVE/WAVE output, variable numCombos, variable type)
@@ -5132,20 +5213,21 @@ End
 // Output[3] = psx_kernel(1)
 // ...
 //
-// psxKernel([select(...), riseTau, decayTau, amp])
+// psxKernel([select(...), riseTau, decayTau, amp, iterations])
 Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph)
 
-	variable riseTau, decayTau, amp, dt, numPoints, numCombos, i, offset, idx
+	variable riseTau, decayTau, amp, dt, numPoints, numCombos, i, offset, idx, iterations
 	string parameterPath, key
 
-	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_PSX_KERNEL, 0, maxArgs = 4)
+	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_PSX_KERNEL, 0, maxArgs = 5)
 
 	WAVE/Z/WAVE selectDataCompArray = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 0)
 	SFH_ASSERT(WaveExists(selectDataCompArray), "Could not gather sweep data from select statement")
 
-	riseTau  = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 1, defValue = 1, checkFunc = IsStrictlyPositiveAndFinite)
-	decayTau = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 2, defValue = 15, checkFunc = IsStrictlyPositiveAndFinite)
-	amp      = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 3, defValue = -5, checkFunc = IsFinite)
+	riseTau    = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 1, defValue = 1, checkFunc = IsStrictlyPositiveAndFinite)
+	decayTau   = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 2, defValue = 15, checkFunc = IsStrictlyPositiveAndFinite)
+	amp        = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 3, defValue = -5, checkFunc = IsFinite)
+	iterations = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 4, defValue = 0, checkFunc = IsInteger)
 
 	SFH_ASSERT(decayTau > riseTau, "decay tau must be strictly larger than the rise tau")
 
@@ -5218,6 +5300,7 @@ Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph
 	JWN_SetNumberInWaveNote(output, parameterPath + "/riseTau", riseTau)
 	JWN_SetNumberInWaveNote(output, parameterPath + "/decayTau", decayTau)
 	JWN_SetNumberInWaveNote(output, parameterPath + "/amp", amp)
+	JWN_SetNumberInWaveNote(output, parameterPath + "/iterations", iterations)
 
 	JWN_SetStringInWaveNote(output, SF_META_OPSTACK, AddListItem(SF_OP_PSX_KERNEL, ""))
 
