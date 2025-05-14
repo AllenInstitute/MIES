@@ -4646,6 +4646,8 @@ Function/WAVE PSX_Operation(STRUCT SF_ExecutionData &exd)
 	variable maxTauFactor, peakThresh, idx, success, kernelRiseTau, kernelDecayTau
 	string parameterPath, id, psxParameters, dataUnit, path
 
+	SFH_CheckArgumentCount(exd, SF_OP_PSX, 1, maxArgs = 8)
+
 	id = SFH_GetArgumentAsText(exd, SF_OP_PSX, 0, checkFunc = IsValidObjectName)
 
 	WAVE/WAVE psxKernelDataset = SFH_GetArgumentAsWave(exd, SF_OP_PSX, 1, defOp = "psxKernel()")
@@ -4753,6 +4755,8 @@ Function/WAVE PSX_OperationKernel(STRUCT SF_ExecutionData &exd)
 
 	variable riseTau, decayTau, amp, dt, numPoints, numCombos, i, offset, idx
 	string parameterPath, key
+
+	SFH_CheckArgumentCount(exd, SF_OP_PSX_KERNEL, 0, maxArgs = 4)
 
 	WAVE/Z/WAVE selectDataCompArray = SFH_GetArgumentSelect(exd, SF_OP_PSX_KERNEL, 0)
 	SFH_ASSERT(WaveExists(selectDataCompArray), "Could not gather sweep data from select statement")
@@ -4899,6 +4903,8 @@ End
 Function/WAVE PSX_OperationStats(STRUCT SF_ExecutionData &exd)
 
 	string stateAsStr, postProc, id, prop
+
+	SFH_CheckArgumentCount(exd, SF_OP_PSX_STATS, 4, maxArgs = 5)
 
 	id = SFH_GetArgumentAsText(exd, SF_OP_PSX, 0, checkFunc = IsValidObjectName)
 
