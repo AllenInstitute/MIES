@@ -4957,6 +4957,7 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 
 	variable kernelIterations = NaN
 	variable numCombos, medianAmp, medianDecayTau, avgRiseTau
+	string browser
 
 	for(;;)
 		if(IsFinite(kernelIterations))
@@ -4966,13 +4967,17 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 		[WAVE output, numCombos, kernelIterations] = PSX_OperationIterationImpl(jsonId, jsonPath, graph)
 
 		if(kernelIterations == 0)
-			return SFH_GetOutputForExecutor(output, graph, SF_OP_PSX)
+			break
 		endif
 
 		medianDecayTau = PSX_CalculateMedianFromEvents(output, numCombos, "weightedTau")
 		medianAmp      = PSX_CalculateMedianFromEvents(output, numCombos, "amplitude")
 		avgRiseTau     = PSX_CalculateAverageRiseTau(output, numCombos)
+		// TODO
+		break
 	endfor
+	
+	return SFH_GetOutputForExecutor(output, graph, SF_OP_PSX)
 End
 
 static Function PSX_CalculateAverageRiseTau(WAVE/WAVE output, variable numCombos)
@@ -4984,7 +4989,11 @@ static Function PSX_CalculateAverageRiseTau(WAVE/WAVE output, variable numCombos
 
 	for(i = 0; i < numCombos; i += 1)
 		key = PSX_GenerateKey("psxEvent", i)
-		WAVE psxEvent = output[%$key]
+		WAVE/Z psxEvent = output[%$key]
+
+		if(!WaveExists(psxEvent))
+			continue
+		endif
 
 		Make/FREE/N=(DimSize(psxEvent, ROWS))/D data
 		data = psxEvent[p][%$"Rise Time"]
@@ -4992,9 +5001,11 @@ static Function PSX_CalculateAverageRiseTau(WAVE/WAVE output, variable numCombos
 		WAVE/Z dataClean = ZapNaNs(data)
 		WaveClear data
 
-		if(WaveExists(dataClean))
-			Concatenate/FREE {dataClean}, result
+		if(!WaveExists(dataClean))
+			continue
 		endif
+
+		Concatenate/FREE {dataClean}, result
 	endfor
 
 	ASSERT(WaveExists(result), "Could not gather rise time data")
@@ -5010,7 +5021,11 @@ static Function PSX_CalculateMedianFromEvents(WAVE/WAVE output, variable numComb
 
 	for(i = 0; i < numCombos; i += 1)
 		key = PSX_GenerateKey("psxEvent", i)
-		WAVE psxEvent = output[%$key]
+		WAVE/Z psxEvent = output[%$key]
+		
+		if(!WaveExists(psxEvent))
+			continue
+		endif
 
 		Make/FREE/N=(DimSize(psxEvent, ROWS))/D data
 		data = (psxEvent[p][%$"Fit Result"] == 1) ? psxEvent[p][%$lbl] : NaN
@@ -5018,9 +5033,11 @@ static Function PSX_CalculateMedianFromEvents(WAVE/WAVE output, variable numComb
 		WAVE/Z dataClean = ZapNaNs(data)
 		WaveClear data
 
-		if(WaveExists(dataClean))
-			Concatenate/FREE {dataClean}, result
+		if(!WaveExists(dataClean))
+			continue
 		endif
+
+		Concatenate/FREE {dataClean}, result
 	endfor
 
 	ASSERT(WaveExists(result), "Could not gather data for " + lbl)
@@ -5162,6 +5179,12 @@ Function [WAVE output, variable numCombos, variable kernelIterations] PSX_Operat
 	JWN_SetWaveNoteFromJSON(output, parameterJsonID)
 	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_PSX)
 	JWN_SetStringInWaveNote(output, SF_META_OPSTACK, AddListItem(SF_OP_PSX, ""))
+	
+	// TODO id
+	Make/FREE/D results = {kernelAmp, kernelRiseTau, kernelDecayTau, kernelIterations}
+	SetDimensionLabels(results, "id;kernelRiseTau;kernelDecayTau;kernelAmp;kernelIterations", ROWS)
+	string browser = SFH_GetBrowserForFormulaGraph(graph)
+	PSX_StoreIntoResultsWave(browser, SFH_RESULT_TYPE_PSX_ITER, results, "psx kernel iteration")
 
 	SFH_CleanUpInput(psxKernelDataset)
 
@@ -5217,7 +5240,7 @@ End
 Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph)
 
 	variable riseTau, decayTau, amp, dt, numPoints, numCombos, i, offset, idx, iterations
-	string parameterPath, key
+	string parameterPath, key, browser
 
 	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_PSX_KERNEL, 0, maxArgs = 5)
 
