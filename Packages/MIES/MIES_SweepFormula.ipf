@@ -1460,16 +1460,18 @@ End
 static Function SF_CheckInputCode(string code, string graph)
 
 	variable i, numGraphs, jsonIDy, jsonIDx, subFormulaCnt
-	string jsonPath, xFormula, yFormula, formulasRemain, subPath, yAndXFormula
+	string jsonPath, xFormula, yFormula, formulasRemain, subPath, yAndXFormula, codeWithoutVariables, preProcCode
 
 	NVAR jsonID = $GetSweepFormulaJSONid(SF_GetBrowserDF(graph))
 	JSON_Release(jsonID, ignoreErr = 1)
 	jsonID = JSON_New()
 	JSON_AddObjects(jsonID, "")
 
-	code = SF_CheckVariableAssignments(code, jsonID)
+	preProcCode = SF_PreprocessInput(code)
 
-	WAVE/T graphCode = SF_SplitCodeToGraphs(SF_PreprocessInput(code))
+	codeWithoutVariables = SF_CheckVariableAssignments(preProcCode, jsonID)
+
+	WAVE/T graphCode = SF_SplitCodeToGraphs(codeWithoutVariables)
 
 	numGraphs = DimSize(graphCode, ROWS)
 	for(i = 0; i < numGraphs; i += 1)
