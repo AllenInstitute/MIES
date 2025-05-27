@@ -327,7 +327,7 @@ static Function [WAVE/Z/T filesResolved, WAVE/Z/T foldersResolved] GetAllFilesAl
 
 	WAVE/Z/T filesWithoutAliases = GrepTextWave(files, "\.lnk$", invert = 1)
 #else
-	WAVE aliasFiles = files
+	WAVE/T aliasFiles = files
 	WAVE/ZZ filesWithoutAliases
 #endif // WINDOWS
 
