@@ -1289,11 +1289,8 @@ psxKernel
 numSDs
   Number of standard deviations for the gaussian fit of the all points histogram, defaults to 2.5
 
-filterLow
-  low threshold for the bandpass filter, defaults to 550 Hz
-
-filterHigh
-  high threshold for the bandpass filter, defaults to 0 Hz
+psxSweepBPFilter
+  results from the `psxSweepBPFilter` operation
 
 maxTauFactor
   maximum tau factor, the decay tau from fitting the event must be smaller than the fit range
@@ -1307,6 +1304,16 @@ psxDeconvBPFilter
 
 The plotting is implemented in a custom way. Due to that multiple `psx`
 operations can only be separated by `with` and not `and`.
+
+The filter order is internally made even as there is no difference in filter
+order `n` and `n + 1` due to implementation details of the used operation
+`FilterIIR`.
+
+The filtering for both the sweep data and the deconvoluted data uses a backing down
+algorithm for determining the filter order. The implementation starts with the
+given order and decrements it by two as long as the filtering is not
+successfull for all sweeps. If we reach zero we bail out. The used filter order
+is stored in the wave note.
 
 .. code-block:: bash
 
@@ -1412,7 +1419,38 @@ order
 The default values of `NaN` are replaced inside `psx`. For the order this is
 `7`, for the frequencies `500` (`lowFreq`) and `50` (`highFreq`).
 Here `lowFreq` is the end and `highFreq` the start of the
-passband, see also the description of `/LO` and `/HI` from `FilterIIR`.
+passband, see also the description of `/LO` and `/HI` from `FilterIIR`. If the
+frequency values are not ordered correctly, they are swapped.
+
+.. code-block:: bash
+
+   psxDeconvBPFilter(800, 100)
+   psxDeconvBPFilter(400, 50, 11)
+
+psxSweepBPFilter
+"""""""""""""""""
+
+The `psxSweepBPFilter` operation is a helper operation for `psx` to manage the sweep filter settings.
+This filter is a bandpass filter.
+
+   psxSweepBPFilter([lowFreq, highFreq, order])
+
+The function accepts zero to three arguments.
+
+lowFreq [Hz]
+   defaults to `NaN`
+
+highFreq [Hz]
+   defaults to `NaN`
+
+order
+   defaults to `NaN`
+
+The default values of `NaN` are replaced inside `psx`. For the order this is
+`7`, for the frequencies `500` (`lowFreq`) and `50` (`highFreq`).
+Here `lowFreq` is the end and `highFreq` the start of the
+passband, see also the description of `/LO` and `/HI` from `FilterIIR`. If the
+frequency values are not ordered correctly, they are swapped.
 
 .. code-block:: bash
 
@@ -1450,7 +1488,7 @@ select
 prop
   column of the `psx` event results waves to plot.
   Choices are: `amp`, `peak`, `peaktime`, `deconvpeak`, `deconvpeaktime`, `baseline`, `baselinetime`, `xinterval`,
-  `tau`, `estate`, `fstate`, `fitresult`, `slewrate`, `slewratetime`, `risetime`, `onsettime`
+  `slowtau`, `fasttau`, `weightedtau`, `estate`, `fstate`, `fitresult`, `slewrate`, `slewratetime`, `risetime`, `onsettime`
 
 state
   QC state to select the events.
