@@ -75,10 +75,11 @@ Cutting a new release
    for how the asterisk should look like
 -  Push the tag: ``git push origin $tag``. You can pass ``--dry-run`` for
    testing out what is getting pushed without pushing anything.
--  Create the release branches:
+-  Create the release branch:
 
    -  ``git checkout -b release/X.Y``
    -  ``git push --no-verify -u origin release/X.Y``
+   -  ``git commit --allow-empty -m "Start of the release X.Y"``
 
 -  Create a new release on github and check that the Github Actions job
    correctly uploads the artifacts
