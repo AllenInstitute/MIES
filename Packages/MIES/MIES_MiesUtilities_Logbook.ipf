@@ -1931,8 +1931,6 @@ Function ParseLogbookMode(string modeText)
 			return DATA_ACQUISITION_MODE
 		case "TEST_PULSE_MODE":
 			return TEST_PULSE_MODE
-		case "NUMBER_OF_LBN_DAQ_MODES":
-			return NUMBER_OF_LBN_DAQ_MODES
 		default:
 			ASSERT(0, "Unsupported labnotebook mode")
 			break
