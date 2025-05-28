@@ -1613,6 +1613,11 @@ Function [variable numSweeps, variable numChannels, WAVE/U/I channels] FillFakeD
 	otherKey[1][0] = "Hz"
 	otherKey[2][0] = LABNOTEBOOK_NO_TOLERANCE
 
+	Make/FREE/T/N=(3, 1) indepKey
+	indepKey[0][0] = LABNOTEBOOK_USER_PREFIX + "indep key"
+	indepKey[1][0] = "m"
+	indepKey[2][0] = "0.1"
+
 	DFREF dfr = GetDeviceDataPath(device)
 	GetDAQDeviceID(device)
 
@@ -1656,6 +1661,11 @@ Function [variable numSweeps, variable numChannels, WAVE/U/I channels] FillFakeD
 		otherValue[connections[1]] = i^2
 		Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/E=1 otherValue
 		ED_AddEntriesToLabnotebook(otherValue, otherKey, sweepNumber, device, mode)
+
+		WAVE indepValue = LBN_GetNumericWave()
+		indepValue[INDEP_HEADSTAGE] = sweepNumber
+		Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/E=1 indepValue
+		ED_AddEntriesToLabnotebook(indepValue, indepKey, sweepNumber, device, mode)
 
 		PGC_SetAndActivateControl(BSP_GetPanel(win), "popup_DB_lockedDevices", str = device)
 		win = GetCurrentWindow()
