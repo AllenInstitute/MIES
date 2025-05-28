@@ -1775,7 +1775,7 @@ threadsafe static Function ParseConstantValues_Impl(string entry)
 	return str2num(str)
 End
 
-Function CheckPubMessagesHeartbeatOnly()
+static Function CheckPubMessagesHeartbeatOnly()
 
 	string   filter
 	variable i
