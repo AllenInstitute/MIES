@@ -633,16 +633,7 @@ threadsafe Function/WAVE CA_TryFetchingEntryFromCache(string key, [variable opti
 
 	ASSERT_TS(index < DimSize(values, ROWS), "Invalid index")
 	WAVE/Z cache = values[index]
-
-	if(!WaveExists(cache))
-#ifdef CACHE_DEBUGGING
-		DEBUGPRINT_TS("Could not find a valid wave for key=", str = key)
-#endif // CACHE_DEBUGGING
-		// invalidate cache entry due to non existent wave,
-		// this can happen for unpacked experiments which don't store free waves
-		keys[index] = ""
-		return $""
-	endif
+	ASSERT_TS(WaveExists(cache), "Invalid cache entry due to non existent wave")
 
 	WAVE stats = GetCacheStatsWave()
 	stats[index][%Hits] += 1
