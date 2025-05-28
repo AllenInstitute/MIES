@@ -252,7 +252,8 @@ Function/WAVE SF_GetNamedOperations()
 	                  SF_OP_LOG10, SF_OP_APFREQUENCY, SF_OP_CURSORS, SF_OP_SELECTSWEEPS, SF_OP_AREA, SF_OP_SETSCALE, SF_OP_BUTTERWORTH, \
 	                  SF_OP_SELECTCHANNELS, SF_OP_DATA, SF_OP_LABNOTEBOOK, SF_OP_WAVE, SF_OP_FINDLEVEL, SF_OP_EPOCHS, SF_OP_TP,         \
 	                  SF_OP_STORE, SF_OP_SELECT, SF_OP_POWERSPECTRUM, SF_OP_TPSS, SF_OP_TPBASE, SF_OP_TPINST, SF_OP_TPFIT,              \
-	                  SF_OP_PSX, SF_OP_PSX_KERNEL, SF_OP_PSX_STATS, SF_OP_PSX_RISETIME, SF_OP_PSX_PREP, SF_OP_PSX_DECONV_FILTER,        \
+	                  SF_OP_PSX, SF_OP_PSX_KERNEL, SF_OP_PSX_STATS, SF_OP_PSX_RISETIME, SF_OP_PSX_PREP, SF_OP_PSX_DECONV_BP_FILTER,     \
+	                  SF_OP_PSX_SWEEP_BP_FILTER,                                                                                        \
 	                  SF_OP_MERGE, SF_OP_FIT, SF_OP_FITLINE, SF_OP_DATASET, SF_OP_SELECTVIS, SF_OP_SELECTCM, SF_OP_SELECTSTIMSET,       \
 	                  SF_OP_SELECTIVSCCSWEEPQC, SF_OP_SELECTIVSCCSETQC, SF_OP_SELECTRANGE, SF_OP_SELECTEXP, SF_OP_SELECTDEV,            \
 	                  SF_OP_SELECTEXPANDSCI, SF_OP_SELECTEXPANDRAC, SF_OP_SELECTSETCYCLECOUNT, SF_OP_SELECTSETSWEEPCOUNT,               \
@@ -1164,8 +1165,11 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 		case SF_OP_PSX_PREP:
 			WAVE out = PSX_OperationPrep(jsonId, jsonPath, graph)
 			break
-		case SF_OP_PSX_DECONV_FILTER:
-			WAVE out = PSX_OperationDeconvFilter(jsonId, jsonPath, graph)
+		case SF_OP_PSX_DECONV_BP_FILTER:
+			WAVE out = PSX_OperationDeconvBPFilter(jsonId, jsonPath, graph)
+			break
+		case SF_OP_PSX_SWEEP_BP_FILTER:
+			WAVE out = PSX_OperationSweepBPFilter(jsonId, jsonPath, graph)
 			break
 		case SF_OP_MERGE:
 			WAVE out = SF_OperationMerge(jsonId, jsonPath, graph)
@@ -1266,16 +1270,9 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 			if(WaveExists(wvXRef))
 				if(numResultsX == 1)
 					WAVE/Z wvXdata = wvXRef[0]
-					if(WaveExists(wvXdata) && DimSize(wvXdata, ROWS) == numResultsY && numpnts(wvYdata) == 1)
-						if(IsTextWave(wvXdata))
-							WAVE/T wT = wvXdata
-							Make/FREE/T wvXnewDataT = {wT[i]}
-							formulaResults[i][%FORMULAX] = wvXnewDataT
-						else
-							WAVE wv = wvXdata
-							Make/FREE/D wvXnewDataD = {wv[i]}
-							formulaResults[i][%FORMULAX] = wvXnewDataD
-						endif
+					if(WaveExists(wvXdata) && DimSize(wvXdata, ROWS) == numResultsY && numpnts(wvYdata) == 1 && numpnts(wvXdata) != 1)
+						Duplicate/FREE/T/RMD=[i] wvXdata, wvXnewData
+						formulaResults[i][%FORMULAX] = wvXnewData
 					else
 						formulaResults[i][%FORMULAX] = wvXRef[0]
 					endif
@@ -1302,7 +1299,7 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 
 	dataUnits = ""
 	if(!IsNull(dataUnitCheck))
-		dataUnits = SelectString(addDataUnitsInAnnotation && !IsEmpty(dataUnitCheck), "", "(" + dataUnitCheck + ")")
+		dataUnits = SelectString(addDataUnitsInAnnotation && !IsEmpty(dataUnitCheck), "", SF_FormatUnit(dataUnitCheck))
 	endif
 
 	plotMetaData.dataType      = JWN_GetStringFromWaveNote(wvYRef, SF_META_DATATYPE)
@@ -1312,6 +1309,11 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 	plotMetaData.yAxisLabel    = JWN_GetStringFromWaveNote(wvYRef, SF_META_YAXISLABEL) + dataUnits
 
 	return [formulaResults, plotMetaData]
+End
+
+static Function/S SF_FormatUnit(string unit)
+
+	return "(" + unit + ")"
 End
 
 static Function/S SF_GetAnnotationPrefix(string dataType)
@@ -1744,48 +1746,59 @@ static Function SF_CommonWindowSetup(string win, string graph)
 	DoWindow/T $win, newTitle
 End
 
-static Function/WAVE SF_GatherYUnits(WAVE/WAVE formulaResults, string explicitLbl, WAVE/Z/T yUnits)
+static Function SF_GatherAxisLabels(WAVE/WAVE formulaResults, string explicitLbl, string formulaLabel, WAVE/T axisLabels)
 
 	variable i, size, numData
+	string unit
 
-	if(!WaveExists(yUnits))
-		Make/FREE/T/N=0 yUnits
-	endif
-
-	size = DimSize(yUnits, ROWS)
+	size = DimSize(axisLabels, ROWS)
 	if(!isEmpty(explicitLbl))
-		Redimension/N=(size + 1) yUnits
-		yUnits[size] = explicitLbl
-		return yUnits
+		Redimension/N=(size + 1) axisLabels
+		axisLabels[size] = explicitLbl
+		return NaN
 	endif
 
 	numData = DimSize(formulaResults, ROWS)
-	Redimension/N=(size + numData) yUnits
+	Redimension/N=(size + numData) axisLabels
 
 	for(i = 0; i < numData; i += 1)
 		WAVE/Z wvResultY = formulaResults[i][%FORMULAY]
 		if(!WaveExists(wvResultY))
 			continue
 		endif
-		yUnits[size] = WaveUnits(wvResultY, COLS)
-		size        += 1
-	endfor
-	Redimension/N=(size) yUnits
 
-	return yUnits
+		strswitch(formulaLabel)
+			case "FORMULAY":
+				unit = WaveUnits(wvResultY, COLS)
+				break
+			case "FORMULAX":
+				WAVE/Z wvResultX = formulaResults[i][%FORMULAX]
+				if(WaveExists(wvResultX))
+					unit = WaveUnits(wvResultX, ROWS)
+				else
+					unit = WaveUnits(wvResultY, ROWS)
+				endif
+				break
+			default:
+				ASSERT(0, "Unsupported formulaLabel: " + formulaLabel)
+				break
+		endswitch
+
+		// fallback to the unit if present
+		if(!IsEmpty(unit))
+			axisLabels[size] = SF_FormatUnit(unit)
+			size            += 1
+		endif
+	endfor
+
+	Redimension/N=(size) axisLabels
 End
 
-static Function/S SF_CombineYUnits(WAVE/T units)
+static Function/S SF_CombineAxisLabels(WAVE/T axisLabels)
 
-	string separator = " / "
-	string result    = ""
+	WAVE/T unique = GetUniqueEntries(axisLabels, dontDuplicate = 1)
 
-	WAVE/T unique = GetUniqueEntries(units, dontDuplicate = 1)
-	for(unit : unique)
-		result += unit + separator
-	endfor
-
-	return RemoveEndingRegExp(result, separator)
+	return TextWaveToList(unique, " / ", trailSep = 0)
 End
 
 static Function SF_CheckNumTraces(string graph, variable numTraces)
@@ -1869,7 +1882,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 	variable winDisplayMode, showLegend, tagCounter, overrideMarker
 	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection, numAnnotations, formulasAreDifferent, postPlotPSX
 	variable formulaCounter, gdIndex, markerCode, lineCode, lineStyle, traceToFront, isCategoryAxis
-	string win, wList, winNameTemplate, exWList, wName, annotation, yAxisLabel, wvName, info, xAxis
+	string win, wList, winNameTemplate, exWList, wName, annotation, xAxisLabel, yAxisLabel, wvName, info, xAxis
 	string formulasRemain, yAndXFormula, xFormula, yFormula, tagText, name, winHook
 	STRUCT SF_PlotMetaData plotMetaData
 	STRUCT RGBColor        color
@@ -1897,8 +1910,9 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 		postPlotPSX    = 0
 		showLegend     = 1
 		formulaCounter = 0
-		WAVE/Z   wvX    = $""
-		WAVE/Z/T yUnits = $""
+		WAVE/Z wvX = $""
+
+		Make/FREE/T/N=0 xAxisLabels, yAxisLabels
 
 		formulasRemain = graphCode[j]
 
@@ -1930,8 +1944,8 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 				Abort
 			endtry
 
-			WAVE/T yUnitsResult = SF_GatherYUnits(formulaResults, plotMetaData.yAxisLabel, yUnits)
-			WAVE/T yUnits       = yUnitsResult
+			SF_GatherAxisLabels(formulaResults, plotMetaData.xAxisLabel, "FORMULAX", xAxisLabels)
+			SF_GatherAxisLabels(formulaResults, plotMetaData.yAxisLabel, "FORMULAY", yAxisLabels)
 
 			if(!cmpstr(plotMetaData.dataType, SF_DATATYPE_PSX))
 				PSX_Plot(win, graph, formulaResults, plotMetaData)
@@ -2122,8 +2136,6 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 			formulaCounter                  += 1
 		while(1)
 
-		yAxisLabel = SF_CombineYUnits(yUnits)
-
 		if(showLegend)
 			customLegend = JWN_GetStringFromWaveNote(formulaResults, SF_META_CUSTOM_LEGEND)
 
@@ -2263,15 +2275,19 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 			endfor
 		endfor
 
-		if(!IsEmpty(plotMetaData.xAxisLabel) && traceCnt > 0)
-			Label/W=$win bottom, plotMetaData.xAxisLabel
-			ModifyGraph/W=$win tickUnit(bottom)=1
-		endif
-		if(!IsEmpty(yAxisLabel) && traceCnt > 0)
-			Label/W=$win left, yAxisLabel
-			ModifyGraph/W=$win tickUnit(left)=1
-		endif
 		if(traceCnt > 0)
+			xAxisLabel = SF_CombineAxisLabels(xAxisLabels)
+			if(!IsEmpty(xAxisLabel))
+				Label/W=$win bottom, xAxisLabel
+				ModifyGraph/W=$win tickUnit(bottom)=1
+			endif
+
+			yAxisLabel = SF_CombineAxisLabels(yAxisLabels)
+			if(!IsEmpty(yAxisLabel))
+				Label/W=$win left, yAxisLabel
+				ModifyGraph/W=$win tickUnit(left)=1
+			endif
+
 			ModifyGraph/W=$win zapTZ(bottom)=1
 		endif
 
@@ -2899,16 +2915,18 @@ End
 static Function SF_CheckInputCode(string code, string graph)
 
 	variable i, numGraphs, jsonIDy, jsonIDx, subFormulaCnt
-	string jsonPath, xFormula, yFormula, formulasRemain, subPath, yAndXFormula
+	string jsonPath, xFormula, yFormula, formulasRemain, subPath, yAndXFormula, codeWithoutVariables, preProcCode
 
 	NVAR jsonID = $GetSweepFormulaJSONid(SF_GetBrowserDF(graph))
 	JSON_Release(jsonID, ignoreErr = 1)
 	jsonID = JSON_New()
 	JSON_AddObjects(jsonID, "")
 
-	code = SF_CheckVariableAssignments(code, jsonID)
+	preProcCode = SF_PreprocessInput(code)
 
-	WAVE/T graphCode = SF_SplitCodeToGraphs(SF_PreprocessInput(code))
+	codeWithoutVariables = SF_CheckVariableAssignments(preProcCode, jsonID)
+
+	WAVE/T graphCode = SF_SplitCodeToGraphs(codeWithoutVariables)
 
 	numGraphs = DimSize(graphCode, ROWS)
 	for(i = 0; i < numGraphs; i += 1)
