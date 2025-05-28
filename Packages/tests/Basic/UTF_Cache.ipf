@@ -127,7 +127,7 @@ static Function TestAddFetchWaveRefWaveNoDuplicate()
 	CHECK(WaveRefsEqual(result, val))
 End
 
-static Function KeyIsCaseInsensitive()
+static Function KeyIsCaseSensitive()
 
 	string key = "abcd"
 
@@ -135,7 +135,7 @@ static Function KeyIsCaseInsensitive()
 
 	CA_StoreEntryIntoCache(key, val)
 	WAVE/Z result = CA_TryFetchingEntryFromCache(UpperStr(key))
-	CHECK_WAVE(result, NUMERIC_WAVE)
+	CHECK_WAVE(result, NULL_WAVE)
 End
 
 static Function DeletingEntriesWorks()

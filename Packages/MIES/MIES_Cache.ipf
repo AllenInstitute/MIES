@@ -591,7 +591,7 @@ threadsafe static Function CA_GetCacheIndex(WAVE keys, string key)
 		return NaN
 	endif
 
-	FindValue/TXOP=4/TEXT=key/RMD=[0, numFilledRows] keys
+	FindValue/TXOP=(1 + 4)/TEXT=key/RMD=[0, numFilledRows] keys
 
 	return (V_Value == -1) ? NaN : V_Value
 End
