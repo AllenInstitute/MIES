@@ -12,6 +12,7 @@
 #include "UTF_AnalysisFunctionParameters"
 #include "UTF_AnalysisFunctionPrototypes"
 #include "UTF_AsynFrameworkTest"
+#include "UTF_Cache"
 #include "UTF_Configuration"
 #include "UTF_DAEphyswoHardware"
 #include "UTF_Debugging"
