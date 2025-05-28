@@ -583,7 +583,7 @@ threadsafe static Function CA_GetCacheIndex(WAVE keys, string key)
 
 	variable numFilledRows
 
-	numFilledRows = GetNumberFromWaveNote(keys, NOTE_INDEX) - 1
+	numFilledRows = GetNumberFromWaveNote(keys, NOTE_INDEX)
 
 	ASSERT_TS(!isEmpty(key), "Cache key can not be empty")
 
