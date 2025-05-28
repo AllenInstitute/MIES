@@ -1932,7 +1932,7 @@ Function ParseLogbookMode(string modeText)
 		case "TEST_PULSE_MODE":
 			return TEST_PULSE_MODE
 		default:
-			ASSERT(0, "Unsupported labnotebook mode")
+			ASSERT(0, "Unsupported logbook mode")
 			break
 	endswitch
 End
