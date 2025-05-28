@@ -2254,6 +2254,28 @@ static Function TestOperationLabNotebook()
 		idx += 1
 	endfor
 
+	// falls back with wrong mode
+	str = "labnotebook(" + textKey + ", select(selchannels(AD2), selsweeps([0, 1])), TEST_PULSE_MODE)"
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
+	Make/FREE/D refDataTextAnchor = {0.0}
+	idx = 0
+	for(WAVE/D data : dataRef)
+		CHECK_EQUAL_WAVES(data, refDataTextAnchor, mode = WAVE_DATA)
+		CHECK_EQUAL_STR("TestText1\rTestText2", JWN_GetStringFromWaveNote(data, SF_META_TAG_TEXT))
+		CHECK_EQUAL_STR(textKey, JWN_GetStringFromWaveNote(data, SF_META_LEGEND_LINE_PREFIX))
+
+		sweepNumber = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
+		CHECK_EQUAL_VAR(sweepNumber, idx)
+
+		WAVE xValues = JWN_GetNumericWaveFromWaveNote(data, SF_META_XVALUES)
+		Make/FREE xValuesRef = {idx}
+		CHECK_EQUAL_WAVES(xValues, xValuesRef, mode = WAVE_DATA)
+		idx += 1
+	endfor
+
+	error = ROStr(GetSweepFormulaOutputMessage())
+	CHECK_EQUAL_STR(error, "labnotebook: Could not find labnotebook key \"USER_TEXTKEY\" with mode \"TEST_PULSE_MODE\", but using \"UNKNOWN_MODE\" succeeded.")
+
 	// no such key
 	str = "labnotebook(\"I_DONT_EXIST\")"
 	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)

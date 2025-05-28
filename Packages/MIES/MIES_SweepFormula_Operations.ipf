@@ -1219,7 +1219,7 @@ End
 static Function/WAVE SFO_OperationLabnotebookImplGetEntry(string graph, WAVE selectData, variable index, string lbnKey, variable mode)
 
 	variable sweepNo, chanNr, chanType, settingsIndex, result, col, mapIndex
-	string entry
+	string entry, msg
 
 	sweepNo  = selectData[index][%SWEEP]
 	chanNr   = selectData[index][%CHANNELNUMBER]
@@ -1244,7 +1244,23 @@ static Function/WAVE SFO_OperationLabnotebookImplGetEntry(string graph, WAVE sel
 
 	[WAVE settings, settingsIndex] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, lbnKey, chanNr, chanType, mode)
 	if(!WaveExists(settings))
-		return out
+		switch(mode)
+			case UNKNOWN_MODE:
+				return out
+			case DATA_ACQUISITION_MODE: // fallthrough
+			case TEST_PULSE_MODE:
+
+				[WAVE settings, settingsIndex] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, lbnKey, chanNr, chanType, UNKNOWN_MODE)
+				if(!WaveExists(settings))
+					return out
+				endif
+
+				sprintf msg, "labnotebook: Could not find labnotebook key \"%s\" with mode \"%s\", but using \"%s\" succeeded.", lbnKey, StringifyLogbookMode(mode), StringifyLogbookMode(UNKNOWN_MODE)
+				SF_SetOutputState(msg, SF_MSG_WARN)
+				break
+			default:
+				FATAL_ERROR("Unsupported mode")
+		endswitch
 	endif
 
 	if(IsNumericWave(settings))
