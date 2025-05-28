@@ -1936,3 +1936,18 @@ Function ParseLogbookMode(string modeText)
 			break
 	endswitch
 End
+
+Function/S StringifyLogbookMode(variable mode)
+
+	switch(mode)
+		case UNKNOWN_MODE:
+			return "UNKNOWN_MODE"
+		case DATA_ACQUISITION_MODE:
+			return "DATA_ACQUISITION_MODE"
+		case TEST_PULSE_MODE:
+			return "TEST_PULSE_MODE"
+		default:
+			FATAL_ERROR("Unsupported logbook mode")
+			break
+	endswitch
+End
