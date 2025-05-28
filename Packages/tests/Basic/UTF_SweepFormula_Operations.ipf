@@ -2356,6 +2356,14 @@ static Function TestOperationLabNotebook()
 
 	error = ROStr(GetSweepFormulaOutputMessage())
 	CHECK_EQUAL_STR(error, "Argument #2 of operation labnotebook: The text argument \"NUMBER_OF_LBN_DAQ_MODES\" is not one of the allowed values (UNKNOWN_MODE, DATA_ACQUISITION_MODE, TEST_PULSE_MODE)")
+
+	// indep entry is returned by default
+	str = "labnotebook([\"" + LABNOTEBOOK_USER_PREFIX + "indep key\"], select(selchannels(AD0), selsweeps([3])), DATA_ACQUISITION_MODE)"
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 1)
+	WAVE firstEntry = dataRef[0]
+	Make/D/FREE refContents = {3}
+	CHECK_EQUAL_WAVES(firstEntry, refContents, mode = WAVE_DATA)
 End
 
 static Function TestOperationLabnotebookHelper(string win, string formula, WAVE wRef)
