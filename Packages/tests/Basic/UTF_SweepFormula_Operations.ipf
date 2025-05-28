@@ -2212,7 +2212,7 @@ End
 static Function TestOperationLabNotebook()
 
 	variable i, j, sweepNumber, channelNumber, numSweeps, numChannels, idx
-	string str, key, axLabel, browser, yAxisLabel
+	string str, key, axLabel, browser, yAxisLabel, error
 
 	string textKey   = LABNOTEBOOK_USER_PREFIX + "TEXTKEY"
 	string textValue = "TestText1;TestText2;"
@@ -2322,6 +2322,18 @@ static Function TestOperationLabNotebook()
 
 	yAxisLabel = JWN_GetStringFromWaveNote(dataRef, SF_META_YAXISLABEL)
 	CHECK_EQUAL_STR(yAxisLabel, "Unit (Hz)")
+
+	// invalid mode
+	try
+		str = "labnotebook([\"*other KEY\"], select(selchannels(AD0), selsweeps([0])), NUMBER_OF_LBN_DAQ_MODES)"
+		WAVE/Z/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	error = ROStr(GetSweepFormulaOutputMessage())
+	CHECK_EQUAL_STR(error, "Argument #2 of operation labnotebook: The text argument \"NUMBER_OF_LBN_DAQ_MODES\" is not one of the allowed values (UNKNOWN_MODE, DATA_ACQUISITION_MODE, TEST_PULSE_MODE)")
 End
 
 static Function TestOperationLabnotebookHelper(string win, string formula, WAVE wRef)

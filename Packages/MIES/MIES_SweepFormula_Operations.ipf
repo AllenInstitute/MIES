@@ -1086,7 +1086,7 @@ Function/WAVE SFO_OperationLabnotebook(STRUCT SF_ExecutionData &exd)
 
 	SFH_CheckArgumentCount(exd, SF_OP_LABNOTEBOOK, 1, maxArgs = 3)
 
-	Make/FREE/T allowedValuesMode = {"UNKNOWN_MODE", "DATA_ACQUISITION_MODE", "TEST_PULSE_MODE", "NUMBER_OF_LBN_DAQ_MODES"}
+	Make/FREE/T allowedValuesMode = {"UNKNOWN_MODE", "DATA_ACQUISITION_MODE", "TEST_PULSE_MODE"}
 	modeTxt = SFH_GetArgumentAsText(exd, SF_OP_LABNOTEBOOK, 2, allowedValues = allowedValuesMode, defValue = "DATA_ACQUISITION_MODE")
 	mode    = ParseLogbookMode(modeTxt)
 
