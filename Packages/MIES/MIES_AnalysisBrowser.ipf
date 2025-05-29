@@ -618,7 +618,7 @@ static Function/S AB_GetRowHash(WAVE/T list, variable row)
 	return WaveHash(rowWave, 4)
 End
 
-/// @brief Load waves from a packed/unpacked experiment file
+/// @brief Load waves from a packed experiment file
 ///
 /// This function is special as it does change the CDF!
 ///
@@ -661,12 +661,8 @@ static Function AB_LoadDataWrapper(DFREF tmpDFR, string expFilePath, string data
 	baseFolder          = GetFolder(expFilePath)
 	extension           = GetFileSuffix(expFilePath)
 
-	/// @todo this is not 100% correct as users might choose a different name for the unpacked experiment folder
-	if(!cmpstr(extension, "uxp"))
-		expFileOrFolder = baseFolder + fileNameWOExtension + " Folder"
-	else
-		expFileOrFolder = expFilePath
-	endif
+	ASSERT(cmpstr(extension, "uxp"), "No support for unpacked experiments")
+	expFileOrFolder = expFilePath
 
 	DFREF savedDF = GetDataFolderDFR()
 	SetDataFolder tmpDFR
