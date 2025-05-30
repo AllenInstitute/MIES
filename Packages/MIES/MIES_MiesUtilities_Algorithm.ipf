@@ -510,7 +510,7 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 	// * This gives a 1D wave with NaN in the rows with no match, and the row index of the match otherwise
 	// * Delete all NaNs in the wave and return it
 
-	key = CA_TemporaryWaveKey({numRows, numLayers})
+	key = CA_FindIndizesKey({numRows, numLayers})
 	WAVE/Z/D matches = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
 
 	if(!WaveExists(matches))

@@ -383,6 +383,16 @@ threadsafe Function/S CA_TemporaryWaveKey(WAVE dims)
 	return num2istr(crc) + "Temporary waves Version 2"
 End
 
+/// @brief Key generator for FindIndizes
+threadsafe Function/S CA_FindIndizesKey(WAVE dims)
+
+	variable crc
+
+	crc = CA_WaveSizeCRC(dims)
+
+	return num2istr(crc) + "FindIndizes Version 1"
+End
+
 /// @brief Calculate the cache key for the hardware device info wave
 Function/S CA_HWDeviceInfoKey(string device, variable hardwareType, variable deviceID)
 
