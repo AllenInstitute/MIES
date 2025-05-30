@@ -505,7 +505,8 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 	// * -1 means no match, every value larger or equal than zero is the row index of the match
 	// * There is no distinction between different layers matching
 	// * After the matches have been calculated we take the maximum of the transposed matches
-	//   wave in each colum transpose back and replace -1 with NaN
+	//   wave in each colum transpose back and replace -1 with NaN. This multiple layer matching algorithm
+	//   using maxCols is also the reason why we can't start with NaN on no match but have to use -1
 	// * This gives a 1D wave with NaN in the rows with no match, and the row index of the match otherwise
 	// * Delete all NaNs in the wave and return it
 
