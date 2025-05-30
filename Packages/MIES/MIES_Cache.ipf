@@ -298,6 +298,21 @@ threadsafe static Function CA_WaveScalingCRC(variable crc, WAVE wv, [variable di
 	return crc
 End
 
+/// @brief Calculate CRC values of the wave `dims` giving the dimensions of a wave
+threadsafe static Function CA_WaveSizeCRC(WAVE dims)
+
+	variable numRows, crc, i
+
+	numRows = DimSize(dims, ROWS)
+	ASSERT_TS(numRows > 0 && numRows <= MAX_DIMENSION_COUNT && DimSize(dims, COLS) <= 1, "Invalid dims dimensions")
+
+	for(i = 0; i < numRows; i += 1)
+		crc = StringCRC(crc, num2istr(dims[i]))
+	endfor
+
+	return crc
+End
+
 /// @brief Calculate all CRC values of the waves referenced in waveRefs
 ///
 /// @param waveRefs                   wave reference wave
@@ -361,14 +376,9 @@ End
 /// Only the size is relevant, the rest is undefined.
 threadsafe Function/S CA_TemporaryWaveKey(WAVE dims)
 
-	variable numRows, crc, i
+	variable crc
 
-	numRows = DimSize(dims, ROWS)
-	ASSERT_TS(numRows > 0 && numRows <= MAX_DIMENSION_COUNT && DimSize(dims, COLS) <= 1, "Invalid dims dimensions")
-
-	for(i = 0; i < numRows; i += 1)
-		crc = StringCRC(crc, num2istr(dims[i]))
-	endfor
+	crc = CA_WaveSizeCRC(dims)
 
 	return num2istr(crc) + "Temporary waves Version 2"
 End
