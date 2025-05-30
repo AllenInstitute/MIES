@@ -39,8 +39,8 @@ Constant SWEEP_EPOCH_VERSION = 9
 /// - New/Changed layers of entries
 ///
 ///@{
-Constant LABNOTEBOOK_VERSION = 81
-Constant RESULTS_VERSION     = 3
+Constant LABNOTEBOOK_VERSION = 83
+Constant RESULTS_VERSION     = 4
 ///@}
 
 /// @name Analysis function versions
@@ -964,22 +964,24 @@ Constant DA_EPHYS_PANEL_PRESSURE_AUTO    = 0
 Constant DA_EPHYS_PANEL_PRESSURE_MANUAL  = 1
 Constant DA_EPHYS_PANEL_PRESSURE_USER    = 2
 
-StrConstant PULSE_START_TIMES_KEY       = "Pulse Train Pulses"
-StrConstant PULSE_TO_PULSE_LENGTH_KEY   = "Pulse To Pulse Length"
-StrConstant HIGH_PREC_SWEEP_START_KEY   = "High precision sweep start"
-StrConstant STIMSET_SCALE_FACTOR_KEY    = "Stim Scale Factor"
-StrConstant STIMSET_WAVE_NOTE_KEY       = "Stim Wave Note"
-StrConstant EPOCHS_ENTRY_KEY            = "Epochs"
-StrConstant CLAMPMODE_ENTRY_KEY         = "Clamp Mode"
-StrConstant TP_AMPLITUDE_VC_ENTRY_KEY   = "TP Amplitude VC"
-StrConstant TP_AMPLITUDE_IC_ENTRY_KEY   = "TP Amplitude IC"
-StrConstant PULSE_START_INDICES_KEY     = "Pulse Train Pulse Start Indices"
-StrConstant PULSE_END_INDICES_KEY       = "Pulse Train Pulse End Indices"
-StrConstant INFLECTION_POINTS_INDEX_KEY = "Inflection Points Indices"
-StrConstant EPOCH_LENGTH_INDEX_KEY      = "Epoch Length Indices"
-StrConstant STIMSET_SIZE_KEY            = "Stimset Size"
-StrConstant STIMSET_ERROR_KEY           = "Wavebuilder Error"
-StrConstant AUTOBIAS_PERC_KEY           = "Autobias %"
+StrConstant PULSE_START_TIMES_KEY         = "Pulse Train Pulses"
+StrConstant PULSE_TO_PULSE_LENGTH_KEY     = "Pulse To Pulse Length"
+StrConstant HIGH_PREC_SWEEP_START_KEY     = "High precision sweep start"
+StrConstant STIMSET_SCALE_FACTOR_KEY      = "Stim Scale Factor"
+StrConstant STIMSET_WAVE_NOTE_KEY         = "Stim Wave Note"
+StrConstant EPOCHS_ENTRY_KEY              = "Epochs"
+StrConstant CLAMPMODE_ENTRY_KEY           = "Clamp Mode"
+StrConstant TP_AMPLITUDE_VC_ENTRY_KEY     = "TP Amplitude VC"
+StrConstant TP_AMPLITUDE_IC_ENTRY_KEY     = "TP Amplitude IC"
+StrConstant PULSE_START_INDICES_KEY       = "Pulse Train Pulse Start Indices"
+StrConstant PULSE_END_INDICES_KEY         = "Pulse Train Pulse End Indices"
+StrConstant INFLECTION_POINTS_INDEX_KEY   = "Inflection Points Indices"
+StrConstant EPOCH_LENGTH_INDEX_KEY        = "Epoch Length Indices"
+StrConstant STIMSET_SIZE_KEY              = "Stimset Size"
+StrConstant STIMSET_ERROR_KEY             = "Wavebuilder Error"
+StrConstant AUTOBIAS_PERC_KEY             = "Autobias %"
+StrConstant POSTPROCESSED_ENTRY_KEY       = "PostProcessed"
+StrConstant SWEEP_EPOCH_VERSION_ENTRY_KEY = "Epochs Version"
 
 Constant WAVEBUILDER_STATUS_ERROR = 1
 
@@ -2432,3 +2434,9 @@ StrConstant TP_ANALYSIS_DATA_LABELS = "BASELINE;STEADYSTATERES;INSTANTRES;ELEVAT
 // Object names for thread data transfer out of ITC Fifothread @ref TFH_FifoLoop
 StrConstant ITC_THREAD_FIFOPOS   = "fifopos"
 StrConstant ITC_THREAD_TIMESTAMP = "timestamp"
+
+/// Labnotebook capabilities are stored in the key wave note
+/// @anchor LabnotebookCapabilityKeys
+///@{
+StrConstant LBN_CAP_SUPPORTS_ENTRYSOURCETYPE = "SupportsEntrySourceType" // since 81
+///@}
