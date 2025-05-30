@@ -13,7 +13,7 @@
 #include "UTF_Constants"
 #include "UTF_DataGenerators"
 
-// #define OUTPUT_DOCUMENTATION_JSON_DUMP
+#define OUTPUT_DOCUMENTATION_JSON_DUMP
 
 /// @file UTF_HelperFunctions.ipf
 /// @brief This file holds helper functions for the tests
@@ -251,6 +251,7 @@ static Function CheckMessageFilters_IGNORE(string filter)
 	WAVE/Z/T allFilters = FFI_GetAvailableMessageFilters()
 	CHECK_WAVE(allFilters, TEXT_WAVE)
 
+	INFO("FFI_GetAvailableMessageFilters() needs updating as %s is missing.", s0 = filter)
 	FindValue/TXOP=4/TEXT=(filter) allFilters
 	CHECK_GE_VAR(V_Value, 0)
 End
@@ -1774,7 +1775,7 @@ threadsafe static Function ParseConstantValues_Impl(string entry)
 	return str2num(str)
 End
 
-Function CheckPubMessagesHeartbeatOnly()
+static Function CheckPubMessagesHeartbeatOnly()
 
 	string   filter
 	variable i

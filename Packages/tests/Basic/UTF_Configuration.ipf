@@ -191,6 +191,11 @@ End
 /// @brief Change Test Panel and Load, then save and check against reference template
 static Function TCONF_Load()
 
+	variable jsonID
+	string actual, expected
+
+	PrepareForPublishTest()
+
 	string fName1 = "ConfigurationTest_compare1.txt"
 
 	variable/G setvarTest
@@ -205,6 +210,11 @@ static Function TCONF_Load()
 	CONF_SaveWindow(PrependExperimentFolder_IGNORE(fName1))
 
 	TCONF_CompareTextFiles(fName1, REF_CONFIG_FILE)
+
+	jsonID   = FetchAndParseMessage(CONFIG_FINISHED_FILTER)
+	expected = "MainPanel"
+	actual   = JSON_GetString(jsonID, "window")
+	CHECK_EQUAL_STR(actual, expected)
 
 	KillVariables setvarTest
 End
@@ -323,7 +333,10 @@ static Function TCONF_SaveNotebookAndRestore()
 	string fName      = "NotebookTest.json"
 	string nbTextRef  = "This is fine."
 	string nbTextRef2 = "This is not fine."
-	string nbText
+	string nbText, expected, actual
+	variable jsonID
+
+	PrepareForPublishTest()
 
 	DoWindow/K $wName
 	NewNotebook/N=$wName/F=0
@@ -334,6 +347,11 @@ static Function TCONF_SaveNotebookAndRestore()
 	nbText = GetNotebookText(wName, mode = 2)
 	CHECK_EQUAL_STR(nbTextRef, nbText)
 
+	jsonID   = FetchAndParseMessage(CONFIG_FINISHED_FILTER)
+	expected = wName
+	actual   = JSON_GetString(jsonID, "window")
+	CHECK_EQUAL_STR(actual, expected)
+
 	ReplaceNotebookText(wName, nbTextRef)
 	SetWindow $wName, userdata($EXPCONFIG_UDATA_EXCLUDE_RESTORE)="1"
 	SetWindow $wName, userdata($EXPCONFIG_UDATA_EXCLUDE_SAVE)="1"
@@ -342,6 +360,11 @@ static Function TCONF_SaveNotebookAndRestore()
 	CONF_RestoreWindow(PrependExperimentFolder_IGNORE(fName))
 	nbText = GetNotebookText(wName, mode = 2)
 	CHECK_EQUAL_STR(nbTextRef2, nbText)
+
+	jsonID   = FetchAndParseMessage(CONFIG_FINISHED_FILTER)
+	expected = wName
+	actual   = JSON_GetString(jsonID, "window")
+	CHECK_EQUAL_STR(actual, expected)
 End
 
 /// @brief Checks if every (qualified) panel has a panel type set
