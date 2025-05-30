@@ -6287,7 +6287,7 @@ End
 
 static Function/WAVE SFH_OperationLabnotebookExpandKeys(string graph, WAVE/T LBNKeys, WAVE selectData, variable mode)
 
-	variable i, j, numSelected, numKeys, sweepNo
+	variable i, j, numSelected, numKeys, sweepNo, mapIndex
 	string key
 
 	numKeys = DimSize(LBNKeys, ROWS)
@@ -6300,10 +6300,11 @@ static Function/WAVE SFH_OperationLabnotebookExpandKeys(string graph, WAVE/T LBN
 
 	numSelected = DimSize(selectData, ROWS)
 	for(i = 0; i < numSelected; i += 1)
-		sweepNo = selectData[i][%SWEEP]
+		sweepNo  = selectData[i][%SWEEP]
+		mapIndex = selectData[i][%SWEEPMAPINDEX]
 
-		WAVE/Z textualValues   = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
-		WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+		WAVE/Z textualValues   = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_TEXTUAL_VALUES)
+		WAVE/Z numericalValues = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_NUMERICAL_VALUES)
 
 		WAVE/Z/T entries = LBV_GetAllLogbookParamNames(textualValues, numericalValues)
 
