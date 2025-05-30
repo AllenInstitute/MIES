@@ -357,7 +357,7 @@ End
 /// @param deconvFilter deconvolution filter settings
 static Function [variable realOrder, WAVE filtered] PSX_DeconvoluteSweepData(WAVE sweepData, WAVE/C psxKernelFFT, WAVE deconvFilter)
 
-	variable numPoints, fftSize, samp, low, high, maxOrder
+	variable samp, low, high, maxOrder
 
 	low      = deconvFilter[%$"Filter Low"]
 	high     = deconvFilter[%$"Filter High"]
@@ -375,12 +375,10 @@ static Function [variable realOrder, WAVE filtered] PSX_DeconvoluteSweepData(WAV
 		maxOrder = PSX_DECONV_FILTER_DEF_ORDER
 	endif
 
-	numPoints = DimSize(sweepData, ROWS)
-	fftSize   = DimSize(psxKernelFFT, ROWS)
-
 	// no window function on purpose
-	WAVE/C outputFFT = DoFFT(sweepData, padSize = numPoints)
+	WAVE/C outputFFT = DoFFT(sweepData)
 
+	ASSERT(DimSize(outputFFT, ROWS) == DimSize(psxKernelFFT, ROWS), "Unmatched wave sizes")
 	Multithread outputFFT[] = outputFFT[p] / (psxKernelFFT[p] + 1e-5)
 
 	IFFT/DEST=Deconv/FREE outputFFT
@@ -1199,7 +1197,7 @@ static Function [WAVE kernel, WAVE kernelFFT] PSX_CreatePSXKernel(variable riseT
 	SetScale/P x, 0, dt, kernel
 
 	// no window function on purpose
-	WAVE kernelFFT = DoFFT(kernel, padSize = numPoints)
+	WAVE kernelFFT = DoFFT(kernel, padSize = 2^FindNextPower(numPoints, 2))
 
 	return [kernel, kernelFFT]
 End
