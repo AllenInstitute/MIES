@@ -2276,7 +2276,19 @@ static Function TestOperationLabNotebook()
 	error = ROStr(GetSweepFormulaOutputMessage())
 	CHECK_EQUAL_STR(error, "labnotebook: Could not find labnotebook key \"USER_TEXTKEY\" with mode \"TEST_PULSE_MODE\", but using \"UNKNOWN_MODE\" succeeded.")
 
-	// no such key
+	// no such key (directly)
+	str = "labnotebook(\"I_DONT_EXIST\", select(), UNKNOWN_MODE)"
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 40)
+	Make/FREE/D refDataTextAnchor = {NaN}
+	for(WAVE/D data : dataRef)
+		CHECK_EQUAL_WAVES(data, refDataTextAnchor, mode = WAVE_DATA)
+	endfor
+
+	error = ROStr(GetSweepFormulaOutputMessage())
+	CHECK_EQUAL_STR(error, "labnotebook: Could not find labnotebook key \"I_DONT_EXIST\".")
+
+	// no such key with fallback
 	str = "labnotebook(\"I_DONT_EXIST\")"
 	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 40)
@@ -2284,6 +2296,9 @@ static Function TestOperationLabNotebook()
 	for(WAVE/D data : dataRef)
 		CHECK_EQUAL_WAVES(data, refDataTextAnchor, mode = WAVE_DATA)
 	endfor
+
+	error = ROStr(GetSweepFormulaOutputMessage())
+	CHECK_EQUAL_STR(error, "labnotebook: Could not find labnotebook key \"I_DONT_EXIST\".")
 
 	// multiple keys
 	str = "labnotebook([\"ADC\", \"Operating Mode\"], select(selchannels(AD2), selsweeps([0])), DATA_ACQUISITION_MODE)"
@@ -2313,6 +2328,9 @@ static Function TestOperationLabNotebook()
 	str = "labnotebook([\"eee*\"], select(selchannels(AD2), selsweeps([0])), DATA_ACQUISITION_MODE)"
 	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 0)
+
+	error = ROStr(GetSweepFormulaOutputMessage())
+	CHECK_EQUAL_STR(error, "labnotebook: Could not find labnotebook keys for wildcard: \"eee*\".")
 
 	// match with wildcard and special QC format
 	str = "labnotebook([\"*random QC\"], select(selchannels(AD0), selsweeps([0, 1, 2])), DATA_ACQUISITION_MODE)"
