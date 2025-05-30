@@ -481,7 +481,7 @@ Function/S CA_PSXKernelOperationKey(variable riseTau, variable decayTau, variabl
 	crc = StringCRC(crc, num2strHighPrec(dt, precision = MAX_DOUBLE_PRECISION))
 	crc = WaveCRC(crc, range)
 
-	return num2istr(crc) + "PSX Kernel Version 2"
+	return num2istr(crc) + "PSX Kernel Version 3"
 End
 
 static Function/S CA_PSXBaseKey(string comboKey, string psxParameters)
