@@ -2000,7 +2000,11 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	if(ParamIsDefault(testsuite))
 		testsuite = GetDefaultTestSuitesForExperiment()
 	else
-		// do nothing
+		if(!enableRegExp)
+			WAVE/T testsuiteWave = ListToTextWave(testsuite, ";")
+			testsuiteWave[] = RemoveEnding(testsuiteWave[p], ".ipf") + ".ipf"
+			testsuite       = TextWaveToList(testsuiteWave, ";")
+		endif
 	endif
 
 	if(IsEmpty(testcase))
