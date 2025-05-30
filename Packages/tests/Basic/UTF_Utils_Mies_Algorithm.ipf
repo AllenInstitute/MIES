@@ -855,3 +855,30 @@ Function FI_AbortsWithInvalidRegExp()
 	endtry
 End
 /// @}
+
+/// GetNumberOfUsefulThreads
+/// @{
+
+Function GNOT_Works()
+
+	REQUIRE_GE_VAR(ThreadProcessorCount, 2)
+
+	CHECK_EQUAL_VAR(GetNumberOfUsefulThreads({0, 0, 0, 0}), 1)
+	CHECK_EQUAL_VAR(GetNumberOfUsefulThreads({1000, 0, 0, 0}), 1)
+	CHECK_EQUAL_VAR(GetNumberOfUsefulThreads({1000, 8, 0, 0}), 2)
+
+	// limited to ThreadProcessorCount
+	CHECK_EQUAL_VAR(GetNumberOfUsefulThreads({1000, 1000, 1000, 1000}), ThreadProcessorCount)
+End
+
+Function GNOT_ChecksParameters()
+
+	try
+		GetNumberOfUsefulThreads({0})
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+End
+
+/// @}

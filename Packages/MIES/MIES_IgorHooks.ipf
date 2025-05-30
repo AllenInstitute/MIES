@@ -335,6 +335,8 @@ static Function AfterCompiledHook()
 
 	MultiThreadingControl setmode=4
 
+	TSDS_WriteVar(TSDS_PROCCOUNT, ThreadprocessorCount)
+
 	LOG_AddEntry(PACKAGE_MIES, "end")
 
 	if(!modifiedBefore)

@@ -372,6 +372,35 @@ threadsafe static Function DecimateMinMax(WAVE input, WAVE output, variable idx,
 	output[targetLast][colOut]  = V_max
 End
 
+/// @brief Return the number of threads for `Multithread` given a problem with dimension `dims`
+///
+/// The algorithm was developed for "easy" problems on the RHS of MultiThread.
+///
+/// Example:
+///
+/// \rst
+/// .. code-block:: igorpro
+///
+///    Make/FREE/N=(1025, 10) data
+///    WAVE dims = GetWaveDimensions(data)
+///    variable numThreads = GetNumberOfUsefulThreads(dims)
+///    MultiThread/Y=(numThreads) data = ...
+///
+/// \endrst
+threadsafe Function GetNumberOfUsefulThreads(WAVE dims)
+
+	ASSERT_TS(DimSize(dims, ROWS) == MAX_DIMENSION_COUNT, "Unexpected dimension size")
+
+	variable pointsPerThread = 4096
+	variable numCores        = TSDS_ReadVar(TSDS_PROCCOUNT)
+	variable numPoints       = max(1, dims[ROWS]) * max(1, dims[COLS]) * max(1, dims[LAYERS]) * max(1, dims[CHUNKS])
+	variable numThreads      = min(ceil(numPoints / pointsPerThread), numCores)
+
+	ASSERT_TS(IsInteger(numThreads) && numThreads > 0, "Invalid thread count")
+
+	return numThreads
+End
+
 /// @brief Extended version of `FindValue`
 ///
 /// Allows to search only the specified column for a value
@@ -404,7 +433,7 @@ End
 /// value could not be found.
 threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, string colLabel, variable var, string str, variable prop, variable startRow, variable endRow, variable startLayer, variable endLayer])
 
-	variable numCols, numRows, numLayers, maskedProp
+	variable numCols, numRows, numLayers, maskedProp, numThreads, numRowsEffective, numLayersEffective
 	string key
 
 	ASSERT_TS((ParamIsDefault(prop) && (ParamIsDefault(var) + ParamIsDefault(str)) == 1)                  \
@@ -484,6 +513,7 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 	endif
 
 	ASSERT_TS(startRow <= endRow, "endRow must be larger than startRow")
+	numRowsEffective = (endRow - startRow) + 1
 
 	if(ParamIsDefault(startLayer))
 		startLayer = 0
@@ -499,6 +529,7 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 	endif
 
 	ASSERT_TS(startLayer <= endLayer, "endLayer must be larger than startLayer")
+	numLayersEffective = (endLayer - startLayer) + 1
 
 	// Algorithm:
 	// * The matches wave has the same size as one column of the input wave
@@ -518,72 +549,74 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 		CA_StoreEntryIntoCache(key, matches, options = CA_OPTS_NO_DUPLICATE)
 	endif
 
+	numThreads = GetNumberOfUsefulThreads({numRowsEffective, numLayersEffective, 0, 0})
+
 	FastOp matches = -1
 
 	if(WaveExists(wv))
 		if(!ParamIsDefault(prop))
 			if(prop & PROP_EMPTY)
 				if(prop & PROP_NOT)
-					MultiThread matches[startRow, endRow][startLayer, endLayer] = (numtype(wv[p][col][q]) != 2) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = (numtype(wv[p][col][q]) != 2) ? p : -1
 				else
-					MultiThread matches[startRow, endRow][startLayer, endLayer] = (numtype(wv[p][col][q]) == 2) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = (numtype(wv[p][col][q]) == 2) ? p : -1
 				endif
 			elseif(prop & PROP_MATCHES_VAR_BIT_MASK)
 				if(prop & PROP_NOT)
-					MultiThread matches[startRow, endRow][startLayer, endLayer] = !(wv[p][col][q] & var) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = !(wv[p][col][q] & var) ? p : -1
 				else
-					MultiThread matches[startRow, endRow][startLayer, endLayer] = (wv[p][col][q] & var) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = (wv[p][col][q] & var) ? p : -1
 				endif
 			elseif(prop & PROP_GREP)
 				if(prop & PROP_NOT)
-					MultiThread matches[startRow, endRow][startLayer, endLayer] = !GrepString(num2strHighPrec(wv[p][col][q]), str) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = !GrepString(num2strHighPrec(wv[p][col][q]), str) ? p : -1
 				else
-					MultiThread matches[startRow, endRow][startLayer, endLayer] = GrepString(num2strHighPrec(wv[p][col][q]), str) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = GrepString(num2strHighPrec(wv[p][col][q]), str) ? p : -1
 				endif
 			elseif(prop & PROP_WILDCARD)
 				if(prop & PROP_NOT)
-					MultiThread matches[startRow, endRow][startLayer, endLayer] = !StringMatch(num2strHighPrec(wv[p][col][q]), str) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = !StringMatch(num2strHighPrec(wv[p][col][q]), str) ? p : -1
 				else
-					MultiThread matches[startRow, endRow][startLayer, endLayer] = StringMatch(num2strHighPrec(wv[p][col][q]), str) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = StringMatch(num2strHighPrec(wv[p][col][q]), str) ? p : -1
 				endif
 			elseif(prop & PROP_NOT)
-				MultiThread matches[startRow, endRow][startLayer, endLayer] = (wv[p][col][q] != var) ? p : -1
+				MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = (wv[p][col][q] != var) ? p : -1
 			endif
 		else
 			ASSERT_TS(!IsNaN(var), "Use PROP_EMPTY to search for NaN")
-			MultiThread matches[startRow, endRow][startLayer, endLayer] = (wv[p][col][q] == var) ? p : -1
+			MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = (wv[p][col][q] == var) ? p : -1
 		endif
 	else
 		if(!ParamIsDefault(prop))
 			if(prop & PROP_EMPTY)
 				if(prop & PROP_NOT)
-					MultiThread matches[startRow, endRow][startLayer, endLayer] = strlen(wvText[p][col][q]) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = strlen(wvText[p][col][q]) ? p : -1
 				else
-					MultiThread matches[startRow, endRow][startLayer, endLayer] = !strlen(wvText[p][col][q]) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = !strlen(wvText[p][col][q]) ? p : -1
 				endif
 			elseif(prop & PROP_MATCHES_VAR_BIT_MASK)
 				if(prop & PROP_NOT)
-					MultiThread matches[startRow, endRow][startLayer, endLayer] = !(str2num(wvText[p][col][q]) & var) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = !(str2num(wvText[p][col][q]) & var) ? p : -1
 				else
-					MultiThread matches[startRow, endRow][startLayer, endLayer] = (str2num(wvText[p][col][q]) & var) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = (str2num(wvText[p][col][q]) & var) ? p : -1
 				endif
 			elseif(prop & PROP_GREP)
 				if(prop & PROP_NOT)
-					MultiThread matches[startRow, endRow][startLayer, endLayer] = !GrepString(wvText[p][col][q], str) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = !GrepString(wvText[p][col][q], str) ? p : -1
 				else
-					MultiThread matches[startRow, endRow][startLayer, endLayer] = GrepString(wvText[p][col][q], str) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = GrepString(wvText[p][col][q], str) ? p : -1
 				endif
 			elseif(prop & PROP_WILDCARD)
 				if(prop & PROP_NOT)
-					MultiThread matches[startRow, endRow][startLayer, endLayer] = !StringMatch(wvText[p][col][q], str) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = !StringMatch(wvText[p][col][q], str) ? p : -1
 				else
-					MultiThread matches[startRow, endRow][startLayer, endLayer] = StringMatch(wvText[p][col][q], str) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = StringMatch(wvText[p][col][q], str) ? p : -1
 				endif
 			elseif(prop & PROP_NOT)
-				MultiThread matches[startRow, endRow][startLayer, endLayer] = CmpStr(wvText[p][col][q], str) ? p : -1
+				MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = CmpStr(wvText[p][col][q], str) ? p : -1
 			endif
 		else
-			MultiThread matches[startRow, endRow][startLayer, endLayer] = !CmpStr(wvText[p][col][q], str) ? p : -1
+			MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = !CmpStr(wvText[p][col][q], str) ? p : -1
 		endif
 	endif
 
