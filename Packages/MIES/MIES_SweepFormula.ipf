@@ -6100,7 +6100,7 @@ static Function/WAVE SF_OperationLabnotebookImpl(string graph, WAVE/T LBNKeys, W
 
 	variable i, numSelected, idx, lbnIndex
 	variable numOutputWaves, colorGroup, marker
-	string lbnKey, refUnit, unitString
+	string lbnKey, refUnit, unitString, bsPanel, msg
 
 	if(!WaveExists(selectData))
 		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, 0)
@@ -6111,6 +6111,10 @@ static Function/WAVE SF_OperationLabnotebookImpl(string graph, WAVE/T LBNKeys, W
 	WAVE/Z/T allLBNKeys = SFH_OperationLabnotebookExpandKeys(graph, LBNKeys, selectData, mode)
 
 	if(!WaveExists(allLBNKeys))
+		bsPanel = BSP_GetPanel(graph)
+		sprintf msg, "labnotebook: Could not find labnotebook keys for wildcard: \"%s\".", TextWaveToList(LBNKeys, ";", trailSep = 0)
+		SF_SetStatusDisplay(bsPanel, msg, SF_MSG_WARN)
+
 		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, 0)
 		JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_LABNOTEBOOK)
 		return output
@@ -6178,6 +6182,8 @@ static Function/WAVE SF_OperationLabnotebookImplGetEntry(string graph, WAVE sele
 	variable sweepNo, chanNr, chanType, settingsIndex, result, col, mapIndex
 	string entry, bsPanel, msg
 
+	bsPanel = BSP_GetPanel(graph)
+
 	sweepNo  = selectData[index][%SWEEP]
 	chanNr   = selectData[index][%CHANNELNUMBER]
 	chanType = selectData[index][%CHANNELTYPE]
@@ -6204,16 +6210,21 @@ static Function/WAVE SF_OperationLabnotebookImplGetEntry(string graph, WAVE sele
 	if(!WaveExists(settings))
 		switch(mode)
 			case UNKNOWN_MODE:
+				sprintf msg, "labnotebook: Could not find labnotebook key \"%s\".", lbnKey
+				SF_SetStatusDisplay(bsPanel, msg, SF_MSG_WARN)
+
 				return out
 			case DATA_ACQUISITION_MODE: // fallthrough
 			case TEST_PULSE_MODE:
 
 				[WAVE settings, settingsIndex] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, lbnKey, chanNr, chanType, UNKNOWN_MODE)
 				if(!WaveExists(settings))
+					sprintf msg, "labnotebook: Could not find labnotebook key \"%s\".", lbnKey
+					SF_SetStatusDisplay(bsPanel, msg, SF_MSG_WARN)
+
 					return out
 				endif
 
-				bsPanel = BSP_GetPanel(graph)
 				sprintf msg, "labnotebook: Could not find labnotebook key \"%s\" with mode \"%s\", but using \"%s\" suceeded.", lbnKey, StringifyLogbookMode(mode), StringifyLogbookMode(UNKNOWN_MODE)
 				SF_SetStatusDisplay(bsPanel, msg, SF_MSG_WARN)
 				break
