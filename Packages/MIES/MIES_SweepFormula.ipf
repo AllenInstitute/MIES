@@ -6041,7 +6041,7 @@ static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, s
 
 	SFH_CheckArgumentCount(jsonID, jsonPath, SF_OP_LABNOTEBOOK, 1, maxArgs = 3)
 
-	Make/FREE/T allowedValuesMode = {"UNKNOWN_MODE", "DATA_ACQUISITION_MODE", "TEST_PULSE_MODE", "NUMBER_OF_LBN_DAQ_MODES"}
+	Make/FREE/T allowedValuesMode = {"UNKNOWN_MODE", "DATA_ACQUISITION_MODE", "TEST_PULSE_MODE"}
 	modeTxt = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 2, allowedValues = allowedValuesMode, defValue = "DATA_ACQUISITION_MODE")
 	mode    = ParseLogbookMode(modeTxt)
 
@@ -6098,7 +6098,7 @@ static Function/WAVE SF_OperationLabnotebookImpl(string graph, WAVE/T LBNKeys, W
 
 	variable i, numSelected, idx, lbnIndex
 	variable numOutputWaves, colorGroup, marker
-	string lbnKey, refUnit, unitString
+	string lbnKey, refUnit, unitString, bsPanel, msg
 
 	if(!WaveExists(selectData))
 		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, 0)
@@ -6109,6 +6109,10 @@ static Function/WAVE SF_OperationLabnotebookImpl(string graph, WAVE/T LBNKeys, W
 	WAVE/Z/T allLBNKeys = SFH_OperationLabnotebookExpandKeys(graph, LBNKeys, selectData, mode)
 
 	if(!WaveExists(allLBNKeys))
+		bsPanel = BSP_GetPanel(graph)
+		sprintf msg, "labnotebook: Could not find labnotebook keys for wildcard: \"%s\".", TextWaveToList(LBNKeys, ";", trailSep = 0)
+		SF_SetStatusDisplay(bsPanel, msg, SF_MSG_WARN)
+
 		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, 0)
 		JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_LABNOTEBOOK)
 		return output
@@ -6174,7 +6178,9 @@ End
 static Function/WAVE SF_OperationLabnotebookImplGetEntry(string graph, WAVE selectData, variable index, string lbnKey, variable mode)
 
 	variable sweepNo, chanNr, chanType, settingsIndex, result, col, mapIndex
-	string entry
+	string entry, bsPanel, msg
+
+	bsPanel = BSP_GetPanel(graph)
 
 	sweepNo  = selectData[index][%SWEEP]
 	chanNr   = selectData[index][%CHANNELNUMBER]
@@ -6198,8 +6204,31 @@ static Function/WAVE SF_OperationLabnotebookImplGetEntry(string graph, WAVE sele
 	WAVE textualValues   = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_TEXTUAL_VALUES)
 
 	[WAVE settings, settingsIndex] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, lbnKey, chanNr, chanType, mode)
+
 	if(!WaveExists(settings))
-		return out
+		switch(mode)
+			case UNKNOWN_MODE:
+				sprintf msg, "labnotebook: Could not find labnotebook key \"%s\".", lbnKey
+				SF_SetStatusDisplay(bsPanel, msg, SF_MSG_WARN)
+
+				return out
+			case DATA_ACQUISITION_MODE:
+			case TEST_PULSE_MODE:
+
+				[WAVE settings, settingsIndex] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, lbnKey, chanNr, chanType, UNKNOWN_MODE)
+				if(!WaveExists(settings))
+					sprintf msg, "labnotebook: Could not find labnotebook key \"%s\".", lbnKey
+					SF_SetStatusDisplay(bsPanel, msg, SF_MSG_WARN)
+
+					return out
+				endif
+
+				sprintf msg, "labnotebook: Could not find labnotebook key \"%s\" with mode \"%s\", but using \"%s\" suceeded.", lbnKey, StringifyLogbookMode(mode), StringifyLogbookMode(UNKNOWN_MODE)
+				SF_SetStatusDisplay(bsPanel, msg, SF_MSG_WARN)
+				break
+			default:
+				ASSERT(0, "Unsupported mode")
+		endswitch
 	endif
 
 	if(IsNumericWave(settings))
@@ -6258,7 +6287,7 @@ End
 
 static Function/WAVE SFH_OperationLabnotebookExpandKeys(string graph, WAVE/T LBNKeys, WAVE selectData, variable mode)
 
-	variable i, j, numSelected, numKeys, sweepNo
+	variable i, j, numSelected, numKeys, sweepNo, mapIndex
 	string key
 
 	numKeys = DimSize(LBNKeys, ROWS)
@@ -6271,10 +6300,11 @@ static Function/WAVE SFH_OperationLabnotebookExpandKeys(string graph, WAVE/T LBN
 
 	numSelected = DimSize(selectData, ROWS)
 	for(i = 0; i < numSelected; i += 1)
-		sweepNo = selectData[i][%SWEEP]
+		sweepNo  = selectData[i][%SWEEP]
+		mapIndex = selectData[i][%SWEEPMAPINDEX]
 
-		WAVE/Z textualValues   = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
-		WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+		WAVE/Z textualValues   = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_TEXTUAL_VALUES)
+		WAVE/Z numericalValues = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_NUMERICAL_VALUES)
 
 		WAVE/Z/T entries = LBV_GetAllLogbookParamNames(textualValues, numericalValues)
 
