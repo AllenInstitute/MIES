@@ -478,7 +478,7 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 	endif
 
 	if(ParamIsDefault(endRow))
-		endRow = Inf
+		endRow = numRows - 1
 	else
 		ASSERT_TS(endRow >= 0 && endRow < numRows, "Invalid endRow")
 	endif
@@ -587,7 +587,6 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 		endif
 	endif
 
-	endRow = numRows - 1
 	MatrixOp/FREE result = zapNans(replace(maxCols(subRange(matches, startRow, endRow, startLayer, endLayer)^t)^t, -1, NaN))
 
 	if(DimSize(result, ROWS) == 0)
