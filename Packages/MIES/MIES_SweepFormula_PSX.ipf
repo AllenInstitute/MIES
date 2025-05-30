@@ -66,7 +66,7 @@ static Constant PSX_FIT_RANGE_PERC              = 0.9
 static Constant PSX_BASELINE_NUM_POINTS_AVERAGE = 5
 static Constant PSX_PEAK_RANGE_FACTOR_LEFT      = 5
 static Constant PSX_PEAK_RANGE_FACTOR_RIGHT     = 0.33
-static Constant PSX_PEAK_NUM_HIST_BINS          = 20
+static Constant PSX_PEAK_NUM_HIST_BINS          = 21
 
 static Constant PSX_NUM_PEAKS_MAX = 2000
 
