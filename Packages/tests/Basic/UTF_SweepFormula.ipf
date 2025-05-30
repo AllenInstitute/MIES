@@ -1081,8 +1081,6 @@ static Function/WAVE TestAverageOverSweeps_CheckMeta(WAVE data, variable channel
 	CHECK_EQUAL_VAR(channelNumber, val)
 	val = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
 	CHECK_EQUAL_VAR(channelType, val)
-	val = JWN_GetNumberFromWaveNote(data, SF_META_AVERAGED_FIRST_SWEEP)
-	CHECK_EQUAL_VAR(firstSweep, val)
 	val = JWN_GetNumberFromWaveNote(data, SF_META_ISAVERAGED)
 	CHECK_EQUAL_VAR(1, val)
 

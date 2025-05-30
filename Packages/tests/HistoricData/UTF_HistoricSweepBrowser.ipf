@@ -23,3 +23,27 @@ static Function TestTTLDisplayWithNoEpochInfo([string str])
 
 	CHECK_NO_RTE()
 End
+
+Function TestSweepFormulaPowerSpectrumAverage()
+
+	string abWin, sweepBrowsers, file, sweepBrowser, bsPanel, scPanel, code
+
+	WAVE/T files = GetHistoricDataFiles()
+	file = "input:" + files[0]
+
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser({file}, loadSweeps = 1)
+	sweepBrowser           = StringFromList(0, sweepBrowsers)
+
+	bsPanel = BSP_GetPanel(sweepBrowser)
+	CHECK(WindowExists(bsPanel))
+
+	scPanel = BSP_GetSweepControlsPanel(sweepBrowser)
+	CHECK(WindowExists(scPanel))
+
+	code = "trange = [0, inf]\r"                                            + \
+	       "sel = select(selrange($trange),selchannels(AD), selsweeps())\r" + \
+	       "dat = data($sel)\r"                                             + \
+	       "powerspectrum($dat, default, avg)"
+
+	ExecuteSweepFormulaCode(sweepBrowser, code)
+End
