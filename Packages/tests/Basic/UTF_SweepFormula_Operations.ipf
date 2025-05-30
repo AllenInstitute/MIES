@@ -2219,6 +2219,8 @@ static Function TestOperationLabNotebook()
 	[numSweeps, numChannels, WAVE/U/I channels] = FillFakeDatabrowserWindow(win, device, XOP_CHANNEL_TYPE_ADC, textKey, textValue)
 	win                                         = GetCurrentWindow()
 
+	bsPanel = BSP_GetPanel(win)
+
 	Make/FREE/N=(numSweeps * numChannels) channelsRef
 	channelsRef[] = channels[trunc(p / numChannels)][mod(p, numChannels)]
 	str           = "labnotebook(ADC)"
@@ -2268,11 +2270,22 @@ static Function TestOperationLabNotebook()
 		idx += 1
 	endfor
 
-	bsPanel = BSP_GetPanel(win)
-	error   = GetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult")
+	error = GetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult")
 	CHECK_EQUAL_STR(error, "labnotebook: Could not find labnotebook key \"USER_TEXTKEY\" with mode \"TEST_PULSE_MODE\", but using \"UNKNOWN_MODE\" suceeded.")
 
-	// no such key
+	// no such key (directly)
+	str = "labnotebook(\"I_DONT_EXIST\", select(), UNKNOWN_MODE)"
+	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 40)
+	Make/FREE/D refDataTextAnchor = {NaN}
+	for(WAVE/D data : dataRef)
+		CHECK_EQUAL_WAVES(data, refDataTextAnchor, mode = WAVE_DATA)
+	endfor
+
+	error = GetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult")
+	CHECK_EQUAL_STR(error, "labnotebook: Could not find labnotebook key \"I_DONT_EXIST\".")
+
+	// no such key with fallback
 	str = "labnotebook(\"I_DONT_EXIST\")"
 	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 40)
@@ -2280,6 +2293,9 @@ static Function TestOperationLabNotebook()
 	for(WAVE/D data : dataRef)
 		CHECK_EQUAL_WAVES(data, refDataTextAnchor, mode = WAVE_DATA)
 	endfor
+
+	error = GetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult")
+	CHECK_EQUAL_STR(error, "labnotebook: Could not find labnotebook key \"I_DONT_EXIST\".")
 
 	// multiple keys
 	str = "labnotebook([\"ADC\", \"Operating Mode\"], select(selchannels(AD2), selsweeps([0])), DATA_ACQUISITION_MODE)"
@@ -2309,6 +2325,9 @@ static Function TestOperationLabNotebook()
 	str = "labnotebook([\"eee*\"], select(selchannels(AD2), selsweeps([0])), DATA_ACQUISITION_MODE)"
 	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 0)
+
+	error = GetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult")
+	CHECK_EQUAL_STR(error, "labnotebook: Could not find labnotebook keys for wildcard: \"eee*\".")
 
 	// match with wildcard and special QC format
 	str = "labnotebook([\"*random QC\"], select(selchannels(AD0), selsweeps([0, 1, 2])), DATA_ACQUISITION_MODE)"
