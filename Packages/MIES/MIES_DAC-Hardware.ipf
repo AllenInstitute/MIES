@@ -626,6 +626,15 @@ Function HW_WriteDeviceInfo(variable hardwareType, string device, WAVE deviceInf
 	endswitch
 End
 
+threadsafe Function/S HW_GetAcquisitionStartTimestamp([variable secondsSinceIgorEpoch])
+
+	if(ParamIsDefault(secondsSinceIgorEpoch))
+		return GetIso8601TimeStamp(numFracSecondsDigits = 9)
+	endif
+
+	return GetIso8601TimeStamp(secondsSinceIgorEpoch = secondsSinceIgorEpoch, numFracSecondsDigits = 9)
+End
+
 /// @brief Start data acquisition
 ///
 /// @param hardwareType One of @ref HardwareDACTypeConstants
@@ -635,11 +644,17 @@ End
 /// @param repeat       [optional, default 0] for NI devices, repeats the scan after it ends
 Function HW_StartAcq(variable hardwareType, variable deviceID, [variable triggerMode, variable flags, variable repeat])
 
+	string device
+
 	HW_AssertOnInvalid(hardwareType, deviceID)
 
 	if(ParamIsDefault(triggerMode))
 		triggerMode = HARDWARE_DAC_DEFAULT_TRIGGER
 	endif
+
+	device = HW_GetMainDeviceName(hardwareType, deviceID, flags = flags)
+	SVAR lastAcqStartTime = $GetLastAcquisitionStartTime(device)
+	lastAcqStartTime = HW_GetAcquisitionStartTimestamp()
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
@@ -1515,7 +1530,7 @@ threadsafe Function HW_ITC_StartAcq_TS(variable deviceID, variable triggerMode, 
 End
 
 /// @see HW_StartAcq
-Function HW_ITC_StartAcq(variable deviceID, variable triggerMode, [variable flags])
+static Function HW_ITC_StartAcq(variable deviceID, variable triggerMode, [variable flags])
 
 	variable tries
 
@@ -2153,6 +2168,28 @@ Function HW_ITC_IsValidDeviceName(string deviceName)
 	return !isEmpty(deviceName)
 End
 
+/// @brief Read out the fifopos from the ITC fifothread
+Function HW_ITC_ReadFifoPos(string device, [variable timeout_tries, variable timeout_default])
+
+	timeout_default = ParamIsDefault(timeout_default) ? NaN : timeout_default
+	timeout_tries   = ParamIsDefault(timeout_tries) ? Inf : timeout_tries
+
+	Make/FREE/T varNames = {ITC_THREAD_FIFOPOS, ITC_THREAD_TIMESTAMP}
+
+	NVAR   tgID = $GetThreadGroupIDFIFO(device)
+	WAVE/Z data = TS_GetNewestFromThreadQueueMult(tgID, varNames, timeout_tries = timeout_tries, timeout_default = timeout_default)
+	if(!WaveExists(data))
+		// ITC TFH_FifoLoop thread stopped
+		return NaN
+	endif
+	if(!IsNaN(data[%$ITC_THREAD_TIMESTAMP]))
+		SVAR lastAcqStartTime = $GetLastAcquisitionStartTime(device)
+		lastAcqStartTime = HW_GetAcquisitionStartTimestamp(secondsSinceIgorEpoch = data[%$ITC_THREAD_TIMESTAMP])
+	endif
+
+	return data[%$ITC_THREAD_FIFOPOS]
+End
+
 ///@}
 ///@}
 
@@ -2224,7 +2261,7 @@ static Constant HW_NI_FIFO_MIN_FREE_DISK_SPACE = 960000000
 ///
 
 /// @see HW_StartAcq
-Function HW_NI_StartAcq(variable deviceID, variable triggerMode, [variable flags, variable repeat])
+static Function HW_NI_StartAcq(variable deviceID, variable triggerMode, [variable flags, variable repeat])
 
 	string device, realDeviceOrPressure, FIFONote, noteID, fifoName, errMsg
 	variable i, pos, endpos, channelTimeOffset, err
@@ -3499,7 +3536,7 @@ static Function [variable hwChannel, string encode] HW_SU_GetEncodeFromUnassocDA
 	return [hwChannel, encode]
 End
 
-Function HW_SU_StartAcq(variable deviceId, [variable flags])
+static Function HW_SU_StartAcq(variable deviceId, [variable flags])
 
 	string device, cmdError, cmdDone
 

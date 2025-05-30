@@ -785,17 +785,13 @@ End
 ///          "unit": "ms",
 ///          "value": 0.002
 ///        },
-///        "time of tp acquisition": {
-///          "unit": "s",
-///          "value": 1000000
-///        },
 ///        "timestamp": {
 ///          "unit": "s",
-///          "value": 2000000
+///          "value": 3829047532.83
 ///        },
 ///        "timestampUTC": {
 ///          "unit": "s",
-///          "value": 3000000
+///          "value": 3829040372.83
 ///        },
 ///        "tp cycle id": 456,
 ///        "tp length ADC": {
@@ -847,7 +843,6 @@ threadsafe Function PUB_TPResult(string device, WAVE tpData, WAVE ampParamStorag
 	JSON_AddVariable(jsonID, path + "/headstage", tpData[%HEADSTAGE])
 	JSON_AddVariable(jsonID, path + "/clamp mode", tpData[%CLAMPMODE])
 
-	PUB_AddTPResultEntry(jsonId, path + "/time of tp acquisition", tpData[%NOW], "s")
 	PUB_AddTPResultEntry(jsonId, path + "/clamp amplitude", tpData[%CLAMPAMP], daUnit)
 	PUB_AddTPResultEntry(jsonId, path + "/tp length ADC", tpData[%TPLENGTHPOINTSADC], "points")
 	PUB_AddTPResultEntry(jsonId, path + "/pulse duration ADC", tpData[%PULSELENGTHPOINTSADC], "points")

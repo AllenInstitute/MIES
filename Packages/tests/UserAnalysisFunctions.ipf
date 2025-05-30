@@ -891,6 +891,19 @@ Function StopMidSweep_V3(string device, STRUCT AnalysisFunction_V3 &s)
 	return 0
 End
 
+Function WaitMidSweep(string device, variable eventType, WAVE DAQDataWave, variable headStage, variable realDataLength)
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK_GE_VAR(eventType, 0)
+	CHECK_LT_VAR(eventType, DimSize(anaFuncTracker, ROWS))
+	anaFuncTracker[eventType][headstage] += 1
+
+	Sleep/S 5
+
+	return ANALYSIS_FUNC_RET_REPURP_TIME
+End
+
 Function AddTooLargeUserEpoch_V3(string device, STRUCT AnalysisFunction_V3 &s)
 
 	variable DAC

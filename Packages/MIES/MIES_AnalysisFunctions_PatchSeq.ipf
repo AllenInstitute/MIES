@@ -5970,8 +5970,7 @@ Function PSQ_Ramp(string device, STRUCT AnalysisFunction_V3 &s)
 				// stop DAQ, set DA to zero from now to the end and start DAQ again
 
 				// fetch the very last fifo position immediately before we stop it
-				NVAR tgID = $GetThreadGroupIDFIFO(device)
-				fifoOffset = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
+				fifoOffset = HW_ITC_ReadFifoPos(device)
 				TFH_StopFIFODaemon(HARDWARE_ITC_DAC, deviceID)
 				HW_StopAcq(HARDWARE_ITC_DAC, deviceID)
 				HW_ITC_PrepareAcq(deviceID, DATA_ACQUISITION_MODE, offset = fifoOffset)
@@ -5988,14 +5987,13 @@ Function PSQ_Ramp(string device, STRUCT AnalysisFunction_V3 &s)
 
 				// fetch newest fifo position, blocks until it gets a valid value
 				// its zero is now fifoOffset
-				NVAR tgID = $GetThreadGroupIDFIFO(device)
-				fifoPos = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
+				fifoPos = HW_ITC_ReadFifoPos(device)
 				ASSERT(fifoPos > 0, "Invalid fifo position, has the thread died?")
 
 				// wait until the hardware is finished with writing this chunk
 				// this is to avoid that two threads write simultaneously into the DAQDataWave
 				for(;;)
-					val = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
+					val = HW_ITC_ReadFifoPos(device)
 
 					if(val > fifoPos)
 						break

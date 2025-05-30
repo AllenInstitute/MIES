@@ -3019,49 +3019,49 @@ End
 /// -  1: Amplifier bias current (Current Clamp)
 /// -  2: (Peak/Instantaneous) Resistance
 /// -  3: (Steady State) Resistance
-/// -  4: Time in s (arbitrary zero)
-/// -  5: Delta time in s relative to the entry in the first row of layer 3
-/// -  6: (Steady State) Resistance slope
-/// -  7: Pressure in psi
-/// -  8: Timestamp since igor epoch (*with* timezone offsets)
-/// -  9: Timestamp in UTC since igor epoch
-/// - 10: Pressure changed
-/// - 11: Holding current (pA, Voltage Clamp)
-/// - 12: Vrest (mV, Current Clamp)
-/// - 13: AD channel
-/// - 14: DA channel
-/// - 15: Headstage
-/// - 16: ClampMode
-/// - 17: UserPressure
-/// - 18: PressureMethod (see @ref PressureModeConstants)
-/// - 19: ValidState (true if the entry is considered valid, false otherwise)
-/// - 20: UserPressureType (see @ref PressureTypeConstants)
-/// - 21: UserPressureTimeStampUTC timestamp since Igor Pro epoch in UTC where
+/// -  4: Delta time in s relative to the entry in the first row of layer 3
+/// -  5: (Steady State) Resistance slope
+/// -  6: Pressure in psi
+/// -  7: Timestamp since igor epoch (*with* timezone offsets)
+/// -  8: Timestamp in UTC since igor epoch
+/// -  9: Pressure changed
+/// - 10: Holding current (pA, Voltage Clamp)
+/// - 11: Vrest (mV, Current Clamp)
+/// - 12: AD channel
+/// - 13: DA channel
+/// - 14: Headstage
+/// - 15: ClampMode
+/// - 16: UserPressure
+/// - 17: PressureMethod (see @ref PressureModeConstants)
+/// - 18: ValidState (true if the entry is considered valid, false otherwise)
+/// - 19: UserPressureType (see @ref PressureTypeConstants)
+/// - 20: UserPressureTimeStampUTC timestamp since Igor Pro epoch in UTC where
 ///       the user pressure was acquired
-/// - 22: TPMarker unique number identifying this set of TPs
-/// - 23: Cell state: Pressure control values defining the cell state, one of @ref CellStateValues
-/// - 24: Testpulse Cycle Id (changes whenever TP is started, allows to group TPs together)
-/// - 25: Auto TP Amplitude: success/fail state
-/// - 26: Auto TP Baseline: success/fail state
-/// - 27: Auto TP Baseline Range Exceeded: True/False
-/// - 28: Auto TP Cycle ID: Unique number which is constant until the "Auto TP"
+/// - 21: TPMarker unique number identifying this set of TPs
+/// - 22: Cell state: Pressure control values defining the cell state, one of @ref CellStateValues
+/// - 23: Testpulse Cycle Id (changes whenever TP is started, allows to group TPs together)
+/// - 24: Auto TP Amplitude: success/fail state
+/// - 25: Auto TP Baseline: success/fail state
+/// - 26: Auto TP Baseline Range Exceeded: True/False
+/// - 27: Auto TP Cycle ID: Unique number which is constant until the "Auto TP"
 ///       state is switched (aka on->off or off->on)
-/// - 29: Auto TP Baseline Fit result: One of @ref TPBaselineFitResults
-/// - 30: Auto TP Delta V [mV]
-/// - 31: Clamp Amplitude [mV] or [pA] depending on Clamp Mode
-/// - 32: Testpulse full length in points for AD channel [points]
-/// - 33: Testpulse pulse length in points for AD channel [points]
-/// - 34: Point index of pulse start for AD channel [point]
-/// - 35: Sampling interval for AD channel [ms]
-/// - 36: Testpulse full length in points for DA channel [points]
-/// - 37: Testpulse pulse length in points for DA channel [points]
-/// - 38: Point index of pulse start for DA channel [point]
-/// - 39: Sampling interval for DA channel [ms]
+/// - 28: Auto TP Baseline Fit result: One of @ref TPBaselineFitResults
+/// - 29: Auto TP Delta V [mV]
+/// - 30: Clamp Amplitude [mV] or [pA] depending on Clamp Mode
+/// - 31: Testpulse full length in points for AD channel [points]
+/// - 32: Testpulse pulse length in points for AD channel [points]
+/// - 33: Point index of pulse start for AD channel [point]
+/// - 34: Sampling interval for AD channel [ms]
+/// - 35: Testpulse full length in points for DA channel [points]
+/// - 36: Testpulse pulse length in points for DA channel [points]
+/// - 37: Point index of pulse start for DA channel [point]
+/// - 38: Sampling interval for DA channel [ms]
 Function/WAVE GetTPStorage(string device)
 
 	DFREF    dfr              = GetDeviceTestPulse(device)
-	variable versionOfNewWave = 16
-	variable numLayers        = 40
+	variable versionOfNewWave = 17
+	variable numLayersV16     = 40
+	variable numLayers        = 39
 
 	WAVE/Z/D/SDFR=dfr wv = TPStorage
 
@@ -3070,7 +3070,7 @@ Function/WAVE GetTPStorage(string device)
 	endif
 
 	if(WaveExists(wv))
-		Redimension/N=(-1, NUM_HEADSTAGES, numLayers)/D wv
+		Redimension/N=(-1, NUM_HEADSTAGES, numLayersV16)/D wv
 
 		if(WaveVersionIsSmaller(wv, 10))
 			wv[][][17]     = NaN
@@ -3092,6 +3092,11 @@ Function/WAVE GetTPStorage(string device)
 		if(WaveVersionIsSmaller(wv, 16))
 			wv[][][31, numLayers - 1] = NaN
 		endif
+		if(WaveVersionIsSmaller(wv, 17))
+			// Delete the former layer for %TimeInSeconds that was layer 4
+			// The functionality is replaced by a precise %TimeStamp
+			DeletePoints/M=(LAYERS) 4, 1, wv
+		endif
 	else
 		Make/N=(MINIMUM_WAVE_SIZE_LARGE, NUM_HEADSTAGES, numLayers)/D dfr:TPStorage/WAVE=wv
 
@@ -3106,45 +3111,44 @@ Function/WAVE GetTPStorage(string device)
 	SetDimLabel LAYERS, 1, HoldingCmd_IC, wv
 	SetDimLabel LAYERS, 2, PeakResistance, wv
 	SetDimLabel LAYERS, 3, SteadyStateResistance, wv
-	SetDimLabel LAYERS, 4, TimeInSeconds, wv
-	SetDimLabel LAYERS, 5, DeltaTimeInSeconds, wv
-	SetDimLabel LAYERS, 6, Rss_Slope, wv
-	SetDimLabel LAYERS, 7, Pressure, wv
-	SetDimLabel LAYERS, 8, TimeStamp, wv
-	SetDimLabel LAYERS, 9, TimeStampSinceIgorEpochUTC, wv
-	SetDimLabel LAYERS, 10, PressureChange, wv
-	SetDimLabel LAYERS, 11, Baseline_VC, wv
-	SetDimLabel LAYERS, 12, Baseline_IC, wv
-	SetDimLabel LAYERS, 13, ADC, wv
-	SetDimLabel LAYERS, 14, DAC, wv
-	SetDimLabel LAYERS, 15, Headstage, wv
-	SetDimLabel LAYERS, 16, ClampMode, wv
-	SetDimLabel LAYERS, 17, UserPressure, wv
-	SetDimLabel LAYERS, 18, PressureMethod, wv
-	SetDimLabel LAYERS, 19, ValidState, wv
-	SetDimLabel LAYERS, 20, UserPressureType, wv
-	SetDimLabel LAYERS, 21, UserPressureTimeStampUTC, wv
-	SetDimLabel LAYERS, 22, TPMarker, wv
-	SetDimLabel LAYERS, 23, CellState, wv
-	SetDimLabel LAYERS, 24, TPCycleID, wv
-	SetDimLabel LAYERS, 25, AutoTPAmplitude, wv
-	SetDimLabel LAYERS, 26, AutoTPBaseline, wv
-	SetDimLabel LAYERS, 27, AutoTPBaselineRangeExceeded, wv
-	SetDimLabel LAYERS, 28, AutoTPCycleID, wv
-	SetDimLabel LAYERS, 29, AutoTPBaselineFitResult, wv
-	SetDimLabel LAYERS, 30, AutoTPDeltaV, wv
+	SetDimLabel LAYERS, 4, DeltaTimeInSeconds, wv
+	SetDimLabel LAYERS, 5, Rss_Slope, wv
+	SetDimLabel LAYERS, 6, Pressure, wv
+	SetDimLabel LAYERS, 7, TimeStamp, wv
+	SetDimLabel LAYERS, 8, TimeStampSinceIgorEpochUTC, wv
+	SetDimLabel LAYERS, 9, PressureChange, wv
+	SetDimLabel LAYERS, 10, Baseline_VC, wv
+	SetDimLabel LAYERS, 11, Baseline_IC, wv
+	SetDimLabel LAYERS, 12, ADC, wv
+	SetDimLabel LAYERS, 13, DAC, wv
+	SetDimLabel LAYERS, 14, Headstage, wv
+	SetDimLabel LAYERS, 15, ClampMode, wv
+	SetDimLabel LAYERS, 16, UserPressure, wv
+	SetDimLabel LAYERS, 17, PressureMethod, wv
+	SetDimLabel LAYERS, 18, ValidState, wv
+	SetDimLabel LAYERS, 19, UserPressureType, wv
+	SetDimLabel LAYERS, 20, UserPressureTimeStampUTC, wv
+	SetDimLabel LAYERS, 21, TPMarker, wv
+	SetDimLabel LAYERS, 22, CellState, wv
+	SetDimLabel LAYERS, 23, TPCycleID, wv
+	SetDimLabel LAYERS, 24, AutoTPAmplitude, wv
+	SetDimLabel LAYERS, 25, AutoTPBaseline, wv
+	SetDimLabel LAYERS, 26, AutoTPBaselineRangeExceeded, wv
+	SetDimLabel LAYERS, 27, AutoTPCycleID, wv
+	SetDimLabel LAYERS, 28, AutoTPBaselineFitResult, wv
+	SetDimLabel LAYERS, 29, AutoTPDeltaV, wv
 	// Dimlabels starting from here are taken from TP_ANALYSIS_DATA_LABELS
 	// This is not required but convenient because in @ref TP_RecordTP data from TPResults (@ref GetTPResults)
 	// is transferred to tpStorage and TPResults also uses dimlabels from TP_ANALYSIS_DATA_LABELS partially.
-	SetDimLabel LAYERS, 31, CLAMPAMP, wv
-	SetDimLabel LAYERS, 32, TPLENGTHPOINTSADC, wv
-	SetDimLabel LAYERS, 33, PULSELENGTHPOINTSADC, wv
-	SetDimLabel LAYERS, 34, PULSESTARTPOINTSADC, wv
-	SetDimLabel LAYERS, 35, SAMPLINGINTERVALADC, wv
-	SetDimLabel LAYERS, 36, TPLENGTHPOINTSDAC, wv
-	SetDimLabel LAYERS, 37, PULSELENGTHPOINTSDAC, wv
-	SetDimLabel LAYERS, 38, PULSESTARTPOINTSDAC, wv
-	SetDimLabel LAYERS, 39, SAMPLINGINTERVALDAC, wv
+	SetDimLabel LAYERS, 30, CLAMPAMP, wv
+	SetDimLabel LAYERS, 31, TPLENGTHPOINTSADC, wv
+	SetDimLabel LAYERS, 32, PULSELENGTHPOINTSADC, wv
+	SetDimLabel LAYERS, 33, PULSESTARTPOINTSADC, wv
+	SetDimLabel LAYERS, 34, SAMPLINGINTERVALADC, wv
+	SetDimLabel LAYERS, 35, TPLENGTHPOINTSDAC, wv
+	SetDimLabel LAYERS, 36, PULSELENGTHPOINTSDAC, wv
+	SetDimLabel LAYERS, 37, PULSESTARTPOINTSDAC, wv
+	SetDimLabel LAYERS, 38, SAMPLINGINTERVALDAC, wv
 
 	SetNumberInWaveNote(wv, AUTOBIAS_LAST_INVOCATION_KEY, 0)
 	SetNumberInWaveNote(wv, DIMENSION_SCALING_LAST_INVOC, 0)
