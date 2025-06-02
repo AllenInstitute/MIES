@@ -85,34 +85,34 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, s
 	WAVE textualValues   = GetLBTextualValues(device)
 
 	strswitch(name)
-		case PSQ_FMT_LBN_SWEEP_PASS:
-		case PSQ_FMT_LBN_CR_INSIDE_BOUNDS:
-		case PSQ_FMT_LBN_CR_BOUNDS_ACTION:
-		case PSQ_FMT_LBN_SAMPLING_PASS:
-		case PSQ_FMT_LBN_ASYNC_PASS:
+		case PSQ_FMT_LBN_SWEEP_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_CR_INSIDE_BOUNDS: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_CR_BOUNDS_ACTION: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_SAMPLING_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_ASYNC_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PSQ_FMT_LBN_CR_STIMSET_QC:
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, name, query = 1)
 			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 		case PSQ_FMT_LBN_CR_BOUNDS_STATE:
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, name, query = 1)
 			return GetLastSettingTextIndepEachSCI(numericalValues, textualValues, sweepNo, PSQ_TEST_HEADSTAGE, key, UNKNOWN_MODE)
-		case PSQ_FMT_LBN_BL_QC_PASS:
-		case PSQ_FMT_LBN_SPIKE_PASS:
-		case PSQ_FMT_LBN_PULSE_DUR:
+		case PSQ_FMT_LBN_BL_QC_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_SPIKE_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_PULSE_DUR: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PSQ_FMT_LBN_DASCALE_OOR:
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, name, query = 1)
 			return GetLastSettingEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
-		case STIMSET_SCALE_FACTOR_KEY:
-		case "Autobias Vcom":
+		case STIMSET_SCALE_FACTOR_KEY: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "Autobias Vcom": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "LPF cutoff":
 			return GetLastSettingEachSCI(numericalValues, sweepNo, name, PSQ_TEST_HEADSTAGE, DATA_ACQUISITION_MODE)
 		case "Delay onset user":
 			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, name, PSQ_TEST_HEADSTAGE, DATA_ACQUISITION_MODE)
-		case PSQ_FMT_LBN_SET_PASS:
-		case PSQ_FMT_LBN_CR_SPIKE_CHECK:
-		case PSQ_FMT_LBN_INITIAL_SCALE:
-		case PSQ_FMT_LBN_CR_RESISTANCE:
-		case PSQ_FMT_LBN_CR_INIT_UOD:
+		case PSQ_FMT_LBN_SET_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_CR_SPIKE_CHECK: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_INITIAL_SCALE: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_CR_RESISTANCE: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_CR_INIT_UOD: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PSQ_FMT_LBN_CR_INIT_LPF:
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, name, query = 1)
 			val = GetLastSettingIndepSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)

@@ -88,20 +88,20 @@ static Function DCR_RecreateDataConfigurationResultFromLNB_TTL(STRUCT DataConfig
 			s.numTTLEntries = 0
 			Make/FREE/N=(0) s.TTLList
 		endif
-	else
-		s.numTTLEntries = 0
-		Make/FREE/N=(0) s.TTLList
-		DEBUGPRINT("LNB entry not found for XOP_CHANNEL_TYPE_TTL: channels")
 	endif
+
+	s.numTTLEntries = 0
+	Make/FREE/N=(0) s.TTLList
+	DEBUGPRINT("LNB entry not found for XOP_CHANNEL_TYPE_TTL: channels")
 
 	[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "stim sets", NaN, XOP_CHANNEL_TYPE_TTL, s.dataAcqOrTP)
 	if(WaveExists(settings))
 		WAVE/T settingsT    = settings
 		WAVE/T s.TTLsetName = ListToTextWave(settingsT[indep_hs_text], ";")
 		ASSERT(DimSize(s.TTLsetName, ROWS) == NUM_DA_TTL_CHANNELS, "Got unexpected LNB entry format")
-	else
-		DEBUGPRINT("LNB entry not found for XOP_CHANNEL_TYPE_TTL: stim sets")
 	endif
+
+	DEBUGPRINT("LNB entry not found for XOP_CHANNEL_TYPE_TTL: stim sets")
 
 	s.TTLstimSet[] = WB_CreateAndGetStimSet(s.TTLsetName[p])
 
@@ -113,18 +113,18 @@ static Function DCR_RecreateDataConfigurationResultFromLNB_TTL(STRUCT DataConfig
 		WAVE/T settingsT      = settings
 		WAVE   s.TTLsetColumn = ListToNumericWave(settingsT[indep_hs_text], ";")
 		ASSERT(DimSize(s.TTLsetColumn, ROWS) == NUM_DA_TTL_CHANNELS, "Unexpected number of TTL channels from LNB.")
-	else
-		DEBUGPRINT("LNB entry not found for XOP_CHANNEL_TYPE_TTL: TTL set sweep counts")
 	endif
+
+	DEBUGPRINT("LNB entry not found for XOP_CHANNEL_TYPE_TTL: TTL set sweep counts")
 
 	[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "TTL set cycle counts", NaN, XOP_CHANNEL_TYPE_TTL, s.dataAcqOrTP)
 	if(WaveExists(settings))
 		WAVE/T settingsT       = settings
 		WAVE   s.TTLcycleCount = ListToNumericWave(settingsT[indep_hs_text], ";")
 		ASSERT(DimSize(s.TTLcycleCount, ROWS) == NUM_DA_TTL_CHANNELS, "Unexpected number of TTL channels from LNB.")
-	else
-		DEBUGPRINT("LNB entry not found for XOP_CHANNEL_TYPE_TTL: TTL set cycle counts")
 	endif
+
+	DEBUGPRINT("LNB entry not found for XOP_CHANNEL_TYPE_TTL: TTL set cycle counts")
 End
 
 static Function [WAVE/D adGains] DCR_RecreateDataConfigurationResultFromLNB_ADC(STRUCT DataConfigurationResult &s, WAVE numericalValues, WAVE/T textualValues, variable sweepNo)

@@ -431,9 +431,9 @@ Function CONF_SaveWindow(string fName)
 		errMsg = getRTErrMessage()
 		if(ClearRTError())
 			ASSERT(0, errMsg)
-		else
-			Abort
 		endif
+
+		Abort
 	endtry
 End
 
@@ -508,10 +508,10 @@ Function CONF_RestoreWindow(string fName, [string rigFile])
 		endif
 		if(ClearRTError())
 			ASSERT(0, errMsg)
-		else
-			printf "Configuration restore aborted at file %s.\r", fullFilePath
-			Abort
 		endif
+
+		printf "Configuration restore aborted at file %s.\r", fullFilePath
+		Abort
 	endtry
 	JSON_Release(jsonID)
 End
@@ -573,9 +573,9 @@ static Function CONF_SaveDAEphys(string fName)
 		errMsg = getRTErrMessage()
 		if(ClearRTError())
 			ASSERT(0, errMsg)
-		else
-			Abort
 		endif
+
+		Abort
 	endtry
 End
 
@@ -769,9 +769,9 @@ Function/S CONF_RestoreDAEphys(variable jsonID, string fullFilePath, [variable m
 		errMsg = getRTErrMessage()
 		if(ClearRTError())
 			ASSERT(0, errMsg)
-		else
-			Abort
 		endif
+
+		Abort
 	endtry
 End
 
@@ -1192,9 +1192,9 @@ Function/S CONF_JSONToWindow(string wName, variable restoreMask, variable jsonID
 		errMsg = getRTErrMessage()
 		if(ClearRTError())
 			ASSERT(0, errMsg)
-		else
-			Abort
 		endif
+
+		Abort
 	endtry
 
 	return wName
@@ -1291,10 +1291,10 @@ static Function CONF_RestoreControl(string wName, variable restoreMask, variable
 			ctrlType = NumberFromList(i, EXPCONFIG_GUI_CTRLTYPES)
 			ControlInfo/W=$wName $ctrlName
 			ASSERT(abs(V_Flag) == ctrlType, "Expected control of type " + ctrlTypeName + " in window " + wName)
-		else
-			ControlInfo/W=$wName $ctrlName
-			ctrlType = abs(V_Flag)
 		endif
+
+		ControlInfo/W=$wName $ctrlName
+		ctrlType = abs(V_Flag)
 
 		if(restoreMask & EXPCONFIG_SAVE_POSITION)
 			VHeight = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_FIELD_CTRLPOSHEIGHT)
@@ -1420,18 +1420,18 @@ static Function CONF_RestoreControl(string wName, variable restoreMask, variable
 				ASSERT(arrayElemType == JSON_NUMERIC, "Expected numeric value for ControlArray of control " + ctrlName + " at " + num2istr(arrayIndex))
 				val = JSON_GetVariable(jsonID, arrayElemPath)
 				PGC_SetAndActivateControl(wName, ctrlName, val = val, mode = PGC_MODE_SKIP_ON_DISABLED)
+			endif
+
+			ASSERT(arrayElemType == JSON_STRING, "Expected string value for ControlArray of control " + ctrlName + " at " + num2istr(arrayIndex))
+			str = JSON_GetString(jsonID, arrayElemPath)
+			if(setVarType == SET_VARIABLE_BUILTIN_STR)
+				PGC_SetAndActivateControl(wName, ctrlName, str = str, mode = PGC_MODE_SKIP_ON_DISABLED)
+			elseif(IsEmpty(str))
+				SetVariable $ctrlName, win=$wName, value=$""
 			else
-				ASSERT(arrayElemType == JSON_STRING, "Expected string value for ControlArray of control " + ctrlName + " at " + num2istr(arrayIndex))
-				str = JSON_GetString(jsonID, arrayElemPath)
-				if(setVarType == SET_VARIABLE_BUILTIN_STR)
-					PGC_SetAndActivateControl(wName, ctrlName, str = str, mode = PGC_MODE_SKIP_ON_DISABLED)
-				elseif(IsEmpty(str))
-					SetVariable $ctrlName, win=$wName, value=$""
-				else
-					varTypeGlobal = exists(str)
-					if(varTypeGlobal == EXISTS_AS_WAVE || varTypeGlobal == EXISTS_AS_VAR_OR_STR)
-						SetVariable $ctrlName, win=$wName, value=$str
-					endif
+				varTypeGlobal = exists(str)
+				if(varTypeGlobal == EXISTS_AS_WAVE || varTypeGlobal == EXISTS_AS_VAR_OR_STR)
+					SetVariable $ctrlName, win=$wName, value=$str
 				endif
 			endif
 		elseif(ctrlType == CONTROL_TYPE_POPUPMENU)
@@ -1439,11 +1439,11 @@ static Function CONF_RestoreControl(string wName, variable restoreMask, variable
 				ASSERT(arrayElemType == JSON_NUMERIC, "Expected numeric value for ControlArray of control " + ctrlName + " at " + num2istr(arrayIndex))
 				val = JSON_GetVariable(jsonID, arrayElemPath)
 				PGC_SetAndActivateControl(wName, ctrlName, val = val, mode = PGC_MODE_SKIP_ON_DISABLED)
-			else
-				ASSERT(arrayElemType == JSON_STRING, "Expected string value for ControlArray of control " + ctrlName + " at " + num2istr(arrayIndex))
-				str = JSON_GetString(jsonID, arrayElemPath)
-				PGC_SetAndActivateControl(wName, ctrlName, str = str, mode = PGC_MODE_SKIP_ON_DISABLED)
 			endif
+
+			ASSERT(arrayElemType == JSON_STRING, "Expected string value for ControlArray of control " + ctrlName + " at " + num2istr(arrayIndex))
+			str = JSON_GetString(jsonID, arrayElemPath)
+			PGC_SetAndActivateControl(wName, ctrlName, str = str, mode = PGC_MODE_SKIP_ON_DISABLED)
 		elseif(ctrlType == CONTROL_TYPE_BUTTON)
 			if(!CmpStr(GetUserData(wName, ctrlName, EXPCONFIG_UDATA_BUTTONPRESS), "1"))
 				PGC_SetAndActivateControl(wName, ctrlName, mode = PGC_MODE_SKIP_ON_DISABLED)
@@ -1510,9 +1510,9 @@ Function CONF_AllWindowsToJSON(string wName, variable saveMask, [string excCtrlT
 		errMsg = getRTErrMessage()
 		if(ClearRTError())
 			ASSERT(0, errMsg)
-		else
-			Abort
 		endif
+
+		Abort
 	endtry
 End
 
@@ -1623,31 +1623,31 @@ Function CONF_WindowToJSON(string wName, variable saveMask, [string excCtrlTypes
 					FindValue/TXOP=4/TEXT=(StringFromList(1, radioList)) ctrlNames
 					ASSERT(V_Value >= 0, "Specified coupled CheckBox is not present as control in " + wName)
 					DeletePoints V_Row, 1, ctrlNames
-				else
-					for(j = 0; j < numCoupled; j += 1)
-						cbCtrlName = StringFromList(j, radioList)
-						ControlInfo/W=$wName $cbCtrlName
-						ctrlType = abs(V_Flag)
-						ASSERT(ctrlType == 2, "Control is not present or not a CheckBox")
-						if(V_Value)
-							break
-						endif
-					endfor
-
-					if(j < numCoupled)
-						DEBUGPRINT("Ecountered >2 coupled CheckBoxes (RadioButtons) where all are in off state")
-					endif
-
-					setRadioPos = j
-					for(j = 0; j < numCoupled; j += 1)
-						cbCtrlName = StringFromList(j, radioList)
-						if(setRadioPos != j)
-							FindValue/TXOP=4/TEXT=cbCtrlName ctrlNames
-							ASSERT(V_Value >= 0, "Specified coupled CheckBox " + cbCtrlName + " is not present as control in " + wName)
-							DeletePoints V_Row, 1, ctrlNames
-						endif
-					endfor
 				endif
+
+				for(j = 0; j < numCoupled; j += 1)
+					cbCtrlName = StringFromList(j, radioList)
+					ControlInfo/W=$wName $cbCtrlName
+					ctrlType = abs(V_Flag)
+					ASSERT(ctrlType == 2, "Control is not present or not a CheckBox")
+					if(V_Value)
+						break
+					endif
+				endfor
+
+				if(j < numCoupled)
+					DEBUGPRINT("Ecountered >2 coupled CheckBoxes (RadioButtons) where all are in off state")
+				endif
+
+				setRadioPos = j
+				for(j = 0; j < numCoupled; j += 1)
+					cbCtrlName = StringFromList(j, radioList)
+					if(setRadioPos != j)
+						FindValue/TXOP=4/TEXT=cbCtrlName ctrlNames
+						ASSERT(V_Value >= 0, "Specified coupled CheckBox " + cbCtrlName + " is not present as control in " + wName)
+						DeletePoints V_Row, 1, ctrlNames
+					endif
+				endfor
 			endfor
 		endif
 
@@ -1671,9 +1671,9 @@ Function CONF_WindowToJSON(string wName, variable saveMask, [string excCtrlTypes
 		errMsg = getRTErrMessage()
 		if(ClearRTError())
 			ASSERT(0, errMsg)
-		else
-			Abort
 		endif
+
+		Abort
 	endtry
 End
 

@@ -1193,10 +1193,10 @@ Function [WAVE passingSweeps, WAVE failingSweeps] AFH_GetRheobaseSweepsSCISweepQ
 		ASSERT(Sum(spikeDetection, firstValid, lastValid) == 1, "Unexpected spike/non-spike duo")
 		Duplicate/FREE/R=[firstValid, lastValid] sweepsSCI, passingSweeps
 		WAVE/Z failingSweeps = GetSetDifference(sweepsSCI, passingSweeps)
-	else
-		Duplicate/FREE sweepsSCI, failingSweeps
-		WAVE/Z passingSweeps
 	endif
+
+	Duplicate/FREE sweepsSCI, failingSweeps
+	WAVE/Z passingSweeps
 
 	return [passingSweeps, failingSweeps]
 End
@@ -1208,11 +1208,11 @@ Function AFH_LastSweepInSet(string device, variable sweepNo, variable headstage,
 	variable DAC, sweepsInSet, nextStimsetColumn, sweepOffset
 
 	switch(eventType)
-		case PRE_DAQ_EVENT:
+		case PRE_DAQ_EVENT: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PRE_SWEEP_CONFIG_EVENT:
 			// no valid setup yet
 			return NaN
-		case PRE_SET_EVENT:
+		case PRE_SET_EVENT: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case MID_SWEEP_EVENT:
 			// we need to look at the last acquired sweep
 			sweepNo    -= 1

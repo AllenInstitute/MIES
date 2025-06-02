@@ -523,12 +523,12 @@ Function PEXT_ButtonProc(STRUCT WMButtonAction &ba) : ButtonControl
 				WAVE/T splitMenu = PEXT_SplitToSubMenus(itemWave)
 				PEXT_GenerateSubMenuNames(splitMenu)
 				PEXT_VerifyAndSetMenuWave(splitMenu)
-			else
-				FUNCREF PEXT_ITEMGETTER_WAVE_PROTO GetItemWave = $itemGetter
-				ASSERT(FuncRefIsAssigned(FuncRefInfo(GetItemWave)), "Popup extension item getter has wrong function template format")
-				WAVE/Z/T itemWave = GetItemWave(ba.win)
-				PEXT_VerifyAndSetMenuWave(itemWave)
 			endif
+
+			FUNCREF PEXT_ITEMGETTER_WAVE_PROTO GetItemWave = $itemGetter
+			ASSERT(FuncRefIsAssigned(FuncRefInfo(GetItemWave)), "Popup extension item getter has wrong function template format")
+			WAVE/Z/T itemWave = GetItemWave(ba.win)
+			PEXT_VerifyAndSetMenuWave(itemWave)
 
 			PopupContextualMenu/N/ASYN=PEXT_Callback "PopupExt" + num2str(DimSize(itemListWave, ROWS))
 			break
@@ -714,7 +714,7 @@ Function PEXT_GenerateSubMenuNames(WAVE/Z/T splitMenu, [variable method])
 			SetDimLabel ROWS, i, $subItem, splitMenu
 		endfor
 
-	else
-		ASSERT(0, "Unknown method for automatically generating submenus")
 	endif
+
+	ASSERT(0, "Unknown method for automatically generating submenus")
 End

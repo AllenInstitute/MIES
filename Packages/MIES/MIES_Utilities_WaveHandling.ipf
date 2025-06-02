@@ -243,9 +243,9 @@ threadsafe Function SetNumberInWaveNote(WAVE wv, string key, variable val, [stri
 		ASSERT_TS(!IsEmpty(format), "Empty format")
 		sprintf str, format, val
 		Note/K wv, ReplaceStringByKey(key, note(wv), str)
-	else
-		Note/K wv, ReplaceNumberByKey(key, note(wv), val)
 	endif
+
+	Note/K wv, ReplaceNumberByKey(key, note(wv), val)
 End
 
 /// @brief Return the string value of `key` found in the wave note
@@ -1152,12 +1152,12 @@ threadsafe Function SetDimensionLabelsFromWaveContents(WAVE wv, [string prefix, 
 				ASSERT_TS(IsValidObjectName(str), "Element at " + num2istr(idx) + " results in ivnalid DimLabel " + str)
 				SetDimLabel ROWS, idx++, $str, wv
 			endfor
-		else
-			for(str : wt)
-				str = prefix + str + suffix
-				SetDimLabel ROWS, idx++, $str, wv
-			endfor
 		endif
+
+		for(str : wt)
+			str = prefix + str + suffix
+			SetDimLabel ROWS, idx++, $str, wv
+		endfor
 
 		return NaN
 	endif
@@ -1218,7 +1218,7 @@ Function DuplicateWaveAndKeepTargetRef(WAVE/Z source, WAVE/Z target)
 	ASSERT(wTypeTgt == wTypeSrc, "Source and Target wave have different base types")
 
 	switch(WaveDims(source))
-		case 0: // intended drop through
+		case 0: // intended drop through, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 1:
 			Redimension/N=(DimSize(source, ROWS)) target
 			break

@@ -81,9 +81,9 @@ Function DQM_FIFOMonitor(STRUCT BackgroundStruct &s)
 					DQ_StopOngoingDAQ(device, DQ_STOP_REASON_HW_ERROR, startTPAfterDAQ = 0)
 					if(err == 18)
 						ASSERT(0, "Acquisition FIFO overflow, data lost. This may happen if the computer is too slow.")
-					else
-						ASSERT(0, "Error reading data from NI device: code " + num2str(err) + "\r" + errMsg)
 					endif
+
+					ASSERT(0, "Error reading data from NI device: code " + num2str(err) + "\r" + errMsg)
 				endtry
 				break
 			case HARDWARE_ITC_DAC:

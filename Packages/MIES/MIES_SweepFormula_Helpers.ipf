@@ -757,9 +757,9 @@ Function SFH_AddToArgSetupStack(WAVE output, WAVE/Z input, string argSetupStr, [
 		else
 			argStackId = JSON_Parse(argSetupStack)
 		endif
-	else
-		argStackId = JSON_New()
 	endif
+
+	argStackId = JSON_New()
 
 	WAVE/Z/T wStack = JSON_GetKeys(argStackId, "", ignoreErr = 1)
 	if(waveExists(wStack))

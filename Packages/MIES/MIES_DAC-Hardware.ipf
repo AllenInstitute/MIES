@@ -146,7 +146,7 @@ Function HW_SelectDevice(variable hardwareType, variable deviceID, [variable fla
 		case HARDWARE_ITC_DAC:
 			return HW_ITC_SelectDevice(deviceID, flags = flags)
 			break
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // intended drop through, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case HARDWARE_SUTTER_DAC:
 			// nothing to do
 			return 0
@@ -384,7 +384,7 @@ Function HW_EnableYoking(variable hardwareType, variable deviceID, [variable fla
 		case HARDWARE_ITC_DAC:
 			HW_ITC_EnableYoking(deviceID, flags = flags)
 			break
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // intended drop through, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case HARDWARE_SUTTER_DAC:
 			ASSERT(0, "Not implemented")
 			break
@@ -407,7 +407,7 @@ Function HW_DisableYoking(variable hardwareType, variable deviceID, [variable fl
 		case HARDWARE_ITC_DAC:
 			HW_ITC_DisableYoking(deviceID, flags = flags)
 			break
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // intended drop through, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case HARDWARE_SUTTER_DAC:
 			ASSERT(0, "Not implemented")
 			break
@@ -875,7 +875,7 @@ Function HW_GetDAFifoPosition(string device, variable dataAcqOrTP)
 	variable fifoPositionAD = ROVar(GetFifoPosition(device))
 
 	switch(hwType)
-		case HARDWARE_ITC_DAC: // intended drop through
+		case HARDWARE_ITC_DAC: // intended drop through, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case HARDWARE_NI_DAC:
 			return fifoPositionAD
 		case HARDWARE_SUTTER_DAC:
@@ -2703,9 +2703,9 @@ Function HW_NI_WriteAnalogSingleAndSlow(string device, variable channel, variabl
 	if(ret)
 		if(flags & HARDWARE_ABORT_ON_ERROR)
 			ASSERT(0, "Error: " + fDAQmx_ErrorString())
-		else
-			DEBUGPRINT("Error: ", str = fDAQmx_ErrorString())
 		endif
+
+		DEBUGPRINT("Error: ", str = fDAQmx_ErrorString())
 	endif
 
 	return ret
@@ -2731,9 +2731,9 @@ Function HW_NI_ReadAnalogSingleAndSlow(string device, variable channel, [variabl
 	if(!IsFinite(value))
 		if(flags & HARDWARE_ABORT_ON_ERROR)
 			ASSERT(0, "Error " + fDAQmx_ErrorString())
-		else
-			DEBUGPRINT("Error: ", str = fDAQmx_ErrorString())
 		endif
+
+		DEBUGPRINT("Error: ", str = fDAQmx_ErrorString())
 	endif
 
 	return value
@@ -2757,9 +2757,9 @@ Function HW_NI_GetAnalogInputConfig(string device, variable channel, [variable f
 	if(!IsFinite(value))
 		if(flags & HARDWARE_ABORT_ON_ERROR)
 			ASSERT(0, "Error " + fDAQmx_ErrorString())
-		else
-			DEBUGPRINT("Error: ", str = fDAQmx_ErrorString())
 		endif
+
+		DEBUGPRINT("Error: ", str = fDAQmx_ErrorString())
 	endif
 
 	return value

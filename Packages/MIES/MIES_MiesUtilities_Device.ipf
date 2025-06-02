@@ -257,8 +257,8 @@ Function IsDeviceActiveWithBGTask(string device, string task)
 		case TASKNAME_FIFOMONMD:
 			WAVE deviceIDList = GetDQMActiveDeviceList()
 			break
-		case TASKNAME_TP:
-		case TASKNAME_TIMER:
+		case TASKNAME_TP: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case TASKNAME_TIMER: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case TASKNAME_FIFOMON:
 			// single device tasks, nothing more to do
 			return 1

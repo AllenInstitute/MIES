@@ -491,9 +491,9 @@ static Function TP_AutoBaseline(string device, variable headstage, WAVE TPResult
 		indizes[headstage] += 1
 		SetStringInWaveNote(overrideResults, "Next unread index [baseline]", NumericWaveToList(indizes, ","))
 		tau = fac * baseline
-	else
-		fac = tau / baseline
 	endif
+
+	fac = tau / baseline
 
 	sprintf msg, "TP_AutoFitBaseline: result %g, tau %g, baseline %g", result, tau, baseline
 	DEBUGPRINT(msg)
@@ -504,7 +504,7 @@ static Function TP_AutoBaseline(string device, variable headstage, WAVE TPResult
 		case TP_BASELINE_FIT_RESULT_OK:
 			// nothing to do
 			break
-		case TP_BASELINE_FIT_RESULT_ERROR:
+		case TP_BASELINE_FIT_RESULT_ERROR: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case TP_BASELINE_FIT_RESULT_TOO_NOISY:
 			TPResults[%AutoTPBaseline][headstage]              = 0
 			TPResults[%AutoTPBaselineRangeExceeded][headstage] = 0
@@ -741,9 +741,9 @@ static Function TP_AutoAmplitudeAndBaseline(string device, WAVE TPResults, varia
 			voltage     = overrideResults[indizes[i]][i][%Voltage]
 			indizes[i] += 1
 			SetStringInWaveNote(overrideResults, "Next unread index [amplitude]", NumericWaveToList(indizes, ","))
-		else
-			voltage = TPResults[%AutoTPDeltaV][i] * MILLI_TO_ONE
 		endif
+
+		voltage = TPResults[%AutoTPDeltaV][i] * MILLI_TO_ONE
 
 		skipAutoBaseline = 0
 

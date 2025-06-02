@@ -90,13 +90,13 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, s
 	type = PSQ_ACC_RES_SMOKE
 
 	strswitch(name)
-		case PSQ_FMT_LBN_AR_RESISTANCE_RATIO:
-		case PSQ_FMT_LBN_AR_RESISTANCE_RATIO_PASS:
-		case PSQ_FMT_LBN_AR_ACCESS_RESISTANCE:
-		case PSQ_FMT_LBN_AR_ACCESS_RESISTANCE_PASS:
-		case PSQ_FMT_LBN_AR_STEADY_STATE_RESISTANCE:
-		case PSQ_FMT_LBN_SWEEP_PASS:
-		case PSQ_FMT_LBN_SAMPLING_PASS:
+		case PSQ_FMT_LBN_AR_RESISTANCE_RATIO: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_AR_RESISTANCE_RATIO_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_AR_ACCESS_RESISTANCE: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_AR_ACCESS_RESISTANCE_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_AR_STEADY_STATE_RESISTANCE: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_SWEEP_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_SAMPLING_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PSQ_FMT_LBN_ASYNC_PASS:
 			key = CreateAnaFuncLBNKey(type, name, query = 1)
 			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
@@ -108,9 +108,9 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, s
 			val = GetLastSettingIndepSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 			Make/D/FREE wv = {val}
 			return wv
-		case PSQ_FMT_LBN_RMS_SHORT_PASS:
-		case PSQ_FMT_LBN_RMS_LONG_PASS:
-		case PSQ_FMT_LBN_LEAKCUR_PASS:
+		case PSQ_FMT_LBN_RMS_SHORT_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_RMS_LONG_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_FMT_LBN_LEAKCUR_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PSQ_FMT_LBN_LEAKCUR:
 			key = CreateAnaFuncLBNKey(type, name, chunk = 0, query = 1)
 			return GetLastSettingEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)

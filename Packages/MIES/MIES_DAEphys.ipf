@@ -906,8 +906,8 @@ Function DAP_SetVarProc_Channel_Search(STRUCT WMSetVariableAction &sva) : SetVar
 	string device, varstr, sel
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // mouse up, FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 2: // Enter key, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 3: // Live update
 			device = sva.win
 			ctrl   = sva.ctrlName
@@ -1596,8 +1596,8 @@ Function DAP_SetVarProc_DA_Scale(STRUCT WMSetVariableAction &sva) : SetVariableC
 	string device, ctrl
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // mouse up, FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 2: // Enter key, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 3: // Live update
 			val    = sva.dval
 			ctrl   = sva.ctrlName
@@ -1694,7 +1694,7 @@ static Function DAP_IsSampleIntervalValid(string device, variable channelType, v
 	endif
 
 	switch(channelType)
-		case XOP_CHANNEL_TYPE_DAC: // intended drop-through
+		case XOP_CHANNEL_TYPE_DAC: // intended drop-through, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case XOP_CHANNEL_TYPE_TTL:
 			WAVE allowedIntervals = GetSutterDACTTLSampleInterval()
 			FindValue/Z/V=(sampInt) allowedIntervals
@@ -1734,8 +1734,8 @@ Function DAP_SetVarProc_TotSweepCount(STRUCT WMSetVariableAction &sva) : SetVari
 	string device
 
 	switch(sva.eventCode)
-		case 1:
-		case 2:
+		case 1: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 2: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 3:
 			device = sva.win
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
@@ -1862,14 +1862,14 @@ Function DAP_SetVarProc_CAA(STRUCT WMSetVariableAction &sva) : SetVariableContro
 	string device
 
 	switch(sva.eventCode)
-		case 1: // mouse up
+		case 1: // mouse up, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 2: // Enter key
 			device = sva.win
 			DAP_AbortIfUnlocked(device)
 
 			strswitch(sva.ctrlName)
-				case "setvar_DataAcq_SSPressure":
-				case "setvar_DataAcq_PPPressure":
+				case "setvar_DataAcq_SSPressure": // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case "setvar_DataAcq_PPPressure": // FIXME(CodeStyleFallthroughCaseRequireComment)
 				case "setvar_DataAcq_PPDuration":
 					DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
 					break
@@ -1890,8 +1890,8 @@ Function DAP_SetVarProc_CAA(STRUCT WMSetVariableAction &sva) : SetVariableContro
 			break
 		case 9: // mouse down
 			strswitch(sva.ctrlName)
-				case "setvar_DataAcq_SSPressure":
-				case "setvar_DataAcq_PPPressure":
+				case "setvar_DataAcq_SSPressure": // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case "setvar_DataAcq_PPPressure": // FIXME(CodeStyleFallthroughCaseRequireComment)
 				case "setvar_DataAcq_PPDuration":
 					ShowSetVariableLimitsSelectionPopup(sva)
 					break
@@ -3111,19 +3111,19 @@ Function/S DAP_GetClampModeControl(variable mode, variable headstage)
 				ASSERT(0, "invalid mode")
 				break
 		endswitch
-	else
-		switch(mode)
-			case V_CLAMP_MODE:
-				return "Radio_ClampMode_AllVClamp"
-			case I_CLAMP_MODE:
-				return "Radio_ClampMode_AllIClamp"
-			case I_EQUAL_ZERO_MODE:
-				return "Radio_ClampMode_AllIZero"
-			default:
-				ASSERT(0, "invalid mode")
-				break
-		endswitch
 	endif
+
+	switch(mode)
+		case V_CLAMP_MODE:
+			return "Radio_ClampMode_AllVClamp"
+		case I_CLAMP_MODE:
+			return "Radio_ClampMode_AllIClamp"
+		case I_EQUAL_ZERO_MODE:
+			return "Radio_ClampMode_AllIZero"
+		default:
+			ASSERT(0, "invalid mode")
+			break
+	endswitch
 End
 
 /// @brief Return information readout from headstage and clamp mode controls
@@ -3601,7 +3601,7 @@ Function DAP_SetVarProc_AmpCntrls(STRUCT WMSetVariableAction &sva) : SetVariable
 	variable headStage, func, clampMode
 
 	switch(sva.eventCode)
-		case 1: // mouse up
+		case 1: // mouse up, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 2: // Enter key
 			device = sva.win
 			ctrl   = sva.ctrlName
@@ -3737,8 +3737,8 @@ Function DAP_SetVarProc_TestPulseSett(STRUCT WMSetVariableAction &sva) : SetVari
 	string   device
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // mouse up, FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 2: // Enter key, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 3: // Live update
 			sva.blockReentry = 1
 			device           = sva.win
@@ -3866,8 +3866,8 @@ End
 Function DAP_SetVarProc_SyncCtrl(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // mouse up, FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 2: // Enter key, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 3: // Live update
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
 			break
@@ -4368,9 +4368,9 @@ End
 Function DAP_SetVar_SetScale(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
-		case 3: // Live update
+		case 1: // mouse up, FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 2: // Enter key, FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 3: // Live update, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 8: // end edit
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval, str = sva.sval)
 			break
@@ -4387,9 +4387,9 @@ End
 Function DAP_SetVar_UpdateGuiState(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
-		case 3: // Live update
+		case 1: // mouse up, FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 2: // Enter key, FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 3: // Live update, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 8: // end edit
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval, str = sva.sval)
 			break
@@ -5089,8 +5089,8 @@ End
 Function DAP_SetVarProc_skipAhead(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
-		case 1:
-		case 2:
+		case 1: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 2: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 3:
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
 			DAP_setSkipAheadLimit(sva.win, IDX_MinNoOfSweeps(sva.win) - 1)

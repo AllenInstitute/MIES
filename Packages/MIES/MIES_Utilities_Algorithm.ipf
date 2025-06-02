@@ -295,62 +295,62 @@ threadsafe Function GetRowIndex(WAVE wv, [variable val, string str, WAVE/Z refWa
 				endif
 			endfor
 		endif
-	else
-		if(IsNumericWave(wv))
-			if(!ParamIsDefault(str))
-				val = str2num(str)
-			endif
+	endif
 
-			if(!reverseSearch)
-				if(IsNaN(val))
-					FindValue/FNAN wv
-				elseif(IsInf(val))
-					// @todo /V supports inf only in IP10
-					numEntries = numpnts(wv)
-					for(i = 0; i < numEntries; i += 1)
-						if(val == wv[i])
-							return i
-						endif
-					endfor
-				else
-					FindValue/V=(val)/T=(0) wv
-				endif
+	if(IsNumericWave(wv))
+		if(!ParamIsDefault(str))
+			val = str2num(str)
+		endif
+
+		if(!reverseSearch)
+			if(IsNaN(val))
+				FindValue/FNAN wv
+			elseif(IsInf(val))
+				// @todo /V supports inf only in IP10
+				numEntries = numpnts(wv)
+				for(i = 0; i < numEntries; i += 1)
+					if(val == wv[i])
+						return i
+					endif
+				endfor
 			else
-				if(IsNaN(val))
-					FindValue/FNAN/R wv
-				elseif(IsInf(val))
-					// @todo /V supports inf only in IP10
-					numEntries = numpnts(wv)
-					for(i = numEntries - 1; i >= 0; i -= 1)
-						if(val == wv[i])
-							return i
-						endif
-					endfor
-				else
-					FindValue/V=(val)/R/T=(0) wv
-				endif
-			endif
-
-			if(V_Value >= 0)
-				return V_Value
-			endif
-		elseif(IsTextWave(wv))
-			if(!ParamIsDefault(val))
-				str = num2str(val)
-			endif
-
-			if(!reverseSearch)
-				FindValue/TEXT=(str)/TXOP=(textOp) wv
-			else
-				FindValue/TEXT=(str)/TXOP=(textOp)/R wv
-			endif
-
-			if(V_Value >= 0)
-				return V_Value
+				FindValue/V=(val)/T=(0) wv
 			endif
 		else
-			ASSERT_TS(0, "Unsupported wave type")
+			if(IsNaN(val))
+				FindValue/FNAN/R wv
+			elseif(IsInf(val))
+				// @todo /V supports inf only in IP10
+				numEntries = numpnts(wv)
+				for(i = numEntries - 1; i >= 0; i -= 1)
+					if(val == wv[i])
+						return i
+					endif
+				endfor
+			else
+				FindValue/V=(val)/R/T=(0) wv
+			endif
 		endif
+
+		if(V_Value >= 0)
+			return V_Value
+		endif
+	elseif(IsTextWave(wv))
+		if(!ParamIsDefault(val))
+			str = num2str(val)
+		endif
+
+		if(!reverseSearch)
+			FindValue/TEXT=(str)/TXOP=(textOp) wv
+		else
+			FindValue/TEXT=(str)/TXOP=(textOp)/R wv
+		endif
+
+		if(V_Value >= 0)
+			return V_Value
+		endif
+	else
+		ASSERT_TS(0, "Unsupported wave type")
 	endif
 
 	return NaN

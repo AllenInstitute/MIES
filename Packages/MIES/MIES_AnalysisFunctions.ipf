@@ -209,7 +209,7 @@ Function TestAnalysisFunction_V3(string device, STRUCT AnalysisFunction_V3 &s)
 			case "variable":
 				print AFH_GetAnalysisParamTextual(name, s.params)
 				break
-			case "wave":
+			case "wave": // FIXME(CodeStyleFallthroughCaseRequireComment)
 				WAVE/Z wv = AFH_GetAnalysisParamWave(name, s.params)
 				print wv
 			case "textwave":
@@ -1035,9 +1035,9 @@ static Function/WAVE CreateOverrideResults()
 	if(WaveExists(wv))
 		ASSERT(IsNumericWave(wv), "overrideResults wave must be numeric here")
 		Redimension/D/N=(numRows, numCols) wv
-	else
-		Make/D/N=(numRows, numCols) root:overrideResults/WAVE=wv
 	endif
+
+	Make/D/N=(numRows, numCols) root:overrideResults/WAVE=wv
 
 	wv[] = 0
 
@@ -1301,16 +1301,16 @@ Function ReportOutOfRangeDAScale(string device, variable sweepNo, variable anaFu
 	ASSERT(GetHardwareType(device) != HARDWARE_SUTTER_DAC, "Missing support for Sutter amplifier")
 
 	switch(anaFuncType)
-		case PSQ_CHIRP:
-		case PSQ_RAMP:
-		case PSQ_DA_SCALE:
-		case PSQ_SQUARE_PULSE:
+		case PSQ_CHIRP: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_RAMP: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_DA_SCALE: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_SQUARE_PULSE: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PSQ_RHEOBASE:
 			key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_DASCALE_OOR)
 			ED_AddEntryToLabnotebook(device, key, oorDAScale, overrideSweepNo = sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
 			break
-		case MSQ_FAST_RHEO_EST:
-		case MSQ_DA_SCALE:
+		case MSQ_FAST_RHEO_EST: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case MSQ_DA_SCALE: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case SC_SPIKE_CONTROL:
 			key = CreateAnaFuncLBNKey(anaFuncType, MSQ_FMT_LBN_DASCALE_OOR)
 			ED_AddEntryToLabnotebook(device, key, oorDAScale, overrideSweepNo = sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
@@ -1506,7 +1506,7 @@ Function SetControlInEvent(string device, STRUCT AnalysisFunction_V3 &s)
 				win = StringFromList(k, windowsWithGUIElement)
 
 				switch(WinType(win))
-					case WINTYPE_GRAPH:
+					case WINTYPE_GRAPH: // FIXME(CodeStyleFallthroughCaseRequireComment)
 					case WINTYPE_PANEL:
 						if(IsControlDisabled(win, guiElem))
 							printf "(%s): The analysis parameter %s is a control which is disabled. Therefore it can not be set.\r", device, guiElem
@@ -1516,13 +1516,13 @@ Function SetControlInEvent(string device, STRUCT AnalysisFunction_V3 &s)
 
 						controlType = GetControlType(win, guiElem)
 						switch(controlType)
-							case CONTROL_TYPE_SETVARIABLE:
+							case CONTROL_TYPE_SETVARIABLE: // FIXME(CodeStyleFallthroughCaseRequireComment)
 							case CONTROL_TYPE_POPUPMENU:
 								PGC_SetAndActivateControl(win, guiElem, str = valueStr)
 								break
-							case CONTROL_TYPE_VALDISPLAY:
-							case CONTROL_TYPE_CHART:
-							case CONTROL_TYPE_GROUPBOX:
+							case CONTROL_TYPE_VALDISPLAY: // FIXME(CodeStyleFallthroughCaseRequireComment)
+							case CONTROL_TYPE_CHART: // FIXME(CodeStyleFallthroughCaseRequireComment)
+							case CONTROL_TYPE_GROUPBOX: // FIXME(CodeStyleFallthroughCaseRequireComment)
 							case CONTROL_TYPE_TITLEBOX:
 								printf "(%s): The analysis parameter %s is a control which can not be set. Please fix the stimulus set.\r", device, guiElem
 								ControlWindowToFront()

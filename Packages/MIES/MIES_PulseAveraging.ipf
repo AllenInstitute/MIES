@@ -454,7 +454,7 @@ static Function/WAVE PA_RetrievePulseInfosFromEpochs(string epochInfo)
 		level = str2num(epochs[i][EPOCH_COL_TREELEVEL])
 
 		switch(level)
-			case 2:
+			case 2: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case 3:
 				pulseNo = NumberByKey("Pulse", tags, "=")
 
@@ -771,9 +771,9 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 		if(WaveExists(setIndices))
 			indexHelper[][] = PA_CopySetIndiceSizeDispRestart(setIndices[p][q])
 		endif
-	else
-		SetNumberInWaveNote(properties, NOTE_PA_NEW_PULSES_START, 0)
 	endif
+
+	SetNumberInWaveNote(properties, NOTE_PA_NEW_PULSES_START, 0)
 
 	WAVE prevDisplayMapping = GetPulseAverageDisplayMapping(pulseAverageDFR)
 	Duplicate/FREE prevDisplayMapping, currentDisplayMapping
@@ -2564,7 +2564,7 @@ threadsafe static Function PA_PulseHasFailed(WAVE pulseWave, WAVE noteWave, STRU
 	clampMode = GetNumberFromWaveNote(noteWave, NOTE_KEY_CLAMP_MODE)
 
 	switch(clampMode)
-		case V_CLAMP_MODE:
+		case V_CLAMP_MODE: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case I_EQUAL_ZERO_MODE:
 			numSpikes = 0
 			Make/D/FREE/N=(numSpikes) spikePositions
@@ -2714,8 +2714,8 @@ End
 Function PA_SetVarProc_Common(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // mouse up, FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 2: // Enter key, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 3: // Live update
 			if(!cmpstr(sva.ctrlName, "setvar_pulseAver_numberOfSpikes"))
 				// switch to 1 on up/down buttons only
@@ -3190,54 +3190,54 @@ static Function PA_AddColorScales(string win, STRUCT PulseAverageSettings &pa, S
 			name = "colorScaleDiag"
 			text = "Diagonal (\\U)"
 			PA_AddColorScale(graph, colorScaleGraph, name, text, i - 0.5, numSlots, traceName)
-		else
-			for(i = 0; i < numActive; i += 1)
-				channelNumber = pasi.channels[i]
-
-				// we always take the last region for attaching the color scale bars
-				// except for the last channel as that would be diagonal again
-				// for the last channel we choose the first region
-				// and in that case the color scale bar is also attached to the image from the first region
-				// but it is placed in the external subwindow from the last region
-
-				graph           = PA_GetGraphName(win, pa, PA_DISPLAYMODE_IMAGES, channelNumber, numActive)
-				colorScaleGraph = PA_GetColorScaleGraph(graph)
-				ASSERT(WindowExists(colorScaleGraph), "Missing external subwindow for color scale")
-
-				if(i == (numActive - 1))
-					regionTaken = 0
-					region      = pasi.regions[regionTaken]
-					imageGraph  = PA_GetGraphName(win, pa, PA_DISPLAYMODE_IMAGES, channelNumber, 1)
-					numSlots    = 2
-				else
-					regionTaken = numActive - 1
-					region      = pasi.regions[regionTaken]
-					graph       = PA_GetGraphName(win, pa, PA_DISPLAYMODE_IMAGES, channelNumber, numActive)
-					imageGraph  = graph
-					numSlots    = 1
-				endif
-
-				WAVE setIndizes = pasi.setIndices[i][regionTaken]
-				// assume that all pulses are from the same headstage
-				if(GetNumberFromWaveNote(setIndizes, NOTE_INDEX) == 0)
-					continue
-				endif
-				headstage = properties[setIndizes[0]][PA_PROPERTIES_INDEX_HEADSTAGE]
-				ASSERT(IsValidHeadstage(headstage), "Invalid headstage")
-
-				WAVE img = GetPulseAverageSetImageWave(pasi.pulseAverageDFR, channelNumber, region)
-				traceName = NameOfWave(img)
-
-				name = "colorScale_HS_" + num2str(headstage)
-				text = "HS" + num2str(headstage) + "\r(\\U)"
-				PA_AddColorScale(imageGraph, colorScaleGraph, name, text, 0, numSlots, traceName)
-			endfor
-
-			name     = "colorScaleDiag"
-			text     = "Diagonal\r(\\U)"
-			numSlots = 2
-			PA_AddColorScale(imageGraph, colorScaleGraph, name, text, 1, numSlots, traceName)
 		endif
+
+		for(i = 0; i < numActive; i += 1)
+			channelNumber = pasi.channels[i]
+
+			// we always take the last region for attaching the color scale bars
+			// except for the last channel as that would be diagonal again
+			// for the last channel we choose the first region
+			// and in that case the color scale bar is also attached to the image from the first region
+			// but it is placed in the external subwindow from the last region
+
+			graph           = PA_GetGraphName(win, pa, PA_DISPLAYMODE_IMAGES, channelNumber, numActive)
+			colorScaleGraph = PA_GetColorScaleGraph(graph)
+			ASSERT(WindowExists(colorScaleGraph), "Missing external subwindow for color scale")
+
+			if(i == (numActive - 1))
+				regionTaken = 0
+				region      = pasi.regions[regionTaken]
+				imageGraph  = PA_GetGraphName(win, pa, PA_DISPLAYMODE_IMAGES, channelNumber, 1)
+				numSlots    = 2
+			else
+				regionTaken = numActive - 1
+				region      = pasi.regions[regionTaken]
+				graph       = PA_GetGraphName(win, pa, PA_DISPLAYMODE_IMAGES, channelNumber, numActive)
+				imageGraph  = graph
+				numSlots    = 1
+			endif
+
+			WAVE setIndizes = pasi.setIndices[i][regionTaken]
+			// assume that all pulses are from the same headstage
+			if(GetNumberFromWaveNote(setIndizes, NOTE_INDEX) == 0)
+				continue
+			endif
+			headstage = properties[setIndizes[0]][PA_PROPERTIES_INDEX_HEADSTAGE]
+			ASSERT(IsValidHeadstage(headstage), "Invalid headstage")
+
+			WAVE img = GetPulseAverageSetImageWave(pasi.pulseAverageDFR, channelNumber, region)
+			traceName = NameOfWave(img)
+
+			name = "colorScale_HS_" + num2str(headstage)
+			text = "HS" + num2str(headstage) + "\r(\\U)"
+			PA_AddColorScale(imageGraph, colorScaleGraph, name, text, 0, numSlots, traceName)
+		endfor
+
+		name     = "colorScaleDiag"
+		text     = "Diagonal\r(\\U)"
+		numSlots = 2
+		PA_AddColorScale(imageGraph, colorScaleGraph, name, text, 1, numSlots, traceName)
 	endif
 
 	numEntries = ItemsInList(graphsToResize)
@@ -3694,7 +3694,7 @@ Function PA_TraceWindowHook(STRUCT WMWinHookStruct &s)
 	string traceGraph
 
 	switch(s.eventcode)
-		case EVENT_WINDOW_HOOK_MOUSEWHEEL:
+		case EVENT_WINDOW_HOOK_MOUSEWHEEL: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case EVENT_WINDOW_HOOK_RESIZE:
 			traceGraph = s.winName
 			Execute/P/Q/Z "PA_UpdateScaleBars(\"" + traceGraph + "\", 0)"

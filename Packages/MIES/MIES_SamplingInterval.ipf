@@ -348,56 +348,57 @@ Function SI_CreateLookupWave(string device, [variable ignoreChannelOrder])
 				idx                      += 1
 			endfor
 		endfor
-	else // exhaustive sampling interval brute forcing
-		ASSERT(totalNumRacks == 1, "Only tested with one rack")
-
-		numPerms = 2^(totalNumDA + totalNumAD + totalNumTTL)
-
-		Make/O/B/N=(numPerms, 7) results = -1
-		SetDimLabel COLS, 0, numDARack1, results
-		SetDimLabel COLS, 1, numADRack1, results
-		SetDimLabel COLS, 2, numTTLRack1, results
-		SetDimLabel COLS, 3, numDARack2, results
-		SetDimLabel COLS, 4, numADRack2, results
-		SetDimLabel COLS, 5, numTTLRack2, results
-		SetDimLabel COLS, 6, minSampInt, results
-
-		DAMask  = (2^(totalNumDA) - 1) * 2^(totalNumAD + totalNumTTL)
-		ADMask  = (2^(totalNumAD) - 1) * 2^(totalNumTTL)
-		TTLMask = (2^(totalNumTTL) - 1) * 2^(0)
-
-		for(i = 0; i < numPerms; i += 1)
-			DA          = (i & DAMask) / 2^(totalNumAD + totalNumTTL)
-			AD          = (i & ADMask) / 2^(totalNumTTL)
-			TTL         = (i & TTLMask) / 2^(0)
-			numChannels = PopCount(i)
-
-			if(numChannels == 0)
-				continue
-			endif
-
-			Redimension/N=(-1, numChannels) DAQDataWave
-			Redimension/N=(numChannels, -1) DAQConfigWave
-
-			numDA  = PopCount(DA)
-			numAD  = PopCount(AD)
-			numTTL = PopCount(TTL)
-
-			if(!mod(i, 1000))
-				printf "i= %d\r", i
-			endif
-
-			SI_FillITCConfigWithPerms(DAQConfigWave, 0, DA, XOP_CHANNEL_TYPE_DAC)
-			SI_FillITCConfigWithPerms(DAQConfigWave, numDA, AD, XOP_CHANNEL_TYPE_ADC)
-			SI_FillITCConfigWithPerms(DAQConfigWave, numDA + numAD, TTL, XOP_CHANNEL_TYPE_TTL)
-
-			results[i][0]    = numDA
-			results[i][1]    = numAD
-			results[i][2]    = numTTL
-			results[i][3, 5] = 0
-			results[i][6]    = SI_TestSampInt(device)
-		endfor
 	endif
+
+	// exhaustive sampling interval brute forcing
+	ASSERT(totalNumRacks == 1, "Only tested with one rack")
+
+	numPerms = 2^(totalNumDA + totalNumAD + totalNumTTL)
+
+	Make/O/B/N=(numPerms, 7) results = -1
+	SetDimLabel COLS, 0, numDARack1, results
+	SetDimLabel COLS, 1, numADRack1, results
+	SetDimLabel COLS, 2, numTTLRack1, results
+	SetDimLabel COLS, 3, numDARack2, results
+	SetDimLabel COLS, 4, numADRack2, results
+	SetDimLabel COLS, 5, numTTLRack2, results
+	SetDimLabel COLS, 6, minSampInt, results
+
+	DAMask  = (2^(totalNumDA) - 1) * 2^(totalNumAD + totalNumTTL)
+	ADMask  = (2^(totalNumAD) - 1) * 2^(totalNumTTL)
+	TTLMask = (2^(totalNumTTL) - 1) * 2^(0)
+
+	for(i = 0; i < numPerms; i += 1)
+		DA          = (i & DAMask) / 2^(totalNumAD + totalNumTTL)
+		AD          = (i & ADMask) / 2^(totalNumTTL)
+		TTL         = (i & TTLMask) / 2^(0)
+		numChannels = PopCount(i)
+
+		if(numChannels == 0)
+			continue
+		endif
+
+		Redimension/N=(-1, numChannels) DAQDataWave
+		Redimension/N=(numChannels, -1) DAQConfigWave
+
+		numDA  = PopCount(DA)
+		numAD  = PopCount(AD)
+		numTTL = PopCount(TTL)
+
+		if(!mod(i, 1000))
+			printf "i= %d\r", i
+		endif
+
+		SI_FillITCConfigWithPerms(DAQConfigWave, 0, DA, XOP_CHANNEL_TYPE_DAC)
+		SI_FillITCConfigWithPerms(DAQConfigWave, numDA, AD, XOP_CHANNEL_TYPE_ADC)
+		SI_FillITCConfigWithPerms(DAQConfigWave, numDA + numAD, TTL, XOP_CHANNEL_TYPE_TTL)
+
+		results[i][0]    = numDA
+		results[i][1]    = numAD
+		results[i][2]    = numTTL
+		results[i][3, 5] = 0
+		results[i][6]    = SI_TestSampInt(device)
+	endfor
 
 	ITCConfigChannelReset2
 
@@ -554,7 +555,7 @@ static Function SI_ITC_CalculateMinSampInterval(string device, variable dataAcqO
 	endif
 
 	strswitch(deviceType)
-		case "ITC18":
+		case "ITC18": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "ITC16":
 			return 2 * SI_FindMatchingTableEntry(lut, ac)
 			break
@@ -579,7 +580,7 @@ static Function/WAVE SI_GetMinSampIntWave(string device)
 	DFREF dfr = GetStaticDataFolder()
 
 	strswitch(deviceType)
-		case "ITC18USB":
+		case "ITC18USB": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "ITC18":
 			WAVE/Z/SDFR=dfr wv = SampInt_ITC18USB
 
@@ -589,7 +590,7 @@ static Function/WAVE SI_GetMinSampIntWave(string device)
 
 			return wv
 			break
-		case "ITC16USB":
+		case "ITC16USB": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "ITC16":
 			WAVE/Z/SDFR=dfr wv = SampInt_ITC16USB
 

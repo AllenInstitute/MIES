@@ -872,16 +872,16 @@ Function/S SC_SpikeControl_CheckParam(string name, STRUCT CheckParametersStruct 
 				return "Invalid value " + num2str(val)
 			endif
 			break
-		case "DAScaleOperator":
-		case "DAScaleSpikePositionOperator":
+		case "DAScaleOperator": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "DAScaleSpikePositionOperator": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "DaScaleTooManySpikesOperator":
 			str = AFH_GetAnalysisParamTextual(name, s.params)
 			if(cmpstr(str, "+") && cmpstr(str, "*"))
 				return "Invalid string " + str
 			endif
 			break
-		case "DAScaleModifier":
-		case "DAScaleSpikePositionModifier":
+		case "DAScaleModifier": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "DAScaleSpikePositionModifier": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "DaScaleTooManySpikesModifier":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val))
@@ -912,7 +912,7 @@ Function/S SC_SpikeControl_CheckParam(string name, STRUCT CheckParametersStruct 
 	endswitch
 
 	strswitch(name)
-		case "DaScaleTooManySpikesModifier":
+		case "DaScaleTooManySpikesModifier": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "DaScaleTooManySpikesOperator":
 			modifier = AFH_GetAnalysisParamNumerical("DaScaleTooManySpikesModifier", s.params)
 			operator = AFH_GetAnalysisParamTextual("DaScaleTooManySpikesOperator", s.params)
@@ -1016,9 +1016,9 @@ Function SC_SpikeControl(string device, STRUCT AnalysisFunction_V3 &s)
 			if(IsControlDisabled(bsPanel, "check_BrowserSettings_OVS"))
 				ASSERT(GetCheckBoxState(bsPanel, "check_BrowserSettings_OVS") == CHECKBOX_SELECTED, \
 				       "OVS must be enabled when the control is disabled")
-			else
-				PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_OVS", val = 1)
 			endif
+
+			PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_OVS", val = 1)
 
 			PGC_SetAndActivateControl(bsPanel, "check_ovs_clear_on_new_stimset_cycle", val = 1)
 

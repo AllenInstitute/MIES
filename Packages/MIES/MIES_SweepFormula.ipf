@@ -490,15 +490,15 @@ static Function [variable jsonId, string jsonPath, variable lastCalculation, var
 			subId = SF_FormulaParser(buffer[1, Inf], createdArray = wasArrayCreated, indentLevel = indentLevel + 1)
 			SF_FPAddArray(jsonId, jsonPath, subId, wasArrayCreated)
 			break
-		case SF_ACTION_LOWERORDER:
+		case SF_ACTION_LOWERORDER: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			jsonPath = SF_ParserAdaptSubPath(jsonId, jsonPath, token)
-		case SF_ACTION_ARRAYELEMENT:
+		case SF_ACTION_ARRAYELEMENT: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			// - "," was encountered, thus we have multiple elements, we need to set an array at current path
 			// The actual content is added in the case fall-through
 			SFH_ASSERT(!(IsEmpty(buffer) && (lastAction == SF_ACTION_COLLECT || lastAction == SF_ACTION_SKIP || lastAction == SF_ACTION_HIGHERORDER)), "array element has no value", jsonId = jsonId)
 			JSON_AddTreeArray(jsonID, jsonPath)
 			lastCalculation = state
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			if(!IsEmpty(buffer))
 				SF_ParserAddJSON(jsonId, jsonPath, buffer, indentLevel)
 			endif
@@ -537,7 +537,7 @@ static Function [variable action, variable lastState, variable collectedSign] SF
 			switch(state)
 				// *, / before +, - (as well as *, / here) and /, - are non-commutative
 				// resulting in *, /, - are handled as higher order
-				case SF_STATE_ADDITION:
+				case SF_STATE_ADDITION: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				case SF_STATE_SUBTRACTION:
 					if(bufferIsEmpty || lastCalculation == SF_STATE_SUBTRACTION || lastCalculation == SF_STATE_MULTIPLICATION || lastCalculation == SF_STATE_DIVISION)
 						action = SF_ACTION_HIGHERORDER
@@ -554,7 +554,7 @@ static Function [variable action, variable lastState, variable collectedSign] SF
 
 					ASSERT(0, "Unhandled state")
 
-				case SF_STATE_MULTIPLICATION:
+				case SF_STATE_MULTIPLICATION: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				case SF_STATE_DIVISION:
 
 					// if the buffer is empty and we are either at the start of a new parse or at a new array element (which is basically the start of a new parse of a subsequent part)
@@ -600,7 +600,7 @@ static Function [variable action, variable lastState, variable collectedSign] SF
 				case SF_STATE_ARRAY:
 					action = SF_ACTION_ARRAY
 					break
-				case SF_STATE_NEWLINE:
+				case SF_STATE_NEWLINE: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				case SF_STATE_WHITESPACE:
 					action = SF_ACTION_SKIP
 					break
@@ -613,7 +613,7 @@ static Function [variable action, variable lastState, variable collectedSign] SF
 					endif
 					action = SF_ACTION_COLLECT
 					break
-				default:
+				default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 					sprintf errMsg, "Encountered undefined transition from %s to %s.", SF_StringifyState(lastState), SF_StringifyState(state)
 					SFH_ASSERT(0, errMsg, jsonId = jsonId)
 			endswitch
@@ -677,11 +677,11 @@ static Function [variable state, variable arrayLevel, variable level] SF_ParserG
 		case "\r":
 			state = SF_STATE_NEWLINE
 			break
-		case " ":
+		case " ": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "\t":
 			state = SF_STATE_WHITESPACE
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			state = SF_STATE_COLLECT
 			SFH_ASSERT(GrepString(token, SF_PARSER_REGEX_OTHER_VALID_CHARS), "undefined pattern in formula near: " + buffer + token, jsonId = jsonId)
 	endswitch
@@ -1013,10 +1013,10 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 	opName = LowerStr(operations[0])
 #ifdef AUTOMATED_TESTING
 	strswitch(opName)
-		case SF_OP_MINUS:
-		case SF_OP_PLUS:
-		case SF_OP_DIV:
-		case SF_OP_MULT:
+		case SF_OP_MINUS: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case SF_OP_PLUS: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case SF_OP_DIV: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case SF_OP_MULT: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case SF_OP_RANGESHORT:
 			break
 		default:
@@ -1041,7 +1041,7 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 		case SF_OP_MULT:
 			WAVE out = SF_OperationMult(jsonId, jsonPath, graph)
 			break
-		case SF_OP_RANGE:
+		case SF_OP_RANGE: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case SF_OP_RANGESHORT:
 			WAVE out = SF_OperationRange(jsonId, jsonPath, graph)
 			break
@@ -1054,7 +1054,7 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 		case SF_OP_MAX:
 			WAVE out = SF_OperationMax(jsonId, jsonPath, graph)
 			break
-		case SF_OP_AVG:
+		case SF_OP_AVG: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case SF_OP_MEAN:
 			WAVE out = SF_OperationAvg(jsonId, jsonPath, graph)
 			break
@@ -1082,7 +1082,7 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 		case SF_OP_BUTTERWORTH:
 			WAVE out = SF_OperationButterworth(jsonId, jsonPath, graph)
 			break
-		case SF_OP_TIME:
+		case SF_OP_TIME: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case SF_OP_XVALUES:
 			WAVE out = SF_OperationXValues(jsonId, jsonPath, graph)
 			break
@@ -1221,7 +1221,7 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 		case SF_OP_SELECTRANGE:
 			WAVE out = SF_OperationSelectRange(jsonId, jsonPath, graph)
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			SFH_ASSERT(0, "Undefined Operation", jsonId = jsonId)
 	endswitch
 	///@}
@@ -2257,15 +2257,15 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 					WAVE customMarker = MoveFreeWaveToPermanent(customMarkerAsFree, dfrWork, wvName)
 					ASSERT(DimSize(wvY, ROWS) == DimSize(customMarker, ROWS), "Marker size mismatch")
 					ModifyGraph/W=$win zmrkNum($trace)={customMarker}
-				else
-					overrideMarker = JWN_GetNumberFromWaveNote(wvY, SF_META_MOD_MARKER)
-
-					if(!IsNaN(overrideMarker))
-						markerCode = overrideMarker
-					endif
-
-					ModifyGraph/W=$win marker($trace)=markerCode
 				endif
+
+				overrideMarker = JWN_GetNumberFromWaveNote(wvY, SF_META_MOD_MARKER)
+
+				if(!IsNaN(overrideMarker))
+					markerCode = overrideMarker
+				endif
+
+				ModifyGraph/W=$win marker($trace)=markerCode
 
 				traceToFront = JWN_GetNumberFromWaveNote(wvY, SF_META_TRACETOFRONT)
 				traceToFront = IsNaN(traceToFront) ? 0 : !!traceToFront
@@ -5330,7 +5330,7 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 					WAVE/Z filter.selects = SF_GetSetIntersectionSelect(filter.selects, arg)
 				endif
 				break
-			default:
+			default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				SFH_ASSERT(0, "Unsupported select argument")
 		endswitch
 	endfor
@@ -5989,8 +5989,8 @@ static Function/WAVE SF_OperationAnaFuncParamImpl(string graph, WAVE/T names, WA
 				case "variable":
 					Make/FREE/D out = {AFH_GetAnalysisParamNumerical(name, params)}
 					break
-				case "string":
-				case "wave":
+				case "string": // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case "wave": // FIXME(CodeStyleFallthroughCaseRequireComment)
 				case "textwave":
 					Make/FREE/D out = {0.0}
 					JWN_SetWaveInWaveNote(out, SF_META_TRACECOLOR, {0, 0, 0, 0})
@@ -7355,7 +7355,7 @@ Function/WAVE SF_OperationFitImpl(WAVE xData, WAVE yData, string fitFunc, WAVE h
 			CurveFit/Q/N=1/NTHR=1/M=0/W=2/G/H=holdString line, kwCWave=coefWave, yData[*][0]/X=xData[*][0]/D; err = GetRTError(1)
 			Make/T/FREE params = {"Offset;Slope"}
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			SFH_ASSERT(0, "Invalid fit function: " + fitFunc)
 	endswitch
 

@@ -228,8 +228,8 @@ Function PSQ_GetPulseSettingsForType(variable type, STRUCT PSQ_PulseSettings &s)
 			s.postPulseChunkLength = PSQ_BL_EVAL_RANGE
 			s.pulseDuration        = NaN
 			break
-		case PSQ_RHEOBASE:
-		case PSQ_RAMP:
+		case PSQ_RHEOBASE: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_RAMP: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PSQ_CHIRP: // fallthrough-by-design
 			s.prePulseChunkLength  = PSQ_BL_EVAL_RANGE
 			s.postPulseChunkLength = PSQ_BL_EVAL_RANGE
@@ -240,8 +240,8 @@ Function PSQ_GetPulseSettingsForType(variable type, STRUCT PSQ_PulseSettings &s)
 			s.postPulseChunkLength = NaN
 			s.pulseDuration        = NaN
 			break
-		case PSQ_SEAL_EVALUATION:
-		case PSQ_TRUE_REST_VM:
+		case PSQ_SEAL_EVALUATION: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_TRUE_REST_VM: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PSQ_ACC_RES_SMOKE: // fallthrough-by-design
 			s.prePulseChunkLength     = NaN
 			s.postPulseChunkLength    = NaN
@@ -344,18 +344,18 @@ Function/WAVE PSQ_DeterminePulseDurationFinder(WAVE statusHS, WAVE/WAVE allSingl
 			FindLevel/Q/R=(Inf, totalOnsetDelay) singleDA, 0
 			ASSERT(!V_Flag, "Could not find an edge")
 			last = V_LevelX
-		else
-			level = WaveMin(singleDA, totalOnsetDelay, Inf) + GetMachineEpsilon(WaveType(singleDA))
-
-			// search a square pulse
-			FindLevel/Q/R=(totalOnsetDelay, Inf)/EDGE=1 singleDA, level
-			ASSERT(!V_Flag, "Could not find a rising edge")
-			first = V_LevelX
-
-			FindLevel/Q/R=(totalOnsetDelay, Inf)/EDGE=2 singleDA, level
-			ASSERT(!V_Flag, "Could not find a falling edge")
-			last = V_LevelX
 		endif
+
+		level = WaveMin(singleDA, totalOnsetDelay, Inf) + GetMachineEpsilon(WaveType(singleDA))
+
+		// search a square pulse
+		FindLevel/Q/R=(totalOnsetDelay, Inf)/EDGE=1 singleDA, level
+		ASSERT(!V_Flag, "Could not find a rising edge")
+		first = V_LevelX
+
+		FindLevel/Q/R=(totalOnsetDelay, Inf)/EDGE=2 singleDA, level
+		ASSERT(!V_Flag, "Could not find a falling edge")
+		last = V_LevelX
 
 		if(level > 0 || type == PSQ_CHIRP)
 			duration = last - first - DimDelta(singleDA, ROWS)
@@ -710,9 +710,10 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 
 		if(type == PSQ_PIPETTE_BATH || type == PSQ_SEAL_EVALUATION || type == PSQ_ACC_RES_SMOKE) // Vclamp
 			ASSERT(!cmpstr(ADunit, "pA"), "Unexpected AD Unit")
-		else // Iclamp
-			ASSERT(!cmpstr(ADunit, "mV"), "Unexpected AD Unit")
 		endif
+
+		// Iclamp
+		ASSERT(!cmpstr(ADunit, "mV"), "Unexpected AD Unit")
 
 		if(testMatrix[baselineType][PSQ_RMS_SHORT_TEST])
 
@@ -809,11 +810,11 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 
 			sprintf msg, "Average leak current of %gms: %g (%s)", evalRangeTime, avgCurrent[i], ToPassFail(leakCurPassed[i])
 			DEBUGPRINT(msg)
-		else
-			sprintf msg, "Average leak current: (%s)\r", "skipped"
-			DEBUGPRINT(msg)
-			leakCurPassed[i] = -1
 		endif
+
+		sprintf msg, "Average leak current: (%s)\r", "skipped"
+		DEBUGPRINT(msg)
+		leakCurPassed[i] = -1
 
 		if(!leakCurPassed[i])
 			continue
@@ -971,8 +972,8 @@ static Function PSQ_GetNumberOfChunks(string device, variable sweepNo, variable 
 
 	switch(type)
 		case PSQ_DA_SCALE: // fallthrough-by-design
-		case PSQ_RHEOBASE:
-		case PSQ_RAMP:
+		case PSQ_RHEOBASE: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PSQ_RAMP: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PSQ_CHIRP:
 			WAVE durations = PSQ_GetPulseDurations(device, type, sweepNo, totalOnsetDelay)
 			ASSERT(durations[headstage] != 0, "Pulse duration can not be zero")
@@ -983,7 +984,7 @@ static Function PSQ_GetNumberOfChunks(string device, variable sweepNo, variable 
 		case PSQ_SEAL_EVALUATION:
 			// upper limit
 			return 2
-		case PSQ_TRUE_REST_VM:
+		case PSQ_TRUE_REST_VM: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PSQ_ACC_RES_SMOKE:
 			return 1
 		default:
@@ -1282,7 +1283,7 @@ Function/WAVE PSQ_CreateOverrideResults(string device, variable headstage, varia
 	endif
 
 	switch(type)
-		case PSQ_RAMP:
+		case PSQ_RAMP: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PSQ_RHEOBASE:
 			numChunks      = 4
 			numRows        = PSQ_GetNumberOfChunks(device, 0, headstage, type, sampleIntervalDA)
@@ -1295,7 +1296,7 @@ Function/WAVE PSQ_CreateOverrideResults(string device, variable headstage, varia
 			numCols   = IDX_NumberOfSweepsInSet(stimset)
 
 			strswitch(opMode)
-				case PSQ_DS_SUB:
+				case PSQ_DS_SUB: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				case PSQ_DS_SUPRA:
 					layerDimLabels = "BaselineQC;SpikePosition;NumberOfSpikes;AsyncQC"
 					break
@@ -1351,9 +1352,9 @@ Function/WAVE PSQ_CreateOverrideResults(string device, variable headstage, varia
 	if(WaveExists(wv))
 		ASSERT(IsNumericWave(wv), "overrideResults wave must be numeric here")
 		Redimension/D/N=(numRows, numCols, numLayers, numChunks) wv
-	else
-		Make/D/N=(numRows, numCols, numLayers, numChunks) root:overrideResults/WAVE=wv
 	endif
+
+	Make/D/N=(numRows, numCols, numLayers, numChunks) root:overrideResults/WAVE=wv
 
 	wv[] = 0
 
@@ -1508,59 +1509,58 @@ static Function/WAVE PSQ_SearchForSpikes(string device, variable type, WAVE swee
 		if(!ParamIsDefault(numberOfSpikesFound))
 			numberOfSpikesFound = numSpikesFoundOverride
 		endif
-	else
+	endif
 
-		WAVE singleAD = AFH_ExtractOneDimDataFromSweep(device, sweepWave, headstage, XOP_CHANNEL_TYPE_ADC, config = config)
-		ASSERT(!cmpstr(WaveUnits(singleAD, -1), "mV"), "Unexpected AD Unit")
+	WAVE singleAD = AFH_ExtractOneDimDataFromSweep(device, sweepWave, headstage, XOP_CHANNEL_TYPE_ADC, config = config)
+	ASSERT(!cmpstr(WaveUnits(singleAD, -1), "mV"), "Unexpected AD Unit")
 
-		if(type == PSQ_CHIRP)
-			// use PA plot logic
-			Duplicate/R=(first, last)/FREE singleAD, chirpChunk
+	if(type == PSQ_CHIRP)
+		// use PA plot logic
+		Duplicate/R=(first, last)/FREE singleAD, chirpChunk
 
-			ASSERT(numberOfSpikesReq == Inf, "Unexpected value of numberOfSpikesReq")
-			WAVE spikePositionsResult = PA_SpikePositionsForNonVC(chirpChunk, level)
+		ASSERT(numberOfSpikesReq == Inf, "Unexpected value of numberOfSpikesReq")
+		WAVE spikePositionsResult = PA_SpikePositionsForNonVC(chirpChunk, level)
 
-			spikeDetection[headstage] = DimSize(spikePositionsResult, ROWS) > 0
+		spikeDetection[headstage] = DimSize(spikePositionsResult, ROWS) > 0
 
-			if(!ParamIsDefault(numberOfSpikesFound))
-				numberOfSpikesFound = DimSize(spikePositionsResult, ROWS)
-			endif
-		else
-			if(numberOfSpikesReq == 1)
-				// search the spike from the start till the end
-				FindLevel/Q/R=(first, last)/B=3 singleAD, level
-				spikeDetection[headstage] = !V_flag
+		if(!ParamIsDefault(numberOfSpikesFound))
+			numberOfSpikesFound = DimSize(spikePositionsResult, ROWS)
+		endif
+	endif
 
-				if(!ParamIsDefault(spikePositions))
-					ASSERT(WaveExists(spikePositions), "Wave spikePositions must exist")
-					Redimension/D/N=(numberOfSpikesReq) spikePositions
-					spikePositions[0] = V_LevelX
-				endif
+	if(numberOfSpikesReq == 1)
+		// search the spike from the start till the end
+		FindLevel/Q/R=(first, last)/B=3 singleAD, level
+		spikeDetection[headstage] = !V_flag
 
-				if(!ParamIsDefault(numberOfSpikesFound))
-					numberOfSpikesFound = spikeDetection[headstage]
-				endif
-			elseif(numberOfSpikesReq > 1)
-				Make/D/FREE/N=0 crossings
-				FindLevels/Q/R=(first, last)/N=(numberOfSpikesReq)/DEST=crossings/EDGE=1/B=3 singleAD, level
-				spikeDetection[headstage] = IsFinite(numberOfSpikesReq) ? (!V_flag) : (V_LevelsFound > 0)
+		if(!ParamIsDefault(spikePositions))
+			ASSERT(WaveExists(spikePositions), "Wave spikePositions must exist")
+			Redimension/D/N=(numberOfSpikesReq) spikePositions
+			spikePositions[0] = V_LevelX
+		endif
 
-				if(!ParamIsDefault(spikePositions))
-					ASSERT(WaveExists(spikePositions), "Wave spikePositions must exist")
-					Redimension/D/N=(V_LevelsFound) spikePositions
+		if(!ParamIsDefault(numberOfSpikesFound))
+			numberOfSpikesFound = spikeDetection[headstage]
+		endif
+	elseif(numberOfSpikesReq > 1)
+		Make/D/FREE/N=0 crossings
+		FindLevels/Q/R=(first, last)/N=(numberOfSpikesReq)/DEST=crossings/EDGE=1/B=3 singleAD, level
+		spikeDetection[headstage] = IsFinite(numberOfSpikesReq) ? (!V_flag) : (V_LevelsFound > 0)
 
-					if(spikeDetection[headstage])
-						spikePositions[] = crossings[p]
-					endif
-				endif
+		if(!ParamIsDefault(spikePositions))
+			ASSERT(WaveExists(spikePositions), "Wave spikePositions must exist")
+			Redimension/D/N=(V_LevelsFound) spikePositions
 
-				if(!ParamIsDefault(numberOfSpikesFound))
-					numberOfSpikesFound = V_LevelsFound
-				endif
-			else
-				ASSERT(0, "Invalid number of spikes value")
+			if(spikeDetection[headstage])
+				spikePositions[] = crossings[p]
 			endif
 		endif
+
+		if(!ParamIsDefault(numberOfSpikesFound))
+			numberOfSpikesFound = V_LevelsFound
+		endif
+	else
+		ASSERT(0, "Invalid number of spikes value")
 	endif
 
 	ASSERT(IsFinite(spikeDetection[headstage]), "Expected finite result")
@@ -1860,7 +1860,7 @@ static Function PSQ_DS_GetDAScaleOffset(string device, variable headstage, strin
 			WAVE/Z setting         = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
 			ASSERT(WaveExists(setting), "Could not find DAScale value of matching rheobase sweep")
 			return setting[headstage]
-		case PSQ_DS_SUB:
+		case PSQ_DS_SUB: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		// fallthrough-by-design
 		case PSQ_DS_ADAPT:
 			return 0
@@ -1894,15 +1894,15 @@ static Function PSQ_GetDefaultSamplingFrequency(string device, variable type)
 	switch(GetHardwareType(device))
 		case HARDWARE_ITC_DAC:
 			switch(type)
-				case PSQ_CHIRP:
-				case PSQ_DA_SCALE:
-				case PSQ_RAMP:
-				case PSQ_RHEOBASE:
+				case PSQ_CHIRP: // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case PSQ_DA_SCALE: // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case PSQ_RAMP: // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case PSQ_RHEOBASE: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				case PSQ_SQUARE_PULSE:
 					return 50
-				case PSQ_PIPETTE_BATH:
-				case PSQ_SEAL_EVALUATION:
-				case PSQ_TRUE_REST_VM:
+				case PSQ_PIPETTE_BATH: // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case PSQ_SEAL_EVALUATION: // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case PSQ_TRUE_REST_VM: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				case PSQ_ACC_RES_SMOKE:
 					return 200
 				default:
@@ -1910,15 +1910,15 @@ static Function PSQ_GetDefaultSamplingFrequency(string device, variable type)
 			endswitch
 		case HARDWARE_NI_DAC:
 			switch(type)
-				case PSQ_CHIRP:
-				case PSQ_DA_SCALE:
-				case PSQ_RAMP:
-				case PSQ_RHEOBASE:
+				case PSQ_CHIRP: // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case PSQ_DA_SCALE: // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case PSQ_RAMP: // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case PSQ_RHEOBASE: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				case PSQ_SQUARE_PULSE:
 					return 50
-				case PSQ_PIPETTE_BATH:
-				case PSQ_SEAL_EVALUATION:
-				case PSQ_TRUE_REST_VM:
+				case PSQ_PIPETTE_BATH: // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case PSQ_SEAL_EVALUATION: // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case PSQ_TRUE_REST_VM: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				case PSQ_ACC_RES_SMOKE:
 					return 250
 				default:
@@ -1926,15 +1926,15 @@ static Function PSQ_GetDefaultSamplingFrequency(string device, variable type)
 			endswitch
 		case HARDWARE_SUTTER_DAC:
 			switch(type)
-				case PSQ_CHIRP:
-				case PSQ_DA_SCALE:
-				case PSQ_RAMP:
-				case PSQ_RHEOBASE:
+				case PSQ_CHIRP: // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case PSQ_DA_SCALE: // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case PSQ_RAMP: // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case PSQ_RHEOBASE: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				case PSQ_SQUARE_PULSE:
 					return 50
-				case PSQ_PIPETTE_BATH:
-				case PSQ_SEAL_EVALUATION:
-				case PSQ_TRUE_REST_VM:
+				case PSQ_PIPETTE_BATH: // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case PSQ_SEAL_EVALUATION: // FIXME(CodeStyleFallthroughCaseRequireComment)
+				case PSQ_TRUE_REST_VM: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				case PSQ_ACC_RES_SMOKE:
 					return 50
 				default:
@@ -2206,10 +2206,10 @@ static Function [WAVE/D fitOffset, WAVE/D fitSlope, string errMsg] PSQ_DS_FitFre
 
 		apfreqFinal[]   = apfreqSorted[idx - PSQ_DA_NUM_POINTS_LINE_FIT + 1 + p]
 		DAScalesFinal[] = DAScalesSorted[idx - PSQ_DA_NUM_POINTS_LINE_FIT + 1 + p]
-	else
-		WAVE apfreqFinal   = apfreqSorted
-		WAVE DAScalesFinal = DAScalesSorted
 	endif
+
+	WAVE apfreqFinal   = apfreqSorted
+	WAVE DAScalesFinal = DAScalesSorted
 	WAVEClear DAScalesSorted, apfreqSorted
 
 	numFits = (numPoints - PSQ_DA_NUM_POINTS_LINE_FIT) + 1
@@ -2649,9 +2649,9 @@ static Function PSQ_DS_GatherAndWriteFrequencyToLabnotebook(string device, varia
 		WAVE/Z setting = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
 		ASSERT(WaveExists(setting), "Missing DAScale LBN entry")
 		Make/D/FREE DAScalesCurrent = {setting[headstage]}
-	else
-		[WAVE/D apFreqCurrent, WAVE/D DAScalesCurrent] = PSQ_DS_GatherFrequencyCurrentData(device, sweepNo, headstage, {sweepNo})
 	endif
+
+	[WAVE/D apFreqCurrent, WAVE/D DAScalesCurrent] = PSQ_DS_GatherFrequencyCurrentData(device, sweepNo, headstage, {sweepNo})
 
 	WAVE apFreqLBN = LBN_GetNumericWave()
 	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FREQ)
@@ -2809,10 +2809,10 @@ static Function [variable fitOffset, variable fitSlope] PSQ_DS_StoreFitOffsetAnd
 		ASSERT(DimSize(fitOffsetAll, ROWS) == 1 && DimSize(fitSlopeAll, ROWS) == 1, "Expected only one fit slope/offset")
 		fitOffset = fitOffsetAll[0]
 		fitSlope  = fitSlopeAll[0]
-	else
-		fitOffset = NaN
-		fitSlope  = NaN
 	endif
+
+	fitOffset = NaN
+	fitSlope  = NaN
 
 	WAVE fitOffsetLBN = LBN_GetNumericWave()
 	fitOffsetLBN[headstage] = fitOffset
@@ -3108,10 +3108,10 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 			filterPassedRhSuAd[] = !negSlopesPassedRhSuAd[p] && !IsNaN(fISlopesRhSuAd)
 
 			WAVE/Z dataRhSuAdFiltered = PSQ_DS_FilterPassingData(dataRhSuAd, filterPassedRhSuAd, pairwise = 1)
-		else
-			// we only store data with sweep passed for RhSuAd
-			WAVE dataRhSuAdFiltered = dataRhSuAd
 		endif
+
+		// we only store data with sweep passed for RhSuAd
+		WAVE dataRhSuAdFiltered = dataRhSuAd
 
 		if(fromRhSuAd)
 			WAVE dataCurrentSCIFiltered = dataCurrentSCI
@@ -3159,12 +3159,12 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 				Make/FREE/N=0 dataCurrentSCIFiltered
 			endif
 		endif
-	else
-		ASSERT(!filterNegSlopeAndNaN, "filterNegSlopeAndNaN requires filterPassing")
-
-		WAVE dataRhSuAdFiltered     = dataRhSuAd
-		WAVE dataCurrentSCIFiltered = dataCurrentSCI
 	endif
+
+	ASSERT(!filterNegSlopeAndNaN, "filterNegSlopeAndNaN requires filterPassing")
+
+	WAVE dataRhSuAdFiltered     = dataRhSuAd
+	WAVE dataCurrentSCIFiltered = dataCurrentSCI
 
 #ifdef DEBUGGING_ENABLED
 	sprintf msg, "keyCurrentSCI=%s, dataRhSuAdFiltered=(%s), dataCurrentSCIFiltered=(%s), emptySCI=%g", keyCurrentSCI, NumericWaveToList(dataRhSuAdFiltered, ", ", trailSep = 0), NumericWaveToList(dataCurrentSCIFiltered, ", ", trailSep = 0), emptySCI
@@ -3651,14 +3651,14 @@ static Function/WAVE PSQ_DS_GetPassingRhSuAdSweepsAndStoreInLBN(string device, v
 		ASSERT(DimSize(DAScalesRhSuAd, ROWS) == DimSize(sweeps, ROWS), "Mismatched sizes between DAScalesRhSuAd and PassingRhSuAdSweeps")
 		WAVE APFreqRhSuAd = JWN_GetNumericWaveFromWaveNote(overrideResults, "/APFrequenciesRhSuAd")
 		ASSERT(DimSize(APFreqRhSuAd, ROWS) == DimSize(sweeps, ROWS), "Mismatched sizes between APFreqRhSuAd and PassingRhSuAdSweeps")
-	else
-		WAVE numericalValues = GetLBNumericalValues(device)
-
-		WAVE passingRheobaseSweeps = PSQ_DS_GetPassingRheobaseSweeps(numericalValues, passingRheobaseSweep, headstage)
-		WAVE passingSupraSweeps    = PSQ_DS_GetPassingDAScaleSweeps(numericalValues, passingSupraSweep, headstage)
-
-		Concatenate/NP=(ROWS)/FREE {passingRheobaseSweeps, passingSupraSweeps, passingAdSweepsFailSet}, sweeps
 	endif
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	WAVE passingRheobaseSweeps = PSQ_DS_GetPassingRheobaseSweeps(numericalValues, passingRheobaseSweep, headstage)
+	WAVE passingSupraSweeps    = PSQ_DS_GetPassingDAScaleSweeps(numericalValues, passingSupraSweep, headstage)
+
+	Concatenate/NP=(ROWS)/FREE {passingRheobaseSweeps, passingSupraSweeps, passingAdSweepsFailSet}, sweeps
 
 	WAVE/T RhSuAdSweepsLBN = LBN_GetTextWave()
 	RhSuAdSweepsLBN[INDEP_HEADSTAGE] = NumericWaveToList(sweeps, ";", format = "%d")
@@ -3912,8 +3912,8 @@ static Function/S PSQ_CheckParamCommon(string name, STRUCT CheckParametersStruct
 				return "Invalid value " + num2str(val)
 			endif
 			break
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
+		case "BaselineRMSLongThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSShortThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "BaselineTargetVThreshold":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0 && val <= maxThreshold))
@@ -3938,7 +3938,7 @@ static Function/S PSQ_CheckParamCommon(string name, STRUCT CheckParametersStruct
 				return "Must be a finite value"
 			endif
 			break
-		case "NextStimSetName":
+		case "NextStimSetName": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "NextIndexingEndStimSetName":
 			str = AFH_GetAnalysisParamTextual(name, s.params)
 			WAVE/Z stimset = WB_CreateAndGetStimSet(str)
@@ -4012,11 +4012,11 @@ End
 Function/S PSQ_DAScale_GetHelp(string name)
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "BaselineTargetVThreshold":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSLongThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSShortThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineTargetVThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "SamplingFrequency": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_DA_SCALE, name)
 		case "DAScaleModifier":
@@ -4073,12 +4073,12 @@ Function/S PSQ_DAScale_CheckParam(string name, STRUCT CheckParametersStruct &s)
 	string   str
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "BaselineTargetVThreshold":
-		case "DAScaleModifier":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSLongThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSShortThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineTargetVThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "DAScaleModifier": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "SamplingFrequency": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s)
 		case "DAScales":
@@ -4094,9 +4094,9 @@ Function/S PSQ_DAScale_CheckParam(string name, STRUCT CheckParametersStruct &s)
 				return "Wave must have at least one entry"
 			endif
 			break
-		case "AbsFrequencyMinDistance":
-		case "MaxFrequencyChangePercent":
-		case "DAScaleNegativeSlopePercent":
+		case "AbsFrequencyMinDistance": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "MaxFrequencyChangePercent": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "DAScaleNegativeSlopePercent": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "DAScaleRangeFactor":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsNullOrPositiveAndFinite(val))
@@ -4139,14 +4139,14 @@ Function/S PSQ_DAScale_CheckParam(string name, STRUCT CheckParametersStruct &s)
 				return "Invalid string " + num2str(val)
 			endif
 			break
-		case "SlopePercentage":
+		case "SlopePercentage": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "FinalSlopePercent":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0 && val <= 100))
 				return "Not a precentage"
 			endif
 			break
-		case "MinimumSpikeCount":
+		case "MinimumSpikeCount": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "MinimumSpikeCountForMaxSlope":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0))
@@ -4166,7 +4166,7 @@ Function/S PSQ_DAScale_CheckParam(string name, STRUCT CheckParametersStruct &s)
 
 	// check ordering of min/max
 	strswitch(name)
-		case "MinimumSpikeCount":
+		case "MinimumSpikeCount": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "MaximumSpikeCount":
 			if(AFH_GetAnalysisParamNumerical("MinimumSpikeCount", s.params)   \
 			   >= AFH_GetAnalysisParamNumerical("MaximumSpikeCount", s.params))
@@ -4179,8 +4179,8 @@ Function/S PSQ_DAScale_CheckParam(string name, STRUCT CheckParametersStruct &s)
 
 	// check that all three are present
 	strswitch(name)
-		case "MinimumSpikeCount":
-		case "MaximumSpikeCount":
+		case "MinimumSpikeCount": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "MaximumSpikeCount": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "DAScaleModifier":
 			if(IsNaN(AFH_GetAnalysisParamNumerical("MinimumSpikeCount", s.params))    \
 			   || IsNaN(AFH_GetAnalysisParamNumerical("MaximumSpikeCount", s.params)) \
@@ -4400,7 +4400,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 			DAScalesIndex[s.headstage] = 0
 
 			strswitch(opMode)
-				case PSQ_DS_SUB:
+				case PSQ_DS_SUB: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				case PSQ_DS_SUPRA:
 
 					daScaleOffset = PSQ_DS_GetDAScaleOffset(device, s.headstage, opMode)
@@ -4579,7 +4579,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 			asyncAlarmPassed = PSQ_CheckAsyncAlarmStateAndStoreInLabnotebook(device, PSQ_DA_SCALE, s.sweepNo, asyncChannels)
 
 			strswitch(opMode)
-				case PSQ_DS_SUB:
+				case PSQ_DS_SUB: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				case PSQ_DS_SUPRA:
 					sweepPassed = baselineQCPassedLBN[s.headstage] && samplingFrequencyPassed && asyncAlarmPassed
 
@@ -4766,7 +4766,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 			endif
 
 			strswitch(opMode)
-				case PSQ_DS_SUB:
+				case PSQ_DS_SUB: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				case PSQ_DS_SUPRA:
 					sprintf msg, "Fitted Slope: %.0W1P%%\r", fISlope[s.headstage]
 					DEBUGPRINT(msg)
@@ -4854,12 +4854,12 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 						ASSERT(WaveExists(fISlopeReached), "Missing fiSlopeReached LBN entry")
 
 						setPassed = enoughSweepsPassed && Sum(fISlopeReached) > 0 && oorDAScaleQC
-					else
-						sprintf msg, "Final slope percentage not present\r"
-						DEBUGPRINT(msg)
-
-						setPassed = enoughSweepsPassed && oorDAScaleQC
 					endif
+
+					sprintf msg, "Final slope percentage not present\r"
+					DEBUGPRINT(msg)
+
+					setPassed = enoughSweepsPassed && oorDAScaleQC
 					break
 				case PSQ_DS_ADAPT:
 					setPassed = PSQ_DS_AdaptiveIsFinished(device, s.sweepNo, s.headstage, numSweepsWithSaturation)
@@ -4910,7 +4910,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 				ASSERT(IsFinite(daScaleModifier), "DAScale modifier is non-finite")
 
 				strswitch(opMode)
-					case PSQ_DS_SUB:
+					case PSQ_DS_SUB: // FIXME(CodeStyleFallthroughCaseRequireComment)
 					case PSQ_DS_SUPRA:
 						DAScale = DAScales[index]
 						break
@@ -4975,8 +4975,8 @@ End
 Function/S PSQ_SquarePulse_GetHelp(string name)
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "SamplingFrequency": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_SQUARE_PULSE, name)
 		default:
@@ -4989,8 +4989,8 @@ Function/S PSQ_SquarePulse_CheckParam(string name, STRUCT CheckParametersStruct 
 	variable val
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "SamplingFrequency": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s)
 		default:
@@ -5240,11 +5240,11 @@ End
 Function/S PSQ_Rheobase_GetHelp(string name)
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "BaselineTargetVThreshold":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSLongThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSShortThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineTargetVThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "SamplingFrequency": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_RHEOBASE, name)
 		default:
@@ -5255,11 +5255,11 @@ End
 Function/S PSQ_Rheobase_CheckParam(string name, STRUCT CheckParametersStruct &s)
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "BaselineTargetVThreshold":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSLongThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSShortThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineTargetVThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "SamplingFrequency": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s)
 		default:
@@ -5685,11 +5685,11 @@ End
 Function/S PSQ_Ramp_GetHelp(string name)
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "BaselineTargetVThreshold":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSLongThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSShortThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineTargetVThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "SamplingFrequency": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_RAMP, name)
 		case "NumberOfSpikes":
@@ -5708,11 +5708,11 @@ Function/S PSQ_Ramp_CheckParam(string name, STRUCT CheckParametersStruct &s)
 	variable val
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "BaselineTargetVThreshold":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSLongThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSShortThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineTargetVThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "SamplingFrequency": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s)
 		case "NumberOfSpikes":
@@ -6017,7 +6017,9 @@ Function PSQ_Ramp(string device, STRUCT AnalysisFunction_V3 &s)
 
 				PSQ_Ramp_AddEpoch(device, s.headstage, daqDataWave, "Name=Unacquired DA data", "RA_UD", fifoOffset, fifoOffset + fifoPos)
 
-			elseif(hardwareType == HARDWARE_NI_DAC)
+			endif
+
+			if(hardwareType == HARDWARE_NI_DAC)
 				// DA output runs on the AD tasks clock source ai
 				// we stop DA and set the analog out to 0, the AD task keeps on running
 
@@ -6066,7 +6068,9 @@ Function PSQ_Ramp(string device, STRUCT AnalysisFunction_V3 &s)
 
 			// recalculate pulse duration
 			PSQ_GetPulseDurations(device, PSQ_RAMP, s.sweepNo, totalOnsetDelay, forceRecalculation = 1)
-		elseif(fifoInStimsetTime > (pulseStart + pulseDuration))
+		endif
+
+		if(fifoInStimsetTime > (pulseStart + pulseDuration))
 			// we are past the pulse and have not found a spike
 			// write the results into the LBN
 			key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SPIKE_DETECT)
@@ -6420,7 +6424,7 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 			scalingFactor = NaN
 			// do nothing
 			break
-		case PSQ_CR_INCREASE:
+		case PSQ_CR_INCREASE: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PSQ_CR_DECREASE:
 			scalingFactor = PSQ_CR_DetermineScalingFactor(lowerInfo, upperInfo, boundsEvaluationMode)
 			if(!IsFinite(scalingFactor) || scalingFactor == 0)
@@ -6542,13 +6546,13 @@ End
 Function/S PSQ_Chirp_GetHelp(string name)
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "BaselineTargetVThreshold":
-		case "FailedLevel":
-		case "NumberOfFailedSweeps":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSLongThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSShortThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineTargetVThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "FailedLevel": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NumberOfFailedSweeps": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "SamplingFrequency": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_CHIRP, name)
 		case "AmpBesselFilter":
@@ -6592,15 +6596,15 @@ Function/S PSQ_Chirp_CheckParam(string name, STRUCT CheckParametersStruct &s)
 	string   str
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "BaselineTargetVThreshold":
-		case "DAScaleOperator":
-		case "DAScaleModifier":
-		case "FailedLevel":
-		case "NumberOfFailedSweeps":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSLongThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSShortThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineTargetVThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "DAScaleOperator": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "DAScaleModifier": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "FailedLevel": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NumberOfFailedSweeps": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "SamplingFrequency": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s)
 		case "AmpBesselFilter":
@@ -6615,7 +6619,7 @@ Function/S PSQ_Chirp_CheckParam(string name, STRUCT CheckParametersStruct &s)
 				return "Must be a finite value"
 			endif
 			break
-		case "AutobiasTargetV":
+		case "AutobiasTargetV": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "AutobiasTargetVAtSetEnd":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val) || val == 0)
@@ -6628,7 +6632,7 @@ Function/S PSQ_Chirp_CheckParam(string name, STRUCT CheckParametersStruct &s)
 				return "Invalid value " + str
 			endif
 			break
-		case "InnerRelativeBound":
+		case "InnerRelativeBound": // FIXME(CodeStyleFallthroughCaseRequireComment)
 			if(AFH_GetAnalysisParamNumerical("InnerRelativeBound", s.params) >= AFH_GetAnalysisParamNumerical("OuterRelativeBound", s.params))
 				return "InnerRelativeBound must be smaller than OuterRelativeBound"
 			endif
@@ -6644,7 +6648,7 @@ Function/S PSQ_Chirp_CheckParam(string name, STRUCT CheckParametersStruct &s)
 				return "Must be a finite non-zero integer"
 			endif
 			break
-		case "SpikeCheck":
+		case "SpikeCheck": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "UseTrueRestingMembranePotentialVoltage": // fallthrough-by-design
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val))
@@ -7166,11 +7170,11 @@ Function PSQ_Chirp(string device, STRUCT AnalysisFunction_V3 &s)
 		WAVE oorDAScale = LBN_GetNumericWave()
 
 		switch(boundsAction)
-			case PSQ_CR_PASS:
+			case PSQ_CR_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case PSQ_CR_RERUN: // fallthrough-by-design
 				// nothing to do
 				break
-			case PSQ_CR_INCREASE:
+			case PSQ_CR_INCREASE: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case PSQ_CR_DECREASE: // fallthrough-by-design
 				oorDAScale[s.headstage] = SetDAScale(device, s.sweepNo, s.headstage, relative = scalingFactorDAScale, roundTopA = 1, limitCheck = limitCheck)
 
@@ -7437,18 +7441,18 @@ Function/S PSQ_PipetteInBath_CheckParam(string name, STRUCT CheckParametersStruc
 	string   str
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "MaxLeakCurrent":
-		case "NextIndexingEndStimSetName":
-		case "NextStimSetName":
-		case "NumberOfFailedSweeps":
-		case "NumberOfTestpulses":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSLongThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSShortThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "MaxLeakCurrent": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NextIndexingEndStimSetName": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NextStimSetName": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NumberOfFailedSweeps": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NumberOfTestpulses": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "SamplingFrequency": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s)
-		case "MinPipetteResistance":
+		case "MinPipetteResistance": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "MaxPipetteResistance":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0 && val <= 20))
@@ -7463,15 +7467,15 @@ End
 Function/S PSQ_PipetteInBath_GetHelp(string name)
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "MaxLeakCurrent":
-		case "NextIndexingEndStimSetName":
-		case "NextStimSetName":
-		case "NumberOfFailedSweeps":
-		case "NumberOfTestpulses":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSLongThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSShortThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "MaxLeakCurrent": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NextIndexingEndStimSetName": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NextStimSetName": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NumberOfFailedSweeps": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NumberOfTestpulses": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "SamplingFrequency": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_PIPETTE_BATH, name)
 		case "MinPipetteResistance":
@@ -7887,14 +7891,14 @@ Function/S PSQ_SealEvaluation_CheckParam(string name, STRUCT CheckParametersStru
 	string   str
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineChunkLength":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "NextIndexingEndStimSetName":
-		case "NextStimSetName":
-		case "NumberOfFailedSweeps":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineChunkLength": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSLongThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSShortThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NextIndexingEndStimSetName": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NextStimSetName": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NumberOfFailedSweeps": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "SamplingFrequency": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s, maxThreshold = 100)
 		case "SealThreshold":
@@ -7917,14 +7921,14 @@ End
 Function/S PSQ_SealEvaluation_GetHelp(string name)
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineChunkLength":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "NextIndexingEndStimSetName":
-		case "NextStimSetName":
-		case "NumberOfFailedSweeps":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineChunkLength": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSLongThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSShortThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NextIndexingEndStimSetName": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NextStimSetName": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NumberOfFailedSweeps": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "SamplingFrequency": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_SEAL_EVALUATION, name)
 		case "SealThreshold":
@@ -8351,7 +8355,9 @@ Function PSQ_SE_CreateEpochsImpl(WAVE/T epochWave, variable DAC, variable totalO
 			[tags, shortName] = PSQ_CreateBaselineChunkSelectionStrings(userEpochIndexBLC)
 			EP_AddUserEpoch(epochWave, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
 			userEpochIndexBLC += 1
-		elseif(i == 1 || i == 4 || i == 7 || i == 12 || i == 15 || i == 18)
+		endif
+
+		if(i == 1 || i == 4 || i == 7 || i == 12 || i == 15 || i == 18)
 			epBegin = wbBegin
 			epEnd   = wbEnd
 
@@ -8390,18 +8396,18 @@ Function/S PSQ_TrueRestingMembranePotential_CheckParam(string name, STRUCT Check
 	string   str
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineChunkLength":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "FailedLevel":
-		case "NextIndexingEndStimSetName":
-		case "NextStimSetName":
-		case "NumberOfFailedSweeps":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineChunkLength": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSLongThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSShortThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "FailedLevel": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NextIndexingEndStimSetName": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NextStimSetName": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NumberOfFailedSweeps": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "SamplingFrequency": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s)
-		case "AbsoluteVoltageDiff":
+		case "AbsoluteVoltageDiff": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "RelativeVoltageDiff":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0)) // +inf is allowed as well
@@ -8434,15 +8440,15 @@ End
 Function/S PSQ_TrueRestingMembranePotential_GetHelp(string name)
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineChunkLength":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "FailedLevel":
-		case "NextIndexingEndStimSetName":
-		case "NextStimSetName":
-		case "NumberOfFailedSweeps":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineChunkLength": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSLongThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSShortThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "FailedLevel": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NextIndexingEndStimSetName": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NextStimSetName": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NumberOfFailedSweeps": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "SamplingFrequency": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_TRUE_REST_VM, name)
 		case "AbsoluteVoltageDiff":
@@ -8838,12 +8844,12 @@ static Function PSQ_DetermineSweepQCResults(string device, variable type, variab
 			RA_SkipSweeps(device, Inf, SWEEP_SKIP_AUTO)
 			return PSQ_RESULTS_DONE
 		endif
-	else
-		if(passesInSet >= requiredPassesInSet)
-			PSQ_ForceSetEvent(device, headstage)
-			RA_SkipSweeps(device, Inf, SWEEP_SKIP_AUTO, limitToSetBorder = 1)
-			return PSQ_RESULTS_DONE
-		endif
+	endif
+
+	if(passesInSet >= requiredPassesInSet)
+		PSQ_ForceSetEvent(device, headstage)
+		RA_SkipSweeps(device, Inf, SWEEP_SKIP_AUTO, limitToSetBorder = 1)
+		return PSQ_RESULTS_DONE
 	endif
 
 	return PSQ_RESULTS_CONT
@@ -9065,16 +9071,16 @@ Function/S PSQ_AccessResistanceSmoke_CheckParam(string name, STRUCT CheckParamet
 	variable val
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineChunkLength":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "MaxLeakCurrent":
-		case "NextStimSetName":
-		case "NextIndexingEndStimSetName":
-		case "NumberOfFailedSweeps":
-		case "NumberOfTestpulses":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineChunkLength": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSLongThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSShortThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "MaxLeakCurrent": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NextStimSetName": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NextIndexingEndStimSetName": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NumberOfFailedSweeps": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NumberOfTestpulses": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "SamplingFrequency": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s)
 		case "MaxAccessResistance":
@@ -9098,16 +9104,16 @@ End
 Function/S PSQ_AccessResistanceSmoke_GetHelp(string name)
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineChunkLength":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "MaxLeakCurrent":
-		case "NextStimSetName":
-		case "NextIndexingEndStimSetName":
-		case "NumberOfFailedSweeps":
-		case "NumberOfTestpulses":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineChunkLength": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSLongThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "BaselineRMSShortThreshold": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "MaxLeakCurrent": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NextStimSetName": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NextIndexingEndStimSetName": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NumberOfFailedSweeps": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "NumberOfTestpulses": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "SamplingFrequency": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_DA_SCALE, name)
 		case "MaxAccessResistance":

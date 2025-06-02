@@ -219,25 +219,25 @@ Function ASYNC_ThreadReadOut()
 				DEBUGPRINT("Async: Number of ReadOut called: " + num2str(statCnt) + " Number buffered; " + num2str(DimSize(DFREFBuffer, ROWS)))
 				return 0
 			endif
-		else
-			// check for inOrder, do we need to buffer?
-			DFREF dfrOut        = dfr:$DF_NAME_FREE
-			SVAR  workloadClass = dfr:$ASYNC_WORKLOADCLASS_STR
-			if(track[%$workloadClass][%INORDER])
-				WAVE workloadClassCounter = dfr:$ASYNC_WLCOUNTER_STR
-				wlcIndex = FindDimLabel(track, ROWS, workloadClass)
-				ASSERT(wlcIndex >= 0, "Could not find work load class")
-				if((workloadClassCounter[0] - track[wlcIndex][%OUTPUTCOUNT]) != 0)
-					bufferSize = numpnts(DFREFbuffer)
-					Redimension/N=(bufferSize + 1) DFREFbuffer
-					DFREFbuffer[bufferSize] = dfr
-					justBuffered            = 1
-					continue
-				endif
+		endif
 
-				justBuffered = 0
-
+		// check for inOrder, do we need to buffer?
+		DFREF dfrOut        = dfr:$DF_NAME_FREE
+		SVAR  workloadClass = dfr:$ASYNC_WORKLOADCLASS_STR
+		if(track[%$workloadClass][%INORDER])
+			WAVE workloadClassCounter = dfr:$ASYNC_WLCOUNTER_STR
+			wlcIndex = FindDimLabel(track, ROWS, workloadClass)
+			ASSERT(wlcIndex >= 0, "Could not find work load class")
+			if((workloadClassCounter[0] - track[wlcIndex][%OUTPUTCOUNT]) != 0)
+				bufferSize = numpnts(DFREFbuffer)
+				Redimension/N=(bufferSize + 1) DFREFbuffer
+				DFREFbuffer[bufferSize] = dfr
+				justBuffered            = 1
+				continue
 			endif
+
+			justBuffered = 0
+
 		endif
 
 		track[%$workloadClass][%OUTPUTCOUNT] += 1
