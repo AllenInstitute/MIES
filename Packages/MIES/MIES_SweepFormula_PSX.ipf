@@ -2505,7 +2505,7 @@ static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventOns
 
 	AssertOnAndClearRTError()
 
-	Make/FREE/T/N=(10, 2) InputAvg, InputRise, InputDecay
+	Make/FREE/T/N=(11, 2) InputAvg, InputRise, InputDecay
 
 	Make/FREE/D/N=5 coefWave
 	Make/FREE/T coeffNames = {"y0", "A", "tau1", "tau2", "X0"}
@@ -2515,6 +2515,7 @@ static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventOns
 	InputAvg[1][0, 1] = {{"ChiSq"}, {num2strHighPrec(V_chiSq)}}
 	InputAvg[2, 6][0] = coeffNames[p - 2]
 	InputAvg[2, 6][1] = num2strHighPrec(coefWave[p - 2])
+	InputAvg[7][0, 1] = {{"Maximum"}, {num2strHighPrec(WaveMax(acceptedAverageFit))}}
 	InputAvg[8][0, 1] = {{"State source"}, {PSX_GetStateTypeFromSpecialPanel(win)}}
 	InputAvg[9][0, 1] = {{"Current combo"}, {ToTrueFalse(PSX_GetrestrictEventsToCurrentCombo(win))}}
 
@@ -2524,13 +2525,14 @@ static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventOns
 
 	wTau = ((coefWave[1] * coefWave[2] + coefWave[3] * coefWave[4]) / (coefWave[1] + coefWave[3]))
 
-	InputRise[0][0, 1] = {{"Function"}, {"dblexp_XOffset rise"}}
-	InputRise[1][0, 1] = {{"ChiSq"}, {num2strHighPrec(V_chiSq)}}
-	InputRise[2, 6][0] = coeffNames[p - 2]
-	InputRise[2, 6][1] = num2strHighPrec(coefWave[p - 2])
-	InputRise[7][0, 1] = {{"weighted tau"}, {num2strHighPrec(wTau)}}
-	InputRise[8][0, 1] = {{"State source"}, {PSX_GetStateTypeFromSpecialPanel(win)}}
-	InputRise[9][0, 1] = {{"Current combo"}, {ToTrueFalse(PSX_GetrestrictEventsToCurrentCombo(win))}}
+	InputRise[0][0, 1]  = {{"Function"}, {"dblexp_XOffset rise"}}
+	InputRise[1][0, 1]  = {{"ChiSq"}, {num2strHighPrec(V_chiSq)}}
+	InputRise[2, 6][0]  = coeffNames[p - 2]
+	InputRise[2, 6][1]  = num2strHighPrec(coefWave[p - 2])
+	InputRise[7][0, 1]  = {{"Maximum"}, {num2strHighPrec(WaveMax(acceptedRiseAverageFit))}}
+	InputRise[8][0, 1]  = {{"weighted tau"}, {num2strHighPrec(wTau)}}
+	InputRise[9][0, 1]  = {{"State source"}, {PSX_GetStateTypeFromSpecialPanel(win)}}
+	InputRise[10][0, 1] = {{"Current combo"}, {ToTrueFalse(PSX_GetrestrictEventsToCurrentCombo(win))}}
 
 	Make/FREE/D/N=5 coefWave
 	Make/FREE/T coeffNames = {"y0", "A1", "tau1", "A2", "tau2"}
@@ -2538,13 +2540,14 @@ static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventOns
 
 	wTau = ((coefWave[1] * coefWave[2] + coefWave[3] * coefWave[4]) / (coefWave[1] + coefWave[3]))
 
-	InputDecay[0][0, 1] = {{"Function"}, {"dblexp_XOffset decay"}}
-	InputDecay[1][0, 1] = {{"ChiSq"}, {num2strHighPrec(V_chiSq)}}
-	InputDecay[2, 6][0] = coeffNames[p - 2]
-	InputDecay[2, 6][1] = num2strHighPrec(coefWave[p - 2])
-	InputDecay[7][0, 1] = {{"weighted tau"}, {num2strHighPrec(wTau)}}
-	InputDecay[8][0, 1] = {{"State source"}, {PSX_GetStateTypeFromSpecialPanel(win)}}
-	InputDecay[9][0, 1] = {{"Current combo"}, {ToTrueFalse(PSX_GetrestrictEventsToCurrentCombo(win))}}
+	InputDecay[0][0, 1]  = {{"Function"}, {"dblexp_XOffset decay"}}
+	InputDecay[1][0, 1]  = {{"ChiSq"}, {num2strHighPrec(V_chiSq)}}
+	InputDecay[2, 6][0]  = coeffNames[p - 2]
+	InputDecay[2, 6][1]  = num2strHighPrec(coefWave[p - 2])
+	InputDecay[7][0, 1]  = {{"Maximum"}, {num2strHighPrec(WaveMax(acceptedDecayAverageFit))}}
+	InputDecay[8][0, 1]  = {{"weighted tau"}, {num2strHighPrec(wTau)}}
+	InputDecay[9][0, 1]  = {{"State source"}, {PSX_GetStateTypeFromSpecialPanel(win)}}
+	InputDecay[10][0, 1] = {{"Current combo"}, {ToTrueFalse(PSX_GetrestrictEventsToCurrentCombo(win))}}
 
 	sprintf msg, "Fit in the range [%g, %g] finished with %d (%s)\r", riseStart, decayStop, err, GetErrMessage(err)
 	DEBUGPRINT(msg)
