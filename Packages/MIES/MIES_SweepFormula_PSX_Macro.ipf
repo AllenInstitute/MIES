@@ -8,7 +8,7 @@
 
 Window PSXPanel() : Panel
 	PauseUpdate; Silent 1 // building window...
-	NewPanel/K=1/W=(196, 1011, 1450, 1491) as "SweepFormula plot from <Browser >"
+	NewPanel/K=1/W=(27, 1010, 1281, 1490) as "SweepFormula plot from <Browser >"
 	SetDrawLayer UserBack
 	SetDrawEnv pop
 	DrawText 47, 475, "UI"
@@ -40,8 +40,7 @@ Window PSXPanel() : Panel
 	CheckBox checkbox_show_deconv_lines, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox checkbox_show_deconv_lines, value=1
 	Button button_psx_info, pos={18.00, 458.00}, size={19.00, 19.00}, proc=PSX_CopyHelpToClipboard
-	Button button_psx_info, title="i", help={"<pre>- none -</pre>"}
-	Button button_psx_info, userdata="- none -"
+	Button button_psx_info, title="i", help={"<pre></pre>"}, userdata="- none -\r\n"
 	Button button_psx_info, userdata(ResizeControlsInfo)=A"!!,BI!!#CJ!!#<P!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_psx_info, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button button_psx_info, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
@@ -84,22 +83,23 @@ Window PSXPanel() : Panel
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)=A"!!*'\"z!!#EW^]6akzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
-	Execute/Q/Z "SetWindow kwTopWin sizeLimit={750,360,inf,inf}" // sizeLimit requires Igor 7 or later
-	NewPanel/HOST=#/EXT=3/W=(0, 415, 1107, 0)/K=2 as " "
+	Execute/Q/Z "SetWindow kwTopWin sizeLimit={820,360,inf,inf}" // sizeLimit requires Igor 7 or later
+	NewPanel/HOST=#/EXT=3/W=(0, 360, 820, 0)/K=2 as " "
 	ModifyPanel fixedSize=0
+	SetDrawLayer UserBack
 	CheckBox checkbox_single_events_accept, pos={21.00, 33.00}, size={53.00, 15.00}, proc=PSX_CheckboxProcAllEventPlotUpdate
 	CheckBox checkbox_single_events_accept, title="Accept"
 	CheckBox checkbox_single_events_accept, help={"Show accepted events in all events plot"}
 	CheckBox checkbox_single_events_accept, value=1
-	CheckBox checkbox_single_events_reject, pos={21.00, 56.00}, size={48.00, 15.00}, proc=PSX_CheckboxProcAllEventPlotUpdate
+	CheckBox checkbox_single_events_reject, pos={21.00, 54.00}, size={48.00, 15.00}, proc=PSX_CheckboxProcAllEventPlotUpdate
 	CheckBox checkbox_single_events_reject, title="Reject"
 	CheckBox checkbox_single_events_reject, help={"Show rejected events in all events plot"}
 	CheckBox checkbox_single_events_reject, value=1
-	CheckBox checkbox_single_events_undetermined, pos={21.00, 79.00}, size={48.00, 15.00}, proc=PSX_CheckboxProcAllEventPlotUpdate
+	CheckBox checkbox_single_events_undetermined, pos={21.00, 72.00}, size={48.00, 15.00}, proc=PSX_CheckboxProcAllEventPlotUpdate
 	CheckBox checkbox_single_events_undetermined, title="Undet"
 	CheckBox checkbox_single_events_undetermined, help={"Show undetermined events in all events plot"}
 	CheckBox checkbox_single_events_undetermined, value=1
-	GroupBox group_average, pos={91.00, 13.00}, size={77.00, 122.00}, title="Average"
+	GroupBox group_average, pos={91.00, 14.00}, size={76.00, 98.00}, title="Average"
 	GroupBox group_average, help={"Toggle the display of the average traces"}
 	CheckBox checkbox_average_events_undetermined, pos={104.00, 72.00}, size={48.00, 15.00}, proc=PSX_CheckboxProcAllEventPlotUpdate
 	CheckBox checkbox_average_events_undetermined, title="Undet"
@@ -113,51 +113,73 @@ Window PSXPanel() : Panel
 	CheckBox checkbox_average_events_accept, title="Accept"
 	CheckBox checkbox_average_events_accept, help={"Show average of the accepted events in all events plot"}
 	CheckBox checkbox_average_events_accept, value=0
-	CheckBox checkbox_average_events_all, pos={104.00, 92.00}, size={30.00, 15.00}, proc=PSX_CheckboxProcAllEventPlotUpdate
+	CheckBox checkbox_average_events_all, pos={104.00, 91.00}, size={30.00, 15.00}, proc=PSX_CheckboxProcAllEventPlotUpdate
 	CheckBox checkbox_average_events_all, title="All"
 	CheckBox checkbox_average_events_all, help={"Show average of all events in all events graph"}
 	CheckBox checkbox_average_events_all, value=0
-	CheckBox checkbox_restrict_events_to_current_combination, pos={12.00, 143.00}, size={97.00, 15.00}, proc=PSX_CheckboxProcChangeRestrictCurrentCombo
+	CheckBox checkbox_restrict_events_to_current_combination, pos={14.00, 116.00}, size={97.00, 15.00}, proc=PSX_CheckboxProcChangeRestrictCurrentCombo
 	CheckBox checkbox_restrict_events_to_current_combination, title="Current combo"
 	CheckBox checkbox_restrict_events_to_current_combination, help={"Show event traces from only the current combination (checked) instead of all combinations (unchecked).\r The current combination can be set in the ListBox below."}
 	CheckBox checkbox_restrict_events_to_current_combination, value=0
-	PopupMenu popupmenu_state_type, pos={113.00, 143.00}, size={80.00, 19.00}, proc=PSX_PopupMenuState
+	PopupMenu popupmenu_state_type, pos={14.00, 134.00}, size={80.00, 19.00}, proc=PSX_PopupMenuState
 	PopupMenu popupmenu_state_type, help={"Select which state is used for plotting. Can be either \"event\" or \"fit\" state."}
 	PopupMenu popupmenu_state_type, mode=1, popvalue="Event State", value=#"PSX_GetEventStateNames()"
-	CheckBox checkbox_average_events_fit, pos={104.00, 111.00}, size={29.00, 15.00}, proc=PSX_CheckboxProcFitAcceptAverage
-	CheckBox checkbox_average_events_fit, title="Fit"
-	CheckBox checkbox_average_events_fit, help={"Fit the accept average with a double exponential and store the outcome in the results wave"}
-	CheckBox checkbox_average_events_fit, value=0
-	Button button_fit_results, pos={137.00, 111.00}, size={18.00, 16.00}, proc=PSX_CopyHelpToClipboard
-	Button button_fit_results, title="i", help={"<pre>- none -</pre>"}
-	Button button_fit_results, userdata="- none -"
-	GroupBox group_event, pos={14.00, 13.00}, size={69.00, 122.00}, title="Event"
+	CheckBox checkbox_events_fit_accept, pos={181.00, 33.00}, size={14.00, 14.00}, proc=PSX_CheckboxProcFitAverage
+	CheckBox checkbox_events_fit_accept, title=""
+	CheckBox checkbox_events_fit_accept, help={"Fit the accept average and store the outcome in the results wave"}
+	CheckBox checkbox_events_fit_accept, value=0
+	Button button_fit_results_accept, pos={199.00, 32.00}, size={18.00, 16.00}, proc=PSX_CopyHelpToClipboard
+	Button button_fit_results_accept, title="i", help={"<pre>- none -</pre>"}
+	Button button_fit_results_accept, userdata="- none -"
+	GroupBox group_event, pos={14.00, 13.00}, size={67.00, 99.00}, title="Event"
 	GroupBox group_event, help={"Toggle the display of the event traces"}
-	SetVariable setvar_event_block_size, pos={13.00, 215.00}, size={120.00, 18.00}, bodyWidth=44, proc=PSX_SetVarBlockSize
+	SetVariable setvar_event_block_size, pos={14.00, 205.00}, size={120.00, 18.00}, bodyWidth=44, proc=PSX_SetVarBlockSize
 	SetVariable setvar_event_block_size, title="Block size [%]"
 	SetVariable setvar_event_block_size, help={"Allows to restrict the all event graph to only a percentage of the events."}
 	SetVariable setvar_event_block_size, limits={0, 100, 1}, value=_NUM:100
-	PopupMenu popup_block, pos={51.00, 238.00}, size={82.00, 19.00}, bodyWidth=50, proc=PSX_PopupMenuBlockNumber
+	PopupMenu popup_block, pos={14.00, 228.00}, size={82.00, 19.00}, bodyWidth=50, proc=PSX_PopupMenuBlockNumber
 	PopupMenu popup_block, title="Block"
 	PopupMenu popup_block, help={"Select which of the event blocks to display"}
 	PopupMenu popup_block, userdata(NumberOfBlocks)="1"
 	PopupMenu popup_block, mode=1, popvalue="", value=#"\"\""
-	PopupMenu popupmenu_event_offset, pos={136.00, 168.00}, size={53.00, 19.00}, proc=PSX_PopupMenuState
+	PopupMenu popupmenu_event_offset, pos={14.00, 157.00}, size={53.00, 19.00}, proc=PSX_PopupMenuState
 	PopupMenu popupmenu_event_offset, help={"Select the time point in x direction for aligning the single event traces in the all event graph"}
 	PopupMenu popupmenu_event_offset, mode=1, popvalue="Onset", value=#"\"Onset;Peak;Slew\""
-	SetVariable setvar_fit_start_amplitude, pos={13.00, 193.00}, size={144.00, 18.00}, bodyWidth=44, proc=PSX_FitStartAmplitude
+	SetVariable setvar_fit_start_amplitude, pos={14.00, 182.00}, size={144.00, 18.00}, bodyWidth=44, proc=PSX_FitStartAmplitude
 	SetVariable setvar_fit_start_amplitude, title="Fit start amplitude"
 	SetVariable setvar_fit_start_amplitude, help={"Percentage of the amplitude used to define the fit start point."}
-	SetVariable setvar_fit_start_amplitude, limits={0, 100, 1}, value=_NUM:20, proc=PSX_FitStartAmplitude
-	DefineGuide leftMenu={FL, 0.2, FR}, horizCenter={leftMenu, 0.5, FR}
+	SetVariable setvar_fit_start_amplitude, limits={0, 100, 1}, value=_NUM:20
+	GroupBox group_fit, pos={172.00, 14.00}, size={54.00, 98.00}, title="Fit"
+	Button button_fit_results_reject, pos={199.00, 52.00}, size={18.00, 16.00}, proc=PSX_CopyHelpToClipboard
+	Button button_fit_results_reject, title="i", help={"<pre>- none -</pre>"}
+	Button button_fit_results_reject, userdata="- none -"
+	CheckBox checkbox_events_fit_reject, pos={181.00, 53.00}, size={14.00, 14.00}, proc=PSX_CheckboxProcFitAverage
+	CheckBox checkbox_events_fit_reject, title=""
+	CheckBox checkbox_events_fit_reject, help={"Fit the reject average and store the outcome in the results wave"}
+	CheckBox checkbox_events_fit_reject, value=0
+	Button button_fit_results_undetermined, pos={199.00, 70.00}, size={18.00, 16.00}, proc=PSX_CopyHelpToClipboard
+	Button button_fit_results_undetermined, title="i", help={"<pre>- none -</pre>"}
+	Button button_fit_results_undetermined, userdata="- none -"
+	CheckBox checkbox_events_fit_undetermined, pos={181.00, 72.00}, size={14.00, 14.00}, proc=PSX_CheckboxProcFitAverage
+	CheckBox checkbox_events_fit_undetermined, title=""
+	CheckBox checkbox_events_fit_undetermined, help={"Fit the undet average and store the outcome in the results wave"}
+	CheckBox checkbox_events_fit_undetermined, value=0
+	Button button_fit_results_all, pos={199.00, 90.00}, size={18.00, 16.00}, proc=PSX_CopyHelpToClipboard
+	Button button_fit_results_all, title="i", help={"<pre>- none -</pre>"}
+	Button button_fit_results_all, userdata="- none -"
+	CheckBox checkbox_events_fit_all, pos={181.00, 91.00}, size={14.00, 14.00}, proc=PSX_CheckboxProcFitAverage
+	CheckBox checkbox_events_fit_all, title=""
+	CheckBox checkbox_events_fit_all, help={"Fit the all average and store the outcome in the results wave"}
+	CheckBox checkbox_events_fit_all, value=0
+	DefineGuide leftMenu={FL, 0.214995, FR}, horizCenter={leftMenu, 0.5, FR}
 	SetWindow kwTopWin, hook(resetScaling)=IH_ResetScaling
 	SetWindow kwTopWin, hook(ctrl)=PSX_AllEventGraphHook
 	SetWindow kwTopWin, hook(windowCoordinateSaving)=StoreWindowCoordinatesHook
-	Execute/Q/Z "SetWindow kwTopWin sizeLimit={750,200.25,inf,inf}" // sizeLimit requires Igor 7 or later
+	Execute/Q/Z "SetWindow kwTopWin sizeLimit={820,200.25,inf,inf}" // sizeLimit requires Igor 7 or later
 	Display/W=(225, 62, 675, 188)/FG=(horizCenter, FT, FR, FB)/HOST=#
 	RenameWindow #, Single
 	SetActiveSubwindow ##
-	Display/W=(225, 62, 675, 188)/FG=(leftMenu, FT, horizCenter, FB)/HOST=#
+	Display/W=(287, 62, 675, 188)/FG=(leftMenu, FT, horizCenter, FB)/HOST=#
 	RenameWindow #, All
 	SetActiveSubwindow ##
 	RenameWindow #, SpecialEventPanel

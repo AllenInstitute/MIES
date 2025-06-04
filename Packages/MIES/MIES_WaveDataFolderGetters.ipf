@@ -8672,41 +8672,47 @@ Function/WAVE GetPSXAverageWave(DFREF dfr, variable state)
 	return wv
 End
 
-Function/WAVE GetPSXAcceptedRiseAverageFitWaveFromDFR(DFREF dfr)
+Function/WAVE GetPSXRiseAverageFitWaveFromDFR(DFREF dfr, variable state)
 
-	WAVE/Z/D/SDFR=dfr wv = acceptedRiseAverageFit
+	string name = "riseAverageFit_" + PSX_StateToString(state)
+
+	WAVE/Z/D/SDFR=dfr wv = $name
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/D/N=(0) dfr:acceptedRiseAverageFit/WAVE=wv
+	Make/D/N=(0) dfr:$name/WAVE=wv
 
 	return wv
 End
 
-Function/WAVE GetPSXAcceptedDecayAverageFitWaveFromDFR(DFREF dfr)
+Function/WAVE GetPSXDecayAverageFitWaveFromDFR(DFREF dfr, variable state)
 
-	WAVE/Z/D/SDFR=dfr wv = acceptedDecayAverageFit
+	string name = "decayAverageFit_" + PSX_StateToString(state)
+
+	WAVE/Z/D/SDFR=dfr wv = $name
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/D/N=(0) dfr:acceptedDecayAverageFit/WAVE=wv
+	Make/D/N=(0) dfr:$name/WAVE=wv
 
 	return wv
 End
 
-Function/WAVE GetPSXAcceptedAverageFitWaveFromDFR(DFREF dfr)
+Function/WAVE GetPSXAverageFitWaveFromDFR(DFREF dfr, variable state)
 
-	WAVE/Z/D/SDFR=dfr wv = acceptedAverageFit
+	string name = "averageFit_" + PSX_StateToString(state)
+
+	WAVE/Z/D/SDFR=dfr wv = $name
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/D/N=(0) dfr:acceptedAverageFit/WAVE=wv
+	Make/D/N=(0) dfr:$name/WAVE=wv
 
 	return wv
 End
