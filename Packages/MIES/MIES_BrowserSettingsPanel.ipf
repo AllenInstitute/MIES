@@ -1983,6 +1983,7 @@ Function/S BSP_RenameAndSetTitle(string win, string newName)
 
 	for(numOtherBrowser = 0;; numOtherBrowser += 1)
 		sprintf newTitle, "Browser%s%s%s", SelectString(numOtherBrowser, "", " [" + num2str(numOtherBrowser) + "]"), suffix, modeSuffix
+		newTitle = RemoveEndingRegExp(newTitle, " *")
 		if(WhichListItem(newTitle, wTitles) == -1)
 			DoWindow/T $win, newTitle
 			break
