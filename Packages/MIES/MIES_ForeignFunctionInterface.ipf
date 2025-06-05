@@ -173,3 +173,65 @@ Function/WAVE FFI_QueryLogbookUniqueSetting(string device, variable logbookType,
 
 	return settings
 End
+
+/// @brief Save the given permanent Igor Pro `datafolder` in the HDF5 format into `filepath`
+Function FFI_SaveDataFolderToHDF5(string filepath, string datafolder)
+
+	return FFI_SaveDataFolderToHDF5Impl(filepath, {datafolder})
+End
+
+static Function FFI_SaveDataFolderToHDF5Impl(string filepath, WAVE/T datafolders)
+
+	variable ref = NaN
+	variable groupID
+	string entry, cleanName
+
+	ASSERT(!FileExists(filepath), "filepath points to an existing file")
+	ASSERT(!FolderExists(filepath), "filepath points to an existing folder and is missing the filename")
+
+	try
+		HDF5CreateFile ref as filepath; AbortOnRTE
+		for(entry : datafolders)
+			DFREF dfr = $entry
+			ASSERT(DataFolderExistsDFR(dfr), "datafolder " + entry + " does not point to an existing datafolder")
+			cleanName = ReplaceString(":", RemovePrefix(entry, start = "root:"), "/")
+			H5_CreateGroupsRecursively(ref, cleanName)
+			groupID = H5_OpenGroup(ref, cleanName)
+			HDf5SaveGroup/R/IGOR=(-1)/OPTS=(2^0)/COMP={1000, 3, 0} dfr, groupID, "."; AbortOnRTE
+			HDF5CloseGroup groupId; AbortOnRTE
+		endfor
+	catch
+		HDF5DumpErrors/CLR=1
+		// do nothing
+	endtry
+
+	HDF5CloseFile/Z ref
+End
+
+/// @brief Return the titles of all sweep browser windows
+Function/WAVE FFI_GetSweepBrowserTitles()
+
+	WAVE wv = ListToTextWave(AB_GetSweepBrowserTitles(), ";")
+
+	if(DimSize(wv, ROWS) == 0)
+		return $""
+	endif
+
+	return wv
+End
+
+/// @brief Save the psx data of the sweepbrowser with title `wintTitle` in the HDF5 format into `filepath`
+Function FFI_SavePSXDataFolderToHDF5(string filepath, string winTitle)
+
+	string sbWin, folderList
+
+	sbWin = AB_GetSweepBrowserWindowFromTitle(winTitle)
+
+	DFREF dfr = SFH_GetWorkingDF(sbWin)
+
+	folderList = GetListOfObjects(dfr, "^psx[0-9]*$", typeFlag = COUNTOBJECTS_DATAFOLDER, fullPath = 1)
+	ASSERT(!IsEmpty(folderList), "Could find any psx folders")
+	WAVE/T folders = ListToTextWave(folderList, ";")
+
+	return FFI_SaveDataFolderToHDF5Impl(filepath, folders)
+End
