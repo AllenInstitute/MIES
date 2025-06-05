@@ -3265,7 +3265,7 @@ Function/S AB_GetSweepBrowserListForPopup()
 	return sbList
 End
 
-static Function/S AB_GetSweepBrowserWindowFromTitle(string winTitle)
+Function/S AB_GetSweepBrowserWindowFromTitle(string winTitle)
 
 	WAVE/T wList = ListToTextWave(WinList(SWEEPBROWSER_WINDOW_NAME + "*", ";", "WIN:1"), ";")
 	for(wName : wList)
