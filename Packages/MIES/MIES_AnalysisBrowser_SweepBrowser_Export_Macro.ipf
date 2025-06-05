@@ -1,9 +1,9 @@
-#pragma TextEncoding="UTF-8"
-#pragma rtGlobals=3 // Use modern global access method and strict wave access.
-#pragma rtFunctionErrors=1
+#pragma TextEncoding     = "UTF-8"
+#pragma rtGlobals        = 3 // Use modern global access method and strict wave access.
+#pragma rtFunctionErrors = 1
 
 #ifdef AUTOMATED_TESTING
-#pragma ModuleName=MIES_SBEM
+#pragma ModuleName = MIES_SBEM
 #endif // AUTOMATED_TESTING
 
 Window ExportSettingsPanel() : Panel

@@ -1,7 +1,7 @@
-#pragma rtGlobals=3
-#pragma rtFunctionErrors=1
-#pragma TextEncoding="UTF-8"
-#pragma IndependentModule=MIES_CompilationTester
+#pragma rtGlobals         = 3
+#pragma rtFunctionErrors  = 1
+#pragma TextEncoding      = "UTF-8"
+#pragma IndependentModule = MIES_CompilationTester
 
 #include "igortest"
 

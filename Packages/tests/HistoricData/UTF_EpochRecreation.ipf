@@ -1,7 +1,7 @@
-#pragma TextEncoding="UTF-8"
-#pragma rtGlobals=3 // Use modern global access method and strict wave access.
-#pragma rtFunctionErrors=1
-#pragma ModuleName=EpochRecreation
+#pragma TextEncoding     = "UTF-8"
+#pragma rtGlobals        = 3 // Use modern global access method and strict wave access.
+#pragma rtFunctionErrors = 1
+#pragma ModuleName       = EpochRecreation
 
 /// @brief This function is a helper function to create copies of recreated epochs waves for each sweep of an experiment file
 ///        as preparation for testcase @ref TestEpochRecreationShortNames

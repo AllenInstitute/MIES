@@ -1,9 +1,9 @@
-#pragma TextEncoding="UTF-8"
-#pragma rtGlobals=3
-#pragma rtFunctionErrors=1
+#pragma TextEncoding     = "UTF-8"
+#pragma rtGlobals        = 3
+#pragma rtFunctionErrors = 1
 
 #ifdef AUTOMATED_TESTING
-#pragma ModuleName=MIES_OOD
+#pragma ModuleName = MIES_OOD
 #endif // AUTOMATED_TESTING
 
 /// @file MIES_OptimzedOverlapDistributedAcquisition.ipf

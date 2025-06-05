@@ -1,7 +1,7 @@
-#pragma TextEncoding="UTF-8"
-#pragma rtGlobals=3 // Use modern global access method and strict wave access.
-#pragma rtFunctionErrors=1
-#pragma IndependentModule=BkgWatcher
+#pragma TextEncoding      = "UTF-8"
+#pragma rtGlobals         = 3 // Use modern global access method and strict wave access.
+#pragma rtFunctionErrors  = 1
+#pragma IndependentModule = BkgWatcher
 
 /// @file MIES_BackgroundWatchdog.ipf
 /// @brief __BW__ Panel for inspecting the state of the MIES DAQ/TP background functions

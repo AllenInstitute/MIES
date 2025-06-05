@@ -1,9 +1,9 @@
-#pragma TextEncoding="UTF-8"
-#pragma rtGlobals=3 // Use modern global access method and strict wave access.
-#pragma rtFunctionErrors=1
+#pragma TextEncoding     = "UTF-8"
+#pragma rtGlobals        = 3 // Use modern global access method and strict wave access.
+#pragma rtFunctionErrors = 1
 
 #ifdef AUTOMATED_TESTING
-#pragma ModuleName=MIES_CONST
+#pragma ModuleName = MIES_CONST
 #endif // AUTOMATED_TESTING
 
 /// @file MIES_Constants.ipf
@@ -806,6 +806,7 @@ Constant HARDWARE_NI_DAC_MIN_SAMPINT = 0.2
 #else
 Constant HARDWARE_NI_DAC_MIN_SAMPINT = 0.002 ///< NI 6343 and other devices, so it is 4E-3 ms for 2 channels, 6E-3 ms for 3 a.s.o.
 #endif // EVIL_KITTEN_EATING_MODE
+
 Constant HARDWARE_ITC_MIN_SAMPINT     = 0.005 ///< ITC DACs
 Constant HARDWARE_NI_6001_MIN_SAMPINT = 0.2   ///< NI 6001 USB
 Constant HARDWARE_SU_MIN_SAMPINT_DAC  = 0.1   /// Sutter output -> 10 kHz

@@ -1,7 +1,7 @@
-#pragma TextEncoding="UTF-8"
-#pragma rtGlobals=3 // Use modern global access method and strict wave access.
-#pragma rtFunctionErrors=1
-#pragma ModuleName=HistoricAnalysisBrowser
+#pragma TextEncoding     = "UTF-8"
+#pragma rtGlobals        = 3 // Use modern global access method and strict wave access.
+#pragma rtFunctionErrors = 1
+#pragma ModuleName       = HistoricAnalysisBrowser
 
 static StrConstant PXP_FILENAME  = "input:AB_LoadSweepsFromIgorData.pxp"
 static StrConstant PXP2_FILENAME = "input:AB_SweepsFromMultipleDevices.pxp"

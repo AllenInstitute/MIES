@@ -1,6 +1,6 @@
-#pragma TextEncoding="UTF-8"
-#pragma rtGlobals=3 // Use modern global access method and strict wave access.
-#pragma rtFunctionErrors=1
+#pragma TextEncoding     = "UTF-8"
+#pragma rtGlobals        = 3 // Use modern global access method and strict wave access.
+#pragma rtFunctionErrors = 1
 
 /// @file MIES_Include.ipf
 /// @brief Main include
@@ -21,7 +21,7 @@
 // .. |IgorPro9WindowsNightly| replace:: `Igor Pro 9 (Windows) <https://www.byte-physics.de/Downloads/WinIgor9_01Dec2023.zip>`__
 // .. |IgorPro9MacOSXNightly| replace:: `Igor Pro 9 (MacOSX) <https://www.byte-physics.de/Downloads/MacIgor9_01Dec2023.dmg>`__
 
-#pragma IgorVersion=9.00
+#pragma IgorVersion = 9.00
 
 #if IgorVersion() < 10 && (NumberByKey("BUILD", IgorInfo(0)) < 56565)
 #define TOO_OLD_IGOR

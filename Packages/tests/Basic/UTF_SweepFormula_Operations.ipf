@@ -1,7 +1,7 @@
-#pragma TextEncoding="UTF-8"
-#pragma rtGlobals=3 // Use modern global access method and strict wave access.
-#pragma rtFunctionErrors=1
-#pragma ModuleName=UTF_SWEEPFORMULA_OPERATIONS
+#pragma TextEncoding     = "UTF-8"
+#pragma rtGlobals        = 3 // Use modern global access method and strict wave access.
+#pragma rtFunctionErrors = 1
+#pragma ModuleName       = UTF_SWEEPFORMULA_OPERATIONS
 
 // IUTF_TD_GENERATOR DataGenerators#TestOperationAPFrequency2Gen
 static Function TestOperationAPFrequency2([WAVE wv])
