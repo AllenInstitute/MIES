@@ -1175,23 +1175,23 @@ static Function [WAVE/D results, WAVE eventIndex, WAVE marker, WAVE/T comboKeys]
 
 	// use the correct event/fit state for the property
 	strswitch(propLabel)
-		case "amplitude":
-		case "peak":
-		case "peak_t":
-		case "deconvPeak":
-		case "deconvPeak_t":
-		case "baseline":
-		case "baseline_t":
-		case "iei":
-		case "Event manual QC call":
-		case "Slew Rate":
-		case "Slew Rate Time":
-		case "Rise Time":
+		case "amplitude": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "peak": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "peak_t": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "deconvPeak": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "deconvPeak_t": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "baseline": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "baseline_t": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "iei": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "Event manual QC call": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "Slew Rate": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "Slew Rate Time": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "Rise Time": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "Onset Time":
 			stateType = "Event manual QC call"
 			break
-		case "Fit result":
-		case "tau":
+		case "Fit result": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "tau": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "Fit manual QC call":
 			stateType = "Fit manual QC call"
 			break
@@ -2419,7 +2419,7 @@ static Function/S PSX_GetPSXParameters(variable jsonID, variable cacheKeyType)
 	subJsonID = JSON_GetJSON(jsonID, SF_META_USER_GROUP + PSX_JWN_PARAMETERS, ignoreErr = 1)
 
 	switch(cacheKeyType)
-		case PSX_CACHE_KEY_EVENTS:
+		case PSX_CACHE_KEY_EVENTS: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PSX_CACHE_KEY_ANALYZE_PEAKS:
 			// do nothing
 			break
@@ -4130,7 +4130,7 @@ static Function [variable eventIndex, variable waveIndex, variable comboIndex] P
 	comboIndex   = PSX_GetComboIndexForComboKey(win, comboKeys[yPointNumber])
 
 	strswitch(postProc)
-		case "nothing":
+		case "nothing": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "log10":
 			eventIndex = xWave[yPointNumber]
 			break
@@ -4220,37 +4220,37 @@ Function PSX_PlotInteractionHook(STRUCT WMWinHookStruct &s)
 				ASSERT(waveIndex == eventIndex, "Mismatched indizes")
 				PSX_ReactToKeyPressWithoutMouse(psxGraph, s.keyCode, comboIndex, eventIndex)
 				PSX_MoveMouseForKeyPress(psxGraph, s.keyCode, comboIndex, eventIndex)
-			else
-				// psxStats
-				// adapt the event state of the *current event* according to the key press
-				PSX_ReactToKeyPressWithoutMouse(psxGraph, s.keyCode, comboIndex, eventIndex)
+			endif
 
-				// calculate the next eventIndex from our current waveIndex
-				// that new eventIndex might be something totally different as a stats plot will usually
-				// only display a subset of the event data or combine multiple combos
+			// psxStats
+			// adapt the event state of the *current event* according to the key press
+			PSX_ReactToKeyPressWithoutMouse(psxGraph, s.keyCode, comboIndex, eventIndex)
 
-				direction                           = PSX_GetDirectionFromKeyCode(psxGraph, s.keyCode)
-				[eventIndex, waveIndex, comboIndex] = PSX_GetEventIndexAndComboIndex(win, direction = direction)
+			// calculate the next eventIndex from our current waveIndex
+			// that new eventIndex might be something totally different as a stats plot will usually
+			// only display a subset of the event data or combine multiple combos
 
-				ASSERT(IsFinite(eventIndex) && IsFinite(waveIndex) && IsFinite(comboIndex), "Invalid event index")
+			direction                           = PSX_GetDirectionFromKeyCode(psxGraph, s.keyCode)
+			[eventIndex, waveIndex, comboIndex] = PSX_GetEventIndexAndComboIndex(win, direction = direction)
 
-				if(PSX_GetCurrentComboIndex(win) != comboIndex)
-					mainWindow = GetMainWindow(win)
-					PGC_SetAndActivateControl(mainWindow, "listbox_select_combo", val = comboIndex)
-				endif
+			ASSERT(IsFinite(eventIndex) && IsFinite(waveIndex) && IsFinite(comboIndex), "Invalid event index")
 
-				// undo the movement as the mouse cursor logic needs to know the direction as well
-				PSX_MoveMouseForKeyPress(psxGraph, s.keyCode, comboIndex, eventIndex - direction)
+			if(PSX_GetCurrentComboIndex(win) != comboIndex)
+				mainWindow = GetMainWindow(win)
+				PGC_SetAndActivateControl(mainWindow, "listbox_select_combo", val = comboIndex)
+			endif
 
-				if(direction == 0)
-					PSX_MoveAndCenterCursor(psxGraph, eventIndex)
-				endif
+			// undo the movement as the mouse cursor logic needs to know the direction as well
+			PSX_MoveMouseForKeyPress(psxGraph, s.keyCode, comboIndex, eventIndex - direction)
 
-				trace = StringByKey("TNAME", CsrInfo(A, win))
+			if(direction == 0)
+				PSX_MoveAndCenterCursor(psxGraph, eventIndex)
+			endif
 
-				if(!IsEmpty(trace))
-					PSX_MoveCursor(win, trace, waveIndex, 0)
-				endif
+			trace = StringByKey("TNAME", CsrInfo(A, win))
+
+			if(!IsEmpty(trace))
+				PSX_MoveCursor(win, trace, waveIndex, 0)
 			endif
 
 #ifdef DEBUGGING_ENABLED
@@ -4363,7 +4363,7 @@ static Function PSX_GetDirectionFromKeyCode(string psxGraph, variable keyCode)
 			return -1
 		case RIGHT_KEY:
 			return +1
-		case UP_KEY:
+		case UP_KEY: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case DOWN_KEY:
 			return PSX_GetMoveDirection(psxGraph)
 		default:
@@ -4376,9 +4376,9 @@ static Function PSX_MoveMouseForKeyPress(string win, variable keyCode, variable 
 	variable direction
 
 	switch(keycode)
-		case LEFT_KEY:
-		case RIGHT_KEY:
-		case UP_KEY:
+		case LEFT_KEY: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case RIGHT_KEY: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case UP_KEY: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case DOWN_KEY:
 			direction = PSX_GetDirectionFromKeyCode(win, keyCode)
 			PSX_MoveAndCenterCursor(win, eventIndex, direction = direction)
@@ -5016,7 +5016,7 @@ Function PSX_MouseEventSelection(variable newState, variable stateType)
 	strswitch(bottomLabel)
 		// PSX decision plot
 		// we match an empty string as well as AxisLabel returns that for auto labels (reported as #4353)
-		case "ms":
+		case "ms": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "":
 			WAVE peakX = GetPSXPeakXWaveFromDFR(comboDFR)
 
@@ -5053,7 +5053,7 @@ Function PSX_MouseEventSelection(variable newState, variable stateType)
 			needsUpdate = 1
 			break
 		// PSX stats plot
-		case "Event":
+		case "Event": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "Non-finite values":
 			[bottom, top] = GetMarqueeHelper("left", vert = 1, doAssert = 0, kill = 1)
 
@@ -5451,7 +5451,7 @@ Function PSX_ListBoxSelectCombo(STRUCT WMListBoxAction &lba) : ListboxControl
 	variable row
 
 	switch(lba.eventCode)
-		case 3: // double click (PGC_SetAndActivateControl uses that)
+		case 3: // double click (PGC_SetAndActivateControl uses that), FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 4: // cell selection
 
 			// workaround IP bug where lba.row can be out of range
@@ -5555,8 +5555,8 @@ End
 Function PSX_SetVarBlockSize(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // mouse up, FIXME(CodeStyleFallthroughCaseRequireComment)
+		case 2: // Enter key, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case 3: // Live update
 			PSX_UpdateAllEventGraph(sva.win, forceAverageUpdate = 1, forceBlockIndexUpdate = 1)
 			break

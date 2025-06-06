@@ -70,12 +70,12 @@ static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incoming
 
 		WAVE/T values = GetLogbookWaves(logbookType, LBN_TEXTUAL_VALUES)
 		WAVE/T keys   = GetLogbookWaves(logbookType, LBN_TEXTUAL_KEYS)
-	else
-		WAVE/T values = GetLogbookWaves(logbookType, LBN_TEXTUAL_VALUES, device = device)
-		WAVE/T keys   = GetLogbookWaves(logbookType, LBN_TEXTUAL_KEYS, device = device)
-
-		state = ROVar(GetAcquisitionState(device))
 	endif
+
+	WAVE/T values = GetLogbookWaves(logbookType, LBN_TEXTUAL_VALUES, device = device)
+	WAVE/T keys   = GetLogbookWaves(logbookType, LBN_TEXTUAL_KEYS, device = device)
+
+	state = ROVar(GetAcquisitionState(device))
 
 	[WAVE indizes, rowIndex] = ED_FindIndizesAndRedimension(incomingTextualKeys, incomingTextualValues, keys, values, logbookType)
 	ASSERT(WaveExists(indizes), "Missing indizes")
@@ -191,12 +191,12 @@ static Function ED_createWaveNotes(WAVE incomingNumericalValues, WAVE/T incoming
 		WAVE/T keys   = GetLogbookWaves(logbookType, LBN_NUMERICAL_KEYS)
 
 		state = AS_INACTIVE
-	else
-		WAVE   values = GetLogbookWaves(logbookType, LBN_NUMERICAL_VALUES, device = device)
-		WAVE/T keys   = GetLogbookWaves(logbookType, LBN_NUMERICAL_KEYS, device = device)
-
-		state = ROVar(GetAcquisitionState(device))
 	endif
+
+	WAVE   values = GetLogbookWaves(logbookType, LBN_NUMERICAL_VALUES, device = device)
+	WAVE/T keys   = GetLogbookWaves(logbookType, LBN_NUMERICAL_KEYS, device = device)
+
+	state = ROVar(GetAcquisitionState(device))
 
 	[WAVE indizes, rowIndex] = ED_FindIndizesAndRedimension(incomingNumericalKeys, incomingNumericalValues, keys, values, logbookType)
 	ASSERT(WaveExists(indizes), "Missing indizes")

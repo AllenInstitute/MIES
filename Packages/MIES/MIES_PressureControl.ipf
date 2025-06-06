@@ -536,10 +536,11 @@ static Function P_PrepareITCWaves(string mainDevice, string pressureDevice, vari
 		WAVE deviceInfo = GetDeviceInfoWave(pressureDevice)
 		ASSERT(deviceInfo[%Rack] == 2, "Pressure with ITC1600 requires two racks")
 		ITCConfig[3][1] = HW_ITC_GetITCXOPChannelForRack(pressureDevice, RACK_ONE)
-	else // one rack
-		Redimension/N=(-1, 3) ITCData
-		Redimension/N=(3, -1) ITCConfig
 	endif
+
+	// one rack
+	Redimension/N=(-1, 3) ITCData
+	Redimension/N=(3, -1) ITCConfig
 
 	ITCConfig[2][1] = HW_ITC_GetITCXOPChannelForRack(pressureDevice, RACK_ZERO)
 End
@@ -712,13 +713,13 @@ Function P_GetUserAccess(string device, variable headStage, variable pressureMod
 			default:
 				ASSERT(0, "Invalid pressure mode")
 		endswitch
-	else
-		if(pressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] == PRESSURE_METHOD_ATM)
-			return ACCESS_ATM
-		endif
-
-		return ACCESS_REGULATOR
 	endif
+
+	if(pressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] == PRESSURE_METHOD_ATM)
+		return ACCESS_ATM
+	endif
+
+	return ACCESS_REGULATOR
 End
 
 /// @brief Maps the access (defined in @ref PRESSURE_CONSTANTS) to the TTL settings
@@ -1591,8 +1592,8 @@ Function P_SetPressureOffset(string device, variable headstage, variable userOff
 
 	switch(method)
 		// pulse based methods
-		case PRESSURE_METHOD_BREAKIN:
-		case PRESSURE_METHOD_CLEAR:
+		case PRESSURE_METHOD_BREAKIN: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PRESSURE_METHOD_CLEAR: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PRESSURE_METHOD_MANUAL:
 			// wait till next time point or ignore
 			break

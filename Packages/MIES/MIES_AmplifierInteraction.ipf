@@ -263,9 +263,9 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 		AI_AssertOnInvalidClampMode(clampMode)
 
 		ctrl = AI_MapFunctionConstantToControl(func, clampMode)
-	else
-		[func, clampMode] = AI_MapControlNameToFunctionConstant(ctrl)
 	endif
+
+	[func, clampMode] = AI_MapControlNameToFunctionConstant(ctrl)
 
 	WAVE AmpStoragewave = GetAmplifierParamStorageWave(device)
 
@@ -301,16 +301,16 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 		DEBUGPRINT(str)
 
 		switch(func)
-			case MCC_HOLDING_FUNC:
-			case MCC_HOLDINGENABLE_FUNC:
-			case MCC_WHOLECELLCOMPCAP_FUNC:
-			case MCC_WHOLECELLCOMPRESIST_FUNC:
-			case MCC_WHOLECELLCOMPENABLE_FUNC:
-			case MCC_RSCOMPENABLE_FUNC:
-			case MCC_PIPETTEOFFSET_FUNC:
-			case MCC_BRIDGEBALRESIST_FUNC:
-			case MCC_BRIDGEBALENABLE_FUNC:
-			case MCC_NEUTRALIZATIONCAP_FUNC:
+			case MCC_HOLDING_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case MCC_HOLDINGENABLE_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case MCC_WHOLECELLCOMPCAP_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case MCC_WHOLECELLCOMPRESIST_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case MCC_WHOLECELLCOMPENABLE_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case MCC_RSCOMPENABLE_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case MCC_PIPETTEOFFSET_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case MCC_BRIDGEBALRESIST_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case MCC_BRIDGEBALENABLE_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case MCC_NEUTRALIZATIONCAP_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case MCC_NEUTRALIZATIONENABL_FUNC:
 				rowLabel = AI_MapFunctionConstantToName(func, clampMode)
 
@@ -322,7 +322,7 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 					TP_UpdateHoldCmdInTPStorage(device, headstage)
 				endif
 				break
-			case MCC_AUTOFASTCOMP_FUNC:
+			case MCC_AUTOFASTCOMP_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case MCC_AUTOSLOWCOMP_FUNC:
 				rowLabel = AI_MapFunctionConstantToName(func, clampMode)
 
@@ -444,9 +444,9 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 
 				AI_UpdateAmpModel(device, i, ctrl = "setvar_DataAcq_RsCorr", value = AmpStorageWave[%$rowLabel][0][i], selectAmp = 0)
 				break
-			case MCC_NO_AUTOBIAS_V_FUNC:
-			case MCC_NO_AUTOBIAS_VRANGE_FUNC:
-			case MCC_NO_AUTOBIAS_IBIASMAX_FUNC:
+			case MCC_NO_AUTOBIAS_V_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case MCC_NO_AUTOBIAS_VRANGE_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case MCC_NO_AUTOBIAS_IBIASMAX_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case MCC_NO_AUTOBIAS_ENABLE_FUNC:
 				rowLabel = AI_MapFunctionConstantToName(func, clampMode)
 
@@ -462,20 +462,20 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 				AI_UpdateAmpModel(device, i, ctrl = "check_DatAcq_BBEnable", value = 1, selectAmp = 0)
 				break
 			// no GUI controls
-			case MCC_RSCOMPBANDWIDTH_FUNC:
-			case MCC_OSCKILLERENABLE_FUNC:
-			case MCC_FASTCOMPCAP_FUNC:
-			case MCC_SLOWCOMPCAP_FUNC:
-			case MCC_FASTCOMPTAU_FUNC:
-			case MCC_SLOWCOMPTAU_FUNC:
-			case MCC_SLOWCOMPTAUX20ENAB_FUNC:
-			case MCC_SLOWCURRENTINJENABL_FUNC:
-			case MCC_PRIMARYSIGNALGAIN_FUNC:
-			case MCC_SLOWCURRENTINJLEVEL_FUNC:
-			case MCC_SLOWCURRENTINJSETLT_FUNC:
-			case MCC_SECONDARYSIGNALGAIN_FUNC:
-			case MCC_PRIMARYSIGNALHPF_FUNC:
-			case MCC_PRIMARYSIGNALLPF_FUNC:
+			case MCC_RSCOMPBANDWIDTH_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case MCC_OSCKILLERENABLE_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case MCC_FASTCOMPCAP_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case MCC_SLOWCOMPCAP_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case MCC_FASTCOMPTAU_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case MCC_SLOWCOMPTAU_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case MCC_SLOWCOMPTAUX20ENAB_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case MCC_SLOWCURRENTINJENABL_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case MCC_PRIMARYSIGNALGAIN_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case MCC_SLOWCURRENTINJLEVEL_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case MCC_SLOWCURRENTINJSETLT_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case MCC_SECONDARYSIGNALGAIN_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case MCC_PRIMARYSIGNALHPF_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+			case MCC_PRIMARYSIGNALLPF_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case MCC_SECONDARYSIGNALLPF_FUNC:
 				AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = value, checkBeforeWrite = checkBeforeWrite)
 				break
@@ -573,9 +573,9 @@ static Function AI_UpdateAmpView(string device, variable headStage, [variable fu
 	if(!ParamIsDefault(func))
 		ASSERT(!ParamIsDefault(clampMode), "Missing clampMode")
 		list = AI_MapFunctionConstantToControl(func, clampMode)
-	else
-		list = AMPLIFIER_CONTROLS_VC + ";" + AMPLIFIER_CONTROLS_IC
 	endif
+
+	list = AMPLIFIER_CONTROLS_VC + ";" + AMPLIFIER_CONTROLS_IC
 
 	numEntries = ItemsInList(list)
 	for(i = 0; i < numEntries; i += 1)
@@ -981,20 +981,20 @@ Function/S AI_MapFunctionConstantToControl(variable func, variable clampMode)
 		case MCC_AUTOBRIDGEBALANCE_FUNC:
 			return "button_DataAcq_AutoBridgeBal_IC"
 		// no controls available
-		case MCC_RSCOMPBANDWIDTH_FUNC:
-		case MCC_OSCKILLERENABLE_FUNC:
-		case MCC_FASTCOMPCAP_FUNC:
-		case MCC_SLOWCOMPCAP_FUNC:
-		case MCC_FASTCOMPTAU_FUNC:
-		case MCC_SLOWCOMPTAU_FUNC:
-		case MCC_SLOWCOMPTAUX20ENAB_FUNC:
-		case MCC_SLOWCURRENTINJENABL_FUNC:
-		case MCC_PRIMARYSIGNALGAIN_FUNC:
-		case MCC_SLOWCURRENTINJLEVEL_FUNC:
-		case MCC_SLOWCURRENTINJSETLT_FUNC:
-		case MCC_SECONDARYSIGNALGAIN_FUNC:
-		case MCC_PRIMARYSIGNALHPF_FUNC:
-		case MCC_PRIMARYSIGNALLPF_FUNC:
+		case MCC_RSCOMPBANDWIDTH_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case MCC_OSCKILLERENABLE_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case MCC_FASTCOMPCAP_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case MCC_SLOWCOMPCAP_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case MCC_FASTCOMPTAU_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case MCC_SLOWCOMPTAU_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case MCC_SLOWCOMPTAUX20ENAB_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case MCC_SLOWCURRENTINJENABL_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case MCC_PRIMARYSIGNALGAIN_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case MCC_SLOWCURRENTINJLEVEL_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case MCC_SLOWCURRENTINJSETLT_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case MCC_SECONDARYSIGNALGAIN_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case MCC_PRIMARYSIGNALHPF_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case MCC_PRIMARYSIGNALLPF_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case MCC_SECONDARYSIGNALLPF_FUNC:
 			return ""
 		default:
@@ -1045,7 +1045,7 @@ threadsafe Function/S AI_MapFunctionConstantToName(variable func, variable clamp
 			return "FastCapacitanceComp"
 		case MCC_AUTOSLOWCOMP_FUNC:
 			return "SlowCapacitanceComp"
-		case MCC_AUTOBRIDGEBALANCE_FUNC:
+		case MCC_AUTOBRIDGEBALANCE_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case MCC_BRIDGEBALRESIST_FUNC:
 			return "BridgeBalance"
 		case MCC_BRIDGEBALENABLE_FUNC:
@@ -1203,7 +1203,7 @@ Function AI_IsControlFromClampMode(string ctrl, variable clampMode)
 		case V_CLAMP_MODE:
 			list = AMPLIFIER_CONTROLS_VC
 			break
-		case I_CLAMP_MODE:
+		case I_CLAMP_MODE: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case I_EQUAL_ZERO_MODE:
 			list = AMPLIFIER_CONTROLS_IC
 			break
@@ -1286,10 +1286,10 @@ static Function/S AI_AmpStorageControlToRowLabel(string ctrl)
 		case "button_DataAcq_WCAuto":
 			return "WholeCellCap"
 			break
-		case "button_DataAcq_AutoBridgeBal_IC":
-		case "button_DataAcq_AutoPipOffset_IC":
-		case "button_DataAcq_FastComp_VC":
-		case "button_DataAcq_SlowComp_VC":
+		case "button_DataAcq_AutoBridgeBal_IC": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "button_DataAcq_AutoPipOffset_IC": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "button_DataAcq_FastComp_VC": // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case "button_DataAcq_SlowComp_VC": // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case "button_DataAcq_AutoPipOffset_VC":
 			// no row exists
 			return ""
@@ -1742,7 +1742,7 @@ static Function AI_SendToAmp(string device, variable headStage, variable mode, v
 			AI_WriteToMCC(func, NaN)
 			ret = AI_SendToAmp(device, headStage, mode, MCC_PIPETTEOFFSET_FUNC, MCC_READ, selectAmp = 0)
 			break
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			if(accessType == MCC_READ)
 				ret = AI_ReadFromMCC(func)
 			else
@@ -1765,8 +1765,8 @@ End
 static Function AI_ReadFromMCC(variable func)
 
 	switch(func)
-		case MCC_AUTOWHOLECELLCOMP_FUNC:
-		case MCC_AUTOFASTCOMP_FUNC:
+		case MCC_AUTOWHOLECELLCOMP_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case MCC_AUTOFASTCOMP_FUNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case MCC_AUTOSLOWCOMP_FUNC:
 			return 0
 		case MCC_HOLDING_FUNC:

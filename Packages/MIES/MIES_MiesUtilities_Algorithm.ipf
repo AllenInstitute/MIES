@@ -60,9 +60,9 @@ Function/WAVE CalculateAverage(WAVE/WAVE waveRefs, DFREF averageDataFolder, stri
 		WAVE      freeAverageWave = aveResult[0]
 		ASSERT(ClearRTError() == 0, "Unexpected RTE")
 		ASSERT(WaveExists(freeAverageWave), "Wave averaging failed")
-	else
-		WAVE freeAverageWave = inputAverage
 	endif
+
+	WAVE freeAverageWave = inputAverage
 
 	dataUnit = WaveUnits(waveRefs[0], -1)
 	SetScale d, 0, 0, dataUnit, freeAverageWave

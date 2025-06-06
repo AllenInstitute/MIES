@@ -779,19 +779,19 @@ static Function CheckRangeOfUserLabnotebookKeys(string device, variable type, va
 						FindValue/V=(value) allowedValues
 						CHECK_GE_VAR(V_Value, 0)
 						break
-					case "Amperes":
+					case "Amperes": // FIXME(CodeStyleFallthroughCaseRequireComment)
 					case "A":
 						value = abs(value)
 						CHECK_GT_VAR(value, 0)
 						CHECK_LE_VAR(value, 4000e-12)
 						break
-					case "Volts":
-					case "Volt":
+					case "Volts": // FIXME(CodeStyleFallthroughCaseRequireComment)
+					case "Volt": // FIXME(CodeStyleFallthroughCaseRequireComment)
 					case "V":
 						CHECK_GE_VAR(value, -0.1)
 						CHECK_LE_VAR(value, 1)
 						break
-					case "Ohm":
+					case "Ohm": // FIXME(CodeStyleFallthroughCaseRequireComment)
 					case "Ω":
 						value = abs(value)
 						CHECK_GT_VAR(value, 0)
@@ -1628,9 +1628,9 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string device)
 		if(s.FAR)
 			// fail hard on aborts, most likely due to memory error on HW_ITC_StartAcq
 			FAIL()
-		else
-			Abort
 		endif
+
+		Abort
 	endtry
 End
 
@@ -1672,7 +1672,9 @@ Function GetMinSamplingInterval([string unit])
 
 	if(ParamIsDefault(unit))
 		FAIL()
-	elseif(cmpstr(unit, "µs"))
+	endif
+
+	if(cmpstr(unit, "µs"))
 		factor = 1
 	elseif(cmpstr(unit, "ms"))
 		factor = 1000

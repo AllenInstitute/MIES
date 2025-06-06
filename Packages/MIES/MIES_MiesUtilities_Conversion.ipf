@@ -73,11 +73,11 @@ threadsafe Function GetNumberFromType([variable var, string str, variable xopVar
 			case "AsyncAD":
 				return NUM_ASYNC_CHANNELS
 				break
-			case "DA":
+			case "DA": // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case "TTL":
 				return NUM_DA_TTL_CHANNELS
 				break
-			case "DataAcqHS":
+			case "DataAcqHS": // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case "Headstage":
 				return NUM_HEADSTAGES
 				break
@@ -93,11 +93,11 @@ threadsafe Function GetNumberFromType([variable var, string str, variable xopVar
 		endswitch
 	elseif(!ParamIsDefault(var))
 		switch(var)
-			case CHANNEL_TYPE_ASYNC:
+			case CHANNEL_TYPE_ASYNC: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case CHANNEL_TYPE_ALARM:
 				return NUM_ASYNC_CHANNELS
 				break
-			case CHANNEL_TYPE_TTL:
+			case CHANNEL_TYPE_TTL: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case CHANNEL_TYPE_DAC:
 				return NUM_DA_TTL_CHANNELS
 				break
@@ -116,7 +116,7 @@ threadsafe Function GetNumberFromType([variable var, string str, variable xopVar
 			case XOP_CHANNEL_TYPE_ADC:
 				return NUM_AD_CHANNELS
 				break
-			case XOP_CHANNEL_TYPE_DAC:
+			case XOP_CHANNEL_TYPE_DAC: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case XOP_CHANNEL_TYPE_TTL:
 				return NUM_DA_TTL_CHANNELS
 				break
@@ -255,7 +255,7 @@ Function MapAnaFuncToConstant(string anaFunc)
 			return MSQ_DA_SCALE
 		case "SC_SpikeControl":
 			return SC_SPIKE_CONTROL
-		default:
+		default: // FIXME(CodeStyleFallthroughCaseRequireComment)
 #ifdef AUTOMATED_TESTING
 			return TEST_ANALYSIS_FUNCTION
 #else

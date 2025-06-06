@@ -1333,13 +1333,13 @@ static Function [variable lowerBound, variable upperBound] WB_TrigGetBoundsForIn
 
 		// we don't require that lowerBound < upperBound, because for the cosine case
 		// we can actually have no solutions at all
-	else
-		d = pa.duration
-		f = pa.frequency / 1000 // NOLINT
-
-		lowerBound = 0 - offset
-		upperBound = 2 * d * f - offset
 	endif
+
+	d = pa.duration
+	f = pa.frequency / 1000 // NOLINT
+
+	lowerBound = 0 - offset
+	upperBound = 2 * d * f - offset
 
 	lowerBound = ceil(lowerBound)
 	upperBound = floor(upperBound)

@@ -277,7 +277,7 @@ Function/WAVE MSQ_CreateOverrideResults(string device, variable headstage, varia
 	ASSERT(WaveExists(wv), "Stimset does not exist")
 
 	switch(type)
-		case MSQ_FAST_RHEO_EST:
+		case MSQ_FAST_RHEO_EST: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			numRows = IDX_NumberOfSweepsInSet(stimset)
 			WAVE activeHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 			numCols    = Sum(activeHS)
@@ -383,36 +383,36 @@ static Function/WAVE MSQ_SearchForSpikes(string device, variable type, WAVE swee
 			Redimension/D/N=(numberOfSpikes) spikePositions
 			spikePositions[] = overrideValue
 		endif
-	else
-		// scale with SWS_GetChannelGains(device) when called during mid sweep event
-		level = MSQ_SPIKE_LEVEL
+	endif
 
-		if(numberOfSpikes == 1)
-			// search the spike from the rising edge till the end of the wave
-			FindLevel/Q/R=(first, last) singleAD, level
-			spikeDetection[headstage] = !V_flag
+	// scale with SWS_GetChannelGains(device) when called during mid sweep event
+	level = MSQ_SPIKE_LEVEL
 
-			if(!ParamIsDefault(spikePositions))
-				ASSERT(WaveExists(spikePositions), "Wave spikePositions must exist")
-				Redimension/D/N=(numberOfSpikes) spikePositions
-				spikePositions[0] = V_LevelX
-			endif
-		elseif(numberOfSpikes > 1)
-			Make/D/FREE/N=0 crossings
-			FindLevels/Q/R=(first, last)/N=(numberOfSpikes)/DEST=crossings/EDGE=1 singleAD, level
-			spikeDetection[headstage] = !V_flag
+	if(numberOfSpikes == 1)
+		// search the spike from the rising edge till the end of the wave
+		FindLevel/Q/R=(first, last) singleAD, level
+		spikeDetection[headstage] = !V_flag
 
-			if(!ParamIsDefault(spikePositions))
-				ASSERT(WaveExists(spikePositions), "Wave spikePositions must exist")
-				Redimension/D/N=(V_LevelsFound) spikePositions
-
-				if(!V_flag && V_LevelsFound > 0)
-					spikePositions[] = crossings[p]
-				endif
-			endif
-		else
-			ASSERT(0, "Invalid number of spikes value")
+		if(!ParamIsDefault(spikePositions))
+			ASSERT(WaveExists(spikePositions), "Wave spikePositions must exist")
+			Redimension/D/N=(numberOfSpikes) spikePositions
+			spikePositions[0] = V_LevelX
 		endif
+	elseif(numberOfSpikes > 1)
+		Make/D/FREE/N=0 crossings
+		FindLevels/Q/R=(first, last)/N=(numberOfSpikes)/DEST=crossings/EDGE=1 singleAD, level
+		spikeDetection[headstage] = !V_flag
+
+		if(!ParamIsDefault(spikePositions))
+			ASSERT(WaveExists(spikePositions), "Wave spikePositions must exist")
+			Redimension/D/N=(V_LevelsFound) spikePositions
+
+			if(!V_flag && V_LevelsFound > 0)
+				spikePositions[] = crossings[p]
+			endif
+		endif
+	else
+		ASSERT(0, "Invalid number of spikes value")
 	endif
 
 	ASSERT(IsFinite(spikeDetection[headstage]), "Expected finite result")
@@ -760,10 +760,10 @@ Function MSQ_FastRheoEst(string device, STRUCT AnalysisFunction_V3 &s)
 					rangeExceededNew[i] = 1
 					ASSERT(headstagePassed[i] != 1, "Unexpected headstage passing")
 					headstagePassed[i] = 0
-				else
-					limitCheck    = !AFH_LastSweepInSet(device, s.sweepNo, s.headstage, s.eventType)
-					oorDAScale[i] = SetDAScale(device, s.sweepNo, i, absolute = newDAScaleValue, limitCheck = limitCheck)
 				endif
+
+				limitCheck    = !AFH_LastSweepInSet(device, s.sweepNo, s.headstage, s.eventType)
+				oorDAScale[i] = SetDAScale(device, s.sweepNo, i, absolute = newDAScaleValue, limitCheck = limitCheck)
 			endfor
 
 			ReportOutOfRangeDAScale(device, s.sweepNo, MSQ_FAST_RHEO_EST, oorDAScale)
@@ -868,9 +868,9 @@ Function MSQ_FastRheoEst(string device, STRUCT AnalysisFunction_V3 &s)
 						WAVE finalDAScale = ZapNaNs(finalDAScaleAll)
 						ASSERT(DimSize(finalDAScale, ROWS) == 1, "Unexpected finalDAScale")
 						val = max(postDAQDAScaleFactor * finalDAScale[0], minRheoOffset * PICO_TO_ONE + finalDAScale[0])
-					else
-						val = AFH_GetAnalysisParamNumerical("PostDAQDAScaleForFailedHS", s.params) * PICO_TO_ONE
 					endif
+
+					val = AFH_GetAnalysisParamNumerical("PostDAQDAScaleForFailedHS", s.params) * PICO_TO_ONE
 
 					// we can't check this here, as we don't know the next stimset
 					SetDAScale(device, s.sweepNo, i, absolute = val, limitCheck = 0)

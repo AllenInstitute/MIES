@@ -168,61 +168,62 @@ static Function [variable fileID, variable createdNewNWBFile] NWB_GetFileForExpo
 		filePathExport = filePath
 
 		createdNewNWBFile = 0
-	else // file does not exist
-		HDF5CreateFile/Z fileID as filePath
-		if(V_flag)
-			// invalidate stored path and ID
-			filePathExport = ""
-			fileIDExport   = NaN
-			DEBUGPRINT("Could not create HDF5 file")
-			// and retry
-			[fileID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion, device)
-			return [fileID, createdNewNWBFile]
-		endif
-
-		STRUCT ToplevelInfo ti
-		InitToplevelInfo(ti, nwbVersion)
-
-		NVAR sessionStartTime = $GetSessionStartTime()
-
-		if(!IsFinite(sessionStartTime))
-			sessionStartTime = DateTimeInUTC()
-		endif
-
-		oldestData = NWB_FirstStartTimeOfAllSweeps()
-
-		// adjusting the session start time, as older sweeps than the
-		// timestamp of the last device locking are to be exported
-		// not adjusting it would result in negative starting times for the lastest sweep
-		if(IsFinite(oldestData))
-			// workaround "Save and Clear" not resetting the sessionStartTime
-			// fixed since previous commit (SaveExperimentSpecial: Reset session start
-			// time in "Save and clear" mode, 2020-05-28)
-			// we ignore session start times which are older (45min) than oldestData
-			// as these are most probably due to the above bug. It is very
-			// unlikely that the time between device locking (session start
-			// time) and first data acquisition is larger than 45min.
-			if((oldestData - sessionStartTime) > (0.75 * 3600))
-				ti.session_start_time = floor(oldestData)
-			else
-				ti.session_start_time = min(sessionStartTime, floor(oldestData))
-			endif
-		endif
-
-		CreateCommonGroups(fileID, ti)
-		CreateIntraCellularEphys(fileID)
-
-		NWB_AddGeneratorString(fileID, nwbVersion)
-		NWB_AddSpecifications(fileID, nwbVersion)
-
-		sessionStartTimeReadBack = NWB_ReadSessionStartTime(fileID)
-		ASSERT(CheckIfClose(ti.session_start_time, sessionStartTimeReadBack, tol = 1e-6), "Buggy timestamp handling")
-
-		fileIDExport   = fileID
-		filePathExport = filePath
-
-		createdNewNWBFile = 1
 	endif
+
+	// file does not exist
+	HDF5CreateFile/Z fileID as filePath
+	if(V_flag)
+		// invalidate stored path and ID
+		filePathExport = ""
+		fileIDExport   = NaN
+		DEBUGPRINT("Could not create HDF5 file")
+		// and retry
+		[fileID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion, device)
+		return [fileID, createdNewNWBFile]
+	endif
+
+	STRUCT ToplevelInfo ti
+	InitToplevelInfo(ti, nwbVersion)
+
+	NVAR sessionStartTime = $GetSessionStartTime()
+
+	if(!IsFinite(sessionStartTime))
+		sessionStartTime = DateTimeInUTC()
+	endif
+
+	oldestData = NWB_FirstStartTimeOfAllSweeps()
+
+	// adjusting the session start time, as older sweeps than the
+	// timestamp of the last device locking are to be exported
+	// not adjusting it would result in negative starting times for the lastest sweep
+	if(IsFinite(oldestData))
+		// workaround "Save and Clear" not resetting the sessionStartTime
+		// fixed since previous commit (SaveExperimentSpecial: Reset session start
+		// time in "Save and clear" mode, 2020-05-28)
+		// we ignore session start times which are older (45min) than oldestData
+		// as these are most probably due to the above bug. It is very
+		// unlikely that the time between device locking (session start
+		// time) and first data acquisition is larger than 45min.
+		if((oldestData - sessionStartTime) > (0.75 * 3600))
+			ti.session_start_time = floor(oldestData)
+		else
+			ti.session_start_time = min(sessionStartTime, floor(oldestData))
+		endif
+	endif
+
+	CreateCommonGroups(fileID, ti)
+	CreateIntraCellularEphys(fileID)
+
+	NWB_AddGeneratorString(fileID, nwbVersion)
+	NWB_AddSpecifications(fileID, nwbVersion)
+
+	sessionStartTimeReadBack = NWB_ReadSessionStartTime(fileID)
+	ASSERT(CheckIfClose(ti.session_start_time, sessionStartTimeReadBack, tol = 1e-6), "Buggy timestamp handling")
+
+	fileIDExport   = fileID
+	filePathExport = filePath
+
+	createdNewNWBFile = 1
 
 	DEBUGPRINT("fileIDExport", var = fileIDExport, format = "%15d")
 	DEBUGPRINT("filePathExport", str = filePathExport)
@@ -560,14 +561,14 @@ static Function NWB_HandleFileOverwrite(string fullFilePath, variable overwrite,
 			endif
 			DeleteFile/Z fullFilePath
 			ASSERT(!FileExists(fullFilePath), "File could not be deleted")
-		else
-			if(verbose)
-				printf "The given path %s for the NWB export points to an existing file and overwrite is disabled.\r", fullFilePath
-				ControlWindowToFront()
-			endif
-
-			return 1
 		endif
+
+		if(verbose)
+			printf "The given path %s for the NWB export points to an existing file and overwrite is disabled.\r", fullFilePath
+			ControlWindowToFront()
+		endif
+
+		return 1
 	endif
 
 	return 0

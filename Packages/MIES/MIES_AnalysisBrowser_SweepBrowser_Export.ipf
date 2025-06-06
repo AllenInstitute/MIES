@@ -326,7 +326,9 @@ static Function SBE_ExportSweepBrowser(STRUCT SBE_ExportSettings &sett)
 		beginX     = pulseStartTimes[0] + sett.preFirstPulse
 		endX       = pulseStartTimes[sett.numPulses] + sett.postLastPulse
 		clipXRange = 1
-	elseif(sett.useCursorRange)
+	endif
+
+	if(sett.useCursorRange)
 		xcsrA          = xcsr(A, sett.sourceGraph)
 		xcsrB          = xcsr(B, sett.sourceGraph)
 		[beginX, endX] = MinMax(xcsrA, xcsrB)

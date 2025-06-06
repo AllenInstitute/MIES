@@ -119,7 +119,7 @@ Function ValidMultHS_V1(string device, variable eventType, WAVE DAQDataWave, var
 		case HARDWARE_ITC_DAC:
 			CHECK_WAVE(DAQDataWave, NUMERIC_WAVE)
 			break
-		case HARDWARE_NI_DAC: // intended drop-through
+		case HARDWARE_NI_DAC: // intended drop-through, FIXME(CodeStyleFallthroughCaseRequireComment)
 		case HARDWARE_SUTTER_DAC:
 			CHECK_WAVE(DAQDataWave, WAVE_WAVE)
 			break
@@ -296,7 +296,7 @@ Function ValidFunc_V3(string device, STRUCT AnalysisFunction_V3 &s)
 					endfor
 				endif
 				break
-			case HARDWARE_NI_DAC: // intended drop through
+			case HARDWARE_NI_DAC: // intended drop through, FIXME(CodeStyleFallthroughCaseRequireComment)
 			case HARDWARE_SUTTER_DAC:
 				WAVE/WAVE DAQDataWaveRef = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
 				CHECK_EQUAL_VAR(DimSize(s.scaledDACWave, ROWS), DimSize(DAQDataWaveRef, ROWS))
@@ -312,7 +312,9 @@ Function ValidFunc_V3(string device, STRUCT AnalysisFunction_V3 &s)
 			default:
 				FAIL()
 		endswitch
-	elseif(s.eventType == POST_DAQ_EVENT)
+	endif
+
+	if(s.eventType == POST_DAQ_EVENT)
 		if(!(IsTextWave(s.scaledDACWave) || IsWaveRefWave(s.scaledDACWave)))
 			FAIL()
 		endif
@@ -351,7 +353,7 @@ Function ValidFunc_V3(string device, STRUCT AnalysisFunction_V3 &s)
 				CHECK_EQUAL_VAR(s.sampleIntervalDA, DimDelta(DAQDataWave, ROWS))
 				CHECK_EQUAL_VAR(s.sampleIntervalAD, DimDelta(DAQDataWave, ROWS))
 				break
-			case HARDWARE_NI_DAC: // intended drop-through
+			case HARDWARE_NI_DAC: // intended drop-through, FIXME(CodeStyleFallthroughCaseRequireComment)
 			case HARDWARE_SUTTER_DAC:
 				WAVE/WAVE DAQDataWaveRef = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
 				Make/FREE/N=(DimSize(DAQDataWaveRef, ROWS)) sizes = DimSize(DAQDataWaveRef[p], ROWS)
@@ -388,8 +390,8 @@ Function ValidFunc_V3(string device, STRUCT AnalysisFunction_V3 &s)
 			CHECK_EQUAL_VAR(s.sweepNo, 0)
 			CHECK_WAVE(GetSweepWave(device, s.sweepNo), NULL_WAVE)
 			break
-		case PRE_SWEEP_CONFIG_EVENT:
-		case PRE_SET_EVENT:
+		case PRE_SWEEP_CONFIG_EVENT: // FIXME(CodeStyleFallthroughCaseRequireComment)
+		case PRE_SET_EVENT: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case MID_SWEEP_EVENT:
 			CHECK_EQUAL_VAR(s.sweepNo, anaFuncTracker[POST_SWEEP_EVENT])
 			CHECK_WAVE(GetSweepWave(device, s.sweepNo), NULL_WAVE)
@@ -501,7 +503,7 @@ Function/S Params5_V3_CheckParam(string name, string params)
 				return "Nope that is not valid content"
 			endif
 			break
-		case "MyNum":
+		case "MyNum": // FIXME(CodeStyleFallthroughCaseRequireComment)
 			var = AFH_GetAnalysisParamNumerical(name, params)
 			if(!IsFinite(var))
 				ASSERT(0, "trying to bug out")
@@ -825,7 +827,7 @@ Function AcquisitionStateTrackingFunc(string device, STRUCT AnalysisFunction_V3 
 		case MID_SWEEP_EVENT:
 			expectedAcqState = AS_MID_SWEEP
 			break
-		case POST_SWEEP_EVENT:
+		case POST_SWEEP_EVENT: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case POST_SET_EVENT:
 			// AS_POST_SET does not yet exist
 			expectedAcqState = AS_POST_SWEEP
@@ -1013,7 +1015,7 @@ End
 Function/S ComplainWithProperString_CheckParam(string name, string params)
 
 	strswitch(name)
-		case "param":
+		case "param": // FIXME(CodeStyleFallthroughCaseRequireComment)
 			if(!IsEmpty(name))
 				return "wrong value"
 			endif
@@ -1049,7 +1051,7 @@ Function AddUserEpochsForTPLike(string device, STRUCT AnalysisFunction_V3 &s)
 	variable ret
 
 	switch(s.eventType)
-		case PRE_SWEEP_CONFIG_EVENT:
+		case PRE_SWEEP_CONFIG_EVENT: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			ret = MIES_PSQ#PSQ_CreateTestpulseEpochs(device, s.headstage, 3)
 			if(ret)
 				return 1

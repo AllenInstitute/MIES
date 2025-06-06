@@ -883,7 +883,7 @@ static Function LBV_SwitchLBGraphXAxis(string graph)
 		logbookType = GetLogbookType(values)
 
 		switch(logbookType)
-			case LBT_LABNOTEBOOK:
+			case LBT_LABNOTEBOOK: // FIXME(CodeStyleFallthroughCaseRequireComment)
 			case LBT_RESULTS:
 				if(isTimeAxis)
 					if(isTextData)
@@ -952,7 +952,7 @@ static Function LBV_CheckIfXAxisIsTime(string graph, [variable logbookType])
 	if(isEmpty(list))
 		if(!ParamIsDefault(logbookType))
 			switch(logbookType)
-				case LBT_RESULTS:
+				case LBT_RESULTS: // FIXME(CodeStyleFallthroughCaseRequireComment)
 				case LBT_TPSTORAGE:
 					return 1
 				case LBT_LABNOTEBOOK:
@@ -1232,10 +1232,10 @@ static Function LBV_LimitXRangeToSelected(string browser)
 		last  = UTCTimeToLocal(last)
 
 		ASSERT(IsFinite(first) && IsFinite(last), "Invalid first/last")
-	else
-		first = minSweep
-		last  = maxSweep
 	endif
+
+	first = minSweep
+	last  = maxSweep
 
 	SetAxis/W=$graph bottom, first, last
 End
