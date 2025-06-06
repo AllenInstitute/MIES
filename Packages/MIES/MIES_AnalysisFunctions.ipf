@@ -1,9 +1,9 @@
-#pragma TextEncoding="UTF-8"
-#pragma rtGlobals=3 // Use modern global access method and strict wave access.
-#pragma rtFunctionErrors=1
+#pragma TextEncoding     = "UTF-8"
+#pragma rtGlobals        = 3 // Use modern global access method and strict wave access.
+#pragma rtFunctionErrors = 1
 
 #ifdef AUTOMATED_TESTING
-#pragma ModuleName=MIES_AF
+#pragma ModuleName = MIES_AF
 #endif // AUTOMATED_TESTING
 
 /// @file MIES_AnalysisFunctions.ipf
@@ -357,6 +357,7 @@ Function LastStimSet(string device, variable eventType, WAVE DAQDataWave, variab
 	LastStimSetRun()
 
 End
+
 /// @brief GUI to set initial stimulus parameters using SetStimParam() and begin data acquisition.
 /// NOTE: DATA ACQUISITION IS INTIATED AT THE END OF FUNCTION!
 Function StimParamGUI()

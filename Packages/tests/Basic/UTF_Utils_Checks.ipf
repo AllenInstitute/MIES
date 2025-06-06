@@ -1,7 +1,7 @@
-#pragma TextEncoding="UTF-8"
-#pragma rtGlobals=3 // Use modern global access method and strict wave access.
-#pragma rtFunctionErrors=1
-#pragma ModuleName=UTILSTEST_CHECKS
+#pragma TextEncoding     = "UTF-8"
+#pragma rtGlobals        = 3 // Use modern global access method and strict wave access.
+#pragma rtFunctionErrors = 1
+#pragma ModuleName       = UTILSTEST_CHECKS
 
 // Missing Tests for:
 // IsFinite

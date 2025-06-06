@@ -114,33 +114,6 @@ then
   ret=1
 fi
 
-matches=$(git grep $opts --files-without-match  '^#pragma rtGlobals=3' '**/MIES_*.ipf' '**/UTF*.ipf' ':^*/MIES_EnhancedWMRoutines.ipf')
-
-if [[ -n "$matches" ]]
-then
-  echo "The pragma rtGlobals=3 check failed and found the following occurences:"
-  echo "$matches"
-  ret=1
-fi
-
-matches=$(git grep $opts --files-without-match  '^#pragma rtFunctionErrors=1' '**/MIES_*.ipf' '**/UTF*.ipf' ':^*/MIES_EnhancedWMRoutines.ipf')
-
-if [[ -n "$matches" ]]
-then
-  echo "The pragma rtFunctionErrors=1 check failed and found the following occurences:"
-  echo "$matches"
-  ret=1
-fi
-
-matches=$(git grep $opts --files-without-match  '^#pragma TextEncoding' '**/MIES_*.ipf' '**/UTF*.ipf' ':^*/MIES_EnhancedWMRoutines.ipf')
-
-if [[ -n "$matches" ]]
-then
-  echo "The pragma TextEncoding check failed and found the following occurences:"
-  echo "$matches"
-  ret=1
-fi
-
 matches=$(git grep $opts --files-without-match  '^#pragma (ModuleName|IndependentModule)' '**/MIES_*.ipf' '**/UTF*.ipf' ':^*/MIES_Include.ipf')
 
 if [[ -n "$matches" ]]

@@ -1,7 +1,7 @@
-#pragma TextEncoding="UTF-8"
-#pragma rtGlobals=3 // Use modern global access method and strict wave access.
-#pragma rtFunctionErrors=1
-#pragma ModuleName=AsynTest
+#pragma TextEncoding     = "UTF-8"
+#pragma rtGlobals        = 3 // Use modern global access method and strict wave access.
+#pragma rtFunctionErrors = 1
+#pragma ModuleName       = AsynTest
 
 /// @file UTF_AsynFrameworkTest.ipf
 /// @brief __ASYNC_Test__ This file holds the tests for the Async Framework

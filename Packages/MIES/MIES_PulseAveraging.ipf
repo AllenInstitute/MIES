@@ -1,9 +1,9 @@
-#pragma TextEncoding="UTF-8"
-#pragma rtGlobals=3 // Use modern global access method and strict wave access.
-#pragma rtFunctionErrors=1
+#pragma TextEncoding     = "UTF-8"
+#pragma rtGlobals        = 3 // Use modern global access method and strict wave access.
+#pragma rtFunctionErrors = 1
 
 #ifdef AUTOMATED_TESTING
-#pragma ModuleName=MIES_PA
+#pragma ModuleName = MIES_PA
 #endif // AUTOMATED_TESTING
 
 /// @file MIES_PulseAveraging.ipf
@@ -89,6 +89,7 @@ static Constant PA_MINIMUM_SPIKE_WIDTH = 0.2 // ms
 
 // comment out to show all the axes, useful for debugging
 #define PA_HIDE_AXIS
+
 // comment out to show execution times in debugging mode
 #define PA_HIDE_EXECUTION_TIME
 

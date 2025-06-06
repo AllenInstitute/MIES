@@ -1,7 +1,7 @@
-#pragma TextEncoding="UTF-8"
-#pragma rtGlobals=3 // Use modern global access method and strict wave access.
-#pragma rtFunctionErrors=1
-#pragma ModuleName=PatchSeqTestRheobase
+#pragma TextEncoding     = "UTF-8"
+#pragma rtGlobals        = 3 // Use modern global access method and strict wave access.
+#pragma rtFunctionErrors = 1
+#pragma ModuleName       = PatchSeqTestRheobase
 
 static Constant PSQ_RHEOBASE_TEST_DURATION  = 2
 static Constant PSQ_RB_FINALSCALE_FAKE_HIGH = 70e-12

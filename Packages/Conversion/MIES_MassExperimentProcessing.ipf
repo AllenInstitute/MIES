@@ -1,9 +1,9 @@
-#pragma TextEncoding="UTF-8"
-#pragma rtGlobals=3 // Use modern global access method.
-#pragma rtFunctionErrors=1
+#pragma TextEncoding     = "UTF-8"
+#pragma rtGlobals        = 3 // Use modern global access method.
+#pragma rtFunctionErrors = 1
 
 #ifdef AUTOMATED_TESTING
-#pragma ModuleName=MIES_MEP
+#pragma ModuleName = MIES_MEP
 #endif // AUTOMATED_TESTING
 
 /// @file MIES_MassExperimentProcessing.ipf

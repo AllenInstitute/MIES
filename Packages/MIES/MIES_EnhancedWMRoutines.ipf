@@ -1,7 +1,7 @@
-#pragma rtFunctionErrors=1
-#pragma TextEncoding="UTF-8"
-#pragma rtGlobals=3 // Use modern global access method and strict wave access.
-#pragma ModuleName=MIES_ENWM
+#pragma rtFunctionErrors = 1
+#pragma TextEncoding     = "UTF-8"
+#pragma rtGlobals        = 3 // Use modern global access method and strict wave access.
+#pragma ModuleName       = MIES_ENWM
 
 /// @file MIES_EnhancedWMRoutines.ipf
 /// @brief Routines packaged with IGOR PRO but enhanced from us

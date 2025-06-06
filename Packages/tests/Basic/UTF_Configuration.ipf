@@ -1,7 +1,7 @@
-#pragma TextEncoding="UTF-8"
-#pragma rtGlobals=3 // Use modern global access method and strict wave access.
-#pragma rtFunctionErrors=1
-#pragma ModuleName=ConfigurationTest
+#pragma TextEncoding     = "UTF-8"
+#pragma rtGlobals        = 3 // Use modern global access method and strict wave access.
+#pragma rtFunctionErrors = 1
+#pragma ModuleName       = ConfigurationTest
 
 /// @file UTF_ConfigurationTest.ipf
 /// @brief __CONFIG_Test__ This file holds the tests for the Configuration saving/loading

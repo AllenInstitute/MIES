@@ -1,7 +1,7 @@
-#pragma TextEncoding="UTF-8"
-#pragma rtGlobals=3 // Use modern global access method and strict wave access.
-#pragma rtFunctionErrors=1
-#pragma ModuleName=PA_Tests
+#pragma TextEncoding     = "UTF-8"
+#pragma rtGlobals        = 3 // Use modern global access method and strict wave access.
+#pragma rtFunctionErrors = 1
+#pragma ModuleName       = PA_Tests
 
 // The functions are enclosed in this define to be able to acquire data for tests in
 // a non-test environment. So commenting AUTOMATED_TESTING in the experiment procedure
@@ -2188,6 +2188,7 @@ static Function/WAVE PAT_IncrementalSweepAdd_Generator()
 
 	return w
 End
+
 // UTF_TD_GENERATOR PAT_IncrementalSweepAdd_Generator
 static Function PAT_IncrementalSweepAdd([WAVE wv])
 
