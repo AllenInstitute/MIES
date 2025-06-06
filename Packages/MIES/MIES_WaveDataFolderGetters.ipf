@@ -3059,7 +3059,7 @@ End
 Function/WAVE GetTPStorage(string device)
 
 	DFREF    dfr              = GetDeviceTestPulse(device)
-	variable versionOfNewWave = 17
+	variable versionOfNewWave = 18
 	variable numLayersV16     = 40
 	variable numLayers        = 39
 
@@ -3154,6 +3154,7 @@ Function/WAVE GetTPStorage(string device)
 	SetNumberInWaveNote(wv, DIMENSION_SCALING_LAST_INVOC, 0)
 	SetNumberInWaveNote(wv, PRESSURE_CTRL_LAST_INVOC, 0)
 	SetNumberInWaveNote(wv, INDEX_ON_TP_START, 0)
+	SetNumberInWaveNote(wv, REFERENCE_START_TIME, 0)
 
 	SetWaveVersion(wv, versionOfNewWave)
 

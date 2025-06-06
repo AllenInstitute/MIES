@@ -370,6 +370,7 @@ StrConstant DIMENSION_SCALING_LAST_INVOC = "DimensionScalingLastInvocation"
 StrConstant PRESSURE_CTRL_LAST_INVOC     = "PressureControlLastInvocation"
 StrConstant INDEX_ON_TP_START            = "IndexOnTestPulseStart"
 StrConstant AUTOTP_LAST_INVOCATION_KEY   = "AutoTPLastInvocation"
+StrConstant REFERENCE_START_TIME         = "ReferenceStartTime"
 ///@}
 
 /// @name Modes for SaveExperimentSpecial
