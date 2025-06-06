@@ -512,6 +512,11 @@ Function/S CA_GetLabnotebookNamesKey(WAVE/Z/T textualValues, WAVE/Z/T numericalV
 	return "Version 1:" + Hash(key, HASH_SHA2_256)
 End
 
+Function/S CA_GetGoodFFTSizesKeys()
+
+	return "GetGoodFFTSizes Version 1"
+End
+
 ///@}
 
 /// @brief Make space for one new entry in the cache waves
