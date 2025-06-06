@@ -61,7 +61,7 @@ End
 Function SCOPE_GetTPTopAxisStart(string device, variable &axisMin)
 
 	string graph
-	variable count, latest
+	variable count, latest, i
 
 	graph = SCOPE_GetGraph(device)
 	GetAxis/W=$graph/Q $AXIS_SCOPE_TP_TIME
@@ -73,7 +73,16 @@ Function SCOPE_GetTPTopAxisStart(string device, variable &axisMin)
 	count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
 
 	if(count > 0)
-		latest = TPStorage[count - 1][0][%DeltaTimeInSeconds]
+		for(i = 0; i < NUM_HEADSTAGES; i += 1)
+			latest = TPStorage[count - 1][i][%DeltaTimeInSeconds]
+
+			if(IsFinite(latest))
+				break
+			endif
+		endfor
+
+		ASSERT(IsFinite(latest), "Could not find a finite DeltaTimeInSeconds")
+
 		if(latest >= V_max)
 			axisMin = latest - 0.5 * SCOPE_TIMEAXIS_RESISTANCE_RANGE
 			return 1

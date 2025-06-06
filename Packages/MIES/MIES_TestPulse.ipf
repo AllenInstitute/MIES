@@ -1195,6 +1195,8 @@ End
 static Function TP_RecordTP(string device, WAVE TPResults)
 
 	variable delta, i, ret, lastPressureCtrl, now
+	variable refTime = NaN
+
 	WAVE     TPStorage     = GetTPStorage(device)
 	WAVE     hsProp        = GetHSProperties(device)
 	variable count         = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
@@ -1210,7 +1212,14 @@ static Function TP_RecordTP(string device, WAVE TPResults)
 			endif
 
 			TP_UpdateHoldCmdInTPStorage(device, i)
+
+			if(IsNaN(refTime))
+				refTime = TPResults[%TIMESTAMP][i]
+				SetNumberInWaveNote(TPStorage, REFERENCE_START_TIME, refTime)
+			endif
 		endfor
+	else
+		refTime = GetNumberFromWaveNote(TPStorage, REFERENCE_START_TIME)
 	endif
 
 	ret = EnsureLargeEnoughWave(TPStorage, indexShouldExist = count, dimension = ROWS, initialValue = NaN, checkFreeMemory = 1)
@@ -1248,7 +1257,7 @@ static Function TP_RecordTP(string device, WAVE TPResults)
 	TPStorage[count][][%Baseline_VC] = (hsProp[q][%ClampMode] == V_CLAMP_MODE) ? TPResults[%BaselineSteadyState][q] : NaN
 	TPStorage[count][][%Baseline_IC] = (hsProp[q][%ClampMode] == I_CLAMP_MODE) ? TPResults[%BaselineSteadyState][q] : NaN
 
-	TPStorage[count][][%DeltaTimeInSeconds] = TPResults[%TIMESTAMP][q] - TPStorage[0][q][%TimeStamp]
+	TPStorage[count][][%DeltaTimeInSeconds] = TPResults[%TIMESTAMP][q] - refTime
 	TPStorage[count][][%TPMarker]           = TPResults[%MARKER][q]
 
 	TPStorage[count][][%TPCycleID] = TPResults[%CYCLEID][q]
