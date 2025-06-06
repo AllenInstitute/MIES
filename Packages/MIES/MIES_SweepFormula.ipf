@@ -184,10 +184,6 @@ static StrConstant SF_PLOTTER_GUIDENAME = "HOR"
 
 static StrConstant SF_XLABEL_USER = ""
 
-static Constant SF_MSG_OK    = 1
-static Constant SF_MSG_ERROR = 0
-static Constant SF_MSG_WARN  = -1
-
 static Constant SF_NUMTRACES_ERROR_THRESHOLD = 10000
 static Constant SF_NUMTRACES_WARN_THRESHOLD  = 1000
 
@@ -2861,7 +2857,7 @@ static Function/S SF_PreprocessInput(string formula)
 	return formula
 End
 
-static Function SF_SetStatusDisplay(string bsPanel, string errMsg, variable errState)
+Function SF_SetStatusDisplay(string bsPanel, string errMsg, variable errState)
 
 	ASSERT(errState == SF_MSG_ERROR || errState == SF_MSG_OK || errState == SF_MSG_WARN, "Unknown error state for SF status")
 	SetValDisplay(bsPanel, "status_sweepFormula_parser", var = errState)
