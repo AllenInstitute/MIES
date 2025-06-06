@@ -452,7 +452,7 @@ Function/WAVE GetColfromWavewithDimLabel(WAVE wv, string dimLabel)
 End
 
 /// @brief Turn a persistent wave into a free wave
-Function/WAVE MakeWaveFree(WAVE/Z wv)
+threadsafe Function/WAVE MakeWaveFree(WAVE/Z wv)
 
 	if(!WaveExists(wv))
 		return $""
