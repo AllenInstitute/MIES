@@ -439,6 +439,9 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 				rowLabel = AI_MapFunctionConstantToName(func, clampMode)
 
 				AmpStorageWave[%$rowLabel][0][i] = value
+
+				PUB_AmplifierSettingChange(device, i, clampMode, func, value)
+
 				AI_UpdateAmpModel(device, i, ctrl = "setvar_DataAcq_RsCorr", value = AmpStorageWave[%$rowLabel][0][i], selectAmp = 0)
 				break
 			case MCC_NO_AUTOBIAS_V_FUNC:
@@ -448,6 +451,8 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 				rowLabel = AI_MapFunctionConstantToName(func, clampMode)
 
 				AmpStorageWave[%$rowLabel][0][i] = value
+
+				PUB_AmplifierSettingChange(device, i, clampMode, func, value)
 				break
 			case MCC_AUTOBRIDGEBALANCE_FUNC:
 				clampMode = I_CLAMP_MODE
@@ -1101,6 +1106,94 @@ threadsafe Function/S AI_MapFunctionConstantToName(variable func, variable clamp
 	endswitch
 End
 
+/// @brief Map human readable names to functions constants from @ref AI_SendToAmpConstants
+threadsafe Function AI_MapNameToFunctionConstant(string name)
+
+	strswitch(name)
+		// begin AmpStorageWave row labels
+		case "BiasCurrent":
+		case "HoldingPotential":
+			return MCC_HOLDING_FUNC
+		case "BiasCurrentEnable":
+		case "HoldingPotentialEnable":
+			return MCC_HOLDINGENABLE_FUNC
+		case "WholeCellCap":
+			return MCC_WHOLECELLCOMPCAP_FUNC
+		case "WholeCellRes":
+			return MCC_WHOLECELLCOMPRESIST_FUNC
+		case "WholeCellEnable":
+			return MCC_WHOLECELLCOMPENABLE_FUNC
+		case "Correction":
+			return MCC_RSCOMPCORRECTION_FUNC
+		case "Prediction":
+			return MCC_RSCOMPPREDICTION_FUNC
+		case "RsCompEnable":
+			return MCC_RSCOMPENABLE_FUNC
+		case "PipetteOffsetVC":
+		case "PipetteOffsetIC":
+			return MCC_PIPETTEOFFSET_FUNC
+		case "FastCapacitanceComp":
+			return MCC_AUTOFASTCOMP_FUNC
+		case "SlowCapacitanceComp":
+			return MCC_AUTOSLOWCOMP_FUNC
+		case "BridgeBalance":
+			return MCC_BRIDGEBALRESIST_FUNC
+		case "BridgeBalanceEnable":
+			return MCC_BRIDGEBALENABLE_FUNC
+		case "CapNeut":
+			return MCC_NEUTRALIZATIONCAP_FUNC
+		case "CapNeutEnable":
+			return MCC_NEUTRALIZATIONENABL_FUNC
+		// end AmpStorageWave row labels
+		// begin others
+		case "RsCompBandWidth":
+			return MCC_RSCOMPBANDWIDTH_FUNC
+		case "OscKillerEnable":
+			return MCC_OSCKILLERENABLE_FUNC
+		case "AutoPipetteOffset":
+			return MCC_AUTOPIPETTEOFFSET_FUNC
+		case "FastCompCap":
+			return MCC_FASTCOMPCAP_FUNC
+		case "FastCompTau":
+			return MCC_FASTCOMPTAU_FUNC
+		case "SlowCompCap":
+			return MCC_SLOWCOMPCAP_FUNC
+		case "SlowCompTau":
+			return MCC_SLOWCOMPTAU_FUNC
+		case "SlowCompTauX20":
+			return MCC_SLOWCOMPTAUX20ENAB_FUNC
+		case "SlowCurrentInjectEnable":
+			return MCC_SLOWCURRENTINJENABL_FUNC
+		case "SlowCurrentInjectLevel":
+			return MCC_SLOWCURRENTINJLEVEL_FUNC
+		case "SlowCurrentInjectSettleTime":
+			return MCC_SLOWCURRENTINJSETLT_FUNC
+		case "SetPrimarySignalGain":
+			return MCC_PRIMARYSIGNALGAIN_FUNC
+		case "SetSecondaySignalGain":
+			return MCC_SECONDARYSIGNALGAIN_FUNC
+		case "SetPrimarySignalHPF":
+			return MCC_PRIMARYSIGNALHPF_FUNC
+		case "SetPrimarySignalLPF":
+			return MCC_PRIMARYSIGNALLPF_FUNC
+		case "SetSecondaySignalLPF":
+			return MCC_SECONDARYSIGNALLPF_FUNC
+		case "RSCompChaining":
+			return MCC_NO_AMPCHAIN_FUNC
+		case "AutoBiasVcom":
+			return MCC_NO_AUTOBIAS_V_FUNC
+		case "AutoBiasVcomVariance":
+			return MCC_NO_AUTOBIAS_VRANGE_FUNC
+		case "AutoBiasIbiasmax":
+			return MCC_NO_AUTOBIAS_IBIASMAX_FUNC
+		case "AutoBiasEnable":
+			return MCC_NO_AUTOBIAS_ENABLE_FUNC
+		// end others
+		default:
+			ASSERT_TS(0, "Invalid name: " + name)
+	endswitch
+End
+
 /// @brief Return the truthness that the ctrl belongs to the clamp mode
 Function AI_IsControlFromClampMode(string ctrl, variable clampMode)
 
@@ -1656,6 +1749,10 @@ static Function AI_SendToAmp(string device, variable headStage, variable mode, v
 				ret = AI_WriteToMCC(func, value)
 			endif
 	endswitch
+
+	if(accessType == MCC_WRITE)
+		PUB_AmplifierSettingChange(device, headstage, mode, func, value)
+	endif
 
 	if(!IsFinite(ret))
 		print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"

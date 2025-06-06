@@ -618,3 +618,145 @@ static Function CheckTPPublishing()
 		endif
 	endfor
 End
+
+static Function CheckConfigurationFinished()
+
+	string windowName, file, rigFile, panelType, actual, expected
+	variable jsonID
+
+	windowName = "Databrowser"
+	file       = "fileA"
+	rigFile    = "fileB"
+	panelType  = PANELTAG_DATABROWSER
+
+	PUB_ConfigurationFinished(windowName, panelType, file, rigFile)
+
+	jsonID = FetchAndParseMessage(CONFIG_FINISHED_FILTER)
+
+	actual   = JSON_GetString(jsonID, "/window")
+	expected = windowName
+	CHECK_EQUAL_STR(actual, expected)
+
+	actual   = JSON_GetString(jsonID, "/panelType")
+	expected = panelType
+	CHECK_EQUAL_STR(actual, expected)
+
+	actual   = JSON_GetString(jsonID, "/fileName")
+	expected = file
+	CHECK_EQUAL_STR(actual, expected)
+
+	actual   = JSON_GetString(jsonID, "/rigFileName")
+	expected = rigFile
+	CHECK_EQUAL_STR(actual, expected)
+
+	JSON_Release(jsonID)
+End
+
+static Function CheckAmplifierSettingChange()
+
+	string device, actual, expected, name, unit, path
+	variable jsonID, valActual, valExpected, headstage, mode, value, func
+
+	device    = "my_device"
+	headstage = 1
+	mode      = V_CLAMP_MODE
+	func      = MCC_HOLDINGENABLE_FUNC
+	name      = "HoldingPotentialEnable"
+	unit      = "On/Off"
+	value     = 1
+
+	PUB_AmplifierSettingChange(device, headstage, mode, func, value)
+
+	jsonID = FetchAndParseMessage(AMPLIFIER_SET_VALUE)
+
+	actual   = JSON_GetString(jsonID, "/device")
+	expected = device
+	CHECK_EQUAL_STR(actual, expected)
+
+	valActual   = JSON_GetVariable(jsonID, "/headstage")
+	valExpected = headstage
+	CHECK_EQUAL_VAR(valActual, valExpected)
+
+	actual   = JSON_GetString(jsonID, "/clamp mode")
+	expected = ConvertAmplifierModeToString(mode)
+	CHECK_EQUAL_STR(actual, expected)
+
+	path        = "/amplifier action/" + name
+	valActual   = JSON_GetType(jsonID, path)
+	valExpected = JSON_OBJECT
+	CHECK_EQUAL_VAR(valActual, valExpected)
+
+	CHECK_EQUAL_STR(actual, expected)
+
+	valActual   = JSON_GetVariable(jsonID, path + "/value")
+	valExpected = value
+	CHECK_EQUAL_VAR(valActual, valExpected)
+
+	actual   = JSON_GetString(jsonID, path + "/unit")
+	expected = unit
+	CHECK_EQUAL_STR(actual, expected)
+
+	JSON_Release(jsonID)
+End
+
+/// Filter: #TESTPULSE_SET_VALUE_FILTER
+///
+/// Example:
+///
+/// \rst
+/// .. code-block:: json
+///
+///    {
+///      "device": "my_device",
+///      "headstage": 1,
+///      "sweep number": "NaN",
+///      "testpulse setting": {
+///        "my name": {
+///          "unit": "On/Off",
+///          "value": 1
+///        }
+///      },
+///      "timestamp": "2025-04-25T20:26:44Z"
+///    }
+///
+/// \endrst
+static Function CheckTestpulseSettingChange()
+
+	string device, name, unit, actual, expected, path
+	variable value, headstage, jsonID, valActual, valExpected
+
+	device    = "my_device"
+	headstage = 1
+	name      = "my name"
+	unit      = "On/Off"
+	value     = 1
+
+	PUB_TPSettingChange(device, headstage, name, value, unit)
+
+	jsonID = FetchAndParseMessage(TESTPULSE_SET_VALUE_FILTER)
+
+	actual   = JSON_GetString(jsonID, "/device")
+	expected = device
+	CHECK_EQUAL_STR(actual, expected)
+
+	valActual   = JSON_GetVariable(jsonID, "/headstage")
+	valExpected = headstage
+	CHECK_EQUAL_VAR(valActual, valExpected)
+
+	path        = "/testpulse setting/" + name
+	valActual   = JSON_GetType(jsonID, path)
+	valExpected = JSON_OBJECT
+	CHECK_EQUAL_VAR(valActual, valExpected)
+
+	CHECK_EQUAL_STR(actual, expected)
+
+	valActual   = JSON_GetVariable(jsonID, path + "/value")
+	valExpected = value
+	CHECK_EQUAL_VAR(valActual, valExpected)
+
+	actual   = JSON_GetString(jsonID, path + "/unit")
+	expected = unit
+	CHECK_EQUAL_STR(actual, expected)
+
+	JSON_Release(jsonID)
+End

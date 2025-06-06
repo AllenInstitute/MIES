@@ -16,10 +16,17 @@ static Function PUB_GetJSONTemplate(string device, variable headstage)
 
 	jsonID = JSON_New()
 	JSON_AddTreeObject(jsonID, "")
-	JSON_AddString(jsonID, "device", device)
+
+	if(IsEmpty(device))
+		JSON_AddNull(jsonID, "device")
+		JSON_AddVariable(jsonID, "sweep number", NaN)
+	else
+		JSON_AddString(jsonID, "device", device)
+		JSON_AddVariable(jsonID, "sweep number", AS_GetSweepNumber(device, allowFallback = 1))
+	endif
+
 	JSON_AddVariable(jsonID, "headstage", headstage)
 	JSON_AddString(jsonID, "timestamp", GetISO8601TimeStamp())
-	JSON_AddVariable(jsonID, "sweep number", AS_GetSweepNumber(device, allowFallback = 1))
 
 	return jsonID
 End
@@ -900,4 +907,95 @@ threadsafe static Function PUB_CheckPublishingTime(string pubFilter, variable pe
 	TUFXOP_ReleaseLock/N=(pubFilter)
 
 	return 0
+End
+
+/// Filter: #CONFIG_FINISHED_FILTER
+///
+/// Example:
+///
+/// \rst
+/// .. code-block:: json
+///
+///    {
+///      "device": null,
+///      "fileName": "fileA",
+///      "headstage": "NaN",
+///      "panelType": "DataBrowser",
+///      "rigFileName": "fileB",
+///      "sweep number": "NaN",
+///      "timestamp": "2025-02-25T15:06:19Z",
+///      "window": "Databrowser"
+///    }
+///
+/// \endrst
+Function PUB_ConfigurationFinished(string windowName, string panelType, string fileName, string rigfileName)
+
+	variable jsonID
+
+	jsonID = PUB_GetJSONTemplate("", NaN)
+
+	JSON_AddString(jsonID, "window", windowName)
+	JSON_AddString(jsonID, "panelType", panelType)
+	JSON_AddString(jsonID, "fileName", fileName)
+	JSON_AddString(jsonID, "rigFileName", rigFileName)
+
+	PUB_Publish(jsonID, CONFIG_FINISHED_FILTER)
+End
+
+/// Filter: #AMPLIFIER_SET_VALUE
+///
+/// The available names are listed in AI_MapFunctionConstantToName().
+///
+/// Example:
+///
+/// \rst
+/// .. code-block:: json
+///
+///    {
+///      "amplifier action": {
+///        "HoldingPotentialEnable": {
+///          "unit": "On/Off",
+///          "value": 1
+///        }
+///      },
+///      "clamp mode": "V_CLAMP_MODE",
+///      "device": "my_device",
+///      "headstage": 1,
+///      "sweep number": "NaN",
+///      "timestamp": "2025-03-25T16:42:21Z"
+///    }
+///
+/// \endrst
+Function PUB_AmplifierSettingChange(string device, variable headstage, variable mode, variable func, variable value)
+
+	variable jsonID
+	string path, unit, name
+
+	jsonID = PUB_GetJSONTemplate(device, headstage)
+
+	JSON_AddString(jsonID, "clamp mode", ConvertAmplifierModeToString(mode))
+
+	path = "/amplifier action"
+	JSON_AddTreeObject(jsonID, path)
+
+	unit = AI_GetUnitForFunctionConstant(func, mode)
+	name = AI_MapFunctionConstantToName(func, mode)
+	PUB_AddValueWithUnit(jsonID, path + "/" + name, value, unit)
+
+	PUB_Publish(jsonID, AMPLIFIER_SET_VALUE)
+End
+
+Function PUB_TPSettingChange(string device, variable headstage, string name, variable value, string unit)
+
+	variable jsonID
+	string   path
+
+	jsonID = PUB_GetJSONTemplate(device, headstage)
+
+	path = "/testpulse setting"
+	JSON_AddTreeObject(jsonID, path)
+
+	PUB_AddValueWithUnit(jsonID, path + "/" + name, value, unit)
+
+	PUB_Publish(jsonID, TESTPULSE_SET_VALUE_FILTER)
 End
