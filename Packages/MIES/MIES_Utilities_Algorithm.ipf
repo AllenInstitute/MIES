@@ -1042,6 +1042,36 @@ threadsafe Function DoPowerSpectrum(WAVE input, WAVE output, variable col)
 	output[][col] = magsqr(powerSpectrum[p])
 End
 
+/// @brief Cut off some trailing points from the wave to allow fast FFT
+Function/WAVE ShortenWaveForFFTIfRequired(WAVE input)
+
+	variable numRowsOpt, numRows
+	string key
+
+	numRows = DimSize(input, ROWS)
+	WAVE primes = GetPrimeFactors(numRows)
+
+	if(WaveMax(primes) > 1000)
+
+		key = CA_GetGoodFFTSizesKeys()
+		WAVE/Z goodFFTSizes = CA_TryFetchingEntryFromCache(key)
+
+		if(!WaveExists(goodFFTSizes))
+			WAVE goodFFTSizes = GetGoodFFTSizes()
+			CA_StoreEntryIntoCache(key, goodFFTSizes)
+		endif
+
+		FindLevel/Q goodFFTSizes, numRows
+		ASSERT_TS(!V_flag, "Could not find good FFT size")
+
+		numRowsOpt = goodFFTSizes[trunc(V_LevelX)]
+		Duplicate/FREE/RMD=[0, numRowsOpt - 1] input, inputOpt
+		return inputOpt
+	endif
+
+	return input
+End
+
 /// @brief Perform FFT on input with optionally given window function
 ///
 /// @param input   Wave to perform FFT on
