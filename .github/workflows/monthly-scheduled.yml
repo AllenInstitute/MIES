@@ -1,0 +1,22 @@
+name: Monthly scheduled jobs
+run-name: Build «${{ github.ref_name }}» (${{ github.actor}})
+on:
+  schedule:
+    # on every 1st of each month at 2:30 UTC
+    - cron:  '30 2 1 * *'
+
+jobs:
+  GitGarbageCollection:
+    name: 🗑  Git garbage collection
+    strategy:
+      matrix:
+        runner: [Linux_I, Linux_II, Linux_III, Linux_IV, Linux_V, Windows_I, Windows_II, Windows_Cert, Windows_ITC, Windows_NI]
+    runs-on: [ self-hosted, "${{ matrix.runner }}" ]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Apply configuration and run gc in auto mode
+        run: |
+            git config gc.auto 1024
+            git config gc.packLimit 10
+            git gc --auto
