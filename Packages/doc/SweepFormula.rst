@@ -1066,6 +1066,9 @@ The `labnotebook` operation returns a data wave for each selected sweep/channel
 combination. Each data wave contains a single element, that is depending on the
 requested labnotebook entry numerical or textual.
 
+When no dependent labnotebook entry could be found for the given sweep/channel
+selection an independent entry is returned if available.
+
 The returned data type is `SF_DATATYPE_LABNOTEBOOK`. If input data type is
 `SF_DATATYPE_SWEEP` from the data operation the sweep meta data is transferred
 to the returned data waves. The default suggested x-axis values for the formula
