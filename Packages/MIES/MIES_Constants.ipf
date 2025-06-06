@@ -1933,6 +1933,14 @@ Constant SF_DM_NORMAL     = 1
 Constant SF_DM_SUBWINDOWS = 2
 ///@}
 
+/// @name Constants for SF_SetStatusDisplay
+/// @anchor SweepFormulaStatusDisplayModes
+///@{
+Constant SF_MSG_OK    = 1
+Constant SF_MSG_ERROR = 0
+Constant SF_MSG_WARN  = -1
+///@}
+
 /// @name Parameters for GetTTLLabnotebookEntry()
 /// @anchor LabnotebookTTLNames
 ///
