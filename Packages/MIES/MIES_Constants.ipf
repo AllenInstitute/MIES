@@ -1933,6 +1933,14 @@ Constant SF_DM_NORMAL     = 1
 Constant SF_DM_SUBWINDOWS = 2
 ///@}
 
+/// @name Constants for SF_SetStatusDisplay
+/// @anchor SweepFormulaStatusDisplayModes
+///@{
+Constant SF_MSG_OK    = 1
+Constant SF_MSG_ERROR = 0
+Constant SF_MSG_WARN  = -1
+///@}
+
 /// @name Parameters for GetTTLLabnotebookEntry()
 /// @anchor LabnotebookTTLNames
 ///
@@ -2343,12 +2351,13 @@ Constant SECONDS_PER_DAY = 86400
 StrConstant DB_AXIS_PART_EPOCHS = "_EP"
 ///@}
 
-StrConstant SF_OP_PSX               = "psx"
-StrConstant SF_OP_PSX_KERNEL        = "psxKernel"
-StrConstant SF_OP_PSX_STATS         = "psxStats"
-StrConstant SF_OP_PSX_RISETIME      = "psxRiseTime"
-StrConstant SF_OP_PSX_PREP          = "psxPrep"
-StrConstant SF_OP_PSX_DECONV_FILTER = "psxDeconvFilter"
+StrConstant SF_OP_PSX                  = "psx"
+StrConstant SF_OP_PSX_KERNEL           = "psxKernel"
+StrConstant SF_OP_PSX_STATS            = "psxStats"
+StrConstant SF_OP_PSX_RISETIME         = "psxRiseTime"
+StrConstant SF_OP_PSX_PREP             = "psxPrep"
+StrConstant SF_OP_PSX_DECONV_BP_FILTER = "psxDeconvBPFilter"
+StrConstant SF_OP_PSX_SWEEP_BP_FILTER  = "psxSweepBPFilter"
 
 /// @name Available PSX states
 /// @anchor PSXStates
@@ -2377,7 +2386,9 @@ Constant PSX_MARKER_UNDET  = 18
 /// @name Custom error codes for PSX_FitEventDecay()
 /// @anchor FitEventDecayCustomErrors
 ///@{
-Constant PSX_DECAY_FIT_ERROR = -10000
+Constant PSX_DECAY_FIT_ERROR               = -10000
+Constant PSX_DECAY_FIT_INVALID_RANGE_ERROR = -10001
+
 ///@}
 
 StrConstant PSX_STATS_LABELS = "Average;Median;Average Deviation;Standard deviation;Skewness;Kurtosis"
@@ -2395,7 +2406,8 @@ Constant PSX_HORIZ_OFFSET_SLEW  = 2
 
 Constant PSX_DECONV_FILTER_DEF_LOW   = 500
 Constant PSX_DECONV_FILTER_DEF_HIGH  = 50
-Constant PSX_DECONV_FILTER_DEF_ORDER = 7
+Constant PSX_SWEEP_FILTER_DEF_ORDER  = 6
+Constant PSX_DECONV_FILTER_DEF_ORDER = 8
 
 StrConstant PSX_JWN_COMBO_KEYS_NAME = "ComboKeys"
 
