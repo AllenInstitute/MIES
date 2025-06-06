@@ -357,7 +357,7 @@ End
 /// @param deconvFilter deconvolution filter settings
 static Function [variable realOrder, WAVE filtered] PSX_DeconvoluteSweepData(WAVE sweepData, WAVE/C psxKernelFFT, WAVE deconvFilter)
 
-	variable numPoints, fftSize, samp, low, high, maxOrder
+	variable numPoints, samp, low, high, maxOrder
 
 	low      = deconvFilter[%$"Filter Low"]
 	high     = deconvFilter[%$"Filter High"]
@@ -376,11 +376,11 @@ static Function [variable realOrder, WAVE filtered] PSX_DeconvoluteSweepData(WAV
 	endif
 
 	numPoints = DimSize(sweepData, ROWS)
-	fftSize   = DimSize(psxKernelFFT, ROWS)
 
 	// no window function on purpose
 	WAVE/C outputFFT = DoFFT(sweepData, padSize = numPoints)
 
+	ASSERT(DimSize(outputFFT, ROWS) == DimSize(psxKernelFFT, ROWS), "Unmatched wave sizes")
 	Multithread outputFFT[] = outputFFT[p] / (psxKernelFFT[p] + 1e-5)
 
 	IFFT/DEST=Deconv/FREE outputFFT
@@ -5183,8 +5183,8 @@ End
 // psxKernel([select(...), riseTau, decayTau, amp])
 Function/WAVE PSX_OperationKernel(STRUCT SF_ExecutionData &exd)
 
-	variable riseTau, decayTau, amp, dt, numPoints, numCombos, i, offset, idx
-	string parameterPath, key
+	variable riseTau, decayTau, amp, dt, numPoints, numCombos, i, offset, idx, shorterPerc
+	string parameterPath, key, bsPanel, comboKey, msg
 
 	SFH_CheckArgumentCount(exd, SF_OP_PSX_KERNEL, 0, maxArgs = 4)
 
@@ -5210,11 +5210,13 @@ Function/WAVE PSX_OperationKernel(STRUCT SF_ExecutionData &exd)
 	Make/FREE/N=(0) allResolvedRanges
 	Make/FREE/N=(0)/T allSelectHashes
 
-	for(i = 0; i < numCombos; i += 1)
-		WAVE/Z sweepData = sweepDataRef[i]
-		ASSERT(WaveExists(sweepData), "Can't handle invalid sweepData waves")
+	bsPanel = BSP_GetPanel(exd.graph)
 
-		[WAVE singleSelectData, WAVE range] = SFH_ParseToSelectDataWaveAndRange(sweepData)
+	for(i = 0; i < numCombos; i += 1)
+		WAVE/Z sweepDataRaw = sweepDataRef[i]
+		ASSERT(WaveExists(sweepDataRaw), "Can't handle invalid sweepData waves")
+
+		[WAVE singleSelectData, WAVE range] = SFH_ParseToSelectDataWaveAndRange(sweepDataRaw)
 
 		[WAVE resolvedRanges, WAVE/T epochRangeNames] = SFH_GetNumericRangeFromEpochFromSingleSelect(exd.graph, singleSelectData, range)
 
@@ -5222,12 +5224,24 @@ Function/WAVE PSX_OperationKernel(STRUCT SF_ExecutionData &exd)
 			continue
 		endif
 
-		numPoints = DimSize(sweepData, ROWS)
-		dt        = DimDelta(sweepData, ROWS)
+		numPoints = DimSize(sweepDataRaw, ROWS)
 
 		if(IsOdd(numPoints))
 			// throw away one point so that FFT works
-			Redimension/N=(--numPoints) sweepData
+			Redimension/N=(--numPoints) sweepDataRaw
+		endif
+
+		WAVE sweepData = ShortenWaveForFFTIfRequired(sweepDataRaw)
+
+		numPoints = DimSize(sweepData, ROWS)
+		dt        = DimDelta(sweepData, ROWS)
+
+		if(numPoints != DimSize(sweepDataRaw, ROWS))
+			comboKey    = PSX_GenerateComboKey(exd.graph, singleSelectData, range)
+			shorterPerc = (DimSize(sweepDataRaw, ROWS) - numPoints) / DimSize(sweepDataRaw, ROWS) * ONE_TO_PERCENT
+			sprintf msg, "psxKernel: The sweep for combination \"%s\" has a very unfitting length and was therefore shortened by %.3g%%.", comboKey, shorterPerc
+			SF_SetOutputState(msg, SF_MSG_WARN)
+			SF_DisplayOutputStateInGUI(bsPanel)
 		endif
 
 		WAVE/WAVE result = PSX_GetPSXKernel(riseTau, decayTau, amp, numPoints, dt, range)

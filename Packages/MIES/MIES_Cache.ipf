@@ -582,6 +582,12 @@ threadsafe Function/S CA_CalculateFetchEpochsKey(WAVE numericalvalues, WAVE text
 
 	return "Version 1:" + Hash(key + num2istr(crc), HASH_SHA2_256)
 End
+
+Function/S CA_GetGoodFFTSizesKeys()
+
+	return "GetGoodFFTSizes Version 1"
+End
+
 ///@}
 
 /// @brief Make space for one new entry in the cache waves
