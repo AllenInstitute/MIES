@@ -24,6 +24,9 @@ else
 fi
 
 echo "[lint]" > config.toml
+
+echo "noreturn-func=FATAL_ERROR|SFH_FATAL_ERROR|FAIL" >> config.toml
+
 while read -r line; do
     echo "files = \"$line\"" >> config.toml
 done < <(git ls-files ':(attr:ipt)')

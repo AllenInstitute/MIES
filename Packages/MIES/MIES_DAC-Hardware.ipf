@@ -2703,9 +2703,9 @@ Function HW_NI_WriteAnalogSingleAndSlow(string device, variable channel, variabl
 	if(ret)
 		if(flags & HARDWARE_ABORT_ON_ERROR)
 			FATAL_ERROR("Error: " + fDAQmx_ErrorString())
-		else
-			DEBUGPRINT("Error: ", str = fDAQmx_ErrorString())
 		endif
+
+		DEBUGPRINT("Error: ", str = fDAQmx_ErrorString())
 	endif
 
 	return ret
@@ -2731,9 +2731,9 @@ Function HW_NI_ReadAnalogSingleAndSlow(string device, variable channel, [variabl
 	if(!IsFinite(value))
 		if(flags & HARDWARE_ABORT_ON_ERROR)
 			FATAL_ERROR("Error " + fDAQmx_ErrorString())
-		else
-			DEBUGPRINT("Error: ", str = fDAQmx_ErrorString())
 		endif
+
+		DEBUGPRINT("Error: ", str = fDAQmx_ErrorString())
 	endif
 
 	return value
@@ -2757,9 +2757,9 @@ Function HW_NI_GetAnalogInputConfig(string device, variable channel, [variable f
 	if(!IsFinite(value))
 		if(flags & HARDWARE_ABORT_ON_ERROR)
 			FATAL_ERROR("Error " + fDAQmx_ErrorString())
-		else
-			DEBUGPRINT("Error: ", str = fDAQmx_ErrorString())
 		endif
+
+		DEBUGPRINT("Error: ", str = fDAQmx_ErrorString())
 	endif
 
 	return value

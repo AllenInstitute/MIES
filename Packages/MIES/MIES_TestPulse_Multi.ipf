@@ -192,9 +192,9 @@ Function TPM_BkrdTPFuncMD(STRUCT BackgroundStruct &s)
 							DQ_StopOngoingDAQ(device, DQ_STOP_REASON_HW_ERROR)
 							if(err == 18)
 								FATAL_ERROR("Acquisition FIFO overflow, data lost. This may happen if the computer is too slow.")
-							else
-								FATAL_ERROR("Error reading data from NI device: code " + num2str(err) + "\r" + errMsg)
 							endif
+
+							FATAL_ERROR("Error reading data from NI device: code " + num2str(err) + "\r" + errMsg)
 						endtry
 
 						tpCounter += 1

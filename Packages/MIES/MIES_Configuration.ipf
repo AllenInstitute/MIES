@@ -431,9 +431,9 @@ Function CONF_SaveWindow(string fName)
 		errMsg = getRTErrMessage()
 		if(ClearRTError())
 			FATAL_ERROR(errMsg)
-		else
-			Abort
 		endif
+
+		Abort
 	endtry
 End
 
@@ -508,10 +508,10 @@ Function CONF_RestoreWindow(string fName, [string rigFile])
 		endif
 		if(ClearRTError())
 			FATAL_ERROR(errMsg)
-		else
-			printf "Configuration restore aborted at file %s.\r", fullFilePath
-			Abort
 		endif
+
+		printf "Configuration restore aborted at file %s.\r", fullFilePath
+		Abort
 	endtry
 
 	PUB_ConfigurationFinished(wName, panelType, fName, rigFile)
@@ -576,9 +576,9 @@ static Function CONF_SaveDAEphys(string fName)
 		errMsg = getRTErrMessage()
 		if(ClearRTError())
 			FATAL_ERROR(errMsg)
-		else
-			Abort
 		endif
+
+		Abort
 	endtry
 End
 
@@ -772,9 +772,9 @@ Function/S CONF_RestoreDAEphys(variable jsonID, string fullFilePath, [variable m
 		errMsg = getRTErrMessage()
 		if(ClearRTError())
 			FATAL_ERROR(errMsg)
-		else
-			Abort
 		endif
+
+		Abort
 	endtry
 End
 
@@ -1195,9 +1195,9 @@ Function/S CONF_JSONToWindow(string wName, variable restoreMask, variable jsonID
 		errMsg = getRTErrMessage()
 		if(ClearRTError())
 			FATAL_ERROR(errMsg)
-		else
-			Abort
 		endif
+
+		Abort
 	endtry
 
 	return wName
@@ -1513,9 +1513,9 @@ Function CONF_AllWindowsToJSON(string wName, variable saveMask, [string excCtrlT
 		errMsg = getRTErrMessage()
 		if(ClearRTError())
 			FATAL_ERROR(errMsg)
-		else
-			Abort
 		endif
+
+		Abort
 	endtry
 End
 
@@ -1674,9 +1674,9 @@ Function CONF_WindowToJSON(string wName, variable saveMask, [string excCtrlTypes
 		errMsg = getRTErrMessage()
 		if(ClearRTError())
 			FATAL_ERROR(errMsg)
-		else
-			Abort
 		endif
+
+		Abort
 	endtry
 End
 

@@ -1628,9 +1628,9 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string device)
 		if(s.FAR)
 			// fail hard on aborts, most likely due to memory error on HW_ITC_StartAcq
 			FAIL()
-		else
-			Abort
 		endif
+
+		Abort
 	endtry
 End
 
@@ -1672,7 +1672,9 @@ Function GetMinSamplingInterval([string unit])
 
 	if(ParamIsDefault(unit))
 		FAIL()
-	elseif(cmpstr(unit, "µs"))
+	endif
+
+	if(cmpstr(unit, "µs"))
 		factor = 1
 	elseif(cmpstr(unit, "ms"))
 		factor = 1000
