@@ -313,6 +313,9 @@ static Function/S DB_LockToDevice(string win, string device)
 	DB_SetUserData(win, device)
 	win = BSP_RenameAndSetTitle(win, newWindow)
 
+	// upgrade folder locations
+	GetDAQDevicesFolder()
+
 	if(windowExists(BSP_GetPanel(win)) && BSP_HasBoundDevice(win))
 		BSP_DynamicStartupSettings(win)
 		[first, last] = BSP_FirstAndLastSweepAcquired(win)
