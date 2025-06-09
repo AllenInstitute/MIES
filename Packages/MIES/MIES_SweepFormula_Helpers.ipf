@@ -595,10 +595,7 @@ static Function/WAVE SFH_GetSweepsForFormulaImpl(string graph, WAVE/WAVE selectD
 			continue
 		endif
 
-		sweepNo = selectData[i][%SWEEP]
-		if(!isSweepBrowser && DB_SplitSweepsIfReq(graph, sweepNo))
-			continue
-		endif
+		sweepNo  = selectData[i][%SWEEP]
 		chanNr   = selectData[i][%CHANNELNUMBER]
 		chanType = selectData[i][%CHANNELTYPE]
 		mapIndex = selectData[i][%SWEEPMAPINDEX]
