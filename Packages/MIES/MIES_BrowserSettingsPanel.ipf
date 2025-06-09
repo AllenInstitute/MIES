@@ -433,7 +433,6 @@ Function/S BSP_GetBrowserType(string win)
 	string mainPanel
 
 	mainPanel = GetMainWindow(win)
-	ASSERT(WindowExists(mainPanel), "specified panel does not exist.")
 
 	return GetUserData(mainPanel, "", MIES_BSP_BROWSER)
 End
