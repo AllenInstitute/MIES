@@ -549,7 +549,7 @@ End
 ///                @ref CacheFetchOptions
 ///
 /// Existing entries with the same key are overwritten.
-threadsafe Function CA_StoreEntryIntoCache(string key, WAVE val, [variable options])
+threadsafe Function CA_StoreEntryIntoCache(string key, WAVE/Z val, [variable options])
 
 	variable index, storeDuplicate, foundIndex
 
@@ -575,14 +575,14 @@ threadsafe Function CA_StoreEntryIntoCache(string key, WAVE val, [variable optio
 		index = foundIndex
 	endif
 
-	if(storeDuplicate)
+	if(storeDuplicate && WaveExists(val))
 		if(IsWaveRefWave(val))
 			WAVE waveToStore = DeepCopyWaveRefWave(val)
 		else
 			Duplicate/FREE val, waveToStore
 		endif
 	else
-		WAVE waveToStore = val
+		WAVE/Z waveToStore = val
 	endif
 
 	values[index] = waveToStore
@@ -622,14 +622,37 @@ End
 /// @param options [optional, defaults to none] One or multiple constants from
 ///                @ref CacheFetchOptions
 ///
-/// @return A wave reference with the stored data or a invalid wave reference
-/// if nothing could be found.
+/// Prefer CA_TryFetchingEntryFromCacheWithNull if you stored an invalid wave
+/// reference and need to query that.
+///
+/// @return wave reference with stored data or an invalid wave reference.
 threadsafe Function/WAVE CA_TryFetchingEntryFromCache(string key, [variable options])
+
+	variable found
+
+	if(ParamIsDefault(options))
+		[WAVE entry, found] = CA_TryFetchingEntryFromCacheWithNull(key)
+	else
+		[WAVE entry, found] = CA_TryFetchingEntryFromCacheWithNull(key, options = options)
+	endif
+
+	return entry
+End
+
+/// @brief Try to fetch the wave stored under key from the cache
+///
+/// @param key     string which uniquely identifies the cached wave
+/// @param options [optional, defaults to none] One or multiple constants from
+///                @ref CacheFetchOptions
+///
+/// @retval entry wave reference with the stored data or an invalid wave reference
+/// @retval found true/false value if something could be found. Allows to distinguish no match from null wave stored.
+threadsafe Function [WAVE entry, variable found] CA_TryFetchingEntryFromCacheWithNull(string key, [variable options])
 
 	variable index, returnDuplicate
 
 #ifdef WAVECACHE_DISABLED
-	return $""
+	return [$"", 0]
 #endif // WAVECACHE_DISABLED
 
 	if(ParamIsDefault(options))
@@ -646,13 +669,12 @@ threadsafe Function/WAVE CA_TryFetchingEntryFromCache(string key, [variable opti
 #ifdef CACHE_DEBUGGING
 		DEBUGPRINT_TS("Could not find a cache entry for key=", str = key)
 #endif // CACHE_DEBUGGING
-		return $""
+		return [$"", 0]
 	endif
 
 	WAVE/WAVE values = GetCacheValueWave()
 
 	WAVE/Z cache = values[index]
-	ASSERT_TS(WaveExists(cache), "Invalid cache entry due to non existent wave")
 
 	WAVE stats = GetCacheStatsWave()
 	stats[index][%Hits] += 1
@@ -661,17 +683,17 @@ threadsafe Function/WAVE CA_TryFetchingEntryFromCache(string key, [variable opti
 	DEBUGPRINT_TS("Found cache entry for key=", str = key)
 #endif // CACHE_DEBUGGING
 
-	if(returnDuplicate)
+	if(returnDuplicate && WaveExists(cache))
 		if(IsWaveRefWave(cache))
 			WAVE wv = DeepCopyWaveRefWave(cache)
 		else
 			Duplicate/FREE cache, wv
 		endif
 	else
-		WAVE wv = cache
+		WAVE/Z wv = cache
 	endif
 
-	return wv
+	return [wv, 1]
 End
 
 /// @brief Try to delete a cache entry
@@ -724,6 +746,7 @@ Function CA_OutputCacheStatistics()
 
 	for(i = 0; i < index; i += 1)
 		size = stats[i][%Size] / 1024 / 1024
+		size = (size == 0) ? 0 : max(1, size)
 		printf "%6d |%6d | %6d | %s  | %6d\r", i, stats[i][%Hits], stats[i][%Misses], GetISO8601TimeStamp(secondsSinceIgorEpoch = stats[i][%ModificationTimestamp], numFracSecondsDigits = 3), size
 	endfor
 
