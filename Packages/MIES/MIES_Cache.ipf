@@ -651,7 +651,6 @@ threadsafe Function/WAVE CA_TryFetchingEntryFromCache(string key, [variable opti
 
 	WAVE/WAVE values = GetCacheValueWave()
 
-	ASSERT_TS(index < DimSize(values, ROWS), "Invalid index")
 	WAVE/Z cache = values[index]
 	ASSERT_TS(WaveExists(cache), "Invalid cache entry due to non existent wave")
 
