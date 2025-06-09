@@ -404,10 +404,6 @@ Function/S BSP_GetDevice(string win)
 	string mainPanel
 
 	mainPanel = GetMainWindow(win)
-	if(IsEmpty(mainPanel))
-		return ""
-	endif
-	ASSERT(WindowExists(mainPanel), "specified panel does not exist.")
 
 	return GetUserData(mainPanel, "", MIES_BSP_DEVICE)
 End
