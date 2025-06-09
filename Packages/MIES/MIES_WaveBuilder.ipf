@@ -2573,7 +2573,7 @@ Function/S WB_SaveStimSet(string baseName, variable stimulusType, WAVE SegWvType
 	s.params  = params
 	s.setName = tempName
 
-	errorMessage = AFH_CheckAnalysisParameter(genericFunc, s)
+	[errorMessage, WAVE errorTypes] = AFH_CheckAnalysisParameter(genericFunc, s)
 
 	if(!IsEmpty(errorMessage))
 		printf "The analysis parameters are not valid and the stimset can therefore not be saved.\r"

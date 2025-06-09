@@ -812,8 +812,9 @@ End
 /// @param genericFunc Name of an analysis V3 function
 /// @param s           struct CheckParametersStruct with additional info
 ///
-/// @return multiline error messages, an empty string on success
-Function/S AFH_CheckAnalysisParameter(string genericFunc, STRUCT CheckParametersStruct &s)
+/// @retval errMsg multiline error messages, an empty string on success
+/// @retval errorTypes list of error types from @ref CheckAnalysisParameterErrorTypes
+Function [string errMsg, WAVE errorTypes] AFH_CheckAnalysisParameter(string genericFunc, STRUCT CheckParametersStruct &s)
 
 	string allNames, presentNames, message, name
 	string reqNamesAndTypesFromFunc, reqNames
@@ -841,12 +842,15 @@ Function/S AFH_CheckAnalysisParameter(string genericFunc, STRUCT CheckParameters
 
 	numParams = ItemsInList(allNames)
 	Make/FREE/T/N=(numParams) errorMessages
+	Make/FREE/N=(numParams) errorTypes
 
 	for(i = 0; i < numParams; i += 1)
 		name = StringFromList(i, allNames)
 
 		if(!AFH_IsValidAnalysisParameter(name))
-			errorMessages[index++] = name + ": has an invalid name."
+			errorMessages[index] = name + ": has an invalid name."
+			errorTypes[index]    = CAP_INVALID_NAME
+			index               += 1
 			continue
 		endif
 
@@ -861,13 +865,17 @@ Function/S AFH_CheckAnalysisParameter(string genericFunc, STRUCT CheckParameters
 
 			// non present required parameters are an error
 			if(isReq)
-				errorMessages[index++] = name + ": is required but missing"
+				errorMessages[index] = name + ": is required but missing"
+				errorTypes[index]    = CAP_REQ_BUT_MISSING
+				index               += 1
 				continue
 			endif
 		else
 			// present parameter is neither a required nor an optional parameter
 			if(!isOpt && !isReq && hasParamsInfo)
-				errorMessages[index++] = name + ": is present but neither required nor optional."
+				errorMessages[index] = name + ": is present but neither required nor optional."
+				errorTypes[index]    = CAP_SUPERFLUOUS
+				index               += 1
 				continue
 			endif
 		endif
@@ -886,14 +894,18 @@ Function/S AFH_CheckAnalysisParameter(string genericFunc, STRUCT CheckParameters
 			if(!IsEmpty(reqType))
 				// invalid types are not allowed
 				if(WhichListItem(reqType, ANALYSIS_FUNCTION_PARAMS_TYPES) == -1)
-					errorMessages[index++] = name + ": has an invalid type."
+					errorMessages[index] = name + ": has an invalid type."
+					errorTypes[index]    = CAP_INVALID_TYPE
+					index               += 1
 					continue
 				endif
 
 				// non-matching type
 				suppType = AFH_GetAnalysisParamType(name, s.params, typeCheck = 0)
 				if(cmpstr(reqType, suppType))
-					errorMessages[index++] = name + ": has differing types (" + reqType + " vs " + suppType + ")."
+					errorMessages[index] = name + ": has differing types (" + reqType + " vs " + suppType + ")."
+					errorTypes[index]    = CAP_DIFFERING_TYPES
+					index               += 1
 					continue
 				endif
 
@@ -901,14 +913,18 @@ Function/S AFH_CheckAnalysisParameter(string genericFunc, STRUCT CheckParameters
 					case "wave":
 						WAVE/Z wv = AFH_GetAnalysisParamWave(name, s.params)
 						if(!WaveExists(wv) || DimSize(wv, ROWS) == 0)
-							errorMessages[index++] = name + ": has a non-existing or empty numeric wave."
+							errorMessages[index] = name + ": has a non-existing or empty numeric wave."
+							errorTypes[index]    = CAP_INVALID_WAVE
+							index               += 1
 							continue
 						endif
 						break
 					case "textwave":
 						WAVE/Z wv = AFH_GetAnalysisParamTextWave(name, s.params)
 						if(!WaveExists(wv) || DimSize(wv, ROWS) == 0)
-							errorMessages[index++] = name + ": has a non-existing or empty text wave."
+							errorMessages[index] = name + ": has a non-existing or empty text wave."
+							errorTypes[index]    = CAP_INVALID_WAVE
+							index               += 1
 							continue
 						endif
 						break
@@ -932,24 +948,28 @@ Function/S AFH_CheckAnalysisParameter(string genericFunc, STRUCT CheckParameters
 
 			// allow null return string meaning no error
 			if(!IsNull(message) && !IsEmpty(message))
-				errorMessages[index++] = name + ": " + trimstring(message)
+				errorMessages[index] = name + ": " + trimstring(message)
+				errorTypes[index]    = CAP_FAILED_CHECK_FUNC
+				index               += 1
 			endif
 		catch
 			ClearRTError()
-			errorMessages[index++] = name + ": Check was aborted"
+			errorMessages[index] = name + ": Check was aborted"
+			errorTypes[index]    = CAP_ABORTED_CHECK_FUNC
+			index               += 1
 		endtry
 	endfor
 
 	if(!index)
-		return ""
+		return ["", $""]
 	endif
 
-	Redimension/N=(index) errorMessages
+	Redimension/N=(index) errorMessages, errorTypes
 
 	sprintf header, "The error message%s are:\r", SelectString(index != 1, "", "s")
 	wfprintf text, "\t- %s\r", errorMessages
 
-	return header + text
+	return [header + text, errorTypes]
 End
 
 /// @brief Add an analysis function parameter to the given stimset
