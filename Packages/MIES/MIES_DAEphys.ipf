@@ -2862,7 +2862,7 @@ static Function DAP_CheckAnalysisFunctionAndParameter(string device, string setN
 		s.setName = setName
 
 		[errorMessage, WAVE errorTypes] = AFH_CheckAnalysisParameter(func, s)
-		if(!IsEmpty(errorMessage))
+		if(!IsEmpty(errorMessage) && !IsConstant(errorTypes, CAP_SUPERFLUOUS))
 			printf "(%s) The analysis parameter check for function %s in stim set %s did not pass.\r", device, func, setName
 			print errorMessage
 			ControlWindowToFront()
