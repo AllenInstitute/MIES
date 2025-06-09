@@ -1778,3 +1778,12 @@ static Function/WAVE VariousInputForCalculateFillinQC()
 
 	return wv
 End
+
+static Function/WAVE CacheOptions()
+
+	Make/FREE wv = {0, CA_OPTS_NO_DUPLICATE}
+
+	SetDimensionLabels(wv, "none;no duplicate", ROWS)
+
+	return wv
+End
