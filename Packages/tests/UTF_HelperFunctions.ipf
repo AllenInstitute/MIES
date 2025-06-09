@@ -807,7 +807,7 @@ Function/S CreateFakeSweepData(string win, string device, [variable sweepNo, FUN
 
 	PGC_SetAndActivateControl(BSP_GetPanel(win), "popup_DB_lockedDevices", str = device)
 	win = GetCurrentWindow()
-	REQUIRE_EQUAL_VAR(MIES_DB#DB_SplitSweepsIfReq(win, sweepNo), 0)
+	SplitAndUpgradeSweepGlobal(device, sweepNo)
 
 	list = GetAllDevicesWithContent()
 	list = RemoveEnding(list, ";")
@@ -1660,7 +1660,7 @@ Function [variable numSweeps, variable numChannels, WAVE/U/I channels] FillFakeD
 		PGC_SetAndActivateControl(BSP_GetPanel(win), "popup_DB_lockedDevices", str = device)
 		win = GetCurrentWindow()
 
-		REQUIRE_EQUAL_VAR(MIES_DB#DB_SplitSweepsIfReq(win, sweepNumber), 0)
+		SplitAndUpgradeSweepGlobal(device, sweepNumber)
 	endfor
 
 	RemoveFromGraph/ALL

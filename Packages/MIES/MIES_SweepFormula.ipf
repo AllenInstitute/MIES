@@ -2698,8 +2698,6 @@ static Function/WAVE SF_GetSelectData(string graph, STRUCT SF_SelectParameters &
 					continue
 				endif
 				mapSize = DimSize(mapIndices, ROWS)
-			elseif(DB_SplitSweepsIfReq(graph, sweepNo))
-				continue
 			endif
 		endif
 

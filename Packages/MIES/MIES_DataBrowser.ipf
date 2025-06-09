@@ -299,7 +299,7 @@ End
 static Function/S DB_LockToDevice(string win, string device)
 
 	string newWindow
-	variable first, last
+	variable first, last, i
 
 	if(!cmpstr(device, NONE))
 		newWindow = DATABROWSER_WINDOW_NAME
@@ -320,6 +320,10 @@ static Function/S DB_LockToDevice(string win, string device)
 		BSP_DynamicStartupSettings(win)
 		[first, last] = BSP_FirstAndLastSweepAcquired(win)
 		DB_UpdateLastSweepControls(win, first, last)
+
+		for(i = first; i <= last; i += 1)
+			SplitAndUpgradeSweepGlobal(device, i)
+		endfor
 	endif
 
 	UpdateSweepPlot(win)
@@ -445,11 +449,6 @@ Function DB_UpdateSweepPlot(string win)
 		endif
 
 		WAVE sweepChannelSel = BSP_FetchSelectedChannels(graph, sweepNo = sweepNo)
-
-		if(DB_SplitSweepsIfReq(win, sweepNo) != 0)
-			BUG("Splitting sweep failed on DB update")
-			continue
-		endif
 
 		WAVE/Z/SDFR=dfr sweepWave = $GetSweepWaveName(sweepNo)
 		if(!WaveExists(sweepWave))
@@ -638,8 +637,6 @@ Function DB_AddSweepToGraph(string win, variable index, [STRUCT BufferedDrawInfo
 
 	WAVE sweepChannelSel = BSP_FetchSelectedChannels(graph, sweepNo = sweepNo)
 
-	DB_SplitSweepsIfReq(win, sweepNo)
-
 	WAVE axisLabelCache = GetAxisLabelCacheWave()
 
 	traceIndex = GetNextTraceIndex(graph)
@@ -653,22 +650,6 @@ Function DB_AddSweepToGraph(string win, variable index, [STRUCT BufferedDrawInfo
 	endif
 
 	AR_UpdateTracesIfReq(graph, dfr, sweepNo)
-End
-
-/// @brief Split sweeps to single sweep waves if required
-///
-/// @param win Databrowser window name
-/// @param sweepNo Number of sweep to split
-/// @returns 1 on error, 0 on success
-Function DB_SplitSweepsIfReq(string win, variable sweepNo)
-
-	string device = BSP_GetDevice(win)
-
-	if(!BSP_IsBoundDevice(win, device))
-		return NaN
-	endif
-
-	return SplitAndUpgradeSweepGlobal(device, sweepNo)
 End
 
 /// @brief Find a Databrowser which is locked to the given DAEphys panel
