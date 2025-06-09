@@ -525,6 +525,11 @@ Function BSP_HasBoundDevice(string win)
 
 	string device = BSP_GetDevice(win)
 
+	return BSP_IsBoundDevice(win, device)
+End
+
+Function BSP_IsBoundDevice(string win, string device)
+
 	return !BSP_IsDataBrowser(win) || !(IsEmpty(device) || !cmpstr(device, NONE))
 End
 

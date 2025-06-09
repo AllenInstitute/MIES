@@ -345,11 +345,11 @@ Function/WAVE DB_GetPlainSweepList(string win)
 
 	string device
 
-	if(!BSP_HasBoundDevice(win))
+	device = BSP_GetDevice(win)
+
+	if(!BSP_IsBoundDevice(win, device))
 		return $""
 	endif
-
-	device = BSP_GetDevice(win)
 
 	return AFH_GetSweeps(device)
 End
@@ -409,11 +409,11 @@ Function DB_UpdateSweepPlot(string win)
 	RemoveFreeAxisFromGraph(graph)
 	TUD_Clear(graph, recursive = 0)
 
-	if(!BSP_HasBoundDevice(win))
+	device = BSP_GetDevice(win)
+
+	if(!BSP_IsBoundDevice(win, device))
 		return NaN
 	endif
-
-	device = BSP_GetDevice(win)
 
 	// fetch keys waves to trigger a potential labnotebook upgrade
 	WAVE numericalKeys = DB_GetLBNWave(win, LBN_NUMERICAL_KEYS)
@@ -662,11 +662,13 @@ End
 /// @returns 1 on error, 0 on success
 Function DB_SplitSweepsIfReq(string win, variable sweepNo)
 
-	if(!BSP_HasBoundDevice(win))
+	string device = BSP_GetDevice(win)
+
+	if(!BSP_IsBoundDevice(win, device))
 		return NaN
 	endif
 
-	return SplitAndUpgradeSweepGlobal(BSP_GetDevice(win), sweepNo)
+	return SplitAndUpgradeSweepGlobal(device, sweepNo)
 End
 
 /// @brief Find a Databrowser which is locked to the given DAEphys panel
@@ -753,11 +755,12 @@ Function/S DB_GetBoundDataBrowser(string device, [variable mode])
 		databrowser = DB_OpenDataBrowser(mode = mode)
 	endif
 
-	if(BSP_HasBoundDevice(databrowser))
+	bsPanel = BSP_GetPanel(databrowser)
+
+	if(BSP_IsBoundDevice(bsPanel, device))
 		return databrowser
 	endif
 
-	bsPanel = BSP_GetPanel(databrowser)
 	PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", str = device)
 
 	return DB_FindDataBrowser(device, mode = mode)
@@ -786,13 +789,17 @@ End
 
 Function/S DB_GetDevice(string win)
 
+	string device
+
 	ASSERT(BSP_IsDataBrowser(win), "Requires window to be a DataBrowser")
 
-	if(!BSP_HasBoundDevice(win))
+	device = BSP_GetDevice(win)
+
+	if(!BSP_IsBoundDevice(win, device))
 		return ""
 	endif
 
-	return BSP_GetDevice(win)
+	return device
 End
 
 Function/DF DB_GetDeviceDF(string win)
