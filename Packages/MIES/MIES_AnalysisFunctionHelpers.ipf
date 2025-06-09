@@ -893,7 +893,7 @@ Function/S AFH_CheckAnalysisParameter(string genericFunc, STRUCT CheckParameters
 				// non-matching type
 				suppType = AFH_GetAnalysisParamType(name, s.params, typeCheck = 0)
 				if(cmpstr(reqType, suppType))
-					errorMessages[index++] = name + ": has an differing types (" + reqType + " vs " + suppType + ")."
+					errorMessages[index++] = name + ": has differing types (" + reqType + " vs " + suppType + ")."
 					continue
 				endif
 
