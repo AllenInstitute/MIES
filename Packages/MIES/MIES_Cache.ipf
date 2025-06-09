@@ -711,7 +711,7 @@ End
 /// @brief Output cache statistics
 Function CA_OutputCacheStatistics()
 
-	variable index, i
+	variable index, i, size
 
 	WAVE stats = GetCacheStatsWave()
 	index = GetNumberFromWaveNote(stats, NOTE_INDEX)
@@ -719,11 +719,12 @@ Function CA_OutputCacheStatistics()
 	printf "Number of entries: %d\r", index
 
 	printf "\r"
-	printf "%s   |%s   | %s | %s | %s (MB)\r", "Index", GetDimLabel(stats, COLS, 0), GetDimLabel(stats, COLS, 1), GetDimLabel(stats, COLS, 2), GetDimLabel(stats, COLS, 3)
-	printf "---------------------------------------------------\r"
+	printf "%s  | %s  | %s | %s     | %s (MB)\r", "Index", GetDimLabel(stats, COLS, 0), GetDimLabel(stats, COLS, 1), GetDimLabel(stats, COLS, 2), GetDimLabel(stats, COLS, 3)
+	printf "----------------------------------------------------------------\r"
 
 	for(i = 0; i < index; i += 1)
-		printf "%6d |%6d | %6d | %s  | %6d\r", i, stats[i][%Hits], stats[i][%Misses], GetISO8601TimeStamp(secondsSinceIgorEpoch = stats[i][%ModificationTimestamp], numFracSecondsDigits = 3), stats[i][%Size] / 1024 / 1024
+		size = stats[i][%Size] / 1024 / 1024
+		printf "%6d |%6d | %6d | %s  | %6d\r", i, stats[i][%Hits], stats[i][%Misses], GetISO8601TimeStamp(secondsSinceIgorEpoch = stats[i][%ModificationTimestamp], numFracSecondsDigits = 3), size
 	endfor
 
 	printf "\r"
