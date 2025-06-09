@@ -2448,3 +2448,17 @@ Constant SF_MSG_OK    = 1
 Constant SF_MSG_ERROR = 0
 Constant SF_MSG_WARN  = -1
 ///@}
+
+/// @name Error types for AFH_CheckAnalysisParameter
+///
+/// @anchor CheckAnalysisParameterErrorTypes
+///@{
+Constant CAP_INVALID_NAME       = 1
+Constant CAP_REQ_BUT_MISSING    = 2
+Constant CAP_DIFFERING_TYPES    = 3
+Constant CAP_SUPERFLUOUS        = 4
+Constant CAP_INVALID_TYPE       = 5
+Constant CAP_INVALID_WAVE       = 6
+Constant CAP_FAILED_CHECK_FUNC  = 7
+Constant CAP_ABORTED_CHECK_FUNC = 8
+///@}
