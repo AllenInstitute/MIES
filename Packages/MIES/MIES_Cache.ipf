@@ -492,7 +492,7 @@ threadsafe Function/S CA_IgorInfoKey(variable selector)
 End
 
 /// @brief Return the key for the filled labnotebook parameter names
-Function/S CA_GetLabnotebookNamesKey(WAVE/Z/T textualValues, WAVE/Z/T numericalValues)
+threadsafe Function/S CA_GetLabnotebookNamesKey(WAVE/Z/T textualValues, WAVE/Z/T numericalValues)
 
 	string key = ""
 	variable crc
@@ -507,7 +507,7 @@ Function/S CA_GetLabnotebookNamesKey(WAVE/Z/T textualValues, WAVE/Z/T numericalV
 		key += num2istr(WaveModCountWrapper(numericalValues))
 	endif
 
-	ASSERT(!IsEmpty(key), "key can't be empty")
+	ASSERT_TS(!IsEmpty(key), "key can't be empty")
 
 	return "Version 1:" + Hash(key, HASH_SHA2_256)
 End
