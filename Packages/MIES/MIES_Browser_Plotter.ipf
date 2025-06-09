@@ -308,7 +308,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 					numChannels = numTTLs
 					break
 				default:
-					ASSERT(0, "Unsupported channel type")
+					FATAL_ERROR("Unsupported channel type")
 					break
 			endswitch
 
@@ -704,7 +704,7 @@ static Function TiledGraphAccelerateAppendTracesImpl(string w, string v, string 
 				AppendToGraph/Q/W=$w/L=$v/B=$h/C=(r, g, b, 65535) d[y[i]]/TN=$t[i]
 				break
 			default:
-				ASSERT(0, "Fail")
+				FATAL_ERROR( "Fail")
 				break
 		endswitch
 	while(i)
@@ -744,7 +744,7 @@ Function PostPlotTransformations(string win, variable mode, [WAVE/Z additionalDa
 			WAVE/Z additionalData = $""
 			break
 		default:
-			ASSERT(0, "Invalid mode")
+			FATAL_ERROR("Invalid mode")
 	endswitch
 
 	graph = GetMainWindow(win)

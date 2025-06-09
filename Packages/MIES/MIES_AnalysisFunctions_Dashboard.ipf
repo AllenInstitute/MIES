@@ -193,7 +193,7 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 		case INVALID_ANALYSIS_FUNCTION:
 			return NOT_AVAILABLE
 		default:
-			ASSERT(0, "Unsupported analysis function")
+			FATAL_ERROR("Unsupported analysis function")
 	endswitch
 End
 
@@ -391,7 +391,7 @@ static Function AD_FillWaves(string win, WAVE/T list, WAVE/T info)
 					Duplicate/FREE sweeps, passingSweeps
 					break
 				default:
-					ASSERT(0, "Unsupported analysis function")
+					FATAL_ERROR("Unsupported analysis function")
 					break
 			endswitch
 
@@ -611,7 +611,7 @@ static Function/S AD_GetDAScaleFailMsg(WAVE numericalValues, WAVE/T textualValue
 
 			break
 		default:
-			ASSERT(0, "Invalid opMode")
+			FATAL_ERROR("Invalid opMode")
 	endswitch
 
 	BUG("Unknown reason for failure")
@@ -1103,7 +1103,7 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 
 				break
 			default:
-				ASSERT(0, "Unsupported analysis function")
+				FATAL_ERROR("Unsupported analysis function")
 		endswitch
 
 		if(IsEmpty(text))

@@ -93,7 +93,7 @@ static Function TPM_BkrdTPMD(string device)
 			HW_StartAcq(HARDWARE_SUTTER_DAC, deviceID, flags = HARDWARE_ABORT_ON_ERROR)
 			break
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 			break
 	endswitch
 	if(!IsBackgroundTaskRunning(TASKNAME_TPMD))
@@ -191,9 +191,9 @@ Function TPM_BkrdTPFuncMD(STRUCT BackgroundStruct &s)
 							LOG_AddEntry(PACKAGE_MIES, "hardware error", stacktrace = 1)
 							DQ_StopOngoingDAQ(device, DQ_STOP_REASON_HW_ERROR)
 							if(err == 18)
-								ASSERT(0, "Acquisition FIFO overflow, data lost. This may happen if the computer is too slow.")
+								FATAL_ERROR("Acquisition FIFO overflow, data lost. This may happen if the computer is too slow.")
 							else
-								ASSERT(0, "Error reading data from NI device: code " + num2str(err) + "\r" + errMsg)
+								FATAL_ERROR("Error reading data from NI device: code " + num2str(err) + "\r" + errMsg)
 							endif
 						endtry
 
@@ -248,7 +248,7 @@ Function TPM_BkrdTPFuncMD(STRUCT BackgroundStruct &s)
 
 				break
 			default:
-				ASSERT(0, "Unsupported hardware type")
+				FATAL_ERROR("Unsupported hardware type")
 				break
 		endswitch
 

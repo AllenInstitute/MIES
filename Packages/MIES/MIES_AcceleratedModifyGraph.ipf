@@ -54,7 +54,7 @@ static Function/S GenerateValueString(variable type, variable keywordIndex, vari
 			result += ")"
 			break
 		default:
-			ASSERT(0, "Unknown type")
+			FATAL_ERROR("Unknown type")
 	endswitch
 
 	return result
@@ -153,7 +153,7 @@ Function ACC_HideTraces(string graph, WAVE/T w, variable h, variable s)
 				ModifyGraph/W=$graph hideTrace($w[h])=s
 				break
 			default:
-				ASSERT(0, "Fail")
+				FATAL_ERROR( "Fail")
 				break
 		endswitch
 	while(h)
@@ -478,7 +478,7 @@ Function ACC_HideTracesPerTrace(string graph, WAVE/T w, variable h, WAVE s)
 				break
 				// END AUTOMATED CODE
 			default:
-				ASSERT(0, "Fail")
+				FATAL_ERROR( "Fail")
 				break
 		endswitch
 	while(h)
@@ -809,7 +809,7 @@ Function ACC_HideTracesAndColor(string graph, WAVE/T w, variable h, WAVE hideSta
 				break
 				// END AUTOMATED CODE
 			default:
-				ASSERT(0, "Fail")
+				FATAL_ERROR( "Fail")
 		endswitch
 	while(h)
 
@@ -861,7 +861,7 @@ Function ACC_ModLineSizeTraces(string graph, WAVE/T w, variable h, variable l)
 					ModifyGraph/W=$graph lsize($w[h])=l
 					break
 				default:
-					ASSERT(0, "Fail")
+					FATAL_ERROR( "Fail")
 					break
 			endswitch
 		while(h)

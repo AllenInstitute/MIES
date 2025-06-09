@@ -538,7 +538,7 @@ Function SetValDisplay(string win, string control, [variable var, string str, st
 		ASSERT(ParamIsDefault(format), "Unexpected parameter combination")
 		formattedString = str
 	else
-		ASSERT(0, "Unexpected parameter combination")
+		FATAL_ERROR("Unexpected parameter combination")
 	endif
 
 	// Don't update if the content does not change, prevents flickering
@@ -737,7 +737,7 @@ Function [STRUCT RGBColor s] GetTraceColor(variable index)
 			break
 
 		default:
-			ASSERT(0, "Invalid index")
+			FATAL_ERROR("Invalid index")
 			break
 	endswitch
 End
@@ -786,7 +786,7 @@ Function [STRUCT RGBColor s] GetTraceColorAlternative(variable index)
 			s.red = 52428; s.green = 31097; s.blue = 42919
 			break
 		default:
-			ASSERT(0, "Invalid index")
+			FATAL_ERROR("Invalid index")
 	endswitch
 
 	return [s]
@@ -841,7 +841,7 @@ static Function [variable minimum, variable maximum] GetAxisRangeFromInfo(string
 	elseif(mode & AXIS_RANGE_INC_AUTOSCALED)
 		// do nothing
 	else
-		ASSERT(0, "Unknown mode from AxisPropModeConstants for this function")
+		FATAL_ERROR("Unknown mode from AxisPropModeConstants for this function")
 	endif
 
 	GetAxis/W=$graph/Q $axis
@@ -1049,7 +1049,7 @@ Function SetAxesProperties(string graph, WAVE props, [string axesRegexp, variabl
 					continue
 				endif
 			else
-				ASSERT(0, "Unknown mode from AxisPropModeConstants for this function")
+				FATAL_ERROR("Unknown mode from AxisPropModeConstants for this function")
 			endif
 		endif
 
@@ -1089,7 +1089,7 @@ Function/S GetUniqueAxisName(string graph, string axesBaseName)
 		axis = axesBaseName + num2str(count++)
 	endfor
 
-	ASSERT(0, "Could not find a free axis name")
+	FATAL_ERROR("Could not find a free axis name")
 End
 
 /// @brief Generic wrapper for setting a control's value
@@ -1110,14 +1110,14 @@ Function SetGuiControlValue(string win, string control, string value)
 		elseif(variableType == SET_VARIABLE_BUILTIN_NUM)
 			SetSetVariable(win, control, str2num(value))
 		else
-			ASSERT(0, "SetVariable globals are not supported")
+			FATAL_ERROR("SetVariable globals are not supported")
 		endif
 	elseif(controlType == CONTROL_TYPE_POPUPMENU)
 		SetPopupMenuIndex(win, control, str2num(value))
 	elseif(controlType == CONTROL_TYPE_SLIDER)
 		Slider $control, win=$win, value=str2num(value)
 	else
-		ASSERT(0, "Unsupported control type") // if I get this, something's really gone pear shaped
+		FATAL_ERROR("Unsupported control type") // if I get this, something's really gone pear shaped
 	endif
 End
 
@@ -1142,7 +1142,7 @@ Function/S GetGuiControlValue(string win, string control)
 		elseif(variableType == SET_VARIABLE_BUILTIN_NUM)
 			value = num2str(GetSetVariable(win, control))
 		else
-			ASSERT(0, "SetVariable globals are not supported")
+			FATAL_ERROR("SetVariable globals are not supported")
 		endif
 	elseif(controlType == CONTROL_TYPE_POPUPMENU)
 		value = num2str(GetPopupMenuIndex(win, control))
@@ -1505,7 +1505,7 @@ Function/S GetValueFromRecMacro(string key, string recMacro)
 	elseif(cr == -1)
 		last = comma
 	else
-		ASSERT(0, "impossible case")
+		FATAL_ERROR("impossible case")
 	endif
 
 	procedure = recMacro[first + strlen(key), last - 1]
@@ -1633,7 +1633,7 @@ Function GetNumericSubType(string subType)
 			return CONTROL_TYPE_TAB
 			break
 		default:
-			ASSERT(0, "Unsupported control subType")
+			FATAL_ERROR("Unsupported control subType")
 			break
 	endswitch
 End
@@ -2057,7 +2057,7 @@ Function DrawScaleBar(string graph, variable x0, variable y0, variable x1, varia
 
 			SetDrawEnv/W=$graph textxjust=1, textyjust=2
 		else
-			ASSERT(0, "Unexpected combination")
+			FATAL_ERROR("Unexpected combination")
 		endif
 
 		DrawText/W=$graph xPos, yPos, str
@@ -2113,7 +2113,7 @@ Function/S GetPopupMenuList(string value, variable type)
 				case "COLORTABLEPOP":
 					return CTabList()
 				default:
-					ASSERT(0, "Not implemented")
+					FATAL_ERROR("Not implemented")
 			endswitch
 		case POPUPMENULIST_TYPE_OTHER:
 			path = GetTemporaryString()
@@ -2129,7 +2129,7 @@ Function/S GetPopupMenuList(string value, variable type)
 			SVAR str = $path
 			return str
 		default:
-			ASSERT(0, "Missing popup menu list type")
+			FATAL_ERROR("Missing popup menu list type")
 	endswitch
 End
 
@@ -2161,7 +2161,7 @@ Function [string recMacro, variable type] GetRecreationMacroAndType(string win, 
 	ControlInfo/W=$win $control
 	if(!V_flag)
 		ASSERT(WindowExists(win), "The panel " + win + " does not exist.")
-		ASSERT(0, "The control " + control + " in the panel " + win + " does not exist.")
+		FATAL_ERROR("The control " + control + " in the panel " + win + " does not exist.")
 	endif
 
 	return [S_recreation, abs(V_flag)]
@@ -2406,7 +2406,7 @@ Function [variable first, variable last] GetMarqueeHelper(string axisName, [vari
 	elseif(vert)
 		return [V_bottom, V_top]
 	else
-		ASSERT(0, "Impossible state")
+		FATAL_ERROR("Impossible state")
 	endif
 End
 

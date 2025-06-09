@@ -313,7 +313,7 @@ Function/WAVE DAG_GetChannelState(string device, variable type)
 			col = 7
 			break
 		default:
-			ASSERT(0, "invalid type")
+			FATAL_ERROR("invalid type")
 			break
 	endswitch
 

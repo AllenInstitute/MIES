@@ -241,7 +241,7 @@ threadsafe static Function AreAllSingleSweepWavesPresent(DFREF targetDFR, WAVE/T
 			elseif(!WaveExists(channel) && !WaveExists(channelBak))
 				chanMissing = 1
 			else
-				ASSERT_TS(0, "Found sweep single channel wave without backup (or vice versa) for sweep in " + GetDataFolder(1, targetDFR) + " channel " + wName)
+				FATAL_ERROR("Found sweep single channel wave without backup (or vice versa) for sweep in " + GetDataFolder(1, targetDFR) + " channel " + wName)
 			endif
 		else
 			if(WaveExists(channel))
@@ -362,7 +362,7 @@ threadsafe static Function SplitTTLWaveIntoComponents(WAVE data, variable ttlBit
 		elseif(rescale == TTL_RESCALE_OFF)
 			MultiThread dest[] = dest[p] & bit
 		else
-			ASSERT_TS(0, "Invalid rescale parameter")
+			FATAL_ERROR("Invalid rescale parameter")
 		endif
 		if(createBackup)
 			CreateBackupWave(dest, forceCreation = 1)
@@ -459,7 +459,7 @@ Function LeftOverSweepTime(string device, variable fifoPos)
 			WAVE      DAQDataWave = ref[0]
 			break
 		default:
-			ASSERT(0, "Invalid hardware type")
+			FATAL_ERROR("Invalid hardware type")
 	endswitch
 
 	variable lastAcquiredPoint = IndexToScale(DAQDataWave, stopCollectionPoint - fifoPos, ROWS)

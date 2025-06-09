@@ -236,7 +236,7 @@ static Function BWO_SetClampModeAll(string device, variable mode)
 			PGC_SetAndActivateControl(device, "Radio_ClampMode_AllIZero", val = CHECKBOX_SELECTED)
 			break
 		default:
-			ASSERT(0, "unhandled case")
+			FATAL_ERROR("unhandled case")
 	endswitch
 End
 

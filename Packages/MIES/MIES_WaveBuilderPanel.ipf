@@ -481,13 +481,13 @@ static Function WBP_SetControl(string win, string control, [variable value, stri
 		elseif(!ParamIsDefault(str))
 			SetVariable $control, win=$win, value=_STR:str
 		else
-			ASSERT(0, "Missing optional parameter")
+			FATAL_ERROR("Missing optional parameter")
 		endif
 	elseif(controlType == 3)
 		ASSERT(!ParamIsDefault(value), "Missing value parameter")
 		PopupMenu $control, win=$win, mode=value + 1
 	else
-		ASSERT(0, "Unsupported control type")
+		FATAL_ERROR("Unsupported control type")
 	endif
 End
 
@@ -708,7 +708,7 @@ Function WBP_UpdateControlAndWave(string control, [variable var, string str])
 			SegWvType[paramRow] = var
 			break
 		default:
-			ASSERT(0, "Invalid wavebuilder wave type")
+			FATAL_ERROR("Invalid wavebuilder wave type")
 			break
 	endswitch
 End
@@ -825,7 +825,7 @@ static Function WBP_ChangeWaveType()
 		SetVariable SetVar_WaveBuilder_P2, win=$panel, limits={-Inf, Inf, 1}
 		EnableControls(panel, list)
 	else
-		ASSERT(0, "Unknown stimulus type")
+		FATAL_ERROR("Unknown stimulus type")
 	endif
 
 	ListBox listbox_combineEpochMap, win=$panel, listWave=GetWBEpochCombineList(WBP_GetStimulusType())
@@ -1213,7 +1213,7 @@ static Function/S WBP_ConvertDeltaLblToCtrlNames(string allControls, string dimL
 		return GrepList(allControls, ".*_S" + num2str(index) + "(_|$)")
 	endif
 
-	ASSERT(0, "Invalid dimLabel")
+	FATAL_ERROR("Invalid dimLabel")
 End
 
 /// @brief Depending on the delta operation the visibility of related controls
@@ -1236,7 +1236,7 @@ static Function WBP_AdjustDeltaControls(string control)
 			WAVE loc = GetSegmentTypeWave()
 			break
 		default:
-			ASSERT(0, "Invalid control type")
+			FATAL_ERROR("Invalid control type")
 	endswitch
 
 	lbl   = GetDimLabel(loc, ROWS, row)
@@ -1295,7 +1295,7 @@ static Function WBP_AdjustDeltaControls(string control)
 			EnableControls(panel, ldelta)
 			break
 		default:
-			ASSERT(0, "Unknown delta mode")
+			FATAL_ERROR("Unknown delta mode")
 	endswitch
 End
 
@@ -1966,7 +1966,7 @@ Function WBP_ButtonProc_AddParam(STRUCT WMButtonAction &ba) : ButtonControl
 					WB_AddAnalysisParameterIntoWPT(WPT, name, wv = ListToTextWave(value, ";"))
 					break
 				default:
-					ASSERT(0, "invalid type")
+					FATAL_ERROR("invalid type")
 					break
 			endswitch
 

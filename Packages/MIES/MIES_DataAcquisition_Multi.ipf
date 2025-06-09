@@ -80,9 +80,9 @@ Function DQM_FIFOMonitor(STRUCT BackgroundStruct &s)
 					LOG_AddEntry(PACKAGE_MIES, "hardware error", stacktrace = 1)
 					DQ_StopOngoingDAQ(device, DQ_STOP_REASON_HW_ERROR, startTPAfterDAQ = 0)
 					if(err == 18)
-						ASSERT(0, "Acquisition FIFO overflow, data lost. This may happen if the computer is too slow.")
+						FATAL_ERROR("Acquisition FIFO overflow, data lost. This may happen if the computer is too slow.")
 					else
-						ASSERT(0, "Error reading data from NI device: code " + num2str(err) + "\r" + errMsg)
+						FATAL_ERROR("Error reading data from NI device: code " + num2str(err) + "\r" + errMsg)
 					endif
 				endtry
 				break
@@ -139,7 +139,7 @@ Function DQM_FIFOMonitor(STRUCT BackgroundStruct &s)
 
 				break
 			default:
-				ASSERT(0, "Invalid hardware mode")
+				FATAL_ERROR("Invalid hardware mode")
 				break
 		endswitch
 
@@ -451,7 +451,7 @@ static Function DQM_MakeOrUpdateTimerParamWave(string device, string listOfFunct
 		ASSERT(rowToRemove >= 0, "Trying to remove a non existing device")
 		DeletePoints/M=(ROWS) rowToRemove, 1, ActiveDevTimeParam
 	else
-		ASSERT(0, "Invalid addOrRemoveDevice value")
+		FATAL_ERROR("Invalid addOrRemoveDevice value")
 	endif
 
 	DQM_MakeOrUpdtDevTimerTxtWv(device, ListOfFunctions, rowToRemove, addOrRemoveDevice)
@@ -484,6 +484,6 @@ static Function DQM_MakeOrUpdtDevTimerTxtWv(string device, string listOfFunction
 		ASSERT(rowToRemove >= 0 && rowToRemove < DimSize(TimerFunctionListWave, ROWS), "Trying to remove a non existing index")
 		DeletePoints/M=(ROWS) rowToRemove, 1, TimerFunctionListWave
 	else
-		ASSERT(0, "Invalid addOrRemoveDevice value")
+		FATAL_ERROR("Invalid addOrRemoveDevice value")
 	endif
 End

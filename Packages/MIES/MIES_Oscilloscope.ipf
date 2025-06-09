@@ -515,7 +515,7 @@ Function SCOPE_UpdateOscilloscopeData(string device, variable dataAcqOrTP, [vari
 			SCOPE_SU_UpdateOscilloscope(device, dataAcqOrTP, chunk, fifoPos)
 			break
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 	endswitch
 
 	WAVE config  = GetDAQConfigWave(device)
@@ -726,7 +726,7 @@ static Function SCOPE_SU_UpdateOscilloscope(string device, variable dataAcqOrTP,
 				Multithread scaledChannel[fifoPosGlobal, fifoPos - 1] = SUChannel[p]; AbortOnRTE
 			catch
 				sprintf msg, "Writing scaledDataWave failed, please save the experiment and file a bug report: scaledDataWave rows %g\r", DimSize(scaledDataWave, ROWS)
-				ASSERT(0, msg)
+				FATAL_ERROR(msg)
 			endtry
 		endfor
 
@@ -794,7 +794,7 @@ static Function SCOPE_NI_UpdateOscilloscope(string device, variable dataAcqOrTP,
 				Multithread scaledChannel[fifoPosGlobal, fifoPos - 1] = NIChannel[p]; AbortOnRTE
 			catch
 				sprintf msg, "Writing scaledDataWave failed, please save the experiment and file a bug report: fifoPosGlobal %g, fifoPos %g, scaledDataWave rows %g, stopCollectionPoint %g\r", fifoPosGlobal, fifoPos, DimSize(scaledDataWave, ROWS), ROVAR(GetStopCollectionPoint(device))
-				ASSERT(0, msg)
+				FATAL_ERROR(msg)
 			endtry
 		endfor
 
@@ -883,7 +883,7 @@ static Function SCOPE_ITC_UpdateOscilloscope(string device, variable dataAcqOrTP
 			endfor
 		catch
 			sprintf msg, "Writing scaledDataWave failed, please save the experiment and file a bug report: fifoPosGlobal %g, fifoPos %g, Channel Index %d, scaledChannelWave rows %g, stopCollectionPoint %g\r", fifoPosGlobal, fifoPos, i, DimSize(scaledChannel, ROWS), ROVAR(GetStopCollectionPoint(device))
-			ASSERT(0, msg)
+			FATAL_ERROR(msg)
 		endtry
 
 		decMethod = GetNumberFromWaveNote(OscilloscopeData, "DecimationMethod")
@@ -899,7 +899,7 @@ static Function SCOPE_ITC_UpdateOscilloscope(string device, variable dataAcqOrTP
 				DecimateWithMethod(DAQDataWave, OscilloscopeData, decFactor, decMethod, firstRowInp = fifoPosGlobal, lastRowInp = fifoPos - 1, firstColInp = startOfADColumns, lastColInp = endOfADColumns - 1, factor = gain)
 		endswitch
 	else
-		ASSERT(0, "Invalid dataAcqOrTP value")
+		FATAL_ERROR("Invalid dataAcqOrTP value")
 	endif
 End
 

@@ -72,7 +72,7 @@ static Function MSQ_GetPulseSettingsForType(variable type, STRUCT MSQ_PulseSetti
 
 	switch(type)
 		default:
-			ASSERT(0, "unsupported type")
+			FATAL_ERROR("unsupported type")
 			break
 	endswitch
 
@@ -296,7 +296,7 @@ Function/WAVE MSQ_CreateOverrideResults(string device, variable headstage, varia
 			typeOfWave = 0 // text wave
 			break
 		default:
-			ASSERT(0, "invalid type")
+			FATAL_ERROR("invalid type")
 	endswitch
 
 	KillOrMoveToTrash(wv = GetOverrideResults())
@@ -369,7 +369,7 @@ static Function/WAVE MSQ_SearchForSpikes(string device, variable type, WAVE swee
 				overrideValue = overrideResults[count][headstage]
 				break
 			default:
-				ASSERT(0, "unsupported type")
+				FATAL_ERROR("unsupported type")
 		endswitch
 
 		if(overrideValue == 0 || overrideValue == 1)
@@ -411,7 +411,7 @@ static Function/WAVE MSQ_SearchForSpikes(string device, variable type, WAVE swee
 				endif
 			endif
 		else
-			ASSERT(0, "Invalid number of spikes value")
+			FATAL_ERROR("Invalid number of spikes value")
 		endif
 	endif
 
@@ -500,7 +500,7 @@ Function/S MSQ_FastRheoEst_GetHelp(string name)
 			return "Scaling factor for setting the DAScale of passed headstages at the end of the set"
 			break
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 			break
 	endswitch
 End
@@ -734,7 +734,7 @@ Function MSQ_FastRheoEst(string device, STRUCT AnalysisFunction_V3 &s)
 						stepSize[i]     = MSQ_FRE_INIT_AMP_m50
 						newDAScaleValue = DAScale[i] + stepSize[i]
 					else
-						ASSERT(0, "Unknown stepsize")
+						FATAL_ERROR("Unknown stepsize")
 					endif
 				else // headstage did not spike
 					if(CheckIfClose(stepSize[i], MSQ_FRE_INIT_AMP_m50))
@@ -745,7 +745,7 @@ Function MSQ_FastRheoEst(string device, STRUCT AnalysisFunction_V3 &s)
 					elseif(CheckIfClose(stepSize[i], MSQ_FRE_INIT_AMP_p100))
 						newDAScaleValue = DAScale[i] + stepSize[i]
 					else
-						ASSERT(0, "Unknown stepsize")
+						FATAL_ERROR("Unknown stepsize")
 					endif
 				endif
 
@@ -1035,7 +1035,7 @@ Function/S MSQ_DAScale_GetHelp(string name)
 			return "DA Scale Factors in pA"
 			break
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 			break
 	endswitch
 End

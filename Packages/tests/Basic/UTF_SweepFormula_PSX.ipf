@@ -1868,7 +1868,7 @@ static Function AdaptForPostProc(string postProc, variable val)
 		case "log10":
 			return log(val)
 		default:
-			ASSERT(0, "Unknown postProc value")
+			FATAL_ERROR("Unknown postProc value")
 	endswitch
 End
 
@@ -2060,7 +2060,7 @@ static Function CheckTraceColors(string win, WAVE/T traces, variable state)
 			Make/FREE refColors = {1, 1, 1}
 			break
 		default:
-			ASSERT(0, "Invalid state")
+			FATAL_ERROR("Invalid state")
 	endswitch
 
 	for(trace : traces)

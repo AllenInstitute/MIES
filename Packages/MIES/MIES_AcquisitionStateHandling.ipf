@@ -41,7 +41,7 @@ Function/S AS_StateToString(variable acqState)
 			return "AS_POST_DAQ"
 			break
 		default:
-			ASSERT(0, "Invalid acqState")
+			FATAL_ERROR("Invalid acqState")
 	endswitch
 End
 
@@ -117,7 +117,7 @@ Function AS_HandlePossibleTransition(string device, variable newAcqState, [varia
 			return AFM_CallAnalysisFunctions(device, POST_DAQ_EVENT)
 			break
 		default:
-			ASSERT(0, "Invalid acqState")
+			FATAL_ERROR("Invalid acqState")
 	endswitch
 End
 
@@ -176,7 +176,7 @@ Function AS_GetSweepNumber(string device, [variable allowFallback])
 			sweepNo = DAG_GetNumericalValue(device, "SetVar_Sweep") - 1
 			break
 		default:
-			ASSERT(0, "Invalid acqState")
+			FATAL_ERROR("Invalid acqState")
 	endswitch
 
 	ASSERT(IsValidSweepNumber(sweepNo), "Could not derive a valid sweep number")

@@ -327,7 +327,7 @@ static Function CheckSurveyPlot(string device, WAVE/WAVE entries)
 				CHECK_EQUAL_WAVES(DAScaleFilteredWithoutFirstPoint, xWave, mode = WAVE_DATA, tol = 1e-6)
 				CHECK_EQUAL_WAVES(fISlopeFiltered, yWave, mode = WAVE_DATA, tol = 1e-6)
 			else
-				ASSERT(0, "Unexpected graph name")
+				FATAL_ERROR("Unexpected graph name")
 			endif
 		endif
 	endfor

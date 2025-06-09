@@ -286,7 +286,7 @@ static Function/S GetChannelNameFromChannelType(variable groupID, string device,
 			CHECK_EQUAL_VAR(str2num(params.channelSuffix), params.ttlBit)
 			break
 		default:
-			ASSERT(0, "unknown channel type " + num2str(params.channelType))
+			FATAL_ERROR("unknown channel type " + num2str(params.channelType))
 			break
 	endswitch
 
@@ -306,7 +306,7 @@ static Function/WAVE LoadTimeSeriesImpl(variable groupID, string channel, variab
 			return LoadStimulus(groupID, channel)
 			break
 		default:
-			ASSERT(0, "unknown channel type " + num2str(channelType))
+			FATAL_ERROR("unknown channel type " + num2str(channelType))
 			break
 	endswitch
 End
@@ -449,7 +449,7 @@ static Function TestTimeSeries(variable fileID, string filepath, string device, 
 				str = "TimeSeries"
 				CHECK_EQUAL_STR(neurodata_type, str)
 			else
-				ASSERT(0, "unknown clamp mode")
+				FATAL_ERROR("unknown clamp mode")
 			endif
 			break
 	endswitch
