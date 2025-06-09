@@ -47,7 +47,7 @@ Function/S GetPanelControl(variable channelIndex, variable channelType, variable
 	elseif(controlType == CHANNEL_CONTROL_TITLE)
 		ctrl = "Title_" + ctrl
 	else
-		ASSERT(0, "Invalid controlType")
+		FATAL_ERROR("Invalid controlType")
 	endif
 
 	if(channelIndex == CHANNEL_INDEX_ALL)

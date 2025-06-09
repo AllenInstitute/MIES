@@ -283,7 +283,7 @@ Function/WAVE SWS_GetChannelGains(string device, [variable timing])
 			endif
 			break
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 			break
 	endswitch
 

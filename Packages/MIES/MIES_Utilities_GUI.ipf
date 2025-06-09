@@ -165,7 +165,7 @@ Function/S UniqueTraceName(string graph, string baseName)
 
 	while(i < numTrials)
 
-	ASSERT(0, "Could not find a trace name")
+	FATAL_ERROR("Could not find a trace name")
 End
 
 /// @brief Calculate the value for `mskip` of `ModifyGraph`

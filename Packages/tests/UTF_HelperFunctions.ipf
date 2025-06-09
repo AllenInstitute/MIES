@@ -719,7 +719,7 @@ End
 
 Function/WAVE FakeSweepDataGeneratorProto(WAVE sweep, variable numChannels)
 
-	ASSERT(0, "Prototype Function FakeSweepDataGeneratorProto called.")
+	FATAL_ERROR("Prototype Function FakeSweepDataGeneratorProto called.")
 End
 
 Function/WAVE FakeSweepDataGeneratorDefault(WAVE sweep, variable numChannels)
@@ -1925,7 +1925,7 @@ static Function/S GetDefaultTestSuitesForExperiment()
 			list = AddListItem("UTF_PA_Tests.ipf", list, ";", Inf)
 			break
 		default:
-			ASSERT(0, "Missing case for " + match)
+			FATAL_ERROR("Missing case for " + match)
 	endswitch
 
 	return list

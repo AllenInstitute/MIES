@@ -422,7 +422,7 @@ Function CheckLBIndexCache_IGNORE(string device)
 						CHECK_EQUAL_VAR(entry, LABNOTEBOOK_MISSING_VALUE)
 						if(entry != LABNOTEBOOK_MISSING_VALUE)
 							sprintf msg, "bug: LBN %s, setting %s, sweep %d, entrySourceType %g\r", NameOfWave(values), setting, j, entrySourceType
-							ASSERT(0, msg)
+							FATAL_ERROR(msg)
 						endif
 					else
 						Duplicate/FREE/RMD=[entry][k] values, settings
@@ -436,7 +436,7 @@ Function CheckLBIndexCache_IGNORE(string device)
 							Duplicate/O settingsNoCache, root:settingsNoCache
 
 							sprintf msg, "bug: LBN %s, setting %s, sweep %d, entrySourceType %g\r", NameOfWave(values), setting, j, entrySourceType
-							ASSERT(0, msg)
+							FATAL_ERROR(msg)
 						endif
 
 						REQUIRE_EQUAL_WAVES(settings, settingsNoCache, mode = WAVE_DATA)

@@ -300,7 +300,7 @@ static Function DCR_RecreateDataConfigurationResultFromLNB_DAC(STRUCT DataConfig
 					s.DACAmp[i][%TPAMP]   = 0
 					continue
 				else
-					ASSERT(0, "Unknown clamp mode")
+					FATAL_ERROR("Unknown clamp mode")
 				endif
 				[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, key, s.DACList[i], XOP_CHANNEL_TYPE_DAC, s.dataAcqOrTP)
 				if(WaveExists(settings))

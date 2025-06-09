@@ -487,7 +487,7 @@ threadsafe Function/S CA_IgorInfoKey(variable selector)
 			sprintf key, "IgorInfo(%d):Version 1", selector
 			return key
 		default:
-			ASSERT_TS(0, "Unimplemented selector")
+			FATAL_ERROR("Unimplemented selector")
 	endswitch
 End
 

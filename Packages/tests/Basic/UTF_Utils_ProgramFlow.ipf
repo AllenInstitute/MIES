@@ -49,6 +49,16 @@ Function AssertionThreadsafeFiresWithPassingZero()
 	endtry
 End
 
+Function FatalErrorAlwaysFires()
+
+	try
+		FATAL_ERROR("Kaboom")
+		FAIL()
+	catch
+		CHECK_GE_VAR(V_AbortCode, 1)
+	endtry
+End
+
 /// @}
 
 /// DoAbortNow

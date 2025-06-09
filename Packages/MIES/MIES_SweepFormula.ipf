@@ -301,7 +301,7 @@ static Function/S SF_StringifyState(variable state)
 		case SF_STATE_UNINITIALIZED:
 			return "SF_STATE_UNINITIALIZED"
 		default:
-			ASSERT(0, "unknown state")
+			FATAL_ERROR("unknown state")
 	endswitch
 End
 
@@ -327,7 +327,7 @@ static Function/S SF_StringifyAction(variable action)
 		case SF_ACTION_UNINITIALIZED:
 			return "SF_ACTION_UNINITIALIZED"
 		default:
-			ASSERT(0, "Unknown action")
+			FATAL_ERROR("Unknown action")
 	endswitch
 End
 
@@ -552,7 +552,7 @@ static Function [variable action, variable lastState, variable collectedSign] SF
 						break
 					endif
 
-					ASSERT(0, "Unhandled state")
+					FATAL_ERROR("Unhandled state")
 
 				case SF_STATE_MULTIPLICATION:
 				case SF_STATE_DIVISION:
@@ -576,7 +576,7 @@ static Function [variable action, variable lastState, variable collectedSign] SF
 						break
 					endif
 
-					ASSERT(0, "Unhandled state")
+					FATAL_ERROR("Unhandled state")
 
 				case SF_STATE_PARENTHESIS:
 					action = SF_ACTION_PARENTHESIS
@@ -615,7 +615,7 @@ static Function [variable action, variable lastState, variable collectedSign] SF
 					break
 				default:
 					sprintf errMsg, "Encountered undefined transition from %s to %s.", SF_StringifyState(lastState), SF_StringifyState(state)
-					SFH_ASSERT(0, errMsg, jsonId = jsonId)
+					SFH_FATAL_ERROR(errMsg, jsonId = jsonId)
 			endswitch
 
 		endif
@@ -1222,7 +1222,7 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 			WAVE out = SF_OperationSelectRange(jsonId, jsonPath, graph)
 			break
 		default:
-			SFH_ASSERT(0, "Undefined Operation", jsonId = jsonId)
+			SFH_FATAL_ERROR("Undefined Operation", jsonId = jsonId)
 	endswitch
 	///@}
 
@@ -1326,7 +1326,7 @@ static Function/S SF_GetAnnotationPrefix(string dataType)
 		case SF_DATATYPE_ANAFUNCPARAM:
 			return "AFP "
 		default:
-			ASSERT(0, "Invalid dataType")
+			FATAL_ERROR("Invalid dataType")
 	endswitch
 End
 
@@ -1781,7 +1781,7 @@ static Function SF_GatherAxisLabels(WAVE/WAVE formulaResults, string explicitLbl
 				endif
 				break
 			default:
-				ASSERT(0, "Unsupported formulaLabel: " + formulaLabel)
+				FATAL_ERROR("Unsupported formulaLabel: " + formulaLabel)
 				break
 		endswitch
 
@@ -1814,7 +1814,7 @@ static Function SF_CheckNumTraces(string graph, variable numTraces)
 		endif
 
 		sprintf msg, "Attempt to plot too many traces (%d).", numTraces
-		SFH_ASSERT(0, msg)
+		SFH_FATAL_ERROR(msg)
 	endif
 	if(numTraces > SF_NUMTRACES_WARN_THRESHOLD)
 		sprintf msg, "Plotting %d traces...", numTraces
@@ -1848,7 +1848,7 @@ static Function/WAVE GetSweepFormula(DFREF dfr, variable graphNr, variable forAx
 		return GetSweepFormulaY(dfr, graphNr)
 	endif
 
-	ASSERT(0, "Unknown SF axis")
+	FATAL_ERROR("Unknown SF axis")
 End
 
 static Function/WAVE SF_PrepareResultWaveForPlotting(DFREF dfr, WAVE wvResult, variable dataCnt, variable forAxis)
@@ -2231,7 +2231,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 							ModifyGraph/W=$win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2], traceColor[3])
 							break
 						default:
-							ASSERT(0, "Invalid size of trace color wave")
+							FATAL_ERROR("Invalid size of trace color wave")
 					endswitch
 				endif
 
@@ -2421,7 +2421,7 @@ static Function SF_FormulaWaveScaleTransfer(WAVE source, WAVE dest, variable dim
 			SetScale/P t, DimOffset(source, dimSource), DimDelta(source, dimSource), WaveUnits(source, dimSource), dest
 			break
 		default:
-			ASSERT(0, "Invalid dimDest")
+			FATAL_ERROR("Invalid dimDest")
 	endswitch
 End
 
@@ -2808,7 +2808,7 @@ static Function SF_MapClampModeToSelectCM(variable clampMode)
 			return SF_OP_SELECT_CLAMPCODE_IZERO
 			break
 		default:
-			ASSERT(0, "Unknown clamp mode")
+			FATAL_ERROR("Unknown clamp mode")
 	endswitch
 End
 
@@ -3571,7 +3571,7 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 					SetScale d, 0, 0, baselineUnit, out
 					break
 				default:
-					SFH_ASSERT(0, "tp: Unknown type.")
+					SFH_FATAL_ERROR("tp: Unknown type.")
 					break
 			endswitch
 		endif
@@ -3615,7 +3615,7 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 			endif
 			break
 		default:
-			SFH_ASSERT(0, "tp: Unknown mode.")
+			SFH_FATAL_ERROR("tp: Unknown mode.")
 			break
 	endswitch
 
@@ -3901,7 +3901,7 @@ static Function/WAVE SF_IndexOverDataSetsForPrimitiveOperation(variable jsonId, 
 				output[] = SF_OperationMultImplDataSets(arg0[p], arg1[p])
 				break
 			default:
-				ASSERT(0, "Unsupported primitive operation")
+				FATAL_ERROR("Unsupported primitive operation")
 		endswitch
 	elseif(dataSetNum1 == 1)
 		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, dataSetNum0)
@@ -3920,7 +3920,7 @@ static Function/WAVE SF_IndexOverDataSetsForPrimitiveOperation(variable jsonId, 
 				output[] = SF_OperationMultImplDataSets(arg0[p], arg1[0])
 				break
 			default:
-				ASSERT(0, "Unsupported primitive operation")
+				FATAL_ERROR("Unsupported primitive operation")
 		endswitch
 	elseif(dataSetNum0 == 1)
 		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, dataSetNum1)
@@ -3939,11 +3939,11 @@ static Function/WAVE SF_IndexOverDataSetsForPrimitiveOperation(variable jsonId, 
 				output[] = SF_OperationMultImplDataSets(arg0[0], arg1[p])
 				break
 			default:
-				ASSERT(0, "Unsupported primitive operation")
+				FATAL_ERROR("Unsupported primitive operation")
 		endswitch
 	else
 		sprintf errMsg, "Can not apply %s on mixed number of datasets.", opShort
-		SFH_ASSERT(0, errMsg)
+		SFH_FATAL_ERROR(errMsg)
 	endif
 
 	type1 = JWN_GetStringFromWaveNote(arg0, SF_META_DATATYPE)
@@ -4092,7 +4092,7 @@ static Function/WAVE SF_OperationConcat(variable jsonId, string jsonPath, string
 
 		if(majorType != sliceMajorType)
 			sprintf errMsg, "Concatenate failed as the wave types of the first argument and #%d don't match: %s vs %s", i, WaveTypeToStringSelectorOne(majorType), WaveTypeToStringSelectorOne(sliceMajorType)
-			SFH_ASSERT(0, errMsg)
+			SFH_FATAL_ERROR(errMsg)
 		endif
 
 		dataType         = JWN_GetStringFromNote(wvNote, SF_META_DATATYPE)
@@ -4187,7 +4187,7 @@ static Function/WAVE SF_OperationAvg(variable jsonId, string jsonPath, string gr
 			return SF_OperationAvgImplOver(input, graph, opShort)
 
 		default:
-			ASSERT(0, "Unknown avg operation mode")
+			FATAL_ERROR("Unknown avg operation mode")
 	endswitch
 
 End
@@ -4634,7 +4634,7 @@ static Function/WAVE SF_OperationSetScaleImpl(WAVE/Z input, string dim, variable
 			ASSERT(DimDelta(input, CHUNKS) == delta, "Encountered Igor Bug.")
 			break
 		default:
-			ASSERT(0, "Invalid dimension mode")
+			FATAL_ERROR("Invalid dimension mode")
 			break
 	endswitch
 
@@ -4670,11 +4670,11 @@ static Function/WAVE SF_OperationSelectChannels(variable jsonId, string jsonPath
 			WAVE/T chanSpecT = chanSpec
 			SplitString/E=regExp chanSpecT[0], channelName, channelNumber
 			if(V_flag == 0)
-				SFH_ASSERT(0, "Unknown channel: " + chanSpecT[0])
+				SFH_FATAL_ERROR("Unknown channel: " + chanSpecT[0])
 			endif
 			channels[i][%channelNumber] = str2num(channelNumber)
 		else
-			SFH_ASSERT(0, "Unsupported arg type for selchannels.")
+			SFH_FATAL_ERROR("Unsupported arg type for selchannels.")
 		endif
 		SFH_ASSERT(!isFinite(channels[i][%channelNumber]) || channels[i][%channelNumber] < NUM_MAX_CHANNELS, "Maximum Number Of Channels exceeded.")
 		if(!IsEmpty(channelName))
@@ -5077,7 +5077,7 @@ static Function/WAVE SF_OperationSelectCM(variable jsonId, string jsonPath, stri
 					mode = mode | SF_OP_SELECT_CLAMPCODE_VC
 					break
 				default:
-					ASSERT(0, "Unsupported mode")
+					FATAL_ERROR("Unsupported mode")
 			endswitch
 		endfor
 	endif
@@ -5213,84 +5213,84 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 				if(IsNaN(filter.sciIndex))
 					filter.sciIndex = arg[0]
 				else
-					SFH_ASSERT(0, "select allows only a single " + SF_OP_SELECTSCIINDEX + " argument.")
+					SFH_FATAL_ERROR("select allows only a single " + SF_OP_SELECTSCIINDEX + " argument.")
 				endif
 				break
 			case SF_DATATYPE_SELECTRACINDEX:
 				if(IsNaN(filter.racIndex))
 					filter.racIndex = arg[0]
 				else
-					SFH_ASSERT(0, "select allows only a single " + SF_OP_SELECTRACINDEX + " argument.")
+					SFH_FATAL_ERROR("select allows only a single " + SF_OP_SELECTRACINDEX + " argument.")
 				endif
 				break
 			case SF_DATATYPE_SELECTSETCYCLECOUNT:
 				if(IsNaN(filter.setCycleCount))
 					filter.setCycleCount = arg[0]
 				else
-					SFH_ASSERT(0, "select allows only a single " + SF_OP_SELECTSETCYCLECOUNT + " argument.")
+					SFH_FATAL_ERROR("select allows only a single " + SF_OP_SELECTSETCYCLECOUNT + " argument.")
 				endif
 				break
 			case SF_DATATYPE_SELECTSETSWEEPCOUNT:
 				if(IsNaN(filter.setSweepCount))
 					filter.setSweepCount = arg[0]
 				else
-					SFH_ASSERT(0, "select allows only a single " + SF_OP_SELECTSETSWEEPCOUNT + " argument.")
+					SFH_FATAL_ERROR("select allows only a single " + SF_OP_SELECTSETSWEEPCOUNT + " argument.")
 				endif
 				break
 			case SF_DATATYPE_SELECTEXPANDSCI:
 				if(IsNaN(filter.expandSCI))
 					filter.expandSCI = 1
 				else
-					SFH_ASSERT(0, "select allows only a single " + SF_OP_SELECTEXPANDSCI + " argument.")
+					SFH_FATAL_ERROR("select allows only a single " + SF_OP_SELECTEXPANDSCI + " argument.")
 				endif
 				break
 			case SF_DATATYPE_SELECTEXPANDRAC:
 				if(IsNaN(filter.expandRAC))
 					filter.expandRAC = 1
 				else
-					SFH_ASSERT(0, "select allows only a single " + SF_OP_SELECTEXPANDRAC + " argument.")
+					SFH_FATAL_ERROR("select allows only a single " + SF_OP_SELECTEXPANDRAC + " argument.")
 				endif
 				break
 			case SF_DATATYPE_SELECTDEV:
 				if(IsEmpty(device))
 					device = WaveText(arg, row = 0)
 				else
-					SFH_ASSERT(0, "select allows only a single " + SF_OP_SELECTDEV + " argument.")
+					SFH_FATAL_ERROR("select allows only a single " + SF_OP_SELECTDEV + " argument.")
 				endif
 				break
 			case SF_DATATYPE_SELECTEXP:
 				if(IsEmpty(expName))
 					expName = WaveText(arg, row = 0)
 				else
-					SFH_ASSERT(0, "select allows only a single " + SF_OP_SELECTEXP + " argument.")
+					SFH_FATAL_ERROR("select allows only a single " + SF_OP_SELECTEXP + " argument.")
 				endif
 				break
 			case SF_DATATYPE_SELECTVIS:
 				if(IsEmpty(filter.vis))
 					filter.vis = WaveText(arg, row = 0)
 				else
-					SFH_ASSERT(0, "select allows only a single " + SF_OP_SELECTVIS + " argument.")
+					SFH_FATAL_ERROR("select allows only a single " + SF_OP_SELECTVIS + " argument.")
 				endif
 				break
 			case SF_DATATYPE_SELECTCM:
 				if(IsNaN(filter.clampMode))
 					filter.clampMode = arg[0]
 				else
-					SFH_ASSERT(0, "select allows only a single " + SF_OP_SELECTCM + " argument.")
+					SFH_FATAL_ERROR("select allows only a single " + SF_OP_SELECTCM + " argument.")
 				endif
 				break
 			case SF_DATATYPE_CHANNELS:
 				if(!WaveExists(filter.channels))
 					WAVE filter.channels = arg
 				else
-					SFH_ASSERT(0, "select allows only a single " + SF_OP_SELECTCHANNELS + " argument.")
+					SFH_FATAL_ERROR("select allows only a single " + SF_OP_SELECTCHANNELS + " argument.")
 				endif
 				break
 			case SF_DATATYPE_SELECTSTIMSET:
 				if(!WaveExists(filter.stimsets))
 					WAVE/T filter.stimsets = arg
 				else
-					SFH_ASSERT(0, "select allows only a single " + SF_OP_SELECTSTIMSET + " argument.")
+					SFH_FATAL_ERROR("select allows only a single " + SF_OP_SELECTSTIMSET + " argument.")
 				endif
 				break
 			case SF_DATATYPE_SWEEPNO:
@@ -5298,28 +5298,28 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 					WAVE/Z filter.sweeps = arg
 					filter.sweepsSet = 1
 				else
-					SFH_ASSERT(0, "select allows only a single " + SF_OP_SELECTSWEEPS + " argument.")
+					SFH_FATAL_ERROR("select allows only a single " + SF_OP_SELECTSWEEPS + " argument.")
 				endif
 				break
 			case SF_DATATYPE_SELECTIVSCCSWEEPQC:
 				if(IsNaN(filter.sweepQC))
 					filter.sweepQC = arg[0]
 				else
-					SFH_ASSERT(0, "select allows only a single " + SF_OP_SELECTIVSCCSWEEPQC + " argument.")
+					SFH_FATAL_ERROR("select allows only a single " + SF_OP_SELECTIVSCCSWEEPQC + " argument.")
 				endif
 				break
 			case SF_DATATYPE_SELECTIVSCCSETQC:
 				if(IsNaN(filter.setQC))
 					filter.setQC = arg[0]
 				else
-					SFH_ASSERT(0, "select allows only a single " + SF_OP_SELECTIVSCCSETQC + " argument.")
+					SFH_FATAL_ERROR("select allows only a single " + SF_OP_SELECTIVSCCSETQC + " argument.")
 				endif
 				break
 			case SF_DATATYPE_SELECTRANGE:
 				if(!WaveExists(filter.ranges))
 					WAVE filter.ranges = arg
 				else
-					SFH_ASSERT(0, "select allows only a single " + SF_OP_SELECTRANGE + " argument.")
+					SFH_FATAL_ERROR("select allows only a single " + SF_OP_SELECTRANGE + " argument.")
 				endif
 				break
 			case SF_DATATYPE_SELECTCOMP:
@@ -5331,7 +5331,7 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 				endif
 				break
 			default:
-				SFH_ASSERT(0, "Unsupported select argument")
+				SFH_FATAL_ERROR("Unsupported select argument")
 		endswitch
 	endfor
 
@@ -5533,7 +5533,7 @@ static Function/WAVE SF_GetSelectDataWithRACorSCIIndex(string graph, WAVE select
 		case SELECTDATA_MODE_SCI:
 			return SF_GetSelectDataWithSCIIndex(selectData, cycleIdsZapped, headStagesZapped, sweepMap, index)
 		default:
-			ASSERT(0, "Unknown mode")
+			FATAL_ERROR("Unknown mode")
 	endswitch
 End
 
@@ -5770,7 +5770,7 @@ static Function/S SF_GetSelectionExperiment(string graph, string expName)
 		return SF_MatchSweepMapColumn(graph, expName, "FileName", SF_OP_SELECTEXP)
 	endif
 
-	ASSERT(0, "Unknown browser type")
+	FATAL_ERROR("Unknown browser type")
 End
 
 static Function/S SF_GetSelectionDevice(string graph, string device)
@@ -5788,7 +5788,7 @@ static Function/S SF_GetSelectionDevice(string graph, string device)
 		return SF_MatchSweepMapColumn(graph, device, "Device", SF_OP_SELECTDEV)
 	endif
 
-	ASSERT(0, "Unknown browser type")
+	FATAL_ERROR("Unknown browser type")
 End
 
 /// @brief sets uninitialized fields of the selection filter
@@ -6001,7 +6001,7 @@ static Function/WAVE SF_OperationAnaFuncParamImpl(string graph, WAVE/T names, WA
 					Make/FREE/D out = {NaN}
 					break
 				default:
-					ASSERT(0, "Unsupported parameter type: " + type)
+					FATAL_ERROR("Unsupported parameter type: " + type)
 			endswitch
 
 			sweepNo  = JWN_GetNumberFromWaveNote(paramsSingle, SF_META_SWEEPNO)
@@ -6213,7 +6213,7 @@ static Function/WAVE SF_OperationLabnotebookImplGetEntry(string graph, WAVE sele
 		JWN_SetWaveInWaveNote(out, SF_META_TRACECOLOR, {0, 0, 0, 0})
 		JWN_SetStringInWaveNote(out, SF_META_TAG_TEXT, entry)
 	else
-		ASSERT(0, "Invalid type")
+		FATAL_ERROR("Invalid type")
 	endif
 
 	return out
@@ -6605,7 +6605,7 @@ static Function/WAVE SF_OperationApFrequencyImpl(WAVE/Z data, variable level, va
 			SetScale/P y, DimOffset(outD, ROWS), DimDelta(outD, ROWS), "peaks [APCount]", outD
 			break
 		default:
-			ASSERT(0, "Unsupported method")
+			FATAL_ERROR("Unsupported method")
 			break
 	endswitch
 
@@ -6626,7 +6626,7 @@ static Function/WAVE SF_OperationApFrequencyImpl(WAVE/Z data, variable level, va
 		elseif(!CmpStr(normStr, SF_OP_APFREQUENCY_NORMOVERSWEEPSAVG))
 			Concatenate/FREE/NP {outD}, normMean
 		else
-			ASSERT(0, "Unknown normalization method")
+			FATAL_ERROR("Unknown normalization method")
 		endif
 	endif
 
@@ -6645,7 +6645,7 @@ static Function/S SF_OperationApFrequencyMethodToString(variable method)
 		case SF_APFREQUENCY_APCOUNT:
 			return "APCount"
 		default:
-			ASSERT(0, "Unknown apfrequency method")
+			FATAL_ERROR("Unknown apfrequency method")
 	endswitch
 End
 
@@ -7360,7 +7360,7 @@ Function/WAVE SF_OperationFitImpl(WAVE xData, WAVE yData, string fitFunc, WAVE h
 			Make/T/FREE params = {"Offset;Slope"}
 			break
 		default:
-			SFH_ASSERT(0, "Invalid fit function: " + fitFunc)
+			SFH_FATAL_ERROR("Invalid fit function: " + fitFunc)
 	endswitch
 
 	if(err)

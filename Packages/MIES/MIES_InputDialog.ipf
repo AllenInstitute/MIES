@@ -129,7 +129,7 @@ Function ID_ButtonProc(STRUCT WMButtonAction &ba) : ButtonControl
 					variable/G dfr:state = 1
 					break
 				default:
-					ASSERT(0, "Unknown control")
+					FATAL_ERROR("Unknown control")
 					break
 			endswitch
 			KillWindow/Z $(ba.win)

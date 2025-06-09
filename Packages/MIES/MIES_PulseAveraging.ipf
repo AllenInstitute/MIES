@@ -121,7 +121,7 @@ static Function/S PA_GetGraphPrefix(string win, variable displayMode)
 		case PA_DISPLAYMODE_ALL:
 			return GetMainWindow(win) + "_" + PA_GRAPH_PREFIX
 		default:
-			ASSERT(0, "invalid display mode")
+			FATAL_ERROR("invalid display mode")
 	endswitch
 End
 
@@ -214,7 +214,7 @@ static Function/S PA_GetGraph(string mainWin, STRUCT PulseAverageSettings &pa, v
 				SetWindow $win, hook(resizeHookAndScalebar)=PA_TraceWindowHook
 				break
 			default:
-				ASSERT(0, "Invalid display mode")
+				FATAL_ERROR("Invalid display mode")
 		endswitch
 	endif
 
@@ -1167,7 +1167,7 @@ static Function PA_UpdateIndiceNotesImpl(WAVE indices, WAVE currentMap, WAVE old
 				DEBUGPRINT("Layout: Remove " + debugMsg)
 			endif
 		else
-			ASSERT_TS(0, "unknown indiceType")
+			FATAL_ERROR("unknown indiceType")
 		endif
 	else
 		SetNumberInWaveNote(indices, PA_SETINDICES_KEY_DISPCHANGE, PA_INDICESCHANGE_NONE)
@@ -1210,7 +1210,7 @@ threadsafe static Function PA_ApplyPulseSortingOrder(WAVE setIndices, variable c
 			SortColumns/KNDX={1, 0} sortWaves={elems}
 			break
 		default:
-			ASSERT_TS(0, "Invalid sorting order")
+			FATAL_ERROR("Invalid sorting order")
 	endswitch
 
 	// copy sorted result back
@@ -2203,7 +2203,7 @@ threadsafe static Function PA_StoreMaxAndUnitsInWaveNote(WAVE/Z w, WAVE/Z unitSo
 	endif
 
 	if(!WaveExists(unitSource))
-		ASSERT_TS(0, "Attempt to set data units in existing wave, but data unit source wave is null.")
+		FATAL_ERROR("Attempt to set data units in existing wave, but data unit source wave is null.")
 	endif
 
 	SetScale d, 0, 0, WaveUnits(unitSource, -1), w
@@ -2400,7 +2400,7 @@ static Function PA_DrawScaleBarsHelper(string win, variable axisMode, variable d
 					vert_max                                   = NaN
 					break
 				default:
-					ASSERT(0, "Invalid display mode")
+					FATAL_ERROR("Invalid display mode")
 			endswitch
 			break
 		case PA_USE_AXIS_SCALES:
@@ -2408,7 +2408,7 @@ static Function PA_DrawScaleBarsHelper(string win, variable axisMode, variable d
 			[horiz_min, horiz_max] = GetAxisRange(graph, horizAxis, mode = AXIS_RANGE_INC_AUTOSCALED)
 			break
 		default:
-			ASSERT(0, "Unknown mode")
+			FATAL_ERROR("Unknown mode")
 	endswitch
 
 	SetDrawEnv/W=$graph push
@@ -2578,7 +2578,7 @@ threadsafe static Function PA_PulseHasFailed(WAVE pulseWave, WAVE noteWave, STRU
 			hasFailed = !((numSpikes == s.failedNumberOfSpikes) || (numSpikes > 0 && IsNaN(s.failedNumberOfSpikes)))
 			break
 		default:
-			ASSERT_TS(0, "Invalid clamp mode:" + num2str(clampMode))
+			FATAL_ERROR("Invalid clamp mode:" + num2str(clampMode))
 	endswitch
 
 	SetStringInWaveNote(noteWave, NOTE_KEY_PULSE_SPIKE_POSITIONS, NumericWaveToList(spikePositions, ","))
@@ -3755,7 +3755,7 @@ static Function PA_IsDataOnSubPlot(STRUCT PulseAverageSettings &pa, STRUCT Pulse
 	if(displayMode == PA_DISPLAYMODE_IMAGES)
 		return !!(pa.showIndividualPulses * pasi.numEntries[yLoc][xLoc] + pasi.imageAvgDataPresent[yLoc][xLoc] + pasi.imageDeconvDataPresent[yLoc][xLoc])
 	endif
-	ASSERT(0, "Unknown display mode")
+	FATAL_ERROR("Unknown display mode")
 End
 
 static Function PA_DrawXZeroLines(string win, STRUCT PulseAverageSettings &pa, STRUCT PulseAverageSetIndices &pasi, variable displayMode)
@@ -3923,7 +3923,7 @@ static Function PA_AccelerateAppendTracesImpl(string w, string v, string h, vari
 					AppendToGraph/Q/W=$w/L=$v/B=$h/C=(r, g, b, a) aa[0,*;s]/TN=$t[i]
 					break
 				default:
-					ASSERT(0, "Fail")
+					FATAL_ERROR( "Fail")
 					break
 			endswitch
 		while(i)
@@ -3957,7 +3957,7 @@ static Function PA_AccelerateAppendTracesImpl(string w, string v, string h, vari
 					AppendToGraph/Q/W=$w/L=$v/B=$h/C=(r, g, b, a) d[y[i]]/TN=$t[i]
 					break
 				default:
-					ASSERT(0, "Fail")
+					FATAL_ERROR( "Fail")
 					break
 			endswitch
 		while(i)

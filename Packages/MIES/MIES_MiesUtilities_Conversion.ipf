@@ -26,7 +26,7 @@ Function/S ChannelTypeToString(variable channelType)
 		case CHANNEL_TYPE_ASYNC:
 			return "AsyncAD"
 		default:
-			ASSERT(0, "Invalid channelType")
+			FATAL_ERROR("Invalid channelType")
 	endswitch
 End
 
@@ -88,7 +88,7 @@ threadsafe Function GetNumberFromType([variable var, string str, variable xopVar
 				return NUM_ASYNC_CHANNELS
 				break
 			default:
-				ASSERT_TS(0, "invalid type")
+				FATAL_ERROR("invalid type")
 				break
 		endswitch
 	elseif(!ParamIsDefault(var))
@@ -108,7 +108,7 @@ threadsafe Function GetNumberFromType([variable var, string str, variable xopVar
 				return NUM_AD_CHANNELS
 				break
 			default:
-				ASSERT_TS(0, "invalid type")
+				FATAL_ERROR("invalid type")
 				break
 		endswitch
 	elseif(!ParamIsDefault(xopVar))
@@ -121,7 +121,7 @@ threadsafe Function GetNumberFromType([variable var, string str, variable xopVar
 				return NUM_DA_TTL_CHANNELS
 				break
 			default:
-				ASSERT_TS(0, "Invalid type")
+				FATAL_ERROR("Invalid type")
 				break
 		endswitch
 	endif
@@ -220,7 +220,7 @@ Function/S GetAbbreviationForAnalysisFunction(string anaFunc)
 		case "SC_SpikeControl":
 			return "SC"
 		default:
-			ASSERT(0, "Unknown")
+			FATAL_ERROR("Unknown")
 	endswitch
 End
 

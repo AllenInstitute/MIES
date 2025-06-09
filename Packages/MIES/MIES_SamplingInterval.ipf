@@ -284,7 +284,7 @@ Function SI_CreateLookupWave(string device, [variable ignoreChannelOrder])
 		totalNumTTL   = 4
 		totalNumRacks = 2
 	else
-		ASSERT(0, "please fill in the void")
+		FATAL_ERROR("please fill in the void")
 	endif
 
 	if(ignoreChannelOrder)
@@ -501,7 +501,7 @@ Function SI_CalculateMinSampInterval(string device, variable dataAcqOrTP, variab
 			return (channelType == XOP_CHANNEL_TYPE_ADC) ? (HARDWARE_SU_MIN_SAMPINT_ADC * MILLI_TO_MICRO) : (HARDWARE_SU_MIN_SAMPINT_DAC * MILLI_TO_MICRO)
 			break
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 			break
 	endswitch
 End

@@ -163,7 +163,7 @@ threadsafe static Function/WAVE JWN_GetWaveRefFromWaveNote_Impl(WAVE wv, string 
 			container[] = JSON_GetTextWave(jsonID, jsonPath + "/" + num2str(p), ignoreErr = 1)
 			break
 		default:
-			ASSERT_TS(0, "Invalid type")
+			FATAL_ERROR("Invalid type")
 	endswitch
 
 	JSON_Release(jsonID)

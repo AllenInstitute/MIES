@@ -710,7 +710,7 @@ Function P_GetUserAccess(string device, variable headStage, variable pressureMod
 				return ACCESS_REGULATOR
 				break
 			default:
-				ASSERT(0, "Invalid pressure mode")
+				FATAL_ERROR("Invalid pressure mode")
 		endswitch
 	else
 		if(pressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] == PRESSURE_METHOD_ATM)
@@ -740,7 +740,7 @@ Function P_SetPressureValves(string device, variable headStage, variable Access)
 			ONorOFFB = 1
 			break
 		default:
-			ASSERT(0, "Invalid case")
+			FATAL_ERROR("Invalid case")
 	endswitch
 
 	// Set Access for headstage
@@ -1095,7 +1095,7 @@ static Function P_DataAcq(string device, variable headStage)
 
 #endif
 	else
-		ASSERT(0, "unknown hardware")
+		FATAL_ERROR("unknown hardware")
 	endif
 End
 
@@ -1245,7 +1245,7 @@ static Function P_GetPressureForDA(string device, variable headStage, variable p
 
 			break
 		default:
-			ASSERT(0, "Invalid pressure mode")
+			FATAL_ERROR("Invalid pressure mode")
 			break
 	endswitch
 
@@ -1261,7 +1261,7 @@ static Function P_GetPressureForDA(string device, variable headStage, variable p
 		p.last  /= HARDWARE_NI_6001_MIN_SAMPINT
 		// calibrated pressures are already in volts
 	else
-		ASSERT(0, "unsupported hardware")
+		FATAL_ERROR("unsupported hardware")
 	endif
 End
 
@@ -1340,7 +1340,7 @@ static Function P_FillDAQWaves(string device, variable headStage, STRUCT P_Press
 			SetScale/P x, 0, HARDWARE_NI_6001_MIN_SAMPINT * MILLI_TO_ONE, "s", da, ad
 			break
 		default:
-			ASSERT(0, "unsupported hardware")
+			FATAL_ERROR("unsupported hardware")
 			break
 	endswitch
 End
@@ -1438,7 +1438,7 @@ static Function P_TTLforPpulse(string device, variable headStage)
 		rackOneState       = HW_ReadDigital(hwType, deviceID, 4)
 		ITCData[][%TTL_R1] = rackOneState
 	else
-		ASSERT(0, "does currently not work with the ITC18USB as DI/DO channels are different")
+		FATAL_ERROR("does currently not work with the ITC18USB as DI/DO channels are different")
 	endif
 
 	rack = HW_ITC_GetRackForTTLBit(pressureDevice, TTL)
@@ -1449,7 +1449,7 @@ static Function P_TTLforPpulse(string device, variable headStage)
 		rackOneState                                                    = P_UpdateTTLdecimal(pressureDevice, rackOneState, TTL, 1)
 		ITCData[PRESSURE_TTL_HIGH_START, PRESSURE_PULSE_ENDpt][%TTL_R1] = rackOneState
 	else
-		ASSERT(0, "Impossible case")
+		FATAL_ERROR("Impossible case")
 	endif
 End
 
@@ -1598,7 +1598,7 @@ Function P_SetPressureOffset(string device, variable headstage, variable userOff
 			break
 		// steady state methods
 		case PRESSURE_METHOD_ATM:
-			ASSERT(0, "Offset must be ignored for ATM method")
+			FATAL_ERROR("Offset must be ignored for ATM method")
 			break
 		case PRESSURE_METHOD_SEAL:
 			val                                             = pressureDataWv[headstage][%LastPressureCommand] + pressureDataWv[headstage][%UserPressureOffset]
@@ -1616,7 +1616,7 @@ Function P_SetPressureOffset(string device, variable headstage, variable userOff
 			endif
 			break
 		default:
-			ASSERT(0, "unhandled pressure method")
+			FATAL_ERROR("unhandled pressure method")
 			break
 	endswitch
 End
@@ -2414,7 +2414,7 @@ Function P_ButtonProc_UserPressure(STRUCT WMButtonAction &ba) : ButtonControl
 				DisableControls(device, "button_Hardware_PUser_Disable")
 				EnableControls(device, "popup_Settings_UserPressure;Popup_Settings_UserPressure_ADC;button_Hardware_PUser_Enable")
 			else
-				ASSERT(0, "Invalid ctrl")
+				FATAL_ERROR("Invalid ctrl")
 			endif
 			break
 		default:
@@ -2511,7 +2511,7 @@ Function/S P_PressureMethodToString(variable method)
 				return "None"
 			endif
 
-			ASSERT(0, "Unknown pressure method: " + num2str(method))
+			FATAL_ERROR("Unknown pressure method: " + num2str(method))
 	endswitch
 End
 

@@ -228,7 +228,7 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 	selectedHeadstage = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
 
 	if(ParamIsDefault(value))
-		ASSERT(0, "Missing optional parameter value")
+		FATAL_ERROR("Missing optional parameter value")
 	endif
 
 	if(ParamIsDefault(selectAmp))
@@ -480,7 +480,7 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 				AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = value, checkBeforeWrite = checkBeforeWrite)
 				break
 			default:
-				ASSERT(0, "Unknown func: " + num2str(func))
+				FATAL_ERROR("Unknown func: " + num2str(func))
 				break
 		endswitch
 
@@ -597,7 +597,7 @@ static Function AI_UpdateAmpView(string device, variable headStage, [variable fu
 		elseif(!cmpstr(ctrl, "button_DataAcq_WCAuto"))
 			// do nothing
 		else
-			ASSERT(0, "Unhandled control: " + ctrl)
+			FATAL_ERROR("Unhandled control: " + ctrl)
 		endif
 	endfor
 End
@@ -842,7 +842,7 @@ static Function/S AI_GetMCCWinFilePath()
 		endif
 	endfor
 
-	ASSERT(0, "Could not find the MCC application")
+	FATAL_ERROR("Could not find the MCC application")
 	return "ERROR"
 End
 
@@ -909,7 +909,7 @@ threadsafe Function [variable func, variable clampMode] AI_MapControlNameToFunct
 			return [MCC_PIPETTEOFFSET_FUNC, I_CLAMP_MODE]
 		// end IC controls
 		default:
-			ASSERT_TS(0, "Unknown control " + ctrl)
+			FATAL_ERROR("Unknown control " + ctrl)
 			break
 	endswitch
 End
@@ -998,7 +998,7 @@ Function/S AI_MapFunctionConstantToControl(variable func, variable clampMode)
 		case MCC_SECONDARYSIGNALLPF_FUNC:
 			return ""
 		default:
-			ASSERT(0, "Unknown func: " + num2str(func))
+			FATAL_ERROR("Unknown func: " + num2str(func))
 			break
 	endswitch
 End
@@ -1102,7 +1102,7 @@ threadsafe Function/S AI_MapFunctionConstantToName(variable func, variable clamp
 			return "AutoBiasEnable"
 		// end others
 		default:
-			ASSERT_TS(0, "Invalid func: " + num2str(func))
+			FATAL_ERROR("Invalid func: " + num2str(func))
 	endswitch
 End
 
@@ -1190,7 +1190,7 @@ threadsafe Function AI_MapNameToFunctionConstant(string name)
 			return MCC_NO_AUTOBIAS_ENABLE_FUNC
 		// end others
 		default:
-			ASSERT_TS(0, "Invalid name: " + name)
+			FATAL_ERROR("Invalid name: " + name)
 	endswitch
 End
 
@@ -1208,7 +1208,7 @@ Function AI_IsControlFromClampMode(string ctrl, variable clampMode)
 			list = AMPLIFIER_CONTROLS_IC
 			break
 		default:
-			ASSERT(0, "Invalid clamp mode")
+			FATAL_ERROR("Invalid clamp mode")
 	endswitch
 
 	return WhichListItem(ctrl, list, ";", 0, 0) >= 0
@@ -1295,7 +1295,7 @@ static Function/S AI_AmpStorageControlToRowLabel(string ctrl)
 			return ""
 			break
 		default:
-			ASSERT(0, "Unknown control " + ctrl)
+			FATAL_ERROR("Unknown control " + ctrl)
 			break
 	endswitch
 End
@@ -1394,7 +1394,7 @@ threadsafe Function/S AI_GetUnitForFunctionConstant(variable func, variable clam
 			return "On/Off"
 		// end others
 		default:
-			ASSERT_TS(0, "Invalid func: " + num2str(func))
+			FATAL_ERROR("Invalid func: " + num2str(func))
 	endswitch
 End
 
@@ -1414,7 +1414,7 @@ threadsafe Function/WAVE AI_GetFunctionConstantForClampMode(variable clampMode)
 			list = AMPLIFIER_CONTROLS_IC
 			break
 		default:
-			ASSERT_TS(0, "Invalid clamp mode")
+			FATAL_ERROR("Invalid clamp mode")
 	endswitch
 
 	numEntries = ItemsInList(list)
@@ -1698,7 +1698,7 @@ static Function AI_SendToAmp(string device, variable headStage, variable mode, v
 	elseif(accessType == MCC_WRITE)
 		ASSERT(!ParamIsDefault(value), "Value is required for writing")
 	else
-		ASSERT(0, "Impossible case")
+		FATAL_ERROR("Impossible case")
 	endif
 
 	headstageMode = DAG_GetHeadstageMode(device, headStage)
@@ -1826,7 +1826,7 @@ static Function AI_ReadFromMCC(variable func)
 		case MCC_SECONDARYSIGNALLPF_FUNC:
 			return MCC_GetSecondarySignalLPF()
 		default:
-			ASSERT(0, "Invalid func: " + num2str(func))
+			FATAL_ERROR("Invalid func: " + num2str(func))
 			break
 	endswitch
 End
@@ -1901,7 +1901,7 @@ static Function AI_WriteToMCC(variable func, variable value)
 		case MCC_AUTOPIPETTEOFFSET_FUNC:
 			return MCC_AutoPipetteOffset()
 		default:
-			ASSERT(0, "Invalid func: " + num2str(func))
+			FATAL_ERROR("Invalid func: " + num2str(func))
 			break
 	endswitch
 End
@@ -2174,7 +2174,7 @@ Function [STRUCT AxonTelegraph_DataStruct tds] AI_GetTelegraphStruct(variable ax
 		endtry
 	endfor
 
-	ASSERT(0, "Could not query amplifier")
+	FATAL_ERROR("Could not query amplifier")
 End
 
 #else // AMPLIFIER_XOPS_PRESENT

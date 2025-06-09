@@ -332,7 +332,7 @@ static Function UpdateCheckBoxes(string win, string control, variable state)
 		SetCheckBoxState(win, checkbox_equalize, !state)
 		SetCheckBoxState(win, checkbox_downsample, state)
 	else
-		ASSERT(0, "Invalid control")
+		FATAL_ERROR("Invalid control")
 	endif
 
 	UpdatePopupMenuTargetRate(win)

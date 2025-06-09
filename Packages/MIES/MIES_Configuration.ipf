@@ -376,7 +376,7 @@ static Function/S CONF_GetSettingsPath(variable type)
 			path = CONF_AUTO_LOADER_USER_PATH
 			break
 		default:
-			ASSERT(0, "Invalid type parameter")
+			FATAL_ERROR("Invalid type parameter")
 			break
 	endswitch
 
@@ -430,7 +430,7 @@ Function CONF_SaveWindow(string fName)
 	catch
 		errMsg = getRTErrMessage()
 		if(ClearRTError())
-			ASSERT(0, errMsg)
+			FATAL_ERROR(errMsg)
 		else
 			Abort
 		endif
@@ -496,7 +496,7 @@ Function CONF_RestoreWindow(string fName, [string rigFile])
 				wName = GetMainWindow(GetCurrentWindow())
 				wName = CONF_JSONToWindow(wName, restoreMask, jsonID)
 			else
-				ASSERT(0, "Configuration file entry for panel type has an unknown type (" + panelType + ").")
+				FATAL_ERROR("Configuration file entry for panel type has an unknown type (" + panelType + ").")
 			endif
 		endif
 
@@ -507,7 +507,7 @@ Function CONF_RestoreWindow(string fName, [string rigFile])
 			JSON_Release(jsonID)
 		endif
 		if(ClearRTError())
-			ASSERT(0, errMsg)
+			FATAL_ERROR(errMsg)
 		else
 			printf "Configuration restore aborted at file %s.\r", fullFilePath
 			Abort
@@ -575,7 +575,7 @@ static Function CONF_SaveDAEphys(string fName)
 	catch
 		errMsg = getRTErrMessage()
 		if(ClearRTError())
-			ASSERT(0, errMsg)
+			FATAL_ERROR(errMsg)
 		else
 			Abort
 		endif
@@ -614,7 +614,7 @@ Function CONF_PrimeDeviceLists(string device)
 			endif
 			break
 		default:
-			ASSERT(0, "Unknown hardwareType")
+			FATAL_ERROR("Unknown hardwareType")
 	endswitch
 End
 
@@ -771,7 +771,7 @@ Function/S CONF_RestoreDAEphys(variable jsonID, string fullFilePath, [variable m
 		endif
 		errMsg = getRTErrMessage()
 		if(ClearRTError())
-			ASSERT(0, errMsg)
+			FATAL_ERROR(errMsg)
 		else
 			Abort
 		endif
@@ -804,7 +804,7 @@ static Function CONF_ParseJSON(string str)
 		return V_Value
 	catch
 		ClearRTError()
-		ASSERT(0, "The text from the configuration file could not be parsed.\rThe above information helps to find the problematic location.\r")
+		FATAL_ERROR("The text from the configuration file could not be parsed.\rThe above information helps to find the problematic location.\r")
 	endtry
 
 	return NaN
@@ -1194,7 +1194,7 @@ Function/S CONF_JSONToWindow(string wName, variable restoreMask, variable jsonID
 		endif
 		errMsg = getRTErrMessage()
 		if(ClearRTError())
-			ASSERT(0, errMsg)
+			FATAL_ERROR(errMsg)
 		else
 			Abort
 		endif
@@ -1397,7 +1397,7 @@ static Function CONF_RestoreControl(string wName, variable restoreMask, variable
 			elseif(ctrlType == CONTROL_TYPE_LISTBOX)
 			elseif(ctrlType == CONTROL_TYPE_TITLEBOX)
 			else
-				ASSERT(0, "Unknown control type to restore value")
+				FATAL_ERROR("Unknown control type to restore value")
 			endif
 
 		endif
@@ -1461,7 +1461,7 @@ static Function CONF_RestoreControl(string wName, variable restoreMask, variable
 		elseif(ctrlType == CONTROL_TYPE_LISTBOX)
 		elseif(ctrlType == CONTROL_TYPE_TITLEBOX)
 		else
-			ASSERT(0, "Unknown control type to restore value")
+			FATAL_ERROR("Unknown control type to restore value")
 		endif
 
 	endif
@@ -1512,7 +1512,7 @@ Function CONF_AllWindowsToJSON(string wName, variable saveMask, [string excCtrlT
 	catch
 		errMsg = getRTErrMessage()
 		if(ClearRTError())
-			ASSERT(0, errMsg)
+			FATAL_ERROR(errMsg)
 		else
 			Abort
 		endif
@@ -1591,7 +1591,7 @@ Function CONF_WindowToJSON(string wName, variable saveMask, [string excCtrlTypes
 		groupEndingCheck[] = StringEndsWith(duplicateCheck[p], LowerStr(EXPCONFIG_CTRLGROUP_SUFFIX))
 		FindValue/I=1 groupEndingCheck
 		if(V_Value >= 0)
-			ASSERT(0, "Control with [nice] name " + duplicateCheck[V_Value] + " uses a reserved suffix for control groups. Please change it to avoid conflicts.")
+			FATAL_ERROR("Control with [nice] name " + duplicateCheck[V_Value] + " uses a reserved suffix for control groups. Please change it to avoid conflicts.")
 		endif
 
 		radioFunc = GetUserData(wName, "", EXPCONFIG_UDATA_RADIOCOUPLING)
@@ -1673,7 +1673,7 @@ Function CONF_WindowToJSON(string wName, variable saveMask, [string excCtrlTypes
 	catch
 		errMsg = getRTErrMessage()
 		if(ClearRTError())
-			ASSERT(0, errMsg)
+			FATAL_ERROR(errMsg)
 		else
 			Abort
 		endif
@@ -1821,7 +1821,7 @@ static Function CONF_ControlToJSON(string wName, string ctrlName, variable saveM
 				elseif(preferCode == 3)
 					JSON_AddString(jsonID, ctrlPath + EXPCONFIG_FIELD_CTRLSDF, S_DataFolder)
 				else
-					ASSERT(0, "Unknown code for preference in EXPCONFIG_SAVE_ONLY_RELEVANT mode.")
+					FATAL_ERROR("Unknown code for preference in EXPCONFIG_SAVE_ONLY_RELEVANT mode.")
 				endif
 			endif
 		endif
@@ -1967,7 +1967,7 @@ static Function CONF_RestoreHeadstageAssociation(string device, variable jsonID,
 			ampSerialList = AddListItem(num2istr(ampSerial), ampSerialList)
 			ampTitleList  = AddListItem(JSON_GetString(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPTITLE), ampTitleList)
 		else
-			ASSERT(0, "Unexpected entry for headstage data in Headstage Association block")
+			FATAL_ERROR("Unexpected entry for headstage data in Headstage Association block")
 		endif
 	endfor
 
@@ -2383,7 +2383,7 @@ static Function CONF_FindAmpInList(variable ampSerialRef, variable ampChannelIDR
 		endif
 	endfor
 
-	ASSERT(0, "Could not find amplifier")
+	FATAL_ERROR("Could not find amplifier")
 End
 
 static Function CONF_MCC_MidExp(string device, variable headStage, variable jsonID)

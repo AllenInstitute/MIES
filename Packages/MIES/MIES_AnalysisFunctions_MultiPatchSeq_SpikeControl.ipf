@@ -223,7 +223,7 @@ static Function SC_AddPulseRegionLBNEntries(WAVE/T inputLBN, variable pulseIndex
 		elseif(IsTextWave(data))
 			str += TextWaveToList(data, ",")
 		else
-			ASSERT(0, "Unsupported wave type")
+			FATAL_ERROR("Unsupported wave type")
 		endif
 	endif
 
@@ -782,7 +782,7 @@ static Function SC_ReactToQCFailures(string device, variable sweepNo, string par
 				// nothing to do
 				break
 			default:
-				ASSERT(0, "Impossible case")
+				FATAL_ERROR("Impossible case")
 				break
 		endswitch
 	endfor
@@ -849,7 +849,7 @@ Function/S SC_SpikeControl_GetHelp(string name)
 			return "Auto bias modifier value in mV on failing baseline QC."
 			break
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 			break
 	endswitch
 End

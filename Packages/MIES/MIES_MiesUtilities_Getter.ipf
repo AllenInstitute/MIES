@@ -104,7 +104,7 @@ Function GetAnalysisFunctionVersion(variable type)
 		case SC_SPIKE_CONTROL:
 			return SC_SPIKE_CONTROL_VERSION
 		default:
-			ASSERT(0, "Invalid type")
+			FATAL_ERROR("Invalid type")
 			break
 	endswitch
 

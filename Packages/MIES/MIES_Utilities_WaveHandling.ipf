@@ -97,7 +97,7 @@ threadsafe Function EnsureLargeEnoughWave(WAVE wv, [variable indexShouldExist, v
 				wv[][][][oldSizes[CHUNKS],] = initialValue
 				break
 			default:
-				ASSERT_TS(0, "Unsupported dimension")
+				FATAL_ERROR("Unsupported dimension")
 				break
 		endswitch
 	endif
@@ -172,7 +172,7 @@ threadsafe Function GetSizeOfType(WAVE wv)
 	elseif(type & IGOR_TYPE_64BIT_INT)
 		size *= 8
 	else
-		ASSERT_TS(0, "Unexpected type")
+		FATAL_ERROR("Unexpected type")
 	endif
 
 	return size
@@ -682,7 +682,7 @@ Function/WAVE MergeTwoWaves(WAVE wv1, WAVE wv2)
 		elseif(validEntryTwo)
 			result[i] = wv2[i]
 		else
-			ASSERT(0, "Both entries can not be valid.")
+			FATAL_ERROR("Both entries can not be valid.")
 		endif
 	endfor
 
@@ -763,12 +763,12 @@ Function DeleteWavePoint(WAVE wv, variable dim, [variable index, WAVE indices])
 					Redimension/N=(-1, -1, -1, 0) wv
 					break
 				default:
-					ASSERT(0, "Invalid dimension")
+					FATAL_ERROR("Invalid dimension")
 					break
 			endswitch
 		endif
 	else
-		ASSERT(0, "index out of range")
+		FATAL_ERROR("index out of range")
 	endif
 End
 
@@ -926,7 +926,7 @@ threadsafe Function/S WaveText(WAVE/Z w, [variable row, variable col, variable l
 	WAVE/T wv = w
 
 	if(ParamIsDefault(row))
-		ASSERT_TS(0, "Missing row parameter")
+		FATAL_ERROR("Missing row parameter")
 	elseif(ParamIsDefault(col))
 		return wv[row]
 	elseif(ParamIsDefault(layer))
@@ -1232,7 +1232,7 @@ Function DuplicateWaveAndKeepTargetRef(WAVE/Z source, WAVE/Z target)
 			Redimension/N=(DimSize(source, ROWS), DimSize(source, COLS), DimSize(source, LAYERS), DimSize(source, CHUNKS)) target
 			break
 		default:
-			ASSERT(0, "Invalid wave dimension")
+			FATAL_ERROR("Invalid wave dimension")
 			break
 	endswitch
 
@@ -1256,7 +1256,7 @@ Function DuplicateWaveAndKeepTargetRef(WAVE/Z source, WAVE/Z target)
 			Multithread targetW[][][][] = sourceW[p][q][r][s]
 			break
 		default:
-			ASSERT(0, "Unknown wave type")
+			FATAL_ERROR("Unknown wave type")
 	endswitch
 
 	CopyScales source, target
@@ -1278,7 +1278,7 @@ End
 
 threadsafe Function FindNeighbourPrototype(variable var1, variable var2)
 
-	ASSERT_TS(0, "Can't call prototype function")
+	FATAL_ERROR("Can't call prototype function")
 End
 
 /// @brief Return the indizes of elements which need to be dropped so that no
@@ -1416,7 +1416,7 @@ Function GetDecimatedWaveSize(variable numRows, variable decimationFactor, varia
 			decimatedSize = IsEven(decimatedSize) ? decimatedSize : ++decimatedSize
 			return decimatedSize
 		default:
-			ASSERT(0, "Invalid method")
+			FATAL_ERROR("Invalid method")
 			break
 	endswitch
 End
@@ -1492,7 +1492,7 @@ Function ConcatenateWavesWithNoteIndex(WAVE/Z dest, WAVE/Z src)
 			Multithread destWAVE[index, newLastIndex] = srcWAVE[p - index]
 			break
 		default:
-			ASSERT_TS(0, "Unsupported type: " + num2istr(waveTypeOne))
+			FATAL_ERROR("Unsupported type: " + num2istr(waveTypeOne))
 	endswitch
 
 	index = newLastIndex + 1

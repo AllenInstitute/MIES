@@ -648,7 +648,7 @@ Function/WAVE PEXT_SplitToSubMenus(WAVE/Z/T menuList, [variable method])
 
 		Redimension/N=(subIndex) splitMenu
 	else
-		ASSERT(0, "Unknown method for automatically splitting to submenus")
+		FATAL_ERROR("Unknown method for automatically splitting to submenus")
 	endif
 
 	return splitMenu
@@ -715,6 +715,6 @@ Function PEXT_GenerateSubMenuNames(WAVE/Z/T splitMenu, [variable method])
 		endfor
 
 	else
-		ASSERT(0, "Unknown method for automatically generating submenus")
+		FATAL_ERROR("Unknown method for automatically generating submenus")
 	endif
 End

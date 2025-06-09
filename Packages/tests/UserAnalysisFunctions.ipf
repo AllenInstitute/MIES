@@ -46,7 +46,7 @@ Function ValidFunc_V1(string device, variable eventType, WAVE DAQDataWave, varia
 			CHECK_WAVE(DAQDataWave, WAVE_WAVE)
 			break
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 	endswitch
 
 #ifdef TESTS_WITH_SUTTER_HARDWARE
@@ -78,7 +78,7 @@ Function ValidFunc_V2(string device, variable eventType, WAVE DAQDataWave, varia
 			CHECK_WAVE(DAQDataWave, WAVE_WAVE)
 			break
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 	endswitch
 
 #ifdef TESTS_WITH_SUTTER_HARDWARE
@@ -124,7 +124,7 @@ Function ValidMultHS_V1(string device, variable eventType, WAVE DAQDataWave, var
 			CHECK_WAVE(DAQDataWave, WAVE_WAVE)
 			break
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 	endswitch
 
 #ifdef TESTS_WITH_SUTTER_HARDWARE
@@ -407,7 +407,7 @@ Function ValidFunc_V3(string device, STRUCT AnalysisFunction_V3 &s)
 			CHECK_WAVE(GetSweepWave(device, s.sweepNo), TEXT_WAVE)
 			break
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 	endswitch
 
 	// the next sweep can not exist
@@ -504,7 +504,7 @@ Function/S Params5_V3_CheckParam(string name, string params)
 		case "MyNum":
 			var = AFH_GetAnalysisParamNumerical(name, params)
 			if(!IsFinite(var))
-				ASSERT(0, "trying to bug out")
+				FATAL_ERROR("trying to bug out")
 			endif
 		default:
 			// default to passing for other parameters
@@ -523,7 +523,7 @@ Function/S Params5_V3_GetHelp(string name)
 		case "MyStr":
 			return "That is actually a useless parameter"
 		case "MyNum":
-			ASSERT(0, "trying to bug out")
+			FATAL_ERROR("trying to bug out")
 			break
 		default:
 			return ""
@@ -834,7 +834,7 @@ Function AcquisitionStateTrackingFunc(string device, STRUCT AnalysisFunction_V3 
 			expectedAcqState = AS_POST_DAQ
 			break
 		default:
-			ASSERT(0, "Invalid event")
+			FATAL_ERROR("Invalid event")
 	endswitch
 
 	name = "AcqStateTrackingValue_" + AS_StateToString(acqState)
