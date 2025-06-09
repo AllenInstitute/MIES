@@ -273,7 +273,7 @@ threadsafe Function HasOneValidEntry(WAVE wv)
 			endif
 		endfor
 	else
-		ASSERT_TS(0, "Unsupported wave type")
+		FATAL_ERROR("Unsupported wave type")
 	endif
 
 	return 0
@@ -290,7 +290,7 @@ threadsafe Function HasOneFiniteEntry(WAVE wv)
 		return !!V_npnts
 	endif
 
-	ASSERT_TS(0, "Unsupported wave type")
+	FATAL_ERROR("Unsupported wave type")
 End
 
 /// @brief Return true if wave has one infinite entry (Inf, -Inf or NaN)
@@ -305,7 +305,7 @@ threadsafe Function HasOneNonFiniteEntry(WAVE wv)
 		return V_numNaNs != 0 || V_numINFs != 0
 	endif
 
-	ASSERT_TS(0, "Unsupported wave type")
+	FATAL_ERROR("Unsupported wave type")
 End
 
 /// @brief Checks if a string ends with a specific suffix. The check is case-insensitive.

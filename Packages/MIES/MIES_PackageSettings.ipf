@@ -28,7 +28,7 @@ End
 /// @brief This functions should return a JSON ID with the default settings
 Function PS_GenerateSettingsDefaults()
 
-	ASSERT(0, "Can not call prototype")
+	FATAL_ERROR("Can not call prototype")
 End
 
 /// @brief Return a JSON ID with an opened JSON settings file

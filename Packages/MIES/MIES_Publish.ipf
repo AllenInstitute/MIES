@@ -579,7 +579,7 @@ Function PUB_DAQStateChange(string device, variable mode, variable oldState, var
 			newState  = !(newState == TEST_PULSE_NOT_RUNNING)
 			break
 		default:
-			ASSERT(0, "Invalid mode")
+			FATAL_ERROR("Invalid mode")
 	endswitch
 
 	jsonID = PUB_GetJSONTemplate(device, NaN)
@@ -726,7 +726,7 @@ threadsafe static Function PUB_AppendAmplifierSettings(variable jsonID, string p
 		value = ampParamStorageSlice[idx]
 		unit  = AI_GetUnitForFunctionConstant(func, clampMode)
 		if(JSON_Exists(jsonID, path + "/" + name))
-			ASSERT_TS(0, "dup: " + name)
+			FATAL_ERROR("dup: " + name)
 		endif
 
 		PUB_AddValueWithUnit(jsonID, path + "/" + name, value, unit)

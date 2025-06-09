@@ -24,10 +24,11 @@ else
 fi
 
 echo "[lint]" > config.toml
+
+echo "noreturn-func=FATAL_ERROR|SFH_FATAL_ERROR|FAIL" >> config.toml
+
 while read -r line; do
     echo "files = \"$line\"" >> config.toml
 done < <(git ls-files ':(attr:ipt)')
-
-echo "exclude=CodeStyleFallthroughCaseRequireComment" >> config.toml
 
 (cd $top_level && $ipt --arg-file config.toml lint -i)

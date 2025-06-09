@@ -249,7 +249,7 @@ Function PSQ_GetPulseSettingsForType(variable type, STRUCT PSQ_PulseSettings &s)
 			s.usesBaselineChunkEpochs = 1
 			break
 		default:
-			ASSERT(0, "unsupported type")
+			FATAL_ERROR("unsupported type")
 			break
 	endswitch
 
@@ -699,7 +699,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 				chunkStartTime = chunkStartTimeMax
 				break
 			default:
-				ASSERT(0, "Invalid baselineType")
+				FATAL_ERROR("Invalid baselineType")
 		endswitch
 
 		ADC = AFH_GetADCFromHeadstage(device, i)
@@ -933,7 +933,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 
 		return PSQ_BL_FAILED
 	else
-		ASSERT(0, "unknown baseline type")
+		FATAL_ERROR("unknown baseline type")
 	endif
 End
 
@@ -987,7 +987,7 @@ static Function PSQ_GetNumberOfChunks(string device, variable sweepNo, variable 
 		case PSQ_ACC_RES_SMOKE:
 			return 1
 		default:
-			ASSERT(0, "unsupported type")
+			FATAL_ERROR("unsupported type")
 	endswitch
 End
 
@@ -1019,7 +1019,7 @@ static Function PSQ_Calculate(WAVE wv, variable column, variable startTime, vari
 			MatrixOP/FREE result = sqrt(sumSqr(data - avg[0]) / numRows(data))
 			break
 		default:
-			ASSERT(0, "Unknown method")
+			FATAL_ERROR("Unknown method")
 	endswitch
 
 	ASSERT(IsFinite(result[0]), "result must be finite")
@@ -1303,7 +1303,7 @@ Function/WAVE PSQ_CreateOverrideResults(string device, variable headstage, varia
 					layerDimLabels = "BaselineQC;APFrequency;AsyncQC"
 					break
 				default:
-					ASSERT(0, "Invalid opMode")
+					FATAL_ERROR("Invalid opMode")
 			endswitch
 			break
 		case PSQ_SQUARE_PULSE:
@@ -1342,7 +1342,7 @@ Function/WAVE PSQ_CreateOverrideResults(string device, variable headstage, varia
 			layerDimLabels = "BaselineQC;AccessResistance;SteadyStateResistance;AsyncQC"
 			break
 		default:
-			ASSERT(0, "invalid type")
+			FATAL_ERROR("invalid type")
 	endswitch
 
 	WAVE/Z/D wv = GetOverrideResults()
@@ -1490,7 +1490,7 @@ static Function/WAVE PSQ_SearchForSpikes(string device, variable type, WAVE swee
 				endif
 				break
 			default:
-				ASSERT(0, "unsupported type")
+				FATAL_ERROR("unsupported type")
 		endswitch
 
 		if(overrideValue == 0 || overrideValue == 1)
@@ -1558,7 +1558,7 @@ static Function/WAVE PSQ_SearchForSpikes(string device, variable type, WAVE swee
 					numberOfSpikesFound = V_LevelsFound
 				endif
 			else
-				ASSERT(0, "Invalid number of spikes value")
+				FATAL_ERROR("Invalid number of spikes value")
 			endif
 		endif
 	endif
@@ -1865,7 +1865,7 @@ static Function PSQ_DS_GetDAScaleOffset(string device, variable headstage, strin
 		case PSQ_DS_ADAPT:
 			return 0
 		default:
-			ASSERT(0, "unknown opMode")
+			FATAL_ERROR("unknown opMode")
 	endswitch
 End
 
@@ -1906,7 +1906,7 @@ static Function PSQ_GetDefaultSamplingFrequency(string device, variable type)
 				case PSQ_ACC_RES_SMOKE:
 					return 200
 				default:
-					ASSERT(0, "Unknown analysis function")
+					FATAL_ERROR("Unknown analysis function")
 			endswitch
 		case HARDWARE_NI_DAC:
 			switch(type)
@@ -1922,7 +1922,7 @@ static Function PSQ_GetDefaultSamplingFrequency(string device, variable type)
 				case PSQ_ACC_RES_SMOKE:
 					return 250
 				default:
-					ASSERT(0, "Unknown analysis function")
+					FATAL_ERROR("Unknown analysis function")
 			endswitch
 		case HARDWARE_SUTTER_DAC:
 			switch(type)
@@ -1938,10 +1938,10 @@ static Function PSQ_GetDefaultSamplingFrequency(string device, variable type)
 				case PSQ_ACC_RES_SMOKE:
 					return 50
 				default:
-					ASSERT(0, "Unknown analysis function")
+					FATAL_ERROR("Unknown analysis function")
 			endswitch
 		default:
-			ASSERT(0, "Unknown hardware type")
+			FATAL_ERROR("Unknown hardware type")
 	endswitch
 End
 
@@ -1957,7 +1957,7 @@ Function PSQ_GetDefaultSamplingFrequencyForSingleHeadstage(string device)
 		case HARDWARE_SUTTER_DAC:
 			return 50
 		default:
-			ASSERT(0, "Unknown hardware")
+			FATAL_ERROR("Unknown hardware")
 	endswitch
 End
 
@@ -2967,7 +2967,7 @@ static Function [string currentSCI, string RhSuAd, variable headstageContingency
 		case PSQ_DS_FILLIN_PASS:
 			return [PSQ_FMT_LBN_DA_AT_FILLIN_PASS, PSQ_FMT_LBN_DA_AT_RSA_FILLIN_PASS, HCM_INDEP]
 		default:
-			ASSERT(0, "Invalid type: " + num2str(type))
+			FATAL_ERROR("Invalid type: " + num2str(type))
 	endswitch
 End
 
@@ -3032,7 +3032,7 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 						WAVE/Z dataCurrentSCI = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 						break
 					default:
-						ASSERT(0, "Unsupported headstageContigencyMode")
+						FATAL_ERROR("Unsupported headstageContigencyMode")
 				endswitch
 				break
 		endswitch
@@ -3057,7 +3057,7 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 			idx = INDEP_HEADSTAGE
 			break
 		default:
-			ASSERT(0, "Unsupported headstageContigencyMode")
+			FATAL_ERROR("Unsupported headstageContigencyMode")
 	endswitch
 
 	WAVE dataRhSuAd = ListToNumericWave(dataRhSuAdLBN[idx], ";")
@@ -3877,7 +3877,7 @@ static Function/S PSQ_GetHelpCommon(variable type, string name)
 		case "SamplingMultiplier":
 			return "Sampling multiplier, use 1 for no multiplier"
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 	endswitch
 End
 
@@ -3977,7 +3977,7 @@ static Function/S PSQ_CheckParamCommon(string name, STRUCT CheckParametersStruct
 			endif
 			break
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 	endswitch
 End
 
@@ -4063,7 +4063,7 @@ Function/S PSQ_DAScale_GetHelp(string name)
 		case "ShowPlot":
 			return "Sub and Supra: Show the resistance (\"Sub\") or the f-I (\"Supra\") plot, defaults to true."
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 	endswitch
 End
 
@@ -4160,7 +4160,7 @@ Function/S PSQ_DAScale_CheckParam(string name, STRUCT CheckParametersStruct &s)
 			endif
 			break
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 			break
 	endswitch
 
@@ -4343,7 +4343,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 			cdp.dascaleNegativeSlopePercent = dascaleNegativeSlopePercent
 			break
 		default:
-			ASSERT(0, "Invalid opMode")
+			FATAL_ERROR("Invalid opMode")
 	endswitch
 
 	switch(s.eventType)
@@ -4544,7 +4544,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 					WAVE DAScales = futureDAScales
 					break
 				default:
-					ASSERT(0, "Invalid opMode")
+					FATAL_ERROR("Invalid opMode")
 			endswitch
 
 			PGC_SetAndActivateControl(device, "check_Settings_ITITP", val = 1)
@@ -4616,7 +4616,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 
 					break
 				default:
-					ASSERT(0, "Invalid opMode")
+					FATAL_ERROR("Invalid opMode")
 			endswitch
 
 			WAVE result = LBN_GetNumericWave()
@@ -4761,7 +4761,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 				elseif(!cmpstr(opMode, PSQ_DS_ADAPT))
 					// nothing to do
 				else
-					ASSERT(0, "Invalid opMode")
+					FATAL_ERROR("Invalid opMode")
 				endif
 			endif
 
@@ -4823,14 +4823,14 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 						endif
 
 					else
-						ASSERT(0, "Unknown PSQ_RESULTS_XXX state")
+						FATAL_ERROR("Unknown PSQ_RESULTS_XXX state")
 					endif
 
 					PSQ_DS_CreateSurveyPlotForUser(device, s.sweepNo, s.headstage)
 
 					break
 				default:
-					ASSERT(0, "Invalid opMode")
+					FATAL_ERROR("Invalid opMode")
 			endswitch
 
 			break
@@ -4865,7 +4865,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 					setPassed = PSQ_DS_AdaptiveIsFinished(device, s.sweepNo, s.headstage, numSweepsWithSaturation)
 					break
 				default:
-					ASSERT(0, "Invalid opMode")
+					FATAL_ERROR("Invalid opMode")
 			endswitch
 
 			sprintf msg, "Set has %s\r", ToPassFail(setPassed)
@@ -4919,7 +4919,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 						[type, DAScale] = PSQ_DS_AD_ParseFutureDAScaleEntry(DAScaleWithType[index])
 						break
 					default:
-						ASSERT(0, "Invalid opMode")
+						FATAL_ERROR("Invalid opMode")
 				endswitch
 
 				strswitch(offsetOp)
@@ -4930,7 +4930,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 						DAScale = DAScale * (1 + daScaleModifier) * daScaleOffset
 						break
 					default:
-						ASSERT(0, "Invalid case")
+						FATAL_ERROR("Invalid case")
 						break
 				endswitch
 
@@ -4980,7 +4980,7 @@ Function/S PSQ_SquarePulse_GetHelp(string name)
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_SQUARE_PULSE, name)
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 	endswitch
 End
 
@@ -4994,7 +4994,7 @@ Function/S PSQ_SquarePulse_CheckParam(string name, STRUCT CheckParametersStruct 
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s)
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 	endswitch
 End
 
@@ -5156,7 +5156,7 @@ Function PSQ_SquarePulse(string device, STRUCT AnalysisFunction_V3 &s)
 					stepsize                = PSQ_SP_INIT_AMP_m50
 					oorDAScale[s.headstage] = SetDAScale(device, s.sweepNo, s.headstage, absolute = DAScale + stepsize, limitCheck = limitCheck)
 				else
-					ASSERT(0, "Unknown stepsize")
+					FATAL_ERROR("Unknown stepsize")
 				endif
 			else // headstage did not spike
 				if(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_m50))
@@ -5167,7 +5167,7 @@ Function PSQ_SquarePulse(string device, STRUCT AnalysisFunction_V3 &s)
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_p100))
 					// do nothing
 				else
-					ASSERT(0, "Unknown stepsize")
+					FATAL_ERROR("Unknown stepsize")
 				endif
 
 				oorDAScale[s.headstage] = SetDAScale(device, s.sweepNo, s.headstage, absolute = DAScale + stepsize, limitCheck = limitCheck)
@@ -5248,7 +5248,7 @@ Function/S PSQ_Rheobase_GetHelp(string name)
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_RHEOBASE, name)
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 	endswitch
 End
 
@@ -5263,7 +5263,7 @@ Function/S PSQ_Rheobase_CheckParam(string name, STRUCT CheckParametersStruct &s)
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s)
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 	endswitch
 End
 
@@ -5548,7 +5548,7 @@ Function PSQ_Rheobase(string device, STRUCT AnalysisFunction_V3 &s)
 
 					DAScale = PSQ_RB_DASCALE_STEP_SMALL
 				else
-					ASSERT(0, "Unknown step size")
+					FATAL_ERROR("Unknown step size")
 				endif
 			endif
 
@@ -5699,7 +5699,7 @@ Function/S PSQ_Ramp_GetHelp(string name)
 			return "Number of ramp sweeps that must pass for the set to pass.\r" \
 			       + "Defaults to " + num2str(PSQ_RA_NUM_SWEEPS_PASS) + "."
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 	endswitch
 End
 
@@ -5729,7 +5729,7 @@ Function/S PSQ_Ramp_CheckParam(string name, STRUCT CheckParametersStruct &s)
 			endif
 			break
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 			break
 	endswitch
 End
@@ -6061,7 +6061,7 @@ Function PSQ_Ramp(string device, STRUCT AnalysisFunction_V3 &s)
 					PSQ_Ramp_AddEpoch(device, s.headstage, scaledChannelDA, "Name=DA Suppression", "RA_DS", fifoPos, DimSize(channelDA, ROWS) - 1)
 				endif
 			else
-				ASSERT(0, "Unknown hardware type")
+				FATAL_ERROR("Unknown hardware type")
 			endif
 
 			// recalculate pulse duration
@@ -6208,7 +6208,7 @@ Function/S PSQ_CR_BoundsActionToString(variable boundsAction)
 		case PSQ_CR_RERUN:
 			return "PSQ_CR_RERUN"
 		default:
-			ASSERT(0, "Invalid case")
+			FATAL_ERROR("Invalid case")
 	endswitch
 End
 
@@ -6265,7 +6265,7 @@ static Function PSQ_CR_DetermineScalingFactor(STRUCT ChirpBoundsInfo &lowerInfo,
 		case PSQ_CR_BEM_DEPOLARIZED:
 			return upperInfo.centerFac
 		default:
-			ASSERT(0, "Invalid case")
+			FATAL_ERROR("Invalid case")
 	endswitch
 End
 
@@ -6351,7 +6351,7 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 			lowerInfo.state = "__"
 			break
 		default:
-			ASSERT(0, "Invalid case")
+			FATAL_ERROR("Invalid case")
 	endswitch
 
 	boundsAction = PSQ_CR_DetermineBoundsActionFromState(upperInfo.state, lowerInfo.state)
@@ -6400,7 +6400,7 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 
 				break
 			default:
-				ASSERT(0, "Invalid case")
+				FATAL_ERROR("Invalid case")
 		endswitch
 
 		graph = "ChirpVisDebugGraph_" + num2str(sweepNo)
@@ -6430,7 +6430,7 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 			endif
 			break
 		default:
-			ASSERT(0, "impossible case")
+			FATAL_ERROR("impossible case")
 	endswitch
 
 	WAVE result = LBN_GetNumericWave()
@@ -6454,7 +6454,7 @@ static Function/S PSQ_CR_BoundsEvaluationModeToString(variable val)
 		case PSQ_CR_BEM_DEPOLARIZED:
 			return "Depolarized"
 		default:
-			ASSERT(0, "Invalid value: " + num2str(val))
+			FATAL_ERROR("Invalid value: " + num2str(val))
 	endswitch
 End
 
@@ -6468,7 +6468,7 @@ static Function PSQ_CR_ParseBoundsEvaluationModeString(string str)
 		case "Depolarized":
 			return PSQ_CR_BEM_DEPOLARIZED
 		default:
-			ASSERT(0, "Invalid value: " + str)
+			FATAL_ERROR("Invalid value: " + str)
 	endswitch
 End
 
@@ -6581,7 +6581,7 @@ Function/S PSQ_Chirp_GetHelp(string name)
 			return "Use the average voltage of a passing True RMS voltage set as Autobias targetV [mV] " + \
 			       "instead of \"AutobiasTargetVAtSetEnd\" in POST_SET_EVENT. Defaults to on."
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 			break
 	endswitch
 End
@@ -6658,7 +6658,7 @@ Function/S PSQ_Chirp_CheckParam(string name, STRUCT CheckParametersStruct &s)
 			endif
 			break
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 			break
 	endswitch
 End
@@ -7179,7 +7179,7 @@ Function PSQ_Chirp(string device, STRUCT AnalysisFunction_V3 &s)
 				endif
 				break
 			default:
-				ASSERT(0, "impossible case")
+				FATAL_ERROR("impossible case")
 		endswitch
 
 		ReportOutOfRangeDAScale(device, s.sweepNo, PSQ_CHIRP, oorDAScale)
@@ -7456,7 +7456,7 @@ Function/S PSQ_PipetteInBath_CheckParam(string name, STRUCT CheckParametersStruc
 			endif
 			break
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 	endswitch
 End
 
@@ -7479,7 +7479,7 @@ Function/S PSQ_PipetteInBath_GetHelp(string name)
 		case "MaxPipetteResistance":
 			return "Maximum allowed pipette resistance [MΩ]"
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 	endswitch
 End
 
@@ -7910,7 +7910,7 @@ Function/S PSQ_SealEvaluation_CheckParam(string name, STRUCT CheckParametersStru
 			endif
 			break
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 	endswitch
 End
 
@@ -7932,7 +7932,7 @@ Function/S PSQ_SealEvaluation_GetHelp(string name)
 		case "TestPulseGroupSelector":
 			return "Group(s) which have their resistance evaluated: One of Both/First/Second, defaults to Both"
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 	endswitch
 End
 
@@ -8096,7 +8096,7 @@ Function PSQ_SealEvaluation(string device, STRUCT AnalysisFunction_V3 &s)
 					sprintf formula, "store(\"Steady state resistance (group B)\", tp(tpss(), select(selchannels(AD), selsweeps(%d), selvis(all)), [0]))", s.sweepNo
 					break
 				default:
-					ASSERT(0, "Invalid testpulseGroupSel: " + num2str(testpulseGroupSel))
+					FATAL_ERROR("Invalid testpulseGroupSel: " + num2str(testpulseGroupSel))
 			endswitch
 
 			databrowser = PSQ_ExecuteSweepFormula(device, formula)
@@ -8128,7 +8128,7 @@ Function PSQ_SealEvaluation(string device, STRUCT AnalysisFunction_V3 &s)
 					baselineQCPassed = baselineQCPassedChunk0LBN[INDEP_HEADSTAGE] && baselineQCPassedChunk1LBN[INDEP_HEADSTAGE]
 					break
 				default:
-					ASSERT(0, "Invalid testpulseGroupSel")
+					FATAL_ERROR("Invalid testpulseGroupSel")
 			endswitch
 
 			ASSERT(IsFinite(baselineQCPassed), "Invalid baselineQCpassed")
@@ -8168,7 +8168,7 @@ Function PSQ_SealEvaluation(string device, STRUCT AnalysisFunction_V3 &s)
 						sealResistanceB = overrideResults[0][count][2]
 						break
 					default:
-						ASSERT(0, "Invalid testpulseGroupSel")
+						FATAL_ERROR("Invalid testpulseGroupSel")
 				endswitch
 			endif
 			// END TEST
@@ -8194,7 +8194,7 @@ Function PSQ_SealEvaluation(string device, STRUCT AnalysisFunction_V3 &s)
 					sealResistanceMax = max(sealResistanceA, sealResistanceB)
 					break
 				default:
-					ASSERT(0, "Invalid testpulseGroupSel")
+					FATAL_ERROR("Invalid testpulseGroupSel")
 			endswitch
 
 			WAVE sealResistanceMaxLBN = LBN_GetNumericWave()
@@ -8216,7 +8216,7 @@ Function PSQ_SealEvaluation(string device, STRUCT AnalysisFunction_V3 &s)
 					sealResistanceQCPassed = (sealResistanceA >= sealThreshold) || (sealResistanceB >= sealThreshold)
 					break
 				default:
-					ASSERT(0, "Invalid testpulseGroupSel")
+					FATAL_ERROR("Invalid testpulseGroupSel")
 			endswitch
 
 			WAVE sealResistanceQCLBN = LBN_GetNumericWave()
@@ -8380,7 +8380,7 @@ static Function PSQ_SE_ParseTestpulseGroupSelection(string str)
 		case "Second":
 			return PSQ_SE_TGS_SECOND
 		default:
-			ASSERT(0, "Invalid value: " + str)
+			FATAL_ERROR("Invalid value: " + str)
 	endswitch
 End
 
@@ -8427,7 +8427,7 @@ Function/S PSQ_TrueRestingMembranePotential_CheckParam(string name, STRUCT Check
 			endif
 			break
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 	endswitch
 End
 
@@ -8456,7 +8456,7 @@ Function/S PSQ_TrueRestingMembranePotential_GetHelp(string name)
 		case "InterTrialInterval":
 			return "Inter trial interval to set, defaults to 10 [s]"
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 	endswitch
 End
 
@@ -9090,7 +9090,7 @@ Function/S PSQ_AccessResistanceSmoke_CheckParam(string name, STRUCT CheckParamet
 			endif
 			break
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 			break
 	endswitch
 End
@@ -9115,7 +9115,7 @@ Function/S PSQ_AccessResistanceSmoke_GetHelp(string name)
 		case "MaxAccessToSteadyStateResistanceRatio":
 			return "Maximum allowed ratio of access to steady state resistance [%]"
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 			break
 	endswitch
 End

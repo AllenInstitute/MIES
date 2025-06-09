@@ -41,7 +41,7 @@ Function SaveExperimentSpecial(variable mode)
 		showSaveDialog   = 0
 		useNewNWBFile    = 0
 	else
-		ASSERT(0, "Unknown mode")
+		FATAL_ERROR("Unknown mode")
 	endif
 
 	// We want never to loose data so we do the following:

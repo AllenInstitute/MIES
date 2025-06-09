@@ -138,7 +138,7 @@ static Function/S ED_HeadstageContigencyModeToString(variable mode)
 		case HCM_EMPTY:
 			return ""
 		default:
-			ASSERT(0, "Invalid mode")
+			FATAL_ERROR("Invalid mode")
 	endswitch
 End
 

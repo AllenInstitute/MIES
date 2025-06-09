@@ -189,7 +189,7 @@ Function DQ_StopDAQ(string device, variable stopReason, [variable startTPAfterDA
 		case DAQ_NOT_RUNNING:
 			return DAQ_NOT_RUNNING
 		default:
-			ASSERT(0, "Invalid run mode")
+			FATAL_ERROR("Invalid run mode")
 	endswitch
 End
 

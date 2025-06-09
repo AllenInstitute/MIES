@@ -184,7 +184,7 @@ static Function CheckTestPulseLikeEpochs(string device, variable testpulseGroupS
 			CheckUserEpochs(device, {535, 540, 555, 560, 575, 580, 1155, 1160, 1175, 1180, 1195, 1200}, EPOCH_SHORTNAME_USER_PREFIX + "TP%d_B1")
 			break
 		default:
-			ASSERT(0, "Invalid testpulseGroupSel")
+			FATAL_ERROR("Invalid testpulseGroupSel")
 	endswitch
 
 End
@@ -205,7 +205,7 @@ static Function CheckBaselineChunks(string device, variable testpulseGroupSel)
 			CheckPSQChunkTimes(device, {20, 520, 640, 1140})
 			break
 		default:
-			ASSERT(0, "Invalid testpulseGroupSel")
+			FATAL_ERROR("Invalid testpulseGroupSel")
 	endswitch
 
 End

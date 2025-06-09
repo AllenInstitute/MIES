@@ -160,7 +160,7 @@ Function/WAVE GetPossiblePathsToGit()
 #elif defined(MACINTOSH)
 	Make/T/FREE paths = {"Macintosh HD:usr:bin:git"}
 #else
-	ASSERT(0, "Unsupported OS")
+	FATAL_ERROR("Unsupported OS")
 #endif
 
 	return paths
@@ -332,7 +332,7 @@ static Function ExecuteGitForMIESVersion(string gitPathOrName, string gitDir, st
 	DEBUGPRINT("Cmd to execute: ", str = cmd)
 	ExecuteScriptText/UNQ/Z cmd
 #else
-	ASSERT(0, "Unsupported OS")
+	FATAL_ERROR("Unsupported OS")
 #endif
 
 	return 0

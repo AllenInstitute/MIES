@@ -575,7 +575,7 @@ Function SBE_PopMenu_ExportTargetAxis(STRUCT WMPopupAction &pa) : PopupMenuContr
 					list = "setvar_sweep_export_new_x_name"
 					break
 				default:
-					ASSERT(0, "Unknown control name")
+					FATAL_ERROR("Unknown control name")
 					break
 			endswitch
 

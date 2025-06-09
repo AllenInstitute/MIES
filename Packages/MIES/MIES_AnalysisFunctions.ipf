@@ -151,7 +151,7 @@
 ///                 return "This parameter delivers food right to your door"
 ///                 break
 ///            default:
-///                 ASSERT(0, "Unimplemented for parameter " + name)
+///                 FATAL_ERROR( "Unimplemented for parameter " + name)
 ///                 break
 ///        endswitch
 ///    End
@@ -488,7 +488,7 @@ Function switchHolding(variable Vm2)
 				elseif(clampMode == I_CLAMP_MODE)
 					PGC_SetAndActivateControl(DEFAULT_DEVICE, "setvar_DataAcq_Hold_IC", val = Vm2)
 				else
-					ASSERT(0, "Unsupported clamp mode")
+					FATAL_ERROR("Unsupported clamp mode")
 				endif
 			endif
 		endfor
@@ -652,7 +652,7 @@ Function AdjustDAScale(string device, variable eventType, WAVE DAQDataWave, vari
 			DAScalesIndex[headstage] += 1
 			break
 		default:
-			ASSERT(0, "Unknown eventType")
+			FATAL_ERROR("Unknown eventType")
 			break
 	endswitch
 
@@ -886,7 +886,7 @@ Function SetDAScaleModOp(string device, variable sweepNo, variable headstage, va
 		case "*":
 			return SetDAScale(device, sweepNo, headstage, relative = invert ? (1 / modifier) : modifier, roundTopA = roundTopA, limitCheck = limitCheck)
 		default:
-			ASSERT(0, "Invalid operator")
+			FATAL_ERROR("Invalid operator")
 			break
 	endswitch
 End
@@ -984,7 +984,7 @@ Function/S ReachTargetVoltage_GetHelp(string name)
 		case "IndexingEndStimsetAllIC":
 			return "Indexing end stimulus set for all IC headstages"
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 			break
 	endswitch
 End
@@ -1011,7 +1011,7 @@ Function/S ReachTargetVoltage_CheckParam(string name, STRUCT CheckParametersStru
 
 			break
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 			break
 	endswitch
 End
@@ -1319,7 +1319,7 @@ Function ReportOutOfRangeDAScale(string device, variable sweepNo, variable anaFu
 			ED_AddEntryToLabnotebook(device, LBN_DASCALE_OUT_OF_RANGE, oorDAScale, unit = LABNOTEBOOK_BINARY_UNIT)
 			break
 		default:
-			ASSERT(0, "Unknown analysis function")
+			FATAL_ERROR("Unknown analysis function")
 	endswitch
 
 	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
@@ -1536,7 +1536,7 @@ Function SetControlInEvent(string device, STRUCT AnalysisFunction_V3 &s)
 						ReplaceNotebookText(win, NormalizeToEOL(valueStr, "\r"))
 						break
 					default:
-						ASSERT(0, "Unexpected window type")
+						FATAL_ERROR("Unexpected window type")
 				endswitch
 			endfor
 		endfor

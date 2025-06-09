@@ -115,7 +115,7 @@ Function AFM_CallAnalysisFunctions(string device, variable eventType)
 				WAVE dataWave = sweepWave
 				break
 			default:
-				ASSERT(0, "Invalid eventType")
+				FATAL_ERROR("Invalid eventType")
 				break
 		endswitch
 
@@ -166,7 +166,7 @@ Function AFM_CallAnalysisFunctions(string device, variable eventType)
 
 				ret = f3(device, s); AbortOnRTE
 			else
-				ASSERT(0, "impossible case")
+				FATAL_ERROR("impossible case")
 			endif
 		catch
 			msg = GetRTErrMessage()

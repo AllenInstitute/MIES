@@ -167,7 +167,7 @@ Function DP_PopMenuProc_Selection(STRUCT WMPopupAction &pa) : PopupMenuControl
 			elseif(!cmpstr(popStr, "All"))
 				listSelWave = SetBit(listSelWave[p], LISTBOX_CHECKBOX_SELECTED)
 			else
-				ASSERT(0, "unknown selection")
+				FATAL_ERROR("unknown selection")
 			endif
 			break
 		default:

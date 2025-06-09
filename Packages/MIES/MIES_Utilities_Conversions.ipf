@@ -460,7 +460,7 @@ threadsafe Function/S DAQRunModeToString(variable runMode)
 			return "DAQ_FG_SINGLE_DEVICE"
 			break
 		default:
-			ASSERT_TS(0, "Unknown run mode")
+			FATAL_ERROR("Unknown run mode")
 			break
 	endswitch
 End
@@ -486,7 +486,7 @@ threadsafe Function/S TestPulseRunModeToString(variable runMode)
 			return "TEST_PULSE_FG_SINGLE_DEVICE"
 			break
 		default:
-			ASSERT_TS(0, "Unknown run mode")
+			FATAL_ERROR("Unknown run mode")
 			break
 	endswitch
 End
@@ -706,7 +706,7 @@ Function WaveTypeStringToNumber(string type)
 		case "NT_I8":
 			return 0x08
 		default:
-			ASSERT(0, "Type is not supported: " + type)
+			FATAL_ERROR("Type is not supported: " + type)
 	endswitch
 End
 
@@ -770,7 +770,7 @@ Function/WAVE JSONToWave(string str, [string path])
 			WAVE data = container
 			break
 		default:
-			ASSERT(0, "Type is not supported: " + type)
+			FATAL_ERROR("Type is not supported: " + type)
 	endswitch
 
 	WAVE/Z/D dimSizes = JSON_GetWave(jsonID, path + "/dimension/size", waveMode = 1, ignoreErr = 1)
@@ -823,7 +823,7 @@ Function/WAVE JSONToWave(string str, [string path])
 					SetScale/P t, dimOffsets[i], dimDeltas[i], dimUnits[i], data
 					break
 				default:
-					ASSERT(0, "Unsupported dimension")
+					FATAL_ERROR("Unsupported dimension")
 			endswitch
 		endfor
 	endif

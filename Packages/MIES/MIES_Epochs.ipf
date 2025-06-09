@@ -1939,7 +1939,7 @@ static Function EP_AddRecreatedUserEpochs_AddTPUserEpochs(WAVE/T epochWave, STRU
 			expectedNumTestpulses = PSQ_AccessResistanceSmoke_GetNumberOfTestpulses(params)
 			break
 		default:
-			ASSERT(0, "Unsupported analysis function type")
+			FATAL_ERROR("Unsupported analysis function type")
 	endswitch
 
 	DAC               = s.DACList[0]

@@ -44,7 +44,7 @@ Function/S UniqueFileOrFolder(string symbPath, string baseName, [string suffix])
 
 	while(i < 10000)
 
-	ASSERT(0, "Could not find a unique file with 10000 trials")
+	FATAL_ERROR("Could not find a unique file with 10000 trials")
 End
 
 /// @brief Return true if the given absolute path refers to an existing drive letter
@@ -175,7 +175,7 @@ threadsafe Function/S GetHFSPath(string path)
 #elif defined(MACINTOSH)
 	return ParseFilePath(5, path, "*", 0, 0)
 #else
-	ASSERT_TS(0, "Unsupported OS")
+	FATAL_ERROR("Unsupported OS")
 #endif
 End
 
@@ -355,7 +355,7 @@ static Function [WAVE/Z/T filesResolved, WAVE/Z/T foldersResolved] GetAllFilesAl
 			EnsureLargeEnoughWave(foldersResolved, indexShouldExist = numFolders)
 			foldersResolved[numFolders++] = S_path
 		else
-			ASSERT(0, "Unexpected file type")
+			FATAL_ERROR("Unexpected file type")
 		endif
 	endfor
 
@@ -543,7 +543,7 @@ Function/WAVE LoadTextFileToWave(string fullFilePath, string sep)
 
 	if(V_flag > 1)
 		SetDataFolder saveDFR
-		ASSERT(0, "Expected to load a single text wave")
+		FATAL_ERROR("Expected to load a single text wave")
 	endif
 
 	WAVE/T wv = $StringFromList(0, S_waveNames)
@@ -562,7 +562,7 @@ Function FileExists(string filepath)
 	try
 		GetFileFolderInfo/Q/Z filepath; AbortOnRTE
 	catch
-		ASSERT(0, "Error: " + GetRTErrMessage())
+		FATAL_ERROR("Error: " + GetRTErrMessage())
 	endtry
 
 	return !V_Flag && V_IsFile
@@ -576,7 +576,7 @@ Function FolderExists(string folderpath)
 	try
 		GetFileFolderInfo/Q/Z folderpath; AbortOnRTE
 	catch
-		ASSERT(0, "Error: " + GetRTErrMessage())
+		FATAL_ERROR("Error: " + GetRTErrMessage())
 	endtry
 
 	return !V_Flag && V_isFolder
@@ -590,7 +590,7 @@ Function/S GetFileVersion(string filepath)
 	try
 		GetFileFolderInfo/Q/Z filepath; AbortOnRTE
 	catch
-		ASSERT(0, "Error: " + GetRTErrMessage())
+		FATAL_ERROR("Error: " + GetRTErrMessage())
 	endtry
 
 	if(V_flag || !V_isFile)
@@ -609,7 +609,7 @@ Function GetFileSize(string filepath)
 	try
 		GetFileFolderInfo/Q/Z filepath; AbortOnRTE
 	catch
-		ASSERT(0, "Error: " + GetRTErrMessage())
+		FATAL_ERROR("Error: " + GetRTErrMessage())
 	endtry
 
 	if(V_flag || !V_isFile)
@@ -641,7 +641,7 @@ Function/S HFSPathToNative(string path)
 #elif defined(WINDOWS)
 	return HFSPathToWindows(path)
 #else
-	ASSERT(0, "Unsupported OS")
+	FATAL_ERROR("Unsupported OS")
 #endif
 End
 
@@ -752,7 +752,7 @@ End
 
 threadsafe Function MU_GetFreeDiskSpace(string path)
 
-	ASSERT_TS(0, "Not implemented")
+	FATAL_ERROR("Not implemented")
 End
 
 #endif // MACINTOSH

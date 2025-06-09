@@ -178,7 +178,7 @@ static Function [variable value, string sValue] CHI_GetInstallationConfigProp(st
 	try
 		objType = JSON_GetType(jsonId, jPath)
 	catch
-		ASSERT(0, "The following path could not be found in installation configuration: " + jPath)
+		FATAL_ERROR("The following path could not be found in installation configuration: " + jPath)
 	endtry
 	if(objType == JSON_NUMERIC)
 		value = JSON_GetVariable(jsonId, jPath)
@@ -190,7 +190,7 @@ static Function [variable value, string sValue] CHI_GetInstallationConfigProp(st
 		return [NaN, sValue]
 	endif
 
-	ASSERT(0, "Unsupported JSON object type")
+	FATAL_ERROR("Unsupported JSON object type")
 End
 
 /// @return 1 if MIES was installed with hardware support, 0 otherwise

@@ -1267,7 +1267,7 @@ static Function WB_NoiseSegment(STRUCT SegmentParameters &pa)
 			magphase[1, Inf] = cmplx(1 / x, enoise(Pi, pa.noiseGenMode))
 			break
 		default:
-			ASSERT(0, "Invalid noise type")
+			FATAL_ERROR("Invalid noise type")
 			break
 	endswitch
 
@@ -1425,7 +1425,7 @@ static Function [WAVE/D inflectionPoints, WAVE/D inflectionIndices] WB_TrigCalcu
 			offset = 1 / 2
 			break
 		default:
-			ASSERT(0, "Unknown trigFuncType")
+			FATAL_ERROR("Unknown trigFuncType")
 	endswitch
 
 	[lowerBound, upperBound] = WB_TrigGetBoundsForInflectionPoints(pa, offset)
@@ -1513,7 +1513,7 @@ static Function WB_CreatePulse(WAVE wv, variable pulseType, variable amplitude, 
 		ASSERT(last > first, "last must be > first")
 		wv[first, last] = amplitude * (p - first) / (last - first)
 	else
-		ASSERT(0, "unknown pulse type")
+		FATAL_ERROR("unknown pulse type")
 	endif
 End
 
@@ -1540,7 +1540,7 @@ Function/S WB_ToEpochTypeString(variable epochType)
 		case EPOCH_TYPE_COMBINE:
 			return "Combine"
 		default:
-			ASSERT(0, "Unknown epoch: " + num2str(epochType))
+			FATAL_ERROR("Unknown epoch: " + num2str(epochType))
 			return ""
 	endswitch
 End
@@ -1568,7 +1568,7 @@ Function WB_ToEpochType(string epochTypeStr)
 		case "Combine":
 			return EPOCH_TYPE_COMBINE
 		default:
-			ASSERT(0, "Unknown epoch: " + epochTypeStr)
+			FATAL_ERROR("Unknown epoch: " + epochTypeStr)
 			return NaN
 	endswitch
 End
@@ -1660,7 +1660,7 @@ Function/S WB_GetWaveNoteEntry(string text, variable entryType, [string key, var
 			re = "^Stimset;"
 			break
 		default:
-			ASSERT(0, "Unknown entryType")
+			FATAL_ERROR("Unknown entryType")
 	endswitch
 
 	match = GrepList(text, re, 0, "\r")
@@ -1733,7 +1733,7 @@ static Function [WAVE/D pulseStartTimes, WAVE/D pulseStartIndices, WAVE/D pulseE
 			// user defined duration
 			pa.numberOfPulses = pa.frequency * pa.duration * MILLI_TO_ONE
 		else
-			ASSERT(0, "Invalid mode")
+			FATAL_ERROR("Invalid mode")
 		endif
 
 		if(!(pa.duration > 0))
@@ -1961,7 +1961,7 @@ Function WB_UpdateEpochCombineList(WAVE/T epochCombineList, variable channelType
 		elseif(WaveExists(stimset))
 			creationDates[i] = CreationDate(stimset)
 		else
-			ASSERT(0, "Missing stimset/param wave")
+			FATAL_ERROR("Missing stimset/param wave")
 		endif
 	endfor
 

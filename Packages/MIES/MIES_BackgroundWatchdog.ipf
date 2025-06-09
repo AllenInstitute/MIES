@@ -46,7 +46,7 @@ static Function SetValDisplay(string win, string control, [variable var, string 
 		ASSERT(ParamIsDefault(format), "Unexpected parameter combination")
 		formattedString = str
 	else
-		ASSERT(0, "Unexpected parameter combination")
+		FATAL_ERROR("Unexpected parameter combination")
 	endif
 
 	// Don't update if the content does not change, prevents flickering
