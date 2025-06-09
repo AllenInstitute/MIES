@@ -1422,8 +1422,8 @@ End
 /// @returns Text wave with epoch information, only rows fitting the input parameters are returned. Can also be a null wave.
 Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, variable channelNumber, string shortname, [variable treelevel, WAVE/Z/T epochsWave, DFREF sweepDFR])
 
-	variable index, epochCnt, midSweep
-	string regexp
+	variable midSweep, found
+	string key
 
 	ASSERT(channelType == XOP_CHANNEL_TYPE_DAC || channelType == XOP_CHANNEL_TYPE_ADC || channelType == XOP_CHANNEL_TYPE_TTL, "Unsupported channel type")
 	treelevel = ParamIsDefault(treelevel) ? NaN : treelevel
@@ -1436,6 +1436,30 @@ Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sw
 	if(ParamIsDefault(sweepDFR))
 		DFREF sweepDFR = $""
 	endif
+
+	if(midSweep)
+		return EP_GetEpochsNoCache(numericalValues, textualValues, sweepNo, channelType, channelNumber, shortname, treelevel, epochsWave, midSweep, sweepDFR)
+	endif
+
+	key = CA_CalculateEpochsKey(numericalvalues, textualValues, sweepNo, channelType, channelNumber, shortName, treelevel, sweepDFR)
+
+	[WAVE epochs, found] = CA_TryFetchingEntryFromCacheWithNull(key)
+
+	if(found)
+		return epochs
+	endif
+
+	WAVE/Z epochs = EP_GetEpochsNoCache(numericalValues, textualValues, sweepNo, channelType, channelNumber, shortname, treelevel, epochsWave, midSweep, sweepDFR)
+
+	CA_StoreEntryIntoCache(key, epochs)
+
+	return epochs
+End
+
+static Function/WAVE EP_GetEpochsNoCache(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, variable channelNumber, string shortname, variable treelevel, WAVE/Z/T epochsWave, variable midSweep, DFREF sweepDFR)
+
+	variable index, epochCnt
+	string regexp
 
 	if(!midsweep)
 		if(DataFolderExistsDFR(sweepDFR))
@@ -1513,7 +1537,20 @@ End
 /// @return epochs wave, see GetEpochsWave() for the wave layout
 threadsafe Function/WAVE EP_FetchEpochs_TS(WAVE numericalValues, WAVE/Z/T textualValues, variable sweep, variable channelNumber, variable channelType)
 
-	WAVE/Z epochs = EP_FetchEpochsFromLNB(numericalValues, textualValues, sweep, channelNumber, channelType)
+	variable found
+	string   key
+
+	key = CA_CalculateFetchEpochsKey(numericalValues, textualValues, sweep, channelNumber, channelType)
+
+	[WAVE epochs, found] = CA_TryFetchingEntryFromCacheWithNull(key)
+
+	if(found)
+		return epochs
+	endif
+
+	WAVE/Z epochs = EP_FetchEpochsFromLNBNoCache(numericalValues, textualValues, sweep, channelNumber, channelType)
+
+	CA_StoreEntryIntoCache(key, epochs)
 
 	return epochs
 End
@@ -1530,7 +1567,7 @@ End
 /// @return epochs wave, see GetEpochsWave() for the wave layout
 Function/WAVE EP_FetchEpochs(WAVE numericalValues, WAVE/Z/T textualValues, variable sweep, DFREF singleSweepDFR, variable channelNumber, variable channelType)
 
-	WAVE/Z epochs = EP_FetchEpochsFromLNB(numericalValues, textualValues, sweep, channelNumber, channelType)
+	WAVE/Z epochs = EP_FetchEpochs_TS(numericalValues, textualValues, sweep, channelNumber, channelType)
 	if(WaveExists(epochs))
 		return epochs
 	endif
@@ -1572,7 +1609,7 @@ static Function/WAVE EP_FetchEpochsFromRecreation(WAVE numericalValues, WAVE/Z/T
 	return epChannel
 End
 
-threadsafe static Function/WAVE EP_FetchEpochsFromLNB(WAVE numericalValues, WAVE/Z/T textualValues, variable sweep, variable channelNumber, variable channelType)
+threadsafe static Function/WAVE EP_FetchEpochsFromLNBNoCache(WAVE numericalValues, WAVE/Z/T textualValues, variable sweep, variable channelNumber, variable channelType)
 
 	variable index
 

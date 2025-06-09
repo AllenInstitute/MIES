@@ -512,6 +512,39 @@ threadsafe Function/S CA_GetLabnotebookNamesKey(WAVE/Z/T textualValues, WAVE/Z/T
 	return "Version 1:" + Hash(key, HASH_SHA2_256)
 End
 
+Function/S CA_CalculateEpochsKey(WAVE numericalvalues, WAVE textualValues, variable sweepNo, variable channelType, variable channelNumber, string shortName, variable treelevel, DFREF sweepDFR)
+
+	string key = ""
+	variable crc
+
+	key += CA_GetLabnotebookNamesKey(numericalvalues, textualValues)
+	crc  = StringCRC(crc, num2str(sweepNo))
+	crc  = StringCRC(crc, num2str(channelType))
+	crc  = StringCRC(crc, num2str(channelNumber))
+	crc  = StringCRC(crc, shortName)
+	crc  = StringCRC(crc, num2str(treelevel))
+
+	if(DataFolderExistsDFR(sweepDFR))
+		crc = StringCRC(crc, GetDataFolder(1, sweepDFR))
+	else
+		crc = StringCRC(crc, "invalid DFREF")
+	endif
+
+	return "Version 1:" + Hash(key + num2istr(crc), HASH_SHA2_256)
+End
+
+threadsafe Function/S CA_CalculateFetchEpochsKey(WAVE numericalvalues, WAVE textualValues, variable sweepNo, variable channelNumber, variable channelType)
+
+	string key = ""
+	variable crc
+
+	key += CA_GetLabnotebookNamesKey(numericalvalues, textualValues)
+	crc  = StringCRC(crc, num2str(sweepNo))
+	crc  = StringCRC(crc, num2str(channelType))
+	crc  = StringCRC(crc, num2str(channelNumber))
+
+	return "Version 1:" + Hash(key + num2istr(crc), HASH_SHA2_256)
+End
 ///@}
 
 /// @brief Make space for one new entry in the cache waves
