@@ -757,10 +757,14 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_AnalyzePeaks(WAVE sweepDataOffF
 	                                                                riseTimeParams[%$"Differentiate Threshold"], \
 	                                                                p)
 
+	Multithread psxEvent[][%$"Onset"] = GetInterpolatedYValue(sweepDataOffFilt, psxEvent[p][%$"Onset Time"])
+
 	Multithread psxEvent[][%$"Rise Time"] = PSX_CalculateRiseTimeWrapper(sweepDataOffFilt, psxEvent, kernelAmp, \
 	                                                                     riseTimeParams[%$"Lower Threshold"],   \
 	                                                                     riseTimeParams[%$"Upper Threshold"],   \
 	                                                                     p)
+
+	Multithread psxEvent[][%$"Rise"] = GetInterpolatedYValue(sweepDataOffFilt, psxEvent[p][%$"Rise Time"])
 
 	Make/FREE/N=(DimSize(psxEvent, ROWS)) indexHelper
 	indexHelper[] = PSX_FitEventDecay(sweepDataOffFilt, psxEvent, maxTauFactor, eventFit, p)
@@ -1286,11 +1290,17 @@ static Function [WAVE/D results, WAVE eventIndex, WAVE marker, WAVE/T comboKeys]
 		case "slewratetime":
 			propLabel = "Slew Rate Time"
 			break
+		case "onsettime":
+			propLabel = "Onset Time"
+			break
+		case "onset":
+			propLabel = "Onset"
+			break
 		case "risetime":
 			propLabel = "Rise Time"
 			break
-		case "onsettime":
-			propLabel = "Onset Time"
+		case "rise":
+			propLabel = "Rise"
 			break
 		default:
 			FATAL_ERROR("Impossible prop: " + prop)
@@ -1634,13 +1644,18 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE s
 			case "slewratetime":
 				propLabelAxis = "Slew Rate time" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_X_DATA_UNIT) + ")"
 				break
-			case "risetime":
-				propLabelAxis = "Rise time" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_X_DATA_UNIT) + ")"
-				break
 			case "onsettime":
 				propLabelAxis = "Onset time" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_X_DATA_UNIT) + ")"
 				break
-
+			case "onset":
+				propLabelAxis = "Onset" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_Y_DATA_UNIT) + ")"
+				break
+			case "risetime":
+				propLabelAxis = "Rise time" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_X_DATA_UNIT) + ")"
+				break
+			case "rise":
+				propLabelAxis = "Rise" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_Y_DATA_UNIT) + ")"
+				break
 			default:
 				FATAL_ERROR("Impossible prop: " + prop)
 		endswitch
@@ -5421,7 +5436,8 @@ static Function/WAVE PSX_GetAllStatsProperties()
 	                        "slowtau", "fasttau", "weightedtau", \
 	                        "estate", "fstate", "fitresult",     \
 	                        "slewrate", "slewratetime",          \
-	                        "risetime", "onsettime"}
+	                        "onsettime", "onset",                \
+	                        "risetime", "rise"}
 
 	return allProps
 End
