@@ -40,11 +40,11 @@ then
   ret=1
 fi
 
-matches=$(git grep $opts "\b(CHECK|REQUIRE|WARN)\b\(.*(==|<=|>=|<|>|&&|\|\|).*\)" -- '*.ipf')
+matches=$(git grep $opts -e "\b(CHECK|REQUIRE|WARN)\b\(.*(==|<=|>=|<|>|&&|\|\|).*\)" --and --not -e '//[[:space:]]*NOLINT$' -- '*.ipf')
 
 if [[ -n "$matches" ]]
 then
-  echo "The test assertion check failed and found the following occurences:"
+  echo "The test assertion check failed and found the following occurences (use \`// NOLINT\` to suppress if appropriate):"
   echo "$matches"
   ret=1
 fi
