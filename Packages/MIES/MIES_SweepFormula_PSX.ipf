@@ -282,8 +282,16 @@ static Function [variable realOrder, WAVE filtered] PSX_FilterSweepData(WAVE/Z s
 	high     = sweepFilter[%$"Filter High"]
 	maxOrder = sweepFilter[%$"Filter Order"]
 
+	if(IsNaN(low))
+		low = sweepFilter[%$"Filter Low (Default)"]
+	endif
+
+	if(IsNaN(high))
+		high = sweepFilter[%$"Filter High (Default)"]
+	endif
+
 	if(IsNaN(maxOrder))
-		maxOrder = PSX_SWEEP_FILTER_DEF_ORDER
+		maxOrder = sweepFilter[%$"Filter Order (Default)"]
 	endif
 
 	[realOrder, WAVE filtered] = BandPassWithRingingDetection(sweepDataOff, high, low, maxOrder)
@@ -350,6 +358,25 @@ static Function [WAVE sweepDataOff, variable offset] PSX_OffsetSweepData(WAVE sw
 	return [output, offset]
 End
 
+static Function PSX_AddDefaultFilterFrequencies(WAVE filter, variable riseTau, variable decayTau, variable filterType)
+
+	variable fac
+
+	switch(filterType)
+		case PSX_FILTER_SWEEP:
+			fac = 1.5
+			break
+		case PSX_FILTER_DECONV:
+			fac = 2
+			break
+		default:
+			FATAL_ERROR("Invalid case")
+	endswitch
+
+	filter[%$"Filter Low (Default)"]  = 1 / (fac * pi * riseTau * MILLI_TO_ONE)
+	filter[%$"Filter High (Default)"] = 1 / (fac * pi * decayTau * MILLI_TO_ONE)
+End
+
 /// @brief Return the deconvoluted sweep data
 ///
 /// @param sweepData data from a single sweep and channel *without* inserted TP
@@ -364,15 +391,15 @@ static Function [variable realOrder, WAVE filtered] PSX_DeconvoluteSweepData(WAV
 	maxOrder = deconvFilter[%$"Filter Order"]
 
 	if(IsNaN(low))
-		low = PSX_DECONV_FILTER_DEF_LOW
+		low = deconvFilter[%$"Filter Low (Default)"]
 	endif
 
 	if(IsNaN(high))
-		high = PSX_DECONV_FILTER_DEF_HIGH
+		high = deconvFilter[%$"Filter High (Default)"]
 	endif
 
 	if(IsNaN(maxOrder))
-		maxOrder = PSX_DECONV_FILTER_DEF_ORDER
+		maxOrder = deconvFilter[%$"Filter Order (Default)"]
 	endif
 
 	numPoints = DimSize(sweepData, ROWS)
@@ -5021,6 +5048,15 @@ Function/WAVE PSX_Operation(STRUCT SF_ExecutionData &exd)
 	ASSERT(IsNumericWave(riseTime), "Invalid return from psxRiseTime")
 	WAVE deconvFilter = SFH_GetArgumentAsWave(exd, SF_OP_PSX, 6, defOp = "psxDeconvBPFilter()", singleResult = 1)
 
+	path          = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX_KERNEL
+	kernelRiseTau = JWN_GetNumberFromWaveNote(psxKernelDataset, path + "/riseTau")
+	ASSERT(IsFinite(kernelRiseTau), "riseTau must be finite")
+	kernelDecayTau = JWN_GetNumberFromWaveNote(psxKernelDataset, path + "/decayTau")
+	ASSERT(IsFinite(kernelDecayTau), "decayTau must be finite")
+
+	PSX_AddDefaultFilterFrequencies(sweepFilter, kernelRiseTau, kernelDecayTau, PSX_FILTER_SWEEP)
+	PSX_AddDefaultFilterFrequencies(deconvFilter, kernelRiseTau, kernelDecayTau, PSX_FILTER_DECONV)
+
 	parameterJsonID = JWN_GetWaveNoteAsJSON(psxKernelDataset)
 	parameterPath   = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX
 	JSON_AddTreeObject(parameterJsonID, parameterPath)
@@ -5032,16 +5068,24 @@ Function/WAVE PSX_Operation(STRUCT SF_ExecutionData &exd)
 	JSON_AddVariable(parameterJsonID, parameterPath + "/upperThreshold", riseTime[%$"Upper Threshold"])
 	JSON_AddVariable(parameterJsonID, parameterPath + "/lowerThreshold", riseTime[%$"Lower Threshold"])
 	JSON_AddVariable(parameterJsonID, parameterPath + "/differentiateThreshold", riseTime[%$"Differentiate Threshold"])
+
 	parameterPath = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX_DECONV_BP_FILTER
 	JSON_AddTreeObject(parameterJsonID, parameterPath)
 	JSON_AddVariable(parameterJsonID, parameterPath + "/filterLow", deconvFilter[%$"Filter Low"])
 	JSON_AddVariable(parameterJsonID, parameterPath + "/filterHigh", deconvFilter[%$"Filter High"])
 	JSON_AddVariable(parameterJsonID, parameterPath + "/filterOrder", deconvFilter[%$"Filter Order"])
+	JSON_AddVariable(parameterJsonID, parameterPath + "/filterLowDefault", deconvFilter[%$"Filter Low (Default)"])
+	JSON_AddVariable(parameterJsonID, parameterPath + "/filterHighDefault", deconvFilter[%$"Filter High (Default)"])
+	JSON_AddVariable(parameterJsonID, parameterPath + "/filterOrderDefault", deconvFilter[%$"Filter Order (Default)"])
+
 	parameterPath = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX_SWEEP_BP_FILTER
 	JSON_AddTreeObject(parameterJsonID, parameterPath)
 	JSON_AddVariable(parameterJsonID, parameterPath + "/filterLow", sweepFilter[%$"Filter Low"])
 	JSON_AddVariable(parameterJsonID, parameterPath + "/filterHigh", sweepFilter[%$"Filter High"])
 	JSON_AddVariable(parameterJsonID, parameterPath + "/filterOrder", sweepFilter[%$"Filter Order"])
+	JSON_AddVariable(parameterJsonID, parameterPath + "/filterLowDefault", sweepFilter[%$"Filter Low (Default)"])
+	JSON_AddVariable(parameterJsonID, parameterPath + "/filterHighDefault", sweepFilter[%$"Filter High (Default)"])
+	JSON_AddVariable(parameterJsonID, parameterPath + "/filterOrderDefault", sweepFilter[%$"Filter Order (Default)"])
 
 	numCombos = DimSize(psxKernelDataset, ROWS) / PSX_KERNEL_OUTPUTWAVES_PER_ENTRY
 	ASSERT(IsInteger(numCombos) && numCombos > 0, "Invalid number of input sets from psxKernel()")
@@ -5106,10 +5150,6 @@ Function/WAVE PSX_Operation(STRUCT SF_ExecutionData &exd)
 		path      = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX_KERNEL
 		kernelAmp = JWN_GetNumberFromWaveNote(psxKernelDataset, path + "/amp")
 		ASSERT(IsFinite(kernelAmp), "psxKernel amplitude must be finite")
-		kernelRiseTau = JWN_GetNumberFromWaveNote(psxKernelDataset, path + "/riseTau")
-		ASSERT(IsFinite(kernelRiseTau), "riseTau must be finite")
-		kernelDecayTau = JWN_GetNumberFromWaveNote(psxKernelDataset, path + "/decayTau")
-		ASSERT(IsFinite(kernelDecayTau), "decayTau must be finite")
 
 		for(i = 0; i < numCombos; i += 1)
 			PSX_OperationImpl(exd.graph, parameterJsonID, id, peakThresh, maxTauFactor, riseTime, kernelAmp, kernelRiseTau, kernelDecayTau, i, output)
@@ -5329,8 +5369,8 @@ Function/WAVE PSX_OperationDeconvBPFilter(STRUCT SF_ExecutionData &exd)
 		order += 1
 	endif
 
-	Make/D/FREE params = {low, high, order}
-	SetDimensionLabels(params, "Filter Low;Filter High;Filter Order", ROWS)
+	Make/D/FREE params = {low, high, order, NaN, NaN, PSX_DECONV_FILTER_DEF_ORDER}
+	SetDimensionLabels(params, "Filter Low;Filter High;Filter Order;Filter Low (Default);Filter High (Default);Filter Order (Default)", ROWS)
 
 	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_PSX_DECONV_BP_FILTER, 1)
 
@@ -5361,8 +5401,8 @@ Function/WAVE PSX_OperationSweepBPFilter(STRUCT SF_ExecutionData &exd)
 		order += 1
 	endif
 
-	Make/D/FREE params = {low, high, order}
-	SetDimensionLabels(params, "Filter Low;Filter High;Filter Order", ROWS)
+	Make/D/FREE params = {low, high, order, NaN, NaN, PSX_SWEEP_FILTER_DEF_ORDER}
+	SetDimensionLabels(params, "Filter Low;Filter High;Filter Order;Filter Low (Default);Filter High (Default);Filter Order (Default)", ROWS)
 
 	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_PSX_SWEEP_BP_FILTER, 1)
 
