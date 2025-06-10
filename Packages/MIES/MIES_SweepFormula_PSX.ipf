@@ -2630,6 +2630,11 @@ static Function PSX_FitAverage(string win, DFREF averageDFR, WAVE eventOnsetTime
 
 	browser = SFH_GetBrowserForFormulaGraph(win)
 	PSX_StoreIntoResultsWave(browser, SFH_RESULT_TYPE_PSX_MISC, input, "accepted average fit results")
+
+	WAVE AverageFitResults = GetPSXAverageFitResultsWaveFromDFR(averageDFR, state)
+	Redimension/N=(0, -1) AverageFitResults
+
+	Concatenate/NP=(ROWS) {InputAvg, InputRise, InputDecay}, AverageFitResults
 End
 
 static Function PSX_StoreIntoResultsWave(string browser, variable resultType, WAVE data, string name)
