@@ -1356,10 +1356,10 @@ select
   selections and range to operate on from the `select` operation
 
 riseTau
-  Time constant for kernel, defaults to 1
+  Time constant for kernel, defaults to 1ms
 
 decayTau
-  Time constant for kernel, defaults to 15
+  Time constant for kernel, defaults to 15ms
 
 amp
    Amplitude for kernel, defaults to -5
