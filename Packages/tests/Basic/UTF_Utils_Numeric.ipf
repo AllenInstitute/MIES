@@ -184,3 +184,27 @@ static Function TestFindNextPower()
 	CHECK_EQUAL_VAR(3, FindNextPower(25, 3))
 End
 /// @}
+
+Function TestGetInterpolatedYValue()
+
+	variable eps
+
+	Make/FREE/N=3 wv = p
+	SetScale/P x, 0, 0.1, wv
+
+	eps = 1e-15
+
+	// non-finite values
+	CHECK_EQUAL_VAR(GetInterpolatedYValue(wv, NaN), NaN)
+	CHECK_EQUAL_VAR(GetInterpolatedYValue(wv, -Inf), NaN)
+	CHECK_EQUAL_VAR(GetInterpolatedYValue(wv, +Inf), NaN)
+
+	// contained values
+	CHECK_EQUAL_VAR(GetInterpolatedYValue(wv, 0), 0)
+	CHECK_EQUAL_VAR(GetInterpolatedYValue(wv, 0.05), 0.5)
+	CHECK_EQUAL_VAR(GetInterpolatedYValue(wv, 0.2), 2)
+
+	// outside
+	CHECK_EQUAL_VAR(GetInterpolatedYValue(wv, 0 - eps), NaN)
+	CHECK_EQUAL_VAR(GetInterpolatedYValue(wv, 0.2 + eps), NaN)
+End
