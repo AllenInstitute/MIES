@@ -8772,6 +8772,21 @@ Function/WAVE GetPSXAverageFitWaveFromDFR(DFREF dfr, variable state)
 	return wv
 End
 
+Function/WAVE GetPSXAverageFitResultsWaveFromDFR(DFREF dfr, variable state)
+
+	string name = "averageFitResults_" + PSX_StateToString(state)
+
+	WAVE/Z/T/SDFR=dfr wv = $name
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/T/N=(0, 2) dfr:$name/WAVE=wv
+
+	return wv
+End
+
 ///@}
 
 /// @brief Returns a wave with the names of all log files
