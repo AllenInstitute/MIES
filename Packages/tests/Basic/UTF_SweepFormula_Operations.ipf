@@ -604,6 +604,14 @@ static Function TestOperationLog()
 	Duplicate/FREE testData, refData
 	CHECK_EQUAL_WAVES(refData, output, mode = WAVE_DATA | DIMENSION_SIZES)
 
+	histRef = CaptureHistoryStart()
+	str     = "log(select())"
+	WAVE output = SF_ExecuteFormula(str, win)
+	histo = TrimString(CaptureHistory(histRef, 1))
+	REQUIRE_EQUAL_STR("0\r-inf", histo)
+	Make/FREE/WAVE/N=2 wRefWave
+	CHECK_EQUAL_WAVES(wRefWave, output, mode = DIMENSION_SIZES | WAVE_DATA_TYPE)
+
 	KillWaves/Z testData
 End
 
