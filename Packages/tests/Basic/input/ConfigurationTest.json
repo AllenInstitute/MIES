@@ -35,6 +35,7 @@
                 "StrValue": "1337"
             }
         },
+        "Window Properties": {},
         "level1 ControlGroup": {
             "level2 ControlGroup": {
                 "slider": {
@@ -58,7 +59,8 @@
                     "Amiga"
                 ]
             }
-        }
+        },
+        "Window Properties": {}
     },
     "Target Window Type": ""
 }
