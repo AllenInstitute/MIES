@@ -346,15 +346,13 @@ End
 /// @brief Fail due to null string
 Function ListToTextWaveMDFail0()
 
-	string   uninitialized
-	variable err
+	string uninitialized
 
 	try
-		WAVE/T t = ListToTextWaveMD(uninitialized, 1)
+		WAVE/T t = ListToTextWaveMD(uninitialized, 1); AbortOnRTE
 		FAIL()
 	catch
-		err = getRTError(1)
-		PASS()
+		CHECK_RTE(185)
 	endtry
 End
 
