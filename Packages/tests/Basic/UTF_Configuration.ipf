@@ -380,3 +380,34 @@ static Function TCONF_CheckMacrosForPanelType([string str])
 	INFO("Panel: " + win)
 	CHECK_PROPER_STR(panelType)
 End
+
+static Function TCONF_CheckHideState()
+
+	string panel, subPanel
+	variable jsonID
+	variable saveRestoreMask = EXPCONFIG_SAVE_VALUE
+
+	NewPanel
+	panel = S_name
+
+	NewPanel/EXT=1/HOST=#/N=sub
+	subPanel = panel + "#sub"
+	SetWindow $subPanel, hide=1
+	// main panel is shown, subwindow is hidden
+
+	jsonID = CONF_AllWindowsToJSON(panel, saveRestoreMask)
+
+	CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, "Panel0#sub/Window Properties/Hide"), 1)
+
+	// all are shown again
+	SetWindow $subPanel, hide=0
+	GetWindow $subPanel, hide
+	CHECK_EQUAL_VAR(V_Value, 0)
+
+	CONF_JSONToWindow(panel, saveRestoreMask, jsonID)
+	DoUpdate/W=$panel
+
+	// and now the subwindow is hidden again
+	GetWindow $subPanel, hide
+	CHECK_EQUAL_VAR(V_Value, 1)
+End
