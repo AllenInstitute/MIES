@@ -1163,7 +1163,7 @@ Function/S CONF_JSONToWindow(string wName, variable restoreMask, variable jsonID
 
 			numCtrl = DimSize(ctrlData, ROWS)
 			if(!numCtrl)
-				return wName
+				continue
 			endif
 			Make/FREE/N=(numCtrl) prioritySort
 			prioritySort[] = str2num(ctrlData[p][%PRIORITY])
