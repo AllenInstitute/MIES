@@ -120,7 +120,7 @@ End
 Function CO_Works()
 
 	try
-		AlreadyCalledOnce(""); AbortONRTE
+		AlreadyCalledOnce("")
 		FAIL()
 	catch
 		PASS()
