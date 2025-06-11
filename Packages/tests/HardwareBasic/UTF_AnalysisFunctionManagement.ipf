@@ -135,7 +135,7 @@ static Function AFT1([string str])
 	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncInvalid1_DA_0:")
 
 	try
-		AcquireData_NG(s, str); AbortOnRTE
+		AcquireData_NG(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -197,7 +197,7 @@ static Function AFT2([string str])
 	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncInvalid2_DA_0:")
 
 	try
-		AcquireData_NG(s, str); AbortOnRTE
+		AcquireData_NG(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -975,7 +975,7 @@ static Function AFT12([string str])
 	                             "__HS1_DA1_AD1_CM:IC:_ST:AnaFuncAbortPre_DA_0:")
 
 	try
-		AcquireData_NG(s, str); AbortOnRTE
+		AcquireData_NG(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -1266,7 +1266,7 @@ static Function AFT14b([string str])
 	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams3_DA_0:")
 
 	try
-		AcquireData_NG(s, str); AbortOnRTE
+		AcquireData_NG(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -1310,7 +1310,7 @@ static Function AFT14c([string str])
 	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams4_DA_0:")
 
 	try
-		AcquireData_NG(s, str); AbortOnRTE
+		AcquireData_NG(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -1356,7 +1356,7 @@ static Function AFT14d([string str])
 	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams5_DA_0:")
 
 	try
-		AcquireData_NG(s, str); AbortOnRTE
+		AcquireData_NG(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -1404,7 +1404,7 @@ static Function AFT14e([string str])
 	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams5_DA_0:")
 
 	try
-		AcquireData_NG(s, str); AbortOnRTE
+		AcquireData_NG(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -1679,7 +1679,7 @@ static Function AFT17([string str])
 	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncPreDAQHar_DA_0:")
 
 	try
-		AcquireData_NG(s, str); AbortOnRTE
+		AcquireData_NG(s, str)
 		FAIL()
 	catch
 		PASS()
