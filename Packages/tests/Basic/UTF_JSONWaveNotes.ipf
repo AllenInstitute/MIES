@@ -9,7 +9,7 @@ static Function TestSetNumberInJSONWaveNote()
 
 	WAVE/Z wv = $""
 	try
-		JWN_SetNumberInWaveNote(wv, "path", NaN); AbortOnRTE
+		JWN_SetNumberInWaveNote(wv, "path", NaN)
 		FAIL()
 	catch
 		PASS()
@@ -17,7 +17,7 @@ static Function TestSetNumberInJSONWaveNote()
 
 	Make/FREE wv
 	try
-		JWN_SetNumberInWaveNote(wv, "", NaN); AbortOnRTE
+		JWN_SetNumberInWaveNote(wv, "", NaN)
 		FAIL()
 	catch
 		PASS()
@@ -50,7 +50,7 @@ static Function TestSetStringInJSONWaveNote()
 
 	WAVE/Z wv = $""
 	try
-		JWN_SetStringInWaveNote(wv, "path", ""); AbortOnRTE
+		JWN_SetStringInWaveNote(wv, "path", "")
 		FAIL()
 	catch
 		PASS()
@@ -58,14 +58,14 @@ static Function TestSetStringInJSONWaveNote()
 
 	Make/FREE wv
 	try
-		JWN_SetStringInWaveNote(wv, "", ""); AbortOnRTE
+		JWN_SetStringInWaveNote(wv, "", "")
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	try
-		JWN_SetStringInWaveNote(wv, "nullStr", nullStr); AbortOnRTE
+		JWN_SetStringInWaveNote(wv, "nullStr", nullStr)
 		FAIL()
 	catch
 		err = GetRTError(1)
@@ -98,7 +98,7 @@ static Function TestSetWaveInJSONWaveNote()
 	Make/FREE/N=10 wvData
 	WAVE/Z wv = $""
 	try
-		JWN_SetWaveInWaveNote(wv, "path", wvData); AbortOnRTE
+		JWN_SetWaveInWaveNote(wv, "path", wvData)
 		FAIL()
 	catch
 		PASS()
@@ -106,14 +106,14 @@ static Function TestSetWaveInJSONWaveNote()
 
 	Make/FREE wv
 	try
-		JWN_SetWaveInWaveNote(wv, "", wvData); AbortOnRTE
+		JWN_SetWaveInWaveNote(wv, "", wvData)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	try
-		JWN_SetWaveInWaveNote(wv, "nullWave", $""); AbortOnRTE
+		JWN_SetWaveInWaveNote(wv, "nullWave", $"")
 		FAIL()
 	catch
 		PASS()
@@ -121,7 +121,7 @@ static Function TestSetWaveInJSONWaveNote()
 
 	Make/FREE/WAVE wvRef
 	try
-		JWN_SetWaveInWaveNote(wv, "refWave", wvRef); AbortOnRTE
+		JWN_SetWaveInWaveNote(wv, "refWave", wvRef)
 		FAIL()
 	catch
 		PASS()
