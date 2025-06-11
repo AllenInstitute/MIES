@@ -367,14 +367,14 @@ static Function PSX_AddDefaultFilterFrequencies(WAVE filter, variable riseTau, v
 			fac = 1.5
 			break
 		case PSX_FILTER_DECONV:
-			fac = 2
+			fac = 2.0
 			break
 		default:
 			ASSERT(0, "Invalid case")
 	endswitch
 
-	filter[%$"Filter Low (Default)"]  = 1 / (fac * pi * riseTau * MILLI_TO_ONE)
-	filter[%$"Filter High (Default)"] = 1 / (fac * pi * decayTau * MILLI_TO_ONE)
+	filter[%$"Filter Low (Default)"]  = round(1 / (fac * pi * riseTau * MILLI_TO_ONE))
+	filter[%$"Filter High (Default)"] = round( (1 / (fac * pi * decayTau * MILLI_TO_ONE) ) / 8)
 End
 
 /// @brief Return the deconvoluted sweep data
