@@ -64,13 +64,10 @@ End
 // UTF_TD_GENERATOR GetInvalidStringsWithSweepNumber
 Function ESN_Complains([string str])
 
-	variable err
-
 	try
-		ExtractSweepNumber(str); AbortOnRTE
+		ExtractSweepNumber(str)
 		FAIL()
 	catch
-		err = GetRTError(1)
 		PASS()
 	endtry
 End
