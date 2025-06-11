@@ -149,14 +149,11 @@ Function ELE_AbortsWithTooLargeValue()
 
 	Make/FREE/N=(MINIMUM_WAVE_SIZE) wv
 
-	variable err
-
 	try
 		EnsureLargeEnoughWave(wv, indexShouldExist = 2^50); AbortOnRTE
 		FAIL()
 	catch
-		err = GetRTError(1)
-		PASS()
+		CHECK_RTE(10)
 	endtry
 End
 
