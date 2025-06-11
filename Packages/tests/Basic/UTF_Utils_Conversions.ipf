@@ -508,7 +508,7 @@ Function NWLChecksInput()
 
 	try
 		Make/FREE/DF wrongWaveType
-		NumericWaveToList(wrongWaveType, ";"); AbortONRTE
+		NumericWaveToList(wrongWaveType, ";")
 		FAIL()
 	catch
 		PASS()
@@ -516,7 +516,7 @@ Function NWLChecksInput()
 
 	try
 		Make/FREE/D/N=(2, 2, 3) ThreeDWave
-		NumericWaveToList(ThreeDWave, ";"); AbortONRTE
+		NumericWaveToList(ThreeDWave, ";")
 		FAIL()
 	catch
 		PASS()
@@ -524,7 +524,7 @@ Function NWLChecksInput()
 
 	try
 		Make/FREE/D/N=(2, 2) TwoDWave
-		NumericWaveToList(TwoDWave, ";", colSep = ""); AbortONRTE
+		NumericWaveToList(TwoDWave, ";", colSep = "")
 		FAIL()
 	catch
 		PASS()
@@ -660,13 +660,10 @@ End
 /// @brief Fail due to negative precision
 Function num2strHighPrecFail0()
 
-	variable err
-
 	try
 		num2strHighPrec(NaN, precision = -1)
 		FAIL()
 	catch
-		err = getRTError(1)
 		PASS()
 	endtry
 End
@@ -674,13 +671,10 @@ End
 /// @brief Fail due to too high precision
 Function num2strHighPrecFail1()
 
-	variable err
-
 	try
 		num2strHighPrec(NaN, precision = 16)
 		FAIL()
 	catch
-		err = getRTError(1)
 		PASS()
 	endtry
 End
@@ -815,16 +809,13 @@ End
 // UTF_TD_GENERATOR STIW_TestAbortGetter
 Function STIW_TestAbort([variable var])
 
-	variable err
-
 	Make/FREE testwave
 	SetScale/P x, 0, 0.1, testwave
 
 	try
-		ScaleToIndexWrapper(testwave, 0, var); AbortOnRTE
+		ScaleToIndexWrapper(testwave, 0, var)
 		FAIL()
 	catch
-		err = GetRtError(1)
 		PASS()
 	endtry
 End
