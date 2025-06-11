@@ -334,7 +334,7 @@ Function fails_on_liberal_wavename()
 	p.newName = "123destw"
 
 	try
-		WAVE/Z wv = UpgradeWaveLocationAndGetIt(p); AbortOnRTE
+		WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
 		FAIL()
 	catch
 		PASS()
@@ -350,7 +350,7 @@ Function fails_on_invalid_wavename()
 	p.newName = ":"
 
 	try
-		WAVE/Z wv = UpgradeWaveLocationAndGetIt(p); AbortOnRTE
+		WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
 		FAIL()
 	catch
 		PASS()
