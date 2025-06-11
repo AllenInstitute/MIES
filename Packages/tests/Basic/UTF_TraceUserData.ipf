@@ -344,8 +344,6 @@ End
 // Test: TUD_GetUserData
 Function GetUserDataExpectsExistingTraceAndKey()
 
-	variable err
-
 	SVAR graph = root:graph
 
 	WAVE/Z/T graphUserData = GetGraphUserData(graph)
@@ -353,18 +351,16 @@ Function GetUserDataExpectsExistingTraceAndKey()
 	TUD_SetUserData(graph, "trace1", "key", "value")
 
 	try
-		TUD_GetUserData(graph, "I DONT EXIST", "key"); AbortOnRTE
+		TUD_GetUserData(graph, "I DONT EXIST", "key")
 		FAIL()
 	catch
-		err = GetRTError(1)
 		PASS()
 	endtry
 
 	try
-		TUD_GetUserData(graph, "trace1", "I DONT EXIST"); AbortOnRTE
+		TUD_GetUserData(graph, "trace1", "I DONT EXIST")
 		FAIL()
 	catch
-		err = GetRTError(1)
 		PASS()
 	endtry
 End
@@ -372,7 +368,6 @@ End
 // Test: TUD_GetUserData
 Function GetUserDataWorks()
 
-	variable err
 	string actual, expected
 
 	SVAR graph = root:graph
@@ -444,8 +439,6 @@ End
 // Test: TUD_GetUserDataAsWave
 Function GetUserDataAsWaveChecksInput()
 
-	variable err
-
 	SVAR graph = root:graph
 
 	WAVE/Z/T graphUserData = GetGraphUserData(graph)
@@ -457,55 +450,49 @@ Function GetUserDataAsWaveChecksInput()
 	TUD_SetUserData(graph, "trace1", "key3", "value3")
 
 	try
-		TUD_GetUserDataAsWave(graph, "I DONT EXIST"); AbortOnRTE
+		TUD_GetUserDataAsWave(graph, "I DONT EXIST")
 		FAIL()
 	catch
-		err = GetRTError(1)
 		PASS()
 	endtry
 
 	// both keys/values must be present or absent
 	try
-		TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceName"}); AbortOnRTE
+		TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceName"})
 		FAIL()
 	catch
-		err = GetRTError(1)
 		PASS()
 	endtry
 
 	// both keys/values must be present or absent
 	try
-		TUD_GetUserDataAsWave(graph, "traceName", values = {"trace1"}); AbortOnRTE
+		TUD_GetUserDataAsWave(graph, "traceName", values = {"trace1"})
 		FAIL()
 	catch
-		err = GetRTError(1)
 		PASS()
 	endtry
 
 	// mismatched keys/values sizes
 	try
-		TUD_GetUserDataAsWave(graph, "traceName", keys = {"a", "b"}, values = {"c"}); AbortOnRTE
+		TUD_GetUserDataAsWave(graph, "traceName", keys = {"a", "b"}, values = {"c"})
 		FAIL()
 	catch
-		err = GetRTError(1)
 		PASS()
 	endtry
 
 	// mismatched keys/values sizes
 	try
-		TUD_GetUserDataAsWave(graph, "traceName", keys = {"a"}, values = {"b", "c"}); AbortOnRTE
+		TUD_GetUserDataAsWave(graph, "traceName", keys = {"a"}, values = {"b", "c"})
 		FAIL()
 	catch
-		err = GetRTError(1)
 		PASS()
 	endtry
 
 	// non-existing key
 	try
-		TUD_GetUserDataAsWave(graph, "traceName", keys = {"a"}, values = {"b"}); AbortOnRTE
+		TUD_GetUserDataAsWave(graph, "traceName", keys = {"a"}, values = {"b"})
 		FAIL()
 	catch
-		err = GetRTError(1)
 		PASS()
 	endtry
 End
@@ -627,16 +614,13 @@ End
 // Test: TUD_RemoveUserData
 Function RemoveUserDataChecksInput()
 
-	variable err
-
 	SVAR graph = root:graph
 
 	// expects existing trace
 	try
-		TUD_RemoveUserData(graph, "I DONT EXIST"); AbortOnRTE
+		TUD_RemoveUserData(graph, "I DONT EXIST")
 		FAIL()
 	catch
-		err = GetRTError(1)
 		PASS()
 	endtry
 End
