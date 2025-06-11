@@ -32,16 +32,14 @@ Function TestDecimateWithMethodInvalid()
 		DecimateWithMethod(data, $"", decimationFactor, method); AbortOnRTE
 		FAIL()
 	catch
-		err = GetRTError(-1)
-		PASS()
+		CHECK_RTE(2)
 	endtry
 
 	try
 		DecimateWithMethod($"", output, decimationFactor, method); AbortOnRTE
 		FAIL()
 	catch
-		err = GetRTError(-1)
-		PASS()
+		CHECK_RTE(2)
 	endtry
 
 	try
