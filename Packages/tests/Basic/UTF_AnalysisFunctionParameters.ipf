@@ -57,7 +57,7 @@ static Function AbortsWithEmptyName()
 	CHECK_EMPTY_STR(params)
 
 	try
-		AFH_AddAnalysisParameter(stimSet, "", var = 123); AbortOnRTE
+		AFH_AddAnalysisParameter(stimSet, "", var = 123)
 		FAIL()
 	catch
 		PASS()
@@ -79,7 +79,7 @@ static Function AbortsWithInvalidName1()
 	CHECK_EMPTY_STR(params)
 
 	try
-		AFH_AddAnalysisParameter(stimSet, "123", var = 123); AbortOnRTE
+		AFH_AddAnalysisParameter(stimSet, "123", var = 123)
 		FAIL()
 	catch
 		PASS()
@@ -101,7 +101,7 @@ static Function AbortsWithInvalidName2()
 	CHECK_EMPTY_STR(params)
 
 	try
-		AFH_AddAnalysisParameter(stimSet, "a b", var = 123); AbortOnRTE
+		AFH_AddAnalysisParameter(stimSet, "a b", var = 123)
 		FAIL()
 	catch
 		PASS()
@@ -123,7 +123,7 @@ static Function AbortsWithNoData()
 	CHECK_EMPTY_STR(params)
 
 	try
-		AFH_AddAnalysisParameter(stimSet, "ab"); AbortOnRTE
+		AFH_AddAnalysisParameter(stimSet, "ab")
 		FAIL()
 	catch
 		PASS()
@@ -145,7 +145,7 @@ static Function AbortsWithInvalidDataComb1()
 	CHECK_EMPTY_STR(params)
 
 	try
-		AFH_AddAnalysisParameter(stimSet, "ab", var = 123, str = "hi there!"); AbortOnRTE
+		AFH_AddAnalysisParameter(stimSet, "ab", var = 123, str = "hi there!")
 		FAIL()
 	catch
 		PASS()
@@ -167,7 +167,7 @@ static Function AbortsWithInvalidDataComb2()
 	CHECK_EMPTY_STR(params)
 
 	try
-		AFH_AddAnalysisParameter(stimSet, "ab", var = 123, wv = {1, 2}); AbortOnRTE
+		AFH_AddAnalysisParameter(stimSet, "ab", var = 123, wv = {1, 2})
 		FAIL()
 	catch
 		PASS()
@@ -189,7 +189,7 @@ static Function AbortsWithInvalidDataComb3()
 	CHECK_EMPTY_STR(params)
 
 	try
-		AFH_AddAnalysisParameter(stimSet, "ab", str = "hi there", wv = {1, 2}); AbortOnRTE
+		AFH_AddAnalysisParameter(stimSet, "ab", str = "hi there", wv = {1, 2})
 		FAIL()
 	catch
 		PASS()
@@ -211,7 +211,7 @@ static Function AbortsWithInvalidDataComb4()
 	CHECK_EMPTY_STR(params)
 
 	try
-		AFH_AddAnalysisParameter(stimSet, "ab", str = "hi there", wv = {1, 2}); AbortOnRTE
+		AFH_AddAnalysisParameter(stimSet, "ab", str = "hi there", wv = {1, 2})
 		FAIL()
 	catch
 		PASS()
@@ -254,7 +254,7 @@ static Function AbortsWithInvalidWaveType()
 
 	try
 		Make/WAVE/FREE wv
-		AFH_AddAnalysisParameter(stimSet, "ab", wv = wv); AbortOnRTE
+		AFH_AddAnalysisParameter(stimSet, "ab", wv = wv)
 		FAIL()
 	catch
 		PASS()
@@ -277,7 +277,7 @@ static Function AbortsWithEmptyWave()
 
 	try
 		Make/N=0/FREE wv
-		AFH_AddAnalysisParameter(stimSet, "ab", wv = wv); AbortOnRTE
+		AFH_AddAnalysisParameter(stimSet, "ab", wv = wv)
 		FAIL()
 	catch
 		PASS()
