@@ -562,8 +562,9 @@ End
 
 static Function TestOperationLog()
 
-	string histo, histoAfter, str, strRef
-	string win
+	string histo, str, strRef
+	string   win
+	variable histRef
 
 	win = GetDataBrowserWithData()
 
@@ -571,25 +572,21 @@ static Function TestOperationLog()
 	WAVE/WAVE outputRef = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(outputRef, ROWS), 0)
 
-	histo = GetHistoryNotebookText()
-	str   = "log(1, 10, 100)"
+	histRef = CaptureHistoryStart()
+	str     = "log(1, 10, 100)"
 	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	histoAfter = GetHistoryNotebookText()
+	histo = TrimString(CaptureHistory(histRef, 1))
+	REQUIRE_EQUAL_STR("1", histo)
 	Make/FREE/D refData = {1, 10, 100}
-	histo = ReplaceString(histo, histoAfter, "")
 	REQUIRE_EQUAL_WAVES(refData, output, mode = WAVE_DATA)
-	strRef = "  1\r"
-	REQUIRE_EQUAL_STR(strRef, histo)
 
-	histo = GetHistoryNotebookText()
-	str   = "log(a, bb, ccc)"
+	histRef = CaptureHistoryStart()
+	str     = "log(a, bb, ccc)"
 	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	histoAfter = GetHistoryNotebookText()
+	histo = TrimString(CaptureHistory(histRef, 1))
+	REQUIRE_EQUAL_STR("a", histo)
 	Make/FREE/T refDataT = {"a", "bb", "ccc"}
-	histo = ReplaceString(histo, histoAfter, "")
 	REQUIRE_EQUAL_WAVES(refDataT, output, mode = WAVE_DATA)
-	strRef = "  a\r"
-	REQUIRE_EQUAL_STR(strRef, histo)
 
 	str = "log(1)"
 	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
