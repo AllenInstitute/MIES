@@ -2575,12 +2575,11 @@ End
 static Function PSX_UpdateBlockIndizes(string win)
 
 	string extAllGraph, comboKey
-	variable restrictCurrentCombo, numBlocks
+	variable numBlocks
 	variable numEntries, i, blockSize, first, last
 
-	extAllGraph          = PSX_GetAllEventGraph(win)
-	restrictCurrentCombo = PSX_GetRestrictEventsToCurrentCombo(win)
-	numBlocks            = PSX_CalculateNumberOfBlocks(win)
+	extAllGraph = PSX_GetAllEventGraph(win)
+	numBlocks   = PSX_CalculateNumberOfBlocks(win)
 
 	[WAVE/T keys, WAVE/T values] = PSX_GetTraceSelectionWaves(extAllGraph, PSX_TUD_TYPE_SINGLE, respectBlock = 0)
 
