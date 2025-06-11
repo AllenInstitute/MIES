@@ -245,6 +245,8 @@ Function BSP_DynamicStartupSettings(string mainPanel)
 		SetPopupMenuVal(shPanel, "popup_Experiment", func = "LBV_GetExperiments(\"" + shPanel + "\")")
 		EnableControls(shPanel, "popup_Device;popup_Experiment")
 	endif
+
+	BSP_UpdateHideButton(mainPanel)
 End
 
 /// @brief Hook function for the Sweep Formula Notebook
@@ -635,6 +637,35 @@ static Function BSP_HidePanel(string win)
 	DoWindow/F $currentWindow
 
 	BSP_MainPanelButtonToggle(mainPanel, 1)
+End
+
+static Function BSP_UpdateHideButton(string win)
+
+	string   mainPanel
+	variable visible
+
+	mainPanel = GetMainWindow(win)
+	WAVE/T allWindows = ListToTextWave(GetAllWindows(mainPanel), ";")
+
+	for(win : allWindows)
+		// ignore child-child windows
+		if(ItemsInList(win, "#") > 2)
+			continue
+		endif
+
+		GetWindow $win, hide
+
+		if(V_Value)
+			visible = 1
+			break
+		endif
+	endfor
+
+	if(visible)
+		ShowControl(mainPanel, BSP_SHOW_WIN_BUTTON)
+	else
+		HideControl(mainPanel, BSP_SHOW_WIN_BUTTON)
+	endif
 End
 
 /// @brief panel close hook for side panel
