@@ -6,12 +6,12 @@
 /// @file UTF_ConfigurationTest.ipf
 /// @brief __CONFIG_Test__ This file holds the tests for the Configuration saving/loading
 
-static StrConstant REF_CONFIG_FILE          = "ConfigurationTest.txt"
-static StrConstant REF_CONFIG_FILE_RELEVANT = "ConfigurationTest_Relevant.txt"
-static StrConstant REF_TMP1_CONFIG_FILE     = "ConfigurationTest_temp1.txt"
-static StrConstant REF_TMP2_CONFIG_FILE     = "ConfigurationTest_temp2.txt"
-static StrConstant REF_DUP1_CONFIG_FILE     = "ConfigurationTest_DupCheck1.txt"
-static StrConstant REF_DUP2_CONFIG_FILE     = "ConfigurationTest_DupCheck2.txt"
+static StrConstant REF_CONFIG_FILE          = "input:ConfigurationTest.json"
+static StrConstant REF_CONFIG_FILE_RELEVANT = "input:ConfigurationTest_Relevant.json"
+static StrConstant REF_TMP1_CONFIG_FILE     = "ConfigurationTest_temp1.json"
+static StrConstant REF_TMP2_CONFIG_FILE     = "ConfigurationTest_temp2.json"
+static StrConstant REF_DUP1_CONFIG_FILE     = "input:ConfigurationTest_DupCheck1.json"
+static StrConstant REF_DUP2_CONFIG_FILE     = "input:ConfigurationTest_DupCheck2.json"
 static Constant    CHECKBOX_CLICKED         = 1
 static Constant    RADIO3_CLICKED           = 2
 
