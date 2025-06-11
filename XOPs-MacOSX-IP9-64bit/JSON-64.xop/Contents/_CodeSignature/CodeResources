@@ -22,10 +22,6 @@
 	<dict>
 		<key>Resources/English.lproj/InfoPlist.strings</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			IkqfOw4cKjx2qm+0VRLo9qNU+3I=
-			</data>
 			<key>hash2</key>
 			<data>
 			w+WZBGIAcQ44AL+GtXKyZx4G3TllbH3oEyDwOqztbHw=
@@ -35,10 +31,6 @@
 		</dict>
 		<key>Resources/JSON-64.rsrc</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			M3nvOsFc3h1lReFySihqydpDCuU=
-			</data>
 			<key>hash2</key>
 			<data>
 			a8Imz1Ua2yjW84nJjyvl8/TIqd5j7dnaywNbMYXIthM=
