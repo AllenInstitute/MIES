@@ -610,20 +610,16 @@ End
 /// @param visible 		set status of external Panel (opened: visible = 1)
 static Function BSP_MainPanelButtonToggle(string mainPanel, variable visible)
 
-	string panelButton
-
 	visible = !!visible ? 1 : 0
 
-	panelButton = "button_BSP_open"
-
-	if(!ControlExists(mainPanel, panelButton) || IsControlDisabled(mainPanel, panelButton))
+	if(!ControlExists(mainPanel, BSP_SHOW_WIN_BUTTON) || IsControlDisabled(mainPanel, BSP_SHOW_WIN_BUTTON))
 		return NaN
 	endif
 
 	if(visible)
-		ShowControl(mainPanel, panelButton)
+		ShowControl(mainPanel, BSP_SHOW_WIN_BUTTON)
 	else
-		HideControl(mainPanel, panelButton)
+		HideControl(mainPanel, BSP_SHOW_WIN_BUTTON)
 	endif
 End
 

@@ -515,6 +515,8 @@ StrConstant MIES_BSP_AR_SWEEPFOLDER = "AR_SWEEPFOLDER"
 StrConstant MIES_BSP_PA_MAINPANEL   = "HOSTWINDOW"
 ///@}
 
+StrConstant BSP_SHOW_WIN_BUTTON = "button_BSP_open"
+
 StrConstant NUMERALS = "First;Second;Third;Fourth;Fifth;Sixth;Seventh;Eighth"
 
 /// Generic axis name for graphs using split axis
