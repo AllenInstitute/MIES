@@ -6371,6 +6371,10 @@ static Function SF_OperationLogImpl(WAVE/Z input)
 	if(IsTextWave(input))
 		WAVE/T wt = input
 		print wt[0]
+	elseif(IsWaveRefWave(input))
+		for(WAVE elem : input)
+			SF_OperationLogImpl(elem)
+		endfor
 	else
 		print input[0]
 	endif
