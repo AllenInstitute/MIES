@@ -95,12 +95,15 @@ End
 /// @brief Return the user data given by the `graph` and `trace` named `key`
 Function/S TUD_GetUserData(string graph, string trace, string key)
 
-	variable row
+	variable row, col
 
 	WAVE/T graphUserData = GetGraphUserData(graph)
 	row = TUD_ConvertTraceNameToRowIndex(graphUserData, trace, create = 0)
 
-	return graphUserData[row][%$key]
+	col = FindDimLabel(graphUserData, COLS, key)
+	ASSERT(col >= 0, "Invalid key")
+
+	return graphUserData[row][col]
 End
 
 /// @brief Return all the user data from `trace` of `graph`

@@ -149,14 +149,11 @@ Function ELE_AbortsWithTooLargeValue()
 
 	Make/FREE/N=(MINIMUM_WAVE_SIZE) wv
 
-	variable err
-
 	try
 		EnsureLargeEnoughWave(wv, indexShouldExist = 2^50); AbortOnRTE
 		FAIL()
 	catch
-		err = GetRTError(1)
-		PASS()
+		CHECK_RTE(10)
 	endtry
 End
 
@@ -648,21 +645,21 @@ static Function TestDeepCopyWaveRefWave()
 	endfor
 
 	try
-		WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension = ROWS, index = 0, indexWave = indexWave); AbortOnRTE
+		WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension = ROWS, index = 0, indexWave = indexWave)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	try
-		WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension = NaN); AbortOnRTE
+		WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension = NaN)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	try
-		WAVE/WAVE cpy = DeepCopyWaveRefWave(src, index = 0); AbortOnRTE
+		WAVE/WAVE cpy = DeepCopyWaveRefWave(src, index = 0)
 		FAIL()
 	catch
 		PASS()
@@ -670,7 +667,7 @@ static Function TestDeepCopyWaveRefWave()
 
 	Make/FREE/N=(refSize + 1) indexWave = p
 	try
-		WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension = ROWS, indexWave = indexWave); AbortOnRTE
+		WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension = ROWS, indexWave = indexWave)
 		FAIL()
 	catch
 		PASS()
@@ -678,7 +675,7 @@ static Function TestDeepCopyWaveRefWave()
 
 	Make/FREE/N=(refSize + 1)/T indexWaveT
 	try
-		WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension = ROWS, indexWave = indexWaveT); AbortOnRTE
+		WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension = ROWS, indexWave = indexWaveT)
 		FAIL()
 	catch
 		PASS()
@@ -686,7 +683,7 @@ static Function TestDeepCopyWaveRefWave()
 
 	Make/FREE/N=0 invalidSrc0
 	try
-		WAVE/WAVE cpy = DeepCopyWaveRefWave(invalidSrc0); AbortOnRTE
+		WAVE/WAVE cpy = DeepCopyWaveRefWave(invalidSrc0)
 		FAIL()
 	catch
 		PASS()
@@ -704,7 +701,7 @@ static Function TestDeepCopyWaveRefWave()
 
 	WAVE src = $""
 	try
-		WAVE/WAVE cpy = DeepCopyWaveRefWave(src); AbortOnRTE
+		WAVE/WAVE cpy = DeepCopyWaveRefWave(src)
 		FAIL()
 	catch
 		PASS()
@@ -776,28 +773,28 @@ static Function TestReduceWaveDimensionality()
 	CHECK_EQUAL_VAR(DimSize(data, COLS), 0)
 
 	try
-		ReduceWaveDimensionality(data, minDimension = NaN); AbortOnRTE
+		ReduceWaveDimensionality(data, minDimension = NaN)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	try
-		ReduceWaveDimensionality(data, minDimension = -1); AbortOnRTE
+		ReduceWaveDimensionality(data, minDimension = -1)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	try
-		ReduceWaveDimensionality(data, minDimension = 1.5); AbortOnRTE
+		ReduceWaveDimensionality(data, minDimension = 1.5)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	try
-		ReduceWaveDimensionality(data, minDimension = Inf); AbortOnRTE
+		ReduceWaveDimensionality(data, minDimension = Inf)
 		FAIL()
 	catch
 		PASS()
@@ -1218,7 +1215,7 @@ Function RUR_ChecksNote1()
 	SetNumberInWaveNote(wv, NOTE_INDEX, -1)
 
 	try
-		RemoveUnusedRows(wv); AbortOnRTE
+		RemoveUnusedRows(wv)
 		FAIL()
 	catch
 		PASS()
@@ -1231,7 +1228,7 @@ Function RUR_ChecksNote2()
 	SetNumberInWaveNote(wv, NOTE_INDEX, Inf)
 
 	try
-		RemoveUnusedRows(wv); AbortOnRTE
+		RemoveUnusedRows(wv)
 		FAIL()
 	catch
 		PASS()
@@ -1268,7 +1265,7 @@ Function ZN_AbortsWithInvalidWaveInput()
 
 	try
 		Make/FREE/T wv
-		ZapNaNs(wv); AbortONRTE
+		ZapNaNs(wv)
 		FAIL()
 	catch
 		PASS()
@@ -1325,7 +1322,7 @@ Function CFW_ChecksParameters()
 	Make perm
 
 	try
-		ChangeFreeWaveName(perm, "abcd"); AbortOnRTE
+		ChangeFreeWaveName(perm, "abcd")
 		FAIL()
 	catch
 		PASS()
@@ -1334,14 +1331,14 @@ Function CFW_ChecksParameters()
 	Make/FREE free
 
 	try
-		ChangeFreeWaveName(free, ""); AbortOnRTE
+		ChangeFreeWaveName(free, "")
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	try
-		ChangeFreeWaveName(free, "123"); AbortOnRTE
+		ChangeFreeWaveName(free, "123")
 		FAIL()
 	catch
 		PASS()
@@ -1806,22 +1803,17 @@ End
 
 Function MWWO_RequiresPermanentDestWave()
 
-	variable err
-
 	Make/FREE dest, src
 
 	try
 		MoveWaveWithOverwrite(dest, src)
 		FAIL()
 	catch
-		err = GetRtError(1)
 		PASS()
 	endtry
 End
 
 Function MWWO_RequiresDistinctWaves()
-
-	variable err
 
 	Make wv
 
@@ -1829,7 +1821,6 @@ Function MWWO_RequiresDistinctWaves()
 		MoveWaveWithOverwrite(wv, wv)
 		FAIL()
 	catch
-		err = GetRtError(1)
 		PASS()
 	endtry
 
@@ -1906,8 +1897,6 @@ Function MWWO_ReturnsNewRef()
 End
 
 Function MWWO_RecursiveWorks()
-
-	variable err
 
 	Make/WAVE/N=2 dest
 	Make/D dest0 = p

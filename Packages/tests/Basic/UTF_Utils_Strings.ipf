@@ -112,7 +112,7 @@ End
 Function LBP_Aborts([variable var])
 
 	try
-		LineBreakingIntoPar("", minimumWidth = var); AbortOnRTE
+		LineBreakingIntoPar("", minimumWidth = var)
 		FAIL()
 	catch
 		PASS()

@@ -1488,7 +1488,7 @@ threadsafe Function/DF InfiniteWorker(DFREF dfr)
 	// We want to catch the thread abort RT on IP7
 	for(;;)
 		try
-			InfiniteWorkerHelper_IGNORE(); AbortOnRTE
+			InfiniteWorkerHelper_IGNORE()
 		catch
 		endtry
 	endfor

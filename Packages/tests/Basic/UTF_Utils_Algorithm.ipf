@@ -1009,7 +1009,7 @@ Function BST_ErrorChecking()
 	try
 		Make/FREE/D wvDouble
 		WAVE/T wv = wvDouble
-		BinarySearchText(wv, "a"); AbortOnRTE
+		BinarySearchText(wv, "a")
 		FAIL()
 	catch
 		PASS()
@@ -1017,7 +1017,7 @@ Function BST_ErrorChecking()
 
 	try
 		Make/FREE/T/N=(2, 2) wv
-		BinarySearchText(wv, "a"); AbortOnRTE
+		BinarySearchText(wv, "a")
 		FAIL()
 	catch
 		PASS()
@@ -1025,7 +1025,7 @@ Function BST_ErrorChecking()
 
 	try
 		Make/FREE/T wv = {"a"}
-		BinarySearchText(wv, "a", startPos = -1, endPos = 0); AbortOnRTE
+		BinarySearchText(wv, "a", startPos = -1, endPos = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1033,7 +1033,7 @@ Function BST_ErrorChecking()
 
 	try
 		Make/FREE/T wv = {"a"}
-		BinarySearchText(wv, "a", startPos = 0, endPos = -1); AbortOnRTE
+		BinarySearchText(wv, "a", startPos = 0, endPos = -1)
 		FAIL()
 	catch
 		PASS()
@@ -1041,7 +1041,7 @@ Function BST_ErrorChecking()
 
 	try
 		Make/FREE/T wv = {"a"}
-		BinarySearchText(wv, "a", startPos = NaN, endPos = 0); AbortOnRTE
+		BinarySearchText(wv, "a", startPos = NaN, endPos = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1049,7 +1049,7 @@ Function BST_ErrorChecking()
 
 	try
 		Make/FREE/T wv = {"a"}
-		BinarySearchText(wv, "a", startPos = 0, endPos = NaN); AbortOnRTE
+		BinarySearchText(wv, "a", startPos = 0, endPos = NaN)
 		FAIL()
 	catch
 		PASS()
@@ -1057,7 +1057,7 @@ Function BST_ErrorChecking()
 
 	try
 		Make/FREE/T wv = {"a"}
-		BinarySearchText(wv, "a", startPos = 1, endPos = 2); AbortOnRTE
+		BinarySearchText(wv, "a", startPos = 1, endPos = 2)
 		FAIL()
 	catch
 		PASS()
@@ -1065,7 +1065,7 @@ Function BST_ErrorChecking()
 
 	try
 		Make/FREE/T wv = {"a", "a"}
-		BinarySearchText(wv, "a", startPos = 1, endPos = 0); AbortOnRTE
+		BinarySearchText(wv, "a", startPos = 1, endPos = 0)
 		FAIL()
 	catch
 		PASS()

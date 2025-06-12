@@ -820,7 +820,7 @@ static Function PGCT_ListboxWorks()
 	CHECK_EQUAL_VAR(row, 1)
 
 	try
-		PGC_SetAndActivateControl(panel, "listbox_ctrl", val = 2); AbortONRTE
+		PGC_SetAndActivateControl(panel, "listbox_ctrl", val = 2)
 		FAIL()
 	catch
 		PASS()

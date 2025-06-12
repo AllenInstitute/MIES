@@ -69,7 +69,7 @@ Function WB_StimsetEntryParsing()
 	CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, STIMSET_ENTRY, key = "Unknown Entry"), NaN)
 
 	try
-		WB_GetWaveNoteEntry(text, 123); AbortOnRTE
+		WB_GetWaveNoteEntry(text, 123)
 		FAIL()
 	catch
 		PASS()

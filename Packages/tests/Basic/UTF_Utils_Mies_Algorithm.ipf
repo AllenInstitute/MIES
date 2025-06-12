@@ -12,7 +12,7 @@
 
 Function TestDecimateWithMethodInvalid()
 
-	variable newSize, numRows, decimationFactor, method, err
+	variable newSize, numRows, decimationFactor, method
 
 	Make/D/FREE data = {0.1, 1, 0.2, 2, 0.3, 3, 0.4, 4, 0.5, 5, 0.6, 6, 0.7, 7, 0.8, 8}
 	numRows          = DimSize(data, ROWS)
@@ -21,10 +21,9 @@ Function TestDecimateWithMethodInvalid()
 	Make/FREE/N=(DimSize(data, ROWS) / 2) output
 
 	try
-		DecimateWithMethod(data, output, 1, method); AbortOnRTE
+		DecimateWithMethod(data, output, 1, method)
 		FAIL()
 	catch
-		err = GetRTError(-1)
 		PASS()
 	endtry
 
@@ -32,146 +31,128 @@ Function TestDecimateWithMethodInvalid()
 		DecimateWithMethod(data, $"", decimationFactor, method); AbortOnRTE
 		FAIL()
 	catch
-		err = GetRTError(-1)
-		PASS()
+		CHECK_RTE(2)
 	endtry
 
 	try
 		DecimateWithMethod($"", output, decimationFactor, method); AbortOnRTE
 		FAIL()
 	catch
-		err = GetRTError(-1)
+		CHECK_RTE(2)
+	endtry
+
+	try
+		DecimateWithMethod(data, output, 0, method)
+		FAIL()
+	catch
 		PASS()
 	endtry
 
 	try
-		DecimateWithMethod(data, output, 0, method); AbortOnRTE
+		DecimateWithMethod(data, output, Inf, method)
 		FAIL()
 	catch
-		err = GetRTError(-1)
 		PASS()
 	endtry
 
 	try
-		DecimateWithMethod(data, output, Inf, method); AbortOnRTE
+		DecimateWithMethod(data, output, decimationFactor, -5)
 		FAIL()
 	catch
-		err = GetRTError(-1)
-		PASS()
-	endtry
-
-	try
-		DecimateWithMethod(data, output, decimationFactor, -5); AbortOnRTE
-		FAIL()
-	catch
-		err = GetRTError(-1)
 		PASS()
 	endtry
 
 	try
 		Duplicate/FREE output, outputWrong
 		Redimension/N=(5) outputWrong
-		DecimateWithMethod(data, outputWrong, decimationFactor, method); AbortOnRTE
+		DecimateWithMethod(data, outputWrong, decimationFactor, method)
 		FAIL()
 	catch
-		err = GetRTError(-1)
 		PASS()
 	endtry
 
 	try
-		DecimateWithMethod(data, output, decimationFactor, method, firstRowInp = -1); AbortOnRTE
+		DecimateWithMethod(data, output, decimationFactor, method, firstRowInp = -1)
 		FAIL()
 	catch
-		err = GetRTError(-1)
 		PASS()
 	endtry
 
 	try
-		DecimateWithMethod(data, output, decimationFactor, method, firstRowInp = 100); AbortOnRTE
+		DecimateWithMethod(data, output, decimationFactor, method, firstRowInp = 100)
 		FAIL()
 	catch
-		err = GetRTError(-1)
 		PASS()
 	endtry
 
 	try
-		DecimateWithMethod(data, output, decimationFactor, method, lastRowInp = -1); AbortOnRTE
+		DecimateWithMethod(data, output, decimationFactor, method, lastRowInp = -1)
 		FAIL()
 	catch
-		err = GetRTError(-1)
 		PASS()
 	endtry
 
 	try
-		DecimateWithMethod(data, output, decimationFactor, method, lastRowInp = 100); AbortOnRTE
+		DecimateWithMethod(data, output, decimationFactor, method, lastRowInp = 100)
 		FAIL()
 	catch
-		err = GetRTError(-1)
 		PASS()
 	endtry
 
 	try
-		DecimateWithMethod(data, output, decimationFactor, method, lastRowInp = -1); AbortOnRTE
+		DecimateWithMethod(data, output, decimationFactor, method, lastRowInp = -1)
 		FAIL()
 	catch
-		err = GetRTError(-1)
 		PASS()
 	endtry
 
 	try
-		DecimateWithMethod(data, output, decimationFactor, method, lastRowInp = 100); AbortOnRTE
+		DecimateWithMethod(data, output, decimationFactor, method, lastRowInp = 100)
 		FAIL()
 	catch
-		err = GetRTError(-1)
 		PASS()
 	endtry
 
 	try
-		DecimateWithMethod(data, output, decimationFactor, method, firstColInp = -1); AbortOnRTE
+		DecimateWithMethod(data, output, decimationFactor, method, firstColInp = -1)
 		FAIL()
 	catch
-		err = GetRTError(-1)
 		PASS()
 	endtry
 
 	try
-		DecimateWithMethod(data, output, decimationFactor, method, firstColInp = 100); AbortOnRTE
+		DecimateWithMethod(data, output, decimationFactor, method, firstColInp = 100)
 		FAIL()
 	catch
-		err = GetRTError(-1)
 		PASS()
 	endtry
 
 	try
-		DecimateWithMethod(data, output, decimationFactor, method, lastColInp = -1); AbortOnRTE
+		DecimateWithMethod(data, output, decimationFactor, method, lastColInp = -1)
 		FAIL()
 	catch
-		err = GetRTError(-1)
 		PASS()
 	endtry
 
 	try
-		DecimateWithMethod(data, output, decimationFactor, method, lastColInp = 100); AbortOnRTE
+		DecimateWithMethod(data, output, decimationFactor, method, lastColInp = 100)
 		FAIL()
 	catch
-		err = GetRTError(-1)
 		PASS()
 	endtry
 
 	try
-		DecimateWithMethod(data, output, decimationFactor, method, factor = $""); AbortOnRTE
+		DecimateWithMethod(data, output, decimationFactor, method, factor = $"")
 		FAIL()
 	catch
-		err = GetRTError(-1)
 		PASS()
 	endtry
 
 	try
 		Make/N=(100)/FREE factor
-		DecimateWithMethod(data, output, decimationFactor, method, factor = factor); AbortOnRTE
+		DecimateWithMethod(data, output, decimationFactor, method, factor = factor)
 		FAIL()
 	catch
-		err = GetRTError(-1)
 		PASS()
 	endtry
 End

@@ -1620,9 +1620,9 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string device)
 	AssertOnAndClearRTError()
 	try
 		if(s.TP && !s.DAQ)
-			PGC_SetAndActivateControl(device, "StartTestPulseButton"); AbortOnRTE
+			PGC_SetAndActivateControl(device, "StartTestPulseButton")
 		elseif(!s.TP && s.DAQ)
-			PGC_SetAndActivateControl(device, "DataAcquireButton"); AbortOnRTE
+			PGC_SetAndActivateControl(device, "DataAcquireButton")
 		endif
 	catch
 		if(s.FAR)

@@ -80,7 +80,7 @@ Function HAH_ChecksClampMode()
 	device = HAH_FillMockGuiStateWave(statusHS, clampModes)
 
 	try
-		DAG_HeadstageIsHighestActive(device, 0, clampMode = NaN); AbortOnRTE
+		DAG_HeadstageIsHighestActive(device, 0, clampMode = NaN)
 		FAIL()
 	catch
 		PASS()
