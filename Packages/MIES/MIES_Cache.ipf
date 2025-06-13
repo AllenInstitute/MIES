@@ -462,7 +462,7 @@ End
 /// @param psxParameters JSON dump of the psx/psxKernel operation parameters
 Function/S CA_PSXEventsKey(string comboKey, string psxParameters)
 
-	return CA_PSXBaseKey(comboKey, psxParameters) + " Events " + ":Version 2"
+	return CA_PSXBaseKey(comboKey, psxParameters) + " Events " + ":Version 3"
 End
 
 Function/S CA_PSXOperationKey(string comboKey, string psxParameters)
@@ -472,7 +472,7 @@ End
 
 Function/S CA_PSXAnalyzePeaks(string comboKey, string psxParameters)
 
-	return CA_PSXBaseKey(comboKey, psxParameters) + " Analyze Peaks " + ":Version 2"
+	return CA_PSXBaseKey(comboKey, psxParameters) + " Analyze Peaks " + ":Version 3"
 End
 
 /// @brief Return the key for the igor info entries
@@ -510,6 +510,11 @@ Function/S CA_GetLabnotebookNamesKey(WAVE/Z/T textualValues, WAVE/Z/T numericalV
 	ASSERT(!IsEmpty(key), "key can't be empty")
 
 	return "Version 1:" + Hash(key, HASH_SHA2_256)
+End
+
+Function/S CA_GetGoodFFTSizesKeys()
+
+	return "GetGoodFFTSizes Version 1"
 End
 
 ///@}
