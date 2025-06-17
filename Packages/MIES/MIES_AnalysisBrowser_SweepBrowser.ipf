@@ -67,11 +67,12 @@ End
 Function SB_GetIndexFromSweepDataPath(string win, DFREF dataDFR)
 
 	variable mapIndex, sweepNo
-	string device, expFolder, sweepFolder
+	string device, expFolder, sweepFolder, datafolder
 
 	WAVE/T sweepMap = SB_GetSweepBrowserMapFromGraph(win)
 
-	SplitSTring/E="root:MIES:Analysis:([^:]+):([^:]+):sweep:([^:]+):" GetDataFolder(1, dataDFR), expFolder, device, sweepFolder
+	datafolder = GetDataFolder(1, dataDFR)
+	SplitSTring/E="root:MIES:Analysis:((?:workFolder:)?[^:]+):([^:]+):sweep:([^:]+):" datafolder, expFolder, device, sweepFolder
 	ASSERT(V_flag == 3, "Unmatched string")
 
 	sweepNo = ExtractSweepNumber(sweepFolder)
