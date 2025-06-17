@@ -46,7 +46,7 @@ End
 static Function WB_OpenStimulusSetInWaveBuilderImpl(string graph, string trace, string menuItemText)
 
 	string extPanel, waveBuilder, stimset, device, channelTypeStr
-	variable sweepNo, channelNumber, abIndex, sbIndex, index, channelType
+	variable sweepNo, channelNumber, abIndex, sbIndex, index, channelType, ttlBit
 
 	extPanel = BSP_GetPanel(graph)
 
@@ -58,17 +58,27 @@ static Function WB_OpenStimulusSetInWaveBuilderImpl(string graph, string trace, 
 
 	channelTypeStr = TUD_GetUserData(graph, trace, "channelType")
 	channelType    = WhichListItem(channelTypeStr, XOP_CHANNEL_NAMES, ";", 0, 0)
-	if(channelType == -1)
+	channelNumber  = str2num(TUD_GetUserData(graph, trace, "channelNumber"))
+	sweepNo        = str2num(TUD_GetUserData(graph, trace, "sweepNumber"))
+
+	if(channelType == -1 || IsNaN(channelNumber))
 		printf "Context menu option \"%s\" could not find the stimulus set of the trace %s.\r", menuItemText, trace
 		ControlWindowToFront()
 		return NaN
 	endif
 
-	channelNumber = str2num(TUD_GetUserData(graph, trace, "channelNumber"))
 	WAVE   numericalValues = $TUD_GetUserData(graph, trace, "numericalValues")
 	WAVE/T textualValues   = $TUD_GetUserData(graph, trace, "textualValues")
 
-	[WAVE stimsetLBN, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, STIM_WAVE_NAME_KEY, channelNumber, channelType, DATA_ACQUISITION_MODE)
+	if(channelType == XOP_CHANNEL_TYPE_TTL)
+		ttlBit = str2num(TUD_GetUserData(graph, trace, "ttlBit"))
+		WAVE/Z HWToGUIChannelMap = GetActiveChannels(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_TTL, TTLMode = TTL_HWTOGUI_CHANNEL)
+		index = HWToGUIChannelMap[channelNumber][IsNaN(ttlBit) ? 0 : ttlBit]
+
+		WAVE/Z stimsetLBN = GetTTLLabnotebookEntry(textualValues, LABNOTEBOOK_TTL_STIMSETS, sweepNo)
+	else
+		[WAVE stimsetLBN, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, STIM_WAVE_NAME_KEY, channelNumber, channelType, DATA_ACQUISITION_MODE)
+	endif
 
 	if(!WaveExists(stimsetLBN))
 		printf "Context menu option \"%s\" could not find the stimulus set of the trace %s.\r", menuItemText, trace
