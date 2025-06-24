@@ -764,7 +764,7 @@ static Function SC_ReactToQCFailures(string device, variable sweepNo, string par
 			case SC_SPIKE_COUNT_STATE_STR_TOO_MANY:
 				oorDAScale[i] = SetDAScaleModOp(device, sweepNo, i, daScaleTooManySpikesModifier, daScaleTooManySpikesOperator, limitCheck = limitCheck)
 				break
-			case SC_SPIKE_COUNT_STATE_STR_MIXED:
+			case SC_SPIKE_COUNT_STATE_STR_MIXED: // fallthrough
 				printf "The spike count on headstage %d in sweep %d is mixed (some pulses have too few, others too many)\n", i, sweepNo
 				key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SPIKE_COUNTS_STATE, query = 1)
 				WAVE/Z/T spikeCountsRAC = GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, key, i, UNKNOWN_MODE)
@@ -775,7 +775,7 @@ static Function SC_ReactToQCFailures(string device, variable sweepNo, string par
 					// push to front on first time
 					ControlWindowToFront()
 				endif
-			case SC_SPIKE_COUNT_STATE_STR_TOO_FEW: // fallthrough
+			case SC_SPIKE_COUNT_STATE_STR_TOO_FEW:
 				oorDAScale[i] = SetDAScaleModOp(device, sweepNo, i, daScaleModifier, daScaleOperator, limitCheck = limitCheck)
 				break
 			case SC_SPIKE_COUNT_STATE_STR_GOOD:
