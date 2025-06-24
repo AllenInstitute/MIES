@@ -388,8 +388,8 @@ Function ValidFunc_V3(string device, STRUCT AnalysisFunction_V3 &s)
 			CHECK_EQUAL_VAR(s.sweepNo, 0)
 			CHECK_WAVE(GetSweepWave(device, s.sweepNo), NULL_WAVE)
 			break
-		case PRE_SWEEP_CONFIG_EVENT:
-		case PRE_SET_EVENT:
+		case PRE_SWEEP_CONFIG_EVENT: // fallthrough
+		case PRE_SET_EVENT: // fallthrough
 		case MID_SWEEP_EVENT:
 			CHECK_EQUAL_VAR(s.sweepNo, anaFuncTracker[POST_SWEEP_EVENT])
 			CHECK_WAVE(GetSweepWave(device, s.sweepNo), NULL_WAVE)
@@ -501,7 +501,7 @@ Function/S Params5_V3_CheckParam(string name, string params)
 				return "Nope that is not valid content"
 			endif
 			break
-		case "MyNum":
+		case "MyNum": // fallthrough
 			var = AFH_GetAnalysisParamNumerical(name, params)
 			if(!IsFinite(var))
 				FATAL_ERROR("trying to bug out")
@@ -825,7 +825,7 @@ Function AcquisitionStateTrackingFunc(string device, STRUCT AnalysisFunction_V3 
 		case MID_SWEEP_EVENT:
 			expectedAcqState = AS_MID_SWEEP
 			break
-		case POST_SWEEP_EVENT:
+		case POST_SWEEP_EVENT: // fallthrough
 		case POST_SET_EVENT:
 			// AS_POST_SET does not yet exist
 			expectedAcqState = AS_POST_SWEEP
@@ -1013,7 +1013,7 @@ End
 Function/S ComplainWithProperString_CheckParam(string name, string params)
 
 	strswitch(name)
-		case "param":
+		case "param": // fallthrough
 			if(!IsEmpty(name))
 				return "wrong value"
 			endif
@@ -1049,7 +1049,7 @@ Function AddUserEpochsForTPLike(string device, STRUCT AnalysisFunction_V3 &s)
 	variable ret
 
 	switch(s.eventType)
-		case PRE_SWEEP_CONFIG_EVENT:
+		case PRE_SWEEP_CONFIG_EVENT: // fallthrough
 			ret = MIES_PSQ#PSQ_CreateTestpulseEpochs(device, s.headstage, 3)
 			if(ret)
 				return 1

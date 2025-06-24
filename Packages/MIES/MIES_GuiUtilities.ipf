@@ -2108,7 +2108,7 @@ Function/S GetPopupMenuList(string value, variable type)
 	string path, cmd
 
 	switch(type)
-		case POPUPMENULIST_TYPE_BUILTIN:
+		case POPUPMENULIST_TYPE_BUILTIN: // fallthrough
 			strswitch(value)
 				case "COLORTABLEPOP":
 					return CTabList()

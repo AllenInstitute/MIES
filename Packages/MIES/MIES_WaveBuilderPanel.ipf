@@ -571,7 +571,7 @@ Function WBP_FinalTabHook(STRUCT WMTabControlAction &tca)
 	ShowControls(tca.win, HIDDEN_CONTROLS_SQUARE_PULSE)
 
 	switch(tca.tab)
-		case EPOCH_TYPE_CUSTOM:
+		case EPOCH_TYPE_CUSTOM: // fallthrough
 		case EPOCH_TYPE_COMBINE:
 			HideControls(tca.win, HIDDEN_CONTROLS_CUSTOM_COMBINE)
 			break
@@ -716,8 +716,8 @@ End
 Function WBP_SetVarProc_UpdateParam(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // fallthrough, mouse up
+		case 2: // fallthrough, Enter key
 		case 3: // Live update
 
 			if(sva.isStr)
@@ -873,8 +873,8 @@ End
 Function WBP_SetVarProc_SetSearchString(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // fallthrough, mouse up
+		case 2: // fallthrough, Enter key
 		case 3: // Live update
 			break
 		default:
@@ -1046,8 +1046,8 @@ End
 Function WBP_SetVarProc_EpochToEdit(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // fallthrough, mouse up
+		case 2: // fallthrough, Enter key
 		case 3: // Live update
 			WAVE SegWvType = GetSegmentTypeWave()
 			PGC_SetAndActivateControl(panel, "WBP_WaveType", val = SegWvType[sva.dval])
@@ -1436,8 +1436,8 @@ Function WBP_SetVarCombineEpochFormula(STRUCT WMSetVariableAction &sva) : SetVar
 	variable currentEpoch, lastSweep, channelType
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // fallthrough, mouse up
+		case 2: // fallthrough, Enter key
 		case 3: // Live update
 			win     = sva.win
 			formula = sva.sval
@@ -2006,9 +2006,9 @@ Function WBP_ListBoxProc_AnalysisParams(STRUCT WMListboxAction &lba) : ListBoxCo
 	variable row, col
 
 	switch(lba.eventCode)
-		case 1: // mouse down
-		case 3: // double click
-		case 4: // cell selection
+		case 1: // fallthrough, mouse down
+		case 3: // fallthrough, double click
+		case 4: // fallthrough, cell selection
 		case 5: // cell selection plus shift key
 
 			win = lba.win
@@ -2091,7 +2091,7 @@ static Function/WAVE WBP_ListControlsPerStimulusType(variable epochType)
 	list = ControlNameList(panel)
 
 	switch(epochType)
-		case EPOCH_TYPE_COMBINE:
+		case EPOCH_TYPE_COMBINE: // fallthrough
 		case EPOCH_TYPE_CUSTOM:
 			hiddenControls = HIDDEN_CONTROLS_CUSTOM_COMBINE
 			break

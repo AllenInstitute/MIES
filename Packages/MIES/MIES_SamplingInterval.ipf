@@ -554,7 +554,7 @@ static Function SI_ITC_CalculateMinSampInterval(string device, variable dataAcqO
 	endif
 
 	strswitch(deviceType)
-		case "ITC18":
+		case "ITC18": // fallthrough
 		case "ITC16":
 			return 2 * SI_FindMatchingTableEntry(lut, ac)
 			break
@@ -579,7 +579,7 @@ static Function/WAVE SI_GetMinSampIntWave(string device)
 	DFREF dfr = GetStaticDataFolder()
 
 	strswitch(deviceType)
-		case "ITC18USB":
+		case "ITC18USB": // fallthrough
 		case "ITC18":
 			WAVE/Z/SDFR=dfr wv = SampInt_ITC18USB
 
@@ -589,7 +589,7 @@ static Function/WAVE SI_GetMinSampIntWave(string device)
 
 			return wv
 			break
-		case "ITC16USB":
+		case "ITC16USB": // fallthrough
 		case "ITC16":
 			WAVE/Z/SDFR=dfr wv = SampInt_ITC16USB
 

@@ -454,7 +454,7 @@ static Function/WAVE PA_RetrievePulseInfosFromEpochs(string epochInfo)
 		level = str2num(epochs[i][EPOCH_COL_TREELEVEL])
 
 		switch(level)
-			case 2:
+			case 2: // fallthrough
 			case 3:
 				pulseNo = NumberByKey("Pulse", tags, "=")
 
@@ -2564,7 +2564,7 @@ threadsafe static Function PA_PulseHasFailed(WAVE pulseWave, WAVE noteWave, STRU
 	clampMode = GetNumberFromWaveNote(noteWave, NOTE_KEY_CLAMP_MODE)
 
 	switch(clampMode)
-		case V_CLAMP_MODE:
+		case V_CLAMP_MODE: // fallthrough
 		case I_EQUAL_ZERO_MODE:
 			numSpikes = 0
 			Make/D/FREE/N=(numSpikes) spikePositions
@@ -2714,8 +2714,8 @@ End
 Function PA_SetVarProc_Common(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // fallthrough, mouse up
+		case 2: // fallthrough, Enter key
 		case 3: // Live update
 			if(!cmpstr(sva.ctrlName, "setvar_pulseAver_numberOfSpikes"))
 				// switch to 1 on up/down buttons only
@@ -3694,7 +3694,7 @@ Function PA_TraceWindowHook(STRUCT WMWinHookStruct &s)
 	string traceGraph
 
 	switch(s.eventcode)
-		case EVENT_WINDOW_HOOK_MOUSEWHEEL:
+		case EVENT_WINDOW_HOOK_MOUSEWHEEL: // fallthrough
 		case EVENT_WINDOW_HOOK_RESIZE:
 			traceGraph = s.winName
 			Execute/P/Q/Z "PA_UpdateScaleBars(\"" + traceGraph + "\", 0)"

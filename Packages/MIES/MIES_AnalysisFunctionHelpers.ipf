@@ -1208,11 +1208,11 @@ Function AFH_LastSweepInSet(string device, variable sweepNo, variable headstage,
 	variable DAC, sweepsInSet, nextStimsetColumn, sweepOffset
 
 	switch(eventType)
-		case PRE_DAQ_EVENT:
+		case PRE_DAQ_EVENT: // fallthrough
 		case PRE_SWEEP_CONFIG_EVENT:
 			// no valid setup yet
 			return NaN
-		case PRE_SET_EVENT:
+		case PRE_SET_EVENT: // fallthrough
 		case MID_SWEEP_EVENT:
 			// we need to look at the last acquired sweep
 			sweepNo    -= 1

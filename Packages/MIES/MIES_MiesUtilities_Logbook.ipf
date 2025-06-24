@@ -111,7 +111,7 @@ Function/WAVE ExtractLogbookSliceTimeStamp(WAVE logbook)
 	logbookType = GetLogbookType(logbook)
 
 	switch(logbookType)
-		case LBT_LABNOTEBOOK:
+		case LBT_LABNOTEBOOK: // fallthrough
 		case LBT_RESULTS:
 			colOrLayer = 1
 			break
@@ -133,7 +133,7 @@ Function/WAVE ExtractLogbookSliceDeltaTime(WAVE logbook)
 	logbookType = GetLogbookType(logbook)
 
 	switch(logbookType)
-		case LBT_LABNOTEBOOK:
+		case LBT_LABNOTEBOOK: // fallthrough
 		case LBT_RESULTS:
 			FATAL_ERROR("Unsupported")
 			break
@@ -187,7 +187,7 @@ static Function/WAVE ExtractLogbookSlice(WAVE logbook, variable logbookType, var
 	endif
 
 	switch(logbookType)
-		case LBT_LABNOTEBOOK:
+		case LBT_LABNOTEBOOK: // fallthrough
 		case LBT_RESULTS:
 			entryName = GetDimLabel(logbook, COLS, colOrLayer)
 			col       = colOrLayer

@@ -75,10 +75,10 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, s
 	type = PSQ_PIPETTE_BATH
 
 	strswitch(name)
-		case PSQ_FMT_LBN_SWEEP_PASS:
-		case PSQ_FMT_LBN_PB_RESISTANCE:
-		case PSQ_FMT_LBN_PB_RESISTANCE_PASS:
-		case PSQ_FMT_LBN_SAMPLING_PASS:
+		case PSQ_FMT_LBN_SWEEP_PASS: // fallthrough
+		case PSQ_FMT_LBN_PB_RESISTANCE: // fallthrough
+		case PSQ_FMT_LBN_PB_RESISTANCE_PASS: // fallthrough
+		case PSQ_FMT_LBN_SAMPLING_PASS: // fallthrough
 		case PSQ_FMT_LBN_ASYNC_PASS:
 			key = CreateAnaFuncLBNKey(type, name, query = 1)
 			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
@@ -90,9 +90,9 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, s
 			val = GetLastSettingIndepSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 			Make/D/FREE wv = {val}
 			return wv
-		case PSQ_FMT_LBN_RMS_SHORT_PASS:
-		case PSQ_FMT_LBN_RMS_LONG_PASS:
-		case PSQ_FMT_LBN_LEAKCUR_PASS:
+		case PSQ_FMT_LBN_RMS_SHORT_PASS: // fallthrough
+		case PSQ_FMT_LBN_RMS_LONG_PASS: // fallthrough
+		case PSQ_FMT_LBN_LEAKCUR_PASS: // fallthrough
 		case PSQ_FMT_LBN_LEAKCUR:
 			key = CreateAnaFuncLBNKey(type, name, chunk = 0, query = 1)
 			return GetLastSettingEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)

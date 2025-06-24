@@ -872,16 +872,16 @@ Function/S SC_SpikeControl_CheckParam(string name, STRUCT CheckParametersStruct 
 				return "Invalid value " + num2str(val)
 			endif
 			break
-		case "DAScaleOperator":
-		case "DAScaleSpikePositionOperator":
+		case "DAScaleOperator": // fallthrough
+		case "DAScaleSpikePositionOperator": // fallthrough
 		case "DaScaleTooManySpikesOperator":
 			str = AFH_GetAnalysisParamTextual(name, s.params)
 			if(cmpstr(str, "+") && cmpstr(str, "*"))
 				return "Invalid string " + str
 			endif
 			break
-		case "DAScaleModifier":
-		case "DAScaleSpikePositionModifier":
+		case "DAScaleModifier": // fallthrough
+		case "DAScaleSpikePositionModifier": // fallthrough
 		case "DaScaleTooManySpikesModifier":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val))
@@ -912,7 +912,7 @@ Function/S SC_SpikeControl_CheckParam(string name, STRUCT CheckParametersStruct 
 	endswitch
 
 	strswitch(name)
-		case "DaScaleTooManySpikesModifier":
+		case "DaScaleTooManySpikesModifier": // fallthrough
 		case "DaScaleTooManySpikesOperator":
 			modifier = AFH_GetAnalysisParamNumerical("DaScaleTooManySpikesModifier", s.params)
 			operator = AFH_GetAnalysisParamTextual("DaScaleTooManySpikesOperator", s.params)

@@ -751,10 +751,10 @@ Function/WAVE JSONToWave(string str, [string path])
 	type = JSON_GetString(jsonID, path + "/type", ignoreErr = 1)
 
 	strswitch(type)
-		case "NT_FP64":
-		case "NT_FP32":
-		case "NT_I32":
-		case "NT_I16":
+		case "NT_FP64": // fallthrough
+		case "NT_FP32": // fallthrough
+		case "NT_I32": // fallthrough
+		case "NT_I16": // fallthrough
 		case "NT_I8":
 			WAVE/Z data = JSON_GetWave(jsonID, path + "/data/raw", waveMode = 1)
 			ASSERT(WaveExists(data), "Missing data")

@@ -73,11 +73,11 @@ threadsafe Function GetNumberFromType([variable var, string str, variable xopVar
 			case "AsyncAD":
 				return NUM_ASYNC_CHANNELS
 				break
-			case "DA":
+			case "DA": // fallthrough
 			case "TTL":
 				return NUM_DA_TTL_CHANNELS
 				break
-			case "DataAcqHS":
+			case "DataAcqHS": // fallthrough
 			case "Headstage":
 				return NUM_HEADSTAGES
 				break
@@ -93,11 +93,11 @@ threadsafe Function GetNumberFromType([variable var, string str, variable xopVar
 		endswitch
 	elseif(!ParamIsDefault(var))
 		switch(var)
-			case CHANNEL_TYPE_ASYNC:
+			case CHANNEL_TYPE_ASYNC: // fallthrough
 			case CHANNEL_TYPE_ALARM:
 				return NUM_ASYNC_CHANNELS
 				break
-			case CHANNEL_TYPE_TTL:
+			case CHANNEL_TYPE_TTL: // fallthrough
 			case CHANNEL_TYPE_DAC:
 				return NUM_DA_TTL_CHANNELS
 				break
@@ -116,7 +116,7 @@ threadsafe Function GetNumberFromType([variable var, string str, variable xopVar
 			case XOP_CHANNEL_TYPE_ADC:
 				return NUM_AD_CHANNELS
 				break
-			case XOP_CHANNEL_TYPE_DAC:
+			case XOP_CHANNEL_TYPE_DAC: // fallthrough
 			case XOP_CHANNEL_TYPE_TTL:
 				return NUM_DA_TTL_CHANNELS
 				break

@@ -800,8 +800,8 @@ End
 Function BSP_TimeAlignmentLevel(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // fallthrough, mouse up
+		case 2: // fallthrough, Enter key
 		case 3: // Live update
 			UpdateSettingsPanel(sva.win)
 			break
@@ -874,8 +874,8 @@ Function BSP_AxisScalingLevelCross(STRUCT WMSetVariableAction &sva) : SetVariabl
 	string graph, bsPanel
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // fallthrough, mouse up
+		case 2: // fallthrough, Enter key
 		case 3: // Live update
 			graph   = GetMainWindow(sva.win)
 			bsPanel = BSP_GetPanel(graph)

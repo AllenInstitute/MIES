@@ -1591,8 +1591,8 @@ Function P_SetPressureOffset(string device, variable headstage, variable userOff
 
 	switch(method)
 		// pulse based methods
-		case PRESSURE_METHOD_BREAKIN:
-		case PRESSURE_METHOD_CLEAR:
+		case PRESSURE_METHOD_BREAKIN: // fallthrough
+		case PRESSURE_METHOD_CLEAR: // fallthrough
 		case PRESSURE_METHOD_MANUAL:
 			// wait till next time point or ignore
 			break

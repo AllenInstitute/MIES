@@ -504,7 +504,7 @@ static Function TP_AutoBaseline(string device, variable headstage, WAVE TPResult
 		case TP_BASELINE_FIT_RESULT_OK:
 			// nothing to do
 			break
-		case TP_BASELINE_FIT_RESULT_ERROR:
+		case TP_BASELINE_FIT_RESULT_ERROR: // fallthrough
 		case TP_BASELINE_FIT_RESULT_TOO_NOISY:
 			TPResults[%AutoTPBaseline][headstage]              = 0
 			TPResults[%AutoTPBaselineRangeExceeded][headstage] = 0

@@ -834,7 +834,7 @@ Function/WAVE GetDAQDataWave(string device, variable mode)
 		case HARDWARE_ITC_DAC:
 			Make/W/N=(1, NUM_DA_TTL_CHANNELS) dfr:$name/WAVE=wv
 			break
-		case HARDWARE_NI_DAC:
+		case HARDWARE_NI_DAC: // fallthrough
 		case HARDWARE_SUTTER_DAC:
 			Make/WAVE/N=(NUM_DA_TTL_CHANNELS) dfr:$name/WAVE=wv_ni
 			WAVE wv = wv_ni

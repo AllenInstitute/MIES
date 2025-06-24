@@ -60,12 +60,12 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, s
 	type = PSQ_TRUE_REST_VM
 
 	strswitch(name)
-		case PSQ_FMT_LBN_SWEEP_PASS:
-		case PSQ_FMT_LBN_SAMPLING_PASS:
+		case PSQ_FMT_LBN_SWEEP_PASS: // fallthrough
+		case PSQ_FMT_LBN_SAMPLING_PASS: // fallthrough
 		case PSQ_FMT_LBN_ASYNC_PASS:
 			key = CreateAnaFuncLBNKey(type, name, query = 1)
 			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
-		case PSQ_FMT_LBN_BL_QC_PASS:
+		case PSQ_FMT_LBN_BL_QC_PASS: // fallthrough
 		case PSQ_FMT_LBN_SPIKE_PASS:
 			key = CreateAnaFuncLBNKey(type, name, query = 1)
 			return GetLastSettingEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
@@ -74,11 +74,11 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, s
 			val = GetLastSettingIndepSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 			Make/D/FREE wv = {val}
 			return wv
-		case PSQ_FMT_LBN_VM_FULL_AVG:
-		case PSQ_FMT_LBN_VM_FULL_AVG_ADIFF:
-		case PSQ_FMT_LBN_VM_FULL_AVG_ADIFF_PASS:
-		case PSQ_FMT_LBN_VM_FULL_AVG_RDIFF:
-		case PSQ_FMT_LBN_VM_FULL_AVG_RDIFF_PASS:
+		case PSQ_FMT_LBN_VM_FULL_AVG: // fallthrough
+		case PSQ_FMT_LBN_VM_FULL_AVG_ADIFF: // fallthrough
+		case PSQ_FMT_LBN_VM_FULL_AVG_ADIFF_PASS: // fallthrough
+		case PSQ_FMT_LBN_VM_FULL_AVG_RDIFF: // fallthrough
+		case PSQ_FMT_LBN_VM_FULL_AVG_RDIFF_PASS: // fallthrough
 		case PSQ_FMT_LBN_VM_FULL_AVG_PASS:
 			key = CreateAnaFuncLBNKey(type, name, query = 1)
 			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
@@ -88,15 +88,15 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, s
 		case PSQ_FMT_LBN_CHUNK_PASS:
 			key = CreateAnaFuncLBNKey(type, name, chunk = chunk, query = 1)
 			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
-		case PSQ_FMT_LBN_RMS_SHORT_PASS:
-		case PSQ_FMT_LBN_RMS_LONG_PASS:
+		case PSQ_FMT_LBN_RMS_SHORT_PASS: // fallthrough
+		case PSQ_FMT_LBN_RMS_LONG_PASS: // fallthrough
 		case PSQ_FMT_LBN_AVERAGEV:
 			key = CreateAnaFuncLBNKey(type, name, chunk = chunk, query = 1)
 			return GetLastSettingEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
-		case "Autobias Vcom":
+		case "Autobias Vcom": // fallthrough
 		case "Autobias":
 			return GetLastSettingEachSCI(numericalValues, sweepNo, name, PSQ_TEST_HEADSTAGE, DATA_ACQUISITION_MODE)
-		case "Inter-trial interval":
+		case "Inter-trial interval": // fallthrough
 		case "Get/Set Inter-trial interval":
 			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, name, PSQ_TEST_HEADSTAGE, DATA_ACQUISITION_MODE)
 		default:

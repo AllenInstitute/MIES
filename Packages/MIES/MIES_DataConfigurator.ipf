@@ -311,7 +311,7 @@ Function DC_CalculateDAQDataWaveLengthImpl(variable dataLength, variable hardwar
 			exponent = max(MINIMUM_ITCDATAWAVE_EXPONENT, exponent)
 
 			return 2^exponent
-		case HARDWARE_NI_DAC:
+		case HARDWARE_NI_DAC: // fallthrough
 		case HARDWARE_SUTTER_DAC:
 
 			return dataLength
@@ -422,7 +422,7 @@ static Function/WAVE DC_MakeNIChannelWave(string device, variable dataAcqOrTP, v
 	Redimension/N=(numRows)/Y=(dataType) channel
 	// @todo test
 	switch(channelType)
-		case XOP_CHANNEL_TYPE_DAC:
+		case XOP_CHANNEL_TYPE_DAC: // fallthrough
 		case XOP_CHANNEL_TYPE_TTL:
 			FastOp channel = 0
 			break
@@ -456,7 +456,7 @@ static Function/WAVE DC_MakeSUTTERChannelWave(string device, variable dataAcqOrT
 	WAVE channel = GetNIDAQChannelWave(device, index, dataAcqOrTP)
 	Redimension/N=(numRows)/Y=(dataType) channel
 	switch(channelType)
-		case XOP_CHANNEL_TYPE_DAC:
+		case XOP_CHANNEL_TYPE_DAC: // fallthrough
 		case XOP_CHANNEL_TYPE_TTL:
 			FastOp channel = 0
 			break
@@ -737,7 +737,7 @@ Function/WAVE DC_GetFilteredChannelState(string device, variable dataAcqOrTP, va
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		switch(channelType)
-			case CHANNEL_TYPE_TTL:
+			case CHANNEL_TYPE_TTL: // fallthrough
 			case CHANNEL_TYPE_ADC:
 				// DAQChannelType does not matter
 				return statusChannel

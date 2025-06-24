@@ -156,7 +156,7 @@ Function AS_GetSweepNumber(string device, [variable allowFallback])
 
 	// same sweep number derivation logic as in AFM_CallAnalysisFunctions
 	switch(acqState)
-		case AS_INACTIVE:
+		case AS_INACTIVE: // fallthrough
 		case AS_EARLY_CHECK:
 			// early return as this is not always a valid sweep number
 			if(allowFallback)
@@ -164,14 +164,14 @@ Function AS_GetSweepNumber(string device, [variable allowFallback])
 			endif
 
 			return NaN
-		case AS_PRE_DAQ:
-		case AS_PRE_SWEEP_CONFIG:
-		case AS_PRE_SWEEP:
+		case AS_PRE_DAQ: // fallthrough
+		case AS_PRE_SWEEP_CONFIG: // fallthrough
+		case AS_PRE_SWEEP: // fallthrough
 		case AS_MID_SWEEP:
 			sweepNo = DAG_GetNumericalValue(device, "SetVar_Sweep")
 			break
-		case AS_POST_SWEEP:
-		case AS_ITI:
+		case AS_POST_SWEEP: // fallthrough
+		case AS_ITI: // fallthrough
 		case AS_POST_DAQ:
 			sweepNo = DAG_GetNumericalValue(device, "SetVar_Sweep") - 1
 			break

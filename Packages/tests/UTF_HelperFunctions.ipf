@@ -751,7 +751,7 @@ Function/S CreateFakeSweepData(string win, string device, [variable sweepNo, FUN
 	hwType = GetHardwareType(device)
 	switch(sweepNo)
 		case 0: // fallthrough
-		case 1:
+		case 1: // fallthrough
 		case 2:
 			numChannels = 4 // from LBN creation in PrepareLBN_IGNORE -> DA2, AD6, DA3, AD7
 			WAVE sweep = sweepGen(sweepTemplate, numChannels)
