@@ -775,7 +775,7 @@ static Function SC_ReactToQCFailures(string device, variable sweepNo, string par
 					// push to front on first time
 					ControlWindowToFront()
 				endif
-			case SC_SPIKE_COUNT_STATE_STR_TOO_FEW: // fallthrough-by-design
+			case SC_SPIKE_COUNT_STATE_STR_TOO_FEW: // fallthrough
 				oorDAScale[i] = SetDAScaleModOp(device, sweepNo, i, daScaleModifier, daScaleOperator, limitCheck = limitCheck)
 				break
 			case SC_SPIKE_COUNT_STATE_STR_GOOD:

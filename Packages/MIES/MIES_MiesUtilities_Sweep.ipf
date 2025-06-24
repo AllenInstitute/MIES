@@ -452,7 +452,7 @@ Function LeftOverSweepTime(string device, variable fifoPos)
 		case HARDWARE_ITC_DAC:
 			// nothing to do
 			break
-		case HARDWARE_NI_DAC: // intended drop-through
+		case HARDWARE_NI_DAC: // fallthrough
 		case HARDWARE_SUTTER_DAC:
 			// we need to use one of the channel waves
 			WAVE/WAVE ref         = DAQDataWave

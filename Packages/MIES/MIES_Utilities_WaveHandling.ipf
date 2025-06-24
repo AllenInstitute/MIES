@@ -1218,7 +1218,7 @@ Function DuplicateWaveAndKeepTargetRef(WAVE/Z source, WAVE/Z target)
 	ASSERT(wTypeTgt == wTypeSrc, "Source and Target wave have different base types")
 
 	switch(WaveDims(source))
-		case 0: // intended drop through
+		case 0: // fallthrough
 		case 1:
 			Redimension/N=(DimSize(source, ROWS)) target
 			break

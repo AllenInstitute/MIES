@@ -146,7 +146,7 @@ Function HW_SelectDevice(variable hardwareType, variable deviceID, [variable fla
 		case HARDWARE_ITC_DAC:
 			return HW_ITC_SelectDevice(deviceID, flags = flags)
 			break
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // fallthrough
 		case HARDWARE_SUTTER_DAC:
 			// nothing to do
 			return 0
@@ -384,7 +384,7 @@ Function HW_EnableYoking(variable hardwareType, variable deviceID, [variable fla
 		case HARDWARE_ITC_DAC:
 			HW_ITC_EnableYoking(deviceID, flags = flags)
 			break
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // fallthrough
 		case HARDWARE_SUTTER_DAC:
 			FATAL_ERROR("Not implemented")
 			break
@@ -407,7 +407,7 @@ Function HW_DisableYoking(variable hardwareType, variable deviceID, [variable fl
 		case HARDWARE_ITC_DAC:
 			HW_ITC_DisableYoking(deviceID, flags = flags)
 			break
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // fallthrough
 		case HARDWARE_SUTTER_DAC:
 			FATAL_ERROR("Not implemented")
 			break
@@ -875,7 +875,7 @@ Function HW_GetDAFifoPosition(string device, variable dataAcqOrTP)
 	variable fifoPositionAD = ROVar(GetFifoPosition(device))
 
 	switch(hwType)
-		case HARDWARE_ITC_DAC: // intended drop through
+		case HARDWARE_ITC_DAC: // fallthrough
 		case HARDWARE_NI_DAC:
 			return fifoPositionAD
 		case HARDWARE_SUTTER_DAC:

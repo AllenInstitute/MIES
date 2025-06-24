@@ -190,7 +190,7 @@ threadsafe static Function/WAVE GetActiveChannelsTTL(WAVE numericalValues, WAVE 
 			return $""
 		endif
 		switch(TTLmode)
-			case TTL_HARDWARE_CHANNEL: // intended drop-through
+			case TTL_HARDWARE_CHANNEL: // fallthrough
 			case TTL_DAEPHYS_CHANNEL:
 				return ListToNumericWave(ttlChannels[index], ";")
 			case TTL_GUITOHW_CHANNEL:

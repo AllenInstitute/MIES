@@ -835,7 +835,7 @@ Function/WAVE GetDAQDataWave(string device, variable mode)
 			Make/W/N=(1, NUM_DA_TTL_CHANNELS) dfr:$name/WAVE=wv
 			break
 		case HARDWARE_NI_DAC:
-		case HARDWARE_SUTTER_DAC: // intended drop through
+		case HARDWARE_SUTTER_DAC: // fallthrough
 			Make/WAVE/N=(NUM_DA_TTL_CHANNELS) dfr:$name/WAVE=wv_ni
 			WAVE wv = wv_ni
 			break
@@ -1231,7 +1231,7 @@ Function/WAVE GetTTLWave(string device)
 			return wv
 
 			break
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // fallthrough
 		case HARDWARE_SUTTER_DAC:
 			WAVE/Z/WAVE/SDFR=dfr wv_ni = TTLWave
 

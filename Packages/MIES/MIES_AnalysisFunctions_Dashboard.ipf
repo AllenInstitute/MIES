@@ -188,7 +188,7 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 		case SC_SPIKE_CONTROL:
 			return AD_GetSpikeControlFailMsg(numericalValues, textualValues, sweepNo, headstage)
 #ifdef AUTOMATED_TESTING
-		case TEST_ANALYSIS_FUNCTION: // fallthrough-by-design
+		case TEST_ANALYSIS_FUNCTION: // fallthrough
 #endif
 		case INVALID_ANALYSIS_FUNCTION:
 			return NOT_AVAILABLE
@@ -383,7 +383,7 @@ static Function AD_FillWaves(string win, WAVE/T list, WAVE/T info)
 					[WAVE passingSweeps, WAVE failingSweeps] = AFH_GetRheobaseSweepsSCISweepQCSplitted(numericalValues, sweepNo, headstage, sweeps, passed)
 					break
 #ifdef AUTOMATED_TESTING
-				case TEST_ANALYSIS_FUNCTION: // fallthrough-by-design
+				case TEST_ANALYSIS_FUNCTION: // fallthrough
 #endif
 				case INVALID_ANALYSIS_FUNCTION:
 					// all sweeps are both passing and failing

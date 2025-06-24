@@ -545,11 +545,11 @@ static Function/S DAG_GetSpecificCtrlNum(string device, string list)
 		switch(controlType)
 			case CONTROL_TYPE_CHECKBOX:
 			case CONTROL_TYPE_POPUPMENU:
-			case CONTROL_TYPE_SLIDER: // fallthrough by design
+			case CONTROL_TYPE_SLIDER: // fallthrough
 				subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)
 				break
 			case CONTROL_TYPE_VALDISPLAY:
-			case CONTROL_TYPE_SETVARIABLE: // fallthrough by design
+			case CONTROL_TYPE_SETVARIABLE: // fallthrough
 				if(!DoesControlHaveInternalString(recMacro))
 					subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)
 				endif
@@ -581,7 +581,7 @@ static Function/S DAG_GetSpecificCtrlTxT(string device, string list)
 				subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)
 				break
 			case CONTROL_TYPE_VALDISPLAY:
-			case CONTROL_TYPE_SETVARIABLE: // fallthrough by design
+			case CONTROL_TYPE_SETVARIABLE: // fallthrough
 				if(DoesControlHaveInternalString(recMacro))
 					subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)
 				endif

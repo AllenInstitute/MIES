@@ -482,7 +482,7 @@ threadsafe Function/S CA_IgorInfoKey(variable selector)
 
 	// only add new selectors if their output is fixed for the current IP session
 	switch(selector)
-		case 0: // fallthrough-by-design
+		case 0: // fallthrough
 		case 3:
 			sprintf key, "IgorInfo(%d):Version 1", selector
 			return key

@@ -167,12 +167,12 @@ Function AS_GetSweepNumber(string device, [variable allowFallback])
 		case AS_PRE_DAQ:
 		case AS_PRE_SWEEP_CONFIG:
 		case AS_PRE_SWEEP:
-		case AS_MID_SWEEP: // fallthrough-by-design
+		case AS_MID_SWEEP: // fallthrough
 			sweepNo = DAG_GetNumericalValue(device, "SetVar_Sweep")
 			break
 		case AS_POST_SWEEP:
 		case AS_ITI:
-		case AS_POST_DAQ: // fallthrough-by-design
+		case AS_POST_DAQ: // fallthrough
 			sweepNo = DAG_GetNumericalValue(device, "SetVar_Sweep") - 1
 			break
 		default:

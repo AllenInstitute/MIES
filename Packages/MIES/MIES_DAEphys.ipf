@@ -1694,7 +1694,7 @@ static Function DAP_IsSampleIntervalValid(string device, variable channelType, v
 	endif
 
 	switch(channelType)
-		case XOP_CHANNEL_TYPE_DAC: // intended drop-through
+		case XOP_CHANNEL_TYPE_DAC: // fallthrough
 		case XOP_CHANNEL_TYPE_TTL:
 			WAVE allowedIntervals = GetSutterDACTTLSampleInterval()
 			FindValue/Z/V=(sampInt) allowedIntervals

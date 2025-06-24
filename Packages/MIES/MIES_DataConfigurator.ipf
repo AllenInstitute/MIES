@@ -177,7 +177,7 @@ static Function DC_ChannelCalcForDAQConfigWave(string device, variable dataAcqOr
 			endif
 			return numDACs + numADCs + numTTLsRackZero + numTTLsRackOne
 			break
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // fallthrough
 		case HARDWARE_SUTTER_DAC:
 			if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 				numDACs = DC_NoOfChannelsSelected(device, CHANNEL_TYPE_DAC)
@@ -312,7 +312,7 @@ Function DC_CalculateDAQDataWaveLengthImpl(variable dataLength, variable hardwar
 
 			return 2^exponent
 		case HARDWARE_NI_DAC:
-		case HARDWARE_SUTTER_DAC: // intended drop-through
+		case HARDWARE_SUTTER_DAC:
 
 			return dataLength
 			break
@@ -360,7 +360,7 @@ static Function [WAVE/Z DAQDataWave, WAVE/WAVE NIDataWave] DC_MakeAndGetDAQDataW
 			SetScale/P x, 0, s.samplingIntervalDA * MICRO_TO_MILLI, "ms", ITCDataWave
 
 			return [ITCDataWave, $""]
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // fallthrough
 		case HARDWARE_SUTTER_DAC:
 			WAVE/WAVE NISUDataWave = GetDAQDataWave(device, dataAcqOrTP)
 			Redimension/N=(s.numActiveChannels) NISUDataWave
@@ -423,7 +423,7 @@ static Function/WAVE DC_MakeNIChannelWave(string device, variable dataAcqOrTP, v
 	// @todo test
 	switch(channelType)
 		case XOP_CHANNEL_TYPE_DAC:
-		case XOP_CHANNEL_TYPE_TTL: // intended drop through
+		case XOP_CHANNEL_TYPE_TTL: // fallthrough
 			FastOp channel = 0
 			break
 		case XOP_CHANNEL_TYPE_ADC:
@@ -457,7 +457,7 @@ static Function/WAVE DC_MakeSUTTERChannelWave(string device, variable dataAcqOrT
 	Redimension/N=(numRows)/Y=(dataType) channel
 	switch(channelType)
 		case XOP_CHANNEL_TYPE_DAC:
-		case XOP_CHANNEL_TYPE_TTL: // intended drop through
+		case XOP_CHANNEL_TYPE_TTL: // fallthrough
 			FastOp channel = 0
 			break
 		case XOP_CHANNEL_TYPE_ADC:
@@ -616,7 +616,7 @@ static Function DC_CalculateChannelSizeForScaledData(string device, variable dat
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
 			return (dataAcqOrTP == DATA_ACQUISITION_MODE) ? ROVar(GetStopCollectionPoint(device)) : TPSettingsCalc[%totalLengthPointsTP_ADC]
-		case HARDWARE_NI_DAC: // intended-drop-through
+		case HARDWARE_NI_DAC: // fallthrough
 		case HARDWARE_SUTTER_DAC:
 			if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 				WAVE/WAVE dataWave = GetDAQDataWave(device, dataAcqOrTP)
@@ -885,7 +885,7 @@ static Function DC_PlaceDataInDAQConfigWave(string device, variable dataAcqOrTP)
 					DAQConfigWave[j][%DAQChannelType] = DAQ_CHANNEL_TYPE_DAQ
 				endif
 				break
-			case HARDWARE_NI_DAC: // intended drop through
+			case HARDWARE_NI_DAC: // fallthrough
 			case HARDWARE_SUTTER_DAC:
 				WAVE statusTTL = DAG_GetChannelState(device, CHANNEL_TYPE_TTL)
 				numEntries = DimSize(statusTTL, ROWS)
@@ -1036,7 +1036,7 @@ static Function DC_MakeTTLWave(string device, STRUCT DataConfigurationResult &s)
 	endif
 
 	switch(s.hardwareType)
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // fallthrough
 		case HARDWARE_SUTTER_DAC:
 			DC_NI_MakeTTLWave(device, s)
 			break
@@ -1066,7 +1066,7 @@ static Function DC_WriteTTLIntoDAQDataWave(string device, STRUCT DataConfigurati
 	[minLimit, maxLimit] = HW_GetDataRange(s.hardwareType, XOP_CHANNEL_TYPE_TTL, 0)
 
 	switch(s.hardwareType)
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // fallthrough
 		case HARDWARE_SUTTER_DAC:
 			WAVE/WAVE NIDataWave = GetDAQDataWave(device, s.dataAcqOrTP)
 			WAVE/WAVE TTLWaveNI  = GetTTLWave(device)
@@ -1350,7 +1350,7 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 					WAVE/W ITCDataWave = DAQDataWave
 					Multithread ITCDataWave[][s.numDACEntries, s.numDACEntries + s.numADCEntries - 1] = 0
 					break
-				case HARDWARE_NI_DAC: // intended drop through
+				case HARDWARE_NI_DAC: // fallthrough
 				case HARDWARE_SUTTER_DAC:
 					WAVE/WAVE NIDataWave = DAQDataWave
 					for(i = 0; i < s.numADCEntries; i += 1)
@@ -1470,7 +1470,7 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 						ITCDataWave[DimSize(ITCDataWave, ROWS) - cutOff, *][i] = 0
 					endif
 					break
-				case HARDWARE_NI_DAC: // intended drop through
+				case HARDWARE_NI_DAC: // fallthrough
 				case HARDWARE_SUTTER_DAC:
 					WAVE NIChannel = NIDataWave[i]
 					Multithread NIChannel[] =                                         \
@@ -1507,7 +1507,7 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 						            limit(tpAmp * s.testPulse[p], minLimit, maxLimit); AbortOnRTE
 					endif
 					break
-				case HARDWARE_NI_DAC: // intended drop through
+				case HARDWARE_NI_DAC: // fallthrough
 				case HARDWARE_SUTTER_DAC:
 					// for an index step of 1 in NIChannel, singleStimSet steps decimationFactor
 					// for an index step of 1 in singleStimset, NIChannel steps 1 / decimationFactor
@@ -1934,7 +1934,7 @@ static Function [variable result, variable row, variable column] DC_CheckIfDataW
 			endif
 
 			return [0, NaN, NaN]
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // fallthrough
 		case HARDWARE_SUTTER_DAC:
 			WAVE/WAVE dataWave = GetDAQDataWave(device, dataAcqOrTP)
 			ASSERT(IsWaveRefWave(dataWave), "Unexpected wave type")

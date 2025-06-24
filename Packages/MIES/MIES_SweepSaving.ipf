@@ -245,7 +245,7 @@ Function/WAVE SWS_GetChannelGains(string device, [variable timing])
 
 	hardwareType = GetHardwareType(device)
 	switch(hardwareType)
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // fallthrough
 		case HARDWARE_SUTTER_DAC:
 			//  in mV^-1, w'(V) = w * g
 			if(numDACs > 0)

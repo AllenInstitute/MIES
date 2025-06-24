@@ -119,7 +119,7 @@ Function ValidMultHS_V1(string device, variable eventType, WAVE DAQDataWave, var
 		case HARDWARE_ITC_DAC:
 			CHECK_WAVE(DAQDataWave, NUMERIC_WAVE)
 			break
-		case HARDWARE_NI_DAC: // intended drop-through
+		case HARDWARE_NI_DAC: // fallthrough
 		case HARDWARE_SUTTER_DAC:
 			CHECK_WAVE(DAQDataWave, WAVE_WAVE)
 			break
@@ -296,7 +296,7 @@ Function ValidFunc_V3(string device, STRUCT AnalysisFunction_V3 &s)
 					endfor
 				endif
 				break
-			case HARDWARE_NI_DAC: // intended drop through
+			case HARDWARE_NI_DAC: // fallthrough
 			case HARDWARE_SUTTER_DAC:
 				WAVE/WAVE DAQDataWaveRef = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
 				CHECK_EQUAL_VAR(DimSize(s.scaledDACWave, ROWS), DimSize(DAQDataWaveRef, ROWS))
@@ -351,7 +351,7 @@ Function ValidFunc_V3(string device, STRUCT AnalysisFunction_V3 &s)
 				CHECK_EQUAL_VAR(s.sampleIntervalDA, DimDelta(DAQDataWave, ROWS))
 				CHECK_EQUAL_VAR(s.sampleIntervalAD, DimDelta(DAQDataWave, ROWS))
 				break
-			case HARDWARE_NI_DAC: // intended drop-through
+			case HARDWARE_NI_DAC: // fallthrough
 			case HARDWARE_SUTTER_DAC:
 				WAVE/WAVE DAQDataWaveRef = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
 				Make/FREE/N=(DimSize(DAQDataWaveRef, ROWS)) sizes = DimSize(DAQDataWaveRef[p], ROWS)

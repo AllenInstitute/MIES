@@ -501,7 +501,7 @@ static Function/S AB_GetSessionStartTime(string device, variable firstSweepNo, s
 			endif
 			return sessionStartTime
 		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
-		case ANALYSISBROWSER_FILE_TYPE_NWBv2: // intended fallthrough
+		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 			sessionStartTime = ROStr(GetAnalysisExpSessionStartTime(dataFolder))
 			return sessionStartTime
 		default:
@@ -873,7 +873,7 @@ static Function AB_LoadHistoryAndLogsFromFile(string discLocation, string dataFo
 			endif
 			break
 		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
-		case ANALYSISBROWSER_FILE_TYPE_NWBv2: // intended fallthrough
+		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 			AB_LoadHistoryAndLogsFromNWB(discLocation, dataFolder, fileType)
 			break
 		default:
