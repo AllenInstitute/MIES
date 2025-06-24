@@ -212,6 +212,7 @@ Function TestAnalysisFunction_V3(string device, STRUCT AnalysisFunction_V3 &s)
 			case "wave":
 				WAVE/Z wv = AFH_GetAnalysisParamWave(name, s.params)
 				print wv
+				break
 			case "textwave":
 				WAVE/Z/T wvText = AFH_GetAnalysisParamTextWave(name, s.params)
 				print wvText

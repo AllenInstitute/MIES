@@ -284,6 +284,7 @@ Function/WAVE MSQ_CreateOverrideResults(string device, variable headstage, varia
 			numLayers  = 0
 			numChunks  = 0
 			typeOfWave = IGOR_TYPE_64BIT_FLOAT
+			break
 		case MSQ_DA_SCALE:
 			// nothing to set
 			break

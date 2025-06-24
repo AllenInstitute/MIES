@@ -2933,6 +2933,7 @@ Function AB_ButtonProc_LoadBoth(STRUCT WMButtonAction &ba) : ButtonControl
 		case 2:
 			PGC_SetAndActivateControl(ba.win, "button_load_stimsets")
 			PGC_SetAndActivateControl(ba.win, "button_load_sweeps")
+			break
 		default:
 			break
 	endswitch
@@ -3852,8 +3853,8 @@ Function AB_ButtonProc_LoadTPStorage(STRUCT WMButtonAction &ba) : ButtonControl
 	switch(ba.eventcode)
 		case 2:
 			AB_CheckPanelVersion(ba.win)
-
 			AB_LoadFromFile(AB_LOAD_TP_STORAGE)
+			break
 		default:
 			break
 	endswitch
@@ -3866,8 +3867,8 @@ Function AB_ButtonProc_LoadHistoryAndLogs(STRUCT WMButtonAction &ba) : ButtonCon
 	switch(ba.eventcode)
 		case 2:
 			AB_CheckPanelVersion(ba.win)
-
 			AB_LoadFromFile(AB_LOAD_HISTORYANDLOGS)
+			break
 		default:
 			break
 	endswitch

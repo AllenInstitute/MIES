@@ -502,6 +502,7 @@ static Function [variable jsonId, string jsonPath, variable lastCalculation, var
 			if(!IsEmpty(buffer))
 				SF_ParserAddJSON(jsonId, jsonPath, buffer, indentLevel)
 			endif
+			break
 	endswitch
 
 	return [jsonId, jsonPath, lastCalculation, wasArrayCreated, createdArrayLocal]
@@ -684,6 +685,7 @@ static Function [variable state, variable arrayLevel, variable level] SF_ParserG
 		default:
 			state = SF_STATE_COLLECT
 			SFH_ASSERT(GrepString(token, SF_PARSER_REGEX_OTHER_VALID_CHARS), "undefined pattern in formula near: " + buffer + token, jsonId = jsonId)
+			break
 	endswitch
 
 	if(level > 0 || arrayLevel > 0)

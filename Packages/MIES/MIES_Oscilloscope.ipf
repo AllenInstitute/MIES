@@ -897,6 +897,7 @@ static Function SCOPE_ITC_UpdateOscilloscope(string device, variable dataAcqOrTP
 				Duplicate/FREE/RMD=[startOfADColumns, endOfADColumns - 1] allGain, gain
 				gain[] = 1 / gain[p]
 				DecimateWithMethod(DAQDataWave, OscilloscopeData, decFactor, decMethod, firstRowInp = fifoPosGlobal, lastRowInp = fifoPos - 1, firstColInp = startOfADColumns, lastColInp = endOfADColumns - 1, factor = gain)
+				break
 		endswitch
 	else
 		FATAL_ERROR("Invalid dataAcqOrTP value")

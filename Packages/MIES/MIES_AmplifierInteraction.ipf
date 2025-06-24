@@ -1748,6 +1748,7 @@ static Function AI_SendToAmp(string device, variable headStage, variable mode, v
 			else
 				ret = AI_WriteToMCC(func, value)
 			endif
+			break
 	endswitch
 
 	if(accessType == MCC_WRITE)

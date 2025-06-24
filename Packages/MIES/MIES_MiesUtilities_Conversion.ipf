@@ -261,6 +261,7 @@ Function MapAnaFuncToConstant(string anaFunc)
 #else
 			return INVALID_ANALYSIS_FUNCTION
 #endif // AUTOMATED_TESTING
+			break
 	endswitch
 End
 

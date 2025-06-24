@@ -827,6 +827,7 @@ static Function [variable qc, string msg] AD_GetBaselineFailMsg(variable anaFunc
 			break
 		default:
 			BUG("No support for analysis function type: " + num2str(anaFuncType))
+			break
 	endswitch
 
 	return [NaN, ""]
