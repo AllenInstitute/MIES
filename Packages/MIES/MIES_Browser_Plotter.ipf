@@ -92,7 +92,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 	variable axisIndex, numChannels
 	variable numDACs, numADCs, numTTLs, i, j, k, hasPhysUnit, hardwareType
 	variable moreData, chan, guiChannelNumber, numHorizWaves, numVertWaves, idx
-	variable numTTLBits, headstage, channelType, isTTLSplitted
+	variable numTTLBits, headstage, channelType, isTTLSplitted, ttlNumber
 	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled, oodDAQEnabled
 	variable stimSetLength, samplingIntDA, samplingIntSweep, samplingIntervalFactor, first, last, count, ttlBit
 	variable numRegions, numRangesPerEntry, traceCounter
@@ -352,7 +352,11 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 				ttlBit = (channelType == XOP_CHANNEL_TYPE_TTL && tgs.splitTTLBits) ? j : NaN
 
 				if(channelType == XOP_CHANNEL_TYPE_TTL)
-					guiChannelNumber = channelMapHWToGUI[chan][IsNaN(ttlBit) ? 0 : ttlBit]
+					if(tgs.splitTTLBits)
+						guiChannelNumber = channelMapHWToGUI[chan][ttlBit]
+					else
+						guiChannelNumber = chan
+					endif
 				else
 					guiChannelNumber = chan
 				endif
@@ -377,8 +381,9 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 				// 15:    TTL bits (sum) rack one
 				// 16-19: TTL bits (single) rack one
 
-				[s]   = GetHeadstageColor(headstage, channelType = channelType, channelNumber = guiChannelNumber, isSplitted = isTTLSplitted)
-				first = 0
+				ttlNumber = isTTLSplitted ? GUIChannelNumber : j
+				[s]       = GetHeadstageColor(headstage, channelType = channelType, channelNumber = ttlNumber, isSplitted = isTTLSplitted)
+				first     = 0
 
 				// number of horizontally distributed
 				// waves per channel type

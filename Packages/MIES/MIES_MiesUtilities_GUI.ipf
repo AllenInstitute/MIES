@@ -101,7 +101,8 @@ End
 ///
 /// @param headstage     Headstage, Use "NaN" for non-associated channels
 /// @param channelType   [optional, empty by default] The channel type for non-associated channels, currently only XOP_CHANNEL_TYPE_TTL is evaluated
-/// @param channelNumber [optional, empty by default] For plotting "TTL" channels only, GUI channel number
+/// @param channelNumber [optional, empty by default] For plotting "TTL" channels only, GUI channel number for `isSplitted` being true,
+///                       a running index of the hardware channel otherwise
 /// @param isSplitted    [optional, default 1] For plotting "TTL" channels only, Flag if the color for a splitted or unsplitted channel should be returned
 Function [STRUCT RGBColor s] GetHeadstageColor(variable headstage, [variable channelType, variable channelNumber, variable isSplitted])
 

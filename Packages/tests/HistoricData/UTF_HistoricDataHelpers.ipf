@@ -137,7 +137,8 @@ End
 
 Function/WAVE GetHistoricDataFilesWithTTLData()
 
-	Make/FREE/T files = {"C57BL6J-684963.02.04.01_pislocin_puff_2023_07_19_141829-compressed.nwb"}
+	Make/FREE/T files = {"C57BL6J-684963.02.04.01_pislocin_puff_2023_07_19_141829-compressed.nwb", \
+	                     "HardwareBasic-ITC1600_18-V2-multiple-TTL-hardware-channels.nwb"}
 	DownloadFilesIfRequired(files)
 	SetLabelsForDGWave(files)
 
