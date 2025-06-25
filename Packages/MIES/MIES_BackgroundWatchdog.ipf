@@ -31,7 +31,7 @@ End
 
 static Function FATAL_ERROR(string errorMsg)
 
-	ASSERT(0, errorMsg)
+	ASSERT(0, errorMsg) // NOLINT
 End
 
 static Function SetValDisplay(string win, string control, [variable var, string str, string format])

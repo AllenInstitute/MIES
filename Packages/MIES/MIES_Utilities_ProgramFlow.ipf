@@ -334,7 +334,7 @@ End
 /// @brief Abort program execution with a message
 threadsafe Function FATAL_ERROR(string errorMsg)
 
-	return ASSERT_TS(0, errorMsg)
+	return ASSERT_TS(0, errorMsg) // NOLINT
 End
 
 #ifdef MACINTOSH

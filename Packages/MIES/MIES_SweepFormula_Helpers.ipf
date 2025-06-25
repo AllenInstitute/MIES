@@ -381,7 +381,7 @@ Function SFH_FATAL_ERROR(string message, [variable jsonId])
 		JSON_Release(jsonId, ignoreErr = 1)
 	endif
 
-	return SFH_ASSERT(0, message)
+	return SFH_ASSERT(0, message) // NOLINT
 End
 
 Function/WAVE SFH_GetEmptyRange()
