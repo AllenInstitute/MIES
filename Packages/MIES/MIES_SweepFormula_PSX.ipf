@@ -5186,6 +5186,9 @@ Function/WAVE PSX_Operation(STRUCT SF_ExecutionData &exd)
 		SFH_FATAL_ERROR("Could not gather sweep data for psx")
 	endtry
 
+	parameterPath = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX
+	JSON_AddVariable(parameterJsonID, parameterPath + "/peakThreshold", peakThresh)
+
 	JWN_SetWaveNoteFromJSON(output, parameterJsonID)
 	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_PSX)
 	JWN_SetStringInWaveNote(output, SF_META_OPSTACK, AddListItem(SF_OP_PSX, ""))
