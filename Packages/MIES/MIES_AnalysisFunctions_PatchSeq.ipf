@@ -230,7 +230,7 @@ Function PSQ_GetPulseSettingsForType(variable type, STRUCT PSQ_PulseSettings &s)
 			break
 		case PSQ_RHEOBASE:
 		case PSQ_RAMP:
-		case PSQ_CHIRP: // fallthrough
+		case PSQ_CHIRP:
 			s.prePulseChunkLength  = PSQ_BL_EVAL_RANGE
 			s.postPulseChunkLength = PSQ_BL_EVAL_RANGE
 			s.pulseDuration        = NaN
@@ -242,7 +242,7 @@ Function PSQ_GetPulseSettingsForType(variable type, STRUCT PSQ_PulseSettings &s)
 			break
 		case PSQ_SEAL_EVALUATION:
 		case PSQ_TRUE_REST_VM:
-		case PSQ_ACC_RES_SMOKE: // fallthrough
+		case PSQ_ACC_RES_SMOKE:
 			s.prePulseChunkLength     = NaN
 			s.postPulseChunkLength    = NaN
 			s.pulseDuration           = NaN
@@ -1860,8 +1860,7 @@ static Function PSQ_DS_GetDAScaleOffset(string device, variable headstage, strin
 			WAVE/Z setting         = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
 			ASSERT(WaveExists(setting), "Could not find DAScale value of matching rheobase sweep")
 			return setting[headstage]
-		case PSQ_DS_SUB:
-		// fallthrough
+		case PSQ_DS_SUB: // fallthrough
 		case PSQ_DS_ADAPT:
 			return 0
 		default:
@@ -6632,7 +6631,7 @@ Function/S PSQ_Chirp_CheckParam(string name, STRUCT CheckParametersStruct &s)
 			if(AFH_GetAnalysisParamNumerical("InnerRelativeBound", s.params) >= AFH_GetAnalysisParamNumerical("OuterRelativeBound", s.params))
 				return "InnerRelativeBound must be smaller than OuterRelativeBound"
 			endif
-		case "OuterRelativeBound": // fallthrough
+		case "OuterRelativeBound":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val) || val < PSQ_CR_LIMIT_BAND_LOW || val > PSQ_CR_LIMIT_BAND_HIGH)
 				return "Out of bounds with value " + num2str(val)
@@ -6645,7 +6644,7 @@ Function/S PSQ_Chirp_CheckParam(string name, STRUCT CheckParametersStruct &s)
 			endif
 			break
 		case "SpikeCheck":
-		case "UseTrueRestingMembranePotentialVoltage": // fallthrough
+		case "UseTrueRestingMembranePotentialVoltage":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val))
 				return "Must be a finite value"
@@ -7167,11 +7166,11 @@ Function PSQ_Chirp(string device, STRUCT AnalysisFunction_V3 &s)
 
 		switch(boundsAction)
 			case PSQ_CR_PASS:
-			case PSQ_CR_RERUN: // fallthrough
+			case PSQ_CR_RERUN:
 				// nothing to do
 				break
 			case PSQ_CR_INCREASE:
-			case PSQ_CR_DECREASE: // fallthrough
+			case PSQ_CR_DECREASE:
 				oorDAScale[s.headstage] = SetDAScale(device, s.sweepNo, s.headstage, relative = scalingFactorDAScale, roundTopA = 1, limitCheck = limitCheck)
 
 				if(oorDAScale[s.headstage])

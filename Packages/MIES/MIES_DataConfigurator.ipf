@@ -423,7 +423,7 @@ static Function/WAVE DC_MakeNIChannelWave(string device, variable dataAcqOrTP, v
 	// @todo test
 	switch(channelType)
 		case XOP_CHANNEL_TYPE_DAC:
-		case XOP_CHANNEL_TYPE_TTL: // fallthrough
+		case XOP_CHANNEL_TYPE_TTL:
 			FastOp channel = 0
 			break
 		case XOP_CHANNEL_TYPE_ADC:
@@ -457,7 +457,7 @@ static Function/WAVE DC_MakeSUTTERChannelWave(string device, variable dataAcqOrT
 	Redimension/N=(numRows)/Y=(dataType) channel
 	switch(channelType)
 		case XOP_CHANNEL_TYPE_DAC:
-		case XOP_CHANNEL_TYPE_TTL: // fallthrough
+		case XOP_CHANNEL_TYPE_TTL:
 			FastOp channel = 0
 			break
 		case XOP_CHANNEL_TYPE_ADC:

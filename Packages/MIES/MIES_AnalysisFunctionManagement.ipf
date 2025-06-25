@@ -81,7 +81,7 @@ Function AFM_CallAnalysisFunctions(string device, variable eventType)
 		switch(eventType)
 			case PRE_DAQ_EVENT:
 			case PRE_SWEEP_CONFIG_EVENT:
-			case PRE_SET_EVENT: // fallthrough
+			case PRE_SET_EVENT:
 				sweepNo = DAG_GetNumericalValue(device, "SetVar_Sweep")
 				WAVE/Z dataWave = $""
 				break
@@ -103,7 +103,7 @@ Function AFM_CallAnalysisFunctions(string device, variable eventType)
 				break
 			case POST_SWEEP_EVENT:
 			case POST_SET_EVENT:
-			case POST_DAQ_EVENT: // fallthrough
+			case POST_DAQ_EVENT:
 				sweepNo = DAG_GetNumericalValue(device, "SetVar_Sweep") - 1
 				WAVE/Z/T sweepWave = GetSweepWave(device, sweepNo)
 				if(!WaveExists(sweepWave))
