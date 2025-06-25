@@ -1192,6 +1192,8 @@ static Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 
 	// unassoc DA
 	for(i = 0; i < numBlocksUnassocDA; i += 1)
+		lastFreeAxis = last
+
 		sprintf regex, ".*(?<!%s)_DA_%d_HS_NaN", DB_AXIS_PART_EPOCHS, unassocDA[i]
 		WAVE/Z/T axes = GrepWave(allVerticalAxes, regex)
 		ASSERT(WaveExists(axes), "Unexpected number of matches")
@@ -1203,14 +1205,26 @@ static Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 		if(WaveExists(axes))
 			EnableAxis(graph, axes, EPOCH_SLOT_MULTIPLIER * spacePerSlot, first, last)
 		endif
+
+		firstFreeAxis = first
+		freeAxis      = "freeaxis_da_ua" + num2str(i)
+		lbl           = "UA"
+		AddFreeAxis(graph, freeAxis, lbl, firstFreeAxis, lastFreeAxis)
 	endfor
 
 	// unassoc AD
 	for(i = 0; i < numBlocksUnassocAD; i += 1)
+		lastFreeAxis = last
+
 		regex = ".*AD_" + num2str(unassocAD[i]) + "_HS_NaN"
 		WAVE/Z/T axes = GrepWave(allVerticalAxes, regex)
 		ASSERT(WaveExists(axes), "Unexpected number of matches")
 		EnableAxis(graph, axes, ADC_SLOT_MULTIPLIER * spacePerSlot, first, last)
+
+		firstFreeAxis = first
+		freeAxis      = "freeaxis_ad_ua" + num2str(i)
+		lbl           = "UA"
+		AddFreeAxis(graph, freeAxis, lbl, firstFreeAxis, lastFreeAxis)
 	endfor
 
 	// TTLs
