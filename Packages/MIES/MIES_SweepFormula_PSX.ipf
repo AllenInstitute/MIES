@@ -1569,7 +1569,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE s
 					// +inf -> +1
 					// finite -> NaN
 					Duplicate/FREE resultsRaw, results
-					Multithread results[] = resultsRaw[p] == -Inf ? -1 : (IsNaN(resultsRaw[p]) ? 0 : ((resultsRaw[p] == +Inf) ? +1 : NaN))
+					Multithread results[] = (resultsRaw[p] == -Inf) ? -1 : (IsNaN(resultsRaw[p]) ? 0 : ((resultsRaw[p] == +Inf) ? +1 : NaN))
 
 					WAVE/Z resultsClean = ZapNaNs(results)
 

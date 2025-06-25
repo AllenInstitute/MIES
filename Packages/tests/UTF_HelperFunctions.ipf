@@ -795,7 +795,7 @@ Function/S CreateFakeSweepData(string win, string device, [variable sweepNo, FUN
 			config[3][%ChannelNumber] = 1
 			// TTL 2
 			config[4][%ChannelType]   = XOP_CHANNEL_TYPE_TTL
-			config[4][%ChannelNumber] = hwType == HARDWARE_NI_DAC ? 2 : IsITC1600(device) ? HARDWARE_ITC_TTL_1600_RACK_ZERO : HARDWARE_ITC_TTL_DEF_RACK_ZERO
+			config[4][%ChannelNumber] = (hwType == HARDWARE_NI_DAC) ? 2 : IsITC1600(device) ? HARDWARE_ITC_TTL_1600_RACK_ZERO : HARDWARE_ITC_TTL_DEF_RACK_ZERO
 			break
 		default:
 			INFO("Unsupported sweep number in test setup")
