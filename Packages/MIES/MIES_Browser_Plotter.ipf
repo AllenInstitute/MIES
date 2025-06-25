@@ -1160,12 +1160,12 @@ static Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 	// starting from the top
 	// headstages with associated channels
 	for(i = 0; i < numBlocksHS; i += 1)
+		lastFreeAxis = last
+
 		headstage = headstages[i]
 		// (?<! is a negative look behind assertion
 		sprintf regex, ".*(?<!%s_)DA_(?:[[:digit:]]{1,2})_HS_%d", DB_AXIS_PART_EPOCHS, headstage
 		WAVE/Z/T axes = GrepWave(allVerticalAxes, regex)
-
-		lastFreeAxis = last
 
 		if(WaveExists(axes))
 			EnableAxis(graph, axes, spacePerSlot, first, last)
