@@ -19,7 +19,7 @@ Constant DAQ_CONFIG_WAVE_VERSION = 3
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
 Constant DA_EPHYS_PANEL_VERSION           = 66
-Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 52
+Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 53
 Constant WAVEBUILDER_PANEL_VERSION        = 14
 Constant ANALYSISBROWSER_PANEL_VERSION    = 9
 Constant PSX_PLOT_PANEL_VERSION           = 1
@@ -514,6 +514,8 @@ StrConstant MIES_BSP_PANEL_FOLDER   = "PANEL_FOLDER"
 StrConstant MIES_BSP_AR_SWEEPFOLDER = "AR_SWEEPFOLDER"
 StrConstant MIES_BSP_PA_MAINPANEL   = "HOSTWINDOW"
 ///@}
+
+StrConstant BSP_SHOW_WIN_BUTTON = "button_BSP_open"
 
 StrConstant NUMERALS = "First;Second;Third;Fourth;Fifth;Sixth;Seventh;Eighth"
 
