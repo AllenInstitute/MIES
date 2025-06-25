@@ -979,6 +979,14 @@ static Function ZeroTracesIfReq(string graph, WAVE/Z/T traces, variable zeroTrac
 	endfor
 End
 
+static Function AddFreeAxis(string graph, string name, string lbl, variable first, variable last)
+
+	NewFreeAxis/W=$graph $name
+	ModifyGraph/W=$graph standoff($name)=0, lblPosMode($name)=2, axRGB($name)=(65535, 65535, 65535, 0), tlblRGB($name)=(65535, 65535, 65535, 0), alblRGB($name)=(0, 0, 0), lblMargin($name)=0, lblLatPos($name)=0
+	ModifyGraph/W=$graph axisEnab($name)={first, last}
+	Label/W=$graph $name, lbl
+End
+
 /// @brief Layout the DataBrowser/SweepBrowser graph
 ///
 /// Takes also care of adding free axis for the headstage display.
@@ -1006,7 +1014,7 @@ static Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 	variable i, numSlots, headstage, numBlocksTTL, numBlocks, numBlocksEpochDA, numBlocksEpochTTL, spacePerSlot
 	variable numBlocksDA, numBlocksAD, first, firstFreeAxis, lastFreeAxis, orientation
 	variable numBlocksUnassocDA, numBlocksUnassocAD, numBlocksHS
-	string graph, regex, freeAxis, axis
+	string graph, regex, freeAxis, axis, lbl
 	variable last = 1.0
 
 	graph = GetMainWindow(win)
@@ -1177,12 +1185,9 @@ static Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 		endif
 
 		firstFreeAxis = first
-
-		freeAxis = "freeaxis_hs" + num2str(headstage)
-		NewFreeAxis/W=$graph $freeAxis
-		ModifyGraph/W=$graph standoff($freeAxis)=0, lblPosMode($freeAxis)=2, axRGB($freeAxis)=(65535, 65535, 65535, 0), tlblRGB($freeAxis)=(65535, 65535, 65535, 0), alblRGB($freeAxis)=(0, 0, 0), lblMargin($freeAxis)=0, lblLatPos($freeAxis)=0
-		ModifyGraph/W=$graph axisEnab($freeAxis)={firstFreeAxis, lastFreeAxis}
-		Label/W=$graph $freeAxis, "HS" + num2str(headstage)
+		freeAxis      = "freeaxis_hs" + num2str(headstage)
+		lbl           = "HS" + num2str(headstage)
+		AddFreeAxis(graph, freeAxis, lbl, firstFreeAxis, lastFreeAxis)
 	endfor
 
 	// unassoc DA
