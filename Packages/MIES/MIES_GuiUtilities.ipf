@@ -2271,7 +2271,7 @@ Function AdaptDependentControls(string win, string controls, variable restoreOnS
 			endif
 
 			// set old state
-			PGC_SetAndActivateControl(win, ctrl, val = oldState)
+			PGC_SetAndActivateControl(win, ctrl, val = oldState, mode = PGC_MODE_SKIP_ON_DISABLED)
 		endfor
 
 		return NaN
@@ -2286,7 +2286,7 @@ Function AdaptDependentControls(string win, string controls, variable restoreOnS
 		SetControlUserData(win, ctrl, "oldState", num2str(oldState))
 
 		// and apply new state
-		PGC_SetAndActivateControl(win, ctrl, val = newState)
+		PGC_SetAndActivateControl(win, ctrl, val = newState, mode = PGC_MODE_SKIP_ON_DISABLED)
 	endfor
 
 	// and disable
