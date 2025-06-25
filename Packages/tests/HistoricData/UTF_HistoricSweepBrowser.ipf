@@ -21,6 +21,14 @@ static Function TestTTLDisplayWithNoEpochInfo([string str])
 	PGC_SetAndActivateControl(win, "check_BrowserSettings_OVS", val = 1)
 	PGC_SetAndActivateControl(win, "popup_overlaySweeps_select", str = "All")
 
+	// without OVS and non-split TTL
+	PGC_SetAndActivateControl(win, "check_BrowserSettings_OVS", val = 0)
+	PGC_SetAndActivateControl(win, "check_BrowserSettings_VisEpochs", val = 0)
+	PGC_SetAndActivateControl(win, "check_BrowserSettings_splitTTL", val = 0)
+
+	// with overlay channels
+	PGC_SetAndActivateControl(win, "check_BrowserSettings_OChan", val = 1)
+
 	CHECK_NO_RTE()
 End
 
