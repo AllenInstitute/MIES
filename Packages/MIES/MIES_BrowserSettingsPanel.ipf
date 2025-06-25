@@ -1196,7 +1196,12 @@ Function BSP_CheckProc_ChangedSetting(STRUCT WMCheckBoxAction &cba) : CheckBoxCo
 						DisableControl(bsPanel, "check_BrowserSettings_splitTTL")
 					endif
 					break
+				case "check_BrowserSettings_OChan":
+					AdaptDependentControls(bsPanel, "check_BrowserSettings_VisEpochs;check_BrowserSettings_splitTTL", CHECKBOX_UNSELECTED, checked, DEP_CTRLS_INVERT)
+					break
 				case "check_BrowserSettings_VisEpochs":
+					AdaptDependentControls(bsPanel, "check_BrowserSettings_OChan", CHECKBOX_UNSELECTED, checked, DEP_CTRLS_INVERT)
+
 					if(GetCheckBoxState(bsPanel, "check_BrowserSettings_TTL"))
 						AdaptDependentControls(bsPanel, "check_BrowserSettings_splitTTL", CHECKBOX_UNSELECTED, checked, DEP_CTRLS_SAME)
 					endif

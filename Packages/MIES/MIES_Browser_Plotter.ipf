@@ -1032,6 +1032,8 @@ static Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 	WAVE/T allHorizontalAxesNonUnique = TUD_GetUserDataAsWave(graph, "XAXIS")
 	WAVE/T allHorizontalAxes          = GetUniqueEntries(allHorizontalAxesNonUnique)
 
+	ASSERT((tgs.overLayChannels + tgs.visualizeEpochs) < 2, "Overlay channels together with epoch visualization is not supported")
+
 	if(tgs.overLayChannels)
 		// up to three blocks
 
