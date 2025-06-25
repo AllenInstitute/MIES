@@ -363,3 +363,17 @@ threadsafe Function IndexAfterDecimation(variable sourceIndex, variable decimati
 	ASSERT_TS(IsInteger(sourceIndex) && sourceIndex >= 0, "sourceIndex must be integer & >= 0")
 	return (sourceIndex == 0) ? -1 : floor((sourceIndex - 0.5) / decimationFactor)
 End
+
+/// @brief Return the interpolated y value for `wv` if `xCrd` is inside its range, NaN otherwise
+threadsafe Function GetInterpolatedYValue(WAVE wv, variable xCrd)
+
+	if(IsNaN(xCrd))
+		return NaN
+	elseif(xCrd < DimOffset(wv, ROWS))
+		return NaN
+	elseif(xCrd > IndexToScale(wv, DimSize(wv, ROWS) - 1, ROWS))
+		return NaN
+	endif
+
+	return wv(xCrd)
+End

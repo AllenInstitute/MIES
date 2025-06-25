@@ -184,10 +184,6 @@ static StrConstant SF_PLOTTER_GUIDENAME = "HOR"
 
 static StrConstant SF_XLABEL_USER = ""
 
-static Constant SF_MSG_OK    = 1
-static Constant SF_MSG_ERROR = 0
-static Constant SF_MSG_WARN  = -1
-
 static Constant SF_NUMTRACES_ERROR_THRESHOLD = 10000
 static Constant SF_NUMTRACES_WARN_THRESHOLD  = 1000
 
@@ -252,7 +248,8 @@ Function/WAVE SF_GetNamedOperations()
 	                  SF_OP_LOG10, SF_OP_APFREQUENCY, SF_OP_CURSORS, SF_OP_SELECTSWEEPS, SF_OP_AREA, SF_OP_SETSCALE, SF_OP_BUTTERWORTH, \
 	                  SF_OP_SELECTCHANNELS, SF_OP_DATA, SF_OP_LABNOTEBOOK, SF_OP_WAVE, SF_OP_FINDLEVEL, SF_OP_EPOCHS, SF_OP_TP,         \
 	                  SF_OP_STORE, SF_OP_SELECT, SF_OP_POWERSPECTRUM, SF_OP_TPSS, SF_OP_TPBASE, SF_OP_TPINST, SF_OP_TPFIT,              \
-	                  SF_OP_PSX, SF_OP_PSX_KERNEL, SF_OP_PSX_STATS, SF_OP_PSX_RISETIME, SF_OP_PSX_PREP, SF_OP_PSX_DECONV_FILTER,        \
+	                  SF_OP_PSX, SF_OP_PSX_KERNEL, SF_OP_PSX_STATS, SF_OP_PSX_RISETIME, SF_OP_PSX_PREP, SF_OP_PSX_DECONV_BP_FILTER,     \
+	                  SF_OP_PSX_SWEEP_BP_FILTER,                                                                                        \
 	                  SF_OP_MERGE, SF_OP_FIT, SF_OP_FITLINE, SF_OP_DATASET, SF_OP_SELECTVIS, SF_OP_SELECTCM, SF_OP_SELECTSTIMSET,       \
 	                  SF_OP_SELECTIVSCCSWEEPQC, SF_OP_SELECTIVSCCSETQC, SF_OP_SELECTRANGE, SF_OP_SELECTEXP, SF_OP_SELECTDEV,            \
 	                  SF_OP_SELECTEXPANDSCI, SF_OP_SELECTEXPANDRAC, SF_OP_SELECTSETCYCLECOUNT, SF_OP_SELECTSETSWEEPCOUNT,               \
@@ -1164,8 +1161,11 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 		case SF_OP_PSX_PREP:
 			WAVE out = PSX_OperationPrep(jsonId, jsonPath, graph)
 			break
-		case SF_OP_PSX_DECONV_FILTER:
-			WAVE out = PSX_OperationDeconvFilter(jsonId, jsonPath, graph)
+		case SF_OP_PSX_DECONV_BP_FILTER:
+			WAVE out = PSX_OperationDeconvBPFilter(jsonId, jsonPath, graph)
+			break
+		case SF_OP_PSX_SWEEP_BP_FILTER:
+			WAVE out = PSX_OperationSweepBPFilter(jsonId, jsonPath, graph)
 			break
 		case SF_OP_MERGE:
 			WAVE out = SF_OperationMerge(jsonId, jsonPath, graph)
@@ -2857,7 +2857,7 @@ static Function/S SF_PreprocessInput(string formula)
 	return formula
 End
 
-static Function SF_SetStatusDisplay(string bsPanel, string errMsg, variable errState)
+Function SF_SetStatusDisplay(string bsPanel, string errMsg, variable errState)
 
 	ASSERT(errState == SF_MSG_ERROR || errState == SF_MSG_OK || errState == SF_MSG_WARN, "Unknown error state for SF status")
 	SetValDisplay(bsPanel, "status_sweepFormula_parser", var = errState)
@@ -2916,16 +2916,18 @@ End
 static Function SF_CheckInputCode(string code, string graph)
 
 	variable i, numGraphs, jsonIDy, jsonIDx, subFormulaCnt
-	string jsonPath, xFormula, yFormula, formulasRemain, subPath, yAndXFormula
+	string jsonPath, xFormula, yFormula, formulasRemain, subPath, yAndXFormula, codeWithoutVariables, preProcCode
 
 	NVAR jsonID = $GetSweepFormulaJSONid(SF_GetBrowserDF(graph))
 	JSON_Release(jsonID, ignoreErr = 1)
 	jsonID = JSON_New()
 	JSON_AddObjects(jsonID, "")
 
-	code = SF_CheckVariableAssignments(code, jsonID)
+	preProcCode = SF_PreprocessInput(code)
 
-	WAVE/T graphCode = SF_SplitCodeToGraphs(SF_PreprocessInput(code))
+	codeWithoutVariables = SF_CheckVariableAssignments(preProcCode, jsonID)
+
+	WAVE/T graphCode = SF_SplitCodeToGraphs(codeWithoutVariables)
 
 	numGraphs = DimSize(graphCode, ROWS)
 	for(i = 0; i < numGraphs; i += 1)
