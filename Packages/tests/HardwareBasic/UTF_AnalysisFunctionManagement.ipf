@@ -1596,12 +1596,12 @@ static Function AFT14j([string str])
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                   + \
 	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams1_DA_0:")
 
-	try
-		AcquireData_NG(s, str)
-		FAIL()
-	catch
-		PASS()
-	endtry
+	AcquireData_NG(s, str)
+End
+
+static Function AFT14j_REENTRY([string str])
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
 End
 
 // MD: mid sweep event is also called for very short stimsets
