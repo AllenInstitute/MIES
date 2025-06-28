@@ -244,13 +244,13 @@ Function GetMachineEpsilon(variable type)
 			return 2^-52
 		case IGOR_TYPE_32BIT_FLOAT:
 			return 2^-23
-		case IGOR_TYPE_64BIT_INT:
-		case IGOR_TYPE_32BIT_INT:
-		case IGOR_TYPE_16BIT_INT:
+		case IGOR_TYPE_64BIT_INT: // fallthrough
+		case IGOR_TYPE_32BIT_INT: // fallthrough
+		case IGOR_TYPE_16BIT_INT: // fallthrough
 		case IGOR_TYPE_8BIT_INT:
 			return 1
 		default:
-			ASSERT(0, "Unsupported wave type")
+			FATAL_ERROR("Unsupported wave type")
 	endswitch
 End
 

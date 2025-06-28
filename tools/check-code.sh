@@ -160,6 +160,15 @@ then
   ret=1
 fi
 
+matches=$(git grep $opts -e '(ASSERT_TS|ASSERT|SFH_ASSERT)\(0' --and --not -e '//[[:space:]]*NOLINT$' '**/MIES_*.ipf' '**/UTF*.ipf')
+
+if [[ -n "$matches" ]]
+then
+  echo "The ASSERT zero check failed and found the following occurences (use \`// NOLINT\` to suppress if appropriate):"
+  echo "$matches"
+  ret=1
+fi
+
 # ripgrep checks
 
 files=$(git ls-files '*.ipf' '*.sh' '*.rst' '*.dot' '*.md' ':!:**/releasenotes_template.rst' ':^*/IPA_Control.ipf')

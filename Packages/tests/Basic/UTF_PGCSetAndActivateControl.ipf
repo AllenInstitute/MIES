@@ -112,8 +112,8 @@ End
 Function PGCT_SetVarProc(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // fallthrough, mouse up
+		case 2: // fallthrough, Enter key
 		case 3: // Live update
 			variable/G dval   = sva.dval
 			string/G   sval   = sva.sval

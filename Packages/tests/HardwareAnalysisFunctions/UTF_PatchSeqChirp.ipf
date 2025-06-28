@@ -85,34 +85,34 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, s
 	WAVE textualValues   = GetLBTextualValues(device)
 
 	strswitch(name)
-		case PSQ_FMT_LBN_SWEEP_PASS:
-		case PSQ_FMT_LBN_CR_INSIDE_BOUNDS:
-		case PSQ_FMT_LBN_CR_BOUNDS_ACTION:
-		case PSQ_FMT_LBN_SAMPLING_PASS:
-		case PSQ_FMT_LBN_ASYNC_PASS:
+		case PSQ_FMT_LBN_SWEEP_PASS: // fallthrough
+		case PSQ_FMT_LBN_CR_INSIDE_BOUNDS: // fallthrough
+		case PSQ_FMT_LBN_CR_BOUNDS_ACTION: // fallthrough
+		case PSQ_FMT_LBN_SAMPLING_PASS: // fallthrough
+		case PSQ_FMT_LBN_ASYNC_PASS: // fallthrough
 		case PSQ_FMT_LBN_CR_STIMSET_QC:
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, name, query = 1)
 			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 		case PSQ_FMT_LBN_CR_BOUNDS_STATE:
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, name, query = 1)
 			return GetLastSettingTextIndepEachSCI(numericalValues, textualValues, sweepNo, PSQ_TEST_HEADSTAGE, key, UNKNOWN_MODE)
-		case PSQ_FMT_LBN_BL_QC_PASS:
-		case PSQ_FMT_LBN_SPIKE_PASS:
-		case PSQ_FMT_LBN_PULSE_DUR:
+		case PSQ_FMT_LBN_BL_QC_PASS: // fallthrough
+		case PSQ_FMT_LBN_SPIKE_PASS: // fallthrough
+		case PSQ_FMT_LBN_PULSE_DUR: // fallthrough
 		case PSQ_FMT_LBN_DASCALE_OOR:
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, name, query = 1)
 			return GetLastSettingEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
-		case STIMSET_SCALE_FACTOR_KEY:
-		case "Autobias Vcom":
+		case STIMSET_SCALE_FACTOR_KEY: // fallthrough
+		case "Autobias Vcom": // fallthrough
 		case "LPF cutoff":
 			return GetLastSettingEachSCI(numericalValues, sweepNo, name, PSQ_TEST_HEADSTAGE, DATA_ACQUISITION_MODE)
 		case "Delay onset user":
 			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, name, PSQ_TEST_HEADSTAGE, DATA_ACQUISITION_MODE)
-		case PSQ_FMT_LBN_SET_PASS:
-		case PSQ_FMT_LBN_CR_SPIKE_CHECK:
-		case PSQ_FMT_LBN_INITIAL_SCALE:
-		case PSQ_FMT_LBN_CR_RESISTANCE:
-		case PSQ_FMT_LBN_CR_INIT_UOD:
+		case PSQ_FMT_LBN_SET_PASS: // fallthrough
+		case PSQ_FMT_LBN_CR_SPIKE_CHECK: // fallthrough
+		case PSQ_FMT_LBN_INITIAL_SCALE: // fallthrough
+		case PSQ_FMT_LBN_CR_RESISTANCE: // fallthrough
+		case PSQ_FMT_LBN_CR_INIT_UOD: // fallthrough
 		case PSQ_FMT_LBN_CR_INIT_LPF:
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, name, query = 1)
 			val = GetLastSettingIndepSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)

@@ -511,7 +511,7 @@ static Function LBV_AddTraceToLBGraph(string graph, WAVE keys, WAVE values, stri
 			axisBaseName = "results_" + VERT_AXIS_BASE_NAME
 			break
 		default:
-			ASSERT(0, "Unexpected logbook type")
+			FATAL_ERROR("Unexpected logbook type")
 	endswitch
 
 	axis = GetNextFreeAxisName(graph, axisBaseName)
@@ -883,7 +883,7 @@ static Function LBV_SwitchLBGraphXAxis(string graph)
 		logbookType = GetLogbookType(values)
 
 		switch(logbookType)
-			case LBT_LABNOTEBOOK:
+			case LBT_LABNOTEBOOK: // fallthrough
 			case LBT_RESULTS:
 				if(isTimeAxis)
 					if(isTextData)
@@ -907,7 +907,7 @@ static Function LBV_SwitchLBGraphXAxis(string graph)
 				keysToReadd = AddListItem(key, keysToReadd, ";", Inf)
 				break
 			default:
-				ASSERT(0, "Invalid logbook type")
+				FATAL_ERROR("Invalid logbook type")
 		endswitch
 	endfor
 
@@ -952,13 +952,13 @@ static Function LBV_CheckIfXAxisIsTime(string graph, [variable logbookType])
 	if(isEmpty(list))
 		if(!ParamIsDefault(logbookType))
 			switch(logbookType)
-				case LBT_RESULTS:
+				case LBT_RESULTS: // fallthrough
 				case LBT_TPSTORAGE:
 					return 1
 				case LBT_LABNOTEBOOK:
 					return 0
 				default:
-					ASSERT(0, "Invalid logbookType")
+					FATAL_ERROR("Invalid logbookType")
 			endswitch
 		endif
 

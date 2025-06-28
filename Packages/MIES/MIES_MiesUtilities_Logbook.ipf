@@ -45,7 +45,7 @@ Function GetLogbookType(WAVE wv)
 		return LBT_RESULTS
 	endif
 
-	ASSERT(0, "Unrecognized wave: " + name)
+	FATAL_ERROR("Unrecognized wave: " + name)
 End
 
 /// @brief Return the logbook waves
@@ -78,7 +78,7 @@ Function/WAVE GetLogbookWaves(variable logbookType, variable logbookWaveType, [s
 					FUNCREF DAQ_LBN_GETTER_PROTO func = GetLBTextualValues
 					break
 				default:
-					ASSERT(0, "Invalid type")
+					FATAL_ERROR("Invalid type")
 			endswitch
 
 			return func(device)
@@ -95,11 +95,11 @@ Function/WAVE GetLogbookWaves(variable logbookType, variable logbookWaveType, [s
 				case LBN_TEXTUAL_VALUES:
 					return GetTextualResultsValues()
 				default:
-					ASSERT(0, "Invalid type")
+					FATAL_ERROR("Invalid type")
 			endswitch
 			break
 		default:
-			ASSERT(0, "Invalid logbook type")
+			FATAL_ERROR("Invalid logbook type")
 	endswitch
 End
 
@@ -111,7 +111,7 @@ Function/WAVE ExtractLogbookSliceTimeStamp(WAVE logbook)
 	logbookType = GetLogbookType(logbook)
 
 	switch(logbookType)
-		case LBT_LABNOTEBOOK:
+		case LBT_LABNOTEBOOK: // fallthrough
 		case LBT_RESULTS:
 			colOrLayer = 1
 			break
@@ -119,7 +119,7 @@ Function/WAVE ExtractLogbookSliceTimeStamp(WAVE logbook)
 			colOrLayer = FindDimLabel(logbook, LAYERS, "TimeStampSinceIgorEpochUTC")
 			break
 		default:
-			ASSERT(0, "Invalid logbook type")
+			FATAL_ERROR("Invalid logbook type")
 	endswitch
 
 	return ExtractLogbookSlice(logbook, logbookType, colOrLayer, "Dat")
@@ -133,15 +133,15 @@ Function/WAVE ExtractLogbookSliceDeltaTime(WAVE logbook)
 	logbookType = GetLogbookType(logbook)
 
 	switch(logbookType)
-		case LBT_LABNOTEBOOK:
+		case LBT_LABNOTEBOOK: // fallthrough
 		case LBT_RESULTS:
-			ASSERT(0, "Unsupported")
+			FATAL_ERROR("Unsupported")
 			break
 		case LBT_TPSTORAGE:
 			colOrLayer = FindDimLabel(logbook, LAYERS, "DeltaTime")
 			break
 		default:
-			ASSERT(0, "Invalid logbook type")
+			FATAL_ERROR("Invalid logbook type")
 	endswitch
 
 	return ExtractLogbookSlice(logbook, logbookType, colOrLayer, "DeltaTime")
@@ -187,7 +187,7 @@ static Function/WAVE ExtractLogbookSlice(WAVE logbook, variable logbookType, var
 	endif
 
 	switch(logbookType)
-		case LBT_LABNOTEBOOK:
+		case LBT_LABNOTEBOOK: // fallthrough
 		case LBT_RESULTS:
 			entryName = GetDimLabel(logbook, COLS, colOrLayer)
 			col       = colOrLayer
@@ -199,7 +199,7 @@ static Function/WAVE ExtractLogbookSlice(WAVE logbook, variable logbookType, var
 			layer     = colOrLayer
 			break
 		default:
-			ASSERT(0, "Invalid logbook type")
+			FATAL_ERROR("Invalid logbook type")
 	endswitch
 
 	Duplicate/O/R=[0, DimSize(logbook, ROWS)][col][layer][-1] logbook, dfr:$name/WAVE=slice
@@ -481,7 +481,7 @@ threadsafe static Function [WAVE/Z wv, variable index] GetLastSettingChannelInte
 
 			break
 		default:
-			ASSERT_TS(0, "Unsupported channelType")
+			FATAL_ERROR("Unsupported channelType")
 	endswitch
 
 	WAVE/Z activeChannels = GetLastSetting(numericalValues, sweepNo, entryName, entrySourceType)
@@ -526,7 +526,7 @@ threadsafe static Function [WAVE/Z wv, variable index] GetLastSettingChannelInte
 
 				// same as above
 			else
-				ASSERT_TS(0, "Invalid wave type")
+				FATAL_ERROR("Invalid wave type")
 			endif
 		endif
 	endif
@@ -644,7 +644,7 @@ threadsafe Function/WAVE GetLastSetting(WAVE values, variable sweepNo, string se
 		return $""
 	endif
 
-	ASSERT_TS(0, "Unexpected type")
+	FATAL_ERROR("Unexpected type")
 End
 
 /// @brief Return a wave with the latest value of a setting from the
@@ -688,10 +688,10 @@ threadsafe Function/WAVE GetLastSettingNoCache(WAVE values, variable sweepNo, st
 		elseif(first >= 0 && last >= 0)
 			mode = GET_LB_MODE_READ
 		else
-			ASSERT_TS(0, "Invalid params")
+			FATAL_ERROR("Invalid params")
 		endif
 	else
-		ASSERT_TS(0, "Invalid params")
+		FATAL_ERROR("Invalid params")
 	endif
 
 	settingCol = ParamIsDefault(settingCol) ? FindDimLabel(values, COLS, setting) : settingCol
@@ -1497,7 +1497,7 @@ threadsafe Function/WAVE GetUniqueSettings(WAVE values, string setting)
 		return dataUnique
 	endif
 
-	ASSERT_TS(0, "Unsupported wave type")
+	FATAL_ERROR("Unsupported wave type")
 End
 
 /// @brief Return the last numerical value of a setting from the labnotebook
@@ -1934,7 +1934,7 @@ Function ParseLogbookMode(string modeText)
 		case "NUMBER_OF_LBN_DAQ_MODES":
 			return NUMBER_OF_LBN_DAQ_MODES
 		default:
-			ASSERT(0, "Unsupported labnotebook mode")
+			FATAL_ERROR("Unsupported labnotebook mode")
 			break
 	endswitch
 End

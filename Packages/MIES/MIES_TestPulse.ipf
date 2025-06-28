@@ -421,7 +421,7 @@ static Function/WAVE TP_CreateOverrideResults(string device, variable type)
 			labels    = "Factor;Voltage;BaselineFitResult"
 			break
 		default:
-			ASSERT(0, "Invalid type")
+			FATAL_ERROR("Invalid type")
 	endswitch
 
 	KillOrMoveToTrash(wv = GetOverrideResults())
@@ -504,13 +504,13 @@ static Function TP_AutoBaseline(string device, variable headstage, WAVE TPResult
 		case TP_BASELINE_FIT_RESULT_OK:
 			// nothing to do
 			break
-		case TP_BASELINE_FIT_RESULT_ERROR:
+		case TP_BASELINE_FIT_RESULT_ERROR: // fallthrough
 		case TP_BASELINE_FIT_RESULT_TOO_NOISY:
 			TPResults[%AutoTPBaseline][headstage]              = 0
 			TPResults[%AutoTPBaselineRangeExceeded][headstage] = 0
 			return NaN
 		default:
-			ASSERT(0, "Unknown return value from TP_AutoFitBaseline")
+			FATAL_ERROR("Unknown return value from TP_AutoFitBaseline")
 	endswitch
 
 	if(fac >= TP_BASELINE_RATIO_LOW && fac <= TP_BASELINE_RATIO_HIGH)
@@ -637,7 +637,7 @@ static Function [variable result, variable tau, variable baseline] TP_AutoFitBas
 		msg = GetRTErrMessage()
 		ClearRTError()
 
-		ASSERT(0, "CurveFit failed with error: " + msg)
+		FATAL_ERROR("CurveFit failed with error: " + msg)
 	endtry
 
 	MakeWaveFree($"W_Sigma")
@@ -1778,7 +1778,7 @@ Function/S TP_AutoTPLabelToLabnotebookName(string lbl)
 		case "sendToAllHS":
 			return "Send TP settings to all headstages"
 		default:
-			ASSERT(0, "Invalid value: " + lbl)
+			FATAL_ERROR("Invalid value: " + lbl)
 	endswitch
 End
 

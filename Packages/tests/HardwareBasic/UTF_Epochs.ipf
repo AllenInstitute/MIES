@@ -850,11 +850,11 @@ static Function EP_TestUserEpochs_REENTRY([string str])
 				FindValue/TEXT=tags/RMD=[][EPOCH_COL_TAGS][DAC] epochWave
 
 				switch(k)
-					case PRE_SET_EVENT:
-					case POST_SET_EVENT:
-					case PRE_SWEEP_CONFIG_EVENT:
-					case MID_SWEEP_EVENT:
-					case POST_SWEEP_EVENT:
+					case PRE_SET_EVENT: // fallthrough
+					case POST_SET_EVENT: // fallthrough
+					case PRE_SWEEP_CONFIG_EVENT: // fallthrough
+					case MID_SWEEP_EVENT: // fallthrough
+					case POST_SWEEP_EVENT: // fallthrough
 						if((k == PRE_SET_EVENT && i == 0) ||          \
 						   (k == POST_SET_EVENT && i == 2) ||         \
 						   (k != PRE_SET_EVENT && k != POST_SET_EVENT))

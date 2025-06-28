@@ -69,7 +69,7 @@ static Function/S GetDownloadLink()
 #elif defined(MACINTHOSH)
 	os = "MacOSX"
 #else
-	ASSERT_TS(0, "Unsupported OS")
+	FATAL_ERROR("Unsupported OS")
 #endif
 
 	text         = ProcedureText("", 0, "MIES_Include.ipf")

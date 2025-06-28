@@ -331,6 +331,12 @@ threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedO
 	endtry
 End
 
+/// @brief Abort program execution with a message
+threadsafe Function FATAL_ERROR(string errorMsg)
+
+	return ASSERT_TS(0, errorMsg) // NOLINT
+End
+
 #ifdef MACINTOSH
 
 threadsafe Function MU_RunningInMainThread()

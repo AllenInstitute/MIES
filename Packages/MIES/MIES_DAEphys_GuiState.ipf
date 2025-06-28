@@ -313,7 +313,7 @@ Function/WAVE DAG_GetChannelState(string device, variable type)
 			col = 7
 			break
 		default:
-			ASSERT(0, "invalid type")
+			FATAL_ERROR("invalid type")
 			break
 	endswitch
 
@@ -543,13 +543,13 @@ static Function/S DAG_GetSpecificCtrlNum(string device, string list)
 		[recMacro, controlType] = GetRecreationMacroAndType(device, controlName)
 
 		switch(controlType)
-			case CONTROL_TYPE_CHECKBOX:
-			case CONTROL_TYPE_POPUPMENU:
-			case CONTROL_TYPE_SLIDER: // fallthrough by design
+			case CONTROL_TYPE_CHECKBOX: // fallthrough
+			case CONTROL_TYPE_POPUPMENU: // fallthrough
+			case CONTROL_TYPE_SLIDER:
 				subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)
 				break
-			case CONTROL_TYPE_VALDISPLAY:
-			case CONTROL_TYPE_SETVARIABLE: // fallthrough by design
+			case CONTROL_TYPE_VALDISPLAY: // fallthrough
+			case CONTROL_TYPE_SETVARIABLE:
 				if(!DoesControlHaveInternalString(recMacro))
 					subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)
 				endif
@@ -580,8 +580,8 @@ static Function/S DAG_GetSpecificCtrlTxT(string device, string list)
 			case CONTROL_TYPE_POPUPMENU:
 				subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)
 				break
-			case CONTROL_TYPE_VALDISPLAY:
-			case CONTROL_TYPE_SETVARIABLE: // fallthrough by design
+			case CONTROL_TYPE_VALDISPLAY: // fallthrough
+			case CONTROL_TYPE_SETVARIABLE:
 				if(DoesControlHaveInternalString(recMacro))
 					subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)
 				endif

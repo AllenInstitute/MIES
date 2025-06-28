@@ -21,7 +21,7 @@ End
 Function AssertionFiresWithPassingZero()
 
 	try
-		ASSERT(0, "Kaboom")
+		ASSERT(0, "Kaboom") // NOLINT
 		FAIL()
 	catch
 		CHECK_EQUAL_VAR(V_AbortCode, -3)
@@ -42,7 +42,17 @@ End
 Function AssertionThreadsafeFiresWithPassingZero()
 
 	try
-		ASSERT_TS(0, "Kaboom")
+		ASSERT_TS(0, "Kaboom") // NOLINT
+		FAIL()
+	catch
+		CHECK_GE_VAR(V_AbortCode, 1)
+	endtry
+End
+
+Function FatalErrorAlwaysFires()
+
+	try
+		FATAL_ERROR("Kaboom")
 		FAIL()
 	catch
 		CHECK_GE_VAR(V_AbortCode, 1)

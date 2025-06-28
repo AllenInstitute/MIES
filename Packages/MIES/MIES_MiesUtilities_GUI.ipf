@@ -47,7 +47,7 @@ Function/S GetPanelControl(variable channelIndex, variable channelType, variable
 	elseif(controlType == CHANNEL_CONTROL_TITLE)
 		ctrl = "Title_" + ctrl
 	else
-		ASSERT(0, "Invalid controlType")
+		FATAL_ERROR("Invalid controlType")
 	endif
 
 	if(channelIndex == CHANNEL_INDEX_ALL)
@@ -832,7 +832,7 @@ Function StoreWindowCoordinatesHook(STRUCT WMWinHookStruct &s)
 	string win
 
 	switch(s.eventCode)
-		case EVENT_WINDOW_HOOK_SUBWINDOWKILL:
+		case EVENT_WINDOW_HOOK_SUBWINDOWKILL: // fallthrough
 		case EVENT_WINDOW_HOOK_KILL:
 			win = s.winName
 			NVAR JSONid = $GetSettingsJSONid()

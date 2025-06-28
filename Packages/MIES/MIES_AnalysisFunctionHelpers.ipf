@@ -401,7 +401,7 @@ Function/WAVE AFH_ExtractOneDimDataFromSweep(string device, WAVE sweep, variable
 			channelNum = headstageOrChannelNum
 			break
 		default:
-			ASSERT(0, "Invalid channeltype")
+			FATAL_ERROR("Invalid channeltype")
 	endswitch
 
 	col = AFH_GetDAQDataColumn(config, channelNum, channelType)
@@ -495,7 +495,7 @@ Function/S AFH_GetListOfAnalysisParams(string func, variable mode)
 		params = GrepList(params, re, 0, ",")
 		return ReplaceString("[", ReplaceString("]", params, ""), "")
 	else
-		ASSERT(0, "Invalid mode value")
+		FATAL_ERROR("Invalid mode value")
 	endif
 End
 
@@ -878,7 +878,7 @@ Function/S AFH_CheckAnalysisParameter(string genericFunc, STRUCT CheckParameters
 			elseif(isOpt)
 				namesAndTypesFromFunc = optNamesAndTypesFromFunc
 			else
-				ASSERT(0, "Invalid case")
+				FATAL_ERROR("Invalid case")
 			endif
 
 			// empty type specifications are allowed
@@ -1066,7 +1066,7 @@ Function/S AFH_GetAnalysisParameterAsText(string name, string params)
 		case "": // unknown name
 			break
 		default:
-			ASSERT(0, "invalid type")
+			FATAL_ERROR("invalid type")
 	endswitch
 
 	return ""
@@ -1138,7 +1138,7 @@ Function/WAVE AFH_GetChannelFromSweepOrScaledWave(WAVE sweepOrScaled, variable c
 		return ResolveSweepChannel(sweepOrScaled, channelIndex)
 	endif
 
-	ASSERT(0, "Unknown Data format")
+	FATAL_ERROR("Unknown Data format")
 End
 
 /// @brief Returns the DA and AD sample intervals of the given sweep. The sweep data input can be
@@ -1208,11 +1208,11 @@ Function AFH_LastSweepInSet(string device, variable sweepNo, variable headstage,
 	variable DAC, sweepsInSet, nextStimsetColumn, sweepOffset
 
 	switch(eventType)
-		case PRE_DAQ_EVENT:
+		case PRE_DAQ_EVENT: // fallthrough
 		case PRE_SWEEP_CONFIG_EVENT:
 			// no valid setup yet
 			return NaN
-		case PRE_SET_EVENT:
+		case PRE_SET_EVENT: // fallthrough
 		case MID_SWEEP_EVENT:
 			// we need to look at the last acquired sweep
 			sweepNo    -= 1

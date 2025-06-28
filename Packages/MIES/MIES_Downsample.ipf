@@ -332,7 +332,7 @@ static Function UpdateCheckBoxes(string win, string control, variable state)
 		SetCheckBoxState(win, checkbox_equalize, !state)
 		SetCheckBoxState(win, checkbox_downsample, state)
 	else
-		ASSERT(0, "Invalid control")
+		FATAL_ERROR("Invalid control")
 	endif
 
 	UpdatePopupMenuTargetRate(win)
@@ -472,11 +472,11 @@ End
 Function PopupMenuTargetRate(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	switch(pa.eventCode)
-		case 1:
-		case 2:
-		case 3:
-		case 4:
-		case 5:
+		case 1: // fallthrough
+		case 2: // fallthrough
+		case 3: // fallthrough
+		case 4: // fallthrough
+		case 5: // fallthrough
 		case 6:
 			UpdateEstimatedSizeAfterwards(pa.win)
 			break

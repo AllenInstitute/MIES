@@ -317,7 +317,7 @@ Function DecimateWithMethod(WAVE input, WAVE output, variable decimationFactor, 
 			Multithread junkWave[targetFirst, targetLast][] = DecimateMinMax(input, output, p, firstRowInp, lastRowInp, firstColInp + q, firstColOut + q, decimationFactor)
 			break
 		default:
-			ASSERT(0, "Unsupported method")
+			FATAL_ERROR("Unsupported method")
 			break
 	endswitch
 

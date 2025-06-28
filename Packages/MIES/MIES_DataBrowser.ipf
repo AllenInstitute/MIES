@@ -571,8 +571,8 @@ Function DB_SetVarProc_SweepNo(STRUCT WMSetVariableAction &sva) : SetVariableCon
 	variable sweepNo
 
 	switch(sva.eventCode)
-		case 1: // mouse up - when the scroll wheel is used on the mouse - "up or down"
-		case 2: // Enter key - when a number is manually entered
+		case 1: // fallthrough, mouse up - when the scroll wheel is used on the mouse - "up or down"
+		case 2: // fallthrough, Enter key - when a number is manually entered
 		case 3: // Live update - happens when you hit the arrow keys associated with the set variable
 			sweepNo = sva.dval
 			win     = sva.win

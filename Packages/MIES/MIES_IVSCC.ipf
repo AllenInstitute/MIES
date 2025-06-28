@@ -263,7 +263,7 @@ Function IVS_SaveExperiment(string filename)
 		SaveExperiment/C/F={1, "", 2}/P=home as filename + ".pxp"; AbortOnRTE
 	catch
 		err = ClearRTError()
-		ASSERT(0, "Could not save experiment due to code: " + num2istr(err))
+		FATAL_ERROR("Could not save experiment due to code: " + num2istr(err))
 	endtry
 End
 

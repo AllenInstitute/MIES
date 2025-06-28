@@ -284,7 +284,7 @@ Function SI_CreateLookupWave(string device, [variable ignoreChannelOrder])
 		totalNumTTL   = 4
 		totalNumRacks = 2
 	else
-		ASSERT(0, "please fill in the void")
+		FATAL_ERROR("please fill in the void")
 	endif
 
 	if(ignoreChannelOrder)
@@ -501,7 +501,7 @@ Function SI_CalculateMinSampInterval(string device, variable dataAcqOrTP, variab
 			return (channelType == XOP_CHANNEL_TYPE_ADC) ? (HARDWARE_SU_MIN_SAMPINT_ADC * MILLI_TO_MICRO) : (HARDWARE_SU_MIN_SAMPINT_DAC * MILLI_TO_MICRO)
 			break
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 			break
 	endswitch
 End
@@ -554,7 +554,7 @@ static Function SI_ITC_CalculateMinSampInterval(string device, variable dataAcqO
 	endif
 
 	strswitch(deviceType)
-		case "ITC18":
+		case "ITC18": // fallthrough
 		case "ITC16":
 			return 2 * SI_FindMatchingTableEntry(lut, ac)
 			break
@@ -579,7 +579,7 @@ static Function/WAVE SI_GetMinSampIntWave(string device)
 	DFREF dfr = GetStaticDataFolder()
 
 	strswitch(deviceType)
-		case "ITC18USB":
+		case "ITC18USB": // fallthrough
 		case "ITC18":
 			WAVE/Z/SDFR=dfr wv = SampInt_ITC18USB
 
@@ -589,7 +589,7 @@ static Function/WAVE SI_GetMinSampIntWave(string device)
 
 			return wv
 			break
-		case "ITC16USB":
+		case "ITC16USB": // fallthrough
 		case "ITC16":
 			WAVE/Z/SDFR=dfr wv = SampInt_ITC16USB
 

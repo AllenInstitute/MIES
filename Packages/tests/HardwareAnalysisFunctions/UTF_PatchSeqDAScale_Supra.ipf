@@ -48,32 +48,32 @@ static Function/WAVE GetLBNEntries_IGNORE(string device, variable sweepNo, strin
 		case PSQ_FMT_LBN_SET_PASS:
 			Make/D/N=1/FREE val = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 			return val
-		case PSQ_FMT_LBN_SWEEP_PASS:
-		case PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS:
-		case PSQ_FMT_LBN_CHUNK_PASS:
-		case PSQ_FMT_LBN_SAMPLING_PASS:
+		case PSQ_FMT_LBN_SWEEP_PASS: // fallthrough
+		case PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS: // fallthrough
+		case PSQ_FMT_LBN_CHUNK_PASS: // fallthrough
+		case PSQ_FMT_LBN_SAMPLING_PASS: // fallthrough
 		case PSQ_FMT_LBN_ASYNC_PASS:
 			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 			break
 		case PSQ_FMT_LBN_DA_OPMODE:
 			return GetLastSettingTextIndepEachSCI(numericalValues, textualValues, sweepNo, PSQ_TEST_HEADSTAGE, key, UNKNOWN_MODE)
 			break
-		case PSQ_FMT_LBN_BL_QC_PASS:
-		case PSQ_FMT_LBN_DA_fI_SLOPE:
-		case PSQ_FMT_LBN_PULSE_DUR:
-		case PSQ_FMT_LBN_RMS_LONG_PASS:
-		case PSQ_FMT_LBN_RMS_SHORT_PASS:
-		case PSQ_FMT_LBN_SPIKE_DETECT:
-		case PSQ_FMT_LBN_SPIKE_COUNT:
-		case PSQ_FMT_LBN_TARGETV_PASS:
-		case PSQ_FMT_LBN_TARGETV:
-		case PSQ_FMT_LBN_LEAKCUR:
-		case PSQ_FMT_LBN_LEAKCUR_PASS:
+		case PSQ_FMT_LBN_BL_QC_PASS: // fallthrough
+		case PSQ_FMT_LBN_DA_fI_SLOPE: // fallthrough
+		case PSQ_FMT_LBN_PULSE_DUR: // fallthrough
+		case PSQ_FMT_LBN_RMS_LONG_PASS: // fallthrough
+		case PSQ_FMT_LBN_RMS_SHORT_PASS: // fallthrough
+		case PSQ_FMT_LBN_SPIKE_DETECT: // fallthrough
+		case PSQ_FMT_LBN_SPIKE_COUNT: // fallthrough
+		case PSQ_FMT_LBN_TARGETV_PASS: // fallthrough
+		case PSQ_FMT_LBN_TARGETV: // fallthrough
+		case PSQ_FMT_LBN_LEAKCUR: // fallthrough
+		case PSQ_FMT_LBN_LEAKCUR_PASS: // fallthrough
 		case PSQ_FMT_LBN_DASCALE_OOR:
 			return GetLastSettingEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 			break
-		case PSQ_FMT_LBN_RMS_SHORT_THRESHOLD:
-		case PSQ_FMT_LBN_RMS_LONG_THRESHOLD:
+		case PSQ_FMT_LBN_RMS_SHORT_THRESHOLD: // fallthrough
+		case PSQ_FMT_LBN_RMS_LONG_THRESHOLD: // fallthrough
 		case PSQ_FMT_LBN_TARGETV_THRESHOLD:
 			WAVE/Z values = GetLastSettingSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 			if(!WaveExists(values))

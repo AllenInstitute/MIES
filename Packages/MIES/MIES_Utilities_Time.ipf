@@ -131,7 +131,7 @@ threadsafe Function ParseISO8601TimeStamp(string timestamp)
 		elseif(!cmpstr(tzOffsetSign, "-"))
 			secondsSinceEpoch += timeOffset
 		else
-			ASSERT_TS(0, "Invalid case")
+			FATAL_ERROR("Invalid case")
 		endif
 	endif
 

@@ -173,9 +173,9 @@ static Function AbortTP_REENTRY([STRUCT IUTF_MDATA &md])
 
 	if(aborted)
 		FAIL()
-	else
-		PASS()
 	endif
+
+	PASS()
 End
 
 // UTF_TD_GENERATOR v0:SingleMultiDeviceDAQ

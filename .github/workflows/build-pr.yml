@@ -46,7 +46,7 @@ jobs:
         uses: actions/checkout@v4
         # no need to checkout submodules or the full history
       - name: Download ipt binary from server
-        run: curl -o ipt.exe "https://byte-physics.de/public-downloads/aistorage/transfer/ipt/0.8.82/ipt.exe"
+        run: curl -o ipt.exe "https://byte-physics.de/public-downloads/aistorage/transfer/ipt/0.9.0/ipt.exe"
       - name: IPT version
         run: ./ipt.exe --version
       - name: Format and lint code

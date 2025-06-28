@@ -29,6 +29,11 @@ static Function ASSERT(variable var, string errorMsg)
 	endtry
 End
 
+static Function FATAL_ERROR(string errorMsg)
+
+	ASSERT(0, errorMsg) // NOLINT
+End
+
 static Function SetValDisplay(string win, string control, [variable var, string str, string format])
 
 	string formattedString
@@ -46,7 +51,7 @@ static Function SetValDisplay(string win, string control, [variable var, string 
 		ASSERT(ParamIsDefault(format), "Unexpected parameter combination")
 		formattedString = str
 	else
-		ASSERT(0, "Unexpected parameter combination")
+		FATAL_ERROR("Unexpected parameter combination")
 	endif
 
 	// Don't update if the content does not change, prevents flickering
