@@ -138,6 +138,36 @@ static Function KeyIsCaseSensitive()
 	CHECK_WAVE(result, NULL_WAVE)
 End
 
+// UTF_TD_GENERATOR DataGenerators#CacheOptions
+static Function NullEntriesCanBeStored([variable opts])
+
+	variable found, ret
+
+	string key = "abcd"
+
+	CheckCacheWaves(0)
+	CA_StoreEntryIntoCache(key, $"")
+	CheckCacheWaves(1)
+
+	// still an invalid wave reference with the old API
+	WAVE/Z result = CA_TryFetchingEntryFromCache(key, options = opts)
+	CHECK_WAVE(result, NULL_WAVE)
+
+	// but with the new we can query that
+	[WAVE result, found] = CA_TryFetchingEntryFromCacheWithNull(key, options = opts)
+	CHECK_WAVE(result, NULL_WAVE)
+	CHECK_EQUAL_VAR(found, 1)
+
+	// deleting works as well
+	ret = CA_DeleteCacheEntry(key)
+	CHECK_EQUAL_VAR(ret, 1)
+
+	// and now it is really gone
+	[WAVE result, found] = CA_TryFetchingEntryFromCacheWithNull(key, options = opts)
+	CHECK_WAVE(result, NULL_WAVE)
+	CHECK_EQUAL_VAR(found, 0)
+End
+
 static Function DeletingEntriesWorks()
 
 	variable ret
