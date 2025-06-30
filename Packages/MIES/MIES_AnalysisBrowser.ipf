@@ -126,7 +126,7 @@ static Function AB_AddMapEntry(string baseFolder, string discLocation)
 
 	// %FileType = igor
 	strswitch(extension)
-		case ".pxp":
+		case ".pxp": // fallthrough
 		case ".uxp":
 			fileType = ANALYSISBROWSER_FILE_TYPE_IGOR
 			break
@@ -148,11 +148,11 @@ static Function AB_AddMapEntry(string baseFolder, string discLocation)
 					fileType = ANALYSISBROWSER_FILE_TYPE_NWBv2
 					break
 				default:
-					ASSERT(0, "Unknown NWB version")
+					FATAL_ERROR("Unknown NWB version")
 			endswitch
 			break
 		default:
-			ASSERT(0, "invalid file type")
+			FATAL_ERROR("invalid file type")
 	endswitch
 	map[writeIndex][%FileType] = fileType
 
@@ -327,7 +327,7 @@ static Function AB_FileHasStimsets(WAVE/T map)
 			endif
 
 			return !!AB_LoadDataWrapper(tmpDFR, map[%DiscLocation], GetWBSvdStimSetPathAsString(), "")
-		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1: // fallthrough
 		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 
 			h5_fileID   = H5_OpenFile(map[%DiscLocation])
@@ -336,7 +336,7 @@ static Function AB_FileHasStimsets(WAVE/T map)
 
 			return !IsEmpty(stimSetList)
 		default:
-			ASSERT(0, "invalid file type")
+			FATAL_ERROR("invalid file type")
 	endswitch
 
 	return 0
@@ -366,7 +366,7 @@ static Function AB_LoadFile(string discLocation, variable loadOpts)
 				AB_LoadResultsFromNWB(map[%DiscLocation], map[%DataFolder])
 				break
 			default:
-				ASSERT(0, "invalid file type")
+				FATAL_ERROR("invalid file type")
 		endswitch
 	endif
 
@@ -387,7 +387,7 @@ static Function AB_LoadFile(string discLocation, variable loadOpts)
 					AB_LoadUserCommentFromIgor(map[%DiscLocation], map[%DataFolder], device)
 				endif
 				break
-			case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+			case ANALYSISBROWSER_FILE_TYPE_NWBv1: // fallthrough
 			case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 				AB_LoadSweepsConfigFromNWB(map[%DiscLocation], map[%DataFolder], device)
 				if(loadOpts & AB_LOADOPT_COMMENTS)
@@ -395,7 +395,7 @@ static Function AB_LoadFile(string discLocation, variable loadOpts)
 				endif
 				break
 			default:
-				ASSERT(0, "invalid file type")
+				FATAL_ERROR("invalid file type")
 		endswitch
 
 		WAVE/I sweeps = GetAnalysisChannelSweepWave(map[%DataFolder], device)
@@ -440,11 +440,11 @@ static Function AB_HasCompatibleVersion(string discLocation)
 			ControlWindowToFront()
 			return 0
 			break
-		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1: // fallthrough
 		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 			return 1
 		default:
-			ASSERT(0, "invalid file type")
+			FATAL_ERROR("invalid file type")
 	endswitch
 End
 
@@ -500,12 +500,12 @@ static Function/S AB_GetSessionStartTime(string device, variable firstSweepNo, s
 				sessionStartTime = GetISO8601TimeStamp(secondsSinceIgorEpoch = LocalTimeToUTC(CreationDate(firstSweepConfig)))
 			endif
 			return sessionStartTime
-		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
-		case ANALYSISBROWSER_FILE_TYPE_NWBv2: // intended fallthrough
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1: // fallthrough
+		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 			sessionStartTime = ROStr(GetAnalysisExpSessionStartTime(dataFolder))
 			return sessionStartTime
 		default:
-			ASSERT(0, "invalid file type")
+			FATAL_ERROR("invalid file type")
 	endswitch
 End
 
@@ -872,12 +872,12 @@ static Function AB_LoadHistoryAndLogsFromFile(string discLocation, string dataFo
 				ControlWindowToFront()
 			endif
 			break
-		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
-		case ANALYSISBROWSER_FILE_TYPE_NWBv2: // intended fallthrough
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1: // fallthrough
+		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 			AB_LoadHistoryAndLogsFromNWB(discLocation, dataFolder, fileType)
 			break
 		default:
-			ASSERT(0, "invalid file type")
+			FATAL_ERROR("invalid file type")
 	endswitch
 
 	AB_ShowHistoryAndLogs(discLocation, dataFolder)
@@ -920,7 +920,7 @@ static Function AB_LoadHistoryAndLogsFromNWB(string nwbFilePath, string expFolde
 			historyName = GetHistoryAndLogFileDatasetName(2)
 			break
 		default:
-			ASSERT(0, "Unknown NWB file type")
+			FATAL_ERROR("Unknown NWB file type")
 	endswitch
 
 	WAVE wv = H5_LoadDataset(generalGroup, historyName)
@@ -952,12 +952,12 @@ static Function AB_LoadTPStorageFromFile(string discLocation, string dataFolder,
 		case ANALYSISBROWSER_FILE_TYPE_IGOR:
 			return AB_LoadTPStorageFromIgor(discLocation, dataFolder, device)
 			break
-		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1: // fallthrough
 		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 			return AB_LoadTPStorageFromNWB(discLocation, dataFolder, device)
 			break
 		default:
-			ASSERT(0, "Invalid file type")
+			FATAL_ERROR("Invalid file type")
 	endswitch
 End
 
@@ -1160,12 +1160,12 @@ static Function/S AB_LoadLabNotebookFromFile(string discLocation)
 		case ANALYSISBROWSER_FILE_TYPE_IGOR:
 			deviceList = AB_LoadLabNotebookFromIgor(map[%DiscLocation])
 			break
-		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1: // fallthrough
 		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 			deviceList = AB_LoadLabNotebookFromNWB(map[%DiscLocation])
 			break
 		default:
-			ASSERT(0, "Unsupported file type")
+			FATAL_ERROR("Unsupported file type")
 			break
 	endswitch
 
@@ -1737,7 +1737,7 @@ static Function AB_LoadFromExpandedRange(variable row, variable subSectionColumn
 				SB_AddToSweepBrowser(sweepBrowserDFR, fileName, dataFolder, device, sweep)
 				break
 			default:
-				ASSERT(0, "Unexpected loadType")
+				FATAL_ERROR("Unexpected loadType")
 		endswitch
 	endfor
 
@@ -1797,8 +1797,8 @@ static Function AB_LoadFromFile(variable loadType, [DFREF sweepBrowserDFR])
 
 		// handle not expanded EXPERIMENT and DEVICE COLUMNS
 		switch(loadType)
-			case AB_LOAD_STIMSET:
-			case AB_LOAD_TP_STORAGE:
+			case AB_LOAD_STIMSET: // fallthrough
+			case AB_LOAD_TP_STORAGE: // fallthrough
 			case AB_LOAD_HISTORYANDLOGS:
 				if(!AB_LoadFromExpandedRange(row, EXPERIMENT_TREEVIEW_COLUMN, loadType, overwrite = overwrite))
 					oneValidLoad = 1
@@ -1820,7 +1820,7 @@ static Function AB_LoadFromFile(variable loadType, [DFREF sweepBrowserDFR])
 				endif
 				break
 			default:
-				ASSERT(0, "Invalid loadType")
+				FATAL_ERROR("Invalid loadType")
 		endswitch
 
 		sweep = str2num(GetLastNonEmptyEntry(expBrowserList, "sweep", row))
@@ -1868,7 +1868,7 @@ static Function AB_LoadFromFile(variable loadType, [DFREF sweepBrowserDFR])
 				oneValidLoad = 1
 				break
 			default:
-				ASSERT(0, "Invalid loadType")
+				FATAL_ERROR("Invalid loadType")
 		endswitch
 	endfor
 
@@ -1967,14 +1967,14 @@ static Function AB_LoadSweepFromFile(string discLocation, string dataFolder, str
 				return 1
 			endif
 			break
-		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1: // fallthrough
 		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 			if(AB_LoadSweepFromNWB(discLocation, sweepDFR, device, sweep))
 				return 1
 			endif
 			break
 		default:
-			ASSERT(0, "fileType not handled")
+			FATAL_ERROR("fileType not handled")
 	endswitch
 
 	sprintf msg, "Loaded sweep %d of device %s and %s\r", sweep, device, discLocation
@@ -2004,7 +2004,7 @@ static Function AB_LoadStimsetFromFile(string discLocation, string dataFolder, s
 				return 1
 			endif
 			break
-		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1: // fallthrough
 		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 			stimsets  = AB_GetStimsetList(fileType, discLocation, dataFolder, device, sweep)
 			h5_fileID = H5_OpenFile(discLocation)
@@ -2024,7 +2024,7 @@ static Function AB_LoadStimsetFromFile(string discLocation, string dataFolder, s
 			H5_CloseFile(h5_fileID)
 			break
 		default:
-			ASSERT(0, "fileType not handled")
+			FATAL_ERROR("fileType not handled")
 	endswitch
 
 	sprintf msg, "Loaded stimsets %s of device %s and %s\r", stimsets, device, discLocation
@@ -2144,7 +2144,7 @@ static Function AB_LoadSweepFromNWBgeneric(variable h5_groupID, variable nwbVers
 
 				break
 			default:
-				ASSERT(0, "unknown channel type " + num2str(p.channelType))
+				FATAL_ERROR("unknown channel type " + num2str(p.channelType))
 		endswitch
 		ASSERT(WaveExists(loaded), "No Wave loaded")
 
@@ -2176,7 +2176,7 @@ static Function AB_LoadSweepFromNWBgeneric(variable h5_groupID, variable nwbVers
 		// nwb files created prior to 901428b might have duplicated datasets
 		if(WaveExists(targetName) && WaveCRC(0, targetName) != WaveCRC(0, loaded))
 			KillOrMoveToTrash(dfr = sweepDFR)
-			ASSERT(0, "wave with same name, but different content, already exists: " + channelName)
+			FATAL_ERROR("wave with same name, but different content, already exists: " + channelName)
 		endif
 		Duplicate/O loaded, sweepDFR:$channelName/WAVE=targetRef
 		CreateBackupWave(targetRef)
@@ -2933,6 +2933,7 @@ Function AB_ButtonProc_LoadBoth(STRUCT WMButtonAction &ba) : ButtonControl
 		case 2:
 			PGC_SetAndActivateControl(ba.win, "button_load_stimsets")
 			PGC_SetAndActivateControl(ba.win, "button_load_sweeps")
+			break
 		default:
 			break
 	endswitch
@@ -3265,7 +3266,7 @@ static Function/S AB_GetSweepBrowserWindowFromTitle(string winTitle)
 		endif
 	endfor
 
-	ASSERT(0, "Could not find SweepBrowser with given title: " + winTitle)
+	FATAL_ERROR("Could not find SweepBrowser with given title: " + winTitle)
 End
 
 /// @brief Button "Select same stim set sweeps"
@@ -3325,7 +3326,7 @@ Function AB_ListBoxProc_ExpBrowser(STRUCT WMListboxAction &lba) : ListBoxControl
 			endif
 			AB_ShowFileContextMenu(AB_GetFilePathFromExpBrowserListboxRow(lba.row))
 			break
-		case 5: // cell selection + shift key
+		case 5: // fallthrough, cell selection + shift key
 		case 4: // cell selection
 			AB_CheckPanelVersion(lba.win)
 			AB_UpdateColors()
@@ -3744,11 +3745,11 @@ Function/S AB_GetStimsetList(string fileType, string discLocation, string dataFo
 		strswitch(fileType)
 			case ANALYSISBROWSER_FILE_TYPE_IGOR:
 				return AB_GetStimsetListFromIgorFile(discLocation)
-			case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+			case ANALYSISBROWSER_FILE_TYPE_NWBv1: // fallthrough
 			case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 				return NWB_ReadStimSetList(discLocation)
 			default:
-				ASSERT(0, "fileType not handled")
+				FATAL_ERROR("fileType not handled")
 		endswitch
 	endif
 
@@ -3852,8 +3853,8 @@ Function AB_ButtonProc_LoadTPStorage(STRUCT WMButtonAction &ba) : ButtonControl
 	switch(ba.eventcode)
 		case 2:
 			AB_CheckPanelVersion(ba.win)
-
 			AB_LoadFromFile(AB_LOAD_TP_STORAGE)
+			break
 		default:
 			break
 	endswitch
@@ -3866,8 +3867,8 @@ Function AB_ButtonProc_LoadHistoryAndLogs(STRUCT WMButtonAction &ba) : ButtonCon
 	switch(ba.eventcode)
 		case 2:
 			AB_CheckPanelVersion(ba.win)
-
 			AB_LoadFromFile(AB_LOAD_HISTORYANDLOGS)
+			break
 		default:
 			break
 	endswitch

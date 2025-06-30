@@ -173,11 +173,11 @@ static Function DC_ChannelCalcForDAQConfigWave(string device, variable dataAcqOr
 				numTTLsRackZero     = 0
 				numTTLsRackOne      = 0
 			else
-				ASSERT(0, "Unknown value of dataAcqOrTP")
+				FATAL_ERROR("Unknown value of dataAcqOrTP")
 			endif
 			return numDACs + numADCs + numTTLsRackZero + numTTLsRackOne
 			break
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // fallthrough
 		case HARDWARE_SUTTER_DAC:
 			if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 				numDACs = DC_NoOfChannelsSelected(device, CHANNEL_TYPE_DAC)
@@ -189,12 +189,12 @@ static Function DC_ChannelCalcForDAQConfigWave(string device, variable dataAcqOr
 				numADCs             = numActiveHeadstages
 				numTTLs             = 0
 			else
-				ASSERT(0, "Unknown value of dataAcqOrTP")
+				FATAL_ERROR("Unknown value of dataAcqOrTP")
 			endif
 			return numDACs + numADCs + numTTLs
 			break
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 			break
 	endswitch
 
@@ -239,7 +239,7 @@ static Function DC_LongestOutputWave(string device, variable dataAcqOrTP, variab
 		elseif(dataAcqOrTP == TEST_PULSE_MODE)
 			WAVE/Z wv = GetTestPulse()
 		else
-			ASSERT(0, "unhandled case")
+			FATAL_ERROR("unhandled case")
 		endif
 
 		if(!WaveExists(wv))
@@ -311,13 +311,13 @@ Function DC_CalculateDAQDataWaveLengthImpl(variable dataLength, variable hardwar
 			exponent = max(MINIMUM_ITCDATAWAVE_EXPONENT, exponent)
 
 			return 2^exponent
-		case HARDWARE_NI_DAC:
-		case HARDWARE_SUTTER_DAC: // intended drop-through
+		case HARDWARE_NI_DAC: // fallthrough
+		case HARDWARE_SUTTER_DAC:
 
 			return dataLength
 			break
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 			break
 	endswitch
 
@@ -360,7 +360,7 @@ static Function [WAVE/Z DAQDataWave, WAVE/WAVE NIDataWave] DC_MakeAndGetDAQDataW
 			SetScale/P x, 0, s.samplingIntervalDA * MICRO_TO_MILLI, "ms", ITCDataWave
 
 			return [ITCDataWave, $""]
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // fallthrough
 		case HARDWARE_SUTTER_DAC:
 			WAVE/WAVE NISUDataWave = GetDAQDataWave(device, dataAcqOrTP)
 			Redimension/N=(s.numActiveChannels) NISUDataWave
@@ -377,7 +377,7 @@ static Function [WAVE/Z DAQDataWave, WAVE/WAVE NIDataWave] DC_MakeAndGetDAQDataW
 
 			return [$"", NISUDataWave]
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 	endswitch
 End
 
@@ -396,7 +396,7 @@ static Function/WAVE DC_SetDataScaleNISUChannelWave(WAVE channel, variable type)
 		case XOP_CHANNEL_TYPE_TTL:
 			break
 		default:
-			ASSERT(0, "Unknown channel type")
+			FATAL_ERROR("Unknown channel type")
 	endswitch
 
 	return channel
@@ -422,15 +422,15 @@ static Function/WAVE DC_MakeNIChannelWave(string device, variable dataAcqOrTP, v
 	Redimension/N=(numRows)/Y=(dataType) channel
 	// @todo test
 	switch(channelType)
-		case XOP_CHANNEL_TYPE_DAC:
-		case XOP_CHANNEL_TYPE_TTL: // intended drop through
+		case XOP_CHANNEL_TYPE_DAC: // fallthrough
+		case XOP_CHANNEL_TYPE_TTL:
 			FastOp channel = 0
 			break
 		case XOP_CHANNEL_TYPE_ADC:
 			FastOp channel = (NaN)
 			break
 		default:
-			ASSERT(0, "Unsupported channel type")
+			FATAL_ERROR("Unsupported channel type")
 	endswitch
 	SetScale/P x, 0, samplingInterval * MICRO_TO_MILLI, "ms", channel
 
@@ -456,15 +456,15 @@ static Function/WAVE DC_MakeSUTTERChannelWave(string device, variable dataAcqOrT
 	WAVE channel = GetNIDAQChannelWave(device, index, dataAcqOrTP)
 	Redimension/N=(numRows)/Y=(dataType) channel
 	switch(channelType)
-		case XOP_CHANNEL_TYPE_DAC:
-		case XOP_CHANNEL_TYPE_TTL: // intended drop through
+		case XOP_CHANNEL_TYPE_DAC: // fallthrough
+		case XOP_CHANNEL_TYPE_TTL:
 			FastOp channel = 0
 			break
 		case XOP_CHANNEL_TYPE_ADC:
 			FastOp channel = (NaN)
 			break
 		default:
-			ASSERT(0, "Unsupported channel type")
+			FATAL_ERROR("Unsupported channel type")
 	endswitch
 	SetScale/P x, 0, samplingInterval * MICRO_TO_ONE, "s", channel
 
@@ -511,7 +511,7 @@ static Function DC_MakeHelperWaves(string device, variable dataAcqOrTP)
 			sampleIntervalADC = DimDelta(SUDataWave[numDACs], ROWS) * ONE_TO_MILLI
 			break
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 			break
 	endswitch
 
@@ -554,7 +554,7 @@ static Function DC_MakeHelperWaves(string device, variable dataAcqOrTP)
 				pointsAcq = numRows
 				break
 			default:
-				ASSERT(0, "Unsupported hardware type")
+				FATAL_ERROR("Unsupported hardware type")
 				break
 		endswitch
 
@@ -589,7 +589,7 @@ static Function DC_MakeHelperWaves(string device, variable dataAcqOrTP)
 				break
 		endswitch
 	else
-		ASSERT(0, "Invalid dataAcqOrTP")
+		FATAL_ERROR("Invalid dataAcqOrTP")
 	endif
 
 	SetNumberInWaveNote(OscilloscopeData, "DecimationMethod", decMethod)
@@ -616,7 +616,7 @@ static Function DC_CalculateChannelSizeForScaledData(string device, variable dat
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
 			return (dataAcqOrTP == DATA_ACQUISITION_MODE) ? ROVar(GetStopCollectionPoint(device)) : TPSettingsCalc[%totalLengthPointsTP_ADC]
-		case HARDWARE_NI_DAC: // intended-drop-through
+		case HARDWARE_NI_DAC: // fallthrough
 		case HARDWARE_SUTTER_DAC:
 			if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 				WAVE/WAVE dataWave = GetDAQDataWave(device, dataAcqOrTP)
@@ -626,7 +626,7 @@ static Function DC_CalculateChannelSizeForScaledData(string device, variable dat
 
 			return TPSettingsCalc[%totalLengthPointsTP_ADC]
 		default:
-			ASSERT(0, "Unknown hardware type")
+			FATAL_ERROR("Unknown hardware type")
 	endswitch
 End
 
@@ -737,7 +737,7 @@ Function/WAVE DC_GetFilteredChannelState(string device, variable dataAcqOrTP, va
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		switch(channelType)
-			case CHANNEL_TYPE_TTL:
+			case CHANNEL_TYPE_TTL: // fallthrough
 			case CHANNEL_TYPE_ADC:
 				// DAQChannelType does not matter
 				return statusChannel
@@ -759,7 +759,7 @@ Function/WAVE DC_GetFilteredChannelState(string device, variable dataAcqOrTP, va
 
 				break
 			default:
-				ASSERT(0, "unhandled case")
+				FATAL_ERROR("unhandled case")
 				break
 		endswitch
 	endif
@@ -777,7 +777,7 @@ Function/WAVE DC_GetFilteredChannelState(string device, variable dataAcqOrTP, va
 			Make/FREE/N=(NUM_DA_TTL_CHANNELS) result = AFH_GetHeadstageFromDAC(device, p)
 			break
 		default:
-			ASSERT(0, "unhandled case")
+			FATAL_ERROR("unhandled case")
 			break
 	endswitch
 
@@ -885,7 +885,7 @@ static Function DC_PlaceDataInDAQConfigWave(string device, variable dataAcqOrTP)
 					DAQConfigWave[j][%DAQChannelType] = DAQ_CHANNEL_TYPE_DAQ
 				endif
 				break
-			case HARDWARE_NI_DAC: // intended drop through
+			case HARDWARE_NI_DAC: // fallthrough
 			case HARDWARE_SUTTER_DAC:
 				WAVE statusTTL = DAG_GetChannelState(device, CHANNEL_TYPE_TTL)
 				numEntries = DimSize(statusTTL, ROWS)
@@ -899,7 +899,7 @@ static Function DC_PlaceDataInDAQConfigWave(string device, variable dataAcqOrTP)
 				endfor
 				break
 			default:
-				ASSERT(0, "Unsupported hardware type")
+				FATAL_ERROR("Unsupported hardware type")
 				break
 		endswitch
 	endif
@@ -967,7 +967,7 @@ static Function DC_CalculateGeneratedDataSize(string device, variable dataAcqOrT
 	elseif(dataAcqOrTP == TEST_PULSE_MODE)
 		return genLength
 	else
-		ASSERT(0, "unhandled case")
+		FATAL_ERROR("unhandled case")
 	endif
 End
 
@@ -1036,7 +1036,7 @@ static Function DC_MakeTTLWave(string device, STRUCT DataConfigurationResult &s)
 	endif
 
 	switch(s.hardwareType)
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // fallthrough
 		case HARDWARE_SUTTER_DAC:
 			DC_NI_MakeTTLWave(device, s)
 			break
@@ -1044,7 +1044,7 @@ static Function DC_MakeTTLWave(string device, STRUCT DataConfigurationResult &s)
 			DC_ITC_MakeTTLWave(device, s)
 			break
 		default:
-			ASSERT(0, "Unsupported hardware type specified")
+			FATAL_ERROR("Unsupported hardware type specified")
 	endswitch
 End
 
@@ -1066,7 +1066,7 @@ static Function DC_WriteTTLIntoDAQDataWave(string device, STRUCT DataConfigurati
 	[minLimit, maxLimit] = HW_GetDataRange(s.hardwareType, XOP_CHANNEL_TYPE_TTL, 0)
 
 	switch(s.hardwareType)
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // fallthrough
 		case HARDWARE_SUTTER_DAC:
 			WAVE/WAVE NIDataWave = GetDAQDataWave(device, s.dataAcqOrTP)
 			WAVE/WAVE TTLWaveNI  = GetTTLWave(device)
@@ -1098,7 +1098,7 @@ static Function DC_WriteTTLIntoDAQDataWave(string device, STRUCT DataConfigurati
 			endif
 			break
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 			break
 	endswitch
 End
@@ -1350,7 +1350,7 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 					WAVE/W ITCDataWave = DAQDataWave
 					Multithread ITCDataWave[][s.numDACEntries, s.numDACEntries + s.numADCEntries - 1] = 0
 					break
-				case HARDWARE_NI_DAC: // intended drop through
+				case HARDWARE_NI_DAC: // fallthrough
 				case HARDWARE_SUTTER_DAC:
 					WAVE/WAVE NIDataWave = DAQDataWave
 					for(i = 0; i < s.numADCEntries; i += 1)
@@ -1359,7 +1359,7 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 					endfor
 					break
 				default:
-					ASSERT(0, "Unsupported hardware type")
+					FATAL_ERROR("Unsupported hardware type")
 					break
 			endswitch
 		else
@@ -1427,7 +1427,7 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 				CA_StoreEntryIntoCache(key, NISUDataWave)
 				break
 			default:
-				ASSERT(0, "Invalid hardware type")
+				FATAL_ERROR("Invalid hardware type")
 				break
 		endswitch
 	endif
@@ -1470,7 +1470,7 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 						ITCDataWave[DimSize(ITCDataWave, ROWS) - cutOff, *][i] = 0
 					endif
 					break
-				case HARDWARE_NI_DAC: // intended drop through
+				case HARDWARE_NI_DAC: // fallthrough
 				case HARDWARE_SUTTER_DAC:
 					WAVE NIChannel = NIDataWave[i]
 					Multithread NIChannel[] =                                         \
@@ -1483,7 +1483,7 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 					endif
 					break
 				default:
-					ASSERT(0, "Unsupported hardware type")
+					FATAL_ERROR("Unsupported hardware type")
 					break
 			endswitch
 		elseif(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
@@ -1507,7 +1507,7 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 						            limit(tpAmp * s.testPulse[p], minLimit, maxLimit); AbortOnRTE
 					endif
 					break
-				case HARDWARE_NI_DAC: // intended drop through
+				case HARDWARE_NI_DAC: // fallthrough
 				case HARDWARE_SUTTER_DAC:
 					// for an index step of 1 in NIChannel, singleStimSet steps decimationFactor
 					// for an index step of 1 in singleStimset, NIChannel steps 1 / decimationFactor
@@ -1533,11 +1533,11 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 					endif
 					break
 				default:
-					ASSERT(0, "Unsupported hardware type")
+					FATAL_ERROR("Unsupported hardware type")
 					break
 			endswitch
 		else
-			ASSERT(0, "Unknown DAC channel type")
+			FATAL_ERROR("Unknown DAC channel type")
 		endif
 	endfor
 End
@@ -1633,13 +1633,13 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 			elseif(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
 				s.stimSet[i] = s.testPulse
 			else
-				ASSERT(0, "Unknown DAQ Channel Type")
+				FATAL_ERROR("Unknown DAQ Channel Type")
 			endif
 		elseif(dataAcqOrTP == TEST_PULSE_MODE)
 			s.setName[i] = LowerStr(STIMSET_TP_WHILE_DAQ)
 			s.stimSet[i] = s.testPulse
 		else
-			ASSERT(0, "unknown mode")
+			FATAL_ERROR("unknown mode")
 		endif
 
 		// restarting DAQ via the stimset popup menues does not call DAP_CheckSettings()
@@ -1669,7 +1669,7 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 			elseif(channelMode == I_CLAMP_MODE || channelMode == I_EQUAL_ZERO_MODE)
 				s.DACAmp[i][%TPAMP] = TPSettings[%amplitudeIC][headstage]
 			else
-				ASSERT(0, "Unknown clamp mode")
+				FATAL_ERROR("Unknown clamp mode")
 			endif
 		else
 			channelMode         = NaN
@@ -1702,7 +1702,7 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 				s.DACAmp[i][%TPAMP] = 0
 			endif
 		else
-			ASSERT(0, "unknown mode")
+			FATAL_ERROR("unknown mode")
 		endif
 	endfor
 
@@ -1856,7 +1856,7 @@ static Function DC_DocumentHardwareProperties(string device, variable hardwareTy
 			DC_DocumentChannelProperty(device, "Digitizer Serial Numbers", INDEP_HEADSTAGE, NaN, NaN, str = devInfoText[%LISTOFDEVICES])
 			break
 		default:
-			ASSERT(0, "Unknown hardware")
+			FATAL_ERROR("Unknown hardware")
 	endswitch
 End
 
@@ -1934,7 +1934,7 @@ static Function [variable result, variable row, variable column] DC_CheckIfDataW
 			endif
 
 			return [0, NaN, NaN]
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // fallthrough
 		case HARDWARE_SUTTER_DAC:
 			WAVE/WAVE dataWave = GetDAQDataWave(device, dataAcqOrTP)
 			ASSERT(IsWaveRefWave(dataWave), "Unexpected wave type")
@@ -1963,7 +1963,7 @@ static Function [variable result, variable row, variable column] DC_CheckIfDataW
 
 			return [0, NaN, NaN]
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 	endswitch
 End
 
@@ -2304,7 +2304,7 @@ static Function DC_GetStopCollectionPoint(string device, STRUCT DataConfiguratio
 		return DAClength
 	endif
 
-	ASSERT(0, "unknown mode")
+	FATAL_ERROR("unknown mode")
 End
 
 /// @brief Returns 1 if a channel is set to TP, the check is through the

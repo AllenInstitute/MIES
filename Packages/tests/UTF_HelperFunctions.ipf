@@ -719,7 +719,7 @@ End
 
 Function/WAVE FakeSweepDataGeneratorProto(WAVE sweep, variable numChannels)
 
-	ASSERT(0, "Prototype Function FakeSweepDataGeneratorProto called.")
+	FATAL_ERROR("Prototype Function FakeSweepDataGeneratorProto called.")
 End
 
 Function/WAVE FakeSweepDataGeneratorDefault(WAVE sweep, variable numChannels)
@@ -750,8 +750,8 @@ Function/S CreateFakeSweepData(string win, string device, [variable sweepNo, FUN
 	WAVE config        = GetDAQConfigWave(device)
 	hwType = GetHardwareType(device)
 	switch(sweepNo)
-		case 0: // intended drop through
-		case 1:
+		case 0: // fallthrough
+		case 1: // fallthrough
 		case 2:
 			numChannels = 4 // from LBN creation in PrepareLBN_IGNORE -> DA2, AD6, DA3, AD7
 			WAVE sweep = sweepGen(sweepTemplate, numChannels)
@@ -795,7 +795,7 @@ Function/S CreateFakeSweepData(string win, string device, [variable sweepNo, FUN
 			config[3][%ChannelNumber] = 1
 			// TTL 2
 			config[4][%ChannelType]   = XOP_CHANNEL_TYPE_TTL
-			config[4][%ChannelNumber] = hwType == HARDWARE_NI_DAC ? 2 : IsITC1600(device) ? HARDWARE_ITC_TTL_1600_RACK_ZERO : HARDWARE_ITC_TTL_DEF_RACK_ZERO
+			config[4][%ChannelNumber] = (hwType == HARDWARE_NI_DAC) ? 2 : IsITC1600(device) ? HARDWARE_ITC_TTL_1600_RACK_ZERO : HARDWARE_ITC_TTL_DEF_RACK_ZERO
 			break
 		default:
 			INFO("Unsupported sweep number in test setup")
@@ -1925,7 +1925,7 @@ static Function/S GetDefaultTestSuitesForExperiment()
 			list = AddListItem("UTF_PA_Tests.ipf", list, ";", Inf)
 			break
 		default:
-			ASSERT(0, "Missing case for " + match)
+			FATAL_ERROR("Missing case for " + match)
 	endswitch
 
 	return list

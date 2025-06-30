@@ -19,7 +19,7 @@ threadsafe Function/S ListMatchesExpr(string list, string matchExpr, variable ex
 		case MATCH_WILDCARD:
 			return ListMatch(list, matchExpr)
 		default:
-			ASSERT_TS(0, "invalid exprType")
+			FATAL_ERROR("invalid exprType")
 	endswitch
 End
 

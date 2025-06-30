@@ -51,11 +51,11 @@ Function CheckIfAllControlsReferStateWv([string str])
 		endif
 
 		switch(abs(V_Flag))
-			case CONTROL_TYPE_BUTTON:
-			case CONTROL_TYPE_LISTBOX:
-			case CONTROL_TYPE_TAB:
-			case CONTROL_TYPE_VALDISPLAY:
-			case CONTROL_TYPE_GROUPBOX:
+			case CONTROL_TYPE_BUTTON: // fallthrough
+			case CONTROL_TYPE_LISTBOX: // fallthrough
+			case CONTROL_TYPE_TAB: // fallthrough
+			case CONTROL_TYPE_VALDISPLAY: // fallthrough
+			case CONTROL_TYPE_GROUPBOX: // fallthrough
 			case CONTROL_TYPE_TITLEBOX:
 				// nothing to do
 				break
@@ -197,11 +197,11 @@ Function CheckStartupSettings([string str])
 		ControlInfo/W=$unlockedDevice $ctrl
 
 		switch(abs(V_Flag))
-			case CONTROL_TYPE_BUTTON:
-			case CONTROL_TYPE_LISTBOX:
-			case CONTROL_TYPE_TAB:
-			case CONTROL_TYPE_VALDISPLAY:
-			case CONTROL_TYPE_GROUPBOX:
+			case CONTROL_TYPE_BUTTON: // fallthrough
+			case CONTROL_TYPE_LISTBOX: // fallthrough
+			case CONTROL_TYPE_TAB: // fallthrough
+			case CONTROL_TYPE_VALDISPLAY: // fallthrough
+			case CONTROL_TYPE_GROUPBOX: // fallthrough
 			case CONTROL_TYPE_TITLEBOX:
 				// nothing to do
 				break
@@ -501,9 +501,9 @@ Function CheckAmplifierReadAndWrite([STRUCT IUTF_MDATA &md])
 		CHECK(IsFinite(actual))
 
 		switch(func)
-			case MCC_OSCKILLERENABLE_FUNC:
-			case MCC_AUTOBRIDGEBALANCE_FUNC:
-			case MCC_AUTOWHOLECELLCOMP_FUNC:
+			case MCC_OSCKILLERENABLE_FUNC: // fallthrough
+			case MCC_AUTOBRIDGEBALANCE_FUNC: // fallthrough
+			case MCC_AUTOWHOLECELLCOMP_FUNC: // fallthrough
 			case MCC_AUTOPIPETTEOFFSET_FUNC:
 				break
 			default:
@@ -523,20 +523,20 @@ Function CheckAmplifierReadAndWrite([STRUCT IUTF_MDATA &md])
 			case MCC_PIPETTEOFFSET_FUNC:
 				newValue = 50
 				break
-			case MCC_BRIDGEBALRESIST_FUNC:
-			case MCC_HOLDING_FUNC:
+			case MCC_BRIDGEBALRESIST_FUNC: // fallthrough
+			case MCC_HOLDING_FUNC: // fallthrough
 			case MCC_WHOLECELLCOMPRESIST_FUNC:
 				newValue = 100
 				break
-			case MCC_NEUTRALIZATIONCAP_FUNC:
-			case MCC_WHOLECELLCOMPCAP_FUNC:
+			case MCC_NEUTRALIZATIONCAP_FUNC: // fallthrough
+			case MCC_WHOLECELLCOMPCAP_FUNC: // fallthrough
 			case MCC_RSCOMPBANDWIDTH_FUNC:
 				newValue = 10
 				break
-			case MCC_BRIDGEBALENABLE_FUNC:
-			case MCC_HOLDINGENABLE_FUNC:
-			case MCC_NEUTRALIZATIONENABL_FUNC:
-			case MCC_WHOLECELLCOMPENABLE_FUNC:
+			case MCC_BRIDGEBALENABLE_FUNC: // fallthrough
+			case MCC_HOLDINGENABLE_FUNC: // fallthrough
+			case MCC_NEUTRALIZATIONENABL_FUNC: // fallthrough
+			case MCC_WHOLECELLCOMPENABLE_FUNC: // fallthrough
 			case MCC_RSCOMPENABLE_FUNC:
 				newValue = 1
 				break
@@ -560,13 +560,13 @@ Function CheckAmplifierReadAndWrite([STRUCT IUTF_MDATA &md])
 				newValue = 10
 				readFunc = MCC_PIPETTEOFFSET_FUNC
 				break
-			case MCC_RSCOMPCORRECTION_FUNC:
+			case MCC_RSCOMPCORRECTION_FUNC: // fallthrough
 			case MCC_RSCOMPPREDICTION_FUNC:
 				ret = AI_WriteToAmplifier(device, headstage, clampMode, MCC_NO_AMPCHAIN_FUNC, newValue, selectAmp = 0)
 				CHECK_EQUAL_VAR(ret, 0)
 				newValue = 10
 				break
-			case MCC_AUTOFASTCOMP_FUNC:
+			case MCC_AUTOFASTCOMP_FUNC: // fallthrough
 			case MCC_AUTOSLOWCOMP_FUNC:
 				newValue = 0
 				break
@@ -583,9 +583,9 @@ Function CheckAmplifierReadAndWrite([STRUCT IUTF_MDATA &md])
 		expected = newValue
 
 		switch(func)
-			case MCC_AUTOBRIDGEBALANCE_FUNC:
-			case MCC_AUTOWHOLECELLCOMP_FUNC:
-			case MCC_AUTOPIPETTEOFFSET_FUNC:
+			case MCC_AUTOBRIDGEBALANCE_FUNC: // fallthrough
+			case MCC_AUTOWHOLECELLCOMP_FUNC: // fallthrough
+			case MCC_AUTOPIPETTEOFFSET_FUNC: // fallthrough
 			case MCC_RSCOMPCORRECTION_FUNC:
 				CHECK(IsFinite(actual))
 				break
@@ -598,9 +598,9 @@ Function CheckAmplifierReadAndWrite([STRUCT IUTF_MDATA &md])
 		rowLabel = AI_MapFunctionConstantToName(func, clampMode)
 
 		switch(func)
-			case MCC_OSCKILLERENABLE_FUNC:
-			case MCC_FASTCOMPTAU_FUNC:
-			case MCC_SLOWCOMPTAU_FUNC:
+			case MCC_OSCKILLERENABLE_FUNC: // fallthrough
+			case MCC_FASTCOMPTAU_FUNC: // fallthrough
+			case MCC_SLOWCOMPTAU_FUNC: // fallthrough
 			case MCC_AUTOPIPETTEOFFSET_FUNC:
 				CHECK_PROPER_STR(rowLabel)
 				break

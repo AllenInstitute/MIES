@@ -223,7 +223,7 @@ static Function SC_AddPulseRegionLBNEntries(WAVE/T inputLBN, variable pulseIndex
 		elseif(IsTextWave(data))
 			str += TextWaveToList(data, ",")
 		else
-			ASSERT(0, "Unsupported wave type")
+			FATAL_ERROR("Unsupported wave type")
 		endif
 	endif
 
@@ -764,7 +764,7 @@ static Function SC_ReactToQCFailures(string device, variable sweepNo, string par
 			case SC_SPIKE_COUNT_STATE_STR_TOO_MANY:
 				oorDAScale[i] = SetDAScaleModOp(device, sweepNo, i, daScaleTooManySpikesModifier, daScaleTooManySpikesOperator, limitCheck = limitCheck)
 				break
-			case SC_SPIKE_COUNT_STATE_STR_MIXED:
+			case SC_SPIKE_COUNT_STATE_STR_MIXED: // fallthrough
 				printf "The spike count on headstage %d in sweep %d is mixed (some pulses have too few, others too many)\n", i, sweepNo
 				key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SPIKE_COUNTS_STATE, query = 1)
 				WAVE/Z/T spikeCountsRAC = GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, key, i, UNKNOWN_MODE)
@@ -775,14 +775,14 @@ static Function SC_ReactToQCFailures(string device, variable sweepNo, string par
 					// push to front on first time
 					ControlWindowToFront()
 				endif
-			case SC_SPIKE_COUNT_STATE_STR_TOO_FEW: // fallthrough-by-design
+			case SC_SPIKE_COUNT_STATE_STR_TOO_FEW:
 				oorDAScale[i] = SetDAScaleModOp(device, sweepNo, i, daScaleModifier, daScaleOperator, limitCheck = limitCheck)
 				break
 			case SC_SPIKE_COUNT_STATE_STR_GOOD:
 				// nothing to do
 				break
 			default:
-				ASSERT(0, "Impossible case")
+				FATAL_ERROR("Impossible case")
 				break
 		endswitch
 	endfor
@@ -849,7 +849,7 @@ Function/S SC_SpikeControl_GetHelp(string name)
 			return "Auto bias modifier value in mV on failing baseline QC."
 			break
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 			break
 	endswitch
 End
@@ -872,16 +872,16 @@ Function/S SC_SpikeControl_CheckParam(string name, STRUCT CheckParametersStruct 
 				return "Invalid value " + num2str(val)
 			endif
 			break
-		case "DAScaleOperator":
-		case "DAScaleSpikePositionOperator":
+		case "DAScaleOperator": // fallthrough
+		case "DAScaleSpikePositionOperator": // fallthrough
 		case "DaScaleTooManySpikesOperator":
 			str = AFH_GetAnalysisParamTextual(name, s.params)
 			if(cmpstr(str, "+") && cmpstr(str, "*"))
 				return "Invalid string " + str
 			endif
 			break
-		case "DAScaleModifier":
-		case "DAScaleSpikePositionModifier":
+		case "DAScaleModifier": // fallthrough
+		case "DAScaleSpikePositionModifier": // fallthrough
 		case "DaScaleTooManySpikesModifier":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val))
@@ -912,7 +912,7 @@ Function/S SC_SpikeControl_CheckParam(string name, STRUCT CheckParametersStruct 
 	endswitch
 
 	strswitch(name)
-		case "DaScaleTooManySpikesModifier":
+		case "DaScaleTooManySpikesModifier": // fallthrough
 		case "DaScaleTooManySpikesOperator":
 			modifier = AFH_GetAnalysisParamNumerical("DaScaleTooManySpikesModifier", s.params)
 			operator = AFH_GetAnalysisParamTextual("DaScaleTooManySpikesOperator", s.params)

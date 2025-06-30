@@ -48,7 +48,7 @@ threadsafe Function/WAVE GetLogbookValuesFromKeys(WAVE keyWave)
 		case LBN_TEXTUALRESULT_KEYS_NAME:
 			return dfr:$LBN_TEXTUALRESULT_VALUES_NAME
 		default:
-			ASSERT_TS(0, "Can not resolve logbook values wave from key wave: " + wName)
+			FATAL_ERROR("Can not resolve logbook values wave from key wave: " + wName)
 	endswitch
 End
 
@@ -68,7 +68,7 @@ threadsafe Function/WAVE GetLogbookKeysFromValues(WAVE valuesWave)
 		case LBN_TEXTUALRESULT_VALUES_NAME:
 			return dfr:$LBN_TEXTUALRESULT_KEYS_NAME
 		default:
-			ASSERT_TS(0, "Can not resolve logbook keys wave from values wave: " + wName)
+			FATAL_ERROR("Can not resolve logbook keys wave from values wave: " + wName)
 	endswitch
 End
 
@@ -473,7 +473,7 @@ Function/WAVE UpgradeWaveLocationAndGetIt(STRUCT WaveLocationMod &p)
 		return src
 	endif
 
-	ASSERT(0, "impossible case")
+	FATAL_ERROR("impossible case")
 End
 
 ///@}
@@ -697,7 +697,7 @@ threadsafe Function/S GetDevicePathAsString(string device)
 			return GetDeviceTypePathAsString(deviceType)
 			break
 		default:
-			ASSERT_TS(0, "Invalid hardware type")
+			FATAL_ERROR("Invalid hardware type")
 	endswitch
 End
 
@@ -821,7 +821,7 @@ Function/WAVE GetDAQDataWave(string device, variable mode)
 			name = "DAQDataWave_TP"
 			break
 		default:
-			ASSERT(0, "Invalid dataAcqOrTP")
+			FATAL_ERROR("Invalid dataAcqOrTP")
 	endswitch
 
 	WAVE/Z/W/SDFR=dfr wv = $name
@@ -834,13 +834,13 @@ Function/WAVE GetDAQDataWave(string device, variable mode)
 		case HARDWARE_ITC_DAC:
 			Make/W/N=(1, NUM_DA_TTL_CHANNELS) dfr:$name/WAVE=wv
 			break
-		case HARDWARE_NI_DAC:
-		case HARDWARE_SUTTER_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // fallthrough
+		case HARDWARE_SUTTER_DAC:
 			Make/WAVE/N=(NUM_DA_TTL_CHANNELS) dfr:$name/WAVE=wv_ni
 			WAVE wv = wv_ni
 			break
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 			break
 	endswitch
 
@@ -883,7 +883,7 @@ Function/WAVE GetNIDAQChannelWave(string device, variable channel, variable mode
 			prefix = "SU"
 			break
 		default:
-			ASSERT(0, "unsupported device type")
+			FATAL_ERROR("unsupported device type")
 	endswitch
 
 	name = prefix + "_Channel" + num2str(channel)
@@ -896,7 +896,7 @@ Function/WAVE GetNIDAQChannelWave(string device, variable channel, variable mode
 			name += "_TP"
 			break
 		default:
-			ASSERT(0, "Invalid dataAcqOrTP")
+			FATAL_ERROR("Invalid dataAcqOrTP")
 	endswitch
 
 	DFREF dfr = GetDevicePath(device)
@@ -1231,7 +1231,7 @@ Function/WAVE GetTTLWave(string device)
 			return wv
 
 			break
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // fallthrough
 		case HARDWARE_SUTTER_DAC:
 			WAVE/Z/WAVE/SDFR=dfr wv_ni = TTLWave
 
@@ -1245,7 +1245,7 @@ Function/WAVE GetTTLWave(string device)
 
 			break
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 	endswitch
 End
 
@@ -1320,14 +1320,14 @@ Function/S GetDevSpecLabNBFolderAsString(string device)
 			return GetLabNotebookFolderAsString() + ":" + deviceType + ":Device" + deviceNumber
 			break
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 			break
 	endswitch
 End
 
 Function/WAVE DAQ_LBN_GETTER_PROTO(string win)
 
-	ASSERT(0, "Can not call prototype")
+	FATAL_ERROR("Can not call prototype")
 End
 
 /// @brief Returns a wave reference to the text labnotebook
@@ -4058,7 +4058,7 @@ Function UpgradeWaveParam(WAVE wv)
 	// upgrade to wave version 5
 	if(WaveVersionIsSmaller(wv, 5))
 		// 41: pink noise, 42: brown noise, none: white noise -> 54: noise type
-		wv[54][][EPOCH_TYPE_NOISE] = wv[41][q][EPOCH_TYPE_NOISE] == 0 && wv[42][q][EPOCH_TYPE_NOISE] == 0 ? 0 : ((wv[41][q][EPOCH_TYPE_NOISE] == 1) ? 1 : 2)
+		wv[54][][EPOCH_TYPE_NOISE] = (wv[41][q][EPOCH_TYPE_NOISE] == 0 && wv[42][q][EPOCH_TYPE_NOISE] == 0) ? 0 : ((wv[41][q][EPOCH_TYPE_NOISE] == 1) ? 1 : 2)
 		// adapt to changed filter order definition
 		wv[26][][EPOCH_TYPE_NOISE] = 6
 		wv[27][][EPOCH_TYPE_NOISE] = 0
@@ -4324,7 +4324,7 @@ Function UpgradeWaveTextParam(WAVE/T wv)
 					WB_AddAnalysisParameterIntoWPT(wv, name, wv = AFH_GetAnalysisParamWave(name, params))
 					break
 				default:
-					ASSERT(0, "Unknown type")
+					FATAL_ERROR("Unknown type")
 					break
 			endswitch
 		endfor
@@ -4614,7 +4614,7 @@ Function/WAVE GetWBEpochCombineList(variable channelType)
 			DFREF dfr = GetWaveBuilderDataTTLPath()
 			break
 		default:
-			ASSERT(0, "Unknown channel type")
+			FATAL_ERROR("Unknown channel type")
 	endswitch
 
 	WAVE/Z/T/SDFR=dfr wv = epochCombineList
@@ -5471,7 +5471,7 @@ Function/WAVE GetAnalysisResultsWave(string expFolder, variable type)
 			name = LBN_TEXTUALRESULT_KEYS_NAME
 			break
 		default:
-			ASSERT(0, "Invalid type")
+			FATAL_ERROR("Invalid type")
 	endswitch
 
 	WAVE/Z/SDFR=dfr wv = $name
@@ -5825,7 +5825,7 @@ End
 /// UTF_NOINSTRUMENTATION
 Function/WAVE ANALYSIS_LBN_GETTER_PROTO(string expFolder, string device)
 
-	ASSERT(0, "Can not call prototype function")
+	FATAL_ERROR("Can not call prototype function")
 End
 
 /// @brief Return the numerical labnotebook values in the analysis browser of a device and experiment pair
@@ -8406,7 +8406,7 @@ Function/WAVE UpgradePSXEventWave(WAVE psxEvent)
 	elseif(WaveVersionIsAtLeast(psxEvent, 1))
 		SetPSXEventDimensionLabels(psxEvent)
 	else
-		ASSERT(0, "Missing upgrade path")
+		FATAL_ERROR("Missing upgrade path")
 	endif
 
 	return psxEvent
@@ -8874,7 +8874,7 @@ Function/DF GetSetFolder(variable channelType)
 	elseif(channelType == CHANNEL_TYPE_TTL)
 		return GetWBSvdStimSetTTLPath()
 	else
-		ASSERT(0, "unknown channelType")
+		FATAL_ERROR("unknown channelType")
 	endif
 End
 
@@ -8888,7 +8888,7 @@ Function/S GetSetFolderAsString(variable channelType)
 	elseif(channelType == CHANNEL_TYPE_TTL)
 		return GetWBSvdStimSetTTLPathAsString()
 	else
-		ASSERT(0, "unknown channelType")
+		FATAL_ERROR("unknown channelType")
 	endif
 End
 
@@ -8904,7 +8904,7 @@ Function/DF GetSetParamFolder(variable channelType)
 	elseif(channelType == CHANNEL_TYPE_TTL)
 		return GetWBSvdStimSetParamTTLPath()
 	else
-		ASSERT(0, "unknown channelType")
+		FATAL_ERROR("unknown channelType")
 	endif
 End
 
@@ -8920,7 +8920,7 @@ Function/S GetSetParamFolderAsString(variable channelType)
 	elseif(channelType == CHANNEL_TYPE_TTL)
 		return GetWBSvdStimSetParamPathAS() + ":TTL"
 	else
-		ASSERT(0, "unknown channelType")
+		FATAL_ERROR("unknown channelType")
 	endif
 End
 

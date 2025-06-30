@@ -216,7 +216,7 @@ static Function/WAVE PSX_GetCheckboxStatesFromSpecialPanel(string win, string tr
 			last         = DimSize(states, ROWS) - 2
 			break
 		default:
-			ASSERT(0, "Unknown trace type")
+			FATAL_ERROR("Unknown trace type")
 			break
 	endswitch
 
@@ -587,7 +587,7 @@ static Function [variable peak_t, variable peak] PSX_CalculateEventPeak(WAVE pea
 		peak   = V_min
 		peak_t = V_minloc
 	else
-		ASSERT(0, "Can't handle kernelAmp of zero")
+		FATAL_ERROR("Can't handle kernelAmp of zero")
 	endif
 
 	return [peak_t, peak]
@@ -604,7 +604,7 @@ static Function [variable baseline_t, variable baseline] PSX_CalculateEventBasel
 	elseif(kernelAmp < 0)
 		baseline_t = V_maxloc
 	else
-		ASSERT(0, "Can't handle kernelAmp of zero")
+		FATAL_ERROR("Can't handle kernelAmp of zero")
 	endif
 
 	range = PSX_BASELINE_NUM_POINTS_AVERAGE * DimDelta(sweepDataOffFilt, ROWS)
@@ -1170,33 +1170,33 @@ static Function [WAVE/D results, WAVE eventIndex, WAVE marker, WAVE/T comboKeys]
 			propLabel = "Onset Time"
 			break
 		default:
-			ASSERT(0, "Impossible prop: " + prop)
+			FATAL_ERROR("Impossible prop: " + prop)
 	endswitch
 
 	// use the correct event/fit state for the property
 	strswitch(propLabel)
-		case "amplitude":
-		case "peak":
-		case "peak_t":
-		case "deconvPeak":
-		case "deconvPeak_t":
-		case "baseline":
-		case "baseline_t":
-		case "iei":
-		case "Event manual QC call":
-		case "Slew Rate":
-		case "Slew Rate Time":
-		case "Rise Time":
+		case "amplitude": // fallthrough
+		case "peak": // fallthrough
+		case "peak_t": // fallthrough
+		case "deconvPeak": // fallthrough
+		case "deconvPeak_t": // fallthrough
+		case "baseline": // fallthrough
+		case "baseline_t": // fallthrough
+		case "iei": // fallthrough
+		case "Event manual QC call": // fallthrough
+		case "Slew Rate": // fallthrough
+		case "Slew Rate Time": // fallthrough
+		case "Rise Time": // fallthrough
 		case "Onset Time":
 			stateType = "Event manual QC call"
 			break
-		case "Fit result":
-		case "tau":
+		case "Fit result": // fallthrough
+		case "tau": // fallthrough
 		case "Fit manual QC call":
 			stateType = "Fit manual QC call"
 			break
 		default:
-			ASSERT(0, "Unknown propLabel: " + propLabel)
+			FATAL_ERROR("Unknown propLabel: " + propLabel)
 	endswitch
 
 	Make/FREE/N=0 allEventIndex, allMarkers
@@ -1511,7 +1511,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE s
 				break
 
 			default:
-				ASSERT(0, "Impossible prop: " + prop)
+				FATAL_ERROR("Impossible prop: " + prop)
 		endswitch
 
 		if(!cmpstr(stateAsStr, "every"))
@@ -1569,7 +1569,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE s
 					// +inf -> +1
 					// finite -> NaN
 					Duplicate/FREE resultsRaw, results
-					Multithread results[] = resultsRaw[p] == -Inf ? -1 : (IsNaN(resultsRaw[p]) ? 0 : ((resultsRaw[p] == +Inf) ? +1 : NaN))
+					Multithread results[] = (resultsRaw[p] == -Inf) ? -1 : (IsNaN(resultsRaw[p]) ? 0 : ((resultsRaw[p] == +Inf) ? +1 : NaN))
 
 					WAVE/Z resultsClean = ZapNaNs(results)
 
@@ -1641,7 +1641,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE s
 					JWN_SetWaveInWaveNote(results, SF_META_XVALUES, eventIndex)
 					break
 				default:
-					ASSERT(0, "Impossible postProc state")
+					FATAL_ERROR("Impossible postProc state")
 			endswitch
 
 			// passing in sweepNo is not correct as we combine data from multiple sweeps
@@ -1704,7 +1704,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE s
 			JWN_SetStringInWaveNote(output, SF_META_YAXISLABEL, "Log10 " + LowerStr(propLabelAxis))
 			break
 		default:
-			ASSERT(0, "Impossible state")
+			FATAL_ERROR("Impossible state")
 	endswitch
 
 	return output
@@ -1784,7 +1784,7 @@ threadsafe static Function PSX_CalculateOnsetTime(WAVE sweepDataDiff, WAVE psxEv
 		slewRate   = V_min
 		slewRate_t = V_minLoc
 	else
-		ASSERT_TS(0, "Unsupported case: kernelAmp being zero")
+		FATAL_ERROR("Unsupported case: kernelAmp being zero")
 	endif
 
 	psxEvent[index][%$"Slew Rate"]      = slewRate
@@ -1845,7 +1845,7 @@ static Function PSX_ParseState(string state)
 		case "All":
 			return PSX_ACCEPT | PSX_REJECT | PSX_UNDET
 		default:
-			ASSERT(0, "Impossible state")
+			FATAL_ERROR("Impossible state")
 	endswitch
 End
 
@@ -1861,7 +1861,7 @@ Function/S PSX_StateToString(variable state)
 		case PSX_ALL:
 			return "All"
 		default:
-			ASSERT(0, "invalid state")
+			FATAL_ERROR("invalid state")
 	endswitch
 End
 
@@ -2042,7 +2042,7 @@ static Function PSX_UpdateOffsetInAllEventGraph(string win)
 					yOffset = 0
 					break
 				default:
-					ASSERT(0, "Invalid offset mode")
+					FATAL_ERROR("Invalid offset mode")
 			endswitch
 
 			MultiThread singleEvent[] = singleEventRaw[p] - yOffset
@@ -2147,7 +2147,7 @@ static Function PSX_AdaptColorsInAllEventGraph(string win, [variable forceAverag
 			WAVE/T stateOld = eventStateFromTraces
 			break
 		default:
-			ASSERT(0, "Invalid state type")
+			FATAL_ERROR("Invalid state type")
 	endswitch
 
 	[WAVE acceptColors, WAVE rejectColors, WAVE undetColors] = PSX_GetEventColors()
@@ -2204,7 +2204,7 @@ static Function PSX_AdaptColorsInAllEventGraph(string win, [variable forceAverag
 				                         {PSX_TUD_FIT_STATE_KEY, PSX_TUD_EVENT_STATE_KEY},   \
 				                         {num2str(fitStateNew[i]), num2str(eventStateNew[i])})
 			else
-				ASSERT(0, "Impossible case")
+				FATAL_ERROR("Impossible case")
 			endif
 		endfor
 	endif
@@ -2261,7 +2261,7 @@ static Function PSX_UpdateAverageTraces(string win, WAVE/T eventIndexFromTraces,
 				undetIndex                  += 1
 				break
 			default:
-				ASSERT(0, "impossible state")
+				FATAL_ERROR("impossible state")
 		endswitch
 
 		contAverageAll[i] = singleEvent
@@ -2352,7 +2352,7 @@ static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventSto
 			CurveFit/M=0/Q/N=2 dblexp_XOffset, kwCWave=coefWave, average(start, stop)/D=acceptedAverageFit; err = GetRTError(1)
 			break
 		default:
-			ASSERT(0, "Unknown fit function")
+			FATAL_ERROR("Unknown fit function")
 	endswitch
 
 	sprintf msg, "Fit in the range [%g, %g] finished with %d (%s)\r", start, stop, err, GetErrMessage(err)
@@ -2419,12 +2419,12 @@ static Function/S PSX_GetPSXParameters(variable jsonID, variable cacheKeyType)
 	subJsonID = JSON_GetJSON(jsonID, SF_META_USER_GROUP + PSX_JWN_PARAMETERS, ignoreErr = 1)
 
 	switch(cacheKeyType)
-		case PSX_CACHE_KEY_EVENTS:
+		case PSX_CACHE_KEY_EVENTS: // fallthrough
 		case PSX_CACHE_KEY_ANALYZE_PEAKS:
 			// do nothing
 			break
 		default:
-			ASSERT(0, "Unknown cache key type")
+			FATAL_ERROR("Unknown cache key type")
 	endswitch
 
 	psxParameters = JSON_Dump(subJsonID, indent = -1)
@@ -2501,7 +2501,7 @@ static Function [WAVE/T keys, WAVE/T values] PSX_GetTraceSelectionWaves(string w
 				Make/FREE/T values = {traceType, PSX_TUD_AVERAGE_ALL_COMBO_KEY}
 				break
 			default:
-				ASSERT(0, "Invalid state type")
+				FATAL_ERROR("Invalid state type")
 		endswitch
 	endif
 
@@ -3048,7 +3048,7 @@ static Function PSX_GetMoveDirection(string psxGraph)
 		case PSX_KEYBOARD_DIR_LR:
 			return +1
 		default:
-			ASSERT(0, "Unsupported direction")
+			FATAL_ERROR("Unsupported direction")
 	endswitch
 End
 
@@ -3063,7 +3063,7 @@ threadsafe static Function/WAVE PSX_SelectColor(variable state, WAVE acceptColor
 		case PSX_UNDET:
 			return undetColors
 		default:
-			ASSERT_TS(0, "Invalid state")
+			FATAL_ERROR("Invalid state")
 	endswitch
 End
 
@@ -3078,7 +3078,7 @@ threadsafe static Function PSX_SelectMarker(variable state)
 		case PSX_UNDET:
 			return PSX_MARKER_UNDET
 		default:
-			ASSERT_TS(0, "Invalid state")
+			FATAL_ERROR("Invalid state")
 	endswitch
 End
 
@@ -3175,7 +3175,7 @@ static Function PSX_UpdateEventWaves(string win, [variable val, variable index, 
 			oldStateCol = stateCol0
 			break
 		default:
-			ASSERT(0, "Unknown state type")
+			FATAL_ERROR("Unknown state type")
 	endswitch
 
 	if(toggle)
@@ -3190,7 +3190,7 @@ static Function PSX_UpdateEventWaves(string win, [variable val, variable index, 
 				val = PSX_UNDET
 				break
 			default:
-				ASSERT(0, "Unknown state")
+				FATAL_ERROR("Unknown state")
 		endswitch
 	endif
 
@@ -3302,7 +3302,7 @@ static Function/S PSX_GenerateComboKey(string graph, WAVE selectData, WAVE range
 		WAVE/T rangeText = range
 		rangeStr = rangeText[0]
 	else
-		ASSERT(0, "Unexpected wave type")
+		FATAL_ERROR("Unexpected wave type")
 	endif
 
 	if(isDataBrowser)
@@ -3459,7 +3459,7 @@ static Function/S PSX_GetPSXGraph(string win)
 		endif
 	endfor
 
-	ASSERT(0, "Could not find an psx graph as part of the window hierarchy")
+	FATAL_ERROR("Could not find an psx graph as part of the window hierarchy")
 End
 
 /// @brief Return the name of the possibly non-existing stats subwindow
@@ -3670,7 +3670,7 @@ static Function PSX_GetComboIndexForComboKey(string win, string comboKey)
 		i += 1
 	endfor
 
-	ASSERT(0, "Could not find a combo folder")
+	FATAL_ERROR("Could not find a combo folder")
 End
 
 /// @brief Return the combo index from the given comboDFR
@@ -4042,7 +4042,7 @@ static Function PSX_AddLegend(string win, WAVE/WAVE results)
 					sprintf line, "%s: %s", param, RemoveEnding(str, sep)
 					break
 				default:
-					ASSERT(0, "Unsupported type")
+					FATAL_ERROR("Unsupported type")
 			endswitch
 
 			input[j][i] = prefix + line
@@ -4130,7 +4130,7 @@ static Function [variable eventIndex, variable waveIndex, variable comboIndex] P
 	comboIndex   = PSX_GetComboIndexForComboKey(win, comboKeys[yPointNumber])
 
 	strswitch(postProc)
-		case "nothing":
+		case "nothing": // fallthrough
 		case "log10":
 			eventIndex = xWave[yPointNumber]
 			break
@@ -4363,7 +4363,7 @@ static Function PSX_GetDirectionFromKeyCode(string psxGraph, variable keyCode)
 			return -1
 		case RIGHT_KEY:
 			return +1
-		case UP_KEY:
+		case UP_KEY: // fallthrough
 		case DOWN_KEY:
 			return PSX_GetMoveDirection(psxGraph)
 		default:
@@ -4376,9 +4376,9 @@ static Function PSX_MoveMouseForKeyPress(string win, variable keyCode, variable 
 	variable direction
 
 	switch(keycode)
-		case LEFT_KEY:
-		case RIGHT_KEY:
-		case UP_KEY:
+		case LEFT_KEY: // fallthrough
+		case RIGHT_KEY: // fallthrough
+		case UP_KEY: // fallthrough
 		case DOWN_KEY:
 			direction = PSX_GetDirectionFromKeyCode(win, keyCode)
 			PSX_MoveAndCenterCursor(win, eventIndex, direction = direction)
@@ -4446,7 +4446,7 @@ static Function PSX_ReactToKeyPressWithoutMouse(string win, variable keyCode, va
 					keyboardDir = PSX_KEYBOARD_DIR_RL
 					break
 				default:
-					ASSERT(0, "Unknown direction")
+					FATAL_ERROR("Unknown direction")
 			endswitch
 
 			PSX_SetKeyboardDirection(win, keyboardDir)
@@ -4724,7 +4724,7 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 
 		SFH_CleanUpInput(psxKernelDataset)
 
-		SFH_ASSERT(0, "Could not gather sweep data for psx")
+		SFH_FATAL_ERROR("Could not gather sweep data for psx")
 	endtry
 
 	JWN_SetWaveNoteFromJSON(output, parameterJsonID)
@@ -5016,7 +5016,7 @@ Function PSX_MouseEventSelection(variable newState, variable stateType)
 	strswitch(bottomLabel)
 		// PSX decision plot
 		// we match an empty string as well as AxisLabel returns that for auto labels (reported as #4353)
-		case "ms":
+		case "ms": // fallthrough
 		case "":
 			WAVE peakX = GetPSXPeakXWaveFromDFR(comboDFR)
 
@@ -5053,7 +5053,7 @@ Function PSX_MouseEventSelection(variable newState, variable stateType)
 			needsUpdate = 1
 			break
 		// PSX stats plot
-		case "Event":
+		case "Event": // fallthrough
 		case "Non-finite values":
 			[bottom, top] = GetMarqueeHelper("left", vert = 1, doAssert = 0, kill = 1)
 
@@ -5099,7 +5099,7 @@ static Function PSX_GetIndexOrientation(string axisLbl)
 			return EVENT_INDEX_VERTICAL
 			break
 		default:
-			ASSERT(0, "Not supported")
+			FATAL_ERROR("Not supported")
 	endswitch
 End
 
@@ -5176,7 +5176,7 @@ static Function/WAVE PSX_GetEventsInsideMarqueeForStatsPlot(string win, variable
 					MatrixOP/FREE eventIndizes = waveMap(yWave, waveMap(matchesClean, indizes))
 					break
 				default:
-					ASSERT(0, "Unsupported index orientation")
+					FATAL_ERROR("Unsupported index orientation")
 			endswitch
 
 			EnsureLargeEnoughWave(result, indexShouldExist = idx)
@@ -5451,7 +5451,7 @@ Function PSX_ListBoxSelectCombo(STRUCT WMListBoxAction &lba) : ListboxControl
 	variable row
 
 	switch(lba.eventCode)
-		case 3: // double click (PGC_SetAndActivateControl uses that)
+		case 3: // fallthrough, double click (PGC_SetAndActivateControl uses that)
 		case 4: // cell selection
 
 			// workaround IP bug where lba.row can be out of range
@@ -5555,8 +5555,8 @@ End
 Function PSX_SetVarBlockSize(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // fallthrough, mouse up
+		case 2: // fallthrough, Enter key
 		case 3: // Live update
 			PSX_UpdateAllEventGraph(sva.win, forceAverageUpdate = 1, forceBlockIndexUpdate = 1)
 			break

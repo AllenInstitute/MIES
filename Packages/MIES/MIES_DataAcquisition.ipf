@@ -182,14 +182,14 @@ Function DQ_StopDAQ(string device, variable stopReason, [variable startTPAfterDA
 		case DAQ_FG_SINGLE_DEVICE:
 			// can not be stopped
 			return runMode
-		case DAQ_BG_SINGLE_DEVICE:
+		case DAQ_BG_SINGLE_DEVICE: // fallthrough
 		case DAQ_BG_MULTI_DEVICE:
 			DQ_StopOngoingDAQ(device, stopReason, startTPAfterDAQ = startTPAfterDAQ)
 			return runMode
 		case DAQ_NOT_RUNNING:
 			return DAQ_NOT_RUNNING
 		default:
-			ASSERT(0, "Invalid run mode")
+			FATAL_ERROR("Invalid run mode")
 	endswitch
 End
 

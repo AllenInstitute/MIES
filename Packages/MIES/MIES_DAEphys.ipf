@@ -906,8 +906,8 @@ Function DAP_SetVarProc_Channel_Search(STRUCT WMSetVariableAction &sva) : SetVar
 	string device, varstr, sel
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // fallthrough, mouse up
+		case 2: // fallthrough, Enter key
 		case 3: // Live update
 			device = sva.win
 			ctrl   = sva.ctrlName
@@ -1122,7 +1122,7 @@ Function GetHeadstageFromSettings(string device, variable channelType, variable 
 	elseif(channelType == XOP_CHANNEL_TYPE_DAC)
 		row = (clampMode == V_CLAMP_MODE) ? 0 : (0 + 4)
 	else
-		ASSERT(0, "Unexpected clamp mode")
+		FATAL_ERROR("Unexpected clamp mode")
 	endif
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
@@ -1596,8 +1596,8 @@ Function DAP_SetVarProc_DA_Scale(STRUCT WMSetVariableAction &sva) : SetVariableC
 	string device, ctrl
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // fallthrough, mouse up
+		case 2: // fallthrough, Enter key
 		case 3: // Live update
 			val    = sva.dval
 			ctrl   = sva.ctrlName
@@ -1683,7 +1683,7 @@ Function DAP_GetSampInt(string device, variable dataAcqOrTP, variable channelTyp
 	elseif(dataAcqOrTP == TEST_PULSE_MODE)
 		return SI_CalculateMinSampInterval(device, dataAcqOrTP, channelType)
 	else
-		ASSERT(0, "unknown mode")
+		FATAL_ERROR("unknown mode")
 	endif
 End
 
@@ -1694,7 +1694,7 @@ static Function DAP_IsSampleIntervalValid(string device, variable channelType, v
 	endif
 
 	switch(channelType)
-		case XOP_CHANNEL_TYPE_DAC: // intended drop-through
+		case XOP_CHANNEL_TYPE_DAC: // fallthrough
 		case XOP_CHANNEL_TYPE_TTL:
 			WAVE allowedIntervals = GetSutterDACTTLSampleInterval()
 			FindValue/Z/V=(sampInt) allowedIntervals
@@ -1704,7 +1704,7 @@ static Function DAP_IsSampleIntervalValid(string device, variable channelType, v
 			FindValue/Z/V=(sampInt) allowedIntervals
 			return V_value >= 0
 		default:
-			ASSERT(0, "Invalid channel type")
+			FATAL_ERROR("Invalid channel type")
 	endswitch
 End
 
@@ -1734,8 +1734,8 @@ Function DAP_SetVarProc_TotSweepCount(STRUCT WMSetVariableAction &sva) : SetVari
 	string device
 
 	switch(sva.eventCode)
-		case 1:
-		case 2:
+		case 1: // fallthrough
+		case 2: // fallthrough
 		case 3:
 			device = sva.win
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
@@ -1862,14 +1862,14 @@ Function DAP_SetVarProc_CAA(STRUCT WMSetVariableAction &sva) : SetVariableContro
 	string device
 
 	switch(sva.eventCode)
-		case 1: // mouse up
+		case 1: // fallthrough, mouse up
 		case 2: // Enter key
 			device = sva.win
 			DAP_AbortIfUnlocked(device)
 
 			strswitch(sva.ctrlName)
-				case "setvar_DataAcq_SSPressure":
-				case "setvar_DataAcq_PPPressure":
+				case "setvar_DataAcq_SSPressure": // fallthrough
+				case "setvar_DataAcq_PPPressure": // fallthrough
 				case "setvar_DataAcq_PPDuration":
 					DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
 					break
@@ -1890,8 +1890,8 @@ Function DAP_SetVarProc_CAA(STRUCT WMSetVariableAction &sva) : SetVariableContro
 			break
 		case 9: // mouse down
 			strswitch(sva.ctrlName)
-				case "setvar_DataAcq_SSPressure":
-				case "setvar_DataAcq_PPPressure":
+				case "setvar_DataAcq_SSPressure": // fallthrough
+				case "setvar_DataAcq_PPPressure": // fallthrough
 				case "setvar_DataAcq_PPDuration":
 					ShowSetVariableLimitsSelectionPopup(sva)
 					break
@@ -2317,7 +2317,7 @@ Function DAP_CheckSettings(string device, variable mode)
 				endif
 				break
 			default:
-				ASSERT(0, "Unexpected value")
+				FATAL_ERROR("Unexpected value")
 		endswitch
 	endfor
 
@@ -3108,7 +3108,7 @@ Function/S DAP_GetClampModeControl(variable mode, variable headstage)
 			case I_EQUAL_ZERO_MODE:
 				return "Radio_ClampMode_" + num2str(headstage * 2 + 1) + "IZ"
 			default:
-				ASSERT(0, "invalid mode")
+				FATAL_ERROR("invalid mode")
 				break
 		endswitch
 	else
@@ -3120,7 +3120,7 @@ Function/S DAP_GetClampModeControl(variable mode, variable headstage)
 			case I_EQUAL_ZERO_MODE:
 				return "Radio_ClampMode_AllIZero"
 			default:
-				ASSERT(0, "invalid mode")
+				FATAL_ERROR("invalid mode")
 				break
 		endswitch
 	endif
@@ -3198,7 +3198,7 @@ Function DAP_GetInfoFromControl(string device, string ctrl, variable &mode, vari
 			mode = I_EQUAL_ZERO_MODE
 		endif
 	else
-		ASSERT(0, "unhandled control")
+		FATAL_ERROR("unhandled control")
 	endif
 
 	AI_AssertOnInvalidClampMode(mode)
@@ -3348,7 +3348,7 @@ Function DAP_ChangeHeadStageMode(string device, variable clampMode, variable hea
 	elseif(options == NO_SLIDER_MOVEMENT)
 		// do nothing
 	else
-		ASSERT(0, "Unsupported option: " + num2str(options))
+		FATAL_ERROR("Unsupported option: " + num2str(options))
 	endif
 
 	DAP_UpdateDAQControls(device, REASON_HEADSTAGE_CHANGE)
@@ -3601,7 +3601,7 @@ Function DAP_SetVarProc_AmpCntrls(STRUCT WMSetVariableAction &sva) : SetVariable
 	variable headStage, func, clampMode
 
 	switch(sva.eventCode)
-		case 1: // mouse up
+		case 1: // fallthrough, mouse up
 		case 2: // Enter key
 			device = sva.win
 			ctrl   = sva.ctrlName
@@ -3737,8 +3737,8 @@ Function DAP_SetVarProc_TestPulseSett(STRUCT WMSetVariableAction &sva) : SetVari
 	string   device
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // fallthrough, mouse up
+		case 2: // fallthrough, Enter key
 		case 3: // Live update
 			sva.blockReentry = 1
 			device           = sva.win
@@ -3866,8 +3866,8 @@ End
 Function DAP_SetVarProc_SyncCtrl(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // fallthrough, mouse up
+		case 2: // fallthrough, Enter key
 		case 3: // Live update
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
 			break
@@ -3924,7 +3924,7 @@ Function DAP_ButtonProc_TPDAQ(STRUCT WMButtonAction &ba) : ButtonControl
 					DQ_StopDAQ(device, DQ_STOP_REASON_DAQ_BUTTON)
 				endif
 			else
-				ASSERT(0, "invalid control")
+				FATAL_ERROR("invalid control")
 			endif
 			break
 		default:
@@ -4368,9 +4368,9 @@ End
 Function DAP_SetVar_SetScale(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
-		case 3: // Live update
+		case 1: // fallthrough, mouse up
+		case 2: // fallthrough, Enter key
+		case 3: // fallthrough, Live update
 		case 8: // end edit
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval, str = sva.sval)
 			break
@@ -4387,9 +4387,9 @@ End
 Function DAP_SetVar_UpdateGuiState(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
-		case 3: // Live update
+		case 1: // fallthrough, mouse up
+		case 2: // fallthrough, Enter key
+		case 3: // fallthrough, Live update
 		case 8: // end edit
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval, str = sva.sval)
 			break
@@ -4702,7 +4702,7 @@ static Function/S DAP_GetControlsForChannelIndex(variable channelIndex, variable
 			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_ALARM_MAX), controls, ";", Inf)
 			break
 		default:
-			ASSERT(0, "Invalid channel type")
+			FATAL_ERROR("Invalid channel type")
 			break
 	endswitch
 
@@ -5089,8 +5089,8 @@ End
 Function DAP_SetVarProc_skipAhead(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
-		case 1:
-		case 2:
+		case 1: // fallthrough
+		case 2: // fallthrough
 		case 3:
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
 			DAP_setSkipAheadLimit(sva.win, IDX_MinNoOfSweeps(sva.win) - 1)
@@ -5510,7 +5510,7 @@ static Function/S DAP_TPControlToLabel(string ctrl)
 		case "setvar_Settings_autoTP_int":
 			return "autoTPInterval"
 		default:
-			ASSERT(0, "invalid control")
+			FATAL_ERROR("invalid control")
 			break
 	endswitch
 End
@@ -5546,7 +5546,7 @@ static Function/S DAP_TPControlToUnit(string ctrl)
 		case "setvar_Settings_autoTP_int":
 			return "s"
 		default:
-			ASSERT(0, "invalid control")
+			FATAL_ERROR("invalid control")
 			break
 	endswitch
 End

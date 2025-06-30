@@ -79,9 +79,9 @@ Function AFM_CallAnalysisFunctions(string device, variable eventType)
 
 		// @todo Use AS_GetSweepNumber once acquisition state handling supports PRE/POST SET_EVENTS
 		switch(eventType)
-			case PRE_DAQ_EVENT:
-			case PRE_SWEEP_CONFIG_EVENT:
-			case PRE_SET_EVENT: // fallthrough-by-design
+			case PRE_DAQ_EVENT: // fallthrough
+			case PRE_SWEEP_CONFIG_EVENT: // fallthrough
+			case PRE_SET_EVENT:
 				sweepNo = DAG_GetNumericalValue(device, "SetVar_Sweep")
 				WAVE/Z dataWave = $""
 				break
@@ -101,9 +101,9 @@ Function AFM_CallAnalysisFunctions(string device, variable eventType)
 				[sampleIntDA, sampleIntAD] = AFH_GetSampleIntervalsFromSweep(scaledDataWave, config)
 				WAVE dataWave = scaledDataWave
 				break
-			case POST_SWEEP_EVENT:
-			case POST_SET_EVENT:
-			case POST_DAQ_EVENT: // fallthrough-by-design
+			case POST_SWEEP_EVENT: // fallthrough
+			case POST_SET_EVENT: // fallthrough
+			case POST_DAQ_EVENT:
 				sweepNo = DAG_GetNumericalValue(device, "SetVar_Sweep") - 1
 				WAVE/Z/T sweepWave = GetSweepWave(device, sweepNo)
 				if(!WaveExists(sweepWave))
@@ -115,7 +115,7 @@ Function AFM_CallAnalysisFunctions(string device, variable eventType)
 				WAVE dataWave = sweepWave
 				break
 			default:
-				ASSERT(0, "Invalid eventType")
+				FATAL_ERROR("Invalid eventType")
 				break
 		endswitch
 
@@ -166,7 +166,7 @@ Function AFM_CallAnalysisFunctions(string device, variable eventType)
 
 				ret = f3(device, s); AbortOnRTE
 			else
-				ASSERT(0, "impossible case")
+				FATAL_ERROR("impossible case")
 			endif
 		catch
 			msg = GetRTErrMessage()

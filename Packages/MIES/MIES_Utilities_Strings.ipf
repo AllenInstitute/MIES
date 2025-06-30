@@ -381,7 +381,7 @@ threadsafe Function/S NormalizeToEOL(string str, string eol)
 	elseif(!cmpstr(eol, "\n"))
 		str = ReplaceString("\r", str, eol)
 	else
-		ASSERT_TS(0, "unsupported EOL character")
+		FATAL_ERROR("unsupported EOL character")
 	endif
 
 	return str
@@ -574,6 +574,6 @@ threadsafe Function/S WaveTypeToStringSelectorOne(variable type)
 		case IGOR_TYPE_WAVEREF_WAVE:
 			return "wave reference"
 		default:
-			ASSERT_TS(0, "Unknown constant: " + num2str(type, "%d"))
+			FATAL_ERROR("Unknown constant: " + num2str(type, "%d"))
 	endswitch
 End

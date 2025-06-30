@@ -228,7 +228,7 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 	selectedHeadstage = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
 
 	if(ParamIsDefault(value))
-		ASSERT(0, "Missing optional parameter value")
+		FATAL_ERROR("Missing optional parameter value")
 	endif
 
 	if(ParamIsDefault(selectAmp))
@@ -301,16 +301,16 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 		DEBUGPRINT(str)
 
 		switch(func)
-			case MCC_HOLDING_FUNC:
-			case MCC_HOLDINGENABLE_FUNC:
-			case MCC_WHOLECELLCOMPCAP_FUNC:
-			case MCC_WHOLECELLCOMPRESIST_FUNC:
-			case MCC_WHOLECELLCOMPENABLE_FUNC:
-			case MCC_RSCOMPENABLE_FUNC:
-			case MCC_PIPETTEOFFSET_FUNC:
-			case MCC_BRIDGEBALRESIST_FUNC:
-			case MCC_BRIDGEBALENABLE_FUNC:
-			case MCC_NEUTRALIZATIONCAP_FUNC:
+			case MCC_HOLDING_FUNC: // fallthrough
+			case MCC_HOLDINGENABLE_FUNC: // fallthrough
+			case MCC_WHOLECELLCOMPCAP_FUNC: // fallthrough
+			case MCC_WHOLECELLCOMPRESIST_FUNC: // fallthrough
+			case MCC_WHOLECELLCOMPENABLE_FUNC: // fallthrough
+			case MCC_RSCOMPENABLE_FUNC: // fallthrough
+			case MCC_PIPETTEOFFSET_FUNC: // fallthrough
+			case MCC_BRIDGEBALRESIST_FUNC: // fallthrough
+			case MCC_BRIDGEBALENABLE_FUNC: // fallthrough
+			case MCC_NEUTRALIZATIONCAP_FUNC: // fallthrough
 			case MCC_NEUTRALIZATIONENABL_FUNC:
 				rowLabel = AI_MapFunctionConstantToName(func, clampMode)
 
@@ -322,7 +322,7 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 					TP_UpdateHoldCmdInTPStorage(device, headstage)
 				endif
 				break
-			case MCC_AUTOFASTCOMP_FUNC:
+			case MCC_AUTOFASTCOMP_FUNC: // fallthrough
 			case MCC_AUTOSLOWCOMP_FUNC:
 				rowLabel = AI_MapFunctionConstantToName(func, clampMode)
 
@@ -444,9 +444,9 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 
 				AI_UpdateAmpModel(device, i, ctrl = "setvar_DataAcq_RsCorr", value = AmpStorageWave[%$rowLabel][0][i], selectAmp = 0)
 				break
-			case MCC_NO_AUTOBIAS_V_FUNC:
-			case MCC_NO_AUTOBIAS_VRANGE_FUNC:
-			case MCC_NO_AUTOBIAS_IBIASMAX_FUNC:
+			case MCC_NO_AUTOBIAS_V_FUNC: // fallthrough
+			case MCC_NO_AUTOBIAS_VRANGE_FUNC: // fallthrough
+			case MCC_NO_AUTOBIAS_IBIASMAX_FUNC: // fallthrough
 			case MCC_NO_AUTOBIAS_ENABLE_FUNC:
 				rowLabel = AI_MapFunctionConstantToName(func, clampMode)
 
@@ -462,25 +462,25 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 				AI_UpdateAmpModel(device, i, ctrl = "check_DatAcq_BBEnable", value = 1, selectAmp = 0)
 				break
 			// no GUI controls
-			case MCC_RSCOMPBANDWIDTH_FUNC:
-			case MCC_OSCKILLERENABLE_FUNC:
-			case MCC_FASTCOMPCAP_FUNC:
-			case MCC_SLOWCOMPCAP_FUNC:
-			case MCC_FASTCOMPTAU_FUNC:
-			case MCC_SLOWCOMPTAU_FUNC:
-			case MCC_SLOWCOMPTAUX20ENAB_FUNC:
-			case MCC_SLOWCURRENTINJENABL_FUNC:
-			case MCC_PRIMARYSIGNALGAIN_FUNC:
-			case MCC_SLOWCURRENTINJLEVEL_FUNC:
-			case MCC_SLOWCURRENTINJSETLT_FUNC:
-			case MCC_SECONDARYSIGNALGAIN_FUNC:
-			case MCC_PRIMARYSIGNALHPF_FUNC:
-			case MCC_PRIMARYSIGNALLPF_FUNC:
+			case MCC_RSCOMPBANDWIDTH_FUNC: // fallthrough
+			case MCC_OSCKILLERENABLE_FUNC: // fallthrough
+			case MCC_FASTCOMPCAP_FUNC: // fallthrough
+			case MCC_SLOWCOMPCAP_FUNC: // fallthrough
+			case MCC_FASTCOMPTAU_FUNC: // fallthrough
+			case MCC_SLOWCOMPTAU_FUNC: // fallthrough
+			case MCC_SLOWCOMPTAUX20ENAB_FUNC: // fallthrough
+			case MCC_SLOWCURRENTINJENABL_FUNC: // fallthrough
+			case MCC_PRIMARYSIGNALGAIN_FUNC: // fallthrough
+			case MCC_SLOWCURRENTINJLEVEL_FUNC: // fallthrough
+			case MCC_SLOWCURRENTINJSETLT_FUNC: // fallthrough
+			case MCC_SECONDARYSIGNALGAIN_FUNC: // fallthrough
+			case MCC_PRIMARYSIGNALHPF_FUNC: // fallthrough
+			case MCC_PRIMARYSIGNALLPF_FUNC: // fallthrough
 			case MCC_SECONDARYSIGNALLPF_FUNC:
 				AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = value, checkBeforeWrite = checkBeforeWrite)
 				break
 			default:
-				ASSERT(0, "Unknown func: " + num2str(func))
+				FATAL_ERROR("Unknown func: " + num2str(func))
 				break
 		endswitch
 
@@ -597,7 +597,7 @@ static Function AI_UpdateAmpView(string device, variable headStage, [variable fu
 		elseif(!cmpstr(ctrl, "button_DataAcq_WCAuto"))
 			// do nothing
 		else
-			ASSERT(0, "Unhandled control: " + ctrl)
+			FATAL_ERROR("Unhandled control: " + ctrl)
 		endif
 	endfor
 End
@@ -842,7 +842,7 @@ static Function/S AI_GetMCCWinFilePath()
 		endif
 	endfor
 
-	ASSERT(0, "Could not find the MCC application")
+	FATAL_ERROR("Could not find the MCC application")
 	return "ERROR"
 End
 
@@ -909,7 +909,7 @@ threadsafe Function [variable func, variable clampMode] AI_MapControlNameToFunct
 			return [MCC_PIPETTEOFFSET_FUNC, I_CLAMP_MODE]
 		// end IC controls
 		default:
-			ASSERT_TS(0, "Unknown control " + ctrl)
+			FATAL_ERROR("Unknown control " + ctrl)
 			break
 	endswitch
 End
@@ -981,24 +981,24 @@ Function/S AI_MapFunctionConstantToControl(variable func, variable clampMode)
 		case MCC_AUTOBRIDGEBALANCE_FUNC:
 			return "button_DataAcq_AutoBridgeBal_IC"
 		// no controls available
-		case MCC_RSCOMPBANDWIDTH_FUNC:
-		case MCC_OSCKILLERENABLE_FUNC:
-		case MCC_FASTCOMPCAP_FUNC:
-		case MCC_SLOWCOMPCAP_FUNC:
-		case MCC_FASTCOMPTAU_FUNC:
-		case MCC_SLOWCOMPTAU_FUNC:
-		case MCC_SLOWCOMPTAUX20ENAB_FUNC:
-		case MCC_SLOWCURRENTINJENABL_FUNC:
-		case MCC_PRIMARYSIGNALGAIN_FUNC:
-		case MCC_SLOWCURRENTINJLEVEL_FUNC:
-		case MCC_SLOWCURRENTINJSETLT_FUNC:
-		case MCC_SECONDARYSIGNALGAIN_FUNC:
-		case MCC_PRIMARYSIGNALHPF_FUNC:
-		case MCC_PRIMARYSIGNALLPF_FUNC:
+		case MCC_RSCOMPBANDWIDTH_FUNC: // fallthrough
+		case MCC_OSCKILLERENABLE_FUNC: // fallthrough
+		case MCC_FASTCOMPCAP_FUNC: // fallthrough
+		case MCC_SLOWCOMPCAP_FUNC: // fallthrough
+		case MCC_FASTCOMPTAU_FUNC: // fallthrough
+		case MCC_SLOWCOMPTAU_FUNC: // fallthrough
+		case MCC_SLOWCOMPTAUX20ENAB_FUNC: // fallthrough
+		case MCC_SLOWCURRENTINJENABL_FUNC: // fallthrough
+		case MCC_PRIMARYSIGNALGAIN_FUNC: // fallthrough
+		case MCC_SLOWCURRENTINJLEVEL_FUNC: // fallthrough
+		case MCC_SLOWCURRENTINJSETLT_FUNC: // fallthrough
+		case MCC_SECONDARYSIGNALGAIN_FUNC: // fallthrough
+		case MCC_PRIMARYSIGNALHPF_FUNC: // fallthrough
+		case MCC_PRIMARYSIGNALLPF_FUNC: // fallthrough
 		case MCC_SECONDARYSIGNALLPF_FUNC:
 			return ""
 		default:
-			ASSERT(0, "Unknown func: " + num2str(func))
+			FATAL_ERROR("Unknown func: " + num2str(func))
 			break
 	endswitch
 End
@@ -1045,7 +1045,7 @@ threadsafe Function/S AI_MapFunctionConstantToName(variable func, variable clamp
 			return "FastCapacitanceComp"
 		case MCC_AUTOSLOWCOMP_FUNC:
 			return "SlowCapacitanceComp"
-		case MCC_AUTOBRIDGEBALANCE_FUNC:
+		case MCC_AUTOBRIDGEBALANCE_FUNC: // fallthrough
 		case MCC_BRIDGEBALRESIST_FUNC:
 			return "BridgeBalance"
 		case MCC_BRIDGEBALENABLE_FUNC:
@@ -1102,7 +1102,7 @@ threadsafe Function/S AI_MapFunctionConstantToName(variable func, variable clamp
 			return "AutoBiasEnable"
 		// end others
 		default:
-			ASSERT_TS(0, "Invalid func: " + num2str(func))
+			FATAL_ERROR("Invalid func: " + num2str(func))
 	endswitch
 End
 
@@ -1111,10 +1111,10 @@ threadsafe Function AI_MapNameToFunctionConstant(string name)
 
 	strswitch(name)
 		// begin AmpStorageWave row labels
-		case "BiasCurrent":
+		case "BiasCurrent": // fallthrough
 		case "HoldingPotential":
 			return MCC_HOLDING_FUNC
-		case "BiasCurrentEnable":
+		case "BiasCurrentEnable": // fallthrough
 		case "HoldingPotentialEnable":
 			return MCC_HOLDINGENABLE_FUNC
 		case "WholeCellCap":
@@ -1129,7 +1129,7 @@ threadsafe Function AI_MapNameToFunctionConstant(string name)
 			return MCC_RSCOMPPREDICTION_FUNC
 		case "RsCompEnable":
 			return MCC_RSCOMPENABLE_FUNC
-		case "PipetteOffsetVC":
+		case "PipetteOffsetVC": // fallthrough
 		case "PipetteOffsetIC":
 			return MCC_PIPETTEOFFSET_FUNC
 		case "FastCapacitanceComp":
@@ -1190,7 +1190,7 @@ threadsafe Function AI_MapNameToFunctionConstant(string name)
 			return MCC_NO_AUTOBIAS_ENABLE_FUNC
 		// end others
 		default:
-			ASSERT_TS(0, "Invalid name: " + name)
+			FATAL_ERROR("Invalid name: " + name)
 	endswitch
 End
 
@@ -1203,12 +1203,12 @@ Function AI_IsControlFromClampMode(string ctrl, variable clampMode)
 		case V_CLAMP_MODE:
 			list = AMPLIFIER_CONTROLS_VC
 			break
-		case I_CLAMP_MODE:
+		case I_CLAMP_MODE: // fallthrough
 		case I_EQUAL_ZERO_MODE:
 			list = AMPLIFIER_CONTROLS_IC
 			break
 		default:
-			ASSERT(0, "Invalid clamp mode")
+			FATAL_ERROR("Invalid clamp mode")
 	endswitch
 
 	return WhichListItem(ctrl, list, ";", 0, 0) >= 0
@@ -1286,16 +1286,16 @@ static Function/S AI_AmpStorageControlToRowLabel(string ctrl)
 		case "button_DataAcq_WCAuto":
 			return "WholeCellCap"
 			break
-		case "button_DataAcq_AutoBridgeBal_IC":
-		case "button_DataAcq_AutoPipOffset_IC":
-		case "button_DataAcq_FastComp_VC":
-		case "button_DataAcq_SlowComp_VC":
+		case "button_DataAcq_AutoBridgeBal_IC": // fallthrough
+		case "button_DataAcq_AutoPipOffset_IC": // fallthrough
+		case "button_DataAcq_FastComp_VC": // fallthrough
+		case "button_DataAcq_SlowComp_VC": // fallthrough
 		case "button_DataAcq_AutoPipOffset_VC":
 			// no row exists
 			return ""
 			break
 		default:
-			ASSERT(0, "Unknown control " + ctrl)
+			FATAL_ERROR("Unknown control " + ctrl)
 			break
 	endswitch
 End
@@ -1394,7 +1394,7 @@ threadsafe Function/S AI_GetUnitForFunctionConstant(variable func, variable clam
 			return "On/Off"
 		// end others
 		default:
-			ASSERT_TS(0, "Invalid func: " + num2str(func))
+			FATAL_ERROR("Invalid func: " + num2str(func))
 	endswitch
 End
 
@@ -1414,7 +1414,7 @@ threadsafe Function/WAVE AI_GetFunctionConstantForClampMode(variable clampMode)
 			list = AMPLIFIER_CONTROLS_IC
 			break
 		default:
-			ASSERT_TS(0, "Invalid clamp mode")
+			FATAL_ERROR("Invalid clamp mode")
 	endswitch
 
 	numEntries = ItemsInList(list)
@@ -1698,7 +1698,7 @@ static Function AI_SendToAmp(string device, variable headStage, variable mode, v
 	elseif(accessType == MCC_WRITE)
 		ASSERT(!ParamIsDefault(value), "Value is required for writing")
 	else
-		ASSERT(0, "Impossible case")
+		FATAL_ERROR("Impossible case")
 	endif
 
 	headstageMode = DAG_GetHeadstageMode(device, headStage)
@@ -1748,6 +1748,7 @@ static Function AI_SendToAmp(string device, variable headStage, variable mode, v
 			else
 				ret = AI_WriteToMCC(func, value)
 			endif
+			break
 	endswitch
 
 	if(accessType == MCC_WRITE)
@@ -1765,8 +1766,8 @@ End
 static Function AI_ReadFromMCC(variable func)
 
 	switch(func)
-		case MCC_AUTOWHOLECELLCOMP_FUNC:
-		case MCC_AUTOFASTCOMP_FUNC:
+		case MCC_AUTOWHOLECELLCOMP_FUNC: // fallthrough
+		case MCC_AUTOFASTCOMP_FUNC: // fallthrough
 		case MCC_AUTOSLOWCOMP_FUNC:
 			return 0
 		case MCC_HOLDING_FUNC:
@@ -1826,7 +1827,7 @@ static Function AI_ReadFromMCC(variable func)
 		case MCC_SECONDARYSIGNALLPF_FUNC:
 			return MCC_GetSecondarySignalLPF()
 		default:
-			ASSERT(0, "Invalid func: " + num2str(func))
+			FATAL_ERROR("Invalid func: " + num2str(func))
 			break
 	endswitch
 End
@@ -1901,7 +1902,7 @@ static Function AI_WriteToMCC(variable func, variable value)
 		case MCC_AUTOPIPETTEOFFSET_FUNC:
 			return MCC_AutoPipetteOffset()
 		default:
-			ASSERT(0, "Invalid func: " + num2str(func))
+			FATAL_ERROR("Invalid func: " + num2str(func))
 			break
 	endswitch
 End
@@ -2174,7 +2175,7 @@ Function [STRUCT AxonTelegraph_DataStruct tds] AI_GetTelegraphStruct(variable ax
 		endtry
 	endfor
 
-	ASSERT(0, "Could not query amplifier")
+	FATAL_ERROR("Could not query amplifier")
 End
 
 #else // AMPLIFIER_XOPS_PRESENT

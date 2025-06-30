@@ -87,7 +87,7 @@ Function UploadLogFilesDaily()
 		AbortOnRTE
 	catch
 		ClearRTError()
-		ASSERT(0, "Could not upload logfiles!")
+		FATAL_ERROR("Could not upload logfiles!")
 	endtry
 End
 
@@ -236,7 +236,7 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 	elseif(!ParamIsDefault(firstDate) && !ParamIsDefault(lastDate))
 		doFilter = 1
 	else
-		ASSERT(0, "Invalid firstDate/lastDate combination")
+		FATAL_ERROR("Invalid firstDate/lastDate combination")
 	endif
 
 	UploadLogFilesPrint("Just a moment, Uploading log files to improve MIES... (only once per day)\r", verbose)

@@ -329,7 +329,7 @@ static Function GetSamplingIntervalFromLBN(WAVE numericalValues, variable sweepN
 			key = "Sampling interval TTL"
 			break
 		default:
-			ASSERT(0, "Invalid Channel Type")
+			FATAL_ERROR("Invalid Channel Type")
 	endswitch
 
 	samplingInterval = GetLastSettingIndep(numericalValues, sweepNo, key, DATA_ACQUISITION_MODE)
@@ -360,7 +360,7 @@ static Function AddDAQChannelTypeFromLBN(WAVE numericalValues, WAVE textualValue
 				channelType = DAQ_CHANNEL_TYPE_DAQ
 				break
 			default:
-				ASSERT(0, "Unsupported channel type")
+				FATAL_ERROR("Unsupported channel type")
 				break
 		endswitch
 

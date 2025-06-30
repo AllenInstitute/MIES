@@ -26,7 +26,7 @@ Function/S ChannelTypeToString(variable channelType)
 		case CHANNEL_TYPE_ASYNC:
 			return "AsyncAD"
 		default:
-			ASSERT(0, "Invalid channelType")
+			FATAL_ERROR("Invalid channelType")
 	endswitch
 End
 
@@ -73,11 +73,11 @@ threadsafe Function GetNumberFromType([variable var, string str, variable xopVar
 			case "AsyncAD":
 				return NUM_ASYNC_CHANNELS
 				break
-			case "DA":
+			case "DA": // fallthrough
 			case "TTL":
 				return NUM_DA_TTL_CHANNELS
 				break
-			case "DataAcqHS":
+			case "DataAcqHS": // fallthrough
 			case "Headstage":
 				return NUM_HEADSTAGES
 				break
@@ -88,16 +88,16 @@ threadsafe Function GetNumberFromType([variable var, string str, variable xopVar
 				return NUM_ASYNC_CHANNELS
 				break
 			default:
-				ASSERT_TS(0, "invalid type")
+				FATAL_ERROR("invalid type")
 				break
 		endswitch
 	elseif(!ParamIsDefault(var))
 		switch(var)
-			case CHANNEL_TYPE_ASYNC:
+			case CHANNEL_TYPE_ASYNC: // fallthrough
 			case CHANNEL_TYPE_ALARM:
 				return NUM_ASYNC_CHANNELS
 				break
-			case CHANNEL_TYPE_TTL:
+			case CHANNEL_TYPE_TTL: // fallthrough
 			case CHANNEL_TYPE_DAC:
 				return NUM_DA_TTL_CHANNELS
 				break
@@ -108,7 +108,7 @@ threadsafe Function GetNumberFromType([variable var, string str, variable xopVar
 				return NUM_AD_CHANNELS
 				break
 			default:
-				ASSERT_TS(0, "invalid type")
+				FATAL_ERROR("invalid type")
 				break
 		endswitch
 	elseif(!ParamIsDefault(xopVar))
@@ -116,12 +116,12 @@ threadsafe Function GetNumberFromType([variable var, string str, variable xopVar
 			case XOP_CHANNEL_TYPE_ADC:
 				return NUM_AD_CHANNELS
 				break
-			case XOP_CHANNEL_TYPE_DAC:
+			case XOP_CHANNEL_TYPE_DAC: // fallthrough
 			case XOP_CHANNEL_TYPE_TTL:
 				return NUM_DA_TTL_CHANNELS
 				break
 			default:
-				ASSERT_TS(0, "Invalid type")
+				FATAL_ERROR("Invalid type")
 				break
 		endswitch
 	endif
@@ -220,7 +220,7 @@ Function/S GetAbbreviationForAnalysisFunction(string anaFunc)
 		case "SC_SpikeControl":
 			return "SC"
 		default:
-			ASSERT(0, "Unknown")
+			FATAL_ERROR("Unknown")
 	endswitch
 End
 
@@ -261,6 +261,7 @@ Function MapAnaFuncToConstant(string anaFunc)
 #else
 			return INVALID_ANALYSIS_FUNCTION
 #endif // AUTOMATED_TESTING
+			break
 	endswitch
 End
 

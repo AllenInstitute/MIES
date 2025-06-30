@@ -76,37 +76,37 @@ End
 ///@{
 Function PGC_ButtonControlProcedure(STRUCT WMButtonAction &ba) : ButtonControl
 
-	ASSERT(0, "Prototype function which must not be called")
+	FATAL_ERROR("Prototype function which must not be called")
 End
 
 Function PGC_PopupActionControlProcedure(STRUCT WMPopupAction &pa) : PopupMenuControl
 
-	ASSERT(0, "Prototype function which must not be called")
+	FATAL_ERROR("Prototype function which must not be called")
 End
 
 Function PGC_CheckboxControlProcedure(STRUCT WMCheckBoxAction &cba) : CheckBoxControl
 
-	ASSERT(0, "Prototype function which must not be called")
+	FATAL_ERROR("Prototype function which must not be called")
 End
 
 Function PGC_TabControlProcedure(STRUCT WMTabControlAction &tca) : TabControl
 
-	ASSERT(0, "Prototype function which must not be called")
+	FATAL_ERROR("Prototype function which must not be called")
 End
 
 Function PGC_SetVariableControlProcedure(STRUCT WMSetVariableAction &tca) : SetVariableControl
 
-	ASSERT(0, "Prototype function which must not be called")
+	FATAL_ERROR("Prototype function which must not be called")
 End
 
 Function PGC_SliderControlProcedure(STRUCT WMSliderAction &sla) : SliderControl
 
-	ASSERT(0, "Prototype function which must not be called")
+	FATAL_ERROR("Prototype function which must not be called")
 End
 
 Function PGC_ListBoxControlProcedure(STRUCT WMListBoxAction &lba) : ListBoxControl
 
-	ASSERT(0, "Prototype function which must not be called")
+	FATAL_ERROR("Prototype function which must not be called")
 End
 ///@}
 
@@ -179,7 +179,7 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 	ControlInfo/W=$win $control
 	if(!V_flag)
 		ASSERT(WindowExists(win), "The panel " + win + " does not exist.")
-		ASSERT(0, "The control " + control + " in the panel " + win + " does not exist.")
+		FATAL_ERROR("The control " + control + " in the panel " + win + " does not exist.")
 	endif
 	controlType = abs(V_flag)
 
@@ -190,13 +190,13 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 				return NaN
 				break
 			case PGC_MODE_ASSERT_ON_DISABLED:
-				ASSERT(0, "The control " + control + " in the panel " + win + " is disabled. The control state cannot be changed when disabled.")
+				FATAL_ERROR("The control " + control + " in the panel " + win + " is disabled. The control state cannot be changed when disabled.")
 				break
 			case PGC_MODE_FORCE_ON_DISABLED:
 				// just continue
 				break
 			default:
-				ASSERT(0, "Invalid mode")
+				FATAL_ERROR("Invalid mode")
 				break
 		endswitch
 	endif
@@ -247,7 +247,7 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 						ASSERT(val >= 0 && val < ItemsInList(popupMenuList), "Invalid value for popupmenu: " + num2str(val))
 						break
 					default:
-						ASSERT(0, "Invalid popup menu type")
+						FATAL_ERROR("Invalid popup menu type")
 				endswitch
 			endif
 
@@ -321,13 +321,13 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 					case PGC_MODE_SKIP_ON_DISABLED:
 						return NaN
 					case PGC_MODE_ASSERT_ON_DISABLED:
-						ASSERT(0, "The setvariable control " + control + " in the panel " + win + " is read-only. The control state cannot be changed.")
+						FATAL_ERROR("The setvariable control " + control + " in the panel " + win + " is read-only. The control state cannot be changed.")
 						break
 					case PGC_MODE_FORCE_ON_DISABLED:
 						// just continue
 						break
 					default:
-						ASSERT(0, "Invalid mode")
+						FATAL_ERROR("Invalid mode")
 						break
 				endswitch
 			endif
@@ -424,7 +424,7 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 			ListProc(lba)
 			break
 		default:
-			ASSERT(0, "Unsupported control type")
+			FATAL_ERROR("Unsupported control type")
 			break
 	endswitch
 

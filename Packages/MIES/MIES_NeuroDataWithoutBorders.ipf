@@ -346,7 +346,7 @@ threadsafe static Function/S NWB_GenerateDeviceDescription(string device, WAVE n
 			sprintf desc, "Sutter Instrument Company: %s", hardwareName
 			break
 		default:
-			ASSERT_TS(0, "Invalid hardwareType")
+			FATAL_ERROR("Invalid hardwareType")
 	endswitch
 
 	return desc
@@ -938,7 +938,7 @@ Function NWB_ExportWithDialog(variable exportType, [variable nwbVersion])
 			msg       = "Choose NWB template name to export data (device name is suffixed)"
 		endif
 	else
-		ASSERT(0, "unexpected exportType")
+		FATAL_ERROR("unexpected exportType")
 	endif
 
 	Open/D/M=msg/F=NWB_OPEN_FILTER/P=$path refNum as filename
@@ -964,7 +964,7 @@ Function NWB_ExportWithDialog(variable exportType, [variable nwbVersion])
 	elseif(exportType == NWB_EXPORT_STIMSETS)
 		NWB_ExportAllStimsets(nwbVersion, S_filename)
 	else
-		ASSERT(0, "unexpected exportType")
+		FATAL_ERROR("unexpected exportType")
 	endif
 End
 
@@ -1338,7 +1338,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 				WAVE/Z/T params.epochs = EP_FetchEpochs_TS(s.numericalValues, s.textualValues, s.sweep, params.channelNumber, params.channelType)
 				break
 			default:
-				ASSERT_TS(0, "Unexpected channel type")
+				FATAL_ERROR("Unexpected channel type")
 				break
 		endswitch
 

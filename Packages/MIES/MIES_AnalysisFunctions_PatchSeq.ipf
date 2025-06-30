@@ -228,9 +228,9 @@ Function PSQ_GetPulseSettingsForType(variable type, STRUCT PSQ_PulseSettings &s)
 			s.postPulseChunkLength = PSQ_BL_EVAL_RANGE
 			s.pulseDuration        = NaN
 			break
-		case PSQ_RHEOBASE:
-		case PSQ_RAMP:
-		case PSQ_CHIRP: // fallthrough-by-design
+		case PSQ_RHEOBASE: // fallthrough
+		case PSQ_RAMP: // fallthrough
+		case PSQ_CHIRP:
 			s.prePulseChunkLength  = PSQ_BL_EVAL_RANGE
 			s.postPulseChunkLength = PSQ_BL_EVAL_RANGE
 			s.pulseDuration        = NaN
@@ -240,16 +240,16 @@ Function PSQ_GetPulseSettingsForType(variable type, STRUCT PSQ_PulseSettings &s)
 			s.postPulseChunkLength = NaN
 			s.pulseDuration        = NaN
 			break
-		case PSQ_SEAL_EVALUATION:
-		case PSQ_TRUE_REST_VM:
-		case PSQ_ACC_RES_SMOKE: // fallthrough-by-design
+		case PSQ_SEAL_EVALUATION: // fallthrough
+		case PSQ_TRUE_REST_VM: // fallthrough
+		case PSQ_ACC_RES_SMOKE:
 			s.prePulseChunkLength     = NaN
 			s.postPulseChunkLength    = NaN
 			s.pulseDuration           = NaN
 			s.usesBaselineChunkEpochs = 1
 			break
 		default:
-			ASSERT(0, "unsupported type")
+			FATAL_ERROR("unsupported type")
 			break
 	endswitch
 
@@ -699,7 +699,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 				chunkStartTime = chunkStartTimeMax
 				break
 			default:
-				ASSERT(0, "Invalid baselineType")
+				FATAL_ERROR("Invalid baselineType")
 		endswitch
 
 		ADC = AFH_GetADCFromHeadstage(device, i)
@@ -933,7 +933,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 
 		return PSQ_BL_FAILED
 	else
-		ASSERT(0, "unknown baseline type")
+		FATAL_ERROR("unknown baseline type")
 	endif
 End
 
@@ -970,9 +970,9 @@ static Function PSQ_GetNumberOfChunks(string device, variable sweepNo, variable 
 	length = stopCollectionPoint * sampleIntervalAD
 
 	switch(type)
-		case PSQ_DA_SCALE: // fallthrough-by-design
-		case PSQ_RHEOBASE:
-		case PSQ_RAMP:
+		case PSQ_DA_SCALE: // fallthrough
+		case PSQ_RHEOBASE: // fallthrough
+		case PSQ_RAMP: // fallthrough
 		case PSQ_CHIRP:
 			WAVE durations = PSQ_GetPulseDurations(device, type, sweepNo, totalOnsetDelay)
 			ASSERT(durations[headstage] != 0, "Pulse duration can not be zero")
@@ -983,11 +983,11 @@ static Function PSQ_GetNumberOfChunks(string device, variable sweepNo, variable 
 		case PSQ_SEAL_EVALUATION:
 			// upper limit
 			return 2
-		case PSQ_TRUE_REST_VM:
+		case PSQ_TRUE_REST_VM: // fallthrough
 		case PSQ_ACC_RES_SMOKE:
 			return 1
 		default:
-			ASSERT(0, "unsupported type")
+			FATAL_ERROR("unsupported type")
 	endswitch
 End
 
@@ -1019,7 +1019,7 @@ static Function PSQ_Calculate(WAVE wv, variable column, variable startTime, vari
 			MatrixOP/FREE result = sqrt(sumSqr(data - avg[0]) / numRows(data))
 			break
 		default:
-			ASSERT(0, "Unknown method")
+			FATAL_ERROR("Unknown method")
 	endswitch
 
 	ASSERT(IsFinite(result[0]), "result must be finite")
@@ -1282,7 +1282,7 @@ Function/WAVE PSQ_CreateOverrideResults(string device, variable headstage, varia
 	endif
 
 	switch(type)
-		case PSQ_RAMP:
+		case PSQ_RAMP: // fallthrough
 		case PSQ_RHEOBASE:
 			numChunks      = 4
 			numRows        = PSQ_GetNumberOfChunks(device, 0, headstage, type, sampleIntervalDA)
@@ -1295,7 +1295,7 @@ Function/WAVE PSQ_CreateOverrideResults(string device, variable headstage, varia
 			numCols   = IDX_NumberOfSweepsInSet(stimset)
 
 			strswitch(opMode)
-				case PSQ_DS_SUB:
+				case PSQ_DS_SUB: // fallthrough
 				case PSQ_DS_SUPRA:
 					layerDimLabels = "BaselineQC;SpikePosition;NumberOfSpikes;AsyncQC"
 					break
@@ -1303,7 +1303,7 @@ Function/WAVE PSQ_CreateOverrideResults(string device, variable headstage, varia
 					layerDimLabels = "BaselineQC;APFrequency;AsyncQC"
 					break
 				default:
-					ASSERT(0, "Invalid opMode")
+					FATAL_ERROR("Invalid opMode")
 			endswitch
 			break
 		case PSQ_SQUARE_PULSE:
@@ -1342,7 +1342,7 @@ Function/WAVE PSQ_CreateOverrideResults(string device, variable headstage, varia
 			layerDimLabels = "BaselineQC;AccessResistance;SteadyStateResistance;AsyncQC"
 			break
 		default:
-			ASSERT(0, "invalid type")
+			FATAL_ERROR("invalid type")
 	endswitch
 
 	WAVE/Z/D wv = GetOverrideResults()
@@ -1490,7 +1490,7 @@ static Function/WAVE PSQ_SearchForSpikes(string device, variable type, WAVE swee
 				endif
 				break
 			default:
-				ASSERT(0, "unsupported type")
+				FATAL_ERROR("unsupported type")
 		endswitch
 
 		if(overrideValue == 0 || overrideValue == 1)
@@ -1558,7 +1558,7 @@ static Function/WAVE PSQ_SearchForSpikes(string device, variable type, WAVE swee
 					numberOfSpikesFound = V_LevelsFound
 				endif
 			else
-				ASSERT(0, "Invalid number of spikes value")
+				FATAL_ERROR("Invalid number of spikes value")
 			endif
 		endif
 	endif
@@ -1860,12 +1860,11 @@ static Function PSQ_DS_GetDAScaleOffset(string device, variable headstage, strin
 			WAVE/Z setting         = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
 			ASSERT(WaveExists(setting), "Could not find DAScale value of matching rheobase sweep")
 			return setting[headstage]
-		case PSQ_DS_SUB:
-		// fallthrough-by-design
+		case PSQ_DS_SUB: // fallthrough
 		case PSQ_DS_ADAPT:
 			return 0
 		default:
-			ASSERT(0, "unknown opMode")
+			FATAL_ERROR("unknown opMode")
 	endswitch
 End
 
@@ -1892,56 +1891,56 @@ End
 static Function PSQ_GetDefaultSamplingFrequency(string device, variable type)
 
 	switch(GetHardwareType(device))
-		case HARDWARE_ITC_DAC:
+		case HARDWARE_ITC_DAC: // fallthrough
 			switch(type)
-				case PSQ_CHIRP:
-				case PSQ_DA_SCALE:
-				case PSQ_RAMP:
-				case PSQ_RHEOBASE:
+				case PSQ_CHIRP: // fallthrough
+				case PSQ_DA_SCALE: // fallthrough
+				case PSQ_RAMP: // fallthrough
+				case PSQ_RHEOBASE: // fallthrough
 				case PSQ_SQUARE_PULSE:
 					return 50
-				case PSQ_PIPETTE_BATH:
-				case PSQ_SEAL_EVALUATION:
-				case PSQ_TRUE_REST_VM:
+				case PSQ_PIPETTE_BATH: // fallthrough
+				case PSQ_SEAL_EVALUATION: // fallthrough
+				case PSQ_TRUE_REST_VM: // fallthrough
 				case PSQ_ACC_RES_SMOKE:
 					return 200
 				default:
-					ASSERT(0, "Unknown analysis function")
+					FATAL_ERROR("Unknown analysis function")
 			endswitch
-		case HARDWARE_NI_DAC:
+		case HARDWARE_NI_DAC: // fallthrough
 			switch(type)
-				case PSQ_CHIRP:
-				case PSQ_DA_SCALE:
-				case PSQ_RAMP:
-				case PSQ_RHEOBASE:
+				case PSQ_CHIRP: // fallthrough
+				case PSQ_DA_SCALE: // fallthrough
+				case PSQ_RAMP: // fallthrough
+				case PSQ_RHEOBASE: // fallthrough
 				case PSQ_SQUARE_PULSE:
 					return 50
-				case PSQ_PIPETTE_BATH:
-				case PSQ_SEAL_EVALUATION:
-				case PSQ_TRUE_REST_VM:
+				case PSQ_PIPETTE_BATH: // fallthrough
+				case PSQ_SEAL_EVALUATION: // fallthrough
+				case PSQ_TRUE_REST_VM: // fallthrough
 				case PSQ_ACC_RES_SMOKE:
 					return 250
 				default:
-					ASSERT(0, "Unknown analysis function")
+					FATAL_ERROR("Unknown analysis function")
 			endswitch
-		case HARDWARE_SUTTER_DAC:
+		case HARDWARE_SUTTER_DAC: // fallthrough
 			switch(type)
-				case PSQ_CHIRP:
-				case PSQ_DA_SCALE:
-				case PSQ_RAMP:
-				case PSQ_RHEOBASE:
+				case PSQ_CHIRP: // fallthrough
+				case PSQ_DA_SCALE: // fallthrough
+				case PSQ_RAMP: // fallthrough
+				case PSQ_RHEOBASE: // fallthrough
 				case PSQ_SQUARE_PULSE:
 					return 50
-				case PSQ_PIPETTE_BATH:
-				case PSQ_SEAL_EVALUATION:
-				case PSQ_TRUE_REST_VM:
+				case PSQ_PIPETTE_BATH: // fallthrough
+				case PSQ_SEAL_EVALUATION: // fallthrough
+				case PSQ_TRUE_REST_VM: // fallthrough
 				case PSQ_ACC_RES_SMOKE:
 					return 50
 				default:
-					ASSERT(0, "Unknown analysis function")
+					FATAL_ERROR("Unknown analysis function")
 			endswitch
 		default:
-			ASSERT(0, "Unknown hardware type")
+			FATAL_ERROR("Unknown hardware type")
 	endswitch
 End
 
@@ -1957,7 +1956,7 @@ Function PSQ_GetDefaultSamplingFrequencyForSingleHeadstage(string device)
 		case HARDWARE_SUTTER_DAC:
 			return 50
 		default:
-			ASSERT(0, "Unknown hardware")
+			FATAL_ERROR("Unknown hardware")
 	endswitch
 End
 
@@ -2967,7 +2966,7 @@ static Function [string currentSCI, string RhSuAd, variable headstageContingency
 		case PSQ_DS_FILLIN_PASS:
 			return [PSQ_FMT_LBN_DA_AT_FILLIN_PASS, PSQ_FMT_LBN_DA_AT_RSA_FILLIN_PASS, HCM_INDEP]
 		default:
-			ASSERT(0, "Invalid type: " + num2str(type))
+			FATAL_ERROR("Invalid type: " + num2str(type))
 	endswitch
 End
 
@@ -3032,7 +3031,7 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 						WAVE/Z dataCurrentSCI = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 						break
 					default:
-						ASSERT(0, "Unsupported headstageContigencyMode")
+						FATAL_ERROR("Unsupported headstageContigencyMode")
 				endswitch
 				break
 		endswitch
@@ -3057,7 +3056,7 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 			idx = INDEP_HEADSTAGE
 			break
 		default:
-			ASSERT(0, "Unsupported headstageContigencyMode")
+			FATAL_ERROR("Unsupported headstageContigencyMode")
 	endswitch
 
 	WAVE dataRhSuAd = ListToNumericWave(dataRhSuAdLBN[idx], ";")
@@ -3877,7 +3876,7 @@ static Function/S PSQ_GetHelpCommon(variable type, string name)
 		case "SamplingMultiplier":
 			return "Sampling multiplier, use 1 for no multiplier"
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 	endswitch
 End
 
@@ -3912,8 +3911,8 @@ static Function/S PSQ_CheckParamCommon(string name, STRUCT CheckParametersStruct
 				return "Invalid value " + num2str(val)
 			endif
 			break
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
+		case "BaselineRMSLongThreshold": // fallthrough
+		case "BaselineRMSShortThreshold": // fallthrough
 		case "BaselineTargetVThreshold":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0 && val <= maxThreshold))
@@ -3938,7 +3937,7 @@ static Function/S PSQ_CheckParamCommon(string name, STRUCT CheckParametersStruct
 				return "Must be a finite value"
 			endif
 			break
-		case "NextStimSetName":
+		case "NextStimSetName": // fallthrough
 		case "NextIndexingEndStimSetName":
 			str = AFH_GetAnalysisParamTextual(name, s.params)
 			WAVE/Z stimset = WB_CreateAndGetStimSet(str)
@@ -3977,7 +3976,7 @@ static Function/S PSQ_CheckParamCommon(string name, STRUCT CheckParametersStruct
 			endif
 			break
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 	endswitch
 End
 
@@ -4012,11 +4011,11 @@ End
 Function/S PSQ_DAScale_GetHelp(string name)
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "BaselineTargetVThreshold":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // fallthrough
+		case "BaselineRMSLongThreshold": // fallthrough
+		case "BaselineRMSShortThreshold": // fallthrough
+		case "BaselineTargetVThreshold": // fallthrough
+		case "SamplingFrequency": // fallthrough
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_DA_SCALE, name)
 		case "DAScaleModifier":
@@ -4063,7 +4062,7 @@ Function/S PSQ_DAScale_GetHelp(string name)
 		case "ShowPlot":
 			return "Sub and Supra: Show the resistance (\"Sub\") or the f-I (\"Supra\") plot, defaults to true."
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 	endswitch
 End
 
@@ -4073,12 +4072,12 @@ Function/S PSQ_DAScale_CheckParam(string name, STRUCT CheckParametersStruct &s)
 	string   str
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "BaselineTargetVThreshold":
-		case "DAScaleModifier":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // fallthrough
+		case "BaselineRMSLongThreshold": // fallthrough
+		case "BaselineRMSShortThreshold": // fallthrough
+		case "BaselineTargetVThreshold": // fallthrough
+		case "DAScaleModifier": // fallthrough
+		case "SamplingFrequency": // fallthrough
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s)
 		case "DAScales":
@@ -4094,9 +4093,9 @@ Function/S PSQ_DAScale_CheckParam(string name, STRUCT CheckParametersStruct &s)
 				return "Wave must have at least one entry"
 			endif
 			break
-		case "AbsFrequencyMinDistance":
-		case "MaxFrequencyChangePercent":
-		case "DAScaleNegativeSlopePercent":
+		case "AbsFrequencyMinDistance": // fallthrough
+		case "MaxFrequencyChangePercent": // fallthrough
+		case "DAScaleNegativeSlopePercent": // fallthrough
 		case "DAScaleRangeFactor":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsNullOrPositiveAndFinite(val))
@@ -4139,14 +4138,14 @@ Function/S PSQ_DAScale_CheckParam(string name, STRUCT CheckParametersStruct &s)
 				return "Invalid string " + num2str(val)
 			endif
 			break
-		case "SlopePercentage":
+		case "SlopePercentage": // fallthrough
 		case "FinalSlopePercent":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0 && val <= 100))
 				return "Not a precentage"
 			endif
 			break
-		case "MinimumSpikeCount":
+		case "MinimumSpikeCount": // fallthrough
 		case "MinimumSpikeCountForMaxSlope":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0))
@@ -4160,13 +4159,13 @@ Function/S PSQ_DAScale_CheckParam(string name, STRUCT CheckParametersStruct &s)
 			endif
 			break
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 			break
 	endswitch
 
 	// check ordering of min/max
 	strswitch(name)
-		case "MinimumSpikeCount":
+		case "MinimumSpikeCount": // fallthrough
 		case "MaximumSpikeCount":
 			if(AFH_GetAnalysisParamNumerical("MinimumSpikeCount", s.params)   \
 			   >= AFH_GetAnalysisParamNumerical("MaximumSpikeCount", s.params))
@@ -4179,8 +4178,8 @@ Function/S PSQ_DAScale_CheckParam(string name, STRUCT CheckParametersStruct &s)
 
 	// check that all three are present
 	strswitch(name)
-		case "MinimumSpikeCount":
-		case "MaximumSpikeCount":
+		case "MinimumSpikeCount": // fallthrough
+		case "MaximumSpikeCount": // fallthrough
 		case "DAScaleModifier":
 			if(IsNaN(AFH_GetAnalysisParamNumerical("MinimumSpikeCount", s.params))    \
 			   || IsNaN(AFH_GetAnalysisParamNumerical("MaximumSpikeCount", s.params)) \
@@ -4343,7 +4342,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 			cdp.dascaleNegativeSlopePercent = dascaleNegativeSlopePercent
 			break
 		default:
-			ASSERT(0, "Invalid opMode")
+			FATAL_ERROR("Invalid opMode")
 	endswitch
 
 	switch(s.eventType)
@@ -4400,7 +4399,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 			DAScalesIndex[s.headstage] = 0
 
 			strswitch(opMode)
-				case PSQ_DS_SUB:
+				case PSQ_DS_SUB: // fallthrough
 				case PSQ_DS_SUPRA:
 
 					daScaleOffset = PSQ_DS_GetDAScaleOffset(device, s.headstage, opMode)
@@ -4544,7 +4543,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 					WAVE DAScales = futureDAScales
 					break
 				default:
-					ASSERT(0, "Invalid opMode")
+					FATAL_ERROR("Invalid opMode")
 			endswitch
 
 			PGC_SetAndActivateControl(device, "check_Settings_ITITP", val = 1)
@@ -4579,7 +4578,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 			asyncAlarmPassed = PSQ_CheckAsyncAlarmStateAndStoreInLabnotebook(device, PSQ_DA_SCALE, s.sweepNo, asyncChannels)
 
 			strswitch(opMode)
-				case PSQ_DS_SUB:
+				case PSQ_DS_SUB: // fallthrough
 				case PSQ_DS_SUPRA:
 					sweepPassed = baselineQCPassedLBN[s.headstage] && samplingFrequencyPassed && asyncAlarmPassed
 
@@ -4616,7 +4615,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 
 					break
 				default:
-					ASSERT(0, "Invalid opMode")
+					FATAL_ERROR("Invalid opMode")
 			endswitch
 
 			WAVE result = LBN_GetNumericWave()
@@ -4761,12 +4760,12 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 				elseif(!cmpstr(opMode, PSQ_DS_ADAPT))
 					// nothing to do
 				else
-					ASSERT(0, "Invalid opMode")
+					FATAL_ERROR("Invalid opMode")
 				endif
 			endif
 
 			strswitch(opMode)
-				case PSQ_DS_SUB:
+				case PSQ_DS_SUB: // fallthrough
 				case PSQ_DS_SUPRA:
 					sprintf msg, "Fitted Slope: %.0W1P%%\r", fISlope[s.headstage]
 					DEBUGPRINT(msg)
@@ -4823,14 +4822,14 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 						endif
 
 					else
-						ASSERT(0, "Unknown PSQ_RESULTS_XXX state")
+						FATAL_ERROR("Unknown PSQ_RESULTS_XXX state")
 					endif
 
 					PSQ_DS_CreateSurveyPlotForUser(device, s.sweepNo, s.headstage)
 
 					break
 				default:
-					ASSERT(0, "Invalid opMode")
+					FATAL_ERROR("Invalid opMode")
 			endswitch
 
 			break
@@ -4865,7 +4864,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 					setPassed = PSQ_DS_AdaptiveIsFinished(device, s.sweepNo, s.headstage, numSweepsWithSaturation)
 					break
 				default:
-					ASSERT(0, "Invalid opMode")
+					FATAL_ERROR("Invalid opMode")
 			endswitch
 
 			sprintf msg, "Set has %s\r", ToPassFail(setPassed)
@@ -4910,7 +4909,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 				ASSERT(IsFinite(daScaleModifier), "DAScale modifier is non-finite")
 
 				strswitch(opMode)
-					case PSQ_DS_SUB:
+					case PSQ_DS_SUB: // fallthrough
 					case PSQ_DS_SUPRA:
 						DAScale = DAScales[index]
 						break
@@ -4919,7 +4918,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 						[type, DAScale] = PSQ_DS_AD_ParseFutureDAScaleEntry(DAScaleWithType[index])
 						break
 					default:
-						ASSERT(0, "Invalid opMode")
+						FATAL_ERROR("Invalid opMode")
 				endswitch
 
 				strswitch(offsetOp)
@@ -4930,7 +4929,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 						DAScale = DAScale * (1 + daScaleModifier) * daScaleOffset
 						break
 					default:
-						ASSERT(0, "Invalid case")
+						FATAL_ERROR("Invalid case")
 						break
 				endswitch
 
@@ -4975,12 +4974,12 @@ End
 Function/S PSQ_SquarePulse_GetHelp(string name)
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // fallthrough
+		case "SamplingFrequency": // fallthrough
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_SQUARE_PULSE, name)
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 	endswitch
 End
 
@@ -4989,12 +4988,12 @@ Function/S PSQ_SquarePulse_CheckParam(string name, STRUCT CheckParametersStruct 
 	variable val
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // fallthrough
+		case "SamplingFrequency": // fallthrough
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s)
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 	endswitch
 End
 
@@ -5156,7 +5155,7 @@ Function PSQ_SquarePulse(string device, STRUCT AnalysisFunction_V3 &s)
 					stepsize                = PSQ_SP_INIT_AMP_m50
 					oorDAScale[s.headstage] = SetDAScale(device, s.sweepNo, s.headstage, absolute = DAScale + stepsize, limitCheck = limitCheck)
 				else
-					ASSERT(0, "Unknown stepsize")
+					FATAL_ERROR("Unknown stepsize")
 				endif
 			else // headstage did not spike
 				if(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_m50))
@@ -5167,7 +5166,7 @@ Function PSQ_SquarePulse(string device, STRUCT AnalysisFunction_V3 &s)
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_p100))
 					// do nothing
 				else
-					ASSERT(0, "Unknown stepsize")
+					FATAL_ERROR("Unknown stepsize")
 				endif
 
 				oorDAScale[s.headstage] = SetDAScale(device, s.sweepNo, s.headstage, absolute = DAScale + stepsize, limitCheck = limitCheck)
@@ -5240,30 +5239,30 @@ End
 Function/S PSQ_Rheobase_GetHelp(string name)
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "BaselineTargetVThreshold":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // fallthrough
+		case "BaselineRMSLongThreshold": // fallthrough
+		case "BaselineRMSShortThreshold": // fallthrough
+		case "BaselineTargetVThreshold": // fallthrough
+		case "SamplingFrequency": // fallthrough
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_RHEOBASE, name)
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 	endswitch
 End
 
 Function/S PSQ_Rheobase_CheckParam(string name, STRUCT CheckParametersStruct &s)
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "BaselineTargetVThreshold":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // fallthrough
+		case "BaselineRMSLongThreshold": // fallthrough
+		case "BaselineRMSShortThreshold": // fallthrough
+		case "BaselineTargetVThreshold": // fallthrough
+		case "SamplingFrequency": // fallthrough
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s)
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 	endswitch
 End
 
@@ -5548,7 +5547,7 @@ Function PSQ_Rheobase(string device, STRUCT AnalysisFunction_V3 &s)
 
 					DAScale = PSQ_RB_DASCALE_STEP_SMALL
 				else
-					ASSERT(0, "Unknown step size")
+					FATAL_ERROR("Unknown step size")
 				endif
 			endif
 
@@ -5685,11 +5684,11 @@ End
 Function/S PSQ_Ramp_GetHelp(string name)
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "BaselineTargetVThreshold":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // fallthrough
+		case "BaselineRMSLongThreshold": // fallthrough
+		case "BaselineRMSShortThreshold": // fallthrough
+		case "BaselineTargetVThreshold": // fallthrough
+		case "SamplingFrequency": // fallthrough
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_RAMP, name)
 		case "NumberOfSpikes":
@@ -5699,7 +5698,7 @@ Function/S PSQ_Ramp_GetHelp(string name)
 			return "Number of ramp sweeps that must pass for the set to pass.\r" \
 			       + "Defaults to " + num2str(PSQ_RA_NUM_SWEEPS_PASS) + "."
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 	endswitch
 End
 
@@ -5708,11 +5707,11 @@ Function/S PSQ_Ramp_CheckParam(string name, STRUCT CheckParametersStruct &s)
 	variable val
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "BaselineTargetVThreshold":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // fallthrough
+		case "BaselineRMSLongThreshold": // fallthrough
+		case "BaselineRMSShortThreshold": // fallthrough
+		case "BaselineTargetVThreshold": // fallthrough
+		case "SamplingFrequency": // fallthrough
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s)
 		case "NumberOfSpikes":
@@ -5729,7 +5728,7 @@ Function/S PSQ_Ramp_CheckParam(string name, STRUCT CheckParametersStruct &s)
 			endif
 			break
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 			break
 	endswitch
 End
@@ -6061,7 +6060,7 @@ Function PSQ_Ramp(string device, STRUCT AnalysisFunction_V3 &s)
 					PSQ_Ramp_AddEpoch(device, s.headstage, scaledChannelDA, "Name=DA Suppression", "RA_DS", fifoPos, DimSize(channelDA, ROWS) - 1)
 				endif
 			else
-				ASSERT(0, "Unknown hardware type")
+				FATAL_ERROR("Unknown hardware type")
 			endif
 
 			// recalculate pulse duration
@@ -6208,7 +6207,7 @@ Function/S PSQ_CR_BoundsActionToString(variable boundsAction)
 		case PSQ_CR_RERUN:
 			return "PSQ_CR_RERUN"
 		default:
-			ASSERT(0, "Invalid case")
+			FATAL_ERROR("Invalid case")
 	endswitch
 End
 
@@ -6265,7 +6264,7 @@ static Function PSQ_CR_DetermineScalingFactor(STRUCT ChirpBoundsInfo &lowerInfo,
 		case PSQ_CR_BEM_DEPOLARIZED:
 			return upperInfo.centerFac
 		default:
-			ASSERT(0, "Invalid case")
+			FATAL_ERROR("Invalid case")
 	endswitch
 End
 
@@ -6351,7 +6350,7 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 			lowerInfo.state = "__"
 			break
 		default:
-			ASSERT(0, "Invalid case")
+			FATAL_ERROR("Invalid case")
 	endswitch
 
 	boundsAction = PSQ_CR_DetermineBoundsActionFromState(upperInfo.state, lowerInfo.state)
@@ -6400,7 +6399,7 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 
 				break
 			default:
-				ASSERT(0, "Invalid case")
+				FATAL_ERROR("Invalid case")
 		endswitch
 
 		graph = "ChirpVisDebugGraph_" + num2str(sweepNo)
@@ -6414,13 +6413,13 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 #endif // DEBUGGING_ENABLED
 
 	switch(boundsAction)
-		case PSQ_CR_RERUN:
+		case PSQ_CR_RERUN: // fallthrough
 			ASSERT(boundsEvaluationMode == PSQ_CR_BEM_SYMMETRIC, "Invalid bounds action")
 		case PSQ_CR_PASS:
 			scalingFactor = NaN
 			// do nothing
 			break
-		case PSQ_CR_INCREASE:
+		case PSQ_CR_INCREASE: // fallthrough
 		case PSQ_CR_DECREASE:
 			scalingFactor = PSQ_CR_DetermineScalingFactor(lowerInfo, upperInfo, boundsEvaluationMode)
 			if(!IsFinite(scalingFactor) || scalingFactor == 0)
@@ -6430,7 +6429,7 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 			endif
 			break
 		default:
-			ASSERT(0, "impossible case")
+			FATAL_ERROR("impossible case")
 	endswitch
 
 	WAVE result = LBN_GetNumericWave()
@@ -6454,7 +6453,7 @@ static Function/S PSQ_CR_BoundsEvaluationModeToString(variable val)
 		case PSQ_CR_BEM_DEPOLARIZED:
 			return "Depolarized"
 		default:
-			ASSERT(0, "Invalid value: " + num2str(val))
+			FATAL_ERROR("Invalid value: " + num2str(val))
 	endswitch
 End
 
@@ -6468,7 +6467,7 @@ static Function PSQ_CR_ParseBoundsEvaluationModeString(string str)
 		case "Depolarized":
 			return PSQ_CR_BEM_DEPOLARIZED
 		default:
-			ASSERT(0, "Invalid value: " + str)
+			FATAL_ERROR("Invalid value: " + str)
 	endswitch
 End
 
@@ -6542,13 +6541,13 @@ End
 Function/S PSQ_Chirp_GetHelp(string name)
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "BaselineTargetVThreshold":
-		case "FailedLevel":
-		case "NumberOfFailedSweeps":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // fallthrough
+		case "BaselineRMSLongThreshold": // fallthrough
+		case "BaselineRMSShortThreshold": // fallthrough
+		case "BaselineTargetVThreshold": // fallthrough
+		case "FailedLevel": // fallthrough
+		case "NumberOfFailedSweeps": // fallthrough
+		case "SamplingFrequency": // fallthrough
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_CHIRP, name)
 		case "AmpBesselFilter":
@@ -6581,7 +6580,7 @@ Function/S PSQ_Chirp_GetHelp(string name)
 			return "Use the average voltage of a passing True RMS voltage set as Autobias targetV [mV] " + \
 			       "instead of \"AutobiasTargetVAtSetEnd\" in POST_SET_EVENT. Defaults to on."
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 			break
 	endswitch
 End
@@ -6592,15 +6591,15 @@ Function/S PSQ_Chirp_CheckParam(string name, STRUCT CheckParametersStruct &s)
 	string   str
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "BaselineTargetVThreshold":
-		case "DAScaleOperator":
-		case "DAScaleModifier":
-		case "FailedLevel":
-		case "NumberOfFailedSweeps":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // fallthrough
+		case "BaselineRMSLongThreshold": // fallthrough
+		case "BaselineRMSShortThreshold": // fallthrough
+		case "BaselineTargetVThreshold": // fallthrough
+		case "DAScaleOperator": // fallthrough
+		case "DAScaleModifier": // fallthrough
+		case "FailedLevel": // fallthrough
+		case "NumberOfFailedSweeps": // fallthrough
+		case "SamplingFrequency": // fallthrough
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s)
 		case "AmpBesselFilter":
@@ -6615,7 +6614,7 @@ Function/S PSQ_Chirp_CheckParam(string name, STRUCT CheckParametersStruct &s)
 				return "Must be a finite value"
 			endif
 			break
-		case "AutobiasTargetV":
+		case "AutobiasTargetV": // fallthrough
 		case "AutobiasTargetVAtSetEnd":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val) || val == 0)
@@ -6628,11 +6627,11 @@ Function/S PSQ_Chirp_CheckParam(string name, STRUCT CheckParametersStruct &s)
 				return "Invalid value " + str
 			endif
 			break
-		case "InnerRelativeBound":
+		case "InnerRelativeBound": // fallthrough
 			if(AFH_GetAnalysisParamNumerical("InnerRelativeBound", s.params) >= AFH_GetAnalysisParamNumerical("OuterRelativeBound", s.params))
 				return "InnerRelativeBound must be smaller than OuterRelativeBound"
 			endif
-		case "OuterRelativeBound": // fallthrough-by-design
+		case "OuterRelativeBound":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val) || val < PSQ_CR_LIMIT_BAND_LOW || val > PSQ_CR_LIMIT_BAND_HIGH)
 				return "Out of bounds with value " + num2str(val)
@@ -6644,8 +6643,8 @@ Function/S PSQ_Chirp_CheckParam(string name, STRUCT CheckParametersStruct &s)
 				return "Must be a finite non-zero integer"
 			endif
 			break
-		case "SpikeCheck":
-		case "UseTrueRestingMembranePotentialVoltage": // fallthrough-by-design
+		case "SpikeCheck": // fallthrough
+		case "UseTrueRestingMembranePotentialVoltage":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val))
 				return "Must be a finite value"
@@ -6658,7 +6657,7 @@ Function/S PSQ_Chirp_CheckParam(string name, STRUCT CheckParametersStruct &s)
 			endif
 			break
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 			break
 	endswitch
 End
@@ -7166,12 +7165,12 @@ Function PSQ_Chirp(string device, STRUCT AnalysisFunction_V3 &s)
 		WAVE oorDAScale = LBN_GetNumericWave()
 
 		switch(boundsAction)
-			case PSQ_CR_PASS:
-			case PSQ_CR_RERUN: // fallthrough-by-design
+			case PSQ_CR_PASS: // fallthrough
+			case PSQ_CR_RERUN:
 				// nothing to do
 				break
-			case PSQ_CR_INCREASE:
-			case PSQ_CR_DECREASE: // fallthrough-by-design
+			case PSQ_CR_INCREASE: // fallthrough
+			case PSQ_CR_DECREASE:
 				oorDAScale[s.headstage] = SetDAScale(device, s.sweepNo, s.headstage, relative = scalingFactorDAScale, roundTopA = 1, limitCheck = limitCheck)
 
 				if(oorDAScale[s.headstage])
@@ -7179,7 +7178,7 @@ Function PSQ_Chirp(string device, STRUCT AnalysisFunction_V3 &s)
 				endif
 				break
 			default:
-				ASSERT(0, "impossible case")
+				FATAL_ERROR("impossible case")
 		endswitch
 
 		ReportOutOfRangeDAScale(device, s.sweepNo, PSQ_CHIRP, oorDAScale)
@@ -7437,18 +7436,18 @@ Function/S PSQ_PipetteInBath_CheckParam(string name, STRUCT CheckParametersStruc
 	string   str
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "MaxLeakCurrent":
-		case "NextIndexingEndStimSetName":
-		case "NextStimSetName":
-		case "NumberOfFailedSweeps":
-		case "NumberOfTestpulses":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // fallthrough
+		case "BaselineRMSLongThreshold": // fallthrough
+		case "BaselineRMSShortThreshold": // fallthrough
+		case "MaxLeakCurrent": // fallthrough
+		case "NextIndexingEndStimSetName": // fallthrough
+		case "NextStimSetName": // fallthrough
+		case "NumberOfFailedSweeps": // fallthrough
+		case "NumberOfTestpulses": // fallthrough
+		case "SamplingFrequency": // fallthrough
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s)
-		case "MinPipetteResistance":
+		case "MinPipetteResistance": // fallthrough
 		case "MaxPipetteResistance":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0 && val <= 20))
@@ -7456,22 +7455,22 @@ Function/S PSQ_PipetteInBath_CheckParam(string name, STRUCT CheckParametersStruc
 			endif
 			break
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 	endswitch
 End
 
 Function/S PSQ_PipetteInBath_GetHelp(string name)
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "MaxLeakCurrent":
-		case "NextIndexingEndStimSetName":
-		case "NextStimSetName":
-		case "NumberOfFailedSweeps":
-		case "NumberOfTestpulses":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // fallthrough
+		case "BaselineRMSLongThreshold": // fallthrough
+		case "BaselineRMSShortThreshold": // fallthrough
+		case "MaxLeakCurrent": // fallthrough
+		case "NextIndexingEndStimSetName": // fallthrough
+		case "NextStimSetName": // fallthrough
+		case "NumberOfFailedSweeps": // fallthrough
+		case "NumberOfTestpulses": // fallthrough
+		case "SamplingFrequency": // fallthrough
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_PIPETTE_BATH, name)
 		case "MinPipetteResistance":
@@ -7479,7 +7478,7 @@ Function/S PSQ_PipetteInBath_GetHelp(string name)
 		case "MaxPipetteResistance":
 			return "Maximum allowed pipette resistance [MΩ]"
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 	endswitch
 End
 
@@ -7887,14 +7886,14 @@ Function/S PSQ_SealEvaluation_CheckParam(string name, STRUCT CheckParametersStru
 	string   str
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineChunkLength":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "NextIndexingEndStimSetName":
-		case "NextStimSetName":
-		case "NumberOfFailedSweeps":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // fallthrough
+		case "BaselineChunkLength": // fallthrough
+		case "BaselineRMSLongThreshold": // fallthrough
+		case "BaselineRMSShortThreshold": // fallthrough
+		case "NextIndexingEndStimSetName": // fallthrough
+		case "NextStimSetName": // fallthrough
+		case "NumberOfFailedSweeps": // fallthrough
+		case "SamplingFrequency": // fallthrough
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s, maxThreshold = 100)
 		case "SealThreshold":
@@ -7910,21 +7909,21 @@ Function/S PSQ_SealEvaluation_CheckParam(string name, STRUCT CheckParametersStru
 			endif
 			break
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 	endswitch
 End
 
 Function/S PSQ_SealEvaluation_GetHelp(string name)
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineChunkLength":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "NextIndexingEndStimSetName":
-		case "NextStimSetName":
-		case "NumberOfFailedSweeps":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // fallthrough
+		case "BaselineChunkLength": // fallthrough
+		case "BaselineRMSLongThreshold": // fallthrough
+		case "BaselineRMSShortThreshold": // fallthrough
+		case "NextIndexingEndStimSetName": // fallthrough
+		case "NextStimSetName": // fallthrough
+		case "NumberOfFailedSweeps": // fallthrough
+		case "SamplingFrequency": // fallthrough
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_SEAL_EVALUATION, name)
 		case "SealThreshold":
@@ -7932,7 +7931,7 @@ Function/S PSQ_SealEvaluation_GetHelp(string name)
 		case "TestPulseGroupSelector":
 			return "Group(s) which have their resistance evaluated: One of Both/First/Second, defaults to Both"
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 	endswitch
 End
 
@@ -8096,7 +8095,7 @@ Function PSQ_SealEvaluation(string device, STRUCT AnalysisFunction_V3 &s)
 					sprintf formula, "store(\"Steady state resistance (group B)\", tp(tpss(), select(selchannels(AD), selsweeps(%d), selvis(all)), [0]))", s.sweepNo
 					break
 				default:
-					ASSERT(0, "Invalid testpulseGroupSel: " + num2str(testpulseGroupSel))
+					FATAL_ERROR("Invalid testpulseGroupSel: " + num2str(testpulseGroupSel))
 			endswitch
 
 			databrowser = PSQ_ExecuteSweepFormula(device, formula)
@@ -8128,7 +8127,7 @@ Function PSQ_SealEvaluation(string device, STRUCT AnalysisFunction_V3 &s)
 					baselineQCPassed = baselineQCPassedChunk0LBN[INDEP_HEADSTAGE] && baselineQCPassedChunk1LBN[INDEP_HEADSTAGE]
 					break
 				default:
-					ASSERT(0, "Invalid testpulseGroupSel")
+					FATAL_ERROR("Invalid testpulseGroupSel")
 			endswitch
 
 			ASSERT(IsFinite(baselineQCPassed), "Invalid baselineQCpassed")
@@ -8168,7 +8167,7 @@ Function PSQ_SealEvaluation(string device, STRUCT AnalysisFunction_V3 &s)
 						sealResistanceB = overrideResults[0][count][2]
 						break
 					default:
-						ASSERT(0, "Invalid testpulseGroupSel")
+						FATAL_ERROR("Invalid testpulseGroupSel")
 				endswitch
 			endif
 			// END TEST
@@ -8194,7 +8193,7 @@ Function PSQ_SealEvaluation(string device, STRUCT AnalysisFunction_V3 &s)
 					sealResistanceMax = max(sealResistanceA, sealResistanceB)
 					break
 				default:
-					ASSERT(0, "Invalid testpulseGroupSel")
+					FATAL_ERROR("Invalid testpulseGroupSel")
 			endswitch
 
 			WAVE sealResistanceMaxLBN = LBN_GetNumericWave()
@@ -8216,7 +8215,7 @@ Function PSQ_SealEvaluation(string device, STRUCT AnalysisFunction_V3 &s)
 					sealResistanceQCPassed = (sealResistanceA >= sealThreshold) || (sealResistanceB >= sealThreshold)
 					break
 				default:
-					ASSERT(0, "Invalid testpulseGroupSel")
+					FATAL_ERROR("Invalid testpulseGroupSel")
 			endswitch
 
 			WAVE sealResistanceQCLBN = LBN_GetNumericWave()
@@ -8380,7 +8379,7 @@ static Function PSQ_SE_ParseTestpulseGroupSelection(string str)
 		case "Second":
 			return PSQ_SE_TGS_SECOND
 		default:
-			ASSERT(0, "Invalid value: " + str)
+			FATAL_ERROR("Invalid value: " + str)
 	endswitch
 End
 
@@ -8390,18 +8389,18 @@ Function/S PSQ_TrueRestingMembranePotential_CheckParam(string name, STRUCT Check
 	string   str
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineChunkLength":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "FailedLevel":
-		case "NextIndexingEndStimSetName":
-		case "NextStimSetName":
-		case "NumberOfFailedSweeps":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // fallthrough
+		case "BaselineChunkLength": // fallthrough
+		case "BaselineRMSLongThreshold": // fallthrough
+		case "BaselineRMSShortThreshold": // fallthrough
+		case "FailedLevel": // fallthrough
+		case "NextIndexingEndStimSetName": // fallthrough
+		case "NextStimSetName": // fallthrough
+		case "NumberOfFailedSweeps": // fallthrough
+		case "SamplingFrequency": // fallthrough
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s)
-		case "AbsoluteVoltageDiff":
+		case "AbsoluteVoltageDiff": // fallthrough
 		case "RelativeVoltageDiff":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0)) // +inf is allowed as well
@@ -8427,22 +8426,22 @@ Function/S PSQ_TrueRestingMembranePotential_CheckParam(string name, STRUCT Check
 			endif
 			break
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 	endswitch
 End
 
 Function/S PSQ_TrueRestingMembranePotential_GetHelp(string name)
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineChunkLength":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "FailedLevel":
-		case "NextIndexingEndStimSetName":
-		case "NextStimSetName":
-		case "NumberOfFailedSweeps":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // fallthrough
+		case "BaselineChunkLength": // fallthrough
+		case "BaselineRMSLongThreshold": // fallthrough
+		case "BaselineRMSShortThreshold": // fallthrough
+		case "FailedLevel": // fallthrough
+		case "NextIndexingEndStimSetName": // fallthrough
+		case "NextStimSetName": // fallthrough
+		case "NumberOfFailedSweeps": // fallthrough
+		case "SamplingFrequency": // fallthrough
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_TRUE_REST_VM, name)
 		case "AbsoluteVoltageDiff":
@@ -8456,7 +8455,7 @@ Function/S PSQ_TrueRestingMembranePotential_GetHelp(string name)
 		case "InterTrialInterval":
 			return "Inter trial interval to set, defaults to 10 [s]"
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 	endswitch
 End
 
@@ -9065,16 +9064,16 @@ Function/S PSQ_AccessResistanceSmoke_CheckParam(string name, STRUCT CheckParamet
 	variable val
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineChunkLength":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "MaxLeakCurrent":
-		case "NextStimSetName":
-		case "NextIndexingEndStimSetName":
-		case "NumberOfFailedSweeps":
-		case "NumberOfTestpulses":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // fallthrough
+		case "BaselineChunkLength": // fallthrough
+		case "BaselineRMSLongThreshold": // fallthrough
+		case "BaselineRMSShortThreshold": // fallthrough
+		case "MaxLeakCurrent": // fallthrough
+		case "NextStimSetName": // fallthrough
+		case "NextIndexingEndStimSetName": // fallthrough
+		case "NumberOfFailedSweeps": // fallthrough
+		case "NumberOfTestpulses": // fallthrough
+		case "SamplingFrequency": // fallthrough
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s)
 		case "MaxAccessResistance":
@@ -9090,7 +9089,7 @@ Function/S PSQ_AccessResistanceSmoke_CheckParam(string name, STRUCT CheckParamet
 			endif
 			break
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 			break
 	endswitch
 End
@@ -9098,16 +9097,16 @@ End
 Function/S PSQ_AccessResistanceSmoke_GetHelp(string name)
 
 	strswitch(name)
-		case "AsyncQCChannels":
-		case "BaselineChunkLength":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
-		case "MaxLeakCurrent":
-		case "NextStimSetName":
-		case "NextIndexingEndStimSetName":
-		case "NumberOfFailedSweeps":
-		case "NumberOfTestpulses":
-		case "SamplingFrequency":
+		case "AsyncQCChannels": // fallthrough
+		case "BaselineChunkLength": // fallthrough
+		case "BaselineRMSLongThreshold": // fallthrough
+		case "BaselineRMSShortThreshold": // fallthrough
+		case "MaxLeakCurrent": // fallthrough
+		case "NextStimSetName": // fallthrough
+		case "NextIndexingEndStimSetName": // fallthrough
+		case "NumberOfFailedSweeps": // fallthrough
+		case "NumberOfTestpulses": // fallthrough
+		case "SamplingFrequency": // fallthrough
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_DA_SCALE, name)
 		case "MaxAccessResistance":
@@ -9115,7 +9114,7 @@ Function/S PSQ_AccessResistanceSmoke_GetHelp(string name)
 		case "MaxAccessToSteadyStateResistanceRatio":
 			return "Maximum allowed ratio of access to steady state resistance [%]"
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 			break
 	endswitch
 End

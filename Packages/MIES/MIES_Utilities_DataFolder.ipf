@@ -97,7 +97,7 @@ threadsafe static Function/S GetAllObjects(DFREF dfr, variable typeFlag)
 			list = DataFolderList("*", ";", dfr)
 			break
 		default:
-			ASSERT_TS(0, "Invalid type flag")
+			FATAL_ERROR("Invalid type flag")
 	endswitch
 
 	return list

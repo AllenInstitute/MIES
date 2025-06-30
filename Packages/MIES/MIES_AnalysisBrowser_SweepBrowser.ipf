@@ -243,7 +243,7 @@ Function/WAVE SB_GetChannelInfoFromGraph(string graph, string channel, [string e
 					FindValue/V=(channelNumber) DACs
 					break
 				default:
-					ASSERT(0, "Unsupported channel")
+					FATAL_ERROR("Unsupported channel")
 					break
 			endswitch
 
@@ -565,7 +565,7 @@ Function/WAVE SB_GetLogbookWave(string win, variable logbookType, variable logbo
 					FUNCREF ANALYSIS_LBN_GETTER_PROTO func = GetAnalysLBTextualValues
 					break
 				default:
-					ASSERT(0, "Invalid logbookWaveType")
+					FATAL_ERROR("Invalid logbookWaveType")
 			endswitch
 
 			if(!ParamIsDefault(sweepNumber))
@@ -604,7 +604,7 @@ Function/WAVE SB_GetLogbookWave(string win, variable logbookType, variable logbo
 
 			return GetAnalysisResultsWave(dataFolder, logbookWaveType)
 		default:
-			ASSERT(0, "Unsupported logbookType")
+			FATAL_ERROR("Unsupported logbookType")
 	endswitch
 End
 

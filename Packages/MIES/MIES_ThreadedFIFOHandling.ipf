@@ -120,7 +120,7 @@ threadsafe static Function TFH_FifoLoop(WAVE config, variable deviceID, variable
 					return 0
 					break
 				default:
-					ASSERT_TS(0, "Invalid mode")
+					FATAL_ERROR("Invalid mode")
 					break
 			endswitch
 		endif

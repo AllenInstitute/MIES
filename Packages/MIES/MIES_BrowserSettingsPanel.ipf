@@ -469,7 +469,7 @@ static Function BSP_ParseBrowserMode(string mode)
 		case "All":
 			return BROWSER_MODE_ALL
 		default:
-			ASSERT(0, "Invalid mode")
+			FATAL_ERROR("Invalid mode")
 	endswitch
 End
 
@@ -483,7 +483,7 @@ static Function/S BSP_SerializeBrowserMode(variable mode)
 		case BROWSER_MODE_ALL:
 			return "All"
 		default:
-			ASSERT(0, "Invalid mode")
+			FATAL_ERROR("Invalid mode")
 	endswitch
 End
 
@@ -800,8 +800,8 @@ End
 Function BSP_TimeAlignmentLevel(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // fallthrough, mouse up
+		case 2: // fallthrough, Enter key
 		case 3: // Live update
 			UpdateSettingsPanel(sva.win)
 			break
@@ -874,8 +874,8 @@ Function BSP_AxisScalingLevelCross(STRUCT WMSetVariableAction &sva) : SetVariabl
 	string graph, bsPanel
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // fallthrough, mouse up
+		case 2: // fallthrough, Enter key
 		case 3: // Live update
 			graph   = GetMainWindow(sva.win)
 			bsPanel = BSP_GetPanel(graph)
@@ -917,7 +917,7 @@ static Function BSP_UpdateSweepControls(string win, string ctrl, variable firstS
 	elseif(!cmpstr(ctrl, "button_SweepControl_NextSweep"))
 		direction = +1
 	else
-		ASSERT(0, "unhandled control name")
+		FATAL_ERROR("unhandled control name")
 	endif
 
 	currentSweepOrIndex = GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")
@@ -1339,7 +1339,7 @@ Function/WAVE BSP_GetLogbookWave(string win, variable logbookType, variable logb
 			ASSERT(IsValidSweepNumber(sweepNumber), "Unsupported sweep number")
 			return GetLogbookWaves(logbookType, logbookWaveType, device = device)
 		else
-			ASSERT(0, "Invalid parameter combination")
+			FATAL_ERROR("Invalid parameter combination")
 		endif
 	else
 		if(ParamIsDefault(sweepNumber) && !selectedExpDevice)
@@ -1359,7 +1359,7 @@ Function/WAVE BSP_GetLogbookWave(string win, variable logbookType, variable logb
 			ASSERT(IsValidSweepNumber(sweepNumber), "Unsupported sweep number")
 			return SB_GetLogbookWave(win, logbookType, logbookWaveType, sweepNumber = sweepNumber)
 		else
-			ASSERT(0, "Invalid parameter combination")
+			FATAL_ERROR("Invalid parameter combination")
 		endif
 	endif
 End
@@ -1373,7 +1373,7 @@ Function/WAVE BSP_FetchSelectedChannels(string graph, [variable index, variable 
 	elseif(!ParamIsDefault(index) && ParamIsDefault(sweepNo))
 		WAVE/Z activeHS = OVS_GetHeadstageRemoval(graph, index = index)
 	else
-		ASSERT(0, "Invalid optional flags")
+		FATAL_ERROR("Invalid optional flags")
 	endif
 
 	WAVE channelSelOriginal = BSP_GetChannelSelectionWave(graph)

@@ -17,12 +17,12 @@ static StrConstant SFH_DEFAULT_SELECT_FORMULA         = "select()"
 
 threadsafe Function SFH_StringChecker_Prototype(string str)
 
-	ASSERT_TS(0, "Can't call prototype function")
+	FATAL_ERROR("Can't call prototype function")
 End
 
 threadsafe Function SFH_NumericChecker_Prototype(variable var)
 
-	ASSERT_TS(0, "Can't call prototype function")
+	FATAL_ERROR("Can't call prototype function")
 End
 
 /// @brief Convenience helper function to get a numeric SweepFormula operation argument
@@ -91,7 +91,7 @@ Function SFH_GetArgumentAsNumeric(variable jsonId, string jsonPath, string graph
 			sep                = ", "
 			allowedValuesAsStr = NumericWaveToList(allowedValues, sep, trailSep = 0)
 			sprintf msg, "Argument #%d of operation %s: The numeric argument \"%g\" is not one of the allowed values (%s)", argNum, opShort, result, allowedValuesAsStr
-			SFH_ASSERT(0, msg)
+			SFH_FATAL_ERROR(msg)
 		endif
 	endif
 
@@ -100,7 +100,7 @@ Function SFH_GetArgumentAsNumeric(variable jsonId, string jsonPath, string graph
 
 		if(!ret)
 			sprintf msg, "Argument #%d of operation %s: The numeric argument \"%g\" does not meet the requirements of \"%s\"", argNum, opShort, result, StringByKey("NAME", FuncRefInfo(checkFunc))
-			SFH_ASSERT(0, msg)
+			SFH_FATAL_ERROR(msg)
 		endif
 	endif
 
@@ -191,12 +191,12 @@ Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph,
 				sep                = ", "
 				allowedValuesAsStr = TextWaveToList(allowedValues, sep, trailSep = 0)
 				sprintf msg, "Argument #%d of operation %s: The text argument \"%s\" is not one of the allowed values (%s)", argNum, opShort, result, allowedValuesAsStr
-				SFH_ASSERT(0, msg)
+				SFH_FATAL_ERROR(msg)
 			elseif(DimSize(matches, ROWS) > 1)
 				sep                = ", "
 				allowedValuesAsStr = TextWaveToList(matches, sep, trailSep = 0)
 				sprintf msg, "Argument #%d of operation %s: The abbreviated text argument \"%s\" is not unique and could be (%s)", argNum, opShort, result, allowedValuesAsStr
-				SFH_ASSERT(0, msg)
+				SFH_FATAL_ERROR(msg)
 			else
 				ASSERT(DimSize(matches, ROWS) == 1, "Unexpected match")
 				// replace possibly abbreviated argument with its full name
@@ -210,7 +210,7 @@ Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph,
 
 		if(!ret)
 			sprintf msg, "Argument #%d of operation %s: The text argument \"%s\" does not meet the requirements of \"%s\"", argNum, opShort, result, StringByKey("NAME", FuncRefInfo(checkFunc))
-			SFH_ASSERT(0, msg)
+			SFH_FATAL_ERROR(msg)
 		endif
 	endif
 
@@ -327,7 +327,7 @@ Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string gra
 			if(!IsConstant(types, expectedMajorType))
 				Make/T/FREE/N=(DimSize(types, ROWS)) typesText = WaveTypeToStringSelectorOne(types[p])
 				sprintf msg, "Argument #%d of operation %s: Expected major wave type %s but got %s", argNum, opShort, WaveTypeToStringSelectorOne(expectedMajorType), TextWaveToList(typesText, ", ", trailSep = 0)
-				SFH_ASSERT(0, msg)
+				SFH_FATAL_ERROR(msg)
 			endif
 		endif
 
@@ -372,6 +372,16 @@ Function SFH_ASSERT(variable condition, string message, [variable jsonId])
 #endif // AUTOMATED_TESTING_DEBUGGING
 		Abort
 	endif
+End
+
+/// @brief Fatal user error for sweep formula
+Function SFH_FATAL_ERROR(string message, [variable jsonId])
+
+	if(!ParamIsDefault(jsonId))
+		JSON_Release(jsonId, ignoreErr = 1)
+	endif
+
+	return SFH_ASSERT(0, message) // NOLINT
 End
 
 Function/WAVE SFH_GetEmptyRange()
@@ -1082,7 +1092,7 @@ Function/S SFH_ResultTypeToString(variable resultType)
 		case SFH_RESULT_TYPE_PSX_MISC:
 			return "psx misc"
 		default:
-			ASSERT(0, "Invalid resultType")
+			FATAL_ERROR("Invalid resultType")
 	endswitch
 End
 
@@ -1903,7 +1913,7 @@ Function/S SFH_CreateLegendFromRanges(WAVE selectData, WAVE/WAVE ranges)
 	elseif(DimSize(ranges, ROWS) == DimSize(selectData, ROWS))
 		prefixPerSelect = 1
 	else
-		SFH_ASSERT(0, "selectData != ranges row number")
+		SFH_FATAL_ERROR("selectData != ranges row number")
 	endif
 	WAVE fullRange = SFH_GetFullRange()
 
@@ -1924,7 +1934,7 @@ Function/S SFH_CreateLegendFromRanges(WAVE selectData, WAVE/WAVE ranges)
 		elseif(IsTextWave(range))
 			sprintf legendStr, "%s\r%sepoch %s", legendStr, prefix, WaveText(range, row = 0)
 		else
-			SFH_ASSERT(0, "Unsupported range format")
+			SFH_FATAL_ERROR("Unsupported range format")
 		endif
 	endfor
 	legendStr = ReplaceString("\r", legendStr, "Ranges:\r", 1, 1)

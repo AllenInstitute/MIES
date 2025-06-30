@@ -186,7 +186,7 @@ Function DEBUGPRINT(string msg, [variable var, string str, WAVE/Z wv, string for
 	elseif(numSuppliedOptParams == 2)
 		ASSERT(!ParamIsDefault(format), "You can't supply \"var\", \"str\" and/or \"wv\" at the same time")
 	else
-		ASSERT(0, "Invalid parameter combination")
+		FATAL_ERROR("Invalid parameter combination")
 	endif
 
 	FindFirstOutsideCaller(func, line, file)
@@ -272,7 +272,7 @@ threadsafe Function DEBUGPRINT_TS(string msg, [variable var, string str, string 
 	elseif(numSuppliedOptParams == 2)
 		ASSERT_TS(!ParamIsDefault(format), "You can't supply \"var\" and \"str\" at the same time")
 	else
-		ASSERT_TS(0, "Invalid parameter combination")
+		FATAL_ERROR("Invalid parameter combination")
 	endif
 
 	if(!ParamIsDefault(var))

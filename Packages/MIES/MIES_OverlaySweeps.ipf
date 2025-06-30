@@ -440,7 +440,7 @@ Function OVS_ChangeSweepSelectionState(string win, variable newState, [variable 
 			WAVE/Z indices = ZapNans(indices1D)
 		endif
 	else
-		ASSERT(0, "Requires one of index or sweepNo")
+		FATAL_ERROR("Requires one of index or sweepNo")
 	endif
 
 	WAVE updateHandle = OVS_BeginIncrementalUpdate(win)
@@ -489,11 +489,11 @@ static Function OVS_AddToIgnoreList(string win, variable headstage, [variable sw
 	elseif(!ParamIsDefault(index))
 		// do nothing
 	else
-		ASSERT(0, "Requires one of index or sweepNo")
+		FATAL_ERROR("Requires one of index or sweepNo")
 	endif
 
 	if(index < 0 || index >= DimSize(listBoxWave, ROWS) || !IsFinite(index))
-		ASSERT(0, "Invalid sweepNo/index")
+		FATAL_ERROR("Invalid sweepNo/index")
 	endif
 
 	listboxWave[index][%headstages] = AddListItem(num2str(headstage), listboxWave[index][%headstages], ";", Inf)
@@ -539,7 +539,7 @@ Function/WAVE OVS_GetHeadstageRemoval(string win, [variable sweepNo, variable in
 	elseif(!ParamIsDefault(index))
 		// do nothing
 	else
-		ASSERT(0, "Requires one of index or sweepNo")
+		FATAL_ERROR("Requires one of index or sweepNo")
 	endif
 
 	if(index < 0 || index >= DimSize(listBoxWave, ROWS) || !IsFinite(index))
@@ -917,7 +917,7 @@ static Function OVS_EndIncrementalUpdate(string win, WAVE/WAVE updateHandle)
 			addedIndizes[addedSweeps++] = i
 			AddSweepToGraph(win, i, bdi = bdi)
 		else
-			ASSERT(0, "Impossible case")
+			FATAL_ERROR("Impossible case")
 		endif
 	endfor
 
@@ -996,8 +996,8 @@ Function OVS_SetVarProc_SelectionRange(STRUCT WMSetVariableAction &sva) : SetVar
 	string popStr, win
 
 	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
+		case 1: // fallthrough, mouse up
+		case 2: // fallthrough, Enter key
 		case 3: // Live update
 			win    = sva.win
 			popStr = GetPopupMenuString(win, "popup_overlaySweeps_select")

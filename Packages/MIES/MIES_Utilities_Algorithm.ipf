@@ -349,7 +349,7 @@ threadsafe Function GetRowIndex(WAVE wv, [variable val, string str, WAVE/Z refWa
 				return V_Value
 			endif
 		else
-			ASSERT_TS(0, "Unsupported wave type")
+			FATAL_ERROR("Unsupported wave type")
 		endif
 	endif
 
@@ -875,7 +875,7 @@ threadsafe Function/WAVE FindLevelWrapper(WAVE data, variable level, variable ed
 
 			return resultMulti
 		default:
-			ASSERT_TS(0, "Impossible case")
+			FATAL_ERROR("Impossible case")
 	endswitch
 End
 

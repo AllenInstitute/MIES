@@ -151,7 +151,7 @@
 ///                 return "This parameter delivers food right to your door"
 ///                 break
 ///            default:
-///                 ASSERT(0, "Unimplemented for parameter " + name)
+///                 FATAL_ERROR( "Unimplemented for parameter " + name)
 ///                 break
 ///        endswitch
 ///    End
@@ -212,6 +212,7 @@ Function TestAnalysisFunction_V3(string device, STRUCT AnalysisFunction_V3 &s)
 			case "wave":
 				WAVE/Z wv = AFH_GetAnalysisParamWave(name, s.params)
 				print wv
+				break
 			case "textwave":
 				WAVE/Z/T wvText = AFH_GetAnalysisParamTextWave(name, s.params)
 				print wvText
@@ -488,7 +489,7 @@ Function switchHolding(variable Vm2)
 				elseif(clampMode == I_CLAMP_MODE)
 					PGC_SetAndActivateControl(DEFAULT_DEVICE, "setvar_DataAcq_Hold_IC", val = Vm2)
 				else
-					ASSERT(0, "Unsupported clamp mode")
+					FATAL_ERROR("Unsupported clamp mode")
 				endif
 			endif
 		endfor
@@ -652,7 +653,7 @@ Function AdjustDAScale(string device, variable eventType, WAVE DAQDataWave, vari
 			DAScalesIndex[headstage] += 1
 			break
 		default:
-			ASSERT(0, "Unknown eventType")
+			FATAL_ERROR("Unknown eventType")
 			break
 	endswitch
 
@@ -886,7 +887,7 @@ Function SetDAScaleModOp(string device, variable sweepNo, variable headstage, va
 		case "*":
 			return SetDAScale(device, sweepNo, headstage, relative = invert ? (1 / modifier) : modifier, roundTopA = roundTopA, limitCheck = limitCheck)
 		default:
-			ASSERT(0, "Invalid operator")
+			FATAL_ERROR("Invalid operator")
 			break
 	endswitch
 End
@@ -984,7 +985,7 @@ Function/S ReachTargetVoltage_GetHelp(string name)
 		case "IndexingEndStimsetAllIC":
 			return "Indexing end stimulus set for all IC headstages"
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 			break
 	endswitch
 End
@@ -1011,7 +1012,7 @@ Function/S ReachTargetVoltage_CheckParam(string name, STRUCT CheckParametersStru
 
 			break
 		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
+			FATAL_ERROR("Unimplemented for parameter " + name)
 			break
 	endswitch
 End
@@ -1301,16 +1302,16 @@ Function ReportOutOfRangeDAScale(string device, variable sweepNo, variable anaFu
 	ASSERT(GetHardwareType(device) != HARDWARE_SUTTER_DAC, "Missing support for Sutter amplifier")
 
 	switch(anaFuncType)
-		case PSQ_CHIRP:
-		case PSQ_RAMP:
-		case PSQ_DA_SCALE:
-		case PSQ_SQUARE_PULSE:
+		case PSQ_CHIRP: // fallthrough
+		case PSQ_RAMP: // fallthrough
+		case PSQ_DA_SCALE: // fallthrough
+		case PSQ_SQUARE_PULSE: // fallthrough
 		case PSQ_RHEOBASE:
 			key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_DASCALE_OOR)
 			ED_AddEntryToLabnotebook(device, key, oorDAScale, overrideSweepNo = sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
 			break
-		case MSQ_FAST_RHEO_EST:
-		case MSQ_DA_SCALE:
+		case MSQ_FAST_RHEO_EST: // fallthrough
+		case MSQ_DA_SCALE: // fallthrough
 		case SC_SPIKE_CONTROL:
 			key = CreateAnaFuncLBNKey(anaFuncType, MSQ_FMT_LBN_DASCALE_OOR)
 			ED_AddEntryToLabnotebook(device, key, oorDAScale, overrideSweepNo = sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
@@ -1319,7 +1320,7 @@ Function ReportOutOfRangeDAScale(string device, variable sweepNo, variable anaFu
 			ED_AddEntryToLabnotebook(device, LBN_DASCALE_OUT_OF_RANGE, oorDAScale, unit = LABNOTEBOOK_BINARY_UNIT)
 			break
 		default:
-			ASSERT(0, "Unknown analysis function")
+			FATAL_ERROR("Unknown analysis function")
 	endswitch
 
 	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
@@ -1506,7 +1507,7 @@ Function SetControlInEvent(string device, STRUCT AnalysisFunction_V3 &s)
 				win = StringFromList(k, windowsWithGUIElement)
 
 				switch(WinType(win))
-					case WINTYPE_GRAPH:
+					case WINTYPE_GRAPH: // fallthrough
 					case WINTYPE_PANEL:
 						if(IsControlDisabled(win, guiElem))
 							printf "(%s): The analysis parameter %s is a control which is disabled. Therefore it can not be set.\r", device, guiElem
@@ -1516,13 +1517,13 @@ Function SetControlInEvent(string device, STRUCT AnalysisFunction_V3 &s)
 
 						controlType = GetControlType(win, guiElem)
 						switch(controlType)
-							case CONTROL_TYPE_SETVARIABLE:
+							case CONTROL_TYPE_SETVARIABLE: // fallthrough
 							case CONTROL_TYPE_POPUPMENU:
 								PGC_SetAndActivateControl(win, guiElem, str = valueStr)
 								break
-							case CONTROL_TYPE_VALDISPLAY:
-							case CONTROL_TYPE_CHART:
-							case CONTROL_TYPE_GROUPBOX:
+							case CONTROL_TYPE_VALDISPLAY: // fallthrough
+							case CONTROL_TYPE_CHART: // fallthrough
+							case CONTROL_TYPE_GROUPBOX: // fallthrough
 							case CONTROL_TYPE_TITLEBOX:
 								printf "(%s): The analysis parameter %s is a control which can not be set. Please fix the stimulus set.\r", device, guiElem
 								ControlWindowToFront()
@@ -1536,7 +1537,7 @@ Function SetControlInEvent(string device, STRUCT AnalysisFunction_V3 &s)
 						ReplaceNotebookText(win, NormalizeToEOL(valueStr, "\r"))
 						break
 					default:
-						ASSERT(0, "Unexpected window type")
+						FATAL_ERROR("Unexpected window type")
 				endswitch
 			endfor
 		endfor

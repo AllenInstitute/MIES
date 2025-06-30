@@ -124,7 +124,7 @@ Function HW_PrepareAcq(variable hardwareType, variable deviceID, variable mode, 
 		case HARDWARE_SUTTER_DAC:
 			return HW_SU_PrepareAcq(deviceID, mode, flags = flags)
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 	endswitch
 
 	return 0
@@ -146,12 +146,12 @@ Function HW_SelectDevice(variable hardwareType, variable deviceID, [variable fla
 		case HARDWARE_ITC_DAC:
 			return HW_ITC_SelectDevice(deviceID, flags = flags)
 			break
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // fallthrough
 		case HARDWARE_SUTTER_DAC:
 			// nothing to do
 			return 0
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 			break
 	endswitch
 End
@@ -185,7 +185,7 @@ Function HW_OpenDevice(string deviceToOpen, variable &hardwareType, [variable fl
 			deviceID          = HW_ITC_OpenDevice(deviceTypeIndex, deviceNumberIndex, flags = flags)
 			break
 		default:
-			ASSERT(0, "Unable to open device: Device to open had an unsupported hardware type")
+			FATAL_ERROR("Unable to open device: Device to open had an unsupported hardware type")
 			break
 	endswitch
 
@@ -216,7 +216,7 @@ Function HW_CloseDevice(variable hardwareType, variable deviceID, [variable flag
 			HW_SU_CloseDevice(deviceID, flags = flags)
 			break
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 			break
 	endswitch
 End
@@ -247,7 +247,7 @@ Function HW_WriteDAC(variable hardwareType, variable deviceID, variable channel,
 			HW_SU_WriteDAC(deviceID, channel, value, flags = flags)
 			break
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 			break
 	endswitch
 End
@@ -279,7 +279,7 @@ Function HW_ReadADC(variable hardwareType, variable deviceID, variable channel, 
 			return HW_SU_ReadADC(deviceID, channel, flags = flags)
 			break
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 			break
 	endswitch
 End
@@ -321,9 +321,9 @@ Function HW_ReadDigital(variable hardwareType, variable deviceID, variable chann
 			return HW_NI_ReadDigital(realDeviceOrPressure, DIOPort = channel, DIOline = line, flags = flags)
 			break
 		case HARDWARE_SUTTER_DAC:
-			ASSERT(0, "Not yet implemented")
+			FATAL_ERROR("Not yet implemented")
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 			break
 	endswitch
 End
@@ -364,9 +364,9 @@ Function HW_WriteDigital(variable hardwareType, variable deviceID, variable chan
 			endif
 			break
 		case HARDWARE_SUTTER_DAC:
-			ASSERT(0, "Not yet implemented")
+			FATAL_ERROR("Not yet implemented")
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 			break
 	endswitch
 End
@@ -384,12 +384,12 @@ Function HW_EnableYoking(variable hardwareType, variable deviceID, [variable fla
 		case HARDWARE_ITC_DAC:
 			HW_ITC_EnableYoking(deviceID, flags = flags)
 			break
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // fallthrough
 		case HARDWARE_SUTTER_DAC:
-			ASSERT(0, "Not implemented")
+			FATAL_ERROR("Not implemented")
 			break
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 			break
 	endswitch
 End
@@ -407,12 +407,12 @@ Function HW_DisableYoking(variable hardwareType, variable deviceID, [variable fl
 		case HARDWARE_ITC_DAC:
 			HW_ITC_DisableYoking(deviceID, flags = flags)
 			break
-		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_NI_DAC: // fallthrough
 		case HARDWARE_SUTTER_DAC:
-			ASSERT(0, "Not implemented")
+			FATAL_ERROR("Not implemented")
 			break
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 			break
 	endswitch
 End
@@ -440,7 +440,7 @@ Function HW_StopAcq(variable hardwareType, variable deviceID, [variable prepareF
 			HW_SU_StopAcq(deviceID, zeroDAC = zeroDAC, flags = flags)
 			break
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 			break
 	endswitch
 End
@@ -468,7 +468,7 @@ Function HW_IsRunning(variable hardwareType, variable deviceID, [variable flags]
 			device = HW_GetMainDeviceName(HARDWARE_SUTTER_DAC, deviceID, flags = flags)
 			return HW_SU_IsRunning(device)
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 			break
 	endswitch
 End
@@ -498,7 +498,7 @@ Function/WAVE HW_GetDeviceInfo(variable hardwareType, variable deviceID, [variab
 			return GetSUDeviceInfo()
 			break
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 			break
 	endswitch
 End
@@ -538,7 +538,7 @@ Function/WAVE HW_GetDeviceInfoUnregistered(variable hardwareType, string device,
 			WAVE/Z devInfo = GetSUDeviceInfo()
 			break
 		default:
-			ASSERT(0, "Unsupported hardware")
+			FATAL_ERROR("Unsupported hardware")
 	endswitch
 
 	return devInfo
@@ -621,7 +621,7 @@ Function HW_WriteDeviceInfo(variable hardwareType, string device, WAVE deviceInf
 			deviceInfo[%AuxDA] = str2num(devInfoHWText[%AO])
 			break
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 			break
 	endswitch
 End
@@ -667,7 +667,7 @@ Function HW_StartAcq(variable hardwareType, variable deviceID, [variable trigger
 			HW_SU_StartAcq(deviceID, flags = flags)
 			break
 		default:
-			ASSERT(0, "Unknown hardware type")
+			FATAL_ERROR("Unknown hardware type")
 	endswitch
 End
 
@@ -693,7 +693,7 @@ Function HW_ResetDevice(variable hardwareType, variable deviceID, [variable flag
 			HW_SU_ResetDevice(flags = flags)
 			break
 		default:
-			ASSERT(0, "Unknown hardware type")
+			FATAL_ERROR("Unknown hardware type")
 	endswitch
 End
 
@@ -875,7 +875,7 @@ Function HW_GetDAFifoPosition(string device, variable dataAcqOrTP)
 	variable fifoPositionAD = ROVar(GetFifoPosition(device))
 
 	switch(hwType)
-		case HARDWARE_ITC_DAC: // intended drop through
+		case HARDWARE_ITC_DAC: // fallthrough
 		case HARDWARE_NI_DAC:
 			return fifoPositionAD
 		case HARDWARE_SUTTER_DAC:
@@ -887,7 +887,7 @@ Function HW_GetDAFifoPosition(string device, variable dataAcqOrTP)
 			return trunc(fifoPositionAD * DimDelta(channelAD, ROWS) / DimDelta(channelDA, ROWS))
 			break
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 	endswitch
 End
 
@@ -901,7 +901,7 @@ End
 Function [variable minimum, variable maximum] HW_GetDataRange(variable hardwareType, variable channelType, variable isAssociated)
 
 	switch(hardwareType)
-		case HARDWARE_NI_DAC:
+		case HARDWARE_NI_DAC: // fallthrough
 			switch(channelType)
 				case XOP_CHANNEL_TYPE_DAC:
 					return [NI_DAC_MIN, NI_DAC_MAX]
@@ -910,11 +910,11 @@ Function [variable minimum, variable maximum] HW_GetDataRange(variable hardwareT
 				case XOP_CHANNEL_TYPE_TTL:
 					return [NI_TTL_MIN, NI_TTL_MAX]
 				default:
-					ASSERT(0, "Not implemented")
+					FATAL_ERROR("Not implemented")
 			endswitch
 		case HARDWARE_ITC_DAC:
 			return [SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX]
-		case HARDWARE_SUTTER_DAC:
+		case HARDWARE_SUTTER_DAC: // fallthrough
 			if(isAssociated)
 				ASSERT(channelType != XOP_CHANNEL_TYPE_TTL, "Associated must be 0 for TTL")
 				return [SU_HS_OUT_MIN, SU_HS_OUT_MAX]
@@ -928,10 +928,10 @@ Function [variable minimum, variable maximum] HW_GetDataRange(variable hardwareT
 				case XOP_CHANNEL_TYPE_TTL:
 					return [SU_TTL_MIN, SU_TTL_MAX]
 				default:
-					ASSERT(0, "Not implemented")
+					FATAL_ERROR("Not implemented")
 			endswitch
 		default:
-			ASSERT(0, "Unsupported hardware type")
+			FATAL_ERROR("Unsupported hardware type")
 	endswitch
 End
 
@@ -952,7 +952,7 @@ Function/S HW_ITC_BuildDeviceString(string deviceType, string deviceNumber)
 		return deviceType + "_Dev_" + deviceNumber
 	endif
 
-	ASSERT(0, "No NI or ITC device with this name found")
+	FATAL_ERROR("No NI or ITC device with this name found")
 End
 
 #ifdef ITC_XOP_PRESENT
@@ -1522,7 +1522,7 @@ threadsafe Function HW_ITC_StartAcq_TS(variable deviceID, variable triggerMode, 
 
 			break
 		default:
-			ASSERT_TS(0, "Unknown trigger mode")
+			FATAL_ERROR("Unknown trigger mode")
 			break
 	endswitch
 
@@ -1550,7 +1550,7 @@ static Function HW_ITC_StartAcq(variable deviceID, variable triggerMode, [variab
 
 			break
 		default:
-			ASSERT(0, "Unknown trigger mode")
+			FATAL_ERROR("Unknown trigger mode")
 			break
 	endswitch
 
@@ -2088,7 +2088,7 @@ threadsafe Function HW_ITC_GetRackRange(variable rack, variable &first, variable
 		first = NUM_ITC_TTL_BITS_PER_RACK
 		last  = 2 * NUM_ITC_TTL_BITS_PER_RACK - 1
 	else
-		ASSERT_TS(0, "Invalid rack parameter")
+		FATAL_ERROR("Invalid rack parameter")
 	endif
 
 	ASSERT_TS((last - first + 1) == NUM_ITC_TTL_BITS_PER_RACK, "Rack channel range must be NUM_ITC_TTL_BITS_PER_RACK for each rack")
@@ -2137,7 +2137,7 @@ Function HW_ITC_GetITCXOPChannelForRack(string device, variable rack)
 		ASSERT(IsITC1600(device), "Only the ITC1600 has multiple racks")
 		return HARDWARE_ITC_TTL_1600_RACK_ONE
 	else
-		ASSERT(0, "Unknown rack")
+		FATAL_ERROR("Unknown rack")
 	endif
 End
 
@@ -2308,7 +2308,7 @@ static Function HW_NI_StartAcq(variable deviceID, variable triggerMode, [variabl
 		err    = ClearRTError()
 		HW_NI_StopAcq(deviceID)
 		HW_NI_KillFifo(deviceID)
-		ASSERT(0, "Start acquisition of NI device " + device + " failed with code: " + num2str(err) + "\r" + errMsg)
+		FATAL_ERROR("Start acquisition of NI device " + device + " failed with code: " + num2str(err) + "\r" + errMsg)
 	endtry
 End
 
@@ -2349,7 +2349,7 @@ Function HW_NI_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCRE
 	endif
 
 	if(!ParamIsDefault(offset))
-		ASSERT(0, "Offset is not supported")
+		FATAL_ERROR("Offset is not supported")
 	endif
 
 	WAVE gain = SWS_GetChannelGains(device, timing = GAIN_BEFORE_DAQ)
@@ -2395,7 +2395,7 @@ Function HW_NI_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCRE
 					ttlCnt          += 1
 					break
 				default:
-					ASSERT(0, "Unsupported channel type")
+					FATAL_ERROR("Unsupported channel type")
 					break
 			endswitch
 		endfor
@@ -2450,7 +2450,7 @@ Function HW_NI_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCRE
 				DAQmx_DIO_Config/DEV=realDeviceOrPressure/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3], TTLWaves[4], TTLWaves[5], TTLWaves[6], TTLWaves[7]} TTLStr; AbortOnRTE
 				break
 			default:
-				ASSERT(0, "Unsupported TTL count")
+				FATAL_ERROR("Unsupported TTL count")
 				break
 		endswitch
 		NVAR taskIDTTL = $GetNI_TTLTaskID(device)
@@ -2461,7 +2461,7 @@ Function HW_NI_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCRE
 		err    = ClearRTError()
 		HW_NI_StopAcq(deviceID)
 		HW_NI_KillFifo(deviceID)
-		ASSERT(0, "Prepare acquisition of NI device " + device + " failed with code: " + num2str(err) + "\r" + errMsg)
+		FATAL_ERROR("Prepare acquisition of NI device " + device + " failed with code: " + num2str(err) + "\r" + errMsg)
 	endtry
 End
 
@@ -2592,7 +2592,7 @@ Function HW_NI_ReadDigital(string device, [variable DIOPort, variable DIOLine, v
 		print fDAQmx_ErrorString()
 		ControlWindowToFront()
 		if(flags & HARDWARE_ABORT_ON_ERROR)
-			ASSERT(0, "Error calling DAQmx_DIO_Config")
+			FATAL_ERROR("Error calling DAQmx_DIO_Config")
 		endif
 		return NaN
 	endif
@@ -2607,7 +2607,7 @@ Function HW_NI_ReadDigital(string device, [variable DIOPort, variable DIOLine, v
 		printf "Error %d: fDAQmx_DIO_Finished\r", ret
 		ControlWindowToFront()
 		if(flags & HARDWARE_ABORT_ON_ERROR)
-			ASSERT(0, "Error calling fDAQmx_DIO_Finished")
+			FATAL_ERROR("Error calling fDAQmx_DIO_Finished")
 		endif
 	endif
 
@@ -2650,7 +2650,7 @@ Function HW_NI_WriteDigital(string device, variable value, [variable DIOPort, va
 		print fDAQmx_ErrorString()
 		ControlWindowToFront()
 		if(flags & HARDWARE_ABORT_ON_ERROR)
-			ASSERT(0, "Error calling DAQmx_DIO_Config")
+			FATAL_ERROR("Error calling DAQmx_DIO_Config")
 		endif
 		return NaN
 	endif
@@ -2664,7 +2664,7 @@ Function HW_NI_WriteDigital(string device, variable value, [variable DIOPort, va
 		printf "Error %d: fDAQmx_DIO_Write\r", ret
 		ControlWindowToFront()
 		if(flags & HARDWARE_ABORT_ON_ERROR)
-			ASSERT(0, "Error calling fDAQmx_DIO_Write")
+			FATAL_ERROR("Error calling fDAQmx_DIO_Write")
 		endif
 	endif
 
@@ -2674,7 +2674,7 @@ Function HW_NI_WriteDigital(string device, variable value, [variable DIOPort, va
 		printf "Error %d: fDAQmx_DIO_Finished\r", ret
 		ControlWindowToFront()
 		if(flags & HARDWARE_ABORT_ON_ERROR)
-			ASSERT(0, "Error calling fDAQmx_DIO_Finished")
+			FATAL_ERROR("Error calling fDAQmx_DIO_Finished")
 		endif
 	endif
 
@@ -2702,10 +2702,10 @@ Function HW_NI_WriteAnalogSingleAndSlow(string device, variable channel, variabl
 
 	if(ret)
 		if(flags & HARDWARE_ABORT_ON_ERROR)
-			ASSERT(0, "Error: " + fDAQmx_ErrorString())
-		else
-			DEBUGPRINT("Error: ", str = fDAQmx_ErrorString())
+			FATAL_ERROR("Error: " + fDAQmx_ErrorString())
 		endif
+
+		DEBUGPRINT("Error: ", str = fDAQmx_ErrorString())
 	endif
 
 	return ret
@@ -2730,10 +2730,10 @@ Function HW_NI_ReadAnalogSingleAndSlow(string device, variable channel, [variabl
 
 	if(!IsFinite(value))
 		if(flags & HARDWARE_ABORT_ON_ERROR)
-			ASSERT(0, "Error " + fDAQmx_ErrorString())
-		else
-			DEBUGPRINT("Error: ", str = fDAQmx_ErrorString())
+			FATAL_ERROR("Error " + fDAQmx_ErrorString())
 		endif
+
+		DEBUGPRINT("Error: ", str = fDAQmx_ErrorString())
 	endif
 
 	return value
@@ -2751,15 +2751,15 @@ Function HW_NI_GetAnalogInputConfig(string device, variable channel, [variable f
 #if exists("fDAQmx_AI_ChannelConfigs")
 	value = fDAQmx_AI_ChannelConfigs(device, channel)
 #else
-	ASSERT(0, "Your NIDAQmx XOP is too old to be usable as it is missing fDAQmx_AI_ChannelConfigs. Please contact the manufacturer for an updated version.")
+	FATAL_ERROR("Your NIDAQmx XOP is too old to be usable as it is missing fDAQmx_AI_ChannelConfigs. Please contact the manufacturer for an updated version.")
 #endif
 
 	if(!IsFinite(value))
 		if(flags & HARDWARE_ABORT_ON_ERROR)
-			ASSERT(0, "Error " + fDAQmx_ErrorString())
-		else
-			DEBUGPRINT("Error: ", str = fDAQmx_ErrorString())
+			FATAL_ERROR("Error " + fDAQmx_ErrorString())
 		endif
+
+		DEBUGPRINT("Error: ", str = fDAQmx_ErrorString())
 	endif
 
 	return value
@@ -2827,7 +2827,7 @@ Function HW_NI_StopADC(variable deviceID, [variable flags])
 			printf "Error %d: fDAQmx_ScanStop\r", ret
 			ControlWindowToFront()
 			if(flags & HARDWARE_ABORT_ON_ERROR)
-				ASSERT(0, "Error calling fDAQmx_ScanStop (has Scan already finished?)")
+				FATAL_ERROR("Error calling fDAQmx_ScanStop (has Scan already finished?)")
 			endif
 		endif
 		taskIDADC = NaN
@@ -2856,7 +2856,7 @@ Function HW_NI_StopDAC(variable deviceID, [variable flags])
 			printf "Error %d: fDAQmx_WaveformStop\r", ret
 			ControlWindowToFront()
 			if(flags & HARDWARE_ABORT_ON_ERROR)
-				ASSERT(0, "Error calling fDAQmx_WaveformStop")
+				FATAL_ERROR("Error calling fDAQmx_WaveformStop")
 			endif
 		endif
 		taskIDDAC = NaN
@@ -2884,7 +2884,7 @@ Function HW_NI_StopTTL(variable deviceID, [variable flags])
 			printf "Error %d: fDAQmx_DIO_Finished\r", ret
 			ControlWindowToFront()
 			if(flags & HARDWARE_ABORT_ON_ERROR)
-				ASSERT(0, "Error calling fDAQmx_DIO_Finished")
+				FATAL_ERROR("Error calling fDAQmx_DIO_Finished")
 			endif
 		endif
 		taskIDTTL = NaN
@@ -2921,7 +2921,7 @@ Function HW_NI_ZeroDAC(variable deviceID, [variable flags])
 		print fDAQmx_ErrorString()
 		ControlWindowToFront()
 		if(flags & HARDWARE_ABORT_ON_ERROR)
-			ASSERT(0, "Error calling DAQmx_AO_SetOutputs")
+			FATAL_ERROR("Error calling DAQmx_AO_SetOutputs")
 		endif
 		return NaN
 	endif
@@ -2976,7 +2976,7 @@ static Function HW_NI_ResetDevice(string device, [variable flags])
 		printf "Error %d: fDAQmx_resetDevice\r", ret
 		ControlWindowToFront()
 		if(flags & HARDWARE_ABORT_ON_ERROR)
-			ASSERT(0, "Error calling fDAQmx_resetDevice")
+			FATAL_ERROR("Error calling fDAQmx_resetDevice")
 		endif
 	endif
 	HW_NI_ResetTaskIDs(device)
@@ -3033,7 +3033,7 @@ static Function HW_NI_CalibrateDevice(string device, [variable force, variable f
 			printf "Error %d: fDAQmx_selfCalibration\r", ret
 			ControlWindowToFront()
 			if(flags & HARDWARE_ABORT_ON_ERROR)
-				ASSERT(0, "Error calling fDAQmx_selfCalibration")
+				FATAL_ERROR("Error calling fDAQmx_selfCalibration")
 			endif
 		endif
 	endif
@@ -3099,7 +3099,7 @@ Function/WAVE HW_NI_GetDeviceInfo(string device, [variable flags])
 
 	return deviceInfo
 #else
-	ASSERT(0, "Your NIDAQmx XOP is too old to be usable as it is missing DAQmx_DeviceInfo. Please contact the manufacturer for an updated version.")
+	FATAL_ERROR("Your NIDAQmx XOP is too old to be usable as it is missing DAQmx_DeviceInfo. Please contact the manufacturer for an updated version.")
 
 	return $""
 #endif
@@ -3321,7 +3321,7 @@ Function HW_SU_GetDeviceInfo(WAVE/T deviceInfo)
 				numHSList      = AddListItem("2", numHSList, ";", Inf)
 				break
 			default:
-				ASSERT(0, "Error parsing IPA serial: " + serial)
+				FATAL_ERROR("Error parsing IPA serial: " + serial)
 		endswitch
 	endfor
 	numDevices = ItemsInList(deviceList)
@@ -3395,7 +3395,7 @@ Function HW_SU_PrepareAcq(variable deviceId, variable mode, [WAVE/Z data, FUNCRE
 	endif
 
 	if(!ParamIsDefault(offset))
-		ASSERT(0, "Offset is not supported")
+		FATAL_ERROR("Offset is not supported")
 	endif
 
 	WAVE gain        = SWS_GetChannelGains(device, timing = GAIN_BEFORE_DAQ)
@@ -3456,7 +3456,7 @@ Function HW_SU_PrepareAcq(variable deviceId, variable mode, [WAVE/Z data, FUNCRE
 				MultiThread ttlComposite[] += SUChannel[p] * (1 << channelNumber)
 				break
 			default:
-				ASSERT(0, "Unsupported channel type")
+				FATAL_ERROR("Unsupported channel type")
 				break
 		endswitch
 	endfor

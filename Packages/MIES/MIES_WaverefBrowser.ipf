@@ -217,7 +217,7 @@ static Function/S WRB_GetWaveTypeAsString(WAVE wv)
 			break
 	endswitch
 
-	ASSERT(0, "Unknown type")
+	FATAL_ERROR("Unknown type")
 End
 
 static Function WRB_CountNotebookParagraphs(string nbName)

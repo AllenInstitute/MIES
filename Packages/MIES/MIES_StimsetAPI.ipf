@@ -495,7 +495,7 @@ Function ST_SetStimsetParameter(string setName, string entry, [variable epochInd
 
 		wv[row][col][layer] = var
 	else
-		ASSERT(0, "Unexpected wave type")
+		FATAL_ERROR("Unexpected wave type")
 	endif
 
 	return 0
