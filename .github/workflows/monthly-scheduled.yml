@@ -4,6 +4,9 @@ on:
   schedule:
     # on every 1st of each month at 2:30 UTC
     - cron:  '30 2 1 * *'
+defaults:
+  run:
+    shell: bash
 
 jobs:
   GitGarbageCollection:
@@ -19,4 +22,4 @@ jobs:
         run: |
             git config gc.auto 1024
             git config gc.packLimit 10
-            git gc --auto
+            git gc --auto --no-detach
