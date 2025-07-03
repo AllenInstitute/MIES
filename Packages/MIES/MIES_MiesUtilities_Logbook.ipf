@@ -1278,7 +1278,7 @@ End
 /// @param[in]  entrySourceType   type of the labnotebook entry, one of @ref DataAcqModes
 /// @param[out] first             point index of the beginning of the range
 /// @param[out] last              point index of the end of the range
-threadsafe static Function FindRange(WAVE wv, variable col, variable val, variable entrySourceType, variable &first, variable &last)
+threadsafe Function FindRange(WAVE wv, variable col, variable val, variable entrySourceType, variable &first, variable &last)
 
 	variable numRows, i, j, sourceTypeCol, firstRow, lastRow, isNumeric, index, startRow, endRow
 
@@ -1704,6 +1704,50 @@ threadsafe Function ReverseEntrySourceTypeMapper(variable mapped)
 	return ((mapped == 0) ? NaN : --mapped)
 End
 
+/// @brief Tests if the LBN value wave supports the EntrySourceType column
+///        Only used in UpgradeLabNotebook
+///        returns 0 if not, 1 is yes
+Function HasLBNEntrySourceTypeCapability(WAVE values)
+
+	variable entryCol
+
+	entryCol = FindDimLabel(values, COLS, "EntrySourceType")
+	if(entryCol == -2)
+		return 0
+	endif
+
+	if(!DimSize(values, ROWS))
+		return 1
+	endif
+
+	if(IsNumericWave(values))
+		WaveStats/Q/M=1/RMD=[][entryCol][] values
+		return !IsNaN(V_max)
+	endif
+
+	Duplicate/FREE/RMD=[][entryCol][] values, entrySourceTypeValues
+	return HasOneValidEntry(entrySourceTypeValues)
+End
+
+/// @brief Returns a labnotebook capability
+///
+/// @param values        LBN values wave
+/// @param capabilityKey Capabilities key, one of @ref LabnotebookCapabilityKeys
+///
+/// @returns capability value
+threadsafe Function GetLBNCapability(WAVE values, string capabilityKey)
+
+	variable cap
+
+	WAVE/Z keys = GetLogbookKeysFromValues(values)
+	ASSERT_TS(WaveExists(keys), "Can not resolve LBN keys wave")
+	cap = GetNumberFromWaveNote(keys, capabilityKey)
+	// Triggers if LBN was not correctly upgraded in UpgradeLabNotebook
+	ASSERT_TS(!IsNaN(cap), "Requested LBN capability not found: " + capabilityKey)
+
+	return cap
+End
+
 /// @brief Return labnotebook keys for patch seq analysis functions
 ///
 /// @param type                                One of @ref SpecialAnalysisFunctionTypes
@@ -1819,15 +1863,13 @@ Function GetHeadstageForChannel(WAVE numericalValues, variable sweep, variable c
 	variable index
 
 	[WAVE settings, index] = GetLastSettingChannel(numericalValues, $"", sweep, "Headstage Active", channelNumber, channelType, entrySourceType)
-	if(!WaveExists(settings))
-		return NaN
+	if(WaveExists(settings) && settings[index] == 1)
+		return index
 	endif
 
-	if(!settings[index])
-		return NaN
-	endif
-
-	return index
+	// fallback for LBN before
+	// 602debb9 (Record the active headstage in the settingsHistory, 2014-11-04)
+	return GetHeadstageFromOldLBN(numericalValues, sweep, channelType, channelNumber, entrySourceType)
 End
 
 /// @brief Return a list of TTL stimsets which are indexed by DAEphys TTL channels
@@ -1881,6 +1923,13 @@ Function GetTotalOnsetDelayFromDevice(string device)
 	return DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") + TPSettingsCalculated[%totalLengthMS]
 End
 
+/// @brief Invalidates the row and index cache for the given LBN
+Function InvalidateLBIndexAndRowCache(WAVE values)
+
+	CA_DeleteCacheEntry(CA_CreateLBIndexCacheKey(values))
+	CA_DeleteCacheEntry(CA_CreateLBRowCacheKey(values))
+End
+
 /// @brief Retrieve the analysis function that was run for a given sweep / channelNumber / channelType
 ///
 /// @param numericalValues numerical labnotebook
@@ -1922,6 +1971,41 @@ Function [variable type, variable waMode, variable headstage] GetAnalysisFunctio
 	return [type, waMode, headstage]
 End
 
+// fallback for headstage retrievel for LBN before
+// 602debb9 (Record the active headstage in the settingsHistory, 2014-11-04)
+// The headstage is retrieved by evaluating the DAC/ADC entries of the LBN
+static Function GetHeadstageFromOldLBN(WAVE numericalValues, variable sweepNo, variable channelType, variable channelNumber, variable dataAcqOrTP)
+
+	string lbnEntry
+
+	switch(channelType)
+		case XOP_CHANNEL_TYPE_DAC:
+			lbnEntry = "DAC"
+			break
+		case XOP_CHANNEL_TYPE_ADC:
+			lbnEntry = "ADC"
+			break
+		case XOP_CHANNEL_TYPE_TTL:
+			return NaN
+		default:
+			FATAL_ERROR("Unknown channel type")
+	endswitch
+
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, lbnEntry, dataAcqOrTP)
+	if(!WaveExists(settings))
+		return NaN
+	endif
+	FindValue/V=(channelNumber) settings
+	if(V_value == -1)
+		return NaN
+	endif
+	if(V_row < NUM_HEADSTAGES)
+		return V_row
+	endif
+
+	return NaN
+End
+
 Function ParseLogbookMode(string modeText)
 
 	strswitch(modeText)
@@ -1937,4 +2021,73 @@ Function ParseLogbookMode(string modeText)
 			FATAL_ERROR("Unsupported labnotebook mode")
 			break
 	endswitch
+End
+
+Function InsertRecreatedEpochsIntoLBN(WAVE numericalValues, WAVE/T textualValues, string device, variable sweepNo)
+
+	string epochList
+	variable channelNumber, channelType, headstage, numChannelTypes, colCount, allocatedCols
+	variable assocCol = NaN
+
+	DFREF  deviceDFR = GetDeviceDataPath(device)
+	DFREF  sweepDFR  = GetSingleSweepFolder(deviceDFR, sweepNo)
+	WAVE/Z recEpochs = EP_RecreateEpochsFromLoadedData(numericalValues, textualValues, sweepDFR, sweepNo)
+	if(!WaveExists(recEpochs))
+		print "Could not recreate Epochs."
+		return NaN
+	endif
+
+	Make/FREE channelTypes = {XOP_CHANNEL_TYPE_DAC, XOP_CHANNEL_TYPE_TTL}
+
+	numChannelTypes = DimSize(channelTypes, ROWS)
+	allocatedCols   = numChannelTypes * NUM_DA_TTL_CHANNELS
+	Make/FREE/T/N=(1, allocatedCols) keys
+	Make/FREE/T/N=(1, allocatedCols, LABNOTEBOOK_LAYER_COUNT) values
+
+	for(channelType : channelTypes)
+		for(channelNumber = 0; channelNumber < NUM_DA_TTL_CHANNELS; channelNumber += 1)
+
+			epochList = EP_EpochWaveToStr(recEpochs, channelNumber, channelType)
+			if(IsEmpty(epochList))
+				continue
+			endif
+
+			if(channelType == XOP_CHANNEL_TYPE_TTL)
+				keys[0][colCount]                    = CreateTTLChannelLBNKey(EPOCHS_ENTRY_KEY, channelNumber)
+				values[0][colCount][INDEP_HEADSTAGE] = epochList
+				colCount                            += 1
+				continue
+			endif
+
+			headstage = GetHeadstageForChannel(numericalValues, sweepNo, channelType, channelNumber, DATA_ACQUISITION_MODE)
+			if(IsAssociatedChannel(headstage))
+				if(IsNaN(assocCol))
+					assocCol          = colCount
+					colCount         += 1
+					keys[0][assocCol] = EPOCHS_ENTRY_KEY
+				endif
+				values[0][assocCol][headstage] = epochList
+				continue
+			endif
+
+			values[0][colCount][INDEP_HEADSTAGE] = epochList
+			keys[0][colCount]                    = CreateLBNUnassocKey(EPOCHS_ENTRY_KEY, channelNumber, channelType)
+			colCount                            += 1
+		endfor
+	endfor
+	if(!colCount)
+		// No Epochs could be recreated for any channel
+		return NaN
+	endif
+
+	Redimension/N=(-1, colCount) keys
+	Redimension/N=(-1, colCount, -1) values
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE, insertAsPostProc = 1)
+
+	Redimension/N=(-1, 1) keys
+	keys[0][0] = SWEEP_EPOCH_VERSION_ENTRY_KEY
+	Make/FREE/D/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) valuesNum
+	FastOp valuesNum = (NaN)
+	valuesNum[0][0][INDEP_HEADSTAGE] = SWEEP_EPOCH_VERSION
+	ED_AddEntriesToLabnotebook(valuesNum, keys, sweepNo, device, DATA_ACQUISITION_MODE, insertAsPostProc = 1)
 End

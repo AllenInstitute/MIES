@@ -4023,7 +4023,7 @@ static Function DAP_AddUserComment(string device)
 		return NaN
 	endif
 
-	comment = DAG_GetTextualValue(device, "SetVar_DataAcq_Comment")
+	comment = GetSetVariableString(device, "SetVar_DataAcq_Comment")
 
 	if(isEmpty(comment))
 		return NaN
@@ -4535,11 +4535,7 @@ Function DAP_LockDevice(string win)
 	headstage = GetSliderPositionIndex(deviceLocked, "slider_DataAcq_ActiveHeadstage")
 	P_SaveUserSelectedHeadstage(deviceLocked, headstage)
 
-	// upgrade all four labnotebook waves in wanna-be atomic way
-	GetLBNumericalKeys(deviceLocked)
-	GetLBNumericalValues(deviceLocked)
-	GetLBTextualKeys(deviceLocked)
-	GetLBTextualValues(deviceLocked)
+	UpgradeLabNotebook(deviceLocked)
 
 	NVAR sessionStartTime = $GetSessionStartTime()
 	sessionStartTime = DateTimeInUTC()
