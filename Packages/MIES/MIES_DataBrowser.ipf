@@ -237,6 +237,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	CheckBox check_limit_x_selected_sweeps, WIN=$shPanel, value=0
 
 	SF_SetFormula(device, SF_GetDefaultFormula())
+	SF_SetError(device, "")
 
 	helpNBWin = BSP_GetSFHELP(device)
 	SetWindow $helpNBWin, userdata($EXPCONFIG_UDATA_EXCLUDE_RESTORE)="1"
@@ -251,9 +252,6 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	ReplaceNotebookText(descNB, "")
 	SetWindow $descNB, userdata($EXPCONFIG_UDATA_EXCLUDE_RESTORE)="1"
 	SetWindow $descNB, userdata($EXPCONFIG_UDATA_EXCLUDE_SAVE)="1"
-
-	SetVariable setvar_sweepFormula_parseResult, WIN=$bsPanel, value=_STR:""
-	ValDisplay status_sweepFormula_parser, WIN=$bsPanel, value=1
 
 	SearchForInvalidControlProcs(device)
 	print "Do not forget to increase DATA_SWEEP_BROWSER_PANEL_VERSION."
