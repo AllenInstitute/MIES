@@ -9077,3 +9077,33 @@ Function/WAVE GetWaverefBRowserReferenceWave()
 End
 
 ///@}
+
+/// @brief returns a color wave for the error message for sweepformula in the databrowser
+Function/WAVE GetSFErrorColorWave()
+
+	Make/FREE/W/U/N=(3, 3) wv
+
+	SetDimLabel COLS, 0, R, wv
+	SetDimLabel COLS, 1, G, wv
+	SetDimLabel COLS, 2, B, wv
+
+	SetDimLabel ROWS, 0, OK, wv
+	SetDimLabel ROWS, 1, WARN, wv
+	SetDimLabel ROWS, 2, ERROR, wv
+
+	wv[%OK][%R] = 0
+	wv[%OK][%G] = 128
+	wv[%OK][%B] = 0
+
+	wv[%WARN][%R] = 255
+	wv[%WARN][%G] = 128
+	wv[%WARN][%B] = 0
+
+	wv[%ERROR][%R] = 255
+	wv[%ERROR][%G] = 0
+	wv[%ERROR][%B] = 0
+
+	wv = wv << 8
+
+	return wv
+End

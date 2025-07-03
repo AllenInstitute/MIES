@@ -184,10 +184,6 @@ static StrConstant SF_PLOTTER_GUIDENAME = "HOR"
 
 static StrConstant SF_XLABEL_USER = ""
 
-static Constant SF_MSG_OK    = 1
-static Constant SF_MSG_ERROR = 0
-static Constant SF_MSG_WARN  = -1
-
 static Constant SF_NUMTRACES_ERROR_THRESHOLD = 10000
 static Constant SF_NUMTRACES_WARN_THRESHOLD  = 1000
 
@@ -1820,7 +1816,7 @@ static Function SF_CheckNumTraces(string graph, variable numTraces)
 	endif
 	if(numTraces > SF_NUMTRACES_WARN_THRESHOLD)
 		sprintf msg, "Plotting %d traces...", numTraces
-		SF_SetStatusDisplay(bsPanel, msg, SF_MSG_WARN)
+		SF_SetOutputState(msg, SF_MSG_WARN)
 		DoUpdate/W=$bsPanel
 	endif
 End
@@ -2859,13 +2855,6 @@ static Function/S SF_PreprocessInput(string formula)
 	return formula
 End
 
-static Function SF_SetStatusDisplay(string bsPanel, string errMsg, variable errState)
-
-	ASSERT(errState == SF_MSG_ERROR || errState == SF_MSG_OK || errState == SF_MSG_WARN, "Unknown error state for SF status")
-	SetValDisplay(bsPanel, "status_sweepFormula_parser", var = errState)
-	SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", errMsg, setHelp = 1)
-End
-
 Function SF_button_sweepFormula_check(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string mainPanel, bsPanel, formula_nb, json_nb, formula, errMsg, text
@@ -2885,17 +2874,16 @@ Function SF_button_sweepFormula_check(STRUCT WMButtonAction &ba) : ButtonControl
 			formula    = GetNotebookText(formula_nb, mode = 2)
 
 			NVAR jsonID = $GetSweepFormulaJSONid(SF_GetBrowserDF(mainPanel))
-			SVAR result = $GetSweepFormulaParseErrorMessage()
-			result = ""
-			SF_SetStatusDisplay(bsPanel, "", SF_MSG_OK)
+			SF_ClearSFOutputState()
+			SF_DisplayOutputStateInGUI(bsPanel)
 
 			try
 				SF_CheckInputCode(formula, mainPanel)
 			catch
-				SF_SetStatusDisplay(bsPanel, result, SF_MSG_ERROR)
 				JSON_Release(jsonID, ignoreErr = 1)
 				jsonID = NaN
 			endtry
+			SF_DisplayOutputStateInGUI(bsPanel)
 
 			json_nb = BSP_GetSFJSON(mainPanel)
 			if(JSON_IsValid(jsonID))
@@ -2912,6 +2900,32 @@ Function SF_button_sweepFormula_check(STRUCT WMButtonAction &ba) : ButtonControl
 	endswitch
 
 	return 0
+End
+
+static Function SF_ClearSFOutputState()
+
+	SVAR result = $GetSweepFormulaOutputMessage()
+	result = ""
+	NVAR severity = $GetSweepFormulaOutputSeverity()
+	severity = SF_MSG_OK
+End
+
+Function SF_DisplayOutputStateInGUI(string databrowser)
+
+	variable        severity
+	string          error
+	STRUCT RGBColor s
+
+	string nb = BSP_GetSFOutputState(databrowser)
+
+	severity = ROVar(GetSweepFormulaOutputSeverity())
+	ASSERT(severity == SF_MSG_ERROR || severity == SF_MSG_OK || severity == SF_MSG_WARN, "Unknown severity for SF error")
+	error = ROStr(GetSweepFormulaOutputMessage())
+
+	ReplaceNotebookText(nb, error)
+	[s] = SF_GetErrorColorsFromSeverity(severity)
+	Notebook $nb, selection={startOfFile, endOfFile}, font="Lucida Console", textRGB=(s.red, s.green, s.blue)
+	NotebookSelectionAtEnd(nb)
 End
 
 /// @brief Checks input code, sets globals for jsonId and error string
@@ -3025,11 +3039,9 @@ Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonContr
 				break
 			endif
 
-			SVAR result = $GetSweepFormulaParseErrorMessage()
-			result = ""
-
 			SF_KillWorkingDF(mainPanel)
-			SF_SetStatusDisplay(bsPanel, "", SF_MSG_OK)
+			SF_ClearSFOutputState()
+			SF_DisplayOutputStateInGUI(bsPanel)
 
 			// catch Abort from SFH_ASSERT
 			try
@@ -3047,8 +3059,9 @@ Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonContr
 
 				ED_AddEntriesToResults(values, keys, UNKNOWN_MODE)
 			catch
-				SF_SetStatusDisplay(bsPanel, result, SF_MSG_ERROR)
+				// jump target for Abort from SFH_ASSERT
 			endtry
+			SF_DisplayOutputStateInGUI(bsPanel)
 
 			break
 		default:
@@ -6862,6 +6875,44 @@ Function SF_PopMenuProc_OldCode(STRUCT WMPopupAction &pa) : PopupMenuControl
 	endswitch
 
 	return 0
+End
+
+// Returns a RGB color for a severity values
+static Function [STRUCT RGBColor s] SF_GetErrorColorsFromSeverity(variable severity)
+
+	WAVE sfColors = GetSFErrorColorWave()
+	switch(severity)
+		case SF_MSG_OK:
+			s.red   = sfColors[%OK][%R]
+			s.green = sfColors[%OK][%G]
+			s.blue  = sfColors[%OK][%B]
+			break
+		case SF_MSG_WARN:
+			s.red   = sfColors[%WARN][%R]
+			s.green = sfColors[%WARN][%G]
+			s.blue  = sfColors[%WARN][%B]
+			break
+		case SF_MSG_ERROR:
+			s.red   = sfColors[%ERROR][%R]
+			s.green = sfColors[%ERROR][%G]
+			s.blue  = sfColors[%ERROR][%B]
+			break
+		default:
+			FATAL_ERROR("Unknown Severity")
+	endswitch
+End
+
+// Use this function from within SF to set an error state
+Function SF_SetOutputState(string error, variable severity)
+
+	ASSERT(!IsNull(error), "Error can not be a null string")
+	ASSERT(severity == SF_MSG_ERROR || severity == SF_MSG_OK || severity == SF_MSG_WARN, "Unknown severity for SF error")
+
+	NVAR sfSeverity = $GetSweepFormulaOutputSeverity()
+	sfSeverity = severity
+
+	SVAR sfError = $GetSweepFormulaOutputMessage()
+	sfError = error
 End
 
 // Sets a formula in the SweepFormula notebook of the given data/sweepbrowser
