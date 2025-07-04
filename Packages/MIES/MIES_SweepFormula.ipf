@@ -331,6 +331,53 @@ static Function/S SF_StringifyAction(variable action)
 	endswitch
 End
 
+#ifdef DEBUGGING_ENABLED
+static Function SF_LogParserState(string token, variable state, variable lastState, variable lastCalculation, variable action, variable level)
+
+	variable numStates
+
+	WAVE/T stateLog = GetSFStateLog()
+	numStates = GetNumberFromWaveNote(stateLog, NOTE_INDEX)
+	EnsureLargeEnoughWave(stateLog, indexShouldExist = numStates)
+	stateLog[numStates][%TOKEN]           = token
+	stateLog[numStates][%STATE]           = num2istr(state)
+	stateLog[numStates][%LASTSTATE]       = num2istr(lastState)
+	stateLog[numStates][%LASTCALCULATION] = num2istr(lastCalculation)
+	stateLog[numStates][%ACTION]          = num2istr(action)
+	stateLog[numStates][%RECURSIONDEPTH]  = num2istr(level)
+	SetNumberInWaveNote(stateLog, NOTE_INDEX, numStates + 1)
+
+End
+
+static Function SF_LogParserErrorState(string msg)
+
+	variable numStates
+
+	WAVE/T stateLog = GetSFStateLog()
+	numStates = GetNumberFromWaveNote(stateLog, NOTE_INDEX)
+	EnsureLargeEnoughWave(stateLog, indexShouldExist = numStates)
+	stateLog[numStates][%ERRORMSG] = msg
+	SetNumberInWaveNote(stateLog, NOTE_INDEX, numStates + 1)
+
+End
+
+static Function SF_LogParserStateInit(string formula)
+
+	variable numStates
+
+	WAVE/T stateLog = GetSFStateLog()
+	KillOrMoveToTrash(wv = stateLog)
+
+	WAVE/T stateLog = GetSFStateLog()
+	numStates = GetNumberFromWaveNote(stateLog, NOTE_INDEX)
+	EnsureLargeEnoughWave(stateLog, indexShouldExist = numStates)
+	stateLog[numStates][%FORMULA] = formula
+	stateLog[numStates][%TOKEN]   = "**STARTPARSER**"
+	SetNumberInWaveNote(stateLog, NOTE_INDEX, numStates + 1)
+
+End
+#endif // DEBUGGING_ENABLED
+
 /// @brief serialize a string formula into JSON
 ///
 /// @param formula  string formula
@@ -339,7 +386,7 @@ End
 /// @returns a JSONid representation
 static Function SF_FormulaParser(string formula, [variable &createdArray, variable indentLevel])
 
-	variable action, collectedSign, level, arrayLevel, createdArrayLocal, wasArrayCreated
+	variable action, collectedSign, level, arrayLevel, createdArrayLocal, wasArrayCreated, numStates
 	string token, indentation
 
 	variable state           = SF_STATE_UNINITIALIZED
@@ -387,11 +434,21 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 
 		if(action == SF_ACTION_COLLECT)
 			buffer += token
+#ifdef DEBUGGING_ENABLED
+			SF_LogParserState(token, state, lastState, lastCalculation, action, indentLevel)
+#endif // DEBUGGING_ENABLED
 			continue
 		elseif(action == SF_ACTION_SKIP)
+#ifdef DEBUGGING_ENABLED
+			SF_LogParserState(token, state, lastState, lastCalculation, action, indentLevel)
+#endif // DEBUGGING_ENABLED
 			continue
 		endif
 		[jsonId, jsonPath, lastCalculation, wasArrayCreated, createdArrayLocal] = SF_ParserModifyJSON(action, lastAction, state, buffer, token, indentLevel)
+
+#ifdef DEBUGGING_ENABLED
+		SF_LogParserState(token, state, lastState, lastCalculation, action, indentLevel)
+#endif // DEBUGGING_ENABLED
 
 		lastAction    = action
 		buffer        = ""
@@ -413,6 +470,9 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 
 	if(!IsEmpty(buffer))
 		SF_ParserHandleRemainingBuffer(jsonId, jsonPath, formula, buffer)
+#ifdef DEBUGGING_ENABLED
+		SF_LogParserState(buffer, state, lastState, lastCalculation, action, indentLevel)
+#endif // DEBUGGING_ENABLED
 	endif
 
 	return jsonID
@@ -2864,6 +2924,10 @@ static Function SF_SetStatusDisplay(string bsPanel, string errMsg, variable errS
 	ASSERT(errState == SF_MSG_ERROR || errState == SF_MSG_OK || errState == SF_MSG_WARN, "Unknown error state for SF status")
 	SetValDisplay(bsPanel, "status_sweepFormula_parser", var = errState)
 	SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", errMsg, setHelp = 1)
+
+#ifdef DEBUGGING_ENABLED
+	SF_LogParserErrorState(errMsg)
+#endif // DEBUGGING_ENABLED
 End
 
 Function SF_button_sweepFormula_check(STRUCT WMButtonAction &ba) : ButtonControl
@@ -2893,6 +2957,9 @@ Function SF_button_sweepFormula_check(STRUCT WMButtonAction &ba) : ButtonControl
 				SF_CheckInputCode(formula, mainPanel)
 			catch
 				SF_SetStatusDisplay(bsPanel, result, SF_MSG_ERROR)
+#ifdef DEBUGGING_ENABLED
+				SF_SaveParserStateLog()
+#endif // DEBUGGING_ENABLED
 				JSON_Release(jsonID, ignoreErr = 1)
 				jsonID = NaN
 			endtry
@@ -2969,13 +3036,25 @@ End
 // returns jsonID or Aborts is not successful
 static Function SF_ParseFormulaToJSON(string formula)
 
+	variable jsonId
+
 	SFH_ASSERT(CountSubstrings(formula, "(") == CountSubstrings(formula, ")"), "Bracket mismatch in formula.")
 	SFH_ASSERT(CountSubstrings(formula, "[") == CountSubstrings(formula, "]"), "Array bracket mismatch in formula.")
 	SFH_ASSERT(!mod(CountSubstrings(formula, "\""), 2), "Quotation marks mismatch in formula.")
 
 	formula = ReplaceString("...", formula, "…")
 
-	return SF_FormulaParser(formula)
+#ifdef DEBUGGING_ENABLED
+	SF_LogParserStateInit(formula)
+#endif // DEBUGGING_ENABLED
+
+	jsonId = SF_FormulaParser(formula)
+
+#ifdef DEBUGGING_ENABLED
+	SF_SaveParserStateLog()
+#endif // DEBUGGING_ENABLED
+
+	return jsonId
 End
 
 Function SF_Update(string graph)
@@ -3048,6 +3127,9 @@ Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonContr
 				ED_AddEntriesToResults(values, keys, UNKNOWN_MODE)
 			catch
 				SF_SetStatusDisplay(bsPanel, result, SF_MSG_ERROR)
+#ifdef DEBUGGING_ENABLED
+				SF_SaveParserStateLog()
+#endif // DEBUGGING_ENABLED
 			endtry
 
 			break
@@ -7600,3 +7682,24 @@ Function TraceValueDisplayHook(STRUCT WMTooltipHookStruct &s)
 
 	return 0
 End
+
+#ifdef DEBUGGING_ENABLED
+static Function SF_SaveParserStateLog()
+
+	variable numStates
+
+	WAVE/T stateLog = GetSFStateLog()
+
+	numStates = GetNumberFromWaveNote(stateLog, NOTE_INDEX)
+	if(numStates)
+		Redimension/N=(numStates, -1) stateLog
+
+		WAVE/T stateLogCollection = GetSFStateLogCollection()
+		if(!DimSize(stateLogCollection, ROWS))
+			Duplicate/O/T stateLog, stateLogCollection
+		else
+			Concatenate/NP=(ROWS)/T {stateLog}, stateLogCollection
+		endif
+	endif
+End
+#endif // DEBUGGING_ENABLED
