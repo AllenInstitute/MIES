@@ -687,6 +687,12 @@ Function/S GetSweepFormulaParseErrorMessage()
 	return GetSVARAsString(GetSweepFormulaPath(), "parseResult")
 End
 
+/// @brief Return the formula error severity for the sweep formula
+Function/S GetSweepFormulaParseErrorSeverity()
+
+	return GetNVARAsString(GetSweepFormulaPath(), "errorSeverity")
+End
+
 /// @brief Return the JSON id of the settings file
 ///
 /// Loads the stored settings on disc if required.

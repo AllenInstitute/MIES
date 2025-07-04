@@ -1538,6 +1538,7 @@ End
 Function ExecuteSweepFormulaInDB(string code, string win)
 
 	string sfFormula, bsPanel
+	variable errorSeverity
 
 	bsPanel = BSP_GetPanel(win)
 
@@ -1547,7 +1548,9 @@ Function ExecuteSweepFormulaInDB(string code, string win)
 	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = CHECKBOX_SELECTED)
 	PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display")
 
-	return GetValDisplayAsNum(bsPanel, "status_sweepFormula_parser")
+	errorSeverity = ROVar(GetSweepFormulaParseErrorSeverity())
+
+	return errorSeverity == SF_MSG_OK
 End
 
 /// @brief test two jsonIDs for equal content
