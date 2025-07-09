@@ -74,7 +74,7 @@ Window AnalysisBrowser() : Panel
 	ListBox listbox_AB_Folders, userdata(ResizeControlsInfo)=A"!!,FU!!#8L!!#E<huH,7z!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
 	ListBox listbox_AB_Folders, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ListBox listbox_AB_Folders, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	ListBox listbox_AB_Folders, labelBack=(65535, 65535, 65535), mode=9
+	ListBox listbox_AB_Folders, labelBack=(65535, 65535, 65535), mode=9, special={4, 0, 0}
 	Button button_AB_AddFolder, pos={7, 5}, size={100, 25}, proc=AB_ButtonProc_AddFolder
 	Button button_AB_AddFolder, title="Add folder"
 	Button button_AB_AddFolder, help={"Add a new folder to the list"}
