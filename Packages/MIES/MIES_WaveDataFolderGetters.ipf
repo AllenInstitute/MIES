@@ -9077,3 +9077,53 @@ Function/WAVE GetWaverefBRowserReferenceWave()
 End
 
 ///@}
+
+#ifdef DEBUGGING_ENABLED
+// Stores logging information from the SF parser for a single parser run
+Function/WAVE GetSFStateLog()
+
+	string name = "stateLog"
+
+	DFREF dfr = GetSweepFormulaPath()
+
+	WAVE/Z/T/SDFR=dfr wv = $name
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/T/N=(0, 8) dfr:$name/WAVE=wv
+
+	SetDimLabel COLS, 0, TOKEN, wv
+	SetDimLabel COLS, 1, STATE, wv
+	SetDimLabel COLS, 2, LASTSTATE, wv
+	SetDimLabel COLS, 3, LASTCALCULATION, wv
+	SetDimLabel COLS, 4, ACTION, wv
+	SetDimLabel COLS, 5, RECURSIONDEPTH, wv
+	SetDimLabel COLS, 6, ERRORMSG, wv
+	SetDimLabel COLS, 7, FORMULA, wv
+
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
+End
+
+// Aggregates parser state logs globally
+// The wave is created in root: because the MIES folder is volatile
+Function/WAVE GetSFStateLogCollection()
+
+	string name = "SFParserStateLog"
+
+	DFREF dfr = root:
+
+	WAVE/Z/T/SDFR=dfr wv = $name
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/T/N=(0) dfr:$name/WAVE=wv
+
+	return wv
+End
+#endif // DEBUGGING_ENABLED
