@@ -300,7 +300,7 @@ End
 static Function/S DB_LockToDevice(string win, string device)
 
 	string newWindow
-	variable first, last
+	variable first, last, i
 
 	if(!cmpstr(device, NONE))
 		newWindow = DATABROWSER_WINDOW_NAME
@@ -314,10 +314,17 @@ static Function/S DB_LockToDevice(string win, string device)
 	DB_SetUserData(win, device)
 	win = BSP_RenameAndSetTitle(win, newWindow)
 
+	// upgrade folder locations
+	GetDAQDevicesFolder()
+
 	if(windowExists(BSP_GetPanel(win)) && BSP_HasBoundDevice(win))
 		BSP_DynamicStartupSettings(win)
 		[first, last] = BSP_FirstAndLastSweepAcquired(win)
 		DB_UpdateLastSweepControls(win, first, last)
+
+		for(i = first; i <= last; i += 1)
+			SplitAndUpgradeSweepGlobal(device, i)
+		endfor
 	endif
 
 	UpdateSweepPlot(win)
@@ -343,11 +350,11 @@ Function/WAVE DB_GetPlainSweepList(string win)
 
 	string device
 
-	if(!BSP_HasBoundDevice(win))
+	device = BSP_GetDevice(win)
+
+	if(!BSP_IsBoundDevice(win, device))
 		return $""
 	endif
-
-	device = BSP_GetDevice(win)
 
 	return AFH_GetSweeps(device)
 End
@@ -407,11 +414,11 @@ Function DB_UpdateSweepPlot(string win)
 	RemoveFreeAxisFromGraph(graph)
 	TUD_Clear(graph, recursive = 0)
 
-	if(!BSP_HasBoundDevice(win))
+	device = BSP_GetDevice(win)
+
+	if(!BSP_IsBoundDevice(win, device))
 		return NaN
 	endif
-
-	device = BSP_GetDevice(win)
 
 	// fetch keys waves to trigger a potential labnotebook upgrade
 	WAVE numericalKeys = DB_GetLBNWave(win, LBN_NUMERICAL_KEYS)
@@ -443,11 +450,6 @@ Function DB_UpdateSweepPlot(string win)
 		endif
 
 		WAVE sweepChannelSel = BSP_FetchSelectedChannels(graph, sweepNo = sweepNo)
-
-		if(DB_SplitSweepsIfReq(win, sweepNo) != 0)
-			BUG("Splitting sweep failed on DB update")
-			continue
-		endif
 
 		WAVE/Z/SDFR=dfr sweepWave = $GetSweepWaveName(sweepNo)
 		if(!WaveExists(sweepWave))
@@ -636,8 +638,6 @@ Function DB_AddSweepToGraph(string win, variable index, [STRUCT BufferedDrawInfo
 
 	WAVE sweepChannelSel = BSP_FetchSelectedChannels(graph, sweepNo = sweepNo)
 
-	DB_SplitSweepsIfReq(win, sweepNo)
-
 	WAVE axisLabelCache = GetAxisLabelCacheWave()
 
 	traceIndex = GetNextTraceIndex(graph)
@@ -651,20 +651,6 @@ Function DB_AddSweepToGraph(string win, variable index, [STRUCT BufferedDrawInfo
 	endif
 
 	AR_UpdateTracesIfReq(graph, dfr, sweepNo)
-End
-
-/// @brief Split sweeps to single sweep waves if required
-///
-/// @param win Databrowser window name
-/// @param sweepNo Number of sweep to split
-/// @returns 1 on error, 0 on success
-Function DB_SplitSweepsIfReq(string win, variable sweepNo)
-
-	if(!BSP_HasBoundDevice(win))
-		return NaN
-	endif
-
-	return SplitAndUpgradeSweepGlobal(BSP_GetDevice(win), sweepNo)
 End
 
 /// @brief Find a Databrowser which is locked to the given DAEphys panel
@@ -751,11 +737,12 @@ Function/S DB_GetBoundDataBrowser(string device, [variable mode])
 		databrowser = DB_OpenDataBrowser(mode = mode)
 	endif
 
-	if(BSP_HasBoundDevice(databrowser))
+	bsPanel = BSP_GetPanel(databrowser)
+
+	if(BSP_IsBoundDevice(bsPanel, device))
 		return databrowser
 	endif
 
-	bsPanel = BSP_GetPanel(databrowser)
 	PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", str = device)
 
 	return DB_FindDataBrowser(device, mode = mode)
@@ -784,13 +771,17 @@ End
 
 Function/S DB_GetDevice(string win)
 
+	string device
+
 	ASSERT(BSP_IsDataBrowser(win), "Requires window to be a DataBrowser")
 
-	if(!BSP_HasBoundDevice(win))
+	device = BSP_GetDevice(win)
+
+	if(!BSP_IsBoundDevice(win, device))
 		return ""
 	endif
 
-	return BSP_GetDevice(win)
+	return device
 End
 
 Function/DF DB_GetDeviceDF(string win)

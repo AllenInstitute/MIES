@@ -178,11 +178,12 @@ static Function/DF LBV_GetTPStorageLocation(string win)
 	string shPanel, device, dataFolder
 
 	if(BSP_IsDataBrowser(win))
-		if(!BSP_HasBoundDevice(win))
+		device = BSP_GetDevice(win)
+
+		if(!BSP_IsBoundDevice(win, device))
 			return $""
 		endif
 
-		device = BSP_GetDevice(win)
 		return GetDeviceTestPulse(device)
 	endif
 
@@ -335,12 +336,14 @@ End
 
 Function/S LBV_GetAllDevicesForExperiment(string win)
 
-	string dataFolder, shPanel
+	string dataFolder, shPanel, device
 	variable index
 
 	if(BSP_IsDataBrowser(win))
-		if(BSP_HasBoundDevice(win))
-			return NONE + ";" + BSP_GetDevice(win)
+		device = BSP_GetDevice(win)
+
+		if(BSP_IsBoundDevice(win, device))
+			return NONE + ";" + device
 		endif
 
 		return NONE
