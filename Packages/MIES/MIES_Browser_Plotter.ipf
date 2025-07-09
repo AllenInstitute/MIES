@@ -92,7 +92,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 	variable axisIndex, numChannels
 	variable numDACs, numADCs, numTTLs, i, j, k, hasPhysUnit, hardwareType
 	variable moreData, chan, guiChannelNumber, numHorizWaves, numVertWaves, idx
-	variable numTTLBits, headstage, channelType, isTTLSplitted
+	variable numTTLBits, headstage, channelType, isTTLSplitted, ttlNumber
 	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled, oodDAQEnabled
 	variable stimSetLength, samplingIntDA, samplingIntSweep, samplingIntervalFactor, first, last, count, ttlBit
 	variable numRegions, numRangesPerEntry, traceCounter
@@ -352,7 +352,11 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 				ttlBit = (channelType == XOP_CHANNEL_TYPE_TTL && tgs.splitTTLBits) ? j : NaN
 
 				if(channelType == XOP_CHANNEL_TYPE_TTL)
-					guiChannelNumber = channelMapHWToGUI[chan][IsNaN(ttlBit) ? 0 : ttlBit]
+					if(tgs.splitTTLBits)
+						guiChannelNumber = channelMapHWToGUI[chan][ttlBit]
+					else
+						guiChannelNumber = chan
+					endif
 				else
 					guiChannelNumber = chan
 				endif
@@ -377,8 +381,9 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 				// 15:    TTL bits (sum) rack one
 				// 16-19: TTL bits (single) rack one
 
-				[s]   = GetHeadstageColor(headstage, channelType = channelType, channelNumber = guiChannelNumber, isSplitted = isTTLSplitted)
-				first = 0
+				ttlNumber = isTTLSplitted ? GUIChannelNumber : j
+				[s]       = GetHeadstageColor(headstage, channelType = channelType, channelNumber = ttlNumber, isSplitted = isTTLSplitted)
+				first     = 0
 
 				// number of horizontally distributed
 				// waves per channel type
@@ -979,6 +984,14 @@ static Function ZeroTracesIfReq(string graph, WAVE/Z/T traces, variable zeroTrac
 	endfor
 End
 
+static Function AddFreeAxis(string graph, string name, string lbl, variable first, variable last)
+
+	NewFreeAxis/W=$graph $name
+	ModifyGraph/W=$graph standoff($name)=0, lblPosMode($name)=2, axRGB($name)=(65535, 65535, 65535, 0), tlblRGB($name)=(65535, 65535, 65535, 0), alblRGB($name)=(0, 0, 0), lblMargin($name)=0, lblLatPos($name)=0
+	ModifyGraph/W=$graph axisEnab($name)={first, last}
+	Label/W=$graph $name, lbl
+End
+
 /// @brief Layout the DataBrowser/SweepBrowser graph
 ///
 /// Takes also care of adding free axis for the headstage display.
@@ -1006,7 +1019,7 @@ static Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 	variable i, numSlots, headstage, numBlocksTTL, numBlocks, numBlocksEpochDA, numBlocksEpochTTL, spacePerSlot
 	variable numBlocksDA, numBlocksAD, first, firstFreeAxis, lastFreeAxis, orientation
 	variable numBlocksUnassocDA, numBlocksUnassocAD, numBlocksHS
-	string graph, regex, freeAxis, axis
+	string graph, regex, freeAxis, axis, lbl
 	variable last = 1.0
 
 	graph = GetMainWindow(win)
@@ -1023,6 +1036,8 @@ static Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 
 	WAVE/T allHorizontalAxesNonUnique = TUD_GetUserDataAsWave(graph, "XAXIS")
 	WAVE/T allHorizontalAxes          = GetUniqueEntries(allHorizontalAxesNonUnique)
+
+	ASSERT((tgs.overLayChannels + tgs.visualizeEpochs) < 2, "Overlay channels together with epoch visualization is not supported")
 
 	if(tgs.overLayChannels)
 		// up to three blocks
@@ -1152,12 +1167,12 @@ static Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 	// starting from the top
 	// headstages with associated channels
 	for(i = 0; i < numBlocksHS; i += 1)
+		lastFreeAxis = last
+
 		headstage = headstages[i]
 		// (?<! is a negative look behind assertion
 		sprintf regex, ".*(?<!%s_)DA_(?:[[:digit:]]{1,2})_HS_%d", DB_AXIS_PART_EPOCHS, headstage
 		WAVE/Z/T axes = GrepWave(allVerticalAxes, regex)
-
-		lastFreeAxis = last
 
 		if(WaveExists(axes))
 			EnableAxis(graph, axes, spacePerSlot, first, last)
@@ -1177,16 +1192,15 @@ static Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 		endif
 
 		firstFreeAxis = first
-
-		freeAxis = "freeaxis_hs" + num2str(headstage)
-		NewFreeAxis/W=$graph $freeAxis
-		ModifyGraph/W=$graph standoff($freeAxis)=0, lblPosMode($freeAxis)=2, axRGB($freeAxis)=(65535, 65535, 65535, 0), tlblRGB($freeAxis)=(65535, 65535, 65535, 0), alblRGB($freeAxis)=(0, 0, 0), lblMargin($freeAxis)=0, lblLatPos($freeAxis)=0
-		ModifyGraph/W=$graph axisEnab($freeAxis)={firstFreeAxis, lastFreeAxis}
-		Label/W=$graph $freeAxis, "HS" + num2str(headstage)
+		freeAxis      = "freeaxis_hs" + num2str(headstage)
+		lbl           = "HS" + num2str(headstage)
+		AddFreeAxis(graph, freeAxis, lbl, firstFreeAxis, lastFreeAxis)
 	endfor
 
 	// unassoc DA
 	for(i = 0; i < numBlocksUnassocDA; i += 1)
+		lastFreeAxis = last
+
 		sprintf regex, ".*(?<!%s)_DA_%d_HS_NaN", DB_AXIS_PART_EPOCHS, unassocDA[i]
 		WAVE/Z/T axes = GrepWave(allVerticalAxes, regex)
 		ASSERT(WaveExists(axes), "Unexpected number of matches")
@@ -1198,14 +1212,26 @@ static Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 		if(WaveExists(axes))
 			EnableAxis(graph, axes, EPOCH_SLOT_MULTIPLIER * spacePerSlot, first, last)
 		endif
+
+		firstFreeAxis = first
+		freeAxis      = "freeaxis_da_ua" + num2str(i)
+		lbl           = "UA"
+		AddFreeAxis(graph, freeAxis, lbl, firstFreeAxis, lastFreeAxis)
 	endfor
 
 	// unassoc AD
 	for(i = 0; i < numBlocksUnassocAD; i += 1)
+		lastFreeAxis = last
+
 		regex = ".*AD_" + num2str(unassocAD[i]) + "_HS_NaN"
 		WAVE/Z/T axes = GrepWave(allVerticalAxes, regex)
 		ASSERT(WaveExists(axes), "Unexpected number of matches")
 		EnableAxis(graph, axes, ADC_SLOT_MULTIPLIER * spacePerSlot, first, last)
+
+		firstFreeAxis = first
+		freeAxis      = "freeaxis_ad_ua" + num2str(i)
+		lbl           = "UA"
+		AddFreeAxis(graph, freeAxis, lbl, firstFreeAxis, lastFreeAxis)
 	endfor
 
 	// TTLs
