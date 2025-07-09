@@ -1689,13 +1689,19 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE s
 
 					WaveStats/Q/M=2 resultsRawClean
 
-					Make/FREE/D results = {V_avg, NaN, V_adev, V_sdev, V_skew, V_kurt}
+					Make/FREE/D results = {V_avg, NaN, V_adev, V_sdev, V_skew, V_kurt, NaN, NaN, NaN, NaN, NaN}
+					SetDimensionLabels(results, PSX_STATS_LABELS, ROWS)
 
 					StatsQuantiles/Q/Z resultsRawClean
 					MakeWaveFree($"W_StatsQuantiles")
 
 					if(!V_Flag)
-						results[1] = V_Median
+						results[%$"Median"] = V_Median
+						results[%$"Lower Quartile"] = V_Q25
+						results[%$"Upper Quartile"] = V_Q75
+						results[%$"Inter-quartile range"] = V_IQR
+						results[%$"Median absolute deviation"] = V_MAD
+						results[%$"Most frequent value"] = V_Mode
 					endif
 
 					WAVE/T statsLabels = ListToTextWave(PSX_STATS_LABELS, ";")
