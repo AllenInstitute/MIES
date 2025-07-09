@@ -2415,7 +2415,7 @@ Constant PSX_DECAY_FIT_INVALID_RANGE_ERROR = -10001
 
 ///@}
 
-StrConstant PSX_STATS_LABELS = "Average;Median;Average Deviation;Standard deviation;Skewness;Kurtosis"
+StrConstant PSX_STATS_LABELS = "Average;Median;Average Deviation;Standard deviation;Skewness;Kurtosis;Lower quartile;Upper quartile;Inter-quartile range;Median absolute deviation;Most frequent value"
 
 /// @name Horizontal offset modes in all event graph
 ///
