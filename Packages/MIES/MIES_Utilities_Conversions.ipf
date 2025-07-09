@@ -705,6 +705,12 @@ Function WaveTypeStringToNumber(string type)
 			return 0x10
 		case "NT_I8":
 			return 0x08
+		case "NT_I32 | NT_UNSIGNED":
+			return 0x20 | 0x40
+		case "NT_I16 | NT_UNSIGNED":
+			return 0x10 | 0x40
+		case "NT_I8 | NT_UNSIGNED":
+			return 0x08 | 0x40
 		default:
 			ASSERT(0, "Type is not supported: " + type)
 	endswitch
@@ -754,8 +760,11 @@ Function/WAVE JSONToWave(string str, [string path])
 		case "NT_FP64":
 		case "NT_FP32":
 		case "NT_I32":
+		case "NT_I32 | NT_UNSIGNED":
 		case "NT_I16":
+		case "NT_I16 | NT_UNSIGNED":
 		case "NT_I8":
+		case "NT_I8 | NT_UNSIGNED":
 			WAVE/Z data = JSON_GetWave(jsonID, path + "/data/raw", waveMode = 1)
 			ASSERT(WaveExists(data), "Missing data")
 			Redimension/Y=(WaveTypeStringToNumber(type)) data
