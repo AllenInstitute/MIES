@@ -654,7 +654,7 @@ End
 
 static Function/WAVE GetSupportedWaveTypes()
 
-	Make/FREE/T input = {"NT_FP64", "NT_FP32", "NT_I32", "NT_I16", "NT_I8", "TEXT_WAVE", "WAVE_WAVE"}
+	Make/FREE/T input = {"NT_FP64", "NT_FP32", "NT_I32", "NT_I16", "NT_I8", "NT_I32 | NT_UNSIGNED", "NT_I16 | NT_UNSIGNED", "NT_I8 | NT_UNSIGNED", "TEXT_WAVE", "WAVE_WAVE"}
 	SetDimensionLabels(input, TextWaveToList(input, ";"), ROWS)
 
 	return input
