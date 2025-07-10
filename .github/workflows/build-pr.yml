@@ -109,13 +109,14 @@ jobs:
         run: tools/pre-commit/run.sh
 
   CompilationTest:
-    name: 👩🏾‍🔬 Compilation of ${{ matrix.source }} ${{ fromJSON('["","with XOP"]')[matrix.hardware] }}
+    name: 👩🏾‍🔬 Compilation of ${{ matrix.source }} ${{ fromJSON('["","with XOP"]')[matrix.hardware] }} v${{ matrix.version }}
     needs:
       - BuildInstaller
     strategy:
       matrix:
         source: [ git, installer ]
         hardware: [ false, true ]
+        version: [9, 10]
         exclude:
           # the git source is always checked with hardware support
           - source: git
@@ -127,8 +128,9 @@ jobs:
       experiment: Packages/tests/Compilation/CompilationTester.pxp
       installer_artifact_name: BuildInstaller-assets
       installer_flags: ${{ fromJSON('["-x skipHardwareXOPs",""]')[matrix.hardware] }} -s ${{ matrix.source }}
-      artifact_name: CompilationTest-${{ matrix.source }}-${{ fromJSON('["no-hardware","hardware"]')[matrix.hardware] }}-assets
+      artifact_name: CompilationTest-${{ matrix.source }}-${{ fromJSON('["no-hardware","hardware"]')[matrix.hardware] }}-v${{ matrix.version }}-assets
       timeout_minutes: 60
+      major_igorpro_version: ${{ matrix.version }}
 
   CompilationEachCommitTest:
     name: 👩🏾‍🔬 Compilation of each commit
@@ -165,13 +167,20 @@ jobs:
           if-no-files-found: error
 
   TestWithoutHardware:
-    name: 🧪 Test ${{ matrix.name }}
+    name: 🧪 Test ${{ matrix.name }} v${{ matrix.version }}
     needs:
       - BuildInstaller
       - Linting
       - CompilationTest
     strategy:
       matrix:
+        version:
+          - 9
+          - 10
+        name:
+          - Basic
+          - PAPlot
+          - HistoricData
         include:
           - experiment: Packages/tests/Basic/Basic.pxp
             name: Basic
@@ -179,15 +188,21 @@ jobs:
             name: PAPlot
           - experiment: Packages/tests/HistoricData/HistoricData.pxp
             name: HistoricData
+        exclude:
+          - version: 10
+            name: PAPlot
+          - version: 10
+            name: HistoricData
     uses: ./.github/workflows/test-igor-workflow.yml
     with:
       job_name: 🧪 Test ${{ matrix.name }}
       overwrite_job_name: ${{ inputs.is_called_workflow || false }}
       experiment: ${{ matrix.experiment }}
-      artifact_name: TestWithoutHardware-${{ matrix.name }}-assets
+      artifact_name: TestWithoutHardware-${{ matrix.name }}-v${{ matrix.version }}-assets
       expensive_checks: "1"
       instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
       timeout_minutes: 60
+      major_igorpro_version: ${{ matrix.version }}
 
   TestNI:
     name: 🧪 Test NI ${{ matrix.name }}
