@@ -187,16 +187,7 @@ static Function EP_GetEpochsDoesNotFallbackWithShortNames()
 	CHECK_WAVE(resultEmpty, NULL_WAVE)
 End
 
-static Function/WAVE OldEpochsFormats()
-
-	Make/WAVE/N=2/FREE oldFormats = {root:EpochsWave:EpochsWave_4e534e298, root:EpochsWave:EpochsWave_d150d896e}
-
-	SetDimensionLabels(oldFormats, "EpochsWave_4e534e298;EpochsWave_d150d896e", ROWS)
-
-	return oldFormats
-End
-
-// UTF_TD_GENERATOR OldEpochsFormats
+// UTF_TD_GENERATOR DataGenerators#OldEpochsFormats
 static Function EP_GetEpochsWorksWithoutShortNames([WAVE wv])
 
 	WAVE/Z/T result = EP_GetEpochs($"", $"", NaN, XOP_CHANNEL_TYPE_DAC, 0, "Inserted TP", epochsWave = wv)

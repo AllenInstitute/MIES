@@ -749,31 +749,12 @@ static Function EnsureCorrectUserAnalysis()
 	REQUIRE_EQUAL_VAR(ItemsInList(FunctionList("InvalidSignature", ";", "WIN:UserAnalysisFunctions.ipf")), 1)
 End
 
-static Function/WAVE GetAnalysisFunctions()
-
-	string funcs
-
-	funcs = AFH_GetAnalysisFunctions(ANALYSIS_FUNCTION_VERSION_V3, includeUserFunctions = 0)
-
-	// remove our test help functions which do nasty things
-	funcs = GrepList(funcs, ".*_V3", 1)
-	funcs = GrepList(funcs, ".*_.*")
-
-	WAVE/T wv = ListToTextWave(funcs, ";")
-
-	SetDimensionLabels(wv, funcs, ROWS)
-
-	Sort/DIML wv, wv
-
-	return wv
-End
-
 Function CheckHelpStringsOfAllAnalysisFunctions()
 
 	string genericFunc, params, names, name, help
 	variable j, numParams
 
-	for(genericFunc : GetAnalysisFunctions())
+	for(genericFunc : DataGenerators#GetAnalysisFunctions())
 		params = AFH_GetListOfAnalysisParams(genericFunc, REQUIRED_PARAMS | OPTIONAL_PARAMS)
 
 		names     = AFH_GetListOfAnalysisParamNames(params)
@@ -786,7 +767,7 @@ Function CheckHelpStringsOfAllAnalysisFunctions()
 	endfor
 End
 
-/// UTF_TD_GENERATOR GetAnalysisFunctions
+/// UTF_TD_GENERATOR DataGenerators#GetAnalysisFunctions
 static Function CheckAbbrevName([string func])
 
 	string abbrev
@@ -832,7 +813,7 @@ End
 
 static Function AnalysisParamsMustHaveSameOptionality()
 
-	WAVE/T funcs = GetAnalysisFunctions()
+	WAVE/T funcs = DataGenerators#GetAnalysisFunctions()
 
 	[WAVE/T required, WAVE/T optional, WAVE/T mixed] = GetAllAnalysisParameters_IGNORE(funcs)
 
@@ -896,7 +877,7 @@ static Function GenerateAnalysisFunctionTable()
 	string type, param, help
 	variable idx
 
-	WAVE/T funcs = GetAnalysisFunctions()
+	WAVE/T funcs = DataGenerators#GetAnalysisFunctions()
 
 	[WAVE/T required, WAVE/T optional, WAVE/T mixed] = GetAllAnalysisParameters_IGNORE(funcs)
 
@@ -939,7 +920,7 @@ static Function GenerateAnalysisFunctionLegend()
 
 	string func
 
-	WAVE/T funcs = GetAnalysisFunctions()
+	WAVE/T funcs = DataGenerators#GetAnalysisFunctions()
 
 	Make/FREE/T/N=(DimSize(funcs, ROWS), 2) output
 
@@ -993,29 +974,7 @@ Function GAPasT_AbortsWithIllegalType()
 	endtry
 End
 
-static Function/WAVE GetAnalysisParameterValues()
-
-	Make/FREE/N=(5)/WAVE waves
-
-	Make/FREE/T wv0 = {"var", "123"}
-	waves[0] = wv0
-
-	Make/FREE/T wv1 = {"str", "abcd"}
-	waves[1] = wv1
-
-	Make/FREE/T wv2 = {"wv", "1;2;"}
-	waves[2] = wv2
-
-	Make/FREE/T wv3 = {"txtwv", "a;b;"}
-	waves[3] = wv3
-
-	Make/FREE/T wv4 = {"i_dont_exist", ""}
-	waves[4] = wv4
-
-	return waves
-End
-
-/// UTF_TD_GENERATOR GetAnalysisParameterValues
+/// UTF_TD_GENERATOR DataGenerators#GetAnalysisParameterValues
 Function GAPasT_Works([WAVE/T wv])
 
 	string result

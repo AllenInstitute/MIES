@@ -389,108 +389,7 @@ static Function PrintSomeValues(WAVE/WAVE entries)
 	print/D wv
 End
 
-static Function/WAVE VariousInputForHasRequiredQCOrder()
-
-	// IPT_FORMAT_OFF
-
-	// all zero
-	Make/FREE firstQC      = {0, 0, 0, 0}
-	Make/FREE checkQCFirst = {0, 0, 0}
-	Make/FREE lastQC       = {0, 0, 0, 0}
-	Make/FREE checkQCLast  = {0, 0, 0}
-	Make/FREE result       = {0}
-
-	Make/FREE/WAVE wv0 = {firstQC, checkQCFirst, lastQC, checkQCLast, result}
-
-	// only first
-	Make/FREE firstQC      = {0, 0, 0, 0}
-	Make/FREE checkQCFirst = {1, 1, 1}
-	Make/FREE lastQC       = {0, 0, 0, 0}
-	Make/FREE checkQCLast  = {0, 0, 0}
-	Make/FREE result       = {0}
-
-	Make/FREE/WAVE wv1 = {firstQC, checkQCFirst, lastQC, checkQCLast, result}
-
-	// only last
-	Make/FREE firstQC      = {0, 0, 0, 0}
-	Make/FREE checkQCFirst = {0, 0, 0}
-	Make/FREE lastQC       = {0, 0, 0, 0}
-	Make/FREE checkQCLast  = {1, 1, 1}
-	Make/FREE result       = {0}
-
-	Make/FREE/WAVE wv2 = {firstQC, checkQCFirst, lastQC, checkQCLast, result}
-
-	// wrong order
-	Make/FREE firstQC      = {0, 1, 1, 0}
-	Make/FREE checkQCFirst = {0, 1, 0}
-	Make/FREE lastQC       = {0, 1, 1, 0}
-	Make/FREE checkQCLast  = {1, 0, 0}
-	Make/FREE result       = {0}
-
-	Make/FREE/WAVE wv3 = {firstQC, checkQCFirst, lastQC, checkQCLast, result}
-
-	// correct order
-	Make/FREE firstQC      = {0, 1, 1, 0}
-	Make/FREE checkQCFirst = {1, 0, 0}
-	Make/FREE lastQC       = {0, 1, 1, 0}
-	Make/FREE checkQCLast  = {0, 1, 0}
-	Make/FREE result       = {1}
-
-	Make/FREE/WAVE wv4 = {firstQC, checkQCFirst, lastQC, checkQCLast, result}
-
-	// correct order but last sweep failed
-	Make/FREE firstQC      = {0, 1, 0, 0}
-	Make/FREE checkQCFirst = {1, 0, 0}
-	Make/FREE lastQC       = {0, 1, 0, 0}
-	Make/FREE checkQCLast  = {0, 1, 0}
-	Make/FREE result       = {0}
-
-	Make/FREE/WAVE wv5 = {firstQC, checkQCFirst, lastQC, checkQCLast, result}
-
-	// correct order but first sweep failed
-	Make/FREE firstQC      = {0, 0, 0, 0}
-	Make/FREE checkQCFirst = {1, 0, 0}
-	Make/FREE lastQC       = {0, 0, 1, 0}
-	Make/FREE checkQCLast  = {0, 1, 0}
-	Make/FREE result       = {0}
-
-	Make/FREE/WAVE wv6 = {firstQC, checkQCFirst, lastQC, checkQCLast, result}
-
-	// passes with fail gap
-	Make/FREE firstQC      = {0, 0, 1, 0, 0}
-	Make/FREE checkQCFirst = {0, 1, 0, 0}
-	Make/FREE lastQC       = {0, 0, 0, 0, 1}
-	Make/FREE checkQCLast  = {0, 0, 0, 1}
-	Make/FREE result       = {1}
-
-	Make/FREE/WAVE wv7 = {firstQC, checkQCFirst, lastQC, checkQCLast, result}
-
-	// fails due to gap with firstQC passing
-	Make/FREE firstQC      = {0, 0, 1, 1, 0}
-	Make/FREE checkQCFirst = {0, 1, 0, 0}
-	Make/FREE lastQC       = {0, 0, 0, 0, 1}
-	Make/FREE checkQCLast  = {0, 0, 0, 1}
-	Make/FREE result       = {0}
-
-	Make/FREE/WAVE wv8 = {firstQC, checkQCFirst, lastQC, checkQCLast, result}
-
-	// fails due to gap with lastQC passing
-	Make/FREE firstQC      = {0, 1, 0, 0, 0}
-	Make/FREE checkQCFirst = {1, 0, 0, 0}
-	Make/FREE lastQC       = {0, 0, 1, 1, 0}
-	Make/FREE checkQCLast  = {0, 0, 1, 0}
-	Make/FREE result       = {0}
-
-	// IPT_FORMAT_ON
-
-	Make/FREE/WAVE wv9 = {firstQC, checkQCFirst, lastQC, checkQCLast, result}
-
-	Make/FREE/WAVE wv = {wv0, wv1, wv2, wv3, wv4, wv5, wv6, wv7, wv8, wv9}
-
-	return wv
-End
-
-/// UTF_TD_GENERATOR w0:VariousInputForHasRequiredQCOrder
+/// UTF_TD_GENERATOR w0:DataGenerators#VariousInputForHasRequiredQCOrder
 static Function HasRequiredQCOrderWorks([STRUCT IUTF_mData &m])
 
 	variable ret
@@ -510,50 +409,7 @@ static Function HasRequiredQCOrderWorks([STRUCT IUTF_mData &m])
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_DS_HasRequiredQCOrder(firstQC, checkQCFirst, lastQC, checkQCLast), ret)
 End
 
-static Function/WAVE VariousInputForCalculateFillinQC()
-
-	// all constant
-	Make/FREE DAScales = {1, 1, 1, 1}
-	Make/FREE ref = {0, 0, 0, 0}
-
-	Make/FREE/WAVE wv0 = {DAScales, ref}
-
-	// sorted
-	Make/FREE DAScales = {1, 2, 3, 4}
-	Make/FREE ref = {0, 0, 0, 0}
-
-	Make/FREE/WAVE wv1 = {DAScales, ref}
-
-	// reverse sorted
-	Make/FREE DAScales = {4, 3, 2, 1}
-	Make/FREE ref = {0, 1, 1, 1}
-
-	Make/FREE/WAVE wv2 = {DAScales, ref}
-
-	// first is largest
-	Make/FREE DAScales = {8, 4, 7, 6, 5}
-	Make/FREE ref = {0, 1, 1, 1, 1}
-
-	Make/FREE/WAVE wv3 = {DAScales, ref}
-
-	// complicated, smallest first
-	Make/FREE DAScales = {1, 4, 3, 6, 5}
-	Make/FREE ref = {0, 0, 1, 0, 1}
-
-	Make/FREE/WAVE wv4 = {DAScales, ref}
-
-	// complicated, middle one first
-	Make/FREE DAScales = {3, 4, 1, 6, 5}
-	Make/FREE ref = {0, 0, 1, 0, 1}
-
-	Make/FREE/WAVE wv5 = {DAScales, ref}
-
-	Make/FREE/WAVE wv = {wv0, wv1, wv2, wv3, wv4, wv5}
-
-	return wv
-End
-
-/// UTF_TD_GENERATOR w0:VariousInputForCalculateFillinQC
+/// UTF_TD_GENERATOR w0:DataGenerators#VariousInputForCalculateFillinQC
 static Function CalculateFillinQCWorks([STRUCT IUTF_mData &m])
 
 	WAVE/WAVE entries = m.w0
@@ -602,7 +458,7 @@ static Function PS_DS_AD1_preAcq(string device)
 	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_AD1([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -750,7 +606,7 @@ static Function PS_DS_AD1a_preAcq(string device)
 	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_AD1a([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -948,7 +804,7 @@ static Function PS_DS_AD2_preAcq(string device)
 	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_AD2([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -1066,7 +922,7 @@ static Function PS_DS_AD2a_preAcq(string device)
 	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_AD2a([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -1188,7 +1044,7 @@ static Function PS_DS_AD2b_preAcq(string device)
 	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_AD2b([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -1309,7 +1165,7 @@ static Function PS_DS_AD3_preAcq(string device)
 	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_AD3([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -1426,7 +1282,7 @@ static Function PS_DS_AD4_preAcq(string device)
 	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_AD4([string str])
 
 	variable ref, sweepNo
@@ -1479,7 +1335,7 @@ static Function PS_DS_AD4a_preAcq(string device)
 	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_AD4a([string str])
 
 	variable ref, sweepNo
@@ -1531,7 +1387,7 @@ static Function PS_DS_AD5_preAcq(string device)
 	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_AD5([string str])
 
 	variable ref, sweepNo
@@ -1584,7 +1440,7 @@ static Function PS_DS_AD6_preAcq(string device)
 	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_AD6([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -1698,7 +1554,7 @@ static Function PS_DS_AD7_preAcq(string device)
 	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_AD7([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -1814,7 +1670,7 @@ static Function PS_DS_AD8_preAcq(string device)
 	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_AD8([string str])
 
 	variable ref, sweepNo
@@ -1864,7 +1720,7 @@ static Function PS_DS_AD10_preAcq(string device)
 	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_AD10([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -1979,7 +1835,7 @@ static Function PS_DS_AD12_preAcq(string device)
 	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_AD12([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -2104,7 +1960,7 @@ static Function PS_DS_AD13_preAcq(string device)
 	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_AD13([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -2219,7 +2075,7 @@ static Function PS_DS_AD14_preAcq(string device)
 	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_AD14([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -2336,7 +2192,7 @@ static Function PS_DS_AD15_preAcq(string device)
 	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_AD15([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -2452,7 +2308,7 @@ static Function PS_DS_AD16_preAcq(string device)
 	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_AD16([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -2573,7 +2429,7 @@ static Function PS_DS_AD17_preAcq(string device)
 	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_AD17([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -2685,7 +2541,7 @@ static Function PS_DS_AD18_preAcq(string device)
 	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_AD18([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -2785,7 +2641,7 @@ static Function PS_DS_AD19_preAcq(string device)
 	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_AD19([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -2897,7 +2753,7 @@ static Function PS_DS_AD20_preAcq(string device)
 	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_AD20([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -3011,7 +2867,7 @@ static Function PS_DS_AD21_preAcq(string device)
 	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_AD21([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -3131,7 +2987,7 @@ static Function PS_DS_AD22_preAcq(string device)
 	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_AD22([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)

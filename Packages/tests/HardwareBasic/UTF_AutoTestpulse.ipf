@@ -84,7 +84,7 @@ static Function AutoTP_OptimumValues_preAcq(string device)
 	CtrlNamedBackGround StopTP, start, period=1, proc=StopTPWhenFinished
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AutoTP_OptimumValues([string str])
 
 	[STRUCT DAQSettings s] = AutoTP_GetDAQSettings(str)
@@ -138,7 +138,7 @@ static Function AutoTP_BadValues_preAcq(string device)
 	CtrlNamedBackGround StopTP, start, period=30, proc=StopTPWhenFinished
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AutoTP_BadValues([string str])
 
 	[STRUCT DAQSettings s] = AutoTP_GetDAQSettings(str)
@@ -194,7 +194,7 @@ static Function AutoTP_MixedOptimumBadValues_preAcq(string device)
 	CtrlNamedBackGround StopTP, start, period=1, proc=StopTPWhenFinished
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AutoTP_MixedOptimumBadValues([string str])
 
 	[STRUCT DAQSettings s] = AutoTP_GetDAQSettings(str)
@@ -251,7 +251,7 @@ static Function AutoTP_SpecialCases_preAcq(string device)
 	CtrlNamedBackGround StopTP, start, period=1, proc=StopTPWhenFinished
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AutoTP_SpecialCases([string str])
 
 	[STRUCT DAQSettings s] = AutoTP_GetDAQSettings(str)

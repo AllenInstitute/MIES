@@ -17,7 +17,7 @@ static StrConstant LOADHISTORY_FILENAME     = "input:nwb2_H17.03.016.11.09.01.nw
 static StrConstant CHECKCOLLAPSED_FILENAME1 = "input:nwb2_H17.03.016.11.09.01.nwb"
 static StrConstant CHECKCOLLAPSED_FILENAME2 = "input:Pvalb-IRES-Cre;Ai14-646904.13.03.02.pxp"
 
-/// UTF_TD_GENERATOR GetHistoricDataNoData
+/// UTF_TD_GENERATOR HistoricDataHelpers#GetHistoricDataNoData
 static Function TestEmptyPXP([string str])
 
 	string file, abWin, sweepBrowsers
@@ -186,7 +186,7 @@ static Function TestNWBvsPXP_Selection()
 	CHECK_EQUAL_STR(fType, ANALYSISBROWSER_FILE_TYPE_NWBv1)
 End
 
-/// UTF_TD_GENERATOR GetHistoricDataLoadResults
+/// UTF_TD_GENERATOR HistoricDataHelpers#GetHistoricDataLoadResults
 static Function TestLoadResults([string str])
 
 	string abWin, sweepBrowsers, file
@@ -206,7 +206,7 @@ static Function TestLoadResults([string str])
 	CHECK_EQUAL_VAR(DataFolderExistsDFR(dfr), 1)
 End
 
-/// UTF_TD_GENERATOR GetHistoricDataLoadUserComment
+/// UTF_TD_GENERATOR HistoricDataHelpers#GetHistoricDataLoadUserComment
 static Function TestLoadComments([string str])
 
 	string abWin, sweepBrowsers, file

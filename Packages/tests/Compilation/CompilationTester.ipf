@@ -1,6 +1,7 @@
 #pragma rtGlobals         = 3
 #pragma rtFunctionErrors  = 1
 #pragma TextEncoding      = "UTF-8"
+#pragma ModuleName        = CompilationTester
 #pragma IndependentModule = MIES_CompilationTester
 
 #include "igortest"
@@ -37,7 +38,7 @@ static Function GetEnvironmentVariableAsBoolean(string key)
 	return NaN
 End
 
-Function/WAVE GetIncludes()
+static Function/WAVE GetIncludes()
 
 	// keep sorted
 	Make/FREE/T includes = {"UTF_All_Includes"}
@@ -47,7 +48,7 @@ Function/WAVE GetIncludes()
 	return includes
 End
 
-Function/WAVE GetDefines()
+static Function/WAVE GetDefines()
 
 	if(GetEnvironmentVariableAsBoolean("CI_SKIP_COMPILATION_TEST_DEFINES"))
 		Make/FREE/T/N=1 defines
@@ -75,8 +76,8 @@ Function/WAVE GetDefines()
 	return defines
 End
 
-/// UTF_TD_GENERATOR s0:GetIncludes
-/// UTF_TD_GENERATOR s1:GetDefines
+/// UTF_TD_GENERATOR s0:CompilationTester#GetIncludes
+/// UTF_TD_GENERATOR s1:CompilationTester#GetDefines
 Function TestCompilation([STRUCT IUTF_mData &md])
 
 	if(strlen(md.s1) > 0)

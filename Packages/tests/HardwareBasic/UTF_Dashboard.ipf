@@ -9,7 +9,7 @@ static Function DAB_Indexing_preAcq(string device)
 	ST_SetStimsetParameter("StimulusSetB_DA_0", "Total number of steps", var = 2)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function DAB_Indexing([string str])
 
 	STRUCT DAQSettings s
@@ -84,7 +84,7 @@ static Function DAB_Skipping_preAcq(string device)
 	PGC_SetAndActivateControl(device, "Check_Settings_SkipAnalysFuncs", val = CHECKBOX_SELECTED)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function DAB_Skipping([string str])
 
 	STRUCT DAQSettings s

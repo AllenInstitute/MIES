@@ -3,16 +3,6 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = UTF_WaveAveraging
 
-static Function/WAVE SupportedTypeGetter()
-
-	Make/FREE result = {IGOR_TYPE_32BIT_FLOAT, IGOR_TYPE_64BIT_FLOAT}
-
-	SetDimLabel 0, 0, $"float", result
-	SetDimLabel 0, 1, $"double", result
-
-	return result
-End
-
 static Function IgorTypeToUTFType_IGNORE(variable igor_type)
 
 	switch(igor_type)
@@ -56,7 +46,7 @@ Function DoesNothingWithInvalidWave()
 	CHECK_WAVE(result[0], NULL_WAVE)
 End
 
-/// UTF_TD_GENERATOR SupportedTypeGetter
+/// UTF_TD_GENERATOR DataGenerators#SupportedTypeGetter
 Function ReturnsCorrectResultWithOneWave([variable var])
 
 	Make/D/FREE data = {1, 2, 3, 4}
@@ -74,7 +64,7 @@ Function ReturnsCorrectResultWithOneWave([variable var])
 	CheckWaveScaling_IGNORE(result[0])
 End
 
-/// UTF_TD_GENERATOR SupportedTypeGetter
+/// UTF_TD_GENERATOR DataGenerators#SupportedTypeGetter
 Function PointForPointNoNans([variable var])
 
 	Make/D/FREE data1 = {1, 2, 3, 4}
@@ -94,7 +84,7 @@ Function PointForPointNoNans([variable var])
 	CheckWaveScaling_IGNORE(result[0])
 End
 
-/// UTF_TD_GENERATOR SupportedTypeGetter
+/// UTF_TD_GENERATOR DataGenerators#SupportedTypeGetter
 Function PointForPointWithNaNs([variable var])
 
 	Make/D/FREE data1 = {1, 2, NaN, 4}
@@ -114,7 +104,7 @@ Function PointForPointWithNaNs([variable var])
 	CheckWaveScaling_IGNORE(result[0])
 End
 
-/// UTF_TD_GENERATOR SupportedTypeGetter
+/// UTF_TD_GENERATOR DataGenerators#SupportedTypeGetter
 Function NonPointForPointNoNans([variable var])
 
 	Make/D/FREE data1 = {1, 2, 3, 4}
@@ -134,7 +124,7 @@ Function NonPointForPointNoNans([variable var])
 	CheckWaveScaling_IGNORE(result[0])
 End
 
-/// UTF_TD_GENERATOR SupportedTypeGetter
+/// UTF_TD_GENERATOR DataGenerators#SupportedTypeGetter
 Function NonPointForPointWithNans([variable var])
 
 	Make/D/FREE data1 = {1, 2, NaN, 4}

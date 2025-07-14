@@ -23,7 +23,7 @@
 /// IsValidSweepNumber
 /// @{
 
-// UTF_TD_GENERATOR InfiniteValues
+// UTF_TD_GENERATOR DataGenerators#InfiniteValues
 static Function IVSN_WorksSpecialValues([variable val])
 
 	CHECK(!IsValidSweepNumber(val))
@@ -41,27 +41,13 @@ End
 /// ExtractSweepNumber
 /// @{
 
-Function/WAVE GetValidStringsWithSweepNumber()
-
-	Make/FREE/T wv = {"Sweep_100", "Sweep_100_bak", "Config_Sweep_100", "Config_Sweep_100_bak", "X_100"}
-
-	return wv
-End
-
-// UTF_TD_GENERATOR GetValidStringsWithSweepNumber
+// UTF_TD_GENERATOR DataGenerators#GetValidStringsWithSweepNumber
 Function ESN_Works([string str])
 
 	CHECK_EQUAL_VAR(ExtractSweepNumber(str), 100)
 End
 
-Function/WAVE GetInvalidStringsWithSweepNumber()
-
-	Make/FREE/T wv = {"", "A", "A__", "Sweep_-100"}
-
-	return wv
-End
-
-// UTF_TD_GENERATOR GetInvalidStringsWithSweepNumber
+// UTF_TD_GENERATOR DataGenerators#GetInvalidStringsWithSweepNumber
 Function ESN_Complains([string str])
 
 	try

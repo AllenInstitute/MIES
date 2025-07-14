@@ -86,7 +86,7 @@ static Function PS_SP1_preAcq(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_SP1([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -152,7 +152,7 @@ static Function PS_SP2_preAcq(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_SP2([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -219,7 +219,7 @@ static Function PS_SP3_preAcq(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_SP3([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -287,7 +287,7 @@ static Function PS_SP4_preAcq(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_SP4([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -355,7 +355,7 @@ static Function PS_SP5_preAcq(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_SP5([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -424,7 +424,7 @@ static Function PS_SP6_preAcq(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_SP6([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -494,7 +494,7 @@ static Function PS_SP7_preAcq(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_SP7([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -566,7 +566,7 @@ End
 
 // Same as PS_SP1 but with failing sampling interval check
 //
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_SP8([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -635,7 +635,7 @@ End
 
 // Same as PS_SP1 but with failing async QC
 //
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_SP9([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -704,7 +704,7 @@ static Function PS_SP10_preAcq(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_SP10([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)

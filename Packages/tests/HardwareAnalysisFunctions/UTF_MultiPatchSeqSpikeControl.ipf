@@ -144,7 +144,7 @@ static Function/WAVE GetLBNEntries_IGNORE(string device, variable sweepNo)
 	return wv
 End
 
-// UTF_TD_GENERATOR SpikeCountsStateValues
+// UTF_TD_GENERATOR DataGenerators#SpikeCountsStateValues
 static Function TestSpikeCounts([WAVE vals])
 
 	CHECK_EQUAL_VAR(MIES_SC#SC_SpikeCountsCalcDetail(vals[%minimum], vals[%maximum], vals[%idealNumber]), vals[%expectedState])
@@ -163,7 +163,7 @@ static Function SC_Test1_preInit(string device)
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var = 1)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_Test1([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
@@ -248,7 +248,7 @@ static Function SC_Test2_preInit(string device)
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var = 1)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_Test2([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
@@ -337,7 +337,7 @@ static Function SC_Test3_preInit(string device)
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var = 1)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_Test3([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
@@ -435,7 +435,7 @@ static Function SC_Test4_preInit(string device)
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var = 2)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_Test4([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
@@ -533,7 +533,7 @@ static Function SC_Test5_preInit(string device)
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var = 2)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_Test5([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
@@ -632,7 +632,7 @@ static Function SC_Test6_preInit(string device)
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var = 1)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_Test6([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
@@ -721,7 +721,7 @@ static Function SC_Test7_preInit(string device)
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var = 2)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_Test7([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
@@ -843,7 +843,7 @@ static Function SC_Test8_preInit(string device)
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var = 1)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_Test8([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
@@ -989,7 +989,7 @@ static Function SC_Test9_preAcq(string device)
 	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, 1), val = 1)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_Test9([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
@@ -1081,7 +1081,7 @@ static Function SC_Test10_preAcq(string device)
 	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, 1), val = 1)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_Test10([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)

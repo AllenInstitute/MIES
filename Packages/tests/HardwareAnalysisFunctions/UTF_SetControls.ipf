@@ -37,7 +37,7 @@ static Function SC_SetControls1_preAcq(string device)
 End
 
 // ignores invalid control
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_SetControls1([string str])
 
 	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
@@ -66,7 +66,7 @@ static Function SC_SetControls2_preAcq(string device)
 End
 
 // complains on wrong parameter type (string)
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_SetControls2([string str])
 
 	[STRUCT DAQSettings s] = SC_GetDAQSettings(str, far = 0)
@@ -95,7 +95,7 @@ static Function SC_SetControls2a_preAcq(string device)
 End
 
 // complains on wrong parameter type (numeric)
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_SetControls2a([string str])
 
 	[STRUCT DAQSettings s] = SC_GetDAQSettings(str, far = 0)
@@ -125,7 +125,7 @@ static Function SC_SetControls2b_preAcq(string device)
 End
 
 // complains on wrong parameter type (numeric wave)
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_SetControls2b([string str])
 
 	[STRUCT DAQSettings s] = SC_GetDAQSettings(str, far = 0)
@@ -155,7 +155,7 @@ static Function SC_SetControls3_preAcq(string device)
 End
 
 // invalid parameter wave size
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_SetControls3([string str])
 
 	[STRUCT DAQSettings s] = SC_GetDAQSettings(str, far = 0)
@@ -185,7 +185,7 @@ static Function SC_SetControls3a_preAcq(string device)
 End
 
 // invalid event type (unknown)
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_SetControls3a([string str])
 
 	[STRUCT DAQSettings s] = SC_GetDAQSettings(str, far = 0)
@@ -215,7 +215,7 @@ static Function SC_SetControls3b_preAcq(string device)
 End
 
 // invalid event type (mid sweep)
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_SetControls3b([string str])
 
 	[STRUCT DAQSettings s] = SC_GetDAQSettings(str, far = 0)
@@ -245,7 +245,7 @@ static Function SC_SetControls3c_PreAcq(string device)
 End
 
 // invalid event type (generic)
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_SetControls3c([string str])
 
 	[STRUCT DAQSettings s] = SC_GetDAQSettings(str, far = 0)
@@ -275,7 +275,7 @@ static Function SC_SetControls4_preAcq(string device)
 End
 
 // unchangeable control in other event than pre DAQ
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_SetControls4([string str])
 
 	[STRUCT DAQSettings s] = SC_GetDAQSettings(str, far = 0)
@@ -305,7 +305,7 @@ static Function SC_SetControls5_preAcq(string device)
 End
 
 // hidden control is ignored
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_SetControls5([string str])
 
 	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
@@ -352,7 +352,7 @@ static Function SC_SetControls6_preAcq(string device)
 End
 
 // works with different controls
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_SetControls6([string str])
 
 	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
@@ -394,7 +394,7 @@ static Function SC_SetControls7_preAcq(string device)
 End
 
 // works with event/data tuples and also accepts incorrect casing for the event names
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_SetControls7([string str])
 
 	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
@@ -433,7 +433,7 @@ static Function SC_SetControls8_preAcq(string device)
 End
 
 // works with event/data tuples setting notebook text
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_SetControls8([string str])
 
 	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
@@ -479,7 +479,7 @@ static Function SC_SetControls9_preAcq(string device)
 End
 
 // supports "Pre Sweep" (old) and "Pre Sweep Config" (new)
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_SetControls9([string str])
 
 	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)

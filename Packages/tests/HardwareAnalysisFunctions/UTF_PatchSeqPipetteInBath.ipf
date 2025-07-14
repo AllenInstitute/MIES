@@ -185,7 +185,7 @@ static Function PS_PB1_preAcq(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_PB1([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -252,7 +252,7 @@ static Function PS_PB2_preAcq(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_PB2([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -320,7 +320,7 @@ static Function PS_PB3_preAcq(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_PB3([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -408,7 +408,7 @@ static Function PS_PB4_preAcq(string device)
 End
 
 // Same as PS_PB1 but has NumberOfFailedSweeps set to 2
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_PB4([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -475,7 +475,7 @@ static Function PS_PB5_preAcq(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_PB5([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -546,7 +546,7 @@ static Function PS_PB6_preAcq(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_PB6([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -625,7 +625,7 @@ End
 
 // Same as PS_PB2 but with failing sampling interval check
 //
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_PB7([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)

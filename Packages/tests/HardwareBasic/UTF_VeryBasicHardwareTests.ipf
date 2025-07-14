@@ -17,7 +17,7 @@ static Function CheckTestingInstallation()
 	REQUIRE_PROPER_STR(str)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function TestLocking([string str])
 
 	// check that we can gather the device config wave
@@ -44,7 +44,7 @@ static Function CheckThatZeroMQMessagingWorks()
 	PrepareForPublishTest()
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckNumberOfRacksAndTTLs([string str])
 
 	variable numRacksRef, numTTLsRef
@@ -107,7 +107,7 @@ static Function CheckDeviceLists()
 
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckGetDeviceInfoValid([string str])
 
 	WAVE/Z wv = GetDeviceInfoWave(str)
@@ -129,7 +129,7 @@ static Function CheckGetDeviceInfoValid([string str])
 	CHECK_EQUAL_VAR(wv[%HardwareType], GetHardwareType(str))
 End
 
-// UTF_TD_GENERATOR NonExistingDevices
+// UTF_TD_GENERATOR DataGenerators#NonExistingDevices
 static Function CheckGetDeviceInfoWithInvalid([string str])
 
 	WAVE/Z wv = GetDeviceInfoWave(str)

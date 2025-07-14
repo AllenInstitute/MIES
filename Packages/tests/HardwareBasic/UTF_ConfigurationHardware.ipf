@@ -5,7 +5,7 @@
 
 static StrConstant REF_DAEPHYS_CONFIG_FILE = "DA_Ephys.json"
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RestoreDAEphysPanel([string str])
 
 	string fName, rewrittenConfigPath
@@ -22,7 +22,7 @@ static Function RestoreDAEphysPanel([string str])
 	MIES_CONF#CONF_SaveDAEphys(fname)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RestoreAndSaveConfiguration([string str])
 
 	string settingsIPath, settingsFolder, templateFolder, workingFolder
@@ -97,7 +97,7 @@ static Function RestoreAndSaveConfiguration([string str])
 	DeleteFile fName
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckIfConfigurationRestoresMCCFilterGain([string str])
 
 	string rewrittenConfig, fName, path
@@ -160,8 +160,8 @@ End
 
 /// @brief Checks if every typed panel restores with auto opening
 ///
-/// IUTF_TD_GENERATOR s0:GetMiesMacrosWithPanelType
-/// IUTF_TD_GENERATOR s1:DeviceNameGenerator
+/// IUTF_TD_GENERATOR s0:DataGenerators#GetMiesMacrosWithPanelType
+/// IUTF_TD_GENERATOR s1:DataGenerators#DeviceNameGenerator
 static Function TCONF_CheckTypedPanelRestore([STRUCT IUTF_mData &md])
 
 	string win, winRestored, rewrittenConfig, device
@@ -199,7 +199,7 @@ static Function TCONF_CheckTypedPanelRestore([STRUCT IUTF_mData &md])
 	CHECK_EQUAL_STR(win, winRestored)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckIfConfigurationRestoresDAEphysWithUnassocDA([string str])
 
 	string rewrittenConfig, fName
@@ -293,7 +293,7 @@ static Function CheckIfConfigurationRestoresDAEphysWithoutAmp_PreAcq(string devi
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPAmplitude", val = 9.5)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckIfConfigurationRestoresDAEphysWithoutAmp([string str])
 
 	string rewrittenConfig, fName
@@ -391,7 +391,7 @@ static Function CheckIfConfigurationRestoresDAEphysWithoutAmp2_REENTRY([string s
 	CHECK_EQUAL_STR(hwTypeString[1], "")
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckIfConfigurationSavesAndRestores([string str])
 
 	string rewrittenConfig, fName

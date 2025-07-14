@@ -3,7 +3,7 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = DataGenerators
 
-Function/WAVE MajorNWBVersions()
+static Function/WAVE MajorNWBVersions()
 
 	Make/FREE wv = {1, 2}
 
@@ -12,7 +12,7 @@ Function/WAVE MajorNWBVersions()
 	return wv
 End
 
-Function/WAVE IndexingPossibilities()
+static Function/WAVE IndexingPossibilities()
 
 	Make/FREE wv = {0, 1}
 
@@ -21,7 +21,7 @@ Function/WAVE IndexingPossibilities()
 	return wv
 End
 
-Function/WAVE InsertedTPPossibilities()
+static Function/WAVE InsertedTPPossibilities()
 
 	Make/FREE wv = {0, 1}
 
@@ -30,7 +30,7 @@ Function/WAVE InsertedTPPossibilities()
 	return wv
 End
 
-Function/WAVE SingleMultiDeviceDAQ()
+static Function/WAVE SingleMultiDeviceDAQ()
 
 	WAVE multiDevices  = DeviceNameGeneratorMD1()
 	WAVE singleDevices = DeviceNameGeneratorMD0()
@@ -46,12 +46,12 @@ Function/WAVE SingleMultiDeviceDAQ()
 	return wv
 End
 
-Function/WAVE DeviceNameGenerator()
+static Function/WAVE DeviceNameGenerator()
 
 	return DeviceNameGeneratorMD1()
 End
 
-Function/WAVE DeviceNameGeneratorMD1()
+static Function/WAVE DeviceNameGeneratorMD1()
 
 	string devList = ""
 	string lblList = ""
@@ -85,7 +85,7 @@ Function/WAVE DeviceNameGeneratorMD1()
 	return data
 End
 
-Function/WAVE DeviceNameGeneratorMD0()
+static Function/WAVE DeviceNameGeneratorMD0()
 
 #ifdef TESTS_WITH_NI_HARDWARE
 	// NI Hardware has no single device support
@@ -109,7 +109,7 @@ Function/WAVE DeviceNameGeneratorMD0()
 
 End
 
-Function/WAVE NWBVersionStrings()
+static Function/WAVE NWBVersionStrings()
 
 	variable i, numEntries
 	string name
@@ -118,7 +118,7 @@ Function/WAVE NWBVersionStrings()
 	return data
 End
 
-Function/WAVE NeuroDataRefTree()
+static Function/WAVE NeuroDataRefTree()
 
 	variable i, numEntries
 	string name
@@ -130,7 +130,7 @@ Function/WAVE NeuroDataRefTree()
 	return data
 End
 
-Function/WAVE SpikeCountsStateValues()
+static Function/WAVE SpikeCountsStateValues()
 
 	variable numEntries = 6
 	variable idx
@@ -149,7 +149,7 @@ Function/WAVE SpikeCountsStateValues()
 	return wv
 End
 
-Function/WAVE GenerateBaselineValues()
+static Function/WAVE GenerateBaselineValues()
 
 	Make/FREE wv = {25, 35, 45}
 
@@ -158,7 +158,7 @@ Function/WAVE GenerateBaselineValues()
 	return wv
 End
 
-Function/WAVE GetITCDevices()
+static Function/WAVE GetITCDevices()
 
 #ifdef TESTS_WITH_NI_HARDWARE
 	Make/FREE/T/N=0 wv
@@ -173,7 +173,7 @@ Function/WAVE GetITCDevices()
 	return DeviceNameGeneratorMD1()
 End
 
-Function/WAVE GetChannelNumbersForDATTL()
+static Function/WAVE GetChannelNumbersForDATTL()
 
 	string list
 
@@ -188,7 +188,7 @@ Function/WAVE GetChannelNumbersForDATTL()
 	return channelNumbers
 End
 
-Function/WAVE GetClampModesWithoutIZero()
+static Function/WAVE GetClampModesWithoutIZero()
 
 	Make/FREE clampModes = {V_CLAMP_MODE, I_CLAMP_MODE}
 	SetDimensionLabels(clampModes, "VC;IC;", ROWS)
@@ -196,7 +196,7 @@ Function/WAVE GetClampModesWithoutIZero()
 	return clampModes
 End
 
-Function/WAVE GetClampModes()
+static Function/WAVE GetClampModes()
 
 	Make/FREE clampModes = {V_CLAMP_MODE, I_CLAMP_MODE, I_EQUAL_ZERO_MODE}
 	SetDimensionLabels(clampModes, "VC;IC;IZ;", ROWS)
@@ -204,7 +204,7 @@ Function/WAVE GetClampModes()
 	return clampModes
 End
 
-Function/WAVE GetChannelTypes()
+static Function/WAVE GetChannelTypes()
 
 	Make/FREE channelTypes = {CHANNEL_TYPE_DAC, CHANNEL_TYPE_TTL}
 
@@ -213,7 +213,7 @@ Function/WAVE GetChannelTypes()
 	return channelTypes
 End
 
-Function/WAVE NonExistingDevices()
+static Function/WAVE NonExistingDevices()
 
 	Make/FREE/T wv = {"Dev0815", "ITC16_DEV_15"}
 
@@ -295,7 +295,7 @@ static Function/WAVE SF_TestVariablesGen()
 	return wv
 End
 
-Function/WAVE GetMiesMacrosWithPanelType()
+static Function/WAVE GetMiesMacrosWithPanelType()
 
 	WAVE/T allMiesMacros = GetMIESMacros()
 
@@ -391,7 +391,7 @@ static Function/WAVE EpochTestTTL_OD_Gen()
 	return w
 End
 
-Function/WAVE InfiniteValues()
+static Function/WAVE InfiniteValues()
 
 	Make/FREE wv = {NaN, Inf, -Inf}
 
@@ -410,14 +410,14 @@ static Function/WAVE RoundTripStimsetFileType()
 	return wv
 End
 
-Function/WAVE IndexAfterDecimation_Positions()
+static Function/WAVE IndexAfterDecimation_Positions()
 
 	Make/FREE/D wv = {e / 11.1, Pi / 11.1, 0.73, 0.51}
 
 	return wv
 End
 
-Function/WAVE IndexAfterDecimation_Sizes()
+static Function/WAVE IndexAfterDecimation_Sizes()
 
 	// These are variations of the target size, the source size is fixed 1000
 	Make/FREE/D wv = {345, 678, 1234, 5678}
@@ -425,7 +425,7 @@ Function/WAVE IndexAfterDecimation_Sizes()
 	return wv
 End
 
-Function/WAVE CountObjectTypeFlags()
+static Function/WAVE CountObjectTypeFlags()
 
 	Make/FREE/D input0 = {COUNTOBJECTS_WAVES}
 	Make/FREE/T result0 = {"wv1;wv2;"}
@@ -458,7 +458,7 @@ Function/WAVE CountObjectTypeFlags()
 	return wv
 End
 
-Function/WAVE TrailSepOptions()
+static Function/WAVE TrailSepOptions()
 
 	Make/FREE wv = {0, 1}
 
@@ -976,7 +976,7 @@ static Function/WAVE SF_TestOperationSelNoArg()
 	return wt
 End
 
-Function/WAVE GetAmplifierFuncs()
+static Function/WAVE GetAmplifierFuncs()
 
 	variable numEntries
 
@@ -991,7 +991,7 @@ Function/WAVE GetAmplifierFuncs()
 	return funcs
 End
 
-Function/WAVE GetNoAmplifierFuncs()
+static Function/WAVE GetNoAmplifierFuncs()
 
 	variable numEntries
 
@@ -1033,4 +1033,748 @@ static Function/WAVE GetConcatSingleElementWaves()
 	SetDimensionLabels(waves, "Numeric;Text;DFREF;WAVE", ROWS)
 
 	return waves
+End
+
+static Function/WAVE GetAnalysisFunctions()
+
+	string funcs
+
+	funcs = AFH_GetAnalysisFunctions(ANALYSIS_FUNCTION_VERSION_V3, includeUserFunctions = 0)
+
+	// remove our test help functions which do nasty things
+	funcs = GrepList(funcs, ".*_V3", 1)
+	funcs = GrepList(funcs, ".*_.*")
+
+	WAVE/T wv = ListToTextWave(funcs, ";")
+
+	SetDimensionLabels(wv, funcs, ROWS)
+
+	Sort/DIML wv, wv
+
+	return wv
+End
+
+static Function/WAVE GetAnalysisParameterValues()
+
+	Make/FREE/N=(5)/WAVE waves
+
+	Make/FREE/T wv0 = {"var", "123"}
+	waves[0] = wv0
+
+	Make/FREE/T wv1 = {"str", "abcd"}
+	waves[1] = wv1
+
+	Make/FREE/T wv2 = {"wv", "1;2;"}
+	waves[2] = wv2
+
+	Make/FREE/T wv3 = {"txtwv", "a;b;"}
+	waves[3] = wv3
+
+	Make/FREE/T wv4 = {"i_dont_exist", ""}
+	waves[4] = wv4
+
+	return waves
+End
+
+static Function/WAVE OldEpochsFormats()
+
+	Make/WAVE/N=2/FREE oldFormats = {root:EpochsWave:EpochsWave_4e534e298, root:EpochsWave:EpochsWave_d150d896e}
+
+	SetDimensionLabels(oldFormats, "EpochsWave_4e534e298;EpochsWave_d150d896e", ROWS)
+
+	return oldFormats
+End
+
+static Function/WAVE LBNInvalidValidPairs()
+
+	Make/WAVE/N=5/FREE waves
+
+	Make/T/FREE wv0 = {"a:b", "a [b]"}
+	waves[0] = wv0
+
+	Make/T/FREE wv1 = {"\"", "_"}
+	waves[1] = wv1
+
+	Make/T/FREE wv2 = {"\'", "_"}
+	waves[2] = wv2
+
+	Make/T/FREE wv3 = {";", "_"}
+	waves[3] = wv3
+
+	Make/T/FREE wv4 = {":", "_"}
+	waves[4] = wv4
+
+	return waves
+End
+
+static Function/WAVE AllDescriptionWaves()
+
+	Make/FREE/WAVE/N=1 wvs
+
+	// GetLBNumericalDescription creates a wave within the MIES datafolder, but that is killed at Test Begin
+	// Thus, we use a copy of that wave here
+	WAVE wDesc = GetLBNumericalDescription()
+	Duplicate/FREE wDesc, wT
+	wvs[0] = wT
+
+	return wvs
+End
+
+static Function/WAVE ControlTypesWhichOnlyAcceptVar()
+
+	Make/T/FREE wv = {"checkbox_ctrl_mode_checkbox", "slider_ctrl", "tab_ctrl", "valdisp_ctrl", "button_ctrl", "listbox_ctrl"}
+
+	return wv
+End
+
+static Function/WAVE ControlTypesWhichRequireOneParameter()
+
+	// all except button
+	Make/T/FREE wv = {"checkbox_ctrl_mode_checkbox", "slider_ctrl", "tab_ctrl", "valdisp_ctrl", "popup_ctrl", "setvar_str_ctrl", "setvar_num_ctrl", "listbox_ctrl"}
+
+	return wv
+End
+
+static Function/WAVE ControlTypesWhichOnlyAcceptVarOrStr()
+
+	Make/T/FREE wv = {"popup_ctrl", "setvar_str_ctrl", "setvar_num_ctrl"}
+
+	return wv
+End
+
+static Function/WAVE InvalidPopupMenuOtherIndizes()
+
+	Make/FREE wv = {-1, NaN, Inf, -Inf, ItemsInList(PGCT_POPUPMENU_ENTRIES)}
+
+	return wv
+End
+
+static Function/WAVE InvalidPopupMenuColorTableIndizes()
+
+	Make/FREE wv = {-1, NaN, Inf, -Inf, ItemsInList(CTabList())}
+
+	return wv
+End
+
+static Function/WAVE VariousModeFlags()
+
+	Make/FREE/D modes = {-1, PGC_MODE_ASSERT_ON_DISABLED, PGC_MODE_FORCE_ON_DISABLED, PGC_MODE_SKIP_ON_DISABLED}
+
+	return modes
+End
+
+static Function/WAVE StatsTest_GetInput()
+
+	Make/T/FREE/N=(3) template
+	SetDimensionLabels(template, "prop;state;postProc", ROWS)
+
+	// wv0
+	Duplicate/FREE/T template, wv0
+	WAVE/T input = wv0
+
+	input[%prop]     = "estate"
+	input[%state]    = "accept"
+	input[%postProc] = "nothing"
+
+	JWN_SetWaveInWaveNote(input, "/results", {PSX_ACCEPT, PSX_ACCEPT, PSX_ACCEPT, PSX_ACCEPT})
+	JWN_SetWaveInWaveNote(input, "/xValues", {1, 3, 5, 7})
+	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT})
+
+	// wv1
+	Duplicate/FREE/T template, wv1
+	WAVE/T input = wv1
+
+	input[%prop]     = "estate"
+	input[%state]    = "reject"
+	input[%postProc] = "nothing"
+
+	JWN_SetWaveInWaveNote(input, "/results", {PSX_REJECT, PSX_REJECT, PSX_REJECT})
+	JWN_SetWaveInWaveNote(input, "/xValues", {0, 4, 8})
+	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_REJECT, PSX_MARKER_REJECT, PSX_MARKER_REJECT})
+
+	// wv2
+	Duplicate/FREE/T template, wv2
+	WAVE/T input = wv2
+
+	input[%prop]     = "estate"
+	input[%state]    = "undetermined"
+	input[%postProc] = "nothing"
+
+	JWN_SetWaveInWaveNote(input, "/results", {PSX_UNDET, PSX_UNDET, PSX_UNDET})
+	JWN_SetWaveInWaveNote(input, "/xValues", {2, 6, 9})
+	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_UNDET, PSX_MARKER_UNDET, PSX_MARKER_UNDET})
+
+	// wv3
+	Duplicate/FREE/T template, wv3
+	WAVE/T input = wv3
+
+	input[%prop]     = "tau"
+	input[%state]    = "accept"
+	input[%postProc] = "nothing"
+
+	JWN_SetWaveInWaveNote(input, "/results", {0e-6, 4e-6, 8e-6})
+	JWN_SetWaveInWaveNote(input, "/xValues", {0, 4, 8})
+	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT})
+
+	// wv4
+	Duplicate/FREE/T template, wv4
+	WAVE/T input = wv4
+
+	input[%prop]     = "amp"
+	input[%state]    = "accept"
+	input[%postProc] = "stats"
+
+	JWN_SetWaveInWaveNote(input, "/results", {40, 40, 20, 25.81988897471611, 0, -2.0775})
+	JWN_SetWaveInWaveNote(input, "/xValues", ListToTextWave(PSX_STATS_LABELS, ";"))
+	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, \
+	                                         PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT})
+
+	// wv5
+	Duplicate/FREE/T template, wv5
+	WAVE/T input = wv5
+
+	input[%prop]     = "fstate"
+	input[%state]    = "undetermined"
+	input[%postProc] = "count"
+
+	JWN_SetWaveInWaveNote(input, "/results", {5})
+	// no xValues
+	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_UNDET})
+
+	// wv6
+	Duplicate/FREE/T template, wv6
+	WAVE/T input = wv6
+
+	input[%prop]     = "peaktime"
+	input[%state]    = "undetermined"
+	input[%postProc] = "hist"
+
+	JWN_SetWaveInWaveNote(input, "/results", {1, 2})
+	// no xValues
+	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_UNDET, PSX_MARKER_UNDET})
+
+	// wv7
+	Duplicate/FREE/T template, wv7
+	WAVE/T input = wv7
+
+	input[%prop]     = "xinterval"
+	input[%state]    = "undetermined"
+	input[%postProc] = "log10"
+
+	Make/FREE/D result = {NaN, log(60 - 20), log(90 - 60)}
+	JWN_SetWaveInWaveNote(input, "/results", result)
+	JWN_SetWaveInWaveNote(input, "/xValues", {2, 6, 9})
+	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_UNDET, PSX_MARKER_UNDET, PSX_MARKER_UNDET})
+
+	// wv8
+	Duplicate/FREE/T template, wv8
+	WAVE/T input = wv8
+
+	input[%prop]     = "fitresult"
+	input[%state]    = "undetermined"
+	input[%postProc] = "nothing"
+
+	JWN_SetWaveInWaveNote(input, "/results", {1, 1, 1, 1, 1})
+	JWN_SetWaveInWaveNote(input, "/xValues", {1, 3, 5, 7, 9})
+	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_UNDET, PSX_MARKER_UNDET, PSX_MARKER_UNDET, PSX_MARKER_UNDET, PSX_MARKER_UNDET})
+
+	// wv9
+	Duplicate/FREE/T template, wv9
+	WAVE/T input = wv9
+
+	input[%prop]     = "risetime"
+	input[%state]    = "undetermined"
+	input[%postProc] = "nothing"
+
+	JWN_SetWaveInWaveNote(input, "/results", {0.2, 0.6, 0.9})
+	JWN_SetWaveInWaveNote(input, "/xValues", {2, 6, 9})
+	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_UNDET, PSX_MARKER_UNDET, PSX_MARKER_UNDET})
+
+	// wv10
+	Duplicate/FREE/T template, wv10
+	WAVE/T input = wv10
+
+	input[%prop]     = "peaktime"
+	input[%state]    = "all"
+	input[%postProc] = "nonfinite"
+
+	JWN_SetWaveInWaveNote(input, "/results", {1, 3, 5, 7, 9})
+	JWN_SetWaveInWaveNote(input, "/xValues", {0, -1, +1, 0, -1})
+	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_UNDET})
+	Make/FREE/T lbl = {"-inf", "NaN", "inf"}
+	JWN_SetWaveInWaveNote(input, "/XTickLabels", lbl)
+	JWN_SetWaveInWaveNote(input, "/XTickPositions", {-1, 0, 1})
+
+	// end
+	Make/FREE/WAVE results = {wv0, wv1, wv2, wv3, wv4, wv5, wv6, wv7, wv8, wv9, wv10}
+
+	return results
+End
+
+Function/WAVE StatsTestSpecialCases_GetInput()
+
+	Make/T/FREE/N=(7) template
+	SetDimensionLabels(template, "prop;state;postProc;refNumOutputRows;numEventsCombo0;numEventsCombo1;outOfRange", ROWS)
+
+	// wv0
+	// every
+	Duplicate/FREE/T template, wv0
+	WAVE/T input = wv0
+
+	input[%prop]             = "estate"
+	input[%state]            = "every"
+	input[%postProc]         = "nothing"
+	input[%refNumOutputRows] = "3"
+	input[%numEventsCombo0]  = "5"
+	input[%numEventsCombo1]  = "3"
+	input[%outOfRange]       = "0"
+
+	JWN_CreatePath(input, "/0")
+	JWN_SetWaveInWaveNote(input, "/0/results", {PSX_ACCEPT, PSX_ACCEPT, PSX_ACCEPT})
+	JWN_SetWaveInWaveNote(input, "/0/xValues", {1, 3, 1})
+	JWN_SetWaveInWaveNote(input, "/0/marker", {PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT})
+
+	JWN_CreatePath(input, "/1")
+	JWN_SetWaveInWaveNote(input, "/1/results", {PSX_REJECT, PSX_REJECT, PSX_REJECT})
+	JWN_SetWaveInWaveNote(input, "/1/xValues", {0, 4, 0})
+	JWN_SetWaveInWaveNote(input, "/1/marker", {PSX_MARKER_REJECT, PSX_MARKER_REJECT, PSX_MARKER_REJECT})
+
+	JWN_CreatePath(input, "/2")
+	JWN_SetWaveInWaveNote(input, "/2/results", {PSX_UNDET, PSX_UNDET})
+	JWN_SetWaveInWaveNote(input, "/2/xValues", {2, 2})
+	JWN_SetWaveInWaveNote(input, "/2/marker", {PSX_MARKER_UNDET, PSX_MARKER_UNDET})
+
+	// wv1
+	// no match
+	Duplicate/FREE/T template, wv1
+	WAVE/T input = wv1
+
+	input[%prop]             = "estate"
+	input[%state]            = "accept"
+	input[%postProc]         = "nothing"
+	input[%refNumOutputRows] = "0"
+	input[%numEventsCombo0]  = "1"
+	input[%numEventsCombo1]  = "1"
+	input[%outOfRange]       = "0"
+
+	// wv2
+	// histogram works also with just one point
+	Duplicate/FREE/T template, wv2
+	WAVE/T input = wv2
+
+	input[%prop]             = "estate"
+	input[%state]            = "reject"
+	input[%postProc]         = "hist"
+	input[%refNumOutputRows] = "1"
+	input[%numEventsCombo0]  = "1"
+	input[%numEventsCombo1]  = "0"
+	input[%outOfRange]       = "0"
+
+	JWN_CreatePath(input, "/0")
+	JWN_SetWaveInWaveNote(input, "/0/results", {1})
+	// no x values
+	JWN_SetWaveInWaveNote(input, "/0/marker", {PSX_MARKER_REJECT})
+
+	// wv3
+	// histogram with no match as the tau values are out-of-range
+	Duplicate/FREE/T template, wv3
+	WAVE/T input = wv3
+
+	input[%prop]             = "tau"
+	input[%state]            = "undetermined"
+	input[%postProc]         = "hist"
+	input[%refNumOutputRows] = "0"
+	input[%numEventsCombo0]  = "3"
+	input[%numEventsCombo1]  = "0"
+	input[%outOfRange]       = "1"
+
+	// wv4
+	// histogram with match but cut out data
+	Duplicate/FREE/T template, wv4
+	WAVE/T input = wv4
+
+	input[%prop]             = "amp"
+	input[%state]            = "all"
+	input[%postProc]         = "hist"
+	input[%refNumOutputRows] = "1"
+	input[%numEventsCombo0]  = "3"
+	input[%numEventsCombo1]  = "0"
+	input[%outOfRange]       = "1"
+
+	JWN_CreatePath(input, "/0")
+	JWN_SetWaveInWaveNote(input, "/0/results", {1})
+	// no xValues
+	JWN_SetWaveInWaveNote(input, "/0/marker", {PSX_MARKER_REJECT})
+
+	// wv5
+	// stats ignores NaN
+	Duplicate/FREE/T template, wv5
+	WAVE/T input = wv5
+
+	input[%prop]             = "amp"
+	input[%state]            = "all"
+	input[%postProc]         = "stats"
+	input[%refNumOutputRows] = "1"
+	input[%numEventsCombo0]  = "2"
+	input[%numEventsCombo1]  = "2"
+	input[%outOfRange]       = "0"
+
+	JWN_CreatePath(input, "/0")
+	JWN_SetWaveInWaveNote(input, "/0/results", {10, NaN, 0, 0, NaN, NaN})
+	JWN_SetWaveInWaveNote(input, "/0/xValues", ListToTextWave(PSX_STATS_LABELS, ";"))
+	JWN_SetWaveInWaveNote(input, "/0/marker", {PSX_MARKER_REJECT, PSX_MARKER_REJECT, PSX_MARKER_REJECT, \
+	                                           PSX_MARKER_REJECT, PSX_MARKER_REJECT, PSX_MARKER_REJECT})
+
+	// wv6
+	// stats ignores NaN and with all data NaN we don't get anything
+	Duplicate/FREE/T template, wv6
+	WAVE/T input = wv6
+
+	input[%prop]             = "amp"
+	input[%state]            = "all"
+	input[%postProc]         = "stats"
+	input[%refNumOutputRows] = "0"
+	input[%numEventsCombo0]  = "1"
+	input[%numEventsCombo1]  = "1"
+	input[%outOfRange]       = "0"
+
+	// no results
+	// no xValues
+	// no marker
+
+	// wv7
+	// xinterval with multiple combos
+	Duplicate/FREE/T template, wv7
+	WAVE/T input = wv7
+
+	input[%prop]             = "xinterval"
+	input[%state]            = "accept"
+	input[%postProc]         = "nothing"
+	input[%refNumOutputRows] = "1"
+	input[%numEventsCombo0]  = "5"
+	input[%numEventsCombo1]  = "5"
+	input[%outOfRange]       = "0"
+
+	JWN_CreatePath(input, "/0")
+	JWN_SetWaveInWaveNote(input, "/0/results", {NaN, 20, NaN, 20})
+	JWN_SetWaveInWaveNote(input, "/0/xValues", {1, 3, 1, 3})
+	JWN_SetWaveInWaveNote(input, "/0/marker", {PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT})
+
+	// end
+	Make/FREE/WAVE results = {wv0, wv1, wv2, wv3, wv4, wv5, wv6, wv7}
+
+	return results
+End
+
+static Function/WAVE GetAllStatsProperties()
+
+	WAVE wv = MIES_PSX#PSX_GetAllStatsProperties()
+	CHECK_WAVE(wv, TEXT_WAVE)
+
+	SetDimensionLabelsFromWaveContents(wv)
+
+	return wv
+End
+
+static Function/WAVE GetKernelAmplitude()
+
+	Make/D/FREE wv = {5, -5}
+
+	return wv
+End
+
+static Function/WAVE SupportedPostProcForEventSelection()
+
+	// nonfinite is tested elsewhere
+	Make/FREE/T wv = {"nothing", "log10"}
+	SetDimensionLabels(wv, AddPrefixToEachListItem("PostProc=", TextWavetoList(wv, ";")), ROWS)
+
+	return wv
+End
+
+static Function/WAVE SupportedAxisModesForEventSelection()
+
+	Make/FREE wv = {MODIFY_GRAPH_LOG_MODE_NORMAL, MODIFY_GRAPH_LOG_MODE_LOG10, MODIFY_GRAPH_LOG_MODE_LOG2}
+	SetDimensionLabels(wv, "LeftAxis=linear;LeftAxis=log10;LeftAxis=log2", ROWS)
+
+	return wv
+End
+
+static Function/WAVE GetCodeVariations()
+
+	string code
+
+	Make/T/N=(3)/FREE wv
+
+	wv[0] = GetTestCode("nothing")
+	code  = ""
+
+	// one sweep per operation separated with `with`
+	code  = "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0]), selvis(all))), 2, 100, 0)"
+	code += "\r with \r"
+	code += "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([2]), selvis(all))), 1.5, 100, 0)"
+	code += "\r and \r"
+	code += "psxStats(myId, select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), peak, all, nothing)"
+	wv[1] = code
+	code  = ""
+
+	// same as code[1] but with a select array for stats
+	code  = "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0]), selvis(all))), 2, 100, 0)"
+	code += "\r with \r"
+	code += "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([2]), selvis(all))), 1.5, 100, 0)"
+	code += "\r and \r"
+	code += "psxStats(myId, [select(selrange([50, 150]), selchannels(AD6), selsweeps([0]), selvis(all)), select(selrange([50, 150]), selchannels(AD6), selsweeps([2]), selvis(all))], peak, all, nothing)"
+	wv[2] = code
+	code  = ""
+
+	return wv
+End
+
+static Function/WAVE SomeTextWaves()
+
+	Make/WAVE/FREE/N=5 all
+
+	Make/FREE/T/N=0 wv1
+
+	// both empty and null roundtrip to an empty wave
+	all[0] = wv1
+	all[1] = $""
+
+	Make/FREE/T/N=(3, 3) wv2 = {{"1", "2", "3"}, {"4", "5", "6"}, {"7", "8", "9"}}
+	all[2] = wv2
+
+	Make/FREE/T/N=(2, 2, 2) wv3 = {{{"1", "2"}, {"3", "4"}}, {{"5", "6"}, {"7", "8"}}}
+	all[3] = wv3
+
+	Make/FREE/T/N=(2, 2, 2, 2) wv4 = {{{{"1", "2"}, {"3", "4"}}, {{"5", "6"}, {"7", "8"}}}, {{{"9", "10"}, {"11", "12"}}, {{"13", "14"}, {"15", "16"}}}}
+	all[4] = wv4
+
+	return all
+End
+
+static Function/WAVE STIW_TestAbortGetter()
+
+	Make/D/FREE data = {4, -1, 0.1, NaN, Inf, -Inf}
+	return data
+End
+
+static Function/WAVE GetValidStringsWithSweepNumber()
+
+	Make/FREE/T wv = {"Sweep_100", "Sweep_100_bak", "Config_Sweep_100", "Config_Sweep_100_bak", "X_100"}
+
+	return wv
+End
+
+static Function/WAVE GetInvalidStringsWithSweepNumber()
+
+	Make/FREE/T wv = {"", "A", "A__", "Sweep_-100"}
+
+	return wv
+End
+
+static Function/WAVE SupportedTypeGetter()
+
+	Make/FREE result = {IGOR_TYPE_32BIT_FLOAT, IGOR_TYPE_64BIT_FLOAT}
+
+	SetDimLabel 0, 0, $"float", result
+	SetDimLabel 0, 1, $"double", result
+
+	return result
+End
+
+static Function/WAVE WB_GatherStimsets()
+
+	string list
+
+	DFREF dfr = root:wavebuilder_misc:DAParameterWaves
+	list = GetListOfObjects(dfr, "WP_.*")
+	list = RemovePrefixFromListItem("WP_", list)
+	WAVE/T wv = ListToTextWave(list, ";")
+
+	SetDimensionLabels(wv, list, ROWS)
+
+	return wv
+End
+
+static Function/WAVE PAT_IncrementalSweepAdd_Generator()
+
+	Make/FREE/WAVE/N=4 w
+
+	Make/FREE sweeps = {0, 1, 2, 3, 4, 5}
+	w[0] = sweeps
+	Make/FREE sweeps = {5, 4, 3, 2, 1, 0}
+	w[1] = sweeps
+	Make/FREE sweeps = {2, 1, 5, 3, 4, 0}
+	w[2] = sweeps
+	Make/FREE sweeps = {4, 3, 5, 0, 1, 2}
+	w[3] = sweeps
+
+	return w
+End
+
+static Function/WAVE AllDatabrowserSubWindows()
+
+	string win
+
+	win = DB_OpenDatabrowser()
+
+	WAVE/Z/T allWindows = ListToTextWave(GetAllWindows(win), ";")
+	CHECK_WAVE(allWindows, TEXT_WAVE)
+
+	allWindows[] = StringFromList(1, allWindows[p], "#")
+
+	RemoveTextWaveEntry1D(allWindows, "", all = 1)
+
+	WAVE/Z/T allWindowsUnique = GetUniqueEntries(allWindows)
+	CHECK_WAVE(allWindowsUnique, TEXT_WAVE)
+
+	SetDimensionLabels(allWindowsUnique, TextWaveToList(allWindowsUnique, ";"), ROWS)
+
+	KillWindow $win
+
+	return allWindowsUnique
+End
+
+static Function/WAVE VariousInputForHasRequiredQCOrder()
+
+	// IPT_FORMAT_OFF
+
+	// all zero
+	Make/FREE firstQC      = {0, 0, 0, 0}
+	Make/FREE checkQCFirst = {0, 0, 0}
+	Make/FREE lastQC       = {0, 0, 0, 0}
+	Make/FREE checkQCLast  = {0, 0, 0}
+	Make/FREE result       = {0}
+
+	Make/FREE/WAVE wv0 = {firstQC, checkQCFirst, lastQC, checkQCLast, result}
+
+	// only first
+	Make/FREE firstQC      = {0, 0, 0, 0}
+	Make/FREE checkQCFirst = {1, 1, 1}
+	Make/FREE lastQC       = {0, 0, 0, 0}
+	Make/FREE checkQCLast  = {0, 0, 0}
+	Make/FREE result       = {0}
+
+	Make/FREE/WAVE wv1 = {firstQC, checkQCFirst, lastQC, checkQCLast, result}
+
+	// only last
+	Make/FREE firstQC      = {0, 0, 0, 0}
+	Make/FREE checkQCFirst = {0, 0, 0}
+	Make/FREE lastQC       = {0, 0, 0, 0}
+	Make/FREE checkQCLast  = {1, 1, 1}
+	Make/FREE result       = {0}
+
+	Make/FREE/WAVE wv2 = {firstQC, checkQCFirst, lastQC, checkQCLast, result}
+
+	// wrong order
+	Make/FREE firstQC      = {0, 1, 1, 0}
+	Make/FREE checkQCFirst = {0, 1, 0}
+	Make/FREE lastQC       = {0, 1, 1, 0}
+	Make/FREE checkQCLast  = {1, 0, 0}
+	Make/FREE result       = {0}
+
+	Make/FREE/WAVE wv3 = {firstQC, checkQCFirst, lastQC, checkQCLast, result}
+
+	// correct order
+	Make/FREE firstQC      = {0, 1, 1, 0}
+	Make/FREE checkQCFirst = {1, 0, 0}
+	Make/FREE lastQC       = {0, 1, 1, 0}
+	Make/FREE checkQCLast  = {0, 1, 0}
+	Make/FREE result       = {1}
+
+	Make/FREE/WAVE wv4 = {firstQC, checkQCFirst, lastQC, checkQCLast, result}
+
+	// correct order but last sweep failed
+	Make/FREE firstQC      = {0, 1, 0, 0}
+	Make/FREE checkQCFirst = {1, 0, 0}
+	Make/FREE lastQC       = {0, 1, 0, 0}
+	Make/FREE checkQCLast  = {0, 1, 0}
+	Make/FREE result       = {0}
+
+	Make/FREE/WAVE wv5 = {firstQC, checkQCFirst, lastQC, checkQCLast, result}
+
+	// correct order but first sweep failed
+	Make/FREE firstQC      = {0, 0, 0, 0}
+	Make/FREE checkQCFirst = {1, 0, 0}
+	Make/FREE lastQC       = {0, 0, 1, 0}
+	Make/FREE checkQCLast  = {0, 1, 0}
+	Make/FREE result       = {0}
+
+	Make/FREE/WAVE wv6 = {firstQC, checkQCFirst, lastQC, checkQCLast, result}
+
+	// passes with fail gap
+	Make/FREE firstQC      = {0, 0, 1, 0, 0}
+	Make/FREE checkQCFirst = {0, 1, 0, 0}
+	Make/FREE lastQC       = {0, 0, 0, 0, 1}
+	Make/FREE checkQCLast  = {0, 0, 0, 1}
+	Make/FREE result       = {1}
+
+	Make/FREE/WAVE wv7 = {firstQC, checkQCFirst, lastQC, checkQCLast, result}
+
+	// fails due to gap with firstQC passing
+	Make/FREE firstQC      = {0, 0, 1, 1, 0}
+	Make/FREE checkQCFirst = {0, 1, 0, 0}
+	Make/FREE lastQC       = {0, 0, 0, 0, 1}
+	Make/FREE checkQCLast  = {0, 0, 0, 1}
+	Make/FREE result       = {0}
+
+	Make/FREE/WAVE wv8 = {firstQC, checkQCFirst, lastQC, checkQCLast, result}
+
+	// fails due to gap with lastQC passing
+	Make/FREE firstQC      = {0, 1, 0, 0, 0}
+	Make/FREE checkQCFirst = {1, 0, 0, 0}
+	Make/FREE lastQC       = {0, 0, 1, 1, 0}
+	Make/FREE checkQCLast  = {0, 0, 1, 0}
+	Make/FREE result       = {0}
+
+	// IPT_FORMAT_ON
+
+	Make/FREE/WAVE wv9 = {firstQC, checkQCFirst, lastQC, checkQCLast, result}
+
+	Make/FREE/WAVE wv = {wv0, wv1, wv2, wv3, wv4, wv5, wv6, wv7, wv8, wv9}
+
+	return wv
+End
+
+static Function/WAVE VariousInputForCalculateFillinQC()
+
+	// all constant
+	Make/FREE DAScales = {1, 1, 1, 1}
+	Make/FREE ref = {0, 0, 0, 0}
+
+	Make/FREE/WAVE wv0 = {DAScales, ref}
+
+	// sorted
+	Make/FREE DAScales = {1, 2, 3, 4}
+	Make/FREE ref = {0, 0, 0, 0}
+
+	Make/FREE/WAVE wv1 = {DAScales, ref}
+
+	// reverse sorted
+	Make/FREE DAScales = {4, 3, 2, 1}
+	Make/FREE ref = {0, 1, 1, 1}
+
+	Make/FREE/WAVE wv2 = {DAScales, ref}
+
+	// first is largest
+	Make/FREE DAScales = {8, 4, 7, 6, 5}
+	Make/FREE ref = {0, 1, 1, 1, 1}
+
+	Make/FREE/WAVE wv3 = {DAScales, ref}
+
+	// complicated, smallest first
+	Make/FREE DAScales = {1, 4, 3, 6, 5}
+	Make/FREE ref = {0, 0, 1, 0, 1}
+
+	Make/FREE/WAVE wv4 = {DAScales, ref}
+
+	// complicated, middle one first
+	Make/FREE DAScales = {3, 4, 1, 6, 5}
+	Make/FREE ref = {0, 0, 1, 0, 1}
+
+	Make/FREE/WAVE wv5 = {DAScales, ref}
+
+	Make/FREE/WAVE wv = {wv0, wv1, wv2, wv3, wv4, wv5}
+
+	return wv
 End

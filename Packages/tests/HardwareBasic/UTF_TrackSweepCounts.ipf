@@ -232,7 +232,7 @@ static Function Events_MD0_RA0_I0_L0_BKG0(STRUCT TestSettings &t)
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD0
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD0
 static Function MD0_RA0_I0_L0_BKG0([string str])
 
 	PrepareForPublishTest()
@@ -273,7 +273,7 @@ static Function Events_MD1_RA0_I0_L0_BKG1(STRUCT TestSettings &t)
 	Events_MD0_RA0_I0_L0_BKG0(t)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MD1_RA0_I0_L0_BKG1([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings()
@@ -331,7 +331,7 @@ static Function Events_MD0_RA1_I0_L0_BKG1(STRUCT TestSettings &t)
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD0
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD0
 static Function MD0_RA1_I0_L0_BKG0([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings()
@@ -366,7 +366,7 @@ static Function Events_MD1_RA1_I0_L0_BKG1(STRUCT TestSettings &t)
 	Events_MD0_RA1_I0_L0_BKG1(t)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MD1_RA1_I0_L0_BKG1([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings()
@@ -438,7 +438,7 @@ static Function Events_MD1_RA1_I1_L0_BKG1(STRUCT TestSettings &t)
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MD1_RA1_I1_L0_BKG1([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings()
@@ -476,7 +476,7 @@ static Function Events_MD0_RA1_I1_L0_BKG0(STRUCT TestSettings &t)
 	Events_MD1_RA1_I1_L0_BKG1(t)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD0
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD0
 static Function MD0_RA1_I1_L0_BKG0([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings()
@@ -558,7 +558,7 @@ static Function Events_MD1_RA1_I1_L1_BKG1(STRUCT TestSettings &t)
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MD1_RA1_I1_L1_BKG1([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings()
@@ -595,7 +595,7 @@ static Function Events_MD0_RA1_I1_L1_BKG0(STRUCT TestSettings &t)
 	Events_MD1_RA1_I1_L1_BKG1(t)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD0
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD0
 static Function MD0_RA1_I1_L1_BKG0([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings()
@@ -676,7 +676,7 @@ static Function Events_RepeatSets_1(STRUCT TestSettings &t)
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RepeatSets_1([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA1_I0_L0_BKG1_RES2")
@@ -783,7 +783,7 @@ static Function Events_RepeatSets_2(STRUCT TestSettings &t)
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RepeatSets_2([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA1_I1_L0_BKG1_RES2")
@@ -911,7 +911,7 @@ static Function Events_RepeatSets_3(STRUCT TestSettings &t)
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RepeatSets_3([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA1_I1_L1_BKG1_RES2")
@@ -1047,7 +1047,7 @@ static Function RepeatSets_4_PreAcq(string device)
 	SwitchIndexingOrder_IGNORE(device)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RepeatSets_4([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA1_I1_L1_BKG1_RES2")
@@ -1161,7 +1161,7 @@ static Function RepeatSets_5_PreAcq(string device)
 	SwitchIndexingOrder_IGNORE(device)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RepeatSets_5([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA1_I1_L0_BKG1_RES2")
@@ -1214,7 +1214,7 @@ End
 
 // test that locked indexing works when the maximum number of sweeps is
 // not in the first stimset
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RepeatSets_6([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA1_I1_L1_BKG1_RES1")
@@ -1250,7 +1250,7 @@ static Function CheckIZeroClampMode_PreAcq(string device)
 	PGC_SetAndActivateControl(device, "Radio_ClampMode_1IZ", val = 1)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckIZeroClampMode([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA0_I0_L0_BKG1_RES1")
@@ -1314,7 +1314,7 @@ static Function Events_RepeatSets_7(STRUCT TestSettings &t)
 End
 
 // test that all events are fired, even with TP during ITI
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RepeatSets_7([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA1_I0_L0_BKG1_RES1_ITI3_TPI1")
@@ -1355,7 +1355,7 @@ End
 
 // Locked Indexing with TP during DAQ
 //
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RepeatSets_8([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA1_I1_L1_BKG1_RES1")
@@ -1399,7 +1399,7 @@ End
 
 // Unlocked Indexing with TP during DAQ
 //
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RepeatSets_9([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA1_I1_L0_BKG1_RES1")

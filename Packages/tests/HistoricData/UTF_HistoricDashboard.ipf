@@ -40,7 +40,7 @@ static Function TestCompression()
 	CHECK_EQUAL_STR(refData, data)
 End
 
-/// UTF_TD_GENERATOR GetHistoricDataFiles
+/// UTF_TD_GENERATOR HistoricDataHelpers#GetHistoricDataFiles
 Function TestDashboardWithHistoricData([string str])
 
 	string abWin, sweepBrowsers, file, bsPanel, sbWin
@@ -65,7 +65,7 @@ Function TestAnalysisBrowserAddingFiles()
 	string abWin, sweepBrowsers, fileToReadd
 	variable holeIndex
 
-	WAVE/T files = GetHistoricDataFiles()
+	WAVE/T files = HistoricDataHelpers#GetHistoricDataFiles()
 	files[] = "input:" + files[p]
 
 	[abWin, sweepBrowsers] = OpenAnalysisBrowser(files)
@@ -90,7 +90,7 @@ Function TestDashboardDependentControlHandling()
 
 	string abWin, sweepBrowsers, file, sweepBrowser, bsPanel, scPanel
 
-	WAVE/T files = GetHistoricDataFiles()
+	WAVE/T files = HistoricDataHelpers#GetHistoricDataFiles()
 	file = "input:" + files[0]
 
 	[abWin, sweepBrowsers] = OpenAnalysisBrowser({file}, loadSweeps = 1)
@@ -145,7 +145,7 @@ Function TestDashboardSelections()
 
 	string abWin, sweepBrowsers, file, sweepBrowser, bsPanel
 
-	WAVE/T files = GetHistoricDataFiles()
+	WAVE/T files = HistoricDataHelpers#GetHistoricDataFiles()
 	file = "input:" + files[0]
 
 	[abWin, sweepBrowsers] = OpenAnalysisBrowser({file}, loadSweeps = 1)

@@ -3,7 +3,7 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = HistoricEochClipping
 
-/// UTF_TD_GENERATOR GetHistoricDataFiles
+/// UTF_TD_GENERATOR HistoricDataHelpers#GetHistoricDataFiles
 static Function TestEpochClipping([string str])
 
 	string abWin, sweepBrowsers, file, bsPanel, sbWin

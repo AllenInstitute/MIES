@@ -3,7 +3,7 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = HistoricSweepUpgrade
 
-/// UTF_TD_GENERATOR GetHistoricDataFilesSweepUpgrade
+/// UTF_TD_GENERATOR HistoricDataHelpers#GetHistoricDataFilesSweepUpgrade
 static Function TestSweepUpgrade([string str])
 
 	string abWin, sweepBrowsers, file, bsPanel, sbWin, dataFolder, device, preUpgradeName

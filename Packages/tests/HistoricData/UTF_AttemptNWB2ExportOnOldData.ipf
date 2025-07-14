@@ -3,7 +3,7 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = ExportToNWB
 
-/// UTF_TD_GENERATOR GetHistoricDataFilesPXP
+/// UTF_TD_GENERATOR HistoricDataHelpers#GetHistoricDataFilesPXP
 static Function TestExportingDataToNWB([string str])
 
 	string templateName, nwbFileName, device
@@ -25,7 +25,7 @@ static Function TestExportingDataToNWB([string str])
 	endfor
 End
 
-/// UTF_TD_GENERATOR GetHistoricDataFilesNWB
+/// UTF_TD_GENERATOR HistoricDataHelpers#GetHistoricDataFilesNWB
 static Function TestSweepBrowserExportToNWB([string str])
 
 	string file, win, abWin, sweepBrowsers, fileType, dataFolder, nwbFileName

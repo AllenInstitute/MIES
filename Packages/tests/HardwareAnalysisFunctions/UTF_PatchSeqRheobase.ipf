@@ -136,7 +136,7 @@ static Function PS_RB1_preAcq(string device)
 	SetFinalDAScale(PSQ_RB_FINALSCALE_FAKE_HIGH)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_RB1([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -230,7 +230,7 @@ static Function PS_RB2_preAcq(string device)
 	SetFinalDAScale(PSQ_RB_FINALSCALE_FAKE_HIGH)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_RB2([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -310,7 +310,7 @@ static Function PS_RB3_preAcq(string device)
 	SetFinalDAScale(PSQ_RB_FINALSCALE_FAKE_HIGH)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_RB3([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -390,7 +390,7 @@ static Function PS_RB4_preAcq(string device)
 	SetFinalDAScale(PSQ_RB_FINALSCALE_FAKE_HIGH)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_RB4([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -483,7 +483,7 @@ static Function PS_RB5_preAcq(string device)
 	SetFinalDAScale(PSQ_RB_FINALSCALE_FAKE_HIGH)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_RB5([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -563,7 +563,7 @@ static Function PS_RB6_preAcq(string device)
 	SetFinalDAScale(PSQ_RB_FINALSCALE_FAKE_HIGH)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_RB6([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -645,7 +645,7 @@ static Function PS_RB7_preAcq(string device)
 	SetFinalDAScale(PSQ_RB_FINALSCALE_FAKE_HIGH)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_RB7([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -732,7 +732,7 @@ static Function PS_RB8_preAcq(string device)
 	SetFinalDAScale(PSQ_RB_FINALSCALE_FAKE_LOW)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_RB8([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -823,7 +823,7 @@ static Function PS_RB9_preAcq(string device)
 End
 
 // check behaviour of DAScale 0 with PSQ_RB_DASCALE_STEP_LARGE stepsize
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_RB9([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -910,7 +910,7 @@ static Function PS_RB10_preAcq(string device)
 End
 
 // check behaviour of DAScale 0 with PSQ_RB_DASCALE_STEP_SMALL stepsize
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_RB10([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -998,7 +998,7 @@ End
 
 // Same as PS_RB1 but with failing sampling frequency check
 //
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_RB11([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -1093,7 +1093,7 @@ static Function PS_RB12_preAcq(string device)
 #endif // TESTS_WITH_NI_HARDWARE
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_RB12([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)

@@ -264,7 +264,7 @@ Function WB_SaveErrorsDontDeleteExistingStimSets()
 	CHECK_EQUAL_VAR(modCount, WaveMOdCount(stimset))
 End
 
-/// UTF_TD_GENERATOR GetChannelTypes
+/// UTF_TD_GENERATOR DataGenerators#GetChannelTypes
 Function ExportAndLoadOfCustomWaves([variable var])
 
 	string setName, path, filename, history

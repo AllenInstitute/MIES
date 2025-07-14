@@ -58,7 +58,7 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(variable sweepNo, string device, s
 	endswitch
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MSQ_DS1([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
@@ -92,7 +92,7 @@ static Function MSQ_DS1_REENTRY([string str])
 	CommonAnalysisFunctionChecks(str, sweepNo, setPass)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MSQ_DS2([string str])
 
 	AFH_AddAnalysisParameter("MSQ_DAScale_DA_0", "DAScales", wv = {1000, 1500, 2000, 3000, 5000})

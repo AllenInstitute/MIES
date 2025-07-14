@@ -45,8 +45,8 @@ static Function GlobalPreAcq(string device)
 	PASS()
 End
 
-// UTF_TD_GENERATOR v0:IndexingPossibilities
-// UTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR v0:DataGenerators#IndexingPossibilities
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
 static Function CheckActiveSetCount([STRUCT IUTF_MDATA &md])
 
 	STRUCT DAQSettings s
@@ -85,8 +85,8 @@ static Function CheckThatTestpulseRan_IGNORE(string device)
 	CHECK_WAVE(settings, NUMERIC_WAVE)
 End
 
-// UTF_TD_GENERATOR v0:SingleMultiDeviceDAQ
-// UTF_TD_GENERATOR s0:DeviceNameGenerator
+// UTF_TD_GENERATOR v0:DataGenerators#SingleMultiDeviceDAQ
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGenerator
 static Function Abort_ITI_TP([STRUCT IUTF_MDATA &md])
 
 	STRUCT DAQSettings s
@@ -112,8 +112,8 @@ static Function Abort_ITI_TP_REENTRY([STRUCT IUTF_MDATA &md])
 	CheckDAQStopReason(md.s0, DQ_STOP_REASON_TP_STARTED)
 End
 
-// UTF_TD_GENERATOR v0:SingleMultiDeviceDAQ
-// UTF_TD_GENERATOR s0:DeviceNameGenerator
+// UTF_TD_GENERATOR v0:DataGenerators#SingleMultiDeviceDAQ
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGenerator
 static Function Abort_ITI_TP_A_TP([STRUCT IUTF_MDATA &md])
 
 	STRUCT DAQSettings s
@@ -141,8 +141,8 @@ static Function Abort_ITI_TP_A_TP_REENTRY([STRUCT IUTF_MDATA &md])
 	CheckDAQStopReason(md.s0, DQ_STOP_REASON_TP_STARTED)
 End
 
-// UTF_TD_GENERATOR v0:SingleMultiDeviceDAQ
-// UTF_TD_GENERATOR s0:DeviceNameGenerator
+// UTF_TD_GENERATOR v0:DataGenerators#SingleMultiDeviceDAQ
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGenerator
 static Function AbortTP([STRUCT IUTF_MDATA &md])
 
 	STRUCT DAQSettings s
@@ -178,8 +178,8 @@ static Function AbortTP_REENTRY([STRUCT IUTF_MDATA &md])
 	PASS()
 End
 
-// UTF_TD_GENERATOR v0:SingleMultiDeviceDAQ
-// UTF_TD_GENERATOR s0:DeviceNameGenerator
+// UTF_TD_GENERATOR v0:DataGenerators#SingleMultiDeviceDAQ
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGenerator
 static Function StartDAQDuringTP([STRUCT IUTF_MDATA &md])
 
 	STRUCT DAQSettings s
@@ -215,8 +215,8 @@ static Function StartDAQDuringTP_REENTRY([STRUCT IUTF_MDATA &md])
 	// ascending sweep numbers are checked in TEST_CASE_BEGIN_OVERRIDE()
 End
 
-// UTF_TD_GENERATOR v0:SingleMultiDeviceDAQ
-// UTF_TD_GENERATOR s0:DeviceNameGenerator
+// UTF_TD_GENERATOR v0:DataGenerators#SingleMultiDeviceDAQ
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGenerator
 static Function Abort_ITI_PressAcq([STRUCT IUTF_MDATA &md])
 
 	STRUCT DAQSettings s
@@ -243,8 +243,8 @@ static Function Abort_ITI_PressAcq_REENTRY([STRUCT IUTF_MDATA &md])
 	CheckDAQStopReason(device, DQ_STOP_REASON_DAQ_BUTTON)
 End
 
-// UTF_TD_GENERATOR v0:SingleMultiDeviceDAQ
-// UTF_TD_GENERATOR s0:DeviceNameGenerator
+// UTF_TD_GENERATOR v0:DataGenerators#SingleMultiDeviceDAQ
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGenerator
 static Function Abort_ITI_TP_A_PressAcq([STRUCT IUTF_MDATA &md])
 
 	STRUCT DAQSettings s
@@ -279,8 +279,8 @@ static Function ChangeToOtherDeviceDAQ_PreAcq(string device)
 	wv[%$"Analysis pre DAQ function"][%Set] = "ChangeToOtherDeviceDAQAF"
 End
 
-// UTF_TD_GENERATOR v0:SingleMultiDeviceDAQ
-// UTF_TD_GENERATOR s0:DeviceNameGeneratorMD0
+// UTF_TD_GENERATOR v0:DataGenerators#SingleMultiDeviceDAQ
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD0
 static Function ChangeToOtherDeviceDAQ([STRUCT IUTF_MDATA &md])
 
 	STRUCT DAQSettings s
@@ -314,7 +314,7 @@ static Function ChangeStimSetDuringDAQ_PreAcq(string device)
 	CtrlNamedBackGround ChangeStimsetDuringDAQ, start, period=30, proc=ChangeStimSet_IGNORE
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function ChangeStimSetDuringDAQ([string str])
 
 	STRUCT DAQSettings s
@@ -346,8 +346,8 @@ static Function ChangeStimSetDuringDAQ_REENTRY([string str])
 	CheckDAQStopReason(str, DQ_STOP_REASON_FINISHED, sweepNo = 2)
 End
 
-// UTF_TD_GENERATOR v0:SingleMultiDeviceDAQ
-// UTF_TD_GENERATOR s0:DeviceNameGenerator
+// UTF_TD_GENERATOR v0:DataGenerators#SingleMultiDeviceDAQ
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGenerator
 static Function DAQZerosDAC([STRUCT IUTF_MDATA &md])
 
 	STRUCT DAQSettings s
@@ -395,7 +395,7 @@ static Function DAQZerosDAC_REENTRY([STRUCT IUTF_MDATA &md])
 End
 
 // Using unassociated channels works
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function UnassociatedChannelsAndTTLs([string str])
 
 	STRUCT DAQSettings s
@@ -770,7 +770,7 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([string str])
 	endif
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckSamplingInterval1([string str])
 
 	STRUCT DAQSettings s
@@ -815,7 +815,7 @@ static Function CheckSamplingInterval1_REENTRY([string str])
 	CHECK_CLOSE_VAR(DimDelta(channelAD, ROWS), expectedSampInt, tol = 1e-6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckSamplingInterval2([string str])
 
 	STRUCT DAQSettings s
@@ -860,7 +860,7 @@ static Function CheckSamplingInterval2_REENTRY([string str])
 	CHECK_CLOSE_VAR(DimDelta(channelAD, ROWS), expectedSampInt, tol = 1e-6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckSamplingInterval3([string str])
 
 	STRUCT DAQSettings s
@@ -906,7 +906,7 @@ static Function CheckSamplingInterval3_REENTRY([string str])
 	CHECK_CLOSE_VAR(DimDelta(channelAD, ROWS), expectedSampInt, tol = 1e-6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function ChangeCMDuringSweep([string str])
 
 	STRUCT DAQSettings s
@@ -969,7 +969,7 @@ static Function ChangeCMDuringSweepWMS_PreAcq(string device)
 	CtrlNamedBackGround ChangeClampModeDuringSweep, start, period=30, proc=ClampModeDuringSweep_IGNORE
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function ChangeCMDuringSweepWMS([string str])
 
 	STRUCT DAQSettings s
@@ -1020,7 +1020,7 @@ static Function ChangeCMDuringSweepWMS_REENTRY([string str])
 	CHECK_EQUAL_TEXTWAVES(foundStimSets, {"StimulusSetC_DA_0", "StimulusSetC_DA_0", "StimulusSetC_DA_0"})
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function ChangeCMDuringSweepNoRA([string str])
 
 	STRUCT DAQSettings s
@@ -1060,7 +1060,7 @@ static Function ChangeCMDuringITI_PreAcq(string device)
 	CtrlNamedBackGround ChangeClampModeDuringSweep, start, period=30, proc=ClampModeDuringITI_IGNORE
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function ChangeCMDuringITI([string str])
 
 	STRUCT DAQSettings s
@@ -1099,7 +1099,7 @@ static Function ChangeCMDuringITI_REENTRY([string str])
 	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function ChangeCMDuringITIWithTP([string str])
 
 	STRUCT DAQSettings s
@@ -1163,7 +1163,7 @@ static Function AutoPipetteOffsetIgnoresApplyOnModeSwitch_PreAcq(string device)
 	PGC_SetAndActivateControl(device, "check_DA_applyOnModeSwitch", val = 1)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AutoPipetteOffsetIgnoresApplyOnModeSwitch([string str])
 
 	STRUCT DAQSettings s
@@ -1206,7 +1206,7 @@ static Function HasNaNAsDefaultWhenAborted_PreAcq(string device)
 End
 
 // check default values for data when aborting DAQ
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function HasNaNAsDefaultWhenAborted([string str])
 
 	STRUCT DAQSettings s
@@ -1286,7 +1286,7 @@ End
 //
 // Now we should not find any unassoc labnotebook keys which only differ in the channel number.
 //
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function UnassocChannelsDuplicatedEntry([string str])
 
 	STRUCT DAQSettings s
@@ -1353,7 +1353,7 @@ static Function LabnotebookEntriesCanBeQueried_PreAcq(string device)
 	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val = 1)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function LabnotebookEntriesCanBeQueried([string str])
 
 	STRUCT DAQSettings s
@@ -1384,7 +1384,7 @@ static Function LabnotebookEntriesCanBeQueried_REENTRY([string str])
 	CheckLabnotebookKeys_IGNORE(textualKeys, textualValues)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function DataBrowserCreatesBackupsByDefault([string str])
 
 	STRUCT DAQSettings s
@@ -1429,7 +1429,7 @@ End
 /// the LBN cache waves. After the second sweep these LBN entries can now be queried thus "proving"
 /// that the LBN caches were successfully updated.
 ///
-/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+/// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function IncrementalLabnotebookCacheUpdate([string str])
 
 	STRUCT DAQSettings s
@@ -1453,7 +1453,7 @@ static Function IncrementalLabnotebookCacheUpdate_REENTRY([string str])
 	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 2)
 End
 
-/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+/// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function TestAcquiringNewDataOnOldData([string str])
 
 	STRUCT DAQSettings s
@@ -1522,7 +1522,7 @@ static Function AsyncAcquisitionLBN_PreAcq(string device)
 	PGC_SetAndActivateControl(device, ctrl, str = "myUnit")
 End
 
-/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+/// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AsyncAcquisitionLBN([string str])
 
 	STRUCT DAQSettings s
@@ -1582,7 +1582,7 @@ static Function AsyncAcquisitionLBN_REENTRY([string str])
 	CHECK_EQUAL_STR(refStr, readStr)
 End
 
-/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+/// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckSettingsFails([string str])
 
 	STRUCT DAQSettings s
@@ -1606,8 +1606,8 @@ static Function CheckSettingsFails_REENTRY([string str])
 	CHECK_EQUAL_VAR(sweepNo, NaN)
 End
 
-// // UTF_TD_GENERATOR v0:SingleMultiDeviceDAQ
-// // UTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+// // UTF_TD_GENERATOR v0:DataGenerators#SingleMultiDeviceDAQ
+// // UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
 static Function CheckAcquisitionStates([STRUCT IUTF_MDATA &md])
 
 	STRUCT DAQSettings s
@@ -1749,7 +1749,7 @@ static Function ConfigureFails_PreAcq(string device)
 	PGC_SetAndActivateControl(device, ctrl, val = 10000)
 End
 
-/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+/// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function ConfigureFails([string str])
 
 	STRUCT DAQSettings s
@@ -1772,7 +1772,7 @@ static Function ConfigureFails_REENTRY([string str])
 	CheckDAQStopReason(str, DQ_STOP_REASON_CONFIG_FAILED)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function StopDAQDueToUnlocking([string str])
 
 	STRUCT DAQSettings s
@@ -1798,7 +1798,7 @@ static Function StopDAQDueToUnlocking_REENTRY([string str])
 	CheckDAQStopReason(str, DQ_STOP_REASON_UNLOCKED_DEVICE)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function StopDAQDueToUncompiled([string str])
 
 	STRUCT DAQSettings s
@@ -1827,7 +1827,7 @@ End
 // Roundtrip stimsets, this also leaves the NWBv2 file lying around
 // for later validation.
 //
-// UTF_TD_GENERATOR MajorNWBVersions
+// UTF_TD_GENERATOR DataGenerators#MajorNWBVersions
 static Function ExportStimsetsAndRoundtripThem([variable var])
 
 	string baseFolder, nwbFile, discLocation
@@ -1879,7 +1879,7 @@ static Function ExportIntoNWBSweepBySweep_PreAcq(string device)
 	PGC_SetAndActivateControl(device, "Check_Settings_NwbExport", val = CHECKBOX_SELECTED)
 End
 
-/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+/// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function ExportIntoNWBSweepBySweep([string str])
 
 	variable ref
@@ -1925,7 +1925,7 @@ static Function ExportOnlyCommentsIntoNWB_PreAcq(string device)
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_Comment", str = "abcdefgh ijjkl")
 End
 
-/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+/// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function ExportOnlyCommentsIntoNWB([string str])
 
 	string discLocation, userComment, userCommentRef
@@ -1949,7 +1949,7 @@ static Function ExportOnlyCommentsIntoNWB([string str])
 	H5_CloseFile(fileID)
 End
 
-/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+/// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckPulseInfoGathering([string str])
 
 	STRUCT DAQSettings s
@@ -2000,8 +2000,8 @@ static Function CheckPulseInfoGathering_REENTRY([string str])
 	CHECK_EQUAL_VAR(DimSize(pulseInfos, ROWS), 60)
 End
 
-// // UTF_TD_GENERATOR v0:SingleMultiDeviceDAQ
-// // UTF_TD_GENERATOR s0:DeviceNameGenerator
+// // UTF_TD_GENERATOR v0:DataGenerators#SingleMultiDeviceDAQ
+// // UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGenerator
 static Function RepeatedAcquisitionWithOneSweep([STRUCT IUTF_MDATA &md])
 
 	STRUCT DAQSettings s
@@ -2018,7 +2018,7 @@ static Function RepeatedAcquisitionWithOneSweep_REENTRY([STRUCT IUTF_MDATA &md])
 	CHECK_EQUAL_VAR(GetSetVariable(md.s0, "SetVar_Sweep"), 1)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EnableIndexingInPostDAQ([string str])
 
 	STRUCT DAQSettings s
@@ -2046,7 +2046,7 @@ static Function ScaleZeroWithCycling_PreAcq(string device)
 	PGC_SetAndActivateControl(device, "check_Settings_ScalingZero", val = CHECKBOX_SELECTED)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function ScaleZeroWithCycling([string str])
 
 	STRUCT DAQSettings s
@@ -2096,7 +2096,7 @@ static Function AcquireWithoutAmplifier_PreAcq(string device)
 	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 1)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AcquireWithoutAmplifier([string str])
 
 	STRUCT DAQSettings s
@@ -2132,7 +2132,7 @@ static Function AcquireWithoutAmplifier_REENTRY([string str])
 	CHECK_EQUAL_WAVES(saveAmpSettings, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, CHECKBOX_SELECTED}, mode = WAVE_DATA)
 End
 
-// UTF_TD_GENERATOR GetITCDevices
+// UTF_TD_GENERATOR DataGenerators#GetITCDevices
 Function HandlesFIFOTimeoutProperly([string str])
 
 	STRUCT DAQSettings s
@@ -2158,7 +2158,7 @@ Function HandlesFIFOTimeoutProperly_REENTRY([string str])
 	CHECK_EQUAL_VAR(stopReason, DQ_STOP_REASON_FINISHED)
 End
 
-// UTF_TD_GENERATOR GetITCDevices
+// UTF_TD_GENERATOR DataGenerators#GetITCDevices
 Function HandlesStuckFIFOProperly([string str])
 
 	STRUCT DAQSettings s
@@ -2184,8 +2184,8 @@ Function HandlesStuckFIFOProperly_REENTRY([string str])
 	CHECK_EQUAL_VAR(stopReason, DQ_STOP_REASON_FINISHED)
 End
 
-// UTF_TD_GENERATOR v0:InsertedTPPossibilities
-// UTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR v0:DataGenerators#InsertedTPPossibilities
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
 static Function CheckDelays([STRUCT IUTF_MDATA &md])
 
 	STRUCT DAQSettings s
@@ -2225,7 +2225,7 @@ static Function CheckDelays_REENTRY([STRUCT IUTF_MDATA &md])
 	CHECK_EQUAL_VAR(val, 10)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckSweepOrdering([string str])
 
 	STRUCT DAQSettings s
@@ -2261,7 +2261,7 @@ static Function CheckSweepOrdering_REENTRY([string str])
 	endtry
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function DoNotAllowTestPulseOnUnassocDA([string str])
 
 	STRUCT DAQSettings s
@@ -2283,7 +2283,7 @@ static Function RandomAcq_preAcq(string device)
 	PGC_SetAndActivateControl(device, "check_DataAcq_RepAcqRandom", val = 1)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RandomAcq([string str])
 
 	STRUCT DAQSettings s
@@ -2319,7 +2319,7 @@ static Function CheckIfNoTTLonTP_preAcq(string device)
 	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK), val = 1)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckIfNoTTLonTP([string str])
 
 	STRUCT DAQSettings s
@@ -2335,7 +2335,7 @@ static Function CheckIfNoTTLonTP_REENTRY([string str])
 End
 
 #ifdef TESTS_WITH_NI_HARDWARE
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function TestNIAcquisitionReliability([string str])
 
 	STRUCT DAQSettings s
@@ -2351,7 +2351,7 @@ static Function TestNIAcquisitionReliability_REENTRY([string str])
 End
 #endif // TESTS_WITH_NI_HARDWARE
 
-// IUTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
 // IUTF_TD_GENERATOR s1:DataGenerators#RoundTripStimsetFileType
 static Function RoundTripDepStimsetsRecursionThroughSweeps([STRUCT IUTF_mData &mData])
 
@@ -2433,7 +2433,7 @@ static Function TestCustomElectrodeNamesInNWB_preAcq(string device)
 	FFI_SetCellElectrodeName(device, 1, "Electric Dreams of Current")
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function TestCustomElectrodeNamesInNWB([string str])
 
 	STRUCT DAQSettings s
@@ -2450,7 +2450,7 @@ static Function TestCustomElectrodeNamesInNWB_REENTRY([string str])
 	TestNwbExportV2()
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function GetDataLimitsCheckWorks([string str])
 
 	variable DAScaleLimit

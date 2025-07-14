@@ -745,7 +745,7 @@ Function TestNwbExportV2()
 	HDF5CloseFile/Z fileID
 End
 
-// UTF_TD_GENERATOR NWBVersionStrings
+// UTF_TD_GENERATOR DataGenerators#NWBVersionStrings
 Function TestNWBVersionStrings([string str])
 
 	variable version0, version1, version2
@@ -757,7 +757,7 @@ Function TestNWBVersionStrings([string str])
 	REQUIRE_NEQ_VAR(version1, NaN)
 End
 
-// UTF_TD_GENERATOR NeuroDataRefTree
+// UTF_TD_GENERATOR DataGenerators#NeuroDataRefTree
 Function TestNeuroDataRefTree([string str])
 
 	string neurodata_type, ancestry

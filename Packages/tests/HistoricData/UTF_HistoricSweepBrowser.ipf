@@ -3,7 +3,7 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = SweepBrowserTests
 
-/// UTF_TD_GENERATOR GetHistoricDataFilesWithTTLData
+/// UTF_TD_GENERATOR HistoricDataHelpers#GetHistoricDataFilesWithTTLData
 static Function TestTTLDisplayWithNoEpochInfo([string str])
 
 	string file, abWin, sweepBrowsers, win
@@ -28,7 +28,7 @@ Function TestSweepFormulaPowerSpectrumAverage()
 
 	string abWin, sweepBrowsers, file, sweepBrowser, bsPanel, scPanel, code
 
-	WAVE/T files = GetHistoricDataFiles()
+	WAVE/T files = HistoricDataHelpers#GetHistoricDataFiles()
 	file = "input:" + files[0]
 
 	[abWin, sweepBrowsers] = OpenAnalysisBrowser({file}, loadSweeps = 1)

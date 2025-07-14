@@ -54,7 +54,7 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, s
 	endswitch
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MSQ_FRE1([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
@@ -146,7 +146,7 @@ static Function MSQ_FRE1_REENTRY([string str])
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MSQ_FRE2([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
@@ -241,7 +241,7 @@ static Function MSQ_FRE2_REENTRY([string str])
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MSQ_FRE3([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
@@ -334,7 +334,7 @@ static Function MSQ_FRE3_REENTRY([string str])
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MSQ_FRE4([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
@@ -432,7 +432,7 @@ static Function MSQ_FRE4_REENTRY([string str])
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MSQ_FRE5([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
@@ -543,7 +543,7 @@ End
 
 // only one IC and one VC headstage
 // check that VC is on again in the end
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MSQ_FRE6([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
@@ -647,7 +647,7 @@ End
 
 // one test with PostDAQDAScale and PostDAQDAScaleFactor analysis parameters
 // check dascale after DAQ
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MSQ_FRE7([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
@@ -758,7 +758,7 @@ End
 
 // one test with PostDAQDAScale and PostDAQDAScaleFactor analysis parameters
 // check dascale after DAQ and one headstage failed
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MSQ_FRE8([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
@@ -865,7 +865,7 @@ static Function MSQ_FRE9_PreInit(string device)
 End
 
 // one test with range exceeded and MaximumDAScale analysis parameter
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MSQ_FRE9([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
@@ -969,7 +969,7 @@ static Function MSQ_FRE10_PreInit(string device)
 End
 
 // Using MinOffset and a scale factor
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MSQ_FRE10([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
@@ -1073,7 +1073,7 @@ static Function MSQ_FRE10_REENTRY([string str])
 	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MSQ_FRE11([string str])
 
 	ST_SetStimsetParameter("MSQ_FastRheoEst_DA_0", "Total number of steps", var = 50)
