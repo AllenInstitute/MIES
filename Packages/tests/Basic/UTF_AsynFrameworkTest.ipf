@@ -1281,13 +1281,7 @@ threadsafe Function/DF RunGenericWorker(DFREF dfr)
 	NVAR/SDFR=dfr v           = param0
 	variable/G    dfrOut:outV = v
 
-	// some processing that has a random runtime
-	variable runtime = abs(floor(gnoise(1))) * 10 // NOLINT
-	for(i = 0; i < runtime; i += 1)
-		for(j = 0; j < 100; j += 1)
-			s = num2str(i)
-		endfor
-	endfor
+	WaitRandomProcessingTime()
 
 	return dfrOut
 End
@@ -1317,13 +1311,7 @@ threadsafe Function/DF RunGenericWorker3(DFREF dfr)
 	NVAR/SDFR=dfr v           = param0
 	variable/G    dfrOut:outV = v
 
-	// some processing that has a random runtime
-	variable runtime = abs(floor(gnoise(1))) * 10 // NOLINT
-	for(i = 0; i < runtime; i += 1)
-		for(j = 0; j < 100; j += 1)
-			s = num2str(i)
-		endfor
-	endfor
+	WaitRandomProcessingTime()
 
 	return dfrOut
 End
@@ -1351,14 +1339,7 @@ threadsafe Function/DF RunGenericWorker5(DFREF dfr)
 	NVAR/SDFR=dfr v           = param0
 	variable/G    dfrOut:outV = v
 
-	// sleep for 1s, Sleep does not work
-	// reliable here on Win7/wine
-	now = datetime
-	for(;;)
-		if(datetime > (now + 1))
-			break
-		endif
-	endfor
+	WaitRandomProcessingTime()
 
 	return dfrOut
 End
@@ -1366,16 +1347,7 @@ End
 /// @brief Worker that aborts after one second with an AbortOnValue
 threadsafe Function/DF RunGenericWorkerAbortOnValue(DFREF dfr)
 
-	variable now
-
-	// sleep for 1s, Sleep does not work
-	// reliable here on Win7/wine
-	now = datetime
-	for(;;)
-		if(datetime > (now + 1))
-			break
-		endif
-	endfor
+	WaitRandomProcessingTime()
 
 	AbortOnValue 1, 2345
 End
@@ -1383,16 +1355,7 @@ End
 /// @brief Worker that creates an RTE 330
 threadsafe Function/DF RunGenericWorkerRTE(DFREF dfr)
 
-	variable now
-
-	// sleep for 1s, Sleep does not work
-	// reliable here on Win7/wine
-	now = datetime
-	for(;;)
-		if(datetime > (now + 1))
-			break
-		endif
-	endfor
+	WaitRandomProcessingTime()
 
 	WAVE/Z wv = $""
 	wv[0] = 0

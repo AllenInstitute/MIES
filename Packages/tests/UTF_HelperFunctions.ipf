@@ -1801,6 +1801,15 @@ static Function CheckPubMessagesHeartbeatOnly()
 	endfor
 End
 
+threadsafe Function WaitRandomProcessingTime()
+
+	variable millis
+
+	millis = trunc(abs(enoise(100)))
+
+	Sleep/S (millis * MILLI_TO_ONE)
+End
+
 // Entry point for igortest
 Function run()
 
