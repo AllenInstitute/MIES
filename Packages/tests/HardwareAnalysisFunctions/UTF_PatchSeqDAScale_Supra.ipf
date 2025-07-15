@@ -101,7 +101,7 @@ static Function PS_DS_Supra1_preAcq(string device)
 End
 
 // The decision logic *without* FinalSlopePercent is the same as for Sub, only the plotting is different
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_Supra1([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Supr_DA_0")
@@ -191,7 +191,7 @@ static Function PS_DS_Supra2_preAcq(string device)
 End
 
 // Different to PS_DS_Supra1 is that the second does not spike and a different offset operator
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_Supra2([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Supr_DA_0")
@@ -281,7 +281,7 @@ static Function PS_DS_Supra3_preAcq(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_Supra3([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DS_SupraLong_DA_0")
@@ -371,7 +371,7 @@ static Function PS_DS_Supra4_preAcq(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_Supra4([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DS_SupraLong_DA_0")
@@ -465,7 +465,7 @@ static Function PS_DS_Supra5_preAcq(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_Supra5([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DS_SupraLong_DA_0")
@@ -570,7 +570,7 @@ static Function PS_DS_Supra6_preAcq(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_Supra6([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DS_SupraLong_DA_0")
@@ -656,7 +656,7 @@ static Function PS_DS_Supra7_preAcq(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_Supra7([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Supr_DA_0")

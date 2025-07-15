@@ -128,8 +128,8 @@ End
 /// IndexAfterDecimation
 /// @{
 
-// IUTF_TD_GENERATOR v0:IndexAfterDecimation_Positions
-// IUTF_TD_GENERATOR v1:IndexAfterDecimation_Sizes
+// IUTF_TD_GENERATOR v0:DataGenerators#IndexAfterDecimation_Positions
+// IUTF_TD_GENERATOR v1:DataGenerators#IndexAfterDecimation_Sizes
 static Function TestIndexAfterDecimation([STRUCT IUTF_mData &md])
 
 	variable decimationFactor, srcPulseLength, srcOffset

@@ -1342,7 +1342,7 @@ End
 /// \rst
 /// .. code-block:: igorpro
 ///
-///		/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+///		/// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 /// 	static Function MyTest([string str])
 ///
 ///			struct DAQSettings s

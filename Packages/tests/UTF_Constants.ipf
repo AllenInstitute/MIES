@@ -14,3 +14,5 @@ StrConstant ZSTD_SUFFIX = ".zst"
 Constant TP_DURATION_S = 5
 
 Constant PSQ_TEST_VERY_LARGE_FREQUENCY = 1e350
+
+StrConstant PGCT_POPUPMENU_ENTRIES = "Entry1;Entry2;Entry3"

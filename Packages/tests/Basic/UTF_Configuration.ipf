@@ -369,7 +369,7 @@ End
 
 /// @brief Checks if every (qualified) panel has a panel type set
 ///
-/// UTF_TD_GENERATOR GetMiesMacrosWithPanelType
+/// UTF_TD_GENERATOR DataGenerators#GetMiesMacrosWithPanelType
 static Function TCONF_CheckMacrosForPanelType([string str])
 
 	string win, panelType

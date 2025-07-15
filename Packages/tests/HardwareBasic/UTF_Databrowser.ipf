@@ -3,7 +3,7 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = DataBrowserTests
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 Function CanFindAllDataBrowsers([string str])
 
 	string win, bsPanel
@@ -39,7 +39,7 @@ Function CanFindAllDataBrowsers([string str])
 	CHECK_EQUAL_VAR(DimSize(matchesAuto, ROWS), 1)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 Function CheckWindowTitles([string str])
 
 	string win
@@ -57,30 +57,7 @@ Function CheckWindowTitles([string str])
 	CHECK_EQUAL_STR(S_Value, "Browser with \"" + str + "\" (A*U*T*O*M*A*T*I*O*N)")
 End
 
-static Function/WAVE AllDatabrowserSubWindows()
-
-	string win
-
-	win = DB_OpenDatabrowser()
-
-	WAVE/Z/T allWindows = ListToTextWave(GetAllWindows(win), ";")
-	CHECK_WAVE(allWindows, TEXT_WAVE)
-
-	allWindows[] = StringFromList(1, allWindows[p], "#")
-
-	RemoveTextWaveEntry1D(allWindows, "", all = 1)
-
-	WAVE/Z/T allWindowsUnique = GetUniqueEntries(allWindows)
-	CHECK_WAVE(allWindowsUnique, TEXT_WAVE)
-
-	SetDimensionLabels(allWindowsUnique, TextWaveToList(allWindowsUnique, ";"), ROWS)
-
-	KillWindow $win
-
-	return allWindowsUnique
-End
-
-// UTF_TD_GENERATOR AllDatabrowserSubWindows
+// UTF_TD_GENERATOR DataGenerators#AllDatabrowserSubWindows
 Function RestoreButtonWorks([string str])
 
 	string win, subWindow

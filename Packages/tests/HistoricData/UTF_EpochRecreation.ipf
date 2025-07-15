@@ -66,7 +66,7 @@ Function ExportEpochsFromFileToDF(string dfNameTemp)
 	endfor
 End
 
-/// UTF_TD_GENERATOR GetHistoricDataFilesPXP
+/// UTF_TD_GENERATOR HistoricDataHelpers#GetHistoricDataFilesPXP
 static Function TestEpochRecreationFromLoadedPXP([string str])
 
 	string win, device, bsPanel
@@ -97,7 +97,7 @@ static Function TestEpochRecreationFromLoadedPXP([string str])
 	endfor
 End
 
-/// UTF_TD_GENERATOR GetHistoricDataFiles
+/// UTF_TD_GENERATOR HistoricDataHelpers#GetHistoricDataFiles
 static Function TestEpochRecreationShortNames([string str])
 
 	string file, win, abWin, sweepBrowsers, refEpFolder, dfName, device, dataFolder

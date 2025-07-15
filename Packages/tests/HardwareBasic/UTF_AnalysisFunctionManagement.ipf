@@ -127,7 +127,7 @@ Function RewriteAnalysisFunctions_IGNORE()
 End
 
 // invalid analysis functions
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT1([string str])
 
 	STRUCT DAQSettings s
@@ -187,7 +187,7 @@ static Function AFT1_REENTRY([string str])
 End
 
 // can not call prototype analysis functions as they reside in the wrong file
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT2([string str])
 
 	variable sweepNo
@@ -249,7 +249,7 @@ static Function AFT2_REENTRY([string str])
 End
 
 // uses a valid V1 function and got calls for all events except post set
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT3([string str])
 
 	STRUCT DAQSettings s
@@ -320,7 +320,7 @@ static Function AFT3_REENTRY([string str])
 End
 
 // uses a valid V1 function and got calls for all events including post set
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT4([string str])
 
 	STRUCT DAQSettings s
@@ -391,7 +391,7 @@ static Function AFT4_REENTRY([string str])
 End
 
 // uses a valid V2 function and got calls for all events except post set
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT5([string str])
 
 	STRUCT DAQSettings s
@@ -453,7 +453,7 @@ static Function AFT5_REENTRY([string str])
 End
 
 // uses a valid V2 function and got calls for all events including post set
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT6([string str])
 
 	STRUCT DAQSettings s
@@ -524,7 +524,7 @@ static Function AFT6_REENTRY([string str])
 End
 
 // uses a valid V3 function and got calls for all events including post set
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT6a([string str])
 
 	STRUCT DAQSettings s
@@ -591,7 +591,7 @@ End
 // uses a valid V3 generic function and then ignores other set analysis functions
 // The wavebuilder does not store other analysis functions if the generic name is set.
 // That is the reason why they are in the labnotebook but not called.
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT6b([string str])
 
 	STRUCT DAQSettings s
@@ -663,7 +663,7 @@ static Function AFT6b_REENTRY([string str])
 End
 
 // ana func called for each headstage
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT7([string str])
 
 	STRUCT DAQSettings s
@@ -745,7 +745,7 @@ static Function AFT7_REENTRY([string str])
 End
 
 // not called if attached to TTL stimsets
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT8([string str])
 
 	STRUCT DAQSettings s
@@ -800,7 +800,7 @@ static Function AFT8_REENTRY([string str])
 End
 
 // does not call some ana funcs if aborted
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT9([string str])
 
 	STRUCT DAQSettings s
@@ -839,7 +839,7 @@ static Function AFT9_REENTRY([string str])
 End
 
 // DAQ works if the analysis function can not be found
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT10([string str])
 
 	STRUCT DAQSettings s
@@ -893,7 +893,7 @@ static Function AFT10_REENTRY([string str])
 End
 
 // calls correct analysis functions
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT11([string str])
 
 	STRUCT DAQSettings s
@@ -966,7 +966,7 @@ End
 
 // abort early results in other analysis functions not being called
 // preDAQ
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT12([string str])
 
 	STRUCT DAQSettings s
@@ -1040,7 +1040,7 @@ End
 
 // abort early results in other analysis functions not being called
 // midSweep
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT13([string str])
 
 	STRUCT DAQSettings s
@@ -1056,7 +1056,7 @@ static Function AFT13_REENTRY([string str])
 End
 
 // Delay acquisition background task call until sweep already finished and ITC fifopos returned == NaN
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT13a([string str])
 
 	STRUCT DAQSettings s
@@ -1142,7 +1142,7 @@ End
 // test parameter handling
 // tests also that no type parameters
 // in Params1_V3_GetParams() are okay
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT14([string str])
 
 	STRUCT DAQSettings s
@@ -1220,7 +1220,7 @@ static Function AFT14a_PreInit(string device)
 End
 
 // test parameter handling with valid type string and optional parameter
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT14a([string str])
 
 	STRUCT DAQSettings s
@@ -1258,7 +1258,7 @@ static Function AFT14b_PreInit(string device)
 End
 
 // test parameter handling with non-matching type string
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT14b([string str])
 
 	STRUCT DAQSettings s
@@ -1302,7 +1302,7 @@ static Function AFT14c_PreInit(string device)
 End
 
 // test parameter handling with invalid type string
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT14c([string str])
 
 	STRUCT DAQSettings s
@@ -1348,7 +1348,7 @@ End
 
 // test parameter handling with analysis parameter check and help function and
 // non-passing check
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT14d([string str])
 
 	STRUCT DAQSettings s
@@ -1396,7 +1396,7 @@ End
 // - Check asserts out on MyNum == NaN
 // - Help also asserts out but that is silently ignored
 // - Asserting out is equal to not passing the check function
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT14e([string str])
 
 	STRUCT DAQSettings s
@@ -1442,7 +1442,7 @@ End
 
 // test parameter handling with analysis parameter check and help function
 // - Checks pass
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT14f([string str])
 
 	STRUCT DAQSettings s
@@ -1483,7 +1483,7 @@ End
 // test parameter handling with analysis parameter check and help function
 // - Checks pass, MyNum is not present and optional and is therefore not checked
 //   (the check would assert out)
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT14g([string str])
 
 	STRUCT DAQSettings s
@@ -1522,7 +1522,7 @@ static Function AFT14h_PreInit(string device)
 End
 
 // test parameter handling with new analysis parameter check signature
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT14h([string str])
 
 	STRUCT DAQSettings s
@@ -1561,7 +1561,7 @@ static Function AFT14i_PreInit(string device)
 End
 
 // parameter MyVar is neither required nor optional as no _GetParams is present but still checked
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT14i([string str])
 
 	STRUCT DAQSettings s
@@ -1589,7 +1589,7 @@ static Function AFT14j_PreInit(string device)
 End
 
 // parameter MyVar is present but neither required nor optional and we have a _GetParams function
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT14j([string str])
 
 	STRUCT DAQSettings s
@@ -1605,7 +1605,7 @@ static Function AFT14j([string str])
 End
 
 // MD: mid sweep event is also called for very short stimsets
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT15([string str])
 
 	STRUCT DAQSettings s
@@ -1638,7 +1638,7 @@ static Function AFT15_REENTRY([string str])
 End
 
 // SD: mid sweep event is also called for very short stimsets
-// UTF_TD_GENERATOR DeviceNameGeneratorMD0
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD0
 static Function AFT16([string str])
 
 	STRUCT DAQSettings s
@@ -1671,7 +1671,7 @@ static Function AFT16_REENTRY([string str])
 End
 
 // Calling Abort during pre DAQ event will prevent DAQ
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT17([string str])
 
 	STRUCT DAQSettings s
@@ -1714,7 +1714,7 @@ End
 // Analysis functions work properly with indexing
 // We index from AnaFuncIdx1_DA_0 to AnaFuncIdx2_DA_0
 // but only the second one has a analysis function set
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT18([string str])
 
 	STRUCT DAQSettings s
@@ -1757,7 +1757,7 @@ static Function AFT18_REENTRY([string str])
 End
 
 // check that pre-set-event can abort
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT19([string str])
 
 	STRUCT DAQSettings s
@@ -1790,7 +1790,7 @@ static Function AFT19_REENTRY([string str])
 End
 
 // check that pre sweep config can abort
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT19a([string str])
 
 	STRUCT DAQSettings s
@@ -1823,7 +1823,7 @@ static Function AFT19a_REENTRY([string str])
 End
 
 // check total ordering of events via timestamps
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT20([string str])
 
 	STRUCT DAQSettings s
@@ -1854,7 +1854,7 @@ static Function AFT20_REENTRY([string str])
 End
 
 // it possible to change the stimset in POST DAQ event
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT21([string str])
 
 	STRUCT DAQSettings s
@@ -1886,7 +1886,7 @@ static Function AFT21_REENTRY([string str])
 End
 
 // POST_SET_EVENT works with only HS1 active
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT22([string str])
 
 	STRUCT DAQSettings s
@@ -1958,7 +1958,7 @@ static Function AFT22_REENTRY([string str])
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CanModifyStimsetInPreSweepConfig([string str])
 
 	STRUCT DAQSettings s
@@ -2017,7 +2017,7 @@ static Function [WAVE entryHS1, WAVE entryHS2] GetLastSweepLBNEntries(WAVE numer
 	return [entriesHS1, entriesHS2]
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckLastSweepInSetWithoutSkipping([string str])
 
 	STRUCT DAQSettings s

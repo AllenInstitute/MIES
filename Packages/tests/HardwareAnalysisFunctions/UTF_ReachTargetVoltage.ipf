@@ -41,7 +41,7 @@ static Function RTV_Works_preAcq(string device)
 	AFH_AddAnalysisParameter("ReachTargetVoltage_DA_0", "EnableIndexing", var = 0)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RTV_Works([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -73,7 +73,7 @@ static Function RTV_WorksWithIndexing_preAcq(string device)
 	AFH_AddAnalysisParameter("ReachTargetVoltage_DA_0", "IndexingEndStimsetAllIC", str = "ReachTargetVoltageIndexEnd_DA_0")
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RTV_WorksWithIndexing([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -117,7 +117,7 @@ static Function RTV_WorksWithMultipleHeadstages_preAcq(string device)
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = -70)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RTV_WorksWithMultipleHeadstages([string str])
 
 	STRUCT DAQSettings s
@@ -160,7 +160,7 @@ static Function RTV_ReportsDAScaleOutOfRange_preAcq(string device)
 	AFH_AddAnalysisParameter("ReachTargetVoltage_DA_0", "EnableIndexing", var = 0)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RTV_ReportsDAScaleOutOfRange([string str])
 
 	WAVE overrideResults = MIES_AF#CreateOverrideResults()

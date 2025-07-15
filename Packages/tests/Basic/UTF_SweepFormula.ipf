@@ -95,7 +95,7 @@ static Function TestNonFiniteValues()
 End
 
 // Fails with Abort
-// UTF_TD_GENERATOR NonFiniteValues
+// UTF_TD_GENERATOR DataGenerators#NonFiniteValues
 //static Function TestNonFiniteValuesPrimitiveOperations([variable var])
 //
 //	string win, device, str

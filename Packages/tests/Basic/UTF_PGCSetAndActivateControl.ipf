@@ -3,8 +3,6 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = PGC_Testing
 
-static StrConstant PGCT_POPUPMENU_ENTRIES = "Entry1;Entry2;Entry3"
-
 static Function TEST_CASE_BEGIN_OVERRIDE(string testCase)
 
 	TestCaseBeginCommon(testCase)
@@ -174,29 +172,7 @@ Function PGCT_ListBoxProc(STRUCT WMListboxAction &lba) : ListBoxControl
 	return 0
 End
 
-static Function/WAVE ControlTypesWhichOnlyAcceptVar()
-
-	Make/T/FREE wv = {"checkbox_ctrl_mode_checkbox", "slider_ctrl", "tab_ctrl", "valdisp_ctrl", "button_ctrl", "listbox_ctrl"}
-
-	return wv
-End
-
-static Function/WAVE ControlTypesWhichRequireOneParameter()
-
-	// all except button
-	Make/T/FREE wv = {"checkbox_ctrl_mode_checkbox", "slider_ctrl", "tab_ctrl", "valdisp_ctrl", "popup_ctrl", "setvar_str_ctrl", "setvar_num_ctrl", "listbox_ctrl"}
-
-	return wv
-End
-
-static Function/WAVE ControlTypesWhichOnlyAcceptVarOrStr()
-
-	Make/T/FREE wv = {"popup_ctrl", "setvar_str_ctrl", "setvar_num_ctrl"}
-
-	return wv
-End
-
-// UTF_TD_GENERATOR ControlTypesWhichOnlyAcceptVar
+// UTF_TD_GENERATOR DataGenerators#ControlTypesWhichOnlyAcceptVar
 static Function PGCT_AbortsWithStr([string str])
 
 	SVAR/SDFR=root: panel
@@ -212,7 +188,7 @@ static Function PGCT_AbortsWithStr([string str])
 	CHECK(!NVAR_Exists(called))
 End
 
-// UTF_TD_GENERATOR ControlTypesWhichOnlyAcceptVar
+// UTF_TD_GENERATOR DataGenerators#ControlTypesWhichOnlyAcceptVar
 static Function PGCT_SettingVarWorks([string str])
 
 	SVAR/SDFR=root: panel
@@ -236,7 +212,7 @@ static Function PGCT_SettingVarWorks([string str])
 	endif
 End
 
-// UTF_TD_GENERATOR ControlTypesWhichRequireOneParameter
+// UTF_TD_GENERATOR DataGenerators#ControlTypesWhichRequireOneParameter
 static Function PGCT_AbortsWithoutVarAndStrOrBoth([string str])
 
 	SVAR/SDFR=root: panel
@@ -334,21 +310,7 @@ static Function PGCT_PopupMenuStrWorks1()
 	endfor
 End
 
-Function/WAVE InvalidPopupMenuOtherIndizes()
-
-	Make/FREE wv = {-1, NaN, Inf, -Inf, ItemsInList(PGCT_POPUPMENU_ENTRIES)}
-
-	return wv
-End
-
-Function/WAVE InvalidPopupMenuColorTableIndizes()
-
-	Make/FREE wv = {-1, NaN, Inf, -Inf, ItemsInList(CTabList())}
-
-	return wv
-End
-
-// UTF_TD_GENERATOR InvalidPopupMenuOtherIndizes
+// UTF_TD_GENERATOR DataGenerators#InvalidPopupMenuOtherIndizes
 static Function PGCT_PopupMenuOtherAbortsWithOutOfRangeVar([variable var])
 
 	variable refValue, popNum, i
@@ -379,7 +341,7 @@ static Function PGCT_PopupMenuOtherAbortsWithOutOfRangeVar([variable var])
 	CHECK_EQUAL_STR(refString, popStr)
 End
 
-// UTF_TD_GENERATOR InvalidPopupMenuColorTableIndizes
+// UTF_TD_GENERATOR DataGenerators#InvalidPopupMenuColorTableIndizes
 static Function PGCT_PopupMenuColorAbortsWithOutOfRangeVar([variable var])
 
 	variable refValue, popNum, i
@@ -577,14 +539,7 @@ static Function PGCT_ModeFlagDefault()
 	CHECK_EQUAL_VAR(refState, state)
 End
 
-static Function/WAVE VariousModeFlags()
-
-	Make/FREE/D modes = {-1, PGC_MODE_ASSERT_ON_DISABLED, PGC_MODE_FORCE_ON_DISABLED, PGC_MODE_SKIP_ON_DISABLED}
-
-	return modes
-End
-
-// UTF_TD_GENERATOR VariousModeFlags
+// UTF_TD_GENERATOR DataGenerators#VariousModeFlags
 static Function PGCT_ModeFlag([variable var])
 
 	variable refState, state

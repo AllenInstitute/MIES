@@ -454,7 +454,7 @@ static Function DirectToFormulaParser(string code)
 	return MIES_SF#SF_ParseFormulaToJSON(code)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SF_TPTest2([string str])
 
 	STRUCT DAQSettings s
@@ -559,7 +559,7 @@ static Function SF_TPTest2_REENTRY([string str])
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SF_TPTest([string str])
 
 	STRUCT DAQSettings s
@@ -580,7 +580,7 @@ static Function SF_TPTest_REENTRY([string str])
 	TestSweepFormulaSelectClampMode(str)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SF_ButtonTest([string str])
 
 	STRUCT DAQSettings s
@@ -595,7 +595,7 @@ static Function SF_ButtonTest_REENTRY([string str])
 	TestSweepFormulaButtons(str)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function TestSweepFormulaCodeResults([string str])
 
 	STRUCT DAQSettings s
@@ -687,7 +687,7 @@ Function SF_InsertedTPVersusTP_preAcq(string device)
 	AI_WriteToAmplifier(device, 1, V_CLAMP_MODE, MCC_PRIMARYSIGNALGAIN_FUNC, 1)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SF_InsertedTPVersusTP([string str])
 
 	STRUCT DAQSettings s
@@ -777,7 +777,7 @@ static Function SF_InsertedTPVersusTP_REENTRY([string str])
 	CHECK_EQUAL_WAVES(instInsertedHS1, instTPStorage_HS1, mode = WAVE_DATA, tol = 0.1)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SF_UnassociatedDATTL_Epochs([string str])
 
 	STRUCT DAQSettings s

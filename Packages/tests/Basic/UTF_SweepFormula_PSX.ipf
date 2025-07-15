@@ -739,155 +739,7 @@ static Function FillEventWave_IGNORE(WAVE psxEvent, string id, string comboKey)
 	JWN_SetWaveNoteFromJSON(psxEvent, jsonID)
 End
 
-Function/WAVE StatsTest_GetInput()
-
-	Make/T/FREE/N=(3) template
-	SetDimensionLabels(template, "prop;state;postProc", ROWS)
-
-	// wv0
-	Duplicate/FREE/T template, wv0
-	WAVE/T input = wv0
-
-	input[%prop]     = "estate"
-	input[%state]    = "accept"
-	input[%postProc] = "nothing"
-
-	JWN_SetWaveInWaveNote(input, "/results", {PSX_ACCEPT, PSX_ACCEPT, PSX_ACCEPT, PSX_ACCEPT})
-	JWN_SetWaveInWaveNote(input, "/xValues", {1, 3, 5, 7})
-	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT})
-
-	// wv1
-	Duplicate/FREE/T template, wv1
-	WAVE/T input = wv1
-
-	input[%prop]     = "estate"
-	input[%state]    = "reject"
-	input[%postProc] = "nothing"
-
-	JWN_SetWaveInWaveNote(input, "/results", {PSX_REJECT, PSX_REJECT, PSX_REJECT})
-	JWN_SetWaveInWaveNote(input, "/xValues", {0, 4, 8})
-	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_REJECT, PSX_MARKER_REJECT, PSX_MARKER_REJECT})
-
-	// wv2
-	Duplicate/FREE/T template, wv2
-	WAVE/T input = wv2
-
-	input[%prop]     = "estate"
-	input[%state]    = "undetermined"
-	input[%postProc] = "nothing"
-
-	JWN_SetWaveInWaveNote(input, "/results", {PSX_UNDET, PSX_UNDET, PSX_UNDET})
-	JWN_SetWaveInWaveNote(input, "/xValues", {2, 6, 9})
-	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_UNDET, PSX_MARKER_UNDET, PSX_MARKER_UNDET})
-
-	// wv3
-	Duplicate/FREE/T template, wv3
-	WAVE/T input = wv3
-
-	input[%prop]     = "tau"
-	input[%state]    = "accept"
-	input[%postProc] = "nothing"
-
-	JWN_SetWaveInWaveNote(input, "/results", {0e-6, 4e-6, 8e-6})
-	JWN_SetWaveInWaveNote(input, "/xValues", {0, 4, 8})
-	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT})
-
-	// wv4
-	Duplicate/FREE/T template, wv4
-	WAVE/T input = wv4
-
-	input[%prop]     = "amp"
-	input[%state]    = "accept"
-	input[%postProc] = "stats"
-
-	JWN_SetWaveInWaveNote(input, "/results", {40, 40, 20, 25.81988897471611, 0, -2.0775})
-	JWN_SetWaveInWaveNote(input, "/xValues", ListToTextWave(PSX_STATS_LABELS, ";"))
-	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, \
-	                                         PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT})
-
-	// wv5
-	Duplicate/FREE/T template, wv5
-	WAVE/T input = wv5
-
-	input[%prop]     = "fstate"
-	input[%state]    = "undetermined"
-	input[%postProc] = "count"
-
-	JWN_SetWaveInWaveNote(input, "/results", {5})
-	// no xValues
-	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_UNDET})
-
-	// wv6
-	Duplicate/FREE/T template, wv6
-	WAVE/T input = wv6
-
-	input[%prop]     = "peaktime"
-	input[%state]    = "undetermined"
-	input[%postProc] = "hist"
-
-	JWN_SetWaveInWaveNote(input, "/results", {1, 2})
-	// no xValues
-	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_UNDET, PSX_MARKER_UNDET})
-
-	// wv7
-	Duplicate/FREE/T template, wv7
-	WAVE/T input = wv7
-
-	input[%prop]     = "xinterval"
-	input[%state]    = "undetermined"
-	input[%postProc] = "log10"
-
-	Make/FREE/D result = {NaN, log(60 - 20), log(90 - 60)}
-	JWN_SetWaveInWaveNote(input, "/results", result)
-	JWN_SetWaveInWaveNote(input, "/xValues", {2, 6, 9})
-	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_UNDET, PSX_MARKER_UNDET, PSX_MARKER_UNDET})
-
-	// wv8
-	Duplicate/FREE/T template, wv8
-	WAVE/T input = wv8
-
-	input[%prop]     = "fitresult"
-	input[%state]    = "undetermined"
-	input[%postProc] = "nothing"
-
-	JWN_SetWaveInWaveNote(input, "/results", {1, 1, 1, 1, 1})
-	JWN_SetWaveInWaveNote(input, "/xValues", {1, 3, 5, 7, 9})
-	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_UNDET, PSX_MARKER_UNDET, PSX_MARKER_UNDET, PSX_MARKER_UNDET, PSX_MARKER_UNDET})
-
-	// wv9
-	Duplicate/FREE/T template, wv9
-	WAVE/T input = wv9
-
-	input[%prop]     = "risetime"
-	input[%state]    = "undetermined"
-	input[%postProc] = "nothing"
-
-	JWN_SetWaveInWaveNote(input, "/results", {0.2, 0.6, 0.9})
-	JWN_SetWaveInWaveNote(input, "/xValues", {2, 6, 9})
-	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_UNDET, PSX_MARKER_UNDET, PSX_MARKER_UNDET})
-
-	// wv10
-	Duplicate/FREE/T template, wv10
-	WAVE/T input = wv10
-
-	input[%prop]     = "peaktime"
-	input[%state]    = "all"
-	input[%postProc] = "nonfinite"
-
-	JWN_SetWaveInWaveNote(input, "/results", {1, 3, 5, 7, 9})
-	JWN_SetWaveInWaveNote(input, "/xValues", {0, -1, +1, 0, -1})
-	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_UNDET})
-	Make/FREE/T lbl = {"-inf", "NaN", "inf"}
-	JWN_SetWaveInWaveNote(input, "/XTickLabels", lbl)
-	JWN_SetWaveInWaveNote(input, "/XTickPositions", {-1, 0, 1})
-
-	// end
-	Make/FREE/WAVE results = {wv0, wv1, wv2, wv3, wv4, wv5, wv6, wv7, wv8, wv9, wv10}
-
-	return results
-End
-
-/// UTF_TD_GENERATOR w0:StatsTest_GetInput
+/// UTF_TD_GENERATOR w0:DataGenerators#StatsTest_GetInput
 static Function StatsWorksWithResults([STRUCT IUTF_mData &m])
 
 	string formulaGraph, browser, device, stateAsStr, postProc, prop
@@ -1001,163 +853,8 @@ static Function StatsWorksWithResults([STRUCT IUTF_mData &m])
 	endif
 End
 
-Function/WAVE StatsTestSpecialCases_GetInput()
-
-	Make/T/FREE/N=(7) template
-	SetDimensionLabels(template, "prop;state;postProc;refNumOutputRows;numEventsCombo0;numEventsCombo1;outOfRange", ROWS)
-
-	// wv0
-	// every
-	Duplicate/FREE/T template, wv0
-	WAVE/T input = wv0
-
-	input[%prop]             = "estate"
-	input[%state]            = "every"
-	input[%postProc]         = "nothing"
-	input[%refNumOutputRows] = "3"
-	input[%numEventsCombo0]  = "5"
-	input[%numEventsCombo1]  = "3"
-	input[%outOfRange]       = "0"
-
-	JWN_CreatePath(input, "/0")
-	JWN_SetWaveInWaveNote(input, "/0/results", {PSX_ACCEPT, PSX_ACCEPT, PSX_ACCEPT})
-	JWN_SetWaveInWaveNote(input, "/0/xValues", {1, 3, 1})
-	JWN_SetWaveInWaveNote(input, "/0/marker", {PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT})
-
-	JWN_CreatePath(input, "/1")
-	JWN_SetWaveInWaveNote(input, "/1/results", {PSX_REJECT, PSX_REJECT, PSX_REJECT})
-	JWN_SetWaveInWaveNote(input, "/1/xValues", {0, 4, 0})
-	JWN_SetWaveInWaveNote(input, "/1/marker", {PSX_MARKER_REJECT, PSX_MARKER_REJECT, PSX_MARKER_REJECT})
-
-	JWN_CreatePath(input, "/2")
-	JWN_SetWaveInWaveNote(input, "/2/results", {PSX_UNDET, PSX_UNDET})
-	JWN_SetWaveInWaveNote(input, "/2/xValues", {2, 2})
-	JWN_SetWaveInWaveNote(input, "/2/marker", {PSX_MARKER_UNDET, PSX_MARKER_UNDET})
-
-	// wv1
-	// no match
-	Duplicate/FREE/T template, wv1
-	WAVE/T input = wv1
-
-	input[%prop]             = "estate"
-	input[%state]            = "accept"
-	input[%postProc]         = "nothing"
-	input[%refNumOutputRows] = "0"
-	input[%numEventsCombo0]  = "1"
-	input[%numEventsCombo1]  = "1"
-	input[%outOfRange]       = "0"
-
-	// wv2
-	// histogram works also with just one point
-	Duplicate/FREE/T template, wv2
-	WAVE/T input = wv2
-
-	input[%prop]             = "estate"
-	input[%state]            = "reject"
-	input[%postProc]         = "hist"
-	input[%refNumOutputRows] = "1"
-	input[%numEventsCombo0]  = "1"
-	input[%numEventsCombo1]  = "0"
-	input[%outOfRange]       = "0"
-
-	JWN_CreatePath(input, "/0")
-	JWN_SetWaveInWaveNote(input, "/0/results", {1})
-	// no x values
-	JWN_SetWaveInWaveNote(input, "/0/marker", {PSX_MARKER_REJECT})
-
-	// wv3
-	// histogram with no match as the tau values are out-of-range
-	Duplicate/FREE/T template, wv3
-	WAVE/T input = wv3
-
-	input[%prop]             = "tau"
-	input[%state]            = "undetermined"
-	input[%postProc]         = "hist"
-	input[%refNumOutputRows] = "0"
-	input[%numEventsCombo0]  = "3"
-	input[%numEventsCombo1]  = "0"
-	input[%outOfRange]       = "1"
-
-	// wv4
-	// histogram with match but cut out data
-	Duplicate/FREE/T template, wv4
-	WAVE/T input = wv4
-
-	input[%prop]             = "amp"
-	input[%state]            = "all"
-	input[%postProc]         = "hist"
-	input[%refNumOutputRows] = "1"
-	input[%numEventsCombo0]  = "3"
-	input[%numEventsCombo1]  = "0"
-	input[%outOfRange]       = "1"
-
-	JWN_CreatePath(input, "/0")
-	JWN_SetWaveInWaveNote(input, "/0/results", {1})
-	// no xValues
-	JWN_SetWaveInWaveNote(input, "/0/marker", {PSX_MARKER_REJECT})
-
-	// wv5
-	// stats ignores NaN
-	Duplicate/FREE/T template, wv5
-	WAVE/T input = wv5
-
-	input[%prop]             = "amp"
-	input[%state]            = "all"
-	input[%postProc]         = "stats"
-	input[%refNumOutputRows] = "1"
-	input[%numEventsCombo0]  = "2"
-	input[%numEventsCombo1]  = "2"
-	input[%outOfRange]       = "0"
-
-	JWN_CreatePath(input, "/0")
-	JWN_SetWaveInWaveNote(input, "/0/results", {10, NaN, 0, 0, NaN, NaN})
-	JWN_SetWaveInWaveNote(input, "/0/xValues", ListToTextWave(PSX_STATS_LABELS, ";"))
-	JWN_SetWaveInWaveNote(input, "/0/marker", {PSX_MARKER_REJECT, PSX_MARKER_REJECT, PSX_MARKER_REJECT, \
-	                                           PSX_MARKER_REJECT, PSX_MARKER_REJECT, PSX_MARKER_REJECT})
-
-	// wv6
-	// stats ignores NaN and with all data NaN we don't get anything
-	Duplicate/FREE/T template, wv6
-	WAVE/T input = wv6
-
-	input[%prop]             = "amp"
-	input[%state]            = "all"
-	input[%postProc]         = "stats"
-	input[%refNumOutputRows] = "0"
-	input[%numEventsCombo0]  = "1"
-	input[%numEventsCombo1]  = "1"
-	input[%outOfRange]       = "0"
-
-	// no results
-	// no xValues
-	// no marker
-
-	// wv7
-	// xinterval with multiple combos
-	Duplicate/FREE/T template, wv7
-	WAVE/T input = wv7
-
-	input[%prop]             = "xinterval"
-	input[%state]            = "accept"
-	input[%postProc]         = "nothing"
-	input[%refNumOutputRows] = "1"
-	input[%numEventsCombo0]  = "5"
-	input[%numEventsCombo1]  = "5"
-	input[%outOfRange]       = "0"
-
-	JWN_CreatePath(input, "/0")
-	JWN_SetWaveInWaveNote(input, "/0/results", {NaN, 20, NaN, 20})
-	JWN_SetWaveInWaveNote(input, "/0/xValues", {1, 3, 1, 3})
-	JWN_SetWaveInWaveNote(input, "/0/marker", {PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT})
-
-	// end
-	Make/FREE/WAVE results = {wv0, wv1, wv2, wv3, wv4, wv5, wv6, wv7}
-
-	return results
-End
-
 // Test events being present locally in a DFREF
-/// UTF_TD_GENERATOR w0:StatsTestSpecialCases_GetInput
+/// UTF_TD_GENERATOR w0:DataGenerators#StatsTestSpecialCases_GetInput
 static Function StatsWorksWithResultsSpecialCases([STRUCT IUTF_mData &m])
 
 	string prop, stateAsStr, postProc, browser, device, formulaGraph, comboKey, pathPrefix, history, id
@@ -1298,17 +995,7 @@ static Function StatsComplainsAboutIntersectingRanges()
 	endtry
 End
 
-static Function/WAVE GetAllStatsProperties()
-
-	WAVE wv = MIES_PSX#PSX_GetAllStatsProperties()
-	CHECK_WAVE(wv, TEXT_WAVE)
-
-	SetDimensionLabelsFromWaveContents(wv)
-
-	return wv
-End
-
-/// IUTF_TD_GENERATOR s0:GetAllStatsProperties
+/// IUTF_TD_GENERATOR s0:DataGenerators#GetAllStatsProperties
 static Function StatsAllProperties([STRUCT IUTF_mData &m])
 
 	string browser, device, formulaGraph, comboKey, id, error, prop
@@ -1483,14 +1170,7 @@ Function/WAVE FakeSweepDataGeneratorPSX(WAVE sweep, variable numChannels)
 	return sweep
 End
 
-static Function/WAVE GetKernelAmplitude()
-
-	Make/D/FREE wv = {5, -5}
-
-	return wv
-End
-
-/// IUTF_TD_GENERATOR v0:GetKernelAmplitude
+/// IUTF_TD_GENERATOR v0:DataGenerators#GetKernelAmplitude
 static Function TestOperationPSX([STRUCT IUTF_mData &m])
 
 	string win, device, str, comboKey
@@ -1821,23 +1501,6 @@ static Function MouseSelectionPSX()
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1}, PSX_UNDET)
 End
 
-static Function/WAVE SupportedPostProcForEventSelection()
-
-	// nonfinite is tested elsewhere
-	Make/FREE/T wv = {"nothing", "log10"}
-	SetDimensionLabels(wv, AddPrefixToEachListItem("PostProc=", TextWavetoList(wv, ";")), ROWS)
-
-	return wv
-End
-
-static Function/WAVE SupportedAxisModesForEventSelection()
-
-	Make/FREE wv = {MODIFY_GRAPH_LOG_MODE_NORMAL, MODIFY_GRAPH_LOG_MODE_LOG10, MODIFY_GRAPH_LOG_MODE_LOG2}
-	SetDimensionLabels(wv, "LeftAxis=linear;LeftAxis=log10;LeftAxis=log2", ROWS)
-
-	return wv
-End
-
 static Function/S SetupDatabrowserWithSomeData()
 
 	string browser, device
@@ -1872,8 +1535,8 @@ static Function AdaptForPostProc(string postProc, variable val)
 	endswitch
 End
 
-/// UTF_TD_GENERATOR v0:SupportedAxisModesForEventSelection
-/// UTF_TD_GENERATOR s0:SupportedPostProcForEventSelection
+/// UTF_TD_GENERATOR v0:DataGenerators#SupportedAxisModesForEventSelection
+/// UTF_TD_GENERATOR s0:DataGenerators#SupportedPostProcForEventSelection
 static Function MouseSelectionPSXStats([STRUCT IUTF_mData &m])
 
 	string win, browser, code, psxGraph, psxStatsGraph, postProc, comboKey
@@ -2080,59 +1743,7 @@ static Function CheckTraceColors(string win, WAVE/T traces, variable state)
 	endfor
 End
 
-// two sweeps in one operation
-static Function/S GetTestCode(string postProc, [string eventState, string prop])
-
-	string code
-
-	if(ParamIsDefault(eventState))
-		eventState = "all"
-	endif
-
-	if(ParamIsDefault(prop))
-		prop = "peaktime"
-	endif
-
-	code = "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all))), 5, 100, 0)"
-
-	code  = "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all))), 1.5, 100, 0)"
-	code += "\r and \r"
-	code += "psxStats(myId, select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), " + prop + ", " + eventState + ", " + postProc + ")"
-
-	return code
-End
-
-static Function/WAVE GetCodeVariations()
-
-	string code
-
-	Make/T/N=(3)/FREE wv
-
-	wv[0] = GetTestCode("nothing")
-	code  = ""
-
-	// one sweep per operation separated with `with`
-	code  = "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0]), selvis(all))), 2, 100, 0)"
-	code += "\r with \r"
-	code += "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([2]), selvis(all))), 1.5, 100, 0)"
-	code += "\r and \r"
-	code += "psxStats(myId, select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), peak, all, nothing)"
-	wv[1] = code
-	code  = ""
-
-	// same as code[1] but with a select array for stats
-	code  = "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0]), selvis(all))), 2, 100, 0)"
-	code += "\r with \r"
-	code += "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([2]), selvis(all))), 1.5, 100, 0)"
-	code += "\r and \r"
-	code += "psxStats(myId, [select(selrange([50, 150]), selchannels(AD6), selsweeps([0]), selvis(all)), select(selrange([50, 150]), selchannels(AD6), selsweeps([2]), selvis(all))], peak, all, nothing)"
-	wv[2] = code
-	code  = ""
-
-	return wv
-End
-
-/// IUTF_TD_GENERATOR s0:GetCodeVariations
+/// IUTF_TD_GENERATOR s0:DataGenerators#GetCodeVariations
 static Function AllEventGraph([STRUCT IUTF_mData &m])
 
 	string browser, code, extAllGraph, win, trace, info, rgbValue, mainWindow, specialEventPanel, comboKey
@@ -2391,8 +2002,8 @@ static Function JumpToUndet()
 	CHECK_EQUAL_VAR(MIES_PSX#PSX_GetCurrentComboIndex(win), 0)
 End
 
-/// UTF_TD_GENERATOR v0:SupportedAxisModesForEventSelection
-/// UTF_TD_GENERATOR s0:SupportedPostProcForEventSelection
+/// UTF_TD_GENERATOR v0:DataGenerators#SupportedAxisModesForEventSelection
+/// UTF_TD_GENERATOR s0:DataGenerators#SupportedPostProcForEventSelection
 static Function JumpToSelectedEvents([STRUCT IUTF_mData &m])
 
 	string browser, code, psxGraph, win, mainWindow, postProc, psxStatsGraph, comboKey

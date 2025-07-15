@@ -839,7 +839,7 @@ Function FLW_RequiresNumericWave()
 	endtry
 End
 
-// UTF_TD_GENERATOR InfiniteValues
+// UTF_TD_GENERATOR DataGenerators#InfiniteValues
 Function FLW_RequiresFiniteLevel([variable var])
 
 	try

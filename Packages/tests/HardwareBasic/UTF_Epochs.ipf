@@ -584,7 +584,7 @@ End
 
 /// <------------- TESTS FOLLOW HERE ---------------------->
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest1([string str])
 
 	STRUCT DAQSettings s
@@ -600,7 +600,7 @@ static Function EP_EpochTest1_REENTRY([string str])
 	TestEpochsGeneric(str)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest2([string str])
 
 	STRUCT DAQSettings s
@@ -616,7 +616,7 @@ static Function EP_EpochTest2_REENTRY([string str])
 	TestEpochsGeneric(str)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest3([string str])
 
 	STRUCT DAQSettings s
@@ -632,7 +632,7 @@ static Function EP_EpochTest3_REENTRY([string str])
 	TestEpochsGeneric(str)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest4([string str])
 
 	STRUCT DAQSettings s
@@ -648,7 +648,7 @@ static Function EP_EpochTest4_REENTRY([string str])
 	TestEpochsGeneric(str)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest4a([string str])
 
 	STRUCT DAQSettings s
@@ -664,7 +664,7 @@ static Function EP_EpochTest4a_REENTRY([string str])
 	TestEpochsGeneric(str)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest5([string str])
 
 	STRUCT DAQSettings s
@@ -680,7 +680,7 @@ static Function EP_EpochTest5_REENTRY([string str])
 	TestEpochsGeneric(str)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest6([string str])
 
 	STRUCT DAQSettings s
@@ -696,7 +696,7 @@ static Function EP_EpochTest6_REENTRY([string str])
 	TestEpochsGeneric(str)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest7([string str])
 
 	STRUCT DAQSettings s
@@ -712,7 +712,7 @@ static Function EP_EpochTest7_REENTRY([string str])
 	TestEpochsGeneric(str)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest8([string str])
 
 	STRUCT DAQSettings s
@@ -728,7 +728,7 @@ static Function EP_EpochTest8_REENTRY([string str])
 	TestEpochsGeneric(str)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest9([string str])
 
 	STRUCT DAQSettings s
@@ -744,7 +744,7 @@ static Function EP_EpochTest9_REENTRY([string str])
 	TestEpochsGeneric(str)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest10([string str])
 
 	STRUCT DAQSettings s
@@ -765,7 +765,7 @@ static Function EP_EpochTest11_preInit(string device)
 	WB_MakeStimsetThirdParty("StimulusSetB_DA_0")
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest11([string str])
 
 	STRUCT DAQSettings s
@@ -781,7 +781,7 @@ static Function EP_EpochTest11_REENTRY([string str])
 	TestEpochsGeneric(str)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest12([string str])
 
 	STRUCT DAQSettings s
@@ -797,7 +797,7 @@ static Function EP_EpochTest12_REENTRY([string str])
 	TestEpochsGeneric(str)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest13([string str])
 
 	STRUCT DAQSettings s
@@ -813,7 +813,7 @@ static Function EP_EpochTest13_REENTRY([string str])
 	TestEpochsGeneric(str)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_TestUserEpochs([string str])
 
 	STRUCT DAQSettings s
@@ -875,7 +875,7 @@ static Function EP_TestUserEpochs_REENTRY([string str])
 	endfor
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest14([string str])
 
 	STRUCT DAQSettings s
@@ -891,7 +891,7 @@ static Function EP_EpochTest14_REENTRY([string str])
 	TestEpochsGeneric(str)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest15([string str])
 
 	STRUCT DAQSettings s
@@ -919,7 +919,7 @@ End
 // Note: PreAcq sets the ADC sample rate to 10 kHz and relies on the feature that DA sample rate for ITC and NI
 //       equals the AD sample rate. For Sutter 10 kHz is the default maximum frequency for DA independent of the
 //       change in PreAcq.
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest16([string str])
 
 	STRUCT DAQSettings s
@@ -944,7 +944,7 @@ End
 // The stimset is also flipped, such that this zeroed interval is at the front in the data wave.
 // This interval should appear as ST_B (stimser baseline trail)
 //
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest17([string str])
 
 	STRUCT DAQSettings s
@@ -959,7 +959,7 @@ static Function EP_EpochTest17_REENTRY([string str])
 	TestEpochsGeneric(str)
 End
 
-// IUTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
 // IUTF_TD_GENERATOR v0:DataGenerators#EpochTestSamplingFrequency_Gen
 // IUTF_TD_GENERATOR s1:DataGenerators#EpochTest_Stimsets_Gen
 static Function EP_EpochTestSamplingFrequency([STRUCT IUTF_mData &mData])
@@ -981,7 +981,7 @@ static Function EP_EpochTestSamplingFrequency_REENTRY([STRUCT IUTF_mData &mData]
 	TestEpochsGeneric(mData.s0)
 End
 
-// IUTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
 // IUTF_TD_GENERATOR v0:DataGenerators#EpochTestSamplingMultiplier_Gen
 // IUTF_TD_GENERATOR s1:DataGenerators#EpochTest_Stimsets_Gen
 static Function EP_EpochTestSamplingMultiplier([STRUCT IUTF_mData &mData])
@@ -1003,7 +1003,7 @@ static Function EP_EpochTestSamplingMultiplier_REENTRY([STRUCT IUTF_mData &mData
 	TestEpochsGeneric(mData.s0)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTestUnassocDA([string str])
 
 	STRUCT DAQSettings s
@@ -1047,7 +1047,7 @@ static Function EP_EpochTestUnassocDA_REENTRY([string str])
 	TestEpochsGeneric(str)
 End
 
-// IUTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
 // IUTF_TD_GENERATOR v0:DataGenerators#EpochTestTTL_TP_Gen
 // IUTF_TD_GENERATOR v1:DataGenerators#EpochTestTTL_TD_Gen
 // IUTF_TD_GENERATOR v2:DataGenerators#EpochTestTTL_OD_Gen
@@ -1113,7 +1113,7 @@ static Function EP_EpochTestTTL_REENTRY([STRUCT IUTF_mData &mData])
 	CHECK_EQUAL_WAVES(epochShortNames, nameRef, mode = WAVE_DATA)
 End
 
-// IUTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
 // IUTF_TD_GENERATOR v0:DataGenerators#EpochTestSamplingFrequencyTTL_Gen
 // IUTF_TD_GENERATOR s1:DataGenerators#EpochTest_StimsetsTTL_Gen
 static Function EP_EpochTestTTLSamplingFrequency([STRUCT IUTF_mData &mData])
@@ -1137,7 +1137,7 @@ static Function EP_EpochTestTTLSamplingFrequency_REENTRY([STRUCT IUTF_mData &mDa
 	TestEpochsGeneric(mData.s0)
 End
 
-// IUTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
 // IUTF_TD_GENERATOR v0:DataGenerators#EpochTestSamplingMultiplier_Gen
 // IUTF_TD_GENERATOR s1:DataGenerators#EpochTest_StimsetsTTL_Gen
 static Function EP_EpochTestTTLSamplingMultiplier([STRUCT IUTF_mData &mData])
@@ -1161,7 +1161,7 @@ static Function EP_EpochTestTTLSamplingMultiplier_REENTRY([STRUCT IUTF_mData &mD
 	TestEpochsGeneric(mData.s0)
 End
 
-// IUTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
 // IUTF_TD_GENERATOR v0:DataGenerators#EpochTestSamplingFrequencyTTL_Gen
 static Function EP_EpochTest18([STRUCT IUTF_mData &mData])
 
@@ -1183,7 +1183,7 @@ static Function EP_EpochTest18_REENTRY([STRUCT IUTF_mData &mData])
 	TestEpochsGeneric(mData.s0)
 End
 
-// IUTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest19([STRUCT IUTF_mData &mData])
 
 	STRUCT DAQSettings s

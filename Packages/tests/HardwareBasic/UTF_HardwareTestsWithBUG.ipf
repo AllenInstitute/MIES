@@ -18,7 +18,7 @@ Function CheckSweepSavingCompatible_PreAcq(string device)
 	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "BreakConfigWave")
 End
 
-/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+/// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 Function CheckSweepSavingCompatible([string str])
 
 	STRUCT DAQSettings s
@@ -37,7 +37,7 @@ Function CheckSweepSavingCompatible_REENTRY([string str])
 	CHECK_EQUAL_VAR(sweepNo, NaN)
 End
 
-/// UTF_TD_GENERATOR DeviceNameGeneratorMD0
+/// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD0
 Function ExtendedDebugLoggingOnErrorWithITC([string str])
 
 	STRUCT DAQSettings s

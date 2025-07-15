@@ -60,7 +60,7 @@ static Function TestFuncMapping()
 	endfor
 End
 
-// UTF_TD_GENERATOR GetClampModesWithoutIZero
+// UTF_TD_GENERATOR DataGenerators#GetClampModesWithoutIZero
 static Function TestAmplifierUnits([variable clampMode])
 
 	string unit, prefix, unitWithPrefix

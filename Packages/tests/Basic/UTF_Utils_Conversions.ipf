@@ -109,7 +109,7 @@ Function TWTLChecksParams()
 	endtry
 End
 
-// UTF_TD_GENERATOR TrailSepOptions
+// UTF_TD_GENERATOR DataGenerators#TrailSepOptions
 Function TWTLOddCases([variable var])
 
 	Make/FREE/T/N=0 w
@@ -128,7 +128,7 @@ Function TWTLOddCases([variable var])
 	CHECK_EQUAL_STR(result, expected)
 End
 
-// UTF_TD_GENERATOR TrailSepOptions
+// UTF_TD_GENERATOR DataGenerators#TrailSepOptions
 Function TWTL1D([variable var])
 
 	Make/FREE/T/N=3 w = {"1", "2", "3"}
@@ -142,7 +142,7 @@ Function TWTL1D([variable var])
 	CHECK_EQUAL_STR(list, refList)
 End
 
-// UTF_TD_GENERATOR TrailSepOptions
+// UTF_TD_GENERATOR DataGenerators#TrailSepOptions
 Function TWTL2D([variable var])
 
 	Make/FREE/T/N=(3, 3) w = {{"1", "2", "3"}, {"4", "5", "6"}, {"7", "8", "9"}}
@@ -156,7 +156,7 @@ Function TWTL2D([variable var])
 	CHECK_EQUAL_STR(list, refList)
 End
 
-// UTF_TD_GENERATOR TrailSepOptions
+// UTF_TD_GENERATOR DataGenerators#TrailSepOptions
 Function TWTL3D([variable var])
 
 	Make/FREE/T/N=(2, 2, 2) w = {{{"1", "2"}, {"3", "4"}}, {{"5", "6"}, {"7", "8"}}}
@@ -170,7 +170,7 @@ Function TWTL3D([variable var])
 	CHECK_EQUAL_STR(list, refList)
 End
 
-// UTF_TD_GENERATOR TrailSepOptions
+// UTF_TD_GENERATOR DataGenerators#TrailSepOptions
 Function TWTL4D([variable var])
 
 	Make/FREE/T/N=(2, 2, 2, 2) w = {{{{"1", "2"}, {"3", "4"}}, {{"5", "6"}, {"7", "8"}}}, {{{"9", "10"}, {"11", "12"}}, {{"13", "14"}, {"15", "16"}}}}
@@ -184,7 +184,7 @@ Function TWTL4D([variable var])
 	CHECK_EQUAL_STR(list, refList)
 End
 
-// UTF_TD_GENERATOR TrailSepOptions
+// UTF_TD_GENERATOR DataGenerators#TrailSepOptions
 Function TWTLCustomSepators([variable var])
 
 	Make/FREE/T/N=(2, 2, 2, 2) w = {{{{"1", "2"}, {"3", "4"}}, {{"5", "6"}, {"7", "8"}}}, {{{"9", "10"}, {"11", "12"}}, {{"13", "14"}, {"15", "16"}}}}
@@ -198,7 +198,7 @@ Function TWTLCustomSepators([variable var])
 	CHECK_EQUAL_STR(list, refList)
 End
 
-// UTF_TD_GENERATOR TrailSepOptions
+// UTF_TD_GENERATOR DataGenerators#TrailSepOptions
 Function TWTLStopOnEmpty([variable var])
 
 	Make/FREE/T/N=(3, 3) w = {{"", "2", "3"}, {"4", "5", "6"}, {"7", "8", "9"}}
@@ -233,7 +233,7 @@ Function TWTLStopOnEmpty([variable var])
 	CHECK_EQUAL_STR(list, refList)
 End
 
-// UTF_TD_GENERATOR TrailSepOptions
+// UTF_TD_GENERATOR DataGenerators#TrailSepOptions
 Function TWTLMaxElements([variable var])
 
 	Make/FREE/T/N=(3, 3) w = {{"1", "2", "3"}, {"4", "5", "6"}, {"7", "8", "9"}}
@@ -264,7 +264,7 @@ Function TWTLMaxElements([variable var])
 	CHECK_EQUAL_STR(list, refList)
 End
 
-// UTF_TD_GENERATOR TrailSepOptions
+// UTF_TD_GENERATOR DataGenerators#TrailSepOptions
 static Function TWTLSingleElementNDSeparators([variable var])
 
 	string list
@@ -295,30 +295,8 @@ static Function TWTLSingleElementNDSeparators([variable var])
 	CHECK_EQUAL_STR(list, refList)
 End
 
-Function/WAVE SomeTextWaves()
-
-	Make/WAVE/FREE/N=5 all
-
-	Make/FREE/T/N=0 wv1
-
-	// both empty and null roundtrip to an empty wave
-	all[0] = wv1
-	all[1] = $""
-
-	Make/FREE/T/N=(3, 3) wv2 = {{"1", "2", "3"}, {"4", "5", "6"}, {"7", "8", "9"}}
-	all[2] = wv2
-
-	Make/FREE/T/N=(2, 2, 2) wv3 = {{{"1", "2"}, {"3", "4"}}, {{"5", "6"}, {"7", "8"}}}
-	all[3] = wv3
-
-	Make/FREE/T/N=(2, 2, 2, 2) wv4 = {{{{"1", "2"}, {"3", "4"}}, {{"5", "6"}, {"7", "8"}}}, {{{"9", "10"}, {"11", "12"}}, {{"13", "14"}, {"15", "16"}}}}
-	all[4] = wv4
-
-	return all
-End
-
-// UTF_TD_GENERATOR w0:SomeTextWaves
-// UTF_TD_GENERATOR v0:TrailSepOptions
+// UTF_TD_GENERATOR w0:DataGenerators#SomeTextWaves
+// UTF_TD_GENERATOR v0:DataGenerators#TrailSepOptions
 Function TWTLRoundTrips([STRUCT IUTF_MDATA &md])
 
 	string list
@@ -467,7 +445,7 @@ End
 /// NumericWaveToList
 /// @{
 
-// UTF_TD_GENERATOR TrailSepOptions
+// UTF_TD_GENERATOR DataGenerators#TrailSepOptions
 Function NWLWorks([variable var])
 
 	string expected, result
@@ -800,13 +778,7 @@ Function STIW_TestDimensions()
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, Inf, ROWS), 0)
 End
 
-Function/WAVE STIW_TestAbortGetter()
-
-	Make/D/FREE data = {4, -1, 0.1, NaN, Inf, -Inf}
-	return data
-End
-
-// UTF_TD_GENERATOR STIW_TestAbortGetter
+// UTF_TD_GENERATOR DataGenerators#STIW_TestAbortGetter
 Function STIW_TestAbort([variable var])
 
 	Make/FREE testwave

@@ -187,7 +187,7 @@ static Function PS_RA1_preAcq(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_RA1([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -268,7 +268,7 @@ static Function PS_RA2_preAcq(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_RA2([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -332,7 +332,7 @@ static Function PS_RA2a_preAcq(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_RA2a([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -423,7 +423,7 @@ static Function PS_RA2b_preAcq(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_RA2b([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -487,7 +487,7 @@ static Function PS_RA3_preAcq(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_RA3([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -567,7 +567,7 @@ static Function PS_RA4_preAcq(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_RA4([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -643,7 +643,7 @@ static Function PS_RA5_preAcq(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_RA5([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -720,7 +720,7 @@ static Function PS_RA6_preAcq(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_RA6([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
@@ -819,7 +819,7 @@ End
 
 // Same as PS_RA2 but with failing sampling interval check
 //
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_RA7([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)

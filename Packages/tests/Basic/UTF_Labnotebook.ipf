@@ -711,29 +711,7 @@ Function SCid_InvalidWaveRef()
 	CHECK_WAVE(settings, NULL_WAVE)
 End
 
-Function/WAVE LBNInvalidValidPairs()
-
-	Make/WAVE/N=5/FREE waves
-
-	Make/T/FREE wv0 = {"a:b", "a [b]"}
-	waves[0] = wv0
-
-	Make/T/FREE wv1 = {"\"", "_"}
-	waves[1] = wv1
-
-	Make/T/FREE wv2 = {"\'", "_"}
-	waves[2] = wv2
-
-	Make/T/FREE wv3 = {";", "_"}
-	waves[3] = wv3
-
-	Make/T/FREE wv4 = {":", "_"}
-	waves[4] = wv4
-
-	return waves
-End
-
-// UTF_TD_GENERATOR LBNInvalidValidPairs
+// UTF_TD_GENERATOR DataGenerators#LBNInvalidValidPairs
 Function LabnotebookUpgradeForValidDimensionLabelsNum([WAVE/T wv])
 
 	string device, txtSetting, refSetting, invalidName, newName
@@ -775,7 +753,7 @@ Function LabnotebookUpgradeForValidDimensionLabelsNum([WAVE/T wv])
 	CHECK_EQUAL_STR(txtSetting, newName)
 End
 
-// UTF_TD_GENERATOR LBNInvalidValidPairs
+// UTF_TD_GENERATOR DataGenerators#LBNInvalidValidPairs
 Function LabnotebookUpgradeForValidDimensionLabelsText([WAVE/T wv])
 
 	string device, refSetting, invalidName, newName, setting
@@ -1129,19 +1107,6 @@ Function Test_GetLastSettingChannel()
 	CHECK_EQUAL_TEXTWAVES(settings, {"", "", "", "", "", "", "", "", "252627"}, mode = WAVE_DATA)
 End
 
-Function/WAVE AllDescriptionWaves()
-
-	Make/FREE/WAVE/N=1 wvs
-
-	// GetLBNumericalDescription creates a wave within the MIES datafolder, but that is killed at Test Begin
-	// Thus, we use a copy of that wave here
-	WAVE wDesc = GetLBNumericalDescription()
-	Duplicate/FREE wDesc, wT
-	wvs[0] = wT
-
-	return wvs
-End
-
 Function IsValidUnit(string unitWithPrefix)
 
 	string prefix, unit
@@ -1152,7 +1117,7 @@ Function IsValidUnit(string unitWithPrefix)
 	CHECK(IsFinite(numPrefix))
 End
 
-// UTF_TD_GENERATOR AllDescriptionWaves
+// UTF_TD_GENERATOR DataGenerators#AllDescriptionWaves
 Function CheckLBNDescriptions([WAVE/T wv])
 
 	variable i, numEntries, num

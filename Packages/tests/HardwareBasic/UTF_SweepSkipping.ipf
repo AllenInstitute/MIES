@@ -29,7 +29,7 @@ static Function SkipAhead_PreAcq(string device)
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_skipAhead", val = 2)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SkipAhead([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings("MD1_RA1_I0_L0_BKG1")
@@ -66,7 +66,7 @@ static Function SweepSkipping_PreAcq(string device)
 	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END), str = "StimulusSetD_*")
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SweepSkipping([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings("MD1_RA1_I1_L0_BKG1")
@@ -111,7 +111,7 @@ static Function SweepSkippingAdvanced_PreAcq(string device)
 	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "StimulusSetA_*")
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SweepSkippingAdvanced([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings("MD1_RA1_I0_L0_BKG1")
@@ -157,8 +157,8 @@ static Function SweepSkippingAdvanced_REENTRY([string str])
 	CHECK_EQUAL_WAVES(skipSweepsSource, {SWEEP_SKIP_AUTO, SWEEP_SKIP_AUTO, SWEEP_SKIP_AUTO, NaN}, mode = WAVE_DATA)
 End
 
-// UTF_TD_GENERATOR v0:SingleMultiDeviceDAQ
-// UTF_TD_GENERATOR s0:DeviceNameGenerator
+// UTF_TD_GENERATOR v0:DataGenerators#SingleMultiDeviceDAQ
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGenerator
 static Function SkipSweepsDuringITI([STRUCT IUTF_MDATA &md])
 
 	[STRUCT DAQSettings s] = GetDAQSettings("MD" + num2str(md.v0) + "_RA1_I0_L0_BKG1_RES5_GSI0_ITI5")
@@ -193,7 +193,7 @@ static Function SkipSweepsBackDuringITI_PreAcq(string device)
 	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END), str = "StimulusSetD_*")
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SkipSweepsBackDuringITI([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings("MD1_RA1_I0_L0_BKG1_RES0_GSI0_ITI5")

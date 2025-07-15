@@ -61,21 +61,7 @@ Function/WAVE WB_FetchRefWave_IGNORE(string name)
 	return wv
 End
 
-Function/WAVE WB_GatherStimsets()
-
-	string list
-
-	DFREF dfr = root:wavebuilder_misc:DAParameterWaves
-	list = GetListOfObjects(dfr, "WP_.*")
-	list = RemovePrefixFromListItem("WP_", list)
-	WAVE/T wv = ListToTextWave(list, ";")
-
-	SetDimensionLabels(wv, list, ROWS)
-
-	return wv
-End
-
-// UTF_TD_GENERATOR WB_GatherStimsets
+// UTF_TD_GENERATOR DataGenerators#WB_GatherStimsets
 Function WB_RegressionTest([string stimset])
 
 	variable i, j, sweepCount, duration, epochCount, minimum, maximum

@@ -2173,23 +2173,7 @@ static Function PAT_MultiSweepAvg()
 	endfor
 End
 
-static Function/WAVE PAT_IncrementalSweepAdd_Generator()
-
-	Make/FREE/WAVE/N=4 w
-
-	Make/FREE sweeps = {0, 1, 2, 3, 4, 5}
-	w[0] = sweeps
-	Make/FREE sweeps = {5, 4, 3, 2, 1, 0}
-	w[1] = sweeps
-	Make/FREE sweeps = {2, 1, 5, 3, 4, 0}
-	w[2] = sweeps
-	Make/FREE sweeps = {4, 3, 5, 0, 1, 2}
-	w[3] = sweeps
-
-	return w
-End
-
-// UTF_TD_GENERATOR PAT_IncrementalSweepAdd_Generator
+// UTF_TD_GENERATOR DataGenerators#PAT_IncrementalSweepAdd_Generator
 static Function PAT_IncrementalSweepAdd([WAVE wv])
 
 	string bspName, graph

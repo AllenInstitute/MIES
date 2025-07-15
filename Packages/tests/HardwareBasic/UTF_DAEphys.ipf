@@ -13,7 +13,7 @@ static Function GlobalPreAcq(string device)
 	PASS()
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 Function CheckIfAllControlsReferStateWv([string str])
 
 	string list, ctrl, stri, expected, lbl, uniqueControls
@@ -170,7 +170,7 @@ Function CheckIfAllControlsReferStateWv([string str])
 	endfor
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 Function CheckStartupSettings([string str])
 
 	string unlockedDevice, list, ctrl, expected, lbl
@@ -246,7 +246,7 @@ Function CheckStartupSettings([string str])
 	CHECK_EQUAL_WAVES(guiStateTxTRef, guiStateTxTNew, mode = WAVE_DATA | DIMENSION_LABELS)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 Function CheckStimsetPopupMetadata([string str])
 
 	string controls, stimsetlist, ctrl, menuExp
@@ -278,7 +278,7 @@ Function CheckStimsetPopupMetadata([string str])
 	endfor
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 Function AllChannelControlsWork([string str])
 
 	string   ctrl
@@ -295,7 +295,7 @@ Function AllChannelControlsWork([string str])
 	endfor
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 Function CheckIfConfigurationRestoresMCCFilterGain([string str])
 
 	string rewrittenConfig, fName
@@ -366,7 +366,7 @@ static Function ComplainsAboutVanishingEpoch_preAcq(string device)
 	ST_SetStimsetParameter(setname, "Amplitude", epochIndex = 1, var = 0)
 End
 
-// UTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
 static Function ComplainsAboutVanishingEpoch([STRUCT IUTF_MDATA &md])
 
 	variable refNum
@@ -417,7 +417,7 @@ static Function SyncMIESMccWorksOutoftheBox_preAcq(string device)
 	PGC_SetAndActivateControl(device, "check_Settings_SyncMiesToMCC", val = 1)
 End
 
-// UTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
 static Function SyncMIESMccWorksOutoftheBox([STRUCT IUTF_MDATA &md])
 
 	variable headstage, func, clampMode, val, expected, actual
@@ -451,8 +451,8 @@ static Function CheckAmplifierReadAndWrite_preAcq(string device)
 	PGC_SetAndActivateControl(device, "check_Settings_SyncMiesToMCC", val = 1)
 End
 
-// UTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
-// UTF_TD_GENERATOR v0:GetClampModesWithoutIZero
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR v0:DataGenerators#GetClampModesWithoutIZero
 Function CheckAmplifierReadAndWrite([STRUCT IUTF_MDATA &md])
 
 	variable refNum, headstage, func, clampMode, val, expected, actual, newValue
@@ -480,7 +480,7 @@ Function CheckAmplifierReadAndWrite([STRUCT IUTF_MDATA &md])
 
 	WAVE ampStorageWave = GetAmplifierParamStorageWave(device)
 
-	WAVE funcs = GetAmplifierFuncs()
+	WAVE funcs = DataGenerators#GetAmplifierFuncs()
 
 	for(func : funcs)
 		switch(func)
@@ -613,7 +613,7 @@ Function CheckAmplifierReadAndWrite([STRUCT IUTF_MDATA &md])
 	endfor
 
 	// handle funcs which don't interact with the MCC
-	WAVE funcs = GetNoAmplifierFuncs()
+	WAVE funcs = DataGenerators#GetNoAmplifierFuncs()
 
 	newValue = 0
 	for(func : funcs)
@@ -629,13 +629,13 @@ Function CheckAmplifierReadAndWrite([STRUCT IUTF_MDATA &md])
 	endfor
 End
 
-// UTF_TD_GENERATOR v0:GetClampModes
+// UTF_TD_GENERATOR v0:DataGenerators#GetClampModes
 static Function CheckAmplifierScaling([STRUCT IUTF_MDATA &md])
 
 	variable forward, backward, clampMode
 
 	clampMode = md.v0
-	WAVE funcs = GetAmplifierFuncs()
+	WAVE funcs = DataGenerators#GetAmplifierFuncs()
 
 	for(func : funcs)
 		forward  = AI_GetMCCScale(clampMode, func, MCC_READ)

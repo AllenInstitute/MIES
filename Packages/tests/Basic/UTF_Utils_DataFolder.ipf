@@ -155,7 +155,7 @@ Function GetListOfObjectsWorks2()
 	KillDataFolder/Z test
 End
 
-// IUTF_TD_GENERATOR w0:CountObjectTypeFlags
+// IUTF_TD_GENERATOR w0:DataGenerators#CountObjectTypeFlags
 Function GetListOfObjectsWorksTypeFlag([STRUCT IUTF_mData &md])
 
 	string result, expected, expectedRec

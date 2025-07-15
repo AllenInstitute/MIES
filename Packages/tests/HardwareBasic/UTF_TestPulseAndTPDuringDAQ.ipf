@@ -13,7 +13,7 @@ static Function GlobalPreAcq(string device)
 	PASS()
 End
 
-/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+/// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckCalculatedTPEntries([string str])
 
 	STRUCT DAQSettings s
@@ -73,8 +73,8 @@ Function CheckTPBaseline_PreAcq(string device)
 	CtrlNamedBackGround StopTP, start=(ticks + 100), period=1, proc=StopTPWhenWeHaveOne
 End
 
-/// UTF_TD_GENERATOR v0:GenerateBaselineValues
-/// UTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+/// UTF_TD_GENERATOR v0:DataGenerators#GenerateBaselineValues
+/// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
 static Function CheckTPBaseline([STRUCT IUTF_MDATA &md])
 
 	string   device
@@ -174,7 +174,7 @@ End
 /// The analysis function ChangeTPSettings changes some settings in POST_SWEEP of sweep 1 and PRE_SWEEP_CONFIG of sweep 2. We check
 /// that these settings are correctly refelected in the LBN as now TP and DAQ settings for sweep 1 differ.
 ///
-/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+/// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckTPEntriesFromLBN([string str])
 
 	STRUCT DAQSettings s
@@ -339,7 +339,7 @@ static Function CheckTPEntriesFromLBN_REENTRY([string str])
 	CHECK_EQUAL_VAR(Sum(validWaves), 0)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function TPCachingWorks([string str])
 
 	STRUCT DAQSettings s
@@ -513,7 +513,7 @@ static Function CheckTPStorage1_PreAcq(string device)
 	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
 End
 
-/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+/// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckTPStorage1([string str])
 
 	STRUCT DAQSettings s
@@ -542,7 +542,7 @@ static Function CheckTPStorage2_PreAcq(string device)
 	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
 End
 
-/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+/// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckTPStorage2([string str])
 
 	STRUCT DAQSettings s
@@ -571,7 +571,7 @@ static Function CheckTPStorage3_PreAcq(string device)
 	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
 End
 
-/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+/// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckTPStorage3([string str])
 
 	STRUCT DAQSettings s
@@ -587,7 +587,7 @@ static Function CheckTPStorage3_REENTRY([string str])
 	CheckTPStorage(str)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function TPDuringDAQOnlyTP([string str])
 
 	STRUCT DAQSettings s
@@ -645,8 +645,8 @@ static Function TPDuringDAQOnlyTP_REENTRY([string str])
 	CHECK_EQUAL_TEXTWAVES(stimsets, {"TestPulse", "", "", "", "", "", "", "", ""}, mode = WAVE_DATA)
 End
 
-// UTF_TD_GENERATOR v0:IndexingPossibilities
-// UTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR v0:DataGenerators#IndexingPossibilities
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
 static Function TPDuringDAQOnlyTPAndIndexing([STRUCT IUTF_MDATA &md])
 
 	STRUCT DAQSettings s
@@ -668,7 +668,7 @@ static Function TPDuringDAQOnlyTPAndIndexing_REENTRY([STRUCT IUTF_MDATA &md])
 	// generic properties are checked in TPDuringDAQOnlyTP
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function TPDuringDAQTPAndUnAssoc([string str])
 
 	STRUCT DAQSettings s
@@ -750,7 +750,7 @@ static Function TPDuringDAQTPAndUnAssoc_REENTRY([string str])
 	CHECK_EQUAL_STR(stimsetUnassoc, stimsetUnassocRef)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function TPDuringDAQ([string str])
 
 	STRUCT DAQSettings s
@@ -823,7 +823,7 @@ static Function TPDuringDAQWithoodDAQ_PreAcq(string device)
 	PGC_SetAndActivateControl(device, "Gain_DA_02", val = 2)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function TPDuringDAQWithoodDAQ([string str])
 
 	STRUCT DAQSettings s
@@ -889,7 +889,7 @@ static Function TPDuringDAQWithoodDAQ_REENTRY([string str])
 	CHECK_EQUAL_TEXTWAVES(stimsets, {"TestPulse", "StimulusSetC_DA_0", "StimulusSetC_DA_0", "", "", "", "", "", ""}, mode = WAVE_DATA)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function TPDuringDAQOnlyWithoodDAQ([string str])
 
 	STRUCT DAQSettings s
@@ -953,7 +953,7 @@ End
 
 static Constant TP_WAIT_TIMEOUT = 5
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function TPDuringDAQTPStoreCheck([string str])
 
 	STRUCT DAQSettings s
@@ -1017,7 +1017,7 @@ static Function CheckThatTPsCanBeFound_PreAcq(string device)
 	PrepareForPublishTest()
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckThatTPsCanBeFound([string str])
 
 	STRUCT DAQSettings s
@@ -1082,7 +1082,7 @@ static Function CheckThatTPsCanBeFound_REENTRY([string str])
 	CheckStartStopMessages("tp", "stopping")
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function TPDuringDAQWithTTL([string str])
 
 	STRUCT DAQSettings s
@@ -1150,7 +1150,7 @@ static Function RunPowerSpectrum_PreAcq(string device)
 	PGC_SetAndActivateControl(device, "check_settings_show_power", val = 1)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RunPowerSpectrum([string str])
 
 	STRUCT DAQSettings s
@@ -1186,7 +1186,7 @@ static Function RunPowerSpectrum_REENTRY([string str])
 	CHECK_EQUAL_WAVES(powerSpectrum, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 1}, mode = WAVE_DATA)
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function TestPulseCachingWorks([string str])
 
 	STRUCT DAQSettings s
@@ -1215,7 +1215,7 @@ static Function TestPulseCachingWorks_REENTRY([string str])
 	CHECK_GE_VAR(stats[V_Value][%Hits], 1)
 End
 
-/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+/// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function ExportIntoNWB([string str])
 
 	STRUCT DAQSettings s
@@ -1260,7 +1260,7 @@ static Function TPDuringDAQwithPS_PreAcq(string device)
 	PGC_SetAndActivateControl(device, "check_settings_show_power", val = 1)
 End
 
-/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+/// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function GetStoredTPTest([string str])
 
 	STRUCT DAQSettings s
@@ -1368,7 +1368,7 @@ static Function GetStoredTPTest_REENTRY([string str])
 	endfor
 End
 
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function TPDuringDAQwithPS([string str])
 
 	STRUCT DAQSettings s
@@ -1399,8 +1399,8 @@ static Function TPDuringDAQwithPS_REENTRY([string str])
 	CHECK_EQUAL_WAVES(powerSpectrum, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 1}, mode = WAVE_DATA)
 End
 
-// UTF_TD_GENERATOR v0:SingleMultiDeviceDAQ
-// UTF_TD_GENERATOR s0:DeviceNameGenerator
+// UTF_TD_GENERATOR v0:DataGenerators#SingleMultiDeviceDAQ
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGenerator
 static Function TPZerosDAC([STRUCT IUTF_MDATA &md])
 
 	STRUCT DAQSettings s
@@ -1448,7 +1448,7 @@ static Function TestTPPublishing_preAcq(string device)
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_Hold_VC", val = 4.56)
 End
 
-/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+/// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function TestTPPublishing([string str])
 
 	TUFXOP_Clear/Z/N=(ZMQ_FILTER_TPRESULT_1S)

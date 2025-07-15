@@ -169,6 +169,15 @@ then
   ret=1
 fi
 
+matches=$(git grep $opts '^// I?UTF_TD_GENERATOR [^#]+$' '**/MIES_*.ipf' '**/UTF*.ipf')
+
+if [[ -n "$matches" ]]
+then
+  echo "All igortest data generator functions used with UTF_TD_GENERATORS must be static."
+  echo "$matches"
+  ret=1
+fi
+
 # ripgrep checks
 
 files=$(git ls-files '*.ipf' '*.sh' '*.rst' '*.dot' '*.md' ':!:**/releasenotes_template.rst' ':^*/IPA_Control.ipf')

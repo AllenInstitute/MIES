@@ -105,7 +105,7 @@ static Function SetLabelsForDGWave(WAVE/T files)
 	SetDimensionLabels(files, TextWaveToList(labels, ";"), ROWS)
 End
 
-Function/WAVE GetHistoricDataFiles()
+static Function/WAVE GetHistoricDataFiles()
 
 	WAVE/T pxpFiles = GetHistoricDataFilesPXP()
 	WAVE/T nwbFiles = GetHistoricDataFilesNWB()
@@ -118,7 +118,7 @@ Function/WAVE GetHistoricDataFiles()
 	return files
 End
 
-Function/WAVE GetHistoricDataFilesPXP()
+static Function/WAVE GetHistoricDataFilesPXP()
 
 	Make/FREE/T files = {"C57BL6J-629713.05.01.02.pxp",                       \
 	                     "Chat-IRES-Cre-neo;Ai14-582723.15.10.01.pxp",        \
@@ -135,7 +135,7 @@ Function/WAVE GetHistoricDataFilesPXP()
 	return files
 End
 
-Function/WAVE GetHistoricDataFilesWithTTLData()
+static Function/WAVE GetHistoricDataFilesWithTTLData()
 
 	Make/FREE/T files = {"C57BL6J-684963.02.04.01_pislocin_puff_2023_07_19_141829-compressed.nwb"}
 	DownloadFilesIfRequired(files)
@@ -144,7 +144,7 @@ Function/WAVE GetHistoricDataFilesWithTTLData()
 	return files
 End
 
-Function/WAVE GetHistoricDataFilesNWB()
+static Function/WAVE GetHistoricDataFilesNWB()
 
 	Make/FREE/T files = {"nwb2_H17.03.016.11.09.01.nwb",           \
 	                     "C57BL6J-628261.02.01.02.nwb",            \
@@ -158,7 +158,7 @@ Function/WAVE GetHistoricDataFilesNWB()
 	return files
 End
 
-Function/WAVE GetHistoricDataFilesSweepUpgrade()
+static Function/WAVE GetHistoricDataFilesSweepUpgrade()
 
 	Make/FREE/T files = {"single_numeric_sweep.pxp"}
 
@@ -168,7 +168,7 @@ Function/WAVE GetHistoricDataFilesSweepUpgrade()
 	return files
 End
 
-Function/WAVE GetHistoricDataNoData()
+static Function/WAVE GetHistoricDataNoData()
 
 	Make/FREE/T files = {"Labnotebook-has-sweep-but-no-data.pxp"}
 
@@ -178,7 +178,7 @@ Function/WAVE GetHistoricDataNoData()
 	return files
 End
 
-Function/WAVE GetHistoricDataLoadResults()
+static Function/WAVE GetHistoricDataLoadResults()
 
 	// Files in list must contain results waves
 	Make/FREE/T files = {"AB_LoadSweepsFromIgorData.pxp", "Gad2-IRES-Cre;Ai14-709273.06.02.02.nwb"}
@@ -189,7 +189,7 @@ Function/WAVE GetHistoricDataLoadResults()
 	return files
 End
 
-Function/WAVE GetHistoricDataLoadUserComment()
+static Function/WAVE GetHistoricDataLoadUserComment()
 
 	// Files in list must contain user comment
 	Make/FREE/T files = {"Pvalb-IRES-Cre;Ai14-646904.13.03.02.pxp", "nwb2_H17.03.016.11.09.01.nwb"}

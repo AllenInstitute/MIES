@@ -281,7 +281,7 @@ Function IC_Works()
 	CHECK_EQUAL_VAR(IsConstant({-1, 2, 3}, 0), 0)
 End
 
-// UTF_TD_GENERATOR InfiniteValues
+// UTF_TD_GENERATOR DataGenerators#InfiniteValues
 Function IC_WorksSpecialValues([variable val])
 
 	Make/FREE/N=0 empty

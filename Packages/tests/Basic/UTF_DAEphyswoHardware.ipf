@@ -142,8 +142,8 @@ static Function/WAVE GetStimsetFromUserData(string device, string ctrl)
 	return ListToTextWave(RemoveFromList(STIMSET_TP_WHILE_DAQ, GetUserData(device, ctrl, USER_DATA_MENU_EXP)), ";")
 End
 
-/// UTF_TD_GENERATOR v1:GetChannelTypes
-/// UTF_TD_GENERATOR v0:GetChannelNumbersForDATTL
+/// UTF_TD_GENERATOR v1:DataGenerators#GetChannelTypes
+/// UTF_TD_GENERATOR v0:DataGenerators#GetChannelNumbersForDATTL
 Function CheckStimsetUpdateAndSearch([STRUCT IUTF_mData &m])
 
 	string device, expected, ctrlWave, ctrlSearch
