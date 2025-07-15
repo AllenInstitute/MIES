@@ -3156,6 +3156,7 @@ Function AB_ButtonProc_AddFiles(STRUCT WMButtonAction &ba) : ButtonControl
 			endif
 			WAVE/T selFiles = ListToTextWave(fileList, "\r")
 			AB_AddFiles(ba.win, selFiles)
+			AB_CheckFileTypeCheckbox(ba.win, selFiles)
 			AB_CollapseAll()
 			break
 		default:
@@ -3163,6 +3164,34 @@ Function AB_ButtonProc_AddFiles(STRUCT WMButtonAction &ba) : ButtonControl
 	endswitch
 
 	return 0
+End
+
+static Function AB_CheckFileTypeCheckbox(string win, WAVE/T files)
+
+	variable numEntries
+	string   extension
+
+	WAVE/T folderList = GetAnalysisBrowserGUIFolderList()
+
+	numEntries = DimSize(folderList, ROWS)
+
+	if(numEntries == 0)
+		return NaN
+	endif
+
+	extension = GetFileSuffix(folderList[numEntries - 1])
+
+	strswitch(extension)
+		case "pxp": // fallthrough
+		case "uxp":
+			PGC_SetAndActivateControl(win, "check_load_pxp", val = CHECKBOX_SELECTED)
+			break
+		case "nwb":
+			PGC_SetAndActivateControl(win, "check_load_nwb", val = CHECKBOX_SELECTED)
+			break
+		default:
+			FATAL_ERROR("Unknown file type")
+	endswitch
 End
 
 static Function AB_AddFiles(string win, WAVE/T selFiles)
