@@ -15,7 +15,7 @@
 
 static StrConstant ASYNC_BACKGROUND    = "AsyncFramework"
 static Constant    ASYNC_THREAD_MARKER = 299792458
-static Constant    ASYNC_MAX_THREADS   = 64
+static Constant    ASYNC_MAX_THREADS   = 1024
 static Constant    ASYNC_SLEEP_ON_WAIT = 0.01
 
 /// @name Variable names for free data folder structure
