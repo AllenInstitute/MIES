@@ -13,7 +13,7 @@
 #include "UTF_Constants"
 #include "UTF_DataGenerators"
 
-#define OUTPUT_DOCUMENTATION_JSON_DUMP
+// #define OUTPUT_DOCUMENTATION_JSON_DUMP
 
 /// @file UTF_HelperFunctions.ipf
 /// @brief This file holds helper functions for the tests
