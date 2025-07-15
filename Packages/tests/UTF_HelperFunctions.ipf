@@ -944,6 +944,8 @@ Function TestBeginCommon()
 	if(DoExpensiveChecks())
 		PrepareForPublishTest()
 	endif
+
+	InitializeBugCount_TS()
 End
 
 Function TestEndCommon()
