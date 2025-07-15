@@ -165,9 +165,7 @@ Function AdditionalExperimentCleanup()
 	NVAR bugCount = $GetBugCount()
 	KillVariables bugCount
 
-	TUFXOP_AcquireLock/N=(TSDS_BUGCOUNT)
-	TSDS_WriteVar(TSDS_BUGCOUNT, 0)
-	TUFXOP_ReleaseLock/N=(TSDS_BUGCOUNT)
+	InitializeBugCount_TS()
 
 	KillOrMoveToTrash(wv = GetOverrideResults())
 End
@@ -928,6 +926,13 @@ static Function RetrieveAllWindowsInCI()
 	endif
 
 	DoIgorMenu "Control", "Retrieve All Windows"
+End
+
+static Function InitializeBugCount_TS()
+
+	TUFXOP_AcquireLock/N=(TSDS_BUGCOUNT)
+	TSDS_WriteVar(TSDS_BUGCOUNT, 0)
+	TUFXOP_ReleaseLock/N=(TSDS_BUGCOUNT)
 End
 
 Function TestBeginCommon()
