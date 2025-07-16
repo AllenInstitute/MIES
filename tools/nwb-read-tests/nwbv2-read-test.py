@@ -12,11 +12,13 @@ if vers < (3, 7):
     print("Unsupported python version: {}".format(vers), file=sys.stderr)
     sys.exit(1)
 
+
 def to_str(s):
     if isinstance(s, bytes):
-        return s.decode('utf-8')
+        return s.decode("utf-8")
     else:
         return s
+
 
 def checkFile(path):
 
@@ -25,8 +27,13 @@ def checkFile(path):
         return 1
 
     # 1.) pynwb Validation
-    comp = run(["pynwb-validate", path],
-               stdout=PIPE, stderr=STDOUT, universal_newlines=True, timeout=120)
+    comp = run(
+        ["pynwb-validate", path],
+        stdout=PIPE,
+        stderr=STDOUT,
+        universal_newlines=True,
+        timeout=120,
+    )
 
     if comp.returncode != 0:
         print(f"pynwb validation output: {comp.stdout}", file=sys.stderr)
@@ -35,8 +42,13 @@ def checkFile(path):
     print(f"pynwb validation output: {comp.stdout}", file=sys.stdout)
 
     # 2.) dandi Validation
-    comp = run(["dandi", "validate", "--ignore", "(NWBI|DANDI)", path],
-               stdout=PIPE, stderr=STDOUT, universal_newlines=True, timeout=120)
+    comp = run(
+        ["dandi", "validate", "--ignore", "(NWBI|DANDI)", path],
+        stdout=PIPE,
+        stderr=STDOUT,
+        universal_newlines=True,
+        timeout=120,
+    )
 
     if comp.returncode != 0:
         print(f"dandi validation output: {comp.stdout}", file=sys.stderr)
@@ -45,7 +57,7 @@ def checkFile(path):
     print(f"dandi validation output: {comp.stdout}", file=sys.stdout)
 
     # 3.) Read test
-    with NWBHDF5IO(path, mode='r', load_namespaces=True) as io:
+    with NWBHDF5IO(path, mode="r", load_namespaces=True) as io:
         nwbfile = io.read()
 
         print(f"nwbfile: {nwbfile}")
@@ -67,11 +79,14 @@ def checkFile(path):
             print(f"epochs.timeseries: {nwbfile.epochs[:, 'timeseries']}")
 
     # 4. Check that pynwb/hdmf can read our object IDs
-    with h5py.File(path, 'r') as f:
+    with h5py.File(path, "r") as f:
         root_object_id_hdf5 = to_str(f["/"].attrs["object_id"])
 
     if root_object_id_hdf5 not in object_ids:
-        print(f"object IDs don't match as {root_object_id_hdf5} could not be found.", file=sys.stderr)
+        print(
+            f"object IDs don't match as {root_object_id_hdf5} could not be found.",
+            file=sys.stderr,
+        )
         return 1
 
     return 0
@@ -80,13 +95,12 @@ def checkFile(path):
 def main():
 
     parser = ArgumentParser(description="Validate and read an NWB file")
-    parser.add_argument("paths", type=str, nargs='+', help="NWB file paths")
+    parser.add_argument("paths", type=str, nargs="+", help="NWB file paths")
     args = parser.parse_args()
     ret = 0
 
     for path in args.paths:
         ret = ret or checkFile(path)
-
 
     if ret == 0:
         print("Success!")
@@ -94,7 +108,7 @@ def main():
     return ret
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     try:
         sys.exit(main())
