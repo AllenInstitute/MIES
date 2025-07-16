@@ -68,18 +68,18 @@ Function RestoreButtonWorks([string str])
 	CHECK(WindowExists(subWindow))
 
 	// restore button is hidden
-	CHECK(IsControlHidden(win, "button_BSP_open"))
+	CHECK(IsControlHidden(win, BSP_SHOW_WIN_BUTTON))
 
 	// restore button is not hidden amymore after killing the subwindow
 	KillWindow $subWindow
-	CHECK(!IsControlHidden(win, "button_BSP_open"))
+	CHECK(!IsControlHidden(win, BSP_SHOW_WIN_BUTTON))
 
 	// subwindow is hidden
 	GetWindow $subWindow, hide
 	CHECK_EQUAL_VAR(V_Value, 0x1)
 
 	// restoring
-	PGC_SetAndActivateControl(win, "button_BSP_open")
+	PGC_SetAndActivateControl(win, BSP_SHOW_WIN_BUTTON)
 	CHECK(WindowExists(subWindow))
 
 	// subwindow is not hidden
@@ -87,5 +87,5 @@ Function RestoreButtonWorks([string str])
 	CHECK_EQUAL_VAR(V_Value, 0x0)
 
 	// but the button is hidden again
-	CHECK(IsControlHidden(win, "button_BSP_open"))
+	CHECK(IsControlHidden(win, BSP_SHOW_WIN_BUTTON))
 End

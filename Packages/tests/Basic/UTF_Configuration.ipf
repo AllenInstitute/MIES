@@ -6,12 +6,12 @@
 /// @file UTF_ConfigurationTest.ipf
 /// @brief __CONFIG_Test__ This file holds the tests for the Configuration saving/loading
 
-static StrConstant REF_CONFIG_FILE          = "ConfigurationTest.txt"
-static StrConstant REF_CONFIG_FILE_RELEVANT = "ConfigurationTest_Relevant.txt"
-static StrConstant REF_TMP1_CONFIG_FILE     = "ConfigurationTest_temp1.txt"
-static StrConstant REF_TMP2_CONFIG_FILE     = "ConfigurationTest_temp2.txt"
-static StrConstant REF_DUP1_CONFIG_FILE     = "ConfigurationTest_DupCheck1.txt"
-static StrConstant REF_DUP2_CONFIG_FILE     = "ConfigurationTest_DupCheck2.txt"
+static StrConstant REF_CONFIG_FILE          = "input:ConfigurationTest.json"
+static StrConstant REF_CONFIG_FILE_RELEVANT = "input:ConfigurationTest_Relevant.json"
+static StrConstant REF_TMP1_CONFIG_FILE     = "ConfigurationTest_temp1.json"
+static StrConstant REF_TMP2_CONFIG_FILE     = "ConfigurationTest_temp2.json"
+static StrConstant REF_DUP1_CONFIG_FILE     = "input:ConfigurationTest_DupCheck1.json"
+static StrConstant REF_DUP2_CONFIG_FILE     = "input:ConfigurationTest_DupCheck2.json"
 static Constant    CHECKBOX_CLICKED         = 1
 static Constant    RADIO3_CLICKED           = 2
 
@@ -379,4 +379,35 @@ static Function TCONF_CheckMacrosForPanelType([string str])
 	panelType = GetUserData(win, "", EXPCONFIG_UDATA_PANELTYPE)
 	INFO("Panel: " + win)
 	CHECK_PROPER_STR(panelType)
+End
+
+static Function TCONF_CheckHideState()
+
+	string panel, subPanel
+	variable jsonID
+	variable saveRestoreMask = EXPCONFIG_SAVE_VALUE
+
+	NewPanel
+	panel = S_name
+
+	NewPanel/EXT=1/HOST=#/N=sub
+	subPanel = panel + "#sub"
+	SetWindow $subPanel, hide=1
+	// main panel is shown, subwindow is hidden
+
+	jsonID = CONF_AllWindowsToJSON(panel, saveRestoreMask)
+
+	CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, "Panel0#sub/Window Properties/Hide"), 1)
+
+	// all are shown again
+	SetWindow $subPanel, hide=0
+	GetWindow $subPanel, hide
+	CHECK_EQUAL_VAR(V_Value, 0)
+
+	CONF_JSONToWindow(panel, saveRestoreMask, jsonID)
+	DoUpdate/W=$panel
+
+	// and now the subwindow is hidden again
+	GetWindow $subPanel, hide
+	CHECK_EQUAL_VAR(V_Value, 1)
 End
