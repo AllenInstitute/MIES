@@ -13,7 +13,7 @@
 #include "UTF_Constants"
 #include "UTF_DataGenerators"
 
-#define OUTPUT_DOCUMENTATION_JSON_DUMP
+// #define OUTPUT_DOCUMENTATION_JSON_DUMP
 
 /// @file UTF_HelperFunctions.ipf
 /// @brief This file holds helper functions for the tests
@@ -165,9 +165,7 @@ Function AdditionalExperimentCleanup()
 	NVAR bugCount = $GetBugCount()
 	KillVariables bugCount
 
-	TUFXOP_AcquireLock/N=(TSDS_BUGCOUNT)
-	TSDS_WriteVar(TSDS_BUGCOUNT, 0)
-	TUFXOP_ReleaseLock/N=(TSDS_BUGCOUNT)
+	InitializeBugCount_TS()
 
 	KillOrMoveToTrash(wv = GetOverrideResults())
 End
@@ -930,6 +928,13 @@ static Function RetrieveAllWindowsInCI()
 	DoIgorMenu "Control", "Retrieve All Windows"
 End
 
+static Function InitializeBugCount_TS()
+
+	TUFXOP_AcquireLock/N=(TSDS_BUGCOUNT)
+	TSDS_WriteVar(TSDS_BUGCOUNT, 0)
+	TUFXOP_ReleaseLock/N=(TSDS_BUGCOUNT)
+End
+
 Function TestBeginCommon()
 
 	RetrieveAllWindowsInCI()
@@ -939,6 +944,8 @@ Function TestBeginCommon()
 	if(DoExpensiveChecks())
 		PrepareForPublishTest()
 	endif
+
+	InitializeBugCount_TS()
 End
 
 Function TestEndCommon()
