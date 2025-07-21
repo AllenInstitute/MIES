@@ -113,3 +113,32 @@ Function TestRemoveDrawLayers()
 	DrawAction/W=$win commands
 	CHECK_EQUAL_VAR(strlen(S_recreation), 0)
 End
+
+Function TestGetExteriorSubWindowOrientations()
+
+	string recMacro = ""
+
+	recMacro += "NewPanel/HOST=#/EXT=2/W=(0,0,580,70)\r"
+	recMacro += "RenameWindow #,SweepControl\r"
+	recMacro += "NewPanel/HOST=#/EXT=1/W=(445,0,0,812)\r"
+	recMacro += "NewNotebook /F=0 /N=sweepFormula_json /W=(12,71,378,358)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0 /OPTS=12\r"
+	recMacro += "RenameWindow #,sweepFormula_json\r"
+	recMacro += "NewNotebook /F=1 /N=sweepFormula_formula /W=(12,71,378,529)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0\r"
+	recMacro += "RenameWindow #,sweepFormula_formula\r"
+	recMacro += "NewNotebook /F=1 /N=sweepFormula_help /W=(10,71,378,358)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0 /OPTS=4\r"
+	recMacro += "RenameWindow #,sweepFormula_help\r"
+	recMacro += "NewNotebook /F=0 /N=WaveNoteDisplay /W=(200,24,600,561)/FG=(FL,$\"\",FR,FB) /HOST=# /V=0 /OPTS=10\r"
+	recMacro += "RenameWindow #,WaveNoteDisplay\r"
+	recMacro += "RenameWindow #,BrowserSettingsPanel\r"
+	recMacro += "NewPanel/HOST=#/EXT=2/W=(0,0,580,357)\r"
+	recMacro += "Display/W=(200,187,353,501)/FG=(UGVL,FT,UGVR,FB)/HOST=#\r"
+	recMacro += "RenameWindow #,LabNoteBook\r"
+	recMacro += "NewNotebook /F=1 /N=Description /W=(145,49,436,148)/FG=(FL,FT,UGVL,FB) /HOST=# /OPTS=11\r"
+	recMacro += "RenameWindow #,Description\r"
+	recMacro += "RenameWindow #,SettingsHistoryPanel"
+
+	[WAVE/T names, WAVE orientation] = GetExteriorSubWindowOrientations(recMacro)
+
+	CHECK_EQUAL_TEXTWAVES(names, {"SweepControl", "BrowserSettingsPanel", "SettingsHistoryPanel"})
+	CHECK_EQUAL_WAVES(orientation, {2, 1, 2})
+End

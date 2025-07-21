@@ -13,6 +13,9 @@ Menu "GraphMarquee"
 	"Horiz Expand (VisX)", /Q, HorizExpandWithVisX()
 End
 
+static Constant SUBWINDOW_MACRO_PARSER_EXT = 1
+static Constant SUBWINDOW_MACRO_PARSER_WIN = 2
+
 /// @brief Check if a given wave, or at least one wave from the dfr, is displayed on a graph
 ///
 /// @return one if one is displayed, zero otherwise
@@ -770,4 +773,108 @@ Function/S GetUnusedWindowName(string baseName)
 		endif
 		i += 1
 	endfor
+End
+
+/// @brief Get the names and orientations of exterior subwindows
+///
+/// See @ref ExtSubWindowOrientations for possible values of `orientation`.
+Function [WAVE/T names, WAVE orientation] GetExteriorSubWindowOrientations(string recMacro)
+
+	string entry, extModeStr
+	variable idx, extMode, lastExtIdx
+
+	WAVE/T matches = ListToTextWave(GrepList(recMacro, "(:?)(RenameWindow|HOST=#)", 0, "\r"), "\r")
+
+	Make/FREE/T/N=(MINIMUM_WAVE_SIZE) result
+
+	for(entry : matches)
+		if(GrepString(entry, "(?i)RenameWindow"))
+			EnsureLargeEnoughWave(result, indexShouldExist = idx)
+			result[idx] = StringFromList(1, entry, ",")
+			idx        += 1
+		elseif(GrepString(entry, "(?i)HOST=#"))
+			EnsureLargeEnoughWave(result, indexShouldExist = idx)
+			SplitString/E="(?i)\\EXT=([[:digit:]]+)" entry, extModeStr
+
+			if(IsEmpty(extModeStr))
+				result[idx] = "EXT:NaN"
+			else
+				switch(str2num(extModeStr))
+					case EXT_SUBWINDOW_ORIENTATION_RIGHT: // fallthrough
+					case EXT_SUBWINDOW_ORIENTATION_LEFT: // fallthrough
+					case EXT_SUBWINDOW_ORIENTATION_BOTTOM: // fallthrough
+					case EXT_SUBWINDOW_ORIENTATION_TOP:
+						break
+					default:
+						FATAL_ERROR("Invalid extMode:" + extModeStr)
+				endswitch
+
+				result[idx] = "EXT:" + extModeStr
+			endif
+
+			idx += 1
+		else
+			FATAL_ERROR("Unexpected entry:" + entry)
+		endif
+	endfor
+
+	if(idx == 0)
+		return [$"", $""]
+	endif
+
+	Redimension/N=(idx) result
+
+	[WAVE/T names, WAVE orientation] = DropInteriorSubWindows(result)
+
+	return [names, orientation]
+End
+
+static Function [WAVE/T names, WAVE orientation] DropInteriorSubWindows(WAVE/T list)
+
+	variable idx, extMode, lastValidExtMode, refExtMode, mode
+	string extModeStr, entry, extModeRegex
+
+	Make/FREE/T/N=(MINIMUM_WAVE_SIZE) names
+	Make/FREE/N=(MINIMUM_WAVE_SIZE) orientation = NaN
+	extModeRegex = "(?i)EXT:([[:digit:]]+|NaN)"
+
+	// go through the list of window names and orientations
+	// and drop interior subwindows
+	for(entry : list)
+		if(GrepString(entry, extModeRegex))
+			SplitString/E=(extModeRegex) entry, extModeStr
+			extMode = str2num(extModeStr)
+
+			if(!IsNaN(extMode))
+				lastValidExtMode = extMode
+			endif
+
+			mode = SUBWINDOW_MACRO_PARSER_EXT
+		else
+			if(mode == SUBWINDOW_MACRO_PARSER_WIN)
+				refExtMode = lastValidExtMode
+			elseif(mode == SUBWINDOW_MACRO_PARSER_EXT)
+				refExtMode = extMode
+			endif
+
+			if(!IsNaN(refExtMode))
+				EnsureLargeEnoughWave(names, indexShouldExist = idx)
+				EnsureLargeEnoughWave(orientation, indexShouldExist = idx)
+
+				names[idx]       = entry
+				orientation[idx] = refExtMode
+				idx             += 1
+			endif
+
+			mode = SUBWINDOW_MACRO_PARSER_WIN
+		endif
+	endfor
+
+	if(idx == 0)
+		return [$"", $""]
+	endif
+
+	Redimension/N=(idx) names, orientation
+
+	return [names, orientation]
 End

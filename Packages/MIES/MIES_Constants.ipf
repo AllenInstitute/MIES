@@ -585,6 +585,15 @@ Constant AXIS_ORIENTATION_LEFT   = 0x12
 Constant AXIS_ORIENTATION_RIGHT  = 0x22
 ///@}
 
+/// @name Constants for exterior SubWindow orientations
+/// @anchor ExtSubWindowOrientations
+///@{
+Constant EXT_SUBWINDOW_ORIENTATION_RIGHT  = 0
+Constant EXT_SUBWINDOW_ORIENTATION_LEFT   = 1
+Constant EXT_SUBWINDOW_ORIENTATION_BOTTOM = 2
+Constant EXT_SUBWINDOW_ORIENTATION_TOP    = 3
+///@}
+
 /// @name Constants for Set/GetAxesRanges modes, use binary pattern
 /// @anchor AxisPropModeConstants
 ///@{
