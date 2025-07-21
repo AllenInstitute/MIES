@@ -768,6 +768,6 @@ Function TestNeuroDataRefTree([string str])
 	str = DetermineDataTypeRefTree(neurodata_type)
 	REQUIRE_EQUAL_STR(ancestry, str)
 
-	str = StringFromList(ItemsInList(ancestry) - 1, ancestry)
+	str = LastStringFromList(ancestry)
 	REQUIRE_EQUAL_STR(neurodata_type, str)
 End
