@@ -137,3 +137,20 @@ Function NumberFromList_Works()
 	num = NumberFromList(1, "123|456", sep = "|")
 	CHECK_EQUAL_VAR(num, 456)
 End
+
+Function LastStringFromList_Works()
+
+	string elem
+
+	elem = LastStringFromList("")
+	CHECK_EQUAL_STR(elem, "")
+
+	elem = LastStringFromList("abc")
+	CHECK_EQUAL_STR(elem, "abc")
+
+	elem = LastStringFromList("abc;efg")
+	CHECK_EQUAL_STR(elem, "efg")
+
+	elem = LastStringFromList("abc|efg|hij", sep = "|")
+	CHECK_EQUAL_STR(elem, "hij")
+End

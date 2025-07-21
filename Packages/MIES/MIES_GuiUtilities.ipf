@@ -605,7 +605,7 @@ Function/S FindNotebook(string nb)
 		for(j = 0; j < numChildWindows; j += 1)
 			childWindow = StringFromList(j, childWindows)
 
-			leaf = StringFromList(ItemsInList(childWindow, "#") - 1, childWindow, "#")
+			leaf = LastStringFromList(childWindow, sep = "#")
 
 			if(!cmpstr(leaf, nb))
 				matches = AddListItem(childWindow, matches, ";", Inf)
