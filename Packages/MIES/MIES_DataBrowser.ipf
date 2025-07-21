@@ -85,7 +85,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	HideTools/W=$scPanel/A
 	HideTools/W=$shPanel/A
 
-	PGC_SetAndActivateControl(device, "button_BSP_open")
+	PGC_SetAndActivateControl(device, BSP_SHOW_WIN_BUTTON)
 	DB_ClearAllGraphs()
 	LBV_ClearGraph(device)
 

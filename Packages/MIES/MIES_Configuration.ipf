@@ -91,6 +91,9 @@
 /// - Buttons are only saved if its userdata Config_PushButtonOnRestore is "1"
 /// - Only most relevant data of a control is saved.
 ///
+/// For all windows a top level JSON object EXPCONFIG_FIELD_WINDOW_PROP is saved with the following entries:
+/// - EXPCONFIG_FIELD_WINDOW_HIDE as boolean (only if true)
+///
 /// *_rig.json configuration files store settings that are specific to a rig.
 /// When restoring a DAEphys panel the settings from the rig file are joined with the settings in the DAEphys configuration file.
 /// Having entries for the same setting in both files is invalid and an assertion will be thrown.
@@ -121,6 +124,8 @@ static StrConstant EXPCONFIG_FIELD_CTRLUSERDATA    = "Userdata"
 static StrConstant EXPCONFIG_FIELD_BASE64PREFIX    = "Base64 "
 static StrConstant EXPCONFIG_FIELD_CTRLARRAYVALUES = "Values"
 static StrConstant EXPCONFIG_FIELD_NOTEBOOKTEXT    = "NotebookText"
+static StrConstant EXPCONFIG_FIELD_WINDOW_PROP     = "Window Properties"
+static StrConstant EXPCONFIG_FIELD_WINDOW_HIDE     = "Hide"
 
 static StrConstant EXPCONFIG_UDATA_NICENAME    = "Config_NiceName"
 static StrConstant EXPCONFIG_UDATA_JSONPATH    = "Config_GroupPath"
@@ -702,7 +707,7 @@ Function/S CONF_RestoreDAEphys(variable jsonID, string fullFilePath, [variable m
 		isTagged = 1
 
 		WAVE/T winNames = CONF_GetWindowNames(jsonID)
-		ASSERT(DimSize(winNames, ROWS) == 1, "DAEPhys configuration file contains configurations for more than one window.")
+		ASSERT(strsearch(winNames[0], "#", 0) == -1, "Top level window must be the first one")
 
 		if(restoreMask & EXPCONFIG_MINIMIZE_ON_RESTORE)
 			SetWindow $device, hide=1
@@ -962,8 +967,8 @@ static Function CONF_GetVariableFromSavedControl(variable jsonID, string niceNam
 	return JSON_GetVariable(jsonID, ctrlPath + "/" + EXPCONFIG_FIELD_CTRLVVALUE)
 End
 
-/// @brief Returns a wave with all configuration sections ( aka control groups).
-///        This equals the top level keys without the EXPCONFIG_RESERVED_DATABLOCK key.
+/// @brief Returns a wave with all windows
+///        This equals the top level keys without the EXPCONFIG_RESERVED_DATABLOCK/EXPCONFIG_RESERVED_TAGENTRY/EXPCONFIG_FIELD_WINDOW_PROP keys.
 ///
 /// @param[in] jsonID ID of existing json
 /// @returns Text wave with all named configuration sections
@@ -972,6 +977,7 @@ static Function/WAVE CONF_GetWindowNames(variable jsonID)
 	WAVE/T ctrlGroups = JSON_GetKeys(jsonID, "")
 	RemoveTextWaveEntry1D(ctrlGroups, EXPCONFIG_RESERVED_DATABLOCK)
 	RemoveTextWaveEntry1D(ctrlGroups, EXPCONFIG_RESERVED_TAGENTRY)
+	RemoveTextWaveEntry1D(ctrlGroups, EXPCONFIG_FIELD_WINDOW_PROP)
 
 	return ctrlGroups
 End
@@ -1025,6 +1031,8 @@ static Function CONF_GatherControlsFromJSON(WAVE/T ctrlData, variable jsonID, st
 	if(!DimSize(ctrlGroups, ROWS))
 		return 0
 	endif
+
+	RemoveTextWaveEntry1D(ctrlGroups, EXPCONFIG_FIELD_WINDOW_PROP)
 
 	WAVE/Z/T ctrlSubGroups
 	WAVE/Z/T niceNames
@@ -1083,6 +1091,9 @@ Function/S CONF_JSONToWindow(string wName, variable restoreMask, variable jsonID
 			subWinTarget = SelectString(IsEmpty(str), wName + "#" + str, wName)
 			wType        = WinType(subWinTarget)
 			ASSERT(wType, "Window " + subWinTarget + " does not exist!")
+
+			CONF_JSONToWindowProperties(subWinTarget, srcWinNames[winNum], jsonID)
+
 			if(wType == WINTYPE_NOTEBOOK)
 				CONF_RestoreNotebookWindow(subWinTarget, srcWinNames[winNum], jsonID)
 				continue
@@ -1163,7 +1174,7 @@ Function/S CONF_JSONToWindow(string wName, variable restoreMask, variable jsonID
 
 			numCtrl = DimSize(ctrlData, ROWS)
 			if(!numCtrl)
-				return wName
+				continue
 			endif
 			Make/FREE/N=(numCtrl) prioritySort
 			prioritySort[] = str2num(ctrlData[p][%PRIORITY])
@@ -1522,6 +1533,53 @@ End
 Function/WAVE CONF_GetRadioButtonCouplingProtoFunc()
 End
 
+/// @brief Store window properties under `/$EXPCONFIG_FIELD_WINDOW_PROP` in the JSON
+static Function CONF_WindowPropertiesToJSON(string win, variable jsonID)
+
+	string basePath, path
+
+	basePath = EXPCONFIG_FIELD_WINDOW_PROP
+	JSON_AddTreeObject(jsonID, basePath)
+
+	GetWindow $win, hide
+
+	// don't save if it is not hidden as we don't want to
+	// clutter the file with default settings
+	if(V_Value)
+		path = basePath + "/" + EXPCONFIG_FIELD_WINDOW_HIDE
+		JSON_AddBoolean(jsonID, path, V_Value)
+	endif
+End
+
+/// @brief Read the window properties from the `/$EXPCONFIG_FIELD_WINDOW_PROP` JSON object and apply it
+static Function CONF_JSONToWindowProperties(string win, string srcWin, variable jsonID)
+
+	string basePath, path, elem
+	variable var
+
+	basePath = srcWin + "/" + EXPCONFIG_FIELD_WINDOW_PROP
+	if(JSON_GetType(jsonID, basePath, ignoreErr = 1) != JSON_OBJECT)
+		return NaN
+	endif
+
+	WAVE/T keys = JSON_GetKeys(jsonID, basePath)
+
+	for(elem : keys)
+		strswitch(elem)
+			case EXPCONFIG_FIELD_WINDOW_HIDE:
+				path = basePath + "/" + elem
+				var  = JSON_GetVariable(jsonID, path)
+				if(var)
+					SetWindow $win, hide=var
+				endif
+				break
+			default:
+				// ignore unknown entries from future versions
+				break
+		endswitch
+	endfor
+End
+
 /// @brief Saves complete GUI state of a window in a json
 ///        For coupled CheckBoxes aka (radio buttons) the enabled radio button is saved, the disabled is not saved.
 ///        For three or more coupled CheckBoxes the first enabled radio button is saved, the disabled are not saved.
@@ -1544,6 +1602,9 @@ Function CONF_WindowToJSON(string wName, variable saveMask, [string excCtrlTypes
 		wType        = WinType(wName)
 		ASSERT(wType, "Window " + wName + " does not exist!")
 		jsonID = JSON_New()
+
+		CONF_WindowPropertiesToJSON(wName, jsonID)
+
 		if(wType == WINTYPE_NOTEBOOK)
 			CONF_NotebookToJSON(wName, jsonID)
 			return jsonID
