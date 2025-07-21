@@ -21,7 +21,7 @@ Constant DAQ_CONFIG_WAVE_VERSION = 3
 Constant DA_EPHYS_PANEL_VERSION           = 66
 Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 53
 Constant WAVEBUILDER_PANEL_VERSION        = 14
-Constant ANALYSISBROWSER_PANEL_VERSION    = 9
+Constant ANALYSISBROWSER_PANEL_VERSION    = 10
 Constant PSX_PLOT_PANEL_VERSION           = 1
 
 /// Version of the stimset wave note
