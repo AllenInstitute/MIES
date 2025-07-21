@@ -32,6 +32,62 @@ static Function TestTTLDisplayWithNoEpochInfo([string str])
 	CHECK_NO_RTE()
 End
 
+static Function LoadAndCheckStimset(string win, string traceName, string channelTypeStr, string stimset)
+
+	string waveBuilderPanel, str, history
+	variable ref
+
+	ref = CaptureHistoryStart()
+	MIES_WBP#WB_OpenStimulusSetInWaveBuilderImpl(win, traceName, "Fake")
+	history = CaptureHistory(ref, 1)
+	CHECK_EMPTY_STR(history)
+
+	waveBuilderPanel = GetCurrentWindow()
+	CHECK_EQUAL_STR(waveBuilderPanel, "WaveBuilder")
+	str = GetPopupMenuString(waveBuilderPanel, "popup_WaveBuilder_OutputType")
+	CHECK_EQUAL_STR(str, channelTypeStr)
+	str = GetSetVariableString(waveBuilderPanel, "setvar_WaveBuilder_baseName")
+	CHECK_EQUAL_STR(str, stimset)
+End
+
+/// UTF_TD_GENERATOR GetHistoricDataFilesWithTTLData
+static Function TestStimsetLoading([string str])
+
+	string file, abWin, sweepBrowsers, bsPanel, history, scPanel, win
+	variable ref
+
+	file = "input:" + str
+
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser({file}, loadSweeps = 1, loadStimsets = 1)
+
+	win     = StringFromList(0, sweepBrowsers)
+	bsPanel = BSP_GetPanel(win)
+	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DAC", val = 1)
+	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_ADC", val = 1)
+	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_TTL", val = 1)
+	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_VisEpochs", val = 1)
+
+	CHECK_NO_RTE()
+
+	scPanel = BSP_GetSweepControlsPanel(win)
+	PGC_SEtAndActivateControl(scPanel, "Popup_SweepControl_Selector", str = "Sweep 26")
+
+	// DA0
+	LoadAndCheckStimset(win, "T000000", "DA", "DA13_50spuff_sti")
+
+	// AD0
+	LoadAndCheckStimset(win, "T000001", "DA", "DA13_50spuff_sti")
+
+	// invalid trace (epoch)
+	ref = CaptureHistoryStart()
+	MIES_WBP#WB_OpenStimulusSetInWaveBuilderImpl(win, "T000005_level2_x__sweep26_chan0_type0_HS0", "Fake")
+	history = CaptureHistory(ref, 1)
+	CHECK_EQUAL_STR(history, "Context menu option \"Fake\" could not find the stimulus set of the trace T000005_level2_x__sweep26_chan0_type0_HS0.\r")
+
+	// TTL
+	LoadAndCheckStimset(win, "T000002", "TTL", "DA13_50spuff_sti")
+End
+
 Function TestSweepFormulaPowerSpectrumAverage()
 
 	string abWin, sweepBrowsers, file, sweepBrowser, bsPanel, scPanel, code

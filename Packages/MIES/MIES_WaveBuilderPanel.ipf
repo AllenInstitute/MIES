@@ -38,40 +38,61 @@ static StrConstant HIDDEN_CONTROLS_SQUARE_PULSE   = "popup_WaveBuilder_op_P71;se
 
 Function WB_OpenStimulusSetInWaveBuilder()
 
-	string graph, trace, extPanel, waveBuilder, stimset, device
-	variable sweepNo, headstage, abIndex, sbIndex
-
 	GetLastUserMenuInfo
-	graph = S_graphName
-	trace = S_traceName
+
+	WB_OpenStimulusSetInWaveBuilderImpl(S_graphName, S_traceName, S_Value)
+End
+
+static Function WB_OpenStimulusSetInWaveBuilderImpl(string graph, string trace, string menuItemText)
+
+	string extPanel, waveBuilder, stimset, device, channelTypeStr
+	variable sweepNo, channelNumber, abIndex, sbIndex, index, channelType, ttlBit
 
 	extPanel = BSP_GetPanel(graph)
 
 	if(!WindowExists(extPanel))
-		printf "Context menu option \"%s\" is only useable for the databrowser/sweepbrowser.\r", S_Value
+		printf "Context menu option \"%s\" is only useable for the databrowser/sweepbrowser.\r", menuItemText
 		ControlWindowToFront()
 		return NaN
 	endif
 
-	sweepNo   = str2num(TUD_GetUserData(graph, trace, "sweepNumber"))
-	headstage = str2num(TUD_GetUserData(graph, trace, "headstage"))
-	WAVE/T textualValues = $TUD_GetUserData(graph, trace, "textualValues")
+	channelTypeStr = TUD_GetUserData(graph, trace, "channelType")
+	channelType    = WhichListItem(channelTypeStr, XOP_CHANNEL_NAMES, ";", 0, 0)
+	channelNumber  = str2num(TUD_GetUserData(graph, trace, "channelNumber"))
+	sweepNo        = str2num(TUD_GetUserData(graph, trace, "sweepNumber"))
 
-	WAVE/Z/T stimsetLBN = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
-
-	if(!WaveExists(stimsetLBN) || !IsValidHeadstage(headstage))
-		printf "Context menu option \"%s\" could not find the stimulus set of the trace %s.\r", S_Value, trace
+	if(channelType == -1 || IsNaN(channelNumber))
+		printf "Context menu option \"%s\" could not find the stimulus set of the trace %s.\r", menuItemText, trace
 		ControlWindowToFront()
 		return NaN
 	endif
 
-	stimset = stimsetLBN[headstage]
+	WAVE   numericalValues = $TUD_GetUserData(graph, trace, "numericalValues")
+	WAVE/T textualValues   = $TUD_GetUserData(graph, trace, "textualValues")
+
+	if(channelType == XOP_CHANNEL_TYPE_TTL)
+		ttlBit = str2num(TUD_GetUserData(graph, trace, "ttlBit"))
+		WAVE/Z HWToGUIChannelMap = GetActiveChannels(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_TTL, TTLMode = TTL_HWTOGUI_CHANNEL)
+		index = HWToGUIChannelMap[channelNumber][IsNaN(ttlBit) ? 0 : ttlBit]
+
+		WAVE/Z stimsetLBN = GetTTLLabnotebookEntry(textualValues, LABNOTEBOOK_TTL_STIMSETS, sweepNo)
+	else
+		[WAVE stimsetLBN, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, STIM_WAVE_NAME_KEY, channelNumber, channelType, DATA_ACQUISITION_MODE)
+	endif
+
+	if(!WaveExists(stimsetLBN))
+		printf "Context menu option \"%s\" could not find the stimulus set of the trace %s.\r", menuItemText, trace
+		ControlWindowToFront()
+		return NaN
+	endif
+
+	stimset = WaveText(stimsetLBN, row = index)
 
 	WAVE/Z stimsetWave = WB_CreateAndGetStimSet(stimset)
 
 	if(!WaveExists(stimsetWave))
 		if(BSP_IsDataBrowser(graph))
-			printf "Context menu option \"%s\" could not be find the stimulus set %s.", S_Value, stimset
+			printf "Context menu option \"%s\" could not be find the stimulus set %s.", menuItemText, stimset
 			ControlWindowToFront()
 			return NaN
 		endif
@@ -87,7 +108,7 @@ Function WB_OpenStimulusSetInWaveBuilder()
 		abIndex = SB_TranslateSBMapIndexToABMapIndex(graph, sbIndex)
 		device  = sweepMap[sbIndex][%Device]
 		if(AB_LoadStimsetForSweep(device, abIndex, sweepNo))
-			printf "Context menu option \"%s\" could not load the stimulus set %s.", S_Value, stimset
+			printf "Context menu option \"%s\" could not load the stimulus set %s.", menuItemText, stimset
 			ControlWindowToFront()
 			return NaN
 		endif
