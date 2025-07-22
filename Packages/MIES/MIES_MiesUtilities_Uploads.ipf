@@ -215,7 +215,7 @@ Function UploadCrashDumps()
 
 	DEBUGPRINT_ELAPSED(referenceTime)
 
-	printf "Uploading %d crash dumps is in progress in the background.\r", numFiles + numLogs
+	printf "Uploading %d crash dumps and log files is in progress in the background.\r", numFiles + numLogs
 	ControlWindowToFront()
 End
 
