@@ -26,11 +26,12 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin, userdata(Config_PanelType)="DataBrowser"
 	SetWindow kwTopWin, userdata(JSONSettings_StoreCoordinates)="1"
 	SetWindow kwTopWin, userdata(JSONSettings_WindowName)="datasweepbrowser"
-	SetWindow kwTopWin, userdata(ResizeControlsInfo)=A"!!*'\"z!!#C=!!#Bb?iU0,zzzzzzzzzzzzzzzzzzzz"
+	SetWindow kwTopWin, userdata(ResizeControlsInfo)=A"!!*'\"z!!#CYJ,hsJzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin, userdata(BROWSERMODE)="User"
-	Execute/Q/Z "SetWindow kwTopWin sizeLimit={324,252,inf,inf}" // sizeLimit requires Igor 7 or later
+	SetWindow kwTopWin, userdata(SweepFormulaContentCRC)="1827768143"
+	Execute/Q/Z "SetWindow kwTopWin sizeLimit={366,279,inf,inf}" // sizeLimit requires Igor 7 or later
 	NewPanel/HOST=#/EXT=2/W=(0, 0, 580, 70) as "Sweep Control"
 	Button button_SweepControl_NextSweep, pos={330.00, 3.00}, size={150.00, 36.00}, proc=BSP_ButtonProc_ChangeSweep
 	Button button_SweepControl_NextSweep, title="Next  \\W649"
@@ -75,7 +76,7 @@ Window DataBrowser() : Graph
 	CheckBox check_SweepControl_AutoUpdate, value=1
 	RenameWindow #, SweepControl
 	SetActiveSubwindow ##
-	NewPanel/HOST=#/EXT=1/W=(445, 0, 0, 453) as " "
+	NewPanel/HOST=#/EXT=1/W=(445, 0, 0, 500) as " "
 	ModifyPanel fixedSize=0
 	GroupBox group_dDAQ, pos={342.00, 27.00}, size={70.00, 323.00}
 	GroupBox group_dDAQ, userdata(ResizeControlsInfo)=A"!!,Hf!!#=;!!#?E!!#B[J,fQL!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -112,10 +113,10 @@ Window DataBrowser() : Graph
 	GroupBox group_channels, userdata(ResizeControlsInfo)=A"!!,D_!!#=;!!#BH!!#?%z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	GroupBox group_channels, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_channels, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	GroupBox group_properties_sweepFormula, pos={5.00, 85.00}, size={434.00, 367.00}, disable=3
+	GroupBox group_properties_sweepFormula, pos={5.00, 85.00}, size={434.00, 414.00}, disable=3
 	GroupBox group_properties_sweepFormula, userdata(tabnum)="5"
 	GroupBox group_properties_sweepFormula, userdata(tabcontrol)="Settings"
-	GroupBox group_properties_sweepFormula, userdata(ResizeControlsInfo)=A"!!,?X!!#?c!!#C>!!#BqJ,fQL!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
+	GroupBox group_properties_sweepFormula, userdata(ResizeControlsInfo)=A"!!,?X!!#?c!!#C>!!#C4z!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
 	GroupBox group_properties_sweepFormula, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#N3Bk1ct9jqaR6>q*JDf>[Vzzzzzzzz"
 	GroupBox group_properties_sweepFormula, userdata(ResizeControlsInfo)+=A"zzz!!#N3Bk1ct9jqaR6>q*8Dfg)>D#aP9zzzzzzzzzz!!!"
 	TabControl Settings, pos={0.00, 0.00}, size={446.00, 21.00}, proc=ACL_DisplayTab
@@ -127,10 +128,10 @@ Window DataBrowser() : Graph
 	TabControl Settings, tabLabel(0)="Settings", tabLabel(1)="OVS", tabLabel(2)="CS"
 	TabControl Settings, tabLabel(3)="AR", tabLabel(4)="PA", tabLabel(5)="SF"
 	TabControl Settings, tabLabel(6)="Note", tabLabel(7)="DS", value=0
-	ListBox list_of_ranges, pos={81.00, 198.00}, size={269.00, 248.00}, disable=3, proc=OVS_MainListBoxProc
+	ListBox list_of_ranges, pos={81.00, 198.00}, size={269.00, 295.00}, disable=3, proc=OVS_MainListBoxProc
 	ListBox list_of_ranges, help={"Select sweeps for overlay; The second column (\"Headstages\") allows to ignore some headstages for the graphing. Syntax is a semicolon \";\" separated list of subranges, e.g. \"0\", \"0,2\", \"1;4;2\""}
 	ListBox list_of_ranges, userdata(tabnum)="1", userdata(tabcontrol)="Settings"
-	ListBox list_of_ranges, userdata(ResizeControlsInfo)=A"!!,E\\!!#AU!!#B@J,hr]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
+	ListBox list_of_ranges, userdata(ResizeControlsInfo)=A"!!,E\\!!#AU!!#B@J,hs#J,fQL!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
 	ListBox list_of_ranges, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ListBox list_of_ranges, userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	ListBox list_of_ranges, userdata(Config_DontRestore)="1"
@@ -198,16 +199,16 @@ Window DataBrowser() : Graph
 	GroupBox group_enable_artifact, userdata(ResizeControlsInfo)=A"!!,?X!!#=+!!#C>!!#>Vz!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
 	GroupBox group_enable_artifact, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_enable_artifact, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	GroupBox group_properties_sweeps, pos={5.00, 85.00}, size={434.00, 367.00}, disable=3
+	GroupBox group_properties_sweeps, pos={5.00, 85.00}, size={434.00, 414.00}, disable=3
 	GroupBox group_properties_sweeps, userdata(tabnum)="1"
 	GroupBox group_properties_sweeps, userdata(tabcontrol)="Settings"
-	GroupBox group_properties_sweeps, userdata(ResizeControlsInfo)=A"!!,?X!!#?c!!#C>!!#BqJ,fQL!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
+	GroupBox group_properties_sweeps, userdata(ResizeControlsInfo)=A"!!,?X!!#?c!!#C>!!#C4z!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
 	GroupBox group_properties_sweeps, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_properties_sweeps, userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	GroupBox group_properties_artefact, pos={5.00, 85.00}, size={434.00, 367.00}, disable=3
+	GroupBox group_properties_artefact, pos={5.00, 85.00}, size={434.00, 414.00}, disable=3
 	GroupBox group_properties_artefact, userdata(tabnum)="3"
 	GroupBox group_properties_artefact, userdata(tabcontrol)="Settings"
-	GroupBox group_properties_artefact, userdata(ResizeControlsInfo)=A"!!,?X!!#?c!!#C>!!#BqJ,fQL!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
+	GroupBox group_properties_artefact, userdata(ResizeControlsInfo)=A"!!,?X!!#?c!!#C>!!#C4z!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
 	GroupBox group_properties_artefact, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_properties_artefact, userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	GroupBox group_channelSel_DA, pos={135.00, 41.00}, size={44.00, 206.00}, disable=1
@@ -550,10 +551,10 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_AD_15, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_channelSel_AD_15, userdata(ControlArray)="AD Channel selection"
 	CheckBox check_channelSel_AD_15, userdata(ControlArrayIndex)="15", value=1
-	ListBox list_of_ranges1, pos={75.00, 156.00}, size={281.00, 289.00}, disable=3, proc=AR_MainListBoxProc
+	ListBox list_of_ranges1, pos={75.00, 156.00}, size={281.00, 336.00}, disable=3, proc=AR_MainListBoxProc
 	ListBox list_of_ranges1, help={"List of artefact ranges"}, userdata(tabnum)="3"
 	ListBox list_of_ranges1, userdata(tabcontrol)="Settings"
-	ListBox list_of_ranges1, userdata(ResizeControlsInfo)=A"!!,EP!!#A+!!#BFJ,hruJ,fQL!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
+	ListBox list_of_ranges1, userdata(ResizeControlsInfo)=A"!!,EP!!#A+!!#BFJ,hs8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
 	ListBox list_of_ranges1, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ListBox list_of_ranges1, userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	ListBox list_of_ranges1, userdata(Config_DontRestore)="1"
@@ -757,11 +758,11 @@ Window DataBrowser() : Graph
 	CheckBox check_BrowserSettings_ADC, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_BrowserSettings_ADC, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_BrowserSettings_ADC, userdata(Config_RestorePriority)="10", value=1
-	CheckBox check_BrowserSettings_TTL, pos={170.00, 36.00}, size={34.00, 15.00}, proc=BSP_CheckProc_ChangedSetting
+	CheckBox check_BrowserSettings_TTL, pos={170.00, 36.00}, size={36.00, 15.00}, proc=BSP_CheckProc_ChangedSetting
 	CheckBox check_BrowserSettings_TTL, title="TTL", help={"Display the TTL channels"}
 	CheckBox check_BrowserSettings_TTL, userdata(tabnum)="0"
 	CheckBox check_BrowserSettings_TTL, userdata(tabcontrol)="Settings"
-	CheckBox check_BrowserSettings_TTL, userdata(ResizeControlsInfo)=A"!!,G:!!#=s!!#=k!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	CheckBox check_BrowserSettings_TTL, userdata(ResizeControlsInfo)=A"!!,G:!!#=s!!#=s!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_BrowserSettings_TTL, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_BrowserSettings_TTL, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_BrowserSettings_TTL, userdata(Config_RestorePriority)="10", value=0
@@ -784,21 +785,21 @@ Window DataBrowser() : Graph
 	CheckBox check_BrowserSettings_dDAQ, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_BrowserSettings_dDAQ, userdata(Config_RestorePriority)="10"
 	CheckBox check_BrowserSettings_dDAQ, value=0
-	CheckBox check_Calculation_ZeroTraces, pos={165.00, 200.00}, size={75.00, 15.00}, proc=BSP_CheckProc_ChangedSetting
+	CheckBox check_Calculation_ZeroTraces, pos={165.00, 200.00}, size={76.00, 15.00}, proc=BSP_CheckProc_ChangedSetting
 	CheckBox check_Calculation_ZeroTraces, title="Zero Traces"
 	CheckBox check_Calculation_ZeroTraces, help={"Remove the offset of all traces"}
 	CheckBox check_Calculation_ZeroTraces, userdata(tabnum)="0"
 	CheckBox check_Calculation_ZeroTraces, userdata(tabcontrol)="Settings"
-	CheckBox check_Calculation_ZeroTraces, userdata(ResizeControlsInfo)=A"!!,G5!!#AW!!#?O!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	CheckBox check_Calculation_ZeroTraces, userdata(ResizeControlsInfo)=A"!!,G5!!#AW!!#?Q!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_Calculation_ZeroTraces, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Calculation_ZeroTraces, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_Calculation_ZeroTraces, value=0
-	CheckBox check_Calculation_AverageTraces, pos={62.00, 199.00}, size={94.00, 15.00}, proc=BSP_CheckProc_ChangedSetting
+	CheckBox check_Calculation_AverageTraces, pos={62.00, 199.00}, size={95.00, 15.00}, proc=BSP_CheckProc_ChangedSetting
 	CheckBox check_Calculation_AverageTraces, title="Average Traces"
 	CheckBox check_Calculation_AverageTraces, help={"Average all traces which belong to the same y axis"}
 	CheckBox check_Calculation_AverageTraces, userdata(tabnum)="0"
 	CheckBox check_Calculation_AverageTraces, userdata(tabcontrol)="Settings"
-	CheckBox check_Calculation_AverageTraces, userdata(ResizeControlsInfo)=A"!!,E2!!#AV!!#?u!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	CheckBox check_Calculation_AverageTraces, userdata(ResizeControlsInfo)=A"!!,E2!!#AV!!#@\"!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_Calculation_AverageTraces, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Calculation_AverageTraces, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_Calculation_AverageTraces, value=0
@@ -919,21 +920,21 @@ Window DataBrowser() : Graph
 	Button button_BrowserSettings_Export, userdata(ResizeControlsInfo)=A"!!,FE!!#B]J,hpU!!#=#z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	Button button_BrowserSettings_Export, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_BrowserSettings_Export, userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox check_SweepControl_HideSweep, pos={61.00, 219.00}, size={112.00, 15.00}, proc=BSP_CheckProc_ChangedSetting
+	CheckBox check_SweepControl_HideSweep, pos={61.00, 219.00}, size={113.00, 15.00}, proc=BSP_CheckProc_ChangedSetting
 	CheckBox check_SweepControl_HideSweep, title="Hide sweep Traces"
 	CheckBox check_SweepControl_HideSweep, help={"Hide sweep traces. Usually combined with \"Average traces\"."}
 	CheckBox check_SweepControl_HideSweep, userdata(tabnum)="0"
 	CheckBox check_SweepControl_HideSweep, userdata(tabcontrol)="Settings"
-	CheckBox check_SweepControl_HideSweep, userdata(ResizeControlsInfo)=A"!!,E.!!#Aj!!#@D!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	CheckBox check_SweepControl_HideSweep, userdata(ResizeControlsInfo)=A"!!,E.!!#Aj!!#@F!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_SweepControl_HideSweep, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_SweepControl_HideSweep, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_SweepControl_HideSweep, value=0
-	CheckBox check_BrowserSettings_splitTTL, pos={170.00, 56.00}, size={58.00, 15.00}, disable=2, proc=BSP_CheckProc_ChangedSetting
+	CheckBox check_BrowserSettings_splitTTL, pos={170.00, 56.00}, size={60.00, 15.00}, disable=2, proc=BSP_CheckProc_ChangedSetting
 	CheckBox check_BrowserSettings_splitTTL, title="sep. TTL"
 	CheckBox check_BrowserSettings_splitTTL, help={"Display the TTL channel data as single traces for each TTL bit (ITC hardware only, for other hardware types this is always the case regardless of this checkbox)"}
 	CheckBox check_BrowserSettings_splitTTL, userdata(tabnum)="0"
 	CheckBox check_BrowserSettings_splitTTL, userdata(tabcontrol)="Settings"
-	CheckBox check_BrowserSettings_splitTTL, userdata(ResizeControlsInfo)=A"!!,G:!!#>n!!#?!!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	CheckBox check_BrowserSettings_splitTTL, userdata(ResizeControlsInfo)=A"!!,G:!!#>n!!#?)!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_BrowserSettings_splitTTL, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_BrowserSettings_splitTTL, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_BrowserSettings_splitTTL, userdata(Config_RestorePriority)="20"
@@ -947,64 +948,44 @@ Window DataBrowser() : Graph
 	PopupMenu popup_DB_lockedDevices, userdata(ResizeControlsInfo)=A"!!,Dg!!#BPJ,hr2!!#<Pz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	PopupMenu popup_DB_lockedDevices, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_DB_lockedDevices, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_DB_lockedDevices, mode=2, popvalue="- none -", value=#"DB_GetAllDevicesWithData()"
+	PopupMenu popup_DB_lockedDevices, mode=1, popvalue="- none -", value=#"DB_GetAllDevicesWithData()"
 	GroupBox group_enable_sweepFormula, pos={5.00, 25.00}, size={434.00, 50.00}, disable=1
 	GroupBox group_enable_sweepFormula, title="SweepFormula", userdata(tabnum)="5"
 	GroupBox group_enable_sweepFormula, userdata(tabcontrol)="Settings"
 	GroupBox group_enable_sweepFormula, userdata(ResizeControlsInfo)=A"!!,?X!!#=+!!#C>!!#>Vz!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
 	GroupBox group_enable_sweepFormula, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#N3Bk1ctAStpcCh5qOGZ8U#zzzzzzzz"
 	GroupBox group_enable_sweepFormula, userdata(ResizeControlsInfo)+=A"zzz!!#N3Bk1ctAStpcCh5qOGX?=jFDl!rzzzzzzzzzz!!!"
-	SetVariable setvar_sweepFormula_parseResult, pos={28.00, 403.00}, size={405.00, 18.00}, disable=3
-	SetVariable setvar_sweepFormula_parseResult, help={"ignored TP index is out of range"}
-	SetVariable setvar_sweepFormula_parseResult, userdata(tabnum)="5"
-	SetVariable setvar_sweepFormula_parseResult, userdata(tabcontrol)="Settings"
-	SetVariable setvar_sweepFormula_parseResult, userdata(ResizeControlsInfo)=A"!!,CD!!#C.J,hsZJ,hlsz!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
-	SetVariable setvar_sweepFormula_parseResult, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
-	SetVariable setvar_sweepFormula_parseResult, userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_sweepFormula_parseResult, userdata(Config_DontRestore)="1"
-	SetVariable setvar_sweepFormula_parseResult, userdata(Config_DontSave)="1"
-	SetVariable setvar_sweepFormula_parseResult, frame=0
-	SetVariable setvar_sweepFormula_parseResult, limits={-Inf, Inf, 0}, value=_STR:"", noedit=1, live=1
-	ValDisplay status_sweepFormula_parser, pos={14.00, 409.00}, size={10.00, 8.00}, bodyWidth=10, disable=3
-	ValDisplay status_sweepFormula_parser, help={"Current parsing status of the entered formula."}
-	ValDisplay status_sweepFormula_parser, userdata(tabnum)="5"
-	ValDisplay status_sweepFormula_parser, userdata(tabcontrol)="Settings"
-	ValDisplay status_sweepFormula_parser, userdata(ResizeControlsInfo)=A"!!,An!!#C1J,hkX!!#:bz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"QBk2=!z"
-	ValDisplay status_sweepFormula_parser, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
-	ValDisplay status_sweepFormula_parser, userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	ValDisplay status_sweepFormula_parser, limits={-1, 1, 0}, barmisc={0, 0}, mode=1, highColor=(0, 65535, 0), lowColor=(65535, 65535, 0), zeroColor=(65535, 0, 0)
-	ValDisplay status_sweepFormula_parser, value=#"1"
-	Button button_sweepFormula_display, pos={9.00, 421.00}, size={51.00, 22.00}, disable=3, proc=SF_button_sweepFormula_display
+	Button button_sweepFormula_display, pos={9.00, 468.00}, size={51.00, 22.00}, disable=3, proc=SF_button_sweepFormula_display
 	Button button_sweepFormula_display, title="Display"
 	Button button_sweepFormula_display, help={"Display the given sweep formula in a graph"}
 	Button button_sweepFormula_display, userdata(tabnum)="5"
 	Button button_sweepFormula_display, userdata(tabcontrol)="Settings"
-	Button button_sweepFormula_display, userdata(ResizeControlsInfo)=A"!!,@s!!#C7J,ho0!!#<hz!!#](Aon#azzzzzzzzzzzzzz!!#](Aon#SBk2=!z"
+	Button button_sweepFormula_display, userdata(ResizeControlsInfo)=A"!!,@s!!#CO!!#>Z!!#<hz!!#](Aon#azzzzzzzzzzzzzz!!#](Aon#SBk2=!z"
 	Button button_sweepFormula_display, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button button_sweepFormula_display, userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	Button button_sweepFormula_check, pos={65.00, 421.00}, size={46.00, 22.00}, disable=3, proc=SF_button_sweepFormula_check
+	Button button_sweepFormula_check, pos={65.00, 468.00}, size={46.00, 22.00}, disable=3, proc=SF_button_sweepFormula_check
 	Button button_sweepFormula_check, title="Check"
 	Button button_sweepFormula_check, help={"Check the sweep formula for syntax errors"}
 	Button button_sweepFormula_check, userdata(tabnum)="5"
 	Button button_sweepFormula_check, userdata(tabcontrol)="Settings"
-	Button button_sweepFormula_check, userdata(ResizeControlsInfo)=A"!!,E<!!#C7J,hnq!!#<hz!!#](Aon#azzzzzzzzzzzzzz!!#](Aon#SBk2=!z"
+	Button button_sweepFormula_check, userdata(ResizeControlsInfo)=A"!!,E<!!#CO!!#>F!!#<hz!!#](Aon#azzzzzzzzzzzzzz!!#](Aon#SBk2=!z"
 	Button button_sweepFormula_check, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button button_sweepFormula_check, userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	TabControl SF_InfoTab, pos={8.00, 90.00}, size={424.00, 318.00}, disable=1, proc=ACL_DisplayTab
+	TabControl SF_InfoTab, pos={8.00, 90.00}, size={424.00, 380.00}, disable=1, proc=ACL_DisplayTab
 	TabControl SF_InfoTab, help={"Choose between sweep formula input, JSON representation and the help notebook"}
 	TabControl SF_InfoTab, userdata(finalhook)="SF_TabProc_Formula"
 	TabControl SF_InfoTab, userdata(currenttab)="0", userdata(tabnum)="5"
 	TabControl SF_InfoTab, userdata(tabcontrol)="Settings"
-	TabControl SF_InfoTab, userdata(ResizeControlsInfo)=A"!!,@c!!#?m!!#C9!!#BYz!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
+	TabControl SF_InfoTab, userdata(ResizeControlsInfo)=A"!!,@c!!#?m!!#C9!!#C#z!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
 	TabControl SF_InfoTab, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TabControl SF_InfoTab, userdata(ResizeControlsInfo)+=A"zzz!!#N3Bk1ct<C^(Vzzzzzzzzzzzzz!!!"
 	TabControl SF_InfoTab, userdata(Config_DontRestore)="1"
 	TabControl SF_InfoTab, userdata(Config_DontSave)="1", tabLabel(0)="Formula"
 	TabControl SF_InfoTab, tabLabel(1)="JSON", tabLabel(2)="Help", value=0
-	ListBox list_dashboard, pos={5.00, 90.00}, size={434.00, 357.00}, disable=1, proc=AD_ListBoxProc
+	ListBox list_dashboard, pos={5.00, 90.00}, size={434.00, 404.00}, disable=1, proc=AD_ListBoxProc
 	ListBox list_dashboard, help={"Show the triplett of stimulus set, analysis function and result for supported analysis functions."}
 	ListBox list_dashboard, userdata(tabnum)="7", userdata(tabcontrol)="Settings"
-	ListBox list_dashboard, userdata(ResizeControlsInfo)=A"!!,?X!!#?m!!#C>!!#BlJ,fQL!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
+	ListBox list_dashboard, userdata(ResizeControlsInfo)=A"!!,?X!!#?m!!#C>!!#C/z!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
 	ListBox list_dashboard, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ListBox list_dashboard, userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	ListBox list_dashboard, userdata(Config_DontRestore)="1"
@@ -1219,39 +1200,41 @@ Window DataBrowser() : Graph
 	CheckBox check_BrowserSettings_VisEpochs, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_BrowserSettings_VisEpochs, userdata(Config_RestorePriority)="20"
 	CheckBox check_BrowserSettings_VisEpochs, value=0
-	Button button_sweepFormula_tofront, pos={115.00, 421.00}, size={51.00, 22.00}, disable=3, proc=SF_button_sweepFormula_tofront
+	Button button_sweepFormula_tofront, pos={115.00, 468.00}, size={51.00, 22.00}, disable=3, proc=SF_button_sweepFormula_tofront
 	Button button_sweepFormula_tofront, title="To Front"
 	Button button_sweepFormula_tofront, help={"Check the sweep formula for syntax errors"}
-	Button button_sweepFormula_tofront, userdata(ResizeControlsInfo)=A"!!,FK!!#C7J,ho0!!#<hz!!#](Aon#azzzzzzzzzzzzzz!!#](Aon#SBk2=!z"
+	Button button_sweepFormula_tofront, userdata(ResizeControlsInfo)=A"!!,FK!!#CO!!#>Z!!#<hz!!#](Aon#azzzzzzzzzzzzzz!!#](Aon#SBk2=!z"
 	Button button_sweepFormula_tofront, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button button_sweepFormula_tofront, userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	Button button_sweepFormula_tofront, userdata(tabnum)="5"
 	Button button_sweepFormula_tofront, userdata(tabcontrol)="Settings"
-	Button button_sweepformula_all_code, pos={237.00, 421.00}, size={195.00, 19.00}, bodyWidth=80, disable=3, proc=PEXT_ButtonProc
+	Button button_sweepformula_all_code, pos={237.00, 468.00}, size={195.00, 19.00}, bodyWidth=80, disable=3, proc=PEXT_ButtonProc
 	Button button_sweepformula_all_code, title="Formerly executed code ▼"
 	Button button_sweepformula_all_code, help={"All formerly executed code from this session can be executed again by selecting it."}
 	Button button_sweepformula_all_code, userdata(popupProc)="SF_PopMenuProc_OldCode"
 	Button button_sweepformula_all_code, userdata(Items)="SF_GetAllOldCodeForGUI"
 	Button button_sweepformula_all_code, userdata(tabnum)="5"
 	Button button_sweepformula_all_code, userdata(tabcontrol)="Settings"
-	Button button_sweepformula_all_code, userdata(ResizeControlsInfo)=A"!!,H(!!#C7J,hr(!!#<Pz!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
+	Button button_sweepformula_all_code, userdata(ResizeControlsInfo)=A"!!,H(!!#CO!!#AR!!#<Pz!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
 	Button button_sweepformula_all_code, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button button_sweepformula_all_code, userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	DefineGuide UGVL={FL, 15}, UGVR={FR, -20}, UGVT={FT, 113}, UGVB={FB, -50}, enableBoxTop={FT, 25}
-	DefineGuide enableBoxBottom={enableBoxTop, 50}, MainBoxBottom={FB, 3}, MainBoxTop={enableBoxBottom, 10}
+	DefineGuide UGVL={FL, 15}, UGVR={FR, -20}, UGVT={FT, 113}, UGVM={FB, -120}, UGVB={FB, -35}
+	DefineGuide enableBoxTop={FT, 25}, enableBoxBottom={enableBoxTop, 50}, MainBoxBottom={FB, 3}
+	DefineGuide MainBoxTop={enableBoxBottom, 10}
 	SetWindow kwTopWin, hook(ResizeControls)=ResizeControlsSafe
-	SetWindow kwTopWin, userdata(ResizeControlsInfo)=A"!!*'\"z!!#CCJ,hsrJ,fQLzzzzzzzzzzzzzzzzzzzz"
+	SetWindow kwTopWin, userdata(ResizeControlsInfo)=A"!!*'\"z!!#CCJ,ht5zzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
-	SetWindow kwTopWin, userdata(ResizeControlsGuides)="UGVL;UGVR;UGVT;UGVB;enableBoxTop;enableBoxBottom;MainBoxBottom;MainBoxTop;"
+	SetWindow kwTopWin, userdata(ResizeControlsGuides)="UGVL;UGVR;UGVT;UGVM;UGVB;enableBoxTop;enableBoxBottom;MainBoxBottom;MainBoxTop;"
 	SetWindow kwTopWin, userdata(ResizeControlsInfoUGVL)="NAME:UGVL;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:0;POSITION:15.00;GUIDE1:FL;GUIDE2:;RELPOSITION:15;"
 	SetWindow kwTopWin, userdata(ResizeControlsInfoUGVR)="NAME:UGVR;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:0;POSITION:425.00;GUIDE1:FR;GUIDE2:;RELPOSITION:-20;"
 	SetWindow kwTopWin, userdata(ResizeControlsInfoUGVT)="NAME:UGVT;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:113.00;GUIDE1:FT;GUIDE2:;RELPOSITION:113;"
-	SetWindow kwTopWin, userdata(ResizeControlsInfoUGVB)="NAME:UGVB;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:403.00;GUIDE1:FB;GUIDE2:;RELPOSITION:-50;"
+	SetWindow kwTopWin, userdata(ResizeControlsInfoUGVB)="NAME:UGVB;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:465.00;GUIDE1:FB;GUIDE2:;RELPOSITION:-35;"
 	SetWindow kwTopWin, userdata(ResizeControlsInfoenableBoxTop)="NAME:enableBoxTop;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:25.00;GUIDE1:FT;GUIDE2:;RELPOSITION:25;"
 	SetWindow kwTopWin, userdata(ResizeControlsInfoenableBoxBottom)="NAME:enableBoxBottom;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:75.00;GUIDE1:enableBoxTop;GUIDE2:;RELPOSITION:50;"
-	SetWindow kwTopWin, userdata(ResizeControlsInfoMainBoxBottom)="NAME:MainBoxBottom;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:453.00;GUIDE1:FB;GUIDE2:;RELPOSITION:3;"
+	SetWindow kwTopWin, userdata(ResizeControlsInfoMainBoxBottom)="NAME:MainBoxBottom;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:500.00;GUIDE1:FB;GUIDE2:;RELPOSITION:3;"
 	SetWindow kwTopWin, userdata(ResizeControlsInfoMainBoxTop)="NAME:MainBoxTop;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:85.00;GUIDE1:enableBoxBottom;GUIDE2:;RELPOSITION:10;"
+	SetWindow kwTopWin, userdata(ResizeControlsInfoUGVM)="NAME:UGVM;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:380.00;GUIDE1:FB;GUIDE2:;RELPOSITION:-120;"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={303,330,inf,inf}" // sizeLimit requires Igor 7 or later
 	NewNotebook/F=0/N=sweepFormula_json/W=(12, 71, 378, 358)/FG=(UGVL, UGVT, UGVR, UGVB)/HOST=#/V=0/OPTS=12
 	Notebook kwTopWin, defaultTab=10, autoSave=0, magnification=100, writeProtect=1
@@ -1266,10 +1249,10 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin, userdata(Config_DontSave)="1"
 	RenameWindow #, sweepFormula_json
 	SetActiveSubwindow ##
-	NewNotebook/F=1/N=sweepFormula_formula/W=(12, 71, 378, 529)/FG=(UGVL, UGVT, UGVR, UGVB)/HOST=#/V=0
+	NewNotebook/F=1/N=sweepFormula_formula/W=(12, 71, 378, 402)/FG=(UGVL, UGVT, UGVR, UGVM)/HOST=#/V=0
 	Notebook kwTopWin, defaultTab=10, autoSave=1, magnification=100, showRuler=0, rulerUnits=2
-	Notebook kwTopWin, newRuler=Normal, justification=0, margins={0, 0, 286}, spacing={0, 0, 0}, tabs={}, rulerDefaults={"Arial", 11, 0, (0, 0, 0)}
-	Notebook kwTopWin, zdata="GaqDU%ejN7!Z)u.`Q5gp6jua3G)Q/*\"sO'm&d\\ZA5g0;J,s_A.LdQ^@<C$C#Otq-f1t2sC82MqA\"GB%hM\\>X0;\\a*`U()2Y1@rq'Go7Iu!s(sas8NXq[U>B>WB!4T5Vb4-6j#u22/9'T%+*K)MBlg[k2iH%'Pf\\>B^1+I(71qr()1OtC@X,fROSS$2'oL1BI]*;e5-22^oEP0X:h!2$Wok%W#\\fsJ\\a\"S-oWjcG6i_@J7pqE+b^64@4'K6P@\\4E@@4jg=Hj-!gnuth1F5o73Bs],5:;`T&HL36>\\!"
+	Notebook kwTopWin, newRuler=Normal, justification=0, margins={0, 0, 285}, spacing={0, 0, 0}, tabs={}, rulerDefaults={"Arial", 11, 0, (0, 0, 0)}
+	Notebook kwTopWin, zdata="GaqDU%ejN7!Z)u.`Q5gp6juaS]RQgY\"9p%N,8(:bX?au2`$I\\H!/O!mdT&R/*0N(![PZJC$qN3-+9[?_du+k1dSgls'qu.Z'Jf:.@X/h.rW<0loDeh%Q*t(c`Mkj_AO&\".\\O6NjJMh2@5Rc#h!K&.8,j+3bjqMSj\\nLAZ<#1guVA9k]BPR)n@%&PN2Dlec\"DB9H9[ll>lG0E_&ZcV7$k$0,\"fNG?Ne,#\"^F2#q#BpH(FF\\%-![37(\\7$`6A!:J5aC1IOi)l3M[+qQ93AVsY_)X``3'SdUJK\"SQITo8"
 	Notebook kwTopWin, zdataEnd=1
 	SetWindow kwTopWin, hook(ResizeControls)=ResizeControlsSafe
 	SetWindow kwTopWin, userdata(tabnum)="0"
@@ -1278,6 +1261,15 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	RenameWindow #, sweepFormula_formula
+	SetActiveSubwindow ##
+	NewNotebook/F=1/N=sweepFormula_error/W=(111, 125, 334, 375)/FG=(UGVL, UGVM, UGVR, UGVB)/HOST=#/V=0/OPTS=12
+	Notebook kwTopWin, defaultTab=10, autoSave=1, magnification=100, writeProtect=1, showRuler=0, rulerUnits=2
+	Notebook kwTopWin, newRuler=Normal, justification=0, margins={0, 0, 285}, spacing={0, 0, 0}, tabs={}, rulerDefaults={"Arial", 11, 0, (0, 0, 0)}
+	Notebook kwTopWin, zdata="GaqDU%ejN7!Z)uN!5sg]bQPlL()o:PL]iZ-,W[?i6\"=Ct6f#P.7,n>B$opR1N^]@m3=J*JadFT7$I8Hm`VDNn$k*-6]FUA"
+	Notebook kwTopWin, zdataEnd=1
+	SetWindow kwTopWin, userdata(tabcontrol)="SF_InfoTab"
+	SetWindow kwTopWin, userdata(tabnum)="0"
+	RenameWindow #, sweepFormula_error
 	SetActiveSubwindow ##
 	NewNotebook/F=1/N=sweepFormula_help/W=(10, 71, 378, 358)/FG=(UGVL, UGVT, UGVR, UGVB)/HOST=#/V=0/OPTS=4
 	Notebook kwTopWin, defaultTab=10, autoSave=0, magnification=100, writeProtect=1, showRuler=0, rulerUnits=2
@@ -1335,7 +1327,7 @@ Window DataBrowser() : Graph
 	GroupBox group_labnotebook_experiment_device, userdata(ResizeControlsInfo)=A"!!,I'J,hj-!!#AM!!#>jz!!#N3Bk1ct<C^(fzzzzzzzzzzzzz!!#o2B4uAe<C^(fz"
 	GroupBox group_labnotebook_experiment_device, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
 	GroupBox group_labnotebook_experiment_device, userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafn!(TR6zzzzzzzzzzzzz!!!"
-	PopupMenu popup_experiment, pos={406.00, 11.00}, size={164.00, 19.00}, bodyWidth=95
+	PopupMenu popup_experiment, pos={407.00, 11.00}, size={163.00, 19.00}, bodyWidth=95
 	PopupMenu popup_experiment, title="Experiment: "
 	PopupMenu popup_experiment, help={"Experiment selection (SweepBrowser only)"}
 	PopupMenu popup_experiment, userdata(ResizeControlsInfo)=A"!!,I1J,hkh!!#A3!!#<Pz!!#N3Bk1ct<C^(fzzzzzzzzzzzzz!!#o2B4uAe<C^(fz"

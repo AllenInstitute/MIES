@@ -12,6 +12,7 @@
 static StrConstant EXT_PANEL_SUBWINDOW    = "BrowserSettingsPanel"
 static StrConstant EXT_PANEL_SWEEPCONTROL = "SweepControl"
 static StrConstant EXT_PANEL_SF_FORMULA   = "sweepFormula_formula"
+static StrConstant EXT_PANEL_SF_ERROR     = "sweepFormula_error"
 static StrConstant EXT_PANEL_SF_JSON      = "sweepFormula_json"
 static StrConstant EXT_PANEL_SF_HELP      = "sweepFormula_help"
 
@@ -55,6 +56,11 @@ End
 Function/S BSP_GetSFFormula(string mainPanel)
 
 	return BSP_GetPanel(mainPanel) + "#" + EXT_PANEL_SF_FORMULA
+End
+
+Function/S BSP_GetSFOutputState(string mainPanel)
+
+	return BSP_GetPanel(mainPanel) + "#" + EXT_PANEL_SF_ERROR
 End
 
 Function/S BSP_GetSFJSON(string mainPanel)
@@ -329,10 +335,6 @@ Function BSP_BindListBoxWaves(string win)
 	WAVE   listBoxSelWave   = GetAnaFuncDashboardselWave(dfr)
 	WAVE/T listBoxWave      = GetAnaFuncDashboardListWave(dfr)
 	ListBox list_dashboard, win=$bsPanel, listWave=listBoxWave, colorWave=listBoxColorWave, selWave=listBoxSelWave, helpWave=listBoxHelpWave
-
-	// sweep formula tab
-	SetValDisplay(bsPanel, "status_sweepFormula_parser", var = 1)
-	SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", "")
 End
 
 /// @brief Get the channel selection wave
@@ -582,7 +584,7 @@ Function BSP_SetSFControlStatus(string win)
 
 	string controlList
 
-	controlList = "group_properties_sweepFormula;SF_InfoTab;button_sweepFormula_display;button_sweepFormula_check;setvar_sweepFormula_parseResult;status_sweepFormula_parser;button_sweepFormula_tofront;button_sweepformula_all_code"
+	controlList = "group_properties_sweepFormula;SF_InfoTab;button_sweepFormula_display;button_sweepFormula_check;button_sweepFormula_tofront;button_sweepformula_all_code"
 	BSP_SetControlStatus(win, controlList, SF_IsActive(win))
 End
 
