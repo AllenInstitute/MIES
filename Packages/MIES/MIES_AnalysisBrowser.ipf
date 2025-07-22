@@ -3255,7 +3255,6 @@ Function AB_CheckboxProc_NWB(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 	switch(cba.eventCode)
 		case 2: // mouse up
 			AB_CheckPanelVersion(cba.win)
-			SetCheckBoxState(cba.win, "check_load_pxp", !cba.checked)
 			PGC_SetAndActivateControl(cba.win, "button_AB_refresh")
 			break
 		default:
@@ -3270,7 +3269,6 @@ Function AB_CheckboxProc_PXP(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 	switch(cba.eventCode)
 		case 2: // mouse up
 			AB_CheckPanelVersion(cba.win)
-			SetCheckBoxState(cba.win, "check_load_nwb", !cba.checked)
 			PGC_SetAndActivateControl(cba.win, "button_AB_refresh")
 			break
 		default:
