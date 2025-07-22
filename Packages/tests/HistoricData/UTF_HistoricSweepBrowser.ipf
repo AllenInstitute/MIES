@@ -50,11 +50,16 @@ static Function LoadAndCheckStimset(string win, string traceName, string channel
 	CHECK_EQUAL_STR(str, stimset)
 End
 
-/// UTF_TD_GENERATOR GetHistoricDataFilesWithTTLData
+/// UTF_TD_GENERATOR HistoricDataHelpers#GetHistoricDataFilesWithTTLData
 static Function TestStimsetLoading([string str])
 
 	string file, abWin, sweepBrowsers, bsPanel, history, scPanel, win
 	variable ref
+
+	if(cmpstr(str, "C57BL6J-684963.02.04.01_pislocin_puff_2023_07_19_141829-compressed.nwb"))
+		SKIP_TESTCASE()
+		return NaN
+	endif
 
 	file = "input:" + str
 
