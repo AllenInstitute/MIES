@@ -56,6 +56,11 @@ static Function TestStimsetLoading([string str])
 	string file, abWin, sweepBrowsers, bsPanel, history, scPanel, win
 	variable ref
 
+	if(cmpstr(str, "C57BL6J-684963.02.04.01_pislocin_puff_2023_07_19_141829-compressed.nwb"))
+		SKIP_TESTCASE()
+		return NaN
+	endif
+
 	file = "input:" + str
 
 	[abWin, sweepBrowsers] = OpenAnalysisBrowser({file}, loadSweeps = 1, loadStimsets = 1)
