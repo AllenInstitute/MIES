@@ -50,7 +50,7 @@ static Function LoadAndCheckStimset(string win, string traceName, string channel
 	CHECK_EQUAL_STR(str, stimset)
 End
 
-/// UTF_TD_GENERATOR GetHistoricDataFilesWithTTLData
+/// UTF_TD_GENERATOR HistoricDataHelpers#GetHistoricDataFilesWithTTLData
 static Function TestStimsetLoading([string str])
 
 	string file, abWin, sweepBrowsers, bsPanel, history, scPanel, win
