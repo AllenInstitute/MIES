@@ -2840,6 +2840,8 @@ Function AB_BrowserStartupSettings()
 	SetWindow $panel, userData(panelVersion)=""
 	SetWindow $panel, userData(datafolder)=""
 
+	PS_RemoveCoordinateSaving(panel)
+
 	SetCheckBoxState(panel, "checkbox_load_overwrite", CHECKBOX_UNSELECTED)
 
 	StoreCurrentPanelsResizeInfo(panel)

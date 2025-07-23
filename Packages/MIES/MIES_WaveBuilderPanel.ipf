@@ -163,6 +163,8 @@ Function WBP_StartupSettings()
 	WAVE/Z wv = $""
 	ListBox listbox_combineEpochMap, listWave=wv, win=$panel
 
+	PS_RemoveCoordinateSaving(panel)
+
 	KillWindow/Z $WBP_GetFFTSpectrumPanel()
 
 	if(SearchForInvalidControlProcs(panel))

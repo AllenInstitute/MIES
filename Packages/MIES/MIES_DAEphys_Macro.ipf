@@ -4334,7 +4334,6 @@ Window DA_Ephys() : Panel
 	CheckBox Radio_ClampMode_AllIClamp, value=0, mode=1
 	DefineGuide UGV0={FR, -25}, UGH0={FB, -27}, UGV1={FL, 481}
 	SetWindow kwTopWin, hook(cleanup)=DAP_WindowHook
-	SetWindow kwTopWin, hook(windowCoordinateSaving)=StoreWindowCoordinatesHook
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)=A"!!*'\"z!!#CW!!#Dl5QCcbzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
@@ -4344,6 +4343,4 @@ Window DA_Ephys() : Panel
 	SetWindow kwTopWin, userdata(ResizeControlsInfoUGV1)="NAME:UGV1;WIN:DA_Ephys;TYPE:User;HORIZONTAL:0;POSITION:481.00;GUIDE1:FL;GUIDE2:;RELPOSITION:481;"
 	SetWindow kwTopWin, userdata(Config_PanelType)="DA_Ephys"
 	SetWindow kwTopWin, userdata(Config_RadioCouplingFunc)="DAP_GetRadioButtonCoupling"
-	SetWindow kwTopWin, userdata(JSONSettings_StoreCoordinates)="1"
-	SetWindow kwTopWin, userdata(JSONSettings_WindowName)="daephys"
 EndMacro

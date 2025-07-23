@@ -788,6 +788,8 @@ Function DAP_EphysPanelStartUpSettings()
 
 	SetDrawLayer/K UserBack
 
+	PS_RemoveCoordinateSaving(device)
+
 	SearchForInvalidControlProcs(device)
 
 	Execute/P/Z "DoWindow/R " + BASE_WINDOW_NAME

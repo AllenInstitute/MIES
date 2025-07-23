@@ -1226,8 +1226,6 @@ Window WaveBuilder() : Panel
 	SetWindow kwTopWin, userdata(panelVersion)="12"
 	SetWindow kwTopWin, userdata(Config_PanelType)="WaveBuilder"
 	SetWindow kwTopWin, userdata(ResizeControlsInfoUGV0)="NAME:UGV0;WIN:WaveBuilder;TYPE:User;HORIZONTAL:0;POSITION:187.00;GUIDE1:FL;GUIDE2:;RELPOSITION:187;"
-	SetWindow kwTopWin, userdata(JSONSettings_StoreCoordinates)="1"
-	SetWindow kwTopWin, userdata(JSONSettings_WindowName)="wavebuilder"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={774,410.25,inf,inf}" // sizeLimit requires Igor 7 or later
 	Display/W=(186, 270, 1030, 544)/FG=(UGV0, UGH1, FR, FB)/HOST=#
 	SetWindow kwTopWin, hook(ResizeControls)=ResizeControlsSafe

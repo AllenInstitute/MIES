@@ -18,10 +18,10 @@
 Constant DAQ_CONFIG_WAVE_VERSION = 3
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION           = 66
-Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 53
-Constant WAVEBUILDER_PANEL_VERSION        = 14
-Constant ANALYSISBROWSER_PANEL_VERSION    = 10
+Constant DA_EPHYS_PANEL_VERSION           = 67
+Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 54
+Constant WAVEBUILDER_PANEL_VERSION        = 15
+Constant ANALYSISBROWSER_PANEL_VERSION    = 11
 Constant PSX_PLOT_PANEL_VERSION           = 1
 
 /// Version of the stimset wave note

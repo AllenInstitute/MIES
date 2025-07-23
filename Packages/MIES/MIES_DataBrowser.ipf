@@ -108,6 +108,8 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	SetWindow $device, userdata(Config_FileHash)=""
 	SetWindow $device, userdata(PulseAverageSettings)=""
 
+	PS_RemoveCoordinateSaving(device)
+
 	// invalidate hooks
 	SetWindow $device, tooltiphook(hook)=$""
 
