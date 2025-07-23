@@ -204,9 +204,13 @@ Function PS_StoreWindowCoordinate(variable JSONid, string win)
 	string path, name
 	variable store
 
-	store = str2num(GetUserData(win, "", PS_STORE_COORDINATES))
+	store = str2numSafe(GetUserData(win, "", PS_STORE_COORDINATES))
 
 	if(IsNaN(store) || store == 0)
+		return NaN
+	endif
+
+	if(ItemsInList(win, "#") > 1 && !IsExteriorSubWindow(win))
 		return NaN
 	endif
 
