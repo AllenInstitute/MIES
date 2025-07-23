@@ -62,6 +62,16 @@ Function GenerateSettingsDefaults()
 	JSON_AddTreeObject(JSONid, "/diagnostics")
 	JSON_AddString(JSONid, "/diagnostics/last upload", GetIso8601TimeStamp(secondsSinceIgorEpoch = 0))
 
+	JSON_AddTreeObject(JSONid, "/analysisbrowser")
+	JSON_AddTreeArray(JSONid, "/analysisbrowser/directory")
+
+	JSON_AddTreeObject(JSONid, "/logfiles")
+	JSON_AddString(JSONid, "/logfiles/last upload", GetIso8601TimeStamp(secondsSinceIgorEpoch = 0))
+
+	JSON_AddTreeObject(JSONid, "/userping")
+	JSON_AddBoolean(JSONid, "/userping/enabled", PACKAGE_SETTINGS_USERPING_DEFAULT)
+	JSON_AddString(JSONid, "/userping/last upload", GetIso8601TimeStamp(secondsSinceIgorEpoch = 0))
+
 	UpgradeSettings(JSONid)
 
 	return JSONid
@@ -69,38 +79,116 @@ End
 
 Function UpgradeSettings(variable JSONid)
 
-	string oldPath, jsonPath
-	string documentsFolder = GetUserDocumentsFolderPath()
+	string oldPath, jsonPath, documentsFolder
+	variable version
 
-	if(!JSON_Exists(JSONid, "/analysisbrowser"))
-		JSON_AddTreeObject(JSONid, "/analysisbrowser")
-		JSON_AddString(JSONid, SETTINGS_AB_FOLDER, documentsFolder)
+	version = JSON_GetVariable(JSONid, "/version")
+
+	if(version == PACKAGE_JSON_VERSION)
+		return NaN
 	endif
 
-	if(!JSON_Exists(JSONid, "/logfiles"))
-		JSON_AddTreeObject(JSONid, "/logfiles")
-		JSON_AddString(JSONid, "/logfiles/last upload", GetIso8601TimeStamp(secondsSinceIgorEpoch = 0))
-	endif
+	if(version <= 1)
+		documentsFolder = GetUserDocumentsFolderPath()
 
-	if(JSON_GetType(JSONid, SETTINGS_AB_FOLDER) == JSON_STRING)
-		oldPath = JSON_GetString(JSONid, SETTINGS_AB_FOLDER)
-		if(!CmpStr(oldPath, SETTINGS_AB_FOLDER_OLD_DEFAULT))
-			oldPath = documentsFolder
+		if(!JSON_Exists(JSONid, "/analysisbrowser"))
+			JSON_AddTreeObject(JSONid, "/analysisbrowser")
+			JSON_AddString(JSONid, SETTINGS_AB_FOLDER, documentsFolder)
 		endif
-		Make/FREE/T wvt = {oldPath}
-		JSON_SetWave(JSONid, SETTINGS_AB_FOLDER, wvt)
+
+		if(!JSON_Exists(JSONid, "/logfiles"))
+			JSON_AddTreeObject(JSONid, "/logfiles")
+			JSON_AddString(JSONid, "/logfiles/last upload", GetIso8601TimeStamp(secondsSinceIgorEpoch = 0))
+		endif
+
+		if(JSON_GetType(JSONid, SETTINGS_AB_FOLDER) == JSON_STRING)
+			oldPath = JSON_GetString(JSONid, SETTINGS_AB_FOLDER)
+			if(!CmpStr(oldPath, SETTINGS_AB_FOLDER_OLD_DEFAULT))
+				oldPath = documentsFolder
+			endif
+			Make/FREE/T wvt = {oldPath}
+			JSON_SetWave(JSONid, SETTINGS_AB_FOLDER, wvt)
+		endif
+
+		jsonPath = "/" + PACKAGE_SETTINGS_USERPING
+		if(!JSON_Exists(JSONid, jsonPath))
+			JSON_AddTreeObject(JSONid, jsonPath)
+		endif
+		if(!JSON_Exists(JSONid, jsonPath + "/enabled"))
+			JSON_AddBoolean(JSONid, jsonPath + "/enabled", PACKAGE_SETTINGS_USERPING_DEFAULT)
+		endif
+		if(!JSON_Exists(JSONid, jsonPath + "/last upload"))
+			JSON_AddString(JSONid, jsonPath + "/last upload", GetIso8601TimeStamp(secondsSinceIgorEpoch = 0))
+		endif
+
+		UpgradeCoordinateSavePaths(jsonID)
 	endif
 
-	jsonPath = "/" + PACKAGE_SETTINGS_USERPING
-	if(!JSON_Exists(JSONid, jsonPath))
-		JSON_AddTreeObject(JSONid, jsonPath)
-	endif
-	if(!JSON_Exists(JSONid, jsonPath + "/enabled"))
-		JSON_AddBoolean(JSONid, jsonPath + "/enabled", PACKAGE_SETTINGS_USERPING_DEFAULT)
-	endif
-	if(!JSON_Exists(JSONid, jsonPath + "/last upload"))
-		JSON_AddString(JSONid, jsonPath + "/last upload", GetIso8601TimeStamp(secondsSinceIgorEpoch = 0))
-	endif
+	// upgrade version variable
+	JSON_SetVariable(JSONId, "/version", PACKAGE_JSON_VERSION)
+End
+
+/// @brief Upgrade save paths for panels/graphs
+///
+/// v1:
+///
+/// \rst
+/// .. code-block:: json
+///
+///     "datasweepbrowser": {
+///       "coordinates": {
+///         "bottom": 664.25,
+///         "left": 427.5,
+///         "right": 916.5,
+///         "top": 292.25
+///       }
+///     }
+///
+/// \endrst
+///
+/// v2:
+///
+/// \rst
+/// .. code-block:: json
+///
+///   "datasweepbrowser": {
+///     "DataBrowser": {
+///       "coordinates": {
+///         "bottom": 981.5,
+///         "left": 427.5,
+///         "right": 1548,
+///         "top": 292.25
+///       }
+///     }
+///    }
+///
+/// \endrst
+///
+/// This is done for a couple of windows.
+static Function UpgradeCoordinateSavePaths(variable jsonID)
+
+	variable numEntries, i
+	string group, old_name, new_name, old_path_full, new_path
+
+	Make/FREE/T map = {{"datasweepbrowser", "wavebuilder", "daephys", "analysisbrowser"}, \
+	                   {"DataBrowser", "WaveBuilder", "DA_Ephys", "AnalysisBrowser"}}
+
+	numEntries = DimSize(map, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		group    = map[i][0]
+		new_name = map[i][1]
+
+		old_path_full = "/" + group + "/coordinates"
+		new_path      = "/" + group + "/" + new_name
+
+		if(!JSON_Exists(jsonID, old_path_full))
+			continue
+		endif
+
+		JSON_AddObjects(jsonID, new_path)
+		JSON_SyncJSON(jsonID, jsonID, old_path_full, new_path + "/coordinates", JSON_SYNC_ADD_TO_TARGET)
+		JSON_Remove(jsonID, old_path_full)
+	endfor
 End
 
 Function ToggleUserPingSetting()
