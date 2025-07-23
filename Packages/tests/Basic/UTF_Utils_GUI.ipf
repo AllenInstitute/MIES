@@ -142,3 +142,19 @@ Function TestGetExteriorSubWindowOrientations()
 	CHECK_EQUAL_TEXTWAVES(names, {"SweepControl", "BrowserSettingsPanel", "SettingsHistoryPanel"})
 	CHECK_EQUAL_WAVES(orientation, {2, 1, 2})
 End
+
+Function TestIsExteriorSubWindow()
+
+	string main, sub0, sub1
+
+	NewPanel
+	main = S_name
+	NewPanel/EXT=1/HOST=#
+	sub0 = S_name
+	NewPanel/HOST=#
+	sub1 = S_name
+
+	CHECK(!IsExteriorSubWindow(main))
+	CHECK(IsExteriorSubWindow(main + "#" + sub0))
+	CHECK(!IsExteriorSubWindow(main + "#" + sub0 + "#" + sub1))
+End

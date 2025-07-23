@@ -878,3 +878,10 @@ static Function [WAVE/T names, WAVE orientation] DropInteriorSubWindows(WAVE/T l
 
 	return [names, orientation]
 End
+
+/// @brief Return the truth that win is an exterior subwindow
+Function IsExteriorSubWindow(string win)
+
+	GetWindow/Z $win, exterior
+	return V_Value == 1
+End
