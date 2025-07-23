@@ -220,7 +220,7 @@ Function BSP_DynamicStartupSettings(string mainPanel)
 	bsPanel = BSP_GetPanel(mainPanel)
 
 	NVAR JSONid = $GetSettingsJSONid()
-	PS_InitCoordinates(JSONid, mainPanel)
+	PS_InitCoordinates(JSONid, mainPanel, recursive = 1)
 
 	PopupMenu popup_overlaySweeps_select, win=$bsPanel, value=#("OVS_GetSweepSelectionChoices(\"" + bsPanel + "\")")
 
