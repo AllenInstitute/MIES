@@ -144,7 +144,7 @@ Function/S WBP_CreateWaveBuilderPanel()
 	AddVersionToPanel(panel, WAVEBUILDER_PANEL_VERSION)
 
 	NVAR JSONid = $GetSettingsJSONid()
-	PS_InitCoordinates(JSONid, panel, "wavebuilder")
+	PS_InitCoordinates(JSONid, panel)
 
 	return panel
 End

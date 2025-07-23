@@ -4344,4 +4344,5 @@ Window DA_Ephys() : Panel
 	SetWindow kwTopWin, userdata(ResizeControlsInfoUGV1)="NAME:UGV1;WIN:DA_Ephys;TYPE:User;HORIZONTAL:0;POSITION:481.00;GUIDE1:FL;GUIDE2:;RELPOSITION:481;"
 	SetWindow kwTopWin, userdata(Config_PanelType)="DA_Ephys"
 	SetWindow kwTopWin, userdata(Config_RadioCouplingFunc)="DAP_GetRadioButtonCoupling"
+	SetWindow kwTopWin, userdata(JSONSettings_WindowGroup)="daephys"
 EndMacro

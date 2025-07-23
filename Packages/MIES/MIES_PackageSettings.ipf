@@ -11,6 +11,7 @@
 
 static StrConstant PS_STORE_COORDINATES      = "JSONSettings_StoreCoordinates"
 static StrConstant PS_WINDOW_NAME            = "JSONSettings_WindowName"
+static StrConstant PS_WINDOW_GROUP           = "JSONSettings_WindowGroup"
 static StrConstant PS_COORDINATE_SAVING_HOOK = "windowCoordinateSaving"
 
 /// @brief Initialize the `PackageFolder` symbolic path
@@ -135,18 +136,31 @@ static Function/WAVE PS_GetAllWindowsExt(string win)
 	return result
 End
 
-/// @brief Move the window to the stored location
-static Function PS_ApplyStoredWindowCoordinate(variable JSONid, string win)
+static Function/S PS_BuildWindowPath(string win)
 
-	string path, name
-	variable left, top, right, bottom, err
+	string name, group
 
 	name = GetUserData(win, "", PS_WINDOW_NAME)
 	ASSERT(!IsEmpty(name), "Invalid empty name")
 
-	path = "/" + name + "/coordinates"
+	// only the main window has the group info
+	group = GetUserData(GetMainWindow(win), "", PS_WINDOW_GROUP)
+	if(IsEmpty(group))
+		return ""
+	endif
 
-	if(JSON_GetType(JSONid, path, ignoreErr = 1) != JSON_OBJECT)
+	return "/" + group + "/" + name + "/coordinates"
+End
+
+/// @brief Move the window to the stored location
+static Function PS_ApplyStoredWindowCoordinate(variable JSONid, string win, variable orientation)
+
+	string path
+	variable left, top, right, bottom, err
+
+	path = PS_BuildWindowPath(win)
+
+	if(IsEmpty(path) || JSON_GetType(JSONid, path, ignoreErr = 1) != JSON_OBJECT)
 		return NaN
 	endif
 
@@ -158,8 +172,25 @@ static Function PS_ApplyStoredWindowCoordinate(variable JSONid, string win)
 	AssertOnAndClearRTError()
 	try
 		if(IsSubWindow(win))
-			// correct for pixel/points confusion
-			MoveSubWindow/W=$win fnum=(0, PointsToPixel(bottom - top), PointsToPixel(right - left), 0); AbortOnRTE
+			switch(orientation)
+				// correct for pixel/points confusion
+				// left, top, right, bottom
+				// coordinates are relative to [top, left] of the main window
+				case EXT_SUBWINDOW_ORIENTATION_BOTTOM:
+					MoveSubWindow/W=$win fnum=(0, 0, PointsToPixel(right - left), PointsToPixel(bottom - top)); AbortOnRTE
+					break
+				case EXT_SUBWINDOW_ORIENTATION_TOP:
+					MoveSubWindow/W=$win fnum=(0, PointsToPixel(bottom - top), PointsToPixel(right - left), 0); AbortOnRTE
+					break
+				case EXT_SUBWINDOW_ORIENTATION_LEFT:
+					MoveSubWindow/W=$win fnum=(PointsToPixel(right - left), 0, 0, PointsToPixel(bottom - top)); AbortOnRTE
+					break
+				case EXT_SUBWINDOW_ORIENTATION_RIGHT:
+					MoveSubWindow/W=$win fnum=(0, 0, PointsToPixel(right - left), PointsToPixel(bottom - top)); AbortOnRTE
+					break
+				default:
+					FATAL_ERROR("Unknown orientation")
+			endswitch
 		else
 			MoveWindow/W=$win left, top, right, bottom; AbortOnRTE
 		endif
@@ -171,10 +202,10 @@ static Function PS_ApplyStoredWindowCoordinate(variable JSONid, string win)
 End
 
 /// @brief Add user data to mark the window as using coordinate saving
-static Function PS_RegisterForCoordinateSaving(string win, string name)
+static Function PS_RegisterForCoordinateSaving(string win)
 
 	SetWindow $win, userdata($PS_STORE_COORDINATES)="1"
-	SetWindow $win, userdata($PS_WINDOW_NAME)=name
+	SetWindow $win, userdata($PS_WINDOW_NAME)=win
 End
 
 /// @brief Remove user data related to coordinate saving
@@ -182,6 +213,7 @@ Function PS_RemoveCoordinateSaving(string win)
 
 	SetWindow $win, userdata($PS_STORE_COORDINATES)=""
 	SetWindow $win, userdata($PS_WINDOW_NAME)=""
+	SetWindow $win, userdata($PS_WINDOW_GROUP)=""
 
 	SetWindow $win, hook($PS_COORDINATE_SAVING_HOOK)=$""
 End
@@ -220,7 +252,7 @@ End
 /// The window must have been registered beforehand with PS_InitCoordinates().
 Function PS_StoreWindowCoordinate(variable JSONid, string win)
 
-	string path, name
+	string   path
 	variable store
 
 	store = str2numSafe(GetUserData(win, "", PS_STORE_COORDINATES))
@@ -233,10 +265,12 @@ Function PS_StoreWindowCoordinate(variable JSONid, string win)
 		return NaN
 	endif
 
-	name = GetUserData(win, "", PS_WINDOW_NAME)
-	ASSERT(!IsEmpty(name), "Invalid empty name")
+	path = PS_BuildWindowPath(win)
 
-	path = "/" + name + "/coordinates"
+	if(IsEmpty(path))
+		// too few userdata
+		return NaN
+	endif
 
 	if(!JSON_Exists(JSONid, path))
 		JSON_AddTreeObject(JSONid, path)
@@ -258,14 +292,16 @@ End
 /// - Read the current coordinates from the JSON settings file and applying
 ///   them
 ///
-/// @param JSONid  JSON document with settings
-/// @param win     window name
-/// @param name    name to store the window under (especially useful for
-///                windows which are renamed to their locked device)
-/// @param addHook [optional, defaults to true] Add a window hook to store the
-///                coordinates on window killing. Users with their own kill event
-///                handling must pass `addHook=0`.
-Function PS_InitCoordinates(variable JSONid, string win, string name, [variable addHook])
+/// @param JSONid    JSON document with settings
+/// @param win       window name, must be the one before locking
+/// @param recursive [optional, defaults to false] Add hook also to all exterior subwindows
+/// @param addHook   [optional, defaults to true] Add a window hook to store the
+///                  coordinates on window killing. Users with their own kill event
+///                  handling must pass `addHook=0`.
+Function PS_InitCoordinates(variable JSONid, string win, [variable recursive, variable addHook])
+
+	string subWin, mainWin, leaf
+	variable idx, orient
 
 	if(ParamIsDefault(addHook))
 		addHook = 1
@@ -273,12 +309,39 @@ Function PS_InitCoordinates(variable JSONid, string win, string name, [variable 
 		addHook = !!addHook
 	endif
 
-	PS_RegisterForCoordinateSaving(win, name)
-	PS_ApplyStoredWindowCoordinate(JSONid, win)
-
-	if(addHook)
-		SetWindow $win, hook($PS_COORDINATE_SAVING_HOOK)=StoreWindowCoordinatesHook
+	if(ParamIsDefault(recursive))
+		recursive = 0
+	else
+		recursive = !!recursive
 	endif
+
+	WAVE/T allExtSubWins = PS_GetAllWindowsExt(win)
+
+	mainWin                          = allExtSubWins[0]
+	[WAVE/T names, WAVE orientation] = GetExteriorSubWindowOrientations(WinRecreation(mainWin, 0))
+
+	for(subWin : allExtSubWins)
+
+		if(!cmpstr(subWin, mainWin))
+			orient = NaN
+		else
+			leaf = LastStringFromList(subWin, sep = "#")
+			idx  = GetRowIndex(names, str = leaf)
+			ASSERT(IsFinite(idx), "Could not find subwindow")
+			orient = orientation[idx]
+		endif
+
+		PS_RegisterForCoordinateSaving(subWin)
+		PS_ApplyStoredWindowCoordinate(JSONid, subWin, orient)
+
+		if(addHook)
+			SetWindow $subWin, hook($PS_COORDINATE_SAVING_HOOK)=StoreWindowCoordinatesHook
+		endif
+
+		if(!recursive)
+			break
+		endif
+	endfor
 End
 
 /// @brief Write the current JSON settings to disc

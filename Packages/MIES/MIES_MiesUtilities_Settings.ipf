@@ -47,7 +47,7 @@
 /// - "logfiles/last upload": ISO8601 timestamp when the last successfull
 ///                              upload of log files was tried. This is also set
 ///                              when no log files have been uploadad.
-/// - "*[/*]/coordinates": window coordinates
+/// - "/<group>/<name>/coordinates": window coordinates
 ///
 /// @return JSONid
 ///

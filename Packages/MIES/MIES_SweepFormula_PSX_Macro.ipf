@@ -131,6 +131,7 @@ Window PSXPanel() : Panel
 	SetWindow kwTopWin, hook(resetScaling)=IH_ResetScaling
 	SetWindow kwTopWin, hook(ctrl)=PSX_AllEventGraphHook
 	SetWindow kwTopWin, hook(windowCoordinateSaving)=StoreWindowCoordinatesHook
+	SetWindow kwTopWin, userdata(JSONSettings_WindowGroup)="psxpanel"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={750,200.25,inf,inf}" // sizeLimit requires Igor 7 or later
 	Display/W=(225, 62, 675, 188)/FG=(horizCenter, FT, FR, FB)/HOST=#
 	RenameWindow #, Single
