@@ -270,6 +270,7 @@ End
 #include "MIES_Structures"
 #include "MIES_SweepFormula"
 #include "MIES_SweepFormula_Helpers"
+#include "MIES_SweepFormula_Parser"
 #include "MIES_SweepFormula_PSX"
 #include "MIES_SweepFormula_PSX_Macro"
 #include "MIES_SweepSaving"

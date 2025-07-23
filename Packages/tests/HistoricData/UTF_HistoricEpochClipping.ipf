@@ -16,7 +16,7 @@ static Function TestEpochClipping([string str])
 	CHECK_PROPER_STR(sbWin)
 	bsPanel = BSP_GetPanel(sbWin)
 
-	jsonId = MIES_SF#SF_FormulaParser("data(select(selrange(\"Stimset;\"), selchannels(AD), selsweeps()))")
+	jsonId = MIES_SFP#SFP_FormulaParser("data(select(selrange(\"Stimset;\"), selchannels(AD), selsweeps()))")
 	CHECK_NEQ_VAR(jsonId, NaN)
 	WAVE/WAVE result = MIES_SF#SF_FormulaExecutor(sbWin, jsonId)
 	JSON_Release(jsonId)
