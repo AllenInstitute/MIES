@@ -58,7 +58,7 @@ Function GenerateSettingsDefaults()
 
 	JSONid = JSON_New()
 
-	JSON_AddVariable(JSONid, "version", 1)
+	JSON_AddVariable(JSONid, "version", PACKAGE_JSON_VERSION)
 	JSON_AddTreeObject(JSONid, "/diagnostics")
 	JSON_AddString(JSONid, "/diagnostics/last upload", GetIso8601TimeStamp(secondsSinceIgorEpoch = 0))
 
