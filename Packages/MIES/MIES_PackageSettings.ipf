@@ -110,6 +110,31 @@ static Function/S PS_GetSettingsFile(string package)
 	return folder + PACKAGE_SETTINGS_JSON
 End
 
+static Function/WAVE PS_GetAllWindowsExt(string win)
+
+	variable idx
+
+	WAVE/T allSubWins = ListToTextWave(GetAllWindows(win), ";")
+
+	Make/FREE/T/N=(DimSize(allSubWins, ROWS)) result
+	result[idx] = win
+	idx++
+
+	for(subWin : allSubWins)
+
+		if(!IsExteriorSubWindow(subWin))
+			continue
+		endif
+
+		result[idx] = subWin
+		idx++
+	endfor
+
+	Redimension/N=(idx) result
+
+	return result
+End
+
 /// @brief Move the window to the stored location
 static Function PS_ApplyStoredWindowCoordinate(variable JSONid, string win)
 
@@ -166,8 +191,8 @@ End
 /// The windows must have been registered beforehand with PS_InitCoordinates().
 static Function PS_StoreWindowCoordinates(variable JSONid)
 
-	string list, win, part, subWindows, subWin
-	variable i, j, numEntries, store, numSubWindows
+	string list, win, subWin
+	variable i, numEntries, store
 
 	list = WinList("*", ";", "WIN:65") // Graphs + Panels
 
@@ -175,19 +200,13 @@ static Function PS_StoreWindowCoordinates(variable JSONid)
 	for(i = 0; i < numEntries; i += 1)
 		win = StringFromList(i, list)
 
-		subWindows = GetAllWindows(win)
+		WAVE/T allExtSubWins = PS_GetAllWindowsExt(win)
 
-		for(j = 0; j < numSubWindows; j += 1)
-			subWin = StringFromList(j, subWindows)
-			store  = str2num(GetUserData(subWin, "", PS_STORE_COORDINATES))
-
-			if(IsNaN(store) || store == 0)
-				continue
-			endif
+		for(subWin : allExtSubWins)
 
 			AssertOnAndClearRTError()
 			try
-				PS_StoreWindowCoordinate(JSONid, win); AbortOnRTE
+				PS_StoreWindowCoordinate(JSONid, subWin); AbortOnRTE
 			catch
 				ClearRTError()
 				// silently ignore
