@@ -23,6 +23,7 @@
 #include "UTF_Labnotebook"
 #include "UTF_Macros"
 #include "UTF_oodDAQ"
+#include "UTF_PackageSettings"
 #include "UTF_PGCSetAndActivateControl"
 #include "UTF_StimsetAPI"
 #include "UTF_SweepFormula"

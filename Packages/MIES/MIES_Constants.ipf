@@ -67,7 +67,7 @@ Constant ANALYSIS_BROWSER_SUPP_VERSION = 3
 
 Constant PA_SETTINGS_STRUCT_VERSION = 6
 
-Constant PACKAGE_JSON_VERSION = 1
+Constant PACKAGE_JSON_VERSION = 2
 ///@}
 
 /// @name Constans for the number of channels
