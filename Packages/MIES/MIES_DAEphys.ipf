@@ -4172,7 +4172,7 @@ Function/S DAP_CreateDAEphysPanel()
 	AddVersionToPanel(panel, DA_EPHYS_PANEL_VERSION)
 
 	NVAR JSONid = $GetSettingsJSONid()
-	PS_InitCoordinates(JSONid, panel, "daephys")
+	PS_InitCoordinates(JSONid, panel)
 
 	return panel
 End

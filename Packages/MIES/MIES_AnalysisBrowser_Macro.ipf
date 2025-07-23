@@ -170,6 +170,7 @@ Window AnalysisBrowser() : Panel
 	SetWindow kwTopWin, hook(ResizeControls)=ResizeControlsSafe
 	SetWindow kwTopWin, hook(cleanup)=AB_WindowHook
 	SetWindow kwTopWin, userdata(Config_PanelType)="AnalysisBrowser"
+	SetWindow kwTopWin, userdata(JSONSettings_WindowGroup)="analysisbrowser"
 	SetWindow kwTopWin, userdata(ResizeControlsGuides)="splitGuide;UGVL;"
 	SetWindow kwTopWin, userdata(ResizeControlsInfosplitGuide)="NAME:splitGuide;WIN:AnalysisBrowser;TYPE:User;HORIZONTAL:1;POSITION:10.00;GUIDE1:FT;GUIDE2:;RELPOSITION:10;"
 	SetWindow kwTopWin, userdata(ResizeControlsInfoUGVL)="NAME:UGVL;WIN:AnalysisBrowser;TYPE:User;HORIZONTAL:0;POSITION:15.00;GUIDE1:FL;GUIDE2:;RELPOSITION:15;"

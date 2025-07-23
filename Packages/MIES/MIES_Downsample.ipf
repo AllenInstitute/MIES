@@ -362,6 +362,7 @@ Function CreateDownsamplePanel()
 	NewPanel/N=$panel/W=(283, 389, 847, 643)/K=1
 	ASSERT(CmpStr(panel, S_name) == 0, "window already exists")
 	SetWindow $panel, hook(cleanup)=DownsampleWindowHook
+	SetWindow kwTopWin, userdata(JSONSettings_WindowGroup)="downsample"
 
 	PopupMenu popup_deviceselection_id, pos={28, 13}, size={214, 21}, bodyWidth=130, proc=PopupMenuDeviceSelection, title="Device Selection"
 	PopupMenu popup_deviceselection_id, mode=1, value=#"GetPopupMenuDeviceListWithData()"
@@ -423,7 +424,7 @@ Function CreateDownsamplePanel()
 	GroupBox group2, pos={11, 190}, size={253, 32}
 
 	NVAR JSONid = $GetSettingsJSONid()
-	PS_InitCoordinates(JSONid, panel, "downsample", addHook = 0)
+	PS_InitCoordinates(JSONid, panel, addHook = 0)
 
 	UpdatePanel(panel)
 	UpdatePopupMenuWindowFunction(panel)

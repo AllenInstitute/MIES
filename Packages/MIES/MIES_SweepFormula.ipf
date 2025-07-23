@@ -645,8 +645,10 @@ static Function SF_CommonWindowSetup(string win, string graph)
 
 	string newTitle
 
+	SetWindow $win, userData(JSONSettings_WindowGroup)="sweepformula"
+
 	NVAR JSONid = $GetSettingsJSONid()
-	PS_InitCoordinates(JSONid, win, "sweepformula_" + win)
+	PS_InitCoordinates(JSONid, win)
 
 	SetWindow $win, hook(resetScaling)=IH_ResetScaling, userData($SFH_USER_DATA_BROWSER)=graph
 

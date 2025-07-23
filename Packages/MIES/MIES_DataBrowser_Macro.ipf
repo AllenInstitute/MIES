@@ -29,6 +29,7 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin, userdata(BROWSERMODE)="User"
 	SetWindow kwTopWin, userdata(SweepFormulaContentCRC)="1827768143"
+	SetWindow kwTopWin, userdata(JSONSettings_WindowGroup)="databrowser"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={366,279,inf,inf}" // sizeLimit requires Igor 7 or later
 	NewPanel/HOST=#/EXT=2/W=(0, 0, 580, 70) as "Sweep Control"
 	Button button_SweepControl_NextSweep, pos={330.00, 3.00}, size={150.00, 36.00}, proc=BSP_ButtonProc_ChangeSweep

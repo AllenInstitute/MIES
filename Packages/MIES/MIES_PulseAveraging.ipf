@@ -204,7 +204,7 @@ static Function/S PA_GetGraph(string mainWin, STRUCT PulseAverageSettings &pa, v
 			endfor
 		endif
 		NVAR JSONid = $GetSettingsJSONid()
-		PS_InitCoordinates(JSONid, win, win)
+		PS_InitCoordinates(JSONid, win)
 
 		switch(displayMode)
 			case PA_DISPLAYMODE_IMAGES:
