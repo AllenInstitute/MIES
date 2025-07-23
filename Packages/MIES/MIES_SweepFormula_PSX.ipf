@@ -5632,6 +5632,9 @@ Function PSX_PlotStartupSettings()
 	// default GUI values
 	CheckBox checkbox_suppress_update, value=0, win=$win
 
+	SetWindow $win, userData(JSONSettings_StoreCoordinates)=""
+	SetWindow $win, userData(JSONSettings_WindowName)=""
+
 	ListBox listbox_select_combo, win=$win, listWave=$"", selWave=$"", helpWave=$"", selRow=0
 
 	specialEventPanel = PSX_GetSpecialPanel(win)

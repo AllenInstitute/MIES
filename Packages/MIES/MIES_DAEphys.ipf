@@ -227,6 +227,9 @@ Function DAP_EphysPanelStartUpSettings()
 	SetWindow $device, userdata(Config_FileName)=""
 	SetWindow $device, userdata(Config_FileHash)=""
 
+	SetWindow $device, userData(JSONSettings_StoreCoordinates)=""
+	SetWindow $device, userData(JSONSettings_WindowName)=""
+
 	CheckBox Check_AD_00, WIN=$device, value=0
 	CheckBox Check_AD_01, WIN=$device, value=0
 	CheckBox Check_AD_02, WIN=$device, value=0
