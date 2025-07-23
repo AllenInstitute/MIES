@@ -220,7 +220,7 @@ Function BSP_DynamicStartupSettings(string mainPanel)
 	bsPanel = BSP_GetPanel(mainPanel)
 
 	NVAR JSONid = $GetSettingsJSONid()
-	PS_InitCoordinates(JSONid, mainPanel, "datasweepbrowser", addHook = 0)
+	PS_InitCoordinates(JSONid, mainPanel, "datasweepbrowser")
 
 	PopupMenu popup_overlaySweeps_select, win=$bsPanel, value=#("OVS_GetSweepSelectionChoices(\"" + bsPanel + "\")")
 
@@ -1903,9 +1903,6 @@ Function BSP_WindowHook(STRUCT WMWinHookStruct &s)
 		case EVENT_WINDOW_HOOK_KILL:
 
 			win = s.winName
-
-			NVAR JSONid = $GetSettingsJSONid()
-			PS_StoreWindowCoordinate(JSONid, win)
 
 			if(BSP_IsSweepBrowser(win))
 				BSP_MemoryFreeMappedDF(win)
