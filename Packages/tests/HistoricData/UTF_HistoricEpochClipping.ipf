@@ -18,6 +18,6 @@ static Function TestEpochClipping([string str])
 
 	jsonId = MIES_SFP#SFP_FormulaParser("data(select(selrange(\"Stimset;\"), selchannels(AD), selsweeps()))")
 	CHECK_NEQ_VAR(jsonId, NaN)
-	WAVE/WAVE result = MIES_SF#SF_FormulaExecutor(sbWin, jsonId)
+	WAVE/WAVE result = MIES_SFE#SFE_FormulaExecutor(sbWin, jsonId)
 	JSON_Release(jsonId)
 End

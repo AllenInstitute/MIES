@@ -49,7 +49,7 @@ End
 Function TestOperationMinMaxHelper(string win, string jsonRefText, string formula, variable refResult)
 
 	CheckEqualFormulas(jsonRefText, formula)
-	WAVE data = SF_ExecuteFormula(formula, win, singleResult = 1, useVariables = 0)
+	WAVE data = SFE_ExecuteFormula(formula, win, singleResult = 1, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
 
 	if(IsNumericWave(data))
@@ -245,71 +245,71 @@ static Function arrayOperations(string win, string array2d, variable numeric)
 	input[][] = IsNaN(input[p][q]) ? input[p][0] : input[p][q]
 
 	str = array2d
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Duplicate/FREE input, input0
 	input0[][][][] = input[p][q][r][s] - input[p][q][r][s]
 	str            = array2d + "-" + array2d
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input0, output, mode = WAVE_DATA)
 
 	Duplicate/FREE input, input1
 	input1[][][][] = input[p][q][r][s] + input[p][q][r][s]
 	str            = array2d + "+" + array2d
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input1, output, mode = WAVE_DATA)
 
 	Duplicate/FREE input, input2
 	input2[][][][] = input[p][q][r][s] / input[p][q][r][s]
 	str            = array2d + "/" + array2d
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input2, output, mode = WAVE_DATA)
 
 	Duplicate/FREE input, input3
 	input3[][][][] = input[p][q][r][s] * input[p][q][r][s]
 	str            = array2d + "*" + array2d
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input3, output, mode = WAVE_DATA)
 
 	Duplicate/FREE input, input10
 	input10 -= numeric
 	str      = array2d + "-" + num2str(numeric)
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input10, output, mode = WAVE_DATA)
 	input10[][][][] = numeric - input[p][q][r][s]
 	str             = num2str(numeric) + "-" + array2d
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input10, output, mode = WAVE_DATA)
 
 	Duplicate/FREE input, input11
 	input11 += numeric
 	str      = array2d + "+" + num2str(numeric)
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input11, output, mode = WAVE_DATA)
 	input11[][][][] = numeric + input[p][q][r][s]
 	str             = num2str(numeric) + "+" + array2d
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input11, output, mode = WAVE_DATA)
 
 	Duplicate/FREE input, input12
 	input12 /= numeric
 	str      = array2d + "/" + num2str(numeric)
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input12, output, mode = WAVE_DATA)
 	input12[][][][] = numeric / input[p][q][r][s]
 	str             = num2str(numeric) + "/" + array2d
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input12, output, mode = WAVE_DATA)
 
 	Duplicate/FREE input, input13
 	input13 *= numeric
 	str      = array2d + "*" + num2str(numeric)
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input13, output, mode = WAVE_DATA)
 	input13[][][][] = numeric * input[p][q][r][s]
 	str             = num2str(numeric) + "*" + array2d
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input13, output, mode = WAVE_DATA)
 End
 
@@ -335,7 +335,7 @@ static Function TestArrayExpansionText()
 	win = GetDataBrowserWithData()
 
 	str = "[[\"1\"],[\"3\",\"4\"],[\"5\",\"6\"]]"
-	WAVE/T output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE/T output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 
 	WAVE/T input = JSON_GetTextWave(JSON_Parse(str), "")
 	// simulate simplified array expansion
@@ -717,13 +717,13 @@ static Function TestPlotting()
 
 	// Reference data waves must be moved out of the working DF for the further tests as
 	// calling the FormulaPlotter later kills the working DF
-	WAVE globalarray2D = SF_ExecuteFormula(strArray2D, sweepBrowser, singleResult = 1, useVariables = 0)
+	WAVE globalarray2D = SFE_ExecuteFormula(strArray2D, sweepBrowser, singleResult = 1, useVariables = 0)
 	Duplicate/FREE globalarray2D, array2D
-	WAVE globalarray1D = SF_ExecuteFormula(strArray1D, sweepBrowser, singleResult = 1, useVariables = 0)
+	WAVE globalarray1D = SFE_ExecuteFormula(strArray1D, sweepBrowser, singleResult = 1, useVariables = 0)
 	Duplicate/FREE globalarray1D, array1D
-	WAVE globalarray0D = SF_ExecuteFormula(strArray0D, sweepBrowser, singleResult = 1, useVariables = 0)
+	WAVE globalarray0D = SFE_ExecuteFormula(strArray0D, sweepBrowser, singleResult = 1, useVariables = 0)
 	Duplicate/FREE globalarray0D, array0D
-	WAVE globalscale1D = SF_ExecuteFormula(strScale1D, sweepBrowser, singleResult = 1, useVariables = 0)
+	WAVE globalscale1D = SFE_ExecuteFormula(strScale1D, sweepBrowser, singleResult = 1, useVariables = 0)
 	Duplicate/FREE globalscale1D, scale1D
 
 	win = winBase + "_#Graph" + "0"
@@ -1007,7 +1007,7 @@ static Function AvoidAssertingOutWithNoSweeps([string str])
 	MIES_DB#DB_LockToDevice(win, device)
 	win = GetCurrentWindow()
 
-	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 0)
 End
 
@@ -1039,7 +1039,7 @@ static Function NonExistingOperation()
 	try
 		// this is currently caught by an additional check specifically for automated testing
 		// but it would also cause an Abort in the main code
-		WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+		WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1052,7 +1052,7 @@ static Function ZeroSizedSubArrayTest()
 
 	win = GetDataBrowserWithData()
 
-	WAVE wTextRef = MIES_SF#SF_FormulaExecutor(win, JSON_Parse("[]"))
+	WAVE wTextRef = MIES_SFE#SFE_FormulaExecutor(win, JSON_Parse("[]"))
 	CHECK(IsTextWave(wTextRef))
 	CHECK_EQUAL_VAR(DimSize(wTextRef, ROWS), 1)
 	CHECK_EQUAL_VAR(DimSize(wTextRef, COLS), 0)
@@ -1186,7 +1186,7 @@ static Function TestArgSetup()
 	win = CreateFakeSweepData(win, device, sweepNo = 1, sweepGen = FakeSweepDataGeneratorAPF1)
 
 	formula = "apfrequency(data(select(selrange(cursors(A,B)),selchannels(AD),selsweeps(0,1),selvis(all))), 3, 15, time, normoversweepsmin,time)"
-	WAVE/WAVE outputRef = SF_ExecuteFormula(formula, win, useVariables = 0)
+	WAVE/WAVE outputRef = SFE_ExecuteFormula(formula, win, useVariables = 0)
 	argSetupStack = JWN_GetStringFromWaveNote(outputRef, SF_META_ARGSETUPSTACK)
 	jsonId        = JSON_Parse(argSetupStack)
 	CHECK_NEQ_VAR(jsonId, NaN)
@@ -1289,7 +1289,7 @@ static Function TestVariables1([WAVE wv])
 
 	WAVE/T formulaAndRest = wRef[0]
 
-	code = MIES_SF#SF_ExecuteVariableAssignments(win, formulaAndRest[0])
+	code = MIES_SFE#SFE_ExecuteVariableAssignments(win, formulaAndRest[0])
 	CHECK_EQUAL_STR(formulaAndRest[1], code)
 
 	WAVE/T    dimLbl     = wRef[1]
@@ -1309,7 +1309,7 @@ static Function TestVariables1([WAVE wv])
 
 	WAVE/Z refData = wRef[2]
 	if(WaveExists(refData))
-		WAVE/Z result = SF_ExecuteFormula(formulaAndRest[0], win, singleresult = 1)
+		WAVE/Z result = SFE_ExecuteFormula(formulaAndRest[0], win, singleresult = 1)
 		CHECK_WAVE(result, WaveType(refData, 1))
 		CHECK_EQUAL_WAVES(result, refData, mode = WAVE_DATA)
 	endif
@@ -1330,7 +1330,7 @@ static Function TestVariables2()
 	// reuse of the same variable name
 	str = "c=cursors(A,B)\rC=select(channels(AD),[0,1],all)\rd=data($c,$C)\r\r$d"
 	try
-		code = MIES_SF#SF_ExecuteVariableAssignments(win, str)
+		code = MIES_SFE#SFE_ExecuteVariableAssignments(win, str)
 		FAIL()
 	catch
 		PASS()
@@ -1339,7 +1339,7 @@ static Function TestVariables2()
 	// variable with invalid expression
 	str = "c=[*#]"
 	try
-		code = MIES_SF#SF_ExecuteVariableAssignments(win, str)
+		code = MIES_SFE#SFE_ExecuteVariableAssignments(win, str)
 		FAIL()
 	catch
 		PASS()
@@ -1347,22 +1347,22 @@ static Function TestVariables2()
 
 	// No valid varName
 	str  = "12c=cursors(A,B)"
-	code = MIES_SF#SF_ExecuteVariableAssignments(win, str)
+	code = MIES_SFE#SFE_ExecuteVariableAssignments(win, str)
 	CHECK_EQUAL_STR(str, code)
 
 	// No variables defined
 	str  = "cursors(A,B)"
-	code = MIES_SF#SF_ExecuteVariableAssignments(win, str)
+	code = MIES_SFE#SFE_ExecuteVariableAssignments(win, str)
 	CHECK_EQUAL_STR(str, code)
 
 	// varName with all chars
 	str  = "abcdefghijklmnopqrstuvwxyz0123456789_=cursors(A,B)\r"
-	code = MIES_SF#SF_ExecuteVariableAssignments(win, str)
+	code = MIES_SFE#SFE_ExecuteVariableAssignments(win, str)
 	CHECK_EQUAL_STR("", code)
 
 	// WhiteSpaces are ok
 	str  = " \ta \t= \tcursors(A,B)\r"
-	code = MIES_SF#SF_ExecuteVariableAssignments(win, str)
+	code = MIES_SFE#SFE_ExecuteVariableAssignments(win, str)
 	CHECK_EQUAL_STR("", code)
 End
 
@@ -1439,7 +1439,7 @@ static Function TestOperationOrVariableInArray()
 	// operation with simple numeric return - channels returns a (2, 1) array
 	// as elements in an outer array -> (2, 1, 2) array
 	code = "[selchannels(AD2), selchannels(DA3)]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
 
@@ -1448,7 +1448,7 @@ static Function TestOperationOrVariableInArray()
 	CHECK_EQUAL_WAVES(arrayNum, ref, mode = WAVE_DATA)
 
 	code = "[123, selchannels(DA3)]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
 
@@ -1457,7 +1457,7 @@ static Function TestOperationOrVariableInArray()
 	CHECK_EQUAL_WAVES(arrayNum, ref, mode = WAVE_DATA)
 
 	code = "[selchannels(AD2), 123]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
 
@@ -1467,7 +1467,7 @@ static Function TestOperationOrVariableInArray()
 
 	code = "[\"abc\", selchannels(DA3)]"
 	try
-		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+		WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1475,7 +1475,7 @@ static Function TestOperationOrVariableInArray()
 
 	code = "[selchannels(DA3), \"abc\"]"
 	try
-		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+		WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1484,7 +1484,7 @@ static Function TestOperationOrVariableInArray()
 	// operation with simple text return - channels returns a (2, 1) array
 	// as elements in an outer array -> (2, 1, 2) array
 	code = "[text(123), text(456)]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
 
@@ -1493,7 +1493,7 @@ static Function TestOperationOrVariableInArray()
 	CHECK_EQUAL_WAVES(array, refT, mode = WAVE_DATA)
 
 	code = "[\"123\", text(456)]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
 
@@ -1502,7 +1502,7 @@ static Function TestOperationOrVariableInArray()
 	CHECK_EQUAL_WAVES(array, refT, mode = WAVE_DATA)
 
 	code = "[text(123), \"456\"]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
 
@@ -1512,7 +1512,7 @@ static Function TestOperationOrVariableInArray()
 
 	code = "[123, text(123)]"
 	try
-		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+		WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1520,7 +1520,7 @@ static Function TestOperationOrVariableInArray()
 
 	code = "[text(123), 123]"
 	try
-		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+		WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1528,7 +1528,7 @@ static Function TestOperationOrVariableInArray()
 
 	// operation with dataset return
 	code = "[dataset(1, \"abcd\"), dataset(2, \"cdef\")]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
 	WAVE/T array = output[0]
@@ -1550,7 +1550,7 @@ static Function TestOperationOrVariableInArray()
 	CHECK_EQUAL_TEXTWAVES(element1[1], {"cdef"}, mode = WAVE_DATA)
 
 	code = "[\"text\", dataset(2, \"cdef\")]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
 	WAVE/T array = output[0]
@@ -1567,7 +1567,7 @@ static Function TestOperationOrVariableInArray()
 	CHECK_EQUAL_TEXTWAVES(element1[1], {"cdef"}, mode = WAVE_DATA)
 
 	code = "[dataset(1, \"abcd\"), \"text\"]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
 	WAVE/T array = output[0]
@@ -1585,7 +1585,7 @@ static Function TestOperationOrVariableInArray()
 
 	code = "[123, dataset(1, \"abcd\")]"
 	try
-		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+		WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1593,7 +1593,7 @@ static Function TestOperationOrVariableInArray()
 
 	code = "[dataset(1, \"abcd\"), 123]"
 	try
-		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+		WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1601,7 +1601,7 @@ static Function TestOperationOrVariableInArray()
 
 	// with variables
 	code = "var1 = selchannels(AD2)\r[$var1, selchannels(DA3)]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 1)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
 
@@ -1610,7 +1610,7 @@ static Function TestOperationOrVariableInArray()
 	CHECK_EQUAL_WAVES(arrayNum, ref, mode = WAVE_DATA)
 
 	code = "var1 = selchannels(DA3)\r[selchannels(AD2), $var1]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 1)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
 
@@ -1619,7 +1619,7 @@ static Function TestOperationOrVariableInArray()
 	CHECK_EQUAL_WAVES(arrayNum, ref, mode = WAVE_DATA)
 
 	code = "var1 = selchannels(AD2)\r[$var1, 123]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 1)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
 
@@ -1628,7 +1628,7 @@ static Function TestOperationOrVariableInArray()
 	CHECK_EQUAL_WAVES(arrayNum, ref, mode = WAVE_DATA)
 
 	code = "var1 = selchannels(DA3)\r[123, $var1]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 1)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
 
@@ -1638,7 +1638,7 @@ static Function TestOperationOrVariableInArray()
 
 	code = "var1 = selchannels(DA3)\r[$var1, \"abc\"]"
 	try
-		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+		WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 1)
 		FAIL()
 	catch
 		PASS()
@@ -1646,14 +1646,14 @@ static Function TestOperationOrVariableInArray()
 
 	code = "var1 = selchannels(DA3)\r[\"abc\", $var1]"
 	try
-		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+		WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 1)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	code = "var1 = text(123)\r[$var1, text(456)]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 1)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
 
@@ -1662,7 +1662,7 @@ static Function TestOperationOrVariableInArray()
 	CHECK_EQUAL_WAVES(array, refT, mode = WAVE_DATA)
 
 	code = "var1 = text(456)\r[text(123), $var1]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 1)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
 
@@ -1671,7 +1671,7 @@ static Function TestOperationOrVariableInArray()
 	CHECK_EQUAL_WAVES(array, refT, mode = WAVE_DATA)
 
 	code = "var1 = text(123)\r[$var1, \"456\"]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 1)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
 
@@ -1680,7 +1680,7 @@ static Function TestOperationOrVariableInArray()
 	CHECK_EQUAL_WAVES(array, refT, mode = WAVE_DATA)
 
 	code = "var1 = text(456)\r[\"123\", $var1]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 1)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
 
@@ -1690,7 +1690,7 @@ static Function TestOperationOrVariableInArray()
 
 	code = "var1 = text(123)\r[$var1, 456]"
 	try
-		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+		WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 1)
 		FAIL()
 	catch
 		PASS()
@@ -1698,14 +1698,14 @@ static Function TestOperationOrVariableInArray()
 
 	code = "var1 = text(123)\r[123, $var1]"
 	try
-		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+		WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 1)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	code = "var1 = dataset(1, \"abcd\")\r[$var1, dataset(2, \"cdef\")]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 1)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
 	WAVE/T array = output[0]
@@ -1727,7 +1727,7 @@ static Function TestOperationOrVariableInArray()
 	CHECK_EQUAL_TEXTWAVES(element1[1], {"cdef"}, mode = WAVE_DATA)
 
 	code = "var1 = dataset(2, \"cdef\")\r[dataset(1, \"abcd\"), $var1]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 1)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
 	WAVE/T array = output[0]
@@ -1749,7 +1749,7 @@ static Function TestOperationOrVariableInArray()
 	CHECK_EQUAL_TEXTWAVES(element1[1], {"cdef"}, mode = WAVE_DATA)
 
 	code = "var1 = dataset(2, \"cdef\")\r[\"text\", $var1]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 1)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
 	WAVE/T array = output[0]
@@ -1766,7 +1766,7 @@ static Function TestOperationOrVariableInArray()
 	CHECK_EQUAL_TEXTWAVES(element1[1], {"cdef"}, mode = WAVE_DATA)
 
 	code = "var1 = dataset(1, \"abcd\")\r[$var1, \"text\"]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 1)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
 	WAVE/T array = output[0]
@@ -1784,7 +1784,7 @@ static Function TestOperationOrVariableInArray()
 
 	code = "var1 = dataset(1, \"abcd\")\r[123, $var1]"
 	try
-		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+		WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 1)
 		FAIL()
 	catch
 		PASS()
@@ -1792,7 +1792,7 @@ static Function TestOperationOrVariableInArray()
 
 	code = "var1 = dataset(1, \"abcd\")\r[$var1, 123]"
 	try
-		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+		WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 1)
 		FAIL()
 	catch
 		PASS()
@@ -1808,7 +1808,7 @@ static Function CheckMixingNonFiniteAndText()
 	win = CreateFakeSweepData(win, device, sweepNo = 0)
 
 	code = "[abc,abc]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
 	WAVE/T array = output[0]
@@ -1817,7 +1817,7 @@ static Function CheckMixingNonFiniteAndText()
 
 	code = "[inf,abc]"
 	try
-		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+		WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1825,21 +1825,21 @@ static Function CheckMixingNonFiniteAndText()
 
 	code = "[abc,inf]"
 	try
-		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+		WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	code = "[inf,inf]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
 	WAVE/T array = output[0]
 	CHECK_EQUAL_WAVES(array, {Inf, Inf}, mode = WAVE_DATA)
 
 	code = "[inf,-INF, NAN, -nan]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
 	WAVE/T array = output[0]
@@ -1855,7 +1855,7 @@ static Function CheckAddArraysInArray()
 	win = CreateFakeSweepData(win, device, sweepNo = 0)
 
 	code = "[[1, 2] + [3, 4] + 1]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
 	WAVE/T array = output[0]
@@ -1863,7 +1863,7 @@ static Function CheckAddArraysInArray()
 	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA)
 
 	code = "[selsweeps() + [3, 4] + 1]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
 	WAVE/T array = output[0]
@@ -1871,7 +1871,7 @@ static Function CheckAddArraysInArray()
 	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA)
 
 	code = "[[dataset(dataset(1) + [3, 4] + 1) + dataset(2) + [5, 6] + 1, dataset(3)] + dataset(4) + [[5, 6],[7,8]] + 1]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
 	WAVE arrayNum = output[0]
@@ -1879,7 +1879,7 @@ static Function CheckAddArraysInArray()
 	CHECK_EQUAL_WAVES(arrayNum, ref, mode = WAVE_DATA)
 
 	code = "var1 = dataset(0)\r[[dataset($var1 + [3, 4] + 1) + $var1 + [5, 6] + 1, $var1] + $var1 + [[5, 6],[7,8]] + 1]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 1)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
 	WAVE arrayNum = output[0]
@@ -1896,47 +1896,47 @@ static Function DataTypePromotionInPrimitiveOperations()
 	win = CreateFakeSweepData(win, device, sweepNo = 0)
 
 	code = "max(1,5) + 1"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
 	CHECK_EQUAL_STR(type, SF_DATATYPE_MAX)
 
 	code = "max(1,5) - 1"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
 	CHECK_EQUAL_STR(type, SF_DATATYPE_MAX)
 
 	code = "max(1,5) * 1"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
 	CHECK_EQUAL_STR(type, SF_DATATYPE_MAX)
 
 	code = "max(1,5) / 1"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
 	CHECK_EQUAL_STR(type, SF_DATATYPE_MAX)
 
 	code = "max(1,5) + max(1,5)"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
 	CHECK_EQUAL_STR(type, SF_DATATYPE_MAX)
 
 	code = "max(1,5) * max(1,5)"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
 	CHECK_EQUAL_STR(type, "")
 
 	code = "max(1,5) / max(1,5)"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
 	CHECK_EQUAL_STR(type, "")
 
 	code = "max(1,5) + min(1,5)"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
 	CHECK_EQUAL_STR(type, "")
 
 	code = "min(1,5) + max(1,5)"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
 	CHECK_EQUAL_STR(type, "")
 End
@@ -1950,7 +1950,7 @@ static Function HelperMoveDatasetToHigherIfCompatible()
 	win = CreateFakeSweepData(win, device, sweepNo = 0)
 
 	code = "[dataset(1, 2), dataset(3, 4)]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK(SFH_IsArray(output))
 	WAVE/WAVE moved = SFH_MoveDatasetHigherIfCompatible(output)
 	CHECK_WAVE(moved, WAVE_WAVE)
@@ -1963,7 +1963,7 @@ static Function HelperMoveDatasetToHigherIfCompatible()
 	CHECK_EQUAL_WAVES(set1, ref, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	code = "[dataset(1, 2, 3), dataset(4, 5, 6)]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK(SFH_IsArray(output))
 	WAVE/WAVE moved = SFH_MoveDatasetHigherIfCompatible(output)
 	CHECK_WAVE(moved, WAVE_WAVE)
@@ -1979,7 +1979,7 @@ static Function HelperMoveDatasetToHigherIfCompatible()
 	CHECK_EQUAL_WAVES(set2, ref, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	code = "[dataset(1, 2), dataset(3, 4), dataset(5, 6)]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK(SFH_IsArray(output))
 	WAVE/WAVE moved = SFH_MoveDatasetHigherIfCompatible(output)
 	CHECK_WAVE(moved, WAVE_WAVE)
@@ -1992,7 +1992,7 @@ static Function HelperMoveDatasetToHigherIfCompatible()
 	CHECK_EQUAL_WAVES(set1, ref, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	code = "[dataset([1, 2], [3, 4]), dataset([5, 6], [7, 8])]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK(SFH_IsArray(output))
 	WAVE/WAVE moved = SFH_MoveDatasetHigherIfCompatible(output)
 	CHECK_WAVE(moved, WAVE_WAVE)
@@ -2005,7 +2005,7 @@ static Function HelperMoveDatasetToHigherIfCompatible()
 	CHECK_EQUAL_WAVES(set1, ref, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	code = "[dataset([a, b], [c, d]), dataset([e, f], [g, h])]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK(SFH_IsArray(output))
 	WAVE/WAVE moved = SFH_MoveDatasetHigherIfCompatible(output)
 	CHECK_WAVE(moved, WAVE_WAVE)
@@ -2018,13 +2018,13 @@ static Function HelperMoveDatasetToHigherIfCompatible()
 	CHECK_EQUAL_WAVES(set1, refT, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	code = "[dataset(1, 2), dataset(3, abc)]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK(SFH_IsArray(output))
 	WAVE/WAVE moved = SFH_MoveDatasetHigherIfCompatible(output)
 	CHECK(SFH_IsArray(moved))
 
 	code = "[dataset(1, 2), dataset(3, 4, 5)]"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK(SFH_IsArray(output))
 	WAVE/WAVE moved = SFH_MoveDatasetHigherIfCompatible(output)
 	CHECK(SFH_IsArray(moved))

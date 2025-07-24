@@ -269,6 +269,7 @@ End
 #include "MIES_StimsetAPI"
 #include "MIES_Structures"
 #include "MIES_SweepFormula"
+#include "MIES_SweepFormula_Executor"
 #include "MIES_SweepFormula_Helpers"
 #include "MIES_SweepFormula_Parser"
 #include "MIES_SweepFormula_PSX"
