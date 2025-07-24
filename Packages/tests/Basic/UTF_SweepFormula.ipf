@@ -1107,7 +1107,7 @@ static Function TestAverageOverSweeps()
 	input[4] = data4
 	input[5] = data5
 
-	WAVE/WAVE output = MIES_SF#SF_AverageDataOverSweeps(input)
+	WAVE/WAVE output = MIES_SFO#SFO_AverageDataOverSweeps(input)
 	CHECK_EQUAL_VAR(3, DimSize(output, ROWS))
 	WAVE data = output[0]
 	Make/FREE dataRef = 2
@@ -1383,21 +1383,21 @@ static Function TestParseFitConstraints()
 
 	Make/FREE/D/N=0 emptyWave
 
-	[WAVE holdWave, WAVE initialWave] = MIES_SF#SF_ParseFitConstraints($"", 0)
+	[WAVE holdWave, WAVE initialWave] = MIES_SFO#SFO_ParseFitConstraints($"", 0)
 	CHECK_EQUAL_WAVES(holdWave, emptyWave)
 	CHECK_EQUAL_WAVES(initialWave, emptyWave)
 
-	[WAVE holdWave, WAVE initialWave] = MIES_SF#SF_ParseFitConstraints($"", 1)
+	[WAVE holdWave, WAVE initialWave] = MIES_SFO#SFO_ParseFitConstraints($"", 1)
 	CHECK_EQUAL_WAVES(holdWave, {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(initialWave, {NaN}, mode = WAVE_DATA)
 
-	[WAVE holdWave, WAVE initialWave] = MIES_SF#SF_ParseFitConstraints({"K0=1.23", "K1=4.56"}, 3)
+	[WAVE holdWave, WAVE initialWave] = MIES_SFO#SFO_ParseFitConstraints({"K0=1.23", "K1=4.56"}, 3)
 	CHECK_EQUAL_WAVES(holdWave, {1, 1, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(initialWave, {1.23, 4.56, NaN}, mode = WAVE_DATA, tol = 1e-3)
 
 	// too many elements in constraints wave
 	try
-		[WAVE holdWave, WAVE initialWave] = MIES_SF#SF_ParseFitConstraints({"abcd"}, 0)
+		[WAVE holdWave, WAVE initialWave] = MIES_SFO#SFO_ParseFitConstraints({"abcd"}, 0)
 		FAIL()
 	catch
 		CHECK_NO_RTE()
@@ -1405,7 +1405,7 @@ static Function TestParseFitConstraints()
 
 	// invalid constraints wave format, as the regexp does not match
 	try
-		[WAVE holdWave, WAVE initialWave] = MIES_SF#SF_ParseFitConstraints({"abcd"}, 1)
+		[WAVE holdWave, WAVE initialWave] = MIES_SFO#SFO_ParseFitConstraints({"abcd"}, 1)
 		FAIL()
 	catch
 		CHECK_NO_RTE()
@@ -1413,7 +1413,7 @@ static Function TestParseFitConstraints()
 
 	// invalid constraints wave format, as the index, K1, is too large
 	try
-		[WAVE holdWave, WAVE initialWave] = MIES_SF#SF_ParseFitConstraints({"K1=1"}, 1)
+		[WAVE holdWave, WAVE initialWave] = MIES_SFO#SFO_ParseFitConstraints({"K1=1"}, 1)
 		FAIL()
 	catch
 		CHECK_NO_RTE()
@@ -1421,7 +1421,7 @@ static Function TestParseFitConstraints()
 
 	// invalid constraints wave format, as the value is not a number
 	try
-		[WAVE holdWave, WAVE initialWave] = MIES_SF#SF_ParseFitConstraints({"K0=abcd"}, 1)
+		[WAVE holdWave, WAVE initialWave] = MIES_SFO#SFO_ParseFitConstraints({"K0=abcd"}, 1)
 		FAIL()
 	catch
 		CHECK_NO_RTE()

@@ -2510,3 +2510,15 @@ StrConstant SF_OP_TPINST              = "tpinst"
 StrConstant SF_OP_TPBASE              = "tpbase"
 StrConstant SF_OP_TPFIT               = "tpfit"
 ///@}
+
+/// @name SF operations shorts
+///
+/// @anchor SFOperationsShorts
+///@{
+StrConstant SF_OPSHORT_MINUS = "minus"
+StrConstant SF_OPSHORT_PLUS  = "plus"
+StrConstant SF_OPSHORT_MULT  = "mult"
+StrConstant SF_OPSHORT_DIV   = "div"
+///@}
+
+Constant SF_TRANSFER_ALL_DIMS = -1
