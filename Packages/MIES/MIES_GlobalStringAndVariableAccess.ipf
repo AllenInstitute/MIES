@@ -681,10 +681,16 @@ Function/S GetSweepFormulaJSONid(DFREF dfr)
 	return GetNVARAsString(dfr, "sweepFormulaJSONid", initialValue = NaN)
 End
 
-/// @brief Return the formula error message for the sweep formula
-Function/S GetSweepFormulaParseErrorMessage()
+/// @brief Return the formula output message for the sweep formula
+Function/S GetSweepFormulaOutputMessage()
 
-	return GetSVARAsString(GetSweepFormulaPath(), "parseResult")
+	return GetSVARAsString(GetSweepFormulaPath(), "outputResult")
+End
+
+/// @brief Return the formula error severity for the sweep formula, @sa SFOutputSeverity
+Function/S GetSweepFormulaOutputSeverity()
+
+	return GetNVARAsString(GetSweepFormulaPath(), "outputSeverity")
 End
 
 /// @brief Return the JSON id of the settings file

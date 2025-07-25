@@ -2439,3 +2439,12 @@ StrConstant TP_ANALYSIS_DATA_LABELS = "BASELINE;STEADYSTATERES;INSTANTRES;ELEVAT
 // Object names for thread data transfer out of ITC Fifothread @ref TFH_FifoLoop
 StrConstant ITC_THREAD_FIFOPOS   = "fifopos"
 StrConstant ITC_THREAD_TIMESTAMP = "timestamp"
+
+/// @name SF constants for error severity
+///
+/// @anchor SFOutputSeverity
+///@{
+Constant SF_MSG_OK    = 1
+Constant SF_MSG_ERROR = 0
+Constant SF_MSG_WARN  = -1
+///@}

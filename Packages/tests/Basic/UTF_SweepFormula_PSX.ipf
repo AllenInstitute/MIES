@@ -470,7 +470,7 @@ static Function StatsComplainsWithoutEvents()
 		MIES_PSX#PSX_OperationStatsImpl(browser, id, selectDataCompArray, prop, stateAsStr, postProc)
 		FAIL()
 	catch
-		error = ROStr(GetSweepFormulaParseErrorMessage())
+		error = ROStr(GetSweepFormulaOutputMessage())
 		CHECK_EQUAL_STR(error, "Could not find any PSX events for all given combinations.")
 	endtry
 
@@ -481,7 +481,7 @@ static Function StatsComplainsWithoutEvents()
 		MIES_PSX#PSX_OperationStatsImpl(browser, id, selectDataCompArray, prop, stateAsStr, postProc)
 		FAIL()
 	catch
-		error = ROStr(GetSweepFormulaParseErrorMessage())
+		error = ROStr(GetSweepFormulaOutputMessage())
 		CHECK_EQUAL_STR(error, "Could not find any PSX events for all given combinations.")
 	endtry
 End
@@ -610,7 +610,7 @@ static Function StatsRangeTesting()
 		WAVE/WAVE results = MIES_PSX#PSX_OperationStatsImpl(browser, id, selectDataCompArrayE, prop, stateAsStr, postProc)
 		FAIL()
 	catch
-		error = ROStr(GetSweepFormulaParseErrorMessage())
+		error = ROStr(GetSweepFormulaOutputMessage())
 		CHECK_EQUAL_STR(error, "Number of ranges is not equal number of selections.")
 	endtry
 
@@ -990,7 +990,7 @@ static Function StatsComplainsAboutIntersectingRanges()
 		MIES_PSX#PSX_OperationStatsImpl(browser, id, selectDataCompArray, "amp", "all", "nothing")
 		FAIL()
 	catch
-		error = ROStr(GetSweepFormulaParseErrorMessage())
+		error = ROStr(GetSweepFormulaOutputMessage())
 		CHECK_EQUAL_STR(error, "Can't work with multiple intersecting ranges")
 	endtry
 End

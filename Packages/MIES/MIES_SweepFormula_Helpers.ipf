@@ -358,14 +358,14 @@ Function SFH_ASSERT(variable condition, string message, [variable jsonId])
 		if(!ParamIsDefault(jsonId))
 			JSON_Release(jsonId, ignoreErr = 1)
 		endif
-		SVAR error = $GetSweepFormulaParseErrorMessage()
-		error = message
+
+		SF_SetOutputState(message, SF_MSG_ERROR)
 
 #ifdef AUTOMATED_TESTING_DEBUGGING
 
 #ifdef AUTOMATED_TESTING
 #if exists("INFO")
-		INFO("SFH_ASSERT: %s", s0 = error)
+		INFO("SFH_ASSERT: %s", s0 = message)
 #endif
 #endif // AUTOMATED_TESTING
 		Debugger

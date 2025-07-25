@@ -995,7 +995,7 @@ static Function TestOperationRange()
 		FAIL()
 	catch
 		CHECK_NO_RTE()
-		error = ROStr(GetSweepFormulaParseErrorMessage())
+		error = ROStr(GetSweepFormulaOutputMessage())
 		CHECK_EQUAL_STR(error, "Argument #0 of operation range: Too many input values")
 	endtry
 End
@@ -1047,7 +1047,7 @@ static Function TestOperationConcat()
 		FAIL()
 	catch
 		CHECK_NO_RTE()
-		error = ROStr(GetSweepFormulaParseErrorMessage())
+		error = ROStr(GetSweepFormulaOutputMessage())
 		CHECK_EQUAL_STR(error, "Concatenate failed as the wave types of the first argument and #1 don't match: numeric vs text")
 	endtry
 End
@@ -3310,7 +3310,7 @@ static Function BasicMathMismatchedWaves([string str])
 			FAIL()
 	endswitch
 
-	error = ROStr(GetSweepFormulaParseErrorMessage())
+	error = ROStr(GetSweepFormulaOutputMessage())
 	CHECK_EQUAL_STR(error, opShort + ": wave size mismatch [2, 0, 0, 0] vs [1, 2, 0, 0]")
 End
 
