@@ -51,10 +51,6 @@ static Function CheckSetVariablesNoEditInMacros()
 					continue
 				endif
 
-				if(!cmpstr(ctrl, "setvar_sweepFormula_parseResult"))
-					Debugger
-				endif
-
 				if(GetControlSettingVar(recMacro, "noEdit") == 1)
 					INFO("Win: %s, Control %s, dont restore set?", s0 = subwin, s1 = ctrl)
 					CHECK_EQUAL_STR(GetUserData(subwin, ctrl, "Config_DontRestore"), "1")
