@@ -185,7 +185,10 @@ Function UploadCrashDumps()
 	WAVE/Z/T files = GetAllFilesRecursivelyFromPath(diagSymbPath, regex = "(?i)\.dmp$")
 	WAVE/Z/T logs  = GetAllFilesRecursivelyFromPath(diagSymbPath, regex = "(?i)\.txt$")
 
-	if(!WaveExists(files) && !WaveExists(logs))
+	numFiles = WaveExists(files) ? DimSize(files, ROWS) : 0
+	numLogs  = WaveExists(logs) ? DimSize(logs, ROWS) : 0
+
+	if(!numFiles && !numLogs)
 		return NaN
 	endif
 
@@ -212,7 +215,7 @@ Function UploadCrashDumps()
 
 	DEBUGPRINT_ELAPSED(referenceTime)
 
-	printf "Uploading %d crash dumps is in progress in the background.\r", numFiles + numLogs
+	printf "Uploading %d crash dumps and log files is in progress in the background.\r", numFiles + numLogs
 	ControlWindowToFront()
 End
 
