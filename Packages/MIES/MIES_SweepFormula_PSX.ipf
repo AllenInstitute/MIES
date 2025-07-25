@@ -3950,7 +3950,7 @@ static Function PSX_CreatePSXGraphAndSubwindows(string win, string graph, STRUCT
 	AppendToGraph/W=$extSingleGraph/C=(21845, 21845, 21845) singleEventFit
 
 	NVAR JSONid = $GetSettingsJSONid()
-	PS_InitCoordinates(JSONid, extSubWin, extSubWin)
+	PS_InitCoordinates(JSONid, mainWin, recursive = 1)
 End
 
 /// @brief Mark `win` as being an psx graph
@@ -5631,6 +5631,9 @@ Function PSX_PlotStartupSettings()
 
 	// default GUI values
 	CheckBox checkbox_suppress_update, value=0, win=$win
+
+	SetWindow $win, userData(JSONSettings_StoreCoordinates)=""
+	SetWindow $win, userData(JSONSettings_WindowName)=""
 
 	ListBox listbox_select_combo, win=$win, listWave=$"", selWave=$"", helpWave=$"", selRow=0
 

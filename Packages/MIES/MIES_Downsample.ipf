@@ -423,7 +423,7 @@ Function CreateDownsamplePanel()
 	GroupBox group2, pos={11, 190}, size={253, 32}
 
 	NVAR JSONid = $GetSettingsJSONid()
-	PS_InitCoordinates(JSONid, panel, "downsample", addHook = 0)
+	PS_InitCoordinates(JSONid, panel, addHook = 0)
 
 	UpdatePanel(panel)
 	UpdatePopupMenuWindowFunction(panel)

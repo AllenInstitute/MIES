@@ -2812,7 +2812,7 @@ Function/S AB_OpenAnalysisBrowser([variable restoreSettings])
 	WAVE   sel  = GetExperimentBrowserGUISel()
 	ListBox list_experiment_contents, win=$panel, listWave=list, selWave=sel
 
-	PS_InitCoordinates(JSONid, panel, "analysisbrowser")
+	PS_InitCoordinates(JSONid, panel)
 	SetWindow $panel, hook(cleanup)=AB_WindowHook
 
 	if(restoreSettings)
@@ -2839,6 +2839,8 @@ Function AB_BrowserStartupSettings()
 	HideTools/W=$panel/A
 	SetWindow $panel, userData(panelVersion)=""
 	SetWindow $panel, userData(datafolder)=""
+	SetWindow $panel, userData(JSONSettings_StoreCoordinates)=""
+	SetWindow $panel, userData(JSONSettings_WindowName)=""
 
 	SetCheckBoxState(panel, "checkbox_load_overwrite", CHECKBOX_UNSELECTED)
 

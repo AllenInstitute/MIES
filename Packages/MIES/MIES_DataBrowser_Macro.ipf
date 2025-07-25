@@ -24,8 +24,6 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin, userdata(BROWSER)="D"
 	SetWindow kwTopWin, userdata(DEVICE)="- none -"
 	SetWindow kwTopWin, userdata(Config_PanelType)="DataBrowser"
-	SetWindow kwTopWin, userdata(JSONSettings_StoreCoordinates)="1"
-	SetWindow kwTopWin, userdata(JSONSettings_WindowName)="datasweepbrowser"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)=A"!!*'\"z!!#CYJ,hsJzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"

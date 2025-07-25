@@ -144,7 +144,7 @@ Function/S WBP_CreateWaveBuilderPanel()
 	AddVersionToPanel(panel, WAVEBUILDER_PANEL_VERSION)
 
 	NVAR JSONid = $GetSettingsJSONid()
-	PS_InitCoordinates(JSONid, panel, "wavebuilder")
+	PS_InitCoordinates(JSONid, panel)
 
 	return panel
 End
@@ -161,6 +161,9 @@ Function WBP_StartupSettings()
 
 	WAVE/Z wv = $""
 	ListBox listbox_combineEpochMap, listWave=wv, win=$panel
+
+	SetWindow $panel, userData(JSONSettings_StoreCoordinates)=""
+	SetWindow $panel, userData(JSONSettings_WindowName)=""
 
 	KillWindow/Z $WBP_GetFFTSpectrumPanel()
 

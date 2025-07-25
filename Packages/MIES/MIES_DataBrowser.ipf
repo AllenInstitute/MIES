@@ -108,6 +108,10 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	SetWindow $device, userdata(Config_FileHash)=""
 	SetWindow $device, userdata(PulseAverageSettings)=""
 
+	// window coordinate handling
+	SetWindow $device, userData(JSONSettings_StoreCoordinates)=""
+	SetWindow $device, userData(JSONSettings_WindowName)=""
+
 	// invalidate hooks
 	SetWindow $device, tooltiphook(hook)=$""
 
