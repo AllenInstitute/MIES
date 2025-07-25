@@ -3473,6 +3473,7 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 				JWN_SetNumberInWaveNote(sweepData, SF_META_SWEEPNO, sweepNo)
 				JWN_SetNumberInWaveNote(sweepData, SF_META_CHANNELTYPE, chanType)
 				JWN_SetNumberInWaveNote(sweepData, SF_META_CHANNELNUMBER, chanNr)
+				JWN_SetNumberInWaveNote(sweepData, SF_META_SWEEPMAPINDEX, mapIndex)
 				output[index] = sweepData
 				index        += 1
 			endif
@@ -3670,6 +3671,7 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 			JWN_SetNumberInWaveNote(out, SF_META_SWEEPNO, sweepNo)
 			JWN_SetNumberInWaveNote(out, SF_META_CHANNELTYPE, chanType)
 			JWN_SetNumberInWaveNote(out, SF_META_CHANNELNUMBER, chanNr)
+			JWN_SetNumberInWaveNote(out, SF_META_SWEEPMAPINDEX, mapIndex)
 
 			output[index] = out
 			index        += 1
@@ -3849,6 +3851,7 @@ static Function/WAVE SF_OperationEpochsImpl(string graph, WAVE/T epochPatterns, 
 		JWN_SetNumberInWaveNote(output[i], SF_META_SWEEPNO, sweepNo)
 		JWN_SetNumberInWaveNote(output[i], SF_META_CHANNELTYPE, chanType)
 		JWN_SetNumberInWaveNote(output[i], SF_META_CHANNELNUMBER, chanNr)
+		JWN_SetNumberInWaveNote(output[i], SF_META_SWEEPMAPINDEX, mapIndex)
 		JWN_SetWaveInWaveNote(output[i], SF_META_XVALUES, {sweepNo})
 
 		colorGroup = GetUniqueInteger()
@@ -6103,6 +6106,7 @@ static Function/WAVE SF_OperationAnaFuncParamImpl(string graph, WAVE/T names, WA
 			JWN_SetNumberInWaveNote(out, SF_META_SWEEPNO, sweepNo)
 			JWN_SetNumberInWaveNote(out, SF_META_CHANNELTYPE, chanType)
 			JWN_SetNumberInWaveNote(out, SF_META_CHANNELNUMBER, chanNr)
+			JWN_SetNumberInWaveNote(out, SF_META_SWEEPMAPINDEX, mapIndex)
 			JWN_SetWaveInWaveNote(out, SF_META_XVALUES, {sweepNo})
 
 			JWN_SetStringInWaveNote(out, SF_META_LEGEND_LINE_PREFIX, name)
