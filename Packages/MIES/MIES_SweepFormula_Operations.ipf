@@ -169,6 +169,7 @@ static Function/WAVE SFO_OperationAnaFuncParamImpl(string graph, WAVE/T names, W
 			JWN_SetNumberInWaveNote(out, SF_META_SWEEPNO, sweepNo)
 			JWN_SetNumberInWaveNote(out, SF_META_CHANNELTYPE, chanType)
 			JWN_SetNumberInWaveNote(out, SF_META_CHANNELNUMBER, chanNr)
+			JWN_SetNumberInWaveNote(out, SF_META_SWEEPMAPINDEX, mapIndex)
 			JWN_SetWaveInWaveNote(out, SF_META_XVALUES, {sweepNo})
 
 			JWN_SetStringInWaveNote(out, SF_META_LEGEND_LINE_PREFIX, name)
@@ -906,6 +907,7 @@ static Function/WAVE SFO_OperationEpochsImpl(string graph, WAVE/T epochPatterns,
 		JWN_SetNumberInWaveNote(output[i], SF_META_SWEEPNO, sweepNo)
 		JWN_SetNumberInWaveNote(output[i], SF_META_CHANNELTYPE, chanType)
 		JWN_SetNumberInWaveNote(output[i], SF_META_CHANNELNUMBER, chanNr)
+		JWN_SetNumberInWaveNote(output[i], SF_META_SWEEPMAPINDEX, mapIndex)
 		JWN_SetWaveInWaveNote(output[i], SF_META_XVALUES, {sweepNo})
 
 		colorGroup = GetUniqueInteger()

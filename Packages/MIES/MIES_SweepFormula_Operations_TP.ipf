@@ -211,6 +211,7 @@ static Function/WAVE SFOTP_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z 
 				JWN_SetNumberInWaveNote(sweepData, SF_META_SWEEPNO, sweepNo)
 				JWN_SetNumberInWaveNote(sweepData, SF_META_CHANNELTYPE, chanType)
 				JWN_SetNumberInWaveNote(sweepData, SF_META_CHANNELNUMBER, chanNr)
+				JWN_SetNumberInWaveNote(sweepData, SF_META_SWEEPMAPINDEX, mapIndex)
 				output[index] = sweepData
 				index        += 1
 			endif
@@ -408,6 +409,7 @@ static Function/WAVE SFOTP_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z 
 			JWN_SetNumberInWaveNote(out, SF_META_SWEEPNO, sweepNo)
 			JWN_SetNumberInWaveNote(out, SF_META_CHANNELTYPE, chanType)
 			JWN_SetNumberInWaveNote(out, SF_META_CHANNELNUMBER, chanNr)
+			JWN_SetNumberInWaveNote(out, SF_META_SWEEPMAPINDEX, mapIndex)
 
 			output[index] = out
 			index        += 1
