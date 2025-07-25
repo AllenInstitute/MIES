@@ -1931,10 +1931,23 @@ Function ParseLogbookMode(string modeText)
 			return DATA_ACQUISITION_MODE
 		case "TEST_PULSE_MODE":
 			return TEST_PULSE_MODE
-		case "NUMBER_OF_LBN_DAQ_MODES":
-			return NUMBER_OF_LBN_DAQ_MODES
 		default:
 			FATAL_ERROR("Unsupported labnotebook mode")
+			break
+	endswitch
+End
+
+Function/S StringifyLogbookMode(variable mode)
+
+	switch(mode)
+		case UNKNOWN_MODE:
+			return "UNKNOWN_MODE"
+		case DATA_ACQUISITION_MODE:
+			return "DATA_ACQUISITION_MODE"
+		case TEST_PULSE_MODE:
+			return "TEST_PULSE_MODE"
+		default:
+			FATAL_ERROR("Unsupported logbook mode")
 			break
 	endswitch
 End
