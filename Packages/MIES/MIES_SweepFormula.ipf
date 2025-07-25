@@ -2563,8 +2563,7 @@ static Function/WAVE SF_GetSelectData(string graph, STRUCT SF_SelectParameters &
 	variable dimPosTNumericalValues, dimPosTTextualValues
 	variable numTraces, fromDisplayed, clampCode, smIndexCounter, mapIndex, setCycleCount, setSweepCount, doStimsetMatching
 	string msg, device, singleSweepDFStr, expName, dataFolder
-	variable mapSize   = 1
-	DFREF    deviceDFR = $""
+	variable mapSize = 1
 
 	WAVE/Z sweeps   = filter.sweeps
 	WAVE/Z channels = filter.channels
@@ -2671,8 +2670,6 @@ static Function/WAVE SF_GetSelectData(string graph, STRUCT SF_SelectParameters &
 		outIndex = 0
 	elseif(isSweepBrowser)
 		WAVE/T sweepMap = SB_GetSweepMap(graph)
-	else
-		DFREF deviceDFR = DB_GetDeviceDF(graph)
 	endif
 
 	// search sweeps for active channels
@@ -2701,17 +2698,17 @@ static Function/WAVE SF_GetSelectData(string graph, STRUCT SF_SelectParameters &
 					continue
 				endif
 				mapSize = DimSize(mapIndices, ROWS)
-			elseif(DB_SplitSweepsIfReq(graph, sweepNo))
-				continue
 			endif
 		endif
 
 		for(smIndexCounter = 0; smIndexCounter < mapSize; smIndexCounter += 1)
 			if(!fromDisplayed)
 				mapIndex = isSweepBrowser ? mapIndices[smIndexCounter] : NaN
-				DFREF sweepDFR
-				[WAVE numericalValues, WAVE textualValues, sweepDFR] = SFH_GetLabNoteBooksAndDFForSweep(graph, sweepNo, mapIndex)
-				if(!WaveExists(numericalValues) || !WaveExists(textualValues) || !DataFolderExistsDFR(sweepDFR))
+
+				WAVE numericalValues = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_NUMERICAL_VALUES)
+				WAVE textualValues   = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_TEXTUAL_VALUES)
+
+				if(!WaveExists(numericalValues) || !WaveExists(textualValues))
 					continue
 				endif
 			endif
@@ -3476,6 +3473,7 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 				JWN_SetNumberInWaveNote(sweepData, SF_META_SWEEPNO, sweepNo)
 				JWN_SetNumberInWaveNote(sweepData, SF_META_CHANNELTYPE, chanType)
 				JWN_SetNumberInWaveNote(sweepData, SF_META_CHANNELNUMBER, chanNr)
+				JWN_SetNumberInWaveNote(sweepData, SF_META_SWEEPMAPINDEX, mapIndex)
 				output[index] = sweepData
 				index        += 1
 			endif
@@ -3673,6 +3671,7 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 			JWN_SetNumberInWaveNote(out, SF_META_SWEEPNO, sweepNo)
 			JWN_SetNumberInWaveNote(out, SF_META_CHANNELTYPE, chanType)
 			JWN_SetNumberInWaveNote(out, SF_META_CHANNELNUMBER, chanNr)
+			JWN_SetNumberInWaveNote(out, SF_META_SWEEPMAPINDEX, mapIndex)
 
 			output[index] = out
 			index        += 1
@@ -3775,7 +3774,7 @@ End
 static Function/WAVE SF_OperationEpochsImpl(string graph, WAVE/T epochPatterns, WAVE/Z selectData, variable epType, string opShort)
 
 	variable i, j, numSelected, sweepNo, chanNr, chanType, index, numEpochs, epIndex, settingsIndex, numPatterns, numEntries
-	variable hasValidData, colorGroup
+	variable hasValidData, colorGroup, mapIndex
 	string epName, epShortName, epEntry, yAxisLabel, epAxisName
 
 	ASSERT(WindowExists(graph), "graph window does not exist")
@@ -3807,9 +3806,10 @@ static Function/WAVE SF_OperationEpochsImpl(string graph, WAVE/T epochPatterns, 
 		endif
 		chanNr   = selectData[i][%CHANNELNUMBER]
 		chanType = selectData[i][%CHANNELTYPE]
+		mapIndex = selectData[i][%SWEEPMAPINDEX]
 
 		DFREF sweepDFR
-		[WAVE numericalValues, WAVE textualValues, sweepDFR] = SFH_GetLabNoteBooksAndDFForSweep(graph, sweepNo, selectData[i][%SWEEPMAPINDEX])
+		[WAVE numericalValues, WAVE textualValues, sweepDFR] = SFH_GetLabNoteBooksAndDFForSweep(graph, sweepNo, mapIndex)
 		if(!WaveExists(numericalValues) || !WaveExists(textualValues))
 			continue
 		endif
@@ -3851,6 +3851,7 @@ static Function/WAVE SF_OperationEpochsImpl(string graph, WAVE/T epochPatterns, 
 		JWN_SetNumberInWaveNote(output[i], SF_META_SWEEPNO, sweepNo)
 		JWN_SetNumberInWaveNote(output[i], SF_META_CHANNELTYPE, chanType)
 		JWN_SetNumberInWaveNote(output[i], SF_META_CHANNELNUMBER, chanNr)
+		JWN_SetNumberInWaveNote(output[i], SF_META_SWEEPMAPINDEX, mapIndex)
 		JWN_SetWaveInWaveNote(output[i], SF_META_XVALUES, {sweepNo})
 
 		colorGroup = GetUniqueInteger()
@@ -6044,6 +6045,7 @@ End
 static Function/WAVE SF_OperationAnaFuncParamImpl(string graph, WAVE/T names, WAVE/Z selectData, string opShort)
 
 	variable numReqNames, numFoundParams, i, j, idx, sweepNo, chanType, chanNr, colorGroup, colorGroupFound, nextFreeIndex, marker
+	variable mapIndex
 	string params, name, type
 
 	if(!WaveExists(selectData))
@@ -6099,10 +6101,12 @@ static Function/WAVE SF_OperationAnaFuncParamImpl(string graph, WAVE/T names, WA
 			sweepNo  = JWN_GetNumberFromWaveNote(paramsSingle, SF_META_SWEEPNO)
 			chanType = JWN_GetNumberFromWaveNote(paramsSingle, SF_META_CHANNELTYPE)
 			chanNr   = JWN_GetNumberFromWaveNote(paramsSingle, SF_META_CHANNELNUMBER)
+			mapIndex = JWN_GetNumberFromWaveNote(paramsSingle, SF_META_SWEEPMAPINDEX)
 
 			JWN_SetNumberInWaveNote(out, SF_META_SWEEPNO, sweepNo)
 			JWN_SetNumberInWaveNote(out, SF_META_CHANNELTYPE, chanType)
 			JWN_SetNumberInWaveNote(out, SF_META_CHANNELNUMBER, chanNr)
+			JWN_SetNumberInWaveNote(out, SF_META_SWEEPMAPINDEX, mapIndex)
 			JWN_SetWaveInWaveNote(out, SF_META_XVALUES, {sweepNo})
 
 			JWN_SetStringInWaveNote(out, SF_META_LEGEND_LINE_PREFIX, name)

@@ -2340,6 +2340,7 @@ For the data wave(s):
 - SF_META_SWEEPNO: number, number of the sweep that provided the source data
 - SF_META_CHANNELTYPE: number, channel type from the sweep that provided the source data
 - SF_META_CHANNELNUMBER: number, channel number from the sweep that provided the source data
+- SF_META_SWEEPMAPINDEX: number, index into sweepbrowser map (NaN inside the databrowser)
 - SF_META_XVALUES: wave, suggested x-wave for the plotter to display this data wave
 
 See also `SF_OperationLabnotebookImpl`, where such meta data is set.
