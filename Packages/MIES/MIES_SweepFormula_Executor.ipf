@@ -386,7 +386,7 @@ Function/WAVE SFE_FormulaExecutor(string graph, variable jsonID, [string jsonPat
 			WAVE out = SFO_OperationApFrequency(jsonId, jsonPath, graph)
 			break
 		case SF_OP_TP:
-			WAVE out = SFO_OperationTP(jsonId, jsonPath, graph)
+			WAVE out = SFOTP_OperationTP(jsonId, jsonPath, graph)
 			break
 		case SF_OP_STORE:
 			WAVE out = SFO_OperationStore(jsonId, jsonPath, graph)
@@ -398,16 +398,16 @@ Function/WAVE SFE_FormulaExecutor(string graph, variable jsonID, [string jsonPat
 			WAVE out = SFO_OperationPowerSpectrum(jsonId, jsonPath, graph)
 			break
 		case SF_OP_TPSS:
-			WAVE out = SFO_OperationTPSS(jsonId, jsonPath, graph)
+			WAVE out = SFOTP_OperationTPSS(jsonId, jsonPath, graph)
 			break
 		case SF_OP_TPINST:
-			WAVE out = SFO_OperationTPInst(jsonId, jsonPath, graph)
+			WAVE out = SFOTP_OperationTPInst(jsonId, jsonPath, graph)
 			break
 		case SF_OP_TPBASE:
-			WAVE out = SFO_OperationTPBase(jsonId, jsonPath, graph)
+			WAVE out = SFOTP_OperationTPBase(jsonId, jsonPath, graph)
 			break
 		case SF_OP_TPFIT:
-			WAVE out = SFO_OperationTPFit(jsonId, jsonPath, graph)
+			WAVE out = SFOTP_OperationTPFit(jsonId, jsonPath, graph)
 			break
 		case SF_OP_PSX:
 			WAVE out = PSX_Operation(jsonId, jsonPath, graph)
