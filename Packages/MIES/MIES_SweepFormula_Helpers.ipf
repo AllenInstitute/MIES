@@ -53,6 +53,7 @@ Function SFH_GetArgumentAsNumeric(variable jsonId, string jsonPath, string graph
 	endif
 
 	if(ParamIsDefault(defValue))
+		ASSERT(ParamIsDefault(checkDefault), "Without defValue passing checkDefault does not make sense")
 		checkExist = 1
 	else
 		checkExist = 0
