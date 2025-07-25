@@ -272,6 +272,7 @@ End
 #include "MIES_SweepFormula_Executor"
 #include "MIES_SweepFormula_Helpers"
 #include "MIES_SweepFormula_Operations"
+#include "MIES_SweepFormula_Operations_Select"
 #include "MIES_SweepFormula_Operations_TP"
 #include "MIES_SweepFormula_Parser"
 #include "MIES_SweepFormula_PSX"

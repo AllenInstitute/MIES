@@ -648,7 +648,7 @@ Structure ASYNC_ReadOutStruct
 EndStructure
 
 /// @brief Wraps all parameters combined for one SF select call
-///        When adapting also change @ref SFO_DuplicateSelectFilter
+///        When adapting also change @ref SFOS_DuplicateSelectFilter
 ///        Initialization with uninitialized state value @see SF_InitSelectFilterUninitalized
 ///        Initialization with defaults for uninitialized elements after select argument parsing @see SF_SetSelectionFilterDefaults
 Structure SF_SelectParameters

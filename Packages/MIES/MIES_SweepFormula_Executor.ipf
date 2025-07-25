@@ -356,10 +356,10 @@ Function/WAVE SFE_FormulaExecutor(string graph, variable jsonID, [string jsonPat
 			WAVE out = SFO_OperationWave(jsonId, jsonPath, graph)
 			break
 		case SF_OP_SELECTCHANNELS:
-			WAVE out = SFO_OperationSelectChannels(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectChannels(jsonId, jsonPath, graph)
 			break
 		case SF_OP_SELECTSWEEPS:
-			WAVE out = SFO_OperationSelectSweeps(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectSweeps(jsonId, jsonPath, graph)
 			break
 		case SF_OP_DATA:
 			WAVE out = SFO_OperationData(jsonId, jsonPath, graph)
@@ -392,7 +392,7 @@ Function/WAVE SFE_FormulaExecutor(string graph, variable jsonID, [string jsonPat
 			WAVE out = SFO_OperationStore(jsonId, jsonPath, graph)
 			break
 		case SF_OP_SELECT:
-			WAVE out = SFO_OperationSelect(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelect(jsonId, jsonPath, graph)
 			break
 		case SF_OP_POWERSPECTRUM:
 			WAVE out = SFO_OperationPowerSpectrum(jsonId, jsonPath, graph)
@@ -440,46 +440,46 @@ Function/WAVE SFE_FormulaExecutor(string graph, variable jsonID, [string jsonPat
 			WAVE out = SFO_OperationDataset(jsonId, jsonPath, graph)
 			break
 		case SF_OP_SELECTVIS:
-			WAVE out = SFO_OperationSelectVis(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectVis(jsonId, jsonPath, graph)
 			break
 		case SF_OP_SELECTEXP:
-			WAVE out = SFO_OperationSelectExperiment(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectExperiment(jsonId, jsonPath, graph)
 			break
 		case SF_OP_SELECTDEV:
-			WAVE out = SFO_OperationSelectDevice(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectDevice(jsonId, jsonPath, graph)
 			break
 		case SF_OP_SELECTEXPANDSCI:
-			WAVE out = SFO_OperationSelectExpandSCI(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectExpandSCI(jsonId, jsonPath, graph)
 			break
 		case SF_OP_SELECTEXPANDRAC:
-			WAVE out = SFO_OperationSelectExpandRAC(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectExpandRAC(jsonId, jsonPath, graph)
 			break
 		case SF_OP_SELECTSETCYCLECOUNT:
-			WAVE out = SFO_OperationSelectSetCycleCount(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectSetCycleCount(jsonId, jsonPath, graph)
 			break
 		case SF_OP_SELECTSETSWEEPCOUNT:
-			WAVE out = SFO_OperationSelectSetSweepCount(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectSetSweepCount(jsonId, jsonPath, graph)
 			break
 		case SF_OP_SELECTSCIINDEX:
-			WAVE out = SFO_OperationSelectSCIIndex(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectSCIIndex(jsonId, jsonPath, graph)
 			break
 		case SF_OP_SELECTRACINDEX:
-			WAVE out = SFO_OperationSelectRACIndex(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectRACIndex(jsonId, jsonPath, graph)
 			break
 		case SF_OP_SELECTCM:
-			WAVE out = SFO_OperationSelectCM(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectCM(jsonId, jsonPath, graph)
 			break
 		case SF_OP_SELECTSTIMSET:
-			WAVE out = SFO_OperationSelectStimset(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectStimset(jsonId, jsonPath, graph)
 			break
 		case SF_OP_SELECTIVSCCSWEEPQC:
-			WAVE out = SFO_OperationSelectIVSCCSweepQC(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectIVSCCSweepQC(jsonId, jsonPath, graph)
 			break
 		case SF_OP_SELECTIVSCCSETQC:
-			WAVE out = SFO_OperationSelectIVSCCSetQC(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectIVSCCSetQC(jsonId, jsonPath, graph)
 			break
 		case SF_OP_SELECTRANGE:
-			WAVE out = SFO_OperationSelectRange(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectRange(jsonId, jsonPath, graph)
 			break
 		default:
 			SFH_FATAL_ERROR("Undefined Operation", jsonId = jsonId)
