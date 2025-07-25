@@ -1778,3 +1778,17 @@ static Function/WAVE VariousInputForCalculateFillinQC()
 
 	return wv
 End
+
+static Function/WAVE InsertRowForProstProcessingSweepIndexerText()
+
+	Make/FREE wv = {0, 1}
+
+	return wv
+End
+
+static Function/WAVE InsertRowForProstProcessingSweepIndexerNum()
+
+	Make/FREE wv = {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
+
+	return wv
+End
