@@ -338,7 +338,7 @@ Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string gra
 	SFH_ASSERT(!checkExist, msg)
 
 	if(!ParamIsDefault(defOp))
-		return SF_ExecuteFormula(defOp, graph, singleResult = singleResult, useVariables = 0)
+		return SFE_ExecuteFormula(defOp, graph, singleResult = singleResult, useVariables = 0)
 	endif
 
 	return defWave
@@ -1039,7 +1039,7 @@ Function/WAVE SFH_GetArgumentSelect(variable jsonId, string jsonPath, string gra
 		return selectArray
 	endif
 
-	WAVE selectComp = SF_ExecuteFormula(SFH_DEFAULT_SELECT_FORMULA, graph, useVariables = 0)
+	WAVE selectComp = SFE_ExecuteFormula(SFH_DEFAULT_SELECT_FORMULA, graph, useVariables = 0)
 	Make/FREE/WAVE selectArray = {selectComp}
 
 	return selectArray
@@ -1138,7 +1138,7 @@ Function [WAVE/T keys, WAVE/T values] SFH_CreateResultsWaveWithCode(string graph
 
 	WAVE/Z/T cursorInfos = GetCursorInfos(graph)
 
-	WAVE/Z/WAVE selectData = SF_ExecuteFormula(SFH_DEFAULT_SELECT_FORMULA, graph, useVariables = 0)
+	WAVE/Z/WAVE selectData = SFE_ExecuteFormula(SFH_DEFAULT_SELECT_FORMULA, graph, useVariables = 0)
 	if(WaveExists(selectData) && WaveExists(selectData[0]))
 		values[0][%$"Sweep Formula sweeps/channels"][INDEP_HEADSTAGE] = NumericWaveToList(selectData[0], ",", colSep = ";")
 	endif

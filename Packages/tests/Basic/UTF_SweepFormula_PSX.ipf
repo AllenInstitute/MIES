@@ -1038,7 +1038,7 @@ static Function TestOperationPSXKernel()
 	win = CreateFakeSweepData(win, device, sweepNo = 2, sweepGen = FakeSweepDataGeneratorPSXKernel)
 
 	str = "psxKernel(select(selRange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 1, 15, -5)"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 6)
 
@@ -1073,7 +1073,7 @@ static Function TestOperationPSXKernel()
 	CheckDimensionScaleHelper(dataWref[5], 50, 0.2)
 
 	str = "psxKernel([select(selRange([50, 150]), selchannels(AD6), selsweeps(0), selvis(all)), select(selRange([50, 150]), selchannels(AD6), selsweeps(2), selvis(all))], 1, 15, -5)"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 6)
 
@@ -1102,7 +1102,7 @@ static Function TestOperationPSXKernel()
 	ED_AddEntriesToLabnotebook(epochInfo, epochKeys, 0, device, DATA_ACQUISITION_MODE)
 
 	str = "psxKernel(select(selrange([E0]), selchannels(AD6), selsweeps([0]), selvis(all)), 1, 15, -5)"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 3)
 
@@ -1112,7 +1112,7 @@ static Function TestOperationPSXKernel()
 	// no data from select statement
 	str = "psxKernel(select(selrange([50, 150]), selchannels(AD15), selsweeps(0)), 1, 15, -5)"
 	try
-		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1121,7 +1121,7 @@ static Function TestOperationPSXKernel()
 	// no data from this sweep statement
 	str = "psxKernel(select(selRange(ABCD), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 1, 15, -5)"
 	try
-		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1130,7 +1130,7 @@ static Function TestOperationPSXKernel()
 	// too large decayTau
 	str = "psxKernel([50, 150], select(selchannels(AD15), selsweeps([0])), 1, 150, -5)"
 	try
-		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1139,7 +1139,7 @@ static Function TestOperationPSXKernel()
 	// overlapping intervals in one select statement
 	str = "psxKernel(select(selrange([E0, E1]), selchannels(AD6), selsweeps([0]), selvis(all)), 1, 15, -5)"
 	try
-		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1200,7 +1200,7 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 	win = CreateFakeSweepData(win, device, sweepNo = 2, sweepGen = FakeSweepDataGeneratorPSX)
 
 	str = "psx(myID, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 1, 15, " + num2str(kernelAmp) + "), 2.5, 100, 0)"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 2 * 7)
 
@@ -1231,13 +1231,13 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 
 	// check that plain psx does not error out
 	str = "psx(id, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all))))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_NO_RTE()
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 
 	// without events found we get empty waves
 	str = "psx(myID, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 10, 15, -5), 250, 10, 0)"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 	Make/FREE/N=(DimSize(dataWref, ROWS)) sizes = WaveExists(dataWref[p]) ? DimSize(dataWref[p], ROWS) : NaN
 	CHECK_EQUAL_WAVES(sizes, {500, 500, 500, NaN, NaN, NaN, NaN, 500, 500, 500, NaN, NaN, NaN, NaN})
@@ -1245,7 +1245,7 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 	// complains with no sweep data
 	try
 		str = "psx(myID, psxKernel(select(selrange([150, 160]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 1, 2, -5), 2.5, 100, 0)"
-		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		CHECK_NO_RTE()
@@ -1254,7 +1254,7 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 	// returns empty waves without events found due to kernelAmp sign
 	overrideResults[][][%$"KernelAmpSignQC"] = 0
 	str                                      = "psx(id, psxKernel(select(selrange([50, 150]), selchannels(AD6), selvis(all), selsweeps([0, 2])), 1, 15, -4))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 	Make/FREE/N=(DimSize(dataWref, ROWS)) sizes = WaveExists(dataWref[p]) ? DimSize(dataWref[p], ROWS) : NaN
 	CHECK_EQUAL_WAVES(sizes, {500, 500, 500, NaN, NaN, NaN, NaN, 500, 500, 500, NaN, NaN, NaN, NaN})
@@ -1281,7 +1281,7 @@ static Function PSXHandlesPartialResults()
 	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	str = "psx(myID, psxKernel(select(selrange([25, 120]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 1, 2, -5), 2.5, 10, 0)"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, browser, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, browser, useVariables = 0)
 	PASS()
 End
 
@@ -1307,7 +1307,7 @@ static Function TestOperationPSXTooLargeDecayTau()
 	win = CreateFakeSweepData(win, device, sweepNo = 2, sweepGen = FakeSweepDataGeneratorPSX)
 
 	str = "psx(myID, psxKernel(select(selrange([50, 150]),selchannels(AD6), selsweeps([0]), selvis(all)), 1, 15, -5), 10, 100, 0)"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 
 	WAVE psxEvent = dataWref[%$"psxEvent_0"]
@@ -3166,28 +3166,28 @@ static Function TestOperationRiseTime()
 	win = SetupDatabrowserWithSomeData()
 
 	str = "psxRiseTime()"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	[lowerThreshold, upperThreshold, diffThreshold] = TestRiseTimeContainer(dataWref)
 	CHECK_EQUAL_VAR(lowerThreshold, 0.2)
 	CHECK_EQUAL_VAR(upperThreshold, 0.8)
 	CHECK_EQUAL_VAR(diffThreshold, 0.05)
 
 	str = "psxRiseTime(10)"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	[lowerThreshold, upperThreshold, diffThreshold] = TestRiseTimeContainer(dataWref)
 	CHECK_EQUAL_VAR(lowerThreshold, 0.1)
 	CHECK_EQUAL_VAR(upperThreshold, 0.8)
 	CHECK_EQUAL_VAR(diffThreshold, 0.05)
 
 	str = "psxRiseTime(10, 90)"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	[lowerThreshold, upperThreshold, diffThreshold] = TestRiseTimeContainer(dataWref)
 	CHECK_EQUAL_VAR(lowerThreshold, 0.1)
 	CHECK_EQUAL_VAR(upperThreshold, 0.9)
 	CHECK_EQUAL_VAR(diffThreshold, 0.05)
 
 	str = "psxRiseTime(10, 90, 45)"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	[lowerThreshold, upperThreshold, diffThreshold] = TestRiseTimeContainer(dataWref)
 	CHECK_EQUAL_VAR(lowerThreshold, 0.1)
 	CHECK_EQUAL_VAR(upperThreshold, 0.9)
@@ -3196,7 +3196,7 @@ static Function TestOperationRiseTime()
 	// checks parameters
 	try
 		str = "psxRiseTime(110, 90)"
-		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		CHECK_NO_RTE()
@@ -3204,7 +3204,7 @@ static Function TestOperationRiseTime()
 
 	try
 		str = "psxRiseTime(10, -10)"
-		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		CHECK_NO_RTE()
@@ -3231,7 +3231,7 @@ static Function TestOperationPrep()
 	psxCode = "psx(myID, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 1, 15, -5), 2.5, 100, 0)"
 	sprintf code, "psxPrep(%s)", psxCode
 
-	WAVE/WAVE dataWref = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 3)
 
@@ -3248,7 +3248,7 @@ static Function TestOperationPrep()
 	// checks parameters
 	try
 		sprintf code, "psxPrep(%s, 0)", psxCode
-		WAVE/WAVE dataWref = SF_ExecuteFormula(code, win, useVariables = 0)
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(code, win, useVariables = 0)
 		FAIL()
 	catch
 		CHECK_NO_RTE()
@@ -3256,7 +3256,7 @@ static Function TestOperationPrep()
 
 	try
 		sprintf code, "psxPrep(%s, -1)", psxCode
-		WAVE/WAVE dataWref = SF_ExecuteFormula(code, win, useVariables = 0)
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(code, win, useVariables = 0)
 		FAIL()
 	catch
 		CHECK_NO_RTE()
@@ -3404,28 +3404,28 @@ static Function TestOperationDeconvFilter()
 	win = SetupDatabrowserWithSomeData()
 
 	str = "psxDeconvFilter()"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	[filterLow, filterHigh, filterOrder] = TestDevonvFilterContainer(dataWref)
 	CHECK_EQUAL_VAR(filterLow, NaN)
 	CHECK_EQUAL_VAR(filterHigh, NaN)
 	CHECK_EQUAL_VAR(filterOrder, NaN)
 
 	str = "psxDeconvFilter(40)"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	[filterLow, filterHigh, filterOrder] = TestDevonvFilterContainer(dataWref)
 	CHECK_EQUAL_VAR(filterLow, 40)
 	CHECK_EQUAL_VAR(filterHigh, NaN)
 	CHECK_EQUAL_VAR(filterOrder, NaN)
 
 	str = "psxDeconvFilter(40, 50)"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	[filterLow, filterHigh, filterOrder] = TestDevonvFilterContainer(dataWref)
 	CHECK_EQUAL_VAR(filterLow, 40)
 	CHECK_EQUAL_VAR(filterHigh, 50)
 	CHECK_EQUAL_VAR(filterOrder, NaN)
 
 	str = "psxDeconvFilter(40, 50, 11)"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	[filterLow, filterHigh, filterOrder] = TestDevonvFilterContainer(dataWref)
 	CHECK_EQUAL_VAR(filterLow, 40)
 	CHECK_EQUAL_VAR(filterHigh, 50)
@@ -3434,7 +3434,7 @@ static Function TestOperationDeconvFilter()
 	// check parameters
 	try
 		str = "psxDeconvFilter(-1)"
-		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		CHECK_NO_RTE()
@@ -3442,7 +3442,7 @@ static Function TestOperationDeconvFilter()
 
 	try
 		str = "psxDeconvFilter(1, -1)"
-		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		CHECK_NO_RTE()
@@ -3450,7 +3450,7 @@ static Function TestOperationDeconvFilter()
 
 	try
 		str = "psxDeconvFilter(1, 1, -1)"
-		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		CHECK_NO_RTE()
