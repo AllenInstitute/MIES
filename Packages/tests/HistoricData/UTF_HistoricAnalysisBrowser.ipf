@@ -177,6 +177,7 @@ static Function TestNWBvsPXP_Selection()
 	fType = expBrowserGUI[0][%type]
 	CHECK_EQUAL_STR(fType, ANALYSISBROWSER_FILE_TYPE_IGOR)
 
+	PGC_SetAndActivateControl(abWin, "check_load_pxp", val = CHECKBOX_UNSELECTED)
 	PGC_SetAndActivateControl(abWin, "check_load_nwb", val = CHECKBOX_SELECTED)
 	// The file includes data from two devices
 	CHECK_EQUAL_VAR(DimSize(expBrowserSel, ROWS), 2)
