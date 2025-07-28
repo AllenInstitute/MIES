@@ -44,6 +44,11 @@ static StrConstant SF_PARSER_REGEX_SIGNED_PARENTHESIS = "^(?i)[+-]?\\([\s\S]*$"
 static StrConstant SF_PARSER_REGEX_SIGNED_FUNCTION    = "^(?i)[+-]?[A-Za-z]+"
 static StrConstant SF_PARSER_REGEX_OTHER_VALID_CHARS  = "[A-Za-z0-9_\.:;=!$]"
 
+static Structure SF_ParserData
+	variable jsonId
+	string jsonPath
+EndStructure
+
 // returns jsonID or Aborts is not successful
 Function SFP_ParseFormulaToJSON(string formula)
 
@@ -204,6 +209,7 @@ End
 /// @returns a JSONid representation
 Function SFP_FormulaParser(string formula, [variable &createdArray, variable indentLevel])
 
+	STRUCT SF_ParserData pad
 	variable action, collectedSign, level, arrayLevel, createdArrayLocal, wasArrayCreated, numStates
 	string token, indentation
 
@@ -211,9 +217,10 @@ Function SFP_FormulaParser(string formula, [variable &createdArray, variable ind
 	variable lastState       = SF_STATE_UNINITIALIZED
 	variable lastCalculation = SF_STATE_UNINITIALIZED
 	variable lastAction      = SF_ACTION_UNINITIALIZED
-	variable jsonID          = JSON_New()
-	string   jsonPath        = ""
 	string   buffer          = ""
+
+	pad.jsonId   = JSON_New()
+	pad.jsonPath = ""
 
 #ifdef DEBUGGING_ENABLED
 	indentation = ReplicateString("-> ", indentLevel)
@@ -224,12 +231,12 @@ Function SFP_FormulaParser(string formula, [variable &createdArray, variable ind
 
 	WAVE/T wFormula = UTF8StringToTextWave(formula)
 	if(!DimSize(wFormula, ROWS))
-		return jsonID
+		return pad.jsonID
 	endif
 
 	for(token : wFormula)
 
-		[state, arrayLevel, level] = SFP_ParserGetStateFromToken(token, jsonId, buffer)
+		[state, arrayLevel, level] = SFP_ParserGetStateFromToken(token, pad.jsonId, buffer)
 
 #ifdef DEBUGGING_ENABLED
 		if(DP_DebuggingEnabledForCaller())
@@ -237,7 +244,7 @@ Function SFP_FormulaParser(string formula, [variable &createdArray, variable ind
 		endif
 #endif // DEBUGGING_ENABLED
 
-		[action, lastState, collectedSign] = SFP_ParserGetActionFromState(jsonId, state, lastCalculation, IsEmpty(buffer))
+		[action, lastState, collectedSign] = SFP_ParserGetActionFromState(pad.jsonId, state, lastCalculation, IsEmpty(buffer))
 
 #ifdef DEBUGGING_ENABLED
 		if(DP_DebuggingEnabledForCaller())
@@ -247,7 +254,7 @@ Function SFP_FormulaParser(string formula, [variable &createdArray, variable ind
 
 		if(action != SF_ACTION_SKIP && lastAction == SF_ACTION_ARRAY)
 			// If the last action was the handling of "]" from an array
-			SFH_ASSERT(action == SF_ACTION_ARRAYELEMENT || action == SF_ACTION_HIGHERORDER, "Expected \",\" after \"]\"", jsonId = jsonId)
+			SFH_ASSERT(action == SF_ACTION_ARRAYELEMENT || action == SF_ACTION_HIGHERORDER, "Expected \",\" after \"]\"", jsonId = pad.jsonId)
 		endif
 
 		if(action == SF_ACTION_COLLECT)
@@ -262,7 +269,7 @@ Function SFP_FormulaParser(string formula, [variable &createdArray, variable ind
 #endif // DEBUGGING_ENABLED
 			continue
 		endif
-		[jsonId, jsonPath, lastCalculation, wasArrayCreated, createdArrayLocal] = SFP_ParserModifyJSON(action, lastAction, state, buffer, token, indentLevel)
+		[pad, lastCalculation, wasArrayCreated, createdArrayLocal] = SFP_ParserModifyJSON(action, lastAction, state, buffer, token, indentLevel)
 
 #ifdef DEBUGGING_ENABLED
 		SFP_LogParserState(token, state, lastState, lastCalculation, action, indentLevel)
@@ -274,86 +281,89 @@ Function SFP_FormulaParser(string formula, [variable &createdArray, variable ind
 	endfor
 
 	if(lastAction != SF_ACTION_UNINITIALIZED)
-		SFH_ASSERT(state != SF_STATE_ADDITION &&                       \
-		           state != SF_STATE_SUBTRACTION &&                    \
-		           state != SF_STATE_MULTIPLICATION &&                 \
-		           state != SF_STATE_DIVISION,                         \
-		           "Expected value after +, -, * or /", jsonId = jsonId)
+		SFH_ASSERT(state != SF_STATE_ADDITION &&                           \
+		           state != SF_STATE_SUBTRACTION &&                        \
+		           state != SF_STATE_MULTIPLICATION &&                     \
+		           state != SF_STATE_DIVISION,                             \
+		           "Expected value after +, -, * or /", jsonId = pad.jsonId)
 	endif
-	SFH_ASSERT(state != SF_STATE_ARRAYELEMENT, "Expected value after \",\"", jsonId = jsonId)
+	SFH_ASSERT(state != SF_STATE_ARRAYELEMENT, "Expected value after \",\"", jsonId = pad.jsonId)
 
 	if(!ParamIsDefault(createdArray))
 		createdArray = createdArrayLocal
 	endif
 
 	if(!IsEmpty(buffer))
-		SFP_ParserHandleRemainingBuffer(jsonId, jsonPath, formula, buffer)
+		SFP_ParserHandleRemainingBuffer(pad, formula, buffer)
 #ifdef DEBUGGING_ENABLED
 		SFP_LogParserState(buffer, state, lastState, lastCalculation, action, indentLevel)
 #endif // DEBUGGING_ENABLED
 	endif
 
-	return jsonID
+	return pad.jsonID
 End
 
-static Function SFP_ParserHandleRemainingBuffer(variable jsonId, string jsonPath, string formula, string buffer)
+static Function SFP_ParserHandleRemainingBuffer(STRUCT SF_ParserData &pad, string formula, string buffer)
 
 	variable subId
 
 	if(!cmpstr(buffer, formula))
 		if(GrepString(buffer, SF_PARSER_REGEX_SIGNED_NUMBER))
 			// optionally signed Number
-			JSON_AddVariable(jsonID, jsonPath, str2num(formula))
+			JSON_AddVariable(pad.jsonID, pad.jsonPath, str2num(formula))
 		elseif(!cmpstr(buffer, "\"\"")) // dummy check
 			// empty string with explicit quotation marks
-			JSON_AddString(jsonID, jsonPath, "")
+			JSON_AddString(pad.jsonID, pad.jsonPath, "")
 		elseif(GrepString(buffer, SF_PARSER_REGEX_QUOTED_STRING))
 			// non-empty string with quotation marks
-			JSON_AddString(jsonID, jsonPath, buffer[1, strlen(buffer) - 2])
+			JSON_AddString(pad.jsonID, pad.jsonPath, buffer[1, strlen(buffer) - 2])
 		else
 			// string without quotation marks
-			JSON_AddString(jsonID, jsonPath, buffer)
+			JSON_AddString(pad.jsonID, pad.jsonPath, buffer)
 		endif
 	else
 		subId = SFP_FormulaParser(buffer)
-		JSON_AddJSON(jsonID, jsonPath, subId)
+		JSON_AddJSON(pad.jsonID, pad.jsonPath, subId)
 		JSON_Release(subId)
 	endif
 End
 
-static Function [variable jsonId, string jsonPath, variable lastCalculation, variable wasArrayCreated, variable createdArrayLocal] SFP_ParserModifyJSON(variable action, variable lastAction, variable state, string buffer, string token, variable indentLevel)
+static Function [STRUCT SF_ParserData pad, variable lastCalculation, variable wasArrayCreated, variable createdArrayLocal] SFP_ParserModifyJSON(variable action, variable lastAction, variable state, string buffer, string token, variable indentLevel)
 
 	variable parenthesisStart, subId
-	string functionName, tempPath
+	string functionName, jsonPathSave, jsonPathArray
 
 	switch(action)
 		case SF_ACTION_FUNCTION:
-			parenthesisStart         = strsearch(buffer, "(", 0, 0)
-			functionName             = buffer[0, parenthesisStart - 1]
-			[functionName, jsonPath] = SFP_ParserEvaluatePossibleSign(jsonId, indentLevel)
-			tempPath                 = SFP_ParserAdaptSubPath(jsonId, jsonPath, functionName)
-			subId                    = SFP_FormulaParser(buffer[parenthesisStart + 1, Inf], createdArray = wasArrayCreated, indentLevel = indentLevel + 1)
-			SFP_FPAddArray(jsonId, tempPath, subId, wasArrayCreated)
+			parenthesisStart    = strsearch(buffer, "(", 0, 0)
+			functionName        = buffer[0, parenthesisStart - 1]
+			[functionName, pad] = SFP_ParserEvaluatePossibleSign()
+			jsonPathSave        = pad.jsonPath
+			[pad]               = SFP_ParserAdaptSubPath(functionName)
+			subId               = SFP_FormulaParser(buffer[parenthesisStart + 1, Inf], createdArray = wasArrayCreated, indentLevel = indentLevel + 1)
+			[pad]               = SFP_FPAddArray(subId, wasArrayCreated)
+			pad.jsonPath        = jsonPathSave
 			break
 		case SF_ACTION_PARENTHESIS:
-			[buffer, jsonPath] = SFP_ParserEvaluatePossibleSign(jsonId, indentLevel)
-			SFP_ParserAddJSON(jsonId, jsonPath, buffer[1, Inf], indentLevel)
+			[buffer, pad] = SFP_ParserEvaluatePossibleSign()
+			[pad]         = SFP_ParserAddJSON(buffer[1, Inf], indentLevel)
 			break
 		case SF_ACTION_HIGHERORDER:
 			// - called if for the first time a "," is encountered (from SF_STATE_ARRAYELEMENT)
 			// - called if a higher priority calculation, e.g. * over + requires to put array in sub json path
 			lastCalculation = state
 			if(state == SF_STATE_ARRAYELEMENT)
-				SFH_ASSERT(!(IsEmpty(buffer) && (lastAction == SF_ACTION_COLLECT || lastAction == SF_ACTION_SKIP || lastAction == SF_ACTION_UNINITIALIZED)), "array element has no value", jsonId = jsonId)
+				SFH_ASSERT(!(IsEmpty(buffer) && (lastAction == SF_ACTION_COLLECT || lastAction == SF_ACTION_SKIP || lastAction == SF_ACTION_UNINITIALIZED)), "array element has no value", jsonId = pad.jsonId)
 			endif
 			if(!IsEmpty(buffer))
-				SFP_ParserAddJSON(jsonId, jsonPath, buffer, indentLevel)
+				[pad] = SFP_ParserAddJSON(buffer, indentLevel)
 			endif
-			jsonPath = SF_EscapeJsonPath(token)
-			if(!cmpstr(jsonPath, ",") || !cmpstr(jsonPath, "]"))
-				jsonPath = ""
+
+			jsonPathArray = SF_EscapeJsonPath(token)
+			if(!cmpstr(jsonPathArray, ",") || !cmpstr(jsonPathArray, "]"))
+				jsonPathArray = ""
 			endif
-			jsonId            = SFP_FPPutInArrayAtPath(jsonID, jsonPath)
+			[pad]             = SFP_FPPutInArrayAtPath(jsonPathArray)
 			createdArrayLocal = 1
 			break
 		case SF_ACTION_ARRAY:
@@ -363,27 +373,28 @@ static Function [variable jsonId, string jsonPath, variable lastCalculation, var
 			// If there was no array created, we have to add another outer array around the returned json
 			// An array needs to be also added if the returned json is a simple value as this action requires
 			// to return an array.
-			[buffer, jsonPath] = SFP_ParserEvaluatePossibleSign(jsonId, indentLevel)
-			SFH_ASSERT(!CmpStr(buffer[0], "["), "Can not find array start. (Is there a \",\" before \"[\" missing?)", jsonId = jsonId)
+			[buffer, pad] = SFP_ParserEvaluatePossibleSign()
+			SFH_ASSERT(!CmpStr(buffer[0], "["), "Can not find array start. (Is there a \",\" before \"[\" missing?)", jsonId = pad.jsonId)
+
 			subId = SFP_FormulaParser(buffer[1, Inf], createdArray = wasArrayCreated, indentLevel = indentLevel + 1)
-			SFP_FPAddArray(jsonId, jsonPath, subId, wasArrayCreated)
+			[pad] = SFP_FPAddArray(subId, wasArrayCreated)
 			break
 		case SF_ACTION_LOWERORDER: // fallthrough
-			jsonPath = SFP_ParserAdaptSubPath(jsonId, jsonPath, token)
+			[pad] = SFP_ParserAdaptSubPath(token)
 		case SF_ACTION_ARRAYELEMENT: // fallthrough
 			// - "," was encountered, thus we have multiple elements, we need to set an array at current path
 			// The actual content is added in the case fall-through
-			SFH_ASSERT(!(IsEmpty(buffer) && (lastAction == SF_ACTION_COLLECT || lastAction == SF_ACTION_SKIP || lastAction == SF_ACTION_HIGHERORDER)), "array element has no value", jsonId = jsonId)
-			JSON_AddTreeArray(jsonID, jsonPath)
+			SFH_ASSERT(!(IsEmpty(buffer) && (lastAction == SF_ACTION_COLLECT || lastAction == SF_ACTION_SKIP || lastAction == SF_ACTION_HIGHERORDER)), "array element has no value", jsonId = pad.jsonId)
+			JSON_AddTreeArray(pad.jsonID, pad.jsonPath)
 			lastCalculation = state
 		default:
 			if(!IsEmpty(buffer))
-				SFP_ParserAddJSON(jsonId, jsonPath, buffer, indentLevel)
+				[pad] = SFP_ParserAddJSON(buffer, indentLevel)
 			endif
 			break
 	endswitch
 
-	return [jsonId, jsonPath, lastCalculation, wasArrayCreated, createdArrayLocal]
+	return [pad, lastCalculation, wasArrayCreated, createdArrayLocal]
 End
 
 static Function [variable action, variable lastState, variable collectedSign] SFP_ParserGetActionFromState(variable jsonId, variable state, variable lastCalculation, variable bufferIsEmpty)
@@ -574,73 +585,81 @@ static Function [variable state, variable arrayLevel, variable level] SFP_Parser
 	return [state, arrayLevel, level]
 End
 
-static Function [string buffer, string jsonPath] SFP_ParserEvaluatePossibleSign(variable jsonId, variable indentLevel)
+/// @brief If buffer has a sign then it is removed from buffer. If the sign was a minus then a negation is prefixed in the json.
+static Function [string buffer, STRUCT SF_ParserData pad] SFP_ParserEvaluatePossibleSign()
 
 	ASSERT(strlen(buffer) > 1, "Expected at least two characters.")
 
 	if(!CmpStr(buffer[0], "-"))
-		return [buffer[1, Inf], SFP_ParserInsertNegation(jsonID, jsonPath, indentLevel)]
+		[pad] = SFP_ParserInsertNegation()
+		return [buffer[1, Inf], pad]
 	endif
 	if(!CmpStr(buffer[0], "+"))
-		return [buffer[1, Inf], jsonPath]
+		return [buffer[1, Inf], pad]
 	endif
 
-	return [buffer, jsonpath]
+	return [buffer, pad]
 End
 
-static Function SFP_ParserAddJSON(variable jsonId, string jsonPath, string formula, variable indentLevel)
+/// @brief Parses a formula to json and puts it at jsonPath into the current json
+static Function [STRUCT SF_ParserData pad] SFP_ParserAddJSON(string formula, variable indentLevel)
 
 	variable subId
 
 	subId = SFP_FormulaParser(formula, indentLevel = indentLevel + 1)
-	JSON_AddJSON(jsonID, jsonPath, subId)
+	JSON_AddJSON(pad.jsonID, pad.jsonPath, subId)
 	JSON_Release(subId)
+
+	return [pad]
 End
 
-static Function/S SFP_ParserInsertNegation(variable jsonId, string jsonPath, variable indentLevel)
+static Function [STRUCT SF_ParserData pad] SFP_ParserInsertNegation()
 
 	variable jsonId1
 
 	jsonId1 = JSON_Parse("{\"*\":[-1]}")
-	JSON_AddJSON(jsonID, jsonPath, jsonId1)
+	JSON_AddJSON(pad.jsonID, pad.jsonPath, jsonId1)
 	JSON_Release(jsonId1)
-	if(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY)
-		jsonPath += "/1/*"
+	if(JSON_GetType(pad.jsonID, pad.jsonPath) == JSON_ARRAY)
+		pad.jsonPath += "/1/*"
 	else
-		jsonPath += "/*"
+		pad.jsonPath += "/*"
 	endif
 
-	return jsonPath
+	return [pad]
 End
 
-static Function/S SFP_ParserAdaptSubPath(variable jsonId, string jsonPath, string subPath)
+static Function [STRUCT SF_ParserData pad] SFP_ParserAdaptSubPath(string subPath)
 
-	if(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY)
-		JSON_AddObjects(jsonID, jsonPath)
-		jsonPath += "/" + num2istr(JSON_GetArraySize(jsonID, jsonPath) - 1)
+	if(JSON_GetType(pad.jsonID, pad.jsonPath) == JSON_ARRAY)
+		JSON_AddObjects(pad.jsonID, pad.jsonPath)
+		pad.jsonPath += "/" + num2istr(JSON_GetArraySize(pad.jsonID, pad.jsonPath) - 1)
 	endif
-	jsonPath += "/" + SF_EscapeJsonPath(subPath)
+	pad.jsonPath += "/" + SF_EscapeJsonPath(subPath)
 
-	return jsonpath
+	return [pad]
 End
 
 /// @brief Create a new empty array object, add mainId into it at path and return created json, release subId
-static Function SFP_FPPutInArrayAtPath(variable subId, string jsonPath)
+static Function [STRUCT SF_ParserData pad] SFP_FPPutInArrayAtPath(string jsonPathArray)
 
 	variable newId
 
 	newId = JSON_New()
-	JSON_AddTreeArray(newId, jsonPath)
-	if(JSON_GetType(subId, "") != JSON_NULL)
-		JSON_AddJSON(newId, jsonPath, subId)
+	JSON_AddTreeArray(newId, jsonPathArray)
+	if(JSON_GetType(pad.jsonId, "") != JSON_NULL)
+		JSON_AddJSON(newId, jsonPathArray, pad.jsonId)
 	endif
-	JSON_Release(subId)
 
-	return newId
+	JSON_Release(pad.jsonId)
+	pad.jsonId   = newId
+	pad.jsonPath = jsonPathArray
+
+	return [pad]
 End
 
 /// @brief Adds subId to mainId, if necessary puts subId into an array, release subId
-static Function SFP_FPAddArray(variable mainId, string jsonPath, variable subId, variable arrayWasCreated)
+static Function [STRUCT SF_ParserData pad] SFP_FPAddArray(variable subId, variable arrayWasCreated)
 
 	variable tmpId
 
@@ -650,11 +669,13 @@ static Function SFP_FPAddArray(variable mainId, string jsonPath, variable subId,
 		JSON_AddTreeArray(tmpId, "")
 		JSON_AddJSON(tmpId, "", subId)
 
-		JSON_AddJSON(mainId, jsonPath, tmpId)
+		JSON_AddJSON(pad.jsonId, pad.jsonPath, tmpId)
 		JSON_Release(tmpId)
 	else
-		JSON_AddJSON(mainId, jsonPath, subId)
+		JSON_AddJSON(pad.jsonId, pad.jsonPath, subId)
 	endif
 
 	JSON_Release(subId)
+
+	return [pad]
 End
