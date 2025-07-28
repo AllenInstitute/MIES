@@ -196,7 +196,7 @@ static Function/DF PSX_GetWorkingFolder(string win)
 	return $GetUserData(mainWindow, "", PSX_USER_DATA_WORKING_FOLDER)
 End
 
-static Function/S PSX_GetSpecialPanel(string win)
+Function/S PSX_GetSpecialPanel(string win)
 
 	return GetMainWindow(win) + "#" + PSX_SPECIAL_EVENT_PANEL
 End
@@ -2566,8 +2566,10 @@ static Function PSX_FitAverage(string win, DFREF averageDFR, WAVE eventOnsetTime
 
 	riselowerThreshold         = GetSetVariable(specialEventPanel, "setvar_fit_start_amplitude") * PERCENT_TO_ONE
 	riseAndDecayUpperThreshold = 0.9
-	FindLevel/EDGE=(edge)/Q average, (riselowerThreshold * extrema)
-
+//	FindLevel/EDGE=(edge)/Q average, (riselowerThreshold * extrema)
+	variable onsetX = PSX_CalculateOnsetTimeFromAvg(average, meanKernelAmp, meanOnsetTime, meanPeakTime)
+	variable level = (riseLowerThreshold * (extrema - average(onsetX))	) + average(onsetX)
+	FindLevel/EDGE=(edge)/r=(extrema_t, onsetX)/Q average, level
 	riseStart = V_LevelX
 	FindLevel/EDGE=(edge)/Q average, (riseAndDecayUpperThreshold * extrema)
 	riseStop = V_levelX
@@ -6306,4 +6308,54 @@ Function PSX_UpdateVisualizationHelpers(STRUCT WMCheckboxAction &cba) : CheckBox
 	endswitch
 
 	return 0
+End
+
+Function PSX_CalculateOnsetTimeFromAvg(WAVE AvgEvent, variable kernelAmp, variable meanOnsetTime, variable meanPeakTime)
+	
+	print "onset: ", meanonsettime, "peak: ", meanpeaktime
+	
+	duplicate/FREE AvgEvent, AvgEventDiff
+	differentiate AvgEventDiff
+	wavestats/q AvgEvent
+	duplicate AvgEventDiff, forDisp
+	
+	variable eventPeak, eventPeak_t, edge, backwardEdge, level, slewrate, slewrate_t
+	
+	if(kernelAmp > 0)
+		eventPeak      	= V_max
+		eventPeak_t    	= V_maxLoc
+		edge         	= FINDLEVEL_EDGE_INCREASING
+		backwardEdge 	= FINDLEVEL_EDGE_DECREASING
+	elseif(kernelAmp < 0)
+		eventPeak      	= V_min
+		eventPeak_t    	= V_minLoc
+		edge         	= FINDLEVEL_EDGE_DECREASING
+		backwardEdge 	= FINDLEVEL_EDGE_INCREASING
+	else
+		ASSERT(0, "Invalid kernel amp")
+	endif
+
+	variable searchEnd = eventPeak_t - 2*(meanPeakTime - abs(meanOnsetTime)) // get ride of the * 2 hack
+
+	
+	wavestats/q/r=(searchEnd, eventPeak_t) AvgEventDiff
+
+	if(kernelAmp > 0)
+		slewRate 		= v_max
+		slewRate_t 		= v_maxloc
+	elseif(kernelAmp < 0)
+		slewRate      	= V_min
+		slewRate_t    	= V_minLoc
+	endif
+	
+	level = 0.20 * slewRate
+
+	FindLevel/R=(eventPeak_t, searchEnd)/EDGE=(edge)/Q AvgEventDiff, level
+
+	if(V_flag)
+		return NaN
+	endif
+	print V_levelX
+	return V_levelX
+
 End
