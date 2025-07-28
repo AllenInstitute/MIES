@@ -1048,11 +1048,11 @@ End
 
 static Function ZeroSizedSubArrayTest()
 
-	string win
+	STRUCT SF_ExecutionData exd
 
-	win = GetDataBrowserWithData()
-
-	WAVE wTextRef = MIES_SFE#SFE_FormulaExecutor(win, JSON_Parse("[]"))
+	exd.graph  = GetDataBrowserWithData()
+	exd.jsonId = JSON_Parse("[]")
+	WAVE wTextRef = MIES_SFE#SFE_FormulaExecutor(exd)
 	CHECK(IsTextWave(wTextRef))
 	CHECK_EQUAL_VAR(DimSize(wTextRef, ROWS), 1)
 	CHECK_EQUAL_VAR(DimSize(wTextRef, COLS), 0)

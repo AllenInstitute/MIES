@@ -41,7 +41,7 @@ End
 /// Here `numBottles` is argument number 0 and mandatory as `defValue` is not present.
 ///
 /// The second argument `size` is optional with 0.5 as default and also defines a list of valid values.
-Function SFH_GetArgumentAsNumeric(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [variable defValue, WAVE/Z allowedValues, FUNCREF SFH_NumericChecker_Prototype checkFunc, variable checkDefault])
+Function SFH_GetArgumentAsNumeric(STRUCT SF_ExecutionData &exd, string opShort, variable argNum, [variable defValue, WAVE/Z allowedValues, FUNCREF SFH_NumericChecker_Prototype checkFunc, variable checkDefault])
 
 	string msg, sep, allowedValuesAsStr
 	variable checkExist, numArgs, result, idx, ret
@@ -58,10 +58,10 @@ Function SFH_GetArgumentAsNumeric(variable jsonId, string jsonPath, string graph
 		checkExist = 0
 	endif
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 
 	if(argNum < numArgs)
-		WAVE/Z data = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, opShort, argNum, checkExist = checkExist)
+		WAVE/Z data = SFH_ResolveDatasetElementFromJSON(exd, opShort, argNum, checkExist = checkExist)
 		sprintf msg, "Argument #%d of operation %s: Is a NULL wave reference ", argNum, opShort
 		SFH_ASSERT(WaveExists(data), msg)
 
@@ -115,8 +115,8 @@ End
 /// .. code-block:: text
 ///
 ///    opShort = "getTrainTable"
-///    date    = SFH_GetArgumentAsText(jsonId, jsonPath, graph, opShort, 0)
-///    type    = SFH_GetArgumentAsText(jsonId, jsonPath, graph, opShort, 1, defValue = "steam train", allowedValues = {"steam train", "light rail"})
+///    date    = SFH_GetArgumentAsText(exd, opShort, 0)
+///    type    = SFH_GetArgumentAsText(exd, opShort, 1, defValue = "steam train", allowedValues = {"steam train", "light rail"})
 ///
 /// \endrst
 ///
@@ -125,7 +125,7 @@ End
 /// The second argument `type` is optional with `steam train` as default and a list of allowed values.
 ///
 /// The text argument can be abbreviated as long as it is unique, the unabbreviated result is returned in all cases.
-Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defValue, WAVE/Z/T allowedValues, FUNCREF SFH_StringChecker_Prototype checkFunc, variable checkDefault])
+Function/S SFH_GetArgumentAsText(STRUCT SF_ExecutionData &exd, string opShort, variable argNum, [string defValue, WAVE/Z/T allowedValues, FUNCREF SFH_StringChecker_Prototype checkFunc, variable checkDefault])
 
 	string msg, result, sep, allowedValuesAsStr
 	variable checkExist, numArgs, idx, ret, matchIndex
@@ -142,10 +142,10 @@ Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph,
 		checkExist = 0
 	endif
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 
 	if(argNum < numArgs)
-		WAVE/Z/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
+		WAVE/Z/WAVE input = SF_ResolveDatasetFromJSON(exd, argNum)
 		sprintf msg, "Argument #%d of operation %s: input is a NULL wave reference", argNum, opShort
 		SFH_ASSERT(WaveExists(input), msg)
 
@@ -236,9 +236,7 @@ End
 ///
 /// The second argument `birdTypes` is optional, if not present the operation `birdTypes()` is called and its result returned. Alternatively `defWave` can be supplied which is then returned if the argument is not present.
 ///
-/// @param jsonId            JSON identifier
-/// @param jsonPath          Location in the AST
-/// @param graph             Databrowser graph
+/// @param exd               Execution data structure
 /// @param opShort           Short name of the operation
 /// @param argNum            Argument index
 /// @param defOp             [optional, defaults to None] SF code to execute in case the argument is not present
@@ -249,7 +247,7 @@ End
 /// @param copy              [optional, defaults to 0] If the returned data should be safe for modification (true) or is only read (false)
 /// @param[out] wvNote       [optional, defaults to None] Wave note of the dataset, useful for single result cases where you still need
 ///                          to query JSON wave note entries
-Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defOp, WAVE/Z defWave, variable singleResult, variable expectedMinorType, variable expectedMajorType, variable copy, string &wvNote])
+Function/WAVE SFH_GetArgumentAsWave(STRUCT SF_ExecutionData &exd, string opShort, variable argNum, [string defOp, WAVE/Z defWave, variable singleResult, variable expectedMinorType, variable expectedMajorType, variable copy, string &wvNote])
 
 	variable checkExist, numArgs, checkMinorType, checkMajorType, result
 	string msg
@@ -276,10 +274,10 @@ Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string gra
 	endif
 	copy = ParamIsDefault(copy) ? 0 : !!copy
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 
 	if(argNum < numArgs)
-		WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
+		WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, argNum)
 
 		if(singleResult)
 			sprintf msg, "Argument #%d of operation %s: Too many input values", argNum, opShort
@@ -338,7 +336,7 @@ Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string gra
 	SFH_ASSERT(!checkExist, msg)
 
 	if(!ParamIsDefault(defOp))
-		return SFE_ExecuteFormula(defOp, graph, singleResult = singleResult, useVariables = 0)
+		return SFE_ExecuteFormula(defOp, exd.graph, singleResult = singleResult, useVariables = 0)
 	endif
 
 	return defWave
@@ -456,14 +454,14 @@ End
 /// has to match.
 ///
 /// @return One or multiple datasets
-Function/WAVE SFH_EvaluateRange(variable jsonId, string jsonPath, string graph, string opShort, variable argNum)
+Function/WAVE SFH_EvaluateRange(STRUCT SF_ExecutionData &exd, string opShort, variable argNum)
 
 	variable numArgs
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 
 	if(argNum < numArgs)
-		WAVE/WAVE ranges    = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
+		WAVE/WAVE ranges    = SF_ResolveDatasetFromJSON(exd, argNum)
 		WAVE      rangesTmp = SFH_MoveDatasetHigherIfCompatible(ranges)
 		WAVE      ranges    = rangesTmp
 
@@ -704,16 +702,16 @@ static Function/WAVE SFH_GetSweepsForFormulaImpl(string graph, WAVE/WAVE selectD
 End
 
 // returns number of operation arguments
-Function SFH_GetNumberOfArguments(variable jsonId, string jsonPath)
+Function SFH_GetNumberOfArguments(STRUCT SF_ExecutionData &exd)
 
 	variable size
 
-	size = JSON_GetArraySize(jsonID, jsonPath)
+	size = JSON_GetArraySize(exd.jsonID, exd.jsonPath)
 	if(!size)
 		return size
 	endif
 
-	return (JSON_GetType(jsonId, jsonPath + "/0") == JSON_NULL) ? 0 : size
+	return (JSON_GetType(exd.jsonId, exd.jsonPath + "/0") == JSON_NULL) ? 0 : size
 End
 
 Function/DF SFH_GetWorkingDF(string win)
@@ -846,12 +844,12 @@ Function/WAVE SFH_CopyDataIfRequired(variable copy, WAVE/Z dataset, WAVE/Z data)
 End
 
 /// @brief Retrieves from an argument the datatype and the first dataset and disposes the argument
-Function [WAVE data, string dataType] SFH_ResolveDatasetElementFromJSONAndType(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [variable checkExist, variable copy])
+Function [WAVE data, string dataType] SFH_ResolveDatasetElementFromJSONAndType(STRUCT SF_ExecutionData &exd, string opShort, variable argNum, [variable checkExist, variable copy])
 
 	checkExist = ParamIsDefault(checkExist) ? 0 : !!checkExist
 	copy       = ParamIsDefault(copy) ? 0 : !!copy
 
-	WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
+	WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, argNum)
 	dataType = JWN_GetStringFromWaveNote(input, SF_META_DATATYPE)
 	WAVE/Z data         = SFH_CheckForSingleDSAndGetData(input, checkExist, opShort, argNum)
 	WAVE/Z possDataCopy = SFH_CopyDataIfRequired(copy, input, data)
@@ -870,12 +868,12 @@ static Function/WAVE SFH_CheckForSingleDSAndGetData(WAVE/WAVE input, variable ch
 End
 
 /// @brief Retrieves from an argument the first dataset and disposes the argument
-Function/WAVE SFH_ResolveDatasetElementFromJSON(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [variable checkExist, variable copy])
+Function/WAVE SFH_ResolveDatasetElementFromJSON(STRUCT SF_ExecutionData &exd, string opShort, variable argNum, [variable checkExist, variable copy])
 
 	checkExist = ParamIsDefault(checkExist) ? 0 : !!checkExist
 	copy       = ParamIsDefault(copy) ? 0 : !!copy
 
-	WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
+	WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, argNum)
 	WAVE/Z    data  = SFH_CheckForSingleDSAndGetData(input, checkExist, opShort, argNum)
 
 	return SFH_CopyDataIfRequired(copy, input, data)
@@ -1009,15 +1007,15 @@ End
 ///        selectArray is wave reference wave containing select composite wave reference waves with SELECTION, RANGE each.
 ///
 ///        This allows operations with selects as arguments to iterate over different selections given by the user
-Function/WAVE SFH_GetArgumentSelect(variable jsonId, string jsonPath, string graph, string opShort, variable argNum)
+Function/WAVE SFH_GetArgumentSelect(STRUCT SF_ExecutionData &exd, string opShort, variable argNum)
 
 	variable numArgs
 	string   type
 
-	numArgs = SFH_GetNumberOfArguments(jsonID, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 	if(argNum < numArgs)
 
-		WAVE/WAVE selectComp = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
+		WAVE/WAVE selectComp = SF_ResolveDatasetFromJSON(exd, argNum)
 		type = JWN_GetStringFromWaveNote(selectComp, SF_META_DATATYPE)
 		if(!CmpStr(type, SF_DATATYPE_SELECTCOMP))
 			Make/FREE/WAVE selectArray = {selectComp}
@@ -1039,7 +1037,7 @@ Function/WAVE SFH_GetArgumentSelect(variable jsonId, string jsonPath, string gra
 		return selectArray
 	endif
 
-	WAVE selectComp = SFE_ExecuteFormula(SFH_DEFAULT_SELECT_FORMULA, graph, useVariables = 0)
+	WAVE selectComp = SFE_ExecuteFormula(SFH_DEFAULT_SELECT_FORMULA, exd.graph, useVariables = 0)
 	Make/FREE/WAVE selectArray = {selectComp}
 
 	return selectArray
@@ -1505,13 +1503,13 @@ Function/WAVE SFH_FilterSelect(WAVE/Z selectData, variable keepChanType)
 End
 
 /// @brief checks the argument count and returns the number of arguments
-Function SFH_CheckArgumentCount(variable jsonId, string jsonPath, string opShort, variable minArgs, [variable maxArgs])
+Function SFH_CheckArgumentCount(STRUCT SF_ExecutionData &exd, string opShort, variable minArgs, [variable maxArgs])
 
 	variable numArgs
 	string   errMsg
 
 	maxArgs = ParamIsDefault(maxArgs) ? Inf : maxArgs
-	numArgs = SFH_GetNumberOfArguments(jsonID, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 	sprintf errMsg, "%s has %d arguments at most.", opShort, maxArgs
 	SFH_ASSERT(numArgs <= maxArgs, errMsg)
 	sprintf errMsg, "%s needs at least %d argument(s).", opShort, minArgs

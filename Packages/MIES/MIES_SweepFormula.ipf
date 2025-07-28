@@ -1842,16 +1842,16 @@ End
 ///        @deprecated: executing all arguments e.g. as array in the executor poses issues as soon as data types get mixed.
 ///                    e.g. operation(0, A, [1, 2, 3]) fails as [0, A, [1, 2, 3]] can not be converted to an Igor wave.
 ///                    Thus, it is strongly recommended to parse each argument separately.
-Function/WAVE SF_GetArgumentTop(variable jsonId, string jsonPath, string graph, string opShort)
+Function/WAVE SF_GetArgumentTop(STRUCT SF_ExecutionData &exd, string opShort)
 
 	variable numArgs
 
-	numArgs = SFH_GetNumberOfArguments(jsonID, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 	if(numArgs > 0)
-		WAVE wv = SFE_FormulaExecutor(graph, jsonID, jsonPath = jsonPath)
+		WAVE wv = SFE_FormulaExecutor(exd)
 	else
 		Make/FREE/N=0 data
-		WAVE wv = SFH_GetOutputForExecutorSingle(data, graph, opShort + "_zeroSizedInput")
+		WAVE wv = SFH_GetOutputForExecutorSingle(data, exd.graph, opShort + "_zeroSizedInput")
 	endif
 
 	WAVE/WAVE input = SF_ResolveDataset(wv)
@@ -1902,11 +1902,16 @@ Function/DF SF_GetBrowserDF(string graph)
 End
 
 /// @brief Executes the part of the argument part of the JSON and parses the resulting data to a waveRef type
-Function/WAVE SF_ResolveDatasetFromJSON(variable jsonId, string jsonPath, string graph, variable argNum, [variable copy])
+Function/WAVE SF_ResolveDatasetFromJSON(STRUCT SF_ExecutionData &exd, variable argNum, [variable copy])
+
+	STRUCT SF_ExecutionData exdarg
 
 	copy = ParamIsDefault(copy) ? 0 : !!copy
 
-	WAVE wv = SFE_FormulaExecutor(graph, jsonID, jsonPath = jsonPath + "/" + num2istr(argNum))
+	exdarg.jsonId   = exd.jsonId
+	exdarg.graph    = exd.graph
+	exdarg.jsonPath = exd.jsonPath + "/" + num2istr(argNum)
+	WAVE wv = SFE_FormulaExecutor(exdarg)
 
 	WAVE dataset = SF_ResolveDataset(wv)
 

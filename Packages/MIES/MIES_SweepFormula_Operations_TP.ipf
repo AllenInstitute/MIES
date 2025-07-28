@@ -26,25 +26,25 @@ static StrConstant SF_OP_TPFIT_RET_MINAMP     = "minabsamp"
 static StrConstant SF_OP_TPFIT_RET_FITQUALITY = "fitq"
 
 // tp(string type[, array selectData[, array ignoreTPs]])
-Function/WAVE SFOTP_OperationTP(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFOTP_OperationTP(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs, outType
 	string dataType, allowedTypes
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 	SFH_ASSERT(numArgs >= 1 || numArgs <= 3, "tp requires 1 to 3 arguments")
 
 	if(numArgs == 3)
-		WAVE ignoreTPs = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_TP, 2, checkExist = 1)
+		WAVE ignoreTPs = SFH_ResolveDatasetElementFromJSON(exd, SF_OP_TP, 2, checkExist = 1)
 		SFH_ASSERT(WaveDims(ignoreTPs) == 1, "ignoreTPs must be one-dimensional.")
 		SFH_ASSERT(IsNumericWave(ignoreTPs), "ignoreTPs parameter must be numeric")
 	else
 		WAVE/Z ignoreTPs
 	endif
 
-	WAVE/Z selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_TP, 1)
+	WAVE/Z selectData = SFH_GetArgumentSelect(exd, SF_OP_TP, 1)
 
-	WAVE/WAVE wMode = SF_ResolveDatasetFromJSON(jsonID, jsonPath, graph, 0)
+	WAVE/WAVE wMode = SF_ResolveDatasetFromJSON(exd, 0)
 	dataType = JWN_GetStringFromWaveNote(wMode, SF_META_DATATYPE)
 
 	allowedTypes = AddListItem(SF_DATATYPE_TPSS, "")
@@ -53,9 +53,9 @@ Function/WAVE SFOTP_OperationTP(variable jsonId, string jsonPath, string graph)
 	allowedTypes = AddListItem(SF_DATATYPE_TPFIT, allowedTypes)
 	SFH_ASSERT(WhichListItem(dataType, allowedTypes) >= 0, "Unknown TP mode.")
 
-	WAVE/Z/WAVE output = SFOTP_OperationTPIterate(graph, wMode, selectData, ignoreTPs, SF_OP_TP)
+	WAVE/Z/WAVE output = SFOTP_OperationTPIterate(exd.graph, wMode, selectData, ignoreTPs, SF_OP_TP)
 	if(!WaveExists(output))
-		WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_TP, 0)
+		WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_TP, 0)
 	endif
 
 	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_TP)
@@ -63,7 +63,7 @@ Function/WAVE SFOTP_OperationTP(variable jsonId, string jsonPath, string graph)
 
 	SF_SetSweepXAxisTickLabels(output, selectData)
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_TP)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_TP)
 End
 
 static Function SFOTP_GetTPFitQuality(WAVE residuals, WAVE sweepData, variable beginTrail, variable endTrail)
@@ -455,44 +455,44 @@ static Function/WAVE SFOTP_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z 
 End
 
 // tpbase()
-Function/WAVE SFOTP_OperationTPBase(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFOTP_OperationTPBase(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs, outType
 	string opShort = SF_OP_TPBASE
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 	SFH_ASSERT(numArgs == 0, "tpbase has no arguments")
 
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, 0)
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 0)
 	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_TPBASE)
 
-	return SFH_GetOutputForExecutor(output, graph, opShort)
+	return SFH_GetOutputForExecutor(output, exd.graph, opShort)
 End
 
 // tpfit()
-Function/WAVE SFOTP_OperationTPFit(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFOTP_OperationTPFit(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs, outType
 	string func, retVal
 	variable maxTrailLength
 	string opShort = SF_OP_TPFIT
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 	SFH_ASSERT(numArgs >= 2 && numArgs <= 3, "tpfit has two or three arguments")
 
-	WAVE/T wFitType = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_TPFIT, 0, checkExist = 1)
+	WAVE/T wFitType = SFH_ResolveDatasetElementFromJSON(exd, SF_OP_TPFIT, 0, checkExist = 1)
 	SFH_ASSERT(IsTextWave(wFitType), "TPFit function argument must be textual.")
 	SFH_ASSERT(DimSize(wFitType, ROWS) == 1, "TPFit function argument must be a single string.")
 	func = wFitType[0]
 	SFH_ASSERT(!CmpStr(func, SF_OP_TPFIT_FUNC_EXP) || !CmpStr(func, SF_OP_TPFIT_FUNC_DEXP), "Fit function must be exp or doubleexp")
 
-	WAVE/T wReturn = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_TPFIT, 1, checkExist = 1)
+	WAVE/T wReturn = SFH_ResolveDatasetElementFromJSON(exd, SF_OP_TPFIT, 1, checkExist = 1)
 	SFH_ASSERT(IsTextWave(wReturn), "TPFit return what argument must be textual.")
 	SFH_ASSERT(DimSize(wReturn, ROWS) == 1, "TPFit return what argument must be a single string.")
 	retVal = wReturn[0]
 	SFH_ASSERT(!CmpStr(retVal, SF_OP_TPFIT_RET_TAULARGE) || !CmpStr(retVal, SF_OP_TPFIT_RET_TAUSMALL) || !CmpStr(retVal, SF_OP_TPFIT_RET_AMP) || !CmpStr(retVal, SF_OP_TPFIT_RET_MINAMP) || !CmpStr(retVal, SF_OP_TPFIT_RET_FITQUALITY), "TP fit result must be tau, tausmall, amp, minabsamp, fitq")
 
-	maxTrailLength = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_TPFIT, 2, defValue = 250)
+	maxTrailLength = SFH_GetArgumentAsNumeric(exd, SF_OP_TPFIT, 2, defValue = 250)
 
 	Make/FREE/T fitSettingsT = {func, retVal}
 	SetDimLabel ROWS, 0, FITFUNCTION, fitSettingsT
@@ -500,43 +500,43 @@ Function/WAVE SFOTP_OperationTPFit(variable jsonId, string jsonPath, string grap
 	Make/FREE/D fitSettings = {maxTrailLength}
 	SetDimLabel ROWS, 0, MAXTRAILLENGTH, fitSettings
 
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, 2)
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 2)
 	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_TPFIT)
 
 	output[0] = fitSettingsT
 	output[1] = fitSettings
 
-	return SFH_GetOutputForExecutor(output, graph, opShort)
+	return SFH_GetOutputForExecutor(output, exd.graph, opShort)
 End
 
 // tpinst()
-Function/WAVE SFOTP_OperationTPInst(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFOTP_OperationTPInst(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs, outType
 	string opShort = SF_OP_TPINST
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 	SFH_ASSERT(numArgs == 0, "tpinst has no arguments")
 
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, 0)
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 0)
 	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_TPINST)
 
-	return SFH_GetOutputForExecutor(output, graph, opShort)
+	return SFH_GetOutputForExecutor(output, exd.graph, opShort)
 End
 
 // tpss()
-Function/WAVE SFOTP_OperationTPSS(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFOTP_OperationTPSS(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs, outType
 	string opShort = SF_OP_TPSS
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 	SFH_ASSERT(numArgs == 0, "tpss has no arguments")
 
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, 0)
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 0)
 	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_TPSS)
 
-	return SFH_GetOutputForExecutor(output, graph, opShort)
+	return SFH_GetOutputForExecutor(output, exd.graph, opShort)
 End
 
 static Function/WAVE SFOTP_FilterEpochs(WAVE/Z epochs, WAVE/Z ignoreTPs)

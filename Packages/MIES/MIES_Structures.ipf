@@ -671,3 +671,12 @@ Structure SF_SelectParameters
 	variable sciIndex // result from selsciindex(x), x if this argument was given, NaN otherwise
 	variable racIndex // result from selracindex(x), x if this argument was given, NaN otherwise
 EndStructure
+
+/// @brief Sweepformula execution data
+///        The structure wraps the data that is used by the executor and the argument getters for SF
+///        It has to be treated outside of the SF execution as READ-ONLY (e.g. in SF operation code)
+Structure SF_ExecutionData
+	string graph // SF graph window name
+	variable jsonId // jsonId of parsed SF formula
+	string jsonPath // current path for execution of the parsed formula
+EndStructure

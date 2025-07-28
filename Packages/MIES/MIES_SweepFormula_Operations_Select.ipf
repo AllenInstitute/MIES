@@ -48,7 +48,7 @@ static StrConstant DB_EXPNAME_DUMMY = "|DataBrowserExperiment|"
 /// returns 2 datasets, main wave typed SF_DATATYPE_SELECTCOMP
 /// dataset 0: N x 3 with columns [sweepNr][channelType][channelNr], typed SF_DATATYPE_SELECT
 /// dataset 1: WaveRef wave with range specifications, typed SF_DATATYPE_SELECTRANGE
-Function/WAVE SFOS_OperationSelect(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFOS_OperationSelect(STRUCT SF_ExecutionData &exd)
 
 	STRUCT SF_SelectParameters filter
 	variable i, numArgs, selectArgPresent
@@ -58,9 +58,9 @@ Function/WAVE SFOS_OperationSelect(variable jsonId, string jsonPath, string grap
 
 	SFOS_InitSelectFilterUninitalized(filter)
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 	for(i = 0; i < numArgs; i += 1)
-		WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, i)
+		WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, i)
 		SFH_ASSERT(DimSize(input, ROWS) >= 1, "Expected at least one dataset")
 		type = JWN_GetStringFromWaveNote(input, SF_META_DATATYPE)
 		WAVE/Z arg = input[0]
@@ -197,31 +197,31 @@ Function/WAVE SFOS_OperationSelect(variable jsonId, string jsonPath, string grap
 		endswitch
 	endfor
 
-	SFOS_SetSelectionFilterDefaults(graph, filter, selectArgPresent)
+	SFOS_SetSelectionFilterDefaults(exd.graph, filter, selectArgPresent)
 
 	if(!IsEmpty(expName))
-		filter.experimentName = SFOS_GetSelectionExperiment(graph, expName)
+		filter.experimentName = SFOS_GetSelectionExperiment(exd.graph, expName)
 	endif
 	if(!IsEmpty(device))
-		filter.device = SFOS_GetSelectionDevice(graph, device)
+		filter.device = SFOS_GetSelectionDevice(exd.graph, device)
 	endif
 
-	WAVE/Z selectData = SFOS_GetSelectData(graph, filter)
+	WAVE/Z selectData = SFOS_GetSelectData(exd.graph, filter)
 	if(WaveExists(selectData))
 		if(!IsNaN(filter.racIndex))
-			WAVE/Z racSelectData = SFOS_GetSelectDataWithRACorSCIIndex(graph, selectData, filter.racIndex, SELECTDATA_MODE_RAC)
+			WAVE/Z racSelectData = SFOS_GetSelectDataWithRACorSCIIndex(exd.graph, selectData, filter.racIndex, SELECTDATA_MODE_RAC)
 			WAVE/Z selectData    = racSelectData
 		endif
 		if(!IsNaN(filter.sciIndex))
-			WAVE/Z sciSelectData = SFOS_GetSelectDataWithRACorSCIIndex(graph, selectData, filter.sciIndex, SELECTDATA_MODE_SCI)
+			WAVE/Z sciSelectData = SFOS_GetSelectDataWithRACorSCIIndex(exd.graph, selectData, filter.sciIndex, SELECTDATA_MODE_SCI)
 			WAVE/Z selectData    = sciSelectData
 		endif
 		// SCI is a subset of RAC, thus if RAC and SCI is enabled then it is sufficient to extend through RAC
 		if(filter.expandRAC)
-			WAVE selectWithRACFilledUp = SFOS_GetSelectDataWithSCIorRAC(graph, selectData, filter, SELECTDATA_MODE_RAC)
+			WAVE selectWithRACFilledUp = SFOS_GetSelectDataWithSCIorRAC(exd.graph, selectData, filter, SELECTDATA_MODE_RAC)
 			WAVE selectData            = selectWithRACFilledUp
 		elseif(filter.expandSCI)
-			WAVE selectWithSCIFilledUp = SFOS_GetSelectDataWithSCIorRAC(graph, selectData, filter, SELECTDATA_MODE_SCI)
+			WAVE selectWithSCIFilledUp = SFOS_GetSelectDataWithSCIorRAC(exd.graph, selectData, filter, SELECTDATA_MODE_SCI)
 			WAVE selectData            = selectWithSCIFilledUp
 		endif
 		if(filter.expandSCI || filter.expandRAC)
@@ -244,7 +244,7 @@ Function/WAVE SFOS_OperationSelect(variable jsonId, string jsonPath, string grap
 		WAVE selectResult = selectData
 	endif
 
-	WAVE/WAVE output = GetSFSelectDataComp(graph, SF_OP_SELECT)
+	WAVE/WAVE output = GetSFSelectDataComp(exd.graph, SF_OP_SELECT)
 	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_SELECTCOMP)
 	JWN_SetStringInWaveNote(filter.ranges, SF_META_DATATYPE, SF_DATATYPE_SELECTRANGE)
 	if(WaveExists(selectResult))
@@ -256,23 +256,23 @@ Function/WAVE SFOS_OperationSelect(variable jsonId, string jsonPath, string grap
 	output[%SELECTION] = selectResult
 	output[%RANGE]     = filter.ranges
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_SELECT)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_SELECT)
 End
 
 /// `selchannels([str name]+)` converts a named channel from string to numbers.
 ///
 /// returns [[channelName, channelNumber]+]
-Function/WAVE SFOS_OperationSelectChannels(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFOS_OperationSelectChannels(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs, i, channelType
 	string channelName, channelNumber
 	string regExp = "^(?i)(" + ReplaceString(";", XOP_CHANNEL_NAMES, "|") + ")([0-9]+)?$"
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 	WAVE channels = SFOS_NewChannelsWave(numArgs ? numArgs : 1)
 	for(i = 0; i < numArgs; i += 1)
 		channelName = ""
-		WAVE chanSpec = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_SELECTCHANNELS, i, singleResult = 1)
+		WAVE chanSpec = SFH_GetArgumentAsWave(exd, SF_OP_SELECTCHANNELS, i, singleResult = 1)
 		if(IsNumericWave(chanSpec))
 			channels[i][%channelNumber] = chanSpec[0]
 		elseif(IsTextWave(chanSpec))
@@ -294,24 +294,24 @@ Function/WAVE SFOS_OperationSelectChannels(variable jsonId, string jsonPath, str
 		endif
 	endfor
 
-	return SFH_GetOutputForExecutorSingle(channels, graph, SF_OP_SELECTCHANNELS, discardOpStack = 1, dataType = SF_DATATYPE_CHANNELS)
+	return SFH_GetOutputForExecutorSingle(channels, exd.graph, SF_OP_SELECTCHANNELS, discardOpStack = 1, dataType = SF_DATATYPE_CHANNELS)
 End
 
 /// `selcm(mode, mode, ...)` // mode can be `ic`, `vc`, `izero`, `all`
 /// see @ref SFClampModeStrings
 ///
 /// returns a one element numeric wave with SF_OP_SELECTCM_CLAMPMODE_* ORed together from all arguments, see @ref SFClampcodeConstants
-Function/WAVE SFOS_OperationSelectCM(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFOS_OperationSelectCM(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs, i, mode
 	string clampMode
 
-	numArgs = SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTCM, 0)
+	numArgs = SFH_CheckArgumentCount(exd, SF_OP_SELECTCM, 0)
 	if(!numArgs)
 		mode = SF_OP_SELECT_CLAMPCODE_ALL
 	else
 		for(i = 0; i < numArgs; i += 1)
-			clampMode = SFH_GetArgumentAsText(jsonId, jsonPath, graph, SF_OP_SELECTCM, i, allowedValues = {SF_OP_SELECTCM_CLAMPMODE_ALL, SF_OP_SELECTCM_CLAMPMODE_NONE, SF_OP_SELECTCM_CLAMPMODE_IZERO, SF_OP_SELECTCM_CLAMPMODE_IC, SF_OP_SELECTCM_CLAMPMODE_VC}, defValue = SF_OP_SELECTCM_CLAMPMODE_ALL)
+			clampMode = SFH_GetArgumentAsText(exd, SF_OP_SELECTCM, i, allowedValues = {SF_OP_SELECTCM_CLAMPMODE_ALL, SF_OP_SELECTCM_CLAMPMODE_NONE, SF_OP_SELECTCM_CLAMPMODE_IZERO, SF_OP_SELECTCM_CLAMPMODE_IC, SF_OP_SELECTCM_CLAMPMODE_VC}, defValue = SF_OP_SELECTCM_CLAMPMODE_ALL)
 
 			strswitch(clampMode)
 				case SF_OP_SELECTCM_CLAMPMODE_ALL:
@@ -337,209 +337,209 @@ Function/WAVE SFOS_OperationSelectCM(variable jsonId, string jsonPath, string gr
 
 	Make/FREE output = {mode}
 
-	return SFH_GetOutputForExecutorSingle(output, graph, SF_OP_SELECTCM, discardOpStack = 1, dataType = SF_DATATYPE_SELECTCM)
+	return SFH_GetOutputForExecutorSingle(output, exd.graph, SF_OP_SELECTCM, discardOpStack = 1, dataType = SF_DATATYPE_SELECTCM)
 End
 
 /// `seldev(device)` // device is a string with optional wildcards
 ///
 /// returns a one element text wave
-Function/WAVE SFOS_OperationSelectDevice(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFOS_OperationSelectDevice(STRUCT SF_ExecutionData &exd)
 
 	string expName
 
-	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTDEV, 1, maxArgs = 1)
+	SFH_CheckArgumentCount(exd, SF_OP_SELECTDEV, 1, maxArgs = 1)
 
-	expName = SFH_GetArgumentAsText(jsonId, jsonPath, graph, SF_OP_SELECTDEV, 0)
+	expName = SFH_GetArgumentAsText(exd, SF_OP_SELECTDEV, 0)
 	Make/FREE/T output = {expName}
 
-	return SFH_GetOutputForExecutorSingle(output, graph, SF_OP_SELECTDEV, discardOpStack = 1, dataType = SF_DATATYPE_SELECTDEV)
+	return SFH_GetOutputForExecutorSingle(output, exd.graph, SF_OP_SELECTDEV, discardOpStack = 1, dataType = SF_DATATYPE_SELECTDEV)
 End
 
 /// `selexpandrac()` // no arguments
 ///
 /// returns a one element numeric wave
-Function/WAVE SFOS_OperationSelectExpandRAC(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFOS_OperationSelectExpandRAC(STRUCT SF_ExecutionData &exd)
 
-	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTEXPANDRAC, 0, maxArgs = 0)
+	SFH_CheckArgumentCount(exd, SF_OP_SELECTEXPANDRAC, 0, maxArgs = 0)
 
 	Make/FREE/D output = {1}
 
-	return SFH_GetOutputForExecutorSingle(output, graph, SF_OP_SELECTEXPANDRAC, discardOpStack = 1, dataType = SF_DATATYPE_SELECTEXPANDRAC)
+	return SFH_GetOutputForExecutorSingle(output, exd.graph, SF_OP_SELECTEXPANDRAC, discardOpStack = 1, dataType = SF_DATATYPE_SELECTEXPANDRAC)
 End
 
 /// `selexpandsci()` // no arguments
 ///
 /// returns a one element numeric wave
-Function/WAVE SFOS_OperationSelectExpandSCI(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFOS_OperationSelectExpandSCI(STRUCT SF_ExecutionData &exd)
 
-	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTEXPANDSCI, 0, maxArgs = 0)
+	SFH_CheckArgumentCount(exd, SF_OP_SELECTEXPANDSCI, 0, maxArgs = 0)
 
 	Make/FREE/D output = {1}
 
-	return SFH_GetOutputForExecutorSingle(output, graph, SF_OP_SELECTEXPANDSCI, discardOpStack = 1, dataType = SF_DATATYPE_SELECTEXPANDSCI)
+	return SFH_GetOutputForExecutorSingle(output, exd.graph, SF_OP_SELECTEXPANDSCI, discardOpStack = 1, dataType = SF_DATATYPE_SELECTEXPANDSCI)
 End
 
 /// `selexp(expName)` // expName is a string with optional wildcards
 ///
 /// returns a one element text wave
-Function/WAVE SFOS_OperationSelectExperiment(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFOS_OperationSelectExperiment(STRUCT SF_ExecutionData &exd)
 
 	string expName
 
-	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTEXP, 1, maxArgs = 1)
+	SFH_CheckArgumentCount(exd, SF_OP_SELECTEXP, 1, maxArgs = 1)
 
-	expName = SFH_GetArgumentAsText(jsonId, jsonPath, graph, SF_OP_SELECTEXP, 0)
+	expName = SFH_GetArgumentAsText(exd, SF_OP_SELECTEXP, 0)
 	Make/FREE/T output = {expName}
 
-	return SFH_GetOutputForExecutorSingle(output, graph, SF_OP_SELECTEXP, discardOpStack = 1, dataType = SF_DATATYPE_SELECTEXP)
+	return SFH_GetOutputForExecutorSingle(output, exd.graph, SF_OP_SELECTEXP, discardOpStack = 1, dataType = SF_DATATYPE_SELECTEXP)
 End
 
 /// `SelIVSCCSetQC(passed | failed)`
 ///
 /// returns a one element numeric wave with either SF_OP_SELECT_IVSCCSETQC_PASSED or SF_OP_SELECT_IVSCCSETQC_FAILED
-Function/WAVE SFOS_OperationSelectIVSCCSetQC(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFOS_OperationSelectIVSCCSetQC(STRUCT SF_ExecutionData &exd)
 
 	variable mode
 	string   arg
 
-	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTIVSCCSETQC, 1, maxArgs = 1)
+	SFH_CheckArgumentCount(exd, SF_OP_SELECTIVSCCSETQC, 1, maxArgs = 1)
 
-	arg  = SFH_GetArgumentAsText(jsonId, jsonPath, graph, SF_OP_SELECTIVSCCSETQC, 0, allowedValues = {SF_OP_SELECT_IVSCCQC_PASSED, SF_OP_SELECT_IVSCCQC_FAILED})
+	arg  = SFH_GetArgumentAsText(exd, SF_OP_SELECTIVSCCSETQC, 0, allowedValues = {SF_OP_SELECT_IVSCCQC_PASSED, SF_OP_SELECT_IVSCCQC_FAILED})
 	mode = !CmpStr(arg, SF_OP_SELECT_IVSCCQC_PASSED) ? SF_OP_SELECT_IVSCCSETQC_PASSED : SF_OP_SELECT_IVSCCSETQC_FAILED
 
 	Make/FREE output = {mode}
 
-	return SFH_GetOutputForExecutorSingle(output, graph, SF_OP_SELECTIVSCCSETQC, discardOpStack = 1, dataType = SF_DATATYPE_SELECTIVSCCSETQC)
+	return SFH_GetOutputForExecutorSingle(output, exd.graph, SF_OP_SELECTIVSCCSETQC, discardOpStack = 1, dataType = SF_DATATYPE_SELECTIVSCCSETQC)
 End
 
 /// `SelIVSCCSweepQC(passed | failed)`
 ///
 /// returns a one element numeric wave with either SF_OP_SELECT_IVSCCSWEEPQC_PASSED or SF_OP_SELECT_IVSCCSWEEPQC_FAILED
-Function/WAVE SFOS_OperationSelectIVSCCSweepQC(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFOS_OperationSelectIVSCCSweepQC(STRUCT SF_ExecutionData &exd)
 
 	variable mode
 	string   arg
 
-	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTIVSCCSWEEPQC, 1, maxArgs = 1)
+	SFH_CheckArgumentCount(exd, SF_OP_SELECTIVSCCSWEEPQC, 1, maxArgs = 1)
 
-	arg  = SFH_GetArgumentAsText(jsonId, jsonPath, graph, SF_OP_SELECTIVSCCSWEEPQC, 0, allowedValues = {SF_OP_SELECT_IVSCCQC_PASSED, SF_OP_SELECT_IVSCCQC_FAILED})
+	arg  = SFH_GetArgumentAsText(exd, SF_OP_SELECTIVSCCSWEEPQC, 0, allowedValues = {SF_OP_SELECT_IVSCCQC_PASSED, SF_OP_SELECT_IVSCCQC_FAILED})
 	mode = !CmpStr(arg, SF_OP_SELECT_IVSCCQC_PASSED) ? SF_OP_SELECT_IVSCCSWEEPQC_PASSED : SF_OP_SELECT_IVSCCSWEEPQC_FAILED
 
 	Make/FREE output = {mode}
 
-	return SFH_GetOutputForExecutorSingle(output, graph, SF_OP_SELECTIVSCCSWEEPQC, discardOpStack = 1, dataType = SF_DATATYPE_SELECTIVSCCSWEEPQC)
+	return SFH_GetOutputForExecutorSingle(output, exd.graph, SF_OP_SELECTIVSCCSWEEPQC, discardOpStack = 1, dataType = SF_DATATYPE_SELECTIVSCCSWEEPQC)
 End
 
 /// `selracindex(x)` // one numeric argument
 ///
 /// returns a one element numeric wave
-Function/WAVE SFOS_OperationSelectRACIndex(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFOS_OperationSelectRACIndex(STRUCT SF_ExecutionData &exd)
 
 	variable value
 
-	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTRACINDEX, 1, maxArgs = 1)
+	SFH_CheckArgumentCount(exd, SF_OP_SELECTRACINDEX, 1, maxArgs = 1)
 
-	value = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_SELECTRACINDEX, 0)
+	value = SFH_GetArgumentAsNumeric(exd, SF_OP_SELECTRACINDEX, 0)
 	Make/FREE/D output = {value}
 
-	return SFH_GetOutputForExecutorSingle(output, graph, SF_OP_SELECTRACINDEX, discardOpStack = 1, dataType = SF_DATATYPE_SELECTRACINDEX)
+	return SFH_GetOutputForExecutorSingle(output, exd.graph, SF_OP_SELECTRACINDEX, discardOpStack = 1, dataType = SF_DATATYPE_SELECTRACINDEX)
 End
 
 /// `selrange(rangespec)`
 ///
 /// returns 1 dataset with range specification (either text or 2 point numerical wave)
-Function/WAVE SFOS_OperationSelectRange(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFOS_OperationSelectRange(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs
 
-	numArgs = SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTRANGE, 0, maxArgs = 1)
+	numArgs = SFH_CheckArgumentCount(exd, SF_OP_SELECTRANGE, 0, maxArgs = 1)
 	if(!numArgs)
 		WAVE/WAVE range = SFH_AsDataSet(SFH_GetFullRange())
 	else
-		WAVE/WAVE range = SFH_EvaluateRange(jsonId, jsonPath, graph, SF_OP_SELECTRANGE, 0)
+		WAVE/WAVE range = SFH_EvaluateRange(exd, SF_OP_SELECTRANGE, 0)
 	endif
 
-	return SFH_GetOutputForExecutorSingle(range, graph, SF_OP_SELECTRANGE, discardOpStack = 1, dataType = SF_DATATYPE_SELECTRANGE)
+	return SFH_GetOutputForExecutorSingle(range, exd.graph, SF_OP_SELECTRANGE, discardOpStack = 1, dataType = SF_DATATYPE_SELECTRANGE)
 End
 
 /// `selsciindex(x)` // one numeric argument
 ///
 /// returns a one element numeric wave
-Function/WAVE SFOS_OperationSelectSCIIndex(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFOS_OperationSelectSCIIndex(STRUCT SF_ExecutionData &exd)
 
 	variable value
 
-	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTSCIINDEX, 1, maxArgs = 1)
+	SFH_CheckArgumentCount(exd, SF_OP_SELECTSCIINDEX, 1, maxArgs = 1)
 
-	value = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_SELECTSCIINDEX, 0)
+	value = SFH_GetArgumentAsNumeric(exd, SF_OP_SELECTSCIINDEX, 0)
 	Make/FREE/D output = {value}
 
-	return SFH_GetOutputForExecutorSingle(output, graph, SF_OP_SELECTSCIINDEX, discardOpStack = 1, dataType = SF_DATATYPE_SELECTSCIINDEX)
+	return SFH_GetOutputForExecutorSingle(output, exd.graph, SF_OP_SELECTSCIINDEX, discardOpStack = 1, dataType = SF_DATATYPE_SELECTSCIINDEX)
 End
 
 /// `selsetcyclecount(x)` // one numeric argument
 ///
 /// returns a one element numeric wave
-Function/WAVE SFOS_OperationSelectSetCycleCount(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFOS_OperationSelectSetCycleCount(STRUCT SF_ExecutionData &exd)
 
 	variable value
 
-	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTSETCYCLECOUNT, 1, maxArgs = 1)
+	SFH_CheckArgumentCount(exd, SF_OP_SELECTSETCYCLECOUNT, 1, maxArgs = 1)
 
-	value = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_SELECTSETCYCLECOUNT, 0)
+	value = SFH_GetArgumentAsNumeric(exd, SF_OP_SELECTSETCYCLECOUNT, 0)
 	Make/FREE/D output = {value}
 
-	return SFH_GetOutputForExecutorSingle(output, graph, SF_OP_SELECTSETCYCLECOUNT, discardOpStack = 1, dataType = SF_DATATYPE_SELECTSETCYCLECOUNT)
+	return SFH_GetOutputForExecutorSingle(output, exd.graph, SF_OP_SELECTSETCYCLECOUNT, discardOpStack = 1, dataType = SF_DATATYPE_SELECTSETCYCLECOUNT)
 End
 
 /// `selsetsweepcount(x)` // one numeric argument
 ///
 /// returns a one element numeric wave
-Function/WAVE SFOS_OperationSelectSetSweepCount(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFOS_OperationSelectSetSweepCount(STRUCT SF_ExecutionData &exd)
 
 	variable value
 
-	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTSETSWEEPCOUNT, 1, maxArgs = 1)
+	SFH_CheckArgumentCount(exd, SF_OP_SELECTSETSWEEPCOUNT, 1, maxArgs = 1)
 
-	value = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_SELECTSETSWEEPCOUNT, 0)
+	value = SFH_GetArgumentAsNumeric(exd, SF_OP_SELECTSETSWEEPCOUNT, 0)
 	Make/FREE/D output = {value}
 
-	return SFH_GetOutputForExecutorSingle(output, graph, SF_OP_SELECTSETSWEEPCOUNT, discardOpStack = 1, dataType = SF_DATATYPE_SELECTSETSWEEPCOUNT)
+	return SFH_GetOutputForExecutorSingle(output, exd.graph, SF_OP_SELECTSETSWEEPCOUNT, discardOpStack = 1, dataType = SF_DATATYPE_SELECTSETSWEEPCOUNT)
 End
 
 /// `selstimset(stimsetName, stimsetName, ...)`
 ///
 /// returns a N element text wave with stimset names
-Function/WAVE SFOS_OperationSelectStimset(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFOS_OperationSelectStimset(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs, i
 
-	numArgs = SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTSTIMSET, 0)
+	numArgs = SFH_CheckArgumentCount(exd, SF_OP_SELECTSTIMSET, 0)
 
 	if(!numArgs)
 		Make/FREE/T output = {SF_OP_SELECT_STIMSETS_ALL}
 	else
 		Make/FREE/T/N=(numArgs) output
 		for(i = 0; i < numArgs; i += 1)
-			output[i] = SFH_GetArgumentAsText(jsonId, jsonPath, graph, SF_OP_SELECTSTIMSET, i)
+			output[i] = SFH_GetArgumentAsText(exd, SF_OP_SELECTSTIMSET, i)
 		endfor
 	endif
 
-	return SFH_GetOutputForExecutorSingle(output, graph, SF_OP_SELECTSTIMSET, discardOpStack = 1, dataType = SF_DATATYPE_SELECTSTIMSET)
+	return SFH_GetOutputForExecutorSingle(output, exd.graph, SF_OP_SELECTSTIMSET, discardOpStack = 1, dataType = SF_DATATYPE_SELECTSTIMSET)
 End
 
 /// `selsweeps()`, `selsweeps(1,2,3, [4...6])`
 /// returns all possible sweeps as 1d array
-Function/WAVE SFOS_OperationSelectSweeps(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFOS_OperationSelectSweeps(STRUCT SF_ExecutionData &exd)
 
 	variable i, numArgs
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 	if(!numArgs)
-		WAVE/Z/D sweeps = OVS_GetSelectedSweeps(graph, OVS_SWEEP_ALL_SWEEPNO)
+		WAVE/Z/D sweeps = OVS_GetSelectedSweeps(exd.graph, OVS_SWEEP_ALL_SWEEPNO)
 	else
 		for(i = 0; i < numArgs; i += 1)
-			WAVE data = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_SELECTSWEEPS, i, singleResult = 1, expectedMinorType = IGOR_TYPE_64BIT_FLOAT)
+			WAVE data = SFH_GetArgumentAsWave(exd, SF_OP_SELECTSWEEPS, i, singleResult = 1, expectedMinorType = IGOR_TYPE_64BIT_FLOAT)
 			SFH_ASSERT(!DimSize(data, COLS), "Argument of selsweeps must be a number or a 1d numeric array")
 			Concatenate/FREE/D/NP {data}, sweeps
 		endfor
@@ -550,22 +550,22 @@ Function/WAVE SFOS_OperationSelectSweeps(variable jsonId, string jsonPath, strin
 		WAVE/ZZ uniqueSweeps
 	endif
 
-	return SFH_GetOutputForExecutorSingle(uniqueSweeps, graph, SF_OP_SELECTSWEEPS, discardOpStack = 1, dataType = SF_DATATYPE_SWEEPNO)
+	return SFH_GetOutputForExecutorSingle(uniqueSweeps, exd.graph, SF_OP_SELECTSWEEPS, discardOpStack = 1, dataType = SF_DATATYPE_SWEEPNO)
 End
 
 /// `selvis(mode)` // mode can be `all` or `displayed`
 ///
 /// returns a one element text wave with either SF_OP_SELECTVIS_ALL or SF_OP_SELECTVIS_DISPLAYED
-Function/WAVE SFOS_OperationSelectVis(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFOS_OperationSelectVis(STRUCT SF_ExecutionData &exd)
 
 	string vis
 
-	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTVIS, 0, maxArgs = 1)
+	SFH_CheckArgumentCount(exd, SF_OP_SELECTVIS, 0, maxArgs = 1)
 
-	vis = SFH_GetArgumentAsText(jsonId, jsonPath, graph, SF_OP_SELECTVIS, 0, allowedValues = {SF_OP_SELECTVIS_DISPLAYED, SF_OP_SELECTVIS_ALL}, defValue = SF_OP_SELECTVIS_DISPLAYED)
+	vis = SFH_GetArgumentAsText(exd, SF_OP_SELECTVIS, 0, allowedValues = {SF_OP_SELECTVIS_DISPLAYED, SF_OP_SELECTVIS_ALL}, defValue = SF_OP_SELECTVIS_DISPLAYED)
 	Make/FREE/T output = {vis}
 
-	return SFH_GetOutputForExecutorSingle(output, graph, SF_OP_SELECTVIS, discardOpStack = 1, dataType = SF_DATATYPE_SELECTVIS)
+	return SFH_GetOutputForExecutorSingle(output, exd.graph, SF_OP_SELECTVIS, discardOpStack = 1, dataType = SF_DATATYPE_SELECTVIS)
 End
 
 static Function SFOS_InitSelectFilterUninitalized(STRUCT SF_SelectParameters &s)

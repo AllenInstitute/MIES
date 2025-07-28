@@ -57,21 +57,21 @@ static Constant    SF_POWERSPECTRUM_RATIO_GAUSS_NUMCOEFS   = 4
 
 static StrConstant SF_AVERAGING_NONSWEEPDATA_LBL = "NOSWEEPDATA"
 
-Function/WAVE SFO_OperationAnaFuncParam(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationAnaFuncParam(STRUCT SF_ExecutionData &exd)
 
-	SFH_CheckArgumentCount(jsonID, jsonPath, SF_OP_ANAFUNCPARAM, 0, maxArgs = 2)
+	SFH_CheckArgumentCount(exd, SF_OP_ANAFUNCPARAM, 0, maxArgs = 2)
 
-	WAVE/T names      = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_ANAFUNCPARAM, 0, singleResult = 1)
-	WAVE/Z selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_DATA, 1)
+	WAVE/T names      = SFH_GetArgumentAsWave(exd, SF_OP_ANAFUNCPARAM, 0, singleResult = 1)
+	WAVE/Z selectData = SFH_GetArgumentSelect(exd, SF_OP_DATA, 1)
 
-	WAVE/WAVE output = SFO_OperationAnaFuncParamIterate(graph, names, selectData, SF_OP_ANAFUNCPARAM)
+	WAVE/WAVE output = SFO_OperationAnaFuncParamIterate(exd.graph, names, selectData, SF_OP_ANAFUNCPARAM)
 
 	JWN_SetStringInWaveNote(output, SF_META_OPSTACK, AddListItem(SF_OP_ANAFUNCPARAM, ""))
 	JWN_SetStringInWaveNote(output, SF_META_WINDOW_HOOK, "TraceValueDisplayHook")
 
 	SF_SetSweepXAxisTickLabels(output, selectData)
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_ANAFUNCPARAM)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_ANAFUNCPARAM)
 End
 
 Function/WAVE SFO_OperationAnaFuncParamIterate(string graph, WAVE/T names, WAVE/Z/WAVE selectDataArray, string opShort)
@@ -232,7 +232,7 @@ static Function/WAVE SFO_OperationAnaFuncParamImplAllNames(WAVE/T names, WAVE/WA
 End
 
 // apfrequency(data, [frequency calculation method], [spike detection crossing level], [result value type], [normalize], [x-axis type])
-Function/WAVE SFO_OperationApFrequency(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationApFrequency(STRUCT SF_ExecutionData &exd)
 
 	variable i, numArgs, keepX, method, level, normValue
 	string xLabel, methodStr, timeFreq, normalize, xAxisType
@@ -240,24 +240,24 @@ Function/WAVE SFO_OperationApFrequency(variable jsonId, string jsonPath, string 
 	variable numArgsMin = 1
 	variable numArgsMax = 6
 
-	numArgs = SFH_GetNumberOfArguments(jsonID, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 	SFH_ASSERT(numArgs <= numArgsMax, "ApFrequency has " + num2istr(numArgsMax) + " arguments at most.")
 	SFH_ASSERT(numArgs >= numArgsMin, "ApFrequency needs at least " + num2istr(numArgsMin) + " argument(s).")
 
-	WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonID, jsonPath, graph, 0)
-	method    = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, opShort, 1, defValue = SF_APFREQUENCY_FULL, allowedValues = {SF_APFREQUENCY_FULL, SF_APFREQUENCY_INSTANTANEOUS, SF_APFREQUENCY_APCOUNT, SF_APFREQUENCY_INSTANTANEOUS_PAIR})
-	level     = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, opShort, 2, defValue = 0)
-	timeFreq  = SFH_GetArgumentAsText(jsonId, jsonPath, graph, opShort, 3, defValue = SF_OP_APFREQUENCY_Y_FREQ, allowedValues = {SF_OP_APFREQUENCY_Y_TIME, SF_OP_APFREQUENCY_Y_FREQ})
-	normalize = SFH_GetArgumentAsText(jsonId, jsonPath, graph, opShort, 4, defValue = SF_OP_APFREQUENCY_NONORM, allowedValues = {                                      \
-	                                                                                                                             SF_OP_APFREQUENCY_NONORM,             \
-	                                                                                                                             SF_OP_APFREQUENCY_NORMOVERSWEEPSMIN,  \
-	                                                                                                                             SF_OP_APFREQUENCY_NORMOVERSWEEPSMAX,  \
-	                                                                                                                             SF_OP_APFREQUENCY_NORMOVERSWEEPSAVG,  \
-	                                                                                                                             SF_OP_APFREQUENCY_NORMWITHINSWEEPMIN, \
-	                                                                                                                             SF_OP_APFREQUENCY_NORMWITHINSWEEPMAX, \
-	                                                                                                                             SF_OP_APFREQUENCY_NORMWITHINSWEEPAVG  \
-	                                                                                                                            })
-	xAxisType = SFH_GetArgumentAsText(jsonId, jsonPath, graph, opShort, 5, defValue = SF_OP_APFREQUENCY_X_TIME, allowedValues = {SF_OP_APFREQUENCY_X_TIME, SF_OP_APFREQUENCY_X_COUNT})
+	WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, 0)
+	method    = SFH_GetArgumentAsNumeric(exd, opShort, 1, defValue = SF_APFREQUENCY_FULL, allowedValues = {SF_APFREQUENCY_FULL, SF_APFREQUENCY_INSTANTANEOUS, SF_APFREQUENCY_APCOUNT, SF_APFREQUENCY_INSTANTANEOUS_PAIR})
+	level     = SFH_GetArgumentAsNumeric(exd, opShort, 2, defValue = 0)
+	timeFreq  = SFH_GetArgumentAsText(exd, opShort, 3, defValue = SF_OP_APFREQUENCY_Y_FREQ, allowedValues = {SF_OP_APFREQUENCY_Y_TIME, SF_OP_APFREQUENCY_Y_FREQ})
+	normalize = SFH_GetArgumentAsText(exd, opShort, 4, defValue = SF_OP_APFREQUENCY_NONORM, allowedValues = {                                      \
+	                                                                                                         SF_OP_APFREQUENCY_NONORM,             \
+	                                                                                                         SF_OP_APFREQUENCY_NORMOVERSWEEPSMIN,  \
+	                                                                                                         SF_OP_APFREQUENCY_NORMOVERSWEEPSMAX,  \
+	                                                                                                         SF_OP_APFREQUENCY_NORMOVERSWEEPSAVG,  \
+	                                                                                                         SF_OP_APFREQUENCY_NORMWITHINSWEEPMIN, \
+	                                                                                                         SF_OP_APFREQUENCY_NORMWITHINSWEEPMAX, \
+	                                                                                                         SF_OP_APFREQUENCY_NORMWITHINSWEEPAVG  \
+	                                                                                                        })
+	xAxisType = SFH_GetArgumentAsText(exd, opShort, 5, defValue = SF_OP_APFREQUENCY_X_TIME, allowedValues = {SF_OP_APFREQUENCY_X_TIME, SF_OP_APFREQUENCY_X_COUNT})
 
 	WAVE/T argSetup = SFH_GetNewArgSetupWave(numArgsMax - 1)
 
@@ -274,7 +274,7 @@ Function/WAVE SFO_OperationApFrequency(variable jsonId, string jsonPath, string 
 
 	normValue = NaN
 	Make/FREE/D/N=0 normMean
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, DimSize(input, ROWS))
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, DimSize(input, ROWS))
 	output = SFO_OperationApFrequencyImpl(input[p], level, method, timeFreq, normalize, xAxisType, normValue, normMean)
 	if(!CmpStr(normalize, SF_OP_APFREQUENCY_NORMOVERSWEEPSAVG) && DimSize(normMean, ROWS))
 		normValue = mean(normMean)
@@ -291,7 +291,7 @@ Function/WAVE SFO_OperationApFrequency(variable jsonId, string jsonPath, string 
 
 	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, opShort, SF_DATATYPE_APFREQUENCY, keepX = keepX, argSetup = argSetup)
 
-	return SFH_GetOutputForExecutor(output, graph, opShort)
+	return SFH_GetOutputForExecutor(output, exd.graph, opShort)
 End
 
 static Function SFO_OperationApFrequencyNormalizeOverSweeps(WAVE/WAVE output, variable normValue)
@@ -437,25 +437,25 @@ static Function/WAVE SFO_ApFrequencyInstantaneousPairs(WAVE peaksAt, variable yM
 	return result
 End
 
-Function/WAVE SFO_OperationArea(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationArea(STRUCT SF_ExecutionData &exd)
 
 	variable zero, numArgs
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 	SFH_ASSERT(numArgs >= 1, "area requires at least one argument.")
 	SFH_ASSERT(numArgs <= 2, "area requires at most two arguments.")
 
-	WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonID, jsonPath, graph, 0)
+	WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, 0)
 
-	zero = !!SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_AREA, 1, defValue = 1)
+	zero = !!SFH_GetArgumentAsNumeric(exd, SF_OP_AREA, 1, defValue = 1)
 
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_AREA, DimSize(input, ROWS))
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_AREA, DimSize(input, ROWS))
 
 	output[] = SFO_OperationAreaImpl(input[p], zero)
 
 	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_AREA, SF_DATATYPE_AREA)
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_AREA, clear = input)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_AREA, clear = input)
 End
 
 static Function/WAVE SFO_OperationAreaImpl(WAVE/Z input, variable zero)
@@ -482,26 +482,26 @@ static Function/WAVE SFO_OperationAreaImpl(WAVE/Z input, variable zero)
 	return out
 End
 
-Function/WAVE SFO_OperationAvg(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationAvg(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs
 	string   mode
 	string opShort = SF_OP_AVG
 
-	numArgs = SFH_CheckArgumentCount(jsonID, jsonPath, opShort, 1, maxArgs = 2)
+	numArgs = SFH_CheckArgumentCount(exd, opShort, 1, maxArgs = 2)
 
-	WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonID, jsonPath, graph, 0)
-	mode = SFH_GetArgumentAsText(jsonId, jsonPath, graph, opShort, 1, defValue = SF_OP_AVG_INSWEEPS, allowedValues = {SF_OP_AVG_INSWEEPS, SF_OP_AVG_OVERSWEEPS})
+	WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, 0)
+	mode = SFH_GetArgumentAsText(exd, opShort, 1, defValue = SF_OP_AVG_INSWEEPS, allowedValues = {SF_OP_AVG_INSWEEPS, SF_OP_AVG_OVERSWEEPS})
 
 	strswitch(mode)
 		case SF_OP_AVG_INSWEEPS:
-			WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, DimSize(input, ROWS))
+			WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, DimSize(input, ROWS))
 			output[] = SFO_OperationAvgImplIn(input[p])
 			SFH_TransferFormulaDataWaveNoteAndMeta(input, output, opShort, SF_DATATYPE_AVG)
-			return SFH_GetOutputForExecutor(output, graph, opShort, clear = input)
+			return SFH_GetOutputForExecutor(output, exd.graph, opShort, clear = input)
 
 		case SF_OP_AVG_OVERSWEEPS:
-			return SFO_OperationAvgImplOver(input, graph, opShort)
+			return SFO_OperationAvgImplOver(input, exd.graph, opShort)
 
 		default:
 			FATAL_ERROR("Unknown avg operation mode")
@@ -560,24 +560,24 @@ static Function/WAVE SFO_OperationAvgImplIn(WAVE/Z input)
 End
 
 /// `butterworth(data, lowPassCutoff, highPassCutoff, order)`
-Function/WAVE SFO_OperationButterworth(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationButterworth(STRUCT SF_ExecutionData &exd)
 
 	variable lowPassCutoff, highPassCutoff, order
 
-	SFH_CheckArgumentCount(jsonID, jsonPath, SF_OP_BUTTERWORTH, 4, maxArgs = 4)
+	SFH_CheckArgumentCount(exd, SF_OP_BUTTERWORTH, 4, maxArgs = 4)
 
-	WAVE/WAVE input = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 0, copy = 1)
-	lowPassCutoff  = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 1)
-	highPassCutoff = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 2)
-	order          = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 3)
+	WAVE/WAVE input = SFH_GetArgumentAsWave(exd, SF_OP_BUTTERWORTH, 0, copy = 1)
+	lowPassCutoff  = SFH_GetArgumentAsNumeric(exd, SF_OP_BUTTERWORTH, 1)
+	highPassCutoff = SFH_GetArgumentAsNumeric(exd, SF_OP_BUTTERWORTH, 2)
+	order          = SFH_GetArgumentAsNumeric(exd, SF_OP_BUTTERWORTH, 3)
 
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_BUTTERWORTH, DimSize(input, ROWS))
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_BUTTERWORTH, DimSize(input, ROWS))
 
 	output[] = SFO_OperationButterworthImpl(input[p], lowPassCutoff, highPassCutoff, order)
 
 	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_BUTTERWORTH, SF_DATATYPE_BUTTERWORTH)
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_BUTTERWORTH, clear = input)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_BUTTERWORTH, clear = input)
 End
 
 static Function/WAVE SFO_OperationButterworthImpl(WAVE/Z input, variable lowPassCutoff, variable highPassCutoff, variable order)
@@ -594,15 +594,15 @@ static Function/WAVE SFO_OperationButterworthImpl(WAVE/Z input, variable lowPass
 End
 
 /// concat(array0, array1, array2, ...)
-Function/WAVE SFO_OperationConcat(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationConcat(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs, i, err, majorType, sliceMajorType
 	variable constantDataType
 	string refDataType, dataType, wvNote, errMsg
 
-	numArgs = SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_CONCAT, 1)
+	numArgs = SFH_CheckArgumentCount(exd, SF_OP_CONCAT, 1)
 
-	WAVE result = SFH_GetArgumentAsWave(jsonId, jsonpath, graph, SF_OP_CONCAT, 0, copy = 1, singleResult = 1, wvNote = wvNote)
+	WAVE result = SFH_GetArgumentAsWave(exd, SF_OP_CONCAT, 0, copy = 1, singleResult = 1, wvNote = wvNote)
 	majorType = WaveType(result, 1)
 
 	refDataType      = JWN_GetStringFromNote(wvNote, SF_META_DATATYPE)
@@ -612,7 +612,7 @@ Function/WAVE SFO_OperationConcat(variable jsonId, string jsonPath, string graph
 
 	AssertOnAndClearRTError()
 	for(i = 1; i < numArgs; i += 1)
-		WAVE slice = SFH_GetArgumentAsWave(jsonId, jsonpath, graph, SF_OP_CONCAT, i, singleResult = 1, wvNote = wvNote)
+		WAVE slice = SFH_GetArgumentAsWave(exd, SF_OP_CONCAT, i, singleResult = 1, wvNote = wvNote)
 		sliceMajorType = WaveType(slice, 1)
 
 		if(majorType != sliceMajorType)
@@ -628,23 +628,23 @@ Function/WAVE SFO_OperationConcat(variable jsonId, string jsonPath, string graph
 	endfor
 
 	dataType = SelectString(constantDataType, SF_DATATYPE_CONCAT, dataType)
-	return SFH_GetOutputForExecutorSingle(result, graph, SF_OP_CONCAT, discardOpStack = 1, dataType = dataType)
+	return SFH_GetOutputForExecutorSingle(result, exd.graph, SF_OP_CONCAT, discardOpStack = 1, dataType = dataType)
 End
 
-Function/WAVE SFO_OperationCursors(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationCursors(STRUCT SF_ExecutionData &exd)
 
 	variable i
 	string   info
 	variable numArgs
 
-	numArgs = SFH_GetNumberOfArguments(jsonID, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 	if(!numArgs)
 		Make/FREE/T wvT = {"A", "B"}
 		numArgs = 2
 	else
 		Make/FREE/T/N=(numArgs) wvT
 		for(i = 0; i < numArgs; i += 1)
-			WAVE/T csrName = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, SF_OP_CURSORS, i, checkExist = 1)
+			WAVE/T csrName = SFH_ResolveDatasetElementFromJSON(exd, SF_OP_CURSORS, i, checkExist = 1)
 			SFH_ASSERT(IsTextWave(csrName), "cursors argument at " + num2istr(i) + " must be textual.")
 			wvT[i] = csrName[0]
 		endfor
@@ -652,31 +652,31 @@ Function/WAVE SFO_OperationCursors(variable jsonId, string jsonPath, string grap
 	Make/FREE/N=(numArgs)/D out = NaN
 	for(i = 0; i < numArgs; i += 1)
 		SFH_ASSERT(GrepString(wvT[i], "^(?i)[A-J]$"), "Invalid Cursor Name")
-		if(IsEmpty(graph))
+		if(IsEmpty(exd.graph))
 			out[i] = xcsr($wvT[i])
 		else
-			info = CsrInfo($wvT[i], graph)
+			info = CsrInfo($wvT[i], exd.graph)
 			if(IsEmpty(info))
 				continue
 			endif
-			out[i] = xcsr($wvT[i], graph)
+			out[i] = xcsr($wvT[i], exd.graph)
 		endif
 	endfor
 
-	return SFH_GetOutputForExecutorSingle(out, graph, SF_OP_CURSORS, discardOpStack = 1)
+	return SFH_GetOutputForExecutorSingle(out, exd.graph, SF_OP_CURSORS, discardOpStack = 1)
 End
 
 /// `data(array range[, array selectData])`
 ///
 /// returns [sweepData][sweeps][channelTypeNumber] for all sweeps selected by selectData
-Function/WAVE SFO_OperationData(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationData(STRUCT SF_ExecutionData &exd)
 
 	variable i, numArgs
 
-	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_DATA, 0, maxArgs = 1)
-	WAVE/WAVE selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_DATA, 0)
+	SFH_CheckArgumentCount(exd, SF_OP_DATA, 0, maxArgs = 1)
+	WAVE/WAVE selectData = SFH_GetArgumentSelect(exd, SF_OP_DATA, 0)
 
-	WAVE/WAVE output = SFH_GetSweepsForFormula(graph, selectData, SF_OP_DATA)
+	WAVE/WAVE output = SFH_GetSweepsForFormula(exd.graph, selectData, SF_OP_DATA)
 	if(!DimSize(output, ROWS))
 		DebugPrint("Call to SFH_GetSweepsForFormula returned no results")
 	endif
@@ -684,40 +684,40 @@ Function/WAVE SFO_OperationData(variable jsonId, string jsonPath, string graph)
 	SFH_AddOpToOpStack(output, "", SF_OP_DATA)
 	SFH_ResetArgSetupStack(output, SF_OP_DATA)
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_DATA)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_DATA)
 End
 
 // dataset(array data1, array data2, ...)
-Function/WAVE SFO_OperationDataset(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationDataset(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs
 
-	numArgs = SFH_GetNumberOfArguments(jsonID, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_DATASET, numArgs)
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_DATASET, numArgs)
 
-	output[] = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_DATASET, p, singleResult = 1)
+	output[] = SFH_GetArgumentAsWave(exd, SF_OP_DATASET, p, singleResult = 1)
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_DATASET)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_DATASET)
 End
 
-Function/WAVE SFO_OperationDerivative(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationDerivative(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 	if(numArgs > 1)
-		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_DERIVATIVE)
+		WAVE/WAVE input = SF_GetArgumentTop(exd, SF_OP_DERIVATIVE)
 	else
-		WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, 0)
+		WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, 0)
 	endif
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_DERIVATIVE, DimSize(input, ROWS))
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_DERIVATIVE, DimSize(input, ROWS))
 
 	output[] = SFO_OperationDerivativeImpl(input[p])
 
 	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_DERIVATIVE, SF_DATATYPE_DERIVATIVE)
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_DERIVATIVE, clear = input)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_DERIVATIVE, clear = input)
 End
 
 static Function/WAVE SFO_OperationDerivativeImpl(WAVE/Z input)
@@ -736,11 +736,11 @@ static Function/WAVE SFO_OperationDerivativeImpl(WAVE/Z input)
 	return out
 End
 
-Function/WAVE SFO_OperationDiv(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationDiv(STRUCT SF_ExecutionData &exd)
 
-	WAVE output = SFO_IndexOverDataSetsForPrimitiveOperation(jsonId, jsonpath, graph, SF_OPSHORT_DIV)
+	WAVE output = SFO_IndexOverDataSetsForPrimitiveOperation(exd, SF_OPSHORT_DIV)
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OPSHORT_DIV)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OPSHORT_DIV)
 End
 
 static Function/WAVE SFO_OperationDivImplDataSets(WAVE/Z data0, WAVE/Z data1)
@@ -773,15 +773,15 @@ End
 
 // epochs(string shortName[, array selectData, [string type]])
 // returns 2xN waves for range and 1xN otherwise, where N is the number of epochs
-Function/WAVE SFO_OperationEpochs(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationEpochs(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs, epType
 
-	numArgs = SFH_GetNumberOfArguments(jsonID, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 	SFH_ASSERT(numArgs >= 1 && numArgs <= 3, "epochs requires at least 1 and at most 3 arguments")
 
 	if(numArgs == 3)
-		WAVE/T epochType = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_EPOCHS, 2, checkExist = 1)
+		WAVE/T epochType = SFH_ResolveDatasetElementFromJSON(exd, SF_OP_EPOCHS, 2, checkExist = 1)
 		SFH_ASSERT(DimSize(epochType, ROWS) == 1, "Epoch type must be a single value.")
 		SFH_ASSERT(IsTextWave(epochType), "Epoch type argument must be textual")
 		strswitch(epochType[0])
@@ -805,7 +805,7 @@ Function/WAVE SFO_OperationEpochs(variable jsonId, string jsonPath, string graph
 	endif
 
 	WAVE/Z/WAVE selectData      = $""
-	WAVE/Z/WAVE selectDataArray = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_EPOCHS, 1)
+	WAVE/Z/WAVE selectDataArray = SFH_GetArgumentSelect(exd, SF_OP_EPOCHS, 1)
 	if(WaveExists(selectDataArray))
 		SFH_ASSERT(DimSize(selectDataArray, ROWS) == 1, "Expected a single select specification")
 		WAVE/Z/WAVE selectDataComp = selectDataArray[0]
@@ -814,14 +814,14 @@ Function/WAVE SFO_OperationEpochs(variable jsonId, string jsonPath, string graph
 		endif
 	endif
 
-	WAVE/T epochPatterns = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_EPOCHS, 0, checkExist = 1)
+	WAVE/T epochPatterns = SFH_ResolveDatasetElementFromJSON(exd, SF_OP_EPOCHS, 0, checkExist = 1)
 	SFH_ASSERT(IsTextWave(epochPatterns), "Epoch pattern argument must be textual")
 
-	WAVE/WAVE output = SFO_OperationEpochsImpl(graph, epochPatterns, selectData, epType, SF_OP_EPOCHS)
+	WAVE/WAVE output = SFO_OperationEpochsImpl(exd.graph, epochPatterns, selectData, epType, SF_OP_EPOCHS)
 
 	SF_SetSweepXAxisTickLabels(output, selectData)
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_EPOCHS)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_EPOCHS)
 End
 
 static Function/WAVE SFO_OperationEpochsImpl(string graph, WAVE/T epochPatterns, WAVE/Z selectData, variable epType, string opShort)
@@ -925,19 +925,19 @@ static Function/WAVE SFO_OperationEpochsImpl(string graph, WAVE/T epochPatterns,
 End
 
 // findlevel(data, level, [edge])
-Function/WAVE SFO_OperationFindLevel(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationFindLevel(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs
 
-	numArgs = SFH_GetNumberOfArguments(jsonID, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 	SFH_ASSERT(numArgs <= 3, "Findlevel has 3 arguments at most.")
 	SFH_ASSERT(numArgs > 1, "Findlevel needs at least two arguments.")
-	WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonID, jsonPath, graph, 0)
-	WAVE      level = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_FINDLEVEL, 1, checkExist = 1)
+	WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, 0)
+	WAVE      level = SFH_ResolveDatasetElementFromJSON(exd, SF_OP_FINDLEVEL, 1, checkExist = 1)
 	SFH_ASSERT(DimSize(level, ROWS) == 1, "Too many input values for parameter level")
 	SFH_ASSERT(IsNumericWave(level), "level parameter must be numeric")
 	if(numArgs == 3)
-		WAVE edge = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_FINDLEVEL, 2, checkExist = 1)
+		WAVE edge = SFH_ResolveDatasetElementFromJSON(exd, SF_OP_FINDLEVEL, 2, checkExist = 1)
 		SFH_ASSERT(DimSize(edge, ROWS) == 1, "Too many input values for parameter edge")
 		SFH_ASSERT(IsNumericWave(edge), "edge parameter must be numeric")
 		SFH_ASSERT(edge[0] == FINDLEVEL_EDGE_BOTH || edge[0] == FINDLEVEL_EDGE_INCREASING || edge[0] == FINDLEVEL_EDGE_DECREASING, "edge parameter is invalid")
@@ -945,25 +945,25 @@ Function/WAVE SFO_OperationFindLevel(variable jsonId, string jsonPath, string gr
 		Make/FREE edge = {FINDLEVEL_EDGE_BOTH}
 	endif
 
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_FINDLEVEL, DimSize(input, ROWS))
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_FINDLEVEL, DimSize(input, ROWS))
 	output = FindLevelWrapper(input[p], level[0], edge[0], FINDLEVEL_MODE_SINGLE)
 
 	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_FINDLEVEL, SF_DATATYPE_FINDLEVEL)
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_FINDLEVEL)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_FINDLEVEL)
 End
 
-Function/WAVE SFO_OperationFit(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationFit(STRUCT SF_ExecutionData &exd)
 
 	variable numElements
 	string   functionName
 
-	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_FIT, 3, maxArgs = 3)
-	WAVE/WAVE xData = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_FIT, 0)
-	WAVE/WAVE yData = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_FIT, 1)
+	SFH_CheckArgumentCount(exd, SF_OP_FIT, 3, maxArgs = 3)
+	WAVE/WAVE xData = SFH_GetArgumentAsWave(exd, SF_OP_FIT, 0)
+	WAVE/WAVE yData = SFH_GetArgumentAsWave(exd, SF_OP_FIT, 1)
 	SFH_ASSERT(DimSize(xData, ROWS) == DimSize(YData, ROWS), "Mismatched number of datasets")
 
-	WAVE/WAVE fitOp = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_FIT, 2)
+	WAVE/WAVE fitOp = SFH_GetArgumentAsWave(exd, SF_OP_FIT, 2)
 	SFH_ASSERT(DimSize(fitOp, ROWS) == 3, "Invalid fit operation parameters")
 
 	WAVE/T fitType       = fitOp[%fitType]
@@ -971,11 +971,11 @@ Function/WAVE SFO_OperationFit(variable jsonId, string jsonPath, string graph)
 	WAVE   initialValues = fitOp[%initialValues]
 
 	numElements = DimSize(yData, ROWS)
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_FIT, numElements)
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_FIT, numElements)
 
 	output[] = SFO_OperationFitImpl(xData[p], yData[p], fitType[0], holdWave, initialValues)
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_FIT)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_FIT)
 End
 
 Function/WAVE SFO_OperationFitImpl(WAVE xData, WAVE yData, string fitFunc, WAVE holdWave, WAVE initialValues)
@@ -1017,42 +1017,42 @@ Function/WAVE SFO_OperationFitImpl(WAVE xData, WAVE yData, string fitFunc, WAVE 
 	return fit
 End
 
-Function/WAVE SFO_OperationFitLine(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationFitLine(STRUCT SF_ExecutionData &exd)
 
-	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_FITLINE, 0, maxArgs = 1)
+	SFH_CheckArgumentCount(exd, SF_OP_FITLINE, 0, maxArgs = 1)
 
-	WAVE/Z/T constraints = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_FITLINE, 0, defWave = $"", singleResult = 1)
+	WAVE/Z/T constraints = SFH_GetArgumentAsWave(exd, SF_OP_FITLINE, 0, defWave = $"", singleResult = 1)
 
 	[WAVE holdWave, WAVE initialValues] = SFO_ParseFitConstraints(constraints, 2)
 
 	Make/FREE/T entry = {"line"}
 
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_FITLINE, 3)
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_FITLINE, 3)
 	SetDimensionLabels(output, "fitType;holdWave;initialValues", ROWS)
 	output[0] = entry
 	output[1] = holdWave
 	output[2] = initialValues
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_FITLINE)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_FITLINE)
 End
 
-Function/WAVE SFO_OperationIntegrate(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationIntegrate(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 	if(numArgs > 1)
-		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_INTEGRATE)
+		WAVE/WAVE input = SF_GetArgumentTop(exd, SF_OP_INTEGRATE)
 	else
-		WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, 0)
+		WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, 0)
 	endif
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_INTEGRATE, DimSize(input, ROWS))
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_INTEGRATE, DimSize(input, ROWS))
 
 	output[] = SFO_OperationIntegrateImpl(input[p])
 
 	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_INTEGRATE, SF_DATATYPE_INTEGRATE)
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_INTEGRATE, clear = input)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_INTEGRATE, clear = input)
 End
 
 static Function/WAVE SFO_OperationIntegrateImpl(WAVE/Z input)
@@ -1074,24 +1074,24 @@ End
 /// `labnotebook(array keys[, array selectData [, string entrySourceType]])`
 ///
 /// return lab notebook @p key for all @p sweeps that belong to the channels @p channels
-Function/WAVE SFO_OperationLabnotebook(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationLabnotebook(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs, mode
 	string lbnKey, modeTxt
 
-	SFH_CheckArgumentCount(jsonID, jsonPath, SF_OP_LABNOTEBOOK, 1, maxArgs = 3)
+	SFH_CheckArgumentCount(exd, SF_OP_LABNOTEBOOK, 1, maxArgs = 3)
 
 	Make/FREE/T allowedValuesMode = {"UNKNOWN_MODE", "DATA_ACQUISITION_MODE", "TEST_PULSE_MODE", "NUMBER_OF_LBN_DAQ_MODES"}
-	modeTxt = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 2, allowedValues = allowedValuesMode, defValue = "DATA_ACQUISITION_MODE")
+	modeTxt = SFH_GetArgumentAsText(exd, SF_OP_LABNOTEBOOK, 2, allowedValues = allowedValuesMode, defValue = "DATA_ACQUISITION_MODE")
 	mode    = ParseLogbookMode(modeTxt)
 
-	WAVE/Z selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 1)
+	WAVE/Z selectData = SFH_GetArgumentSelect(exd, SF_OP_LABNOTEBOOK, 1)
 
-	WAVE/T lbnKeys = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 0, expectedMajorType = IGOR_TYPE_TEXT_WAVE, singleResult = 1)
+	WAVE/T lbnKeys = SFH_GetArgumentAsWave(exd, SF_OP_LABNOTEBOOK, 0, expectedMajorType = IGOR_TYPE_TEXT_WAVE, singleResult = 1)
 
-	WAVE/Z/WAVE output = SFO_OperationLabnotebookIterate(graph, lbnKeys, selectData, mode, SF_OP_LABNOTEBOOK)
+	WAVE/Z/WAVE output = SFO_OperationLabnotebookIterate(exd.graph, lbnKeys, selectData, mode, SF_OP_LABNOTEBOOK)
 	if(!WaveExists(output))
-		WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_LABNOTEBOOK, 0)
+		WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_LABNOTEBOOK, 0)
 		JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_LABNOTEBOOK)
 	endif
 
@@ -1100,7 +1100,7 @@ Function/WAVE SFO_OperationLabnotebook(variable jsonId, string jsonPath, string 
 
 	SF_SetSweepXAxisTickLabels(output, selectData)
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_LABNOTEBOOK)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_LABNOTEBOOK)
 End
 
 static Function/WAVE SFO_OperationLabnotebookIterate(string graph, WAVE/T lbnKeys, WAVE/Z/WAVE selectDataArray, variable mode, string opShort)
@@ -1342,17 +1342,17 @@ static Function/WAVE SFO_OperationLabnotebookExpandKeys(string graph, WAVE/T LBN
 	return allLBNKeysUnique
 End
 
-Function/WAVE SFO_OperationLog(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationLog(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 	if(numArgs > 1)
-		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_LOG)
+		WAVE/WAVE input = SF_GetArgumentTop(exd, SF_OP_LOG)
 	elseif(numArgs == 1)
-		WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, 0)
+		WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, 0)
 	else
-		WAVE/WAVE input = SFH_CreateSFRefWave(graph, SF_OP_LOG, 0)
+		WAVE/WAVE input = SFH_CreateSFRefWave(exd.graph, SF_OP_LOG, 0)
 	endif
 
 	for(w : input)
@@ -1361,7 +1361,7 @@ Function/WAVE SFO_OperationLog(variable jsonId, string jsonPath, string graph)
 
 	SFH_TransferFormulaDataWaveNoteAndMeta(input, input, SF_OP_LOG, JWN_GetStringFromWaveNote(input, SF_META_DATATYPE))
 
-	return SFH_GetOutputForExecutor(input, graph, SF_OP_LOG)
+	return SFH_GetOutputForExecutor(input, exd.graph, SF_OP_LOG)
 End
 
 static Function SFO_OperationLogImpl(WAVE/Z input)
@@ -1386,23 +1386,23 @@ static Function SFO_OperationLogImpl(WAVE/Z input)
 	endif
 End
 
-Function/WAVE SFO_OperationLog10(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationLog10(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 	if(numArgs > 1)
-		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_LOG10)
+		WAVE/WAVE input = SF_GetArgumentTop(exd, SF_OP_LOG10)
 	else
-		WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, 0)
+		WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, 0)
 	endif
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_LOG10, DimSize(input, ROWS))
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_LOG10, DimSize(input, ROWS))
 
 	output[] = SFO_OperationLog10Impl(input[p])
 
 	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_LOG10, JWN_GetStringFromWaveNote(input, SF_META_DATATYPE))
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_LOG10, clear = input)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_LOG10, clear = input)
 End
 
 static Function/WAVE SFO_OperationLog10Impl(WAVE/Z input)
@@ -1417,16 +1417,16 @@ static Function/WAVE SFO_OperationLog10Impl(WAVE/Z input)
 	return output
 End
 
-Function/WAVE SFO_OperationMax(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationMax(STRUCT SF_ExecutionData &exd)
 
-	WAVE/WAVE input  = SFO_GetNumericVarArgs(jsonId, jsonPath, graph, SF_OP_MAX)
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_MAX, DimSize(input, ROWS))
+	WAVE/WAVE input  = SFO_GetNumericVarArgs(exd, SF_OP_MAX)
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_MAX, DimSize(input, ROWS))
 
 	output[] = SFO_OperationMaxImpl(input[p])
 
 	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_MAX, SF_DATATYPE_MAX)
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_MAX, clear = input)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_MAX, clear = input)
 End
 
 static Function/WAVE SFO_OperationMaxImpl(WAVE/Z input)
@@ -1447,12 +1447,12 @@ static Function/WAVE SFO_OperationMaxImpl(WAVE/Z input)
 End
 
 // merge(array data1, array data2, ...)
-Function/WAVE SFO_OperationMerge(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationMerge(STRUCT SF_ExecutionData &exd)
 
 	variable numElements, numOutputDatasets, wvType
 
-	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_MERGE, 1, maxArgs = 1)
-	WAVE/WAVE inputWithNull = SF_ResolveDatasetFromJSON(jsonID, jsonPath, graph, 0)
+	SFH_CheckArgumentCount(exd, SF_OP_MERGE, 1, maxArgs = 1)
+	WAVE/WAVE inputWithNull = SF_ResolveDatasetFromJSON(exd, 0)
 
 	WAVE/ZZ/WAVE input = ZapNullRefs(inputWithNull)
 	WaveClear inputWithNull
@@ -1460,10 +1460,10 @@ Function/WAVE SFO_OperationMerge(variable jsonId, string jsonPath, string graph)
 	numElements = WaveExists(input) ? DimSize(input, ROWS) : 0
 
 	numOutputDatasets = (numElements > 0)
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_MERGE, numOutputDatasets)
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_MERGE, numOutputDatasets)
 
 	if(!numOutputDatasets)
-		return SFH_GetOutputForExecutor(output, graph, SF_OP_MERGE)
+		return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_MERGE)
 	endif
 
 	Make/FREE/N=(numElements) waveTypes = WaveType(input[p])
@@ -1484,19 +1484,19 @@ Function/WAVE SFO_OperationMerge(variable jsonId, string jsonPath, string graph)
 
 	output[0] = content
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_MERGE)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_MERGE)
 End
 
-Function/WAVE SFO_OperationMin(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationMin(STRUCT SF_ExecutionData &exd)
 
-	WAVE/WAVE input  = SFO_GetNumericVarArgs(jsonId, jsonPath, graph, SF_OP_MIN)
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_MIN, DimSize(input, ROWS))
+	WAVE/WAVE input  = SFO_GetNumericVarArgs(exd, SF_OP_MIN)
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_MIN, DimSize(input, ROWS))
 
 	output[] = SFO_OperationMinImpl(input[p])
 
 	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_MIN, SF_DATATYPE_MIN)
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_MIN, clear = input)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_MIN, clear = input)
 End
 
 static Function/WAVE SFO_OperationMinImpl(WAVE/Z input)
@@ -1517,11 +1517,11 @@ static Function/WAVE SFO_OperationMinImpl(WAVE/Z input)
 	return out
 End
 
-Function/WAVE SFO_OperationMinus(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationMinus(STRUCT SF_ExecutionData &exd)
 
-	WAVE output = SFO_IndexOverDataSetsForPrimitiveOperation(jsonId, jsonpath, graph, SF_OPSHORT_MINUS)
+	WAVE output = SFO_IndexOverDataSetsForPrimitiveOperation(exd, SF_OPSHORT_MINUS)
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OPSHORT_MINUS)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OPSHORT_MINUS)
 End
 
 static Function/WAVE SFO_OperationMinusImplDataSets(WAVE/Z data0, WAVE/Z data1)
@@ -1552,11 +1552,11 @@ static Function/WAVE SFO_OperationMinusImplDataSets(WAVE/Z data0, WAVE/Z data1)
 	return result
 End
 
-Function/WAVE SFO_OperationMult(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationMult(STRUCT SF_ExecutionData &exd)
 
-	WAVE output = SFO_IndexOverDataSetsForPrimitiveOperation(jsonId, jsonpath, graph, SF_OPSHORT_MULT)
+	WAVE output = SFO_IndexOverDataSetsForPrimitiveOperation(exd, SF_OPSHORT_MULT)
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OPSHORT_MULT)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OPSHORT_MULT)
 End
 
 static Function/WAVE SFO_OperationMultImplDataSets(WAVE/Z data0, WAVE/Z data1)
@@ -1587,11 +1587,11 @@ static Function/WAVE SFO_OperationMultImplDataSets(WAVE/Z data0, WAVE/Z data1)
 	return result
 End
 
-Function/WAVE SFO_OperationPlus(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationPlus(STRUCT SF_ExecutionData &exd)
 
-	WAVE output = SFO_IndexOverDataSetsForPrimitiveOperation(jsonId, jsonpath, graph, SF_OPSHORT_PLUS)
+	WAVE output = SFO_IndexOverDataSetsForPrimitiveOperation(exd, SF_OPSHORT_PLUS)
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OPSHORT_PLUS)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OPSHORT_PLUS)
 End
 
 static Function/WAVE SFO_OperationPlusImplDataSets(WAVE/Z data0, WAVE/Z data1)
@@ -1622,21 +1622,21 @@ static Function/WAVE SFO_OperationPlusImplDataSets(WAVE/Z data0, WAVE/Z data1)
 	return result
 End
 
-Function/WAVE SFO_OperationPowerSpectrum(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationPowerSpectrum(STRUCT SF_ExecutionData &exd)
 
 	variable i, doAvg, debugVal
 	string unit, avg, winFunc
 	variable cutoff, ratioFreq
 
-	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_POWERSPECTRUM, 1, maxArgs = 6)
+	SFH_CheckArgumentCount(exd, SF_OP_POWERSPECTRUM, 1, maxArgs = 6)
 
-	WAVE/WAVE input = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_POWERSPECTRUM, 0, copy = 1)
-	unit      = SFH_GetArgumentAsText(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 1, defValue = SF_POWERSPECTRUM_UNIT_DEFAULT, allowedValues = {SF_POWERSPECTRUM_UNIT_DEFAULT, SF_POWERSPECTRUM_UNIT_DB, SF_POWERSPECTRUM_UNIT_NORMALIZED})
-	avg       = SFH_GetArgumentAsText(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 2, defValue = SF_POWERSPECTRUM_AVG_OFF, allowedValues = {SF_POWERSPECTRUM_AVG_ON, SF_POWERSPECTRUM_AVG_OFF})
-	ratioFreq = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 3, defValue = 0, checkFunc = IsNullOrPositiveAndFinite)
-	cutoff    = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 4, defValue = 1000, checkFunc = IsStrictlyPositiveAndFinite)
+	WAVE/WAVE input = SFH_GetArgumentAsWave(exd, SF_OP_POWERSPECTRUM, 0, copy = 1)
+	unit      = SFH_GetArgumentAsText(exd, SF_OP_POWERSPECTRUM, 1, defValue = SF_POWERSPECTRUM_UNIT_DEFAULT, allowedValues = {SF_POWERSPECTRUM_UNIT_DEFAULT, SF_POWERSPECTRUM_UNIT_DB, SF_POWERSPECTRUM_UNIT_NORMALIZED})
+	avg       = SFH_GetArgumentAsText(exd, SF_OP_POWERSPECTRUM, 2, defValue = SF_POWERSPECTRUM_AVG_OFF, allowedValues = {SF_POWERSPECTRUM_AVG_ON, SF_POWERSPECTRUM_AVG_OFF})
+	ratioFreq = SFH_GetArgumentAsNumeric(exd, SF_OP_POWERSPECTRUM, 3, defValue = 0, checkFunc = IsNullOrPositiveAndFinite)
+	cutoff    = SFH_GetArgumentAsNumeric(exd, SF_OP_POWERSPECTRUM, 4, defValue = 1000, checkFunc = IsStrictlyPositiveAndFinite)
 	WAVE/T allowedWinFuncs = ListToTextWave(AddListItem(SF_POWERSPECTRUM_WINFUNC_NONE, FFT_WINF), ";")
-	winFunc = SFH_GetArgumentAsText(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 5, defValue = FFT_WINF_DEFAULT, allowedValues = allowedWinFuncs)
+	winFunc = SFH_GetArgumentAsText(exd, SF_OP_POWERSPECTRUM, 5, defValue = FFT_WINF_DEFAULT, allowedValues = allowedWinFuncs)
 	if(!CmpStr(winFunc, SF_POWERSPECTRUM_WINFUNC_NONE))
 		winFunc = ""
 	endif
@@ -1656,7 +1656,7 @@ Function/WAVE SFO_OperationPowerSpectrum(variable jsonId, string jsonPath, strin
 	if(doAvg)
 		Make/FREE/WAVE/N=(DimSize(input, ROWS)) output
 	else
-		WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_POWERSPECTRUM, DimSize(input, ROWS))
+		WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_POWERSPECTRUM, DimSize(input, ROWS))
 	endif
 
 	MultiThread output[] = SFO_OperationPowerSpectrumImpl(input[p], unit, cutoff, winFunc)
@@ -1665,7 +1665,7 @@ Function/WAVE SFO_OperationPowerSpectrum(variable jsonId, string jsonPath, strin
 
 	if(doAvg)
 		WAVE/WAVE outputAvg   = SFO_AverageDataOverSweeps(output)
-		WAVE/WAVE outputAvgPS = SFH_CreateSFRefWave(graph, SF_OP_POWERSPECTRUM, DimSize(outputAvg, ROWS))
+		WAVE/WAVE outputAvgPS = SFH_CreateSFRefWave(exd.graph, SF_OP_POWERSPECTRUM, DimSize(outputAvg, ROWS))
 		JWN_SetStringInWaveNote(outputAvgPS, SF_META_DATATYPE, SF_DATATYPE_POWERSPECTRUM)
 		JWN_SetStringInWaveNote(outputAvgPS, SF_META_OPSTACK, JWN_GetStringFromWaveNote(output, SF_META_OPSTACK))
 		outputAvgPS[] = outputAvg[p]
@@ -1690,7 +1690,7 @@ Function/WAVE SFO_OperationPowerSpectrum(variable jsonId, string jsonPath, strin
 #endif // DEBUGGING_ENABLED
 	endif
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_POWERSPECTRUM, clear = input)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_POWERSPECTRUM, clear = input)
 End
 
 static Function/WAVE SFO_PowerSpectrumRatio(WAVE/Z input, variable ratioFreq, variable deltaHz, [WAVE fitData])
@@ -1825,15 +1825,15 @@ threadsafe static Function/WAVE SFO_OperationPowerSpectrumImpl(WAVE/Z input, str
 End
 
 /// range (start[, stop[, step]])
-Function/WAVE SFO_OperationRange(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationRange(STRUCT SF_ExecutionData &exd)
 
 	variable start, stop, step, stopDefault
 
-	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_RANGE, 1, maxArgs = 3)
+	SFH_CheckArgumentCount(exd, SF_OP_RANGE, 1, maxArgs = 3)
 
-	start = SFH_GetArgumentAsNumeric(jsonId, jsonpath, graph, SF_OP_RANGE, 0)
-	stop  = SFH_GetArgumentAsNumeric(jsonId, jsonpath, graph, SF_OP_RANGE, 1, defValue = NaN)
-	step  = SFH_GetArgumentAsNumeric(jsonId, jsonpath, graph, SF_OP_RANGE, 2, defValue = 1)
+	start = SFH_GetArgumentAsNumeric(exd, SF_OP_RANGE, 0)
+	stop  = SFH_GetArgumentAsNumeric(exd, SF_OP_RANGE, 1, defValue = NaN)
+	step  = SFH_GetArgumentAsNumeric(exd, SF_OP_RANGE, 2, defValue = 1)
 
 	if(IsNaN(stop))
 		stop        = 0
@@ -1848,27 +1848,27 @@ Function/WAVE SFO_OperationRange(variable jsonId, string jsonPath, string graph)
 		MultiThread range[] = start + p * step
 	endif
 
-	return SFH_GetOutputForExecutorSingle(range, graph, SF_OP_RANGE, dataType = SF_DATATYPE_RANGE)
+	return SFH_GetOutputForExecutorSingle(range, exd.graph, SF_OP_RANGE, dataType = SF_DATATYPE_RANGE)
 End
 
-Function/WAVE SFO_OperationRMS(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationRMS(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 	SFH_ASSERT(numArgs > 0, "rms requires at least one argument")
 	if(numArgs > 1)
-		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_RMS)
+		WAVE/WAVE input = SF_GetArgumentTop(exd, SF_OP_RMS)
 	else
-		WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, 0)
+		WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, 0)
 	endif
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_RMS, DimSize(input, ROWS))
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_RMS, DimSize(input, ROWS))
 
 	output[] = SFO_OperationRMSImpl(input[p])
 
 	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_RMS, SF_DATATYPE_RMS)
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_RMS, clear = input)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_RMS, clear = input)
 End
 
 static Function/WAVE SFO_OperationRMSImpl(WAVE/Z input)
@@ -1887,42 +1887,42 @@ static Function/WAVE SFO_OperationRMSImpl(WAVE/Z input)
 End
 
 /// `setscale(data, dim, [dimOffset, [dimDelta[, unit]]])`
-Function/WAVE SFO_OperationSetScale(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationSetScale(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 	SFH_ASSERT(numArgs < 6, "Maximum number of arguments exceeded.")
 	SFH_ASSERT(numArgs > 1, "At least two arguments.")
-	WAVE/WAVE dataRef   = SF_ResolveDatasetFromJSON(jsonID, jsonPath, graph, 0)
-	WAVE/T    dimension = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_SETSCALE, 1, checkExist = 1)
+	WAVE/WAVE dataRef   = SF_ResolveDatasetFromJSON(exd, 0)
+	WAVE/T    dimension = SFH_ResolveDatasetElementFromJSON(exd, SF_OP_SETSCALE, 1, checkExist = 1)
 	SFH_ASSERT(IsTextWave(dimension), "Expected d, x, y, z or t as dimension.")
 	SFH_ASSERT(DimSize(dimension, ROWS) == 1 && GrepString(dimension[0], "[d,x,y,z,t]"), "undefined input for dimension")
 
 	if(numArgs >= 3)
-		WAVE offset = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_SETSCALE, 2, checkExist = 1)
+		WAVE offset = SFH_ResolveDatasetElementFromJSON(exd, SF_OP_SETSCALE, 2, checkExist = 1)
 		SFH_ASSERT(IsNumericWave(offset) && DimSize(offset, ROWS) == 1, "Expected a number as offset.")
 	else
 		Make/FREE/N=1 offset = {0}
 	endif
 	if(numArgs >= 4)
-		WAVE delta = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_SETSCALE, 3, checkExist = 1)
+		WAVE delta = SFH_ResolveDatasetElementFromJSON(exd, SF_OP_SETSCALE, 3, checkExist = 1)
 		SFH_ASSERT(IsNumericWave(delta) && DimSize(delta, ROWS) == 1, "Expected a number as delta.")
 	else
 		Make/FREE/N=1 delta = {1}
 	endif
 	if(numArgs == 5)
-		WAVE/T unit = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_SETSCALE, 4, checkExist = 1)
+		WAVE/T unit = SFH_ResolveDatasetElementFromJSON(exd, SF_OP_SETSCALE, 4, checkExist = 1)
 		SFH_ASSERT(IsTextWave(unit) && DimSize(unit, ROWS) == 1, "Expected a string as unit.")
 	else
 		Make/FREE/N=1/T unit = {""}
 	endif
 
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_SETSCALE, DimSize(dataRef, ROWS))
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_SETSCALE, DimSize(dataRef, ROWS))
 
 	output[] = SFO_OperationSetScaleImpl(dataRef[p], dimension[0], offset[0], delta[0], unit[0])
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_SETSCALE, clear = dataRef)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_SETSCALE, clear = dataRef)
 End
 
 static Function/WAVE SFO_OperationSetScaleImpl(WAVE/Z input, string dim, variable offset, variable delta, string unit)
@@ -1963,24 +1963,24 @@ static Function/WAVE SFO_OperationSetScaleImpl(WAVE/Z input, string dim, variabl
 	return input
 End
 
-Function/WAVE SFO_OperationStdev(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationStdev(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 	SFH_ASSERT(numArgs > 0, "stdev requires at least one argument")
 	if(numArgs > 1)
-		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_STDEV)
+		WAVE/WAVE input = SF_GetArgumentTop(exd, SF_OP_STDEV)
 	else
-		WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, 0)
+		WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, 0)
 	endif
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_STDEV, DimSize(input, ROWS))
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_STDEV, DimSize(input, ROWS))
 
 	output[] = SFO_OperationStdevImpl(input[p])
 
 	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_STDEV, SF_DATATYPE_STDEV)
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_STDEV, clear = input)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_STDEV, clear = input)
 End
 
 static Function/WAVE SFO_OperationStdevImpl(WAVE/Z input)
@@ -1999,45 +1999,45 @@ static Function/WAVE SFO_OperationStdevImpl(WAVE/Z input)
 End
 
 // `store(name, ...)`
-Function/WAVE SFO_OperationStore(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationStore(STRUCT SF_ExecutionData &exd)
 
 	string rawCode, preProcCode, name
 	variable maxEntries, numEntries
 
-	SFH_ASSERT(SFH_GetNumberOfArguments(jsonID, jsonPath) == 2, "Function accepts only two arguments")
+	SFH_ASSERT(SFH_GetNumberOfArguments(exd) == 2, "Function accepts only two arguments")
 
-	name = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_STORE, 0)
+	name = SFH_GetArgumentAsText(exd, SF_OP_STORE, 0)
 
-	WAVE/WAVE dataRef = SF_ResolveDatasetFromJSON(jsonID, jsonPath, graph, 1)
+	WAVE/WAVE dataRef = SF_ResolveDatasetFromJSON(exd, 1)
 
-	[rawCode, preProcCode] = SF_GetCode(graph)
+	[rawCode, preProcCode] = SF_GetCode(exd.graph)
 
-	[WAVE/T keys, WAVE/T values] = SFH_CreateResultsWaveWithCode(graph, rawCode, data = dataRef, name = name, resultType = SFH_RESULT_TYPE_STORE)
+	[WAVE/T keys, WAVE/T values] = SFH_CreateResultsWaveWithCode(exd.graph, rawCode, data = dataRef, name = name, resultType = SFH_RESULT_TYPE_STORE)
 
 	ED_AddEntriesToResults(values, keys, SWEEP_FORMULA_RESULT)
 
 	// return second argument unmodified
-	return SFH_GetOutputForExecutor(dataRef, graph, SF_OP_STORE)
+	return SFH_GetOutputForExecutor(dataRef, exd.graph, SF_OP_STORE)
 End
 
-Function/WAVE SFO_OperationText(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationText(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 	SFH_ASSERT(numArgs > 0, "text requires at least one argument.")
 	if(numArgs > 1)
-		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_TEXT)
+		WAVE/WAVE input = SF_GetArgumentTop(exd, SF_OP_TEXT)
 	else
-		WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, 0)
+		WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, 0)
 	endif
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_TEXT, DimSize(input, ROWS))
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_TEXT, DimSize(input, ROWS))
 
 	output[] = SFO_OperationTextImpl(input[p])
 
 	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_TEXT, JWN_GetStringFromWaveNote(input, SF_META_DATATYPE))
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_TEXT, clear = input)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_TEXT, clear = input)
 End
 
 static Function/WAVE SFO_OperationTextImpl(WAVE/Z input)
@@ -2054,24 +2054,24 @@ static Function/WAVE SFO_OperationTextImpl(WAVE/Z input)
 	return output
 End
 
-Function/WAVE SFO_OperationVariance(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationVariance(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 	SFH_ASSERT(numArgs > 0, "variance requires at least one argument")
 	if(numArgs > 1)
-		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_VARIANCE)
+		WAVE/WAVE input = SF_GetArgumentTop(exd, SF_OP_VARIANCE)
 	else
-		WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, 0)
+		WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, 0)
 	endif
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_VARIANCE, DimSize(input, ROWS))
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_VARIANCE, DimSize(input, ROWS))
 
 	output[] = SFO_OperationVarianceImpl(input[p])
 
 	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_VARIANCE, SF_DATATYPE_VARIANCE)
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_VARIANCE, clear = input)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_VARIANCE, clear = input)
 End
 
 static Function/WAVE SFO_OperationVarianceImpl(WAVE/Z input)
@@ -2089,31 +2089,31 @@ static Function/WAVE SFO_OperationVarianceImpl(WAVE/Z input)
 	return out
 End
 
-Function/WAVE SFO_OperationWave(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationWave(STRUCT SF_ExecutionData &exd)
 
-	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_WAVE, 0, maxArgs = 1)
+	SFH_CheckArgumentCount(exd, SF_OP_WAVE, 0, maxArgs = 1)
 
-	WAVE/Z output = $SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_WAVE, 0, defValue = "")
+	WAVE/Z output = $SFH_GetArgumentAsText(exd, SF_OP_WAVE, 0, defValue = "")
 
-	return SFH_GetOutputForExecutorSingle(output, graph, SF_OP_WAVE, discardOpStack = 1)
+	return SFH_GetOutputForExecutorSingle(output, exd.graph, SF_OP_WAVE, discardOpStack = 1)
 End
 
-Function/WAVE SFO_OperationXValues(variable jsonId, string jsonPath, string graph)
+Function/WAVE SFO_OperationXValues(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 	SFH_ASSERT(numArgs > 0, "xvalues requires at least one argument.")
 	if(numArgs > 1)
-		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_XVALUES)
+		WAVE/WAVE input = SF_GetArgumentTop(exd, SF_OP_XVALUES)
 	else
-		WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, 0)
+		WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, 0)
 	endif
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_XVALUES, DimSize(input, ROWS))
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_XVALUES, DimSize(input, ROWS))
 
 	output[] = SFO_OperationXValuesImpl(input[p])
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_XVALUES, clear = input)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_XVALUES, clear = input)
 End
 
 static Function/WAVE SFO_OperationXValuesImpl(WAVE/Z input)
@@ -2132,21 +2132,21 @@ static Function/WAVE SFO_OperationXValuesImpl(WAVE/Z input)
 	return output
 End
 
-static Function/WAVE SFO_IndexOverDataSetsForPrimitiveOperation(variable jsonId, string jsonPath, string graph, string opShort)
+static Function/WAVE SFO_IndexOverDataSetsForPrimitiveOperation(STRUCT SF_ExecutionData &exd, string opShort)
 
 	variable numArgs, dataSetNum0, dataSetNum1
 	string errMsg, type1, type2, resultType
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(exd)
 	ASSERT(numArgs == 2, "Number of arguments must be 2 for " + opShort)
 
-	WAVE/WAVE arg0 = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, 0)
-	WAVE/WAVE arg1 = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, 1)
+	WAVE/WAVE arg0 = SF_ResolveDatasetFromJSON(exd, 0)
+	WAVE/WAVE arg1 = SF_ResolveDatasetFromJSON(exd, 1)
 	dataSetNum0 = DimSize(arg0, ROWS)
 	dataSetNum1 = DimSize(arg1, ROWS)
 	SFH_ASSERT(dataSetNum0 > 0 && dataSetNum1 > 0, "No input data for " + opShort)
 	if(dataSetNum0 == dataSetNum1)
-		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, dataSetNum0)
+		WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, dataSetNum0)
 		WAVE/WAVE input  = arg0
 		strswitch(opShort)
 			case SF_OPSHORT_DIV:
@@ -2165,7 +2165,7 @@ static Function/WAVE SFO_IndexOverDataSetsForPrimitiveOperation(variable jsonId,
 				FATAL_ERROR("Unsupported primitive operation")
 		endswitch
 	elseif(dataSetNum1 == 1)
-		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, dataSetNum0)
+		WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, dataSetNum0)
 		WAVE/WAVE input  = arg0
 		strswitch(opShort)
 			case SF_OPSHORT_DIV:
@@ -2184,7 +2184,7 @@ static Function/WAVE SFO_IndexOverDataSetsForPrimitiveOperation(variable jsonId,
 				FATAL_ERROR("Unsupported primitive operation")
 		endswitch
 	elseif(dataSetNum0 == 1)
-		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, dataSetNum1)
+		WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, dataSetNum1)
 		WAVE/WAVE input  = arg1
 		strswitch(opShort)
 			case SF_OPSHORT_DIV:
@@ -2282,15 +2282,15 @@ static Function [WAVE/D holdWave, WAVE/D initialValues] SFO_ParseFitConstraints(
 	return [holdWave, initialValues]
 End
 
-static Function/WAVE SFO_GetNumericVarArgs(variable jsonId, string jsonPath, string graph, string opShort)
+static Function/WAVE SFO_GetNumericVarArgs(STRUCT SF_ExecutionData &exd, string opShort)
 
 	variable numArgs
 
-	numArgs = SFH_CheckArgumentCount(jsonId, jsonPath, opShort, 1)
+	numArgs = SFH_CheckArgumentCount(exd, opShort, 1)
 	if(numArgs == 1)
-		WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, 0)
+		WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, 0)
 	else
-		WAVE      wv    = SFE_FormulaExecutor(graph, jsonID, jsonPath = jsonPath)
+		WAVE      wv    = SFE_FormulaExecutor(exd)
 		WAVE/WAVE input = SF_ResolveDataset(wv)
 		SFH_ASSERT(DimSize(input, ROWS) == 1, "Expected a single data set")
 		WAVE wNum = input[0]

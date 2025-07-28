@@ -25,7 +25,9 @@ static Constant SFE_VARIABLE_PREFIX = 36
 /// @param useVariables [optional, default 1], when not set, hint the function that the formula string contains only an expression and no variable definitions
 Function/WAVE SFE_ExecuteFormula(string formula, string graph, [variable singleResult, variable checkExist, variable useVariables])
 
-	variable jsonId
+	STRUCT SF_ExecutionData exd
+
+	exd.graph = graph
 
 	singleResult = ParamIsDefault(singleResult) ? 0 : !!singleResult
 	checkExist   = ParamIsDefault(checkExist) ? 0 : !!checkExist
@@ -35,9 +37,9 @@ Function/WAVE SFE_ExecuteFormula(string formula, string graph, [variable singleR
 	if(useVariables)
 		formula = SFE_ExecuteVariableAssignments(graph, formula)
 	endif
-	jsonId = SFP_ParseFormulaToJSON(formula)
-	WAVE/Z result = SFE_FormulaExecutor(graph, jsonId)
-	JSON_Release(jsonId, ignoreErr = 1)
+	exd.jsonId = SFP_ParseFormulaToJSON(formula)
+	WAVE/Z result = SFE_FormulaExecutor(exd)
+	JSON_Release(exd.jsonId, ignoreErr = 1)
 
 	WAVE/WAVE out = SF_ResolveDataset(result)
 	if(singleResult)
@@ -53,8 +55,11 @@ End
 
 Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode)
 
-	variable i, numAssignments, jsonId
+	STRUCT SF_ExecutionData exd
+	variable i, numAssignments
 	string code
+
+	exd.graph = graph
 
 	WAVE/WAVE varStorage = GetSFVarStorage(graph)
 	RemoveAllDimLabels(varStorage)
@@ -69,13 +74,13 @@ Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode)
 	Redimension/N=(numAssignments) varStorage
 
 	for(i = 0; i < numAssignments; i += 1)
-		jsonId = SFP_ParseFormulaToJSON(varAssignments[i][%EXPRESSION])
-		WAVE dataRef = SFE_FormulaExecutor(graph, jsonId)
+		exd.jsonId = SFP_ParseFormulaToJSON(varAssignments[i][%EXPRESSION])
+		WAVE dataRef = SFE_FormulaExecutor(exd)
 		WAVE data    = SF_ResolveDataset(dataRef)
 		JWN_SetNumberInWaveNote(data, SF_VARIABLE_MARKER, 1)
 		varStorage[i] = dataRef
 		SetDimLabel ROWS, i, $varAssignments[i][%VARNAME], varStorage
-		JSON_Release(jsonId)
+		JSON_Release(exd.jsonId)
 	endfor
 
 	return code
@@ -88,49 +93,51 @@ End
 /// @param graph    graph to read from, mainly used by the `data` operation
 /// @param jsonID   JSON object ID from the JSON XOP
 /// @param jsonPath JSON pointer compliant path
-Function/WAVE SFE_FormulaExecutor(string graph, variable jsonID, [string jsonPath])
+Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd)
 
 	string opName, str
 	variable i, size, JSONType, arrayElemJSONType, effectiveArrayDimCount, dim
 	variable colSize, layerSize, chunkSize, operationsWithScalarResultCount
 
-	if(ParamIsDefault(jsonPath))
-		jsonPath = ""
+	STRUCT SF_ExecutionData exdop
+
+	if(numType(strlen(exd.jsonPath)) == 2)
+		exd.jsonPath = ""
 	endif
 
 #ifdef DEBUGGING_ENABLED
 	if(DP_DebuggingEnabledForCaller())
 		printf "##########################\r"
-		printf "%s\r", JSON_Dump(jsonID, indent = 2)
+		printf "%s\r", JSON_Dump(exd.jsonID, indent = 2)
 		printf "##########################\r"
 	endif
 #endif // DEBUGGING_ENABLED
 
 	// object and array evaluation
-	JSONtype = JSON_GetType(jsonID, jsonPath)
+	JSONtype = JSON_GetType(exd.jsonID, exd.jsonPath)
 	if(JSONtype == JSON_NUMERIC)
-		Make/FREE/D out = {JSON_GetVariable(jsonID, jsonPath)}
-		return SFH_GetOutputForExecutorSingle(out, graph, "ExecutorNumberReturn")
+		Make/FREE/D out = {JSON_GetVariable(exd.jsonID, exd.jsonPath)}
+		return SFH_GetOutputForExecutorSingle(out, exd.graph, "ExecutorNumberReturn")
 	elseif(JSONtype == JSON_STRING)
-		return SFE_FormulaExecutorStringOrVariable(graph, jsonId, jsonPath)
+		return SFE_FormulaExecutorStringOrVariable(exd)
 	elseif(JSONtype == JSON_ARRAY)
 		// Evaluate an array consisting of any elements including subarrays and objects (operations)
 
 		// If we want to return an Igor Pro data wave the final dimensionality can not exceed 4
-		WAVE topArraySize = JSON_GetMaxArraySize(jsonID, jsonPath)
+		WAVE topArraySize = JSON_GetMaxArraySize(exd.jsonID, exd.jsonPath)
 		effectiveArrayDimCount = DimSize(topArraySize, ROWS)
-		SFH_ASSERT(effectiveArrayDimCount <= MAX_DIMENSION_COUNT, "Array in evaluation has more than " + num2istr(MAX_DIMENSION_COUNT) + "dimensions.", jsonId = jsonId)
+		SFH_ASSERT(effectiveArrayDimCount <= MAX_DIMENSION_COUNT, "Array in evaluation has more than " + num2istr(MAX_DIMENSION_COUNT) + "dimensions.", jsonId = exd.jsonId)
 		// Check against empty array
 		if(DimSize(topArraySize, ROWS) == 1 && topArraySize[0] == 0)
 			Make/FREE/D/N=0 out
-			return SFH_GetOutputForExecutorSingle(out, graph, "ExecutorNumberReturn")
+			return SFH_GetOutputForExecutorSingle(out, exd.graph, "ExecutorNumberReturn")
 		endif
 
 		// Get all types of current level (row)
-		Make/FREE/N=(topArraySize[0]) types = JSON_GetType(jsonID, jsonPath + "/" + num2istr(p))
+		Make/FREE/N=(topArraySize[0]) types = JSON_GetType(exd.jsonID, exd.jsonPath + "/" + num2istr(p))
 		// Do not allow null, that can happen if a formula like "integrate()" is executed and SF_GetArgumentTop attempts to parse all arguments into one array
 		FindValue/V=(JSON_NULL) types
-		SFH_ASSERT(!(V_Value >= 0), "Encountered null element in array.", jsonId = jsonId)
+		SFH_ASSERT(!(V_Value >= 0), "Encountered null element in array.", jsonId = exd.jsonId)
 
 		Redimension/N=(MAX_DIMENSION_COUNT) topArraySize
 		topArraySize[] = (topArraySize[p] != 0) ? topArraySize[p] : 1
@@ -143,7 +150,7 @@ Function/WAVE SFE_FormulaExecutor(string graph, variable jsonID, [string jsonPat
 		EXTRACT/FREE/INDX types, arrElemAt, (types[p] == JSON_OBJECT) || (types[p] == JSON_ARRAY) || (types[p] == JSON_STRING) || (types[p] == JSON_NUMERIC)
 		// Iterate over all subarrays and objects on current level
 		for(index : arrElemAt)
-			WAVE/WAVE genericElement = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, index)
+			WAVE/WAVE genericElement = SF_ResolveDatasetFromJSON(exd, index)
 			if(DimSize(genericElement, ROWS) == 1)
 				// single dataset
 				WAVE/Z subArray = genericElement[0]
@@ -160,17 +167,17 @@ Function/WAVE SFE_FormulaExecutor(string graph, variable jsonID, [string jsonPat
 					[out, outT] = SFE_ExecutorCreateOrCheckNumeric(out, outT, topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3])
 				else
 					[out, outT] = SFE_ExecutorCreateOrCheckTextual(out, outT, topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3])
-					WAVE subArrayWrapped = SFH_GetOutputForExecutor(subArray, graph, "WrappedArrayElement")
+					WAVE subArrayWrapped = SFH_GetOutputForExecutor(subArray, exd.graph, "WrappedArrayElement")
 					WAVE subArray        = subArrayWrapped
 				endif
 			else
 				// multi dataset
 				[out, outT] = SFE_ExecutorCreateOrCheckTextual(out, outT, topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3])
-				WAVE subArray = SFH_GetOutputForExecutor(genericElement, graph, "WrappedArrayElement")
+				WAVE subArray = SFH_GetOutputForExecutor(genericElement, exd.graph, "WrappedArrayElement")
 			endif
 
 			SFH_ASSERT(numpnts(subArray), "Encountered subArray with zero size.")
-			SFH_ASSERT(WaveDims(subArray) < MAX_DIMENSION_COUNT, "Encountered 4d sub array at " + jsonPath)
+			SFH_ASSERT(WaveDims(subArray) < MAX_DIMENSION_COUNT, "Encountered 4d sub array at " + exd.jsonPath)
 
 			// Promote WaveNote with meta data if topArray is 1 point.
 			// The single topArray element is object or array at this point
@@ -260,16 +267,18 @@ Function/WAVE SFE_FormulaExecutor(string graph, variable jsonID, [string jsonPat
 			topArraySize[dim] = 0
 		endfor
 		Redimension/N=(topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3])/E=1 out
-		return SFH_GetOutputForExecutorSingle(out, graph, "ExecutorArrayReturn")
+		return SFH_GetOutputForExecutorSingle(out, exd.graph, "ExecutorArrayReturn")
 	endif
 
 	// operation evaluation
-	SFH_ASSERT(JSONtype == JSON_OBJECT, "Topmost element needs to be an object", jsonId = jsonId)
-	WAVE/T operations = JSON_GetKeys(jsonID, jsonPath)
-	SFH_ASSERT(DimSize(operations, ROWS) == 1, "Only one operation is allowed", jsonId = jsonId)
-	jsonPath += "/" + SF_EscapeJsonPath(operations[0])
-	SFH_ASSERT(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY, "An array is required to hold the operands of the operation.", jsonId = jsonId)
+	SFH_ASSERT(JSONtype == JSON_OBJECT, "Topmost element needs to be an object", jsonId = exd.jsonId)
+	WAVE/T operations = JSON_GetKeys(exd.jsonID, exd.jsonPath)
+	SFH_ASSERT(DimSize(operations, ROWS) == 1, "Only one operation is allowed", jsonId = exd.jsonId)
 
+	exdop.jsonId   = exd.jsonId
+	exdop.graph    = exd.graph
+	exdop.jsonPath = exd.jsonPath + "/" + SF_EscapeJsonPath(operations[0])
+	SFH_ASSERT(JSON_GetType(exdop.jsonID, exdop.jsonPath) == JSON_ARRAY, "An array is required to hold the operands of the operation.", jsonId = exdop.jsonId)
 	opName = LowerStr(operations[0])
 #ifdef AUTOMATED_TESTING
 	strswitch(opName)
@@ -290,220 +299,220 @@ Function/WAVE SFE_FormulaExecutor(string graph, variable jsonID, [string jsonPat
 	///@{
 	strswitch(opName)
 		case SF_OP_MINUS:
-			WAVE out = SFO_OperationMinus(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationMinus(exdop)
 			break
 		case SF_OP_PLUS:
-			WAVE out = SFO_OperationPlus(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationPlus(exdop)
 			break
 		case SF_OP_DIV: // division
-			WAVE out = SFO_OperationDiv(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationDiv(exdop)
 			break
 		case SF_OP_MULT:
-			WAVE out = SFO_OperationMult(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationMult(exdop)
 			break
 		case SF_OP_RANGE: // fallthrough
 		case SF_OP_RANGESHORT:
-			WAVE out = SFO_OperationRange(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationRange(exdop)
 			break
 		case SF_OP_CONCAT:
-			WAVE out = SFO_OperationConcat(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationConcat(exdop)
 			break
 		case SF_OP_MIN:
-			WAVE out = SFO_OperationMin(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationMin(exdop)
 			break
 		case SF_OP_MAX:
-			WAVE out = SFO_OperationMax(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationMax(exdop)
 			break
 		case SF_OP_AVG: // fallthrough
 		case SF_OP_MEAN:
-			WAVE out = SFO_OperationAvg(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationAvg(exdop)
 			break
 		case SF_OP_RMS:
-			WAVE out = SFO_OperationRMS(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationRMS(exdop)
 			break
 		case SF_OP_VARIANCE:
-			WAVE out = SFO_OperationVariance(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationVariance(exdop)
 			break
 		case SF_OP_STDEV:
-			WAVE out = SFO_OperationStdev(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationStdev(exdop)
 			break
 		case SF_OP_DERIVATIVE:
-			WAVE out = SFO_OperationDerivative(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationDerivative(exdop)
 			break
 		case SF_OP_INTEGRATE:
-			WAVE out = SFO_OperationIntegrate(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationIntegrate(exdop)
 			break
 		case SF_OP_EPOCHS:
-			WAVE out = SFO_OperationEpochs(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationEpochs(exdop)
 			break
 		case SF_OP_AREA:
-			WAVE out = SFO_OperationArea(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationArea(exdop)
 			break
 		case SF_OP_BUTTERWORTH:
-			WAVE out = SFO_OperationButterworth(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationButterworth(exdop)
 			break
 		case SF_OP_TIME: // fallthrough
 		case SF_OP_XVALUES:
-			WAVE out = SFO_OperationXValues(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationXValues(exdop)
 			break
 		case SF_OP_TEXT:
-			WAVE out = SFO_OperationText(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationText(exdop)
 			break
 		case SF_OP_SETSCALE:
-			WAVE out = SFO_OperationSetScale(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationSetScale(exdop)
 			break
 		case SF_OP_WAVE:
-			WAVE out = SFO_OperationWave(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationWave(exdop)
 			break
 		case SF_OP_SELECTCHANNELS:
-			WAVE out = SFOS_OperationSelectChannels(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectChannels(exdop)
 			break
 		case SF_OP_SELECTSWEEPS:
-			WAVE out = SFOS_OperationSelectSweeps(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectSweeps(exdop)
 			break
 		case SF_OP_DATA:
-			WAVE out = SFO_OperationData(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationData(exdop)
 			break
 		case SF_OP_LABNOTEBOOK:
-			WAVE out = SFO_OperationLabnotebook(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationLabnotebook(exdop)
 			break
 		case SF_OP_ANAFUNCPARAM:
-			WAVE out = SFO_OperationAnaFuncParam(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationAnaFuncParam(exdop)
 			break
 		case SF_OP_LOG: // JSON logic debug operation
-			WAVE out = SFO_OperationLog(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationLog(exdop)
 			break
 		case SF_OP_LOG10: // decadic logarithm
-			WAVE out = SFO_OperationLog10(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationLog10(exdop)
 			break
 		case SF_OP_CURSORS:
-			WAVE out = SFO_OperationCursors(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationCursors(exdop)
 			break
 		case SF_OP_FINDLEVEL:
-			WAVE out = SFO_OperationFindLevel(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationFindLevel(exdop)
 			break
 		case SF_OP_APFREQUENCY:
-			WAVE out = SFO_OperationApFrequency(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationApFrequency(exdop)
 			break
 		case SF_OP_TP:
-			WAVE out = SFOTP_OperationTP(jsonId, jsonPath, graph)
+			WAVE out = SFOTP_OperationTP(exdop)
 			break
 		case SF_OP_STORE:
-			WAVE out = SFO_OperationStore(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationStore(exdop)
 			break
 		case SF_OP_SELECT:
-			WAVE out = SFOS_OperationSelect(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelect(exdop)
 			break
 		case SF_OP_POWERSPECTRUM:
-			WAVE out = SFO_OperationPowerSpectrum(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationPowerSpectrum(exdop)
 			break
 		case SF_OP_TPSS:
-			WAVE out = SFOTP_OperationTPSS(jsonId, jsonPath, graph)
+			WAVE out = SFOTP_OperationTPSS(exdop)
 			break
 		case SF_OP_TPINST:
-			WAVE out = SFOTP_OperationTPInst(jsonId, jsonPath, graph)
+			WAVE out = SFOTP_OperationTPInst(exdop)
 			break
 		case SF_OP_TPBASE:
-			WAVE out = SFOTP_OperationTPBase(jsonId, jsonPath, graph)
+			WAVE out = SFOTP_OperationTPBase(exdop)
 			break
 		case SF_OP_TPFIT:
-			WAVE out = SFOTP_OperationTPFit(jsonId, jsonPath, graph)
+			WAVE out = SFOTP_OperationTPFit(exdop)
 			break
 		case SF_OP_PSX:
-			WAVE out = PSX_Operation(jsonId, jsonPath, graph)
+			WAVE out = PSX_Operation(exdop)
 			break
 		case SF_OP_PSX_KERNEL:
-			WAVE out = PSX_OperationKernel(jsonId, jsonPath, graph)
+			WAVE out = PSX_OperationKernel(exdop)
 			break
 		case SF_OP_PSX_STATS:
-			WAVE out = PSX_OperationStats(jsonId, jsonPath, graph)
+			WAVE out = PSX_OperationStats(exdop)
 			break
 		case SF_OP_PSX_RISETIME:
-			WAVE out = PSX_OperationRiseTime(jsonId, jsonPath, graph)
+			WAVE out = PSX_OperationRiseTime(exdop)
 			break
 		case SF_OP_PSX_PREP:
-			WAVE out = PSX_OperationPrep(jsonId, jsonPath, graph)
+			WAVE out = PSX_OperationPrep(exdop)
 			break
 		case SF_OP_PSX_DECONV_FILTER:
-			WAVE out = PSX_OperationDeconvFilter(jsonId, jsonPath, graph)
+			WAVE out = PSX_OperationDeconvFilter(exdop)
 			break
 		case SF_OP_MERGE:
-			WAVE out = SFO_OperationMerge(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationMerge(exdop)
 			break
 		case SF_OP_FIT:
-			WAVE out = SFO_OperationFit(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationFit(exdop)
 			break
 		case SF_OP_FITLINE:
-			WAVE out = SFO_OperationFitLine(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationFitLine(exdop)
 			break
 		case SF_OP_DATASET:
-			WAVE out = SFO_OperationDataset(jsonId, jsonPath, graph)
+			WAVE out = SFO_OperationDataset(exdop)
 			break
 		case SF_OP_SELECTVIS:
-			WAVE out = SFOS_OperationSelectVis(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectVis(exdop)
 			break
 		case SF_OP_SELECTEXP:
-			WAVE out = SFOS_OperationSelectExperiment(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectExperiment(exdop)
 			break
 		case SF_OP_SELECTDEV:
-			WAVE out = SFOS_OperationSelectDevice(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectDevice(exdop)
 			break
 		case SF_OP_SELECTEXPANDSCI:
-			WAVE out = SFOS_OperationSelectExpandSCI(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectExpandSCI(exdop)
 			break
 		case SF_OP_SELECTEXPANDRAC:
-			WAVE out = SFOS_OperationSelectExpandRAC(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectExpandRAC(exdop)
 			break
 		case SF_OP_SELECTSETCYCLECOUNT:
-			WAVE out = SFOS_OperationSelectSetCycleCount(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectSetCycleCount(exdop)
 			break
 		case SF_OP_SELECTSETSWEEPCOUNT:
-			WAVE out = SFOS_OperationSelectSetSweepCount(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectSetSweepCount(exdop)
 			break
 		case SF_OP_SELECTSCIINDEX:
-			WAVE out = SFOS_OperationSelectSCIIndex(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectSCIIndex(exdop)
 			break
 		case SF_OP_SELECTRACINDEX:
-			WAVE out = SFOS_OperationSelectRACIndex(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectRACIndex(exdop)
 			break
 		case SF_OP_SELECTCM:
-			WAVE out = SFOS_OperationSelectCM(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectCM(exdop)
 			break
 		case SF_OP_SELECTSTIMSET:
-			WAVE out = SFOS_OperationSelectStimset(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectStimset(exdop)
 			break
 		case SF_OP_SELECTIVSCCSWEEPQC:
-			WAVE out = SFOS_OperationSelectIVSCCSweepQC(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectIVSCCSweepQC(exdop)
 			break
 		case SF_OP_SELECTIVSCCSETQC:
-			WAVE out = SFOS_OperationSelectIVSCCSetQC(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectIVSCCSetQC(exdop)
 			break
 		case SF_OP_SELECTRANGE:
-			WAVE out = SFOS_OperationSelectRange(jsonId, jsonPath, graph)
+			WAVE out = SFOS_OperationSelectRange(exdop)
 			break
 		default:
-			SFH_FATAL_ERROR("Undefined Operation", jsonId = jsonId)
+			SFH_FATAL_ERROR("Undefined Operation", jsonId = exdop.jsonId)
 	endswitch
 	///@}
 
 	return out
 End
 
-static Function/WAVE SFE_FormulaExecutorStringOrVariable(string graph, variable jsonId, string jsonPath)
+static Function/WAVE SFE_FormulaExecutorStringOrVariable(STRUCT SF_ExecutionData &exd)
 
 	string   str
 	variable dim
 
-	str = JSON_GetString(jsonID, jsonPath)
+	str = JSON_GetString(exd.jsonID, exd.jsonPath)
 	if(strlen(str) > 1 && char2num(str[0]) == SFE_VARIABLE_PREFIX)
-		WAVE/WAVE varStorage = GetSFVarStorage(graph)
+		WAVE/WAVE varStorage = GetSFVarStorage(exd.graph)
 		dim = FindDimLabel(varStorage, ROWS, str[1, Inf])
 		SFH_ASSERT(dim != -2, "Unknown variable " + str[1, Inf])
 		return varStorage[dim]
 	endif
 
 	Make/FREE/T outT = {str}
-	return SFH_GetOutputForExecutorSingle(outT, graph, "ExecutorStringReturn")
+	return SFH_GetOutputForExecutorSingle(outT, exd.graph, "ExecutorStringReturn")
 End
 
 static Function/WAVE SFE_ConvertNonFiniteElements(WAVE/T subArray)

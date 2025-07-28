@@ -4639,24 +4639,24 @@ End
 // Output[0] = sweepData(1)
 // Output[1] = sweepDataOffFilt(1)
 // ...
-Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
+Function/WAVE PSX_Operation(STRUCT SF_ExecutionData &exd)
 
 	variable numberOfSDs, sweepFilterLow, sweepFilterHigh, parameterJsonID, numCombos, i, addedData, kernelAmp
 	variable maxTauFactor, peakThresh, idx, success, kernelRiseTau, kernelDecayTau
 	string parameterPath, id, psxParameters, dataUnit, path
 
-	id = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX, 0, checkFunc = IsValidObjectName)
+	id = SFH_GetArgumentAsText(exd, SF_OP_PSX, 0, checkFunc = IsValidObjectName)
 
-	WAVE/WAVE psxKernelDataset = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_PSX, 1, defOp = "psxKernel()")
+	WAVE/WAVE psxKernelDataset = SFH_GetArgumentAsWave(exd, SF_OP_PSX, 1, defOp = "psxKernel()")
 
 	try
-		numberOfSDs     = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 2, defValue = PSX_NUMBER_OF_SDS_DEFAULT, checkFunc = IsStrictlyPositiveAndFinite)
-		sweepFilterLow  = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 3, defValue = PSX_DEFAULT_FILTER_LOW, checkFunc = IsNullOrPositiveAndFinite)
-		sweepFilterHigh = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 4, defValue = PSX_DEFAULT_FILTER_HIGH, checkFunc = IsNullOrPositiveAndFinite)
-		maxTauFactor    = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 5, defValue = PSX_DEFAULT_MAX_TAU_FACTOR, checkFunc = IsStrictlyPositiveAndFinite)
-		WAVE riseTime = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_PSX, 6, defOp = "psxRiseTime()", expectedMinorType = IGOR_TYPE_64BIT_FLOAT, singleResult = 1)
+		numberOfSDs     = SFH_GetArgumentAsNumeric(exd, SF_OP_PSX, 2, defValue = PSX_NUMBER_OF_SDS_DEFAULT, checkFunc = IsStrictlyPositiveAndFinite)
+		sweepFilterLow  = SFH_GetArgumentAsNumeric(exd, SF_OP_PSX, 3, defValue = PSX_DEFAULT_FILTER_LOW, checkFunc = IsNullOrPositiveAndFinite)
+		sweepFilterHigh = SFH_GetArgumentAsNumeric(exd, SF_OP_PSX, 4, defValue = PSX_DEFAULT_FILTER_HIGH, checkFunc = IsNullOrPositiveAndFinite)
+		maxTauFactor    = SFH_GetArgumentAsNumeric(exd, SF_OP_PSX, 5, defValue = PSX_DEFAULT_MAX_TAU_FACTOR, checkFunc = IsStrictlyPositiveAndFinite)
+		WAVE riseTime = SFH_GetArgumentAsWave(exd, SF_OP_PSX, 6, defOp = "psxRiseTime()", expectedMinorType = IGOR_TYPE_64BIT_FLOAT, singleResult = 1)
 		ASSERT(IsNumericWave(riseTime), "Invalid return from psxRiseTime")
-		WAVE deconvFilter = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_PSX, 7, defOp = "psxDeconvFilter()", singleResult = 1)
+		WAVE deconvFilter = SFH_GetArgumentAsWave(exd, SF_OP_PSX, 7, defOp = "psxDeconvFilter()", singleResult = 1)
 
 		parameterJsonID = JWN_GetWaveNoteAsJSON(psxKernelDataset)
 		parameterPath   = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX
@@ -4680,7 +4680,7 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 		numCombos = DimSize(psxKernelDataset, ROWS) / PSX_KERNEL_OUTPUTWAVES_PER_ENTRY
 		ASSERT(IsInteger(numCombos) && numCombos > 0, "Invalid number of input sets from psxKernel()")
 
-		WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_PSX, numCombos * PSX_OPERATION_OUTPUT_WAVES_PER_ENTRY)
+		WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_PSX, numCombos * PSX_OPERATION_OUTPUT_WAVES_PER_ENTRY)
 
 		path      = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX_KERNEL
 		kernelAmp = JWN_GetNumberFromWaveNote(psxKernelDataset, path + "/amp")
@@ -4697,7 +4697,7 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 		PSX_OperationSetDimensionLabels(output, numCombos, labels, labelsTemplate)
 
 		for(i = 0; i < numCombos; i += 1)
-			success = !PSX_OperationSweepGathering(graph, psxKernelDataset, parameterJsonID, sweepFilterLow, sweepFilterHigh, deconvFilter, idx, output)
+			success = !PSX_OperationSweepGathering(exd.graph, psxKernelDataset, parameterJsonID, sweepFilterLow, sweepFilterHigh, deconvFilter, idx, output)
 			idx    += success
 		endfor
 
@@ -4713,7 +4713,7 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 		WaveClear hist, fit
 
 		for(i = 0; i < numCombos; i += 1)
-			PSX_OperationImpl(graph, parameterJsonID, id, peakThresh, maxTauFactor, riseTime, kernelAmp, kernelRiseTau, kernelDecayTau, i, output)
+			PSX_OperationImpl(exd.graph, parameterJsonID, id, peakThresh, maxTauFactor, riseTime, kernelAmp, kernelRiseTau, kernelDecayTau, i, output)
 		endfor
 	catch
 		if(WaveExists(output))
@@ -4733,7 +4733,7 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 
 	SFH_CleanUpInput(psxKernelDataset)
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_PSX)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_PSX)
 End
 
 /// @brief Implementation of the `psxKernel` operation
@@ -4746,26 +4746,26 @@ End
 // Output[2] = sweepData(0)
 // Output[3] = psx_kernel(1)
 // ...
-Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph)
+Function/WAVE PSX_OperationKernel(STRUCT SF_ExecutionData &exd)
 
 	variable riseTau, decayTau, amp, dt, numPoints, numCombos, i, offset, idx
 	string parameterPath, key
 
-	WAVE/Z/WAVE selectDataCompArray = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 0)
+	WAVE/Z/WAVE selectDataCompArray = SFH_GetArgumentSelect(exd, SF_OP_PSX_KERNEL, 0)
 	SFH_ASSERT(WaveExists(selectDataCompArray), "Could not gather sweep data from select statement")
 
-	riseTau  = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 1, defValue = 1, checkFunc = IsStrictlyPositiveAndFinite)
-	decayTau = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 2, defValue = 15, checkFunc = IsStrictlyPositiveAndFinite)
-	amp      = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 3, defValue = -5, checkFunc = IsFinite)
+	riseTau  = SFH_GetArgumentAsNumeric(exd, SF_OP_PSX_KERNEL, 1, defValue = 1, checkFunc = IsStrictlyPositiveAndFinite)
+	decayTau = SFH_GetArgumentAsNumeric(exd, SF_OP_PSX_KERNEL, 2, defValue = 15, checkFunc = IsStrictlyPositiveAndFinite)
+	amp      = SFH_GetArgumentAsNumeric(exd, SF_OP_PSX_KERNEL, 3, defValue = -5, checkFunc = IsFinite)
 
 	SFH_ASSERT(decayTau > riseTau, "decay tau must be strictly larger than the rise tau")
 
-	WAVE/WAVE sweepDataRef = SFH_GetSweepsForFormula(graph, selectDataCompArray, SF_OP_PSX_KERNEL)
+	WAVE/WAVE sweepDataRef = SFH_GetSweepsForFormula(exd.graph, selectDataCompArray, SF_OP_PSX_KERNEL)
 
 	numCombos = DimSize(sweepDataRef, ROWS)
 	SFH_ASSERT(numCombos > 0, "Could not fetch sweeps")
 
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_PSX_KERNEL, PSX_KERNEL_OUTPUTWAVES_PER_ENTRY * numCombos)
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_PSX_KERNEL, PSX_KERNEL_OUTPUTWAVES_PER_ENTRY * numCombos)
 
 	Make/FREE/T rawLabels = {"psxKernel", "psxKernelFFT", "sweepData"}
 	ASSERT(DimSize(rawLabels, ROWS) == PSX_KERNEL_OUTPUTWAVES_PER_ENTRY, "Mismatched rawLabels wave")
@@ -4779,7 +4779,7 @@ Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph
 
 		[WAVE singleSelectData, WAVE range] = SFH_ParseToSelectDataWaveAndRange(sweepData)
 
-		[WAVE resolvedRanges, WAVE/T epochRangeNames] = SFH_GetNumericRangeFromEpochFromSingleSelect(graph, singleSelectData, range)
+		[WAVE resolvedRanges, WAVE/T epochRangeNames] = SFH_GetNumericRangeFromEpochFromSingleSelect(exd.graph, singleSelectData, range)
 
 		if(!WaveExists(resolvedRanges))
 			continue
@@ -4799,7 +4799,7 @@ Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph
 			continue
 		endif
 
-		PSX_CollectResolvedRanges(graph, resolvedRanges, singleSelectData, allResolvedRanges, allSelectHashes)
+		PSX_CollectResolvedRanges(exd.graph, resolvedRanges, singleSelectData, allResolvedRanges, allSelectHashes)
 
 		Duplicate/FREE/T rawLabels, labels
 		labels[] = PSX_GenerateKey(rawLabels[p], idx)
@@ -4832,47 +4832,47 @@ Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph
 
 	JWN_SetStringInWaveNote(output, SF_META_OPSTACK, AddListItem(SF_OP_PSX_KERNEL, ""))
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_PSX_KERNEL)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_PSX_KERNEL)
 End
 
-Function/WAVE PSX_OperationRiseTime(variable jsonId, string jsonPath, string graph)
+Function/WAVE PSX_OperationRiseTime(STRUCT SF_ExecutionData &exd)
 
 	variable lowerThreshold, upperThreshold, differentiateThreshold
 
-	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_PSX_RISETIME, 0, maxArgs = 3)
+	SFH_CheckArgumentCount(exd, SF_OP_PSX_RISETIME, 0, maxArgs = 3)
 
-	lowerThreshold         = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_RISETIME, 0, defValue = 20, checkFunc = BetweenZeroAndOneHoundredExc)
-	upperThreshold         = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_RISETIME, 1, defValue = 80, checkFunc = BetweenZeroAndOneHoundredExc)
-	differentiateThreshold = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_RISETIME, 2, defValue = 5, checkFunc = BetweenZeroAndOneHoundredExc)
+	lowerThreshold         = SFH_GetArgumentAsNumeric(exd, SF_OP_PSX_RISETIME, 0, defValue = 20, checkFunc = BetweenZeroAndOneHoundredExc)
+	upperThreshold         = SFH_GetArgumentAsNumeric(exd, SF_OP_PSX_RISETIME, 1, defValue = 80, checkFunc = BetweenZeroAndOneHoundredExc)
+	differentiateThreshold = SFH_GetArgumentAsNumeric(exd, SF_OP_PSX_RISETIME, 2, defValue = 5, checkFunc = BetweenZeroAndOneHoundredExc)
 
 	Make/D/FREE thresholds = {lowerThreshold / ONE_TO_PERCENT, upperThreshold / ONE_TO_PERCENT, differentiateThreshold / ONE_TO_PERCENT}
 	SetDimensionLabels(thresholds, "Lower Threshold;Upper Threshold;Differentiate Threshold", ROWS)
 
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_PSX_RISETIME, 1)
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_PSX_RISETIME, 1)
 
 	output[0] = thresholds
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_PSX_RISETIME)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_PSX_RISETIME)
 End
 
-Function/WAVE PSX_OperationDeconvFilter(variable jsonId, string jsonPath, string graph)
+Function/WAVE PSX_OperationDeconvFilter(STRUCT SF_ExecutionData &exd)
 
 	variable low, high, order
 
-	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_PSX_DECONV_FILTER, 0, maxArgs = 3)
+	SFH_CheckArgumentCount(exd, SF_OP_PSX_DECONV_FILTER, 0, maxArgs = 3)
 
-	low   = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_DECONV_FILTER, 0, defValue = NaN, checkFunc = IsNullOrPositiveAndFinite, checkDefault = 0)
-	high  = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_DECONV_FILTER, 1, defValue = NaN, checkFunc = IsNullOrPositiveAndFinite, checkDefault = 0)
-	order = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_DECONV_FILTER, 2, defValue = NaN, checkFunc = IsStrictlyPositiveAndFinite, checkDefault = 0)
+	low   = SFH_GetArgumentAsNumeric(exd, SF_OP_PSX_DECONV_FILTER, 0, defValue = NaN, checkFunc = IsNullOrPositiveAndFinite, checkDefault = 0)
+	high  = SFH_GetArgumentAsNumeric(exd, SF_OP_PSX_DECONV_FILTER, 1, defValue = NaN, checkFunc = IsNullOrPositiveAndFinite, checkDefault = 0)
+	order = SFH_GetArgumentAsNumeric(exd, SF_OP_PSX_DECONV_FILTER, 2, defValue = NaN, checkFunc = IsStrictlyPositiveAndFinite, checkDefault = 0)
 
 	Make/D/FREE params = {low, high, order}
 	SetDimensionLabels(params, "Filter Low;Filter High;Filter Order", ROWS)
 
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_PSX_DECONV_FILTER, 1)
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_PSX_DECONV_FILTER, 1)
 
 	output[0] = params
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_PSX_DECONV_FILTER)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_PSX_DECONV_FILTER)
 End
 
 static Function/WAVE PSX_GetAllStatsProperties()
@@ -4890,47 +4890,47 @@ static Function/WAVE PSX_GetAllStatsProperties()
 	return allProps
 End
 
-Function/WAVE PSX_OperationStats(variable jsonId, string jsonPath, string graph)
+Function/WAVE PSX_OperationStats(STRUCT SF_ExecutionData &exd)
 
 	string stateAsStr, postProc, id, prop
 
-	id = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX, 0, checkFunc = IsValidObjectName)
+	id = SFH_GetArgumentAsText(exd, SF_OP_PSX, 0, checkFunc = IsValidObjectName)
 
-	WAVE/Z/WAVE selectDataCompArray = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 1)
+	WAVE/Z/WAVE selectDataCompArray = SFH_GetArgumentSelect(exd, SF_OP_PSX_STATS, 1)
 	SFH_Assert(WaveExists(selectDataCompArray), "Missing select data")
 
 	WAVE allProps = PSX_GetAllStatsProperties()
-	prop = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 2, allowedValues = allProps)
+	prop = SFH_GetArgumentAsText(exd, SF_OP_PSX_STATS, 2, allowedValues = allProps)
 	Make/FREE/T allStates = {"accept", "reject", "undetermined", "all", "every"}
-	stateAsStr = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 3, allowedValues = allStates)
+	stateAsStr = SFH_GetArgumentAsText(exd, SF_OP_PSX_STATS, 3, allowedValues = allStates)
 	Make/FREE/T allPostProc = {"nothing", "stats", "count", "hist", "log10", "nonfinite"}
-	postProc = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 4, defValue = "nothing", allowedValues = allPostProc)
+	postProc = SFH_GetArgumentAsText(exd, SF_OP_PSX_STATS, 4, defValue = "nothing", allowedValues = allPostProc)
 
-	WAVE/WAVE output = PSX_OperationStatsImpl(graph, id, selectDataCompArray, prop, stateAsStr, postProc)
+	WAVE/WAVE output = PSX_OperationStatsImpl(exd.graph, id, selectDataCompArray, prop, stateAsStr, postProc)
 
 	JWN_SetStringInWaveNote(output, SF_META_OPSTACK, AddListItem(SF_OP_PSX_STATS, ""))
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_PSX_STATS)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_PSX_STATS)
 End
 
-Function/WAVE PSX_OperationPrep(variable jsonId, string jsonPath, string graph)
+Function/WAVE PSX_OperationPrep(STRUCT SF_ExecutionData &exd)
 
 	variable numSDs, threshold, numCombos
 	string msg, dataUnit
 
-	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_PSX_PREP, 1, maxArgs = 2)
+	SFH_CheckArgumentCount(exd, SF_OP_PSX_PREP, 1, maxArgs = 2)
 
-	WAVE/WAVE results = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_PSX_PREP, 0)
+	WAVE/WAVE results = SFH_GetArgumentAsWave(exd, SF_OP_PSX_PREP, 0)
 
 	numCombos = PSX_GetNumberOfCombinations(results)
 
 	if(!numCombos)
-		return SFH_CreateSFRefWave(graph, SF_OP_PSX_PREP, 0)
+		return SFH_CreateSFRefWave(exd.graph, SF_OP_PSX_PREP, 0)
 	endif
 
-	numSDs = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_PREP, 1, defValue = PSX_NUMBER_OF_SDS_DEFAULT, checkFunc = IsStrictlyPositiveAndFinite)
+	numSDs = SFH_GetArgumentAsNumeric(exd, SF_OP_PSX_PREP, 1, defValue = PSX_NUMBER_OF_SDS_DEFAULT, checkFunc = IsStrictlyPositiveAndFinite)
 
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_PSX_PREP, 3)
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_PSX_PREP, 3)
 	SetDimensionLabels(output, "Histogram;Fit;Thresholds;", ROWS)
 
 	[WAVE hist, WAVE fit, threshold, dataUnit] = PSX_CalculatePeakThreshold(results, numCombos, numSDs)
@@ -4964,7 +4964,7 @@ Function/WAVE PSX_OperationPrep(variable jsonId, string jsonPath, string graph)
 	sprintf msg, "Number of SDs: %g\r\\s(T000000d0_X) Histogram\r\\s(T000001d1_X) Fit\r\\s(T000002d2_X) Peak threshold: %g (%s)", numSDs, threshold, dataUnit
 	JWN_SetStringInWaveNote(output, SF_META_CUSTOM_LEGEND, msg)
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_PSX_PREP)
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_PSX_PREP)
 End
 
 static Function [WAVE hist, WAVE fit, variable peakThresh, string dataUnit] PSX_CalculatePeakThreshold(WAVE/WAVE results, variable numCombos, variable numSDs)
