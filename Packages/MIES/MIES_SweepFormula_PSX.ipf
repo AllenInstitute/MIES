@@ -2367,12 +2367,12 @@ static Function PSX_AdaptColorsInAllEventGraph(string win, [variable forceAverag
 	endif
 
 	if(averageUpdateRequired || forceAverageUpdate)
-		PSX_UpdateAverageTraces(win, eventIndexFromTraces, comboIndizesFromTraces, stateNew, indexMapper, comboFolders)
+		PSX_UpdateAverageTraces(win, comboIndizesFromTraces, stateNew, indexMapper, comboFolders)
 	endif
 End
 
 /// @brief Update the contents of the average waves for the all event graph
-static Function PSX_UpdateAverageTraces(string win, WAVE/T eventIndexFromTraces, WAVE/T comboIndizesFromTraces, WAVE stateNew, WAVE indexMapper, WAVE/DF comboFolders)
+static Function PSX_UpdateAverageTraces(string win, WAVE/T comboIndizesFromTraces, WAVE stateNew, WAVE indexMapper, WAVE/DF comboFolders)
 
 	variable i, idx, numEvents, eventState, start, stop
 	variable acceptIndex, rejectIndex, undetIndex, extractStartAbs, extractStopAbs, fitStartAbs
@@ -2380,13 +2380,15 @@ static Function PSX_UpdateAverageTraces(string win, WAVE/T eventIndexFromTraces,
 
 	extAllGraph = PSX_GetAllEventGraph(win)
 
-	numEvents = DimSize(eventIndexFromTraces, ROWS)
+	numEvents = DimSize(stateNew, ROWS)
 
 	Make/WAVE/FREE/N=(numEvents) contAverageAll, contAverageAccept, contAverageReject, contAverageUndet
 	Make/FREE=1/D/N=(numEvents) eventOnsetTime, eventPeakTime, eventStopTime, eventKernelAmp
 
 	for(i = 0; i < numEvents; i += 1)
-		idx = str2num(eventIndexFromTraces[i])
+		// i: index of the displayed events across multiple combos
+		// idx: index in a single combo
+		idx = indexMapper[i]
 
 		DFREF comboDFR = comboFolders[str2num(comboIndizesFromTraces[i])]
 
@@ -2401,12 +2403,12 @@ static Function PSX_UpdateAverageTraces(string win, WAVE/T eventIndexFromTraces,
 
 		// single event waves are zeroed in x-direction to extractStartAbs
 		[extractStartAbs, extractStopAbs] = PSX_GetSingleEventRange(psxEvent, sweepDataOffFilt, idx)
-		eventStopTime[idx]                = extractStopAbs - extractStartAbs
-		eventOnsetTime[idx]               = psxEvent[idx][%$"Onset Time"] - extractStartAbs
-		eventPeakTime[idx]                = psxEvent[idx][%peak_t] - extractStartAbs
+		eventStopTime[i]                  = extractStopAbs - extractStartAbs
+		eventOnsetTime[i]                 = psxEvent[idx][%$"Onset Time"] - extractStartAbs
+		eventPeakTime[i]                  = psxEvent[idx][%peak_t] - extractStartAbs
 
-		path                = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX_KERNEL
-		eventKernelAmp[idx] = JWN_GetNumberFromWaveNote(psxEvent, path + "/amp")
+		path              = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX_KERNEL
+		eventKernelAmp[i] = JWN_GetNumberFromWaveNote(psxEvent, path + "/amp")
 
 		switch(stateNew[i])
 			case PSX_ACCEPT:
