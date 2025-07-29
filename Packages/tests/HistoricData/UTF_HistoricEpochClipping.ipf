@@ -6,8 +6,9 @@
 /// UTF_TD_GENERATOR HistoricDataHelpers#GetHistoricDataFiles
 static Function TestEpochClipping([string str])
 
+	STRUCT SF_ExecutionData exd
+
 	string abWin, sweepBrowsers, file, bsPanel, sbWin
-	variable jsonId
 
 	file = "input:" + str
 
@@ -16,8 +17,9 @@ static Function TestEpochClipping([string str])
 	CHECK_PROPER_STR(sbWin)
 	bsPanel = BSP_GetPanel(sbWin)
 
-	jsonId = MIES_SF#SF_FormulaParser("data(select(selrange(\"Stimset;\"), selchannels(AD), selsweeps()))")
-	CHECK_NEQ_VAR(jsonId, NaN)
-	WAVE/WAVE result = MIES_SF#SF_FormulaExecutor(sbWin, jsonId)
-	JSON_Release(jsonId)
+	exd.jsonId = MIES_SFP#SFP_FormulaParser("data(select(selrange(\"Stimset;\"), selchannels(AD), selsweeps()))")
+	CHECK_NEQ_VAR(exd.jsonId, NaN)
+	exd.graph = sbWin
+	WAVE/WAVE result = MIES_SFE#SFE_FormulaExecutor(exd)
+	JSON_Release(exd.jsonId)
 End

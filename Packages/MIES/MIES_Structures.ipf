@@ -648,7 +648,7 @@ Structure ASYNC_ReadOutStruct
 EndStructure
 
 /// @brief Wraps all parameters combined for one SF select call
-///        When adapting also change @ref SF_DuplicateSelectFilter
+///        When adapting also change @ref SFOS_DuplicateSelectFilter
 ///        Initialization with uninitialized state value @see SF_InitSelectFilterUninitalized
 ///        Initialization with defaults for uninitialized elements after select argument parsing @see SF_SetSelectionFilterDefaults
 Structure SF_SelectParameters
@@ -670,4 +670,13 @@ Structure SF_SelectParameters
 	variable setSweepCount // result from selsetsweepcount(x), x if this argument was given, NaN otherwise
 	variable sciIndex // result from selsciindex(x), x if this argument was given, NaN otherwise
 	variable racIndex // result from selracindex(x), x if this argument was given, NaN otherwise
+EndStructure
+
+/// @brief Sweepformula execution data
+///        The structure wraps the data that is used by the executor and the argument getters for SF
+///        It has to be treated outside of the SF execution as READ-ONLY (e.g. in SF operation code)
+Structure SF_ExecutionData
+	string graph // SF graph window name
+	variable jsonId // jsonId of parsed SF formula
+	string jsonPath // current path for execution of the parsed formula
 EndStructure

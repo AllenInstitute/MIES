@@ -16,7 +16,7 @@ static Function TestOperationAPFrequency2([WAVE wv])
 	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen = FakeSweepDataGeneratorAPF0)
 	win = CreateFakeSweepData(win, device, sweepNo = 1, sweepGen = FakeSweepDataGeneratorAPF1)
 
-	WAVE/WAVE outputRef = SF_ExecuteFormula(formula, win, useVariables = 0)
+	WAVE/WAVE outputRef = SFE_ExecuteFormula(formula, win, useVariables = 0)
 	numResults = DimSize(wv, ROWS)
 	CHECK_EQUAL_VAR(numResults, DimSize(outputRef, ROWS))
 	WAVE/WAVE results = wv
@@ -41,7 +41,7 @@ static Function TestOperationAPFrequency()
 	// requires at least one arguments
 	str = "apfrequency()"
 	try
-		WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+		WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -50,7 +50,7 @@ static Function TestOperationAPFrequency()
 	// but no more than six
 	str = "apfrequency([1], 0, 0.5, freq, nonorm, time, 3)"
 	try
-		WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+		WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -59,7 +59,7 @@ static Function TestOperationAPFrequency()
 	// requires valid method
 	str = "apfrequency([1], 10)"
 	try
-		WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+		WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -67,89 +67,89 @@ static Function TestOperationAPFrequency()
 
 	// works with full
 	str = "apfrequency(setscale([10, 20, 10, 20, 10, 20], x, 0, 5, ms), 0, 15)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE/D output_ref = {100}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// works with apcount
 	str = "apfrequency(setscale([10, 20, 10, 20, 10, 20], x, 0, 5, ms), 2, 15)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE/D output_ref = {3}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// works with instantaneous
 	str = "apfrequency(setscale([10, 20, 30, 10, 20, 30, 40, 10, 20], x, 0, 5, ms), 1, 15)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE/D output_ref = {57.14285714285714}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// works with instantaneous pair
 	str = "apfrequency(setscale([10, 20, 30, 10, 20, 30, 40, 10, 20], x, 0, 5, ms), 3, 15)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE/D output_ref = {100 * 2 / 3, 50}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 	str = "apfrequency(setscale([10, 20, 30, 10, 20, 30, 40, 10, 20], x, 0, 5, ms), 3, 15,freq)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// works with instantaneous pair time
 	str = "apfrequency(setscale([10, 20, 30, 10, 20, 30, 40, 10, 20], x, 0, 5, ms), 3, 15, time)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE/D output_ref = {0.015, 0.02}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 	str = "apfrequency(setscale([10, 20, 30, 10, 20, 30, 40, 10, 20], x, 0, 5, ms), 3, 15, time, nonorm)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// returns 0 if nothing found for Full
 	str = "apfrequency([10, 20, 30, 20], 0, 100)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE/D output_ref = {0}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// returns null wave if nothing found for Instantaneous
 	str = "apfrequency([10, 20, 30, 20], 1, 100)"
-	WAVE/Z output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE/Z output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	CHECK_WAVE(output, NULL_WAVE)
 
 	// returns null wave if nothing found for Instantaneous Pair
 	str = "apfrequency([10, 20, 30, 20], 3, 100)"
-	WAVE/Z output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE/Z output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	CHECK_WAVE(output, NULL_WAVE)
 
 	// returns null wave for single peak for Instantaneous Pair
 	str = "apfrequency([10, 20, 30, 20], 3, 25)"
-	WAVE/Z output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE/Z output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	CHECK_WAVE(output, NULL_WAVE)
 
 	// check meta data
 	str = "apfrequency([10, 20, 30, 20], 1, 100)"
-	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	dataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
 	strRef   = SF_DATATYPE_APFREQUENCY
 	CHECK_EQUAL_STR(strRef, dataType)
 
 	// works with instantaneous pair time, norminsweepsmin
 	str = "apfrequency(setscale([10, 20, 30, 10, 20, 30, 40, 10, 20], x, 0, 5, ms), 3, 15, time, norminsweepsmin)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE/D output_ref = {1, 0.02 / 0.015}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// works with instantaneous pair time, norminsweepsmax
 	str = "apfrequency(setscale([10, 20, 30, 10, 20, 30, 40, 10, 20], x, 0, 5, ms), 3, 15, time, norminsweepsmax)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE/D output_ref = {0.015 / 0.02, 1}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// works with instantaneous pair time, norminsweepsavg
 	str = "apfrequency(setscale([10, 20, 30, 10, 20, 30, 40, 10, 20], x, 0, 5, ms), 3, 15, time, norminsweepsavg)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE/D output_ref = {0.015 / 0.0175, 0.02 / 0.0175}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// works with instantaneous pair time, norminsweepsavg, time as x-axis
 	str = "apfrequency(setscale([10, 20, 30, 10, 20, 30, 40, 10, 20], x, 0, 5, ms), 3, 15, time, norminsweepsavg, time)"
-	WAVE/WAVE outputRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE outputRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	Make/FREE/D output_ref = {2.5, 17.5}
 	for(data : outputRef)
 		WAVE/Z xValues = JWN_GetNumericWaveFromWaveNote(data, SF_META_XVALUES)
@@ -159,7 +159,7 @@ static Function TestOperationAPFrequency()
 
 	// works with instantaneous pair time, norminsweepsavg, count as x-axis
 	str = "apfrequency(setscale([10, 20, 30, 10, 20, 30, 40, 10, 20], x, 0, 5, ms), 3, 15, time, norminsweepsavg, count)"
-	WAVE/WAVE outputRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE outputRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	Make/FREE/D/N=2 output_ref = p
 	for(data : outputRef)
 		WAVE/Z xValues = JWN_GetNumericWaveFromWaveNote(data, SF_META_XVALUES)
@@ -261,18 +261,18 @@ static Function TestOperationWave()
 	Make/N=(10) wave0 = p
 
 	str = "wave(wave0)"
-	WAVE wave1 = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE wave1 = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	str = "range(0,10)"
-	WAVE wave2 = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE wave2 = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(wave0, wave2, mode = WAVE_DATA)
 	REQUIRE_EQUAL_WAVES(wave1, wave2, mode = WAVE_DATA)
 
 	str = "wave(does_not_exist)"
-	WAVE/Z wave1 = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE/Z wave1 = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	CHECK(!WaveExists(wave1))
 
 	str = "wave()"
-	WAVE/Z wave1 = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE/Z wave1 = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	CHECK(!WaveExists(wave1))
 
 	KillWaves/Z wave0
@@ -290,14 +290,14 @@ static Function TestOperationTPBase_TPSS_TPInst([string str])
 	dataTypeRef = StringFromList(1, str)
 
 	formula = func + "()"
-	WAVE/WAVE output = SF_ExecuteFormula(formula, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(formula, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 0)
 	dataType = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
 	CHECK_EQUAL_STR(dataTypeRef, dataType)
 
 	try
 		formula = func + "(1)"
-		WAVE/WAVE output = SF_ExecuteFormula(formula, win, useVariables = 0)
+		WAVE/WAVE output = SFE_ExecuteFormula(formula, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -335,7 +335,7 @@ static Function TestOperationTP()
 	win = GetDataBrowserWithData()
 
 	formula = "tp(tpfit(exp, amp), select(selvis(all), selsweeps(1000)))"
-	WAVE/Z/WAVE output = SF_ExecuteFormula(formula, win, useVariables = 0)
+	WAVE/Z/WAVE output = SFE_ExecuteFormula(formula, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 0)
 End
@@ -348,36 +348,36 @@ static Function TestOperationTPfit()
 	win = GetDataBrowserWithData()
 
 	formula = "tpfit(exp,tau)"
-	WAVE/WAVE output = SF_ExecuteFormula(formula, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(formula, win, useVariables = 0)
 	CheckTPFitResult(output, "exp", "tau", 250)
 
 	formula = "tpfit(doubleexp,tau)"
-	WAVE/WAVE output = SF_ExecuteFormula(formula, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(formula, win, useVariables = 0)
 	CheckTPFitResult(output, "doubleexp", "tau", 250)
 
 	formula = "tpfit(exp,tausmall)"
-	WAVE/WAVE output = SF_ExecuteFormula(formula, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(formula, win, useVariables = 0)
 	CheckTPFitResult(output, "exp", "tausmall", 250)
 
 	formula = "tpfit(exp,amp)"
-	WAVE/WAVE output = SF_ExecuteFormula(formula, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(formula, win, useVariables = 0)
 	CheckTPFitResult(output, "exp", "amp", 250)
 
 	formula = "tpfit(exp,minabsamp)"
-	WAVE/WAVE output = SF_ExecuteFormula(formula, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(formula, win, useVariables = 0)
 	CheckTPFitResult(output, "exp", "minabsamp", 250)
 
 	formula = "tpfit(exp,fitq)"
-	WAVE/WAVE output = SF_ExecuteFormula(formula, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(formula, win, useVariables = 0)
 	CheckTPFitResult(output, "exp", "fitq", 250)
 
 	formula = "tpfit(exp,tau,20)"
-	WAVE/WAVE output = SF_ExecuteFormula(formula, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(formula, win, useVariables = 0)
 	CheckTPFitResult(output, "exp", "tau", 20)
 
 	try
 		formula = "tpfit(exp)"
-		WAVE/WAVE output = SF_ExecuteFormula(formula, win, useVariables = 0)
+		WAVE/WAVE output = SFE_ExecuteFormula(formula, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -385,7 +385,7 @@ static Function TestOperationTPfit()
 
 	try
 		formula = "tpfit(exp,tau,250,1)"
-		WAVE/WAVE output = SF_ExecuteFormula(formula, win, useVariables = 0)
+		WAVE/WAVE output = SFE_ExecuteFormula(formula, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -393,7 +393,7 @@ static Function TestOperationTPfit()
 
 	try
 		formula = "tpfit(1,tau,250)"
-		WAVE/WAVE output = SF_ExecuteFormula(formula, win, useVariables = 0)
+		WAVE/WAVE output = SFE_ExecuteFormula(formula, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -401,7 +401,7 @@ static Function TestOperationTPfit()
 
 	try
 		formula = "tpfit(exp,1,250)"
-		WAVE/WAVE output = SF_ExecuteFormula(formula, win, useVariables = 0)
+		WAVE/WAVE output = SFE_ExecuteFormula(formula, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -409,7 +409,7 @@ static Function TestOperationTPfit()
 
 	try
 		formula = "tpfit(exp,tau,tau)"
-		WAVE/WAVE output = SF_ExecuteFormula(formula, win, useVariables = 0)
+		WAVE/WAVE output = SFE_ExecuteFormula(formula, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -440,7 +440,7 @@ static Function TestVariousFunctions([string str])
 
 	// 1D
 	str = func + "(" + JSON_Dump(jsonIDOneD) + ")"
-	WAVE output1D = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output1D = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Execute "Make output1D_mo = {" + oneDResult + "}"
 	WAVE output1D_mo
 
@@ -448,7 +448,7 @@ static Function TestVariousFunctions([string str])
 
 	// 2D
 	str = func + "(" + JSON_Dump(jsonIDTwoD) + ")"
-	WAVE output2D = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output2D = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Execute "Make output2D_mo = {" + twoDResult + "}"
 	WAVE output2D_mo
 
@@ -492,7 +492,7 @@ static Function TestOperationMinMax()
 	wavePath = GetWavesDataFolder(input, 2)
 	str      = "min(wave(" + wavePath + "))"
 	try
-		WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+		WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -500,7 +500,7 @@ static Function TestOperationMinMax()
 
 	str = "max(wave(" + wavePath + "))"
 	try
-		WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+		WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -508,7 +508,7 @@ static Function TestOperationMinMax()
 
 	str = "avg(wave(" + wavePath + "))"
 	try
-		WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+		WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -526,14 +526,14 @@ static Function TestOperationText()
 
 	str = "text()"
 	try
-		WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+		WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	str = "text([[5.1234567, 1], [2, 3]])"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE/T refData = {{"5.1234567", "2.0000000"}, {"1.0000000", "3.0000000"}}
 	REQUIRE_EQUAL_WAVES(refData, output, mode = WAVE_DATA)
 
@@ -543,7 +543,7 @@ static Function TestOperationText()
 	Note/K testData, strRef
 	wavePath = GetWavesDataFolder(testData, 2)
 	str      = "text(wave(" + wavePath + "))"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	str = note(output)
 	INFO("note: %s", s0 = str)
 	CHECK_EQUAL_STR(strRef, str)
@@ -552,7 +552,7 @@ static Function TestOperationText()
 	JWN_SetStringInWaveNote(testData, "abcd", "efgh")
 	strRef = "WaveNoteCopyTest\rJSON_BEGIN\r{\n\"abcd\": \"efgh\"\n}"
 	str    = "text(wave(" + wavePath + "))"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	str = note(output)
 	INFO("note: %s", s0 = str)
 	CHECK_EQUAL_STR(strRef, str)
@@ -569,12 +569,12 @@ static Function TestOperationLog()
 	win = GetDataBrowserWithData()
 
 	str = "log()"
-	WAVE/WAVE outputRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE outputRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(outputRef, ROWS), 0)
 
 	histRef = CaptureHistoryStart()
 	str     = "log(1, 10, 100)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	histo = TrimString(CaptureHistory(histRef, 1))
 	REQUIRE_EQUAL_STR("1", histo)
 	Make/FREE/D refData = {1, 10, 100}
@@ -582,31 +582,31 @@ static Function TestOperationLog()
 
 	histRef = CaptureHistoryStart()
 	str     = "log(a, bb, ccc)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	histo = TrimString(CaptureHistory(histRef, 1))
 	REQUIRE_EQUAL_STR("a", histo)
 	Make/FREE/T refDataT = {"a", "bb", "ccc"}
 	REQUIRE_EQUAL_WAVES(refDataT, output, mode = WAVE_DATA)
 
 	str = "log(1)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE wRef = {1}
 	CHECK_EQUAL_WAVES(wRef, output, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	str = "log(1, 2)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE wRef = {1, 2}
 	CHECK_EQUAL_WAVES(wRef, output, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	Make testData = {1, 2}
 	str = "log(wave(" + GetWavesDataFolder(testData, 2) + "))"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Duplicate/FREE testData, refData
 	CHECK_EQUAL_WAVES(refData, output, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	histRef = CaptureHistoryStart()
 	str     = "log(select())"
-	WAVE output = SF_ExecuteFormula(str, win)
+	WAVE output = SFE_ExecuteFormula(str, win)
 	histo = TrimString(CaptureHistory(histRef, 1))
 	REQUIRE_EQUAL_STR("0\r-inf", histo)
 	Make/FREE/WAVE/N=2 wRefWave
@@ -624,35 +624,35 @@ static Function TestOperationButterworth()
 
 	str = "butterworth()"
 	try
-		WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+		WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
 	endtry
 	str = "butterworth(1)"
 	try
-		WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+		WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
 	endtry
 	str = "butterworth(1, 1)"
 	try
-		WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+		WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
 	endtry
 	str = "butterworth(1, 1, 1)"
 	try
-		WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+		WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
 	endtry
 	str = "butterworth(1, 1, 1, 1, 1)"
 	try
-		WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+		WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -660,9 +660,9 @@ static Function TestOperationButterworth()
 
 	Make/FREE/D refData = {0, 0.863870777482797, 0.235196115045368, 0.692708791122301, 0.359757805059761, 0.602060073208013, 0.425726643942363, 0.554051807855231}
 	str = "butterworth([0,1,0,1,0,1,0,1], 90E3, 100E3, 2)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(refData, output, mode = WAVE_DATA, tol = 1E-9)
-	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	dataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
 	strRef   = SF_DATATYPE_BUTTERWORTH
 	CHECK_EQUAL_STR(strRef, dataType)
@@ -678,57 +678,57 @@ static Function TestOperationSelChannels()
 	SetDimLabel COLS, 0, channelType, input
 	SetDimLabel COLS, 1, channelNumber, input
 	str = "selchannels(AD)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input, output)
 
 	Make/FREE input = {{0}, {0}}
 	str = "selchannels(AD0)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{0, 0}, {0, 1}}
 	str = "selchannels(AD0,AD1)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{0, 1}, {0, 1}}
 	str = "selchannels(AD0,DA1)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{1, 1}, {0, 0}}
 	str = "selchannels(DA0,DA0)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{0, 1}, {NaN, NaN}}
 	str = "selchannels(AD,DA)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{NaN}, {1}}
 	str = "selchannels(1)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{NaN, NaN}, {1, 3}}
 	str = "selchannels(1,3)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{0, 1, NaN}, {1, 2, 3}}
 	str = "selchannels(AD1,DA2,3)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{NaN}, {NaN}}
 	str = "selchannels()"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	str = "selchannels(unknown)"
 	try
-		SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+		SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -745,12 +745,12 @@ static Function TestOperationDifferentiateIntegrate()
 
 	// differentiate/integrate 1D waves along rows
 	str = "derivative([0,1,4,9,16,25,36,49,64,81])"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/N=10/U/I/FREE sourcewave = p^2
 	Differentiate/EP=0 sourcewave/D=testwave
 	MakeWaveFree(testwave)
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
-	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	dataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
 	strRef   = SF_DATATYPE_DERIVATIVE
 	CHECK_EQUAL_STR(strRef, dataType)
@@ -758,7 +758,7 @@ static Function TestOperationDifferentiateIntegrate()
 	Make/N=10/U/I/FREE input = p^2
 	wfprintf str, "%d,", input
 	str = "derivative([" + RemoveEnding(str, ",") + "])"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/N=10/FREE testwave = 2 * p
 	Deletepoints 9, 1, testwave, output
 	Deletepoints 0, 1, testwave, output
@@ -767,12 +767,12 @@ static Function TestOperationDifferentiateIntegrate()
 	Make/N=10/U/I/FREE input = 2 * p
 	wfprintf str, "%d,", input
 	str = "integrate([" + RemoveEnding(str, ",") + "])"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/N=10/FREE testwave = p^2
 	Deletepoints 9, 1, testwave, output
 	Deletepoints 0, 1, testwave, output
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
-	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	dataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
 	strRef   = SF_DATATYPE_INTEGRATE
 	CHECK_EQUAL_STR(strRef, dataType)
@@ -780,7 +780,7 @@ static Function TestOperationDifferentiateIntegrate()
 	Make/N=(128)/U/I/FREE input = p
 	wfprintf str, "%d,", input
 	str = "derivative(integrate([" + RemoveEnding(str, ",") + "]))"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Deletepoints 127, 1, input, output
 	Deletepoints 0, 1, input, output
 	REQUIRE_EQUAL_WAVES(output, input, mode = WAVE_DATA)
@@ -788,7 +788,7 @@ static Function TestOperationDifferentiateIntegrate()
 	Make/N=(128)/U/I/FREE input = p^2
 	wfprintf str, "%d,", input
 	str = "integrate(derivative([" + RemoveEnding(str, ",") + "]))"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	output -= 0.5 // expected end point error from first point estimation
 	Deletepoints 127, 1, input, output
 	Deletepoints 0, 1, input, output
@@ -800,7 +800,7 @@ static Function TestOperationDifferentiateIntegrate()
 	JSON_AddWave(array, "", input)
 	str = "derivative(integrate(" + JSON_Dump(array) + "))"
 	JSON_Release(array)
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Deletepoints/M=(ROWS) 127, 1, input, output
 	Deletepoints/M=(ROWS) 0, 1, input, output
 	REQUIRE_EQUAL_WAVES(output, input, mode = WAVE_DATA)
@@ -811,7 +811,7 @@ static Function TestOperationDifferentiateIntegrate()
 	Note/K testData, strRef
 	wavePath = GetWavesDataFolder(testData, 2)
 	str      = "integrate(wave(" + wavePath + "))"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	str = note(output)
 	CHECK_EQUAL_STR(strRef, str)
 	KillWaves/Z testData
@@ -822,7 +822,7 @@ static Function TestOperationDifferentiateIntegrate()
 	Note/K testData, strRef
 	wavePath = GetWavesDataFolder(testData, 2)
 	str      = "derivative(wave(" + wavePath + "))"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	str = note(output)
 	CHECK_EQUAL_STR(strRef, str)
 	KillWaves/Z testData
@@ -839,19 +839,19 @@ static Function TestOperationArea()
 	// rectangular triangle has area 1/2 * a * b
 	// non-zeroed
 	str = "area([0,1,2,3,4], 0)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE testwave = {8}
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
 
 	// zeroed
 	str = "area([0,1,2,3,4], 1)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE testwave = {4}
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
 
 	// x scaling is taken into account
 	str = "area(setscale([0,1,2,3,4], x, 0, 2, unit), 0)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE testwave = {16}
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
 
@@ -864,7 +864,7 @@ static Function TestOperationArea()
 	str = "area(" + JSON_Dump(array) + ", 0)"
 	JSON_Release(array)
 
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	// 0th column: see above
 	// 1st column: imagine 0...5 and remove 0..1 which gives 12.5 - 0.5
 	Make/FREE testwave = {8, 12}
@@ -872,7 +872,7 @@ static Function TestOperationArea()
 
 	// check meta data
 	str = "area([0,1,2,3,4], 0)"
-	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	dataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
 	strRef   = SF_DATATYPE_AREA
 	CHECK_EQUAL_STR(strRef, dataType)
@@ -889,13 +889,13 @@ static Function TestOperationSetscale()
 	win = GetDataBrowserWithData()
 
 	str = "setscale([0,1,2,3,4,5,6,7,8,9], x, 0, 2, unit)"
-	WAVE wv = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE wv = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/N=(10)/FREE waveX = p
 	SetScale x, 0, 2, "unit", waveX
 	REQUIRE_EQUAL_WAVES(waveX, wv, mode = WAVE_DATA)
 
 	str = "setscale(setscale([range(10),range(10)+1,range(10)+2,range(10)+3,range(10)+4,range(10)+5,range(10)+6,range(10)+7,range(10)+8,range(10)+9], x, 0, 2, unitX), y, 0, 4, unitX)"
-	WAVE wv = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE wv = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/N=(10, 10)/FREE waveXY = p + q
 	SetScale/P x, 0, 2, "unitX", waveXY
 	SetScale/P y, 0, 4, "unitX", waveXY
@@ -905,7 +905,7 @@ static Function TestOperationSetscale()
 	wavePath = GetWavesDataFolder(input, 2)
 	refUnit  = "unit"
 	str      = "setscale(wave(" + wavePath + "), z, 0, 2, " + refUnit + ")"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	ref = DimDelta(data, LAYERS)
 	REQUIRE_EQUAL_VAR(ref, 2)
 	unit = WaveUnits(data, LAYERS)
@@ -915,7 +915,7 @@ static Function TestOperationSetscale()
 	wavePath = GetWavesDataFolder(input, 2)
 	refUnit  = "unit"
 	str      = "setscale(wave(" + wavePath + "), t, 0, 2, " + refUnit + ")"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	ref = DimDelta(data, CHUNKS)
 	REQUIRE_EQUAL_VAR(ref, 2)
 	unit = WaveUnits(data, CHUNKS)
@@ -925,7 +925,7 @@ static Function TestOperationSetscale()
 	wavePath = GetWavesDataFolder(input, 2)
 	refUnit  = "unit"
 	str      = "setscale(wave(" + wavePath + "), d, 2, 0, " + refUnit + ")"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	unit = WaveUnits(data, -1)
 	REQUIRE_EQUAL_STR(refUnit, unit)
 	strRef    = "1,2,0"
@@ -949,49 +949,49 @@ static Function TestOperationRange()
 	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	str = "1…10"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/N=9/U/I/FREE testwave = 1 + p
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
 
 	str = "range(1,10)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
 
 	str = "range(10)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/N=10/U/I/FREE testwave = p
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
 
 	str = "range(1,10,2)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/N=5/U/I/FREE testwave = 1 + p * 2
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
 
 	str = "1.5…10.5"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/N=9/FREE floatwave = 1.5 + p
 	REQUIRE_EQUAL_WAVES(output, floatwave, mode = WAVE_DATA)
 
 	str = "range(1, 5, 0.7)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE floatwave = {1, 1.7, 2.4, 3.1, 3.8, 4.5}
 	REQUIRE_EQUAL_WAVES(output, floatwave, mode = WAVE_DATA, tol = 1e-6)
 
 	str = "range(3,0,-1)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE floatwave = {3, 2, 1}
 	REQUIRE_EQUAL_WAVES(output, floatWave, mode = WAVE_DATA)
 
 	// check meta data
 	str = "range(1,10)"
-	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	dataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
 	strRef   = SF_DATATYPE_RANGE
 	CHECK_EQUAL_STR(strRef, dataType)
 
 	try
 		str = "range([1,2])"
-		SF_ExecuteFormula(str, win, useVariables = 0)
+		SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		CHECK_NO_RTE()
@@ -1008,42 +1008,42 @@ static Function TestOperationConcat()
 	win = GetDataBrowserWithData()
 
 	str = "concat([1, 2], [4, 5])"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE floatWave = {1, 2, 4, 5}
 	REQUIRE_EQUAL_WAVES(output, floatWave, mode = WAVE_DATA)
 
 	str = "concat([a, b], [e, f])"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE/T textWave = {"a", "b", "e", "f"}
 	REQUIRE_EQUAL_TEXTWAVES(output, textWave, mode = WAVE_DATA)
 
 	str = "concat([[1, 2], [4, 5]], [[10, 20], [40, 50]])"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	// IP is column major, SF row major
 	Make/FREE floatWave = {{1, 4}, {2, 5}, {10, 40}, {20, 50}}
 	REQUIRE_EQUAL_WAVES(output, floatWave, mode = WAVE_DATA)
 
 	// check meta data
 	str = "concat(1)"
-	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	dataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
 	CHECK_EQUAL_STR(dataType, SF_DATATYPE_CONCAT)
 
 	// preserved from input
 	str = "concat(selsweeps(1), selsweeps(2))"
-	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	dataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
 	CHECK_EQUAL_STR(dataType, SF_DATATYPE_SWEEPNO)
 
 	// but only if equal
 	str = "concat(selsweeps(1), 2)"
-	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	dataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
 	CHECK_EQUAL_STR(dataType, SF_DATATYPE_CONCAT)
 
 	try
 		str = "concat(1, a)"
-		SF_ExecuteFormula(str, win, useVariables = 0)
+		SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		CHECK_NO_RTE()
@@ -1062,7 +1062,7 @@ static Function TestOperationFindLevel()
 	// requires at least two arguments
 	try
 		str = "findlevel()"
-		WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+		WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1070,7 +1070,7 @@ static Function TestOperationFindLevel()
 
 	try
 		str = "findlevel([1])"
-		WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+		WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1079,7 +1079,7 @@ static Function TestOperationFindLevel()
 	// but no more than three
 	try
 		str = "findlevel([1], 2, 3, 4)"
-		WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+		WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1087,26 +1087,26 @@ static Function TestOperationFindLevel()
 
 	// works
 	str = "findlevel([10, 20, 30, 20], 25)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE output_ref = {1.5}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// supports rising edge only
 	str = "findlevel([10, 20, 30, 20], 25, 1)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE output_ref = {1.5}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// supports falling edge only
 	str = "findlevel([10, 20, 30, 20], 25, 2)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE output_ref = {2.5}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// errors out on invalid edge
 	try
 		str = "findlevel([10, 20, 30, 20], 25, 3)"
-		WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+		WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1114,25 +1114,25 @@ static Function TestOperationFindLevel()
 
 	// works with 2D data
 	str = "findlevel([[10, 10], [20, 20], [30, 30]], 15)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE output_ref = {0.5, 0.5}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// returns x coordinates and not indizes
 	str = "findlevel(setscale([[10, 10], [20, 20], [30, 30]], x, 4, 0.5), 15)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE output_ref = {4.25, 4.25}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// returns NaN if nothing found
 	str = "findlevel([10, 20, 30, 20], 100)"
-	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE output_ref = {NaN}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// check meta data
 	str = "findlevel([10, 20, 30, 20], 25)"
-	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	dataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
 	strRef   = SF_DATATYPE_FINDLEVEL
 	CHECK_EQUAL_STR(strRef, dataType)
@@ -1151,7 +1151,7 @@ static Function TestOperationAverage()
 
 	str = "avg()"
 	try
-		WAVE/Z data = SF_ExecuteFormula(str, win, singleResult = 1)
+		WAVE/Z data = SFE_ExecuteFormula(str, win, singleResult = 1)
 		FAIL()
 	catch
 		PASS()
@@ -1159,7 +1159,7 @@ static Function TestOperationAverage()
 
 	str = "avg(1, 2, 3)"
 	try
-		WAVE/Z data = SF_ExecuteFormula(str, win, singleResult = 1)
+		WAVE/Z data = SFE_ExecuteFormula(str, win, singleResult = 1)
 		FAIL()
 	catch
 		PASS()
@@ -1167,29 +1167,29 @@ static Function TestOperationAverage()
 
 	str = "avg(1, 2)"
 	try
-		WAVE/Z data = SF_ExecuteFormula(str, win, singleResult = 1)
+		WAVE/Z data = SFE_ExecuteFormula(str, win, singleResult = 1)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	str = "avg(2, in)"
-	WAVE/Z data = SF_ExecuteFormula(str, win, singleResult = 1, checkExist = 1)
+	WAVE/Z data = SFE_ExecuteFormula(str, win, singleResult = 1, checkExist = 1)
 	CHECK_WAVE(data, IUTF_WAVETYPE1_NUM)
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
 	CHECK_EQUAL_VAR(data[0], 2)
 
 	str = "avg([1, 2, 3], in)"
-	WAVE/Z data = SF_ExecuteFormula(str, win, singleResult = 1, checkExist = 1)
+	WAVE/Z data = SFE_ExecuteFormula(str, win, singleResult = 1, checkExist = 1)
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
 	CHECK_EQUAL_VAR(data[0], 2)
 	str = "avg([1, 2, 3])"
-	WAVE/Z data = SF_ExecuteFormula(str, win, singleResult = 1, checkExist = 1)
+	WAVE/Z data = SFE_ExecuteFormula(str, win, singleResult = 1, checkExist = 1)
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
 	CHECK_EQUAL_VAR(data[0], 2)
 
 	str = "avg(data(select(selrange(),selchannels(AD),selsweeps(),selvis(all))), in)"
-	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 4)
 	Make/FREE/D ref = {4.5}
 	for(data : dataRef)
@@ -1197,7 +1197,7 @@ static Function TestOperationAverage()
 	endfor
 
 	str = "avg(data(select(selrange(),selchannels(AD),selsweeps(),selvis(all))), over)"
-	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 1)
 
 	[s] = GetTraceColorForAverage()
@@ -1261,30 +1261,30 @@ static Function TestOperationSelsweeps()
 	endfor
 
 	str = "selsweeps()"
-	WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(wref, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(wref, ROWS), 1)
 	WAVE array = wref[0]
 	CHECK_EQUAL_WAVES(array, {0, 1, 2, 3}, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	str = "selsweeps(2,3)"
-	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE wref  = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE      array = wref[0]
 	CHECK_EQUAL_WAVES(array, {2, 3}, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	str = "selsweeps(1...4)"
-	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE wref  = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE      array = wref[0]
 	CHECK_EQUAL_WAVES(array, {1, 2, 3}, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	str = "selsweeps(1...4, 0)"
-	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE wref  = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE      array = wref[0]
 	CHECK_EQUAL_WAVES(array, {1, 2, 3, 0}, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	str = "selsweeps(abc)"
 	try
-		WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1300,7 +1300,7 @@ static Function TestOperationSelvis()
 	win = CreateFakeSweepData(win, device, sweepNo = 0)
 
 	str = "selvis()"
-	WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(wref, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(wref, ROWS), 1)
 	WAVE/T array = wref[0]
@@ -1308,20 +1308,20 @@ static Function TestOperationSelvis()
 	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	str = "selvis(displayed)"
-	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE wref  = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE/T    array = wref[0]
 	Make/FREE/T ref = {"displayed"}
 	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	str = "selvis(all)"
-	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE wref  = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE/T    array = wref[0]
 	Make/FREE/T ref = {"all"}
 	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	str = "selvis(invalid_option)"
 	try
-		WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1329,7 +1329,7 @@ static Function TestOperationSelvis()
 
 	str = "selvis(123)"
 	try
-		WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1345,50 +1345,50 @@ static Function TestOperationSelcm()
 	win = CreateFakeSweepData(win, device, sweepNo = 0)
 
 	str = "selcm()"
-	WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(wref, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(wref, ROWS), 1)
 	WAVE array = wref[0]
 	CHECK_EQUAL_WAVES(array, {SF_OP_SELECT_CLAMPCODE_ALL}, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	str = "selcm(all)"
-	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE wref  = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE      array = wref[0]
 	CHECK_EQUAL_WAVES(array, {SF_OP_SELECT_CLAMPCODE_ALL}, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	str = "selcm(ic)"
-	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE wref  = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE      array = wref[0]
 	CHECK_EQUAL_WAVES(array, {SF_OP_SELECT_CLAMPCODE_IC}, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	str = "selcm(vc)"
-	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE wref  = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE      array = wref[0]
 	CHECK_EQUAL_WAVES(array, {SF_OP_SELECT_CLAMPCODE_VC}, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	str = "selcm(izero)"
-	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE wref  = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE      array = wref[0]
 	CHECK_EQUAL_WAVES(array, {SF_OP_SELECT_CLAMPCODE_IZERO}, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	str = "selcm(none)"
-	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE wref  = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE      array = wref[0]
 	CHECK_EQUAL_WAVES(array, {SF_OP_SELECT_CLAMPCODE_NONE}, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	str = "selcm(ic, vc)"
-	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE wref  = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE      array = wref[0]
 	CHECK_EQUAL_WAVES(array, {SF_OP_SELECT_CLAMPCODE_IC | SF_OP_SELECT_CLAMPCODE_VC}, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	str = "selcm(none, ic, vc, izero)"
-	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE wref  = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE      array = wref[0]
 	CHECK_EQUAL_WAVES(array, {SF_OP_SELECT_CLAMPCODE_ALL}, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	str = "selcm(invalid_option)"
 	try
-		WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1396,7 +1396,7 @@ static Function TestOperationSelcm()
 
 	str = "selcm(123)"
 	try
-		WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1412,7 +1412,7 @@ static Function TestOperationSelstimset()
 	win = CreateFakeSweepData(win, device, sweepNo = 0)
 
 	str = "selstimset()"
-	WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(wref, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(wref, ROWS), 1)
 	WAVE/T array = wref[0]
@@ -1420,14 +1420,14 @@ static Function TestOperationSelstimset()
 	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	str = "selstimset(enjoy, the, silence)"
-	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE wref  = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE/T    array = wref[0]
 	Make/FREE/T ref = {"enjoy", "the", "silence"}
 	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	str = "selstimset(123)"
 	try
-		WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1444,28 +1444,28 @@ static Function TestOperationSelSingleText([string str])
 	win = CreateFakeSweepData(win, device, sweepNo = 0)
 
 	formula = str + "(AKAelectricRG28)"
-	WAVE/WAVE wref  = SF_ExecuteFormula(formula, win, useVariables = 0)
+	WAVE/WAVE wref  = SFE_ExecuteFormula(formula, win, useVariables = 0)
 	WAVE/T    array = wref[0]
 	Make/FREE/T ref = {"AKAelectricRG28"}
 	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	formula = str + "()"
 	try
-		WAVE/WAVE wref = SF_ExecuteFormula(formula, win, useVariables = 0)
+		WAVE/WAVE wref = SFE_ExecuteFormula(formula, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
 	endtry
 	formula = str + "(123)"
 	try
-		WAVE/WAVE wref = SF_ExecuteFormula(formula, win, useVariables = 0)
+		WAVE/WAVE wref = SFE_ExecuteFormula(formula, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
 	endtry
 	formula = str + "(dev1, dev2)"
 	try
-		WAVE/WAVE wref = SF_ExecuteFormula(formula, win, useVariables = 0)
+		WAVE/WAVE wref = SFE_ExecuteFormula(formula, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1482,21 +1482,21 @@ static Function TestOperationSelNoArg([string str])
 	win = CreateFakeSweepData(win, device, sweepNo = 0)
 
 	formula = str + "()"
-	WAVE/WAVE wref  = SF_ExecuteFormula(formula, win, useVariables = 0)
+	WAVE/WAVE wref  = SFE_ExecuteFormula(formula, win, useVariables = 0)
 	WAVE/T    array = wref[0]
 	Make/FREE ref = {1}
 	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	formula = str + "(123)"
 	try
-		WAVE/WAVE wref = SF_ExecuteFormula(formula, win, useVariables = 0)
+		WAVE/WAVE wref = SFE_ExecuteFormula(formula, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
 	endtry
 	formula = str + "(exp1, exp2)"
 	try
-		WAVE/WAVE wref = SF_ExecuteFormula(formula, win, useVariables = 0)
+		WAVE/WAVE wref = SFE_ExecuteFormula(formula, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1513,28 +1513,28 @@ static Function TestOperationSelSingleNumber([string str])
 	win = CreateFakeSweepData(win, device, sweepNo = 0)
 
 	formula = "selsetcyclecount(123)"
-	WAVE/WAVE wref  = SF_ExecuteFormula(formula, win, useVariables = 0)
+	WAVE/WAVE wref  = SFE_ExecuteFormula(formula, win, useVariables = 0)
 	WAVE/T    array = wref[0]
 	Make/FREE ref = {123}
 	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	formula = str + "()"
 	try
-		WAVE/WAVE wref = SF_ExecuteFormula(formula, win, useVariables = 0)
+		WAVE/WAVE wref = SFE_ExecuteFormula(formula, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
 	endtry
 	formula = str + "(text)"
 	try
-		WAVE/WAVE wref = SF_ExecuteFormula(formula, win, useVariables = 0)
+		WAVE/WAVE wref = SFE_ExecuteFormula(formula, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
 	endtry
 	formula = str + "(1, 2)"
 	try
-		WAVE/WAVE wref = SF_ExecuteFormula(formula, win, useVariables = 0)
+		WAVE/WAVE wref = SFE_ExecuteFormula(formula, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1550,7 +1550,7 @@ static Function TestOperationSelIVSCCSweepQC()
 	win = CreateFakeSweepData(win, device, sweepNo = 0)
 
 	str = "selivsccsweepqc(passed)"
-	WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(wref, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(wref, ROWS), 1)
 	WAVE/T array = wref[0]
@@ -1558,14 +1558,14 @@ static Function TestOperationSelIVSCCSweepQC()
 	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	str = "selivsccsweepqc(failed)"
-	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE wref  = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE/T    array = wref[0]
 	Make/FREE ref = {SF_OP_SELECT_IVSCCSWEEPQC_FAILED}
 	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	str = "selivsccsweepqc(invalid_option)"
 	try
-		WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1573,7 +1573,7 @@ static Function TestOperationSelIVSCCSweepQC()
 
 	str = "selivsccsweepqc(123)"
 	try
-		WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1589,7 +1589,7 @@ static Function TestOperationSelRange()
 	win = CreateFakeSweepData(win, device, sweepNo = 0)
 
 	str = "selrange()"
-	WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(wref, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(wref, ROWS), 1)
 	WAVE/WAVE set = wref[0]
@@ -1600,7 +1600,7 @@ static Function TestOperationSelRange()
 	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	str = "selrange([1,2])"
-	WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE/WAVE set  = wref[0]
 	CHECK_WAVE(set, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(set, ROWS), 1)
@@ -1608,7 +1608,7 @@ static Function TestOperationSelRange()
 	CHECK_EQUAL_WAVES(array, {1, 2}, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	str = "selrange(abc)"
-	WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE/WAVE set  = wref[0]
 	CHECK_WAVE(set, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(set, ROWS), 1)
@@ -1618,7 +1618,7 @@ static Function TestOperationSelRange()
 
 	str = "selrange(abc, def)"
 	try
-		WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1626,7 +1626,7 @@ static Function TestOperationSelRange()
 
 	str = "selrange(123,456)"
 	try
-		WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1642,7 +1642,7 @@ static Function TestOperationSelIVSCCSetQC()
 	win = CreateFakeSweepData(win, device, sweepNo = 0)
 
 	str = "selivsccsetqc(passed)"
-	WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(wref, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(wref, ROWS), 1)
 	WAVE/T array = wref[0]
@@ -1650,14 +1650,14 @@ static Function TestOperationSelIVSCCSetQC()
 	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	str = "selivsccsetqc(failed)"
-	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE wref  = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE/T    array = wref[0]
 	Make/FREE ref = {SF_OP_SELECT_IVSCCSWEEPQC_FAILED}
 	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	str = "selivsccsetqc(invalid_option)"
 	try
-		WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1665,7 +1665,7 @@ static Function TestOperationSelIVSCCSetQC()
 
 	str = "selivsccsetqc(123)"
 	try
-		WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1722,7 +1722,7 @@ static Function TestOperationData()
 
 	sweepCnt = 1
 	str      = "data(select(selrange(TestEpoch2),selchannels(TTL2),selsweeps(" + num2istr(3) + "),selvis(all)))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	numResultsRef = sweepCnt * 1
 	Make/FREE/N=(numResultsRef, 2) ranges
 	ranges[][0] = rangeStart1
@@ -1732,28 +1732,28 @@ static Function TestOperationData()
 
 	sweepCnt = 1
 	str      = "data(select(selrange(),selchannels(AD),selsweeps(" + num2istr(sweepNo) + "),selvis(all)))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	numResultsRef = sweepCnt * numChannels / 2
 	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3})
 	CheckSweepsMetaData(dataWref, {0, 0}, {6, 7}, {0, 0}, SF_DATATYPE_SWEEP)
 
 	sweepCnt = 1
 	str      = "data(select(selrange([0, inf]),selchannels(AD),selsweeps(" + num2istr(sweepNo) + "),selvis(all)))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	numResultsRef = sweepCnt * numChannels / 2
 	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3})
 	CheckSweepsMetaData(dataWref, {0, 0}, {6, 7}, {0, 0}, SF_DATATYPE_SWEEP)
 
 	sweepCnt = 1
 	str      = "data(select(selrange(),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all)))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	numResultsRef = sweepCnt * 1
 	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1})
 	CheckSweepsMetaData(dataWref, {0}, {6}, {0}, SF_DATATYPE_SWEEP)
 
 	sweepCnt = 1
 	str      = "data(select(selrange(TestEpoch),selchannels(AD),selsweeps(" + num2istr(sweepNo) + "),selvis(all)))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	numResultsRef = sweepCnt * numChannels / 2
 	Make/FREE/N=(numResultsRef, 2) ranges
 	ranges[][0] = rangeStart0
@@ -1763,7 +1763,7 @@ static Function TestOperationData()
 
 	sweepCnt = 1
 	str      = "data(select(selrange(\"Test*\"),selchannels(AD),selsweeps(" + num2istr(sweepNo) + "),selvis(all)))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	numResultsRef = sweepCnt * numChannels / 2 * 2 // 2 epochs starting with Test...
 
 	Make/FREE/N=(numResultsRef, 2) ranges
@@ -1783,7 +1783,7 @@ static Function TestOperationData()
 	sweepCnt  = 1
 	strSelect = "select(selrange([[0,0],[2,4]]),selchannels(AD),selsweeps(" + num2istr(sweepNo) + "),selvis(all))"
 	str       = "data(" + strSelect + ")"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	numResultsRef = sweepCnt * numChannels / 2 * 2 // 2 ranges specified
 
 	Make/FREE/N=(numResultsRef, 2) ranges
@@ -1805,7 +1805,7 @@ static Function TestOperationData()
 	str      = "sel = select(selchannels(AD),selsweeps(" + num2istr(sweepNo) + "),selvis(all))\r"
 	str      = str + "ep = epochs(\"TestEpoch\",$sel)+[0,0]\r"
 	str      = str + "data(select(selrange($ep),$sel))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 1)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 1)
 	numResultsRef = sweepCnt * numChannels / 2
 
 	Make/FREE/N=(numResultsRef, 2) ranges
@@ -1818,7 +1818,7 @@ static Function TestOperationData()
 
 	sweepCnt = 1
 	str      = "data(select(selrange([\"TestEpoch\",\"TestEpoch1\"]),selchannels(AD),selsweeps(" + num2istr(sweepNo) + "),selvis(all)))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	numResultsRef = sweepCnt * numChannels / 2 * 2 // 2 epochs in array
 
 	Make/FREE/N=(numResultsRef, 2) ranges
@@ -1836,7 +1836,7 @@ static Function TestOperationData()
 	// Finds the NoShortName epoch
 	sweepCnt = 1
 	str      = "data(select(selrange(\"!TestEpoch*\"),selchannels(AD),selsweeps(" + num2istr(sweepNo) + "),selvis(all)))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	numResultsRef = sweepCnt * numChannels / 2
 
 	Make/FREE/N=(numResultsRef, 2) ranges
@@ -1847,7 +1847,7 @@ static Function TestOperationData()
 
 	sweepCnt = 1
 	str      = "data(select(selrange(TestEpoch),selchannels(AD),selsweeps(" + num2istr(sweepNo + 1) + "),selvis(all)))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	numResultsRef = sweepCnt * numChannels / 2
 	Make/FREE/N=(numResultsRef, 2) ranges
 	ranges[][0] = rangeStart1
@@ -1857,7 +1857,7 @@ static Function TestOperationData()
 
 	sweepCnt = 2
 	str      = "data(select(selrange(TestEpoch),selchannels(AD),selsweeps(" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "),selvis(all)))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	numResultsRef = sweepCnt * numChannels / 2
 	Make/FREE/N=(numResultsRef, 2) ranges
 	ranges[][0] = (p >= 2) ? rangeStart1 : rangeStart0
@@ -1868,37 +1868,37 @@ static Function TestOperationData()
 	// FAIL Tests
 	// non existing channel
 	str = "data(select(selrange(TestEpoch),selchannels(AD4),selsweeps(" + num2istr(sweepNo) + "),selvis(all)))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
 	// non existing sweep
 	str = "data(select(selrange(TestEpoch),selchannels(AD),selsweeps(" + num2istr(sweepNo + 1337) + "),selvis(all)))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
 	// non existing epoch
 	str = "data(select(selrange(WhatEpochIsThis),selchannels(AD),selsweeps(" + num2istr(sweepNo) + "),selvis(all)))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
 	// empty range from epochs
 	str = "sel = select(selchannels(AD),selsweeps(" + num2istr(sweepNo) + "),selvis(all))\r"
 	str = str + "ep = epochs(WhatEpochIsThis, $sel)\r"
 	str = str + "data(select(selrange($ep),$sel))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 1)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 1)
 	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
 	// one null range from epochs as TestEpoch1 only exists for sweepNo
 	str = "sel = select(selchannels(AD6),selsweeps(" + num2istr(sweepNo) + ", " + num2istr(sweepNo + 1) + "),selvis(all))\r"
 	str = str + "ep = epochs(TestEpoch1, $sel)\r"
 	str = str + "data(select(selrange($ep),$sel))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 1)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 1)
 	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 1)
 	REQUIRE_EQUAL_VAR(DimSize(dataWref[0], ROWS), 5)
 
 	str = "data(1, 2)"
 	try
-		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1907,7 +1907,7 @@ static Function TestOperationData()
 	// range begin
 	str = "data(select(selrange([12, 10]),selchannels(AD),selsweeps(" + num2istr(sweepNo) + "),selvis(all)))"
 	try
-		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1916,7 +1916,7 @@ static Function TestOperationData()
 	// range end
 	str = "data(select(selrange([0, 11]),selchannels(AD),selsweeps(" + num2istr(sweepNo) + "),selvis(all)))"
 	try
-		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1925,7 +1925,7 @@ static Function TestOperationData()
 	// One sweep does not exist, it is not result of select, we end up with one sweep
 	sweepCnt = 1
 	str      = "data(select(selrange(),selchannels(AD),selsweeps(" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1337) + "),selvis(all)))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	numResultsRef = sweepCnt * numChannels / 2
 	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3})
 	CheckSweepsMetaData(dataWref, {0, 0}, {6, 7}, {0, 0}, SF_DATATYPE_SWEEP)
@@ -1934,7 +1934,7 @@ static Function TestOperationData()
 	str      = "sel1 = select(selrange(),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))\r"
 	str      = str + "sel2 = select(selrange(),selchannels(AD7),selsweeps(" + num2istr(sweepNo) + "),selvis(all))\r"
 	str      = str + "data([$sel1, $sel2])"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 1)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 1)
 	numResultsRef = sweepCnt * numChannels / 2
 	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3})
 	CheckSweepsMetaData(dataWref, {0, 0}, {6, 7}, {0, 0}, SF_DATATYPE_SWEEP)
@@ -1943,7 +1943,7 @@ static Function TestOperationData()
 	str      = "sel1 = select(selrange([0, 2]),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))\r"
 	str      = str + "sel2 = select(selrange([0, 4]),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))\r"
 	str      = str + "data([$sel1, $sel2])"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 1)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 1)
 	numResultsRef = sweepCnt * numChannels / 2
 
 	Make/FREE/N=(numResultsRef, 2) ranges
@@ -1981,12 +1981,12 @@ static Function TestOperationData()
 
 	sweepCnt = 2
 	str      = "data(select())"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	numResultsRef = sweepCnt * numChannels
 	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3, 0, 2, 1, 3, 0, 2})
 	CheckSweepsMetaData(dataWref, {0, 0, 1, 1, 0, 0, 1, 1}, {6, 7, 2, 3, 6, 7, 2, 3}, {0, 0, 0, 0, 1, 1, 1, 1}, SF_DATATYPE_SWEEP)
 	str = "data()"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3, 0, 2, 1, 3, 0, 2})
 	CheckSweepsMetaData(dataWref, {0, 0, 1, 1, 0, 0, 1, 1}, {6, 7, 2, 3, 6, 7, 2, 3}, {0, 0, 0, 0, 1, 1, 1, 1}, SF_DATATYPE_SWEEP)
 
@@ -1995,15 +1995,15 @@ static Function TestOperationData()
 	Cursor/W=$win/A=1/P B, $trace, trunc(dataSize / 2)
 	Make/FREE dataRef = {0, trunc(dataSize / 2)}
 	str = "cursors(A,B)"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
 	str = "cursors()"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
 
 	try
 		str = "cursors(X,Y)"
-		WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+		WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -2079,7 +2079,7 @@ static Function TestOperationPowerSpectrum()
 	win = CreateFakeSweepData(win, device, sweepNo = sweepNo + 1, sweepGen = FakeSweepDataGeneratorPS)
 
 	str = "powerspectrum(data(select(selrange(),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(1, DimSize(dataWref, ROWS))
 	WAVE data = dataWref[0]
 	WaveStats/Q/M=1 data
@@ -2093,7 +2093,7 @@ static Function TestOperationPowerSpectrum()
 	CHECK_EQUAL_STR(strRef, str)
 
 	str = "powerspectrum(data(select(selrange(),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))),dB)"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(1, DimSize(dataWref, ROWS))
 	WAVE data = dataWref[0]
 	WaveStats/Q/M=1 data
@@ -2104,7 +2104,7 @@ static Function TestOperationPowerSpectrum()
 	CHECK_EQUAL_STR(strRef, str)
 
 	str = "powerspectrum(data(select(selrange(),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))),normalized)"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(1, DimSize(dataWref, ROWS))
 	WAVE data = dataWref[0]
 	WaveStats/Q/M=1 data
@@ -2115,7 +2115,7 @@ static Function TestOperationPowerSpectrum()
 	CHECK_EQUAL_STR(strRef, str)
 
 	str = "powerspectrum(data(select(selrange(),selchannels(AD),selsweeps(" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "),selvis(all))),dB,avg)"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(2, DimSize(dataWref, ROWS))
 	WAVE data = dataWref[0]
 	WaveStats/Q/M=1 data
@@ -2127,7 +2127,7 @@ static Function TestOperationPowerSpectrum()
 	CHECK_CLOSE_VAR(V_max, 88, tol = 0.01)
 
 	str = "powerspectrum(data(select(selrange(),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))),dB,noavg,100)"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(1, DimSize(dataWref, ROWS))
 	WAVE data = dataWref[0]
 	WaveStats/Q/M=1 data
@@ -2135,17 +2135,17 @@ static Function TestOperationPowerSpectrum()
 	CHECK_CLOSE_VAR(data[0], 1.32, tol = 0.01)
 
 	str = "powerspectrum(data(select(selrange(),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))),dB,noavg,0,2000)"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(1, DimSize(dataWref, ROWS))
 	WAVE data = dataWref[0]
 	val = IndexToScale(data, DimSize(data, ROWS), ROWS)
 	CHECK_CLOSE_VAR(val, 2000, tol = 0.001)
 
 	str = "powerspectrum(data(select(selrange(),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))),dB,noavg,0,1000,HFT248D)"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(1, DimSize(dataWref, ROWS))
 	WAVE      data     = dataWref[0]
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(1, DimSize(dataWref, ROWS))
 	WAVE data = dataWref[0]
 	WaveStats/Q/M=1 data
@@ -2154,7 +2154,7 @@ static Function TestOperationPowerSpectrum()
 
 	try
 		str = "powerspectrum()"
-		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -2162,7 +2162,7 @@ static Function TestOperationPowerSpectrum()
 
 	try
 		str = "powerspectrum(data(select(selrange(),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))), not_exist)"
-		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -2170,7 +2170,7 @@ static Function TestOperationPowerSpectrum()
 
 	try
 		str = "powerspectrum(data(select(selrange(),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))), dB, not_exist)"
-		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -2178,7 +2178,7 @@ static Function TestOperationPowerSpectrum()
 
 	try
 		str = "powerspectrum(data(select(selrange(),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))), dB, avg, -1)"
-		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -2186,7 +2186,7 @@ static Function TestOperationPowerSpectrum()
 
 	try
 		str = "powerspectrum(data(select(selrange(),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))), dB, avg, 0, -1)"
-		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -2194,7 +2194,7 @@ static Function TestOperationPowerSpectrum()
 
 	try
 		str = "powerspectrum(data(select(selrange(),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))), dB, avg, 0, 1000, not_exist)"
-		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -2202,7 +2202,7 @@ static Function TestOperationPowerSpectrum()
 
 	try
 		str = "powerspectrum(data(select(selrange(),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))), dB, avg, 0, 1000, Bartlet, not_exist)"
-		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -2234,11 +2234,11 @@ static Function TestOperationLabNotebook()
 	TestOperationLabnotebookHelper(win, str, channelsRef)
 
 	str = "labnotebook(ADC, select(selchannels(AD12),selsweeps(-1)))"
-	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 0)
 
 	str = "labnotebook(" + textKey + ", select(selchannels(AD2), selsweeps([0, 1])))"
-	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	Make/FREE/D refDataTextAnchor = {0.0}
 	for(WAVE/D data : dataRef)
 		CHECK_EQUAL_WAVES(data, refDataTextAnchor, mode = WAVE_DATA)
@@ -2256,7 +2256,7 @@ static Function TestOperationLabNotebook()
 
 	// no such key
 	str = "labnotebook(\"I_DONT_EXIST\")"
-	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 40)
 	Make/FREE/D refDataTextAnchor = {NaN}
 	for(WAVE/D data : dataRef)
@@ -2265,7 +2265,7 @@ static Function TestOperationLabNotebook()
 
 	// multiple keys
 	str = "labnotebook([\"ADC\", \"Operating Mode\"], select(selchannels(AD2), selsweeps([0])), DATA_ACQUISITION_MODE)"
-	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 2)
 	WAVE firstEntry = dataRef[0]
 	Make/D/FREE refContents = {2}
@@ -2277,7 +2277,7 @@ static Function TestOperationLabNotebook()
 
 	// multiple keys with wildcard
 	str = "labnotebook([\"ADC\", \"Operating *\"], select(selchannels(AD2), selsweeps([0])), DATA_ACQUISITION_MODE)"
-	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 2)
 	WAVE firstEntry = dataRef[0]
 	Make/D/FREE refContents = {2}
@@ -2289,12 +2289,12 @@ static Function TestOperationLabNotebook()
 
 	// no match with wildcards
 	str = "labnotebook([\"eee*\"], select(selchannels(AD2), selsweeps([0])), DATA_ACQUISITION_MODE)"
-	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 0)
 
 	// match with wildcard and special QC format
 	str = "labnotebook([\"*random QC\"], select(selchannels(AD0), selsweeps([0, 1, 2])), DATA_ACQUISITION_MODE)"
-	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 3)
 	idx = 0
 	for(WAVE/D data : dataRef)
@@ -2317,7 +2317,7 @@ static Function TestOperationLabNotebook()
 
 	// key with unit
 	str = "labnotebook([\"*other KEY\"], select(selchannels(AD0), selsweeps([0])), DATA_ACQUISITION_MODE)"
-	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 1)
 
 	yAxisLabel = JWN_GetStringFromWaveNote(dataRef, SF_META_YAXISLABEL)
@@ -2328,7 +2328,7 @@ static Function TestOperationLabnotebookHelper(string win, string formula, WAVE 
 
 	variable i
 
-	WAVE/WAVE dataRef = SF_ExecuteFormula(formula, win, useVariables = 0)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(formula, win, useVariables = 0)
 	CHECK_GT_VAR(DimSize(dataRef, ROWS), 0)
 	i = 0
 	for(WAVE/D data : dataRef)
@@ -2358,7 +2358,7 @@ static Function TestOperationEpochs()
 	win                                         = GetCurrentWindow()
 
 	str = "epochs(\"E0_PT_P48\")"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	Make/FREE/D refData = {500, 510}
 	numResultsRef = numSweeps * activeChannelsDA
 	REQUIRE_EQUAL_VAR(numResultsRef, DimSize(dataWref, ROWS))
@@ -2373,47 +2373,47 @@ static Function TestOperationEpochs()
 	CheckSweepsMetaData(dataWref, chanType, chanNr, sweeps, SF_DATATYPE_EPOCHS)
 
 	str = "epochs(\"E0_PT_P48\", select(selchannels(DA0), selsweeps(0)))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 1)
 	Make/FREE/D refData = {500, 510}
 	WAVE data = dataWref[0]
 	REQUIRE_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
 
 	str = "epochs(\"E0_PT_P48_B\", select(selchannels(DA4), selsweeps(0)))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 1)
 	Make/FREE/D refData = {503, 510}
 	WAVE data = dataWref[0]
 	REQUIRE_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
 
 	str = "epochs(\"E0_PT_P48_B\", select(selchannels(DA4), selsweeps(0)), range)"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE/D refData = {503, 510}
 	REQUIRE_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
 
 	str = "epochs(\"E0_PT_P48_B\", select(selchannels(DA4), selsweeps(0)), treelevel)"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE/D refData = {3}
 	REQUIRE_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
 
 	str = "epochs(\"E0_PT_P48_B\", select(selchannels(DA4), selsweeps(9)), name)"
-	WAVE/T dataT = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE/T dataT = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE/T refDataT = {"E0_PT_P48_B"}
 	REQUIRE_EQUAL_WAVES(dataT, refDataT, mode = WAVE_DATA)
 
 	str = "epochs(\"NoShortName\", select(selchannels(DA4), selsweeps(9)), name)"
-	WAVE/T dataT = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE/T dataT = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE/T refDataT = {"NoShortName"}
 	REQUIRE_EQUAL_WAVES(dataT, refDataT, mode = WAVE_DATA)
 
 	// works case-insensitive
 	str = "epochs(\"e0_pt_p48_B\", select(selchannels(DA4), selsweeps(9)), name)"
-	WAVE/T dataT = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE/T dataT = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE/T refDataT = {"E0_PT_P48_B"}
 	REQUIRE_EQUAL_WAVES(dataT, refDataT, mode = WAVE_DATA)
 
 	str = "epochs(\"E0_PT_P48_B\", select(selchannels(DA), selsweeps(0..." + num2istr(numSweeps) + ")))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), numSweeps * activeChannelsDA)
 	Make/FREE/D refData = {503, 510}
 	for(data : dataWref)
@@ -2427,7 +2427,7 @@ static Function TestOperationEpochs()
 	CheckSweepsMetaData(dataWref, channelTypes, channelNumbers, sweepNumbers, SF_DATATYPE_EPOCHS)
 
 	str = "epochs(\"E0_PT_P48_*\", select(selchannels(DA), selsweeps(0)))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), activeChannelsDA)
 	Make/FREE/D refData = {503, 510}
 	for(data : dataWref)
@@ -2437,12 +2437,12 @@ static Function TestOperationEpochs()
 	// find epoch without shortname
 	epochLongName = RemoveEnding(epoch2, ";")
 	str           = "epochs(\"" + epochLongName + "\", select(selchannels(DA), selsweeps(0)))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), activeChannelsDA)
 
 	// finds only epoch without shortname from test epochs
 	str = "epochs(\"!E0_PT_P48*\", select(selchannels(DA), selsweeps(0)))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), activeChannelsDA)
 	CHECK_EQUAL_VAR(DimSize(dataWref, COLS), 0)
 
@@ -2455,7 +2455,7 @@ static Function TestOperationEpochs()
 	// the first wildcard matches both setup epochs, the second only the first setup epoch
 	// only unique epochs are returned, thus two
 	str = "epochs([\"E0_PT_*\",\"E0_PT_P48*\"], select(selchannels(DA), selsweeps(0)))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 4)
 	Make/FREE/D refData = {{500, 510}, {503, 510}}
 	for(WAVE/Z data : dataWref)
@@ -2465,23 +2465,23 @@ static Function TestOperationEpochs()
 
 	// channel(s) with no epochs
 	str = "epochs(\"E0_PT_P48_B\", select(selchannels(AD), selsweeps(0..." + num2istr(numSweeps) + ")))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
 	// channels with epochs, but name that does not match any epoch
 	str = "epochs(\"does_not_exist\", select(selchannels(DA), selsweeps(0..." + num2istr(numSweeps) + ")))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
 	// invalid sweep
 	str = "epochs(\"E0_PT_P48_B\", select(selchannels(DA), selsweeps(" + num2istr(numSweeps) + ")))"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
 	// invalid type
 	str = "epochs(\"E0_PT_P48_B\", select(selchannels(DA), selsweeps(0..." + num2istr(numSweeps) + ")), invalid_type)"
 	try
-		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -2497,18 +2497,18 @@ static Function TestOperationDataset()
 	win = CreateFakeSweepData(win, device, sweepNo = 0)
 
 	code = "dataset()"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 0)
 
 	code = "dataset(1)"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1)
 	CHECK_EQUAL_WAVES(output[0], {1}, mode = WAVE_DATA)
 
 	code = "dataset(1, [2, 3], \"abcd\")"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 3)
 	CHECK_EQUAL_WAVES(output[0], {1}, mode = WAVE_DATA)
@@ -2526,7 +2526,7 @@ static Function TestOperationFit()
 
 	// straight line with slope 1 and offset 0
 	code = "fit([1, 3], [1, 3], fitline())"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1)
 	WAVE wv = output[0]
@@ -2548,7 +2548,7 @@ static Function TestOperationFit()
 
 	// more complex, use CurveFit for generating reference values
 	code = "fit([0, 1, 2], [4, 5, 6], fitline([K0=3]))"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1)
 	WAVE wv = output[0]
@@ -2583,14 +2583,14 @@ static Function TestOperationFit()
 
 	// non-matching x and y sizes
 	code = "fit([1, 2], [3, 4, 5], fitline())"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1)
 	CHECK(!WaveExists(output[0]))
 
 	// unknown fit function
 	code = "fit([1, 2], [3, 4], dataset(3))"
 	try
-		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+		WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 		FAIL()
 	catch
 		CHECK_NO_RTE()
@@ -2599,7 +2599,7 @@ static Function TestOperationFit()
 	// mismatched dataset sizes
 	code = "fit(dataset([1]), dataset([1], [2]), fitline())"
 	try
-		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+		WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 		FAIL()
 	catch
 		CHECK_NO_RTE()
@@ -2608,7 +2608,7 @@ End
 
 static Function TestOperationSelectCompareWithFullRange(string win, string formula, WAVE/Z dataRef)
 
-	WAVE/WAVE comp = SF_ExecuteFormula(formula, win, useVariables = 0)
+	WAVE/WAVE comp = SFE_ExecuteFormula(formula, win, useVariables = 0)
 	CHECK_WAVE(comp, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(comp, ROWS), 2)
 	WAVE/Z    dataSel = comp[0]
@@ -2632,7 +2632,7 @@ static Function TestOperationSelectFails([string str])
 	win           = CreateFakeSweepData(win, device, sweepNo = 0)
 
 	try
-		WAVE/WAVE comp = SF_ExecuteFormula(str, win, useVariables = 0)
+		WAVE/WAVE comp = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
 		PASS()
@@ -2728,11 +2728,11 @@ static Function TestOperationSelect()
 
 	// clamp mode set filters on DA/AD
 	str = "select(selchannels(AD1),selsweeps(" + num2istr(3) + "),selvis(all),selcm(vc))"
-	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE comp    = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE/Z    dataSel = comp[0]
 	CHECK_WAVE(dataSel, NULL_WAVE)
 	str = "select(selchannels(DA0),selsweeps(" + num2istr(3) + "),selvis(all),selcm(vc))"
-	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE comp    = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE/Z    dataSel = comp[0]
 	CHECK_WAVE(dataSel, NULL_WAVE)
 
@@ -2763,24 +2763,24 @@ static Function TestOperationSelect()
 
 	// No existing sweeps
 	str = "select(selchannels(AD6, DA),selsweeps(" + num2istr(sweepNo + 1337) + "),selvis(all))"
-	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE comp    = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE/Z    dataSel = comp[0]
 	CHECK_WAVE(dataSel, NULL_WAVE)
 
 	// No existing channels
 	str = "select(selchannels(AD0),selsweeps(" + num2istr(sweepNo) + "),selvis(all))"
-	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE comp    = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE/Z    dataSel = comp[0]
 	CHECK_WAVE(dataSel, NULL_WAVE)
 
 	str = "select(selvis(all),selrange([1,2]))"
-	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE comp    = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE/WAVE rngSet  = comp[1]
 	WAVE      dataRng = rngSet[0]
 	CHECK_EQUAL_WAVES(dataRng, {1, 2}, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	str = "select(selvis(all),select(selrange([1,2])))"
-	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE comp    = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE/WAVE rngSet  = comp[1]
 	WAVE      dataRng = rngSet[0]
 	CHECK_EQUAL_WAVES(dataRng, {-Inf, Inf}, mode = WAVE_DATA | DIMENSION_SIZES)
@@ -2842,17 +2842,17 @@ static Function TestOperationSelect()
 	str = "select(select(selchannels(AD6)),selchannels(6))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 	str = "select(select(selchannels(AD6)),selchannels(5))"
-	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE comp    = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE/Z    dataSel = comp[0]
 	CHECK_WAVE(dataSel, NULL_WAVE)
 	str = "select(select(selchannels(AD6)),selchannels(DA))"
-	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE comp    = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE/Z    dataSel = comp[0]
 	CHECK_WAVE(dataSel, NULL_WAVE)
 	str = "select(select(selchannels(AD6),selsweeps()),selsweeps(0,1))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 	str = "select(select(selchannels(AD6),selsweeps()),selsweeps(2))"
-	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE comp    = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE/Z    dataSel = comp[0]
 	CHECK_WAVE(dataSel, NULL_WAVE)
 	str = "select(select(selchannels(AD6)),selvis(displayed))"
@@ -2876,7 +2876,7 @@ static Function TestOperationSelect()
 	str = "select(select(selchannels(AD),selstimset(\"stimset*\")),selstimset(stimsetSweep0HS0),selsweeps(0))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 	str = "select(select(selchannels(AD),selstimset(\"stimsetSweep1*\")),selstimset(\"stimsetSweep0*\"),selsweeps(0))"
-	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE comp    = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE/Z    dataSel = comp[0]
 	CHECK_WAVE(dataSel, NULL_WAVE)
 
@@ -2890,11 +2890,11 @@ static Function TestOperationSelect()
 	str = "select(select(selchannels(AD6)),selivsccsetqc(passed))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 	str = "select(selchannels(AD6),selsweeps(0),selivsccsetqc(failed))"
-	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE comp    = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE/Z    dataSel = comp[0]
 	CHECK_WAVE(dataSel, NULL_WAVE)
 	str = "select(select(selchannels(AD6),selivsccsetqc(passed)),selivsccsetqc(failed))"
-	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE comp    = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE/Z    dataSel = comp[0]
 	CHECK_WAVE(dataSel, NULL_WAVE)
 
@@ -2908,11 +2908,11 @@ static Function TestOperationSelect()
 	str = "select(select(selchannels(AD6)),selivsccsweepqc(passed))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 	str = "select(selchannels(AD6),selsweeps(1),selivsccsweepqc(failed))"
-	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE comp    = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE/Z    dataSel = comp[0]
 	CHECK_WAVE(dataSel, NULL_WAVE)
 	str = "select(select(selchannels(AD6),selivsccsweepqc(passed)),selivsccsweepqc(failed))"
-	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE comp    = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE/Z    dataSel = comp[0]
 	CHECK_WAVE(dataSel, NULL_WAVE)
 
@@ -3028,7 +3028,7 @@ static Function TestOperationSelect()
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
 	str = "select(selchannels(AD6),selsweeps(),selvis(displayed), selcm(izero))"
-	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE comp    = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE/Z    dataSel = comp[0]
 	CHECK_WAVE(dataSel, NULL_WAVE)
 
@@ -3050,13 +3050,13 @@ static Function TestOperationSelect()
 
 	// No existing sweeps
 	str = "select(selchannels(AD6, DA),selsweeps(" + num2istr(sweepNo + 1337) + "))"
-	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE comp    = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE/Z    dataSel = comp[0]
 	CHECK_WAVE(dataSel, NULL_WAVE)
 
 	// No existing channels
 	str = "select(selchannels(AD0),selsweeps(" + num2istr(sweepNo) + "))"
-	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE comp    = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE/Z    dataSel = comp[0]
 	CHECK_WAVE(dataSel, NULL_WAVE)
 
@@ -3095,7 +3095,7 @@ static Function TestOperationSelect()
 	str = "select(selchannels(DA0),selsweeps(),selvis(displayed),selcm(none))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 	str = "select(selchannels(DA0),selsweeps(),selvis(displayed),selcm(vc))"
-	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE comp    = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE/Z    dataSel = comp[0]
 	CHECK_WAVE(dataSel, NULL_WAVE)
 
@@ -3109,7 +3109,7 @@ static Function TestOperationSelect()
 	str = "select(selchannels(AD1),selsweeps(),selvis(displayed),selcm(none))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 	str = "select(selchannels(AD1),selsweeps(),selvis(displayed),selcm(vc))"
-	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE comp    = SFE_ExecuteFormula(str, win, useVariables = 0)
 	WAVE/Z    dataSel = comp[0]
 	CHECK_WAVE(dataSel, NULL_WAVE)
 
@@ -3140,7 +3140,7 @@ static Function TestOperationMerge()
 	// no input
 	code = "merge()"
 	try
-		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+		WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 		FAIL()
 	catch
 		CHECK_NO_RTE()
@@ -3149,7 +3149,7 @@ static Function TestOperationMerge()
 	// too many points (2) in the input datasets
 	code = "merge(dataset([1, 2]))"
 	try
-		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+		WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 		FAIL()
 	catch
 		CHECK_NO_RTE()
@@ -3158,31 +3158,31 @@ static Function TestOperationMerge()
 	// mixed input wave types
 	code = "merge(dataset([1], [\"a\"]))"
 	try
-		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+		WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 		FAIL()
 	catch
 		CHECK_NO_RTE()
 	endtry
 
 	code = "merge(dataset([1], [2]))"
-	WAVE wv = SF_ExecuteFormula(code, win, useVariables = 0, singleResult = 1)
+	WAVE wv = SFE_ExecuteFormula(code, win, useVariables = 0, singleResult = 1)
 	CHECK_WAVE(wv, FREE_WAVE, minorType = DOUBLE_WAVE)
 	Make/FREE/D refWv = {1, 2}
 	CHECK_EQUAL_WAVES(wv, refWv)
 
 	code = "merge(dataset([\"a\"], [\"b\"]))"
-	WAVE wv = SF_ExecuteFormula(code, win, useVariables = 0, singleResult = 1)
+	WAVE wv = SFE_ExecuteFormula(code, win, useVariables = 0, singleResult = 1)
 	CHECK_WAVE(wv, TEXT_WAVE)
 	Make/FREE/T refWvTxt = {"a", "b"}
 	CHECK_EQUAL_WAVES(wv, refWvTxt)
 
 	code = "merge(dataset())"
-	WAVE/Z/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/Z/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 0)
 
 	code = "merge(dataset(wave(I_DONT_EXIST)))"
-	WAVE/Z/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/Z/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 0)
 End
@@ -3196,7 +3196,7 @@ static Function TestOperationFitLine()
 	win = CreateFakeSweepData(win, device, sweepNo = 0)
 
 	code = "fitline()"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 3)
 	WAVE/T fitType = output[%fitType]
@@ -3207,7 +3207,7 @@ static Function TestOperationFitLine()
 	CHECK_EQUAL_WAVES(initialValues, {NaN, NaN}, mode = WAVE_DATA)
 
 	code = "fitline([\"K0=17\"])"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 3)
 	WAVE/T fitType = output[%fitType]
@@ -3218,7 +3218,7 @@ static Function TestOperationFitLine()
 	CHECK_EQUAL_WAVES(initialValues, {17, NaN}, mode = WAVE_DATA)
 
 	code = "fitline([\"K0=1\", \"K1=3\"])"
-	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 3)
 	WAVE/T fitType = output[%fitType]
@@ -3230,7 +3230,7 @@ static Function TestOperationFitLine()
 
 	code = "fitline(1, 2)"
 	try
-		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+		WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 		FAIL()
 	catch
 		CHECK_NO_RTE()
@@ -3287,7 +3287,7 @@ static Function BasicMathMismatchedWaves([string str])
 
 	sprintf code, "[1, 2] %s [[1, 2]]", str
 	try
-		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+		WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 		FAIL()
 	catch
 		CHECK_NO_RTE()
@@ -3330,7 +3330,7 @@ static Function DefaultFormulaWorks()
 	WAVE sweepRef = FakeSweepDataGeneratorDefault(sweepTemplate, numChannels)
 
 	str = SF_GetDefaultFormula()
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 1)
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 1)
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 	// If the default formula changes the following checks need to be adapted
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), numChannels / 2)
@@ -3384,27 +3384,27 @@ static Function TestOperationAnaFuncParam()
 
 	// no such key
 	str = "anaFuncParam(\"I_DONT_EXIST\")"
-	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 0)
 
 	// no params in sweep
 	str = "anaFuncParam(\"var\", select(selchannels(), selsweeps([2])))"
-	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 0)
 
 	// no wildcard match
 	str = "anaFuncParam(\"SOME NAME*\")"
-	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 0)
 
 	// no select data
 	str = "anaFuncParam(\"var\", select(selchannels(), selsweeps([100])))"
-	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 0)
 
 	// single match (var)
 	str = "anaFuncParam(\"var\", select(selchannels(AD0), selsweeps()))"
-	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 10)
 	for(WAVE/D data : dataRef)
 		if(idx == 0)
@@ -3429,7 +3429,7 @@ static Function TestOperationAnaFuncParam()
 
 	// wildcard match (str*)
 	str = "anaFuncParam(\"str*\", select(selchannels(AD0), selsweeps([0, 1])))"
-	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 4)
 	idx = 0
 	Make/FREE dataPoints = {0, NaN, 0, NaN}
@@ -3454,7 +3454,7 @@ static Function TestOperationAnaFuncParam()
 
 	// wildcard match (wv*)
 	str = "anaFuncParam(\"wv*\", select(selchannels(AD0), selsweeps([0, 1])))"
-	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 4)
 	idx = 0
 	Make/FREE dataPoints = {0, NaN, 0, NaN}

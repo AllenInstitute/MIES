@@ -2448,3 +2448,77 @@ Constant SF_MSG_OK    = 1
 Constant SF_MSG_ERROR = 0
 Constant SF_MSG_WARN  = -1
 ///@}
+
+/// @name SF operations
+///
+/// @anchor SFOperations
+///@{
+StrConstant SF_OP_MINUS               = "-"
+StrConstant SF_OP_PLUS                = "+"
+StrConstant SF_OP_MULT                = "*"
+StrConstant SF_OP_DIV                 = "~1"
+StrConstant SF_OP_RANGE               = "range"
+StrConstant SF_OP_CONCAT              = "concat"
+StrConstant SF_OP_RANGESHORT          = "…"
+StrConstant SF_OP_MIN                 = "min"
+StrConstant SF_OP_MAX                 = "max"
+StrConstant SF_OP_AVG                 = "avg"
+StrConstant SF_OP_MEAN                = "mean"
+StrConstant SF_OP_RMS                 = "rms"
+StrConstant SF_OP_VARIANCE            = "variance"
+StrConstant SF_OP_STDEV               = "stdev"
+StrConstant SF_OP_DERIVATIVE          = "derivative"
+StrConstant SF_OP_INTEGRATE           = "integrate"
+StrConstant SF_OP_TIME                = "time"
+StrConstant SF_OP_XVALUES             = "xvalues"
+StrConstant SF_OP_TEXT                = "text"
+StrConstant SF_OP_LOG                 = "log"
+StrConstant SF_OP_LOG10               = "log10"
+StrConstant SF_OP_APFREQUENCY         = "apfrequency"
+StrConstant SF_OP_CURSORS             = "cursors"
+StrConstant SF_OP_SELECTSWEEPS        = "selsweeps"
+StrConstant SF_OP_AREA                = "area"
+StrConstant SF_OP_SETSCALE            = "setscale"
+StrConstant SF_OP_BUTTERWORTH         = "butterworth"
+StrConstant SF_OP_SELECTCHANNELS      = "selchannels"
+StrConstant SF_OP_DATA                = "data"
+StrConstant SF_OP_LABNOTEBOOK         = "labnotebook"
+StrConstant SF_OP_ANAFUNCPARAM        = "anaFuncParam"
+StrConstant SF_OP_WAVE                = "wave"
+StrConstant SF_OP_FINDLEVEL           = "findlevel"
+StrConstant SF_OP_EPOCHS              = "epochs"
+StrConstant SF_OP_TP                  = "tp"
+StrConstant SF_OP_STORE               = "store"
+StrConstant SF_OP_SELECT              = "select"
+StrConstant SF_OP_SELECTVIS           = "selvis"
+StrConstant SF_OP_SELECTEXP           = "selexp"
+StrConstant SF_OP_SELECTDEV           = "seldev"
+StrConstant SF_OP_SELECTEXPANDSCI     = "selexpandsci"
+StrConstant SF_OP_SELECTEXPANDRAC     = "selexpandrac"
+StrConstant SF_OP_SELECTSETCYCLECOUNT = "selsetcyclecount"
+StrConstant SF_OP_SELECTSETSWEEPCOUNT = "selsetsweepcount"
+StrConstant SF_OP_SELECTSCIINDEX      = "selsciindex"
+StrConstant SF_OP_SELECTRACINDEX      = "selracindex"
+StrConstant SF_OP_SELECTCM            = "selcm"
+StrConstant SF_OP_SELECTSTIMSET       = "selstimset"
+StrConstant SF_OP_SELECTIVSCCSWEEPQC  = "selivsccsweepqc"
+StrConstant SF_OP_SELECTIVSCCSETQC    = "selivsccsetqc"
+StrConstant SF_OP_SELECTRANGE         = "selrange"
+StrConstant SF_OP_POWERSPECTRUM       = "powerspectrum"
+StrConstant SF_OP_TPSS                = "tpss"
+StrConstant SF_OP_TPINST              = "tpinst"
+StrConstant SF_OP_TPBASE              = "tpbase"
+StrConstant SF_OP_TPFIT               = "tpfit"
+///@}
+
+/// @name SF operations shorts
+///
+/// @anchor SFOperationsShorts
+///@{
+StrConstant SF_OPSHORT_MINUS = "minus"
+StrConstant SF_OPSHORT_PLUS  = "plus"
+StrConstant SF_OPSHORT_MULT  = "mult"
+StrConstant SF_OPSHORT_DIV   = "div"
+///@}
+
+Constant SF_TRANSFER_ALL_DIMS = -1
