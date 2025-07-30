@@ -105,6 +105,9 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd)
 		exd.jsonPath = ""
 	endif
 
+	SVAR jsonPathTracker = $GetSweepFormulaJSONPathTracker(exd.graph)
+	jsonPathTracker = exd.jsonPath
+
 #ifdef DEBUGGING_ENABLED
 	if(DP_DebuggingEnabledForCaller())
 		printf "##########################\r"
@@ -275,9 +278,10 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd)
 	WAVE/T operations = JSON_GetKeys(exd.jsonID, exd.jsonPath)
 	SFH_ASSERT(DimSize(operations, ROWS) == 1, "Only one operation is allowed", jsonId = exd.jsonId)
 
-	exdop.jsonId   = exd.jsonId
-	exdop.graph    = exd.graph
-	exdop.jsonPath = exd.jsonPath + "/" + SF_EscapeJsonPath(operations[0])
+	exdop.jsonId    = exd.jsonId
+	exdop.graph     = exd.graph
+	exdop.jsonPath  = exd.jsonPath + "/" + SF_EscapeJsonPath(operations[0])
+	jsonPathTracker = exdop.jsonPath
 	SFH_ASSERT(JSON_GetType(exdop.jsonID, exdop.jsonPath) == JSON_ARRAY, "An array is required to hold the operands of the operation.", jsonId = exdop.jsonId)
 	opName = LowerStr(operations[0])
 #ifdef AUTOMATED_TESTING
