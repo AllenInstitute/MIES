@@ -777,3 +777,9 @@ Function/S GetDFReferenceCount(DFREF dfr)
 
 	return GetNVARAsString(dfr, MEMORY_REFCOUNTER_DF, initialValue = 0)
 End
+
+/// @brief Return the current JSON path in the sweep formula execution
+Function/S GetSweepFormulaJSONPathTracker(string graph)
+
+	return GetSVARAsString(SF_GetBrowserDF(graph), "sweepFormulaJSONPath", initialValue = "")
+End
