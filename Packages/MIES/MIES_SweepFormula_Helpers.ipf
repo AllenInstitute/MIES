@@ -353,9 +353,23 @@ End
 /// UTF_NOINSTRUMENTATION
 Function SFH_ASSERT(variable condition, string message, [variable jsonId])
 
+	variable parserBufferOffset
+	string attemptedFormula, underline
+
 	if(!condition)
 		if(!ParamIsDefault(jsonId))
 			JSON_Release(jsonId, ignoreErr = 1)
+		endif
+
+		parserBufferOffset = ROVar(GetSweepFormulaBufferOffsetTracker())
+		if(!IsNaN(parserBufferOffset))
+			attemptedFormula = ROStr(GetSweepFormulaParserAttemptFormula())
+			underline        = PadString("", parserBufferOffset, char2num("-")) + "^"
+			attemptedFormula = ReplaceString("\r", attemptedFormula, " ")
+			message         += "\r" + attemptedFormula + "\r" + underline
+			SFP_ResetParserBufferOffsetTracker()
+		else
+			// TODO: Error from execution
 		endif
 
 		SF_SetOutputState(message, SF_MSG_ERROR)

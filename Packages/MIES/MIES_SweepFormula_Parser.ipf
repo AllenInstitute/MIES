@@ -66,13 +66,24 @@ Function SFP_ParseFormulaToJSON(string formula)
 	SFP_LogParserStateInit(formula)
 #endif // DEBUGGING_ENABLED
 
+	SVAR attemptFormula = $GetSweepFormulaParserAttemptFormula()
+	attemptFormula           = formula
 	[jsonId, WAVE/T srcLocs] = SFP_FormulaParser(formula, 0)
+	SFP_ResetParserBufferOffsetTracker()
 
 #ifdef DEBUGGING_ENABLED
 	SFP_SaveParserStateLog()
 #endif // DEBUGGING_ENABLED
 
 	return jsonId
+End
+
+Function SFP_ResetParserBufferOffsetTracker()
+
+	NVAR parserBufferOffset = $GetSweepFormulaBufferOffsetTracker()
+	parserBufferOffset = NaN
+	SVAR attemptFormula = $GetSweepFormulaParserAttemptFormula()
+	attemptFormula = ""
 End
 
 static Function/S SFP_StringifyState(variable state)
@@ -232,6 +243,9 @@ Function [variable jsonId, WAVE/T srcLocs] SFP_FormulaParser(string formula, var
 	WAVE/T pad.srcLocs = srcLocs
 	pad.bufferOffset = bufOffset
 
+	NVAR trackParserBufferOffset = $GetSweepFormulaBufferOffsetTracker()
+	trackParserBufferOffset = bufOffset
+
 #ifdef DEBUGGING_ENABLED
 	indentation = ReplicateString("-> ", indentLevel)
 	if(DP_DebuggingEnabledForCaller())
@@ -278,10 +292,12 @@ Function [variable jsonId, WAVE/T srcLocs] SFP_FormulaParser(string formula, var
 #ifdef DEBUGGING_ENABLED
 			SFP_LogParserState(token, state, lastState, lastCalculation, action, indentLevel)
 #endif // DEBUGGING_ENABLED
+			pad.bufferOffset += 1
 			continue
 		endif
 		[pad, lastCalculation, wasArrayCreated, createdArrayLocal] = SFP_ParserModifyJSON(action, lastAction, state, buffer, token, indentLevel)
 		pad.bufferOffset                                           = bufOffset + consumedChars
+		trackParserBufferOffset                                    = pad.bufferOffset
 #ifdef DEBUGGING_ENABLED
 		SFP_LogParserState(token, state, lastState, lastCalculation, action, indentLevel)
 #endif // DEBUGGING_ENABLED
