@@ -1418,6 +1418,8 @@ Function [WAVE/T varAssignments, string code] SF_GetVariableAssignments(string p
 		EnsureLargeEnoughWave(varAssignments, indexShouldExist = varCnt)
 		varAssignments[varCnt][dimVarName]  = varName
 		varAssignments[varCnt][%EXPRESSION] = formula
+		varAssignments[varCnt][%LINE]       = num2istr(i)
+		varAssignments[varCnt][%OFFSET]     = num2istr(strsearch(line, "=", 0) + 1)
 
 		varCnt += 1
 	endfor
@@ -1437,8 +1439,8 @@ End
 
 static Function/S SF_CheckVariableAssignments(string preProcCode, variable jsonId)
 
-	variable i, numAssignments, jsonIdFormula
-	string code, jsonPath
+	variable i, numAssignments, jsonIdFormula, srcLocId, line, offset
+	string code, jsonPath, formula
 
 	[WAVE/T varAssignments, code] = SF_GetVariableAssignments(preProcCode)
 	if(!WaveExists(varAssignments))
@@ -1447,9 +1449,13 @@ static Function/S SF_CheckVariableAssignments(string preProcCode, variable jsonI
 
 	numAssignments = DimSize(varAssignments, ROWS)
 	for(i = 0; i < numAssignments; i += 1)
-		jsonIdFormula = SFP_ParseFormulaToJSON(varAssignments[i][%EXPRESSION])
-		jsonPath      = "/variable:" + varAssignments[i][%VARNAME]
+		formula                   = varAssignments[i][%EXPRESSION]
+		[jsonIdFormula, srcLocId] = SFP_ParseFormulaToJSON(formula)
+		jsonPath                  = "/variable:" + varAssignments[i][%VARNAME]
 		JSON_AddJSON(jsonID, jsonPath, jsonIdFormula)
+		line   = str2num(varAssignments[i][%LINE])
+		offset = str2num(varAssignments[i][%OFFSET])
+		SF_AddSourceInfoToJSON(jsonId, "/variables", jsonPath, srcLocId, formula, line, offset)
 		JSON_Release(jsonIdFormula)
 	endfor
 
@@ -1459,8 +1465,8 @@ End
 /// @brief Checks input code, sets globals for jsonId and error string
 static Function SF_CheckInputCode(string code, string graph)
 
-	variable i, numGraphs, jsonIDy, jsonIDx, subFormulaCnt
-	string jsonPath, xFormula, yFormula, formulasRemain, subPath, yAndXFormula, codeWithoutVariables, preProcCode
+	variable i, numGraphs, jsonIDy, jsonIDx, subFormulaCnt, srcLocId, line, offset
+	string jsonPath, xFormula, yFormula, formulasRemain, subPath, yAndXFormula, codeWithoutVariables, preProcCode, prefix
 
 	NVAR jsonID = $GetSweepFormulaJSONid(SF_GetBrowserDF(graph))
 	JSON_Release(jsonID, ignoreErr = 1)
@@ -1491,23 +1497,45 @@ static Function SF_CheckInputCode(string code, string graph)
 
 			sprintf subPath, "%s/pair_%d", jsonPath, subFormulaCnt
 			JSON_AddTreeObject(jsonID, subPath)
+			prefix = subPath
 
-			sprintf subPath, "%s/pair_%d/formula_y", jsonPath, subFormulaCnt
-			jsonIDy = SFP_ParseFormulaToJSON(yFormula)
+			[jsonIDy, srcLocId] = SFP_ParseFormulaToJSON(yFormula)
+			subPath             = prefix + "/formula_y"
 			JSON_AddJSON(jsonID, subPath, jsonIDy)
 			JSON_Release(jsonIDy)
 
-			if(!IsEmpty(xFormula))
-				jsonIDx = SFP_ParseFormulaToJSON(xFormula)
+			SF_AddSourceInfoToJSON(jsonId, prefix, "/formula_y", srcLocId, yFormula, line, offset)
 
-				sprintf subPath, "%s/pair_%d/formula_x", jsonPath, subFormulaCnt
+			if(!IsEmpty(xFormula))
+				[jsonIDx, srcLocId] = SFP_ParseFormulaToJSON(xFormula)
+
+				subPath = prefix + "/formula_x"
 				JSON_AddJSON(jsonID, subPath, jsonIDx)
 				JSON_Release(jsonIDx)
+
+				SF_AddSourceInfoToJSON(jsonId, prefix, "/formula_x", srcLocId, xFormula, line, offset)
 			endif
 
 			subFormulaCnt += 1
 		while(1)
 	endfor
+End
+
+static Function SF_AddSourceInfoToJSON(variable jsonId, string jsonPath, string subPath, variable srcLocId, string formula, variable line, variable offset)
+
+	string prefix
+
+	prefix = jsonPath + "/source_location" + subPath
+	JSON_AddTreeObject(jsonId, prefix)
+	subPath = prefix + "/source"
+	JSON_AddString(jsonID, subPath, formula)
+	subPath = prefix + "/line"
+	JSON_AddVariable(jsonID, subPath, line)
+	subPath = prefix + "/start_offset"
+	JSON_AddVariable(jsonID, subPath, offset)
+	subPath = prefix + "/source_map"
+	JSON_AddJSON(jsonID, subPath, srcLocId)
+	JSON_Release(srcLocId)
 End
 
 Function SF_Update(string graph)
