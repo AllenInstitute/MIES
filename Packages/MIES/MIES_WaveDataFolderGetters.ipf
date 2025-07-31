@@ -8342,9 +8342,11 @@ End
 /// @brief Returns a wave where variable assignments are collected into
 Function/WAVE GetSFVarAssignments()
 
-	Make/FREE/T/N=(0, 2) varAssignments
+	Make/FREE/T/N=(0, 4) varAssignments
 	SetDimLabel COLS, 0, VARNAME, varAssignments
 	SetDimLabel COLS, 1, EXPRESSION, varAssignments
+	SetDimLabel COLS, 2, LINE, varAssignments
+	SetDimLabel COLS, 3, OFFSET, varAssignments
 
 	return varAssignments
 End
@@ -9143,6 +9145,26 @@ Function/WAVE GetSFErrorColorWave()
 	wv[%ERROR][%B] = 0
 
 	wv = wv << 8
+
+	return wv
+End
+
+Function/WAVE GetSFExecutorAssertData()
+
+	string name = "SFExecutorAssertData"
+
+	DFREF dfr = GetSweepFormulaPath()
+
+	WAVE/Z/T/SDFR=dfr wv = $name
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/T/N=(3) dfr:$name/WAVE=wv
+
+	SetDimLabel ROWS, 0, SRCLOCID, wv
+	SetDimLabel ROWS, 1, JSONPATH, wv
 
 	return wv
 End
