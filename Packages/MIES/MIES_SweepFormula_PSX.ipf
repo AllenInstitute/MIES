@@ -2575,12 +2575,11 @@ End
 static Function PSX_UpdateBlockIndizes(string win)
 
 	string extAllGraph, comboKey
-	variable restrictCurrentCombo, numBlocks
+	variable numBlocks
 	variable numEntries, i, blockSize, first, last
 
-	extAllGraph          = PSX_GetAllEventGraph(win)
-	restrictCurrentCombo = PSX_GetRestrictEventsToCurrentCombo(win)
-	numBlocks            = PSX_CalculateNumberOfBlocks(win)
+	extAllGraph = PSX_GetAllEventGraph(win)
+	numBlocks   = PSX_CalculateNumberOfBlocks(win)
 
 	[WAVE/T keys, WAVE/T values] = PSX_GetTraceSelectionWaves(extAllGraph, PSX_TUD_TYPE_SINGLE, respectBlock = 0)
 
@@ -2681,8 +2680,8 @@ End
 /// The number of average waves is 4 due to the number of different states, see @ref PSXStates.
 ///
 /// - Single event traces for all combinations
-/// - 4 average waves for *each* combination
-/// - 4 average waves for the global average across all combinations
+/// - 4 average waves plus 3 waves for the accepted fits for *each* combination
+/// - 4 average waves plus 3 waves for the accepted fits for the global average across all combinations
 static Function PSX_AppendTracesToAllEventGraph(string win)
 
 	variable i, numEvents, state, idx, comboIndex
@@ -4639,11 +4638,15 @@ End
 // Output[0] = sweepData(1)
 // Output[1] = sweepDataOffFilt(1)
 // ...
+//
+// psx(id, [psxKernel(...), numSDs, sweepFilterLow, sweepFilterHigh, maxTauFactor, psxRiseTime(...), psxDeconvFilter(...)])
 Function/WAVE PSX_Operation(STRUCT SF_ExecutionData &exd)
 
 	variable numberOfSDs, sweepFilterLow, sweepFilterHigh, parameterJsonID, numCombos, i, addedData, kernelAmp
 	variable maxTauFactor, peakThresh, idx, success, kernelRiseTau, kernelDecayTau
 	string parameterPath, id, psxParameters, dataUnit, path
+
+	SFH_CheckArgumentCount(exd, SF_OP_PSX, 1, maxArgs = 8)
 
 	id = SFH_GetArgumentAsText(exd, SF_OP_PSX, 0, checkFunc = IsValidObjectName)
 
@@ -4746,10 +4749,14 @@ End
 // Output[2] = sweepData(0)
 // Output[3] = psx_kernel(1)
 // ...
+//
+// psxKernel([select(...), riseTau, decayTau, amp])
 Function/WAVE PSX_OperationKernel(STRUCT SF_ExecutionData &exd)
 
 	variable riseTau, decayTau, amp, dt, numPoints, numCombos, i, offset, idx
 	string parameterPath, key
+
+	SFH_CheckArgumentCount(exd, SF_OP_PSX_KERNEL, 0, maxArgs = 4)
 
 	WAVE/Z/WAVE selectDataCompArray = SFH_GetArgumentSelect(exd, SF_OP_PSX_KERNEL, 0)
 	SFH_ASSERT(WaveExists(selectDataCompArray), "Could not gather sweep data from select statement")
@@ -4835,6 +4842,7 @@ Function/WAVE PSX_OperationKernel(STRUCT SF_ExecutionData &exd)
 	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_PSX_KERNEL)
 End
 
+// psxRiseTime([lowerThreshold, upperThreshold, differentiateThreshold])
 Function/WAVE PSX_OperationRiseTime(STRUCT SF_ExecutionData &exd)
 
 	variable lowerThreshold, upperThreshold, differentiateThreshold
@@ -4855,6 +4863,7 @@ Function/WAVE PSX_OperationRiseTime(STRUCT SF_ExecutionData &exd)
 	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_PSX_RISETIME)
 End
 
+// psxDeconvFilter([low, high, order])
 Function/WAVE PSX_OperationDeconvFilter(STRUCT SF_ExecutionData &exd)
 
 	variable low, high, order
@@ -4890,9 +4899,12 @@ static Function/WAVE PSX_GetAllStatsProperties()
 	return allProps
 End
 
+// psxStats(id, select(...), prop, state, [postProc])
 Function/WAVE PSX_OperationStats(STRUCT SF_ExecutionData &exd)
 
 	string stateAsStr, postProc, id, prop
+
+	SFH_CheckArgumentCount(exd, SF_OP_PSX_STATS, 4, maxArgs = 5)
 
 	id = SFH_GetArgumentAsText(exd, SF_OP_PSX, 0, checkFunc = IsValidObjectName)
 
@@ -4913,6 +4925,7 @@ Function/WAVE PSX_OperationStats(STRUCT SF_ExecutionData &exd)
 	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_PSX_STATS)
 End
 
+// psxPrep(data(...), [numSDs])
 Function/WAVE PSX_OperationPrep(STRUCT SF_ExecutionData &exd)
 
 	variable numSDs, threshold, numCombos
@@ -5605,11 +5618,13 @@ Function PSX_PlotStartupSettings()
 
 		WAVE/Z/T userDataKeys = GetUserdataKeys(WinRecreation(subWin, 0))
 
-		for(ud : userDataKeys)
-			if(!GrepString(ud, "^ResizeControls.*$"))
-				SetWindow $subWin, userdata($ud)=""
-			endif
-		endfor
+		if(WaveExists(userDataKeys))
+			for(ud : userDataKeys)
+				if(!GrepString(ud, "^ResizeControls.*$"))
+					SetWindow $subWin, userdata($ud)=""
+				endif
+			endfor
+		endif
 
 		if(WinType(subwin) == WINTYPE_GRAPH)
 			if(ItemsInList(subwin, "#") <= 2)

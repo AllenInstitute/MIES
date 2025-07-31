@@ -53,6 +53,7 @@ Function SFH_GetArgumentAsNumeric(STRUCT SF_ExecutionData &exd, string opShort, 
 	endif
 
 	if(ParamIsDefault(defValue))
+		ASSERT(ParamIsDefault(checkDefault), "Without defValue passing checkDefault does not make sense")
 		checkExist = 1
 	else
 		checkExist = 0
