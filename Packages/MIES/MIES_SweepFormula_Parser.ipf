@@ -52,9 +52,7 @@ static Structure SF_ParserData
 EndStructure
 
 // returns jsonID or Aborts is not successful
-Function SFP_ParseFormulaToJSON(string formula)
-
-	variable jsonId
+Function [variable jsonid, variable srcLocId] SFP_ParseFormulaToJSON(string formula)
 
 	SFH_ASSERT(CountSubstrings(formula, "(") == CountSubstrings(formula, ")"), "Bracket mismatch in formula.")
 	SFH_ASSERT(CountSubstrings(formula, "[") == CountSubstrings(formula, "]"), "Array bracket mismatch in formula.")
@@ -71,11 +69,13 @@ Function SFP_ParseFormulaToJSON(string formula)
 	[jsonId, WAVE/T srcLocs] = SFP_FormulaParser(formula, 0)
 	SFP_ResetParserBufferOffsetTracker()
 
+	srcLocId = SFP_ConvertSourceLocWaveToJSON(srcLocs, formula)
+
 #ifdef DEBUGGING_ENABLED
 	SFP_SaveParserStateLog()
 #endif // DEBUGGING_ENABLED
 
-	return jsonId
+	return [jsonId, srcLocId]
 End
 
 Function SFP_ResetParserBufferOffsetTracker()
@@ -819,4 +819,26 @@ static Function SFP_AddToSourceLocationWave(WAVE/T srcLocs, string srcPath, vari
 	srcLocs[size][%PATH]   = srcPath
 	srcLocs[size][%OFFSET] = num2istr(loc)
 	SetNumberInWaveNote(srcLocs, NOTE_INDEX, size + 1)
+End
+
+static Function SFP_ConvertSourceLocWaveToJSON(WAVE/T srcLocs, string formula)
+
+	variable i, size, jsonId, tmpId
+	string path
+
+	size = GetNumberFromWaveNote(srcLocs, NOTE_INDEX)
+
+	jsonId = JSON_New()
+	JSON_AddTreeObject(jsonId, "")
+	for(i = 0; i < size; i += 1)
+		path = SF_EscapeJsonPath(srcLocs[i][%PATH])
+		if(!JSON_Exists(jsonId, path))
+			JSON_AddVariable(jsonId, path, str2num(srcLocs[i][%OFFSET]))
+		else
+			//			BUG("Got same source location multiple times: " + srcLocs[i][%PATH])
+		endif
+	endfor
+	JSON_AddString(jsonId, "/", formula)
+
+	return jsonId
 End
