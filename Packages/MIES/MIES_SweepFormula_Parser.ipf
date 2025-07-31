@@ -66,13 +66,24 @@ Function SFP_ParseFormulaToJSON(string formula)
 	SFP_LogParserStateInit(formula)
 #endif // DEBUGGING_ENABLED
 
+	SVAR attemptFormula = $GetSweepFormulaParserAttemptFormula()
+	attemptFormula           = formula
 	[jsonId, WAVE/T srcLocs] = SFP_FormulaParser(formula, 0)
+	SFP_ResetParserBufferOffsetTracker()
 
 #ifdef DEBUGGING_ENABLED
 	SFP_SaveParserStateLog()
 #endif // DEBUGGING_ENABLED
 
 	return jsonId
+End
+
+Function SFP_ResetParserBufferOffsetTracker()
+
+	NVAR parserBufferOffset = $GetSweepFormulaBufferOffsetTracker()
+	parserBufferOffset = NaN
+	SVAR attemptFormula = $GetSweepFormulaParserAttemptFormula()
+	attemptFormula = ""
 End
 
 static Function/S SFP_StringifyState(variable state)
@@ -206,6 +217,7 @@ End
 /// @brief serialize a string formula into JSON
 ///
 /// @param formula  string formula
+/// @param bufOffset Parser internal character offset into the initial formula string. When SFP_FormulaParser is called from a outside the parser this should be zero.
 /// @param createdArray [optional, default 0] set on recursive calls, returns boolean if parser created a JSON array
 /// @param indentLevel [internal use only] recursive call level, used for debug output
 /// @returns a JSONid representation
@@ -231,6 +243,9 @@ Function [variable jsonId, WAVE/T srcLocs] SFP_FormulaParser(string formula, var
 	SetNumberInWaveNote(srcLocs, NOTE_INDEX, 0)
 	WAVE/T pad.srcLocs = srcLocs
 	pad.bufferOffset = bufOffset
+
+	NVAR trackParserBufferOffset = $GetSweepFormulaBufferOffsetTracker()
+	trackParserBufferOffset = bufOffset
 
 #ifdef DEBUGGING_ENABLED
 	indentation = ReplicateString("-> ", indentLevel)
@@ -278,10 +293,12 @@ Function [variable jsonId, WAVE/T srcLocs] SFP_FormulaParser(string formula, var
 #ifdef DEBUGGING_ENABLED
 			SFP_LogParserState(token, state, lastState, lastCalculation, action, indentLevel)
 #endif // DEBUGGING_ENABLED
+			pad.bufferOffset += 1
 			continue
 		endif
 		[pad, lastCalculation, wasArrayCreated, createdArrayLocal] = SFP_ParserModifyJSON(action, lastAction, state, buffer, token, indentLevel)
 		pad.bufferOffset                                           = bufOffset + consumedChars
+		trackParserBufferOffset                                    = pad.bufferOffset
 #ifdef DEBUGGING_ENABLED
 		SFP_LogParserState(token, state, lastState, lastCalculation, action, indentLevel)
 #endif // DEBUGGING_ENABLED
