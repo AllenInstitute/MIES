@@ -2229,6 +2229,23 @@ Function TestConcat_AddingSingleElement([WAVE src])
 	CHECK_EQUAL_VAR(DimSize(dest, ROWS), 1)
 End
 
+// UTF_TD_GENERATOR DataGenerators#GetConcatElementWaves2D
+Function TestConcat_AddingElements2D([WAVE src])
+
+	variable index
+
+	Duplicate/FREE src, dest
+	Redimension/N=(0, 2) dest
+	SetNumberInWaveNote(dest, NOTE_INDEX, 0)
+
+	index = ConcatenateWavesWithNoteIndex(dest, src)
+	CHECK_EQUAL_VAR(index, 2)
+
+	CHECK_EQUAL_WAVES(dest, src, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DimSize(dest, ROWS), 2)
+	CHECK_EQUAL_VAR(DimSize(dest, COLS), 2)
+End
+
 Function TestConcat_AddingMoreElements()
 
 	variable index
@@ -2256,4 +2273,107 @@ Function TestConcat_AddingMoreElements()
 	CHECK_EQUAL_WAVES(slice, src, mode = WAVE_DATA)
 End
 
+Function TestConcat_ChaosDimension()
+
+	Make/FREE/N=1 dest
+	SetNumberInWaveNote(dest, NOTE_INDEX, 0)
+
+	Make/FREE/N=(1, 1) src
+	try
+		ConcatenateWavesWithNoteIndex(dest, src)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+		PASS()
+	endtry
+
+	Make/FREE/N=(0, 1) dest
+	SetNumberInWaveNote(dest, NOTE_INDEX, 0)
+
+	Make/FREE/N=(1, 2) src
+	try
+		ConcatenateWavesWithNoteIndex(dest, src)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+		PASS()
+	endtry
+
+	Make/FREE/N=(0, 1, 1) dest
+	SetNumberInWaveNote(dest, NOTE_INDEX, 0)
+
+	Make/FREE/N=(1, 1, 2) src
+	try
+		ConcatenateWavesWithNoteIndex(dest, src)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+		PASS()
+	endtry
+
+	Make/FREE/N=(0, 1, 1, 1) dest
+	SetNumberInWaveNote(dest, NOTE_INDEX, 0)
+
+	Make/FREE/N=(1, 1, 1, 2) src
+	try
+		ConcatenateWavesWithNoteIndex(dest, src)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+		PASS()
+	endtry
+End
+
+Function TestConcat_SpecialWaveRef1D()
+
+	// This checks if concatenate does NOT apply the {waveWave} syntax
+	// (because dest exists as WaveRef wave)
+	variable index
+
+	Make/FREE/WAVE/N=(1) dest
+	SetNumberInWaveNote(dest, NOTE_INDEX, 0)
+
+	Make/FREE data
+	Make/FREE/WAVE/N=2 src = data
+
+	index = ConcatenateWavesWithNoteIndex(dest, src)
+	CHECK_EQUAL_VAR(index, 2)
+
+	CHECK_EQUAL_WAVES(dest, src, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(dest[0], data, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(dest[1], data, mode = WAVE_DATA)
+End
+
+Function TestConcat_SpecialWaveRef2D()
+
+	variable index, size
+
+	Make/FREE data
+
+	Make/FREE/WAVE/N=(0, 2) dest
+	SetNumberInWaveNote(dest, NOTE_INDEX, 0)
+
+	Make/FREE/WAVE/N=(2, 2) src = data
+
+	index = ConcatenateWavesWithNoteIndex(dest, src)
+	CHECK_EQUAL_VAR(index, 2)
+	size = GetNumberFromWaveNote(dest, NOTE_INDEX)
+	CHECK_EQUAL_VAR(size, 2)
+	CHECK_EQUAL_VAR(DimSize(dest, COLS), 2)
+	CHECK_EQUAL_WAVES(dest, src, mode = WAVE_DATA)
+
+	Make/FREE/WAVE/N=(2, 2) dest = data
+	SetNumberInWaveNote(dest, NOTE_INDEX, 2)
+
+	Make/FREE/WAVE/N=(2, 2) src = data
+
+	index = ConcatenateWavesWithNoteIndex(dest, src)
+	CHECK_EQUAL_VAR(index, 4)
+	size = GetNumberFromWaveNote(dest, NOTE_INDEX)
+	CHECK_EQUAL_VAR(size, 4)
+	CHECK_EQUAL_VAR(DimSize(dest, COLS), 2)
+
+	Make/FREE/WAVE/N=(4, 2) comp = data
+	CHECK_EQUAL_WAVES(dest, comp, mode = WAVE_DATA)
+End
 /// @}

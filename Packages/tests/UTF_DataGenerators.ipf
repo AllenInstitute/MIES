@@ -1048,6 +1048,27 @@ static Function/WAVE GetConcatSingleElementWaves()
 	return waves
 End
 
+static Function/WAVE GetConcatElementWaves2D()
+
+	Make/FREE/N=4/WAVE waves
+
+	Make/FREE/N=(2, 2) srcNum = 4711
+	waves[0] = srcNum
+
+	Make/FREE/T/N=(2, 2) srcText = "baccab"
+	waves[1] = srcText
+
+	Make/FREE/DF/N=(2, 2) srcDFR = NewfreeDataFolder()
+	waves[2] = srcDFR
+
+	Make/FREE/WAVE/N=(2, 2) srcWv = NewFreeWave(IGOR_TYPE_16BIT_INT, 0)
+	waves[3] = srcWv
+
+	SetDimensionLabels(waves, "Numeric;Text;DFREF;WAVE", ROWS)
+
+	return waves
+End
+
 static Function/WAVE GetAnalysisFunctions()
 
 	string funcs
