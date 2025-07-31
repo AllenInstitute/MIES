@@ -1500,3 +1500,29 @@ Function ConcatenateWavesWithNoteIndex(WAVE/Z dest, WAVE/Z src)
 
 	return index
 End
+
+/// @brief concatenate wv2 on wv1 in the row dimension
+Function ConcatenateWavesWithNoteIndexMD(WAVE/Z wv1, WAVE/Z wv2)
+
+	variable size1, size2
+
+	ASSERT_TS(WaveExists(wv1), "Missing wave1")
+	size1 = GetNumberFromWaveNote(wv1, NOTE_INDEX)
+	ASSERT_TS(IsFinite(size1), "Missing NOTE_INDEX wave1")
+
+	if(!WaveExists(wv2))
+		return size1
+	endif
+	size2 = GetNumberFromWaveNote(wv2, NOTE_INDEX)
+	ASSERT_TS(IsFinite(size2), "Missing NOTE_INDEX wave2")
+
+	Redimension/N=(size1, -1, -1, -1) wv1
+	Redimension/N=(size2, -1, -1, -1) wv2
+
+	Concatenate/NP=(ROWS) {wv2}, wv1
+	size1 += size2
+
+	SetNumberInWaveNote(wv1, NOTE_INDEX, size1)
+
+	return size1
+End
