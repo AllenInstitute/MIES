@@ -450,8 +450,11 @@ End
 
 static Function DirectToFormulaParser(string code)
 
-	code = MIES_SF#SF_PreprocessInput(code)
-	return MIES_SFP#SFP_ParseFormulaToJSON(code)
+	variable jsonId, srcLocId
+
+	code               = MIES_SF#SF_PreprocessInput(code)
+	[jsonId, srcLocId] = MIES_SFP#SFP_ParseFormulaToJSON(code)
+	return jsonId
 End
 
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1

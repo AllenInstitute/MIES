@@ -26,6 +26,7 @@ static Constant SFE_VARIABLE_PREFIX = 36
 Function/WAVE SFE_ExecuteFormula(string formula, string graph, [variable singleResult, variable checkExist, variable useVariables])
 
 	STRUCT SF_ExecutionData exd
+	variable jsonId, srcLocid
 
 	exd.graph = graph
 
@@ -37,9 +38,11 @@ Function/WAVE SFE_ExecuteFormula(string formula, string graph, [variable singleR
 	if(useVariables)
 		formula = SFE_ExecuteVariableAssignments(graph, formula)
 	endif
-	exd.jsonId = SFP_ParseFormulaToJSON(formula)
-	WAVE/Z result = SFE_FormulaExecutor(exd)
+	[jsonId, srcLocid] = SFP_ParseFormulaToJSON(formula)
+	exd.jsonId         = jsonId
+	WAVE/Z result = SFE_FormulaExecutor(exd, srcLocId = srcLocId)
 	JSON_Release(exd.jsonId, ignoreErr = 1)
+	JSON_Release(srcLocId, ignoreErr = 1)
 
 	WAVE/WAVE out = SF_ResolveDataset(result)
 	if(singleResult)
@@ -56,7 +59,7 @@ End
 Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode)
 
 	STRUCT SF_ExecutionData exd
-	variable i, numAssignments
+	variable i, numAssignments, jsonId, srcLocId
 	string code
 
 	exd.graph = graph
@@ -74,13 +77,15 @@ Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode)
 	Redimension/N=(numAssignments) varStorage
 
 	for(i = 0; i < numAssignments; i += 1)
-		exd.jsonId = SFP_ParseFormulaToJSON(varAssignments[i][%EXPRESSION])
-		WAVE dataRef = SFE_FormulaExecutor(exd)
+		[jsonId, srcLocId] = SFP_ParseFormulaToJSON(varAssignments[i][%EXPRESSION])
+		exd.jsonId         = jsonId
+		WAVE dataRef = SFE_FormulaExecutor(exd, srcLocId = srcLocId)
 		WAVE data    = SF_ResolveDataset(dataRef)
 		JWN_SetNumberInWaveNote(data, SF_VARIABLE_MARKER, 1)
 		varStorage[i] = dataRef
 		SetDimLabel ROWS, i, $varAssignments[i][%VARNAME], varStorage
 		JSON_Release(exd.jsonId)
+		JSON_Release(srcLocId)
 	endfor
 
 	return code
@@ -90,10 +95,9 @@ End
 ///
 /// Recursively executes the formula parsed into jsonID.
 ///
-/// @param graph    graph to read from, mainly used by the `data` operation
-/// @param jsonID   JSON object ID from the JSON XOP
-/// @param jsonPath JSON pointer compliant path
-Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd)
+/// @param exd      Execution Data structure with the jsonId, jsonpath and graph name
+/// @param srcLocId JSON id of the source location JSON. Set this when calling from outside the Executor logic. The source location JSON is returned from the parsing step.
+Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLocId])
 
 	string opName, str
 	variable i, size, JSONType, arrayElemJSONType, effectiveArrayDimCount, dim
@@ -105,7 +109,11 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd)
 		exd.jsonPath = ""
 	endif
 
-	SVAR jsonPathTracker = $GetSweepFormulaJSONPathTracker(exd.graph)
+	if(!ParamIsDefault(srcLocId))
+		SFE_StoreExecutorAssertInfo(srcLocId, exd.jsonPath)
+	endif
+
+	SVAR jsonPathTracker = $GetSweepFormulaJSONPathTracker()
 	jsonPathTracker = exd.jsonPath
 
 #ifdef DEBUGGING_ENABLED
@@ -582,4 +590,11 @@ static Function SFE_PlaceSubArrayAt(WAVE/Z out, WAVE/Z subArray, variable index)
 	else
 		Multithread out[index][0, max(0, DimSize(subArray, ROWS) - 1)][0, max(0, DimSize(subArray, COLS) - 1)][0, max(0, DimSize(subArray, LAYERS) - 1)] = subArray[q][r][s]
 	endif
+End
+
+static Function SFE_StoreExecutorAssertInfo(variable srcLocId, string jsonPath)
+
+	WAVE/T info = GetSFExecutorAssertData()
+	info[%SRCLOCID] = num2istr(srcLocId)
+	info[%JSONPATH] = jsonPath
 End
