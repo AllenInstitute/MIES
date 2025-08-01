@@ -22,4 +22,5 @@ jobs:
         run: |
             git config gc.auto 1024
             git config gc.packLimit 10
-            git gc --auto --no-detach
+            git config gc.autoDetach false
+            git gc --auto
