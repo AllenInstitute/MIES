@@ -1462,6 +1462,20 @@ static Function/S SF_CheckVariableAssignments(string preProcCode, variable jsonI
 	return code
 End
 
+static Function SF_GetLineNumberOfRemainingCode(string all, string endPart)
+
+	variable len1, len2
+	string firstPart
+
+	len1 = strlen(all)
+	len2 = strlen(endPart)
+	ASSERT(len1 >= len2, "endPart must be equal or smaller than the full string")
+	firstPart = all[0, len1 - len2]
+	WAVE/T tmp = ListToTextWave(firstPart, SF_CHAR_CR)
+
+	return DimSize(tmp, ROWS) - 1
+End
+
 /// @brief Checks input code, sets globals for jsonId and error string
 static Function SF_CheckInputCode(string code, string graph)
 
@@ -1476,6 +1490,7 @@ static Function SF_CheckInputCode(string code, string graph)
 	preProcCode = SF_PreprocessInput(code)
 
 	codeWithoutVariables = SF_CheckVariableAssignments(preProcCode, jsonID)
+	line                 = SF_GetLineNumberOfRemainingCode(preProcCode, codeWithoutVariables)
 
 	WAVE/T graphCode = SF_SplitCodeToGraphs(codeWithoutVariables)
 
