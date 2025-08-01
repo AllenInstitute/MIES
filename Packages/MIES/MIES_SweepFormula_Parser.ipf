@@ -64,10 +64,9 @@ Function [variable jsonid, variable srcLocId] SFP_ParseFormulaToJSON(string form
 	SFP_LogParserStateInit(formula)
 #endif // DEBUGGING_ENABLED
 
-	SVAR attemptFormula = $GetSweepFormulaParserAttemptFormula()
-	attemptFormula           = formula
+	WAVE/T info = GetSFAssertData()
+	info[%FORMULA]           = formula
 	[jsonId, WAVE/T srcLocs] = SFP_FormulaParser(formula, 0)
-	SFP_ResetParserBufferOffsetTracker()
 
 	srcLocId = SFP_ConvertSourceLocWaveToJSON(srcLocs, formula)
 
@@ -76,14 +75,6 @@ Function [variable jsonid, variable srcLocId] SFP_ParseFormulaToJSON(string form
 #endif // DEBUGGING_ENABLED
 
 	return [jsonId, srcLocId]
-End
-
-Function SFP_ResetParserBufferOffsetTracker()
-
-	NVAR parserBufferOffset = $GetSweepFormulaBufferOffsetTracker()
-	parserBufferOffset = NaN
-	SVAR attemptFormula = $GetSweepFormulaParserAttemptFormula()
-	attemptFormula = ""
 End
 
 static Function/S SFP_StringifyState(variable state)
@@ -832,6 +823,9 @@ static Function SFP_ConvertSourceLocWaveToJSON(WAVE/T srcLocs, string formula)
 	JSON_AddTreeObject(jsonId, "")
 	for(i = 0; i < size; i += 1)
 		path = SF_EscapeJsonPath(srcLocs[i][%PATH])
+		if(IsEmpty(path))
+			continue
+		endif
 		if(!JSON_Exists(jsonId, path))
 			JSON_AddVariable(jsonId, path, str2num(srcLocs[i][%OFFSET]))
 		else
