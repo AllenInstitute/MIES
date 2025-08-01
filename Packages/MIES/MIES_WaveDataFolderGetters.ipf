@@ -7946,7 +7946,9 @@ End
 /// - One for each y vs x formula combination
 Function/WAVE GetYvsXFormulas()
 
-	Make/T/FREE/N=0 wv
+	Make/T/FREE/N=(0, 2) wv
+	SetDimLabel COLS, 0, GRAPHCODE, wv
+	SetDimLabel COLS, 1, LINE, wv
 
 	return wv
 End
@@ -9160,9 +9162,9 @@ Function/WAVE GetSFErrorColorWave()
 	return wv
 End
 
-Function/WAVE GetSFExecutorAssertData()
+Function/WAVE GetSFAssertData()
 
-	string name = "SFExecutorAssertData"
+	string name = "SFAssertData"
 
 	DFREF dfr = GetSweepFormulaPath()
 
@@ -9172,10 +9174,15 @@ Function/WAVE GetSFExecutorAssertData()
 		return wv
 	endif
 
-	Make/T/N=(3) dfr:$name/WAVE=wv
+	Make/T/N=(7) dfr:$name/WAVE=wv
 
 	SetDimLabel ROWS, 0, SRCLOCID, wv
 	SetDimLabel ROWS, 1, JSONPATH, wv
+	SetDimLabel ROWS, 2, STEP, wv
+	SetDimLabel ROWS, 3, LINE, wv
+	SetDimLabel ROWS, 4, OFFSET, wv
+	SetDimLabel ROWS, 5, FORMULA, wv
+	SetDimLabel ROWS, 6, INFORMULAOFFSET, wv
 
 	return wv
 End

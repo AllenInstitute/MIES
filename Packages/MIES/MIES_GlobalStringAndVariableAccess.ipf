@@ -789,9 +789,3 @@ Function/S GetSweepFormulaBufferOffsetTracker()
 
 	return GetNVARAsString(GetSweepFormulaPath(), "sweepFormulaParserBufferOffset", initialValue = NaN)
 End
-
-/// @brief Return the formula that the parser is attempting to parse
-Function/S GetSweepFormulaParserAttemptFormula()
-
-	return GetSVARAsString(GetSweepFormulaPath(), "sweepFormulaParserAttemptFormula", initialValue = "")
-End

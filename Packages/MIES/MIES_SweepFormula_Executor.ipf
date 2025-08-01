@@ -18,27 +18,32 @@ static Constant SFE_VARIABLE_PREFIX = 36
 /// @brief Executes a given formula without changing the current SweepFormula notebook
 ///        supports by default variable assignments
 ///        does not support "with" and "and" keywords
-/// @param formula formula string to execute
-/// @param graph name of databrowser window
+/// @param formula      formula string to execute
+/// @param graph        name of databrowser window
 /// @param singleResult [optional, default 0], if set then the first dataSet is retrieved from the waveRef wave and returned, the waveRef wave is disposed
-/// @param checkExist [optional, default 0], only valid if singleResult=1, if set then the data wave in the single dataSet retrieved must exist
+/// @param checkExist   [optional, default 0], only valid if singleResult=1, if set then the data wave in the single dataSet retrieved must exist
 /// @param useVariables [optional, default 1], when not set, hint the function that the formula string contains only an expression and no variable definitions
-Function/WAVE SFE_ExecuteFormula(string formula, string graph, [variable singleResult, variable checkExist, variable useVariables])
+/// @param line         [optional, default NaN], line number of formula in SF notebook, when set, stores the information for the case of an SFH_ASSERT
+/// @param offset       [optional, default NaN], offset of a formula in SF notebook in characters from the start of the line (x-formulas), when set, stores the information for the case of an SFH_ASSERT
+Function/WAVE SFE_ExecuteFormula(string formula, string graph, [variable singleResult, variable checkExist, variable useVariables, variable line, variable offset])
 
 	STRUCT SF_ExecutionData exd
-	variable jsonId, srcLocid
+	variable jsonId, srcLocId
 
 	exd.graph = graph
 
 	singleResult = ParamIsDefault(singleResult) ? 0 : !!singleResult
 	checkExist   = ParamIsDefault(checkExist) ? 0 : !!checkExist
 	useVariables = ParamIsDefault(useVariables) ? 1 : !!useVariables
+	line         = ParamIsDefault(line) ? NaN : line
+	offset       = ParamIsDefault(offset) ? NaN : offset
 
 	formula = SF_PreprocessInput(formula)
 	if(useVariables)
 		formula = SFE_ExecuteVariableAssignments(graph, formula)
 	endif
-	[jsonId, srcLocid] = SFP_ParseFormulaToJSON(formula)
+	SFH_StoreAssertInfoParser(line, offset)
+	[jsonId, srcLocId] = SFP_ParseFormulaToJSON(formula)
 	exd.jsonId         = jsonId
 	WAVE/Z result = SFE_FormulaExecutor(exd, srcLocId = srcLocId)
 	JSON_Release(exd.jsonId, ignoreErr = 1)
@@ -59,7 +64,7 @@ End
 Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode)
 
 	STRUCT SF_ExecutionData exd
-	variable i, numAssignments, jsonId, srcLocId
+	variable i, numAssignments, jsonId, srcLocId, line, offset
 	string code
 
 	exd.graph = graph
@@ -77,6 +82,9 @@ Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode)
 	Redimension/N=(numAssignments) varStorage
 
 	for(i = 0; i < numAssignments; i += 1)
+		line   = str2num(varAssignments[i][%LINE])
+		offset = str2num(varAssignments[i][%OFFSET])
+		SFH_StoreAssertInfoParser(line, offset)
 		[jsonId, srcLocId] = SFP_ParseFormulaToJSON(varAssignments[i][%EXPRESSION])
 		exd.jsonId         = jsonId
 		WAVE dataRef = SFE_FormulaExecutor(exd, srcLocId = srcLocId)
@@ -110,7 +118,7 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLoc
 	endif
 
 	if(!ParamIsDefault(srcLocId))
-		SFE_StoreExecutorAssertInfo(srcLocId, exd.jsonPath)
+		SFH_StoreAssertInfoExecutor(srcLocId, exd.jsonPath)
 	endif
 
 	SVAR jsonPathTracker = $GetSweepFormulaJSONPathTracker()
@@ -590,11 +598,4 @@ static Function SFE_PlaceSubArrayAt(WAVE/Z out, WAVE/Z subArray, variable index)
 	else
 		Multithread out[index][0, max(0, DimSize(subArray, ROWS) - 1)][0, max(0, DimSize(subArray, COLS) - 1)][0, max(0, DimSize(subArray, LAYERS) - 1)] = subArray[q][r][s]
 	endif
-End
-
-static Function SFE_StoreExecutorAssertInfo(variable srcLocId, string jsonPath)
-
-	WAVE/T info = GetSFExecutorAssertData()
-	info[%SRCLOCID] = num2istr(srcLocId)
-	info[%JSONPATH] = jsonPath
 End
