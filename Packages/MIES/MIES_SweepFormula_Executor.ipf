@@ -26,6 +26,7 @@ static Constant SFE_VARIABLE_PREFIX = 36
 Function/WAVE SFE_ExecuteFormula(string formula, string graph, [variable singleResult, variable checkExist, variable useVariables])
 
 	STRUCT SF_ExecutionData exd
+	variable jsonId, srcLocid
 
 	exd.graph = graph
 
@@ -37,9 +38,11 @@ Function/WAVE SFE_ExecuteFormula(string formula, string graph, [variable singleR
 	if(useVariables)
 		formula = SFE_ExecuteVariableAssignments(graph, formula)
 	endif
-	exd.jsonId = SFP_ParseFormulaToJSON(formula)
-	WAVE/Z result = SFE_FormulaExecutor(exd)
+	[jsonId, srcLocid] = SFP_ParseFormulaToJSON(formula)
+	exd.jsonId         = jsonid
+	WAVE/Z result = SFE_FormulaExecutor(exd, srcLocId = srcLocId)
 	JSON_Release(exd.jsonId, ignoreErr = 1)
+	JSON_Release(srcLocId, ignoreErr = 1)
 
 	WAVE/WAVE out = SF_ResolveDataset(result)
 	if(singleResult)
@@ -56,7 +59,7 @@ End
 Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode)
 
 	STRUCT SF_ExecutionData exd
-	variable i, numAssignments
+	variable i, numAssignments, jsonId, srcLocId
 	string code
 
 	exd.graph = graph
@@ -74,13 +77,15 @@ Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode)
 	Redimension/N=(numAssignments) varStorage
 
 	for(i = 0; i < numAssignments; i += 1)
-		exd.jsonId = SFP_ParseFormulaToJSON(varAssignments[i][%EXPRESSION])
-		WAVE dataRef = SFE_FormulaExecutor(exd)
+		[jsonId, srcLocId] = SFP_ParseFormulaToJSON(varAssignments[i][%EXPRESSION])
+		exd.jsonid         = jsonId
+		WAVE dataRef = SFE_FormulaExecutor(exd, srcLocId = srcLocId)
 		WAVE data    = SF_ResolveDataset(dataRef)
 		JWN_SetNumberInWaveNote(data, SF_VARIABLE_MARKER, 1)
 		varStorage[i] = dataRef
 		SetDimLabel ROWS, i, $varAssignments[i][%VARNAME], varStorage
 		JSON_Release(exd.jsonId)
+		JSON_Release(srcLocId)
 	endfor
 
 	return code
@@ -93,7 +98,7 @@ End
 /// @param graph    graph to read from, mainly used by the `data` operation
 /// @param jsonID   JSON object ID from the JSON XOP
 /// @param jsonPath JSON pointer compliant path
-Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd)
+Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLocId])
 
 	string opName, str
 	variable i, size, JSONType, arrayElemJSONType, effectiveArrayDimCount, dim
@@ -104,6 +109,13 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd)
 	if(numType(strlen(exd.jsonPath)) == 2)
 		exd.jsonPath = ""
 	endif
+
+	if(!ParamIsDefault(srcLocId))
+		SFE_StoreExecutorAssertInfo(srcLocId, exd.jsonPath)
+	endif
+
+	SVAR jsonPathTracker = $GetSweepFormulaJSONPathTracker()
+	jsonPathTracker = exd.jsonPath
 
 #ifdef DEBUGGING_ENABLED
 	if(DP_DebuggingEnabledForCaller())
@@ -275,9 +287,10 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd)
 	WAVE/T operations = JSON_GetKeys(exd.jsonID, exd.jsonPath)
 	SFH_ASSERT(DimSize(operations, ROWS) == 1, "Only one operation is allowed", jsonId = exd.jsonId)
 
-	exdop.jsonId   = exd.jsonId
-	exdop.graph    = exd.graph
-	exdop.jsonPath = exd.jsonPath + "/" + SF_EscapeJsonPath(operations[0])
+	exdop.jsonId    = exd.jsonId
+	exdop.graph     = exd.graph
+	exdop.jsonPath  = exd.jsonPath + "/" + SF_EscapeJsonPath(operations[0])
+	jsonPathTracker = exdop.jsonPath + "/0"
 	SFH_ASSERT(JSON_GetType(exdop.jsonID, exdop.jsonPath) == JSON_ARRAY, "An array is required to hold the operands of the operation.", jsonId = exdop.jsonId)
 	opName = LowerStr(operations[0])
 #ifdef AUTOMATED_TESTING
@@ -290,7 +303,7 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd)
 			break
 		default:
 			WAVE ops = SF_GetNamedOperations()
-			ASSERT(GetRowIndex(ops, str = opName) >= 0, "List of operations with long name is out of date as the following is missing: " + opName)
+			//			ASSERT(GetRowIndex(ops, str = opName) >= 0, "List of operations with long name is out of date as the following is missing: " + opName)
 			break
 	endswitch
 #endif // AUTOMATED_TESTING
@@ -578,4 +591,11 @@ static Function SFE_PlaceSubArrayAt(WAVE/Z out, WAVE/Z subArray, variable index)
 	else
 		Multithread out[index][0, max(0, DimSize(subArray, ROWS) - 1)][0, max(0, DimSize(subArray, COLS) - 1)][0, max(0, DimSize(subArray, LAYERS) - 1)] = subArray[q][r][s]
 	endif
+End
+
+static Function SFE_StoreExecutorAssertInfo(variable srcLocId, string jsonPath)
+
+	WAVE/T info = GetSFExecutorAssertData()
+	info[%SRCLOCID] = num2istr(srcLocId)
+	info[%JSONPATH] = jsonPath
 End

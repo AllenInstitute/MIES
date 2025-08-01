@@ -353,9 +353,39 @@ End
 /// UTF_NOINSTRUMENTATION
 Function SFH_ASSERT(variable condition, string message, [variable jsonId])
 
+	variable parserBufferOffset, srcLocId, srcLoc
+	string attemptedFormula, currentExePath
+
 	if(!condition)
 		if(!ParamIsDefault(jsonId))
 			JSON_Release(jsonId, ignoreErr = 1)
+		endif
+
+		parserBufferOffset = ROVar(GetSweepFormulaBufferOffsetTracker())
+		if(!IsNaN(parserBufferOffset))
+			attemptedFormula = ROStr(GetSweepFormulaParserAttemptFormula())
+			message         += SFH_FormatSourceLocationError(attemptedFormula, parserBufferOffset)
+			SFP_ResetParserBufferOffsetTracker()
+		else
+			WAVE/T info = GetSFExecutorAssertData()
+			currentExePath = ROStr(GetSweepFormulaJSONPathTracker())
+			srcLocId       = str2num(info[%SRCLOCID])
+			if(JSON_Exists(srcLocId, ""))
+				if(IsEmpty(currentExePath))
+					srcLoc = 0
+				else
+					srcLoc = JSON_GetVariable(srcLocId, SF_EscapeJsonPath(currentExePath), ignoreErr = 1)
+				endif
+				if(!IsNaN(srcLoc))
+					attemptedFormula = JSON_GetString(srcLocId, "/")
+					message         += SFH_FormatSourceLocationError(attemptedFormula, srcLoc)
+				else
+					BUG("SFH_ASSERT: source path not found")
+				endif
+				JSON_Release(srcLocId)
+			else
+				BUG("SFH_ASSERT: No source loc information")
+			endif
 		endif
 
 		SF_SetOutputState(message, SF_MSG_ERROR)
@@ -371,6 +401,17 @@ Function SFH_ASSERT(variable condition, string message, [variable jsonId])
 #endif // AUTOMATED_TESTING_DEBUGGING
 		Abort
 	endif
+End
+
+static Function/S SFH_FormatSourceLocationError(string formula, variable loc)
+
+	string marker = ""
+
+	formula = ReplaceString("\r", formula, " ")
+	if(loc >= 0)
+		marker = "\r" + PadString("", loc, char2num("-")) + "^"
+	endif
+	return "\r" + formula + marker
 End
 
 /// @brief Fatal user error for sweep formula
