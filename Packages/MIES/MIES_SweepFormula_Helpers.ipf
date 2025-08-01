@@ -15,6 +15,9 @@ static StrConstant SFH_ARGSETUP_OPERATION_KEY         = "Operation"
 static StrConstant SFH_ARGSETUP_EMPTY_OPERATION_VALUE = "NOOP"
 static StrConstant SFH_DEFAULT_SELECT_FORMULA         = "select()"
 
+static Constant SF_STEP_PARSER   = 1
+static Constant SF_STEP_EXECUTOR = 2
+
 threadsafe Function SFH_StringChecker_Prototype(string str)
 
 	FATAL_ERROR("Can't call prototype function")
@@ -353,7 +356,7 @@ End
 /// UTF_NOINSTRUMENTATION
 Function SFH_ASSERT(variable condition, string message, [variable jsonId])
 
-	variable parserBufferOffset, srcLocId, srcLoc
+	variable parserBufferOffset, srcLocId, srcLoc, sfStep
 	string attemptedFormula, currentExePath
 
 	if(!condition)
@@ -361,15 +364,16 @@ Function SFH_ASSERT(variable condition, string message, [variable jsonId])
 			JSON_Release(jsonId, ignoreErr = 1)
 		endif
 
+		WAVE/T asserData = GetSFAssertData()
 		parserBufferOffset = ROVar(GetSweepFormulaBufferOffsetTracker())
-		if(!IsNaN(parserBufferOffset))
-			attemptedFormula = ROStr(GetSweepFormulaParserAttemptFormula())
-			message         += SFH_FormatSourceLocationError(attemptedFormula, parserBufferOffset)
-			SFP_ResetParserBufferOffsetTracker()
-		else
-			WAVE/T info = GetSFExecutorAssertData()
+		sfStep             = str2numSafe(asserData[%STEP])
+		if(sfStep == SF_STEP_PARSER)
+			attemptedFormula            = asserData[%FORMULA]
+			message                    += SFH_FormatSourceLocationError(attemptedFormula, parserBufferOffset)
+			asserData[%INFORMULAOFFSET] = num2istr(parserBufferOffset)
+		elseif(sfStep == SF_STEP_EXECUTOR)
 			currentExePath = ROStr(GetSweepFormulaJSONPathTracker())
-			srcLocId       = str2num(info[%SRCLOCID])
+			srcLocId       = str2numSafe(asserData[%SRCLOCID])
 			if(JSON_Exists(srcLocId, ""))
 				if(IsEmpty(currentExePath))
 					srcLoc = 0
@@ -377,8 +381,9 @@ Function SFH_ASSERT(variable condition, string message, [variable jsonId])
 					srcLoc = JSON_GetVariable(srcLocId, SF_EscapeJsonPath(currentExePath), ignoreErr = 1)
 				endif
 				if(!IsNaN(srcLoc))
-					attemptedFormula = JSON_GetString(srcLocId, "/")
-					message         += SFH_FormatSourceLocationError(attemptedFormula, srcLoc)
+					attemptedFormula            = JSON_GetString(srcLocId, "/")
+					message                    += SFH_FormatSourceLocationError(attemptedFormula, srcLoc)
+					asserData[%INFORMULAOFFSET] = num2istr(srcLoc)
 				else
 					BUG("SFH_ASSERT: source path not found")
 				endif
@@ -386,6 +391,8 @@ Function SFH_ASSERT(variable condition, string message, [variable jsonId])
 			else
 				BUG("SFH_ASSERT: No source loc information")
 			endif
+		else
+			FATAL_ERROR("Unknown SF execution step")
 		endif
 
 		SF_SetOutputState(message, SF_MSG_ERROR)
@@ -2027,4 +2034,20 @@ Function/WAVE SFH_GetLabNoteBookForSweep(string graph, variable sweepNo, variabl
 
 	ASSERT(IsNaN(mapIndex), "Window is DataBrowser, but got a mapIndex into a sweepMap")
 	return BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, logbookWaveType, sweepNumber = sweepNo)
+End
+
+Function SFH_StoreAssertInfoParser(variable line, variable offset)
+
+	WAVE/T info = GetSFAssertData()
+	info[%STEP]   = num2istr(SF_STEP_PARSER)
+	info[%LINE]   = num2istr(line)
+	info[%OFFSET] = num2istr(offset)
+End
+
+Function SFH_StoreAssertInfoExecutor(variable srcLocId, string jsonPath)
+
+	WAVE/T info = GetSFAssertData()
+	info[%SRCLOCID] = num2istr(srcLocId)
+	info[%JSONPATH] = jsonPath
+	info[%STEP]     = num2istr(SF_STEP_EXECUTOR)
 End
