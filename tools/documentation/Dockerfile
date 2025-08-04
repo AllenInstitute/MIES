@@ -5,7 +5,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update &&              \
     apt-get install -y             \
-      doxygen                      \
       gawk                         \
       git                          \
       graphviz                     \
@@ -28,6 +27,13 @@ RUN useradd -u $USERID -g $GROUPID -ms /bin/bash ci
 USER ci
 
 WORKDIR /home/ci
+
+RUN mkdir -p /usr/local/bin
+
+ADD --chown="$USERID":"$GROUPID" https://byte-physics.de/public-downloads/aistorage/transfer/ci/doxygen_1.14.0/doxygen /usr/local/bin
+RUN chmod 0755 /usr/local/bin/doxygen
+COPY sha256sum.lst .
+RUN sha256sum -c sha256sum.lst
 
 COPY requirements.txt .
 
