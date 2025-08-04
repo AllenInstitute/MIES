@@ -25,13 +25,13 @@
 
 #pragma IgorVersion = 9.00
 
+///@cond HIDDEN_SYMBOL
 #if IgorVersion() < 10 && (NumberByKey("BUILD", IgorInfo(0)) < 56565)
 #define TOO_OLD_IGOR
 #elif IgorVersion() == 10 && (NumberByKey("BUILD", IgorInfo(0)) < 29303)
 #define TOO_OLD_IGOR
 #endif
 
-///@cond HIDDEN_SYMBOL
 #if !defined(IGOR64)
 #define TOO_OLD_IGOR
 #endif
