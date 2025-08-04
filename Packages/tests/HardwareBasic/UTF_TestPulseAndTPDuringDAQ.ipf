@@ -446,23 +446,23 @@ static Function CheckTPStorage(string device)
 	entry = "PeakResistance"
 	WAVE/Z values = ExtractvalidValues(TPStorage, 0, entry)
 	CHECK_WAVE(values, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
-	WaveStats/M=0/Q values
+	WaveStats/M=1/Q values
 	CHECK_CLOSE_VAR(V_avg, 10, tol = 0.1)
 
 	WAVE/Z values = ExtractvalidValues(TPStorage, 1, entry)
 	CHECK_WAVE(values, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
-	WaveStats/M=0/Q values
+	WaveStats/M=1/Q values
 	CHECK_CLOSE_VAR(V_avg, 250, tol = 0.1)
 
 	entry = "SteadyStateResistance"
 	WAVE/Z values = ExtractvalidValues(TPStorage, 0, entry)
 	CHECK_WAVE(values, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
-	WaveStats/M=0/Q values
+	WaveStats/M=1/Q values
 	CHECK_CLOSE_VAR(V_avg, 10, tol = 0.1)
 
 	WAVE/Z values = ExtractvalidValues(TPStorage, 1, entry)
 	CHECK_WAVE(values, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
-	WaveStats/M=0/Q values
+	WaveStats/M=1/Q values
 	CHECK_CLOSE_VAR(V_avg, 250, tol = 0.1)
 
 	entry = "baseline_IC"
@@ -471,12 +471,12 @@ static Function CheckTPStorage(string device)
 
 	WAVE/Z values = ExtractvalidValues(TPStorage, 1, entry)
 	CHECK_WAVE(values, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
-	WaveStats/M=0/Q values
+	WaveStats/M=1/Q values
 	CHECK_LT_VAR(V_avg, 100)
 
 	entry = "baseline_VC"
 	WAVE/Z values = ExtractvalidValues(TPStorage, 0, entry)
-	WaveStats/M=0/Q values
+	WaveStats/M=1/Q values
 	CHECK_LT_VAR(V_avg, 100)
 
 	WAVE/Z values = ExtractvalidValues(TPStorage, 1, entry)
