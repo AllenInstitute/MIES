@@ -42,7 +42,7 @@ Function WRB_EvaluateDataBrowserSelection()
 	endfor
 End
 
-Function WRB_RecreateWrefBrowser()
+Function WRB_StartupSettings()
 
 	string nbName
 

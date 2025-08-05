@@ -44,7 +44,7 @@ End
 
 /// @brief Utility function to generate new window recreation macro of DataBrowser (also used for SweepBrowser)
 ///        after GUI editor adapted controls in development process
-Function DB_ResetAndStoreCurrentDBPanel()
+Function DB_DatabrowserStartupSettings()
 
 	string device, bsPanel, scPanel, shPanel, recreationCode
 	string sfJSON, descNB, helpNBWin
