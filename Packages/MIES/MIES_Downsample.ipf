@@ -31,8 +31,9 @@ static StrConstant listbox_waves          = "listbox_waves_id"
 static StrConstant button_doit            = "button_doit_id"
 static StrConstant button_restorebackup   = "button_restorebackup_id"
 
-static StrConstant dataPath = "root:MIES:postExperimentProcedures:downsample:"
-static StrConstant panel    = "Downsampling"
+static StrConstant dataPath       = "root:MIES:postExperimentProcedures:downsample:"
+static StrConstant panel          = "Downsampling"
+static StrConstant no_devices_msg = "No devices with data found"
 
 static Function/DF GetDownsampleDataFolder()
 
@@ -122,7 +123,7 @@ Function/S GetPopupMenuDeviceListWithData()
 	endfor
 
 	if(isEmpty(list))
-		return "No devices with data found"
+		return no_devices_msg
 	endif
 
 	return list
