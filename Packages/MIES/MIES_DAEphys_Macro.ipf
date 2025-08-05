@@ -3011,7 +3011,8 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_WCR, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_DataAcq_WCR, userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable setvar_DataAcq_WCR, userdata(Config_DontRestore)="1"
-	SetVariable setvar_DataAcq_WCR, limits={1, Inf, 1}, userdata(Config_DontSave)="1", value=_NUM:1
+	SetVariable setvar_DataAcq_WCR, userdata(Config_DontSave)="1"
+	SetVariable setvar_DataAcq_WCR, limits={1, Inf, 1}, value=_NUM:1
 	CheckBox check_DatAcq_WholeCellEnable, pos={63.00, 198.00}, size={14.00, 14.00}, disable=1, proc=DAP_CheckProc_AmpCntrls
 	CheckBox check_DatAcq_WholeCellEnable, title="", userdata(tabnum)="0"
 	CheckBox check_DatAcq_WholeCellEnable, userdata(tabcontrol)="tab_DataAcq_Amp"
