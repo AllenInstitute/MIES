@@ -188,6 +188,8 @@ Function WBP_StartupSettings()
 
 	CallFunctionForEachListItem(WBP_AdjustDeltaControls, ControlNameList(panel, ";", "popup_WaveBuilder_op_*"))
 
+	SetWindow $panel, userdata(panelVersion)=""
+
 	Execute/P/Q/Z "DoWindow/R " + panel
 	Execute/P/Q/Z "COMPILEPROCEDURES "
 	CleanupOperationQueueResult()
