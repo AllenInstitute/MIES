@@ -4353,6 +4353,8 @@ Function PSX_AllEventGraphHook(STRUCT WMWinHookStruct &s)
 		default:
 			break
 	endswitch
+
+	return 0
 End
 
 static Function PSX_GetDirectionFromKeyCode(string psxGraph, variable keyCode)
