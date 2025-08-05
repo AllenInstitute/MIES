@@ -15,6 +15,7 @@
 #include "UTF_Cache"
 #include "UTF_Configuration"
 #include "UTF_DAEphyswoHardware"
+#include "UTF_Downsample"
 #include "UTF_Debugging"
 #include "UTF_EpochswoHardware"
 #include "UTF_ForeignFunctionInterface"

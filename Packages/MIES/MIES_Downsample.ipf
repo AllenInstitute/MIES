@@ -613,6 +613,10 @@ static Function UpdatePanel(string win, [string deviceSelectionString])
 		deviceSelectionString = GetPopupMenuString(win, popup_deviceselection)
 	endif
 
+	if(!cmpstr(deviceSelectionString, no_devices_msg))
+		return NaN
+	endif
+
 	ret = ParseDeviceString(deviceSelectionString, deviceType, deviceNumber)
 	if(!ret)
 		return NaN
