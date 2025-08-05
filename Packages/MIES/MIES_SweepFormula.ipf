@@ -315,7 +315,7 @@ static Function/WAVE SF_GenerateTraceColors(WAVE colorGroups)
 	for(i = 0; i < numUniqueColors; i += 1)
 		[STRUCT RGBColor s] = GetTraceColorAlternative(i)
 
-		lbl = num2str(uniqueColorGroups[i])
+		lbl = num2istr(uniqueColorGroups[i])
 		SetDimLabel ROWS, i, $lbl, traceColors
 
 		traceColors[i][%Red]   = s.red
@@ -384,7 +384,7 @@ Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE
 		colorGroup = JWN_GetNumberFromWaveNote(data, SF_META_COLOR_GROUP)
 		ASSERT(IsFinite(colorGroup), "Invalid color group")
 
-		idx = FindDimLabel(traceGroupColors, ROWS, num2str(colorGroup))
+		idx = FindDimLabel(traceGroupColors, ROWS, num2istr(colorGroup))
 		ASSERT(idx >= 0, "Invalid color group index")
 
 		s.red   = traceGroupColors[idx][%Red]
