@@ -159,6 +159,7 @@ Function WBP_StartupSettings()
 
 	HideTools/A/W=$panel
 
+	// @todo workaround IP issue #7316
 	WAVE/Z wv = $""
 	ListBox listbox_combineEpochMap, listWave=wv, win=$panel
 
