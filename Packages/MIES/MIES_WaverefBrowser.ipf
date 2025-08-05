@@ -62,6 +62,8 @@ Function WRB_StartupSettings()
 
 	DoWindow/T $WIN_NAME, "Waveref Wave Browser"
 
+	PS_RemoveCoordinateSaving(WIN_NAME)
+
 	Execute/P/Z "DoWindow/R " + WIN_NAME
 	Execute/P/Q/Z "COMPILEPROCEDURES "
 	CleanupOperationQueueResult()
@@ -89,11 +91,12 @@ Function WRB_ShowWrefBrowser(WAVE/WAVE wv)
 
 	if(!WindowExists(WIN_NAME))
 		Execute "WaverefBrowser()"
+		NVAR JSONid = $GetSettingsJSONid()
+		PS_InitCoordinates(JSONid, WIN_NAME)
 	else
 		DoWindow/F $WIN_NAME
 	endif
 	ListBox wrefList, win=$WIN_NAME, listWave=listWave, selWave=selWave, colorWave=colorWave
-	SetWindow $WIN_NAME, hook(windowCoordinateSaving)=StoreWindowCoordinatesHook
 	SetWindow $WIN_NAME, hook(cleanup)=WRB_BrowserWindowHook
 	if(IsFreeWave(wv))
 		wName = "Free wave ->" + NameOfWave(wv)
