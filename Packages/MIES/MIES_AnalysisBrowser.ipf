@@ -3278,7 +3278,7 @@ Function AB_CheckboxProc_PXP(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 	return 0
 End
 
-Function/S AB_GetSweepBrowserListForPopup()
+Function/S AB_GetSweepBrowserTitles()
 
 	string wName
 	string sbList = ""
@@ -3288,12 +3288,21 @@ Function/S AB_GetSweepBrowserListForPopup()
 		GetWindow $wName, title
 		sbList = AddListItem(S_Value, sbList, ";", Inf)
 	endfor
+
+	return sbList
+End
+
+Function/S AB_GetSweepBrowserListForPopup()
+
+	string sbList
+
+	sbList = AB_GetSweepBrowserTitles()
 	sbList = AddListItem("New", sbList)
 
 	return sbList
 End
 
-static Function/S AB_GetSweepBrowserWindowFromTitle(string winTitle)
+Function/S AB_GetSweepBrowserWindowFromTitle(string winTitle)
 
 	WAVE/T wList = ListToTextWave(WinList(SWEEPBROWSER_WINDOW_NAME + "*", ";", "WIN:1"), ";")
 	for(wName : wList)
