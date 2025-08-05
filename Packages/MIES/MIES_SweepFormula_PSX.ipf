@@ -2506,6 +2506,19 @@ Function PSX_FilterFitAverageParameters(WAVE input, WAVE newState, variable stat
 	return Inf
 End
 
+/// @brief Compute and store fitted average traces for a given event state
+///
+/// Fits average, rise, and decay components of events marked with the specified state.
+/// If fitting is disabled via GUI checkbox, outputs are set to NaN.
+///
+/// @param win               Name of the calling window (used to access GUI settings)
+/// @param averageDFR        Data folder reference containing the average waves
+/// @param eventOnsetTime    Wave of event onset times
+/// @param eventPeakTime     Wave of event peak times
+/// @param eventStopTime     Wave of event stop times
+/// @param eventKernelAmp    Wave of event amplitudes (used to infer polarity)
+/// @param newState          Wave containing per-event classification bit flags
+/// @param state             Bit flag representing the target event state (e.g., PSX_ACCEPT)
 static Function PSX_FitAverage(string win, DFREF averageDFR, WAVE eventOnsetTime, WAVE eventPeakTime, WAVE eventStopTime, WAVE eventKernelAmp, WAVE newState, variable state)
 
 	string specialEventPanel, str, htmlStr, rawCode, browser, msg, fitFunc
@@ -2546,7 +2559,8 @@ static Function PSX_FitAverage(string win, DFREF averageDFR, WAVE eventOnsetTime
 	CopyScales average, AverageFit, RiseAverageFit, DecayAverageFit
 
 	meanOnsetTime = PSX_FilterFitAverageParameters(eventOnsetTime, newState, state)
-	meanStopTime  = PSX_FilterFitAverageParameters(eventStopTime, newState, state)
+	//	meanStopTime = PSX_FindDominantStopTimePeak(eventStopTime, newState, state, binwidth = 0.1, showplot = 1)
+	meanStopTime  = PSX_FindDominantStopTimePeak(eventStopTime, newState, state)
 	meanKernelAmp = PSX_FilterFitAverageParameters(eventKernelAmp, newState, state, requireFiniteResult = 1)
 	meanPeakTime  = PSX_FilterFitAverageParameters(eventPeakTime, newState, state, requireFiniteResult = 1)
 
@@ -2645,6 +2659,117 @@ static Function PSX_FitAverage(string win, DFREF averageDFR, WAVE eventOnsetTime
 	Redimension/N=(0, -1) AverageFitResults
 
 	Concatenate/NP=(ROWS) {InputAvg, InputRise, InputDecay}, AverageFitResults
+End
+
+/// @brief Return most frequent stop time peak, ignoring edge bins. Falls back to 2×kernelDecayTau if no peak.
+///
+/// @param stopTimes     Wave of event stop times (with wave note from PSX pipeline)
+/// @param newState      Wave of state bitmasks per event
+/// @param state         Bitmask value to include (e.g., PSX_ACCEPT)
+/// @param [binWidth]    Optional histogram bin width (default = 0.1)
+/// @param [showPlot]    Optional flag to plot histogram (default = 0)
+Function PSX_FindDominantStopTimePeak(WAVE stopTimes, WAVE newState, variable state, [variable binWidth, variable showPlot])
+
+	variable i
+	variable n     = DimSize(stopTimes, ROWS)
+	variable count = 0
+
+	if(ParamIsDefault(binWidth))
+		binWidth = 0.1
+	endif
+	if(ParamIsDefault(showPlot))
+		showPlot = 0
+	endif
+
+	// Filter stopTimes
+	Make/FREE/D/N=(n) tmp = NaN
+	for(i = 0; i < n; i += 1)
+		if((newState[i] & state) && IsFinite(stopTimes[i]))
+			tmp[count] = stopTimes[i]
+			count     += 1
+		endif
+	endfor
+
+	if(count == 0)
+		if(showPlot)
+			Print "No matching stop times found."
+		endif
+		return NaN
+	endif
+
+	Redimension/N=(count) tmp
+
+	// Histogram setup
+	variable minVal = WaveMin(tmp)
+	variable maxVal = WaveMax(tmp)
+
+	if(minVal == maxVal)
+		if(showPlot)
+			Print "Identical stop times: using value = ", minVal
+		endif
+		return minVal
+	endif
+
+	variable nBins = ceil((maxVal - minVal) / binWidth)
+	if(nBins < 5)
+		if(showPlot)
+			Print "Too few bins (", nBins, ")."
+		endif
+		return NaN
+	endif
+
+	// Named waves for plotting
+	KillWaves/Z root:PSX_hist, root:PSX_histX
+	Make/D/N=(nBins) root:PSX_hist, root:PSX_histX
+	WAVE hist  = root:PSX_hist
+	WAVE histX = root:PSX_histX
+
+	Histogram/B={minVal, binWidth, nBins}/DEST=hist tmp
+	histX[] = minVal + binWidth * (p + 0.5)
+	Smooth 3, hist
+
+	// Optional plot
+	if(showPlot)
+		Display/K=1/N=PSX_StopTimeHistogram
+		AppendToGraph hist vs histX
+		ModifyGraph mode=4, lsize=2, rgb=(0, 0, 65535)
+		ModifyGraph grid=1, mirror=1, axThick=1.5
+		Label bottom, "Stop Time"
+		Label left, "Event Count"
+		SetAxis/A
+	endif
+
+	// Find dominant internal peak
+	variable peakMaxVal = -Inf
+	variable maxIdx     = -1
+	for(i = 1; i < (nBins - 1); i += 1)
+		if(hist[i] > peakMaxVal)
+			peakMaxVal = hist[i]
+			maxIdx     = i
+		endif
+	endfor
+
+	if(maxIdx >= 0)
+		if(showPlot)
+			Print "Dominant internal peak at ", histX[maxIdx]
+		endif
+		return histX[maxIdx]
+	endif
+
+	// Fallback: Try to retrieve decayTau only if needed
+	variable decayTau = JWN_GetNumberFromWaveNote(stopTimes, SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/psxKernel/decayTau")
+
+	if(IsFinite(decayTau))
+		if(showPlot)
+			Print "No peak found. Falling back to 2 × decayTau = ", 2 * decayTau
+		endif
+		return 2 * decayTau
+	endif
+
+	if(showPlot)
+		Print "No peak found and decayTau not available. Returning NaN."
+	endif
+	return NaN
 End
 
 static Function PSX_StoreIntoResultsWave(string browser, variable resultType, WAVE data, string name)
