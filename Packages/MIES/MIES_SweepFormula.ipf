@@ -326,8 +326,8 @@ static Function/WAVE SF_GenerateTraceColors(WAVE colorGroups)
 	return traceColors
 End
 
-/// @brief Return an Nx3 wave with one color triplett for each unique trace color group
-static Function/WAVE SF_GetGroupColors(WAVE/WAVE formulaResults)
+/// @brief Return the color groups from the formulaResults
+static Function/WAVE SF_GetColorGroups(WAVE/WAVE formulaResults)
 
 	variable numFormulas, i, numUniqueColors, refColorGroup, constantChannelNumAndType
 	string lbl
@@ -353,7 +353,7 @@ static Function/WAVE SF_GetGroupColors(WAVE/WAVE formulaResults)
 	Make/FREE/N=(numFormulas)/D colorGroups = JWN_GetNumberFromWaveNote(formulaResults[p][%FORMULAY], SF_META_COLOR_GROUP)
 
 	if(numFormulas == 1)
-		return SF_GenerateTraceColors(colorGroups)
+		return colorGroups
 	endif
 
 	// check if the data in the y formulas is from the same channel type and number
@@ -367,15 +367,17 @@ static Function/WAVE SF_GetGroupColors(WAVE/WAVE formulaResults)
 		return $""
 	endif
 
-	return SF_GenerateTraceColors(colorGroups)
+	return colorGroups
 End
 
-Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE data, WAVE/Z traceGroupColors)
+Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE data, WAVE/Z colorGroups)
 
 	variable i, channelNumber, channelType, sweepNo, headstage, numDoInh, minVal, isAveraged, mapIndex
 	variable colorGroup, idx
 
-	if(WaveExists(traceGroupColors))
+	if(WaveExists(colorGroups))
+		WAVE traceGroupColors = SF_GenerateTraceColors(colorGroups)
+
 		// Operations with trace group color support:
 		// - data/epochs/tp/psxKernel (via SFH_GetSweepsForFormula)
 		// - labnotebook
@@ -863,7 +865,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 
 			SF_FormulaPlotterExtendResultsIfCompatible(formulaResults)
 
-			WAVE/Z traceGroupColors = SF_GetGroupColors(formulaResults)
+			WAVE/Z colorGroups = SF_GetColorGroups(formulaResults)
 
 			numData = DimSize(formulaResults, ROWS)
 			for(k = 0; k < numData; k += 1)
@@ -879,7 +881,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 
 				SFH_ASSERT(!(IsTextWave(wvResultY) && WaveDims(wvResultY) > 1), "Plotter got 2d+ text wave as y data.")
 
-				[color] = SF_GetTraceColor(graph, plotMetaData.opStack, wvResultY, traceGroupColors)
+				[color] = SF_GetTraceColor(graph, plotMetaData.opStack, wvResultY, colorGroups)
 
 				if(!WaveExists(wvResultX) && !IsEmpty(plotMetaData.xAxisLabel))
 					WAVE/Z wvResultX = JWN_GetNumericWaveFromWaveNote(wvResultY, SF_META_XVALUES)
