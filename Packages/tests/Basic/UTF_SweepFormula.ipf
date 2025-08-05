@@ -2183,3 +2183,55 @@ static Function TestAxisLabelGathering()
 
 	KillWaves/Z data1, data2, data3
 End
+
+static Function TestTraceColor(string graph, string traces, variable index, WAVE colors)
+
+	string info, trace
+
+	trace = StringFromList(index, traces)
+	CHECK_PROPER_STR(trace)
+
+	info = TraceInfo(graph, trace, 0)
+	CHECK_PROPER_STR(info)
+
+	WAVE traceColors = NumericWaveByKey("rgb(x)", info, keySep = "=", listSep = ";")
+	CHECK_EQUAL_WAVES(traceColors, colors, mode = WAVE_DATA)
+End
+
+static Function TestTraceColors()
+
+	string win, device, code, graph, winBase, traces, trace, info
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo = 0)
+	win = CreateFakeSweepData(win, device, sweepNo = 1)
+
+	code    = "data()"
+	winBase = ExecuteSweepFormulaCode(win, code)
+
+	graph = winBase + "#Graph0"
+
+	traces = TraceNameList(graph, ";", 1 + 2)
+	CHECK_EQUAL_VAR(ItemsInList(traces), 2)
+
+	// these are the per headstage colors
+	TestTraceColor(graph, traces, 0, {7967, 7710, 7710})
+	TestTraceColor(graph, traces, 1, {60395, 52685, 15934})
+
+	code    = "data(select(selchannels(AD6)))\r with\r data(select(selchannels(AD6)))"
+	winBase = ExecuteSweepFormulaCode(win, code)
+
+	graph = winBase + "#Graph0"
+
+	traces = TraceNameList(graph, ";", 1 + 2)
+	CHECK_EQUAL_VAR(ItemsInList(traces), 2)
+
+	// color groups:
+	// black
+	TestTraceColor(graph, traces, 0, {0, 0, 0})
+
+	// and
+	// yellow
+	TestTraceColor(graph, traces, 1, {59110, 40863, 0})
+End

@@ -326,8 +326,8 @@ static Function/WAVE SF_GenerateTraceColors(WAVE colorGroups)
 	return traceColors
 End
 
-/// @brief Return the color groups from the formulaResults
-static Function/WAVE SF_GetColorGroups(WAVE/WAVE formulaResults)
+/// @brief Add the color groups from the formulaResults to colorGroups and return it
+static Function/WAVE SF_GetColorGroups(WAVE/WAVE formulaResults, WAVE/Z colorGroups)
 
 	variable numFormulas, i, numUniqueColors, refColorGroup, constantChannelNumAndType
 	string lbl
@@ -335,25 +335,31 @@ static Function/WAVE SF_GetColorGroups(WAVE/WAVE formulaResults)
 	numFormulas = DimSize(formulaResults, ROWS)
 
 	if(numFormulas == 0)
-		return $""
+		return colorGroups
 	endif
 
 	WAVE/Z data = formulaResults[0][%FORMULAY]
 
 	if(!WaveExists(data))
-		return $""
+		return colorGroups
 	endif
 
 	refColorGroup = JWN_GetNumberFromWaveNote(data, SF_META_COLOR_GROUP)
 
 	if(IsNaN(refColorGroup))
-		return $""
+		return colorGroups
 	endif
 
-	Make/FREE/N=(numFormulas)/D colorGroups = JWN_GetNumberFromWaveNote(formulaResults[p][%FORMULAY], SF_META_COLOR_GROUP)
+	Make/FREE/N=(numFormulas)/D newColorGroups = JWN_GetNumberFromWaveNote(formulaResults[p][%FORMULAY], SF_META_COLOR_GROUP)
+
+	if(WaveExists(colorGroups))
+		Concatenate/FREE/NP=(ROWS) {colorGroups, newColorGroups}, allColorGroups
+	else
+		WAVE allColorGroups = newColorGroups
+	endif
 
 	if(numFormulas == 1)
-		return colorGroups
+		return allColorGroups
 	endif
 
 	// check if the data in the y formulas is from the same channel type and number
@@ -364,10 +370,10 @@ static Function/WAVE SF_GetColorGroups(WAVE/WAVE formulaResults)
 	                            && IsConstant(channelTypes, channelTypes[0], ignoreNaN = 0)
 
 	if(!constantChannelNumAndType)
-		return $""
+		return colorGroups
 	endif
 
-	return colorGroups
+	return allColorGroups
 End
 
 Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE data, WAVE/Z colorGroups)
@@ -820,7 +826,8 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 		postPlotPSX    = 0
 		showLegend     = 1
 		formulaCounter = 0
-		WAVE/Z wvX = $""
+		WAVE/Z wvX         = $""
+		WAVE/Z colorGroups = $""
 
 		Make/FREE/T/N=0 xAxisLabels, yAxisLabels
 
@@ -865,7 +872,12 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 
 			SF_FormulaPlotterExtendResultsIfCompatible(formulaResults)
 
-			WAVE/Z colorGroups = SF_GetColorGroups(formulaResults)
+			if(WaveExists(colorGroups))
+				Duplicate/FREE colorGroups, previousColorGroups
+			else
+				WAVE/ZZ previousColorGroups
+			endif
+			WAVE/Z colorGroups = SF_GetColorGroups(formulaResults, previousColorGroups)
 
 			numData = DimSize(formulaResults, ROWS)
 			for(k = 0; k < numData; k += 1)
