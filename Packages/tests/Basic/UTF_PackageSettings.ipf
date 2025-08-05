@@ -3,6 +3,19 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = TestPackageJSON
 
+Function/S CreateFromMacro_IGNORE(string macroName)
+
+	string panel
+
+	Execute macroName + "()"
+	panel = GetCurrentWindow()
+
+	NVAR JSONid = $GetSettingsJSONid()
+	PS_InitCoordinates(JSONid, panel, recursive = 1)
+
+	return panel
+End
+
 static Function TestPackageUpgrade()
 
 	variable jsonID, numEntries, i
@@ -39,4 +52,32 @@ static Function TestGenerateSettingsDefault()
 
 	jsonID = GenerateSettingsDefaults()
 	CHECK(JSON_IsValid(jsonID))
+End
+
+/// UTF_TD_GENERATOR DataGenerators#GetMiesMacrosWithCoordinateSaving
+static Function TestWindowCoordinateSaving([string str])
+
+	string panel
+	variable newTop, newLeft
+
+	panel = CreateFromMacro_IGNORE(str)
+	DoUpdate
+
+	GetWindow $panel, wsize
+
+	newLeft = 100
+	newTop  = 200
+
+	MoveWindow/W=$panel newLeft, newTop, -1, -1
+
+	KillWindow $panel
+	DoUpdate
+
+	panel = CreateFromMacro_IGNORE(str)
+	DoUpdate
+
+	GetWindow $panel, wsize
+
+	REQUIRE_CLOSE_VAR(newTop, V_top, tol = 1e-1)
+	REQUIRE_CLOSE_VAR(newLeft, V_left, tol = 1e-1)
 End
