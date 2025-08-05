@@ -703,8 +703,7 @@ static Function/WAVE SFOS_GetSelectData(string graph, STRUCT SF_SelectParameters
 	variable dimPosTNumericalValues, dimPosTTextualValues
 	variable numTraces, fromDisplayed, clampCode, smIndexCounter, mapIndex, setCycleCount, setSweepCount, doStimsetMatching
 	string msg, device, singleSweepDFStr, expName, dataFolder
-	variable mapSize   = 1
-	DFREF    deviceDFR = $""
+	variable mapSize = 1
 
 	WAVE/Z sweeps   = filter.sweeps
 	WAVE/Z channels = filter.channels
@@ -811,8 +810,6 @@ static Function/WAVE SFOS_GetSelectData(string graph, STRUCT SF_SelectParameters
 		outIndex = 0
 	elseif(isSweepBrowser)
 		WAVE/T sweepMap = SB_GetSweepMap(graph)
-	else
-		DFREF deviceDFR = DB_GetDeviceDF(graph)
 	endif
 
 	// search sweeps for active channels
@@ -841,17 +838,17 @@ static Function/WAVE SFOS_GetSelectData(string graph, STRUCT SF_SelectParameters
 					continue
 				endif
 				mapSize = DimSize(mapIndices, ROWS)
-			elseif(DB_SplitSweepsIfReq(graph, sweepNo))
-				continue
 			endif
 		endif
 
 		for(smIndexCounter = 0; smIndexCounter < mapSize; smIndexCounter += 1)
 			if(!fromDisplayed)
 				mapIndex = isSweepBrowser ? mapIndices[smIndexCounter] : NaN
-				DFREF sweepDFR
-				[WAVE numericalValues, WAVE textualValues, sweepDFR] = SFH_GetLabNoteBooksAndDFForSweep(graph, sweepNo, mapIndex)
-				if(!WaveExists(numericalValues) || !WaveExists(textualValues) || !DataFolderExistsDFR(sweepDFR))
+
+				WAVE numericalValues = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_NUMERICAL_VALUES)
+				WAVE textualValues   = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_TEXTUAL_VALUES)
+
+				if(!WaveExists(numericalValues) || !WaveExists(textualValues))
 					continue
 				endif
 			endif

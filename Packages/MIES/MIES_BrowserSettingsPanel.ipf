@@ -404,13 +404,6 @@ Function/S BSP_GetDevice(string win)
 	string mainPanel
 
 	mainPanel = GetMainWindow(win)
-	if(IsEmpty(mainPanel))
-		return ""
-	endif
-	ASSERT(WindowExists(mainPanel), "specified panel does not exist.")
-
-	// upgrade folder locations
-	GetDAQDevicesFolder()
 
 	return GetUserData(mainPanel, "", MIES_BSP_DEVICE)
 End
@@ -440,7 +433,6 @@ Function/S BSP_GetBrowserType(string win)
 	string mainPanel
 
 	mainPanel = GetMainWindow(win)
-	ASSERT(WindowExists(mainPanel), "specified panel does not exist.")
 
 	return GetUserData(mainPanel, "", MIES_BSP_BROWSER)
 End
@@ -532,6 +524,11 @@ End
 Function BSP_HasBoundDevice(string win)
 
 	string device = BSP_GetDevice(win)
+
+	return BSP_IsBoundDevice(win, device)
+End
+
+Function BSP_IsBoundDevice(string win, string device)
 
 	return !BSP_IsDataBrowser(win) || !(IsEmpty(device) || !cmpstr(device, NONE))
 End

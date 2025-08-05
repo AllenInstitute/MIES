@@ -32,7 +32,7 @@ threadsafe Function/WAVE MIES_fWaveAverage(WAVE/Z yWaves, variable ignoreNaNs, v
 	variable rawDeltaX        = NaN // 6.35: keep track of common deltaX for waveforms.
 	variable differentDeltax  = 0   // 6.35: use interpolation if deltax's are different, even if simply reversed in sign.
 	variable thisXMin, thisXMax, thisDeltax
-	variable minXmin, maxXmax, minDeltax
+	variable minXmin, maxXmax, minDeltax, numThreads
 	variable numXWaves     = 0
 	variable XWavesAreSame = 1 // assume they are until proven differently. Irrelevant if	numXWaves!=numWaves
 	variable i, numWaves, gotPrevAvgData
@@ -229,6 +229,8 @@ threadsafe Function/WAVE MIES_fWaveAverage(WAVE/Z yWaves, variable ignoreNaNs, v
 	CopyScales w, AveW // just to get the data and x units
 	SetScale/I x, minXmin, maxXmax, AveW // set X scaling to all-encompassing range
 
+	numThreads = GetNumberOfUsefulThreads({maxLength, numWaves})
+
 	for(i = 0; i < numWaves; i += 1)
 		thisXMin = xRange[i][0]
 		thisXMax = xRange[i][1]
@@ -240,14 +242,14 @@ threadsafe Function/WAVE MIES_fWaveAverage(WAVE/Z yWaves, variable ignoreNaNs, v
 		firstAvePoint = ceil(x2pntWithFrac(AveW, thisXMin))  // truncate the partial point numbers...
 		lastAvePoint  = floor(x2pntWithFrac(AveW, thisXMax)) // ... by indenting slightly
 		WAVE wy = waves[i]
-		MultiThread TempYWave[firstAvePoint, lastAvePoint] = wy(limit(pnt2x(AveW, p), thisXMin, thisXMax))
+		MultiThread/NT=(numThreads) TempYWave[firstAvePoint, lastAvePoint] = wy(limit(pnt2x(AveW, p), thisXMin, thisXMax))
 
 		if(ignoreNaNs)
-			MultiThread AveW[firstAvePoint, lastAvePoint] += !IsNaN(TempYWave[p]) ? TempYWave[p] : 0
-			MultiThread TempNWave[firstAvePoint, lastAvePoint] += !IsNaN(TempYWave[p])
+			MultiThread/NT=(numThreads) AveW[firstAvePoint, lastAvePoint] += !IsNaN(TempYWave[p]) ? TempYWave[p] : 0
+			MultiThread/NT=(numThreads) TempNWave[firstAvePoint, lastAvePoint] += !IsNaN(TempYWave[p])
 		else
-			MultiThread AveW[firstAvePoint, lastAvePoint] += TempYWave[p]
-			MultiThread TempNWave[firstAvePoint, lastAvePoint] += 1
+			MultiThread/NT=(numThreads) AveW[firstAvePoint, lastAvePoint] += TempYWave[p]
+			MultiThread/NT=(numThreads) TempNWave[firstAvePoint, lastAvePoint] += 1
 		endif
 	endfor
 
@@ -259,12 +261,12 @@ threadsafe Function/WAVE MIES_fWaveAverage(WAVE/Z yWaves, variable ignoreNaNs, v
 	if(gotPrevAvgData)
 		WAVE prevCnt = prevAvgData[1]
 		Make/FREE/N=(maxLength)/Y=(averageWaveType) prevCntXAdapt
-		MultiThread prevCntXAdapt[firstAvePoint, lastAvePoint] = prevCnt(limit(pnt2x(AveW, p), thisXMin, thisXMax))
-		MultiThread TempNWave[firstAvePoint, lastAvePoint] += prevCntXAdapt - 1
+		MultiThread/NT=(numThreads) prevCntXAdapt[firstAvePoint, lastAvePoint] = prevCnt(limit(pnt2x(AveW, p), thisXMin, thisXMax))
+		MultiThread/NT=(numThreads) TempNWave[firstAvePoint, lastAvePoint] += prevCntXAdapt - 1
 	endif
 
 	//  points with no values added are set to NaN here:
-	MultiThread AveW = (TempNWave[p] == 0) ? NaN : (AveW[p] / TempNWave[p])
+	MultiThread/NT=(numThreads) AveW = (TempNWave[p] == 0) ? NaN : (AveW[p] / TempNWave[p])
 
 	result = {AveW, SumW, TempNWave}
 	return result
