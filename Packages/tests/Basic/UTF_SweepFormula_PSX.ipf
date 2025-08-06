@@ -1703,7 +1703,7 @@ End
 
 static Function CheckTraceColors(string win, WAVE/T traces, variable state)
 
-	string tInfo, rgbValue, trace
+	string tInfo, trace
 	variable numEntries
 
 	[WAVE acceptColors, WAVE rejectColors, WAVE undetColors] = MIES_PSX#PSX_GetEventColors()
@@ -1727,11 +1727,10 @@ static Function CheckTraceColors(string win, WAVE/T traces, variable state)
 	endswitch
 
 	for(trace : traces)
-		tInfo    = TraceInfo(win, trace, 0)
-		rgbValue = StringByKey("rgb(x)", tInfo, "=", ";")
-		WAVE traceColors = ListToNumericWave(rgbValue[1, strlen(rgbValue) - 2], ",")
+		tInfo = TraceInfo(win, trace, 0)
+		WAVE traceColors = NumericWaveByKey("rgb(x)", tInfo, keySep = "=", listSep = ";")
 
-		INFO("trace %s, state %s, rgbValue \"%s\"", s0 = trace, s1 = MIES_PSX#PSX_StateToString(state), s2 = rgbValue)
+		INFO("trace %s, state %s, traceColors (%s)", s0 = trace, s1 = MIES_PSX#PSX_StateToString(state), s2 = NumericWaveToList(traceColors, ";"))
 
 		// average waves don't have alpha set
 		numEntries = DimSize(traceColors, ROWS)
