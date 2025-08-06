@@ -945,7 +945,7 @@ static Function PSX_FitEventDecay(WAVE sweepDataOffFilt, WAVE psxEvent, variable
 
 	fitRange = endTime - startTime
 
-	if((IsFinite(weightedTau) && weightedTau > (maxTauFactor * fitRange)) || fastTau <= 0 || SlowTau <= 0 || weightedTau <= 0)
+	if((IsFinite(weightedTau) && weightedTau > (maxTauFactor * fitRange)) || fastTau <= 0 || slowTau <= 0 || weightedTau <= 0)
 		psxEvent[eventIndex][%$"Fit manual QC call"] = PSX_REJECT
 		psxEvent[eventIndex][%$"Fit result"]         = PSX_DECAY_FIT_ERROR
 		psxEvent[eventIndex][%weightedTau]           = NaN
@@ -2559,8 +2559,8 @@ static Function PSX_FitAverage(string win, DFREF averageDFR, WAVE eventOnsetTime
 	CopyScales average, AverageFit, RiseAverageFit, DecayAverageFit
 
 	meanOnsetTime = PSX_FilterFitAverageParameters(eventOnsetTime, newState, state)
-	//	meanStopTime = PSX_FindDominantStopTimePeak(eventStopTime, newState, state, binwidth = 0.1, showplot = 1)
-	meanStopTime  = PSX_FindDominantStopTimePeak(eventStopTime, newState, state)
+	//	meanStopTime = PSX_FindDominantStopTimePeak(eventStopTime, newState, state, eventKernelAmp,  binwidth = 0.1, showplot = 1)
+	meanStopTime  = PSX_FindDominantStopTimePeak(eventStopTime, newState, state, eventKernelAmp)
 	meanKernelAmp = PSX_FilterFitAverageParameters(eventKernelAmp, newState, state, requireFiniteResult = 1)
 	meanPeakTime  = PSX_FilterFitAverageParameters(eventPeakTime, newState, state, requireFiniteResult = 1)
 
@@ -2584,7 +2584,8 @@ static Function PSX_FitAverage(string win, DFREF averageDFR, WAVE eventOnsetTime
 	riseAndDecayUpperThreshold = 0.9
 	//	FindLevel/EDGE=(edge)/Q average, (riselowerThreshold * extrema)
 	variable onsetX = PSX_CalculateOnsetTimeFromAvg(average, meanKernelAmp, meanOnsetTime, meanPeakTime)
-	variable level  = (riseLowerThreshold * (extrema - average(onsetX))) + average(onsetX)
+	assert(!isNaN(onsetX), "onset time calculation must cannot be Nan")
+	variable level = (riseLowerThreshold * (extrema - average(onsetX))) + average(onsetX)
 	FindLevel/EDGE=(edge)/R=(extrema_t, onsetX)/Q average, level
 	riseStart = V_LevelX
 	FindLevel/EDGE=(edge)/Q average, (riseAndDecayUpperThreshold * extrema)
@@ -2661,14 +2662,14 @@ static Function PSX_FitAverage(string win, DFREF averageDFR, WAVE eventOnsetTime
 	Concatenate/NP=(ROWS) {InputAvg, InputRise, InputDecay}, AverageFitResults
 End
 
-/// @brief Return most frequent stop time peak, ignoring edge bins. Falls back to 2×kernelDecayTau if no peak.
-///
-/// @param stopTimes     Wave of event stop times (with wave note from PSX pipeline)
-/// @param newState      Wave of state bitmasks per event
-/// @param state         Bitmask value to include (e.g., PSX_ACCEPT)
-/// @param [binWidth]    Optional histogram bin width (default = 0.1)
-/// @param [showPlot]    Optional flag to plot histogram (default = 0)
-Function PSX_FindDominantStopTimePeak(WAVE stopTimes, WAVE newState, variable state, [variable binWidth, variable showPlot])
+//// @brief Return most frequent stop time peak, ignoring edge bins and bins < decayTau. Falls back to 2×decayTau.
+/// @param stopTimes     Wave of event stop times (with kernel decayTau in wave note)
+/// @param newState      Bitmask wave of per-event state
+/// @param state         Target state value (e.g., PSX_ACCEPT)
+/// @param psxKernel     kernel
+/// @param [binWidth]    Histogram bin width (default = 0.1)
+/// @param [showPlot]    Whether to display the histogram (default = 0)
+Function PSX_FindDominantStopTimePeak(WAVE stopTimes, WAVE newState, variable state, WAVE psxKernel, [variable binWidth, variable showPlot])
 
 	variable i
 	variable n     = DimSize(stopTimes, ROWS)
@@ -2681,7 +2682,7 @@ Function PSX_FindDominantStopTimePeak(WAVE stopTimes, WAVE newState, variable st
 		showPlot = 0
 	endif
 
-	// Filter stopTimes
+	// Step 1: Filter stopTimes by state
 	Make/FREE/D/N=(n) tmp = NaN
 	for(i = 0; i < n; i += 1)
 		if((newState[i] & state) && IsFinite(stopTimes[i]))
@@ -2692,20 +2693,20 @@ Function PSX_FindDominantStopTimePeak(WAVE stopTimes, WAVE newState, variable st
 
 	if(count == 0)
 		if(showPlot)
-			Print "No matching stop times found."
+			Print "No valid stop times for selected state."
 		endif
 		return NaN
 	endif
 
 	Redimension/N=(count) tmp
 
-	// Histogram setup
+	// Step 2: Bin setup
 	variable minVal = WaveMin(tmp)
 	variable maxVal = WaveMax(tmp)
 
 	if(minVal == maxVal)
 		if(showPlot)
-			Print "Identical stop times: using value = ", minVal
+			Print "All stop times identical. Using ", minVal
 		endif
 		return minVal
 	endif
@@ -2713,14 +2714,14 @@ Function PSX_FindDominantStopTimePeak(WAVE stopTimes, WAVE newState, variable st
 	variable nBins = ceil((maxVal - minVal) / binWidth)
 	if(nBins < 5)
 		if(showPlot)
-			Print "Too few bins (", nBins, ")."
+			Print "Too few bins. Returning NaN."
 		endif
 		return NaN
 	endif
 
-	// Named waves for plotting
+	// Step 3: Create histogram
 	KillWaves/Z root:PSX_hist, root:PSX_histX
-	Make/D/N=(nBins) root:PSX_hist, root:PSX_histX
+	Make/O/D/N=(nBins) root:PSX_hist, root:PSX_histX
 	WAVE hist  = root:PSX_hist
 	WAVE histX = root:PSX_histX
 
@@ -2728,10 +2729,18 @@ Function PSX_FindDominantStopTimePeak(WAVE stopTimes, WAVE newState, variable st
 	histX[] = minVal + binWidth * (p + 0.5)
 	Smooth 3, hist
 
-	// Optional plot
+	// Step 4: Optional plot
 	if(showPlot)
-		Display/K=1/N=PSX_StopTimeHistogram
-		AppendToGraph hist vs histX
+		//		Display/K=1/N=PSX_StopTimeHistogram
+
+		if(!WindowExists("PSX_StopTimeHistogram")) // 1 = graph window
+			Display/N=PSX_StopTimeHistogram
+		else
+			DoWindow/F PSX_StopTimeHistogram // Bring to front if already exists
+			//			AppendToGraph/W=PSX_StopTimeHistogram stopTimes vs stopTimeHist
+		endif
+
+		AppendToGraph/W=PSX_StopTimeHistogram hist vs histX
 		ModifyGraph mode=4, lsize=2, rgb=(0, 0, 65535)
 		ModifyGraph grid=1, mirror=1, axThick=1.5
 		Label bottom, "Stop Time"
@@ -2739,35 +2748,41 @@ Function PSX_FindDominantStopTimePeak(WAVE stopTimes, WAVE newState, variable st
 		SetAxis/A
 	endif
 
-	// Find dominant internal peak
+	// Step 5: Try to find decayTau
+	variable decayTau = GetKernelDecayTau()
+	variable validTau = IsFinite(decayTau)
+
+	// Step 6: Find max internal peak above decayTau
 	variable peakMaxVal = -Inf
 	variable maxIdx     = -1
 	for(i = 1; i < (nBins - 1); i += 1)
+		if(validTau && histX[i] < (2 * decayTau))
+			continue
+		endif
 		if(hist[i] > peakMaxVal)
 			peakMaxVal = hist[i]
 			maxIdx     = i
 		endif
 	endfor
 
+	// Step 7: Return result
 	if(maxIdx >= 0)
 		if(showPlot)
-			Print "Dominant internal peak at ", histX[maxIdx]
+			Print "Dominant peak at ", histX[maxIdx], " (passes decayTau filter)"
 		endif
 		return histX[maxIdx]
 	endif
 
-	// Fallback: Try to retrieve decayTau only if needed
-	variable decayTau = JWN_GetNumberFromWaveNote(stopTimes, SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/psxKernel/decayTau")
-
-	if(IsFinite(decayTau))
+	// Step 8: Fallback
+	if(validTau)
 		if(showPlot)
-			Print "No peak found. Falling back to 2 × decayTau = ", 2 * decayTau
+			Print "No peak ≥ decayTau found. Fallback to 2 × decayTau = ", 2 * decayTau
 		endif
 		return 2 * decayTau
 	endif
 
 	if(showPlot)
-		Print "No peak found and decayTau not available. Returning NaN."
+		Print "No peak found. DecayTau not available. Returning NaN."
 	endif
 	return NaN
 End
@@ -6442,12 +6457,12 @@ End
 
 Function PSX_CalculateOnsetTimeFromAvg(WAVE AvgEvent, variable kernelAmp, variable meanOnsetTime, variable meanPeakTime)
 
-	print "onset: ", meanonsettime, "peak: ", meanpeaktime
-
 	duplicate/FREE AvgEvent, AvgEventDiff
 	differentiate AvgEventDiff
+	smooth 500, AvgEventDiff
 	wavestats/Q AvgEvent
-	duplicate AvgEventDiff, forDisp
+	duplicate/O AvgEventDiff, root:forDisp
+	smooth 500, root:forDisp
 
 	variable eventPeak, eventPeak_t, edge, backwardEdge, level, slewrate, slewrate_t
 
@@ -6465,7 +6480,7 @@ Function PSX_CalculateOnsetTimeFromAvg(WAVE AvgEvent, variable kernelAmp, variab
 		FATAL_ERROR("Invalid kernel amp")
 	endif
 
-	variable searchEnd = eventPeak_t - 2 * (meanPeakTime - abs(meanOnsetTime)) // get ride of the * 2 hack
+	variable searchEnd = -Inf // optionally: eventPeak_t - (meanPeakTime) or similar
 
 	wavestats/Q/R=(searchEnd, eventPeak_t) AvgEventDiff
 
@@ -6477,14 +6492,104 @@ Function PSX_CalculateOnsetTimeFromAvg(WAVE AvgEvent, variable kernelAmp, variab
 		slewRate_t = V_minLoc
 	endif
 
-	level = 0.20 * slewRate
+	level = 0.2 * slewRate
 
 	FindLevel/R=(eventPeak_t, searchEnd)/EDGE=(edge)/Q AvgEventDiff, level
 
-	if(V_flag)
+	if(!V_flag)
+		return V_levelX
+	endif
+
+	// --- Fallback: Use second derivative to enforce slope direction ---
+	duplicate/FREE AvgEventDiff, d2
+	differentiate d2
+	smooth 200, d2 // optional smoothing for stability
+
+	variable closestIdx  = -1
+	variable closestDist = Inf
+	variable n           = DimSize(AvgEventDiff, 0)
+	variable xval, diffVal, d2Val
+	variable i
+
+	for(i = 0; i < n; i += 1)
+		xval = pnt2x(AvgEventDiff, i)
+
+		// Constrain time range
+		if(xval < searchEnd || xval > eventPeak_t)
+			continue
+		endif
+
+		diffVal = AvgEventDiff[i]
+		d2Val   = d2[i]
+
+		// Constrain direction of slope change at the candidate level crossing
+		if(edge == FINDLEVEL_EDGE_INCREASING && d2Val < 0)
+			continue // not increasing slope
+		elseif(edge == FINDLEVEL_EDGE_DECREASING && d2Val > 0)
+			continue // not decreasing slope
+		endif
+
+		// Find closest to desired level
+		if(abs(diffVal - level) < closestDist)
+			closestDist = abs(diffVal - level)
+			closestIdx  = i
+		endif
+	endfor
+
+	if(closestIdx >= 0)
+		return pnt2x(AvgEventDiff, closestIdx)
+	endif
+
+	return NaN
+End
+
+Function GetKernelDecayTau()
+
+	string psxPath
+	string ListOfwin = WinList("*", ";", "WIN:64") // Only graph windows
+	variable i
+	variable num = ItemsInList(ListOfwin, ";")
+
+	// Search all graph windows for one with psxFolder user data
+	for(i = 0; i < num; i += 1)
+		string baseWin = StringFromList(i, ListOfwin, ";")
+		psxPath = GetUserData(baseWin, "", "psxFolder")
+		if(strlen(psxPath) > 0)
+			break
+		endif
+	endfor
+
+	if(strlen(psxPath) == 0)
+		printf "No psxFolder user data found in any graph window.\r"
 		return NaN
 	endif
-	print V_levelX
-	return V_levelX
 
+	DFREF psxDFR = $psxPath
+
+	// Search combo_* subfolders for a valid psxEvent wave
+	variable j = 0
+	do
+		string folderName = GetIndexedObjName(psxPath, 4, j) // 4 = data folder
+		if(strlen(folderName) == 0)
+			break
+		endif
+
+		if(stringmatch(folderName, "combo_*"))
+			DFREF comboDFR = psxDFR:$folderName
+			if(DataFolderRefStatus(comboDFR) != 0)
+				WAVE/Z psxEvent = comboDFR:psxEvent
+				if(WaveExists(psxEvent))
+					variable tau = JWN_GetNumberFromWaveNote(psxEvent, "User/Parameters/psxKernel/decayTau")
+					if(IsFinite(tau))
+						return tau
+					endif
+				endif
+			endif
+		endif
+
+		j += 1
+	while(1)
+
+	printf "No valid psxEvent wave with decayTau found.\r"
+	return NaN
 End
