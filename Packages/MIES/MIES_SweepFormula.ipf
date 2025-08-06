@@ -1351,8 +1351,7 @@ Function SF_button_sweepFormula_check(STRUCT WMButtonAction &ba) : ButtonControl
 #ifdef DEBUGGING_ENABLED
 				SFP_SaveParserStateLog()
 #endif // DEBUGGING_ENABLED
-				WAVE/T info = GetSFAssertData()
-				print info
+				SF_MarkErrorLocationInNotebook(mainPanel)
 				JSON_Release(jsonID, ignoreErr = 1)
 				jsonID = NaN
 			endtry
@@ -1642,8 +1641,7 @@ Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonContr
 #ifdef DEBUGGING_ENABLED
 				SFP_SaveParserStateLog()
 #endif // DEBUGGING_ENABLED
-				WAVE/T info = GetSFAssertData()
-				print info
+				SF_MarkErrorLocationInNotebook(mainPanel)
 			endtry
 			SF_DisplayOutputStateInGUI(bsPanel)
 
@@ -2124,4 +2122,70 @@ Function TraceValueDisplayHook(STRUCT WMTooltipHookStruct &s)
 	endif
 
 	return 0
+End
+
+/// @brief calculate the error position within the sf notebook
+///        In notebooks every paragraph ends with a CR. It is possible to navigate through paragraphs
+///        and character offsets in these paragraphs.
+///        As formula code can contain CR, these have to be accounted for in counting paragraphs.
+///        Also the effective character offset in the NB paragraph needs to be calculated.
+static Function [variable paragraph, variable charPosition] SF_CalculateErrorLocationInNotebook(string win)
+
+	string sfWin, text
+	variable line, i, lineNr, offset, lineOffset, numCR, formOffset, inFormOffset
+
+	sfWin = BSP_GetSFFormula(win)
+	text  = GetNotebookText(sfWin, mode = 2)
+	text  = SF_PreprocessInput(text)
+	WAVE/T wText = ListToTextWave(text, SF_CHAR_CR)
+
+	WAVE/T info = GetSFAssertData()
+	line = str2numSafe(info[%LINE])
+
+	// find line in text and look how many CR are between 0 and offset
+	for(i = 0; i < line; i += 1)
+		lineOffset += strlen(wText[i]) + strlen(SF_CHAR_CR)
+	endfor
+	text = text[lineOffset, Inf]
+
+	// handle CR in left of "vs" formula
+	offset = str2numSafe(info[%OFFSET])
+	if(offset > 0)
+		formOffset = offset
+		for(i = 0; i < offset; i += 1)
+			if(!CmpStr(text[i], SF_CHAR_CR))
+				numCR     += 1
+				formOffset = offset - i - 1
+			endif
+		endfor
+	endif
+
+	// handle CR right of "vs" formula
+	text         = text[offset, Inf]
+	offset       = str2numSafe(info[%INFORMULAOFFSET])
+	inFormOffset = offset
+	for(i = 0; i < offset; i += 1)
+		if(!CmpStr(text[i], SF_CHAR_CR))
+			numCR       += 1
+			formOffset   = 0
+			inFormOffset = offset - i - 1
+		endif
+	endfor
+
+	lineNr        = line + numCR
+	inFormOffset += formOffset
+
+	return [lineNr, inFormOffset]
+End
+
+/// @brief Mark the error location in red in the SF notebook
+static Function SF_MarkErrorLocationInNotebook(string win)
+
+	variable paragraph, offset
+	string sfWin
+
+	[paragraph, offset] = SF_CalculateErrorLocationInNotebook(win)
+
+	sfWin = BSP_GetSFFormula(win)
+	Notebook $sfWin, selection={(paragraph, offset), (paragraph, offset + 1)}, textRGB=(65535, 0, 0)
 End
