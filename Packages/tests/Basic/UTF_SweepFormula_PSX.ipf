@@ -2886,7 +2886,7 @@ static Function NoEventsAtAll()
 
 	code = "psx(psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all))), 100, 100, 0)"
 
-	win = ExecuteSweepFormulaCode(browser, code)
+	win = ExecuteSweepFormulaCode(browser, code, expectFailure = 1)
 
 	try
 		psxGraph = MIES_PSX#PSX_GetPSXGraph(win)

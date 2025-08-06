@@ -2051,7 +2051,7 @@ static Function TestVariablePlottingDoesNotModifyData()
 	graphBase = BSP_GetFormulaGraph(win)
 	graph     = graphBase + "_#Graph" + "0"
 
-	ExecuteSweepFormulaInDB(code, win)
+	ExecuteSweepFormulaCode(win, code)
 	REQUIRE_EQUAL_VAR(WindowExists(graph), 1)
 
 	WAVE/WAVE varStorage = GetSFVarStorage(win)
@@ -2077,7 +2077,7 @@ static Function TestVariablePlottingDifferentSubsequentBaseTypes()
 	graphBase = BSP_GetFormulaGraph(win)
 	graph     = graphBase + "_#Graph" + "0"
 
-	ExecuteSweepFormulaInDB(code, win)
+	ExecuteSweepFormulaCode(win, code)
 	REQUIRE_EQUAL_VAR(WindowExists(graph), 1)
 	WAVE/WAVE varStorage = GetSFVarStorage(win)
 	WAVE/WAVE dataRef    = SFH_AttemptDatasetResolve(WaveText(WaveRef(varStorage, row = FindDimLabel(varStorage, ROWS, "data")), row = 0))
@@ -2090,7 +2090,7 @@ static Function TestVariablePlottingDifferentSubsequentBaseTypes()
 	Make/N=3 root:testData = p
 
 	code = "data=wave(root:testData)\r$data"
-	ExecuteSweepFormulaInDB(code, win)
+	ExecuteSweepFormulaCode(win, code)
 
 	WAVE/WAVE varStorage = GetSFVarStorage(win)
 	WAVE/WAVE dataRef    = SFH_AttemptDatasetResolve(WaveText(WaveRef(varStorage, row = FindDimLabel(varStorage, ROWS, "data")), row = 0))
@@ -2114,7 +2114,7 @@ static Function TestVariableReadOnly()
 	Make/N=100 root:testData = p + offset
 
 	code = "data=wave(root:testData)\rpowerspectrum($data)"
-	ExecuteSweepFormulaInDB(code, win)
+	ExecuteSweepFormulaCode(win, code)
 
 	WAVE/WAVE varStorage = GetSFVarStorage(win)
 	WAVE/WAVE dataRef    = SFH_AttemptDatasetResolve(WaveText(WaveRef(varStorage, row = FindDimLabel(varStorage, ROWS, "data")), row = 0))
@@ -2144,7 +2144,7 @@ static Function TestKeepsUnitsWhenMappingMultipleYToOne()
 	SetScale/P y, 0, 1, "y2", data2
 
 	code = "dataset(wave(data1), wave(data1)) vs dataset(wave(data2))"
-	ExecuteSweepFormulaInDB(code, win)
+	ExecuteSweepFormulaCode(win, code)
 	yAxis = AxisLabel(graph, "left")
 	CHECK_EQUAL_STR(yAxis, "(y1)")
 	xAxis = AxisLabel(graph, "bottom")
@@ -2175,7 +2175,7 @@ static Function TestAxisLabelGathering()
 	code = "wave(data1)\r"            + \
 	       "with \r"                  + \
 	       "wave(data2) vs wave(data3)\r"
-	ExecuteSweepFormulaInDB(code, win)
+	ExecuteSweepFormulaCode(win, code)
 	yAxis = AxisLabel(graph, "left")
 	CHECK_EQUAL_STR(yAxis, "(y1) / (y2)")
 	xAxis = AxisLabel(graph, "bottom")
