@@ -6437,7 +6437,7 @@ End
 
 Function PSX_CalculateOnsetTimeFromAvg(WAVE AvgEvent, variable kernelAmp, variable meanOnsetTime, variable meanPeakTime)
 	
-	print "onset: ", meanonsettime, "peak: ", meanpeaktime
+	print "onset: ", meanOnsetTime, "peak: ", meanPeakTime
 	
 	duplicate/FREE AvgEvent, AvgEventDiff
 	differentiate AvgEventDiff
