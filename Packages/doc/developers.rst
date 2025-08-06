@@ -49,7 +49,7 @@ These files are generated from requirements.in via
 
   .. code:: text
 
-    pip-compile --generate-hashes --output-file=requirements.txt --strip-extras requirements.in
+    pip-compile --upgrade --generate-hashes --output-file=requirements.txt --strip-extras requirements.in
 
 Therefore updates should be done directly in requirements.in and then calling pip-compile. The platform/OS
 needs to be the same when generating the requirements.txt and running them. We currently run all python code
