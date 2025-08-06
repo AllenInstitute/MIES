@@ -945,7 +945,7 @@ static Function PSX_FitEventDecay(WAVE sweepDataOffFilt, WAVE psxEvent, variable
 
 	fitRange = endTime - startTime
 
-	if((IsFinite(weightedTau) && weightedTau > (maxTauFactor * fitRange)) || fastTau <= 0 || SlowTau <= 0 || weightedTau <= 0)
+	if((IsFinite(weightedTau) && weightedTau > (maxTauFactor * fitRange)) || fastTau <= 0 || slowTau <= 0 || weightedTau <= 0)
 		psxEvent[eventIndex][%$"Fit manual QC call"] = PSX_REJECT
 		psxEvent[eventIndex][%$"Fit result"]         = PSX_DECAY_FIT_ERROR
 		psxEvent[eventIndex][%weightedTau]           = NaN
