@@ -108,7 +108,7 @@ End
 Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLocId])
 
 	string opName, str
-	variable i, size, JSONType, arrayElemJSONType, effectiveArrayDimCount, dim
+	variable i, size, JSONType, arrayElemJSONType, effectiveArrayDimCount, dim, onTopLevel
 	variable colSize, layerSize, chunkSize, operationsWithScalarResultCount
 
 	STRUCT SF_ExecutionData exdop
@@ -118,6 +118,7 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLoc
 	endif
 
 	if(!ParamIsDefault(srcLocId))
+		onTopLevel = 1
 		SFH_StoreAssertInfoExecutor(srcLocId, exd.jsonPath)
 	endif
 
@@ -136,9 +137,9 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLoc
 	JSONtype = JSON_GetType(exd.jsonID, exd.jsonPath)
 	if(JSONtype == JSON_NUMERIC)
 		Make/FREE/D out = {JSON_GetVariable(exd.jsonID, exd.jsonPath)}
-		return SFH_GetOutputForExecutorSingle(out, exd.graph, "ExecutorNumberReturn")
+		return SFE_ExeReturn(SFH_GetOutputForExecutorSingle(out, exd.graph, "ExecutorNumberReturn"), onTopLevel)
 	elseif(JSONtype == JSON_STRING)
-		return SFE_FormulaExecutorStringOrVariable(exd)
+		return SFE_ExeReturn(SFE_FormulaExecutorStringOrVariable(exd), onTopLevel)
 	elseif(JSONtype == JSON_ARRAY)
 		// Evaluate an array consisting of any elements including subarrays and objects (operations)
 
@@ -149,7 +150,7 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLoc
 		// Check against empty array
 		if(DimSize(topArraySize, ROWS) == 1 && topArraySize[0] == 0)
 			Make/FREE/D/N=0 out
-			return SFH_GetOutputForExecutorSingle(out, exd.graph, "ExecutorNumberReturn")
+			return SFE_ExeReturn(SFH_GetOutputForExecutorSingle(out, exd.graph, "ExecutorNumberReturn"), onTopLevel)
 		endif
 
 		// Get all types of current level (row)
@@ -286,7 +287,7 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLoc
 			topArraySize[dim] = 0
 		endfor
 		Redimension/N=(topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3])/E=1 out
-		return SFH_GetOutputForExecutorSingle(out, exd.graph, "ExecutorArrayReturn")
+		return SFE_ExeReturn(SFH_GetOutputForExecutorSingle(out, exd.graph, "ExecutorArrayReturn"), onTopLevel)
 	endif
 
 	// operation evaluation
@@ -515,7 +516,7 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLoc
 	endswitch
 	///@}
 
-	return out
+	return SFE_ExeReturn(out, onTopLevel)
 End
 
 static Function/WAVE SFE_FormulaExecutorStringOrVariable(STRUCT SF_ExecutionData &exd)
@@ -598,4 +599,16 @@ static Function SFE_PlaceSubArrayAt(WAVE/Z out, WAVE/Z subArray, variable index)
 	else
 		Multithread out[index][0, max(0, DimSize(subArray, ROWS) - 1)][0, max(0, DimSize(subArray, COLS) - 1)][0, max(0, DimSize(subArray, LAYERS) - 1)] = subArray[q][r][s]
 	endif
+End
+
+static Function/WAVE SFE_ExeReturn(WAVE out, variable onTopLevel)
+
+	if(!onTopLevel)
+		return out
+	endif
+
+	WAVE/T assertData = GetSFAssertData()
+	assertData[%STEP] = num2istr(SF_STEP_OUTSIDE)
+
+	return out
 End
