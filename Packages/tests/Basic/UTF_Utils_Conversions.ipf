@@ -1062,3 +1062,29 @@ Function GMC_SomeVariants()
 
 	CHECK_EQUAL_VAR(MICRO_TO_TERA, 1e-18)
 End
+
+Function TestNumericWaveByKey()
+
+	// all defaults
+	WAVE/Z wv = NumericWaveByKey("kb", "ka:va;kb:[1,2,3]")
+	CHECK_WAVE(wv, NUMERIC_WAVE, minorType = IGOR_TYPE_64BIT_FLOAT)
+	CHECK_EQUAL_WAVES(wv, {1, 2, 3}, mode = WAVE_DATA)
+
+	// no content
+	WAVE/Z wv = NumericWaveByKey("ka", "ka:[];kb:[1,2,3]")
+	CHECK_WAVE(wv, NULL_WAVE)
+
+	// ignores case
+	WAVE/Z wv = NumericWaveByKey("KB", "ka:va;kb:[1,2,3]")
+	CHECK_WAVE(wv, NUMERIC_WAVE, minorType = IGOR_TYPE_64BIT_FLOAT)
+	CHECK_EQUAL_WAVES(wv, {1, 2, 3}, mode = WAVE_DATA)
+
+	// respect case
+	WAVE/Z wv = NumericWaveByKey("KB", "ka:va;kb:[1,2,3]", matchCase = 1)
+	CHECK_WAVE(wv, NULL_WAVE)
+
+	// custom delimiters and wave type
+	WAVE/Z wv = NumericWaveByKey("KB", "ka=va|kb=[1;2;3]", keySep = "=", listSep = "|", wvListSep = ";", wvType = IGOR_TYPE_8BIT_INT)
+	CHECK_WAVE(wv, NUMERIC_WAVE, minorType = IGOR_TYPE_8BIT_INT)
+	CHECK_EQUAL_WAVES(wv, {1, 2, 3}, mode = WAVE_DATA)
+End
