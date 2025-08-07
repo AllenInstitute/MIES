@@ -20,13 +20,14 @@ Building the documentation
 
 - The script ``tools/build-documentation.sh`` allows to build the documentation locally
 - This command also installs the required pip packages, so using a dedicated virtual environment is advised
-- Linux users might directly execute the docker version in ``tools/documentation/run.sh``
+- Linux users might directly execute the docker version in ``tools/documentation/run.sh``. This script also
+  works on WSL.
 
 Updating documentation
 ~~~~~~~~~~~~~~~~~~~~~~
 
 Due to our excessive use of the breathe sphinx extension which feeds from
-doxygen, a full documentation build takes around 10 minutes. It is also not
+doxygen, a full documentation build takes around 5 minutes. It is also not
 possible to use the sphinx autobuild feature, as it rebuilds all everything from
 scratch due to breathe.
 
@@ -34,7 +35,7 @@ For fast read-write-view cycles while writing the user documentation do the foll
 
 - Start with a clean ``Packages/doc`` folder
 - Apply the :download:`patch <0001-WIP-fast-sphinx-rst-update-cycle.patch>`
-  which temporarily removes breathe via ``git am ...``
+  which temporarily removes breathe via ``git am 0001-WIP-fast-sphinx-rst-update-cycle.patch``
 - Call ``make autobuild`` which opens a local webbrowser and rebuilds after
   every change. This time incremental updates work.
 
@@ -48,7 +49,7 @@ These files are generated from requirements.in via
 
   .. code:: text
 
-    pip-compile --generate-hashes --output-file=requirements.txt --strip-extras requirements.in
+    pip-compile --upgrade --generate-hashes --output-file=requirements.txt --strip-extras requirements.in
 
 Therefore updates should be done directly in requirements.in and then calling pip-compile. The platform/OS
 needs to be the same when generating the requirements.txt and running them. We currently run all python code
