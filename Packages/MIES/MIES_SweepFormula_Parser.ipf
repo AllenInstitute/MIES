@@ -54,9 +54,21 @@ EndStructure
 // returns jsonID or Aborts is not successful
 Function [variable jsonid, variable srcLocId] SFP_ParseFormulaToJSON(string formula)
 
-	SFH_ASSERT(CountSubstrings(formula, "(") == CountSubstrings(formula, ")"), "Bracket mismatch in formula.")
-	SFH_ASSERT(CountSubstrings(formula, "[") == CountSubstrings(formula, "]"), "Array bracket mismatch in formula.")
-	SFH_ASSERT(!mod(CountSubstrings(formula, "\""), 2), "Quotation marks mismatch in formula.")
+	WAVE/T assertData = GetSFAssertData()
+	assertData[%FORMULA] = formula
+	NVAR trackParserBufferOffset = $GetSweepFormulaBufferOffsetTracker()
+	if(CountSubstrings(formula, "(") != CountSubstrings(formula, ")"))
+		trackParserBufferOffset = strsearch(formula, ")", Inf, 1)
+		SFH_FATAL_ERROR("Bracket mismatch in formula.")
+	endif
+	if(CountSubstrings(formula, "[") != CountSubstrings(formula, "]"))
+		trackParserBufferOffset = strsearch(formula, "]", Inf, 1)
+		SFH_FATAL_ERROR("Array bracket mismatch in formula.")
+	endif
+	if(mod(CountSubstrings(formula, "\""), 2))
+		trackParserBufferOffset = strsearch(formula, "\"", Inf, 1)
+		SFH_FATAL_ERROR("Quotation marks mismatch in formula.")
+	endif
 
 	formula = ReplaceString("...", formula, "…")
 
@@ -64,8 +76,6 @@ Function [variable jsonid, variable srcLocId] SFP_ParseFormulaToJSON(string form
 	SFP_LogParserStateInit(formula)
 #endif // DEBUGGING_ENABLED
 
-	WAVE/T info = GetSFAssertData()
-	info[%FORMULA]           = formula
 	[jsonId, WAVE/T srcLocs] = SFP_FormulaParser(formula, 0)
 
 	srcLocId = SFP_ConvertSourceLocWaveToJSON(srcLocs, formula)
