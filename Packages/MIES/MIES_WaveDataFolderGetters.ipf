@@ -9184,5 +9184,7 @@ Function/WAVE GetSFAssertData()
 	SetDimLabel ROWS, 5, FORMULA, wv
 	SetDimLabel ROWS, 6, INFORMULAOFFSET, wv
 
+	wv[%STEP] = num2istr(SF_STEP_OUTSIDE)
+
 	return wv
 End
