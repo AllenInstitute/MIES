@@ -2212,7 +2212,7 @@ End
 static Function TestOperationLabNotebook()
 
 	variable i, j, sweepNumber, channelNumber, numSweeps, numChannels, idx
-	string str, key, axLabel, browser, yAxisLabel
+	string str, key, axLabel, browser, yAxisLabel, error
 
 	string textKey   = LABNOTEBOOK_USER_PREFIX + "TEXTKEY"
 	string textValue = "TestText1;TestText2;"
@@ -2254,7 +2254,41 @@ static Function TestOperationLabNotebook()
 		idx += 1
 	endfor
 
-	// no such key
+	// falls back with wrong mode
+	str = "labnotebook(" + textKey + ", select(selchannels(AD2), selsweeps([0, 1])), TEST_PULSE_MODE)"
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
+	Make/FREE/D refDataTextAnchor = {0.0}
+	idx = 0
+	for(WAVE/D data : dataRef)
+		CHECK_EQUAL_WAVES(data, refDataTextAnchor, mode = WAVE_DATA)
+		CHECK_EQUAL_STR("TestText1\rTestText2", JWN_GetStringFromWaveNote(data, SF_META_TAG_TEXT))
+		CHECK_EQUAL_STR(textKey, JWN_GetStringFromWaveNote(data, SF_META_LEGEND_LINE_PREFIX))
+
+		sweepNumber = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
+		CHECK_EQUAL_VAR(sweepNumber, idx)
+
+		WAVE xValues = JWN_GetNumericWaveFromWaveNote(data, SF_META_XVALUES)
+		Make/FREE xValuesRef = {idx}
+		CHECK_EQUAL_WAVES(xValues, xValuesRef, mode = WAVE_DATA)
+		idx += 1
+	endfor
+
+	error = ROStr(GetSweepFormulaOutputMessage())
+	CHECK_EQUAL_STR(error, "labnotebook: Could not find labnotebook key \"USER_TEXTKEY\" with mode \"TEST_PULSE_MODE\", but using \"UNKNOWN_MODE\" succeeded.")
+
+	// no such key (directly)
+	str = "labnotebook(\"I_DONT_EXIST\", select(), UNKNOWN_MODE)"
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 40)
+	Make/FREE/D refDataTextAnchor = {NaN}
+	for(WAVE/D data : dataRef)
+		CHECK_EQUAL_WAVES(data, refDataTextAnchor, mode = WAVE_DATA)
+	endfor
+
+	error = ROStr(GetSweepFormulaOutputMessage())
+	CHECK_EQUAL_STR(error, "labnotebook: Could not find labnotebook key \"I_DONT_EXIST\".")
+
+	// no such key with fallback
 	str = "labnotebook(\"I_DONT_EXIST\")"
 	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 40)
@@ -2262,6 +2296,9 @@ static Function TestOperationLabNotebook()
 	for(WAVE/D data : dataRef)
 		CHECK_EQUAL_WAVES(data, refDataTextAnchor, mode = WAVE_DATA)
 	endfor
+
+	error = ROStr(GetSweepFormulaOutputMessage())
+	CHECK_EQUAL_STR(error, "labnotebook: Could not find labnotebook key \"I_DONT_EXIST\".")
 
 	// multiple keys
 	str = "labnotebook([\"ADC\", \"Operating Mode\"], select(selchannels(AD2), selsweeps([0])), DATA_ACQUISITION_MODE)"
@@ -2291,6 +2328,9 @@ static Function TestOperationLabNotebook()
 	str = "labnotebook([\"eee*\"], select(selchannels(AD2), selsweeps([0])), DATA_ACQUISITION_MODE)"
 	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 0)
+
+	error = ROStr(GetSweepFormulaOutputMessage())
+	CHECK_EQUAL_STR(error, "labnotebook: Could not find labnotebook keys for wildcard: \"eee*\".")
 
 	// match with wildcard and special QC format
 	str = "labnotebook([\"*random QC\"], select(selchannels(AD0), selsweeps([0, 1, 2])), DATA_ACQUISITION_MODE)"
@@ -2322,6 +2362,26 @@ static Function TestOperationLabNotebook()
 
 	yAxisLabel = JWN_GetStringFromWaveNote(dataRef, SF_META_YAXISLABEL)
 	CHECK_EQUAL_STR(yAxisLabel, "Unit (Hz)")
+
+	// invalid mode
+	try
+		str = "labnotebook([\"*other KEY\"], select(selchannels(AD0), selsweeps([0])), NUMBER_OF_LBN_DAQ_MODES)"
+		WAVE/Z/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	error = ROStr(GetSweepFormulaOutputMessage())
+	CHECK_EQUAL_STR(error, "Argument #2 of operation labnotebook: The text argument \"NUMBER_OF_LBN_DAQ_MODES\" is not one of the allowed values (UNKNOWN_MODE, DATA_ACQUISITION_MODE, TEST_PULSE_MODE)")
+
+	// indep entry is returned by default
+	str = "labnotebook([\"" + LABNOTEBOOK_USER_PREFIX + "indep key\"], select(selchannels(AD0), selsweeps([3])), DATA_ACQUISITION_MODE)"
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 1)
+	WAVE firstEntry = dataRef[0]
+	Make/D/FREE refContents = {3}
+	CHECK_EQUAL_WAVES(firstEntry, refContents, mode = WAVE_DATA)
 End
 
 static Function TestOperationLabnotebookHelper(string win, string formula, WAVE wRef)

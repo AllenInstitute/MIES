@@ -1086,7 +1086,7 @@ Function/WAVE SFO_OperationLabnotebook(STRUCT SF_ExecutionData &exd)
 
 	SFH_CheckArgumentCount(exd, SF_OP_LABNOTEBOOK, 1, maxArgs = 3)
 
-	Make/FREE/T allowedValuesMode = {"UNKNOWN_MODE", "DATA_ACQUISITION_MODE", "TEST_PULSE_MODE", "NUMBER_OF_LBN_DAQ_MODES"}
+	Make/FREE/T allowedValuesMode = {"UNKNOWN_MODE", "DATA_ACQUISITION_MODE", "TEST_PULSE_MODE"}
 	modeTxt = SFH_GetArgumentAsText(exd, SF_OP_LABNOTEBOOK, 2, allowedValues = allowedValuesMode, defValue = "DATA_ACQUISITION_MODE")
 	mode    = ParseLogbookMode(modeTxt)
 
@@ -1143,7 +1143,7 @@ static Function/WAVE SFO_OperationLabnotebookImpl(string graph, WAVE/T LBNKeys, 
 
 	variable i, numSelected, idx, lbnIndex
 	variable numOutputWaves, colorGroup, marker
-	string lbnKey, refUnit, unitString
+	string lbnKey, refUnit, unitString, msg
 
 	if(!WaveExists(selectData))
 		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, 0)
@@ -1154,6 +1154,9 @@ static Function/WAVE SFO_OperationLabnotebookImpl(string graph, WAVE/T LBNKeys, 
 	WAVE/Z/T allLBNKeys = SFO_OperationLabnotebookExpandKeys(graph, LBNKeys, selectData, mode)
 
 	if(!WaveExists(allLBNKeys))
+		sprintf msg, "labnotebook: Could not find labnotebook keys for wildcard: \"%s\".", TextWaveToList(LBNKeys, ";", trailSep = 0)
+		SF_SetOutputState(msg, SF_MSG_WARN)
+
 		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, 0)
 		JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_LABNOTEBOOK)
 		return output
@@ -1219,7 +1222,7 @@ End
 static Function/WAVE SFO_OperationLabnotebookImplGetEntry(string graph, WAVE selectData, variable index, string lbnKey, variable mode)
 
 	variable sweepNo, chanNr, chanType, settingsIndex, result, col, mapIndex
-	string entry
+	string entry, msg
 
 	sweepNo  = selectData[index][%SWEEP]
 	chanNr   = selectData[index][%CHANNELNUMBER]
@@ -1244,7 +1247,29 @@ static Function/WAVE SFO_OperationLabnotebookImplGetEntry(string graph, WAVE sel
 
 	[WAVE settings, settingsIndex] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, lbnKey, chanNr, chanType, mode)
 	if(!WaveExists(settings))
-		return out
+		switch(mode)
+			case UNKNOWN_MODE:
+				sprintf msg, "labnotebook: Could not find labnotebook key \"%s\".", lbnKey
+				SF_SetOutputState(msg, SF_MSG_WARN)
+
+				return out
+			case DATA_ACQUISITION_MODE: // fallthrough
+			case TEST_PULSE_MODE:
+
+				[WAVE settings, settingsIndex] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, lbnKey, chanNr, chanType, UNKNOWN_MODE)
+				if(!WaveExists(settings))
+					sprintf msg, "labnotebook: Could not find labnotebook key \"%s\".", lbnKey
+					SF_SetOutputState(msg, SF_MSG_WARN)
+
+					return out
+				endif
+
+				sprintf msg, "labnotebook: Could not find labnotebook key \"%s\" with mode \"%s\", but using \"%s\" succeeded.", lbnKey, StringifyLogbookMode(mode), StringifyLogbookMode(UNKNOWN_MODE)
+				SF_SetOutputState(msg, SF_MSG_WARN)
+				break
+			default:
+				FATAL_ERROR("Unsupported mode")
+		endswitch
 	endif
 
 	if(IsNumericWave(settings))
