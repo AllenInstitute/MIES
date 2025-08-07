@@ -2548,3 +2548,12 @@ Constant CAP_INVALID_WAVE       = 6
 Constant CAP_FAILED_CHECK_FUNC  = 7
 Constant CAP_ABORTED_CHECK_FUNC = 8
 ///@}
+
+/// @name Steps for Sweepformula execution
+///
+/// @anchor SFExecutionSteps
+///@{
+Constant SF_STEP_PARSER   = 1
+Constant SF_STEP_EXECUTOR = 2
+Constant SF_STEP_OUTSIDE  = 3
+///@}
