@@ -146,7 +146,7 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLoc
 		// If we want to return an Igor Pro data wave the final dimensionality can not exceed 4
 		WAVE topArraySize = JSON_GetMaxArraySize(exd.jsonID, exd.jsonPath)
 		effectiveArrayDimCount = DimSize(topArraySize, ROWS)
-		SFH_ASSERT(effectiveArrayDimCount <= MAX_DIMENSION_COUNT, "Array in evaluation has more than " + num2istr(MAX_DIMENSION_COUNT) + "dimensions.", jsonId = exd.jsonId)
+		SFH_ASSERT(effectiveArrayDimCount <= MAX_DIMENSION_COUNT, "Array in evaluation has more than " + num2istr(MAX_DIMENSION_COUNT) + " dimensions.", jsonId = exd.jsonId)
 		// Check against empty array
 		if(DimSize(topArraySize, ROWS) == 1 && topArraySize[0] == 0)
 			Make/FREE/D/N=0 out
