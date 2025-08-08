@@ -42,6 +42,12 @@ Function WRB_EvaluateDataBrowserSelection()
 	endfor
 End
 
+// Steps to recreate the macro:
+//
+// - Enable the Databrowser menu via `MIES Panels->Advanced->Panels->Enable Enhanced Databrowser`
+// - Create a wave reference wave with `make/o/wave d = {NewFreeWave(0, 1)}`
+// - Select the wave reference wave in the databrowser and choose "BrowseWref"
+// - Execute `WRB_StartupSettings()`
 Function WRB_StartupSettings()
 
 	string nbName
