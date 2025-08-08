@@ -383,7 +383,7 @@ Function SFH_ASSERT(variable condition, string message, [variable jsonId])
 						message                    += SFH_FormatSourceLocationError(attemptedFormula, srcLoc)
 						asserData[%INFORMULAOFFSET] = num2istr(srcLoc)
 					else
-						BUG("SFH_ASSERT: source path not found")
+						BUG("SFH_ASSERT: source path not found: " + currentExePath)
 					endif
 					JSON_Release(srcLocId)
 				else

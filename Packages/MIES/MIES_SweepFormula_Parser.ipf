@@ -336,6 +336,8 @@ static Function SFP_ParserHandleRemainingBuffer(STRUCT SF_ParserData &pad, strin
 
 	variable subId, arraySize
 
+	DEBUGPRINT("RemainingBuffer: " + buffer)
+
 	if(!cmpstr(buffer, formula))
 		if(GrepString(buffer, SF_PARSER_REGEX_SIGNED_NUMBER))
 			// optionally signed Number
@@ -355,6 +357,9 @@ static Function SFP_ParserHandleRemainingBuffer(STRUCT SF_ParserData &pad, strin
 		[subId, WAVE/T srcLocsSub] = SFP_FormulaParser(buffer, pad.bufferOffset)
 		JSON_AddJSON(pad.jsonID, pad.jsonPath, subId)
 		JSON_Release(subId)
+
+		string str = JSON_Dump(pad.jsonId, indent = 2)
+
 		SFP_AdaptSourceSubPaths(pad, srcLocsSub, 1)
 		ConcatenateWavesWithNoteIndex(pad.srcLocs, srcLocsSub)
 	endif
@@ -362,8 +367,10 @@ End
 
 static Function [STRUCT SF_ParserData pad, variable lastCalculation, variable wasArrayCreated, variable createdArrayLocal] SFP_ParserModifyJSON(variable action, variable lastAction, variable state, string buffer, string token, variable indentLevel)
 
-	variable parenthesisStart, subId, createArray, bufOffset, arrayPresent
+	variable parenthesisStart, subId, createArray, bufOffset, arrayPresent, addArrayIndex
 	string functionName, jsonPathSave, jsonPathArray
+
+	DEBUGPRINT("Buffer: " + buffer)
 
 	switch(action)
 		case SF_ACTION_FUNCTION:
@@ -377,7 +384,14 @@ static Function [STRUCT SF_ParserData pad, variable lastCalculation, variable wa
 
 			[pad]       = SFP_ParserAdaptSubPath(functionName)
 			createArray = JSON_GetType(subId, "") != JSON_ARRAY || !wasArrayCreated
-			[pad]       = SFP_FPAddArray(subId, createArray, parenthesisStart + 1)
+			if(createArray && JSON_GetType(subId, "") == JSON_OBJECT)
+				[pad] = SFP_FPAddArray(subId, createArray)
+				SFP_AddSourceLocation(pad, pad.bufferOffset + parenthesisStart + 1)
+			else
+				[pad] = SFP_FPAddArray(subId, createArray)
+			endif
+
+			SFP_AddToSourceLocationWave(pad.srcLocs, pad.jsonPath, pad.bufferOffset)
 
 			SFP_AdaptSourceSubPaths(pad, srcLocsSub, createArray)
 			ConcatenateWavesWithNoteIndex(pad.srcLocs, srcLocsSub)
@@ -418,10 +432,9 @@ static Function [STRUCT SF_ParserData pad, variable lastCalculation, variable wa
 			bufOffset                 += pad.bufferOffset + 1
 			[subId, WAVE/T srcLocsSub] = SFP_FormulaParser(buffer[1, Inf], bufOffset, createdArray = wasArrayCreated, indentLevel = indentLevel + 1)
 			createArray                = JSON_GetType(subId, "") != JSON_ARRAY || !wasArrayCreated
-			[pad]                      = SFP_FPAddArray(subId, createArray, 1)
-
-			SFP_AdaptSourceSubPaths(pad, srcLocsSub, createArray)
+			SFP_AddArray(pad, srcLocsSub, subId, createArray)
 			ConcatenateWavesWithNoteIndex(pad.srcLocs, srcLocsSub)
+
 			break
 		case SF_ACTION_LOWERORDER: // fallthrough
 			[pad] = SFP_ParserAdaptSubPath(token)
@@ -707,10 +720,10 @@ static Function [STRUCT SF_ParserData pad] SFP_FPPutInArrayAtPath(string jsonPat
 		JSON_Release(pad.jsonId)
 		pad.jsonId   = newId
 		pad.jsonPath = jsonPathArray
+		SF_ExpandWithBasePath(pad.srcLocs)
 		SFP_AdaptSourceSubPaths(pad, pad.srcLocs, 1)
 		if(!IsEmpty(pad.jsonPath))
 			SFP_AddSourceLocation(pad, pad.bufferOffset, arrayOnly = 1)
-			SFP_AddSourceLocation(pad, -1)
 		endif
 	else
 		JSON_Release(pad.jsonId)
@@ -723,28 +736,33 @@ static Function [STRUCT SF_ParserData pad] SFP_FPPutInArrayAtPath(string jsonPat
 End
 
 /// @brief Adds subId to mainId, if necessary puts subId into an array, release subId
-static Function [STRUCT SF_ParserData pad] SFP_FPAddArray(variable subId, variable createArray, variable firstElementOffset)
+static Function [STRUCT SF_ParserData pad] SFP_FPAddArray(variable subId, variable createArray, [variable firstElementOffset])
 
-	variable tmpId
+	variable tmpId, offset
+	string addJSONPath
+
+	firstElementOffset = ParamIsDefault(firstElementOffset) ? NaN : firstElementOffset
+	offset             = pad.bufferOffset + firstElementOffset
 
 	if(createArray)
 		tmpId = JSON_New()
 		JSON_AddTreeArray(tmpId, "")
 		JSON_AddJSON(tmpId, "", subId)
 
+		if(!IsNaN(firstElementOffset))
+			addJSONPath = SF_GetAddJSONPath(pad.jsonId, pad.jsonPath)
+		endif
 		JSON_AddJSON(pad.jsonId, pad.jsonPath, tmpId)
 		JSON_Release(tmpId)
 
-		SFP_AddSourceLocation(pad, pad.bufferOffset, arrayOnly = 1)
-		if(JSON_GetType(subId, "") == JSON_OBJECT)
-			SFP_AddSourceLocation(pad, pad.bufferOffset + firstElementOffset)
+		if(!IsNaN(firstElementOffset))
+			// at this path the AddJSON adds the tmpId, the subId path is added through the
+			// srcLoc waves from the deeper recursion that gets it paths prefixed (in the caller)
+			SFP_AddToSourceLocationWave(pad.srcLocs, addJSONPath, offset)
 		endif
 	else
 		// subId contains an array
 		JSON_AddJSON(pad.jsonId, pad.jsonPath, subId)
-		if(!IsEmpty(pad.jsonPath))
-			SFP_AddSourceLocation(pad, pad.bufferOffset, arrayOnly = 1)
-		endif
 	endif
 
 	JSON_Release(subId)
@@ -752,15 +770,52 @@ static Function [STRUCT SF_ParserData pad] SFP_FPAddArray(variable subId, variab
 	return [pad]
 End
 
-static Function SFP_AddSourceLocation(STRUCT SF_ParserData &pad, variable formulaOffset, [variable arrayOnly, variable arrayCreated])
+// @brief Must be used before the JSON_AddJSON is applied to jsonId
+static Function/S SF_GetAddJSONPath(variable jsonId, string jsonPath)
+
+	variable arraySize
+
+	if(JSON_GetType(jsonId, jsonPath) != JSON_ARRAY)
+		return jsonPath
+	endif
+
+	arraySize = JSON_GetArraySize(jsonId, jsonPath)
+	if(arraySize > 1)
+		return jsonPath + "/" + num2istr(arraySize)
+	endif
+
+	if(JSON_GetType(jsonId, jsonPath + "/0") == JSON_NULL)
+		return jsonPath + "/0"
+	endif
+
+	return jsonPath + "/1"
+End
+
+static Function SF_ExpandWithBasePath(WAVE/T srcLocs)
+
+	variable col, size
+
+	col = FindDimLabel(srcLocs, COLS, "PATH")
+	FindValue/TEXT=""/RMD=[, col] srcLocs
+	if(V_row >= 0)
+		return NaN
+	endif
+
+	size = GetNumberFromWaveNote(srcLocs, NOTE_INDEX)
+	Make/FREE/D/N=(size) offsetRow
+	offsetRow[] = str2num(srcLocs[p][%OFFSET])
+
+	SFP_AddToSourceLocationWave(srcLocs, "", WaveMin(offsetRow))
+End
+
+static Function SFP_AddSourceLocation(STRUCT SF_ParserData &pad, variable formulaOffset, [variable arrayOnly])
 
 	variable arraySize
 	string   srcPath
 
 	variable size = GetNumberFromWaveNote(pad.srcLocs, NOTE_INDEX)
 
-	arrayOnly    = ParamIsDefault(arrayOnly) ? 0 : !!arrayOnly
-	arrayCreated = ParamIsDefault(arrayCreated) ? 0 : !!arrayCreated
+	arrayOnly = ParamIsDefault(arrayOnly) ? 0 : !!arrayOnly
 
 	srcPath = pad.jsonPath
 	if(JSON_GetType(pad.jsonID, pad.jsonPath) == JSON_ARRAY)
@@ -781,14 +836,13 @@ static Function SFP_AddSourceLocation(STRUCT SF_ParserData &pad, variable formul
 		srcPath = "/" + srcPath
 	endif
 
-	srcPath = SelectString(arrayCreated, srcPath, srcPath + "/0")
 	SFP_AddToSourceLocationWave(pad.srcLocs, srcPath, formulaOffset)
 End
 
 static Function SFP_AdaptSourceSubPaths(STRUCT SF_ParserData &pad, WAVE/T srcLocsSub, variable addArrayIndex)
 
-	variable size
-	string   jsonPath
+	variable i, size
+	string jsonPath
 
 	variable arraySize = NaN
 	string   suffix    = ""
@@ -811,6 +865,13 @@ static Function SFP_AdaptSourceSubPaths(STRUCT SF_ParserData &pad, WAVE/T srcLoc
 	endif
 
 	srcLocsSub[0, size - 1][%PATH] = jsonPath + suffix + SelectString(IsEmpty(srcLocsSub[p][%PATH]), srcLocsSub[p][%PATH], "")
+
+#if defined(DEBUGGING_ENABLED)
+	DEBUGPRINT("SrcPath Moved up: " + jsonpath + suffix)
+	for(i = 0; i < size; i += 1)
+		DEBUGPRINT(srcLocsSub[i][%PATH])
+	endfor
+#endif
 End
 
 static Function SFP_AddToSourceLocationWave(WAVE/T srcLocs, string srcPath, variable loc)
@@ -820,6 +881,7 @@ static Function SFP_AddToSourceLocationWave(WAVE/T srcLocs, string srcPath, vari
 	srcLocs[size][%PATH]   = srcPath
 	srcLocs[size][%OFFSET] = num2istr(loc)
 	SetNumberInWaveNote(srcLocs, NOTE_INDEX, size + 1)
+	DEBUGPRINT("Added SrcPath: " + srcPath + " Loc:" + num2istr(loc))
 End
 
 static Function SFP_ConvertSourceLocWaveToJSON(WAVE/T srcLocs, string formula)
@@ -827,11 +889,14 @@ static Function SFP_ConvertSourceLocWaveToJSON(WAVE/T srcLocs, string formula)
 	variable i, size, jsonId, tmpId
 	string path
 
+	DEBUGPRINT("Final SrcPathWave")
+
 	size = GetNumberFromWaveNote(srcLocs, NOTE_INDEX)
 
 	jsonId = JSON_New()
 	JSON_AddTreeObject(jsonId, "")
 	for(i = 0; i < size; i += 1)
+		DEBUGPRINT(srcLocs[i][%PATH] + " at " + srcLocs[i][%OFFSET])
 		path = SF_EscapeJsonPath(srcLocs[i][%PATH])
 		if(IsEmpty(path))
 			continue
@@ -839,10 +904,44 @@ static Function SFP_ConvertSourceLocWaveToJSON(WAVE/T srcLocs, string formula)
 		if(!JSON_Exists(jsonId, path))
 			JSON_AddVariable(jsonId, path, str2num(srcLocs[i][%OFFSET]))
 		else
-			//			BUG("Got same source location multiple times: " + srcLocs[i][%PATH])
+			BUG("Got same source location multiple times: " + srcLocs[i][%PATH])
 		endif
 	endfor
 	JSON_AddString(jsonId, "/", formula)
 
 	return jsonId
+End
+
+static Function SFP_AddArray(STRUCT SF_ParserData &pad, WAVE/T srcLocsSub, variable subId, variable createArray)
+
+	string addJsonPath, jsonPathSave
+	variable addArrayIndex
+
+	addJsonPath = SF_GetAddJSONPath(pad.jsonId, pad.jsonPath)
+	if(JSON_GetType(pad.jsonId, "") == JSON_NULL)
+		[pad] = SFP_FPAddArray(subId, createArray, firstElementOffset = 0)
+		if(createArray)
+			SFP_AdaptSourceSubPathsAtJSONPath(pad, srcLocsSub, addJsonPath)
+		else
+			SFP_AdaptSourceSubPaths(pad, srcLocsSub, 0)
+		endif
+	else
+		[pad] = SFP_FPAddArray(subId, createArray, firstElementOffset = 0)
+		if(createArray)
+			SFP_AdaptSourceSubPathsAtJSONPath(pad, srcLocsSub, addJsonPath)
+		else
+			addArrayIndex = createArray || (!createArray && JSON_GetType(pad.jsonId, pad.jsonPath) == JSON_ARRAY)
+			SFP_AdaptSourceSubPaths(pad, srcLocsSub, addArrayIndex)
+		endif
+	endif
+End
+
+static Function SFP_AdaptSourceSubPathsAtJSONPath(STRUCT SF_ParserData &pad, WAVE/T srcLocsSub, string jsonPath)
+
+	string jsonPathSave
+
+	jsonPathSave = pad.jsonPath
+	pad.jsonPath = jsonPath
+	SFP_AdaptSourceSubPaths(pad, srcLocsSub, 1)
+	pad.jsonPath = jsonPathSave
 End
