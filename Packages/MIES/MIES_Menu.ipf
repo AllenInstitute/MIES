@@ -64,9 +64,9 @@ Menu "Mies Panels"
 		SubMenu "Panels"
 			"Reset and store AnalysisBrowser", /Q, AB_BrowserStartupSettings()
 			"Reset and store DA_EPHYS", /Q, DAP_EphysPanelStartUpSettings()
-			"Reset and store DataBrowser", /Q, DB_ResetAndStoreCurrentDBPanel()
+			"Reset and store DataBrowser", /Q, DB_DatabrowserStartupSettings()
 			"Reset and store Wavebuilder", /Q, WBP_StartupSettings()
-			"Reset and store WaverefBrowser", /Q, WRB_RecreateWrefBrowser()
+			"Reset and store WaverefBrowser", /Q, WRB_StartupSettings()
 			"Check GUI control procedures of top panel", /Q, SearchForInvalidControlProcs(GetCurrentWindow())
 			"Open debug panel", /Q, DP_OpenDebugPanel()
 			"Enable Enhanced Databrowser", /Q, WRB_AddDataBrowserButton()

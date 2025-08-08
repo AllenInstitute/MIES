@@ -229,3 +229,13 @@ threadsafe Function NumberFromList(variable index, string list, [string sep])
 
 	return str2num(StringFromList(index, list, sep))
 End
+
+/// @brief Return the last element from a list
+threadsafe Function/S LastStringFromList(string list, [string sep])
+
+	if(ParamIsDefault(sep))
+		sep = ";"
+	endif
+
+	return StringFromList(ItemsInList(list, sep) - 1, list, sep)
+End

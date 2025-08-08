@@ -343,7 +343,13 @@ End
 
 Function IVS_CreatePanel()
 
+	string panel
+
 	Execute "IVSCCControlPanel()"
+	panel = GetCurrentWindow()
+
+	NVAR JSONid = $GetSettingsJSONid()
+	PS_InitCoordinates(JSONid, panel)
 End
 
 /// @brief Return the Set QC passed/failed state for the given sweep

@@ -31,8 +31,9 @@ static StrConstant listbox_waves          = "listbox_waves_id"
 static StrConstant button_doit            = "button_doit_id"
 static StrConstant button_restorebackup   = "button_restorebackup_id"
 
-static StrConstant dataPath = "root:MIES:postExperimentProcedures:downsample:"
-static StrConstant panel    = "Downsampling"
+static StrConstant dataPath       = "root:MIES:postExperimentProcedures:downsample:"
+static StrConstant panel          = "Downsampling"
+static StrConstant no_devices_msg = "No devices with data found"
 
 static Function/DF GetDownsampleDataFolder()
 
@@ -122,7 +123,7 @@ Function/S GetPopupMenuDeviceListWithData()
 	endfor
 
 	if(isEmpty(list))
-		return "No devices with data found"
+		return no_devices_msg
 	endif
 
 	return list
@@ -362,6 +363,7 @@ Function CreateDownsamplePanel()
 	NewPanel/N=$panel/W=(283, 389, 847, 643)/K=1
 	ASSERT(CmpStr(panel, S_name) == 0, "window already exists")
 	SetWindow $panel, hook(cleanup)=DownsampleWindowHook
+	SetWindow kwTopWin, userdata(JSONSettings_WindowGroup)="downsample"
 
 	PopupMenu popup_deviceselection_id, pos={28, 13}, size={214, 21}, bodyWidth=130, proc=PopupMenuDeviceSelection, title="Device Selection"
 	PopupMenu popup_deviceselection_id, mode=1, value=#"GetPopupMenuDeviceListWithData()"
@@ -423,7 +425,7 @@ Function CreateDownsamplePanel()
 	GroupBox group2, pos={11, 190}, size={253, 32}
 
 	NVAR JSONid = $GetSettingsJSONid()
-	PS_InitCoordinates(JSONid, panel, "downsample", addHook = 0)
+	PS_InitCoordinates(JSONid, panel, addHook = 0)
 
 	UpdatePanel(panel)
 	UpdatePopupMenuWindowFunction(panel)
@@ -609,6 +611,10 @@ static Function UpdatePanel(string win, [string deviceSelectionString])
 
 	if(ParamIsDefault(deviceSelectionString))
 		deviceSelectionString = GetPopupMenuString(win, popup_deviceselection)
+	endif
+
+	if(!cmpstr(deviceSelectionString, no_devices_msg))
+		return NaN
 	endif
 
 	ret = ParseDeviceString(deviceSelectionString, deviceType, deviceNumber)

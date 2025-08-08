@@ -3011,7 +3011,8 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_WCR, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_DataAcq_WCR, userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable setvar_DataAcq_WCR, userdata(Config_DontRestore)="1"
-	SetVariable setvar_DataAcq_WCR, limits={1, Inf, 1}, userdata(Config_DontSave)="1", value=_NUM:1
+	SetVariable setvar_DataAcq_WCR, userdata(Config_DontSave)="1"
+	SetVariable setvar_DataAcq_WCR, limits={1, Inf, 1}, value=_NUM:1
 	CheckBox check_DatAcq_WholeCellEnable, pos={63.00, 198.00}, size={14.00, 14.00}, disable=1, proc=DAP_CheckProc_AmpCntrls
 	CheckBox check_DatAcq_WholeCellEnable, title="", userdata(tabnum)="0"
 	CheckBox check_DatAcq_WholeCellEnable, userdata(tabcontrol)="tab_DataAcq_Amp"
@@ -4334,7 +4335,6 @@ Window DA_Ephys() : Panel
 	CheckBox Radio_ClampMode_AllIClamp, value=0, mode=1
 	DefineGuide UGV0={FR, -25}, UGH0={FB, -27}, UGV1={FL, 481}
 	SetWindow kwTopWin, hook(cleanup)=DAP_WindowHook
-	SetWindow kwTopWin, hook(windowCoordinateSaving)=StoreWindowCoordinatesHook
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)=A"!!*'\"z!!#CW!!#Dl5QCcbzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
@@ -4344,6 +4344,5 @@ Window DA_Ephys() : Panel
 	SetWindow kwTopWin, userdata(ResizeControlsInfoUGV1)="NAME:UGV1;WIN:DA_Ephys;TYPE:User;HORIZONTAL:0;POSITION:481.00;GUIDE1:FL;GUIDE2:;RELPOSITION:481;"
 	SetWindow kwTopWin, userdata(Config_PanelType)="DA_Ephys"
 	SetWindow kwTopWin, userdata(Config_RadioCouplingFunc)="DAP_GetRadioButtonCoupling"
-	SetWindow kwTopWin, userdata(JSONSettings_StoreCoordinates)="1"
-	SetWindow kwTopWin, userdata(JSONSettings_WindowName)="daephys"
+	SetWindow kwTopWin, userdata(JSONSettings_WindowGroup)="daephys"
 EndMacro

@@ -42,7 +42,13 @@ Function WRB_EvaluateDataBrowserSelection()
 	endfor
 End
 
-Function WRB_RecreateWrefBrowser()
+// Steps to recreate the macro:
+//
+// - Enable the Databrowser menu via `MIES Panels->Advanced->Panels->Enable Enhanced Databrowser`
+// - Create a wave reference wave with `make/o/wave d = {NewFreeWave(0, 1)}`
+// - Select the wave reference wave in the databrowser and choose "BrowseWref"
+// - Execute `WRB_StartupSettings()`
+Function WRB_StartupSettings()
 
 	string nbName
 
@@ -53,6 +59,10 @@ Function WRB_RecreateWrefBrowser()
 	ListBox wrefList, win=$WIN_NAME, selRow=0, listWave=$"", selWave=$"", colorWave=$""
 	nbName = WIN_NAME + "#" + WAVEINFO_NAME
 	ReplaceNotebookText(nbName, "")
+
+	DoWindow/T $WIN_NAME, "Waveref Wave Browser"
+
+	PS_RemoveCoordinateSaving(WIN_NAME)
 
 	Execute/P/Z "DoWindow/R " + WIN_NAME
 	Execute/P/Q/Z "COMPILEPROCEDURES "
@@ -81,11 +91,12 @@ Function WRB_ShowWrefBrowser(WAVE/WAVE wv)
 
 	if(!WindowExists(WIN_NAME))
 		Execute "WaverefBrowser()"
+		NVAR JSONid = $GetSettingsJSONid()
+		PS_InitCoordinates(JSONid, WIN_NAME)
 	else
 		DoWindow/F $WIN_NAME
 	endif
 	ListBox wrefList, win=$WIN_NAME, listWave=listWave, selWave=selWave, colorWave=colorWave
-	SetWindow $WIN_NAME, hook(windowCoordinateSaving)=StoreWindowCoordinatesHook
 	SetWindow $WIN_NAME, hook(cleanup)=WRB_BrowserWindowHook
 	if(IsFreeWave(wv))
 		wName = "Free wave ->" + NameOfWave(wv)

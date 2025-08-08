@@ -3949,7 +3949,7 @@ static Function PSX_CreatePSXGraphAndSubwindows(string win, string graph, STRUCT
 	AppendToGraph/W=$extSingleGraph/C=(21845, 21845, 21845) singleEventFit
 
 	NVAR JSONid = $GetSettingsJSONid()
-	PS_InitCoordinates(JSONid, extSubWin, extSubWin)
+	PS_InitCoordinates(JSONid, mainWin, recursive = 1)
 End
 
 /// @brief Mark `win` as being an psx graph
@@ -4353,6 +4353,8 @@ Function PSX_AllEventGraphHook(STRUCT WMWinHookStruct &s)
 		default:
 			break
 	endswitch
+
+	return 0
 End
 
 static Function PSX_GetDirectionFromKeyCode(string psxGraph, variable keyCode)

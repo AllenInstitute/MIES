@@ -1217,17 +1217,14 @@ Window WaveBuilder() : Panel
 	SetWindow kwTopWin, hook(main)=WBP_MainWindowHook
 	SetWindow kwTopWin, hook(resetScaling)=IH_ResetScaling
 	SetWindow kwTopWin, hook(ResizeControls)=ResizeControlsSafe
-	SetWindow kwTopWin, hook(windowCoordinateSaving)=StoreWindowCoordinatesHook
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)=A"!!*'\"z!!#E<!!#Cm^]4?7zzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin, userdata(ResizeControlsGuides)="UGH1;UGV0;"
 	SetWindow kwTopWin, userdata(ResizeControlsInfoUGH1)="NAME:UGH1;WIN:WaveBuilder;TYPE:User;HORIZONTAL:1;POSITION:237.00;GUIDE1:FT;GUIDE2:;RELPOSITION:237;"
-	SetWindow kwTopWin, userdata(panelVersion)="12"
 	SetWindow kwTopWin, userdata(Config_PanelType)="WaveBuilder"
 	SetWindow kwTopWin, userdata(ResizeControlsInfoUGV0)="NAME:UGV0;WIN:WaveBuilder;TYPE:User;HORIZONTAL:0;POSITION:187.00;GUIDE1:FL;GUIDE2:;RELPOSITION:187;"
-	SetWindow kwTopWin, userdata(JSONSettings_StoreCoordinates)="1"
-	SetWindow kwTopWin, userdata(JSONSettings_WindowName)="wavebuilder"
+	SetWindow kwTopWin, userdata(JSONSettings_WindowGroup)="wavebuilder"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={774,410.25,inf,inf}" // sizeLimit requires Igor 7 or later
 	Display/W=(186, 270, 1030, 544)/FG=(UGV0, UGH1, FR, FB)/HOST=#
 	SetWindow kwTopWin, hook(ResizeControls)=ResizeControlsSafe

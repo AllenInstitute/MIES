@@ -8321,7 +8321,7 @@ End
 
 /// @brief Returns a free wave for gathering formula results
 ///
-/// The wave stores the wave reference waves returned from SF_ExecuteFormula for the X and Y formulas.
+/// The wave stores the wave reference waves returned from SFE_ExecuteFormula for the X and Y formulas.
 /// In SF_GatherFormulaResults() all formula pairs for on graph subwindow are gathered.
 Function/WAVE GetFormulaGatherWave()
 
