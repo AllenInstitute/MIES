@@ -996,7 +996,7 @@ static Function TestOperationRange()
 	catch
 		CHECK_NO_RTE()
 		error = ROStr(GetSweepFormulaOutputMessage())
-		CHECK_EQUAL_STR(error, "Argument #0 of operation range: Too many input values")
+		CHECK_EQUAL_STR(error, "Argument #0 of operation range: Too many input values\rrange([1,2])\r---------^")
 	endtry
 End
 

@@ -7946,7 +7946,9 @@ End
 /// - One for each y vs x formula combination
 Function/WAVE GetYvsXFormulas()
 
-	Make/T/FREE/N=0 wv
+	Make/T/FREE/N=(0, 2) wv
+	SetDimLabel COLS, 0, GRAPHCODE, wv
+	SetDimLabel COLS, 1, LINE, wv
 
 	return wv
 End
@@ -8353,9 +8355,11 @@ End
 /// @brief Returns a wave where variable assignments are collected into
 Function/WAVE GetSFVarAssignments()
 
-	Make/FREE/T/N=(0, 2) varAssignments
+	Make/FREE/T/N=(0, 4) varAssignments
 	SetDimLabel COLS, 0, VARNAME, varAssignments
 	SetDimLabel COLS, 1, EXPRESSION, varAssignments
+	SetDimLabel COLS, 2, LINE, varAssignments
+	SetDimLabel COLS, 3, OFFSET, varAssignments
 
 	return varAssignments
 End
@@ -9154,6 +9158,33 @@ Function/WAVE GetSFErrorColorWave()
 	wv[%ERROR][%B] = 0
 
 	wv = wv << 8
+
+	return wv
+End
+
+Function/WAVE GetSFAssertData()
+
+	string name = "SFAssertData"
+
+	DFREF dfr = GetSweepFormulaPath()
+
+	WAVE/Z/T/SDFR=dfr wv = $name
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/T/N=(7) dfr:$name/WAVE=wv
+
+	SetDimLabel ROWS, 0, SRCLOCID, wv
+	SetDimLabel ROWS, 1, JSONPATH, wv
+	SetDimLabel ROWS, 2, STEP, wv
+	SetDimLabel ROWS, 3, LINE, wv
+	SetDimLabel ROWS, 4, OFFSET, wv
+	SetDimLabel ROWS, 5, FORMULA, wv
+	SetDimLabel ROWS, 6, INFORMULAOFFSET, wv
+
+	wv[%STEP] = num2istr(SF_STEP_OUTSIDE)
 
 	return wv
 End
