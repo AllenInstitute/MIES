@@ -1808,3 +1808,74 @@ static Function/WAVE CacheOptions()
 
 	return wv
 End
+
+static Function/WAVE DG_SourceLocationsBrackets()
+
+	Make/FREE/T wv = {"\"\r\"\"", "(\r))", "[\r]]"}
+
+	SetDimensionLabels(wv, "parenthesis;braces;brackets", ROWS)
+
+	return wv
+End
+
+static Function/WAVE DG_SourceLocationsVarious()
+
+	Make/FREE pos = {4}
+	Make/FREE/T formula = {"max(,,)"}
+	Make/FREE/WAVE wv0 = {pos, formula}
+
+	Make/FREE pos = {6}
+	Make/FREE/T formula = {"max(1,a)"}
+	Make/FREE/WAVE wv1 = {pos, formula}
+
+	Make/FREE pos = {12}
+	Make/FREE/T formula = {"max(1...10) + a"}
+	Make/FREE/WAVE wv2 = {pos, formula}
+
+	Make/FREE pos = {11}
+	Make/FREE/T formula = {"max(1, min(a))"}
+	Make/FREE/WAVE wv3 = {pos, formula}
+
+	Make/FREE pos = {2}
+	Make/FREE/T formula = {"1+++1"}
+	Make/FREE/WAVE wv4 = {pos, formula}
+
+	Make/FREE pos = {13}
+	Make/FREE/T formula = {"[1*(-1),1*-1][]"}
+	Make/FREE/WAVE wv4 = {pos, formula}
+
+	Make/FREE/WAVE wv = {wv0, wv1, wv2, wv3, wv4}
+
+	return wv
+End
+
+static Function/WAVE DG_SourceLocationsJSON()
+
+	Make/FREE pos = {4}
+	Make/FREE/T formula = {"1"}
+	Make/FREE/WAVE wv0 = {pos, formula}
+
+	Make/FREE pos = {6}
+	Make/FREE/T formula = {"1+2"}
+	Make/FREE/WAVE wv1 = {pos, formula}
+
+	Make/FREE pos = {12}
+	Make/FREE/T formula = {"max()"}
+	Make/FREE/WAVE wv2 = {pos, formula}
+
+	Make/FREE pos = {11}
+	Make/FREE/T formula = {"max(1)"}
+	Make/FREE/WAVE wv3 = {pos, formula}
+
+	Make/FREE pos = {2}
+	Make/FREE/T formula = {"[1,2]"}
+	Make/FREE/WAVE wv4 = {pos, formula}
+
+	Make/FREE pos = {13}
+	Make/FREE/T formula = {"1+2*3"}
+	Make/FREE/WAVE wv4 = {pos, formula}
+
+	Make/FREE/WAVE wv = {wv0, wv1, wv2, wv3, wv4}
+
+	return wv
+End
