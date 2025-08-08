@@ -54,6 +54,8 @@ Function WRB_StartupSettings()
 	nbName = WIN_NAME + "#" + WAVEINFO_NAME
 	ReplaceNotebookText(nbName, "")
 
+	DoWindow/T $WIN_NAME, "Waveref Wave Browser"
+
 	Execute/P/Z "DoWindow/R " + WIN_NAME
 	Execute/P/Q/Z "COMPILEPROCEDURES "
 	CleanupOperationQueueResult()
