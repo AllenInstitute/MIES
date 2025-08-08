@@ -1,11 +1,11 @@
 IGOR
-WAVES/T/N=(78,6)	labnotebook_textual_description
+WAVES/T/N=(79,6)	labnotebook_textual_description
 BEGIN
 	"Name"	"Unit"	"Tolerance"	"Description"	"Headstage Contingency"	"ClampMode"
 	"TimeStamp"	"s"	"-"	"Time Stamp: Seconds since Igor epoch (1/1/1904) in local time zone with millisecond precision. Written at time of labnotebook entry."	"ALL"	""
 	"TimeStampSinceIgorEpochUTC"	"s"	"-"	"Time Stamp: Seconds since Igor epoch (1/1/1904) in coordinated universal time zone (UTC) with millisecond precision. Written at time of labnotebook entry."	"ALL"	""
 	"EntrySourceType"	""	"-"	"Entry source type: type of the labnotebook entry, 0 for data acquisition, 1 for test pulse, NaN for all other types including user entries.\r"	"ALL"	""
-	"AcquisitionState"	""	"-"	"Stores the current numbered state of data acquistion."	"ALL"	""
+	"AcquisitionState"	""	"-"	"Stores the current numbered state of data acquisition."	"ALL"	""
 	"Stim Wave Name"	""	"-"	"Stimulus set name"	"DEPEND"	""
 	"DA unit"	""	"-"	"User-defined analog output unit. Depends on the clamp mode. Typically pA or mV."	"DEPEND"	""
 	"AD unit"	""	"-"	"User-defined analog input unit. Depends on the clamp mode. Typically pA or mV."	"DEPEND"	""
@@ -54,7 +54,7 @@ BEGIN
 	"RawOutSignalString"	""	"-"	"User-configured signal type of secondary output encoded as a string.\r\rFor more details, see the MultiClamp700B Manual."	"DEPEND"	""
 	"RawScaleFactorUnitsString"	""	"-"	"String denoting the unit of the Raw Scale Factor.\r\rFor more details see the MultiClamp700B Manual."	"DEPEND"	""
 	"User comment"	""	"-"	"Free-form user comment without a timestamp. Duplicate of entries in the user-comment notebook."	"INDEP"	""
-	"HardwareTypeString"	""	"-"	"Amplifer hardware type string. e.g., MultiClamp 700B"	"DEPEND"	""
+	"HardwareTypeString"	""	"-"	"Amplifier hardware type string. e.g., MultiClamp 700B"	"DEPEND"	""
 	"Async AD0 Title"	""	"-"	"User name of indicated asynchronous channel."	"INDEP"	""
 	"Async AD1 Title"	""	"-"	"User name of indicated asynchronous channel."	"INDEP"	""
 	"Async AD2 Title"	""	"-"	"User name of indicated asynchronous channel."	"INDEP"	""
@@ -79,6 +79,7 @@ BEGIN
 	"TTL Epochs Channel 5"	""	"-"	"Epochs of TTL Channel 5"	"INDEP"	""
 	"TTL Epochs Channel 6"	""	"-"	"Epochs of TTL Channel 6"	"INDEP"	""
 	"TTL Epochs Channel 7"	""	"-"	"Epochs of TTL Channel 7"	"INDEP"	""
+	"PostProcessed"	"On/Off"	"-"	"Information added at a later time through a post processing step. (e.g. recreated epoch information)"	"ALL"	""
 END
 X SetScale/P x 0,1,"", labnotebook_textual_description; SetScale/P y 0,1,"", labnotebook_textual_description; SetScale d 0,0,"", labnotebook_textual_description
 X Note labnotebook_textual_description, "WAVE_LAYOUT_VERSION:1;"
