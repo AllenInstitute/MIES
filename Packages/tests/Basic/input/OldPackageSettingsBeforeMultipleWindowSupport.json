@@ -1,0 +1,48 @@
+{
+  "analysisbrowser": {
+    "coordinates": {
+      "bottom": 516.5,
+      "left": 9,
+      "right": 881.25,
+      "top": 72.5
+    },
+    "directory": [
+      "C:Users:Admin:Documents:"
+    ]
+  },
+  "daephys": {
+    "coordinates": {
+      "bottom": 725.75,
+      "left": 986.25,
+      "right": 1363.5,
+      "top": 68.75
+    }
+  },
+  "datasweepbrowser": {
+    "coordinates": {
+      "bottom": 664.25,
+      "left": 427.5,
+      "right": 916.5,
+      "top": 292.25
+    }
+  },
+  "diagnostics": {
+    "last upload": "1904-01-01T00:00:00Z"
+  },
+  "logfiles": {
+    "last upload": "1904-01-01T00:00:00Z"
+  },
+  "userping": {
+    "enabled": true,
+    "last upload": "1904-01-01T00:00:00Z"
+  },
+  "version": 1,
+  "wavebuilder": {
+    "coordinates": {
+      "bottom": 680,
+      "left": 102,
+      "right": 876,
+      "top": 269.75
+    }
+  }
+}

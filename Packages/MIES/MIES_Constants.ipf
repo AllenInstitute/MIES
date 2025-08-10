@@ -18,10 +18,10 @@
 Constant DAQ_CONFIG_WAVE_VERSION = 3
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION           = 66
-Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 53
-Constant WAVEBUILDER_PANEL_VERSION        = 14
-Constant ANALYSISBROWSER_PANEL_VERSION    = 10
+Constant DA_EPHYS_PANEL_VERSION           = 67
+Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 54
+Constant WAVEBUILDER_PANEL_VERSION        = 15
+Constant ANALYSISBROWSER_PANEL_VERSION    = 11
 Constant PSX_PLOT_PANEL_VERSION           = 1
 
 /// Version of the stimset wave note
@@ -66,6 +66,8 @@ Constant EXPERIMENT_VERSION = 3
 Constant ANALYSIS_BROWSER_SUPP_VERSION = 3
 
 Constant PA_SETTINGS_STRUCT_VERSION = 6
+
+Constant PACKAGE_JSON_VERSION = 2
 ///@}
 
 /// @name Constans for the number of channels
@@ -583,6 +585,15 @@ Constant AXIS_ORIENTATION_TOP    = 0x09
 Constant AXIS_ORIENTATION_VERT   = 0x02
 Constant AXIS_ORIENTATION_LEFT   = 0x12
 Constant AXIS_ORIENTATION_RIGHT  = 0x22
+///@}
+
+/// @name Constants for exterior SubWindow orientations
+/// @anchor ExtSubWindowOrientations
+///@{
+Constant EXT_SUBWINDOW_ORIENTATION_RIGHT  = 0
+Constant EXT_SUBWINDOW_ORIENTATION_LEFT   = 1
+Constant EXT_SUBWINDOW_ORIENTATION_BOTTOM = 2
+Constant EXT_SUBWINDOW_ORIENTATION_TOP    = 3
 ///@}
 
 /// @name Constants for Set/GetAxesRanges modes, use binary pattern

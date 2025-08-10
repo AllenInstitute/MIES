@@ -308,6 +308,19 @@ static Function/WAVE GetMiesMacrosWithPanelType()
 	return matches
 End
 
+static Function/WAVE GetMiesMacrosWithCoordinateSaving()
+
+	WAVE/T allMiesMacros = GetMIESMacros()
+
+	Make/FREE/T panelsWithoutGroup = {"IDM_Headstage_Panel", "IDM_Popup_Panel", "DebugPanel", "ExportSettingsPanel", "WaverefBrowser"}
+
+	WAVE/T matches = GetSetDifference(allMiesMacros, panelsWithoutGroup)
+
+	SetDimensionLabels(matches, TextWaveToList(matches, ";"), ROWS)
+
+	return matches
+End
+
 static Function/WAVE EpochTestSamplingFrequency_Gen()
 
 	string frequencies = DAP_GetSamplingFrequencies()

@@ -144,7 +144,7 @@ Function/S WBP_CreateWaveBuilderPanel()
 	AddVersionToPanel(panel, WAVEBUILDER_PANEL_VERSION)
 
 	NVAR JSONid = $GetSettingsJSONid()
-	PS_InitCoordinates(JSONid, panel, "wavebuilder")
+	PS_InitCoordinates(JSONid, panel)
 
 	return panel
 End
@@ -159,8 +159,11 @@ Function WBP_StartupSettings()
 
 	HideTools/A/W=$panel
 
+	// @todo workaround IP issue #7316
 	WAVE/Z wv = $""
 	ListBox listbox_combineEpochMap, listWave=wv, win=$panel
+
+	PS_RemoveCoordinateSaving(panel)
 
 	KillWindow/Z $WBP_GetFFTSpectrumPanel()
 
@@ -187,6 +190,8 @@ Function WBP_StartupSettings()
 	endif
 
 	CallFunctionForEachListItem(WBP_AdjustDeltaControls, ControlNameList(panel, ";", "popup_WaveBuilder_op_*"))
+
+	SetWindow $panel, userdata(panelVersion)=""
 
 	Execute/P/Q/Z "DoWindow/R " + panel
 	Execute/P/Q/Z "COMPILEPROCEDURES "

@@ -14,4 +14,5 @@ Window IVSCCControlPanel() : Panel
 	Button button_runBaselineQC, pos={48.00, 61.00}, size={190.00, 30.00}, proc=IVS_ButtonProc_BaselineQC, title="Run baseline QC"
 	Button button_runAccessResisQC, pos={48.00, 145.00}, size={190.00, 30.00}, proc=IVS_ButtonProc_AccessResist, title="Run access resistance QC check"
 	SetWindow kwTopWin, userdata(Config_PanelType)="IVSCControlPanel"
+	SetWindow kwTopWin, userdata(JSONSettings_WindowGroup)="ivscccontrolpanel"
 EndMacro

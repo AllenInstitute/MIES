@@ -680,7 +680,7 @@ Function PEXT_GenerateSubMenuNames(WAVE/Z/T splitMenu, [variable method])
 			subItemList = splitMenu[i]
 			ASSERT(!IsEmpty(subItemList), "menu item list for submenu is empty in splitMenu wave")
 			subMenuBoundary[2 * i]     = StringFromList(0, subItemList)
-			subMenuBoundary[2 * i + 1] = StringFromList(ItemsInList(subItemList) - 1, subItemList)
+			subMenuBoundary[2 * i + 1] = LastStringFromList(subItemList)
 		endfor
 
 		minLen = 0
