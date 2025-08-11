@@ -2373,7 +2373,7 @@ Function HW_NI_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCRE
 			ASSERT(!IsFreeWave(NIDataWave[i]), "Can not work with free waves")
 			switch(config[i][%ChannelType])
 				case XOP_CHANNEL_TYPE_ADC:
-					scanStr += num2str(config[i][%ChannelNumber]) + "/RSE,"
+					scanStr += num2str(config[i][%ChannelNumber]) + "/" + HW_NI_AnalogInputToString(HW_NI_CONFIG_RSE) + ","
 					scanStr += num2str(NI_ADC_MIN) + "," + num2str(NI_ADC_MAX) + ","
 					scanStr += num2str(gain[i]) + ",0"
 					scanStr += ";"
