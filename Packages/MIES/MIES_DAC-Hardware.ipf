@@ -2249,6 +2249,8 @@ static Constant HW_NI_MIN_VOLTAGE = -10.0
 static Constant HW_NI_MAX_VOLTAGE = +10.0
 ///@}
 
+/// Not to be confused with @ref NIAnalogInputConfigs
+/// this is a fDAQmx_ReadChan flag only.
 static Constant HW_NI_DIFFERENTIAL_SETUP = 0
 
 static Constant HW_NI_FIFOSIZE = 120
