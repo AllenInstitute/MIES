@@ -11,6 +11,56 @@
 
 /// @brief Add numerical/textual entries to the labnotebook
 ///
+/// This function adds one or more new entries to the LBN.
+/// The new entries are given through a vals, keys combination. Depending on the type of
+/// vals the textual or numerical LBN is targeted. The function determines the correct
+/// target LBN automatically through sweepNo and device.
+///
+/// The entrySourceType specifies to which logical block of the LBN the entries get added
+///
+/// Specification of vals and keys:
+/// Multiple entries can be written with one call.
+/// vals: text or numerical WAVE of size (1, numberOfNewEntries, LABNOTEBOOK_LAYER_COUNT)
+///       The layers index the target headstage or INDEP_HEADSTAGE.
+///       The elements of the wave must be filled with the values that should be written.
+///       Based on  the column number key/value pairs are defined from vals/keys.
+///       numeric vals waves must be initialized with NaN
+/// keys: text WAVE in one of three possible layouts:
+///       - size (1, numberOfNewEntries)
+///         one key is specified per column
+///       - size (3, numberOfNewEntries)
+///         row 0: key
+///         row 1: LBN unit
+///         row 2: LNB tolerance
+///       - size (6, numberOfNewEntries)
+///         row 0: key
+///         row 1: unit
+///         row 2: tolerance
+///         row 3: description
+///         row 4: Headstage Contingency
+///         row 5: ClampMode
+///       optionally the keys wave may have a layer size of 1.
+///
+/// Key specification:
+/// Duplicated keys are not allowed and will give an error.
+///
+/// Correct filling of entry keys and corresponding values:
+/// for associated DA/AD channels use the regular key and the headstage as layer for vals
+/// for unassociated DA/AD channels create the correct key with CreateLBNUnassocKey with
+///   layer INDEP_HEADSTAGE in vals
+/// for some TTL channels the correct key is created through CreateTTLChannelLBNKey with layer INDEP_HEADSTAGE in vals
+///
+/// In the LBN one new row is added at the end where all entries that should be written are placed.
+/// (As no keys are duplicated, all data can be written to one row)
+/// LBN columns for new keys are created automatically.
+///
+/// If insertAsPostProc is set to 1:
+/// Instead of the above: In the LBN a new row is inserted after the block specified by sweepNo/entrySourceType.
+/// The new entries are placed in this row and implicitly an entry with key "PostProcessed"
+/// and value "1" or 1 respectively is set in the same row.
+///
+/// It is recommended to gather all entries to be written in keys/values and call ED_AddEntriesToLabnotebook then once.
+///
 /// @see ED_createTextNotes, ED_createWaveNote
 Function ED_AddEntriesToLabnotebook(WAVE vals, WAVE/T keys, variable sweepNo, string device, variable entrySourceType)
 
@@ -37,12 +87,59 @@ End
 
 static Function ED_CheckValuesAndKeys(WAVE vals, WAVE keys)
 
+	string msg
+
 	ASSERT(DimSize(vals, ROWS) == 1, "Mismatched row count")
 	ASSERT(DimSize(vals, COLS) == DimSize(keys, COLS), "Mismatched column count")
 	ASSERT(DimSize(vals, LAYERS) <= LABNOTEBOOK_LAYER_COUNT, "Mismatched layer count")
 
 	ASSERT(DimSize(keys, ROWS) == 1 || DimSize(keys, ROWS) == 3 || DimSize(keys, ROWS) == 6, "Mismatched row count")
 	ASSERT(DimSize(keys, LAYERS) <= 1, "Mismatched layer count")
+
+	if(DimSize(keys, COLS) == 1)
+		return NaN
+	endif
+	Duplicate/FREE/RMD=[0][][0][0] keys, checkKeysForDupes
+	Redimension/N=(DimSize(checkKeysForDupes, COLS))/E=1 checkKeysForDupes
+	if(SearchForDuplicates(checkKeysForDupes))
+		FindDuplicates/Z/FREE/DT=dups checkKeysForDupes
+		wfprintf msg, "%s", dups
+		sprintf msg, "Keywave contains duplicate keys: %s", msg
+		FATAL_ERROR(msg)
+	endif
+End
+
+static Function ED_InitNewRow(WAVE values, variable rowIndex, variable sweepNo, variable entrySourceType, variable acqState)
+
+	variable timestamp
+	string   timestampStr
+
+	if(IsTextWave(values))
+		WAVE/T valuesT = values
+		valuesT[rowIndex][0][] = num2istr(sweepNo)
+		valuesT[rowIndex][3][] = num2istr(entrySourceType)
+
+		valuesT[rowIndex][4][] = num2istr(acqState)
+
+		// store the current time in a variable first
+		// so that all layers have the same timestamp
+		timestampStr           = num2strHighPrec(DateTime, precision = 3)
+		valuesT[rowIndex][1][] = timestampStr
+		timestampStr           = num2strHighPrec(DateTimeInUTC(), precision = 3)
+		valuesT[rowIndex][2][] = timestampStr
+	else
+		values[rowIndex][0][] = sweepNo
+		values[rowIndex][3][] = entrySourceType
+
+		values[rowIndex][4][] = acqState
+
+		// store the current time in a variable first
+		// so that all layers have the same timestamp
+		timestamp             = DateTime
+		values[rowIndex][1][] = timestamp
+		timestamp             = DateTimeInUTC()
+		values[rowIndex][2][] = timestamp
+	endif
 End
 
 /// @brief Add textual entries to the logbook
@@ -62,7 +159,6 @@ End
 static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incomingTextualKeys, variable sweepNo, variable entrySourceType, variable logbookType, [string device])
 
 	variable rowIndex, numCols, i, lastValidIncomingLayer, state
-	string timestamp
 
 	if(ParamIsDefault(device))
 		ASSERT(logbookType == LBT_RESULTS, "Invalid logbook type")
@@ -80,17 +176,7 @@ static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incoming
 	[WAVE indizes, rowIndex] = ED_FindIndizesAndRedimension(incomingTextualKeys, incomingTextualValues, keys, values, logbookType)
 	ASSERT(WaveExists(indizes), "Missing indizes")
 
-	values[rowIndex][0][] = num2istr(sweepNo)
-	values[rowIndex][3][] = num2istr(entrySourceType)
-
-	values[rowIndex][4][] = num2istr(state)
-
-	// store the current time in a variable first
-	// so that all layers have the same timestamp
-	timestamp             = num2strHighPrec(DateTime, precision = 3)
-	values[rowIndex][1][] = timestamp
-	timestamp             = num2strHighPrec(DateTimeInUTC(), precision = 3)
-	values[rowIndex][2][] = timestamp
+	ED_InitNewRow(values, rowIndex, sweepNo, entrySourceType, state)
 
 	WAVE valuesDat = ExtractLogbookSliceTimeStamp(values)
 	EnsureLargeEnoughWave(valuesDat, indexShouldExist = rowIndex, dimension = ROWS)
@@ -113,7 +199,7 @@ static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incoming
 	SetNumberInWaveNote(values, NOTE_INDEX, rowIndex + 1)
 End
 
-static Function ED_ParseHeadstageContigencyMode(string str)
+static Function ED_ParseHeadstageContingencyMode(string str)
 
 	if(!cmpstr(str, "ALL"))
 		return (HCM_DEPEND | HCM_INDEP)
@@ -126,7 +212,7 @@ static Function ED_ParseHeadstageContigencyMode(string str)
 	return HCM_EMPTY
 End
 
-static Function/S ED_HeadstageContigencyModeToString(variable mode)
+static Function/S ED_HeadstageContingencyModeToString(variable mode)
 
 	switch(mode)
 		case HCM_INDEP:
@@ -142,7 +228,7 @@ static Function/S ED_HeadstageContigencyModeToString(variable mode)
 	endswitch
 End
 
-/// @brief Return the headstage contigency mode for values
+/// @brief Return the headstage contingency mode for values
 static Function ED_GetHeadstageContingency(WAVE values)
 
 	if(IsTextWave(values))
@@ -182,7 +268,7 @@ End
 /// @param logbookType             one of @ref LogbookTypes
 static Function ED_createWaveNotes(WAVE incomingNumericalValues, WAVE/T incomingNumericalKeys, variable sweepNo, variable entrySourceType, variable logbookType, [string device])
 
-	variable rowIndex, numCols, lastValidIncomingLayer, i, timestamp, state
+	variable rowIndex, numCols, lastValidIncomingLayer, i, state
 
 	if(ParamIsDefault(device))
 		ASSERT(logbookType == LBT_RESULTS, "Invalid logbook type")
@@ -201,17 +287,7 @@ static Function ED_createWaveNotes(WAVE incomingNumericalValues, WAVE/T incoming
 	[WAVE indizes, rowIndex] = ED_FindIndizesAndRedimension(incomingNumericalKeys, incomingNumericalValues, keys, values, logbookType)
 	ASSERT(WaveExists(indizes), "Missing indizes")
 
-	values[rowIndex][0][] = sweepNo
-	values[rowIndex][3][] = entrySourceType
-
-	values[rowIndex][4][] = state
-
-	// store the current time in a variable first
-	// so that all layers have the same timestamp
-	timestamp             = DateTime
-	values[rowIndex][1][] = timestamp
-	timestamp             = DateTimeInUTC()
-	values[rowIndex][2][] = timestamp
+	ED_InitNewRow(values, rowIndex, sweepNo, entrySourceType, state)
 
 	WAVE valuesDat = ExtractLogbookSliceTimeStamp(values)
 	EnsureLargeEnoughWave(valuesDat, indexShouldExist = rowIndex, dimension = ROWS, initialValue = NaN)
@@ -493,11 +569,10 @@ End
 /// @retval rowIndex   returns the row index into values at which the new values should be written
 static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimension(WAVE/T incomingKey, WAVE incomingValues, WAVE/T key, WAVE values, variable logbookType)
 
-	variable numCols, numKeyRows, numKeyCols, i, j, numAdditions, idx
+	variable numCols, numKeyCols, i, j, numAdditions, idx
 	variable lastValidIncomingKeyRow, descIndex, isUserEntry, headstageCont, headstageContDesc, isUnAssoc
 	string msg, searchStr
 
-	numKeyRows              = DimSize(key, ROWS)
 	numKeyCols              = DimSize(key, COLS)
 	lastValidIncomingKeyRow = DimSize(incomingKey, ROWS) - 1
 
@@ -596,14 +671,14 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 		// check for correct headstage contingency
 		Duplicate/FREE/RMD=[0][i][*] incomingValues, valuesSlice
 		headstageCont     = ED_GetHeadstageContingency(valuesSlice)
-		headstageContDesc = ED_ParseHeadstageContigencyMode(desc[%HeadstageContingency][descIndex])
+		headstageContDesc = ED_ParseHeadstageContingencyMode(desc[%HeadstageContingency][descIndex])
 
 		if(isUnAssoc)
 			headstageContDesc = HCM_INDEP
 		endif
 
 		if(headstageCont != HCM_EMPTY && !(headstageCont & headstageContDesc))
-			sprintf msg, "Headstage contingency for entry \"%s\": stock: \"%s\", incoming: \"%s\"", searchStr, desc[%HeadstageContingency][descIndex], ED_HeadstageContigencyModeToString(headstageCont)
+			sprintf msg, "Headstage contingency for entry \"%s\": stock: \"%s\", incoming: \"%s\"", searchStr, desc[%HeadstageContingency][descIndex], ED_HeadstageContingencyModeToString(headstageCont)
 			BUG(msg)
 		endif
 

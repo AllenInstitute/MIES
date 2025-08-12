@@ -825,7 +825,7 @@ static Function Test_GetHeadstageForChannel()
 
 	channel = 6
 	hs      = GetHeadstageForChannel(numericalValues, sweepNo, XOP_CHANNEL_TYPE_TTL, channel, DATA_ACQUISITION_MODE)
-	CHECK_EQUAL_VAR(hs, INDEP_HEADSTAGE)
+	CHECK_EQUAL_VAR(hs, NaN)
 	hs = GetHeadstageForChannel(numericalValues, sweepNo, XOP_CHANNEL_TYPE_DAC, channel, TEST_PULSE_MODE)
 	CHECK_EQUAL_VAR(hs, NaN)
 	hs = GetHeadstageForChannel(numericalValues, sweepNo, XOP_CHANNEL_TYPE_ADC, channel, UNKNOWN_MODE)

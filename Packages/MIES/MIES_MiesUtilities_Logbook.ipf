@@ -1819,15 +1819,13 @@ Function GetHeadstageForChannel(WAVE numericalValues, variable sweep, variable c
 	variable index
 
 	[WAVE settings, index] = GetLastSettingChannel(numericalValues, $"", sweep, "Headstage Active", channelNumber, channelType, entrySourceType)
-	if(!WaveExists(settings))
-		return NaN
+	if(WaveExists(settings) && settings[index] == 1)
+		return index
 	endif
 
-	if(!settings[index])
-		return NaN
-	endif
-
-	return index
+	// fallback for LBN before
+	// 602debb9 (Record the active headstage in the settingsHistory, 2014-11-04)
+	return GetHeadstageFromOldLBN(numericalValues, sweep, channelType, channelNumber, entrySourceType)
 End
 
 /// @brief Return a list of TTL stimsets which are indexed by DAEphys TTL channels
@@ -1920,6 +1918,41 @@ Function [variable type, variable waMode, variable headstage] GetAnalysisFunctio
 	[type, waMode]          = AD_GetAnalysisFunctionType(numericalValues, anaFuncTypes, sweepNo, headstage)
 
 	return [type, waMode, headstage]
+End
+
+// fallback for headstage retrievel for LBN before
+// 602debb9 (Record the active headstage in the settingsHistory, 2014-11-04)
+// The headstage is retrieved by evaluating the DAC/ADC entries of the LBN
+static Function GetHeadstageFromOldLBN(WAVE numericalValues, variable sweepNo, variable channelType, variable channelNumber, variable dataAcqOrTP)
+
+	string lbnEntry
+
+	switch(channelType)
+		case XOP_CHANNEL_TYPE_DAC:
+			lbnEntry = "DAC"
+			break
+		case XOP_CHANNEL_TYPE_ADC:
+			lbnEntry = "ADC"
+			break
+		case XOP_CHANNEL_TYPE_TTL:
+			return NaN
+		default:
+			FATAL_ERROR("Unknown channel type")
+	endswitch
+
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, lbnEntry, dataAcqOrTP)
+	if(!WaveExists(settings))
+		return NaN
+	endif
+	FindValue/V=(channelNumber) settings
+	if(V_value == -1)
+		return NaN
+	endif
+	if(V_row < NUM_HEADSTAGES)
+		return V_row
+	endif
+
+	return NaN
 End
 
 Function ParseLogbookMode(string modeText)

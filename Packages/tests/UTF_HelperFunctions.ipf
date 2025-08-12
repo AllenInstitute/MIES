@@ -382,7 +382,7 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 	keys[0][0][0]   = "Headstage Active"
 	keys[1][0][0]   = LABNOTEBOOK_BINARY_UNIT
 	keys[2][0][0]   = LABNOTEBOOK_NO_TOLERANCE
-	ED_AddEntriesToLabnotebook(valuesDAC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	keys = ""
 
@@ -505,7 +505,7 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 	values[0][0][0] = 1
 	values[0][0][1] = 1
 	keys[0][0][0]   = "Headstage Active"
-	ED_AddEntriesToLabnotebook(valuesDAC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// numerical entries
 
@@ -609,7 +609,7 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 	values[0][0][0] = 1
 	values[0][0][1] = 1
 	keys[0][0][0]   = "Headstage Active"
-	ED_AddEntriesToLabnotebook(valuesDAC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	values[]        = NaN
 	values[0][0][0] = I_EQUAL_ZERO_MODE
@@ -670,7 +670,7 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 	values[]        = 0
 	values[0][0][0] = 1
 	keys[0][0][0]   = "Headstage Active"
-	ED_AddEntriesToLabnotebook(valuesDAC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	values[]        = NaN
 	values[0][0][0] = V_CLAMP_MODE
