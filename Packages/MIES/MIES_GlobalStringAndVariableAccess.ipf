@@ -777,3 +777,11 @@ Function/S GetDFReferenceCount(DFREF dfr)
 
 	return GetNVARAsString(dfr, MEMORY_REFCOUNTER_DF, initialValue = 0)
 End
+
+/// @brief Get the ADC configuration for NI devices
+///
+/// Combination of @ref NIAnalogInputConfigs bits
+Function/S GetDeviceADCConfig(string device)
+
+	return GetNVARAsString(GetDevicePath(device), "ADCConfig", initialValue = NaN)
+End
