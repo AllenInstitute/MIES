@@ -2366,7 +2366,7 @@ Function HW_NI_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCRE
 	endif
 
 	if(ParamIsDefault(ADCConfig))
-		ADCConfig = HW_NI_CONFIG_RSE
+		FATAL_ERROR("ADCConfig is missing")
 	endif
 
 	if((ADCConfig & HW_NI_CONFIG_RSE) == HW_NI_CONFIG_RSE)
