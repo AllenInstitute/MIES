@@ -414,7 +414,7 @@ End
 static Function UnassociatedChannelsAndTTLs_REENTRY([string str])
 
 	string device, sweeps, configs, unit, expectedStr, stimSetLengths2
-	variable numEntries, i, j, k, numSweeps, numRacks, hardwareType, index
+	variable numEntries, i, j, k, numSweeps, numRacks, hardwareType, index, ADCConfig
 
 	numSweeps = 1
 
@@ -768,6 +768,22 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([string str])
 		TestNwbExportV1()
 		TestNwbExportV2()
 	endif
+
+	ADCConfig = GetLastSettingIndep(numericalValues, 0, "ADC Configuration bits", DATA_ACQUISITION_MODE)
+
+	INFO("ADCConfig: %d", n0 = ADCConfig)
+
+	switch(hardwareType)
+		case HARDWARE_NI_DAC:
+			CHECK(IsFinite(ADCConfig))
+			break
+		case HARDWARE_ITC_DAC: // fallthrough
+		case HARDWARE_SUTTER_DAC:
+			CHECK(IsNaN(ADCConfig))
+			break
+		default:
+			FATAL_ERROR("Invalid hardware type: " + num2str(hardwareType))
+	endswitch
 End
 
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1

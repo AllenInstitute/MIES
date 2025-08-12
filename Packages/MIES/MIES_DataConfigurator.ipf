@@ -1121,6 +1121,8 @@ static Function DC_PrepareLBNEntries(string device, STRUCT DataConfigurationResu
 
 	DC_DocumentChannelProperty(device, RA_ACQ_CYCLE_ID_KEY, INDEP_HEADSTAGE, NaN, NaN, var = raCycleID)
 
+	DC_DocumentChannelProperty(device, "ADC Configuration bits", INDEP_HEADSTAGE, NaN, NaN, var = RoVar(GetDeviceADCConfig(device)))
+
 	// get maximum ITI from all DACs
 	for(i = 0; i < s.numDACEntries; i += 1)
 		maxITI = max(maxITI, WB_GetITI(s.stimSet[i], s.setColumn[i]))

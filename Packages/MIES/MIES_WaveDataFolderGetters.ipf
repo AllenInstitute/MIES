@@ -32,7 +32,7 @@ static StrConstant TP_SETTINGS_LABELS = "bufferSize;resistanceTol;sendToAllHS;ba
 static StrConstant LOGBOOK_SUFFIX_SORTEDKEYS        = "_sorted"
 static StrConstant LOGBOOK_SUFFIX_SORTEDKEYSINDICES = "_indices"
 
-static Constant SWEEP_SETTINGS_WAVE_VERSION = 41
+static Constant SWEEP_SETTINGS_WAVE_VERSION = 42
 
 /// @brief Return a wave reference to the corresponding Logbook keys wave from an values wave input
 threadsafe Function/WAVE GetLogbookValuesFromKeys(WAVE keyWave)
@@ -2517,6 +2517,7 @@ End
 /// - 59: Require amplifier
 /// - 60: Skip Ahead
 /// - 61: TP power spectrum
+/// - 62: ADC Configuration bits
 Function/WAVE GetSweepSettingsKeyWave(string device)
 
 	variable versionOfNewWave = SWEEP_SETTINGS_WAVE_VERSION
@@ -2538,7 +2539,7 @@ Function/WAVE GetSweepSettingsKeyWave(string device)
 	if(WaveExists(wv))
 		Redimension/N=(-1, 63) wv
 	else
-		Make/T/N=(3, 62) newDFR:$newName/WAVE=wv
+		Make/T/N=(3, 63) newDFR:$newName/WAVE=wv
 	endif
 
 	wv = ""
@@ -2794,6 +2795,10 @@ Function/WAVE GetSweepSettingsKeyWave(string device)
 	wv[%Parameter][61] = "TP power spectrum"
 	wv[%Units][61]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][61] = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[%Parameter][62] = "ADC Configuration bits"
+	wv[%Units][62]     = ""
+	wv[%Tolerance][62] = "0.1"
 
 	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)

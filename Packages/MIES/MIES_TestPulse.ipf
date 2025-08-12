@@ -1489,6 +1489,8 @@ End
 /// @param fast        [optional, defaults to false] Performs only the totally necessary steps for setup
 Function TP_Setup(string device, variable runMode, [variable fast])
 
+	variable ADCConfig
+
 	if(ParamIsDefault(fast))
 		fast = 0
 	else
@@ -1502,7 +1504,8 @@ Function TP_Setup(string device, variable runMode, [variable fast])
 		// fast restart is considered to be part of the same cycle
 
 		NVAR deviceID = $GetDAQDeviceID(device)
-		HW_PrepareAcq(GetHardwareType(device), deviceID, TEST_PULSE_MODE, flags = HARDWARE_ABORT_ON_ERROR)
+		ADCConfig = ROVar(GetDeviceADCConfig(device))
+		HW_PrepareAcq(GetHardwareType(device), deviceID, TEST_PULSE_MODE, flags = HARDWARE_ABORT_ON_ERROR, ADCConfig = ADCConfig)
 		return NaN
 	endif
 
@@ -1523,7 +1526,8 @@ Function TP_Setup(string device, variable runMode, [variable fast])
 	DAP_AdaptAutoTPColorAndDependent(device)
 
 	NVAR deviceID = $GetDAQDeviceID(device)
-	HW_PrepareAcq(GetHardwareType(device), deviceID, TEST_PULSE_MODE, flags = HARDWARE_ABORT_ON_ERROR)
+	ADCConfig = ROVar(GetDeviceADCConfig(device))
+	HW_PrepareAcq(GetHardwareType(device), deviceID, TEST_PULSE_MODE, flags = HARDWARE_ABORT_ON_ERROR, ADCConfig = ADCConfig)
 End
 
 /// @brief Common setup calls for TP and TP during DAQ

@@ -1696,7 +1696,7 @@ End
 /// @param configFunc  [optional, defaults to GetDAQConfigWave()] override wave getter for the ITC config wave
 /// @param offset      [optional, defaults to zero] offset into the data wave in points
 /// @param flags       [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-/// @param ADCConfig   [optional, defaults to NaN] Available ADC configurations (NI hardware only)
+/// @param ADCConfig   [optional] Not supported for ITC hardware
 Function HW_ITC_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable flags, variable offset, variable ADCConfig])
 
 	string   device
@@ -2334,7 +2334,7 @@ End
 /// @param configFunc  [optional, defaults to GetDAQConfigWave()] override wave getter for the ITC config wave
 /// @param offset      [optional, defaults to zero] offset into the data wave in points
 /// @param flags       [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-/// @param ADCConfig   [optional, defaults to NaN] Available ADC configurations (NI hardware only)
+/// @param ADCConfig   Available ADC configurations (NI hardware only)
 Function HW_NI_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable flags, variable offset, variable ADCConfig])
 
 	string device, tempStr, realDeviceOrPressure, filename, clkStr, wavegenStr, TTLStr, fifoName, errMsg
@@ -2366,7 +2366,7 @@ Function HW_NI_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCRE
 	endif
 
 	if(ParamIsDefault(ADCConfig))
-		ADCConfig = HW_NI_CONFIG_RSE
+		FATAL_ERROR("ADCConfig is missing")
 	endif
 
 	if((ADCConfig & HW_NI_CONFIG_RSE) == HW_NI_CONFIG_RSE)
@@ -3394,7 +3394,7 @@ End
 /// @param configFunc  [optional, defaults to GetDAQConfigWave()] override wave getter for the ITC config wave
 /// @param offset      [optional, defaults to zero] offset into the data wave in points
 /// @param flags       [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-/// @param ADCConfig     [optional, defaults to HW_NI_CONFIG_RSE] ADC input mode (NI hardware only)
+/// @param ADCConfig   [optional] Not supported for Sutter hardware
 Function HW_SU_PrepareAcq(variable deviceId, variable mode, [WAVE/Z data, FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable flags, variable offset, variable ADCConfig])
 
 	string device, encodeInfo
