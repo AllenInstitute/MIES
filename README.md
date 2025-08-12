@@ -73,6 +73,10 @@ Video tutorial of the postsynaptic potential/postsynaptic current data (PSX) ana
       Other NI hardware models can be added on request. Please open an issue from within MIES,
   `MIES Panels->Report an issue`, for that.
 
+  Better results are obtained if your hardware's analog input channels support Referenced Single Ended (RSE)
+  Terminal Configuration, but Differential is also supported as a fallback. See also
+  [this](https://knowledge.ni.com/KnowledgeArticleDetails?id=kA00Z0000019QRZSA2) article from NI Support.
+
   - Instrutech/HEKA ITC:
     - [16](http://www.heka.com/downloads/hardware/manual/itc16.pdf)
     - [18](http://www.heka.com/downloads/hardware/manual/m_itc18.pdf)
