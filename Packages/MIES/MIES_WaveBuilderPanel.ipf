@@ -159,10 +159,6 @@ Function WBP_StartupSettings()
 
 	HideTools/A/W=$panel
 
-	// @todo workaround IP issue #7316
-	WAVE/Z wv = $""
-	ListBox listbox_combineEpochMap, listWave=wv, win=$panel
-
 	PS_RemoveCoordinateSaving(panel)
 
 	KillWindow/Z $WBP_GetFFTSpectrumPanel()
@@ -192,6 +188,7 @@ Function WBP_StartupSettings()
 	CallFunctionForEachListItem(WBP_AdjustDeltaControls, ControlNameList(panel, ";", "popup_WaveBuilder_op_*"))
 
 	SetWindow $panel, userdata(panelVersion)=""
+	ListBox listbox_combineEpochMap, listWave=$"", win=$panel
 
 	Execute/P/Q/Z "DoWindow/R " + panel
 	Execute/P/Q/Z "COMPILEPROCEDURES "
