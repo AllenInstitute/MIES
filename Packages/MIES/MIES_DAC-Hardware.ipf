@@ -2574,8 +2574,10 @@ Function HW_NI_PrintPropertiesOfDevices()
 
 		lines = RemoveEnding(lines, ",")
 
+		Make/FREE/N=(numAI) ADCConfigs = HW_NI_GetAnalogInputConfig(device, p)
+
 		printf "Device name: %s\r", device
-		printf "#AI %d, #AO %d, #Cnt %d, #DIO ports %d with (%s) lines\r", numAI, numAO, numCounter, numDIO, lines
+		printf "#AI %d (config bits: [%s]), #AO %d, #Cnt %d, #DIO ports %d with (%s) lines\r", numAI, NumericWaveToList(ADCConfigs, ", ", trailSep = 0), numAO, numCounter, numDIO, lines
 		printf "Last self calibration: %s\r", SelectString(IsFinite(selfCalDate), "na", GetIso8601TimeStamp(secondsSinceIgorEpoch = selfCalDate))
 		printf "Last external calibration: %s\r", GetIso8601TimeStamp(secondsSinceIgorEpoch = extCalDate)
 	endfor
