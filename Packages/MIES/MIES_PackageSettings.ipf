@@ -213,7 +213,6 @@ Function PS_RemoveCoordinateSaving(string win)
 
 	SetWindow $win, userdata($PS_STORE_COORDINATES)=""
 	SetWindow $win, userdata($PS_WINDOW_NAME)=""
-	SetWindow $win, userdata($PS_WINDOW_GROUP)=""
 
 	SetWindow $win, hook($PS_COORDINATE_SAVING_HOOK)=$""
 End
