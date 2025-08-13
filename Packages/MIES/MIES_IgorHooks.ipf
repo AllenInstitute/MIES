@@ -294,6 +294,8 @@ End
 
 static Function BeforeUncompiledHook(variable changeCode, string procedureWindowTitleStr, string textChangeStr)
 
+	variable ret
+
 	LOG_AddEntry(PACKAGE_MIES, "start")
 
 	// catch all error conditions, asserts and aborts
@@ -308,7 +310,11 @@ static Function BeforeUncompiledHook(variable changeCode, string procedureWindow
 	// dito
 	AssertOnAndClearRTError()
 	try
-		ASYNC_Stop(timeout = 5); AbortOnRTE
+		ret = ASYNC_Stop(timeout = 5); AbortOnRTE
+
+		if(ret) // error stopping it, stop all threads
+			ret = ThreadGroupRelease(-2)
+		endif
 	catch
 		ClearRTError()
 	endtry
