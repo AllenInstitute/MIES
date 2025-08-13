@@ -2559,8 +2559,8 @@ static Function PSX_FitAverage(string win, DFREF averageDFR, WAVE eventOnsetTime
 	CopyScales average, AverageFit, RiseAverageFit, DecayAverageFit
 
 	meanOnsetTime = PSX_FilterFitAverageParameters(eventOnsetTime, newState, state)
-	meanStopTime = PSX_FindDominantStopTimePeak(eventStopTime, newState, state, eventKernelAmp,  binwidth = 0.1, showplot = 1)
-//	meanStopTime = PSX_FindDominantStopTimePeak(eventStopTime, newState, state)
+//	meanStopTime = PSX_FindDominantStopTimePeak(eventStopTime, newState, state, eventKernelAmp,  binwidth = 0.1, showplot = 1)
+	meanStopTime = PSX_FindDominantStopTimePeak(eventStopTime, newState, state, eventKernelAmp)
 	meanKernelAmp = PSX_FilterFitAverageParameters(eventKernelAmp, newState, state, requireFiniteResult = 1)
 	meanPeakTime  = PSX_FilterFitAverageParameters(eventPeakTime, newState, state, requireFiniteResult = 1)
 
@@ -6450,15 +6450,89 @@ Function PSX_UpdateVisualizationHelpers(STRUCT WMCheckboxAction &cba) : CheckBox
 	return 0
 End
 
+//Function PSX_CalculateOnsetTimeFromAvg(WAVE AvgEvent, variable kernelAmp, variable meanOnsetTime, variable meanPeakTime)
+
+	duplicate/FREE AvgEvent, AvgEventDiff
+	differentiate AvgEventDiff
+	smooth 500, AvgEventDiff
+
+	wavestats/q AvgEvent
+	duplicate/o AvgEventDiff, root:forDisp
+	smooth 500, root:forDisp
+
+	variable eventPeak, eventPeak_t, edge, backwardEdge, level, slewrate, slewrate_t
+
+	if(kernelAmp > 0)
+		eventPeak      = V_max
+		eventPeak_t    = V_maxLoc
+		edge           = FINDLEVEL_EDGE_INCREASING
+		backwardEdge   = FINDLEVEL_EDGE_DECREASING
+	elseif(kernelAmp < 0)
+		eventPeak      = V_min
+		eventPeak_t    = V_minLoc
+		edge           = FINDLEVEL_EDGE_DECREASING
+		backwardEdge   = FINDLEVEL_EDGE_INCREASING
+	else
+		ASSERT(0, "Invalid kernel amp")
+	endif
+
+	variable searchEnd = -inf  // Optionally use eventPeak_t - meanPeakTime
+	wavestats/q/r=(searchEnd, eventPeak_t) AvgEventDiff
+
+	if(kernelAmp > 0)
+		slewRate   = V_max
+		slewRate_t = V_maxLoc
+	elseif(kernelAmp < 0)
+		slewRate   = V_min
+		slewRate_t = V_minLoc
+	endif
+
+	level = 0.2 * slewRate
+
+	// Try to find level crossing first
+	FindLevel/R=(eventPeak_t, searchEnd)/EDGE=(edge)/Q AvgEventDiff, level
+
+	if(!V_flag)
+		return V_levelX
+	endif
+
+	// ----- Fallback path -----
+	// Find point closest to level within the search window
+	variable n = DimSize(AvgEventDiff, 0)
+	variable closestIdx = -1
+	variable closestDiff = Inf
+	variable xval
+
+	variable i
+	for(i = 0; i < n; i += 1)
+		xval = pnt2x(AvgEventDiff, i)       
+		if((xval >= searchEnd) && (xval <= eventPeak_t))
+			variable diff = abs(AvgEventDiff[i] - level)
+			if(diff < closestDiff)
+				closestDiff = diff
+				closestIdx = i
+			endif
+		endif
+	endfor
+
+	if(closestIdx >= 0)
+		print pnt2x(AvgEventDiff, closestIdx)
+		return pnt2x(AvgEventDiff, closestIdx)
+	else
+		return NaN
+	endif
+
+End
+
 Function PSX_CalculateOnsetTimeFromAvg(WAVE AvgEvent, variable kernelAmp, variable meanOnsetTime, variable meanPeakTime)
-	
-	
+
 	duplicate/FREE AvgEvent, AvgEventDiff
 	differentiate AvgEventDiff
 	smooth 500, AvgEventDiff
 	wavestats/q AvgEvent
 	duplicate/o AvgEventDiff, root:forDisp
 	smooth 500, root:forDisp
+	
 	variable eventPeak, eventPeak_t, edge, backwardEdge, level, slewrate, slewrate_t
 	
 	if(kernelAmp > 0)
@@ -6475,7 +6549,7 @@ Function PSX_CalculateOnsetTimeFromAvg(WAVE AvgEvent, variable kernelAmp, variab
 		ASSERT(0, "Invalid kernel amp")
 	endif
 
-	variable searchEnd = eventPeak_t - (meanPeakTime)// - abs(meanOnsetTime))
+	variable searchEnd = -inf // optionally: eventPeak_t - (meanPeakTime) or similar
 	
 	wavestats/q/r=(searchEnd, eventPeak_t) AvgEventDiff
 
@@ -6491,13 +6565,54 @@ Function PSX_CalculateOnsetTimeFromAvg(WAVE AvgEvent, variable kernelAmp, variab
 
 	FindLevel/R=(eventPeak_t, searchEnd)/EDGE=(edge)/Q AvgEventDiff, level
 
-	if(V_flag)
+	if(!V_flag)
+		return V_levelX
+	endif
+
+// --- Fallback: Use second derivative to enforce slope direction ---
+	duplicate/FREE AvgEventDiff, d2
+	differentiate d2
+	smooth 200, d2 // optional smoothing for stability
+
+	variable closestIdx = -1
+	variable closestDist = Inf
+	variable n = DimSize(AvgEventDiff, 0)
+	variable xval, diffVal, d2Val
+	variable i
+
+	for(i = 0; i < n; i += 1)
+		xval = pnt2x(AvgEventDiff, i)
+
+		// Constrain time range
+		if(xval < searchEnd || xval > eventPeak_t)
+			continue
+		endif
+
+		diffVal = AvgEventDiff[i]
+		d2Val = d2[i]
+
+		// Constrain direction of slope change at the candidate level crossing
+		if(edge == FINDLEVEL_EDGE_INCREASING && d2Val < 0)
+			continue // not increasing slope
+		elseif(edge == FINDLEVEL_EDGE_DECREASING && d2Val > 0)
+			continue // not decreasing slope
+		endif
+
+		// Find closest to desired level
+		if(abs(diffVal - level) < closestDist)
+			closestDist = abs(diffVal - level)
+			closestIdx = i
+		endif
+	endfor
+
+	if(closestIdx >= 0)
+		return pnt2x(AvgEventDiff, closestIdx)
+	else
 		return NaN
 	endif
 
-	return V_levelX
-
 End
+
 
 Function GetKernelDecayTau()
 	string psxPath
