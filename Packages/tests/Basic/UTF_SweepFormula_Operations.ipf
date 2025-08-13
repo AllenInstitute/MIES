@@ -175,7 +175,7 @@ static Function StoreChecksParameters([string str])
 
 	win = GetDataBrowserWithData()
 
-	CHECK(!ExecuteSweepFormulaInDB(str, win))
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
 
 	WAVE textualResultsValues = GetLogbookWaves(LBT_RESULTS, LBN_TEXTUAL_VALUES)
 	CHECK_EQUAL_VAR(GetNumberFromWaveNote(textualResultsValues, NOTE_INDEX), 0)
@@ -194,7 +194,7 @@ static Function StoreWorks([WAVE wv])
 	ref = "store(\"ABCD\", " + JSON_Dump(array) + " ) vs 0"
 	JSON_Release(array)
 
-	CHECK(ExecuteSweepFormulaInDB(ref, win))
+	ExecuteSweepFormulaCode(win, ref)
 
 	WAVE textualResultsValues = GetLogbookWaves(LBT_RESULTS, LBN_TEXTUAL_VALUES)
 
@@ -240,7 +240,7 @@ static Function StoreWorksWithMultipleDataSets()
 	[numSweeps, numChannels, WAVE/U/I channels] = FillFakeDatabrowserWindow(win, device, XOP_CHANNEL_TYPE_ADC, textKey, textValue)
 
 	str = "store(\"ABCD\", data(select(selrange(), selchannels(), selsweeps())))"
-	CHECK(ExecuteSweepFormulaInDB(str, win))
+	ExecuteSweepFormulaCode(win, str)
 
 	WAVE textualResultsValues = GetLogbookWaves(LBT_RESULTS, LBN_TEXTUAL_VALUES)
 
@@ -3317,7 +3317,7 @@ static Function TPWithModelCell()
 
 	win = DB_GetBoundDataBrowser(device)
 
-	CHECK(ExecuteSweepFormulaInDB("store(\"inst\",tp(tpinst()))\n and \nstore(\"ss\",tp(tpss()))", win))
+	ExecuteSweepFormulaCode(win, "store(\"inst\",tp(tpinst()))\n and \nstore(\"ss\",tp(tpss()))")
 
 	WAVE textualResultsValues = GetLogbookWaves(LBT_RESULTS, LBN_TEXTUAL_VALUES)
 
