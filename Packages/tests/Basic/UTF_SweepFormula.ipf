@@ -1236,6 +1236,8 @@ static Function TestInputCodeCheck()
 
 	string win
 	string formula, jsonRef, jsonTxt
+	string srcLocPath    = "/graph_0/pair_0/source_location"
+	string srcLocPathVar = "/variables"
 
 	win = GetDataBrowserWithData()
 
@@ -1245,6 +1247,7 @@ static Function TestInputCodeCheck()
 	formula = "1"
 	jsonRef = "{\n\"graph_0\": {\n\"pair_0\": {\n\"formula_y\": 1\n}\n}\n}"
 	MIES_SF#SF_CheckInputCode(formula, win)
+	JSON_Remove(jsonId, srcLocPath)
 	jsonTxt = JSON_Dump(jsonId)
 	JSON_Release(jsonId)
 	CHECK_EQUAL_STR(jsonRef, jsonTxt)
@@ -1252,6 +1255,7 @@ static Function TestInputCodeCheck()
 	formula = "1 vs 1"
 	jsonRef = "{\n\"graph_0\": {\n\"pair_0\": {\n\"formula_x\": 1,\n\"formula_y\": 1\n}\n}\n}"
 	MIES_SF#SF_CheckInputCode(formula, win)
+	JSON_Remove(jsonId, srcLocPath)
 	jsonTxt = JSON_Dump(jsonId)
 	JSON_Release(jsonId)
 	CHECK_EQUAL_STR(jsonRef, jsonTxt)
@@ -1259,6 +1263,8 @@ static Function TestInputCodeCheck()
 	formula = "1\rwith\r1 vs 1"
 	jsonRef = "{\n\"graph_0\": {\n\"pair_0\": {\n\"formula_y\": 1\n},\n\"pair_1\": {\n\"formula_x\": 1,\n\"formula_y\": 1\n}\n}\n}"
 	MIES_SF#SF_CheckInputCode(formula, win)
+	JSON_Remove(jsonId, srcLocPath)
+	JSON_Remove(jsonId, "/graph_0/pair_1/source_location")
 	jsonTxt = JSON_Dump(jsonId)
 	JSON_Release(jsonId)
 	CHECK_EQUAL_STR(jsonRef, jsonTxt)
@@ -1266,6 +1272,8 @@ static Function TestInputCodeCheck()
 	formula = "v = 1\r1"
 	jsonRef = "{\n\"graph_0\": {\n\"pair_0\": {\n\"formula_y\": 1\n}\n},\n\"variable:v\": 1\n}"
 	MIES_SF#SF_CheckInputCode(formula, win)
+	JSON_Remove(jsonId, srcLocPath)
+	JSON_Remove(jsonId, srcLocPathVar)
 	jsonTxt = JSON_Dump(jsonId)
 	JSON_Release(jsonId)
 	CHECK_EQUAL_STR(jsonRef, jsonTxt)
@@ -1273,6 +1281,8 @@ static Function TestInputCodeCheck()
 	formula = "# comment\r var = 1\r\r $var"
 	jsonRef = "{\n\"graph_0\": {\n\"pair_0\": {\n\"formula_y\": \"$var\"\n}\n},\n\"variable:var\": 1\n}"
 	MIES_SF#SF_CheckInputCode(formula, win)
+	JSON_Remove(jsonId, srcLocPath)
+	JSON_Remove(jsonId, srcLocPathVar)
 	jsonTxt = JSON_Dump(jsonId)
 	JSON_Release(jsonId)
 	CHECK_EQUAL_STR(jsonRef, jsonTxt)
