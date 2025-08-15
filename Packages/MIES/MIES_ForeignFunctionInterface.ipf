@@ -235,3 +235,82 @@ Function FFI_SavePSXDataFolderToHDF5(string filepath, string winTitle)
 
 	return FFI_SaveDataFolderToHDF5Impl(filepath, folders)
 End
+
+// ---------- TP Helpers ----------
+
+/// @brief Return 1 if the device can be selected (exists/available), 0 otherwise
+///
+/// @param[in] device   Device title, e.g. "ITC1600_Dev_0"
+/// @returns            1 if selectable, 0 otherwise
+static Function FFI_TP_DeviceSelectable(string device)
+
+	variable hardwareType = GetHardwareType(device)
+	NVAR     deviceID     = $GetDAQDeviceID(device)
+	// HW_SelectDevice returns 0 on success; invert to get 1 on success.
+	return !HW_SelectDevice(hardwareType, deviceID, flags = HARDWARE_PREVENT_ERROR_MESSAGE)
+End
+
+// ---------- TP API wrappers ----------
+
+/// @brief Start the test pulse for a device unless it is already running
+///
+/// @param[in] device   Device title, e.g. "ITC1600_Dev_0"
+/// @returns            0 = started now, 1 = already running (ignored), -1 = device unavailable
+Function [variable ret, string errorMsg] FFI_StartTestPulse(string device)
+
+	if(!FFI_TP_DeviceSelectable(device))
+		sprintf errorMsg, "Device %s is not available.\r", device
+		ret = -1
+		return
+	endif
+
+	if(TP_CheckIfTestpulseIsRunning(device))
+		sprintf errorMsg, "Test pulse already running on %s; start ignored.\r", device
+		ret = 1
+		return
+	endif
+
+	TPM_StartTestPulseMultiDevice(device)
+	ret = 0
+	return
+End
+
+/// @brief Stop the test pulse for a device unless it is already stopped
+///
+/// @param[in] device   Device title, e.g. "ITC1600_Dev_0"
+/// @returns            0 = stopped now, 1 = already stopped (ignored), -1 = device unavailable
+Function [variable ret, string errorMsg] FFI_StopTestPulse(string device)
+
+	if(!FFI_TP_DeviceSelectable(device))
+		sprintf errorMsg, "Device %s is not available.\r", device
+		ret = -1
+		return
+	endif
+
+	if(!TP_CheckIfTestpulseIsRunning(device))
+		sprintf errorMsg, "Test pulse already stopped on %s; stop ignored.\r", device
+		ret = 1
+		return
+	endif
+
+	TPM_StopTestPulseMultiDevice(device)
+
+	ret = 0
+	return
+End
+
+/// @brief Unified API entry point to start or stop the test pulse
+///
+/// @param[in] device   Device title, e.g. "ITC1600_Dev_0"
+/// @param[in] action   1 to start, 0 to stop
+/// @returns            Pass-through of API_StartTestPulse()/API_StopTestPulse() return codes
+Function [variable ret, string errorMsg] FFI_TestPulseMD(string device, variable action)
+
+	if(action)
+		[ret, errorMsg] = FFI_StartTestPulse(device)
+		return
+	endif
+
+	[ret, errorMsg] = FFI_StopTestPulse(device)
+	return
+End
