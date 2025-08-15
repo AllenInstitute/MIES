@@ -1865,3 +1865,92 @@ threadsafe Function TP_GetPowerSpectrumLength(variable tpLength)
 
 	return 2^FindNextPower(tpLength, 2)
 End
+
+
+// ---------- Helpers ----------
+
+// Returns 1 if the device can be selected (exists/available), 0 otherwise.
+Function TP_DeviceSelectable(device)
+    String device
+    variable hardwareType = GetHardwareType(device)
+    NVAR deviceID = $GetDAQDeviceID(device)
+    // HW_SelectDevice returns 0 on success; invert to get 1 on success.
+    return !HW_SelectDevice(hardwareType, deviceID, flags = HARDWARE_PREVENT_ERROR_MESSAGE)
+End
+
+// Returns 1 if TP is running for `device`, 0 otherwise.
+Function TP_IsRunningForDevice(device)
+    String device
+    NVAR deviceID               = $GetDAQDeviceID(device)
+    WAVE ActiveDevicesTPMD      = GetActiveDevicesTPMD()
+    variable n                  = GetNumberFromWaveNote(ActiveDevicesTPMD, NOTE_INDEX)
+    if (n <= 0)
+        return 0
+    endif
+    // Column 0 holds DeviceID (matches use in TPM_RemoveDevice)
+    FindValue/V=(deviceID)/RMD=[0, n-1][0] ActiveDevicesTPMD
+    return V_Value != -1
+End
+
+// ---------- API wrappers ----------
+
+// Start TP if not running. Returns:
+//   0 = started now
+//   1 = already running (ignored)
+//  -1 = device unavailable
+Function API_StartTestPulse(device)
+    String device
+
+    if (!TP_DeviceSelectable(device))
+        Printf "Device %s is not available.\r", device
+        return -1
+    endif
+
+    if (TP_IsRunningForDevice(device))
+        Printf "Test pulse already running on %s; start ignored.\r", device
+        return 1
+    endif
+
+    TPM_StartTestPulseMultiDevice(device)
+    return 0
+End
+
+// Stop TP if running. Returns:
+//   0 = stopped now
+//   1 = already stopped (ignored)
+//  -1 = device unavailable
+Function API_StopTestPulse(device, [fast])
+    String device
+    Variable fast
+
+    if (!TP_DeviceSelectable(device))
+        Printf "Device %s is not available.\r", device
+        return -1
+    endif
+
+    if (!TP_IsRunningForDevice(device))
+        Printf "Test pulse already stopped on %s; stop ignored.\r", device
+        return 1
+    endif
+
+    if (ParamIsDefault(fast))
+        TPM_StopTestPulseMultiDevice(device)
+    else
+        TPM_StopTestPulseMultiDevice(device, fast = fast)
+    endif
+    return 0
+End
+
+// Optional unified entry point:
+// action = 1 -> start, 0 -> stop
+Function API_TestPulse(device, action, [fast])
+    String device
+    Variable action
+    Variable fast
+
+    if (action)
+        return API_StartTestPulse(device)
+    else
+        return API_StopTestPulse(device, fast = fast)
+    endif
+End
