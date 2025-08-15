@@ -1874,11 +1874,11 @@ End
 /// @param[in] device   Device title, e.g. "ITC1600_Dev_0"
 /// @returns            1 if selectable, 0 otherwise
 Function TP_DeviceSelectable(device)
-    String device
-    variable hardwareType = GetHardwareType(device)
-    NVAR deviceID = $GetDAQDeviceID(device)
-    // HW_SelectDevice returns 0 on success; invert to get 1 on success.
-    return !HW_SelectDevice(hardwareType, deviceID, flags = HARDWARE_PREVENT_ERROR_MESSAGE)
+	String device
+	variable hardwareType = GetHardwareType(device)
+	NVAR deviceID = $GetDAQDeviceID(device)
+	// HW_SelectDevice returns 0 on success; invert to get 1 on success.
+	return !HW_SelectDevice(hardwareType, deviceID, flags = HARDWARE_PREVENT_ERROR_MESSAGE)
 End
 
 /// @brief Check whether the test pulse is currently running for the given device
@@ -1886,16 +1886,16 @@ End
 /// @param[in] device   Device title, e.g. "ITC1600_Dev_0"
 /// @returns            1 if running, 0 otherwiseFunction
 Function TP_IsRunningForDevice(device)
-    String device
-    NVAR deviceID               = $GetDAQDeviceID(device)
-    WAVE ActiveDevicesTPMD      = GetActiveDevicesTPMD()
-    variable n                  = GetNumberFromWaveNote(ActiveDevicesTPMD, NOTE_INDEX)
-    if (n <= 0)
-        return 0
-    endif
-    // Column 0 holds DeviceID (matches use in TPM_RemoveDevice)
-    FindValue/V=(deviceID)/RMD=[0, n-1][0] ActiveDevicesTPMD
-    return V_Value != -1
+	String device
+	NVAR deviceID               = $GetDAQDeviceID(device)
+	WAVE ActiveDevicesTPMD      = GetActiveDevicesTPMD()
+	variable n                  = GetNumberFromWaveNote(ActiveDevicesTPMD, NOTE_INDEX)
+		if (n <= 0)
+			return 0
+		endif
+	// Column 0 holds DeviceID (matches use in TPM_RemoveDevice)	
+	FindValue/V=(deviceID)/RMD=[0, n-1][0] ActiveDevicesTPMD
+	return V_Value != -1
 End
 
 // ---------- API wrappers ----------
@@ -1905,20 +1905,20 @@ End
 /// @param[in] device   Device title, e.g. "ITC1600_Dev_0"
 /// @returns            0 = started now, 1 = already running (ignored), -1 = device unavailable
 Function API_StartTestPulse(device)
-    String device
+	String device
 
-    if (!TP_DeviceSelectable(device))
-        Printf "Device %s is not available.\r", device
-        return -1
-    endif
+	if (!TP_DeviceSelectable(device))
+		Printf "Device %s is not available.\r", device
+		return -1
+	endif
 
-    if (TP_IsRunningForDevice(device))
-        Printf "Test pulse already running on %s; start ignored.\r", device
-        return 1
-    endif
+	if (TP_IsRunningForDevice(device))
+		Printf "Test pulse already running on %s; start ignored.\r", device
+		return 1
+	endif
 
-    TPM_StartTestPulseMultiDevice(device)
-    return 0
+	TPM_StartTestPulseMultiDevice(device)
+	return 0
 End
 
 /// @brief Stop the test pulse for a device unless it is already stopped
@@ -1927,25 +1927,26 @@ End
 /// @param[in] fast     Optional. Non-zero to request fast teardown (forwarded to MIES)
 /// @returns            0 = stopped now, 1 = already stopped (ignored), -1 = device unavailable
 Function API_StopTestPulse(device, [fast])
-    String device
-    Variable fast
+	String device
+	Variable fast
 
-    if (!TP_DeviceSelectable(device))
-        Printf "Device %s is not available.\r", device
-        return -1
-    endif
+	if (!TP_DeviceSelectable(device))
+		Printf "Device %s is not available.\r", device
+		return -1
+	endif
 
-    if (!TP_IsRunningForDevice(device))
-        Printf "Test pulse already stopped on %s; stop ignored.\r", device
-        return 1
-    endif
+	if (!TP_IsRunningForDevice(device))
+		Printf "Test pulse already stopped on %s; stop ignored.\r", device
+		return 1
+	endif
 
-    if (ParamIsDefault(fast))
-        TPM_StopTestPulseMultiDevice(device)
-    else
-        TPM_StopTestPulseMultiDevice(device, fast = fast)
-    endif
-    return 0
+	if (ParamIsDefault(fast))
+		TPM_StopTestPulseMultiDevice(device)
+	else
+		TPM_StopTestPulseMultiDevice(device, fast = fast)
+	endif
+	
+	return 0
 End
 
 /// @brief Unified API entry point to start or stop the test pulse
@@ -1955,13 +1956,13 @@ End
 /// @param[in] fast     Optional. Non-zero for fast stop (applies when action==0)
 /// @returns            Pass-through of API_StartTestPulse()/API_StopTestPulse() return codes
 Function API_TestPulse(device, action, [fast])
-    String device
-    Variable action
-    Variable fast
+	String device
+	Variable action
+	Variable fast
 
-    if (action)
-        return API_StartTestPulse(device)
-    else
-        return API_StopTestPulse(device, fast = fast)
-    endif
+	if (action)
+		return API_StartTestPulse(device)
+	else
+		return API_StopTestPulse(device, fast = fast)
+	endif
 End
