@@ -1869,7 +1869,10 @@ End
 
 // ---------- Helpers ----------
 
-// Returns 1 if the device can be selected (exists/available), 0 otherwise.
+/// @brief Return 1 if the device can be selected (exists/available), 0 otherwise
+///
+/// @param[in] device   Device title, e.g. "ITC1600_Dev_0"
+/// @returns            1 if selectable, 0 otherwise
 Function TP_DeviceSelectable(device)
     String device
     variable hardwareType = GetHardwareType(device)
@@ -1878,8 +1881,10 @@ Function TP_DeviceSelectable(device)
     return !HW_SelectDevice(hardwareType, deviceID, flags = HARDWARE_PREVENT_ERROR_MESSAGE)
 End
 
-// Returns 1 if TP is running for `device`, 0 otherwise.
-Function TP_IsRunningForDevice(device)
+/// @brief Check whether the test pulse is currently running for the given device
+///
+/// @param[in] device   Device title, e.g. "ITC1600_Dev_0"
+/// @returns            1 if running, 0 otherwiseFunction TP_IsRunningForDevice(device)
     String device
     NVAR deviceID               = $GetDAQDeviceID(device)
     WAVE ActiveDevicesTPMD      = GetActiveDevicesTPMD()
@@ -1894,10 +1899,10 @@ End
 
 // ---------- API wrappers ----------
 
-// Start TP if not running. Returns:
-//   0 = started now
-//   1 = already running (ignored)
-//  -1 = device unavailable
+/// @brief Start the test pulse for a device unless it is already running
+///
+/// @param[in] device   Device title, e.g. "ITC1600_Dev_0"
+/// @returns            0 = started now, 1 = already running (ignored), -1 = device unavailable
 Function API_StartTestPulse(device)
     String device
 
@@ -1915,10 +1920,11 @@ Function API_StartTestPulse(device)
     return 0
 End
 
-// Stop TP if running. Returns:
-//   0 = stopped now
-//   1 = already stopped (ignored)
-//  -1 = device unavailable
+/// @brief Stop the test pulse for a device unless it is already stopped
+///
+/// @param[in] device   Device title, e.g. "ITC1600_Dev_0"
+/// @param[in] fast     Optional. Non-zero to request fast teardown (forwarded to MIES)
+/// @returns            0 = stopped now, 1 = already stopped (ignored), -1 = device unavailable
 Function API_StopTestPulse(device, [fast])
     String device
     Variable fast
@@ -1941,8 +1947,12 @@ Function API_StopTestPulse(device, [fast])
     return 0
 End
 
-// Optional unified entry point:
-// action = 1 -> start, 0 -> stop
+/// @brief Unified API entry point to start or stop the test pulse
+///
+/// @param[in] device   Device title, e.g. "ITC1600_Dev_0"
+/// @param[in] action   1 to start, 0 to stop
+/// @param[in] fast     Optional. Non-zero for fast stop (applies when action==0)
+/// @returns            Pass-through of API_StartTestPulse()/API_StopTestPulse() return codes
 Function API_TestPulse(device, action, [fast])
     String device
     Variable action
