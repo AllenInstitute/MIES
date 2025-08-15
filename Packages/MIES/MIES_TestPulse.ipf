@@ -1884,7 +1884,8 @@ End
 /// @brief Check whether the test pulse is currently running for the given device
 ///
 /// @param[in] device   Device title, e.g. "ITC1600_Dev_0"
-/// @returns            1 if running, 0 otherwiseFunction TP_IsRunningForDevice(device)
+/// @returns            1 if running, 0 otherwiseFunction
+Function TP_IsRunningForDevice(device)
     String device
     NVAR deviceID               = $GetDAQDeviceID(device)
     WAVE ActiveDevicesTPMD      = GetActiveDevicesTPMD()
