@@ -119,7 +119,7 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLoc
 
 	if(!ParamIsDefault(srcLocId))
 		onTopLevel = 1
-		SFH_StoreAssertInfoExecutor(srcLocId, exd.jsonPath)
+		SFH_StoreAssertInfoExecutor(exd.jsonid, srcLocId, exd.jsonPath)
 	endif
 
 	SVAR jsonPathTracker = $GetSweepFormulaJSONPathTracker()
@@ -525,7 +525,7 @@ static Function/WAVE SFE_FormulaExecutorStringOrVariable(STRUCT SF_ExecutionData
 	variable dim
 
 	str = JSON_GetString(exd.jsonID, exd.jsonPath)
-	if(strlen(str) > 1 && char2num(str[0]) == SFE_VARIABLE_PREFIX)
+	if(SFE_IsStringVariable(str))
 		WAVE/WAVE varStorage = GetSFVarStorage(exd.graph)
 		dim = FindDimLabel(varStorage, ROWS, str[1, Inf])
 		SFH_ASSERT(dim != -2, "Unknown variable " + str[1, Inf])
@@ -611,4 +611,9 @@ static Function/WAVE SFE_ExeReturn(WAVE out, variable onTopLevel)
 	assertData[%STEP] = num2istr(SF_STEP_OUTSIDE)
 
 	return out
+End
+
+Function SFE_IsStringVariable(string varName)
+
+	return strlen(varName) > 1 && char2num(varName[0]) == SFE_VARIABLE_PREFIX
 End
