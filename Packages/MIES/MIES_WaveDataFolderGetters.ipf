@@ -9198,15 +9198,16 @@ Function/WAVE GetSFAssertData()
 		return wv
 	endif
 
-	Make/T/N=(7) dfr:$name/WAVE=wv
+	Make/T/N=(8) dfr:$name/WAVE=wv
 
-	SetDimLabel ROWS, 0, SRCLOCID, wv
-	SetDimLabel ROWS, 1, JSONPATH, wv
-	SetDimLabel ROWS, 2, STEP, wv
-	SetDimLabel ROWS, 3, LINE, wv
-	SetDimLabel ROWS, 4, OFFSET, wv
-	SetDimLabel ROWS, 5, FORMULA, wv
-	SetDimLabel ROWS, 6, INFORMULAOFFSET, wv
+	SetDimLabel ROWS, 0, JSONID, wv
+	SetDimLabel ROWS, 1, SRCLOCID, wv
+	SetDimLabel ROWS, 2, JSONPATH, wv
+	SetDimLabel ROWS, 3, STEP, wv
+	SetDimLabel ROWS, 4, LINE, wv
+	SetDimLabel ROWS, 5, OFFSET, wv
+	SetDimLabel ROWS, 6, FORMULA, wv
+	SetDimLabel ROWS, 7, INFORMULAOFFSET, wv
 
 	wv[%STEP] = num2istr(SF_STEP_OUTSIDE)
 

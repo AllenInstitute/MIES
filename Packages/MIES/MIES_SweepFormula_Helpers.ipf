@@ -399,9 +399,16 @@ End
 /// UTF_NOINSTRUMENTATION
 Function SFH_ASSERT(variable condition, string message, [variable jsonId])
 
+	variable sfStep
+
 	if(!condition)
+
 		if(!ParamIsDefault(jsonId))
-			JSON_Release(jsonId, ignoreErr = 1)
+			WAVE/T assertData = GetSFAssertData()
+			sfStep = str2numSafe(assertData[%STEP])
+			if(sfStep == SF_STEP_OUTSIDE)
+				JSON_Release(jsonId, ignoreErr = 1)
+			endif
 		endif
 
 		message += SFH_GetAssertLocationMessage()
@@ -2055,9 +2062,10 @@ Function SFH_StoreAssertInfoParser(variable line, variable offset)
 	info[%OFFSET] = num2istr(offset)
 End
 
-Function SFH_StoreAssertInfoExecutor(variable srcLocId, string jsonPath)
+Function SFH_StoreAssertInfoExecutor(variable jsonId, variable srcLocId, string jsonPath)
 
 	WAVE/T info = GetSFAssertData()
+	info[%JSONID]   = num2istr(jsonId)
 	info[%SRCLOCID] = num2istr(srcLocId)
 	info[%JSONPATH] = jsonPath
 	info[%STEP]     = num2istr(SF_STEP_EXECUTOR)

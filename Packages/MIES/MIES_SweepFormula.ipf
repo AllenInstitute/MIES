@@ -2161,6 +2161,36 @@ Function TraceValueDisplayHook(STRUCT WMTooltipHookStruct &s)
 	return 0
 End
 
+/// @brief Utility function that is called in the process of calculating the error location in the SF notebook.
+///        If the current error location points to a variable then the variable should be marked too.
+///        Generally errors in variables can only happen in the execution phase.
+///        This function checks if the last execution path pointed to a variable.
+///        If it does it returns the variable name, an empty string otherwise.
+static Function/S SF_IsExecutionErrorInVariable(string win)
+
+	string exPath, varName
+	variable sfStep, jsonId
+
+	WAVE/T assertData = GetSFAssertData()
+	sfStep = str2numSafe(assertData[%STEP])
+	if(sfStep != SF_STEP_EXECUTOR)
+		return ""
+	endif
+
+	exPath = ROStr(GetSweepFormulaJSONPathTracker())
+	jsonId = str2num(assertData[%JSONID])
+	if(JSON_GetType(jsonId, exPath) != JSON_STRING)
+		return ""
+	endif
+
+	varName = JSON_GetString(jsonId, exPath)
+	if(!SFE_IsStringVariable(varName))
+		return ""
+	endif
+
+	return varName[1, Inf]
+End
+
 /// @brief calculate the error position within the sf notebook
 ///        In notebooks every paragraph ends with a CR. It is possible to navigate through paragraphs
 ///        and character offsets in these paragraphs.
@@ -2218,11 +2248,28 @@ End
 /// @brief Mark the error location in red in the SF notebook
 static Function SF_MarkErrorLocationInNotebook(string win)
 
-	variable paragraph, offset
-	string sfWin
+	variable paragraph, offset, col
+	string sfWin, varName, code, preProcCode
 
 	[paragraph, offset] = SF_CalculateErrorLocationInNotebook(win)
 
 	sfWin = BSP_GetSFFormula(win)
 	Notebook $sfWin, selection={(paragraph, offset), (paragraph, offset + 1)}, textRGB=(65535, 0, 0)
+
+	varName = SF_IsExecutionErrorInVariable(win)
+	WAVE/T assertData = GetSFAssertData()
+	JSON_Release(str2num(assertData[%JSONID]), ignoreErr = 1)
+	if(IsEmpty(varName))
+		return NaN
+	endif
+
+	[code, preProcCode]           = SF_GetCode(win)
+	[WAVE/T varAssignments, code] = SF_GetVariableAssignments(preProcCode)
+	col                           = FindDimLabel(varAssignments, COLS, "VARNAME")
+	FindValue/TEXT=(varName)/TXOP=4/RMD=[][col] varAssignments
+	ASSERT(V_row >= 0, "Variable not found")
+
+	paragraph = str2num(varAssignments[V_row][%LINE])
+	offset    = str2num(varAssignments[V_row][%OFFSET])
+	Notebook $sfWin, selection={(paragraph, 0), (paragraph, offset - 1)}, textRGB=(65535, 0, 0)
 End
