@@ -1924,11 +1924,9 @@ End
 /// @brief Stop the test pulse for a device unless it is already stopped
 ///
 /// @param[in] device   Device title, e.g. "ITC1600_Dev_0"
-/// @param[in] fast     Optional. Non-zero to request fast teardown (forwarded to MIES)
 /// @returns            0 = stopped now, 1 = already stopped (ignored), -1 = device unavailable
-Function API_StopTestPulse(device, [fast])
+Function API_StopTestPulse(device)
 	String device
-	Variable fast
 
 	if (!TP_DeviceSelectable(device))
 		Printf "Device %s is not available.\r", device
@@ -1940,11 +1938,7 @@ Function API_StopTestPulse(device, [fast])
 		return 1
 	endif
 
-	if (ParamIsDefault(fast))
-		TPM_StopTestPulseMultiDevice(device)
-	else
-		TPM_StopTestPulseMultiDevice(device, fast = fast)
-	endif
+	TPM_StopTestPulseMultiDevice(device)
 	
 	return 0
 End
@@ -1953,16 +1947,14 @@ End
 ///
 /// @param[in] device   Device title, e.g. "ITC1600_Dev_0"
 /// @param[in] action   1 to start, 0 to stop
-/// @param[in] fast     Optional. Non-zero for fast stop (applies when action==0)
 /// @returns            Pass-through of API_StartTestPulse()/API_StopTestPulse() return codes
-Function API_TestPulse(device, action, [fast])
+Function API_TestPulse(device, action)
 	String device
 	Variable action
-	Variable fast
 
 	if (action)
 		return API_StartTestPulse(device)
 	else
-		return API_StopTestPulse(device, fast = fast)
+		return API_StopTestPulse(device)
 	endif
 End
