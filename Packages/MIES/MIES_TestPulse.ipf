@@ -1865,3 +1865,96 @@ threadsafe Function TP_GetPowerSpectrumLength(variable tpLength)
 
 	return 2^FindNextPower(tpLength, 2)
 End
+
+
+// ---------- Helpers ----------
+
+/// @brief Return 1 if the device can be selected (exists/available), 0 otherwise
+///
+/// @param[in] device   Device title, e.g. "ITC1600_Dev_0"
+/// @returns            1 if selectable, 0 otherwise
+Function TP_DeviceSelectable(device)
+	String device
+	variable hardwareType = GetHardwareType(device)
+	NVAR deviceID = $GetDAQDeviceID(device)
+	// HW_SelectDevice returns 0 on success; invert to get 1 on success.
+	return !HW_SelectDevice(hardwareType, deviceID, flags = HARDWARE_PREVENT_ERROR_MESSAGE)
+End
+
+/// @brief Check whether the test pulse is currently running for the given device
+///
+/// @param[in] device   Device title, e.g. "ITC1600_Dev_0"
+/// @returns            1 if running, 0 otherwise
+Function TP_IsRunningForDevice(device)
+	String device
+	NVAR deviceID               = $GetDAQDeviceID(device)
+	WAVE ActiveDevicesTPMD      = GetActiveDevicesTPMD()
+	variable n                  = GetNumberFromWaveNote(ActiveDevicesTPMD, NOTE_INDEX)
+		if (n <= 0)
+			return 0
+		endif
+	// Column 0 holds DeviceID (matches use in TPM_RemoveDevice)	
+	FindValue/V=(deviceID)/RMD=[0, n-1][0] ActiveDevicesTPMD
+	return V_Value != -1
+End
+
+// ---------- API wrappers ----------
+
+/// @brief Start the test pulse for a device unless it is already running
+///
+/// @param[in] device   Device title, e.g. "ITC1600_Dev_0"
+/// @returns            0 = started now, 1 = already running (ignored), -1 = device unavailable
+Function API_StartTestPulse(device)
+	String device
+
+	if (!TP_DeviceSelectable(device))
+		Printf "Device %s is not available.\r", device
+		return -1
+	endif
+
+	if (TP_IsRunningForDevice(device))
+		Printf "Test pulse already running on %s; start ignored.\r", device
+		return 1
+	endif
+
+	TPM_StartTestPulseMultiDevice(device)
+	return 0
+End
+
+/// @brief Stop the test pulse for a device unless it is already stopped
+///
+/// @param[in] device   Device title, e.g. "ITC1600_Dev_0"
+/// @returns            0 = stopped now, 1 = already stopped (ignored), -1 = device unavailable
+Function API_StopTestPulse(device)
+	String device
+
+	if (!TP_DeviceSelectable(device))
+		Printf "Device %s is not available.\r", device
+		return -1
+	endif
+
+	if (!TP_IsRunningForDevice(device))
+		Printf "Test pulse already stopped on %s; stop ignored.\r", device
+		return 1
+	endif
+
+	TPM_StopTestPulseMultiDevice(device)
+	
+	return 0
+End
+
+/// @brief Unified API entry point to start or stop the test pulse
+///
+/// @param[in] device   Device title, e.g. "ITC1600_Dev_0"
+/// @param[in] action   1 to start, 0 to stop
+/// @returns            Pass-through of API_StartTestPulse()/API_StopTestPulse() return codes
+Function API_TestPulse(device, action)
+	String device
+	Variable action
+
+	if (action)
+		return API_StartTestPulse(device)
+	else
+		return API_StopTestPulse(device)
+	endif
+End
