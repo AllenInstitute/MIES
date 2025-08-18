@@ -905,3 +905,61 @@ Function/WAVE UTF8StringToTextWave(string str)
 
 	return wv
 End
+
+/// @brief Extract a numeric wave from a keyword list
+///
+/// \rst
+///
+/// .. code-block:: igorpro
+///
+///	   WAVE wv = NumericWaveByKey("kb", "ka:va;kb:[1,2,3]")
+///	   // wv contains {1, 2, 3}
+///
+/// \endrst
+///
+/// @param key       key
+/// @param kwList    keyword-value list
+/// @param keySep    [optional, defaults to `:`] separator between keyword and values
+/// @param listSep   [optional, defaults to `;`] separator between keyword-value items
+/// @param wvListSep [optional, defaults to `,`] separator between wave values
+/// @param matchCase [optional, defaults to false] match the case of the key (1) or not (0)
+/// @param wvType    [optional, defaults to IGOR_TYPE_64BIT_FLOAT] type of the created wave
+Function/WAVE NumericWaveByKey(string key, string kwList, [string keySep, string listSep, string wvListSep, variable matchCase, variable wvType])
+
+	string   value
+	variable length
+
+	if(ParamIsDefault(keySep))
+		keySep = ":"
+	endif
+
+	if(ParamIsDefault(listSep))
+		listSep = ";"
+	endif
+
+	if(ParamIsDefault(wvListSep))
+		wvListSep = ","
+	endif
+
+	if(ParamIsDefault(matchCase))
+		matchCase = 0
+	else
+		matchCase = !!matchCase
+	endif
+
+	if(ParamIsDefault(wvType))
+		wvType = IGOR_TYPE_64BIT_FLOAT
+	endif
+
+	value  = StringByKey(key, kwList, keySep, listSep, matchCase)
+	length = strlen(value)
+
+	if(length <= 2)
+		return $""
+	endif
+
+	// drop surrounding parantheses
+	value = value[1, length - 2]
+
+	return ListToNumericWave(value, wvListSep, type = wvType)
+End

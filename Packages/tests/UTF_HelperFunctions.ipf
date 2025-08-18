@@ -1542,24 +1542,6 @@ static Function CompareEpochsHistoricChannel(WAVE/T epochChannelRef, WAVE/T epoc
 	endfor
 End
 
-Function ExecuteSweepFormulaInDB(string code, string win)
-
-	string sfFormula, bsPanel
-	variable errorSeverity
-
-	bsPanel = BSP_GetPanel(win)
-
-	sfFormula = BSP_GetSFFormula(win)
-	ReplaceNotebookText(sfFormula, code)
-
-	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = CHECKBOX_SELECTED)
-	PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display")
-
-	errorSeverity = ROVar(GetSweepFormulaOutputSeverity())
-
-	return errorSeverity == SF_MSG_OK
-End
-
 /// @brief test two jsonIDs for equal content
 Function CHECK_EQUAL_JSON(variable jsonID0, variable jsonID1)
 
@@ -1743,9 +1725,16 @@ Function LoadMIESFolderFromPXP(string fName)
 End
 
 /// @brief Execute the given SweepFormula code in the browser and return the formula graph
-Function/S ExecuteSweepFormulaCode(string browser, string code)
+Function/S ExecuteSweepFormulaCode(string browser, string code, [variable expectFailure])
 
-	string bsPanel
+	string   bsPanel
+	variable errorSeverity
+
+	if(ParamIsDefault(expectFailure))
+		expectFailure = 0
+	else
+		expectFailure = !!expectFailure
+	endif
 
 	SF_SetFormula(browser, code)
 
@@ -1753,6 +1742,13 @@ Function/S ExecuteSweepFormulaCode(string browser, string code)
 
 	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = 1)
 	PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display", val = NaN)
+
+	errorSeverity = ROVar(GetSweepFormulaOutputSeverity())
+	if(expectFailure)
+		CHECK_EQUAL_VAR(errorSeverity, SF_MSG_ERROR)
+	else
+		CHECK_EQUAL_VAR(errorSeverity, SF_MSG_OK)
+	endif
 
 	return SFH_GetFormulaGraphForBrowser(browser)
 End
