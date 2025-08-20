@@ -171,6 +171,7 @@ jobs:
     needs:
       - BuildInstaller
       - Linting
+      - Ipt
       - CompilationTest
     strategy:
       matrix:
