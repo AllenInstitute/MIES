@@ -955,10 +955,6 @@ Function TP_AutoTPDisableIfAppropriate(string device, WAVE TPStorage, [variable 
 		return TPState
 	endif
 
-	if(needsUpdate)
-		DAP_TPSettingsToGUI(device, entry = "autoTPEnable")
-	endif
-
 	return NaN
 End
 
