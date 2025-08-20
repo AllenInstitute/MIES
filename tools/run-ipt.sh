@@ -24,6 +24,7 @@ else
 fi
 
 config=$(pwd)/config.toml
+trap 'rm -f $config' SIGINT SIGQUIT SIGTSTP EXIT
 
 echo "[lint]" > $config
 

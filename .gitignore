@@ -56,7 +56,6 @@ Packages/tests/**/*.nwb
 # intermediate test files
 rewritten_config.json
 CheckIfConfigurationRestoresMCCFilterGain.json
-config.toml
 
 # Renamed experiments during tests
 Packages/tests/**/20*.pxp
