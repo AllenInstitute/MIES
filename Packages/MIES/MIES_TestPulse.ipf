@@ -874,9 +874,13 @@ Function TP_AutoTPDisableIfAppropriate(string device, WAVE TPStorage, [variable 
 	endif
 
 	if(ParamIsDefault(restartTP))
-		restartTP = 0
+		restartTP = 1
 	else
 		restartTP = !!restartTP
+	endif
+
+	if(!TP_AutoTPActive(device))
+		return NaN
 	endif
 
 	WAVE TPSettings = GetTPSettings(device)
