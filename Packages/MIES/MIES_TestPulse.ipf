@@ -845,14 +845,47 @@ static Function TP_AutoTPTurnOff(string device, WAVE autoTPEnable, variable head
 	TPSettingsLBN[0][%$"TP Auto QC"][headstage] = QC
 End
 
-/// @brief Disable Auto TP if it passed `TP_AUTO_TP_CONSECUTIVE_PASSES` times in a row.
-static Function TP_AutoDisableIfFinished(string device, WAVE TPStorage)
+/// @brief Disable Auto TP if appropriate
+///
+/// Disable Auto TP if it passed #TP_AUTO_TP_CONSECUTIVE_PASSES or failed
+/// #TP_AUTO_TP_BASELINE_RANGE_EXCEEDED_FAILS times in a row or forceFailedQC
+/// is true.
+///
+/// @param device        Device
+/// @param TPStorage     TPStorage wave
+/// @param forceFailedQC [optional, defaults to false] Stop Auto TP with a QC failure
+/// @param headstage     [optional, defaults to all IC headstages] Headstage [0, 8[ or use one of @ref AllHeadstageModeConstants
+/// @param restartTP     [optional, defaults to true] restart the Testpulse
+///
+/// @return Returns the previously running Test Pulse mode , one of @ref
+///         TestPulseRunModes, when it was stopped or NaN if the testpulse was not changed
+Function TP_AutoTPDisableIfAppropriate(string device, WAVE TPStorage, [variable forceFailedQC, variable headstage, variable restartTP])
 
 	variable i, needsUpdate, TPState
+
+	if(ParamIsDefault(forceFailedQC))
+		forceFailedQC = 0
+	else
+		forceFailedQC = !!forceFailedQC
+	endif
+
+	if(ParamIsDefault(headstage))
+		headstage = NaN
+	endif
+
+	if(ParamIsDefault(restartTP))
+		restartTP = 0
+	else
+		restartTP = !!restartTP
+	endif
 
 	WAVE TPSettings = GetTPSettings(device)
 
 	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
+
+	if(headstage >= 0)
+		statusHS[] = statusHS[p] && p == headstage
+	endif
 
 	WAVE autoTPEnable = LBN_GetNumericWave()
 	autoTPEnable[] = TPSettings[%autoTPEnable][p]
@@ -893,6 +926,13 @@ static Function TP_AutoDisableIfFinished(string device, WAVE TPStorage)
 			needsUpdate = 1
 			continue
 		endif
+
+		if(forceFailedQC)
+			TP_AutoTPTurnOff(device, autoTPEnable, i, 0)
+
+			needsUpdate = 1
+			continue
+		endif
 	endfor
 
 	if(needsUpdate)
@@ -904,12 +944,18 @@ static Function TP_AutoDisableIfFinished(string device, WAVE TPStorage)
 
 		DAP_TPSettingsToGUI(device, entry = "autoTPEnable")
 
-		TP_RestartTestPulse(device, TPState)
+		if(restartTP)
+			TP_RestartTestPulse(device, TPState)
+		endif
+
+		return TPState
 	endif
 
 	if(needsUpdate)
 		DAP_TPSettingsToGUI(device, entry = "autoTPEnable")
 	endif
+
+	return NaN
 End
 
 /// @brief Generate new auto TP cycle IDs
@@ -1294,7 +1340,7 @@ static Function TP_RecordTP(string device, WAVE TPResults)
 
 	SetNumberInWaveNote(TPStorage, NOTE_INDEX, count + 1)
 
-	TP_AutoDisableIfFinished(device, TPStorage)
+	TP_AutoTPDisableIfAppropriate(device, TPStorage)
 End
 
 /// @brief Threadsafe wrapper for performing CurveFits on the TPStorage wave

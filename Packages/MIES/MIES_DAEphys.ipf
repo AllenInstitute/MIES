@@ -3305,7 +3305,10 @@ Function DAP_ChangeHeadStageMode(string device, variable clampMode, variable hea
 	endif
 
 	if(options != MCC_SKIP_UPDATES)
-		if(activeHS || headstage < 0)
+		WAVE TPStorage = GetTPStorage(device)
+		testPulseMode = TP_AutoTPDisableIfAppropriate(device, TPStorage, forceFailedQC = 1, headstage = headstage, restartTP = 0)
+
+		if((activeHS || headstage < 0) && IsNaN(testPulseMode))
 			testPulseMode = TP_StopTestPulse(device)
 		endif
 	endif
