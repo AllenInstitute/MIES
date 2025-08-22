@@ -2238,11 +2238,11 @@ Function/S HW_NI_AnalogInputToString(variable config)
 	endif
 
 	if(config & HW_NI_CONFIG_DIFFERENTIAL)
-		str += "Differential, "
+		str += "DIFF, "
 	endif
 
 	if(config & HW_NI_CONFIG_PSEUDO_DIFFERENTIAL)
-		str += "Pseudo Differential, "
+		str += "PDIFF, "
 	endif
 
 	ASSERT(!IsEmpty(str), "Invalid config")
