@@ -236,6 +236,21 @@ Function ClampModeDuringSweep_IGNORE(STRUCT WMBackgroundStruct &s)
 	return 0
 End
 
+Function ClampModeDuringTP_IGNORE(STRUCT WMBackgroundStruct &s)
+
+	SVAR   devices = $GetLockedDevices()
+	string device  = StringFromList(0, devices)
+
+	NVAR tpRunMode = $GetTestpulseRunMode(device)
+
+	if(tpRunMode != TEST_PULSE_NOT_RUNNING)
+		PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, 1), val = 1)
+		return 1
+	endif
+
+	return 0
+End
+
 Function ClampModeDuringITI_IGNORE(STRUCT WMBackgroundStruct &s)
 
 	SVAR   devices = $GetLockedDevices()
@@ -300,16 +315,7 @@ Function StopTPWhenFinished(STRUCT WMBackgroundStruct &s)
 	SVAR   devices = $GetLockedDevices()
 	string device  = StringFromList(0, devices)
 
-	WAVE settings = GetTPSettings(device)
-
-	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
-
-	Duplicate/FREE/RMD=[FindDimLabel(settings, ROWS, "autoTPEnable")][0, NUM_HEADSTAGES - 1] settings, autoTPEnable
-	Redimension/N=(numpnts(autoTPEnable)) autoTPEnable
-
-	autoTPEnable[] = statusHS[p] && autoTPEnable[p]
-
-	if(Sum(autoTPEnable) == 0)
+	if(!TP_AutoTPActive(device))
 		PGC_SetAndActivateControl(device, "StartTestPulseButton")
 		return 1
 	endif
