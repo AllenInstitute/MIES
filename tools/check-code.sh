@@ -178,6 +178,15 @@ then
   ret=1
 fi
 
+matches=$(git grep $opts 'JSON_Exists(.*\"\")' '**/MIES_*.ipf' '**/UTF*.ipf')
+
+if [[ -n "$matches" ]]
+then
+  echo "Prefer JSON_IsValid(...) over JSON_Exists(..., \"\")"
+  echo "$matches"
+  ret=1
+fi
+
 # ripgrep checks
 
 files=$(git ls-files '*.ipf' '*.sh' '*.rst' '*.dot' '*.md' ':!:**/releasenotes_template.rst' ':^*/IPA_Control.ipf')

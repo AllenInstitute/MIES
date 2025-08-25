@@ -24,7 +24,7 @@ Function CreatesWave()
 	CHECK_EQUAL_VAR(DimSize(graphUserData, COLS), 0)
 
 	CHECK_EQUAL_VAR(GetNumberFromWaveNote(graphUserData, NOTE_INDEX), 0)
-	CHECK(JSON_Exists(GetNumberFromWaveNote(graphUserData, TUD_INDEX_JSON), ""))
+	CHECK(JSON_IsValid(GetNumberFromWaveNote(graphUserData, TUD_INDEX_JSON)))
 End
 
 Function KillGraphAndCheckEmptyUserData_IGNORE(string graph, WAVE/T graphUserData, [variable clearInstead])

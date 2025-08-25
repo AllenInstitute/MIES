@@ -381,7 +381,7 @@ static Function TUD_GetIndexJSON(WAVE/T graphUserData)
 
 	jsonID = GetNumberFromWaveNote(graphUserData, TUD_INDEX_JSON)
 
-	if(IsFinite(jsonID) && JSON_Exists(jsonID, ""))
+	if(JSON_IsValid(jsonID))
 		return jsonID
 	endif
 
