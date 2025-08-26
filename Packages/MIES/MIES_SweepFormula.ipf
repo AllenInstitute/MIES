@@ -136,7 +136,7 @@ Function SF_FormulaWaveScaleTransfer(WAVE source, WAVE dest, variable dimSource,
 	endswitch
 End
 
-static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] SF_GatherFormulaResults(string xFormula, string yFormula, string graph)
+static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] SF_GatherFormulaResults(string xFormula, string yFormula, string graph, variable lineNr, variable offset)
 
 	variable i, numResultsY, numResultsX
 	variable useXLabel, addDataUnitsInAnnotation
@@ -146,10 +146,10 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 
 	WAVE/Z/WAVE wvXRef = $""
 	if(!IsEmpty(xFormula))
-		WAVE/WAVE wvXRef = SFE_ExecuteFormula(xFormula, graph, useVariables = 0)
+		WAVE/WAVE wvXRef = SFE_ExecuteFormula(xFormula, graph, useVariables = 0, line = lineNr, offset = offset)
 		SFH_ASSERT(WaveExists(wvXRef), "x part of formula returned no result.")
 	endif
-	WAVE/WAVE wvYRef = SFE_ExecuteFormula(yFormula, graph, useVariables = 0)
+	WAVE/WAVE wvYRef = SFE_ExecuteFormula(yFormula, graph, useVariables = 0, line = lineNr, offset = 0)
 	SFH_ASSERT(WaveExists(wvYRef), "y part of formula returned no result.")
 	numResultsY = DimSize(wvYRef, ROWS)
 	if(WaveExists(wvXRef))
@@ -793,19 +793,21 @@ End
 /// @param graph  graph to pass to SF_FormulaExecutor
 /// @param formula formula to plot
 /// @param dmMode  [optional, default DM_SUBWINDOWS] display mode that defines how multiple sweepformula graphs are arranged
-static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode])
+/// @param lineVars  [optional, default NaN] number of lines in the SF notebook with variable assignments in front of the formula
+static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode, variable lineVars])
 
 	string trace, customLegend
 	variable i, j, k, l, numTraces, splitTraces, splitY, splitX, numGraphs, numWins, numData, dataCnt, traceCnt
-	variable winDisplayMode, showLegend, tagCounter, overrideMarker
+	variable winDisplayMode, showLegend, tagCounter, overrideMarker, line, lineGraph, lineGraphFormula
 	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection, numAnnotations, formulasAreDifferent, postPlotPSX
-	variable formulaCounter, gdIndex, markerCode, lineCode, lineStyle, traceToFront, isCategoryAxis
+	variable formulaCounter, gdIndex, markerCode, lineCode, lineStyle, traceToFront, isCategoryAxis, xFormulaOffset
 	string win, wList, winNameTemplate, exWList, wName, annotation, xAxisLabel, yAxisLabel, wvName, info, xAxis
-	string formulasRemain, yAndXFormula, xFormula, yFormula, tagText, name, winHook
+	string formulasRemain, moreFormulas, yAndXFormula, xFormula, yFormula, tagText, name, winHook
 	STRUCT SF_PlotMetaData plotMetaData
 	STRUCT RGBColor        color
 
 	winDisplayMode = ParamIsDefault(dmMode) ? SF_DM_SUBWINDOWS : dmMode
+	lineVars       = ParamIsDefault(lineVars) ? NaN : lineVars
 	ASSERT(winDisplaymode == SF_DM_NORMAL || winDisplaymode == SF_DM_SUBWINDOWS, "Invalid display mode.")
 
 	DFREF dfr = SF_GetBrowserDF(graph)
@@ -833,7 +835,8 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 
 		Make/FREE/T/N=0 xAxisLabels, yAxisLabels
 
-		formulasRemain = graphCode[j]
+		formulasRemain = graphCode[j][%GRAPHCODE]
+		lineGraph      = str2num(graphCode[j][%LINE])
 
 		win   = plotGraphs[j]
 		wList = AddListItem(win, wList)
@@ -847,17 +850,20 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 			gdIndex    = 0
 			annotation = ""
 
-			SplitString/E=SF_SWEEPFORMULA_WITH_REGEXP formulasRemain, yAndXFormula, formulasRemain
+			SplitString/E=SF_SWEEPFORMULA_WITH_REGEXP formulasRemain, yAndXFormula, moreFormulas
 			if(!V_flag)
 				break
 			endif
+			line             = lineVars + lineGraph + lineGraphFormula
+			lineGraphFormula = SF_GetLineNumberOfRemainingCode(formulasRemain, moreFormulas)
+			formulasRemain   = moreFormulas
 
-			[xFormula, yFormula] = SF_SplitGraphsToFormula(yAndXFormula)
+			[xFormula, yFormula, xFormulaOffset] = SF_SplitGraphsToFormula(yAndXFormula)
 			SFH_ASSERT(!IsEmpty(yFormula), "Could not determine y [vs x] formula pair.")
 
 			WAVE/Z/WAVE formulaResults = $""
 			try
-				[formulaResults, plotMetaData] = SF_GatherFormulaResults(xFormula, yFormula, graph)
+				[formulaResults, plotMetaData] = SF_GatherFormulaResults(xFormula, yFormula, graph, line, xFormulaOffset)
 			catch
 				SF_CleanUpPlotWindowsOnFail(plotGraphs)
 				Abort
@@ -1359,6 +1365,7 @@ Function SF_button_sweepFormula_check(STRUCT WMButtonAction &ba) : ButtonControl
 #ifdef DEBUGGING_ENABLED
 				SFP_SaveParserStateLog()
 #endif // DEBUGGING_ENABLED
+				SF_MarkErrorLocationInNotebook(mainPanel)
 				JSON_Release(jsonID, ignoreErr = 1)
 				jsonID = NaN
 			endtry
@@ -1434,6 +1441,8 @@ Function [WAVE/T varAssignments, string code] SF_GetVariableAssignments(string p
 		EnsureLargeEnoughWave(varAssignments, indexShouldExist = varCnt)
 		varAssignments[varCnt][dimVarName]  = varName
 		varAssignments[varCnt][%EXPRESSION] = formula
+		varAssignments[varCnt][%LINE]       = num2istr(i)
+		varAssignments[varCnt][%OFFSET]     = num2istr(strsearch(line, "=", 0) + 1)
 
 		varCnt += 1
 	endfor
@@ -1453,8 +1462,8 @@ End
 
 static Function/S SF_CheckVariableAssignments(string preProcCode, variable jsonId)
 
-	variable i, numAssignments, jsonIdFormula, srcLocId
-	string code, jsonPath
+	variable i, numAssignments, jsonIdFormula, srcLocId, line, offset
+	string code, jsonPath, formula
 
 	[WAVE/T varAssignments, code] = SF_GetVariableAssignments(preProcCode)
 	if(!WaveExists(varAssignments))
@@ -1463,20 +1472,46 @@ static Function/S SF_CheckVariableAssignments(string preProcCode, variable jsonI
 
 	numAssignments = DimSize(varAssignments, ROWS)
 	for(i = 0; i < numAssignments; i += 1)
-		[jsonIdFormula, srcLocId] = SFP_ParseFormulaToJSON(varAssignments[i][%EXPRESSION])
+		formula = varAssignments[i][%EXPRESSION]
+		line    = str2num(varAssignments[i][%LINE])
+		offset  = str2num(varAssignments[i][%OFFSET])
+		SFH_StoreAssertInfoParser(line, offset)
+		[jsonIdFormula, srcLocId] = SFP_ParseFormulaToJSON(formula)
 		jsonPath                  = "/variable:" + varAssignments[i][%VARNAME]
 		JSON_AddJSON(jsonID, jsonPath, jsonIdFormula)
+		SF_AddSourceInfoToJSON(jsonId, "/variables", jsonPath, srcLocId, formula, line, offset)
 		JSON_Release(jsonIdFormula)
 	endfor
 
 	return code
 End
 
+/// @brief When preprocessing the SF notebook content there are occurances where a part at the front is split off
+///        for further processing. For the source location tracking it is important to track the current line number.
+///        Thus, the number of `<CR>` in the split off part need to be counted. This helper function counts these `<CR>`s.
+///
+/// @param all     full string content
+/// @param endPart remaining string content (where all == split_off_part + endPart)
+static Function SF_GetLineNumberOfRemainingCode(string all, string endPart)
+
+	variable len1, len2
+	string firstPart
+
+	len1 = strlen(all)
+	len2 = strlen(endPart)
+	ASSERT(len1 >= len2, "endPart must be equal or smaller than the full string")
+	firstPart = all[0, len1 - len2]
+	WAVE/T tmp = ListToTextWave(firstPart, SF_CHAR_CR)
+
+	return DimSize(tmp, ROWS) - 1
+End
+
 /// @brief Checks input code, sets globals for jsonId and error string
 static Function SF_CheckInputCode(string code, string graph)
 
-	variable i, numGraphs, jsonIDy, jsonIDx, subFormulaCnt, srcLocId
-	string jsonPath, xFormula, yFormula, formulasRemain, subPath, yAndXFormula, codeWithoutVariables, preProcCode
+	variable i, numGraphs, jsonIDy, jsonIDx, subFormulaCnt, srcLocId, lineVars, lineGraphFormula, line, xFormulaOffset
+	string jsonPath, xFormula, yFormula, formulasRemain, subPath, yAndXFormula, codeWithoutVariables, preProcCode, prefix
+	string moreFormulas
 
 	NVAR jsonID = $GetSweepFormulaJSONid(SF_GetBrowserDF(graph))
 	JSON_Release(jsonID, ignoreErr = 1)
@@ -1486,44 +1521,89 @@ static Function SF_CheckInputCode(string code, string graph)
 	preProcCode = SF_PreprocessInput(code)
 
 	codeWithoutVariables = SF_CheckVariableAssignments(preProcCode, jsonID)
+	lineVars             = SF_GetLineNumberOfRemainingCode(preProcCode, codeWithoutVariables)
 
 	WAVE/T graphCode = SF_SplitCodeToGraphs(codeWithoutVariables)
 
 	numGraphs = DimSize(graphCode, ROWS)
 	for(i = 0; i < numGraphs; i += 1)
 		subFormulaCnt  = 0
-		formulasRemain = graphCode[i]
+		formulasRemain = graphCode[i][%GRAPHCODE]
 		sprintf jsonPath, "/graph_%d", i
 		JSON_AddObjects(jsonID, jsonPath)
 
 		do
-			SplitString/E=SF_SWEEPFORMULA_WITH_REGEXP formulasRemain, yAndXFormula, formulasRemain
+			SplitString/E=SF_SWEEPFORMULA_WITH_REGEXP formulasRemain, yAndXFormula, moreFormulas
 			if(!V_flag)
 				break
 			endif
+			line             = lineVars + str2num(graphCode[i][%LINE]) + lineGraphFormula
+			lineGraphFormula = SF_GetLineNumberOfRemainingCode(formulasRemain, moreFormulas)
+			formulasRemain   = moreFormulas
 
-			[xFormula, yFormula] = SF_SplitGraphsToFormula(yAndXFormula)
+			[xFormula, yFormula, xFormulaOffset] = SF_SplitGraphsToFormula(yAndXFormula)
 			SFH_ASSERT(!IsEmpty(yFormula), "Could not determine y [vs x] formula pair.")
 
 			sprintf subPath, "%s/pair_%d", jsonPath, subFormulaCnt
 			JSON_AddTreeObject(jsonID, subPath)
+			prefix = subPath
 
-			sprintf subPath, "%s/pair_%d/formula_y", jsonPath, subFormulaCnt
+			SFH_StoreAssertInfoParser(line, 0)
 			[jsonIDy, srcLocId] = SFP_ParseFormulaToJSON(yFormula)
+			subPath             = prefix + "/formula_y"
 			JSON_AddJSON(jsonID, subPath, jsonIDy)
 			JSON_Release(jsonIDy)
 
+			SF_AddSourceInfoToJSON(jsonId, prefix, "/formula_y", srcLocId, yFormula, line, 0)
+
 			if(!IsEmpty(xFormula))
+				SFH_StoreAssertInfoParser(line, xFormulaOffset)
 				[jsonIDx, srcLocId] = SFP_ParseFormulaToJSON(xFormula)
 
-				sprintf subPath, "%s/pair_%d/formula_x", jsonPath, subFormulaCnt
+				subPath = prefix + "/formula_x"
 				JSON_AddJSON(jsonID, subPath, jsonIDx)
 				JSON_Release(jsonIDx)
+
+				SF_AddSourceInfoToJSON(jsonId, prefix, "/formula_x", srcLocId, xFormula, line, xFormulaOffset)
 			endif
 
 			subFormulaCnt += 1
 		while(1)
 	endfor
+End
+
+/// @brief Helper function to add base source location information to a JSON created for "check"
+///        The full path is build from: jsonPath + "/source_location" + subPath + `<internalPathForElement>`
+///        Internal paths are (path : content):
+///        /source : formula
+///        /line : line number
+///        /start_offset : offset
+///        /source_map : here JSON form srcLocId is added
+///
+///        srcLocId is created and returned by SFP_ParseFormulaToJSON
+///
+/// @param jsonId   JSON created for "check"
+/// @param jsonPath the base JSON path for the specific formula set (from graph/pair) or variable
+/// @param subPath  the sub JSON path for the specific formula or variable name
+/// @param srcLocId the JSON with the source location information, it is released after adding it to the main JSON from jsonid
+/// @param formula  formula string
+/// @param line     line in the SF notebook where the formula is
+/// @param offset   character offset of the formula in the line in the SF notebook
+static Function SF_AddSourceInfoToJSON(variable jsonId, string jsonPath, string subPath, variable srcLocId, string formula, variable line, variable offset)
+
+	string prefix
+
+	prefix = jsonPath + "/source_location" + subPath
+	JSON_AddTreeObject(jsonId, prefix)
+	subPath = prefix + "/source"
+	JSON_AddString(jsonID, subPath, formula)
+	subPath = prefix + "/line"
+	JSON_AddVariable(jsonID, subPath, line)
+	subPath = prefix + "/start_offset"
+	JSON_AddVariable(jsonID, subPath, offset)
+	subPath = prefix + "/source_map"
+	JSON_AddJSON(jsonID, subPath, srcLocId)
+	JSON_Release(srcLocId)
 End
 
 Function SF_Update(string graph)
@@ -1556,7 +1636,8 @@ End
 
 Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonControl
 
-	string mainPanel, rawCode, bsPanel, preProcCode
+	string mainPanel, rawCode, bsPanel, preProcCode, codeWithoutVariables
+	variable lineVars
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -1579,15 +1660,16 @@ Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonContr
 
 			// catch Abort from SFH_ASSERT
 			try
-				preProcCode = SFE_ExecuteVariableAssignments(mainPanel, preProcCode)
-				if(IsEmpty(preProcCode))
+				codeWithoutVariables = SFE_ExecuteVariableAssignments(mainPanel, preProcCode)
+				if(IsEmpty(codeWithoutVariables))
 					break
 				endif
-				SF_FormulaPlotter(mainPanel, preProcCode)
+				lineVars = SF_GetLineNumberOfRemainingCode(preProcCode, codeWithoutVariables)
+				SF_FormulaPlotter(mainPanel, codeWithoutVariables, lineVars = lineVars)
 
 				DFREF dfr      = SF_GetBrowserDF(mainPanel)
 				SVAR  lastCode = $GetLastSweepFormulaCode(dfr)
-				lastCode = preProcCode
+				lastCode = codeWithoutVariables
 
 				[WAVE/T keys, WAVE/T values] = SFH_CreateResultsWaveWithCode(mainPanel, rawCode)
 
@@ -1596,6 +1678,7 @@ Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonContr
 #ifdef DEBUGGING_ENABLED
 				SFP_SaveParserStateLog()
 #endif // DEBUGGING_ENABLED
+				SF_MarkErrorLocationInNotebook(mainPanel)
 			endtry
 			SF_DisplayOutputStateInGUI(bsPanel)
 
@@ -1673,38 +1756,50 @@ End
 static Function/WAVE SF_SplitCodeToGraphs(string code)
 
 	string group0, group1
-	variable graphCount, size
+	variable graphCount, size, line
 
 	WAVE/T graphCode = GetYvsXFormulas()
 
 	do
 		SplitString/E=SF_SWEEPFORMULA_GRAPHS_REGEXP code, group0, group1
 		if(!IsEmpty(group0))
-			EnsureLargeEnoughWave(graphCode, dimension = ROWS, indexShouldExist = graphCount)
-			graphCode[graphCount] = group0
-			graphCount           += 1
-			code                  = group1
+			EnsureLargeEnoughWave(graphCode, dimension = ROWS, indexShouldExist = graphCount + 1)
+			graphCode[graphCount][%GRAPHCODE] = group0
+
+			if(graphCount == 0)
+				graphCode[0][%LINE] = num2istr(0)
+			endif
+			line                            += SF_GetLineNumberOfRemainingCode(code, group1)
+			graphCode[graphCount + 1][%LINE] = num2istr(line)
+
+			graphCount += 1
+			code        = group1
 		endif
 	while(!IsEmpty(group1))
-	Redimension/N=(graphCount) graphCode
+	Redimension/N=(graphCount, -1) graphCode
 
 	return graphCode
 End
 
-static Function [string xFormula, string yFormula] SF_SplitGraphsToFormula(string graphCode)
+static Function [string xFormula, string yFormula, variable offset] SF_SplitGraphsToFormula(string graphCode)
 
 	variable numFormulae
+
+	offset = NaN
 
 	SplitString/E=SF_SWEEPFORMULA_REGEXP graphCode, yFormula, xFormula
 	numFormulae = V_Flag
 
 	if(numFormulae != 1 && numFormulae != 2)
-		return ["", ""]
+		return ["", "", NaN]
 	endif
 
 	xFormula = SelectString(numFormulae == 2, "", xFormula)
+	if(!IsEmpty(xFormula))
+		offset = strsearch(graphCode, xFormula, Inf, 1)
+	endif
 
-	return [xFormula, yFormula]
+	return [xFormula, yFormula, offset]
 End
 
 static Function/S SF_GetFormulaWinNameTemplate(string mainWindow)
@@ -2064,4 +2159,70 @@ Function TraceValueDisplayHook(STRUCT WMTooltipHookStruct &s)
 	endif
 
 	return 0
+End
+
+/// @brief calculate the error position within the sf notebook
+///        In notebooks every paragraph ends with a CR. It is possible to navigate through paragraphs
+///        and character offsets in these paragraphs.
+///        As formula code can contain CR, these have to be accounted for in counting paragraphs.
+///        Also the effective character offset in the NB paragraph needs to be calculated.
+static Function [variable paragraph, variable charPosition] SF_CalculateErrorLocationInNotebook(string win)
+
+	string sfWin, text
+	variable line, i, lineNr, offset, lineOffset, numCR, formOffset, inFormOffset
+
+	sfWin = BSP_GetSFFormula(win)
+	text  = GetNotebookText(sfWin, mode = 2)
+	text  = SF_PreprocessInput(text)
+	WAVE/T wText = ListToTextWave(text, SF_CHAR_CR)
+
+	WAVE/T info = GetSFAssertData()
+	line = str2numSafe(info[%LINE])
+
+	// find line in text and look how many CR are between 0 and offset
+	for(i = 0; i < line; i += 1)
+		lineOffset += strlen(wText[i]) + strlen(SF_CHAR_CR)
+	endfor
+	text = text[lineOffset, Inf]
+
+	// handle CR in left of "vs" formula
+	offset = str2numSafe(info[%OFFSET])
+	if(offset > 0)
+		formOffset = offset
+		for(i = 0; i < offset; i += 1)
+			if(!CmpStr(text[i], SF_CHAR_CR))
+				numCR     += 1
+				formOffset = offset - i - 1
+			endif
+		endfor
+	endif
+
+	// handle CR right of "vs" formula
+	text         = text[offset, Inf]
+	offset       = str2numSafe(info[%INFORMULAOFFSET])
+	inFormOffset = offset
+	for(i = 0; i < offset; i += 1)
+		if(!CmpStr(text[i], SF_CHAR_CR))
+			numCR       += 1
+			formOffset   = 0
+			inFormOffset = offset - i - 1
+		endif
+	endfor
+
+	lineNr        = line + numCR
+	inFormOffset += formOffset
+
+	return [lineNr, inFormOffset]
+End
+
+/// @brief Mark the error location in red in the SF notebook
+static Function SF_MarkErrorLocationInNotebook(string win)
+
+	variable paragraph, offset
+	string sfWin
+
+	[paragraph, offset] = SF_CalculateErrorLocationInNotebook(win)
+
+	sfWin = BSP_GetSFFormula(win)
+	Notebook $sfWin, selection={(paragraph, offset), (paragraph, offset + 1)}, textRGB=(65535, 0, 0)
 End

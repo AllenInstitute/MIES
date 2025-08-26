@@ -7935,7 +7935,9 @@ End
 /// - One for each y vs x formula combination
 Function/WAVE GetYvsXFormulas()
 
-	Make/T/FREE/N=0 wv
+	Make/T/FREE/N=(0, 2) wv
+	SetDimLabel COLS, 0, GRAPHCODE, wv
+	SetDimLabel COLS, 1, LINE, wv
 
 	return wv
 End
@@ -8340,11 +8342,21 @@ Function/WAVE GetSFVarStorage(string graph)
 End
 
 /// @brief Returns a wave where variable assignments are collected into
+///
+/// This 2D wave is used by "check" when the variables from the SF notebook are processed
+/// The ROWS collect the variables
+/// Columns:
+/// VARNAME    : name of the variable
+/// EXPRESSION : formula for this variable
+/// LINE       : line number in SF notebook where the variable is defined
+/// OFFSET     : character offset in the line where the formula for this variable starts
 Function/WAVE GetSFVarAssignments()
 
-	Make/FREE/T/N=(0, 2) varAssignments
+	Make/FREE/T/N=(0, 4) varAssignments
 	SetDimLabel COLS, 0, VARNAME, varAssignments
 	SetDimLabel COLS, 1, EXPRESSION, varAssignments
+	SetDimLabel COLS, 2, LINE, varAssignments
+	SetDimLabel COLS, 3, OFFSET, varAssignments
 
 	return varAssignments
 End

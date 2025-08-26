@@ -2240,3 +2240,210 @@ static Function TestTraceColors()
 	// yellow
 	TestTraceColor(graph, traces, 1, {59110, 40863, 0})
 End
+
+// UTF_TD_GENERATOR DataGenerators#DG_SourceLocationsBrackets
+static Function TestSourceLocationTrackingBrackets([string str])
+
+	variable sweepNo, numChannels
+	string win, device
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	sweepNo = 0
+	win     = CreateFakeSweepData(win, device, sweepNo = sweepNo)
+
+	try
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 1)
+		FAIL()
+	catch
+		WAVE/T assertData = GetSFAssertData()
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%STEP]), SF_STEP_PARSER)
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%INFORMULAOFFSET]), 3)
+	endtry
+End
+
+static Function TestSourceLocationTrackingVariables()
+
+	variable sweepNo, numChannels
+	string win, device, str
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	sweepNo = 0
+	win     = CreateFakeSweepData(win, device, sweepNo = sweepNo)
+
+	str = "a = 1 +"
+	try
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 1)
+		FAIL()
+	catch
+		WAVE/T assertData = GetSFAssertData()
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%STEP]), SF_STEP_PARSER)
+		CHECK_EQUAL_STR(assertData[%FORMULA], " 1 +")
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%LINE]), 0)
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%OFFSET]), 3)
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%INFORMULAOFFSET]), 4)
+	endtry
+
+	str = "a = [1]a"
+	try
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 1)
+		FAIL()
+	catch
+		WAVE/T assertData = GetSFAssertData()
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%STEP]), SF_STEP_PARSER)
+		CHECK_EQUAL_STR(assertData[%FORMULA], " [1]a")
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%LINE]), 0)
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%OFFSET]), 3)
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%INFORMULAOFFSET]), 4)
+	endtry
+
+	str = "a = [a,b,,]"
+	try
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 1)
+		FAIL()
+	catch
+		WAVE/T assertData = GetSFAssertData()
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%STEP]), SF_STEP_PARSER)
+		CHECK_EQUAL_STR(assertData[%FORMULA], " [a,b,,]")
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%LINE]), 0)
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%OFFSET]), 3)
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%INFORMULAOFFSET]), 6)
+	endtry
+
+	str = "a = [10,a]"
+	try
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 1)
+		FAIL()
+	catch
+		WAVE/T assertData = GetSFAssertData()
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%STEP]), SF_STEP_EXECUTOR)
+		CHECK_EQUAL_STR(assertData[%FORMULA], " [10,a]")
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%LINE]), 0)
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%OFFSET]), 3)
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%INFORMULAOFFSET]), 5)
+	endtry
+
+	str = "a = [[[[[10]]]]]"
+	try
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 1)
+		FAIL()
+	catch
+		WAVE/T assertData = GetSFAssertData()
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%STEP]), SF_STEP_EXECUTOR)
+		CHECK_EQUAL_STR(assertData[%FORMULA], " [[[[[10]]]]]")
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%LINE]), 0)
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%OFFSET]), 3)
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%INFORMULAOFFSET]), 0)
+	endtry
+
+	str = "a = selchannels(AB)\r"
+	try
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 1)
+		FAIL()
+	catch
+		WAVE/T assertData = GetSFAssertData()
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%STEP]), SF_STEP_EXECUTOR)
+		CHECK_EQUAL_STR(assertData[%FORMULA], " selchannels(AB)")
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%LINE]), 0)
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%OFFSET]), 3)
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%INFORMULAOFFSET]), 13)
+	endtry
+End
+
+static Function TestSourceLocationTrackingPosition()
+
+	variable sweepNo, numChannels, paragraph, charposition
+	string win, device, str, prefix
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	sweepNo = 0
+	win     = CreateFakeSweepData(win, device, sweepNo = sweepNo)
+	PGC_SetAndActivateControl(BSP_GetPanel(win), "check_BrowserSettings_SF", val = CHECKBOX_SELECTED)
+
+	prefix = "# comment\ra = 1 # comment\rb  =  2#comment\r\r1\rand\r1\rwith\r1\rand\r 1 +  #comment \r 1 vs 1 + \r"
+
+	str = prefix + "selchannels(AB)"
+	SF_SetFormula(win, str)
+	PGC_SetAndActivateControl(BSP_GetPanel(win), "button_sweepFormula_display")
+	[paragraph, charPosition] = MIES_SF#SF_CalculateErrorLocationInNotebook(win)
+	CHECK_EQUAL_VAR(paragraph, 12)
+	CHECK_EQUAL_VAR(charPosition, 12)
+End
+
+// UTF_TD_GENERATOR DataGenerators#DG_SourceLocationsVarious
+static Function TestSourceLocationTrackingPosition2([WAVE/WAVE wv])
+
+	variable sweepNo, numChannels, paragraph, charposition
+	string win, device, str, prefix
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	sweepNo = 0
+	win     = CreateFakeSweepData(win, device, sweepNo = sweepNo)
+	PGC_SetAndActivateControl(BSP_GetPanel(win), "check_BrowserSettings_SF", val = CHECKBOX_SELECTED)
+
+	WAVE   wvPos     = wv[0]
+	WAVE/T wvFormula = wv[1]
+
+	prefix = "# comment\ra = 1 # comment\rb  =  2#comment\r\r1\rand\r1\rwith\r1\rand\r 1 +  #comment \r 1 vs 1 + \r"
+	str    = prefix + wvFormula[0]
+	SF_SetFormula(win, str)
+	PGC_SetAndActivateControl(BSP_GetPanel(win), "button_sweepFormula_display")
+	[paragraph, charPosition] = MIES_SF#SF_CalculateErrorLocationInNotebook(win)
+	CHECK_EQUAL_VAR(charPosition, wvPos[0])
+End
+
+// UTF_TD_GENERATOR DataGenerators#DG_SourceLocationsJSON
+static Function TestSourceLocationJSON([WAVE/WAVE wv])
+
+	variable sweepNo, numChannels, jsonId
+	string win, device, str, prefix, srcPath
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	sweepNo = 0
+	win     = CreateFakeSweepData(win, device, sweepNo = sweepNo)
+	PGC_SetAndActivateControl(BSP_GetPanel(win), "check_BrowserSettings_SF", val = CHECKBOX_SELECTED)
+
+	WAVE   wvPos     = wv[0]
+	WAVE/T wvFormula = wv[1]
+
+	prefix = "# comment\ra = 1 # comment\rb  =  2#comment\r\r1\rand\r1\rwith\r1\rand\r 1 +  #comment \r 1 vs 1 + \r"
+	str    = prefix + wvFormula[0]
+	SF_SetFormula(win, str)
+	PGC_SetAndActivateControl(BSP_GetPanel(win), "button_sweepFormula_check")
+	jsonId = ROVar(GetSweepFormulaJSONid(SF_GetBrowserDF(win)))
+	CHECK_EQUAL_VAR(JSON_Exists(jsonId, "/variables/source_location/variable:a"), 1)
+	CHECK_EQUAL_VAR(JSON_Exists(jsonId, "/variables/source_location/variable:b"), 1)
+	CHECK_EQUAL_VAR(JSON_Exists(jsonId, "/graph_2/pair_0/source_location/formula_x"), 1)
+	CHECK_EQUAL_VAR(JSON_Exists(jsonId, "/graph_2/pair_0/source_location/formula_y"), 1)
+
+	CHECK_EQUAL_VAR(JSON_Exists(jsonId, "/graph_2/pair_0/source_location/formula_x/source_map"), 1)
+	CHECK_EQUAL_VAR(JSON_Exists(jsonId, "/graph_2/pair_0/source_location/formula_x/line"), 1)
+	CHECK_EQUAL_VAR(JSON_Exists(jsonId, "/graph_2/pair_0/source_location/formula_x/start_offset"), 1)
+	CHECK_EQUAL_VAR(JSON_Exists(jsonId, "/graph_2/pair_0/source_location/formula_x/source"), 1)
+	CHECK_EQUAL_VAR(JSON_Exists(jsonId, "/graph_2/pair_0/source_location/formula_x/source_map/"), 1)
+	srcPath = SF_EscapeJsonPath("/+")
+	CHECK_EQUAL_VAR(JSON_Exists(jsonId, "/graph_2/pair_0/source_location/formula_x/source_map/" + srcPath), 1)
+	srcPath = SF_EscapeJsonPath("/+/0")
+	CHECK_EQUAL_VAR(JSON_Exists(jsonId, "/graph_2/pair_0/source_location/formula_x/source_map/" + srcPath), 1)
+	srcPath = SF_EscapeJsonPath("/+/1")
+	CHECK_EQUAL_VAR(JSON_Exists(jsonId, "/graph_2/pair_0/source_location/formula_x/source_map/" + srcPath), 1)
+End
+
+// UTF_TD_GENERATOR DataGenerators#DG_SourceLocationsContent
+static Function TestSourceLocationContent([WAVE/WAVE wv])
+
+	variable jsonId, size
+
+	WAVE/T wFormula = wv[0]
+	WAVE/T wSrcLocs = wv[1]
+
+	[jsonId, WAVE/T srcLocs] = SFP_FormulaParser(wFormula[0], 0)
+	JSON_Release(jsonId)
+	size = GetNumberFromWaveNote(srcLocs, NOTE_INDEX)
+	Redimension/N=(size, -1) srcLocs
+	CHECK_EQUAL_WAVES(srcLocs, wSrcLocs, mode = WAVE_DATA)
+End
