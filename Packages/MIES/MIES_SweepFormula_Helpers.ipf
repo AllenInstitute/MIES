@@ -1987,3 +1987,19 @@ Function/WAVE SFH_GetLabNoteBookForSweep(string graph, variable sweepNo, variabl
 	ASSERT(IsNaN(mapIndex), "Window is DataBrowser, but got a mapIndex into a sweepMap")
 	return BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, logbookWaveType, sweepNumber = sweepNo)
 End
+
+Function SFH_StoreAssertInfoParser(variable line, variable offset)
+
+	WAVE/T info = GetSFAssertData()
+	info[%STEP]   = num2istr(SF_STEP_PARSER)
+	info[%LINE]   = num2istr(line)
+	info[%OFFSET] = num2istr(offset)
+End
+
+Function SFH_StoreAssertInfoExecutor(variable srcLocId, string jsonPath)
+
+	WAVE/T info = GetSFAssertData()
+	info[%SRCLOCID] = num2istr(srcLocId)
+	info[%JSONPATH] = jsonPath
+	info[%STEP]     = num2istr(SF_STEP_EXECUTOR)
+End

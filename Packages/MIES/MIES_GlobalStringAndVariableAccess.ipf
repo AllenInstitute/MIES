@@ -779,9 +779,9 @@ Function/S GetDFReferenceCount(DFREF dfr)
 End
 
 /// @brief Return the current JSON path in the sweep formula execution
-Function/S GetSweepFormulaJSONPathTracker(string graph)
+Function/S GetSweepFormulaJSONPathTracker()
 
-	return GetSVARAsString(SF_GetBrowserDF(graph), "sweepFormulaJSONPath", initialValue = "")
+	return GetSVARAsString(GetSweepFormulaPath(), "sweepFormulaJSONPath", initialValue = "")
 End
 
 /// @brief Return the current buffer offset in the sweep formula parser
