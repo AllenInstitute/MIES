@@ -1901,14 +1901,14 @@ End
 /// @brief Conversion between pixel <-> points
 ///
 ///@{
-Function PointsToPixel(variable var)
+Function PointsToPixel(string win, variable var)
 
-	return var * (ScreenResolution / 72)
+	return var * (ScreenResolution / PanelResolution(win))
 End
 
-Function PixelToPoints(variable var)
+Function PixelToPoints(string win, variable var)
 
-	return var * (72 / ScreenResolution)
+	return var * (PanelResolution(win) / ScreenResolution)
 End
 ///@}
 
