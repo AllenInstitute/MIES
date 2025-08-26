@@ -2298,12 +2298,10 @@ Function ReflowNotebookText(string win)
 
 	variable width
 
-	GetWindow $win, wsizeDC
+	GetWindow $win, wsizeRM
 	width = V_right - V_left
 	// make it a bit shorter
 	width -= 10
-	// pixel -> points
-	width = width * (72 / ScreenResolution)
 	// redefine ruler
 	Notebook $win, ruler=Normal, rulerUnits=0, margins={0, 0, width}
 	// select everything
