@@ -9,6 +9,7 @@ static Function TestEpochClipping([string str])
 	STRUCT SF_ExecutionData exd
 
 	string abWin, sweepBrowsers, file, bsPanel, sbWin
+	variable jsonId
 
 	file = "input:" + str
 
@@ -17,7 +18,8 @@ static Function TestEpochClipping([string str])
 	CHECK_PROPER_STR(sbWin)
 	bsPanel = BSP_GetPanel(sbWin)
 
-	exd.jsonId = MIES_SFP#SFP_FormulaParser("data(select(selrange(\"Stimset;\"), selchannels(AD), selsweeps()))")
+	[jsonId, WAVE/T srcLocs] = MIES_SFP#SFP_FormulaParser("data(select(selrange(\"Stimset;\"), selchannels(AD), selsweeps()))", 0)
+	exd.jsonId               = jsonId
 	CHECK_NEQ_VAR(exd.jsonId, NaN)
 	exd.graph = sbWin
 	WAVE/WAVE result = MIES_SFE#SFE_FormulaExecutor(exd)

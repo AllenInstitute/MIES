@@ -9146,3 +9146,57 @@ Function/WAVE GetSFErrorColorWave()
 
 	return wv
 End
+
+/// @brief Creates a new free wave for source location tracking
+///
+/// Columns:
+/// PATH : json path in the jsonId returned by SFP_FormulaParser
+/// OFFSET : character offset into the parsed formula where the element for json path starts
+///
+/// The wave rows are NOTE_INDEX managed
+Function/WAVE GetNewSourceLocationWave()
+
+	Make/FREE/T/N=(MINIMUM_WAVE_SIZE, 2) srcLocs
+	SetDimLabel COLS, 0, PATH, srcLocs
+	SetDimLabel COLS, 1, OFFSET, srcLocs
+	SetNumberInWaveNote(srcLocs, NOTE_INDEX, 0)
+
+	return srcLocs
+End
+
+/// @brief Creates a global wave storing data for the case the SF executor runs into an SFH_ASSERT
+///
+/// Rows:
+/// SRCLOCID : json id of the JSON storing the source location information
+/// JSONPATH : last json path the executor was working on, this element is updated by the executor while executing
+/// STEP : step in the sweepformula exection, one of @sa SFExecutionSteps
+/// LINE : line number where the current formula is in the SF notebook
+/// OFFSET : character offset in the line where the current formula starts in the SF notebook
+/// FORMULA : current formula string
+/// INFORMULAOFFSET : character offset in the formula where the error is located
+Function/WAVE GetSFAssertData()
+
+	string name = "SFAssertData"
+
+	DFREF dfr = GetSweepFormulaPath()
+
+	WAVE/Z/T/SDFR=dfr wv = $name
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/T/N=(7) dfr:$name/WAVE=wv
+
+	SetDimLabel ROWS, 0, SRCLOCID, wv
+	SetDimLabel ROWS, 1, JSONPATH, wv
+	SetDimLabel ROWS, 2, STEP, wv
+	SetDimLabel ROWS, 3, LINE, wv
+	SetDimLabel ROWS, 4, OFFSET, wv
+	SetDimLabel ROWS, 5, FORMULA, wv
+	SetDimLabel ROWS, 6, INFORMULAOFFSET, wv
+
+	wv[%STEP] = num2istr(SF_STEP_OUTSIDE)
+
+	return wv
+End

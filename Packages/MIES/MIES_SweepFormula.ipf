@@ -1453,7 +1453,7 @@ End
 
 static Function/S SF_CheckVariableAssignments(string preProcCode, variable jsonId)
 
-	variable i, numAssignments, jsonIdFormula
+	variable i, numAssignments, jsonIdFormula, srcLocId
 	string code, jsonPath
 
 	[WAVE/T varAssignments, code] = SF_GetVariableAssignments(preProcCode)
@@ -1463,8 +1463,8 @@ static Function/S SF_CheckVariableAssignments(string preProcCode, variable jsonI
 
 	numAssignments = DimSize(varAssignments, ROWS)
 	for(i = 0; i < numAssignments; i += 1)
-		jsonIdFormula = SFP_ParseFormulaToJSON(varAssignments[i][%EXPRESSION])
-		jsonPath      = "/variable:" + varAssignments[i][%VARNAME]
+		[jsonIdFormula, srcLocId] = SFP_ParseFormulaToJSON(varAssignments[i][%EXPRESSION])
+		jsonPath                  = "/variable:" + varAssignments[i][%VARNAME]
 		JSON_AddJSON(jsonID, jsonPath, jsonIdFormula)
 		JSON_Release(jsonIdFormula)
 	endfor
@@ -1475,7 +1475,7 @@ End
 /// @brief Checks input code, sets globals for jsonId and error string
 static Function SF_CheckInputCode(string code, string graph)
 
-	variable i, numGraphs, jsonIDy, jsonIDx, subFormulaCnt
+	variable i, numGraphs, jsonIDy, jsonIDx, subFormulaCnt, srcLocId
 	string jsonPath, xFormula, yFormula, formulasRemain, subPath, yAndXFormula, codeWithoutVariables, preProcCode
 
 	NVAR jsonID = $GetSweepFormulaJSONid(SF_GetBrowserDF(graph))
@@ -1509,12 +1509,12 @@ static Function SF_CheckInputCode(string code, string graph)
 			JSON_AddTreeObject(jsonID, subPath)
 
 			sprintf subPath, "%s/pair_%d/formula_y", jsonPath, subFormulaCnt
-			jsonIDy = SFP_ParseFormulaToJSON(yFormula)
+			[jsonIDy, srcLocId] = SFP_ParseFormulaToJSON(yFormula)
 			JSON_AddJSON(jsonID, subPath, jsonIDy)
 			JSON_Release(jsonIDy)
 
 			if(!IsEmpty(xFormula))
-				jsonIDx = SFP_ParseFormulaToJSON(xFormula)
+				[jsonIDx, srcLocId] = SFP_ParseFormulaToJSON(xFormula)
 
 				sprintf subPath, "%s/pair_%d/formula_x", jsonPath, subFormulaCnt
 				JSON_AddJSON(jsonID, subPath, jsonIDx)

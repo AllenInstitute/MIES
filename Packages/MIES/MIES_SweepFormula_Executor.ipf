@@ -25,6 +25,8 @@ static Constant SFE_VARIABLE_PREFIX = 36
 /// @param useVariables [optional, default 1], when not set, hint the function that the formula string contains only an expression and no variable definitions
 Function/WAVE SFE_ExecuteFormula(string formula, string graph, [variable singleResult, variable checkExist, variable useVariables])
 
+	variable jsonId, srcLocId
+
 	STRUCT SF_ExecutionData exd
 
 	exd.graph = graph
@@ -37,7 +39,8 @@ Function/WAVE SFE_ExecuteFormula(string formula, string graph, [variable singleR
 	if(useVariables)
 		formula = SFE_ExecuteVariableAssignments(graph, formula)
 	endif
-	exd.jsonId = SFP_ParseFormulaToJSON(formula)
+	[jsonId, srcLocId] = SFP_ParseFormulaToJSON(formula)
+	exd.jsonId         = jsonId
 	WAVE/Z result = SFE_FormulaExecutor(exd)
 	JSON_Release(exd.jsonId, ignoreErr = 1)
 
@@ -56,7 +59,7 @@ End
 Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode)
 
 	STRUCT SF_ExecutionData exd
-	variable i, numAssignments
+	variable i, numAssignments, jsonId, srcLocId
 	string code
 
 	exd.graph = graph
@@ -74,7 +77,8 @@ Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode)
 	Redimension/N=(numAssignments) varStorage
 
 	for(i = 0; i < numAssignments; i += 1)
-		exd.jsonId = SFP_ParseFormulaToJSON(varAssignments[i][%EXPRESSION])
+		[jsonId, srcLocId] = SFP_ParseFormulaToJSON(varAssignments[i][%EXPRESSION])
+		exd.jsonId         = jsonId
 		WAVE dataRef = SFE_FormulaExecutor(exd)
 		WAVE data    = SF_ResolveDataset(dataRef)
 		JWN_SetNumberInWaveNote(data, SF_VARIABLE_MARKER, 1)

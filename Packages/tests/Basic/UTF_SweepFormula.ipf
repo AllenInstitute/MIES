@@ -42,8 +42,13 @@ End
 
 Function DirectToFormulaParser(string code)
 
-	code = MIES_SF#SF_PreprocessInput(code)
-	return MIES_SFP#SFP_ParseFormulaToJSON(code)
+	variable jsonId, srcLocId
+
+	code               = MIES_SF#SF_PreprocessInput(code)
+	[jsonId, srcLocId] = MIES_SFP#SFP_ParseFormulaToJSON(code)
+	JSON_Release(srcLocId)
+
+	return jsonId
 End
 
 Function TestOperationMinMaxHelper(string win, string jsonRefText, string formula, variable refResult)

@@ -783,3 +783,9 @@ Function/S GetSweepFormulaJSONPathTracker(string graph)
 
 	return GetSVARAsString(SF_GetBrowserDF(graph), "sweepFormulaJSONPath", initialValue = "")
 End
+
+/// @brief Return the current buffer offset in the sweep formula parser
+Function/S GetSweepFormulaBufferOffsetTracker()
+
+	return GetNVARAsString(GetSweepFormulaPath(), "sweepFormulaParserBufferOffset", initialValue = NaN)
+End
