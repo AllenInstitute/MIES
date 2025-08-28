@@ -23,12 +23,15 @@ else
   ipt="ipt"
 fi
 
-echo "[lint]" > config.toml
+config=$(pwd)/config.toml
+trap 'rm -f $config' SIGINT SIGQUIT SIGTSTP EXIT
 
-echo "noreturn-func=FATAL_ERROR|SFH_FATAL_ERROR|FAIL" >> config.toml
+echo "[lint]" > $config
+
+echo "noreturn-func=FATAL_ERROR|SFH_FATAL_ERROR|FAIL" >> $config
 
 while read -r line; do
-    echo "files = \"$line\"" >> config.toml
-done < <(git ls-files ':(attr:ipt)')
+    echo "files = \"$line\"" >> $config
+done < <(git ls-files --full-name ':(attr:ipt)')
 
-(cd $top_level && $ipt --arg-file config.toml lint -i)
+(cd $top_level && $ipt --arg-file $config lint -i)
