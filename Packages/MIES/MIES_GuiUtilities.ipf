@@ -1901,14 +1901,14 @@ End
 /// @brief Conversion between pixel <-> points
 ///
 ///@{
-Function PointsToPixel(variable var)
+Function PointsToPixel(string win, variable var)
 
-	return var * (ScreenResolution / 72)
+	return var * (ScreenResolution / PanelResolution(win))
 End
 
-Function PixelToPoints(variable var)
+Function PixelToPoints(string win, variable var)
 
-	return var * (72 / ScreenResolution)
+	return var * (PanelResolution(win) / ScreenResolution)
 End
 ///@}
 
@@ -2298,12 +2298,10 @@ Function ReflowNotebookText(string win)
 
 	variable width
 
-	GetWindow $win, wsizeDC
+	GetWindow $win, wsizeRM
 	width = V_right - V_left
 	// make it a bit shorter
 	width -= 10
-	// pixel -> points
-	width = width * (72 / ScreenResolution)
 	// redefine ruler
 	Notebook $win, ruler=Normal, rulerUnits=0, margins={0, 0, width}
 	// select everything
