@@ -177,16 +177,16 @@ static Function PS_ApplyStoredWindowCoordinate(variable JSONid, string win, vari
 				// left, top, right, bottom
 				// coordinates are relative to [top, left] of the main window
 				case EXT_SUBWINDOW_ORIENTATION_BOTTOM:
-					MoveSubWindow/W=$win fnum=(0, 0, PointsToPixel(right - left), PointsToPixel(bottom - top)); AbortOnRTE
+					MoveSubWindow/W=$win fnum=(0, 0, PointsToPixel(win, right - left), PointsToPixel(win, bottom - top)); AbortOnRTE
 					break
 				case EXT_SUBWINDOW_ORIENTATION_TOP:
-					MoveSubWindow/W=$win fnum=(0, PointsToPixel(bottom - top), PointsToPixel(right - left), 0); AbortOnRTE
+					MoveSubWindow/W=$win fnum=(0, PointsToPixel(win, bottom - top), PointsToPixel(win, right - left), 0); AbortOnRTE
 					break
 				case EXT_SUBWINDOW_ORIENTATION_LEFT:
-					MoveSubWindow/W=$win fnum=(PointsToPixel(right - left), 0, 0, PointsToPixel(bottom - top)); AbortOnRTE
+					MoveSubWindow/W=$win fnum=(PointsToPixel(win, right - left), 0, 0, PointsToPixel(win, bottom - top)); AbortOnRTE
 					break
 				case EXT_SUBWINDOW_ORIENTATION_RIGHT:
-					MoveSubWindow/W=$win fnum=(0, 0, PointsToPixel(right - left), PointsToPixel(bottom - top)); AbortOnRTE
+					MoveSubWindow/W=$win fnum=(0, 0, PointsToPixel(win, right - left), PointsToPixel(win, bottom - top)); AbortOnRTE
 					break
 				default:
 					FATAL_ERROR("Unknown orientation")

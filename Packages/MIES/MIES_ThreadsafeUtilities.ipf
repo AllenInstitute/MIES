@@ -194,15 +194,27 @@ End
 /// dfr can be a free DF
 threadsafe Function TS_ThreadGroupPutDFR(variable tgID, DFREF dfr)
 
-	string dfrName
+	string dfrName, errMsg, msg
+	variable err
 
 	ASSERT_TS(DataFolderExistsDFR(dfr), "dfr does not exist")
 
 	DFREF dfrSave = GetDataFolderDFR()
 
 	SetDataFolder NewFreeDataFolder()
-	DuplicateDataFolder/Z dfr, :
-	ASSERT_TS(!V_flag, "Could not duplicate data folder")
+
+	AssertOnAndClearRTError()
+	try
+		DuplicateDataFolder dfr, :; AbortOnRTE
+	catch
+		SetDatafolder dfrSave
+
+		errMsg = GetRTErrMessage()
+		err    = ClearRTError()
+		sprintf msg, "Could not duplicate data folder due to error %s (%d)", errMsg, err
+		FATAL_ERROR(msg)
+	endtry
+
 	dfrName = GetIndexedObjName(":", COUNTOBJECTS_DATAFOLDER, 0)
 
 	ThreadGroupPutDF tgID, $dfrName

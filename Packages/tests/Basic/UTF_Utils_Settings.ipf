@@ -10,7 +10,7 @@ Function GSJIWorks()
 
 	NVAR/Z jsonID = $GetSettingsJSONid()
 	CHECK(NVAR_Exists(jsonID))
-	CHECK(JSON_Exists(jsonID, ""))
+	CHECK(JSON_IsValid(jsonID))
 End
 
 Function GSJIWorksWithCorruptID()
@@ -24,7 +24,7 @@ Function GSJIWorksWithCorruptID()
 	// fetching again now returns a valid ID again
 	NVAR/Z jsonID = $GetSettingsJSONid()
 	CHECK(NVAR_Exists(jsonID))
-	CHECK(JSON_Exists(jsonID, ""))
+	CHECK(JSON_IsValid(jsonID))
 End
 
 /// @}
