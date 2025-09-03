@@ -1440,63 +1440,48 @@ Function/S GetLastNonEmptyEntry(WAVE/T wv, string colLabel, variable endRow)
 	return wv[indizes[DimSize(indizes, ROWS) - 1]][%$colLabel]
 End
 
-/// @brief Concatenate src into dest where dest uses NOTE_INDEX for free space management
+/// @brief concatenate dest on src in the row dimension. src is appended at the end of dest.
+///        dest must have a NOTE_INDEX set.
+///        src can have a NOTE_INDEX set, if not the the complete src wave is appended.
+///        dest and src must have the same number of dimensions and the same number of COLS, LAYERS, CHUNKS
+///        (the implicit expansion of the Concatenate operation is not exposed)
 Function ConcatenateWavesWithNoteIndex(WAVE/Z dest, WAVE/Z src)
 
-	variable srcLength, newIndex, index, newLastIndex, waveTypeOne
+	variable size1, size2, numDims
 
 	ASSERT_TS(WaveExists(dest), "Missing dest wave")
-
-	index = GetNumberFromWaveNote(dest, NOTE_INDEX)
-	ASSERT_TS(IsFinite(index), "Missing NOTE_INDEX")
+	size1 = GetNumberFromWaveNote(dest, NOTE_INDEX)
+	ASSERT_TS(IsFinite(size1), "Missing NOTE_INDEX in dest wave")
 
 	if(!WaveExists(src))
-		return index
+		return size1
 	endif
 
-	waveTypeOne = WaveType(dest, 1)
+	ASSERT_TS(WaveType(dest, 0) == WaveType(src, 0) && WaveType(dest, 1) == WaveType(src, 1), "Non-matching wave types")
 
-	ASSERT_TS(WaveType(dest, 0) == WaveType(src, 0) && waveTypeOne == WaveType(src, 1), "Non-matching wave types")
-	ASSERT_TS(DimSize(dest, COLS) == 0 && DimSize(src, COLS) == 0, "Expected 1D waves")
-
-	srcLength = DimSize(src, ROWS)
-
-	if(srcLength == 0)
-		// nothing to do
-		return index
+	size2 = GetNumberFromWaveNote(src, NOTE_INDEX)
+	if(IsNaN(size2))
+		size2 = DimSize(src, ROWS)
+	endif
+	if(size2 == 0)
+		return size1
 	endif
 
-	newLastIndex = index + (srcLength - 1)
-	EnsureLargeEnoughWave(dest, dimension = ROWS, indexShouldExist = newLastIndex)
+	numDims = WaveDims(dest)
+	ASSERT_TS(numDims == WaveDims(src), "src and dest wave have not the same number of dimensions")
+	if(numDims > 1)
+		ASSERT_TS(DimSize(dest, COLS) == DimSize(src, COLS), "src and dest wave have not the column size")
+		ASSERT_TS(DimSize(dest, LAYERS) == DimSize(src, LAYERS), "src and dest wave have not the layers size")
+		ASSERT_TS(DimSize(dest, CHUNKS) == DimSize(src, CHUNKS), "src and dest wave have not the chunks size")
+	endif
 
-	switch(waveTypeOne)
-		case IGOR_TYPE_NUMERIC_WAVE:
-			Multithread dest[index, newLastIndex] = src[p - index]
-			break
-		case IGOR_TYPE_TEXT_WAVE:
-			WAVE/T destText = dest
-			WAVE/T srcText  = src
+	Redimension/N=(size1, -1, -1, -1) dest
+	Redimension/N=(size2, -1, -1, -1) src
 
-			Multithread destText[index, newLastIndex] = srcText[p - index]
-			break
-		case IGOR_TYPE_DFREF_WAVE:
-			WAVE/DF destDF = dest
-			WAVE/DF srcDF  = src
+	Concatenate/NP=(ROWS) {src}, dest
+	size1 += size2
 
-			Multithread destDF[index, newLastIndex] = srcDF[p - index]
-			break
-		case IGOR_TYPE_WAVEREF_WAVE:
-			WAVE/WAVE destWAVE = dest
-			WAVE/WAVE srcWAVE  = src
+	SetNumberInWaveNote(dest, NOTE_INDEX, size1)
 
-			Multithread destWAVE[index, newLastIndex] = srcWAVE[p - index]
-			break
-		default:
-			FATAL_ERROR("Unsupported type: " + num2istr(waveTypeOne))
-	endswitch
-
-	index = newLastIndex + 1
-	SetNumberInWaveNote(dest, NOTE_INDEX, index)
-
-	return index
+	return size1
 End

@@ -1048,6 +1048,27 @@ static Function/WAVE GetConcatSingleElementWaves()
 	return waves
 End
 
+static Function/WAVE GetConcatElementWaves2D()
+
+	Make/FREE/N=4/WAVE waves
+
+	Make/FREE/N=(2, 2) srcNum = 4711
+	waves[0] = srcNum
+
+	Make/FREE/T/N=(2, 2) srcText = "baccab"
+	waves[1] = srcText
+
+	Make/FREE/DF/N=(2, 2) srcDFR = NewfreeDataFolder()
+	waves[2] = srcDFR
+
+	Make/FREE/WAVE/N=(2, 2) srcWv = NewFreeWave(IGOR_TYPE_16BIT_INT, 0)
+	waves[3] = srcWv
+
+	SetDimensionLabels(waves, "Numeric;Text;DFREF;WAVE", ROWS)
+
+	return waves
+End
+
 static Function/WAVE GetAnalysisFunctions()
 
 	string funcs
@@ -1797,6 +1818,150 @@ static Function/WAVE CacheOptions()
 	Make/FREE wv = {0, CA_OPTS_NO_DUPLICATE}
 
 	SetDimensionLabels(wv, "none;no duplicate", ROWS)
+
+	return wv
+End
+
+static Function/WAVE DG_SourceLocationsBrackets()
+
+	Make/FREE/T wv = {"\"\r\"\"", "(\r))", "[\r]]"}
+
+	SetDimensionLabels(wv, "parenthesis;braces;brackets", ROWS)
+
+	return wv
+End
+
+static Function/WAVE DG_SourceLocationsVarious()
+
+	Make/FREE pos = {4}
+	Make/FREE/T formula = {"max(,,)"}
+	Make/FREE/WAVE wv0 = {pos, formula}
+
+	Make/FREE pos = {6}
+	Make/FREE/T formula = {"max(1,a)"}
+	Make/FREE/WAVE wv1 = {pos, formula}
+
+	Make/FREE pos = {12}
+	Make/FREE/T formula = {"max(1...10) + a"}
+	Make/FREE/WAVE wv2 = {pos, formula}
+
+	Make/FREE pos = {11}
+	Make/FREE/T formula = {"max(1, min(a))"}
+	Make/FREE/WAVE wv3 = {pos, formula}
+
+	Make/FREE pos = {2}
+	Make/FREE/T formula = {"1+++1"}
+	Make/FREE/WAVE wv4 = {pos, formula}
+
+	Make/FREE pos = {13}
+	Make/FREE/T formula = {"[1*(-1),1*-1][]"}
+	Make/FREE/WAVE wv4 = {pos, formula}
+
+	Make/FREE/WAVE wv = {wv0, wv1, wv2, wv3, wv4}
+
+	return wv
+End
+
+static Function/WAVE DG_SourceLocationsJSON()
+
+	Make/FREE pos = {4}
+	Make/FREE/T formula = {"1"}
+	Make/FREE/WAVE wv0 = {pos, formula}
+
+	Make/FREE pos = {6}
+	Make/FREE/T formula = {"1+2"}
+	Make/FREE/WAVE wv1 = {pos, formula}
+
+	Make/FREE pos = {12}
+	Make/FREE/T formula = {"max()"}
+	Make/FREE/WAVE wv2 = {pos, formula}
+
+	Make/FREE pos = {11}
+	Make/FREE/T formula = {"max(1)"}
+	Make/FREE/WAVE wv3 = {pos, formula}
+
+	Make/FREE pos = {2}
+	Make/FREE/T formula = {"[1,2]"}
+	Make/FREE/WAVE wv4 = {pos, formula}
+
+	Make/FREE pos = {13}
+	Make/FREE/T formula = {"1+2*3"}
+	Make/FREE/WAVE wv4 = {pos, formula}
+
+	Make/FREE/WAVE wv = {wv0, wv1, wv2, wv3, wv4}
+
+	return wv
+End
+
+static Function/WAVE DG_SourceLocationsContent()
+
+	Make/FREE/T wFormula = {"max(max(1,1),1)"}
+	Make/FREE/T/N=(6, 2) wSrcLocs
+	wSrcLocs[0][0] = "/max"
+	wSrcLocs[0][1] = "0"
+	wSrcLocs[1][0] = "/max/0/max"
+	wSrcLocs[1][1] = "4"
+	wSrcLocs[2][0] = "/max/0/max/0"
+	wSrcLocs[2][1] = "8"
+	wSrcLocs[3][0] = "/max/0/max/1"
+	wSrcLocs[3][1] = "10"
+	wSrcLocs[4][0] = "/max/0"
+	wSrcLocs[4][1] = "4"
+	wSrcLocs[5][0] = "/max/1"
+	wSrcLocs[5][1] = "13"
+	Make/FREE/WAVE wv0 = {wFormula, wSrcLocs}
+
+	Make/FREE/T wFormula = {"1+[1,2,3]"}
+	Make/FREE/T/N=(5, 2) wSrcLocs
+	wSrcLocs[0][0] = "/+"
+	wSrcLocs[0][1] = "0"
+	wSrcLocs[1][0] = "/+/0"
+	wSrcLocs[1][1] = "0"
+	wSrcLocs[2][0] = "/+/1/0"
+	wSrcLocs[2][1] = "3"
+	wSrcLocs[3][0] = "/+/1/1"
+	wSrcLocs[3][1] = "5"
+	wSrcLocs[4][0] = "/+/1/2"
+	wSrcLocs[4][1] = "7"
+	Make/FREE/WAVE wv1 = {wFormula, wSrcLocs}
+
+	Make/FREE/T wFormula = {"[1, max(1)]"}
+	Make/FREE/T/N=(3, 2) wSrcLocs
+	wSrcLocs[0][0] = "/0"
+	wSrcLocs[0][1] = "1"
+	wSrcLocs[1][0] = "/1/max"
+	wSrcLocs[1][1] = "4"
+	wSrcLocs[2][0] = "/1/max/0"
+	wSrcLocs[2][1] = "8"
+	Make/FREE/WAVE wv2 = {wFormula, wSrcLocs}
+
+	Make/FREE/T wFormula = {"[1,[2]]"}
+	Make/FREE/T/N=(3, 2) wSrcLocs
+	wSrcLocs[0][0] = "/0"
+	wSrcLocs[0][1] = "1"
+	wSrcLocs[1][0] = "/1"
+	wSrcLocs[1][1] = "3"
+	wSrcLocs[2][0] = "/1/0"
+	wSrcLocs[2][1] = "4"
+	Make/FREE/WAVE wv3 = {wFormula, wSrcLocs}
+
+	Make/FREE/T wFormula = {"[[1],[3,4],[5,6]]"}
+	Make/FREE/T/N=(6, 2) wSrcLocs
+	wSrcLocs[0][0] = "/0"
+	wSrcLocs[0][1] = "1"
+	wSrcLocs[1][0] = "/0/0"
+	wSrcLocs[1][1] = "2"
+	wSrcLocs[2][0] = "/1/0"
+	wSrcLocs[2][1] = "6"
+	wSrcLocs[3][0] = "/1/1"
+	wSrcLocs[3][1] = "8"
+	wSrcLocs[4][0] = "/2/0"
+	wSrcLocs[4][1] = "12"
+	wSrcLocs[5][0] = "/2/1"
+	wSrcLocs[5][1] = "14"
+	Make/FREE/WAVE wv4 = {wFormula, wSrcLocs}
+
+	Make/FREE/WAVE wv = {wv0, wv1, wv2, wv3, wv4}
 
 	return wv
 End

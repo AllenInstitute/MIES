@@ -777,3 +777,15 @@ Function/S GetDFReferenceCount(DFREF dfr)
 
 	return GetNVARAsString(dfr, MEMORY_REFCOUNTER_DF, initialValue = 0)
 End
+
+/// @brief Return the current JSON path in the sweep formula execution
+Function/S GetSweepFormulaJSONPathTracker()
+
+	return GetSVARAsString(GetSweepFormulaPath(), "sweepFormulaJSONPath", initialValue = "")
+End
+
+/// @brief Return the current buffer offset in the sweep formula parser
+Function/S GetSweepFormulaBufferOffsetTracker()
+
+	return GetNVARAsString(GetSweepFormulaPath(), "sweepFormulaParserBufferOffset", initialValue = NaN)
+End
