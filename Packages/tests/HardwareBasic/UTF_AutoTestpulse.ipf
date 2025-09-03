@@ -296,3 +296,33 @@ static Function AutoTP_SpecialCases_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%baselineFrac], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0.35}, mode = WAVE_DATA, tol = 1e-6)
 End
+
+static Function AutoTP_ClampModeChange_preAcq(string device)
+
+	PGC_SetAndActivateControl(device, "check_DataAcq_AutoTP", val = 1)
+End
+
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
+static Function AutoTP_ClampModeChange([string str])
+
+	[STRUCT DAQSettings s] = AutoTP_GetDAQSettings(str)
+	AcquireData_NG(s, str)
+
+	CtrlNamedBackGround ChangeClampModeToVC, start=(ticks + 120), period=20, proc=ClampModeDuringTP_IGNORE
+	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
+End
+
+static Function AutoTP_ClampModeChange_REENTRY([string str])
+
+	WAVE/WAVE entries = GetLBNSingleEntry_IGNORE(str)
+
+	CHECK_EQUAL_WAVES(entries[%autoTPQC], {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	// AutoTP was enabled for both headstages before stopping the TP
+	CHECK_EQUAL_WAVES(entries[%autoTPEnable], {0, 0, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	WAVE TPSettings   = GetTPSettings(str)
+	WAVE autoTPEnable = LBN_GetNumericWave()
+	autoTPEnable[] = TPSettings[%autoTPEnable][p]
+	CHECK_EQUAL_WAVES(autoTPEnable, {0, 0, 1, 1, 1, 1, 1, 1, NaN}, mode = WAVE_DATA)
+End

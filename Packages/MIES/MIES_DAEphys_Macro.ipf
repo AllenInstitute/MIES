@@ -4226,7 +4226,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_IinjMax, limits={1, 1500, 1}, value=_NUM:200
 	CheckBox check_DataAcq_AutoTP, pos={275.00, 407.00}, size={59.00, 15.00}, disable=1, proc=DAP_CheckProc_TestPulseSett
 	CheckBox check_DataAcq_AutoTP, title="Auto TP"
-	CheckBox check_DataAcq_AutoTP, help={"Auto TP amplitude and baseline tuning. Green background indicates active TP tuning on at least one headstage."}
+	CheckBox check_DataAcq_AutoTP, help={"Auto TP amplitude and baseline tuning. Green background indicates active TP tuning on at least one headstage. (IC only)"}
 	CheckBox check_DataAcq_AutoTP, userdata(tabnum)="0", userdata(tabcontrol)="ADC"
 	CheckBox check_DataAcq_AutoTP, userdata(ResizeControlsInfo)=A"!!,H[J,hr+!!#?;!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DataAcq_AutoTP, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
