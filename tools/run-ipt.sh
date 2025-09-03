@@ -16,12 +16,14 @@ then
   exit 1
 fi
 
-if [ -n "$CI" ]
-then
-  ipt="./ipt.exe"
-else
-  ipt="ipt"
-fi
+case $(uname) in
+    Linux)
+      ipt="ipt"
+      ;;
+    *)
+      ipt="$top_level/tools/ipt.exe"
+      ;;
+esac
 
 config=$(pwd)/config.toml
 trap 'rm -f $config' SIGINT SIGQUIT SIGTSTP EXIT
