@@ -45,10 +45,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         # no need to checkout submodules or the full history
-      - name: Download ipt binary from server
-        run: curl -o ipt.exe "https://byte-physics.de/public-downloads/aistorage/transfer/ipt/0.9.0/ipt.exe"
-      - name: IPT version
-        run: ./ipt.exe --version
       - name: Format and lint code
         run: tools/run-ipt.sh
       - name: Check for changed files
