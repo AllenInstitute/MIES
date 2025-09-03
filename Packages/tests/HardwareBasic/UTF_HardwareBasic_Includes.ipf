@@ -17,6 +17,7 @@
 #include "UTF_HardwareTestsWithBUG"
 #include "UTF_SweepFormulaHardware"
 #include "UTF_SweepSkipping"
+#include "UTF_ForeignFunctionInterfaceWithHardware"
 #include "UTF_TestPulseAndTPDuringDAQ"
 #include "UTF_TrackSweepCounts"
 #include "UTF_VeryBasicHardwareTests"
