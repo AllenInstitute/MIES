@@ -261,18 +261,18 @@ Function [variable ret, string errorMsg] FFI_StartTestPulse(string device)
 	if(!FFI_TP_DeviceSelectable(device))
 		sprintf errorMsg, "Device %s is not available.\r", device
 		ret = -1
-		return
+		return [ret, errorMsg]
 	endif
 
 	if(TP_CheckIfTestpulseIsRunning(device))
 		sprintf errorMsg, "Test pulse already running on %s; start ignored.\r", device
 		ret = 1
-		return
+		return [ret, errorMsg]
 	endif
 
 	TPM_StartTestPulseMultiDevice(device)
 	ret = 0
-	return
+	return [ret, errorMsg]
 End
 
 /// @brief Stop the test pulse for a device unless it is already stopped
@@ -284,19 +284,19 @@ Function [variable ret, string errorMsg] FFI_StopTestPulse(string device)
 	if(!FFI_TP_DeviceSelectable(device))
 		sprintf errorMsg, "Device %s is not available.\r", device
 		ret = -1
-		return
+		return [ret, errorMsg]
 	endif
 
 	if(!TP_CheckIfTestpulseIsRunning(device))
 		sprintf errorMsg, "Test pulse already stopped on %s; stop ignored.\r", device
 		ret = 1
-		return
+		return [ret, errorMsg]
 	endif
 
 	TPM_StopTestPulseMultiDevice(device)
 
-	ret = 0
-	return
+	ret = 0; errorMsg = ""
+	return [ret, errorMsg]
 End
 
 /// @brief Unified API entry point to start or stop the test pulse
@@ -306,11 +306,16 @@ End
 /// @returns            Pass-through of API_StartTestPulse()/API_StopTestPulse() return codes
 Function [variable ret, string errorMsg] FFI_TestPulseMD(string device, variable action)
 
-	if(action)
-		[ret, errorMsg] = FFI_StartTestPulse(device)
-		return
-	endif
-
-	[ret, errorMsg] = FFI_StopTestPulse(device)
-	return
+	switch(action)
+		case 0:
+			[ret, errorMsg] = FFI_StopTestPulse(device)
+			break
+		case 1:
+			[ret, errorMsg] = FFI_StartTestPulse(device)
+			break
+		default:
+			FATAL_ERROR("Invalid action. Action != 0 or 1. Action = " + num2istr(action))
+	endswitch
+			
+	return [ret, errorMsg]
 End
