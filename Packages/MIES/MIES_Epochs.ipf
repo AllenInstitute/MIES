@@ -1115,7 +1115,7 @@ Function EP_SortEpochs(WAVE/T epochWave)
 			epochSortColStartTime[] = str2numSafe(epochChannel[p][EPOCH_COL_STARTTIME])
 			epochSortColEndTime[]   = -1 * str2numSafe(epochChannel[p][EPOCH_COL_ENDTIME])
 			epochSortColTreeLevel[] = str2numSafe(epochChannel[p][EPOCH_COL_TREELEVEL])
-			epochSortTagCRC[]       = StringCRC(0, epochChannel[p][EPOCH_COL_TAGS])
+			epochSortTagCRC[]       = StringCRC(0, epochChannel[p][EPOCH_COL_TAGS]) // NOLINT
 			SortColumns/DIML keyWaves={epochSortColStartTime, epochSortColEndTime, epochSortColTreeLevel, epochSortTagCRC}, sortWaves={epochChannel}
 
 			// remove epochs marked for removal
