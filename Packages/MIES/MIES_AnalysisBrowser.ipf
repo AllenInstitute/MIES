@@ -2174,7 +2174,7 @@ static Function AB_LoadSweepFromNWBgeneric(variable h5_groupID, variable nwbVers
 
 		WAVE/Z/SDFR=sweepDFR targetName = $channelName
 		// nwb files created prior to 901428b might have duplicated datasets
-		if(WaveExists(targetName) && WaveCRC(0, targetName) != WaveCRC(0, loaded))
+		if(WaveExists(targetName) && cmpstr(HashWave("", targetName), HashWave("", loaded)))
 			KillOrMoveToTrash(dfr = sweepDFR)
 			FATAL_ERROR("wave with same name, but different content, already exists: " + channelName)
 		endif
