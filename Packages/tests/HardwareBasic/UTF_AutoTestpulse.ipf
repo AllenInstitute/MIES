@@ -308,8 +308,8 @@ static Function AutoTP_ClampModeChange([string str])
 	[STRUCT DAQSettings s] = AutoTP_GetDAQSettings(str)
 	AcquireData_NG(s, str)
 
-	CtrlNamedBackGround ChangeClampModeToVC, start=(ticks + 120), period=20, proc=ClampModeDuringTP_IGNORE
-	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
+	CtrlNamedBackGround ChangeClampModeToVC, start=(ticks + 60), period=60, proc=ClampModeDuringTP_IGNORE
+	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 600), period=60, proc=StopTP_IGNORE
 End
 
 static Function AutoTP_ClampModeChange_REENTRY([string str])
