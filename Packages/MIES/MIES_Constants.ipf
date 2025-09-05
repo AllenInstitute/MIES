@@ -2318,6 +2318,7 @@ Constant SUBWINDOW_MOVE_CORRECTION = 5
 /// @anchor HashMethods
 ///@{
 Constant HASH_SHA2_256 = 1
+Constant HASH_XXH3_64  = 102
 ///@}
 
 // see DisplayHelpTopic "LoadWave"
