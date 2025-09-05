@@ -151,4 +151,4 @@ jobs:
             -u "${{ secrets.GHA_MIES_FTP_ARTEFACT_STORAGE_USER }}" \
             -p "${{ secrets.GHA_MIES_FTP_ARTEFACT_STORAGE_PWD }}" \
             -d "${{ steps.download.outputs.download-path }}" \
-            -t "deploy/$(echo "${{ github.ref_name }}" | sed "s@/@_@g")/${{ github.sha }}/${{ github.run_attempt }}"
+            -t "ci-artifacts/$(echo "${{ github.ref_name }}" | sed "s@/@_@g")/${{ github.sha }}/${{ github.run_attempt }}"
