@@ -25,7 +25,7 @@ Constant ANALYSISBROWSER_PANEL_VERSION    = 11
 Constant PSX_PLOT_PANEL_VERSION           = 1
 
 /// Version of the stimset wave note
-Constant STIMSET_NOTE_VERSION = 12
+Constant STIMSET_NOTE_VERSION = 13
 
 /// Version of the epoch information for DA+TTL data
 Constant SWEEP_EPOCH_VERSION = 9
@@ -39,7 +39,7 @@ Constant SWEEP_EPOCH_VERSION = 9
 /// - New/Changed layers of entries
 ///
 ///@{
-Constant LABNOTEBOOK_VERSION = 81
+Constant LABNOTEBOOK_VERSION = 82
 Constant RESULTS_VERSION     = 3
 ///@}
 

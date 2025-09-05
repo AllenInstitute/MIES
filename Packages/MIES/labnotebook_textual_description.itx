@@ -1,5 +1,5 @@
 IGOR
-WAVES/T/N=(78,6)	labnotebook_textual_description
+WAVES/T/N=(79,6)	labnotebook_textual_description
 BEGIN
 	"Name"	"Unit"	"Tolerance"	"Description"	"Headstage Contingency"	"ClampMode"
 	"TimeStamp"	"s"	"-"	"Time Stamp: Seconds since Igor epoch (1/1/1904) in local time zone with millisecond precision. Written at time of labnotebook entry."	"ALL"	""
@@ -43,7 +43,7 @@ BEGIN
 	"Indexing End Stimset"	""	"-"	"The last DA stimulus set in the indexing list."	"DEPEND"	""
 	"TTL Indexing End Stimset"	""	"-"	"The last TTL stimulus set in the indexing list."	"INDEP"	""
 	"TTL Stimset wave note"	""	"-"	"Wave note of the TTL stimulus set. Textual description of the stimulus set. See documentation: https://alleninstitute.github.io/MIES/file/_m_i_e_s___wave_builder_8ipf.html#_CPPv419WB_GetWaveNoteEntry6string8variable6string8variable8variable"	"INDEP"	""
-	"TTL Stim Wave Checksum"	""	"-"	"List of TTL stimset checksums. URL-encoded semi-colon separated string list, see https://en.wikipedia.org/wiki/Percent-encoding. Up to 8 entries.  Empty entries for inactive TTL channels. For all hardware types."	"INDEP"	""
+	"TTL Stim Wave Checksum V2"	""	"-"	"List of TTL stimset checksums. URL-encoded semi-colon separated string list, see https://en.wikipedia.org/wiki/Percent-encoding. Up to 8 entries.  Empty entries for inactive TTL channels. For all hardware types."	"INDEP"	""
 	"TTL Stim set length"	""	"-"	"List of TTL stimset lengths in points. Semi-colon separated string list. Up to 8 entries.  Empty entries for inactive TTL channels. For all hardware types."	"INDEP"	""
 	"TTL rack zero set cycle counts"	""	"-"	"The number of TTL stimulus set repetitions in one repeated acquisition cycle of rack zero. Semi-colon separated string list. Up to 4 entries. Empty entries for inactive TTL channels. ITC hardware only. "	"INDEP"	""
 	"TTL rack one set cycle counts"	""	"-"	"The number of TTL stimulus set repetitions in one repeated acquisition cycle of rack one. Semi-colon separated string list. Up to 4 entries. Empty entries for inactive TTL channels. ITC hardware only."	"INDEP"	""
@@ -79,6 +79,7 @@ BEGIN
 	"TTL Epochs Channel 5"	""	"-"	"Epochs of TTL Channel 5"	"INDEP"	""
 	"TTL Epochs Channel 6"	""	"-"	"Epochs of TTL Channel 6"	"INDEP"	""
 	"TTL Epochs Channel 7"	""	"-"	"Epochs of TTL Channel 7"	"INDEP"	""
+	"Stim Wave Checksum V2"	""	"-"	"The \"Stim Wave Checksum\" is a unique identifier for the stimulus set contents.\r\rChanges in this ID catches cases where the stimset has the same name but different contents."	"DEPEND"	""
 END
 X SetScale/P x 0,1,"", labnotebook_textual_description; SetScale/P y 0,1,"", labnotebook_textual_description; SetScale d 0,0,"", labnotebook_textual_description
 X Note labnotebook_textual_description, "WAVE_LAYOUT_VERSION:1;"

@@ -1105,8 +1105,8 @@ End
 
 static Function DC_PrepareLBNEntries(string device, STRUCT DataConfigurationResult &s)
 
-	variable i, j, maxITI, channel, headstage, setChecksum, fingerprint, stimsetCycleID, isoodDAQMember, samplingInterval
-	string func, ctrl, str
+	variable i, j, maxITI, channel, headstage, fingerprint, stimsetCycleID, isoodDAQMember, samplingInterval
+	string func, ctrl, str, setChecksum
 
 	WAVE config = GetDAQConfigWave(device)
 
@@ -1179,7 +1179,7 @@ static Function DC_PrepareLBNEntries(string device, STRUCT DataConfigurationResu
 		DC_DocumentChannelProperty(device, "Set Cycle Count", headstage, channel, XOP_CHANNEL_TYPE_DAC, var = s.setCycleCount[i])
 
 		setChecksum = WB_GetStimsetChecksum(s.stimSet[i], s.setName[i], s.dataAcqOrTP)
-		DC_DocumentChannelProperty(device, "Stim Wave Checksum", headstage, channel, XOP_CHANNEL_TYPE_DAC, var = setChecksum)
+		DC_DocumentChannelProperty(device, "Stim Wave Checksum V2", headstage, channel, XOP_CHANNEL_TYPE_DAC, str = setChecksum)
 
 		if(s.dataAcqOrTP == DATA_ACQUISITION_MODE && config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
 			fingerprint    = DC_GenerateStimsetFingerprint(raCycleID, s.setName[i], s.setCycleCount[i], setChecksum)
@@ -1891,18 +1891,18 @@ End
 ///
 /// Always then this fingerprint changes, a new stimset acquisition cycle ID has
 /// to be generated.
-static Function DC_GenerateStimsetFingerprint(variable raCycleID, string setName, variable setCycleCount, variable setChecksum)
+static Function DC_GenerateStimsetFingerprint(variable raCycleID, string setName, variable setCycleCount, string setChecksum)
 
 	variable crc
 
 	ASSERT(IsInteger(raCycleID) && raCycleID > 0, "Invalid raCycleID")
 	ASSERT(IsInteger(setCycleCount), "Invalid setCycleCount")
-	ASSERT(IsInteger(setChecksum) && setChecksum > 0, "Invalid stimset checksum")
+	ASSERT(!IsEmpty(setChecksum), "Invalid stimset checksum")
 	ASSERT(!IsEmpty(setName) && !cmpstr(setName, trimstring(setName)), "Invalid setName")
 
 	crc = StringCRC(crc, num2str(raCycleID))
 	crc = StringCRC(crc, num2str(setCycleCount))
-	crc = StringCRC(crc, num2str(setChecksum))
+	crc = StringCRC(crc, setChecksum)
 	crc = StringCRC(crc, setName)
 
 	return crc
@@ -2103,13 +2103,13 @@ static Function DC_ITC_MakeTTLWave(string device, STRUCT DataConfigurationResult
 		setLength[i]          = num2istr(s.TTLsetLength[i])
 		indexingEndStimSet[i] = allSetNamesIndexingEnd[i]
 		waveNote[i]           = URLEncode(note(s.TTLstimSet[i]))
-		checksum[i]           = num2istr(WB_GetStimsetChecksum(s.TTLstimSet[i], s.TTLsetName[i], DATA_ACQUISITION_MODE))
+		checksum[i]           = WB_GetStimsetChecksum(s.TTLstimSet[i], s.TTLsetName[i], DATA_ACQUISITION_MODE)
 	endfor
 
 	DC_DocumentChannelProperty(device, "Stim set length", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str = TextWaveToList(setLength, ";"))
 	DC_DocumentChannelProperty(device, "Indexing End stimset", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str = TextWaveToList(indexingEndStimSet, ";"))
 	DC_DocumentChannelProperty(device, "Stimset wave note", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str = TextWaveToList(waveNote, ";"))
-	DC_DocumentChannelProperty(device, "Stim Wave Checksum", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str = TextWaveToList(checksum, ";"))
+	DC_DocumentChannelProperty(device, "Stim Wave Checksum V2", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str = TextWaveToList(checksum, ";"))
 
 	ASSERT(maxRows > 0, "Expected stim set of non-zero size")
 	WAVE TTLWave = GetTTLWave(device)
@@ -2155,7 +2155,7 @@ static Function DC_NI_MakeTTLWave(string device, STRUCT DataConfigurationResult 
 		channels[i]           = num2istr(i)
 		indexingEndStimSet[i] = allSetNamesIndexingEnd[i]
 		waveNote[i]           = note(s.TTLstimSet[i])
-		checksum[i]           = num2istr(WB_GetStimsetChecksum(s.TTLstimSet[i], s.TTLsetName[i], DATA_ACQUISITION_MODE))
+		checksum[i]           = WB_GetStimsetChecksum(s.TTLstimSet[i], s.TTLsetName[i], DATA_ACQUISITION_MODE)
 
 		WAVE TTLStimSet = s.TTLstimSet[i]
 		Make/FREE/B/U/N=(DimSize(TTLStimSet, ROWS)) TTLWaveSingle
@@ -2171,7 +2171,7 @@ static Function DC_NI_MakeTTLWave(string device, STRUCT DataConfigurationResult 
 	DC_DocumentChannelProperty(device, "set cycle counts", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str = TextWaveToList(cycleCount, ";"))
 	DC_DocumentChannelProperty(device, "Indexing End stimset", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str = TextWaveToList(indexingEndStimSet, ";"))
 	DC_DocumentChannelProperty(device, "Stimset wave note", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str = TextWaveToList(waveNote, ";"))
-	DC_DocumentChannelProperty(device, "Stim Wave Checksum", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str = TextWaveToList(checksum, ";"))
+	DC_DocumentChannelProperty(device, "Stim Wave Checksum V2", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str = TextWaveToList(checksum, ";"))
 End
 
 /// @brief Returns column number/step of the stimulus set, independent of the times the set is being cycled through
