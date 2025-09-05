@@ -313,7 +313,7 @@ Function WB_GetStimsetChecksum(WAVE stimset, string setName, variable dataAcqOrT
 		return NaN
 	endif
 
-	crc = NumberByKey("Checksum", note(stimset), " = ", ";")
+	crc = WB_GetWaveNoteEntryAsNumber(note(stimset), STIMSET_ENTRY, key = "Checksum")
 
 	if(IsFinite(crc))
 		return crc
