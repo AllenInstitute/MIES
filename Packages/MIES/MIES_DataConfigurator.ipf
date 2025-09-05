@@ -1105,8 +1105,8 @@ End
 
 static Function DC_PrepareLBNEntries(string device, STRUCT DataConfigurationResult &s)
 
-	variable i, j, maxITI, channel, headstage, fingerprint, stimsetCycleID, isoodDAQMember, samplingInterval
-	string func, ctrl, str, setChecksum
+	variable i, j, maxITI, channel, headstage, stimsetCycleID, isoodDAQMember, samplingInterval
+	string func, ctrl, str, fingerprint, setChecksum
 
 	WAVE config = GetDAQConfigWave(device)
 
@@ -1865,20 +1865,21 @@ End
 /// @param device  device
 /// @param fingerprint fingerprint as returned by DC_GenerateStimsetFingerprint()
 /// @param DAC         DA channel
-static Function DC_GetStimsetAcqCycleID(string device, variable fingerprint, variable DAC)
+static Function DC_GetStimsetAcqCycleID(string device, string fingerprint, variable DAC)
 
-	WAVE stimsetAcqIDHelper = GetStimsetAcqIDHelperWave(device)
+	WAVE   stimsetAcqIDNumericalHelper = GetStimsetAcqIDNumericalHelperWave(device)
+	WAVE/T stimsetAcqIDTextualHelper   = GetStimsetAcqIDTextualHelperWave(device)
 
-	ASSERT(IsFinite(fingerprint), "Invalid fingerprint")
+	ASSERT(IsEmpty(fingerprint), "Invalid fingerprint")
 
-	if(fingerprint == stimsetAcqIDHelper[DAC][%fingerprint])
-		return stimsetAcqIDHelper[DAC][%id]
+	if(!cmpstr(fingerprint, stimsetAcqIDTextualHelper[DAC][%fingerprint]))
+		return stimsetAcqIDNumericalHelper[DAC][%id]
 	endif
 
-	stimsetAcqIDHelper[DAC][%fingerprint] = fingerprint
-	stimsetAcqIDHelper[DAC][%id]          = GetNextRandomNumberForDevice(device)
+	stimsetAcqIDTextualHelper[DAC][%fingerprint] = fingerprint
+	stimsetAcqIDNumericalHelper[DAC][%id]        = GetNextRandomNumberForDevice(device)
 
-	return stimsetAcqIDHelper[DAC][%id]
+	return stimsetAcqIDNumericalHelper[DAC][%id]
 End
 
 /// @brief Generate the stimset fingerprint
@@ -1891,21 +1892,21 @@ End
 ///
 /// Always then this fingerprint changes, a new stimset acquisition cycle ID has
 /// to be generated.
-static Function DC_GenerateStimsetFingerprint(variable raCycleID, string setName, variable setCycleCount, string setChecksum)
+static Function/S DC_GenerateStimsetFingerprint(variable raCycleID, string setName, variable setCycleCount, string setChecksum)
 
-	variable crc
+	string hv = ""
 
 	ASSERT(IsInteger(raCycleID) && raCycleID > 0, "Invalid raCycleID")
 	ASSERT(IsInteger(setCycleCount), "Invalid setCycleCount")
 	ASSERT(!IsEmpty(setChecksum), "Invalid stimset checksum")
 	ASSERT(!IsEmpty(setName) && !cmpstr(setName, trimstring(setName)), "Invalid setName")
 
-	crc = StringCRC(crc, num2str(raCycleID))
-	crc = StringCRC(crc, num2str(setCycleCount))
-	crc = StringCRC(crc, setChecksum)
-	crc = StringCRC(crc, setName)
+	hv = HashNumber(hv, raCycleID)
+	hv = HashNumber(hv, setCycleCount)
+	hv = HashString(hv, setChecksum)
+	hv = HashString(hv, setName)
 
-	return crc
+	return hv
 End
 
 static Function [variable result, variable row, variable column] DC_CheckIfDataWaveHasBorderVals(string device, variable dataAcqOrTP)

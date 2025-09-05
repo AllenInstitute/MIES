@@ -1251,7 +1251,33 @@ Function/WAVE GetTTLWave(string device)
 	endswitch
 End
 
-/// @brief Return the stimset acquistion cycle ID helper wave
+/// @brief Return the stimset acquisition cycle ID helper wave (numerical)
+///
+/// Only valid during DAQ.
+///
+/// Rows:
+/// - NUM_DA_TTL_CHANNELS
+///
+/// Columns:
+/// - 0: Current stimset acquisition cycle ID
+Function/WAVE GetStimsetAcqIDNumericalHelperWave(string device)
+
+	DFREF dfr = GetDevicePath(device)
+
+	WAVE/Z/D/SDFR=dfr wv = stimsetAcqIDNumericalHelper
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/D/N=(NUM_DA_TTL_CHANNELS, 1) dfr:stimsetAcqIDNumericalHelper/WAVE=wv
+
+	SetDimLabel COLS, 0, id, wv
+
+	return wv
+End
+
+/// @brief Return the stimset acquisition cycle ID helper wave (textual)
 ///
 /// Only valid during DAQ.
 ///
@@ -1260,21 +1286,19 @@ End
 ///
 /// Columns:
 /// - 0: Stimset fingerprint of the previous sweep
-/// - 1: Current stimset acquisition cycle ID
-Function/WAVE GetStimsetAcqIDHelperWave(string device)
+Function/WAVE GetStimsetAcqIDTextualHelperWave(string device)
 
 	DFREF dfr = GetDevicePath(device)
 
-	WAVE/Z/D/SDFR=dfr wv = stimsetAcqIDHelper
+	WAVE/Z/T/SDFR=dfr wv = stimsetAcqIDHelper
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/D/N=(NUM_DA_TTL_CHANNELS, 2) dfr:stimsetAcqIDHelper/WAVE=wv
+	Make/T/N=(NUM_DA_TTL_CHANNELS, 1) dfr:stimsetAcqIDTextualHelper/WAVE=wv
 
 	SetDimLabel COLS, 0, fingerprint, wv
-	SetDimLabel COLS, 1, id, wv
 
 	return wv
 End
