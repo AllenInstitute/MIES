@@ -16,17 +16,16 @@
 ///
 /// Usage:
 /// * Write a key generator function returning a string
-///   The parameters to CA_GenKey() must completely determine the wave you will later store.
+///   The parameters to CA_GenerateKeyFancyCalc() must completely determine the wave you will later store.
 ///   The appended version string to the key allows you to invalidate old keys
 ///   if the algorithm creating the wave changes, but all input stays the same.
 ///
 /// \rst
 /// .. code-block:: igorpro
 ///
-/// 	Function/S CA_GenKey(input)
-/// 	    variable input
+/// 	Function/S CA_GenerateKeyFancyCalc(string input)
 ///
-/// 	    return stringCRC(0, num2str(input)) + "Version 1"
+/// 	    return HashString("", input) + ":FancyCalc:Version 1"
 /// 	End
 /// \endrst
 ///
@@ -38,10 +37,9 @@
 /// \rst
 /// .. code-block:: igorpro
 ///
-/// 	Function/WAVE MyFancyCalculation(input)
-/// 	    variable input
+/// 	Function/WAVE MyFancyCalculation(string input)
 ///
-/// 	    string key = CA_GenKey(input)
+/// 	    string key = CA_GenerateKeyFancyCalc(input)
 ///
 /// 	    WAVE/Z result = CA_TryFetchingEntryFromCache(key)
 ///
@@ -59,7 +57,7 @@
 /// \endrst
 ///
 /// * Deleting cache entries has to be done *manually* via CA_DeleteCacheEntry().
-///   The cache is also stored in a packed experiment.
+///   The cache is also stored in a experiment file.
 ///
 /// * The entries in the cache are stored as free wave copies of what you feed into CA_StoreEntryIntoCache().
 ///   Similiary you get a free wave copy from CA_TryFetchingEntryFromCache().
@@ -73,7 +71,7 @@
 /// @brief Cache key generator for recreated epochs wave
 Function/S CA_KeyRecreatedEpochs(WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo)
 
-	variable crc
+	string hv = ""
 
 	// the calculation assumes that recreated epochs are based on an old LNB
 	// thats content is treated as const (except mod time, as this check is fast)
@@ -82,50 +80,51 @@ Function/S CA_KeyRecreatedEpochs(WAVE numericalValues, WAVE/T textualValues, DFR
 	ASSERT_TS(!IsFreeWave(textualValues), "Textual LNB wave must be global")
 	ASSERT_TS(!IsFreeDatafolder(sweepDFR), "sweepDFR must not be free")
 
-	crc = StringCRC(0, GetWavesDataFolder(numericalValues, 2))
-	crc = StringCRC(crc, num2istr(WaveModCountWrapper(numericalValues)))
+	hv = HashString(hv, GetWavesDataFolder(numericalValues, 2))
+	hv = HashNumber(hv, WaveModCountWrapper(numericalValues))
 
-	crc = StringCRC(crc, GetWavesDataFolder(textualValues, 2))
-	crc = StringCRC(crc, num2istr(WaveModCountWrapper(textualValues)))
+	hv = HashString(hv, GetWavesDataFolder(textualValues, 2))
+	hv = HashNumber(hv, WaveModCountWrapper(textualValues))
 
-	crc = StringCRC(crc, GetDataFolder(1, sweepDFR))
-	crc = StringCRC(crc, num2istr(sweepNo))
-	crc = StringCRC(crc, num2istr(SWEEP_EPOCH_VERSION))
+	hv = HashString(hv, GetDataFolder(1, sweepDFR))
+	hv = HashNumber(hv, sweepNo)
+	hv = HashNumber(hv, SWEEP_EPOCH_VERSION)
 
-	return num2istr(crc) + "Version 1"
+	return hv + ":Version 1"
 End
 
 /// @brief Cache key generator for oodDAQ offset waves
 Function/S CA_DistDAQCreateCacheKey(STRUCT OOdDAQParams &params)
 
-	variable numWaves, crc, i
+	variable numWaves, i
+	string hv = ""
 
 	numWaves = DimSize(params.stimSets, ROWS)
 
-	crc = WaveCRC(0, params.setColumns)
+	hv = HashWave(hv, params.setColumns)
 
 	for(i = 0; i < numWaves; i += 1)
-		crc = WaveCRC(crc, params.stimSets[i])
+		hv = HashWave(hv, params.stimSets[i])
 	endfor
 
-	crc = StringCRC(crc, num2str(params.preFeaturePoints))
-	crc = StringCRC(crc, num2str(params.postFeaturePoints))
+	hv = HashNumber(hv, params.preFeaturePoints)
+	hv = HashNumber(hv, params.postFeaturePoints)
 
-	return num2istr(crc) + "Version 5"
+	return hv + ":Version 5"
 End
 
 /// @brief Cache key generator for @c FindLevel in PA_CalculatePulseTimes()
 Function/S CA_PulseTimes(WAVE wv, string fullPath, variable channelNumber, variable totalOnsetDelay)
 
-	variable crc
+	string hv = ""
 
-	crc = StringCRC(crc, num2istr(ModDate(wv)))
-	crc = StringCRC(crc, num2istr(WaveModCountWrapper(wv)))
-	crc = StringCRC(crc, fullPath)
-	crc = StringCRC(crc, num2istr(channelNumber))
-	crc = StringCRC(crc, num2str(totalOnsetDelay))
+	hv = HashNumber(hv, ModDate(wv))
+	hv = HashNumber(hv, WaveModCountWrapper(wv))
+	hv = HashString(hv, fullPath)
+	hv = HashNumber(hv, channelNumber)
+	hv = HashNumber(hv, totalOnsetDelay)
 
-	return num2istr(crc) + "Version 2"
+	return hv + ":Version 2"
 End
 
 /// @brief Cache key generator for PA_SmoothDeconv()
@@ -135,14 +134,14 @@ End
 /// @param range_pnts       number of points (p) the smoothing was performed
 Function/S CA_SmoothDeconv(WAVE wv, variable smoothingFactor, variable range_pnts)
 
-	variable crc
+	string hv = ""
 
-	crc = WaveCRC(0, wv)
-	crc = StringCRC(crc, num2str(DimDelta(wv, ROWS)))
-	crc = StringCRC(crc, num2istr(smoothingFactor))
-	crc = StringCRC(crc, num2istr(range_pnts))
+	hv = HashWave(hv, wv)
+	hv = HashNumber(hv, DimDelta(wv, ROWS))
+	hv = HashNumber(hv, smoothingFactor)
+	hv = HashNumber(hv, range_pnts)
 
-	return num2istr(crc) + "Version 1"
+	return hv + ":Version 1"
 End
 
 /// @brief Cache key generator for PA_Deconvolution()
@@ -151,28 +150,28 @@ End
 /// @param tau convolution time
 Function/S CA_Deconv(WAVE wv, variable tau)
 
-	variable crc
+	string hv = ""
 
-	crc = WaveCRC(0, wv)
-	crc = StringCRC(crc, num2str(DimDelta(wv, ROWS)))
-	crc = StringCRC(crc, num2str(tau))
+	hv = HashWave(hv, wv)
+	hv = HashNumber(hv, DimDelta(wv, ROWS))
+	hv = HashNumber(hv, tau)
 
-	return num2istr(crc) + "Version 1"
+	return hv + ":Version 1"
 End
 
 /// @brief Cache key generator for GetActiveChannels
 threadsafe Function/S CA_GenKeyGetActiveChannels(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, variable TTLmode)
 
 	string primitiveKey
-	string version = "Version 1"
-	variable crc
+	string version = ":Version 1"
+	string hv      = ""
 
 	sprintf primitiveKey, "%d_%d_%d_%s", sweepNo, channelType, TTLmode, version
-	crc = CA_GetWaveModCRC(numericalValues, 0)
-	crc = CA_GetWaveModCRC(textualValues, crc)
-	crc = StringCRC(crc, primitiveKey)
+	hv = CA_GetWaveModHash(numericalValues, hv)
+	hv = CA_GetWaveModHash(textualValues, hv)
+	hv = HashString(hv, primitiveKey)
 
-	return num2istr(crc) + version
+	return hv + version
 End
 
 /// @brief Cache key generator for LBN index cache
@@ -196,53 +195,54 @@ End
 /// @brief Cache key generator for Logbook sortedKeyWave
 threadsafe Function/S CA_GenKeyLogbookSortedKeys(WAVE keys)
 
-	string version = "Version 1"
-	variable crc
+	string hv = ""
 
-	crc = CA_GetWaveModCRC(keys, 0)
+	hv = CA_GetWaveModHash(keys, hv)
 
-	return num2istr(crc) + version
+	return hv + ":Version 1"
 End
 
 /// @brief Cache key generator for artefact removal ranges
 Function/S CA_ArtefactRemovalRangesKey(DFREF singleSweepDFR, variable sweepNo)
 
-	variable crc
+	string hv = ""
 
-	crc = StringCRC(crc, GetDataFolder(1, singleSweepDFR))
-	crc = StringCRC(crc, num2str(sweepNo))
+	hv = HashString(hv, GetDataFolder(1, singleSweepDFR))
+	hv = HashNumber(hv, sweepNo)
 
-	return num2istr(crc) + "Version 1"
+	return hv + ":Version 1"
 End
 
 /// @brief Cache key generator for averaging
 Function/S CA_AveragingKey(WAVE/WAVE waveRefs)
 
-	return CA_WaveCRCs(waveRefs, includeWaveScalingAndUnits = 1, dims = ROWS) + "Version 6"
+	return CA_WaveHash(waveRefs, includeWaveScalingAndUnits = 1, dims = ROWS) + ":Version 6"
 End
 
 /// @brief Cache key generator for averaging info from non-free waves
 Function/S CA_AveragingWaveModKey(WAVE wv)
 
-	return num2istr(CA_RecursiveWavemodCRC(wv)) + "Version 1"
+	return CA_RecursiveWaveModHash(wv) + ":Version 1"
 End
 
 /// @brief Cache key generator for the tau range calculation
 ///        of psx events
 Function/S CA_PSXEventGoodTauRange(WAVE wv)
 
-	return num2istr(CA_RecursiveWavemodCRC(wv)) + "Version 1"
+	return CA_RecursiveWaveModHash(wv) + ":Version 1"
 End
 
-/// @brief Calculated a CRC from non wave reference waves using modification data, wave modification count and wave location.
-///        If the given wave is a wave reference wave, then the CRC is calculated recursively from
+/// @brief Calculated a hash from non wave reference waves using modification data, wave modification count and wave location.
+///        If the given wave is a wave reference wave, then the hash is calculated recursively from
 ///        all non wave reference waves and null wave references found.
-static Function CA_RecursiveWavemodCRC(WAVE/Z wv, [variable prevCRC])
+static Function/S CA_RecursiveWaveModHash(WAVE/Z wv, [string prevHash])
 
 	variable rows_, cols_, layers_, chunks_
 	variable i, j, k, l
 
-	prevCRC = ParamIsDefault(prevCRC) ? 0 : prevCRC
+	if(ParamIsDefault(prevHash))
+		prevHash = ""
+	endif
 
 	if(!WaveExists(wv))
 		// prevents getting the same key when the internal layout of the multi dimensional
@@ -255,7 +255,7 @@ static Function CA_RecursiveWavemodCRC(WAVE/Z wv, [variable prevCRC])
 		// null, null, null
 		// null,   w1,   w2
 		// null,   w3,   w4
-		return StringCRC(prevCRC, "null wave")
+		return HashString(prevHash, "null wave")
 	endif
 
 	if(IsWaveRefWave(wv))
@@ -274,25 +274,29 @@ static Function CA_RecursiveWavemodCRC(WAVE/Z wv, [variable prevCRC])
 			for(k = 0; k < layers_; k += 1)
 				for(j = 0; j < cols_; j += 1)
 					for(i = 0; i < rows_; i += 1)
-						prevCRC = CA_RecursiveWavemodCRC(wvRef[i][j][k][l], prevCRC = prevCRC)
+						prevHash = CA_RecursiveWaveModHash(wvRef[i][j][k][l], prevHash = prevHash)
 					endfor
 				endfor
 			endfor
 		endfor
 	else
-		prevCRC = CA_GetWaveModCRC(wv, prevCRC)
+		prevHash = CA_GetWaveModHash(wv, prevHash)
 	endif
 
-	return prevCRC
+	return prevHash
 End
 
-threadsafe static Function CA_GetWaveModCRC(WAVE wv, variable crc)
+threadsafe static Function/S CA_GetWaveModHash(WAVE wv, string hv)
 
-	return StringCRC(crc, num2istr(ModDate(wv)) + num2istr(WaveModCountWrapper(wv)) + GetWavesDataFolder(wv, 2))
+	hv = HashNumber(hv, ModDate(wv))
+	hv = HashNumber(hv, WaveModCountWrapper(wv))
+	hv = HashString(hv, GetWavesDataFolder(wv, 2))
+
+	return hv
 End
 
-/// @brief Calculate the CRC of all metadata of all or the given dimension
-threadsafe static Function CA_WaveScalingCRC(variable crc, WAVE wv, [variable dimension])
+/// @brief Calculate the hash of all metadata of all dimensions or the given only
+threadsafe static Function/S CA_WaveScalingHash(string hv, WAVE wv, [variable dimension])
 
 	variable dims, i
 
@@ -307,45 +311,41 @@ threadsafe static Function CA_WaveScalingCRC(variable crc, WAVE wv, [variable di
 	endif
 
 	for(i = 0; i < dims; i += 1)
-		crc = StringCRC(crc, num2str(DimSize(wv, dimension)))
-		crc = StringCRC(crc, num2str(DimOffset(wv, dimension)))
-		crc = StringCRC(crc, num2str(DimDelta(wv, dimension)))
-		crc = StringCRC(crc, WaveUnits(wv, dimension))
+		hv = HashNumber(hv, DimSize(wv, dimension))
+		hv = HashNumber(hv, DimOffset(wv, dimension))
+		hv = HashNumber(hv, DimDelta(wv, dimension))
+		hv = HashString(hv, WaveUnits(wv, dimension))
 	endfor
 
-	return crc
+	return hv
 End
 
-/// @brief Calculate CRC values of the wave `dims` giving the dimensions of a wave
-threadsafe static Function CA_WaveSizeCRC(WAVE dims)
+/// @brief Calculate hash values of the wave `dims` giving the dimensions of a wave
+threadsafe static Function/S CA_WaveSizeHash(WAVE dims)
 
-	variable numRows, crc, i
+	variable numRows, i
+	string hv = ""
 
 	numRows = DimSize(dims, ROWS)
 	ASSERT_TS(numRows > 0 && numRows <= MAX_DIMENSION_COUNT && DimSize(dims, COLS) <= 1, "Invalid dims dimensions")
 
 	for(i = 0; i < numRows; i += 1)
-		crc = StringCRC(crc, num2istr(dims[i]))
+		hv = HashNumber(hv, dims[i])
 	endfor
 
-	return crc
+	return hv
 End
 
-/// @brief Calculate all CRC values of the waves referenced in waveRefs
+/// @brief Calculate all hash values of the waves referenced in waveRefs
 ///
 /// @param waveRefs                   wave reference wave
-/// @param crcMode                    [optional] parameter to WaveCRC
 /// @param includeWaveScalingAndUnits [optional] include the wave scaling and units of filled dimensions
-/// @param dims                       [optional] number of dimensions to include wave scaling and units in crc
-static Function/S CA_WaveCRCs(WAVE/WAVE waveRefs, [variable crcMode, variable includeWaveScalingAndUnits, variable dims])
+/// @param dims                       [optional] number of dimensions to include wave scaling and units in hash
+static Function/S CA_WaveHash(WAVE/WAVE waveRefs, [variable includeWaveScalingAndUnits, variable dims])
 
 	variable rows
 
 	ASSERT(IsWaveRefWave(waveRefs), "Expected a wave reference wave")
-
-	if(ParamIsDefault(crcMode))
-		crcMode = 0
-	endif
 
 	if(ParamIsDefault(includeWaveScalingAndUnits))
 		includeWaveScalingAndUnits = 0
@@ -359,33 +359,36 @@ static Function/S CA_WaveCRCs(WAVE/WAVE waveRefs, [variable crcMode, variable in
 	rows = DimSize(waveRefs, ROWS)
 	ASSERT(rows > 0, "Unexpected number of entries")
 
-	Make/D/FREE/N=(rows) crc
-	MultiThread/NT=(rows < NUM_ENTRIES_FOR_MULTITHREAD) crc[] = WaveCRC(0, waveRefs[p], crcMode)
+	Make/T/FREE/N=(rows) hashes
+	MultiThread/NT=(rows < NUM_ENTRIES_FOR_MULTITHREAD) hashes[] = HashWave("", waveRefs[p])
 
 	if(includeWaveScalingAndUnits)
-		MultiThread/NT=(rows < NUM_ENTRIES_FOR_MULTITHREAD) crc[] = CA_WaveScalingCRC(crc[p], waveRefs[p])
+		MultiThread/NT=(rows < NUM_ENTRIES_FOR_MULTITHREAD) hashes[] = CA_WaveScalingHash(hashes[p], waveRefs[p], dimension = dims)
 	endif
 
-	return NumericWaveToList(crc, ";", format = "%.15g")
+	return HashWave("", hashes)
 End
 
 /// @brief Calculate the cache key for SI_FindMatchingTableEntry.
 ///
-/// We are deliberatly not using a WaveCRC here as know that the wave is not
+/// We are deliberatly not using a HashWave here as know that the wave is not
 /// changed in IP once loaded. Therefore using its name and ModDate is enough.
 Function/S CA_SamplingIntervalKey(WAVE lut, STRUCT ActiveChannels &s)
 
-	variable crc
+	string hv = ""
 
-	crc = StringCRC(crc, num2istr(s.numDARack1))
-	crc = StringCRC(crc, num2istr(s.numADRack1))
-	crc = StringCRC(crc, num2istr(s.numTTLRack1))
-	crc = StringCRC(crc, num2istr(s.numDARack2))
-	crc = StringCRC(crc, num2istr(s.numADRack2))
-	crc = StringCRC(crc, num2istr(s.numTTLRack2))
+	hv = HashNumber(hv, s.numDARack1)
+	hv = HashNumber(hv, s.numADRack1)
+	hv = HashNumber(hv, s.numTTLRack1)
+	hv = HashNumber(hv, s.numDARack2)
+	hv = HashNumber(hv, s.numADRack2)
+	hv = HashNumber(hv, s.numTTLRack2)
 
 	ASSERT(!IsFreeWave(lut), "lut can not be a free wave")
-	return num2istr(crc) + NameOfWave(lut) + num2istr(ModDate(lut)) + "Version 1"
+	hv = HashString(hv, NameOfWave(lut))
+	hv = HashNumber(hv, ModDate(lut))
+
+	return hv + ":Version 1"
 End
 
 /// @brief Generic key generator for storing throw away waves used for
@@ -394,33 +397,33 @@ End
 /// Only the size is relevant, the rest is undefined.
 threadsafe Function/S CA_TemporaryWaveKey(WAVE dims)
 
-	variable crc
+	string hv = ""
 
-	crc = CA_WaveSizeCRC(dims)
+	hv = CA_WaveSizeHash(dims)
 
-	return num2istr(crc) + "Temporary waves Version 2"
+	return hv + "Temporary waves Version 2"
 End
 
 /// @brief Key generator for FindIndizes
 threadsafe Function/S CA_FindIndizesKey(WAVE dims)
 
-	variable crc
+	string hv
 
-	crc = CA_WaveSizeCRC(dims)
+	hv = CA_WaveSizeHash(dims)
 
-	return num2istr(crc) + "FindIndizes Version 1"
+	return hv + "FindIndizes Version 1"
 End
 
 /// @brief Calculate the cache key for the hardware device info wave
 Function/S CA_HWDeviceInfoKey(string device, variable hardwareType, variable deviceID)
 
-	variable crc
+	string hv = ""
 
-	crc = StringCrc(crc, device)
-	crc = StringCrc(crc, num2str(hardwareType))
-	crc = StringCrc(crc, num2str(deviceID))
+	hv = HashString(hv, device)
+	hv = HashNumber(hv, hardwareType)
+	hv = HashNumber(hv, deviceID)
 
-	return num2istr(crc) + "HW Device Info Version 1"
+	return hv + ":HW Device Info Version 1"
 End
 
 /// @brief Generate a key for the DAQDataWave in TEST_PULSE_MODE
@@ -436,33 +439,33 @@ End
 /// - testPulseLength, baselineFrac
 Function/S CA_HardwareDataTPKey(STRUCT HardwareDataTPInput &s)
 
-	variable crc
+	string hv = ""
 
-	crc = StringCRC(crc, num2str(s.hardwareType))
-	crc = StringCRC(crc, num2str(s.numDACs))
-	crc = StringCRC(crc, num2str(s.numActiveChannels))
-	crc = StringCRC(crc, num2str(s.numberOfRows))
-	crc = StringCRC(crc, num2str(s.samplingInterval))
-	crc = WaveCRC(crc, s.gains)
-	crc = WaveCRC(crc, s.DACAmpTP)
-	crc = StringCRC(crc, num2str(s.testPulseLength))
-	crc = StringCRC(crc, num2str(s.baselineFrac))
+	hv = HashNumber(hv, s.hardwareType)
+	hv = HashNumber(hv, s.numDACs)
+	hv = HashNumber(hv, s.numActiveChannels)
+	hv = HashNumber(hv, s.numberOfRows)
+	hv = HashNumber(hv, s.samplingInterval)
+	hv = HashWave(hv, s.gains)
+	hv = HashWave(hv, s.DACAmpTP)
+	hv = HashNumber(hv, s.testPulseLength)
+	hv = HashNumber(hv, s.baselineFrac)
 
-	return num2istr(crc) + "HW Datawave Testpulse Version 2"
+	return hv + "HW Datawave Testpulse Version 2"
 End
 
 Function/S CA_PSXKernelOperationKey(variable riseTau, variable decayTau, variable amp, variable numPoints, variable dt, WAVE range)
 
-	variable crc
+	string hv = ""
 
-	crc = StringCRC(crc, num2strHighPrec(riseTau, precision = MAX_DOUBLE_PRECISION))
-	crc = StringCRC(crc, num2strHighPrec(decayTau, precision = MAX_DOUBLE_PRECISION))
-	crc = StringCRC(crc, num2strHighPrec(amp, precision = MAX_DOUBLE_PRECISION))
-	crc = StringCRC(crc, num2strHighPrec(numPoints, precision = MAX_DOUBLE_PRECISION))
-	crc = StringCRC(crc, num2strHighPrec(dt, precision = MAX_DOUBLE_PRECISION))
-	crc = WaveCRC(crc, range)
+	hv = HashString(hv, num2strHighPrec(riseTau, precision = MAX_DOUBLE_PRECISION))
+	hv = HashString(hv, num2strHighPrec(decayTau, precision = MAX_DOUBLE_PRECISION))
+	hv = HashString(hv, num2strHighPrec(amp, precision = MAX_DOUBLE_PRECISION))
+	hv = HashString(hv, num2strHighPrec(numPoints, precision = MAX_DOUBLE_PRECISION))
+	hv = HashString(hv, num2strHighPrec(dt, precision = MAX_DOUBLE_PRECISION))
+	hv = HashWave(hv, range)
 
-	return num2istr(crc) + "PSX Kernel Version 2"
+	return hv + "PSX Kernel Version 2"
 End
 
 static Function/S CA_PSXBaseKey(string comboKey, string psxParameters)
@@ -513,7 +516,6 @@ End
 threadsafe Function/S CA_GetLabnotebookNamesKey(WAVE/Z/T textualValues, WAVE/Z/T numericalValues)
 
 	string key = ""
-	variable crc
 
 	if(WaveExists(textualValues))
 		key += GetWavesDataFolder(textualValues, 2)
@@ -525,43 +527,39 @@ threadsafe Function/S CA_GetLabnotebookNamesKey(WAVE/Z/T textualValues, WAVE/Z/T
 		key += num2istr(WaveModCountWrapper(numericalValues))
 	endif
 
-	ASSERT_TS(!IsEmpty(key), "key can't be empty")
-
-	return "Version 1:" + Hash(key, HASH_SHA2_256)
+	return HashString("", key) + ":Version 1"
 End
 
 Function/S CA_CalculateEpochsKey(WAVE numericalvalues, WAVE textualValues, variable sweepNo, variable channelType, variable channelNumber, string shortName, variable treelevel, DFREF sweepDFR)
 
-	string key = ""
-	variable crc
+	string hv
 
-	key += CA_GetLabnotebookNamesKey(numericalvalues, textualValues)
-	crc  = StringCRC(crc, num2str(sweepNo))
-	crc  = StringCRC(crc, num2str(channelType))
-	crc  = StringCRC(crc, num2str(channelNumber))
-	crc  = StringCRC(crc, shortName)
-	crc  = StringCRC(crc, num2str(treelevel))
+	hv = CA_GetLabnotebookNamesKey(numericalvalues, textualValues)
+	hv = HashNumber(hv, sweepNo)
+	hv = HashNumber(hv, channelType)
+	hv = HashNumber(hv, channelNumber)
+	hv = HashString(hv, shortName)
+	hv = HashNumber(hv, treelevel)
 
 	if(DataFolderExistsDFR(sweepDFR))
-		crc = StringCRC(crc, GetDataFolder(1, sweepDFR))
+		hv = HashString(hv, GetDataFolder(1, sweepDFR))
 	else
-		crc = StringCRC(crc, "invalid DFREF")
+		hv = HashString(hv, "invalid DFREF")
 	endif
 
-	return "Version 1:" + Hash(key + num2istr(crc), HASH_SHA2_256)
+	return hv + ":Version 1"
 End
 
 threadsafe Function/S CA_CalculateFetchEpochsKey(WAVE numericalvalues, WAVE textualValues, variable sweepNo, variable channelNumber, variable channelType)
 
-	string key = ""
-	variable crc
+	string hv = ""
 
-	key += CA_GetLabnotebookNamesKey(numericalvalues, textualValues)
-	crc  = StringCRC(crc, num2str(sweepNo))
-	crc  = StringCRC(crc, num2str(channelType))
-	crc  = StringCRC(crc, num2str(channelNumber))
+	hv = HashString(hv, CA_GetLabnotebookNamesKey(numericalvalues, textualValues))
+	hv = HashNumber(hv, sweepNo)
+	hv = HashNumber(hv, channelType)
+	hv = HashNumber(hv, channelNumber)
 
-	return "Version 1:" + Hash(key + num2istr(crc), HASH_SHA2_256)
+	return hv + ":Version 1"
 End
 ///@}
 

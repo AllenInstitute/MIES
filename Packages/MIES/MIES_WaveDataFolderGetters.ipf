@@ -32,7 +32,7 @@ static StrConstant TP_SETTINGS_LABELS = "bufferSize;resistanceTol;sendToAllHS;ba
 static StrConstant LOGBOOK_SUFFIX_SORTEDKEYS        = "_sorted"
 static StrConstant LOGBOOK_SUFFIX_SORTEDKEYSINDICES = "_indices"
 
-static Constant SWEEP_SETTINGS_WAVE_VERSION = 41
+static Constant SWEEP_SETTINGS_WAVE_VERSION = 42
 
 /// @brief Return a wave reference to the corresponding Logbook keys wave from an values wave input
 threadsafe Function/WAVE GetLogbookValuesFromKeys(WAVE keyWave)
@@ -1251,7 +1251,33 @@ Function/WAVE GetTTLWave(string device)
 	endswitch
 End
 
-/// @brief Return the stimset acquistion cycle ID helper wave
+/// @brief Return the stimset acquisition cycle ID helper wave (numerical)
+///
+/// Only valid during DAQ.
+///
+/// Rows:
+/// - NUM_DA_TTL_CHANNELS
+///
+/// Columns:
+/// - 0: Current stimset acquisition cycle ID
+Function/WAVE GetStimsetAcqIDNumericalHelperWave(string device)
+
+	DFREF dfr = GetDevicePath(device)
+
+	WAVE/Z/D/SDFR=dfr wv = stimsetAcqIDNumericalHelper
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/D/N=(NUM_DA_TTL_CHANNELS, 1) dfr:stimsetAcqIDNumericalHelper/WAVE=wv
+
+	SetDimLabel COLS, 0, id, wv
+
+	return wv
+End
+
+/// @brief Return the stimset acquisition cycle ID helper wave (textual)
 ///
 /// Only valid during DAQ.
 ///
@@ -1260,21 +1286,19 @@ End
 ///
 /// Columns:
 /// - 0: Stimset fingerprint of the previous sweep
-/// - 1: Current stimset acquisition cycle ID
-Function/WAVE GetStimsetAcqIDHelperWave(string device)
+Function/WAVE GetStimsetAcqIDTextualHelperWave(string device)
 
 	DFREF dfr = GetDevicePath(device)
 
-	WAVE/Z/D/SDFR=dfr wv = stimsetAcqIDHelper
+	WAVE/Z/T/SDFR=dfr wv = stimsetAcqIDHelper
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/D/N=(NUM_DA_TTL_CHANNELS, 2) dfr:stimsetAcqIDHelper/WAVE=wv
+	Make/T/N=(NUM_DA_TTL_CHANNELS, 1) dfr:stimsetAcqIDTextualHelper/WAVE=wv
 
 	SetDimLabel COLS, 0, fingerprint, wv
-	SetDimLabel COLS, 1, id, wv
 
 	return wv
 End
@@ -2487,9 +2511,6 @@ End
 /// - 31: Optimized Overlap dDAQ
 /// - 32: Delay onset oodDAQ
 /// - 33: Repeated Acquisition Cycle ID
-/// - 34: Stim Wave Checksum (can be used to disambiguate cases
-///                           where two stimsets are named the same
-///                           but have different contents)
 /// - 35: Multi Device mode
 /// - 36: Background Testpulse
 /// - 37: Background DAQ
@@ -2536,9 +2557,9 @@ Function/WAVE GetSweepSettingsKeyWave(string device)
 	endif
 
 	if(WaveExists(wv))
-		Redimension/N=(-1, 63) wv
+		Redimension/N=(-1, 61) wv
 	else
-		Make/T/N=(3, 62) newDFR:$newName/WAVE=wv
+		Make/T/N=(3, 61) newDFR:$newName/WAVE=wv
 	endif
 
 	wv = ""
@@ -2683,117 +2704,113 @@ Function/WAVE GetSweepSettingsKeyWave(string device)
 	wv[%Units][33]     = ""
 	wv[%Tolerance][33] = "1"
 
-	wv[%Parameter][34] = "Stim Wave Checksum"
-	wv[%Units][34]     = ""
-	wv[%Tolerance][34] = "1"
+	wv[%Parameter][34] = "Multi Device mode"
+	wv[%Units][34]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][34] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][35] = "Multi Device mode"
+	wv[%Parameter][35] = "Background Testpulse"
 	wv[%Units][35]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][35] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][36] = "Background Testpulse"
+	wv[%Parameter][36] = "Background DAQ"
 	wv[%Units][36]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][36] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][37] = "Background DAQ"
+	wv[%Parameter][37] = "TP during ITI"
 	wv[%Units][37]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][37] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][38] = "TP during ITI"
+	wv[%Parameter][38] = "Amplifier change via I=0"
 	wv[%Units][38]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][38] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][39] = "Amplifier change via I=0"
+	wv[%Parameter][39] = "Skip analysis functions"
 	wv[%Units][39]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][39] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][40] = "Skip analysis functions"
+	wv[%Parameter][40] = "Repeat sweep on async alarm"
 	wv[%Units][40]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][40] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][41] = "Repeat sweep on async alarm"
-	wv[%Units][41]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][41] = LABNOTEBOOK_NO_TOLERANCE
+	wv[%Parameter][41] = "Set Cycle Count"
+	wv[%Units][41]     = ""
+	wv[%Tolerance][41] = "1"
 
-	wv[%Parameter][42] = "Set Cycle Count"
+	wv[%Parameter][42] = STIMSET_ACQ_CYCLE_ID_KEY
 	wv[%Units][42]     = ""
 	wv[%Tolerance][42] = "1"
 
-	wv[%Parameter][43] = STIMSET_ACQ_CYCLE_ID_KEY
+	wv[%Parameter][43] = "Digitizer Hardware Type"
 	wv[%Units][43]     = ""
 	wv[%Tolerance][43] = "1"
 
-	wv[%Parameter][44] = "Digitizer Hardware Type"
-	wv[%Units][44]     = ""
+	wv[%Parameter][44] = "Fixed frequency acquisition"
+	wv[%Units][44]     = "kHz"
 	wv[%Tolerance][44] = "1"
 
-	wv[%Parameter][45] = "Fixed frequency acquisition"
-	wv[%Units][45]     = "kHz"
-	wv[%Tolerance][45] = "1"
+	wv[%Parameter][45] = "Headstage Active"
+	wv[%Units][45]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][45] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][46] = "Headstage Active"
-	wv[%Units][46]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Parameter][46] = CLAMPMODE_ENTRY_KEY
+	wv[%Units][46]     = ""
 	wv[%Tolerance][46] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][47] = CLAMPMODE_ENTRY_KEY
+	wv[%Parameter][47] = "Igor Pro bitness"
 	wv[%Units][47]     = ""
 	wv[%Tolerance][47] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][48] = "Igor Pro bitness"
+	wv[%Parameter][48] = "DA ChannelType"
 	wv[%Units][48]     = ""
-	wv[%Tolerance][48] = LABNOTEBOOK_NO_TOLERANCE
+	wv[%Tolerance][48] = "1"
 
-	wv[%Parameter][49] = "DA ChannelType"
+	wv[%Parameter][49] = "AD ChannelType"
 	wv[%Units][49]     = ""
 	wv[%Tolerance][49] = "1"
 
-	wv[%Parameter][50] = "AD ChannelType"
-	wv[%Units][50]     = ""
-	wv[%Tolerance][50] = "1"
+	wv[%Parameter][50] = "oodDAQ member"
+	wv[%Units][50]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][50] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][51] = "oodDAQ member"
-	wv[%Units][51]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][51] = LABNOTEBOOK_NO_TOLERANCE
+	wv[%Parameter][51] = AUTOBIAS_PERC_KEY
+	wv[%Units][51]     = ""
+	wv[%Tolerance][51] = "0.1"
 
-	wv[%Parameter][52] = AUTOBIAS_PERC_KEY
-	wv[%Units][52]     = ""
+	wv[%Parameter][52] = "Autobias Interval"
+	wv[%Units][52]     = "s"
 	wv[%Tolerance][52] = "0.1"
 
-	wv[%Parameter][53] = "Autobias Interval"
-	wv[%Units][53]     = "s"
-	wv[%Tolerance][53] = "0.1"
+	wv[%Parameter][53] = "TP after DAQ"
+	wv[%Units][53]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][53] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][54] = "TP after DAQ"
-	wv[%Units][54]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][54] = LABNOTEBOOK_NO_TOLERANCE
+	wv[%Parameter][54] = SWEEP_EPOCH_VERSION_ENTRY_KEY
+	wv[%Units][54]     = ""
+	wv[%Tolerance][54] = "1"
 
-	wv[%Parameter][55] = SWEEP_EPOCH_VERSION_ENTRY_KEY
-	wv[%Units][55]     = ""
-	wv[%Tolerance][55] = "1"
+	wv[%Parameter][55] = "Get/Set Inter-trial interval"
+	wv[%Units][55]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][55] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][56] = "Get/Set Inter-trial interval"
+	wv[%Parameter][56] = "Double precision data"
 	wv[%Units][56]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][56] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][57] = "Double precision data"
+	wv[%Parameter][57] = "Save amplifier settings"
 	wv[%Units][57]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][57] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][58] = "Save amplifier settings"
+	wv[%Parameter][58] = "Require amplifier"
 	wv[%Units][58]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][58] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][59] = "Require amplifier"
-	wv[%Units][59]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][59] = LABNOTEBOOK_NO_TOLERANCE
+	wv[%Parameter][59] = "Skip Ahead"
+	wv[%Units][59]     = ""
+	wv[%Tolerance][59] = "1"
 
-	wv[%Parameter][60] = "Skip Ahead"
-	wv[%Units][60]     = ""
-	wv[%Tolerance][60] = "1"
-
-	wv[%Parameter][61] = "TP power spectrum"
-	wv[%Units][61]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][61] = LABNOTEBOOK_NO_TOLERANCE
+	wv[%Parameter][60] = "TP power spectrum"
+	wv[%Units][60]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][60] = LABNOTEBOOK_NO_TOLERANCE
 
 	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)
@@ -2897,13 +2914,16 @@ End
 /// - 33: Indexing End Stimset
 /// - 34: TTL Indexing End Stimset (hardware agnostic), string list in `INDEP_HEADSTAGE` layer with empty entries indexed by [0, NUM_DA_TTL_CHANNELS[
 /// - 35: TTL Stimset wave note (hardware agnostic), same string list formatting
-/// - 36: TTL Stim Wave Checksum (hardware agnostic) URL-encoded payload, see [URL-encoding](https://en.wikipedia.org/wiki/Percent-encoding)
+/// - 36: TTL Stim Wave Checksum V2 (hardware agnostic) URL-encoded payload, see [URL-encoding](https://en.wikipedia.org/wiki/Percent-encoding)
 ///                                                  for background information, same string list formatting
 /// - 37: TTL Stim set length (hardware agnostic), same string list formatting
 /// - 38: TTL rack zero set cycle counts (ITC hardware)
 /// - 39: TTL rack one set cycle counts (ITC hardware)
 /// - 40: TTL set cycle counts (NI hardware), string list in `INDEP_HEADSTAGE` layer with empty entries indexed by [0, NUM_DA_TTL_CHANNELS[
 /// - 41: Device (aka DAEphys panel name)
+/// - 50: Stim Wave Checksum V2 (DA data, can be used to disambiguate cases
+///                              where two stimsets are named the same
+///                              but have different contents)
 Function/WAVE GetSweepSettingsTextKeyWave(string device)
 
 	variable versionOfNewWave = SWEEP_SETTINGS_WAVE_VERSION
@@ -2923,9 +2943,9 @@ Function/WAVE GetSweepSettingsTextKeyWave(string device)
 	endif
 
 	if(WaveExists(wv))
-		Redimension/N=(-1, 50, 0) wv
+		Redimension/N=(-1, 51, 0) wv
 	else
-		Make/T/N=(1, 50) newDFR:$newName/WAVE=wv
+		Make/T/N=(1, 51) newDFR:$newName/WAVE=wv
 	endif
 
 	SetDimLabel ROWS, 0, Parameter, wv
@@ -2968,7 +2988,7 @@ Function/WAVE GetSweepSettingsTextKeyWave(string device)
 	wv[0][33] = "Indexing End Stimset"
 	wv[0][34] = "TTL Indexing End Stimset"
 	wv[0][35] = "TTL Stimset wave note"
-	wv[0][36] = "TTL Stim Wave Checksum"
+	wv[0][36] = "TTL Stim Wave Checksum V2"
 	wv[0][37] = "TTL Stim set length"
 	wv[0][38] = "TTL rack zero set cycle counts"
 	wv[0][39] = "TTL rack one set cycle counts"
@@ -2982,6 +3002,7 @@ Function/WAVE GetSweepSettingsTextKeyWave(string device)
 	wv[0][47] = CreateTTLChannelLBNKey(EPOCHS_ENTRY_KEY, 5)
 	wv[0][48] = CreateTTLChannelLBNKey(EPOCHS_ENTRY_KEY, 6)
 	wv[0][49] = CreateTTLChannelLBNKey(EPOCHS_ENTRY_KEY, 7)
+	wv[0][50] = "Stim Wave Checksum V2"
 
 	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)

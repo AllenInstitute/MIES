@@ -68,7 +68,7 @@ Function/WAVE CalculateAverage(WAVE/WAVE waveRefs, DFREF averageDataFolder, stri
 	SetScale d, 0, 0, dataUnit, freeAverageWave
 
 	if(!skipCRC)
-		crc     = WaveCRC(0, freeAverageWave)
+		crc     = WaveCRC(0, freeAverageWave) // NOLINT
 		wvName += "_" + num2istr(crc)
 		SetNumberInWaveNote(freeAverageWave, "DataCRC", crc)
 	endif

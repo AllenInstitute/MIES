@@ -1326,3 +1326,50 @@ static Function TestFindSequenceReverseWrapper()
 End
 
 /// @}
+
+static Function TestHashString()
+
+#if IgorVersion() >= 10
+	CHECK_EQUAL_STR(HashString("", ""), "2d06800538d394c2")
+	CHECK_EQUAL_STR(HashString("123", "b"), "3c9cec9e7b5026a6")
+#else
+	CHECK_EQUAL_STR(HashString("", ""), "0")
+	CHECK_EQUAL_STR(HashString("123", "b"), "3060352845")
+#endif
+
+End
+
+static Function TestHashNumber()
+
+#if IgorVersion() >= 10
+	CHECK_EQUAL_STR(HashNumber("", NaN), "bacd09c7db647d0d")
+	CHECK_EQUAL_STR(HashNumber("123", 456), "507f6d6059ff79de")
+#else
+	CHECK_EQUAL_STR(HashNumber("", NaN), "1810114945")
+	CHECK_EQUAL_STR(HashNumber("123", 456), "3909895360")
+#endif
+
+End
+
+static Function TestHashWave()
+
+	try
+		HashWave("", $"")
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	Make/T/FREE/N=0 empty
+	Make/R/FREE some = {456}
+
+#if IgorVersion() >= 10
+	CHECK_EQUAL_STR(HashWave("", empty), "2d06800538d394c2")
+	// outputted hash is prefixed with previousHash (123)
+	CHECK_EQUAL_STR(HashWave("123", some), "12338bbb7f4fc6cddb1")
+#else
+	CHECK_EQUAL_STR(HashWave("", empty), "0")
+	CHECK_EQUAL_STR(HashWave("123", some), "1220402755")
+#endif
+
+End
