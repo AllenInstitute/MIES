@@ -2626,4 +2626,4 @@ Constant SF_DISPLAYTYPE_TABLE = 1
 Constant TRACECOLORMAX = 21
 ///@}
 
-StrConstant BSP_USER_DATA_SF_CONTENT_CRC = "SweepFormulaContentCRC"
+StrConstant BSP_USER_DATA_SF_CONTENT_HASH = "SweepFormulaContentHash"
