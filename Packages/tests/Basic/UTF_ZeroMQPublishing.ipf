@@ -52,12 +52,15 @@ End
 static Function CheckClampMode()
 
 	string device, expected, actual
-	variable headstage, i, jsonID, value
+	variable headstage, i, jsonID, value, saveEveryTPisChecked
+	variable expected_var, actual_var, saveEveryTPisDisabled
 
-	device    = "my_device"
-	headstage = 0
+	device                = "my_device"
+	headstage             = 0
+	saveEveryTPisChecked  = 1
+	saveEveryTPisDisabled = 0
 
-	MIES_PUB#PUB_ClampModeChange(device, headstage, I_CLAMP_MODE, V_CLAMP_MODE)
+	MIES_PUB#PUB_ClampModeChange(device, headstage, I_CLAMP_MODE, V_CLAMP_MODE, saveEveryTPisChecked, saveEveryTPisDisabled)
 
 	jsonID = FetchAndParseMessage(AMPLIFIER_CLAMP_MODE_FILTER)
 
@@ -68,6 +71,14 @@ static Function CheckClampMode()
 	expected = "V_CLAMP_MODE"
 	actual   = JSON_GetString(jsonID, "/clamp mode/new")
 	CHECK_EQUAL_STR(actual, expected)
+
+	expected_var = 1
+	actual_var   = JSON_GetVariable(jsonID, "/save every TP/checked")
+	CHECK_EQUAL_VAR(actual_var, expected_var)
+
+	expected_var = 0
+	actual_var   = JSON_GetVariable(jsonID, "/save every TP/disabled")
+	CHECK_EQUAL_VAR(actual_var, expected_var)
 
 	JSON_Release(jsonID)
 End
