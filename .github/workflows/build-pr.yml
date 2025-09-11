@@ -45,10 +45,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         # no need to checkout submodules or the full history
-      - name: Download ipt binary from server
-        run: curl -o ipt.exe "https://byte-physics.de/public-downloads/aistorage/transfer/ipt/0.9.0/ipt.exe"
-      - name: IPT version
-        run: ./ipt.exe --version
       - name: Format and lint code
         run: tools/run-ipt.sh
       - name: Check for changed files
@@ -171,6 +167,7 @@ jobs:
     needs:
       - BuildInstaller
       - Linting
+      - Ipt
       - CompilationTest
     strategy:
       matrix:
@@ -180,19 +177,14 @@ jobs:
         name:
           - Basic
           - PAPlot
-          - HistoricData
         include:
           - experiment: Packages/tests/Basic/Basic.pxp
             name: Basic
           - experiment: Packages/tests/PAPlot/PAPlot.pxp
             name: PAPlot
-          - experiment: Packages/tests/HistoricData/HistoricData.pxp
-            name: HistoricData
         exclude:
           - version: 10
             name: PAPlot
-          - version: 10
-            name: HistoricData
     uses: ./.github/workflows/test-igor-workflow.yml
     with:
       job_name: 🧪 Test ${{ matrix.name }}
@@ -343,4 +335,4 @@ jobs:
             -u "${{ secrets.GHA_MIES_FTP_ARTEFACT_STORAGE_USER }}" \
             -p "${{ secrets.GHA_MIES_FTP_ARTEFACT_STORAGE_PWD }}" \
             -d "${{ steps.download.outputs.download-path }}" \
-            -t "branch/$(echo "${{ github.ref_name }}" | sed "s@/@_@g")/${{ github.sha }}/${{ github.run_attempt }}"
+            -t "ci-artifacts/$(echo "${{ github.ref_name }}" | sed "s@/@_@g")/${{ github.sha }}/${{ github.run_attempt }}"

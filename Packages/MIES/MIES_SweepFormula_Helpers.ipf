@@ -343,6 +343,52 @@ Function/WAVE SFH_GetArgumentAsWave(STRUCT SF_ExecutionData &exd, string opShort
 	return defWave
 End
 
+static Function/S SFH_GetAssertLocationMessage()
+
+	variable parserBufferOffset, srcLocId, srcLoc, sfStep
+	string attemptedFormula, currentExePath
+
+	WAVE/T assertData = GetSFAssertData()
+	sfStep = str2numSafe(assertData[%STEP])
+	if(sfStep == SF_STEP_OUTSIDE)
+		return ""
+	endif
+
+	if(sfStep == SF_STEP_PARSER)
+		parserBufferOffset           = ROVar(GetSweepFormulaBufferOffsetTracker())
+		attemptedFormula             = assertData[%FORMULA]
+		assertData[%INFORMULAOFFSET] = num2istr(parserBufferOffset)
+		return SFH_FormatSourceLocationError(attemptedFormula, parserBufferOffset)
+	endif
+
+	if(sfStep == SF_STEP_EXECUTOR)
+		currentExePath = ROStr(GetSweepFormulaJSONPathTracker())
+		srcLocId       = str2numSafe(assertData[%SRCLOCID])
+		if(JSON_IsValid(srcLocId))
+			if(IsEmpty(currentExePath))
+				srcLoc = 0
+			else
+				srcLoc = JSON_GetVariable(srcLocId, SF_EscapeJsonPath(currentExePath), ignoreErr = 1)
+			endif
+			if(!IsNaN(srcLoc))
+				attemptedFormula             = JSON_GetString(srcLocId, "/")
+				assertData[%INFORMULAOFFSET] = num2istr(srcLoc)
+				JSON_Release(srcLocId)
+				return SFH_FormatSourceLocationError(attemptedFormula, srcLoc)
+			endif
+
+			JSON_Release(srcLocId)
+			BUG("SFH_ASSERT: source path not found: " + currentExePath)
+			return ""
+		endif
+
+		BUG("SFH_ASSERT: No source loc information")
+		return ""
+	endif
+
+	FATAL_ERROR("Unknown SF execution step")
+End
+
 /// @brief Assertion for sweep formula
 ///
 /// This assertion does *not* indicate a general programmer error but a
@@ -353,10 +399,19 @@ End
 /// UTF_NOINSTRUMENTATION
 Function SFH_ASSERT(variable condition, string message, [variable jsonId])
 
+	variable sfStep
+
 	if(!condition)
+
 		if(!ParamIsDefault(jsonId))
-			JSON_Release(jsonId, ignoreErr = 1)
+			WAVE/T assertData = GetSFAssertData()
+			sfStep = str2numSafe(assertData[%STEP])
+			if(sfStep == SF_STEP_OUTSIDE)
+				JSON_Release(jsonId, ignoreErr = 1)
+			endif
 		endif
+
+		message += SFH_GetAssertLocationMessage()
 
 		SF_SetOutputState(message, SF_MSG_ERROR)
 
@@ -371,6 +426,17 @@ Function SFH_ASSERT(variable condition, string message, [variable jsonId])
 #endif // AUTOMATED_TESTING_DEBUGGING
 		Abort
 	endif
+End
+
+static Function/S SFH_FormatSourceLocationError(string formula, variable loc)
+
+	string marker = ""
+
+	formula = ReplaceString("\r", formula, " ")
+	if(loc >= 0)
+		marker = "\r" + PadString("", loc, char2num("-")) + "^"
+	endif
+	return "\r" + formula + marker
 End
 
 /// @brief Fatal user error for sweep formula
@@ -1986,4 +2052,21 @@ Function/WAVE SFH_GetLabNoteBookForSweep(string graph, variable sweepNo, variabl
 
 	ASSERT(IsNaN(mapIndex), "Window is DataBrowser, but got a mapIndex into a sweepMap")
 	return BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, logbookWaveType, sweepNumber = sweepNo)
+End
+
+Function SFH_StoreAssertInfoParser(variable line, variable offset)
+
+	WAVE/T info = GetSFAssertData()
+	info[%STEP]   = num2istr(SF_STEP_PARSER)
+	info[%LINE]   = num2istr(line)
+	info[%OFFSET] = num2istr(offset)
+End
+
+Function SFH_StoreAssertInfoExecutor(variable jsonId, variable srcLocId, string jsonPath)
+
+	WAVE/T info = GetSFAssertData()
+	info[%JSONID]   = num2istr(jsonId)
+	info[%SRCLOCID] = num2istr(srcLocId)
+	info[%JSONPATH] = jsonPath
+	info[%STEP]     = num2istr(SF_STEP_EXECUTOR)
 End

@@ -21,6 +21,9 @@ fi
 git config --local filter.compress.clean "gzip -3 --no-name --stdout"
 git config --local filter.compress.smudge "gzip --decompress --stdout"
 
+# required so we get the expected line endings in the repo
+git config --local core.autocrlf false
+
 # remove Git index
 git read-tree --empty
 

@@ -1776,6 +1776,7 @@ Function BSP_SFHelpWindowHook(STRUCT WMWinHookStruct &s)
 				return 1
 			endif
 			break
+		case EVENT_WINDOW_HOOK_ACTIVATE: // fallthrough
 		case EVENT_WINDOW_HOOK_DEACTIVATE:
 			mainWin       = GetMainWindow(s.winName)
 			sfWin         = BSP_GetSFFormula(mainWin)

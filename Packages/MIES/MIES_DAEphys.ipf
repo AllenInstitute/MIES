@@ -3305,10 +3305,15 @@ Function DAP_ChangeHeadStageMode(string device, variable clampMode, variable hea
 	endif
 
 	if(options != MCC_SKIP_UPDATES)
-		if(activeHS || headstage < 0)
+		WAVE TPStorage = GetTPStorage(device)
+		testPulseMode = TP_AutoTPDisableIfAppropriate(device, TPStorage, forceFailedQC = 1, headstage = headstage, restartTP = 0)
+
+		if((activeHS || headstage < 0) && IsNaN(testPulseMode))
 			testPulseMode = TP_StopTestPulse(device)
 		endif
 	endif
+
+	Make/FREE/N=(NUM_HEADSTAGES) clampModeChange
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		if(!changeHS[i])
@@ -3328,8 +3333,6 @@ Function DAP_ChangeHeadStageMode(string device, variable clampMode, variable hea
 			continue
 		endif
 
-		PUB_ClampModeChange(device, i, GuiState[i][%HSmode], clampMode)
-
 		GuiState[i][%HSmode] = clampMode
 
 		if(options != MCC_SKIP_UPDATES)
@@ -3338,9 +3341,19 @@ Function DAP_ChangeHeadStageMode(string device, variable clampMode, variable hea
 		endif
 
 		AI_SetClampMode(device, i, clampMode, zeroStep = DAG_GetNumericalValue(device, "check_Settings_AmpIEQZstep"))
+
+		clampModeChange[i] = 1
 	endfor
 
 	if(options == MCC_SKIP_UPDATES)
+		for(i = 0; i < NUM_HEADSTAGES; i += 1)
+			if(!clampModeChange[i])
+				continue
+			endif
+
+			PUB_ClampModeChange(device, i, GuiState[i][%HSmode], clampMode)
+		endfor
+
 		// we are done
 		return NaN
 	endif
@@ -3362,6 +3375,14 @@ Function DAP_ChangeHeadStageMode(string device, variable clampMode, variable hea
 	if(oldTab != 0)
 		PGC_SetAndActivateControl(device, "ADC", val = oldTab)
 	endif
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+		if(!clampModeChange[i])
+			continue
+		endif
+
+		PUB_ClampModeChange(device, i, GuiState[i][%HSmode], clampMode)
+	endfor
 End
 
 ///@brief Sets the control state of the radio buttons used for setting the clamp mode on the Data Acquisition Tab of the DA_Ephys panel

@@ -996,7 +996,7 @@ static Function TestOperationRange()
 	catch
 		CHECK_NO_RTE()
 		error = ROStr(GetSweepFormulaOutputMessage())
-		CHECK_EQUAL_STR(error, "Argument #0 of operation range: Too many input values")
+		CHECK_EQUAL_STR(error, "Argument #0 of operation range: Too many input values\rrange([1,2])\r---------^")
 	endtry
 End
 
@@ -1048,7 +1048,7 @@ static Function TestOperationConcat()
 	catch
 		CHECK_NO_RTE()
 		error = ROStr(GetSweepFormulaOutputMessage())
-		CHECK_EQUAL_STR(error, "Concatenate failed as the wave types of the first argument and #1 don't match: numeric vs text")
+		CHECK_EQUAL_STR(error, "Concatenate failed as the wave types of the first argument and #1 don't match: numeric vs text\r" + str + "\r----------^")
 	endtry
 End
 
@@ -2373,7 +2373,7 @@ static Function TestOperationLabNotebook()
 	endtry
 
 	error = ROStr(GetSweepFormulaOutputMessage())
-	CHECK_EQUAL_STR(error, "Argument #2 of operation labnotebook: The text argument \"NUMBER_OF_LBN_DAQ_MODES\" is not one of the allowed values (UNKNOWN_MODE, DATA_ACQUISITION_MODE, TEST_PULSE_MODE)")
+	CHECK_EQUAL_STR(error, "Argument #2 of operation labnotebook: The text argument \"NUMBER_OF_LBN_DAQ_MODES\" is not one of the allowed values (UNKNOWN_MODE, DATA_ACQUISITION_MODE, TEST_PULSE_MODE)\r" + str + "\r----------------------------------------------------------------------^")
 
 	// indep entry is returned by default
 	str = "labnotebook([\"" + LABNOTEBOOK_USER_PREFIX + "indep key\"], select(selchannels(AD0), selsweeps([3])), DATA_ACQUISITION_MODE)"
@@ -3371,7 +3371,7 @@ static Function BasicMathMismatchedWaves([string str])
 	endswitch
 
 	error = ROStr(GetSweepFormulaOutputMessage())
-	CHECK_EQUAL_STR(error, opShort + ": wave size mismatch [2, 0, 0, 0] vs [1, 2, 0, 0]")
+	CHECK_EQUAL_STR(error, opShort + ": wave size mismatch [2, 0, 0, 0] vs [1, 2, 0, 0]\r" + code + "\r--------------^")
 End
 
 static Function DefaultFormulaWorks()
