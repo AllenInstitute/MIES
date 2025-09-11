@@ -1955,14 +1955,13 @@ End
 /// @param[in] action   1 to start, 0 to stop
 /// @param[in] fast     Optional. Non-zero for fast stop (applies when action==0)
 /// @returns            Pass-through of API_StartTestPulse()/API_StopTestPulse() return codes
-Function API_TestPulse(device, action, [fast])
+Function API_TestPulse(device, action)
 	String device
 	Variable action
-	Variable fast
 
 	if (action)
 		return API_StartTestPulse(device)
 	else
-		return API_StopTestPulse(device, fast = fast)
+		return API_StopTestPulse(device)
 	endif
 End
