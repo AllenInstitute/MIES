@@ -3294,6 +3294,8 @@ Function DAP_ChangeHeadStageMode(string device, variable clampMode, variable hea
 	WAVE GuiState      = GetDA_EphysGuiStateNum(device)
 
 	Make/FREE/N=(NUM_HEADSTAGES) changeHS = 0
+	Make/FREE/N=(NUM_HEADSTAGES) oldClampMode = GuiState[p][%HSmode]
+
 	if(headstage < 0)
 		changeHS[] = 1
 		DAP_SetAmpModeControls(device, headstage, clampMode)
@@ -3351,7 +3353,7 @@ Function DAP_ChangeHeadStageMode(string device, variable clampMode, variable hea
 				continue
 			endif
 
-			PUB_ClampModeChange(device, i, GuiState[i][%HSmode], clampMode)
+			PUB_ClampModeChange(device, i, oldClampMode[i], clampMode)
 		endfor
 
 		// we are done
@@ -3381,7 +3383,7 @@ Function DAP_ChangeHeadStageMode(string device, variable clampMode, variable hea
 			continue
 		endif
 
-		PUB_ClampModeChange(device, i, GuiState[i][%HSmode], clampMode)
+		PUB_ClampModeChange(device, i, oldClampMode[i], clampMode)
 	endfor
 End
 
