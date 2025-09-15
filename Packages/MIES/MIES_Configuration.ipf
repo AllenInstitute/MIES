@@ -310,11 +310,11 @@ static Function/WAVE CONF_GetConfigFiles([string customIPath])
 		settingsPath = customIPath
 	endif
 
-	WAVE/Z/T fileList = GetAllFilesRecursivelyFromPath(settingsPath, regex = "(?i)\.json$")
+	WAVE/Z/T fileList = GetAllFilesRecursivelyFromPath(settingsPath, regex = "(?i)\.json$", resolveAliases = 1)
 
 	if(!WaveExists(fileList) && !ParamIsDefault(customIPath))
 		settingsPath = CONF_GetSettingsPath(CONF_AUTO_LOADER_USER)
-		WAVE/Z/T fileList = GetAllFilesRecursivelyFromPath(settingsPath, regex = "(?i)\.json$")
+		WAVE/Z/T fileList = GetAllFilesRecursivelyFromPath(settingsPath, regex = "(?i)\.json$", resolveAliases = 1)
 	endif
 
 	if(!WaveExists(fileList))
