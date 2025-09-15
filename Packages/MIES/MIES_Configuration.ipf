@@ -1370,7 +1370,7 @@ static Function CONF_RestoreControl(string wName, variable restoreMask, variable
 		if(restoreMask & EXPCONFIG_SAVE_VALUE)
 			if(ctrlType == CONTROL_TYPE_CHECKBOX || ctrlType == CONTROL_TYPE_SLIDER || ctrlType == CONTROL_TYPE_TAB || ctrlType == CONTROL_TYPE_VALDISPLAY)
 				val = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_FIELD_CTRLVVALUE)
-				PGC_SetAndActivateControl(wName, ctrlName, val = val, mode = PGC_MODE_SKIP_ON_DISABLED)
+				PGC_SetAndActivateControl(wName, ctrlName, val = val, mode = PGC_MODE_FORCE_ON_DISABLED)
 			elseif(ctrlType == CONTROL_TYPE_SETVARIABLE)
 				setVarType = GetInternalSetVariableType(S_recreation)
 				if(setVarType == SET_VARIABLE_BUILTIN_NUM)
