@@ -11,7 +11,7 @@
 
 Function GetZeroMQXOPFlags()
 
-	return ZeroMQ_SET_FLAGS_DEFAULT | ZeroMQ_SET_FLAGS_NOBUSYWAITRECV | ZeroMQ_SET_FLAGS_LOGGING 
+	return ZeroMQ_SET_FLAGS_DEFAULT | ZeroMQ_SET_FLAGS_NOBUSYWAITRECV
 End
 
 /// @brief Start the ZeroMQ sockets and the message handler
