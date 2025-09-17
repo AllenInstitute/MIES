@@ -3314,6 +3314,7 @@ Function DAP_ChangeHeadStageMode(string device, variable clampMode, variable hea
 	endif
 
 	Make/FREE/N=(NUM_HEADSTAGES) clampModeChange
+	Make/FREE/N=(NUM_HEADSTAGES) oldClampMode = GuiState[p][%HSmode]
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		if(!changeHS[i])
@@ -3351,7 +3352,7 @@ Function DAP_ChangeHeadStageMode(string device, variable clampMode, variable hea
 				continue
 			endif
 
-			PUB_ClampModeChange(device, i, GuiState[i][%HSmode], clampMode)
+			PUB_ClampModeChange(device, i, oldClampMode[i], clampMode)
 		endfor
 
 		// we are done
@@ -3381,7 +3382,7 @@ Function DAP_ChangeHeadStageMode(string device, variable clampMode, variable hea
 			continue
 		endif
 
-		PUB_ClampModeChange(device, i, GuiState[i][%HSmode], clampMode)
+		PUB_ClampModeChange(device, i, oldClampMode[i], clampMode)
 	endfor
 End
 
