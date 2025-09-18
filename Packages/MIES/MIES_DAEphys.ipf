@@ -3330,8 +3330,9 @@ Function DAP_ChangeHeadStageMode(string device, variable clampMode, variable hea
 			printf "(%s) Could not switch the clamp mode to %s as no DA and/or AD channels are associated with headstage %d.\r", device, ConvertAmplifierModeToString(clampMode), headstage
 			continue
 		endif
-
-		PUB_ClampModeChange(device, i, GuiState[i][%HSmode], clampMode)
+		
+		variable disabled = isControlDisabled(device ,"check_Settings_TP_SaveTP")
+		PUB_ClampModeChange(device, i, GuiState[i][%HSmode], clampMode, guiState[0][%check_Settings_TP_SaveTP], disabled)
 
 		GuiState[i][%HSmode] = clampMode
 
