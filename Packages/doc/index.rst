@@ -16,7 +16,7 @@ Table of Contents
   todo
   deprecated
   CalculateTPLikePropsFromSweep
-  IPNWB/index
+  IPNWB/Readme
   TPAnalysis_algorithm
   asyncframework
   labnotebook-docs
