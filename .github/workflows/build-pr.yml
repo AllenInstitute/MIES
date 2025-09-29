@@ -84,6 +84,7 @@ jobs:
           path: |
             *.zip
             tools/installer/MIES-*.exe
+            *.patch
           if-no-files-found: error
 
   Linting:
