@@ -303,6 +303,7 @@ static Function AutoTP_ClampModeChange_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
+// IUTF_RETRY_FAILED
 static Function AutoTP_ClampModeChange([string str])
 
 	[STRUCT DAQSettings s] = AutoTP_GetDAQSettings(str)
