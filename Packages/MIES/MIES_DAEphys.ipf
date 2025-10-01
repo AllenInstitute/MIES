@@ -3208,11 +3208,14 @@ End
 
 Function DAP_CheckProc_ClampMode(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
-	variable mode, headStage
+	variable mode, headStage, flags
 	string device, control
 
 	switch(cba.eventCode)
 		case 2: // mouse up
+//			flags = GetZeroMQXOPFlags()
+//			zeromq_set(flags | ZeroMQ_SET_FLAGS_DEBUG)
+//			BeginFunctionProfiling()
 			AssertOnAndClearRTError()
 			try
 				device  = cba.win
@@ -3232,6 +3235,8 @@ Function DAP_CheckProc_ClampMode(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 				SetCheckBoxState(device, control, !cba.checked)
 				Abort
 			endtry
+			EndfunctionProfiling()
+//			zeromq_set(flags)
 			break
 		default:
 			break

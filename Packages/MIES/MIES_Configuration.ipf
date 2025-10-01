@@ -310,11 +310,11 @@ static Function/WAVE CONF_GetConfigFiles([string customIPath])
 		settingsPath = customIPath
 	endif
 
-	WAVE/Z/T fileList = GetAllFilesRecursivelyFromPath(settingsPath, regex = "(?i)\.json$")
+	WAVE/Z/T fileList = GetAllFilesRecursivelyFromPath(settingsPath, regex = "(?i)\.json$", resolveAliases = 1)
 
 	if(!WaveExists(fileList) && !ParamIsDefault(customIPath))
 		settingsPath = CONF_GetSettingsPath(CONF_AUTO_LOADER_USER)
-		WAVE/Z/T fileList = GetAllFilesRecursivelyFromPath(settingsPath, regex = "(?i)\.json$")
+		WAVE/Z/T fileList = GetAllFilesRecursivelyFromPath(settingsPath, regex = "(?i)\.json$",resolveAliases = 1)
 	endif
 
 	if(!WaveExists(fileList))
@@ -327,7 +327,7 @@ End
 /// @brief Automatically loads all *.json files from MIES Settings folder and opens and restores the corresponding windows
 ///        Files are restored in case-insensitive alphanumeric order. Associated *_rig.json files are taken into account.
 Function CONF_AutoLoader([string customIPath])
-
+//	beginFunctionProfiling(testTime=100)
 	variable i, numFiles
 	string rigCandidate
 
@@ -355,6 +355,7 @@ Function CONF_AutoLoader([string customIPath])
 		endif
 		CONF_RestoreWindow(mainFileList[i], rigFile = rigCandidate)
 	endfor
+//	endfunctionprofiling()
 End
 
 /// @brief Returns a symbolic path to the settings folder
@@ -1370,7 +1371,7 @@ static Function CONF_RestoreControl(string wName, variable restoreMask, variable
 		if(restoreMask & EXPCONFIG_SAVE_VALUE)
 			if(ctrlType == CONTROL_TYPE_CHECKBOX || ctrlType == CONTROL_TYPE_SLIDER || ctrlType == CONTROL_TYPE_TAB || ctrlType == CONTROL_TYPE_VALDISPLAY)
 				val = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_FIELD_CTRLVVALUE)
-				PGC_SetAndActivateControl(wName, ctrlName, val = val, mode = PGC_MODE_SKIP_ON_DISABLED)
+				PGC_SetAndActivateControl(wName, ctrlName, val = val, mode = PGC_MODE_FORCE_ON_DISABLED)
 			elseif(ctrlType == CONTROL_TYPE_SETVARIABLE)
 				setVarType = GetInternalSetVariableType(S_recreation)
 				if(setVarType == SET_VARIABLE_BUILTIN_NUM)
