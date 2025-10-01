@@ -70,6 +70,11 @@
 /// @anchor CacheKeyGenerators
 ///@{
 
+Function/S CA_MiesVersionKey()
+
+	return "MIES Version: Version 1"
+End
+
 /// @brief Cache key generator for recreated epochs wave
 Function/S CA_KeyRecreatedEpochs(WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo)
 
