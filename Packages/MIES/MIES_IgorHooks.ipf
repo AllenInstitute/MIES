@@ -18,6 +18,8 @@ static Function IH_KillTemporaries()
 	string trashFolders, path, allFolders, list
 	variable numFolders, i
 
+	// dont use the getters here to avoid spending time
+	// filling them
 	DFREF dfr = GetMiesPath()
 
 	KillStrings/Z dfr:version
