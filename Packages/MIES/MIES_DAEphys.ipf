@@ -49,7 +49,7 @@ End
 /// @return list of NI DAC devices, #NONE if there are none
 Function/S DAP_GetNIDeviceList()
 
-	string devList
+	string devList, key
 
 	SVAR globalNIDevList = $GetNIDeviceList()
 	devList = globalNIDevList
@@ -58,7 +58,17 @@ Function/S DAP_GetNIDeviceList()
 		return devList
 	endif
 
-	devList = DAP_GetNIDeviceListNoCache()
+	key = CA_DACDevicesKey(HARDWARE_NI_DAC)
+
+	WAVE/Z/T cachedNIDevList = CA_TryFetchingEntryFromCache(key)
+
+	if(!WaveExists(cachedNIDevList))
+		Make/T/FREE cachedNIDevList = {DAP_GetNIDeviceListNoCache()}
+
+		CA_StoreEntryIntoCache(key, cachedNIDevList)
+	endif
+
+	devList = cachedNIDevList[0]
 
 	if(!IsEmpty(devList))
 		globalNIDevList = devList
@@ -111,7 +121,7 @@ End
 /// @brief Returns a list of ITC devices for DAC, #NONE if there are none
 Function/S DAP_GetITCDeviceList()
 
-	string devList
+	string devList, key
 
 	SVAR globalITCDevList = $GetITCDeviceList()
 	devList = globalITCDevList
@@ -120,7 +130,17 @@ Function/S DAP_GetITCDeviceList()
 		return devList
 	endif
 
-	devList = DAP_GetITCDeviceListNoCache()
+	key = CA_DACDevicesKey(HARDWARE_ITC_DAC)
+
+	WAVE/Z/T cachedITCDevList = CA_TryFetchingEntryFromCache(key)
+
+	if(!WaveExists(cachedITCDevList))
+		Make/T/FREE cachedITCDevList = {DAP_GetITCDeviceListNoCache()}
+
+		CA_StoreEntryIntoCache(key, cachedITCDevList)
+	endif
+
+	devList = cachedITCDevList[0]
 
 	if(!IsEmpty(devList))
 		globalITCDevList = devList
@@ -5328,6 +5348,9 @@ Function ButtonProc_Hardware_rescan(STRUCT WMButtonAction &ba) : ButtonControl
 			SVAR globalNIDevList  = $GetNIDeviceList()
 
 			KillStrings/Z globalITCDevList, globalNIDevList
+
+			CA_DeleteCacheEntry(CA_DACDevicesKey(HARDWARE_ITC_DAC))
+			CA_DeleteCacheEntry(CA_DACDevicesKey(HARDWARE_NI_DAC))
 
 			DAP_GetNIDeviceList()
 			DAP_GetITCDeviceList()
