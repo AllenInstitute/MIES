@@ -49,17 +49,33 @@ End
 /// @return list of NI DAC devices, #NONE if there are none
 Function/S DAP_GetNIDeviceList()
 
-	variable i, j, numPattern, numDevices
-	string propList
-	string devList, pattern, device
-	string allDevices = ""
+	string devList
 
 	SVAR globalNIDevList = $GetNIDeviceList()
 	devList = globalNIDevList
 
-	if(!isEmpty(devList))
+	if(!IsEmpty(devList))
 		return devList
 	endif
+
+	devList = DAP_GetNIDeviceListNoCache()
+
+	if(!IsEmpty(devList))
+		globalNIDevList = devList
+	else
+		globalNIDevList = NONE
+	endif
+
+	return globalNIDevList
+End
+
+static Function/S DAP_GetNIDeviceListNoCache()
+
+	variable i, j, numPattern, numDevices
+	string propList
+	string pattern, device
+	string allDevices = ""
+	string devList    = ""
 
 	numPattern = ItemsInList(NI_DAC_PATTERNS, "|")
 
@@ -89,13 +105,7 @@ Function/S DAP_GetNIDeviceList()
 #endif // EVIL_KITTEN_EATING_MODE
 	endfor
 
-	if(!IsEmpty(devList))
-		globalNIDevList = devList
-	else
-		globalNIDevList = NONE
-	endif
-
-	return globalNIDevList
+	return devList
 End
 
 /// @brief Returns a list of ITC devices for DAC, #NONE if there are none
