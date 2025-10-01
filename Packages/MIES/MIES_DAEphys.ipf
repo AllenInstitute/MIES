@@ -111,7 +111,7 @@ End
 /// @brief Returns a list of ITC devices for DAC, #NONE if there are none
 Function/S DAP_GetITCDeviceList()
 
-	string devList = ""
+	string devList
 
 	SVAR globalITCDevList = $GetITCDeviceList()
 	devList = globalITCDevList
@@ -120,9 +120,7 @@ Function/S DAP_GetITCDeviceList()
 		return devList
 	endif
 
-#if defined(WINDOWS)
-	devList = HW_ITC_ListDevices()
-#endif
+	devList = DAP_GetITCDeviceListNoCache()
 
 	if(!IsEmpty(devList))
 		globalITCDevList = devList
@@ -131,6 +129,15 @@ Function/S DAP_GetITCDeviceList()
 	endif
 
 	return globalITCDevList
+End
+
+static Function/S DAP_GetITCDeviceListNoCache()
+
+#if defined(WINDOWS)
+	return HW_ITC_ListDevices()
+#endif
+
+	return ""
 End
 
 /// @brief Returns a list of SU devices for DAC, #NONE if there are none
