@@ -177,14 +177,19 @@ jobs:
         name:
           - Basic
           - PAPlot
+          - HistoricData
         include:
           - experiment: Packages/tests/Basic/Basic.pxp
             name: Basic
           - experiment: Packages/tests/PAPlot/PAPlot.pxp
             name: PAPlot
+          - experiment: Packages/tests/HistoricData/HistoricData.pxp
+            name: HistoricData
         exclude:
           - version: 10
             name: PAPlot
+          - version: 10
+            name: HistoricData
     uses: ./.github/workflows/test-igor-workflow.yml
     with:
       job_name: 🧪 Test ${{ matrix.name }}
