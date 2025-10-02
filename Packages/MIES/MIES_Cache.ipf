@@ -776,9 +776,7 @@ End
 /// @brief Remove all entries from the wave cache
 Function CA_FlushCache()
 
-	KillOrMoveToTrash(wv = GetCacheKeyWave())
-	KillOrMoveToTrash(wv = GetCacheValueWave())
-	KillOrMoveToTrash(wv = GetCacheStatsWave())
+	KillOrMoveToTrash(dfr = GetCacheFolder())
 End
 
 /// @brief Output cache statistics
