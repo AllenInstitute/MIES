@@ -3235,7 +3235,7 @@ Function DAP_CheckProc_ClampMode(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 				SetCheckBoxState(device, control, !cba.checked)
 				Abort
 			endtry
-			EndfunctionProfiling()
+//			EndfunctionProfiling()
 //			zeromq_set(flags)
 			break
 		default:
