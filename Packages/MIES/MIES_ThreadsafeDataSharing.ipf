@@ -10,16 +10,24 @@
 ///
 /// @brief Helper functions for accessing global objects from all threads
 
-/// @brief Creates/Overwrites a threadstorage and puts a numerical value in
-threadsafe static Function TSDS_Create(string name, variable var)
+/// @brief Creates/Overwrites a threadstorage and returns it
+threadsafe static Function/WAVE TSDS_Create(string name)
 
 	ASSERT_TS(!IsEmpty(name), "name can not be empty")
 
 	TUFXOP_Init/Z/N=name
 	TUFXOP_GetStorage/Z/N=name wv
 
+	return wv
+End
+
+/// @brief Creates/Overwrites a threadstorage and puts a numerical value in
+threadsafe static Function TSDS_CreateVar(string name, variable var)
+
+	WAVE/WAVE storage = TSDS_Create(name)
+
 	Make/FREE/D data = {var}
-	wv[0] = data
+	storage[0] = data
 End
 
 /// @brief Reads a numerical value from a threadstorage
@@ -43,7 +51,7 @@ threadsafe Function TSDS_ReadVar(string name, [variable defValue, variable creat
 
 	ASSERT_TS(create == 1, "Error reading from threadstorage:" + name)
 
-	TSDS_Create(name, defValue)
+	TSDS_CreateVar(name, defValue)
 
 	return defValue
 End
@@ -64,7 +72,7 @@ threadsafe Function TSDS_WriteVar(string name, variable var)
 		return NaN
 	endif
 
-	TSDS_Create(name, var)
+	TSDS_CreateVar(name, var)
 End
 
 /// @brief Reads a single wave ref wave from a named threadstorage
