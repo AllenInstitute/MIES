@@ -3313,6 +3313,9 @@ Function DAP_ChangeHeadStageMode(string device, variable clampMode, variable hea
 		endif
 	endif
 
+	Make/FREE/N=(NUM_HEADSTAGES) clampModeChange
+	Make/FREE/N=(NUM_HEADSTAGES) oldClampMode = GuiState[p][%HSmode]
+
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		if(!changeHS[i])
 			continue
@@ -3331,8 +3334,6 @@ Function DAP_ChangeHeadStageMode(string device, variable clampMode, variable hea
 			continue
 		endif
 
-		PUB_ClampModeChange(device, i, GuiState[i][%HSmode], clampMode)
-
 		GuiState[i][%HSmode] = clampMode
 
 		if(options != MCC_SKIP_UPDATES)
@@ -3341,9 +3342,19 @@ Function DAP_ChangeHeadStageMode(string device, variable clampMode, variable hea
 		endif
 
 		AI_SetClampMode(device, i, clampMode, zeroStep = DAG_GetNumericalValue(device, "check_Settings_AmpIEQZstep"))
+
+		clampModeChange[i] = 1
 	endfor
 
 	if(options == MCC_SKIP_UPDATES)
+		for(i = 0; i < NUM_HEADSTAGES; i += 1)
+			if(!clampModeChange[i])
+				continue
+			endif
+
+			PUB_ClampModeChange(device, i, oldClampMode[i], clampMode)
+		endfor
+
 		// we are done
 		return NaN
 	endif
@@ -3365,6 +3376,14 @@ Function DAP_ChangeHeadStageMode(string device, variable clampMode, variable hea
 	if(oldTab != 0)
 		PGC_SetAndActivateControl(device, "ADC", val = oldTab)
 	endif
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+		if(!clampModeChange[i])
+			continue
+		endif
+
+		PUB_ClampModeChange(device, i, oldClampMode[i], clampMode)
+	endfor
 End
 
 ///@brief Sets the control state of the radio buttons used for setting the clamp mode on the Data Acquisition Tab of the DA_Ephys panel
