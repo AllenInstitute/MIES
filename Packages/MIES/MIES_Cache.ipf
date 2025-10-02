@@ -84,6 +84,11 @@ Function/S CA_DACDevicesKey(variable hardwareType)
 	return str
 End
 
+Function/S CA_AmplifierHardwareWavesKey()
+
+	return "Amplifier hardware waves: Version 1"
+End
+
 /// @brief Cache key generator for recreated epochs wave
 Function/S CA_KeyRecreatedEpochs(WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo)
 

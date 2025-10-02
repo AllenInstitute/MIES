@@ -1791,7 +1791,7 @@ Function DAP_ButtonCtrlFindConnectedAmps(STRUCT WMButtonAction &ba) : ButtonCont
 
 	switch(ba.eventcode)
 		case 2: // mouse up
-			AI_FindConnectedAmps()
+			AI_FindConnectedAmps(rescanHardware = 1)
 			break
 		default:
 			break
