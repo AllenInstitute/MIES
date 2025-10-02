@@ -1,2 +1,0 @@
-[lint]
-noreturn-func=FATAL_ERROR|SFH_FATAL_ERROR|FAIL
