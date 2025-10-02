@@ -48,17 +48,6 @@ threadsafe Function TSDS_ReadVar(string name, [variable defValue, variable creat
 	return defValue
 End
 
-/// @brief Reads a single wave ref wave from a named threadstorage
-threadsafe static Function/WAVE TSDS_Read(string name)
-
-	TUFXOP_GetStorage/Q/N=name/Z wv
-	if(!V_flag && WaveExists(wv) && IsWaveRefWave(wv) && DimSize(wv, ROWS) == 1)
-		return wv[0]
-	endif
-
-	return $""
-End
-
 /// @brief Writes a numerical value to a threadstorage, if the threadstorage does not exist it is automatically created.
 ///
 /// @param name   name of threadstorage
@@ -76,4 +65,15 @@ threadsafe Function TSDS_WriteVar(string name, variable var)
 	endif
 
 	TSDS_Create(name, var)
+End
+
+/// @brief Reads a single wave ref wave from a named threadstorage
+threadsafe static Function/WAVE TSDS_Read(string name)
+
+	TUFXOP_GetStorage/Q/N=name/Z wv
+	if(!V_flag && WaveExists(wv) && IsWaveRefWave(wv) && DimSize(wv, ROWS) == 1)
+		return wv[0]
+	endif
+
+	return $""
 End
