@@ -54,6 +54,17 @@ package from Wavemetrics.
 Install version 2.2.2 of the Multiclamp Commander (64bit) from `here
 <http://mdc.custhelp.com/app/answers/detail/a_id/20059>`__.
 
+When using ITC hardware it is necessary to disable ASLR for Igor64.exe.
+
+The installer does include a signed PowerShell script to do so. But this
+requires that signed scripts are allowed. You can enable this by running the following command in a PowerShell window, which sets the execution policy to allow only signed scripts for the current user:
+
+.. code:: powershell
+
+   Set-ExecutionPolicy -ExecutionPolicy AllSigned -Scope CurrentUser
+
+and that the certificate in `tools/installer/public-key.cer` is added to the certificate store as trusted publisher.
+
 Signed installer
 ~~~~~~~~~~~~~~~~
 
