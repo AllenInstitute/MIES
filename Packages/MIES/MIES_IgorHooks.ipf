@@ -12,12 +12,15 @@
 /// @brief Remove all strings/variables/waves which should not
 /// survive experiment reload/quit/saving
 ///
-/// Mainly useful for temporaries which you want to recreate on initialization
+/// Mainly useful for temporaries which you want to recreate on initialization.
+/// Things which are expensive to recreate should be stored in the cache to avoid recalculation.
 static Function IH_KillTemporaries()
 
 	string trashFolders, path, allFolders, list
 	variable numFolders, i
 
+	// dont use the getters here to avoid spending time
+	// filling them
 	DFREF dfr = GetMiesPath()
 
 	KillStrings/Z dfr:version

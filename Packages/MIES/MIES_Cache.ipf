@@ -70,6 +70,25 @@
 /// @anchor CacheKeyGenerators
 ///@{
 
+Function/S CA_MiesVersionKey()
+
+	return "MIES Version: Version 1"
+End
+
+Function/S CA_DACDevicesKey(variable hardwareType)
+
+	string str
+
+	sprintf str, "DAC Devices %s: Version 1", StringFromList(hardwareType, HARDWARE_DAC_TYPES)
+
+	return str
+End
+
+Function/S CA_AmplifierHardwareWavesKey()
+
+	return "Amplifier hardware waves: Version 1"
+End
+
 /// @brief Cache key generator for recreated epochs wave
 Function/S CA_KeyRecreatedEpochs(WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo)
 

@@ -107,6 +107,7 @@ Function MEN_OpenAboutDialog()
 		return NaN
 	endif
 
+	// rescale the sizes as the panel was designed with 100% scaling
 	sfactor = ScreenResolution / 96
 	NewPanel/N=$panel/K=1/W=(332 / sfactor, 252 / sfactor, 928 / sfactor, 724 / sfactor) as "About MIES"
 

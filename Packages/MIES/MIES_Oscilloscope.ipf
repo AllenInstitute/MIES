@@ -347,6 +347,10 @@ Function SCOPE_CreateGraph(string device, variable dataAcqOrTP)
 				endif
 			endif
 
+			if(showPeakResistance && showSteadyStateResistance)
+				ModifyGraph/W=$graph log($rightAxis)=1
+			endif
+
 			resPosPercY = 100 * (1 - ((YaxisHigh - YaxisLow) / 2 + YaxisLow))
 			sprintf str, RES_FORMAT_STR, steadyColor.red, steadyColor.green, steadyColor.blue, GetWavesDataFolder(TPResults, 2), "ResistanceSteadyState", headstage
 			TextBox/W=$graph/A=RT/B=1/F=0/X=-10/Y=(resPosPercY - 1) str
