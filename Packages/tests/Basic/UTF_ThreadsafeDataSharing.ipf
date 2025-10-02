@@ -36,7 +36,7 @@ static Function ChecksParams()
 	endtry
 End
 
-static Function WriteWorks1()
+static Function WriteVarWorks1()
 
 	variable var
 
@@ -49,7 +49,7 @@ static Function WriteWorks1()
 	CHECK_EQUAL_VAR(var, 567)
 End
 
-static Function ReadWorks1()
+static Function ReadVarWorks1()
 
 	variable var
 
@@ -66,7 +66,7 @@ static Function ReadWorks1()
 	CHECK_EQUAL_VAR(var, 123)
 End
 
-static Function ReadWorksWithDefault()
+static Function ReadVarWorksWithDefault()
 
 	try
 		TSDS_ReadVar(KEY, defValue = 567)
@@ -76,7 +76,7 @@ static Function ReadWorksWithDefault()
 	endtry
 End
 
-static Function ReadWorksWithDefaultAndCreate()
+static Function ReadVarWorksWithDefaultAndCreate()
 
 	variable var
 
@@ -88,7 +88,7 @@ static Function ReadWorksWithDefaultAndCreate()
 	CHECK_EQUAL_VAR(var, 567)
 End
 
-static Function ReadBrokenStorage1()
+static Function ReadVarBrokenStorage1()
 
 	variable var
 
@@ -109,7 +109,7 @@ static Function ReadBrokenStorage1()
 	endtry
 End
 
-static Function ReadBrokenStorage2()
+static Function ReadVarBrokenStorage2()
 
 	variable var
 
