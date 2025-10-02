@@ -110,3 +110,30 @@ static Function TestUploadJsonPayload()
 	CHECK(GrepString(logs, "\"S_ServerResponse\":\"fake error\",\"V_Flag\":\"1\",\"action\":\"URLRequest failed"))
 End
 /// @}
+
+static Function TestCacheBackupAndRestore()
+
+	string name
+
+	CA_FlushCache()
+
+	DFREF dfr = GetCacheFolder()
+
+	Make/FREE old = p
+	Note/K old, "abcd"
+
+	Duplicate old, dfr:data
+
+	BackupCacheWaves()
+	KillDataFolder dfr
+	RestoreCacheWaves()
+
+	DFREF dfr = GetCacheFolder()
+
+	name = GetListOfObjects(dfr, ".*")
+	CHECK_EQUAL_STR(name, "data;")
+
+	WAVE/Z/SDFR=dfr new = $StringFromList(0, name)
+	CHECK(!WaveRefsEqual(new, old))
+	CHECK_EQUAL_WAVES(new, old)
+End

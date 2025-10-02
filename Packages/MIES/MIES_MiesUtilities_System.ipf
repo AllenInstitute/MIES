@@ -207,12 +207,51 @@ Function SaveExperimentWrapper(string path, string filename, [variable overrideI
 	return 0
 End
 
-/// @brief Starts with a new experiment.
+/// @brief Backup cache waves into TUF XOP named storage
+Function BackupCacheWaves()
+
+	variable i, numEntries
+
+	DFREF dfr = GetCacheFolder()
+
+	WAVE/WAVE cacheWaves = ListToWaveRefWave(GetListOfObjects(dfr, ".*", fullPath = 1))
+
+	WAVE/WAVE dup = DeepCopyWaveRefWave(cacheWaves)
+
+	numEntries = DimSize(dup, ROWS)
+	ASSERT(DimSize(cacheWaves, ROWS) == numEntries, "Non-matching number of entries")
+	for(i = 0; i < numEntries; i += 1)
+		ChangeFreeWaveName(dup[i], NameOfWave(cacheWaves[i]))
+	endfor
+
+	TSDS_WriteWave(TSDS_NEWEXPCACHE, dup)
+End
+
+/// @brief Restore cache waves from TUF XOP named storage into global datafolder hierarchy
+Function RestoreCacheWaves()
+
+	WAVE/WAVE cacheWaves = TSDS_ReadWave(TSDS_NEWEXPCACHE)
+
+	DFREF dfr = GetCacheFolder()
+
+	for(WAVE wv : cacheWaves)
+		MoveWave wv, dfr
+	endfor
+
+	// we don't update the cache waves here as that is done when using them
+
+	// free memory by deleting the stale entry
+	TSDS_WriteWave(TSDS_NEWEXPCACHE, $"")
+End
+
+/// @brief Starts with a new experiment preserving the cache
 ///
 /// You have to manually save before, see SaveExperimentWrapper()
 Function NewExperiment()
 
+	Execute/P/Q "BackupCacheWaves()"
 	Execute/P/Q "NEWEXPERIMENT "
+	Execute/P/Q "RestoreCacheWaves()"
 End
 
 /// @brief Return if the function results are overriden for testing purposes

@@ -2000,8 +2000,9 @@ Constant TP_GETVALUES_LATEST_AUTOTPCYCLE = 0x1
 /// Possible names for TSDS_Read*/TSDS_Write
 /// @anchor ThreadsafeDataExchangeNames
 ///@{
-StrConstant TSDS_BUGCOUNT  = "BugCount"
-StrConstant TSDS_PROCCOUNT = "ProcessorCount"
+StrConstant TSDS_BUGCOUNT    = "BugCount"
+StrConstant TSDS_PROCCOUNT   = "ProcessorCount"
+StrConstant TSDS_NEWEXPCACHE = "NewExperimentCache"
 ///@}
 
 /// Headstage contingency modes
