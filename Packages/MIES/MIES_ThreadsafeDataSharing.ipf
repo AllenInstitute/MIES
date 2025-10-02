@@ -39,7 +39,6 @@ threadsafe Function TSDS_ReadVar(string name, [variable defValue, variable creat
 
 	variable argCheck = ParamIsDefault(defValue) + ParamIsDefault(create)
 	ASSERT_TS(argCheck == 2 || argCheck == 0, "defaul value and create must be either both set or both default.")
-	ASSERT_TS(!IsEmpty(name), "name can not be empty")
 
 	defValue = ParamIsDefault(defValue) ? NaN : defValue
 	create   = ParamIsDefault(create) ? 0 : !!create
@@ -77,6 +76,8 @@ End
 
 /// @brief Reads a single wave ref wave from a named threadstorage
 threadsafe static Function/WAVE TSDS_Read(string name)
+
+	ASSERT_TS(!IsEmpty(name), "name can not be empty")
 
 	TUFXOP_GetStorage/Q/N=name/Z wv
 	if(!V_flag && WaveExists(wv) && IsWaveRefWave(wv) && DimSize(wv, ROWS) == 1)
