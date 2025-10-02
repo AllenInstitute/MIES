@@ -59,7 +59,6 @@ End
 ///
 /// @param name   name of threadstorage
 /// @param var    numerical value that should be written
-/// @returns 0 if write was successful, 1 if write was not successful
 threadsafe Function TSDS_WriteVar(string name, variable var)
 
 	ASSERT_TS(!IsEmpty(name), "name can not be empty")
