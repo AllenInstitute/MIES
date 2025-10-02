@@ -36,7 +36,7 @@ static Function ChecksParams()
 	endtry
 End
 
-static Function WriteVarWorks1()
+static Function WriteVarWorks()
 
 	variable var
 
@@ -49,7 +49,7 @@ static Function WriteVarWorks1()
 	CHECK_EQUAL_VAR(var, 567)
 End
 
-static Function ReadVarWorks1()
+static Function ReadVarWorks()
 
 	variable var
 
