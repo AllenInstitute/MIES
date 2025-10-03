@@ -47,6 +47,10 @@ Function AD_Update(string win)
 	string mainPanel
 	variable numEntries, refTime
 
+	if(!BSP_HasBoundDevice(win))
+		return NaN
+	endif
+
 	refTime = DEBUG_TIMER_START()
 
 	mainPanel = BSP_GetPanel(win)
