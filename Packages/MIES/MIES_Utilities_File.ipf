@@ -846,3 +846,9 @@ Function OpenExplorerAtFile(string fullFilePath)
 
 	ExecuteScriptText/Z cmdLine
 End
+
+/// @brief Return the absolute path to cmd.exe
+Function/S GetCmdPath()
+
+	return GetEnvironmentVariable("COMSPEC")
+End

@@ -45,13 +45,14 @@ End
 /// @param file name of the uncompressed file
 Function CompressFile(string file)
 
-	string folder, cmd
+	string folder, cmd, shellPath
 
-	folder = GetInputPath()
+	folder    = GetInputPath()
+	shellPath = GetCmdPath()
 
 	ASSERT(FileExists(folder + file), "Missing file for compression: " + folder + file)
 
-	sprintf cmd, "cmd.exe /C %s..\\..\..\\..\\tools\\zstd.exe -f --check --ultra -22 -k %s -o %s", GetWindowsPath(folder), GetWindowsPath(folder + file), GetWindowsPath(folder + file + ZSTD_SUFFIX)
+	sprintf cmd, "%s /C %s..\\..\..\\..\\tools\\zstd.exe -f --check --ultra -22 -k %s -o %s", shellPath, GetWindowsPath(folder), GetWindowsPath(folder + file), GetWindowsPath(folder + file + ZSTD_SUFFIX)
 	ExecuteScriptText/B/Z cmd
 	ASSERT(!V_flag, "Compression error: " + S_Value)
 End
@@ -61,14 +62,15 @@ End
 /// @param file name of the **uncompressed** file
 Function DecompressFile(string file)
 
-	string cmd, folder, compPath
+	string cmd, folder, compPath, shellPath
 
-	folder = GetInputPath()
+	folder    = GetInputPath()
+	shellPath = GetCmdPath()
 
 	compPath = folder + file + ZSTD_SUFFIX
 	ASSERT(FileExists(compPath), "Missing file for decompression: " + compPath)
 
-	sprintf cmd, "cmd.exe /C %s..\\..\..\\..\\tools\\zstd.exe -f --check --decompress %s -o %s", GetWindowsPath(folder), GetWindowsPath(compPath), GetWindowsPath(folder + file)
+	sprintf cmd, "%s /C %s..\\..\..\\..\\tools\\zstd.exe -f --check --decompress %s -o %s", shellPath, GetWindowsPath(folder), GetWindowsPath(compPath), GetWindowsPath(folder + file)
 	ExecuteScriptText/B/Z cmd
 	ASSERT(!V_flag, "Decompression error: " + S_Value)
 End
