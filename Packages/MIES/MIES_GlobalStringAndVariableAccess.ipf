@@ -271,7 +271,7 @@ static Function ExecuteGitForMIESVersion(string gitPathOrName, string gitDir, st
 #if defined(WINDOWS)
 	// explanation:
 	// cmd /C "<full path to git.exe> --git-dir=<mies repository .git> describe <options> redirect everything into <mies respository>/version.txt"
-	sprintf cmd, "%s /C \"\"%s\" --git-dir=\"%s\" describe --always --tags --match \"Release_*\" > \"%sversion.txt\" 2>&1\"", shellPath, gitPathOrName, gitDir, topDir
+	sprintf cmd, "%s /C \"\"%s\" --git-dir=\"%s\" describe --always --dirty --broken --tags --match \"Release_*\" > \"%sversion.txt\" 2>&1\"", shellPath, gitPathOrName, gitDir, topDir
 	DEBUGPRINT("Cmd to execute: ", str = cmd)
 	ExecuteScriptText/B/Z cmd
 	ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
