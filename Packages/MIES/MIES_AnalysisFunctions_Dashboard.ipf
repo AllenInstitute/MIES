@@ -1264,7 +1264,6 @@ static Function AD_SelectResult(string win)
 	WAVE/Z sweepsWithDuplicatesClean = ZapNans(sweepsWithDuplicates)
 
 	if(!WaveExists(sweepsWithDuplicatesClean))
-		print "Select the Passed/Failed checkboxes to display the sweeps"
 		return NaN
 	endif
 

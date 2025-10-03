@@ -1013,7 +1013,7 @@ Window DataBrowser() : Graph
 	CheckBox check_BrowserSettings_DB_Passed, userdata(ResizeControlsInfo)=A"!!,D#!!#=o!!#>^!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_BrowserSettings_DB_Passed, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_BrowserSettings_DB_Passed, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_BrowserSettings_DB_Passed, value=0
+	CheckBox check_BrowserSettings_DB_Passed, value=1
 	CheckBox check_BrowserSettings_DB_Failed, pos={37.00, 56.00}, size={47.00, 15.00}, disable=3, proc=AD_CheckProc_FailedSweeps
 	CheckBox check_BrowserSettings_DB_Failed, title="Failed"
 	CheckBox check_BrowserSettings_DB_Failed, help={"Show failed sweeps for selection"}
