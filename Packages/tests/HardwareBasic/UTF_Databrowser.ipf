@@ -89,3 +89,38 @@ Function RestoreButtonWorks([string str])
 	// but the button is hidden again
 	CHECK(IsControlHidden(win, BSP_SHOW_WIN_BUTTON))
 End
+
+Function NextPreviousSweepUnlocked()
+
+	string win, scPanel
+
+	win     = DB_OpenDatabrowser()
+	scPanel = BSP_GetSweepControlsPanel(win)
+
+	try
+		PGC_SetAndActivateControl(scPanel, "button_SweepControl_NextSweep")
+		PGC_SetAndActivateControl(scPanel, "button_SweepControl_PrevSweep")
+		PASS()
+	catch
+		FAIL()
+	endtry
+End
+
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
+Function NextPreviousNoData([string str])
+
+	string win, scPanel
+
+	CreateLockedDAEphys(str)
+
+	win     = DB_OpenDatabrowser()
+	scPanel = BSP_GetSweepControlsPanel(win)
+
+	try
+		PGC_SetAndActivateControl(scPanel, "button_SweepControl_NextSweep")
+		PGC_SetAndActivateControl(scPanel, "button_SweepControl_PrevSweep")
+		PASS()
+	catch
+		FAIL()
+	endtry
+End
