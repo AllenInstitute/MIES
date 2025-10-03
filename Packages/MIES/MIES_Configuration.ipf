@@ -692,6 +692,8 @@ Function/S CONF_RestoreDAEphys(variable jsonID, string fullFilePath, [variable m
 
 		StimSetPath = CONF_GetStringFromSettings(jsonID, EXPCONFIG_JSON_STIMSET_NAME)
 		StimSetPath = HFSPathToNative(StimSetPath)
+		// @todo workaround IP issue #7584 in ParseFilePath
+		StimSetPath = ReplaceString(":/\\", StimSetPath, ":/")
 		if(!IsEmpty(StimSetPath))
 			ASSERT(FileExists(StimSetPath), "Specified StimSet file at " + StimSetPath + " not found!", extendedOutput = 0)
 			err = NWB_LoadAllStimSets(overwrite = 1, fileName = StimSetPath)
