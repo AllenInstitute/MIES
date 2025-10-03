@@ -39,6 +39,8 @@ Function HardwareTestBeginCommon(string name)
 	DuplicateDataFolder/Z/O=1 dfr, dest
 	CHECK_EQUAL_VAR(V_flag, 0)
 
+	CA_FlushCache()
+
 	LoadStimsetsIfRequired()
 
 	TestBeginCommon()

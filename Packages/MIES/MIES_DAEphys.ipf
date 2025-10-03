@@ -49,17 +49,43 @@ End
 /// @return list of NI DAC devices, #NONE if there are none
 Function/S DAP_GetNIDeviceList()
 
-	variable i, j, numPattern, numDevices
-	string propList
-	string devList, pattern, device
-	string allDevices = ""
+	string devList, key
 
 	SVAR globalNIDevList = $GetNIDeviceList()
 	devList = globalNIDevList
 
-	if(!isEmpty(devList))
+	if(!IsEmpty(devList))
 		return devList
 	endif
+
+	key = CA_DACDevicesKey(HARDWARE_NI_DAC)
+
+	WAVE/Z/T cachedNIDevList = CA_TryFetchingEntryFromCache(key)
+
+	if(!WaveExists(cachedNIDevList))
+		Make/T/FREE cachedNIDevList = {DAP_GetNIDeviceListNoCache()}
+
+		CA_StoreEntryIntoCache(key, cachedNIDevList)
+	endif
+
+	devList = cachedNIDevList[0]
+
+	if(!IsEmpty(devList))
+		globalNIDevList = devList
+	else
+		globalNIDevList = NONE
+	endif
+
+	return globalNIDevList
+End
+
+static Function/S DAP_GetNIDeviceListNoCache()
+
+	variable i, j, numPattern, numDevices
+	string propList
+	string pattern, device
+	string allDevices = ""
+	string devList    = ""
 
 	numPattern = ItemsInList(NI_DAC_PATTERNS, "|")
 
@@ -89,19 +115,13 @@ Function/S DAP_GetNIDeviceList()
 #endif // EVIL_KITTEN_EATING_MODE
 	endfor
 
-	if(!IsEmpty(devList))
-		globalNIDevList = devList
-	else
-		globalNIDevList = NONE
-	endif
-
-	return globalNIDevList
+	return devList
 End
 
 /// @brief Returns a list of ITC devices for DAC, #NONE if there are none
 Function/S DAP_GetITCDeviceList()
 
-	string devList = ""
+	string devList, key
 
 	SVAR globalITCDevList = $GetITCDeviceList()
 	devList = globalITCDevList
@@ -110,9 +130,17 @@ Function/S DAP_GetITCDeviceList()
 		return devList
 	endif
 
-#if defined(WINDOWS)
-	devList = HW_ITC_ListDevices()
-#endif
+	key = CA_DACDevicesKey(HARDWARE_ITC_DAC)
+
+	WAVE/Z/T cachedITCDevList = CA_TryFetchingEntryFromCache(key)
+
+	if(!WaveExists(cachedITCDevList))
+		Make/T/FREE cachedITCDevList = {DAP_GetITCDeviceListNoCache()}
+
+		CA_StoreEntryIntoCache(key, cachedITCDevList)
+	endif
+
+	devList = cachedITCDevList[0]
 
 	if(!IsEmpty(devList))
 		globalITCDevList = devList
@@ -121,6 +149,15 @@ Function/S DAP_GetITCDeviceList()
 	endif
 
 	return globalITCDevList
+End
+
+static Function/S DAP_GetITCDeviceListNoCache()
+
+#if defined(WINDOWS)
+	return HW_ITC_ListDevices()
+#endif
+
+	return ""
 End
 
 /// @brief Returns a list of SU devices for DAC, #NONE if there are none
@@ -1754,7 +1791,7 @@ Function DAP_ButtonCtrlFindConnectedAmps(STRUCT WMButtonAction &ba) : ButtonCont
 
 	switch(ba.eventcode)
 		case 2: // mouse up
-			AI_FindConnectedAmps()
+			AI_FindConnectedAmps(rescanHardware = 1)
 			break
 		default:
 			break
@@ -5311,6 +5348,9 @@ Function ButtonProc_Hardware_rescan(STRUCT WMButtonAction &ba) : ButtonControl
 			SVAR globalNIDevList  = $GetNIDeviceList()
 
 			KillStrings/Z globalITCDevList, globalNIDevList
+
+			CA_DeleteCacheEntry(CA_DACDevicesKey(HARDWARE_ITC_DAC))
+			CA_DeleteCacheEntry(CA_DACDevicesKey(HARDWARE_NI_DAC))
 
 			DAP_GetNIDeviceList()
 			DAP_GetITCDeviceList()

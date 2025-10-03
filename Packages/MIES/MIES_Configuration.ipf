@@ -2040,7 +2040,6 @@ static Function CONF_RestoreHeadstageAssociation(string device, variable jsonID,
 
 	CONF_Position_MCC_Win(ampSerialList, ampTitleList, CONF_GetStringFromSettings(jsonID, EXPCONFIG_JSON_POSITION_MCC))
 
-	PGC_SetAndActivateControl(device, "button_Settings_UpdateAmpStatus")
 	PGC_SetAndActivateControl(device, "button_Settings_UpdateDACList")
 
 	warnMissingMCCSync = !GetCheckBoxState(device, "check_Settings_SyncMiesToMCC")

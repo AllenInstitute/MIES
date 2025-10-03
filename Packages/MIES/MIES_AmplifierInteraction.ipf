@@ -2120,8 +2120,45 @@ Function AI_QueryGainsFromMCC(string device)
 	return numConnAmplifiers
 End
 
+Function AI_FindConnectedAmps([variable rescanHardware])
+
+	string key
+
+	if(ParamIsDefault(rescanHardware))
+		rescanHardware = 0
+	else
+		rescanHardware = !!rescanHardware
+	endif
+
+	key = CA_AmplifierHardwareWavesKey()
+
+	if(rescanHardware)
+		IH_RemoveAmplifierConnWaves()
+		CA_DeleteCacheEntry(key)
+	endif
+
+	WAVE telegraphServers = GetAmplifierTelegraphServers()
+	WAVE ampMCC           = GetAmplifierMultiClamps()
+
+	if(DimSize(telegraphServers, ROWS) == 0 || DimSize(ampMCC, ROWS) == 0)
+
+		WAVE/Z/WAVE cache = CA_TryFetchingEntryFromCache(key)
+
+		if(WaveExists(cache))
+			Duplicate/O cache[0], telegraphServers
+			Duplicate/O cache[1], ampMCC
+		else
+			[WAVE telegraphServers, WAVE ampMCC] = AI_FindConnectedAmpsNoCache()
+
+			Make/FREE/WAVE cache = {telegraphServers, ampMCC}
+
+			CA_StoreEntryIntoCache(key, cache)
+		endif
+	endif
+End
+
 /// @brief Create the amplifier connection waves
-Function AI_FindConnectedAmps()
+static Function [WAVE telegraphServers, WAVE ampMCC] AI_FindConnectedAmpsNoCache()
 
 	string list
 
@@ -2135,6 +2172,7 @@ Function AI_FindConnectedAmps()
 	SortColumns/DIML/KNDX={0, 1} sortWaves={telegraphServers}
 
 	MCC_FindServers/Z=1
+	WAVE ampMCC = GetAmplifierMultiClamps()
 
 	SetDataFolder saveDFR
 
@@ -2146,6 +2184,8 @@ Function AI_FindConnectedAmps()
 	endif
 
 	LOG_AddEntry(PACKAGE_MIES, "amplifiers", keys = {"list"}, values = {list})
+
+	return [telegraphServers, ampMCC]
 End
 
 Function [STRUCT AxonTelegraph_DataStruct tds] AI_GetTelegraphStruct(variable axonSerial, variable channel)
@@ -2243,7 +2283,7 @@ Function AI_QueryGainsFromMCC(string device)
 	DEBUGPRINT("Unimplemented")
 End
 
-Function AI_FindConnectedAmps()
+Function AI_FindConnectedAmps([variable rescanHardware])
 
 	DEBUGPRINT("Unimplemented")
 End

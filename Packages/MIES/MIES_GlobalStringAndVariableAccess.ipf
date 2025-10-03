@@ -166,6 +166,26 @@ Function/WAVE GetPossiblePathsToGit()
 	return paths
 End
 
+// @brief Return the MIES version (uses the cache if available)
+static Function/S CreateMiesVersion()
+
+	string key
+
+	key = CA_MiesVersionKey()
+
+	WAVE/Z/T version = CA_TryFetchingEntryFromCache(key)
+
+	if(WaveExists(version))
+		return version[0]
+	endif
+
+	Make/T/FREE version = {CreateMiesVersionNoCache()}
+
+	CA_StoreEntryIntoCache(key, version)
+
+	return version[0]
+End
+
 /// @brief Return the version string for the mies-igor project
 ///
 /// The mies version looks like
@@ -183,7 +203,7 @@ End
 /// or #UNKNOWN_MIES_VERSION on error
 ///
 /// @returns the mies version
-static Function/S CreateMiesVersion()
+static Function/S CreateMiesVersionNoCache()
 
 	string path, topDir, version, gitPath
 	string gitDir, fullVersionPath
