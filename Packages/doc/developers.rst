@@ -55,6 +55,25 @@ Therefore updates should be done directly in requirements.in and then calling pi
 needs to be the same when generating the requirements.txt and running them. We currently run all python code
 in debian bookworm docker containers. On Windows you can get a debian bookworm with WSL.
 
+Linting
+-------
+
+As part of our CI we do run various linters on code, files and documentation using `pre-commit <https://www.pre-commit.com>`__.
+
+For local development this can be done via:
+
+One time setup:
+
+- ``pip install uv``
+- ``uv venv --python 3.13``
+- ``uv pip install pre-commit``
+
+And then with ``uv run pre-commit`` which runs only on changed files.
+To lint all files do ``uv run pre-commit run --all-files``.
+
+Registering it with git so that this is automatically checked when committing can be done
+with ``uv run pre-commit install`` (only needed once).
+
 Release Handling
 ----------------
 
