@@ -41,3 +41,17 @@ repos:
   hooks:
     - id: black
       language_version: python3.13
+- repo: local
+  hooks:
+    - id: ipt-format-and-lint
+      name: Make Igor Pro code fantastic
+      language: script
+      files: \.ipf$
+      exclude: |
+               (?x) # verbose re
+               ( # start alternations
+               ACL_TabUtilities.ipf|
+               ACL_UserdataEditor.ipf|
+               ZeroMQ_Interop.ipf
+               )
+      entry: ./tools/run-ipt.sh lint --noreturn-func=FATAL_ERROR|SFH_FATAL_ERROR|FAIL
