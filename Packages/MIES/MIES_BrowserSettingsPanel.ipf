@@ -1446,7 +1446,12 @@ Function BSP_ButtonProc_ChangeSweep(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventcode)
 		case 2: // mouse up
-			graph   = GetMainWindow(ba.win)
+			graph = GetMainWindow(ba.win)
+
+			if(!BSP_HasBoundDevice(graph))
+				break
+			endif
+
 			scPanel = BSP_GetSweepControlsPanel(graph)
 			bsPanel = BSP_GetPanel(graph)
 
@@ -1455,6 +1460,10 @@ Function BSP_ButtonProc_ChangeSweep(STRUCT WMButtonAction &ba) : ButtonControl
 			overlaySweeps = OVS_IsActive(graph)
 
 			[first, last] = BSP_FirstAndLastSweepAcquired(graph)
+
+			if(IsNaN(first) && IsNaN(last))
+				break
+			endif
 
 			if(BSP_IsDataBrowser(graph))
 				DB_UpdateLastSweepControls(graph, first, last)
