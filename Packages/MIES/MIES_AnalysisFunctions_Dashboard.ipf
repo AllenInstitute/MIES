@@ -47,6 +47,10 @@ Function AD_Update(string win)
 	string mainPanel
 	variable numEntries, refTime
 
+	if(!BSP_HasBoundDevice(win))
+		return NaN
+	endif
+
 	refTime = DEBUG_TIMER_START()
 
 	mainPanel = BSP_GetPanel(win)
@@ -1264,7 +1268,6 @@ static Function AD_SelectResult(string win)
 	WAVE/Z sweepsWithDuplicatesClean = ZapNans(sweepsWithDuplicates)
 
 	if(!WaveExists(sweepsWithDuplicatesClean))
-		print "Select the Passed/Failed checkboxes to display the sweeps"
 		return NaN
 	endif
 

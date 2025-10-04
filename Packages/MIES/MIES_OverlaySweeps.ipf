@@ -198,6 +198,10 @@ Function OVS_UpdatePanel(string win, [variable fullUpdate])
 	extPanel = BSP_GetPanel(win)
 	WAVE/Z sweeps = GetPlainSweepList(win)
 
+	if(!WaveExists(sweeps))
+		return NaN
+	endif
+
 	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 
 	WAVE/T sweepSelectionChoices = GetOverlaySweepSelectionChoices(win, dfr, skipUpdate = 1)

@@ -1007,16 +1007,16 @@ Window DataBrowser() : Graph
 	GroupBox group_enable_dashboard, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_BrowserSettings_DB_Passed, pos={37.00, 35.00}, size={52.00, 15.00}, disable=3, proc=AD_CheckProc_PassedSweeps
 	CheckBox check_BrowserSettings_DB_Passed, title="Passed"
-	CheckBox check_BrowserSettings_DB_Passed, help={"Show passed sweeps on double click into ListBox "}
+	CheckBox check_BrowserSettings_DB_Passed, help={"Show passed sweeps for selection"}
 	CheckBox check_BrowserSettings_DB_Passed, userdata(tabnum)="7"
 	CheckBox check_BrowserSettings_DB_Passed, userdata(tabcontrol)="Settings"
 	CheckBox check_BrowserSettings_DB_Passed, userdata(ResizeControlsInfo)=A"!!,D#!!#=o!!#>^!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_BrowserSettings_DB_Passed, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_BrowserSettings_DB_Passed, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_BrowserSettings_DB_Passed, value=0
+	CheckBox check_BrowserSettings_DB_Passed, value=1
 	CheckBox check_BrowserSettings_DB_Failed, pos={37.00, 56.00}, size={47.00, 15.00}, disable=3, proc=AD_CheckProc_FailedSweeps
 	CheckBox check_BrowserSettings_DB_Failed, title="Failed"
-	CheckBox check_BrowserSettings_DB_Failed, help={"Show failed sweeps on double click into ListBox "}
+	CheckBox check_BrowserSettings_DB_Failed, help={"Show failed sweeps for selection"}
 	CheckBox check_BrowserSettings_DB_Failed, userdata(tabnum)="7"
 	CheckBox check_BrowserSettings_DB_Failed, userdata(tabcontrol)="Settings"
 	CheckBox check_BrowserSettings_DB_Failed, userdata(ResizeControlsInfo)=A"!!,D#!!#>n!!#>J!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
