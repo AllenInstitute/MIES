@@ -1,4 +1,4 @@
-FROM debian:bookworm
+FROM debian:trixie
 LABEL org.opencontainers.image.authors="Thomas Braun thomas.braun@byte-physics.de"
 
 ENV DEBIAN_FRONTEND=noninteractive
