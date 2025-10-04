@@ -274,11 +274,12 @@ End
 /// @return zero on success, aborts on failure
 static Function ExecuteGitForMIESVersion(string gitPathOrName, string gitDir, string topDir, string fullVersionPath)
 
-	string cmd, userName
+	string cmd, userName, shellPath
 
 	gitPathOrName = HFSPathToNative(gitPathOrName)
 	gitDir        = HFSPathToNative(gitDir)
 	topDir        = HFSPathToNative(topDir)
+	shellPath     = GetCmdPath()
 
 	// git is installed, try to regenerate version.txt
 	DEBUGPRINT("Found git at: ", str = gitPathOrName)
@@ -290,22 +291,22 @@ static Function ExecuteGitForMIESVersion(string gitPathOrName, string gitDir, st
 #if defined(WINDOWS)
 	// explanation:
 	// cmd /C "<full path to git.exe> --git-dir=<mies repository .git> describe <options> redirect everything into <mies respository>/version.txt"
-	sprintf cmd, "cmd.exe /C \"\"%s\" --git-dir=\"%s\" describe --always --tags --match \"Release_*\" > \"%sversion.txt\" 2>&1\"", gitPathOrName, gitDir, topDir
+	sprintf cmd, "%s /C \"\"%s\" --git-dir=\"%s\" describe --always --dirty --broken --tags --match \"Release_*\" > \"%sversion.txt\" 2>&1\"", shellPath, gitPathOrName, gitDir, topDir
 	DEBUGPRINT("Cmd to execute: ", str = cmd)
 	ExecuteScriptText/B/Z cmd
 	ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
 
-	sprintf cmd, "cmd.exe /C \"echo | set /p=\"Date and time of last commit: \" >> \"%sversion.txt\" 2>&1\"", topDir
+	sprintf cmd, "%s /C \"echo | set /p=\"Date and time of last commit: \" >> \"%sversion.txt\" 2>&1\"", shellPath, topDir
 	DEBUGPRINT("Cmd to execute: ", str = cmd)
 	ExecuteScriptText/B/Z cmd
 	ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
 
-	sprintf cmd, "cmd.exe /C \"\"%s\" --git-dir=\"%s\" log -1 --pretty=format:%%cI%%n >> \"%sversion.txt\" 2>&1\"", gitPathOrName, gitDir, topDir
+	sprintf cmd, "%s /C \"\"%s\" --git-dir=\"%s\" log -1 --pretty=format:%%cI%%n >> \"%sversion.txt\" 2>&1\"", shellPath, gitPathOrName, gitDir, topDir
 	DEBUGPRINT("Cmd to execute: ", str = cmd)
 	ExecuteScriptText/B/Z cmd
 	ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
 
-	sprintf cmd, "cmd.exe /C \"echo Submodule status: >> \"%sversion.txt\" 2>&1\"", topDir
+	sprintf cmd, "%s /C \"echo Submodule status: >> \"%sversion.txt\" 2>&1\"", shellPath, topDir
 	DEBUGPRINT("Cmd to execute: ", str = cmd)
 	ExecuteScriptText/B/Z cmd
 	ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
@@ -313,7 +314,7 @@ static Function ExecuteGitForMIESVersion(string gitPathOrName, string gitDir, st
 	// git submodule status can not be used here as submodule is currently a sh script and executing that with --git-dir does not work
 	// but we can use the helper command which outputs a slightly uglier version, but is much faster
 	// the submodule helper is shipped with git 2.7 and later, therefore its failed execution is not fatal
-	sprintf cmd, "cmd.exe /C \"\"%s\" --git-dir=\"%s\" submodule--helper status >> \"%sversion.txt\" 2>&1\"", gitPathOrName, gitDir, topDir
+	sprintf cmd, "%s /C \"\"%s\" --git-dir=\"%s\" submodule--helper status >> \"%sversion.txt\" 2>&1\"", shellPath, gitPathOrName, gitDir, topDir
 	DEBUGPRINT("Cmd to execute: ", str = cmd)
 	ExecuteScriptText/B/Z cmd
 #elif defined(MACINTOSH)
