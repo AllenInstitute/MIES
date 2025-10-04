@@ -84,6 +84,8 @@ jobs:
           path: |
             *.zip
             tools/installer/MIES-*.exe
+            *.patch
+            Packages/ITCXOP2/tools/Disable-ASLR-for-Igor64.ps1
           if-no-files-found: error
 
   Linting:

@@ -83,7 +83,7 @@ do
     /csp "eToken Base Cryptographic Provider" \
     /kc "$privKeyContainerName"               \
     /f public-key.cer                         \
-    tools/installer/MIES*.exe
+    Packages/ITCXOP2/tools/Disable-ASLR-for-Igor64.ps1
 
   if [ $? -eq 0 ]
   then
@@ -94,5 +94,7 @@ do
 
   sleep $i
 done
+
+git diff . > diff.patch
 
 exit 1
