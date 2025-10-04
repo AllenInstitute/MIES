@@ -1999,7 +1999,7 @@ End
 /// @param[in] midExp middle of experiment - uploads MCC relevant settings from panel to MCC instead
 static Function CONF_RestoreHeadstageAssociation(string device, variable jsonID, variable midExp)
 
-	variable i, type, numRows, ampSerial, ampChannel, index, value, warnMissingMCCSync
+	variable i, type, numRows, ampSerial, ampChannel, index, value
 	string jsonPath, jsonBasePath, jsonPathAmpBlock
 	string ampSerialList = ""
 	string ampTitleList  = ""
@@ -2043,8 +2043,6 @@ static Function CONF_RestoreHeadstageAssociation(string device, variable jsonID,
 	CONF_Position_MCC_Win(ampSerialList, ampTitleList, CONF_GetStringFromSettings(jsonID, EXPCONFIG_JSON_POSITION_MCC))
 
 	PGC_SetAndActivateControl(device, "button_Settings_UpdateDACList")
-
-	warnMissingMCCSync = !GetCheckBoxState(device, "check_Settings_SyncMiesToMCC")
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = i)
@@ -2114,12 +2112,6 @@ static Function CONF_RestoreHeadstageAssociation(string device, variable jsonID,
 
 			if(IsFinite(ampSerial))
 				if(!midExp)
-					if(warnMissingMCCSync)
-						printf "The sync MIES to MCC settings checkbox is not checked.\r"
-						printf "Restored amplifier settings will not be applied to Multiclamp commander.\r"
-						warnMissingMCCSync = 0
-					endif
-
 					CONF_RestoreAmplifierSettings(device, i, jsonID, jsonBasePath)
 				else
 					CONF_MCC_MidExp(device, i, jsonID)
