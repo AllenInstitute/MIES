@@ -1275,3 +1275,65 @@ Function FindSequenceReverseWrapper(WAVE sequence, WAVE source)
 		start      = foundIndex + 1
 	endfor
 End
+
+/// @brief Return a hash of `str` taking `previousHash` into account
+///
+/// Uses `XXH3-64` on IP10 and CRC on IP9. Can not be used for security purposes.
+threadsafe Function/S HashString(string previousHash, string str)
+
+	variable crc
+
+#if IgorVersion() >= 10
+	return Hash(previousHash + str, HASH_XXH3_64)
+#endif
+
+	if(IsEmpty(previousHash))
+		crc = 0
+	else
+		crc = str2num(previousHash)
+	endif
+
+#ifdef AUTOMATED_TESTING
+	ASSERT_TS(IsFinite(crc), "Expected previousHash to be a number:" + previousHash)
+#endif // AUTOMATED_TESTING
+
+	return num2istr(StringCRC(crc, str)) // NOLINT
+End
+
+/// @brief Return a hash of `wv` taking `previousHash` into account
+///
+/// Uses `XXH3-64` on IP10 and CRC on IP9. Can not be used for security purposes.
+threadsafe Function/S HashWave(string previousHash, WAVE/Z wv)
+
+	variable crc
+
+	ASSERT_TS(WaveExists(wv), "Missing wv")
+
+#if IgorVersion() >= 10
+	return previousHash + WaveHash(wv, HASH_XXH3_64)
+#endif
+
+	if(IsEmpty(previousHash))
+		crc = 0
+	else
+		crc = str2num(previousHash)
+	endif
+
+#ifdef AUTOMATED_TESTING
+	ASSERT_TS(IsFinite(crc), "Expected previousHash to be a number:" + previousHash)
+#endif // AUTOMATED_TESTING
+
+	return num2istr(WaveCRC(crc, wv)) // NOLINT
+End
+
+/// @brief Return a hash of `num` taking `previousHash` into account
+///
+/// The conversion to string is done with full double precision.
+///
+/// Uses `XXH3-64` on IP10 and CRC on IP9. Can not be used for security purposes.
+threadsafe Function/S HashNumber(string previousHash, variable num)
+
+	string str = num2strHighPrec(num, precision = MAX_DOUBLE_PRECISION, shorten = 1)
+
+	return HashString(previousHash, str)
+End

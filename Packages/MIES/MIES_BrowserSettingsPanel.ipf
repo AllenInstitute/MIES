@@ -27,7 +27,7 @@ static StrConstant BROWSERSETTINGS_AXES_SCALING_CHECKBOXES = "check_Display_Visi
 static StrConstant SWEEPCONTROL_CONTROLS_DATABROWSER  = "check_SweepControl_AutoUpdate;setvar_SweepControl_SweepNo;"
 static StrConstant SWEEPCONTROL_CONTROLS_SWEEPBROWSER = "popup_SweepControl_Selector;"
 
-static StrConstant BSP_USER_DATA_SF_CONTENT_CRC = "SweepFormulaContentCRC"
+static StrConstant BSP_USER_DATA_SF_CONTENT_HASH = "SweepFormulaContentHash"
 
 static Constant BSP_EPOCH_LEVELS = 5
 
@@ -1753,7 +1753,8 @@ End
 Function BSP_SFHelpWindowHook(STRUCT WMWinHookStruct &s)
 
 	string mainWin, sfWin, bspPanel, cmdStr
-	variable modMask, refContentCRC, contentCRC
+	variable modMask
+	string refContentHash, contentHash
 
 	switch(s.eventCode)
 		case EVENT_WINDOW_HOOK_MOUSEDOWN:
@@ -1787,13 +1788,13 @@ Function BSP_SFHelpWindowHook(STRUCT WMWinHookStruct &s)
 			break
 		case EVENT_WINDOW_HOOK_ACTIVATE: // fallthrough
 		case EVENT_WINDOW_HOOK_DEACTIVATE:
-			mainWin       = GetMainWindow(s.winName)
-			sfWin         = BSP_GetSFFormula(mainWin)
-			refContentCRC = str2num(GetUserData(mainWin, "", BSP_USER_DATA_SF_CONTENT_CRC))
-			contentCRC    = GetNotebookCRC(sfWin)
-			if(!CmpStr(sfWin, s.winName) && refContentCRC != contentCRC)
+			mainWin        = GetMainWindow(s.winName)
+			sfWin          = BSP_GetSFFormula(mainWin)
+			refContentHash = GetUserData(mainWin, "", BSP_USER_DATA_SF_CONTENT_HASH)
+			contentHash    = GetNotebookHash(sfWin)
+			if(!CmpStr(sfWin, s.winName) && cmpstr(refContentHash, contentHash))
 				BSP_SFFormulaColoring(sfWin)
-				SetWindow $mainWin, userData($BSP_USER_DATA_SF_CONTENT_CRC)=num2istr(contentCRC)
+				SetWindow $mainWin, userData($BSP_USER_DATA_SF_CONTENT_HASH)=contentHash
 			endif
 			break
 		default:

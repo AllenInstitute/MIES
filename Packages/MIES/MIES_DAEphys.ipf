@@ -1257,8 +1257,11 @@ Function DAP_OneTimeCallBeforeDAQ(string device, variable runMode)
 	NVAR fifoPosition = $GetFifoPosition(device)
 	fifoPosition = NaN
 
-	WAVE stimsetAcqIDHelper = GetStimsetAcqIDHelperWave(device)
-	stimsetAcqIDHelper = NaN
+	WAVE stimsetAcqIDNumericalHelper = GetStimsetAcqIDNumericalHelperWave(device)
+	stimsetAcqIDNumericalHelper = NaN
+
+	WAVE/T stimsetAcqIDTextualHelper = GetStimsetAcqIDTextualHelperWave(device)
+	stimsetAcqIDTextualHelper = ""
 
 	DAP_ClearDelayedClampModeChange(device)
 

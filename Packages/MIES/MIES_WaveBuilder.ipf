@@ -305,18 +305,18 @@ End
 /// @brief Return a checksum of the stimsets and its parameter waves.
 ///
 /// Uses the entry from the stimset wave note if available.
-Function WB_GetStimsetChecksum(WAVE stimset, string setName, variable dataAcqOrTP)
+Function/S WB_GetStimsetChecksum(WAVE stimset, string setName, variable dataAcqOrTP)
 
-	variable crc
+	string hv
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
-		return NaN
+		return ""
 	endif
 
-	crc = NumberByKey("Checksum", note(stimset), " = ", ";")
+	hv = WB_GetWaveNoteEntry(note(stimset), STIMSET_ENTRY, key = "ChecksumV2")
 
-	if(IsFinite(crc))
-		return crc
+	if(!IsEmpty(hv))
+		return hv
 	endif
 
 	// old stimsets without the wave note entry
@@ -324,23 +324,23 @@ Function WB_GetStimsetChecksum(WAVE stimset, string setName, variable dataAcqOrT
 End
 
 /// @brief Calculcate the checksum of the stimsets and its parameter waves.
-static Function WB_CalculateStimsetChecksum(WAVE stimset, string setName)
+static Function/S WB_CalculateStimsetChecksum(WAVE stimset, string setName)
 
-	variable crc
+	string hv = ""
 
-	crc = WaveCRC(crc, stimset)
+	hv = HashWave(hv, stimset)
 
 	WAVE/Z   WP        = WB_GetWaveParamForSet(setName)
 	WAVE/Z/T WPT       = WB_GetWaveTextParamForSet(setName)
 	WAVE/Z   SegWvType = WB_GetSegWvTypeForSet(setName)
 
 	if(WaveExists(WP) && WaveExists(WPT) && WaveExists(SegWvType))
-		crc = WaveCRC(crc, WP)
-		crc = WaveCRC(crc, WPT)
-		crc = WaveCRC(crc, SegWvType)
+		hv = HashWave(hv, WP)
+		hv = HashWave(hv, WPT)
+		hv = HashWave(hv, SegWvType)
 	endif
 
-	return crc
+	return hv
 End
 
 /// @brief Get modification date of saved stimset wave
@@ -488,7 +488,7 @@ static Function/WAVE WB_GetStimSet([string setName])
 	AddEntryIntoWaveNoteAsList(stimset, STIMSET_SIZE_KEY, var = DimSize(stimset, ROWS), format = "%d")
 
 	if(!isEmpty(setName))
-		AddEntryIntoWaveNoteAsList(stimset, "Checksum", var = WB_CalculateStimsetChecksum(stimset, setName), format = "%d")
+		AddEntryIntoWaveNoteAsList(stimset, "Checksum V2", str = WB_CalculateStimsetChecksum(stimset, setName), format = "%d")
 		AddEntryIntoWaveNoteAsList(stimset, "WP modification count", var = WaveModCountWrapper(WP), format = "%d")
 		AddEntryIntoWaveNoteAsList(stimset, "WPT modification count", var = WaveModCountWrapper(WPT), format = "%d")
 		AddEntryIntoWaveNoteAsList(stimset, "SegWvType modification count", var = WaveModCountWrapper(SegWvType), format = "%d", appendCR = 1)
@@ -1605,6 +1605,9 @@ End
 ///    - length of each segment
 ///    - inflection point positions (left side index)
 ///
+/// Version 11:
+///    - Switched stimset checksum from CRC to XX3-64 hash (IP10 only) and renamed it from Checksum to "Checksum V2"
+///
 /// Example:
 ///
 /// .. code-block:: none
@@ -1621,7 +1624,7 @@ End
 /// 	Sweep = 1;Epoch = 1;Type = Ramp;Duration = 150;Amplitude = 1;Offset = 0;
 /// 	Sweep = 1;Epoch = 2;Type = Square pulse;Duration = 300;Amplitude = 0;
 /// 	Sweep = 1;Epoch = 3;Type = Pulse Train;Duration = 960.005;Amplitude = 1;Offset = 0;Pulse Type = Square;Frequency = 20;Pulse To Pulse Length = 50;Pulse duration = 10;Number of pulses = 20;Mixed frequency = False;First mixed frequency = 0;Last mixed frequency = 0;Poisson distribution = False;Random seed = 0.963638;Pulse Train Pulses = 0,50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900,950,;Definition mode = Duration;
-/// 	Stimset;Sweep Count = 2;Epoch Count = 4;Pre DAQ = ;Mid Sweep = ;Post Sweep = ;Post Set = ;Post DAQ = ;Pre Sweep = ;Generic = PSQ_Ramp;Pre Set = ;Function params (encoded)= NumberOfSpikes:variable=5,Elements:string=%20%3B%2C;Flip = 0;Random Seed = 0.963638;Wavebuilder Error = 0;Checksum = 65446509;
+/// 	Stimset;Sweep Count = 2;Epoch Count = 4;Pre DAQ = ;Mid Sweep = ;Post Sweep = ;Post Set = ;Post DAQ = ;Pre Sweep = ;Generic = PSQ_Ramp;Pre Set = ;Function params (encoded)= NumberOfSpikes:variable=5,Elements:string=%20%3B%2C;Flip = 0;Random Seed = 0.963638;Wavebuilder Error = 0;Checksum V2 = 6497a96f53a89890;
 /// \endrst
 ///
 /// @param text      stimulus set wave note

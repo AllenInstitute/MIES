@@ -1,5 +1,5 @@
 IGOR
-WAVES/T/N=(196,6)	labnotebook_numerical_description
+WAVES/T/N=(195,6)	labnotebook_numerical_description
 BEGIN
 	"Name"	"Unit"	"Tolerance"	"Description"	"Headstage Contingency"	"ClampMode"
 	"SweepNum"	""	"-"	"Sweep number: Non-repeating non-negative numeric identifier for sweep time series. Increments in the order of acquisition. Starts at zero."	"ALL"	""
@@ -57,7 +57,6 @@ BEGIN
 	"Delay onset oodDAQ"	"ms"	"1"	"Calculated total oodDAQ offset used for acquisition.\r\rSee https://alleninstitute.github.io/MIES/#id4 for a visualization of oodDAQ."	"DEPEND"	""
 	"Pulse To Pulse Length"	"ms"	"1"	"Not used in newer MIES versions."	"ALL"	""
 	"Repeated Acq Cycle ID"	""	"1"	"The \"Repeated Acq Cycle ID\" labels each repeated acquisition with a unique integer number.\rSweeps belonging to the same repeated acquisition cycle have the same ID.\rFor yoked devices the follower and lead devices will have the same ID,\rwhich also helps in that case to group sweeps together."	"INDEP"	""
-	"Stim Wave Checksum"	""	"1"	"The \"Stim Wave Checksum\" is a unique identifier for the stimulus set contents.\r\rChanges in this ID catches cases where the stimset has the same name but different contents."	"DEPEND"	""
 	"Multi Device mode"	"On/Off"	"-"	"Support for multiple DAQ devices acquiring data simultaneously. When turned off, legacy single device mode is used."	"INDEP"	""
 	"Background Testpulse"	"On/Off"	"-"	"When enabled, a running testpulse does not block the Igor Pro user interface."	"INDEP"	""
 	"Background DAQ"	"On/Off"	"-"	"When enabled, data acquisition does not block the Igor Pro user interface."	"INDEP"	""
