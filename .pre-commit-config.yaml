@@ -55,3 +55,9 @@ repos:
                ZeroMQ_Interop.ipf
                )
       entry: ./tools/run-ipt.sh lint --noreturn-func=FATAL_ERROR|SFH_FATAL_ERROR|FAIL
+- repo: local
+  hooks:
+    - id: custom-check-code
+      name: Hacky code linting
+      language: script
+      entry: ./tools/check-code.sh

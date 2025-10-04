@@ -69,8 +69,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Code Checks
-        run: tools/check-code.sh
         # straight from the documentation, see https://pre-commit.com/#github-actions-example
       - name: set PY
         run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
