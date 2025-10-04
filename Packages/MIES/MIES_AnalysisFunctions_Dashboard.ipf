@@ -1233,6 +1233,10 @@ static Function AD_SelectResult(string win)
 	string bspPanel, list
 	variable numEntries, i
 
+	if(!BSP_HasBoundDevice(win))
+		return NaN
+	endif
+
 	bspPanel = BSP_GetPanel(win)
 
 	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
