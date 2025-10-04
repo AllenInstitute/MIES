@@ -810,3 +810,11 @@ Function/S GetSweepFormulaBufferOffsetTracker()
 
 	return GetNVARAsString(GetSweepFormulaPath(), "sweepFormulaParserBufferOffset", initialValue = NaN)
 End
+
+/// @brief Get the ADC configuration for NI devices
+///
+/// Combination of @ref NIAnalogInputConfigs bits
+Function/S GetDeviceADCConfig(string device)
+
+	return GetNVARAsString(GetDevicePath(device), "ADCConfig", initialValue = NaN)
+End
