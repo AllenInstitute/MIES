@@ -63,8 +63,8 @@ jobs:
             tools/installer/MIES-*.exe
           if-no-files-found: error
 
-  Linting:
-    name: 🔎 Linting
+  PreCommitLinting:
+    name: 🔎 Pre-Commit Linting
     runs-on: [ self-hosted, Linux, Docker ]
     steps:
       - name: Checkout repository
@@ -141,7 +141,7 @@ jobs:
     name: 🧪 Test ${{ matrix.name }} v${{ matrix.version }}
     needs:
       - BuildInstaller
-      - Linting
+      - PreCommitLinting
       - CompilationTest
     strategy:
       matrix:
