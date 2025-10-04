@@ -338,12 +338,16 @@ End
 ///      },
 ///      "device": "my_device",
 ///      "headstage": 0,
+///      "save every TP": {
+///        "checked": true,
+///        "disabled": false
+///      },
 ///      "sweep number": "NaN",
-///      "timestamp": "2022-05-13T18:54:39Z"
+///      "timestamp": "2025-10-04T00:52:17Z"
 ///    }
 ///
 /// \endrst
-Function PUB_ClampModeChange(string device, variable headstage, variable oldClampMode, variable newClampMode)
+Function PUB_ClampModeChange(string device, variable headstage, variable oldClampMode, variable newClampMode, variable saveEveryTPisChecked, variable saveEveryTPisDisabled)
 
 	variable jsonID
 	string   payload
@@ -352,10 +356,16 @@ Function PUB_ClampModeChange(string device, variable headstage, variable oldClam
 		return NaN
 	endif
 
+	// add clamp mode to JSON
 	jsonID = PUB_GetJSONTemplate(device, headstage)
 	JSON_AddTreeObject(jsonID, "clamp mode")
 	JSON_AddString(jsonID, "clamp mode/old", ConvertAmplifierModeToString(oldClampMode))
 	JSON_AddString(jsonID, "clamp mode/new", ConvertAmplifierModeToString(newClampMode))
+
+	// add save every TP checkbox state to JSON
+	JSON_AddTreeObject(jsonID, "save every TP")
+	JSON_AddBoolean(jsonID, "save every TP/checked", saveEveryTPisChecked)
+	JSON_AddBoolean(jsonID, "save every TP/disabled", saveEveryTPisDisabled)
 
 	PUB_Publish(jsonID, AMPLIFIER_CLAMP_MODE_FILTER)
 End
