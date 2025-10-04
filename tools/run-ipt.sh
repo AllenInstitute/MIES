@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Get top level of git repo
 git --version > /dev/null
@@ -18,22 +18,12 @@ fi
 
 case $(uname) in
     Linux)
-      ipt="ipt"
+      IPT=$top_level/tools/ipt
+      ;;
+    MINGW*)
+      IPT=$top_level/tools/ipt.exe
       ;;
     *)
-      ipt="$top_level/tools/ipt.exe"
-      ;;
 esac
 
-config=$(pwd)/config.toml
-trap 'rm -f $config' SIGINT SIGQUIT SIGTSTP EXIT
-
-echo "[lint]" > $config
-
-echo "noreturn-func=FATAL_ERROR|SFH_FATAL_ERROR|FAIL" >> $config
-
-while read -r line; do
-    echo "files = \"$line\"" >> $config
-done < <(git ls-files --full-name ':(attr:ipt)')
-
-(cd $top_level && $ipt --arg-file $config lint -i)
+${IPT} "$@"

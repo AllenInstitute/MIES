@@ -1,4 +1,4 @@
-FROM debian:bookworm
+FROM debian:trixie
 LABEL org.opencontainers.image.authors="Thomas Braun thomas.braun@byte-physics.de"
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -11,6 +11,7 @@ RUN apt-get update &&      \
         python3-pip        \
         python3-setuptools \
         python3-venv       \
+        ripgrep            \
         &&                 \
     apt-get clean
 

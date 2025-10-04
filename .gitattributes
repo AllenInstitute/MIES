@@ -65,10 +65,3 @@ Packages/doc/** linguist-documentation
 tools/installer/nsis/** linguist-vendored
 tools/installer/Shelllink/** linguist-vendored
 tools/installer/AccessControl/** linguist-vendored
-
-# input files for IPT
-Packages/Conversion/**/*.ipf ipt
-Packages/MIES/*MIES*.ipf     ipt
-Packages/doc/**/*.ipf        ipt
-Packages/tests/**/*.ipf      ipt
-Packages/MIES_Include.ipf    ipt

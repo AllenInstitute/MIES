@@ -38,29 +38,6 @@ concurrency:
   cancel-in-progress: true
 jobs:
 
-  Ipt:
-    name: 🔎 IPT checks
-    runs-on: [ self-hosted, Windows ]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        # no need to checkout submodules or the full history
-      - name: Format and lint code
-        run: tools/run-ipt.sh
-      - name: Check for changed files
-        run: git diff --name-only --ignore-submodules; git diff  --ignore-submodules --quiet
-      - name: Create patch
-        if: ${{ failure() }}
-        run: git diff > format-changes.patch
-      - name: upload artifacts
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-          name: IPT-assets
-          path: |
-            format-changes.patch
-          if-no-files-found: warn
-
   BuildInstaller:
     name: 🏗 Build installer
     runs-on: [ self-hosted, Windows, Certificate ]
@@ -86,14 +63,12 @@ jobs:
             tools/installer/MIES-*.exe
           if-no-files-found: error
 
-  Linting:
-    name: 🔎 Linting
+  PreCommitLinting:
+    name: 🔎 Pre-Commit Linting
     runs-on: [ self-hosted, Linux, Docker ]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Code Checks
-        run: tools/check-code.sh
         # straight from the documentation, see https://pre-commit.com/#github-actions-example
       - name: set PY
         run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
@@ -166,8 +141,7 @@ jobs:
     name: 🧪 Test ${{ matrix.name }} v${{ matrix.version }}
     needs:
       - BuildInstaller
-      - Linting
-      - Ipt
+      - PreCommitLinting
       - CompilationTest
     strategy:
       matrix:
@@ -308,7 +282,6 @@ jobs:
     if: ${{ !cancelled() && !inputs.is_called_workflow}}
     needs:
       # All jobs that create new artifacts
-      - Ipt
       - BuildInstaller
       - CompilationEachCommitTest
       - CompilationTest
