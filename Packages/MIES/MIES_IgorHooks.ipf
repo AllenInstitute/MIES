@@ -272,6 +272,8 @@ static Function IgorStartOrNewHook(string igorApplicationNameStr)
 	ExperimentModified
 	modifiedBefore = V_flag
 
+	RestoreCacheWaves()
+
 	PS_FixPackageLocation(PACKAGE_MIES)
 
 	LOG_MarkSessionStart(PACKAGE_MIES)

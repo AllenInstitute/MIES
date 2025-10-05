@@ -230,7 +230,11 @@ End
 /// @brief Restore cache waves from TUF XOP named storage into global datafolder hierarchy
 Function RestoreCacheWaves()
 
-	WAVE/WAVE cacheWaves = TSDS_ReadWave(TSDS_NEWEXPCACHE)
+	WAVE/Z/WAVE cacheWaves = TSDS_ReadWave(TSDS_NEWEXPCACHE, create = 1, defWave = $"")
+
+	if(!WaveExists(cacheWaves))
+		return NaN
+	endif
 
 	DFREF dfr = GetCacheFolder()
 
@@ -251,7 +255,7 @@ Function NewExperiment()
 
 	Execute/P/Q "BackupCacheWaves()"
 	Execute/P/Q "NEWEXPERIMENT "
-	Execute/P/Q "RestoreCacheWaves()"
+	// restoring is done in IgorStartOrNewHook
 End
 
 /// @brief Return if the function results are overriden for testing purposes
