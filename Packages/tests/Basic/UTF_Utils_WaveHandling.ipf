@@ -1366,6 +1366,14 @@ Function CFW_ChecksParameters()
 		PASS()
 	endtry
 
+	Make/FREE/WAVE wref
+	try
+		ChangeFreeWaveName(wref, "123")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
 	KillWaves/Z perm
 End
 

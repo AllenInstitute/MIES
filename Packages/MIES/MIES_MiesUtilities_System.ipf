@@ -211,6 +211,7 @@ End
 Function BackupCacheWaves()
 
 	variable i, numEntries
+	string names = ""
 
 	DFREF dfr = GetCacheFolder()
 
@@ -220,9 +221,13 @@ Function BackupCacheWaves()
 
 	numEntries = DimSize(dup, ROWS)
 	ASSERT(DimSize(cacheWaves, ROWS) == numEntries, "Non-matching number of entries")
+
 	for(i = 0; i < numEntries; i += 1)
-		ChangeFreeWaveName(dup[i], NameOfWave(cacheWaves[i]))
+		/// @todo workaround WM issue #7587 ChangeFreeWaveName does not work with wave reference waves
+		names = AddListItem(NameOfWave(cacheWaves[i]), names, ";", Inf)
 	endfor
+
+	Note/K dup, names
 
 	TSDS_WriteWave(TSDS_NEWEXPCACHE, dup)
 End
@@ -230,16 +235,23 @@ End
 /// @brief Restore cache waves from TUF XOP named storage into global datafolder hierarchy
 Function RestoreCacheWaves()
 
+	string names, name
+	variable i, numEntries
+
 	WAVE/Z/WAVE cacheWaves = TSDS_ReadWave(TSDS_NEWEXPCACHE, create = 1, defWave = $"")
 
 	if(!WaveExists(cacheWaves))
 		return NaN
 	endif
 
+	names = note(cacheWaves)
+
 	DFREF dfr = GetCacheFolder()
 
-	for(WAVE wv : cacheWaves)
-		MoveWave wv, dfr
+	numEntries = DimSize(cacheWaves, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		name = StringFromList(i, names)
+		MoveWave cacheWaves[i], dfr:$name
 	endfor
 
 	// we don't update the cache waves here as that is done when using them

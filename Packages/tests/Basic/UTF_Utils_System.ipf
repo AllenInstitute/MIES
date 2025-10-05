@@ -137,3 +137,23 @@ static Function TestCacheBackupAndRestore()
 	CHECK(!WaveRefsEqual(new, old))
 	CHECK_EQUAL_WAVES(new, old)
 End
+
+static Function TestCacheBackupAndRestoreIntegration()
+
+	string key = "abcd"
+
+	KillOrMoveToTrash(dfr = GetCacheFolder())
+	Make/FREE data = {NaN}
+	CA_StoreEntryIntoCache(key, data)
+	WAVE/Z match = CA_TryFetchingEntryFromCache(key)
+	CHECK_WAVE(match, NUMERIC_WAVE)
+
+	BackupCacheWaves()
+
+	RenameDataFolderToUniqueName(GetCacheFolderAS(), "_old")
+
+	RestoreCacheWaves()
+
+	WAVE/Z match = CA_TryFetchingEntryFromCache(key)
+	CHECK_WAVE(match, NUMERIC_WAVE)
+End

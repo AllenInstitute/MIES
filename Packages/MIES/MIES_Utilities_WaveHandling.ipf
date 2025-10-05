@@ -1039,6 +1039,9 @@ threadsafe Function ChangeFreeWaveName(WAVE wv, string name)
 	ASSERT_TS(IsFreeWave(wv), "Only works with free waves")
 	ASSERT_TS(IsValidObjectName(name), "name is not a valid object name")
 
+	/// @todo workaround WM issue #7587 as MoveWave clears wv
+	ASSERT_TS(!IsWaveRefWave(wv), "Broken with wave reference waves")
+
 	DFREF dfr = NewFreeDataFolder()
 
 	MoveWave wv, dfr:$name
