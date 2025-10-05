@@ -551,31 +551,47 @@ threadsafe Function/WAVE DeepCopyWaveRefWave(WAVE/WAVE src, [variable dimension,
 			continue
 		endif
 
-		if(ParamIsDefault(dimension))
-			Duplicate/FREE srcWave, dstWave
-		else
-			if(!ParamIsDefault(indexWave))
-				index = indexWave[i]
+		if(IsWaveRefWave(srcWave))
+			if(ParamIsDefault(dimension) && ParamIsDefault(index) && ParamIsDefault(indexWave))
+				WAVE dstWave = DeepCopyWaveRefWave(srcWave)
+			elseif(!ParamIsDefault(dimension))
+				if(!ParamIsDefault(index))
+					WAVE dstWave = DeepCopyWaveRefWave(srcWave, dimension = dimension, index = index)
+				elseif(!ParamIsDefault(indexWave))
+					WAVE dstWave = DeepCopyWaveRefWave(srcWave, dimension = dimension, indexWave = indexWave)
+				else
+					FATAL_ERROR("Invalid case with dimension")
+				endif
+			else
+				FATAL_ERROR("Invalid case")
 			endif
+		else
+			if(ParamIsDefault(dimension))
+				Duplicate/FREE srcWave, dstWave
+			else
+				if(!ParamIsDefault(indexWave))
+					index = indexWave[i]
+				endif
 
-			switch(dimension)
-				case ROWS:
-					Duplicate/FREE/R=[index][][][] srcWave, dstWave
-					break
-				case COLS:
-					Duplicate/FREE/R=[][index][][] srcWave, dstWave
-					break
-				case LAYERS:
-					Duplicate/FREE/R=[][][index][] srcWave, dstWave
-					break
-				case CHUNKS:
-					Duplicate/FREE/R=[][][][index] srcWave, dstWave
-					break
-				default:
-					break
-			endswitch
+				switch(dimension)
+					case ROWS:
+						Duplicate/FREE/R=[index][][][] srcWave, dstWave
+						break
+					case COLS:
+						Duplicate/FREE/R=[][index][][] srcWave, dstWave
+						break
+					case LAYERS:
+						Duplicate/FREE/R=[][][index][] srcWave, dstWave
+						break
+					case CHUNKS:
+						Duplicate/FREE/R=[][][][index] srcWave, dstWave
+						break
+					default:
+						break
+				endswitch
 
-			ReduceWaveDimensionality(dstWave, minDimension = dimension)
+				ReduceWaveDimensionality(dstWave, minDimension = dimension)
+			endif
 		endif
 
 		dst[i] = dstWave
