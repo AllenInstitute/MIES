@@ -3313,7 +3313,7 @@ End
 Function DAP_ChangeHeadStageMode(string device, variable clampMode, variable headstage, variable options)
 
 	string iZeroCtrl, VCctrl, ICctrl, headstageCtrl, ctrl
-	variable activeHS, testPulseMode, oppositeMode, DAC, ADC, i, oldTab, oldState, newSliderPos
+	variable activeHS, testPulseMode, oppositeMode, DAC, ADC, i, oldTab, oldState, newSliderPos, saveTPDisabled
 
 	AI_AssertOnInvalidClampMode(clampMode)
 	DAP_AbortIfUnlocked(device)
@@ -3349,6 +3349,8 @@ Function DAP_ChangeHeadStageMode(string device, variable clampMode, variable hea
 			testPulseMode = TP_StopTestPulse(device)
 		endif
 	endif
+
+	saveTPDisabled = IsControlDisabled(device, "check_Settings_TP_SaveTP")
 
 	Make/FREE/N=(NUM_HEADSTAGES) clampModeChange
 	Make/FREE/N=(NUM_HEADSTAGES) oldClampMode = GuiState[p][%HSmode]
@@ -3389,7 +3391,7 @@ Function DAP_ChangeHeadStageMode(string device, variable clampMode, variable hea
 				continue
 			endif
 
-			PUB_ClampModeChange(device, i, oldClampMode[i], clampMode)
+			PUB_ClampModeChange(device, i, oldClampMode[i], clampMode, guiState[0][%check_Settings_TP_SaveTP], saveTPDisabled)
 		endfor
 
 		// we are done
@@ -3419,7 +3421,7 @@ Function DAP_ChangeHeadStageMode(string device, variable clampMode, variable hea
 			continue
 		endif
 
-		PUB_ClampModeChange(device, i, oldClampMode[i], clampMode)
+		PUB_ClampModeChange(device, i, oldClampMode[i], clampMode, guiState[0][%check_Settings_TP_SaveTP], saveTPDisabled)
 	endfor
 End
 
