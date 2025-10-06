@@ -265,7 +265,8 @@ End
 /// You have to manually save before, see SaveExperimentWrapper()
 Function NewExperiment()
 
-	Execute/P/Q "BackupCacheWaves()"
+	// not yet working on rig5
+	// Execute/P/Q "BackupCacheWaves()"
 	Execute/P/Q "NEWEXPERIMENT "
 	// restoring is done in IgorStartOrNewHook
 End
