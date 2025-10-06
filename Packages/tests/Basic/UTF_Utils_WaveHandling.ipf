@@ -706,6 +706,28 @@ static Function TestDeepCopyWaveRefWave()
 	catch
 		PASS()
 	endtry
+
+	// recursive wave ref waves 0 (outside) to 3 (very inside)
+	Make/FREE/WAVE/N=1 wvLevel0, wvLevel1, wvLevel2, wvLevel3
+	Make/FREE data = p
+
+	wvLevel0[0] = wvLevel1
+	wvLevel1[0] = wvLevel2
+	wvLevel2[0] = wvLevel3
+	wvLevel3[0] = data
+
+	WAVE/WAVE   wvLevel0Cpy = DeepCopyWaveRefWave(wvLevel0)
+	WAVE/WAVE   wvLevel1Cpy = wvLevel0Cpy[0]
+	WAVE/WAVE   wvLevel2Cpy = wvLevel1Cpy[0]
+	WAVE/WAVE   wvLevel3Cpy = wvLevel2Cpy[0]
+	WAVE/Z/WAVE dataCpy     = wvLevel3Cpy[0]
+
+	CHECK(!WaveRefsEqual(wvLevel0, wvLevel0Cpy))
+	CHECK(!WaveRefsEqual(wvLevel1, wvLevel1Cpy))
+	CHECK(!WaveRefsEqual(wvLevel2, wvLevel2Cpy))
+	CHECK(!WaveRefsEqual(wvLevel3, wvLevel3Cpy))
+	CHECK(!WaveRefsEqual(data, dataCpy))
+	CHECK_EQUAL_WAVES(data, dataCpy)
 End
 
 /// @}
@@ -1339,6 +1361,14 @@ Function CFW_ChecksParameters()
 
 	try
 		ChangeFreeWaveName(free, "123")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE/WAVE wref
+	try
+		ChangeFreeWaveName(wref, "123")
 		FAIL()
 	catch
 		PASS()
