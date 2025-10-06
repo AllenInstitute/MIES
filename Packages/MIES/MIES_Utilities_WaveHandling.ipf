@@ -521,10 +521,10 @@ End
 ///                  differing indizes per `src` entry, indices are not checked
 threadsafe Function/WAVE DeepCopyWaveRefWave(WAVE/WAVE src, [variable dimension, variable index, WAVE indexWave])
 
-	variable i, numEntries
+	variable i, j, k, l
+	variable numRows, numCols, numLayers, numChunks
 
 	ASSERT_TS(IsWaveRefWave(src), "Expected wave ref wave")
-	ASSERT_TS(DimSize(src, COLS) <= 1, "Expected a 1D wave for src")
 
 	if(!ParamIsDefault(dimension))
 		ASSERT_TS(dimension >= ROWS && dimension <= CHUNKS, "Invalid dimension")
@@ -537,64 +537,75 @@ threadsafe Function/WAVE DeepCopyWaveRefWave(WAVE/WAVE src, [variable dimension,
 
 	Duplicate/WAVE/FREE src, dst
 
-	numEntries = DimSize(src, ROWS)
+	numRows   = DimSize(src, ROWS)
+	numCols   = max(DimSize(src, COLS), 1)
+	numLayers = max(DimSize(src, LAYERS), 1)
+	numChunks = max(DimSize(src, CHUNKS), 1)
 
 	if(!ParamIsDefault(indexWave))
 		ASSERT_TS(IsNumericWave(indexWave), "Expected numeric wave")
-		ASSERT_TS(numEntries == numpnts(indexWave), "indexWave and src must have the same number of points")
+		ASSERT_TS(EqualWaves(src, indexWave, EQWAVES_DIMSIZE), "indexWave and src must have the same dimensions")
 	endif
 
-	for(i = 0; i < numEntries; i += 1)
-		WAVE/Z srcWave = dst[i]
+	for(i = 0; i < numRows; i += 1)
+		for(j = 0; j < numCols; j += 1)
+			for(k = 0; k < numLayers; k += 1)
+				for(l = 0; l < numChunks; l += 1)
 
-		if(!WaveExists(srcWave))
-			continue
-		endif
+					// linear indexing into a possible multi-dimensional wave
+					WAVE/Z srcWave = dst[i][j][k][l]
 
-		if(IsWaveRefWave(srcWave))
-			if(ParamIsDefault(dimension) && ParamIsDefault(index) && ParamIsDefault(indexWave))
-				WAVE dstWave = DeepCopyWaveRefWave(srcWave)
-			elseif(!ParamIsDefault(dimension))
-				if(!ParamIsDefault(index))
-					WAVE dstWave = DeepCopyWaveRefWave(srcWave, dimension = dimension, index = index)
-				elseif(!ParamIsDefault(indexWave))
-					WAVE dstWave = DeepCopyWaveRefWave(srcWave, dimension = dimension, indexWave = indexWave)
-				else
-					FATAL_ERROR("Invalid case with dimension")
-				endif
-			else
-				FATAL_ERROR("Invalid case")
-			endif
-		else
-			if(ParamIsDefault(dimension))
-				Duplicate/FREE srcWave, dstWave
-			else
-				if(!ParamIsDefault(indexWave))
-					index = indexWave[i]
-				endif
+					if(!WaveExists(srcWave))
+						continue
+					endif
 
-				switch(dimension)
-					case ROWS:
-						Duplicate/FREE/R=[index][][][] srcWave, dstWave
-						break
-					case COLS:
-						Duplicate/FREE/R=[][index][][] srcWave, dstWave
-						break
-					case LAYERS:
-						Duplicate/FREE/R=[][][index][] srcWave, dstWave
-						break
-					case CHUNKS:
-						Duplicate/FREE/R=[][][][index] srcWave, dstWave
-						break
-					default:
-						break
-				endswitch
+					if(IsWaveRefWave(srcWave))
+						if(ParamIsDefault(dimension) && ParamIsDefault(index) && ParamIsDefault(indexWave))
+							WAVE dstWave = DeepCopyWaveRefWave(srcWave)
+						elseif(!ParamIsDefault(dimension))
+							if(!ParamIsDefault(index))
+								WAVE dstWave = DeepCopyWaveRefWave(srcWave, dimension = dimension, index = index)
+							elseif(!ParamIsDefault(indexWave))
+								WAVE dstWave = DeepCopyWaveRefWave(srcWave, dimension = dimension, indexWave = indexWave)
+							else
+								FATAL_ERROR("Invalid case with dimension")
+							endif
+						else
+							FATAL_ERROR("Invalid case")
+						endif
+					else
+						if(ParamIsDefault(dimension))
+							Duplicate/FREE srcWave, dstWave
+						else
+							if(!ParamIsDefault(indexWave))
+								index = indexWave[i][j][k][l]
+							endif
 
-				ReduceWaveDimensionality(dstWave, minDimension = dimension)
-			endif
-		endif
+							switch(dimension)
+								case ROWS:
+									Duplicate/FREE/R=[index][][][] srcWave, dstWave
+									break
+								case COLS:
+									Duplicate/FREE/R=[][index][][] srcWave, dstWave
+									break
+								case LAYERS:
+									Duplicate/FREE/R=[][][index][] srcWave, dstWave
+									break
+								case CHUNKS:
+									Duplicate/FREE/R=[][][][index] srcWave, dstWave
+									break
+								default:
+									break
+							endswitch
 
-		dst[i] = dstWave
+							ReduceWaveDimensionality(dstWave, minDimension = dimension)
+						endif
+					endif
+
+					dst[i][j][k][l] = dstWave
+				endfor
+			endfor
+		endfor
 	endfor
 
 	return dst
