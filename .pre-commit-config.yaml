@@ -17,7 +17,7 @@ exclude: |
          ) # end alternations
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.3.0
+  rev: v6.0.0
   hooks:
   - id: check-added-large-files
   - id: fix-byte-order-marker
@@ -33,11 +33,31 @@ repos:
   - id: mixed-line-ending
   - id: trailing-whitespace
 - repo: https://github.com/sirosen/texthooks
-  rev: 0.4.0
+  rev: 0.7.1
   hooks:
   - id: forbid-bidi-controls
 - repo: https://github.com/psf/black-pre-commit-mirror
-  rev: 25.1.0
+  rev: 25.9.0
   hooks:
     - id: black
-      language_version: python3.11
+      language_version: python3.13
+- repo: local
+  hooks:
+    - id: ipt-format-and-lint
+      name: Make Igor Pro code fantastic
+      language: script
+      files: \.ipf$
+      exclude: |
+               (?x) # verbose re
+               ( # start alternations
+               ACL_TabUtilities.ipf|
+               ACL_UserdataEditor.ipf|
+               ZeroMQ_Interop.ipf
+               )
+      entry: ./tools/run-ipt.sh lint --noreturn-func=FATAL_ERROR|SFH_FATAL_ERROR|FAIL
+- repo: local
+  hooks:
+    - id: custom-check-code
+      name: Hacky code linting
+      language: script
+      entry: ./tools/check-code.sh

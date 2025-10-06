@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 git --version > /dev/null
 if [ $? -ne 0 ]
