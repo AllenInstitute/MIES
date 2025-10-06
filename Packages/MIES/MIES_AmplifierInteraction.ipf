@@ -813,7 +813,7 @@ End
 /// @return a 1D FREE wave containing amplifier serial numbers without leading zeroes
 static Function/WAVE AI_GetMCCSerialNumbers()
 
-	AI_FindConnectedAmps()
+	AI_FindConnectedAmps(rescanHardware = 1)
 	WAVE W_TelegraphServers = GetAmplifierTelegraphServers()
 	Duplicate/FREE/R=[][FindDimLabel(W_TelegraphServers, COLS, "SerialNum")] W_TelegraphServers, OpenMCCList
 	return GetUniqueEntries(OpenMCCList)
