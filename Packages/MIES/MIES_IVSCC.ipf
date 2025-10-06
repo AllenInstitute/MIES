@@ -396,3 +396,11 @@ Function IVS_DisableStoringEveryTP(string device)
 
 	PGC_SetAndActivateControl(device, "check_Settings_TP_SaveTP", val = CHECKBOX_UNSELECTED)
 End
+
+Function IVS_NewExperimentWithCacheAndAutoloader()
+
+	Execute/P/Q "BackupCacheWaves()"
+	Execute/P/Q "NEWEXPERIMENT "
+	// restoring is done in IgorStartOrNewHook
+	Execute/P/Q "CONF_AutoLoader()"
+End
