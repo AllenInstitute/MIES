@@ -157,3 +157,17 @@ static Function TestCacheBackupAndRestoreIntegration()
 	WAVE/Z match = CA_TryFetchingEntryFromCache(key)
 	CHECK_WAVE(match, NUMERIC_WAVE)
 End
+
+static Function TestCacheBackupAndRestoreNoWaves()
+
+	CA_FlushCache()
+
+	BackupCacheWaves()
+
+	DFREF dfr = GetCacheFolder()
+	CHECK(IsDataFolderEmpty(dfr))
+
+	RestoreCacheWaves()
+
+	CHECK(IsDataFolderEmpty(dfr))
+End
