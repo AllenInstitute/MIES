@@ -297,7 +297,7 @@ Renewal process
 - Ask Tim to get a new certificate. Takes around 4 weeks due to heavy administration involvement.
 - Exchange the old USB token with the new one
 - Physically destroy the old USB token
-- Install SafeNet on the machine if not yet done
+- Install [SafeNet](https://support.globalsign.com/code-signing/safenet-drivers#Windows) on the machine if not yet done
 - As you can't see the token when logged in via Remote Desktop (RDP) you need to workaround that:
 - Install Anydesk
 - Enable Unattended Access with a strong password
