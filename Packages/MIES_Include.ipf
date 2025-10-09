@@ -28,7 +28,7 @@
 ///@cond HIDDEN_SYMBOL
 #if IgorVersion() < 10 && (NumberByKey("BUILD", IgorInfo(0)) < 56565)
 #define TOO_OLD_IGOR
-#elif IgorVersion() == 10 && (NumberByKey("BUILD", IgorInfo(0)) < 29730)
+#elif IgorVersion() == 10 && (NumberByKey("BUILD", IgorInfo(0)) < 29756)
 #define TOO_OLD_IGOR
 #endif
 
