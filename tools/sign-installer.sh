@@ -31,7 +31,7 @@ then
   exit 1
 fi
 
-sign_tool_exe=/C/Program\ Files\ \(x86\)/Windows\ Kits/10/bin/10.0.19041.0/x64/signtool.exe
+sign_tool_exe=/C/Program\ Files\ \(x86\)/Windows\ Kits/10/bin/10.0.26100.0/x64/signtool.exe
 
 if [ ! -f "$sign_tool_exe" ]
 then
