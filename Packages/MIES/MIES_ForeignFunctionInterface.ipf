@@ -313,3 +313,13 @@ Function [variable ret, string errorMsg] FFI_TestPulseMD(string device, variable
 
 	return [ret, errorMsg]
 End
+
+Function FFI_TestPulseMDSingleResult(string device, variable action)
+
+	variable ret
+	string errorMsg
+
+	[ret, errorMsg] = FFI_TestPulseMD(device, action)
+
+	return ret
+End

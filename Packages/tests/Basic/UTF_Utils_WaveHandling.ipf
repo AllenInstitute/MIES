@@ -644,6 +644,14 @@ static Function TestDeepCopyWaveRefWave()
 		CHECK_EQUAL_WAVES(dataRef, cpy[i])
 	endfor
 
+	Make/FREE/N=(0)/WAVE src
+	WAVE/WAVE cpy = DeepCopyWaveRefWave(src)
+	CHECK_EQUAL_WAVES(src, cpy)
+
+	Make/FREE/N=(1, 2, 3, 4)/WAVE src
+	WAVE/WAVE cpy = DeepCopyWaveRefWave(src)
+	CHECK_EQUAL_WAVES(src, cpy)
+
 	try
 		WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension = ROWS, index = 0, indexWave = indexWave)
 		FAIL()

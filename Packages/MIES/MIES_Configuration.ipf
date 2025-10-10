@@ -475,7 +475,6 @@ Function CONF_RestoreWindow(string fName, [string rigFile])
 				wName = CONF_RestoreDAEphys(jsonID, fullFilePath)
 			else
 				wName = CONF_JSONToWindow(wName, restoreMask, jsonID)
-				print "Configuration restored for " + wName
 			endif
 		else
 			if(!CmpStr(panelType, PANELTAG_DAEPHYS))
@@ -487,7 +486,6 @@ Function CONF_RestoreWindow(string fName, [string rigFile])
 				DB_OpenDataBrowser()
 				wName = GetMainWindow(GetCurrentWindow())
 				wName = CONF_JSONToWindow(wName, restoreMask, jsonID)
-				print "Data Browser restored in window \"" + wName + "\""
 			elseif(!CmpStr(panelType, PANELTAG_WAVEBUILDER))
 				WBP_CreateWaveBuilderPanel()
 				wName = GetMainWindow(GetCurrentWindow())
