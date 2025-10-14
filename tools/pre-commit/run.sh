@@ -14,6 +14,8 @@ fi
 
 top_level=$(git rev-parse --show-toplevel)
 
+container_home="/home/ci"
+
 # build containter
 echo "##[group]Build Docker container 'pre-commit'"
 docker build                     \
@@ -24,9 +26,9 @@ docker build                     \
 echo "##[endgroup]"
 
 echo "##[group]Running pre-commit"
-docker run --rm -u $(id -u):$(id -g)                  \
-    --workdir=$HOME/repo                              \
-    -v "$(pwd)/.cache:$HOME/.cache:rw"                \
-    -v "$top_level:$HOME/repo" pre-commit             \
+docker run --rm -u $(id -u):$(id -g)                \
+    --workdir=$container_home/repo                  \
+    -v "$(pwd)/.cache:$container_home/.cache:rw"    \
+    -v "$top_level:$container_home/repo" pre-commit \
     pre-commit run --all-files --show-diff-on-failure
 echo "##[endgroup]"
