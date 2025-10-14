@@ -13,7 +13,7 @@ jobs:
     name: 🗑  Git garbage collection
     strategy:
       matrix:
-        runner: [Linux_I, Linux_II, Linux_III, Linux_IV, Linux_V, Windows_I, Windows_II, Windows_Cert, Windows_ITC, Windows_NI]
+        runner: [Linux_I, Linux_II, Linux_III, Linux_IV, Linux_V, Windows_I, Windows_II, Windows_Cert, Windows_ITC18, Windows_ITC1600, Windows_NI]
     runs-on: [ self-hosted, "${{ matrix.runner }}" ]
     steps:
       - name: Checkout repository
