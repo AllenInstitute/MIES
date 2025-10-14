@@ -191,7 +191,7 @@ Install required software
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 -  Install `Docker <https://docker.io>`__
--  Misc required software: ``dnf install git rg``
+-  Misc required software: ``dnf install git``
 
 Setup Github Actions runner
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
