@@ -25,6 +25,8 @@ docker build                     \
     $top_level/tools/pre-commit
 echo "##[endgroup]"
 
+mkdir -p "$(pwd)/.cache" > /dev/null
+
 echo "##[group]Running pre-commit"
 docker run --rm -u $(id -u):$(id -g)                \
     --workdir=$container_home/repo                  \
