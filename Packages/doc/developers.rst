@@ -202,25 +202,25 @@ Setup Github Actions runner
 -  Add a fitting label to the agent in the repository settings at
    Github (see `detailed description <https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/using-labels-with-self-hosted-runners>`)
 
-Setting up a continuous integration runner (Windows, ``ITC`` and ``NI``)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Setting up a continuous integration runner (Windows, ``ITC18``, ``ITC1600``  and ``NI``)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  Windows 10 with "Remote Desktop" enabled user
+-  Windows 10 with "Remote Desktop" and "SSH Server" enabled user
 -  Install the folllowing programs:
 
    -  Git (choose the installer option which will make the Unix tools
       available in cmd as well)
-   -  Multiclamp Commander
-   -  NIDAQ-mx driver package 19.0 or later
+   -  Multiclamp Commander, unzip the executable package to allow installing it
+   -  NIDAQ-mx driver package 2025 Q4 or later
    -  NIDAQ-mx XOP from WaveMetrics
-   -  HEKA Harware Drivers 2014-03 Windows.zip
+   -  HEKA Hardware Drivers 2014-03 Windows.zip from `here <https://github.com/AllenInstitute/ITCXOP2/issues/36>`__
    -  Igor Pro (latest required versions), the binary folder needs to be named ``IgorBinaries_x64_r$revision``
    -  Github Actions runner as described above
    -  VC Redistributable package from ``tools/installer/vc_redist.x64.exe``
 
 -  Start Igor Pro and open a DA\_Ephys panel, lock the device. This will
    not work, so follow the posted suggestions to get it working (registry fix and ASLR fix).
--  Add shortcuts to ``MC700B.exe`` into ``C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp``
+-  Add shortcuts to ``MC700B.exe`` and ``C:\actions-runner\run.cmd`` into ``C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp``
 
 Setting up a continuous integration runner (Windows, ``IgorPro``)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -235,6 +235,15 @@ Setting up a continuous integration runner (Windows, ``IgorPro``)
       but the application itself does not have to run)
    -  Github Actions runner as described above
    -  VC Redistributable package from ``tools/installer/vc_redist.x64.exe``
+
+Setting up a continuous integration runner (Windows, ``Certificate``)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Steps as above for the ``NI``/``ITC18``/``ITC1600`` machine plus:
+
+- Install Windows SDK from https://developer.microsoft.com/de-de/windows/downloads/windows-sdk
+- Install [SafeNet](https://support.globalsign.com/code-signing/safenet-drivers#Windows) on the machine if not yet done
+- Plugin the USB key with the EV-certificate
 
 Available CI servers
 ~~~~~~~~~~~~~~~~~~~~
@@ -257,7 +266,7 @@ The following labels are in use:
 
 - ``Windows``: Agents run on Windows with
 
-  - Windows 10
+  - Windows 11
 
 - ``Certificate``: Agent can sign installer packages
 
@@ -267,7 +276,7 @@ The following labels are in use:
 
   - Igor Pro (latest required versions)
 
-- ``ITC``: Agent can execute hardware tests with ITC18USB hardware
+- ``ITC18``: Agent can execute hardware tests with ITC18USB hardware
 
   - ITC18-USB hardware, 2 AD/DA channels are looped
   - MCC demo amplifier only
