@@ -3486,7 +3486,10 @@ static Function DAP_UpdateClampmodeTabs(string device, variable headStage, varia
 	AI_AssertOnInvalidClampMode(clampMode)
 
 	AI_SyncAmpStorageToGUI(device, headStage)
-	PGC_SetAndActivateControl(device, "tab_DataAcq_Amp", val = clampMode)
+
+	if(GetTabID(device, "tab_DataAcq_Amp") != clampMode)
+		PGC_SetAndActivateControl(device, "tab_DataAcq_Amp", val = clampMode)
+	endif
 
 	if(DAG_GetNumericalValue(device, "check_Settings_SyncMiesToMCC"))
 		AI_SyncGUIToAmpStorageAndMCCApp(device, headStage, clampMode)

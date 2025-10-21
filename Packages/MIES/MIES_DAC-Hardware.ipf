@@ -2581,7 +2581,6 @@ Function HW_NI_ReadDigital(string device, [variable DIOPort, variable DIOLine, v
 		lineGrouping = 0
 	else
 		lineGrouping = 1
-		ASSERT(DIOline <= fDAQmx_DIO_PortWidth(device, DIOport), "Line does not exist in port")
 		sprintf line, "/%s/port%d/line%d", device, DIOPort, DIOline
 	endif
 
