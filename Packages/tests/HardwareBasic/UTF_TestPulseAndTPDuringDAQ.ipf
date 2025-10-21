@@ -1464,7 +1464,8 @@ static Function TestTPPublishing([string str])
 
 	PrepareForPublishTest()
 
-	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
+	// let the TP run for around ~30s so that we get the wrap around in the ITCDataWave
+	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + 6 * TP_DURATION_S * 60), period=1, proc=StopTP_IGNORE
 End
 
 static Function TestTPPublishing_REENTRY([string str])

@@ -107,7 +107,7 @@ End
 Function TPM_BkrdTPFuncMD(STRUCT BackgroundStruct &s)
 
 	variable i, j, deviceID, fifoPos, hardwareType, checkAgain, updateInt, endOfPulse
-	variable fifoLatest, lastTP, now
+	variable fifoLatest, lastTP, now, lastAcqStartTimeUTC
 	variable channelNr, tpLengthPoints, err, doRestart
 	string device, fifoChannelName, fifoName, errMsg
 
@@ -136,6 +136,8 @@ Function TPM_BkrdTPFuncMD(STRUCT BackgroundStruct &s)
 
 		WAVE TPSettingsCalc = GetTPsettingsCalculated(device)
 
+		lastAcqStartTimeUTC = ParseIsO8601TimeStamp(RoStr(GetLastAcquisitionStartTime(device)))
+
 		switch(hardwareType)
 			case HARDWARE_SUTTER_DAC:
 				if(ROVar(GetSU_AcquisitionError(device)))
@@ -148,7 +150,7 @@ Function TPM_BkrdTPFuncMD(STRUCT BackgroundStruct &s)
 
 				lastTP = trunc(fifoLatest / TPSettingsCalc[%totalLengthPointsTP_ADC]) - 1
 				if(lastTP >= 0 && lastTP != ActiveDeviceList[i][%ActiveChunk])
-					SCOPE_UpdateOscilloscopeData(device, TEST_PULSE_MODE, chunk = lastTP)
+					SCOPE_UpdateOscilloscopeData(device, TEST_PULSE_MODE, chunk = lastTP, acqStartTimeUTC = lastAcqStartTimeUTC)
 					ActiveDeviceList[i][%ActiveChunk] = lastTP
 				endif
 
@@ -184,7 +186,7 @@ Function TPM_BkrdTPFuncMD(STRUCT BackgroundStruct &s)
 								SetScale/P x, 0, DimDelta(NIChannel, ROWS) * ONE_TO_MILLI, "ms", NIChannel
 							endfor
 
-							SCOPE_UpdateOscilloscopeData(device, TEST_PULSE_MODE, deviceID = deviceID)
+							SCOPE_UpdateOscilloscopeData(device, TEST_PULSE_MODE, deviceID = deviceID, acqStartTimeUTC = lastAcqStartTimeUTC)
 						catch
 							errMsg = GetRTErrMessage()
 							err    = ClearRTError()
@@ -209,6 +211,7 @@ Function TPM_BkrdTPFuncMD(STRUCT BackgroundStruct &s)
 						HW_NI_PrepareAcq(deviceID, TEST_PULSE_MODE)
 						HW_StartAcq(HARDWARE_NI_DAC, deviceID, triggerMode = HARDWARE_DAC_DEFAULT_TRIGGER)
 						tpCounter = 0
+						lastAcqStartTimeUTC = ParseIsO8601TimeStamp(RoStr(GetLastAcquisitionStartTime(device)))
 					endif
 				while(checkAgain)
 				break
@@ -242,7 +245,7 @@ Function TPM_BkrdTPFuncMD(STRUCT BackgroundStruct &s)
 				// Ensures that the new TP chunk isn't the same as the last one.
 				// This is required to keep the TP buffer in sync.
 				if(lastTP >= 0 && lastTP != ActiveDeviceList[i][%ActiveChunk])
-					SCOPE_UpdateOscilloscopeData(device, TEST_PULSE_MODE, chunk = lastTP)
+					SCOPE_UpdateOscilloscopeData(device, TEST_PULSE_MODE, chunk = lastTP, acqStartTimeUTC = lastAcqStartTimeUTC)
 					ActiveDeviceList[i][%ActiveChunk] = lastTP
 				endif
 

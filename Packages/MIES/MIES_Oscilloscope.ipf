@@ -467,21 +467,26 @@ End
 /// @brief Prepares a subset/copy of `DAQDataWave` for displaying it in the
 /// oscilloscope panel
 ///
-/// @param device  panel title
-/// @param dataAcqOrTP One of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-/// @param chunk       Only for #TEST_PULSE_MODE and multi device mode; Selects
-///                    the testpulse to extract
-/// @param fifoPos     Position of the hardware DAQ fifo to keep track of
-///                    the position which will be written next
-/// @param deviceID    device ID
-Function SCOPE_UpdateOscilloscopeData(string device, variable dataAcqOrTP, [variable chunk, variable fifoPos, variable deviceID])
+/// @param device          panel title
+/// @param dataAcqOrTP     One of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+/// @param chunk           Only for #TEST_PULSE_MODE and multi device mode; Selects
+///                        the testpulse to extract
+/// @param fifoPos         Position of the hardware DAQ fifo to keep track of
+///                        the position which will be written next
+/// @param deviceID        device ID
+/// @param acqStartTimeUTC Timestamp with igor epoch in UTC timezone when the acquisition started, see HW_GetAcquisitionStartTimestamp()
+Function SCOPE_UpdateOscilloscopeData(string device, variable dataAcqOrTP, [variable chunk, variable fifoPos, variable deviceID, variable acqStartTimeUTC])
 
 	STRUCT TPAnalysisInput tpInput
 	variable i, j
 	variable tpChannels, numADCs, numDACs, tpLengthPointsADC, tpStart, tpEnd, tpStartPos
-	variable TPChanIndex, saveTP, clampAmp, timeSinceAcqStart, timeOfAcqStartUTC, tpCounter
+	variable TPChanIndex, saveTP, clampAmp, timeSinceAcqStart, tpCounter
 	variable headstage, fifoLatest, channelIndex
 	string hsList
+
+	if(dataAcqOrTP == TEST_PULSE_MODE)
+		ASSERT(!ParamIsDefault(acqStartTimeUTC), "optional parameter acqStartTimeUTC is required in TEST_PULSE_MODE")
+	endif
 
 	variable hardwareType = GetHardwareType(device)
 	switch(hardwareType)
@@ -547,8 +552,6 @@ Function SCOPE_UpdateOscilloscopeData(string device, variable dataAcqOrTP, [vari
 		numDACs = DimSize(DACs, ROWS)
 		numADCs = DimSize(ADCs, ROWS)
 
-		timeOfAcqStartUTC = ParseISO8601TimeStamp(ROStr(GetLastAcquisitionStartTime(device)))
-
 		// note: currently this works for multiplier = 1 only, see DC_PlaceDataInDAQDataWave
 		Make/FREE/N=(tpLengthPointsADC) channelData
 		WAVE tpInput.data = channelData
@@ -597,9 +600,11 @@ Function SCOPE_UpdateOscilloscopeData(string device, variable dataAcqOrTP, [vari
 
 			// Use same time for all headstages
 			timeSinceAcqStart     = (tpCounter + i) * tpInput.samplingIntervalDAC * tpInput.tpLengthPointsDAC * MILLI_TO_ONE
-			tpInput.timeStampUTC  = timeOfAcqStartUTC + timeSinceAcqStart
+			tpInput.timeStampUTC  = acqStartTimeUTC + timeSinceAcqStart
 			tpInput.timeStamp     = UTCTimeToLocal(tpInput.timeStampUTC)
 			tpInput.sendTPMessage = 1
+
+			ASSERT(tpInput.timeStampUTC < DateTimeInUTC(), "Invalid timestamp ordering")
 
 			for(j = 0; j < numADCs; j += 1)
 				if(ADCmode[j] == DAQ_CHANNEL_TYPE_TP)
