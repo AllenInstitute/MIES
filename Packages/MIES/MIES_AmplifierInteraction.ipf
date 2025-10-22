@@ -1666,7 +1666,7 @@ End
 /// @returns return value (for getters, respects `usePrefixes`), success (`0`) or error (`NaN`).
 static Function AI_SendToAmp(string device, variable headStage, variable mode, variable func, variable accessType, [variable checkBeforeWrite, variable usePrefixes, variable selectAmp, variable value])
 
-	variable ret, headstageMode, scale
+	variable ret, headstageMode, scale, nonScaledValue
 	string str
 
 	ASSERT(func > MCC_BEGIN_INVALID_FUNC && func < MCC_END_INVALID_FUNC, "MCC function constant is out for range")
@@ -1718,6 +1718,7 @@ static Function AI_SendToAmp(string device, variable headStage, variable mode, v
 	sprintf str, "headStage=%d, mode=%d, func=%d, value(passed)=%g, scale=%g\r", headStage, mode, func, value, scale
 	DEBUGPRINT(str)
 
+	nonScaledValue = value
 	value *= scale
 
 	if(checkBeforeWrite)
@@ -1752,7 +1753,7 @@ static Function AI_SendToAmp(string device, variable headStage, variable mode, v
 	endswitch
 
 	if(accessType == MCC_WRITE)
-		PUB_AmplifierSettingChange(device, headstage, mode, func, value)
+		PUB_AmplifierSettingChange(device, headstage, mode, func, nonScaledValue)
 	endif
 
 	if(!IsFinite(ret))

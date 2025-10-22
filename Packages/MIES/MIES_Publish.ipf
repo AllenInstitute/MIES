@@ -976,6 +976,8 @@ End
 ///    }
 ///
 /// \endrst
+///
+/// The parameter `value` requires MIES units (SI units with prefixes, so `mV` instead of `V`).
 Function PUB_AmplifierSettingChange(string device, variable headstage, variable mode, variable func, variable value)
 
 	variable jsonID
