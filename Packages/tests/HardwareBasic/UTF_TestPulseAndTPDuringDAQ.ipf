@@ -1638,3 +1638,51 @@ static Function TestTPPublishing_REENTRY([string str])
 	CHECK(foundHS0)
 	CHECK(foundHS1)
 End
+
+static Function TestTPPublishingIEqualZero_PreAcq(string device)
+
+	/// @todo workaround inconsistent gain handling with I=0, see https://github.com/AllenInstitute/MIES/issues/1431
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPAmplitudeIC", val = -5)
+End
+
+/// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
+static Function TestTPPublishingIEqualZero([string str])
+
+	TUFXOP_Clear/Z/N=(ZMQ_FILTER_TPRESULT_1S)
+	TUFXOP_Clear/Z/N=(ZMQ_FILTER_TPRESULT_5S)
+	TUFXOP_Clear/Z/N=(ZMQ_FILTER_TPRESULT_10S)
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1" + \
+	                             "__HS0_DA0_AD0_CM:I=0:")
+
+	AcquireData_NG(s, str)
+
+	PrepareForPublishTest()
+
+	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTP_IGNORE
+End
+
+static Function TestTPPublishingIEqualZero_REENTRY([string str])
+
+	variable sweepNo, objectType, jsonId
+	string filter
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, NaN)
+
+	WaitAndCheckStoredTPs_IGNORE(str, 1)
+
+	WAVE/T filters = DataGenerators#PUB_TPFilters()
+	for(filter : filters)
+		jsonId = FetchAndParseMessage(filter)
+
+		objectType = JSON_GetType(jsonID, "/amplifier")
+		CHECK_EQUAL_VAR(objectType, JSON_OBJECT)
+		WAVE/Z/T elements = JSON_GetKeys(jsonID, "/amplifier")
+		CHECK_WAVE(elements, FREE_WAVE | TEXT_WAVE)
+		CHECK_EQUAL_VAR(DimSize(elements, ROWS), 0)
+	endfor
+End
