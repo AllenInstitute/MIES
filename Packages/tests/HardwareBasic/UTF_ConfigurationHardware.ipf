@@ -318,7 +318,7 @@ static Function CheckIfConfigurationRestoresDAEphysWithoutAmp([string str])
 	KillOrMoveToTrash(dfr = root:MIES)
 
 	CONF_RestoreWindow(rewrittenConfig)
-	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
+	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTP_IGNORE
 End
 
 static Function CheckIfConfigurationRestoresDAEphysWithoutAmp_REENTRY([string str])

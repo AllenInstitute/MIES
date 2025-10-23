@@ -1027,7 +1027,7 @@ static Function CheckThatTPsCanBeFound([string str])
 
 	AcquireData_NG(s, str)
 
-	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
+	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTP_IGNORE
 End
 
 static Function CheckThatTPsCanBeFound_REENTRY([string str])
@@ -1160,7 +1160,7 @@ static Function RunPowerSpectrum([string str])
 
 	AcquireData_NG(s, str)
 
-	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
+	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTP_IGNORE
 End
 
 static Function RunPowerSpectrum_REENTRY([string str])
@@ -1225,7 +1225,7 @@ static Function ExportIntoNWB([string str])
 
 	AcquireData_NG(s, str)
 
-	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
+	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTP_IGNORE
 End
 
 static Function ExportIntoNWB_REENTRY([string str])
@@ -1242,7 +1242,7 @@ static Function ExportIntoNWB_REENTRY([string str])
 	PGC_SetAndActivateControl(str, "Check_Settings_NwbExport", val = CHECKBOX_SELECTED)
 	PGC_SetAndActivateControl(str, "StartTestPulseButton")
 
-	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
+	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTP_IGNORE
 End
 
 static Function ExportIntoNWB_REENTRY_REENTRY([string str])
@@ -1270,7 +1270,7 @@ static Function GetStoredTPTest([string str])
 
 	AcquireData_NG(s, str)
 
-	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
+	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTP_IGNORE
 End
 
 static Function GetStoredTPTest_REENTRY([string str])
@@ -1409,7 +1409,7 @@ static Function TPZerosDAC([STRUCT IUTF_MDATA &md])
 
 	AcquireData_NG(s, md.s0)
 
-	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
+	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTP_IGNORE
 End
 
 static Function TPZerosDAC_REENTRY([STRUCT IUTF_MDATA &md])
@@ -1464,7 +1464,8 @@ static Function TestTPPublishing([string str])
 
 	PrepareForPublishTest()
 
-	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
+	// let the TP run for around ~30s so that we get the wrap around in the ITCDataWave
+	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + 6 * TP_DURATION_S * 60), period=1, proc=StopTP_IGNORE
 End
 
 static Function TestTPPublishing_REENTRY([string str])

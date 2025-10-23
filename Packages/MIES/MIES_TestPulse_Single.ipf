@@ -31,6 +31,8 @@ End
 /// @ingroup BackgroundFunctions
 Function TPS_TestPulseFunc(STRUCT BackgroundStruct &s)
 
+	variable lastAcqStartTimeUTC
+
 	SVAR runningDevice = $GetRunningSingleDevice()
 	// create a copy as runningDevice is killed in TPS_StopTestPulseSingleDevice
 	// but we still need it afterwards
@@ -47,6 +49,7 @@ Function TPS_TestPulseFunc(STRUCT BackgroundStruct &s)
 
 	HW_ITC_ResetFifo(deviceID, flags = HARDWARE_ABORT_ON_ERROR)
 	HW_StartAcq(HARDWARE_ITC_DAC, deviceID, flags = HARDWARE_ABORT_ON_ERROR)
+	lastAcqStartTimeUTC = ParseIsO8601TimeStamp(RoStr(GetLastAcquisitionStartTime(device)))
 
 	do
 		// nothing
@@ -54,7 +57,7 @@ Function TPS_TestPulseFunc(STRUCT BackgroundStruct &s)
 
 	HW_StopAcq(HARDWARE_ITC_DAC, deviceID, prepareForDAQ = 1, zeroDAC = 1, flags = HARDWARE_ABORT_ON_ERROR)
 
-	SCOPE_UpdateOscilloscopeData(device, TEST_PULSE_MODE)
+	SCOPE_UpdateOscilloscopeData(device, TEST_PULSE_MODE, acqStartTimeUTC = lastAcqStartTimeUTC)
 
 	SCOPE_UpdateGraph(device, TEST_PULSE_MODE)
 
@@ -131,7 +134,7 @@ End
 /// @return zero if time elapsed, one if the Testpulse was manually stopped
 Function TPS_StartTestPulseForeground(string device, [variable elapsedTime])
 
-	variable i, refTime, timeLeft
+	variable i, refTime, timeLeft, lastAcqStartTimeUTC
 	string oscilloscopeSubwindow
 
 	if(ParamIsDefault(elapsedTime))
@@ -147,13 +150,14 @@ Function TPS_StartTestPulseForeground(string device, [variable elapsedTime])
 		DoXOPIdle
 		HW_ITC_ResetFifo(deviceID)
 		HW_StartAcq(HARDWARE_ITC_DAC, deviceID, flags = HARDWARE_ABORT_ON_ERROR)
+		lastAcqStartTimeUTC = ParseIsO8601TimeStamp(RoStr(GetLastAcquisitionStartTime(device)))
 
 		do
 			// nothing
 		while(HW_ITC_MoreData(deviceID, flags = (HARDWARE_ABORT_ON_ERROR)))
 
 		HW_StopAcq(HARDWARE_ITC_DAC, deviceID, prepareForDAQ = 1, zeroDAC = 1, flags = HARDWARE_ABORT_ON_ERROR)
-		SCOPE_UpdateOscilloscopeData(device, TEST_PULSE_MODE)
+		SCOPE_UpdateOscilloscopeData(device, TEST_PULSE_MODE, acqStartTimeUTC = lastAcqStartTimeUTC)
 
 		SCOPE_UpdateGraph(device, TEST_PULSE_MODE)
 
