@@ -58,6 +58,7 @@ repos:
 - repo: local
   hooks:
     - id: custom-check-code
+      pass_filenames: false
       name: Hacky code linting
       language: script
       entry: ./tools/check-code.sh
