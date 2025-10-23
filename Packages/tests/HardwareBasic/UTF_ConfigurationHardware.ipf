@@ -101,7 +101,7 @@ End
 static Function CheckIfConfigurationRestoresMCCFilterGain([string str])
 
 	string rewrittenConfig, fName, path
-	variable val, gain, filterFreq, headStage, jsonID
+	variable val, gain, filterFreq, headStage, jsonID, biasCurrent
 
 	PrepareForPublishTest()
 
@@ -113,6 +113,15 @@ static Function CheckIfConfigurationRestoresMCCFilterGain([string str])
 	                             "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetB_DA_0:")
 
 	AcquireData_NG(s, str)
+
+	biasCurrent = 123
+	PGC_SetAndActivateControl(str, "setvar_DataAcq_Hold_IC", val = biasCurrent)
+
+	jsonID = FetchAndParseMessage(AMPLIFIER_SET_VALUE)
+	path = "/amplifier action/BiasCurrent"
+	CHECK_EQUAL_STR(JSON_GetString(jsonID, path + "/unit"), "pA")
+	CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, path + "/value"), biasCurrent)
+	JSON_Release(jsonID)
 
 	gain       = 5
 	filterFreq = 6
