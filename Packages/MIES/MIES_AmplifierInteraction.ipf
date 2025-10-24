@@ -1413,6 +1413,8 @@ threadsafe Function/WAVE AI_GetFunctionConstantForClampMode(variable clampMode)
 		case I_CLAMP_MODE:
 			list = AMPLIFIER_CONTROLS_IC
 			break
+		case I_EQUAL_ZERO_MODE:
+			return $""
 		default:
 			FATAL_ERROR("Invalid clamp mode")
 	endswitch
