@@ -54,7 +54,7 @@ repos:
                ACL_UserdataEditor.ipf|
                ZeroMQ_Interop.ipf
                )
-      entry: ./tools/run-ipt.sh lint --noreturn-func=FATAL_ERROR|SFH_FATAL_ERROR|FAIL
+      entry: ./tools/run-ipt.sh lint -i --noreturn-func=FATAL_ERROR|SFH_FATAL_ERROR|FAIL
 - repo: local
   hooks:
     - id: custom-check-code

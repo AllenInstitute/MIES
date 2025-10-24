@@ -210,7 +210,7 @@ Function TPM_BkrdTPFuncMD(STRUCT BackgroundStruct &s)
 						HW_NI_StopAcq(deviceID)
 						HW_NI_PrepareAcq(deviceID, TEST_PULSE_MODE)
 						HW_StartAcq(HARDWARE_NI_DAC, deviceID, triggerMode = HARDWARE_DAC_DEFAULT_TRIGGER)
-						tpCounter = 0
+						tpCounter           = 0
 						lastAcqStartTimeUTC = ParseIsO8601TimeStamp(RoStr(GetLastAcquisitionStartTime(device)))
 					endif
 				while(checkAgain)
