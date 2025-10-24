@@ -1719,7 +1719,7 @@ static Function AI_SendToAmp(string device, variable headStage, variable mode, v
 	DEBUGPRINT(str)
 
 	nonScaledValue = value
-	value *= scale
+	value         *= scale
 
 	if(checkBeforeWrite)
 		ret = AI_ReadFromMCC(func)
