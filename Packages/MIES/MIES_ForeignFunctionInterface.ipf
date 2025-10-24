@@ -317,7 +317,7 @@ End
 Function FFI_TestPulseMDSingleResult(string device, variable action)
 
 	variable ret
-	string errorMsg
+	string   errorMsg
 
 	[ret, errorMsg] = FFI_TestPulseMD(device, action)
 
