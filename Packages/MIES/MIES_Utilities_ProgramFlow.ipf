@@ -9,6 +9,8 @@
 /// @file MIES_Utilities_ProgramFlow.ipf
 /// @brief utility functions for program flow
 
+static StrConstant STACKTRACE_DEFAULT_HEADER = "Stacktrace"
+
 /// @brief Helper function to ensure that there is no pending RTE before entering a critical section.
 ///        If there is a pending RTE then a BUG message is output (which is a CI error).
 ///
@@ -198,6 +200,27 @@ threadsafe Function/S GetStackTrace([string prefix])
 	return output
 End
 
+/// @brief Get the stacktrace header
+///
+/// This takes into account the information provided by the ZeroMQ XOP interceptor, see ZeroMQ_Interceptor()
+threadsafe Function/S GetStacktraceHeader()
+
+	string stacktraceHeader
+
+	SVAR zmqXOPInfo = $GetZeroMQXOPCallInfo()
+
+	if(!cmpstr(zmqXOPInfo, ZeroMQ_INFO_UNDEFINED))
+		return STACKTRACE_DEFAULT_HEADER
+	endif
+
+	sprintf stacktraceHeader, "%s (%s)", STACKTRACE_DEFAULT_HEADER, zmqXOPInfo
+
+	// the interceptor function is not called after an abort, so we need to reset it here
+	zmqXOPInfo = ZeroMQ_INFO_UNDEFINED
+
+	return stacktraceHeader
+End
+
 /// @brief Low overhead function to check assertions
 ///
 /// @param var            if zero an error message is printed into the history and procedure execution is aborted,
@@ -219,6 +242,7 @@ End
 /// UTF_NOINSTRUMENTATION
 Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 
+	string stracktrace, miesVersionStr, lockedDevicesStr, device
 	variable doCallDebugger
 
 	try
@@ -244,6 +268,12 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 		extendedOutput = 1
 #endif // AUTOMATED_TESTING_DEBUGGING
 #endif // AUTOMATED_TESTING
+
+		stacktraceHeader = GetStacktraceHeader()
+
+		if(cmpstr(stacktraceHeader, STACKTRACE_DEFAULT_HEADER))
+			doCallDebugger = 0
+		endif
 
 		// Recursion detection, if ASSERT appears multiple times in StackTrace
 		if(IsFunctionCalledRecursively())
@@ -321,6 +351,8 @@ threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedO
 		extendedOutput = 1
 #endif // AUTOMATED_TESTING_DEBUGGING
 #endif // AUTOMATED_TESTING
+
+		stacktraceHeader = GetStacktraceHeader()
 
 		// Recursion detection, if ASSERT_TS appears multiple times in StackTrace
 		if(IsFunctionCalledRecursively())

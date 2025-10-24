@@ -2945,3 +2945,5 @@ StrConstant IPA_SET_V_HOLD         = "VHold"
 StrConstant IPA_SET_V_HOLD_ON      = "VHoldOn"
 StrConstant IPA_SET_V_MON          = "VMon"
 ///@}
+
+StrConstant ZeroMQ_INFO_UNDEFINED = "undefined"
