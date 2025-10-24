@@ -118,7 +118,7 @@ static Function CheckIfConfigurationRestoresMCCFilterGain([string str])
 	PGC_SetAndActivateControl(str, "setvar_DataAcq_Hold_IC", val = biasCurrent)
 
 	jsonID = FetchAndParseMessage(AMPLIFIER_SET_VALUE)
-	path = "/amplifier action/BiasCurrent"
+	path   = "/amplifier action/BiasCurrent"
 	CHECK_EQUAL_STR(JSON_GetString(jsonID, path + "/unit"), "pA")
 	CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, path + "/value"), biasCurrent)
 	JSON_Release(jsonID)
