@@ -1,6 +1,7 @@
 #pragma TextEncoding     = "UTF-8"
-#pragma rtGlobals        = 3 // Use modern global access method and strict wave access.
+#pragma rtGlobals        = 3          // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors = 1
+#pragma DefaultTab       = {3, 20, 4} // Set default tab width in Igor Pro 9 and later
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName = MIES_FFI
@@ -322,4 +323,254 @@ Function FFI_TestPulseMDSingleResult(string device, variable action)
 	[ret, errorMsg] = FFI_TestPulseMD(device, action)
 
 	return ret
+End
+
+// for external callers to set manual pressure
+Function DoPressureManual(string device, variable headstage, [variable manualOnOff, variable targetPressure, variable userAccessOnOff])
+
+	// 0) Select the headstage
+
+	if(DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage") != headStage)
+		PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = headstage)
+	endif
+
+	// 1) Set the requested pressure value on the GUI control
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_SSPressure", val = targetPressure)
+
+	// 2) Check the current pressure mode
+	variable currentMode = P_GetPressureMethod(device, headstage)
+
+	// 3) If we want manual mode ON...
+	if(manualOnOff == 1)
+		// ...and we are NOT in manual mode yet, switch to manual
+		if(currentMode != PRESSURE_METHOD_MANUAL)
+			P_SetManual(device, "button_DataAcq_SSSetPressureMan")
+		endif
+	else
+		// If we want manual mode OFF...
+		// ...and we ARE currently in manual mode, switch to atmospheric (or the "off" state)
+		if(currentMode == PRESSURE_METHOD_MANUAL)
+			P_SetManual(device, "button_DataAcq_SSSetPressureMan")
+		endif
+	endif
+
+End
+
+// -----------------------------
+// FFI: GetPressureWithOptionToSetSourceAndPressure
+// -----------------------------
+/// @brief FFI entry: set/rout pressure per 'requestedSource' and/or set regulator setpoint.
+/// @param device          		MIES device name
+/// @param headstage       		target headstage index
+/// @param requestedSource		"atmosphere" | "regulator" | "user" | "default" | ""
+/// @param requestedPressure 	regulator setpoint (psi; <9.9, >-9.9) | NaN
+/// @return regulatorPressure, pipettePressure
+
+Function [string source, variable regulatorPressure] FFI_GetWithOptionToSetPressure(string device, variable headstage, string requestedSource, variable requestedPressure)
+
+	// ---- Safety & validation ----
+	DAP_AbortIfUnlocked(device)
+	ASSERT(IsValidHeadstage(headstage), "Invalid headstage (0–7)")
+
+	// Normalize inputs
+	string src = TrimString(requestedSource)
+	// hoops to jump through because xop toolkit used for zeroMQ XOP does not support optional parameters
+	variable hasSetpoint = (numtype(requestedPressure) == 0) // finite number?
+	if(numtype(requestedPressure) == 1) // +/-INF -> treat as "no change"
+		hasSetpoint = 0
+	endif
+
+	// If a pressure pulse is still running, wait it out. Max pressure pulse time is 300 ms.
+	FFI_WaitForIdle(device, headstage)
+
+	// ---- Apply according to contract ----
+	// strswitch is case-insensitive in Igor
+	strswitch(src)
+
+		case "atmosphere":
+			// Route to atmosphere
+			if(hasSetpoint)
+				P_SetPressureMode(device, headstage, PRESSURE_METHOD_ATM)
+				PGC_SetAndActivateControl(Device, "setvar_DataAcq_SSPressure", val = requestedPressure)
+			else
+				P_SetPressureMode(device, headstage, PRESSURE_METHOD_ATM)
+			endif
+			P_PressureControl(device)
+			PGC_SetAndActivateControl(device, "check_DataAcq_Pressure_User", val = CHECKBOX_UNSELECTED)
+			break
+
+		case "regulator":
+			// Enter/keep manual; set setpoint if provided
+			if(hasSetpoint)
+				P_SetPressureMode(device, headstage, PRESSURE_METHOD_MANUAL, pressure = requestedPressure)
+			else
+				P_SetPressureMode(device, headstage, PRESSURE_METHOD_MANUAL)
+			endif
+			P_PressureControl(device)
+			PGC_SetAndActivateControl(device, "check_DataAcq_Pressure_User", val = CHECKBOX_UNSELECTED)
+
+			break
+
+		case "user":
+			// Optionally update regulator setpoint first (even though pipette will route to user)
+			if(hasSetpoint)
+				P_SetPressureMode(device, headstage, PRESSURE_METHOD_MANUAL, pressure = requestedPressure)
+				P_PressureControl(device)
+			endif
+			// Now route valves to the user line
+			PGC_SetAndActivateControl(device, "check_DataAcq_Pressure_User", val = CHECKBOX_SELECTED)
+			// Ensure valves reflect current mode/access explicitly
+			P_SetPressureValves(device, headstage,                                                        \
+			                    P_GetUserAccess(device, headstage, P_GetPressureMethod(device, headstage)))
+			break
+
+		case "default": // fallthrough
+		case "":
+			// No routing change; set manual setpoint only if provided
+			if(hasSetpoint)
+				PGC_SetAndActivateControl(Device, "setvar_DataAcq_SSPressure", val = requestedPressure)
+			endif
+			break
+
+		default:
+			// Unknown token -> treat like "default" (no routing change)
+			if(hasSetpoint)
+				PGC_SetAndActivateControl(Device, "setvar_DataAcq_SSPressure", val = requestedPressure)
+			endif
+			break
+	endswitch
+
+	// ---- Readback ----
+
+	[source, regulatorPressure] = ReadPressureSourceAndPressure(device, headstage)
+	return [source, regulatorPressure]
+End
+
+Function [string source, variable pressure] ReadPressureSourceAndPressure(string device, variable headstage)
+
+	WAVE PD = P_GetPressureDataWaveRef(device)
+	pressure = PD[headstage][%LastPressureCommand]
+
+	variable mode   = P_GetPressureMethod(device, headstage)
+	variable access = P_GetUserAccess(device, headstage, mode)
+
+	if(mode == PRESSURE_METHOD_ATM) // need to think about how to handle unimplemented manual pressure command versus implemented pressure command
+		source = "atmosphere"
+	elseif(access == ACCESS_USER)
+		source = "user"
+	else
+		source = "regulator"
+	endif
+
+	return [source, pressure]
+
+End
+
+// Max pressure pulse is 300 ms. Add a little slack for routing/GUI churn.
+static Constant kPressurePulseMaxMS  = 300
+static Constant kPressureWaitSlackMS = 150
+
+/// Return 1 if idle, 0 if we timed out still busy.
+Function FFI_WaitForIdle(string device, variable headstage)
+
+	WAVE PD = P_GetPressureDataWaveRef(device)
+
+	// Fast path: already idle
+	if(!PD[headstage][%OngoingPressurePulse])
+		return 1
+	endif
+
+	variable t0 = stopmstimer(-2)
+	// Wait until the pulse finishes or timeout elapses
+	do
+		if(!PD[headstage][%OngoingPressurePulse])
+			return 1
+		endif
+
+		// Timeout check (treating stopmstimer(-2) deltas as milliseconds)
+		if((stopmstimer(-2) - t0) > (kPressurePulseMaxMS + kPressureWaitSlackMS))
+			// one last check before giving up
+			return !PD[headstage][%OngoingPressurePulse]
+		endif
+
+		DoUpdate // yield to background tasks/UI
+	while(1)
+End
+
+Function SetPressureToBaseline()
+
+	string   source
+	variable pressure
+	[source, pressure] = FFI_GetWithOptionToSetPressure("ITC1600_Dev_0", 0, "atmosphere", 0)
+End
+
+Function readoutPressureSourceAndPressure() // should readout source and pressure without making changes to pressure settings
+
+	SetPressureToBaseline()
+	string sourceIn, sourceOut
+	variable pressureIn, PressureOut
+	WAVE PD = P_GetPressureDataWaveRef("ITC1600_Dev_0")
+	[SourceIn, pressureIn]   = ReadPressureSourceAndPressure("ITC1600_Dev_0", 0)
+	pressureIn               = PD[0][%ManSSPressure]
+	[SourceOut, pressureOut] = FFI_GetWithOptionToSetPressure("ITC1600_Dev_0", 0, "default", NaN)
+	pressureOut              = PD[0][%ManSSPressure]
+	assert(!cmpstr(SourceIn, SourceOut), "changed source when it shouldn't have")
+	assert(pressureIn == pressureOut, " changed pressure when it shouldn't have")
+End
+
+Function SetRegulatorPressure() // should set the pressure of the next manual pressure command to 2 psi. Should not turn on manual pressure
+
+	SetPressureToBaseline()
+	string sourceIn, sourceOut
+	variable pressureIn, PressureOut, NextRegulatorPressureCommand
+	WAVE PD = P_GetPressureDataWaveRef("ITC1600_Dev_0")
+	[SourceIn, pressureIn]       = ReadPressureSourceAndPressure("ITC1600_Dev_0", 0)
+	[SourceOut, pressureOut]     = FFI_GetWithOptionToSetPressure("ITC1600_Dev_0", 0, "default", 2)
+	NextRegulatorPressureCommand = PD[0][%ManSSPressure]
+	assert(!cmpstr(SourceIn, SourceOut), "changed source when it shouldn't have")
+	assert(pressureOut == 0, "set output pressure when it shouldn't have")
+	assert(NextRegulatorPressureCommand == 2, "did not set the next manual/regulator pressure command to 2 psi")
+
+End
+
+Function SetRegulatorPressureAndSetREgulatorSource() // should set the pressure of the manual pressure command to 3 psi and set the source to regulator. Should not turn on manual pressure
+
+	SetPressureToBaseline()
+	string sourceIn, sourceOut
+	variable pressureIn, PressureOut
+	[SourceIn, pressureIn]   = ReadPressureSourceAndPressure("ITC1600_Dev_0", 0)
+	[SourceOut, pressureOut] = FFI_GetWithOptionToSetPressure("ITC1600_Dev_0", 0, "regulator", 3)
+	assert(!cmpstr("regulator", SourceOut), "did not change the source to regulator")
+	assert(pressureOut == 3, "did not set pressure to 3 psi")
+End
+
+Function SetSourceToRegulator() // should set the source to regulator/manual without changing the regulator pressure.
+
+	SetPressureToBaseline()
+	string sourceIn, sourceOut
+	variable pressureIn, PressureOut
+	[SourceIn, pressureIn]   = ReadPressureSourceAndPressure("ITC1600_Dev_0", 0)
+	[SourceOut, pressureOut] = FFI_GetWithOptionToSetPressure("ITC1600_Dev_0", 0, "regulator", NaN)
+	assert(!cmpstr("regulator", SourceOut), "did not change the source to regulator")
+	assert(pressureIn == pressureOut, "changed the pressure!")
+End
+
+Function SetSourceToUserSetPressureToNeg2() // should set the source to user and set the next manual pressure command to -2psi
+
+	SetPressureToBaseline()
+	string sourceIn, sourceOut
+	variable pressureIn, PressureOut
+	[SourceIn, pressureIn]   = ReadPressureSourceAndPressure("ITC1600_Dev_0", 0)
+	[SourceOut, pressureOut] = FFI_GetWithOptionToSetPressure("ITC1600_Dev_0", 0, "user", -2)
+	assert(!cmpstr("user", SourceOut), "did not change the source to user")
+	assert(-2 == pressureOut, "changed the pressure!")
+End
+
+Function RunTests()
+
+	readoutPressureSourceAndPressure()
+	SetRegulatorPressure()
+	SetRegulatorPressureAndSetREgulatorSource()
+	setSourceToRegulator()
+	SetSourceToUserSetPressureToNeg2()
 End
