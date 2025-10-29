@@ -231,7 +231,7 @@ jobs:
       job_name: 🧪 Test ITC18-USB ${{ matrix.name }}
       overwrite_job_name: ${{ inputs.is_called_workflow || false }}
       experiment: ${{ matrix.experiment }}
-      target: "[ 'self-hosted', 'Windows', 'IgorPro', 'ITC' ]"
+      target: "[ 'self-hosted', 'Windows', 'IgorPro', 'ITC18' ]"
       artifact_name: TestITC18-${{ matrix.name }}-assets
       expensive_checks: "1"
       instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
