@@ -233,7 +233,7 @@ Function CreatesReproducibleResults()
 
 	rngSeed = 1
 	Make/FREE/N=1024/L dataInt = GetNextRandomNumberForDevice(device)
-	CHECK_EQUAL_VAR(2932874867, WaveCRC(0, dataInt))
+	CHECK_EQUAL_VAR(2932874867, WaveCRC(0, dataInt)) // NOLINT
 
 	rngSeed = 1
 	Make/FREE/N=1024/D dataDouble = GetNextRandomNumberForDevice(device)
