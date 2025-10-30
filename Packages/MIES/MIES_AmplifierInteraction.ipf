@@ -1216,7 +1216,7 @@ Function AI_IsControlFromClampMode(string ctrl, variable clampMode)
 End
 
 /// @brief Convert amplifier controls to row labels for `AmpStorageWave`
-static Function/S AI_AmpStorageControlToRowLabel(string ctrl)
+Function/S AI_AmpStorageControlToRowLabel(string ctrl)
 
 	strswitch(ctrl)
 		// V-Clamp controls
