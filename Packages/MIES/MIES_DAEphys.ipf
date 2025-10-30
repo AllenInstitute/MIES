@@ -1786,7 +1786,7 @@ Function/S DAP_FormatTelegraphServerList(WAVE telegraphServers)
 	return list
 End
 
-static Function/S DAP_GetAmplifierDef(variable ampSerial, variable ampChannel)
+Function/S DAP_GetAmplifierDef(variable ampSerial, variable ampChannel)
 
 	string str
 

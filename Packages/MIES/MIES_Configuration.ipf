@@ -2367,20 +2367,14 @@ End
 static Function CONF_FindAmpInList(variable ampSerialRef, variable ampChannelIDRef)
 
 	string listOfAmps, ampDef
-	variable numAmps, i, ampSerial, ampChannelID
+	variable idx
 
 	listOfAmps = DAP_GetNiceAmplifierChannelList()
-	numAmps    = ItemsInList(listOfAmps)
 
-	for(i = 0; i < numAmps; i += 1)
-		ampDef = StringFromList(i, listOfAmps)
-		DAP_ParseAmplifierDef(ampDef, ampSerial, ampChannelID)
-		if(ampSerial == ampSerialRef && ampChannelID == ampChannelIDRef)
-			return i
-		endif
-	endfor
-
-	ASSERT(0, "Could not find amplifier")
+	ampDef = DAP_GetAmplifierDef(ampSerialRef, ampChannelIDRef)
+	idx    = WhichListItem(ampDef, listOfAmps, ";", 1)
+	ASSERT(idx >= 0, "Could not find amplifier: " + ampDef)
+	return idx
 End
 
 static Function CONF_MCC_MidExp(string device, variable headStage, variable jsonID)
