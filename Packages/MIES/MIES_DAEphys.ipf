@@ -5901,6 +5901,8 @@ End
 /// @param[in] mode      clamp mode @ref AmplifierClampModes
 Function DAP_SetClampMode(string device, variable headstage, variable mode)
 
+	AI_AssertOnInvalidClampMode(mode)
+
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
 	if(dataAcqRunMode == DAQ_NOT_RUNNING)
 		DAP_ChangeHeadStageMode(device, mode, headstage, DO_MCC_MIES_SYNCING)
