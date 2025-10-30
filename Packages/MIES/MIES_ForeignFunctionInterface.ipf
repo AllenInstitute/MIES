@@ -10,6 +10,14 @@
 /// @file MIES_ForeignFunctionInterface.ipf
 /// @brief __FFI__ ACQ4/ZeroMQ accessible functions
 
+/// @name Auto Clamp Ctrls enum for FFI_TriggerAutoClampControl
+/// @anchor FFI_AutoClampCtrls
+///@{
+static Constant AUTO_PIPETTE       = 1
+static Constant AUTO_CAPACITANCE   = 2
+static Constant AUTO_BRIDGEBALANCE = 3
+///@}
+
 /// @brief Function to return Peak Resistance, Steady State Resistance to ACQ4 (Neurophysiology Acquisition and Analysis System.
 /// See http://acq4.org/ for more details)
 ///
@@ -573,4 +581,401 @@ Function RunTests()
 	SetRegulatorPressureAndSetREgulatorSource()
 	setSourceToRegulator()
 	SetSourceToUserSetPressureToNeg2()
+End
+
+/// @brief Returns the clamp state of a headstage of a locked device
+///
+/// - if the requested head stage is not active then a null wave is returned
+/// The clamp state wave is DP numeric wave:
+///
+/// For VC
+///
+/// \rst
+/// +------------------------+-----------------------+---------+
+/// | Dimension Label        | Value description     | Units   |
+/// +========================+=======================+=========+
+/// | HoldingPotential       |                       | mV      |
+/// +------------------------+-----------------------+---------+
+/// | RSCompChaining         | 1 : On 0 : Off        | On/Off  |
+/// +------------------------+-----------------------+---------+
+/// | HoldingPotentialEnable | 1 : On 0 : Off        | On/Off  |
+/// +------------------------+-----------------------+---------+
+/// | WholeCellCap           |                       | pF      |
+/// +------------------------+-----------------------+---------+
+/// | WholeCellRes           |                       | MΩ      |
+/// +------------------------+-----------------------+---------+
+/// | WholeCellEnable        | 1 : On 0 : Off        | On/Off  |
+/// +------------------------+-----------------------+---------+
+/// | Correction             |                       | %       |
+/// +------------------------+-----------------------+---------+
+/// | Prediction             |                       | %       |
+/// +------------------------+-----------------------+---------+
+/// | RsCompEnable           | 1 : On 0 : Off        | On/Off  |
+/// +------------------------+-----------------------+---------+
+/// | PipetteOffsetVC        |                       | mV      |
+/// +------------------------+-----------------------+---------+
+/// | WholeCellCap           |                       | a.u.    |
+/// +------------------------+-----------------------+---------+
+/// | ClampMode              | 0 : VC                |         |
+/// +------------------------+-----------------------+---------+
+/// \endrst
+///
+///
+/// For IC
+///
+/// \rst
+/// +----------------------+-----------------------+---------+
+/// | Dimension Label      | Value description     | Units   |
+/// +======================+=======================+=========+
+/// | BiasCurrent          |                       | pA      |
+/// +----------------------+-----------------------+---------+
+/// | BiasCurrentEnable    | 1 : On 0 : Off        | On/Off  |
+/// +----------------------+-----------------------+---------+
+/// | BridgeBalance        |                       | MΩ      |
+/// +----------------------+-----------------------+---------+
+/// | BridgeBalanceEnable  | 1 : On 0 : Off        | On/Off  |
+/// +----------------------+-----------------------+---------+
+/// | CapNeut              |                       | pF      |
+/// +----------------------+-----------------------+---------+
+/// | CapNeutEnable        | 1 : On 0 : Off        | On/Off  |
+/// +----------------------+-----------------------+---------+
+/// | AutoBiasVcom         |                       | mV      |
+/// +----------------------+-----------------------+---------+
+/// | AutoBiasVcomVariance |                       | mV      |
+/// +----------------------+-----------------------+---------+
+/// | AutoBiasIbiasmax     |                       | pA      |
+/// +----------------------+-----------------------+---------+
+/// | AutoBiasEnable       | 1 : On 0 : Off        | On/Off  |
+/// +----------------------+-----------------------+---------+
+/// | PipetteOffsetIC      |                       | mV      |
+/// +----------------------+-----------------------+---------+
+/// | ClampMode            | 1 : IC                |         |
+/// +----------------------+-----------------------+---------+
+/// \endrst
+///
+///
+/// For I=0
+///
+/// \rst
+/// +----------------------+-----------------------+---------+
+/// | Dimension Label      | Value description     | Units   |
+/// +======================+=======================+=========+
+/// | ClampMode            | 2 : I=0               |         |
+/// +----------------------+-----------------------+---------+
+/// \endrst
+///
+/// @param[in] device    Device title, e.g. "Dev1"
+/// @param[in] headstage headstage number
+/// @returns             wave with clamp state, null wave for invalid/inactive headstage
+Function/WAVE FFI_GetCurrentClampState(string device, variable headstage)
+
+	variable clampMode, numFuncs, i, j
+	string lbl
+
+	FFI_CheckValidDeviceAndHeadstage(device, headstage)
+	if(!DAG_GetHeadstageState(device, headstage))
+		return $""
+	endif
+
+	WAVE AmpStorageWave = GetAmplifierParamStorageWave(device)
+
+	clampMode = DAG_GetHeadstageMode(device, headstage)
+	if(clampMode == I_EQUAL_ZERO_MODE)
+		Make/FREE/D clampState = {I_EQUAL_ZERO_MODE}
+		SetDimLabel ROWS, j, ClampMode, clampState
+		return clampState
+	endif
+
+	WAVE aiFuncs = AI_GetFunctionConstantForClampMode(clampMode)
+	numFuncs = DimSize(aiFuncs, ROWS)
+	Make/FREE/T/N=(numFuncs) ctrlNames, ampLabels
+
+	ctrlNames[] = AI_MapFunctionConstantToControl(aiFuncs[p], clampMode)
+	ampLabels[] = AI_AmpStorageControlToRowLabel(ctrlNames[p])
+
+	Make/FREE/D/N=(numFuncs + 1) clampState
+	for(i = 0; i < numFuncs; i += 1)
+		if(IsEmpty(ampLabels[i]))
+			continue
+		endif
+		clampState[j] = AmpStorageWave[%$ampLabels[i]][0][headStage]
+		lbl           = AI_MapFunctionConstantToName(aiFuncs[i], clampMode)
+		SetDimLabel ROWS, j, $lbl, clampState
+		j += 1
+	endfor
+	clampState[j] = clampMode
+	SetDimLabel ROWS, j, ClampMode, clampState
+	Redimension/N=(j + 1) clampState
+
+	return clampState
+End
+
+/// @brief Returns the full clamp state of a headstage of a locked device
+///
+/// \rst
+/// +------------------------+-----------------+------+
+/// | Dimension Label        |Value description|Units |
+/// +========================+=================+======+
+/// | HoldingPotential       |                 | mV   |
+/// +------------------------+-----------------+------+
+/// | HoldingPotentialEnable | 1 : On, 0 : Off |      |
+/// +------------------------+-----------------+------+
+/// | WholeCellCap           |                 | pF   |
+/// +------------------------+-----------------+------+
+/// | WholeCellRes           |                 | MΩ   |
+/// +------------------------+-----------------+------+
+/// | WholeCellEnable        | 1 : On, 0 : Off |      |
+/// +------------------------+-----------------+------+
+/// | Correction             |                 | %    |
+/// +------------------------+-----------------+------+
+/// | Prediction             |                 | %    |
+/// +------------------------+-----------------+------+
+/// | RsCompEnable           | 1 : On, 0 : Off |      |
+/// +------------------------+-----------------+------+
+/// | PipetteOffsetVC        |                 | mV   |
+/// +------------------------+-----------------+------+
+/// | FastCapacitanceComp    |                 | a.u. |
+/// +------------------------+-----------------+------+
+/// | SlowCapacitanceComp    |                 | a.u. |
+/// +------------------------+-----------------+------+
+/// | RSCompChaining         | 1 : On, 0 : Off |      |
+/// +------------------------+-----------------+------+
+/// | VClampPlaceHolder      | reserved        |      |
+/// +------------------------+-----------------+------+
+/// | VClampPlaceHolder      | reserved        |      |
+/// +------------------------+-----------------+------+
+/// | VClampPlaceHolder      | reserved        |      |
+/// +------------------------+-----------------+------+
+/// | VClampPlaceHolder      | reserved        |      |
+/// +------------------------+-----------------+------+
+/// | BiasCurrent            |                 | pA   |
+/// +------------------------+-----------------+------+
+/// | BiasCurrentEnable      | 1 : On, 0 : Off |      |
+/// +------------------------+-----------------+------+
+/// | BridgeBalance          |                 | MΩ   |
+/// +------------------------+-----------------+------+
+/// | BridgeBalanceEnable    | 1 : On, 0 : Off |      |
+/// +------------------------+-----------------+------+
+/// | CapNeut                |                 | pF   |
+/// +------------------------+-----------------+------+
+/// | CapNeutEnable          | 1 : On, 0 : Off |      |
+/// +------------------------+-----------------+------+
+/// | AutoBiasVcom           |                 | mV   |
+/// +------------------------+-----------------+------+
+/// | AutoBiasVcomVariance   |                 | mV   |
+/// +------------------------+-----------------+------+
+/// | AutoBiasIbiasmax       |                 | pA   |
+/// +------------------------+-----------------+------+
+/// | AutoBiasEnable         | 1 : On, 0 : Off |      |
+/// +------------------------+-----------------+------+
+/// | PipetteOffsetIC        |                 | mV   |
+/// +------------------------+-----------------+------+
+/// | IclampPlaceHolder      | reserved        |      |
+/// +------------------------+-----------------+------+
+/// | IclampPlaceHolder      | reserved        |      |
+/// +------------------------+-----------------+------+
+/// | IclampPlaceHolder      | reserved        |      |
+/// +------------------------+-----------------+------+
+/// | IclampPlaceHolder      | reserved        |      |
+/// +------------------------+-----------------+------+
+/// \endrst
+///
+/// @param[in] device    Device title, e.g. "Dev1"
+/// @param[in] headstage headstage number
+/// @returns             wave with full clamp state, null wave for invalid/inactive headstage
+Function/WAVE FFI_GetClampState(string device, variable headstage)
+
+	FFI_CheckValidDeviceAndHeadstage(device, headstage)
+	if(!DAG_GetHeadstageState(device, headstage))
+		return $""
+	endif
+
+	WAVE AmpStorageWave = GetAmplifierParamStorageWave(device)
+	Duplicate/FREE/RMD=[][][headstage] AmpStorageWave, AmpStorageWaveHS
+	Redimension/N=(-1) AmpStorageWaveHS
+
+	return AmpStorageWaveHS
+End
+
+/// @brief Triggers an auto clamp control
+///
+/// @param[in] device    Device title, e.g. "Dev1"
+/// @param[in] headstage headstage number
+/// @param[in] autoCtrl  auto control number @ref FFI_AutoClampCtrls
+Function FFI_TriggerAutoClampControl(string device, variable headstage, variable autoCtrl)
+
+	variable clampMode, err
+
+	FFI_CheckValidDeviceAndHeadstage(device, headstage)
+
+	clampMode = DAG_GetHeadstageMode(device, headstage)
+
+	if(autoCtrl == AUTO_PIPETTE)
+		err = AI_WriteToAmplifier(device, headstage, clampMode, MCC_AUTOPIPETTEOFFSET_FUNC, 1, GUIWrite = 1)
+		ASSERT(err == 0, "Failed to trigger auto pipette offset for headstage " + num2istr(headstage))
+	elseif(autoCtrl == AUTO_CAPACITANCE)
+		ASSERT(clampMode == V_CLAMP_MODE, "MCC_AUTOWHOLECELLCOMP_FUNC works only in VC clampMode")
+		err = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_AUTOWHOLECELLCOMP_FUNC, 1, GUIWrite = 1)
+		ASSERT(err == 0, "Failed to trigger auto capacitance for headstage " + num2istr(headstage))
+	elseif(autoCtrl == AUTO_BRIDGEBALANCE)
+		ASSERT(clampMode == I_CLAMP_MODE, "MCC_AUTOBRIDGEBALANCE_FUNC works only in IC clampMode")
+		err = AI_WriteToAmplifier(device, headstage, I_CLAMP_MODE, MCC_AUTOBRIDGEBALANCE_FUNC, 1, GUIWrite = 1)
+		ASSERT(err == 0, "Failed to trigger auto bridge balance for headstage " + num2istr(headstage))
+	else
+		FATAL_ERROR("Unknown auto clamp control")
+	endif
+End
+
+/// @brief Sets clamp mode
+///
+/// Note: When DAQ is running the clamp mode change is deferred until DAQ is not running
+///
+/// @param[in] device    Device title, e.g. "Dev1"
+/// @param[in] headstage headstage number
+/// @param[in] clampMode clamp mode @ref AmplifierClampModes
+Function FFI_SetClampMode(string device, variable headstage, variable clampMode)
+
+	FFI_CheckValidDeviceAndHeadstage(device, headstage)
+	ASSERT(AI_IsValidClampMode(clampMode), "Invalid clamp mode: " + num2istr(clampMode))
+
+	DAP_SetClampMode(device, headstage, clampMode)
+End
+
+/// @brief Sets Holding Potential
+///
+/// @param[in] device    Device title, e.g. "Dev1"
+/// @param[in] headstage headstage number
+/// @param[in] potential holding potential in mV when current clamp mode of headstage is VC, bias current in pA when current clamp mode of headstage is IC
+/// @param[in] enable    when set to 1, enables Holding Potential after setting its value, when set to 0, disables Holding Potential before setting its values
+Function FFI_SetHoldingPotential(string device, variable headstage, variable potential, variable enable)
+
+	variable clampMode, err
+
+	enable = !!enable
+
+	FFI_CheckValidDeviceAndHeadstage(device, headstage)
+
+	clampMode = DAG_GetHeadstageMode(device, headstage)
+	ASSERT(clampMode == V_CLAMP_MODE, "Attempt to set holding potential but current clamp mode is not VC !")
+	ASSERT(!IsNaN(potential), "potential argument is NaN")
+
+	if(!enable)
+		err = AI_WriteToAmplifier(device, headstage, clampMode, MCC_HOLDINGENABLE_FUNC, 0, GUIWrite = 1)
+		ASSERT(err == 0, "Failed to disable holding on amplifier")
+	endif
+	FFI_SetHolding(device, headstage, clampMode, potential)
+	if(enable)
+		err = AI_WriteToAmplifier(device, headstage, clampMode, MCC_HOLDINGENABLE_FUNC, 1, GUIWrite = 1)
+		ASSERT(err == 0, "Failed to enable holding on amplifier")
+	endif
+End
+
+/// @brief Sets Bias Current
+///
+/// @param[in] device      Device title, e.g. "Dev1"
+/// @param[in] headstage   headstage number
+/// @param[in] biasCurrent bias current in pA
+/// @param[in] enable      when set to 1, enables Holding Bias Current after setting its value, when set to 0, disables Holding Bias Current before setting its values
+Function FFI_SetBiasCurrent(string device, variable headstage, variable biasCurrent, variable enable)
+
+	variable clampMode, err
+
+	enable = !!enable
+
+	FFI_CheckValidDeviceAndHeadstage(device, headstage)
+
+	clampMode = DAG_GetHeadstageMode(device, headstage)
+	ASSERT(clampMode == I_CLAMP_MODE, "Attempt to set bias current but current clamp mode is not IC !")
+	ASSERT(!IsNaN(biasCurrent), "bias current argument is NaN")
+
+	if(!enable)
+		err = AI_WriteToAmplifier(device, headstage, clampMode, MCC_HOLDINGENABLE_FUNC, 0, GUIWrite = 1)
+		ASSERT(err == 0, "Failed to disable holding on amplifier")
+	endif
+	FFI_SetHolding(device, headstage, clampMode, biasCurrent)
+	if(enable)
+		err = AI_WriteToAmplifier(device, headstage, clampMode, MCC_HOLDINGENABLE_FUNC, 1, GUIWrite = 1)
+		ASSERT(err == 0, "Failed to enable holding on amplifier")
+	endif
+End
+
+static Function FFI_SetHolding(string device, variable headstage, variable clampMode, variable value)
+
+	variable err
+
+	err = AI_WriteToAmplifier(device, headstage, clampMode, MCC_HOLDING_FUNC, value, GUIWrite = 1)
+	ASSERT(err == 0, "Failed to set holding value on amplifier")
+End
+
+static Function FFI_CheckValidDeviceAndHeadstage(string device, variable headstage)
+
+	ASSERT(!DAP_DeviceIsUnlocked(device), "Target device is not locked:" + device)
+	ASSERT(IsValidHeadstage(headstage), "Invalid headStage index: " + num2str(headstage))
+End
+
+/// @brief Sets Auto Bias
+///
+/// @param[in] device    Device title, e.g. "Dev1"
+/// @param[in] headstage headstage number
+/// @param[in] potential Vm in mV in the range -99 mV to 99 mV
+/// @param[in] enable    when set to 1 then auto bias gets enabled after setting its value, when set to 0 then auto bias gets disabled before setting its value
+Function FFI_SetAutoBias(string device, variable headstage, variable potential, variable enable)
+
+	variable clampMode, err
+
+	enable = !!enable
+
+	FFI_CheckValidDeviceAndHeadstage(device, headstage)
+
+	clampMode = DAG_GetHeadstageMode(device, headstage)
+	ASSERT(clampMode == I_CLAMP_MODE, "Attempt to set auto bias but current clamp mode is not IC !")
+
+	if(!enable)
+		err = AI_WriteToAmplifier(device, headstage, clampMode, MCC_NO_AUTOBIAS_ENABLE_FUNC, 0, GUIWrite = 1)
+		ASSERT(err == 0, "Failed to disable AutoBias")
+	endif
+	err = AI_WriteToAmplifier(device, headstage, clampMode, MCC_NO_AUTOBIAS_V_FUNC, potential, GUIWrite = 1)
+	ASSERT(err == 0, "Failed to set AutoBias")
+	if(enable)
+		err = AI_WriteToAmplifier(device, headstage, clampMode, MCC_NO_AUTOBIAS_ENABLE_FUNC, 1, GUIWrite = 1)
+		ASSERT(err == 0, "Failed to enable AutoBias")
+	endif
+End
+
+/// @brief Enables/Disables a headstage
+///
+/// The headstage state can not be changed while a data acquisition is running
+///
+/// @param[in] device    Device title, e.g. "Dev1"
+/// @param[in] headstage headstage number
+/// @param[in] enable    when set to 1 the headstage gets enabled, 0 disabled
+/// @returns 0 when successful
+Function FFI_SetHeadstageActive(string device, variable headstage, variable enable)
+
+	string ctrlName
+
+	enable = !!enable
+
+	FFI_CheckValidDeviceAndHeadstage(device, headstage)
+
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
+	ASSERT(dataAcqRunMode == DAQ_NOT_RUNNING, "Can not set headstage " + num2istr(headstage) + " active because data acquisition is running.")
+	ctrlName = GetPanelControl(headstage, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+	PGC_SetAndActivateControl(device, ctrlName, val = enable)
+
+	return 0
+End
+
+/// @brief Enables/Disables a headstage
+///
+/// The headstage state can not be changed while a data acquisition is running
+///
+/// @param[in] device    Device title, e.g. "Dev1"
+/// @param[in] headstage headstage number
+/// @returns 1 if the headstage is active, 0 otherwise
+Function FFI_GetHeadstageActive(string device, variable headstage)
+
+	FFI_CheckValidDeviceAndHeadstage(device, headstage)
+
+	return DAG_GetHeadstageState(device, headstage)
 End
