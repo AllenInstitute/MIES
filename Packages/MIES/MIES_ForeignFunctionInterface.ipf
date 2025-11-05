@@ -476,21 +476,21 @@ Function FFI_WaitForIdle(string device, variable headstage)
 	WAVE PD = P_GetPressureDataWaveRef(device)
 
 	// Fast path: already idle
-	if(!PD[headstage][%OngoingPessurePulse])
+	if(!PD[headstage][%OngoingPressurePulse])
 		return 1
 	endif
 
 	variable t0 = stopmstimer(-2)
 	// Wait until the pulse finishes or timeout elapses
 	do
-		if(!PD[headstage][%OngoingPessurePulse])
+		if(!PD[headstage][%OngoingPressurePulse])
 			return 1
 		endif
 
 		// Timeout check (treating stopmstimer(-2) deltas as milliseconds)
 		if((stopmstimer(-2) - t0) > (kPressurePulseMaxMS + kPressureWaitSlackMS))
 			// one last check before giving up
-			return !PD[headstage][%OngoingPessurePulse]
+			return !PD[headstage][%OngoingPressurePulse]
 		endif
 
 		DoUpdate // yield to background tasks/UI
