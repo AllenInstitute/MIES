@@ -357,7 +357,7 @@ Function DoPressureManual(string device, variable headstage, [variable manualOnO
 End
 
 // -----------------------------
-// FFI: GetPressuerWithOptionToSetSourceAndPressure
+// FFI: GetPressureWithOptionToSetSourceAndPressure
 // -----------------------------
 /// @brief FFI entry: set/rout pressure per 'requestedSource' and/or set regulator setpoint.
 /// @param device          		MIES device name
