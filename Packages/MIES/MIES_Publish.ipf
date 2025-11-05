@@ -712,7 +712,11 @@ threadsafe static Function PUB_AppendAmplifierSettings(variable jsonID, string p
 	variable idx, value, nameIndex
 	string name, unit
 
-	WAVE funcs = AI_GetFunctionConstantForClampMode(clampMode)
+	WAVE/Z funcs = AI_GetFunctionConstantForClampMode(clampMode)
+
+	if(!WaveExists(funcs))
+		return NaN
+	endif
 
 	Make/FREE/T/N=(DimSize(funcs, ROWS)) names
 
@@ -844,6 +848,8 @@ End
 ///        }
 ///      }
 ///    }
+///
+/// For I=0 clamp mode the amplifier JSON object will be empty.
 ///
 /// \endrst
 threadsafe Function PUB_TPResult(string device, WAVE tpData, WAVE ampParamStorageSlice, WAVE additionalData)
