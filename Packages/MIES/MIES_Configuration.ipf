@@ -324,37 +324,125 @@ static Function/WAVE CONF_GetConfigFiles([string customIPath])
 	return fileList
 End
 
-/// @brief Automatically loads all *.json files from MIES Settings folder and opens and restores the corresponding windows
-///        Files are restored in case-insensitive alphanumeric order. Associated *_rig.json files are taken into account.
-Function CONF_AutoLoader([string customIPath])
+/// @brief Identifies paired global and rig json configuration files
+///
+///  Uses CONF_GetConfigFiles() -> WAVE/Z/T of *.json filenames (no paths).
+///  Splits into main vs rig lists by EXPCONFIG_RIGFILESUFFIX.
+/// For each main file, accepts ANY rig whose name CONTAINS the main base
+/// (main filename without ".json"), case-insensitive.
+/// Tie-breaker: prefer names that START with the base; else earliest pos.
+/// Optional: preserve exact "<base>_rig.json" first.
+Function CONF_AutoLoader()
 
-	variable i, numFiles
-	string rigCandidate
+	string fname, base, lowerBase, rigCandidate
+	string candidateLower, exactCandidate
+	variable i, j, k
+	variable numRaw, numMain, nRigs
+	variable fnameLen, suffixLen
+	variable bestIdx, bestPos, pos
 
-	if(ParamIsDefault(customIPath))
-		WAVE/Z/T rawFileList = CONF_GetConfigFiles()
-	else
-		WAVE/Z/T rawFileList = CONF_GetConfigFiles(customIPath = customIPath)
-	endif
-	if(!WaveExists(rawFileList))
+	// -----------------------------
+	// 1) Gather all *.json config filenames
+	// -----------------------------
+	WAVE/Z/T rawFileList = CONF_GetConfigFiles()
+	if(!WaveExists(rawFileList) || (DimSize(rawFileList, ROWS) <= 0))
 		printf "There are no files to load from the %s folder.\r", EXPCONFIG_SETTINGS_FOLDER
 		ControlWindowToFront()
 		Abort
 	endif
 
-	[WAVE/T rigFileList, WAVE/T mainFileList] = SplitTextWaveBySuffix(rawFileList, EXPCONFIG_RIGFILESUFFIX)
+	// -----------------------------
+	// 2) Split into main vs rig waves (by suffix)
+	// -----------------------------
+	Make/T/O/N=0 mainFileList
+	Make/T/O/N=0 rigFileList
+	WAVE/T mainFileList
+	WAVE/T rigFileList
 
-	Sort mainFileList, mainFileList
-	numFiles = DimSize(mainFileList, ROWS)
-	for(i = 0; i < numFiles; i += 1)
-		rigCandidate = mainFileList[i]
-		rigCandidate = rigCandidate[0, strlen(rigCandidate) - 6] + EXPCONFIG_RIGFILESUFFIX
-		FindValue/TXOP=4/TEXT=rigCandidate rigFileList
-		if(V_Value == -1)
-			rigCandidate = ""
+	suffixLen = strlen(EXPCONFIG_RIGFILESUFFIX)
+	numRaw    = DimSize(rawFileList, ROWS)
+	for(k = 0; k < numRaw; k += 1)
+		fname    = rawFileList[k]
+		fnameLen = strlen(fname)
+		if(fnameLen >= suffixLen && CmpStr(LowerStr(fname[fnameLen - suffixLen, fnameLen - 1]), LowerStr(EXPCONFIG_RIGFILESUFFIX)) == 0)
+			// Append to rigFileList
+			InsertPoints DimSize(rigFileList, ROWS), 1, rigFileList
+			rigFileList[DimSize(rigFileList, ROWS) - 1] = fname
+		else
+			// Append to mainFileList
+			InsertPoints DimSize(mainFileList, ROWS), 1, mainFileList
+			mainFileList[DimSize(mainFileList, ROWS) - 1] = fname
 		endif
-		CONF_RestoreWindow(mainFileList[i], rigFile = rigCandidate)
 	endfor
+
+	numMain = DimSize(mainFileList, ROWS)
+	nRigs   = DimSize(rigFileList, ROWS)
+	if(numMain <= 0)
+		printf "The %s folder.\r only contains rig specific file(s)", EXPCONFIG_SETTINGS_FOLDER
+		ControlWindowToFront()
+		Abort
+	endif
+
+	// -----------------------------
+	// (Optional) Precompute lowercase rig names once
+	// -----------------------------
+	Make/T/O/N=(nRigs) rigFileListLower
+	for(k = 0; k < nRigs; k += 1)
+		rigFileListLower[k] = LowerStr(rigFileList[k])
+	endfor
+
+	// -----------------------------
+	// 3) For each main file, pick the best rig match
+	// -----------------------------
+	for(i = 0; i < numMain; i += 1)
+
+		fname    = mainFileList[i]
+		fnameLen = strlen(fname)
+
+		// Base name = without ".json"
+		base      = fname[0, fnameLen - 6]
+		lowerBase = LowerStr(base)
+
+		// ===== OPTIONAL: exact historical match first (e.g., "<base>_rig.json") =====
+		exactCandidate = base + EXPCONFIG_RIGFILESUFFIX
+		FindValue/TXOP=4/TEXT=exactCandidate rigFileList
+		if(V_Value >= 0)
+			CONF_RestoreWindow(fname, rigFile = rigFileList[V_Value])
+			continue
+		endif
+		// ============================================================================
+
+		// Relaxed search: any rig name that CONTAINS the base (case-insensitive)
+		bestIdx = -1
+		bestPos = Inf
+
+		for(j = 0; j < nRigs; j += 1)
+			candidateLower = rigFileListLower[j]
+			pos            = strsearch(candidateLower, lowerBase, 0) // -1 if not found
+			if(pos >= 0)
+				if(pos == 0)
+					bestIdx = j
+					break // perfect: starts with base
+				endif
+
+				if(pos < bestPos)
+					bestPos = pos
+					bestIdx = j
+				endif
+			endif
+		endfor
+
+		if(bestIdx >= 0)
+			rigCandidate = rigFileList[bestIdx]
+		else
+			rigCandidate = "" // proceed without a rig file
+		endif
+
+		CONF_RestoreWindow(fname, rigFile = rigCandidate)
+
+	endfor
+
+	return 0
 End
 
 /// @brief Returns a symbolic path to the settings folder
