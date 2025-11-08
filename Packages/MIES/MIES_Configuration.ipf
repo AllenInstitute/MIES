@@ -378,7 +378,7 @@ Function CONF_AutoLoader()
 	numMain = DimSize(mainFileList, ROWS)
 	nRigs   = DimSize(rigFileList, ROWS)
 	if(numMain <= 0)
-		printf "The %s folder.\r only contains rig specific file(s)", EXPCONFIG_SETTINGS_FOLDER
+		printf "The %s folder only contains rig specific file(s).\r", EXPCONFIG_SETTINGS_FOLDER
 		ControlWindowToFront()
 		Abort
 	endif
