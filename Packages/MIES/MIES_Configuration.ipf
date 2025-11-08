@@ -400,7 +400,7 @@ Function CONF_AutoLoader()
 		fnameLen = strlen(fname)
 
 		// Base name = without ".json"
-		base      = fname[0, fnameLen - 6]
+		base      = fname[0, fnameLen - strlen(".json")]
 		lowerBase = LowerStr(base)
 
 		// ===== OPTIONAL: exact historical match first (e.g., "<base>_rig.json") =====
