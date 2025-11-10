@@ -314,7 +314,7 @@ Function CHI_CheckInstallation()
 	printf "\rInstallation Configuration:\r"
 	installedWithHW = CHI_IsMIESInstalledWithHardware()
 	printf "  Installation with hardware: %s\r", ToTrueFalse(installedWithHW)
-	printf "  Installated for all users: %s\r", ToTrueFalse(CHI_IsMIESInstalledForAllUsers())
+	printf "  Installed for all users: %s\r", ToTrueFalse(CHI_IsMIESInstalledForAllUsers())
 
 	printf "\rChecking base installation:\r"
 
