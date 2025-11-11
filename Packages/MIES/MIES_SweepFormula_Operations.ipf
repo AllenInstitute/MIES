@@ -62,7 +62,7 @@ Function/WAVE SFO_OperationAnaFuncParam(STRUCT SF_ExecutionData &exd)
 	SFH_CheckArgumentCount(exd, SF_OP_ANAFUNCPARAM, 0, maxArgs = 2)
 
 	WAVE/T names      = SFH_GetArgumentAsWave(exd, SF_OP_ANAFUNCPARAM, 0, singleResult = 1)
-	WAVE/Z selectData = SFH_GetArgumentSelect(exd, SF_OP_DATA, 1)
+	WAVE/Z selectData = SFH_GetArgumentSelect(exd, 1)
 
 	WAVE/WAVE output = SFO_OperationAnaFuncParamIterate(exd.graph, names, selectData, SF_OP_ANAFUNCPARAM)
 
@@ -677,7 +677,7 @@ Function/WAVE SFO_OperationData(STRUCT SF_ExecutionData &exd)
 	variable i, numArgs
 
 	SFH_CheckArgumentCount(exd, SF_OP_DATA, 0, maxArgs = 1)
-	WAVE/WAVE selectData = SFH_GetArgumentSelect(exd, SF_OP_DATA, 0)
+	WAVE/WAVE selectData = SFH_GetArgumentSelect(exd, 0)
 
 	WAVE/WAVE output = SFH_GetSweepsForFormula(exd.graph, selectData, SF_OP_DATA)
 	if(!DimSize(output, ROWS))
@@ -808,7 +808,7 @@ Function/WAVE SFO_OperationEpochs(STRUCT SF_ExecutionData &exd)
 	endif
 
 	WAVE/Z/WAVE selectData      = $""
-	WAVE/Z/WAVE selectDataArray = SFH_GetArgumentSelect(exd, SF_OP_EPOCHS, 1)
+	WAVE/Z/WAVE selectDataArray = SFH_GetArgumentSelect(exd, 1)
 	if(WaveExists(selectDataArray))
 		SFH_ASSERT(DimSize(selectDataArray, ROWS) == 1, "Expected a single select specification")
 		WAVE/Z/WAVE selectDataComp = selectDataArray[0]
@@ -1090,7 +1090,7 @@ Function/WAVE SFO_OperationLabnotebook(STRUCT SF_ExecutionData &exd)
 	modeTxt = SFH_GetArgumentAsText(exd, SF_OP_LABNOTEBOOK, 2, allowedValues = allowedValuesMode, defValue = "DATA_ACQUISITION_MODE")
 	mode    = ParseLogbookMode(modeTxt)
 
-	WAVE/Z selectData = SFH_GetArgumentSelect(exd, SF_OP_LABNOTEBOOK, 1)
+	WAVE/Z selectData = SFH_GetArgumentSelect(exd, 1)
 
 	WAVE/T lbnKeys = SFH_GetArgumentAsWave(exd, SF_OP_LABNOTEBOOK, 0, expectedMajorType = IGOR_TYPE_TEXT_WAVE, singleResult = 1)
 
