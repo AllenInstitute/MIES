@@ -11,10 +11,11 @@
 /// @brief __CHI__ Routines for checking the health of the
 ///        MIES installation
 
-static StrConstant CHI_NIDAQ_XOP_64_HASH = "b13267a080053c07b80302212b7f73ac199e1f001d9a1b4303e2d7dce1aeb39e"
-static StrConstant CHI_JSON_XOP_VERSION  = "version-919-g9b6b617"
-static StrConstant CHI_TUF_XOP_VERSION   = "version-163-g686effb"
-static StrConstant CHI_ITC_XOP_VERSION   = "latest-174-gb9915a9"
+static StrConstant CHI_NIDAQ_XOP_64_HASH  = "b13267a080053c07b80302212b7f73ac199e1f001d9a1b4303e2d7dce1aeb39e"
+static StrConstant CHI_JSON_XOP_VERSION   = "version-919-g9b6b617"
+static StrConstant CHI_TUF_XOP_VERSION    = "version-163-g686effb"
+static StrConstant CHI_ITC_XOP_VERSION    = "latest-174-gb9915a9"
+static StrConstant CHI_ZEROMQ_XOP_64_HASH = "06b4fab7456a4a8922b42cef6c4ee5081916017e886022461375d48bb555eae3"
 
 static StrConstant CHI_INSTALLCONFIG_NAME          = "installation_configuration.json"
 static Constant    CHI_INSTALLDEFAULT_WITHHARDWARE = 1
@@ -313,7 +314,7 @@ Function CHI_CheckInstallation()
 	printf "\rInstallation Configuration:\r"
 	installedWithHW = CHI_IsMIESInstalledWithHardware()
 	printf "  Installation with hardware: %s\r", ToTrueFalse(installedWithHW)
-	printf "  Installated for all users: %s\r", ToTrueFalse(CHI_IsMIESInstalledForAllUsers())
+	printf "  Installed for all users: %s\r", ToTrueFalse(CHI_IsMIESInstalledForAllUsers())
 
 	printf "\rChecking base installation:\r"
 
@@ -337,7 +338,7 @@ Function CHI_CheckInstallation()
 
 	// one operation/function of each non-hardware XOP needs to be called in CheckCompilation_IGNORE()
 	CHI_CheckXOP(listOfXOPs, "JSON-64.xop", "JSON XOP", state)
-	CHI_CheckXOP(listOfXOPs, "ZeroMQ-64.xop", "ZeroMQ XOP", state)
+	CHI_CheckXOP(listOfXOPs, "ZeroMQ-64.xop", "ZeroMQ XOP", state, expectedHash = CHI_ZEROMQ_XOP_64_HASH)
 	CHI_CheckXOP(listOfXOPs, "TUF-64.xop", "TUF XOP", state)
 
 #ifdef WINDOWS
