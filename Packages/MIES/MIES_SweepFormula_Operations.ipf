@@ -679,7 +679,14 @@ Function/WAVE SFO_OperationData(STRUCT SF_ExecutionData &exd)
 	SFH_CheckArgumentCount(exd, SF_OP_DATA, 0, maxArgs = 1)
 	WAVE/WAVE selectData = SFH_GetArgumentSelect(exd, 0)
 
-	WAVE/WAVE output = SFH_GetSweepsForFormula(exd.graph, selectData, SF_OP_DATA)
+	WAVE output = SFO_GetDataFromSelect(exd.graph, selectData)
+
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_DATA)
+End
+
+static Function/WAVE SFO_GetDataFromSelect(string graph, WAVE/WAVE selectData)
+
+	WAVE/WAVE output = SFH_GetSweepsForFormula(graph, selectData, SF_OP_DATA)
 	if(!DimSize(output, ROWS))
 		DebugPrint("Call to SFH_GetSweepsForFormula returned no results")
 	endif
@@ -687,7 +694,7 @@ Function/WAVE SFO_OperationData(STRUCT SF_ExecutionData &exd)
 	SFH_AddOpToOpStack(output, "", SF_OP_DATA)
 	SFH_ResetArgSetupStack(output, SF_OP_DATA)
 
-	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_DATA)
+	return output
 End
 
 // dataset(array data1, array data2, ...)
