@@ -1067,16 +1067,24 @@ End
 ///        There is also a quick path for argNum >= numArgs, which is the case for e.g. data()
 ///        For that case numArgs is 0 and select is expected at argNum 0. Then the result of "select()" is
 ///        returned (as selectArray with a single element)
+///        If the doNotEnforce flag is set then a select type value at the arguments location is not enforced.
+///        If the argument is neither a single select or an array of selects then a null wave is returned.
 ///
 ///        selectArray is wave reference wave containing select composite wave reference waves with SELECTION, RANGE each.
 ///
 ///        This allows operations with selects as arguments to iterate over different selections given by the user
-Function/WAVE SFH_GetArgumentSelect(STRUCT SF_ExecutionData &exd, variable argNum)
+Function/WAVE SFH_GetArgumentSelect(STRUCT SF_ExecutionData &exd, variable argNum, [variable doNotEnforce])
 
-	variable numArgs
-	string   type
+	variable numArgs, cond
+	string type
+
+	doNotEnforce = ParamIsDefault(doNotEnforce) ? 0 : !!doNotEnforce
 
 	numArgs = SFH_GetNumberOfArguments(exd)
+	if(argNum >= numArgs && doNotEnforce)
+		return $""
+	endif
+
 	if(argNum < numArgs)
 
 		WAVE/WAVE selectComp = SF_ResolveDatasetFromJSON(exd, argNum)
@@ -1087,15 +1095,31 @@ Function/WAVE SFH_GetArgumentSelect(STRUCT SF_ExecutionData &exd, variable argNu
 			return selectArray
 		endif
 
-		SFH_ASSERT(DimSize(selectComp, ROWS) == 1, "Expected a single array")
+		cond = DimSize(selectComp, ROWS) == 1
+		if(doNotEnforce && !cond)
+			return $""
+		endif
+		SFH_ASSERT(cond, "Expected a single array")
 		WAVE array = selectComp[0]
-		SFH_ASSERT(IsTextWave(array), "Expected a text wave")
+		cond = IsTextWave(array)
+		if(doNotEnforce && !cond)
+			return $""
+		endif
+		SFH_ASSERT(cond, "Expected a text wave")
 
 		Make/FREE/WAVE/N=(DimSize(array, ROWS)) selectArray = SFH_AttemptDatasetResolve(WaveText(array, row = p), checkWithSFHAssert = 1)
 		for(WAVE/Z/WAVE selectComp : selectArray)
-			ASSERT(WaveExists(selectComp), "Expected select composite")
+			cond = WaveExists(selectComp)
+			if(doNotEnforce && !cond)
+				return $""
+			endif
+			ASSERT(cond, "Expected select composite")
 			type = JWN_GetStringFromWaveNote(selectComp, SF_META_DATATYPE)
-			SFH_ASSERT(!CmpStr(type, SF_DATATYPE_SELECTCOMP), "Expected select data as argument")
+			cond = !CmpStr(type, SF_DATATYPE_SELECTCOMP)
+			if(doNotEnforce && !cond)
+				return $""
+			endif
+			SFH_ASSERT(cond, "Expected select data as argument")
 		endfor
 
 		return selectArray
