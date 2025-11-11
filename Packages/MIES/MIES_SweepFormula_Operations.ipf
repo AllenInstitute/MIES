@@ -493,8 +493,19 @@ Function/WAVE SFO_OperationAvg(STRUCT SF_ExecutionData &exd)
 
 	numArgs = SFH_CheckArgumentCount(exd, opShort, 1, maxArgs = 2)
 
-	WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, 0)
 	mode = SFH_GetArgumentAsText(exd, opShort, 1, defValue = SF_OP_AVG_INSWEEPS, allowedValues = {SF_OP_AVG_INSWEEPS, SF_OP_AVG_OVERSWEEPS})
+	// attempt to resolve as select type argument or array of it
+	WAVE/Z/WAVE input = SFH_GetArgumentSelect(exd, 0, doNotEnforce = 1)
+	if(WaveExists(input))
+		// successful resolved as selection
+		if(!CmpStr(mode, SF_OP_AVG_INSWEEPS) || !CmPStr(mode, SF_OP_AVG_OVERSWEEPS))
+			WAVE/WAVE data  = SFO_GetDataFromSelect(exd.graph, input)
+			WAVE      input = data
+		endif
+	else
+		// any other type
+		WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, 0)
+	endif
 
 	strswitch(mode)
 		case SF_OP_AVG_INSWEEPS:
