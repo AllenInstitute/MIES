@@ -42,7 +42,7 @@ Function/WAVE SFOTP_OperationTP(STRUCT SF_ExecutionData &exd)
 		WAVE/Z ignoreTPs
 	endif
 
-	WAVE/Z selectData = SFH_GetArgumentSelect(exd, SF_OP_TP, 1)
+	WAVE/Z selectData = SFH_GetArgumentSelect(exd, 1)
 
 	WAVE/WAVE wMode = SF_ResolveDatasetFromJSON(exd, 0)
 	dataType = JWN_GetStringFromWaveNote(wMode, SF_META_DATATYPE)

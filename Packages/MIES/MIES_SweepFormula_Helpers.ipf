@@ -1071,7 +1071,7 @@ End
 ///        selectArray is wave reference wave containing select composite wave reference waves with SELECTION, RANGE each.
 ///
 ///        This allows operations with selects as arguments to iterate over different selections given by the user
-Function/WAVE SFH_GetArgumentSelect(STRUCT SF_ExecutionData &exd, string opShort, variable argNum)
+Function/WAVE SFH_GetArgumentSelect(STRUCT SF_ExecutionData &exd, variable argNum)
 
 	variable numArgs
 	string   type
