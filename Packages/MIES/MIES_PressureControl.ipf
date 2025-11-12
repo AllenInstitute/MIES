@@ -147,7 +147,7 @@ End
 /// @brief Record pressure in TPStorage wave
 static Function P_UpdateTPStorage(string device, variable headStage)
 
-	variable count, old, new
+	variable count, old, new, ret
 
 	if(!P_ValidatePressureSetHeadstage(device, headStage) || !P_IsHSActiveAndInVClamp(device, headStage))
 		return NaN
@@ -157,6 +157,13 @@ static Function P_UpdateTPStorage(string device, variable headStage)
 	WAVE TPStorage      = GetTPStorage(device)
 
 	count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
+
+	ret = EnsureLargeEnoughWave(TPStorage, indexShouldExist = count, dimension = ROWS, initialValue = NaN, checkFreeMemory = 1)
+
+	if(ret)
+		HandleOutOfMemory(device, NameOfWave(TPStorage))
+		return NaN
+	endif
 
 	TPStorage[count][headstage][%Pressure] = PressureDataWv[headStage][%RealTimePressure][0]
 
