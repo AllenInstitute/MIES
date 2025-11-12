@@ -30,8 +30,9 @@ static StrConstant SF_OP_APFREQUENCY_NONORM             = "nonorm"
 static StrConstant SF_OP_APFREQUENCY_X_COUNT            = "count"
 static StrConstant SF_OP_APFREQUENCY_X_TIME             = "time"
 
-static StrConstant SF_OP_AVG_INSWEEPS   = "in"
-static StrConstant SF_OP_AVG_OVERSWEEPS = "over"
+static StrConstant SF_OP_AVG_INSWEEPS    = "in"
+static StrConstant SF_OP_AVG_OVERSWEEPS  = "over"
+static StrConstant SF_OP_AVG_SWEEPGROUPS = "sweepgroup"
 
 static StrConstant SF_OP_EPOCHS_TYPE_RANGE     = "range"
 static StrConstant SF_OP_EPOCHS_TYPE_NAME      = "name"
@@ -487,40 +488,80 @@ End
 
 Function/WAVE SFO_OperationAvg(STRUCT SF_ExecutionData &exd)
 
-	variable numArgs
-	string   mode
+	variable numArgs, numGroups
+	string mode
 	string opShort = SF_OP_AVG
 
 	numArgs = SFH_CheckArgumentCount(exd, opShort, 1, maxArgs = 2)
 
-	mode = SFH_GetArgumentAsText(exd, opShort, 1, defValue = SF_OP_AVG_INSWEEPS, allowedValues = {SF_OP_AVG_INSWEEPS, SF_OP_AVG_OVERSWEEPS})
+	mode = SFH_GetArgumentAsText(exd, opShort, 1, defValue = SF_OP_AVG_INSWEEPS, allowedValues = {SF_OP_AVG_INSWEEPS, SF_OP_AVG_OVERSWEEPS, SF_OP_AVG_SWEEPGROUPS})
 	// attempt resolve as select type argument or array of it
 	WAVE/Z/WAVE input = SFH_GetArgumentSelect(exd, 0, doNotEnforce = 1)
-	if(WaveExists(input))
-		// successful resolved as selection
-		if(!CmpStr(mode, SF_OP_AVG_INSWEEPS) || !CmPStr(mode, SF_OP_AVG_OVERSWEEPS))
+
+	if(!CmpStr(mode, SF_OP_AVG_INSWEEPS) || !CmpStr(mode, SF_OP_AVG_OVERSWEEPS))
+		if(WaveExists(input))
+			// successful resolved as selection
 			WAVE/WAVE data  = SFO_GetDataFromSelect(exd.graph, input)
 			WAVE      input = data
+		else
+			// any other type
+			WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, 0)
 		endif
+
+		strswitch(mode)
+			case SF_OP_AVG_INSWEEPS:
+				WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, DimSize(input, ROWS))
+				output[] = SFO_OperationAvgImplIn(input[p])
+				SFH_TransferFormulaDataWaveNoteAndMeta(input, output, opShort, SF_DATATYPE_AVG)
+				return SFH_GetOutputForExecutor(output, exd.graph, opShort, clear = input)
+
+			case SF_OP_AVG_OVERSWEEPS:
+				return SFO_OperationAvgImplOver(input, exd.graph, opShort)
+
+			default:
+				FATAL_ERROR("Unhandled avg operation mode")
+		endswitch
+	elseif(!CmpStr(mode, SF_OP_AVG_SWEEPGROUPS))
+		SFH_ASSERT(WaveExists(input), "First argument is not a select type")
+		numGroups = DimSize(input, ROWS)
+		SFH_ASSERT(numGroups > 1, "First argument must contain at least two selections")
+		Make/FREE/WAVE/N=(numGroups) sweepsFromEachSelection = SFO_GetDataFromSelect(exd.graph, {input[p]})
+		return SFO_OperationAvgImplSweepGroups(sweepsFromEachSelection, exd.graph, opShort)
 	else
-		// any other type
-		WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, 0)
+		FATAL_ERROR("Unhandled avg operation mode")
 	endif
+End
 
-	strswitch(mode)
-		case SF_OP_AVG_INSWEEPS:
-			WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, DimSize(input, ROWS))
-			output[] = SFO_OperationAvgImplIn(input[p])
-			SFH_TransferFormulaDataWaveNoteAndMeta(input, output, opShort, SF_DATATYPE_AVG)
-			return SFH_GetOutputForExecutor(output, exd.graph, opShort, clear = input)
+static Function/WAVE SFO_OperationAvgImplSweepGroups(WAVE/WAVE sweepsFromEachSelection, string graph, string opShort)
 
-		case SF_OP_AVG_OVERSWEEPS:
-			return SFO_OperationAvgImplOver(input, exd.graph, opShort)
+	variable numData, numMaxSweeps, numGroups, i, j
+	STRUCT RGBColor s
 
-		default:
-			FATAL_ERROR("Unknown avg operation mode")
-	endswitch
+	[s] = GetTraceColorForAverage()
+	Make/FREE/W/U traceColor = {s.red, s.green, s.blue}
 
+	numGroups = DimSize(sweepsFromEachSelection, ROWS)
+	Make/FREE/D/N=(numGroups) sweepCnts = DimSize(sweepsFromEachSelection[p], ROWS)
+	numMaxSweeps = WaveMax(sweepCnts)
+	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, numMaxSweeps)
+	for(i = 0; i < numMaxSweeps; i += 1)
+		Make/FREE/WAVE/N=(numGroups) avgSet
+		numData = 0
+		for(j = 0; j < numGroups; j += 1)
+			if(DimSize(sweepsFromEachSelection[j], ROWS) > i)
+				avgSet[numData] = WaveRef(sweepsFromEachSelection[j], row = i)
+				numData        += 1
+			endif
+		endfor
+		Redimension/N=(numData) avgSet
+		WAVE/WAVE avg = MIES_fWaveAverage(avgSet, 1, IGOR_TYPE_64BIT_FLOAT)
+		output[i] = avg[0]
+		JWN_SetWaveInWaveNote(output[i], SF_META_TRACECOLOR, traceColor)
+		JWN_SetNumberInWaveNote(output[i], SF_META_TRACETOFRONT, 1)
+		JWN_SetNumberInWaveNote(output[i], SF_META_LINESTYLE, 0)
+	endfor
+
+	return SFH_GetOutputForExecutor(output, graph, opShort)
 End
 
 static Function/WAVE SFO_OperationAvgImplOver(WAVE/WAVE input, string graph, string opShort)
