@@ -2524,6 +2524,8 @@ StrConstant SF_OP_TPBASE              = "tpbase"
 StrConstant SF_OP_TPFIT               = "tpfit"
 ///@}
 
+StrConstant SF_PROPERTY_TABLE = "Table"
+
 /// @name SF operations shorts
 ///
 /// @anchor SFOperationsShorts

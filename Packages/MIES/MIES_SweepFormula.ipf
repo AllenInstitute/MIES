@@ -41,6 +41,10 @@ Menu "GraphPopup"
 	"Bring browser to front", /Q, SF_BringBrowserToFront()
 End
 
+Menu "TablePopup"
+	"Bring browser to front", /Q, SF_BringBrowserToFront()
+End
+
 Function SF_BringBrowserToFront()
 
 	string browser, graph
@@ -544,14 +548,73 @@ static Function/S SF_ShrinkLegend(string annotation)
 	return shrunkAnnotation
 End
 
+static Function SF_ClearPlotPanel(string win)
+
+	string   subWindow
+	variable wType
+
+	TUD_Clear(win, recursive = 1)
+
+	WAVE/T allWindows = ListToTextWave(GetAllWindows(win), ";")
+
+	for(subWindow : allWindows)
+		if(IsSubwindow(subWindow))
+			// in complex hierarchies we might kill more outer subwindows first
+			// so the inner ones might later not exist anymore
+			KillWindow/Z $subWindow
+		endif
+	endfor
+
+	RemoveAllControls(win)
+	wType = WinType(win)
+	if(wType == WINTYPE_PANEL || wType == WINTYPE_GRAPH)
+		RemoveAllDrawLayers(win)
+	endif
+End
+
+/// @brief Creates a new panel for sweepformula display of graph or table and returns the actual window name
+///
+/// @param[in] templateName base name of new window
+/// @param[in] graph        name of sweepbrowser/databrowser window
+/// @param[in] winType      [optional, default WINTYPE_PANEL] specifies window type
+/// @returns name of created window
+static Function/S SF_NewSweepFormulaBaseWindow(string templateName, string graph, [variable winType])
+
+	string win
+
+	winType = ParamIsDefault(winType) ? WINTYPE_PANEL : winType
+
+	win = templateName
+	if(WindowExists(win))
+		SF_ClearPlotPanel(win)
+	else
+		if(winType == WINTYPE_GRAPH)
+			Display/N=$win/K=1/W=(150, 400, 1000, 700)
+		elseif(winType == WINTYPE_PANEL)
+			NewPanel/N=$win/K=1/W=(150, 400, 1000, 700)
+		elseif(winType == WINTYPE_TABLE)
+			Edit/N=$win/K=1/W=(150, 400, 1000, 700)
+		else
+			FATAL_ERROR("Unsupported window type")
+		endif
+		win = S_name
+
+		SF_CommonWindowSetup(win, graph)
+	endif
+
+	return win
+End
+
 static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string winNameTemplate, string graph, variable winDisplayMode, variable numGraphs)
 
 	variable i, guidePos, restoreCursorInfo
-	string panelName, guideName1, guideName2, win
+	string panelName, guideName1, guideName2, win, winTable, winNameTemplateTable
 
 	ASSERT(numGraphs > 0, "Can not prepare plotter window for zero graphs")
 
-	Make/FREE/T/N=(numGraphs) plotGraphs
+	winNameTemplateTable = winNameTemplate + "table"
+
+	WAVE/T plotGraphs = GetPlotGraphNames(numGraphs)
 	Make/FREE/WAVE/N=(numGraphs, 3) infos
 	SetDimensionLabels(infos, "axes;cursors;annotations", COLS)
 
@@ -580,41 +643,15 @@ static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string wi
 
 	if(winDisplayMode == SF_DM_NORMAL)
 		for(i = 0; i < numGraphs; i += 1)
-			win = winNameTemplate + num2istr(i)
-
-			if(!WindowExists(win))
-				Display/N=$win/K=1/W=(150, 400, 1000, 700) as win
-				win = S_name
-			endif
-
-			SF_CommonWindowSetup(win, graph)
-
-			plotGraphs[i] = win
+			win                   = winNameTemplate + num2istr(i)
+			plotGraphs[i][%GRAPH] = SF_NewSweepFormulaBaseWindow(win, graph, winType = WINTYPE_GRAPH)
+			win                   = winNameTemplateTable + num2istr(i)
+			plotGraphs[i][%TABLE] = SF_NewSweepFormulaBaseWindow(win, graph, winType = WINTYPE_TABLE)
 		endfor
 	elseif(winDisplayMode == SF_DM_SUBWINDOWS)
 
-		win = winNameTemplate
-		if(WindowExists(win))
-			TUD_Clear(win, recursive = 1)
-
-			WAVE/T allWindows = ListToTextWave(GetAllWindows(win), ";")
-
-			for(subWindow : allWindows)
-				if(IsSubwindow(subWindow))
-					// in complex hierarchies we might kill more outer subwindows first
-					// so the inner ones might later not exist anymore
-					KillWindow/Z $subWindow
-				endif
-			endfor
-
-			RemoveAllControls(win)
-			RemoveAllDrawLayers(win)
-		else
-			NewPanel/N=$win/K=1/W=(150, 400, 1000, 700)
-			win = S_name
-
-			SF_CommonWindowSetup(win, graph)
-		endif
+		win      = SF_NewSweepFormulaBaseWindow(winNameTemplate, graph)
+		winTable = SF_NewSweepFormulaBaseWindow(winNameTemplateTable, graph)
 
 		// now we have an open panel without any subwindows
 
@@ -627,23 +664,32 @@ static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string wi
 			guideName1 = SF_PLOTTER_GUIDENAME + num2istr(i)
 			guidePos   = i / numGraphs
 			DefineGuide/W=$win $guideName1={FT, guidePos, FB}
+			DefineGuide/W=$winTable $guideName1={FT, guidePos, FB}
 		endfor
 
 		DefineGuide/W=$win customLeft={FL, 0.0, FR}
 		DefineGuide/W=$win customRight={FL, 1.0, FR}
+		DefineGuide/W=$winTable customLeft={FL, 0.0, FR}
+		DefineGuide/W=$winTable customRight={FL, 1.0, FR}
 
 		// and now the subwindow graphs
 		for(i = 0; i < numGraphs; i += 1)
 			guideName1 = SF_PLOTTER_GUIDENAME + num2istr(i)
 			guideName2 = SF_PLOTTER_GUIDENAME + num2istr(i + 1)
 			Display/HOST=$win/FG=(customLeft, $guideName1, customRight, $guideName2)/N=$("Graph" + num2str(i))
-			plotGraphs[i] = winNameTemplate + "#" + S_name
+			plotGraphs[i][%GRAPH] = win + "#" + S_name
+			Edit/HOST=$winTable/FG=(customLeft, $guideName1, customRight, $guideName2)/N=$("Table" + num2str(i))
+			plotGraphs[i][%TABLE] = winTable + "#" + S_name
 		endfor
 	endif
 
-	for(win : plotGraphs)
+	for(i = 0; i < numGraphs; i += 1)
+		win = plotGraphs[i][%GRAPH]
 		RemoveTracesFromGraph(win)
 		ModifyGraph/W=$win swapXY=0
+
+		win = plotGraphs[i][%TABLE]
+		RemoveAllColumnsFromTable(win)
 	endfor
 
 	return [plotGraphs, infos]
@@ -740,13 +786,52 @@ static Function SF_CheckNumTraces(string graph, variable numTraces)
 	endif
 End
 
-static Function SF_CleanUpPlotWindowsOnFail(WAVE/T plotGraphs)
+static Function SF_KillEmptyDataWindows(WAVE/T plotGraphs)
 
 	for(str : plotGraphs)
-		WAVE/Z wv = WaveRefIndexed(str, 0, 1)
-		if(!WaveExists(wv))
-			KillWindow/Z $str
+		if(WindowExists(str))
+			WAVE/Z wv = WaveRefIndexed(str, 0, 1)
+			if(!WaveExists(wv))
+				KillWindow/Z $str
+			endif
 		endif
+	endfor
+End
+
+/// @brief Tiles the subwindows in the panels acording to existing data, requires SF_DM_SUBWINDOWS mode
+static Function SF_TileExistingData(WAVE/T plotGraphs)
+
+	variable numSubWins, numData, guidePos, i, j, col, numCols
+	string guideName1, guideName2, win
+
+	numCols = DimSize(plotGraphs, COLS)
+	for(col = 0; col < numCols; col += 1)
+		win = plotGraphs[0][col]
+		win = RemoveEnding(win, "#" + StringFromList(ItemsInList(win, "#") - 1, win, "#"))
+
+		numSubWins = DimSize(plotGraphs, ROWS)
+		Make/FREE/N=(numSubWins) hasData
+		hasData[] = WaveExists(WaveRefIndexed(plotGraphs[p][col], 0, 1))
+
+		WAVE/Z idx = FindIndizes(hasData, var = 1)
+		if(!WaveExists(idx))
+			KillWindow/Z $win
+			return NaN
+		endif
+
+		numData = DimSize(idx, ROWS)
+		j       = 0
+		for(i : idx)
+			guideName1 = SF_PLOTTER_GUIDENAME + num2istr(i)
+			guidePos   = j / numData
+			DefineGuide/W=$win $guideName1={FT, guidePos, FB}
+
+			guideName2 = SF_PLOTTER_GUIDENAME + num2istr(i + 1)
+			guidePos   = (j + 1) / numData
+			DefineGuide/W=$win $guideName2={FT, guidePos, FB}
+
+			j += 1
+		endfor
 	endfor
 End
 
@@ -788,6 +873,15 @@ static Function/WAVE SF_PrepareResultWaveForPlotting(DFREF dfr, WAVE wvResult, v
 	return plotWave
 End
 
+static Function SF_IsDataForTableDisplay(WAVE wvY)
+
+	variable useTable
+
+	useTable = JWN_GetNumberFromWaveNote(wvY, SF_PROPERTY_TABLE)
+
+	return IsNaN(useTable) ? 0 : !!useTable
+End
+
 /// @brief  Plot the formula using the data from graph
 ///
 /// @param graph  graph to pass to SF_FormulaExecutor
@@ -801,7 +895,8 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 	variable winDisplayMode, showLegend, tagCounter, overrideMarker, line, lineGraph, lineGraphFormula
 	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection, numAnnotations, formulasAreDifferent, postPlotPSX
 	variable formulaCounter, gdIndex, markerCode, lineCode, lineStyle, traceToFront, isCategoryAxis, xFormulaOffset
-	string win, wList, winNameTemplate, exWList, wName, annotation, xAxisLabel, yAxisLabel, wvName, info, xAxis
+	variable showInTable
+	string win, winTable, wList, winNameTemplate, exWList, wName, annotation, xAxisLabel, yAxisLabel, wvName, info, xAxis
 	string formulasRemain, moreFormulas, yAndXFormula, xFormula, yFormula, tagText, name, winHook
 	STRUCT SF_PlotMetaData plotMetaData
 	STRUCT RGBColor        color
@@ -838,8 +933,12 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 		formulasRemain = graphCode[j][%GRAPHCODE]
 		lineGraph      = str2num(graphCode[j][%LINE])
 
-		win   = plotGraphs[j]
-		wList = AddListItem(win, wList)
+		win      = plotGraphs[j][%GRAPH]
+		winTable = plotGraphs[j][%TABLE]
+		if(winDisplayMode == SF_DM_NORMAL)
+			wList = AddListItem(win, wList)
+			wList = AddListItem(winTable, wList)
+		endif
 
 		Make/FREE=1/T/N=(MINIMUM_WAVE_SIZE) wAnnotations, formulaArgSetup
 		Make/FREE=1/WAVE/N=(MINIMUM_WAVE_SIZE) collPlotFormData
@@ -865,7 +964,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 			try
 				[formulaResults, plotMetaData] = SF_GatherFormulaResults(xFormula, yFormula, graph, line, xFormulaOffset)
 			catch
-				SF_CleanUpPlotWindowsOnFail(plotGraphs)
+				SF_KillEmptyDataWindows(plotGraphs)
 				Abort
 			endtry
 
@@ -886,6 +985,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 				WAVE/ZZ previousColorGroups
 			endif
 			WAVE/Z colorGroups = SF_GetColorGroups(formulaResults, previousColorGroups)
+			showInTable = SF_IsDataForTableDisplay(formulaResults)
 
 			numData = DimSize(formulaResults, ROWS)
 			for(k = 0; k < numData; k += 1)
@@ -923,6 +1023,12 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 				yMxN    = DimSize(wvY, COLS)
 
 				SFH_ASSERT(!(IsTextWave(wvY) && (WaveExists(wvX) && IsTextWave(wvX))), "One wave needs to be numeric for plotting")
+
+				if(showIntable)
+					AppendToTable/W=$winTable wvY.ld
+					dataCnt += 1
+					continue
+				endif
 
 				if(IsTextWave(wvY))
 					SFH_ASSERT(WaveExists(wvX), "Cannot plot a single text wave")
@@ -1244,6 +1350,11 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 			endif
 		endif
 	endfor
+
+	if(winDisplayMode == SF_DM_SUBWINDOWS)
+		SF_TileExistingData(plotGraphs)
+	endif
+	SF_KillEmptyDataWindows(plotGraphs)
 
 	if(winDisplayMode == SF_DM_NORMAL)
 		exWList = WinList(winNameTemplate + "*", ";", "WIN:1")
