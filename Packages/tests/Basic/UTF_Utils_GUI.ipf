@@ -158,3 +158,60 @@ Function TestIsExteriorSubWindow()
 	CHECK(IsExteriorSubWindow(main + "#" + sub0))
 	CHECK(!IsExteriorSubWindow(main + "#" + sub0 + "#" + sub1))
 End
+
+Function TestRemoveAllColumnsFromTable()
+
+	string win
+	string wName1 = "racft1"
+	string wName2 = "racft2"
+	string wName3 = "racft3"
+
+	try
+		RemoveAllColumnsFromTable("IdoNotExist")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Display/N=myPlot
+	win = S_name
+	try
+		RemoveAllColumnsFromTable(win)
+		FAIL()
+	catch
+		PASS()
+	endtry
+	KillWindow/Z $win
+
+	KillWaves/Z $wName1, $wName2, $wName3
+	Make $wName1/WAVE=wv1
+	Make $wName2/WAVE=wv2
+	Make/N=(1, 1) $wName3/WAVE=wv3
+
+	Edit/N=myTable wv1
+	win = S_name
+
+	RemoveAllColumnsFromTable(win)
+	WAVE/Z wvremain = WaveRefIndexed(win, 0, 3)
+	CHECK_WAVE(wvremain, NULL_WAVE)
+	KillWindow/Z $win
+
+	Edit/N=myTable wv1
+	win = S_name
+	AppendToTable/W=$win wv2
+
+	RemoveAllColumnsFromTable(win)
+	WAVE/Z wvremain = WaveRefIndexed(win, 0, 3)
+	CHECK_WAVE(wvremain, NULL_WAVE)
+	KillWindow/Z $win
+
+	Edit/N=myTable wv3
+	win = S_name
+
+	RemoveAllColumnsFromTable(win)
+	WAVE/Z wvremain = WaveRefIndexed(win, 0, 3)
+	CHECK_WAVE(wvremain, NULL_WAVE)
+	KillWindow/Z $win
+
+	KillWaves/Z $wName1, $wName2, $wName3
+End
