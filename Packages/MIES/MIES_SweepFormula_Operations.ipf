@@ -2420,3 +2420,18 @@ threadsafe static Function/WAVE SFO_SweepAverageHelper(WAVE/WAVE group)
 
 	return avgResult[0]
 End
+
+Function/WAVE SFO_OperationTable(STRUCT SF_ExecutionData &exd)
+
+	SFH_CheckArgumentCount(exd, SF_OP_TABLE, 1, maxArgs = 1)
+
+	WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, 0)
+
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_TABLE, DimSize(input, ROWS))
+
+	output[] = input[p]
+
+	JWN_SetNumberInWaveNote(output, SF_PROPERTY_TABLE, 1)
+
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_TABLE)
+End
