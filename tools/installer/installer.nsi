@@ -869,6 +869,13 @@ SkipASLRSetup:
         SetRegView default
       ${EndIf}
 SkipITCSetup:
+
+  IntCmp $INSTALL_I964 0 NoIniIgor9
+    WriteINIStr "$APPDATA\WaveMetrics\Igor Pro 9.ini" "MiscSettings" "Graph\disableTraceDrag" "true"
+NoIniIgor9:
+  IntCmp $INSTALL_I1064 0 NoIniIgor10
+    WriteINIStr "$APPDATA\WaveMetrics\Igor Pro 10.ini" "MiscSettings" "Graph\disableTraceDrag" "true"
+NoIniIgor10:
 ; Write out installed configuration
 ; Format of the json file:
 ; /Installation/User : <string> ; for what user target the installation was done, either "current" or "all"
