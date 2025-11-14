@@ -329,7 +329,7 @@ End
 Function CONF_AutoLoader([string customIPath])
 
 	variable i, numFiles
-	string rigCandidate
+	string rigCandidate, pattern
 
 	if(ParamIsDefault(customIPath))
 		WAVE/Z/T rawFileList = CONF_GetConfigFiles()
@@ -347,12 +347,16 @@ Function CONF_AutoLoader([string customIPath])
 	Sort mainFileList, mainFileList
 	numFiles = DimSize(mainFileList, ROWS)
 	for(i = 0; i < numFiles; i += 1)
-		rigCandidate = mainFileList[i]
-		rigCandidate = rigCandidate[0, strlen(rigCandidate) - 6] + EXPCONFIG_RIGFILESUFFIX
-		FindValue/TXOP=4/TEXT=rigCandidate rigFileList
-		if(V_Value == -1)
+		pattern = "^.*" + "\Q" + GetBaseName(mainFileList[i]) + "\E" + ".*" + "\Q" + EXPCONFIG_RIGFILESUFFIX + "\E$"
+		WAVE/Z/T result = GrepTextWave(rigFileList, pattern)
+
+		if(WaveExists(result))
+			ASSERT(DimSize(result, ROWS) == 1, "Expected at most one rig file per main configuration file")
+			rigCandidate = result[0]
+		else
 			rigCandidate = ""
 		endif
+
 		CONF_RestoreWindow(mainFileList[i], rigFile = rigCandidate)
 	endfor
 End
