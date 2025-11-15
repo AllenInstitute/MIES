@@ -130,9 +130,14 @@ Constant FREE_MEMORY_LOWER_LIMIT = 0.75
 
 /// @name Pressure Control constants
 ///@{
-/// Max and min pressure regulator pressure in psi
+/// Max, min and atmospheric pressure regulator pressure in psi
 Constant MAX_REGULATOR_PRESSURE = 9.9
 Constant MIN_REGULATOR_PRESSURE = -9.9
+Constant ATMOSPHERIC_PRESSURE   = 0
+/// valve for pressure routing
+Constant ACCESS_ATM       = 0 // Access constants are used to set TTL valve configuration
+Constant ACCESS_REGULATOR = 1
+Constant ACCESS_USER      = 2
 ///@}
 
 /// The indizies correspond to the values from @ref XopChannelConstants
