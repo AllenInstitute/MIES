@@ -522,11 +522,19 @@ Function/WAVE SFO_OperationAvg(STRUCT SF_ExecutionData &exd)
 				FATAL_ERROR("Unhandled avg operation mode")
 		endswitch
 	elseif(!CmpStr(mode, SF_OP_AVG_SWEEPGROUPS))
-		SFH_ASSERT(WaveExists(input), "First argument is not a select type")
-		numGroups = DimSize(input, ROWS)
-		SFH_ASSERT(numGroups > 1, "First argument must contain at least two selections")
-		Make/FREE/WAVE/N=(numGroups) sweepsFromEachSelection = SFO_GetDataFromSelect(exd.graph, {input[p]})
-		return SFO_OperationAvgImplSweepGroups(sweepsFromEachSelection, exd.graph, opShort)
+		if(WaveExists(input))
+			numGroups = DimSize(input, ROWS)
+			SFH_ASSERT(numGroups > 1, "First argument must be an array with at least two elements")
+			Make/FREE/WAVE/N=(numGroups) dataFromEachGroup = SFO_GetDataFromSelect(exd.graph, {input[p]})
+		else
+			WAVE/WAVE firstArgArray = SF_ResolveDatasetFromJSON(exd, 0)
+			SFH_ASSERT(IsTextWave(firstArgArray[0]), "Expected a dataset")
+			WAVE/T elemRefs = firstArgArray[0]
+			numGroups = DimSize(elemRefs, ROWS)
+			SFH_ASSERT(numGroups > 1, "First argument must be an array with at least two elements")
+			Make/FREE/WAVE/N=(numGroups) dataFromEachGroup = SFH_AttemptDatasetResolve(elemRefs[p], checkWithSFHAssert = 1)
+		endif
+		return SFO_OperationAvgImplSweepGroups(dataFromEachGroup, exd.graph, opShort)
 	else
 		FATAL_ERROR("Unhandled avg operation mode")
 	endif
