@@ -4760,7 +4760,7 @@ Function/WAVE PSX_OperationKernel(STRUCT SF_ExecutionData &exd)
 
 	SFH_CheckArgumentCount(exd, SF_OP_PSX_KERNEL, 0, maxArgs = 4)
 
-	WAVE/Z/WAVE selectDataCompArray = SFH_GetArgumentSelect(exd, SF_OP_PSX_KERNEL, 0)
+	WAVE/Z/WAVE selectDataCompArray = SFH_GetArgumentSelect(exd, 0)
 	SFH_ASSERT(WaveExists(selectDataCompArray), "Could not gather sweep data from select statement")
 
 	riseTau  = SFH_GetArgumentAsNumeric(exd, SF_OP_PSX_KERNEL, 1, defValue = 1, checkFunc = IsStrictlyPositiveAndFinite)
@@ -4910,7 +4910,7 @@ Function/WAVE PSX_OperationStats(STRUCT SF_ExecutionData &exd)
 
 	id = SFH_GetArgumentAsText(exd, SF_OP_PSX, 0, checkFunc = IsValidObjectName)
 
-	WAVE/Z/WAVE selectDataCompArray = SFH_GetArgumentSelect(exd, SF_OP_PSX_STATS, 1)
+	WAVE/Z/WAVE selectDataCompArray = SFH_GetArgumentSelect(exd, 1)
 	SFH_Assert(WaveExists(selectDataCompArray), "Missing select data")
 
 	WAVE allProps = PSX_GetAllStatsProperties()
