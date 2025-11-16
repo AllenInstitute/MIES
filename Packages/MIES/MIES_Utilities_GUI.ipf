@@ -661,6 +661,24 @@ Function RemoveTracesFromGraph(string graph, [string trace, WAVE/Z wv, DFREF dfr
 	return NaN
 End
 
+/// @brief Removes all wave columns from a table
+///
+/// @param win name of a window containing a table
+Function RemoveAllColumnsFromTable(string win)
+
+	ASSERT(WinType(win) == WINTYPE_TABLE, "Target window must be a table")
+
+	for(;;)
+		WAVE/Z wv = WaveRefIndexed(win, 0, 3)
+		if(!WaveExists(wv))
+			break
+		endif
+		// the order of the columnSpec subTypes is very important here
+		// see WM issue #7689
+		RemoveFromTable/W=$win wv.id, wv.ld, wv.i, wv.l, wv.d
+	endfor
+End
+
 /// @brief Add user data "panelVersion" to the panel
 Function AddVersionToPanel(string win, variable version)
 

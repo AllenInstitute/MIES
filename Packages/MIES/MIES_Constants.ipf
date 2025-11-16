@@ -2518,11 +2518,14 @@ StrConstant SF_OP_SELECTIVSCCSWEEPQC  = "selivsccsweepqc"
 StrConstant SF_OP_SELECTIVSCCSETQC    = "selivsccsetqc"
 StrConstant SF_OP_SELECTRANGE         = "selrange"
 StrConstant SF_OP_POWERSPECTRUM       = "powerspectrum"
+StrConstant SF_OP_TABLE               = "table"
 StrConstant SF_OP_TPSS                = "tpss"
 StrConstant SF_OP_TPINST              = "tpinst"
 StrConstant SF_OP_TPBASE              = "tpbase"
 StrConstant SF_OP_TPFIT               = "tpfit"
 ///@}
+
+StrConstant SF_PROPERTY_TABLE = "Table"
 
 /// @name SF operations shorts
 ///
