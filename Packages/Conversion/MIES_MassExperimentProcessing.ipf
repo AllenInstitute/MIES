@@ -260,7 +260,7 @@ End
 // Allow user to choose the folder containing the experiment files and start the process.
 Function StartMultiExperimentProcessWrapper()
 
-	string message, settingsFile, inputFolder, outputFolder, files
+	string message, settingsFile, inputFolder, outputFolder
 	variable jsonID
 
 	STRUCT MultiExperimentProcessPrefs prefs
@@ -296,7 +296,7 @@ Function StartMultiExperimentProcessWrapper()
 	outputFolder = S_Path
 	ASSERT(V_flag, "Invalid path")
 
-	WAVE/Z files = GetAllFilesRecursivelyFromPath("MultiExperimentInputFolder", regex = "(?i)\.pxp$")
+	WAVE/Z/T files = GetAllFilesRecursivelyFromPath("MultiExperimentInputFolder", regex = "(?i)\.pxp$")
 
 	if(WaveExists(files))
 		Sort/A=2 files, files
@@ -312,10 +312,10 @@ Function StartMultiExperimentProcessWrapper()
 	JSON_AddVariable(jsonID, "/processed", 0)
 	JSON_AddVariable(jsonID, "/errors", 0)
 	JSON_AddVariable(jsonID, "/skipped", 0)
-	JSON_AddVariable(jsonID, "/total", DimSize(inputPXPs, ROWS))
+	JSON_AddVariable(jsonID, "/total", DimSize(files, ROWS))
 
 	JSON_AddTreeArray(jsonID, "/log")
-	JSON_AddObjects(jsonID, "/log", objCount = DimSize(inputPXPs, ROWS))
+	JSON_AddObjects(jsonID, "/log", objCount = DimSize(files, ROWS))
 
 	prefs.settingsFile = outputFolder + "conversion.json"
 	StoreJSON(prefs, jsonID)
