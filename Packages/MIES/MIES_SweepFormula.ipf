@@ -203,6 +203,7 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 			endif
 
 			formulaResults[i][%FORMULAY] = wvYdata
+			JWN_SetStringInWaveNote(wvYdata, SF_META_FORMULA, yFormula)
 		endif
 	endfor
 
@@ -597,6 +598,7 @@ static Function/S SF_NewSweepFormulaBaseWindow(string templateName, string graph
 			NewPanel/N=$win/K=1/W=(150, 400, 1000, 700)
 		elseif(winType == WINTYPE_TABLE)
 			Edit/N=$win/K=1/W=(150, 400, 1000, 700)
+			SF_AddTableExtras(S_name)
 		else
 			FATAL_ERROR("Unsupported window type")
 		endif
@@ -606,6 +608,11 @@ static Function/S SF_NewSweepFormulaBaseWindow(string templateName, string graph
 	endif
 
 	return win
+End
+
+static Function SF_AddTableExtras(string win)
+
+	SetWindow $win, tooltipHook(sfTableTooltip)=SF_TableTooltipHook
 End
 
 static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string winNameTemplate, string graph, variable winDisplayMode, variable numGraphs)
@@ -682,6 +689,7 @@ static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string wi
 			Display/HOST=$win/FG=(customLeft, $guideName1, customRight, $guideName2)/N=$("Graph" + num2str(i))
 			plotGraphs[i][%GRAPH] = win + "#" + S_name
 			Edit/HOST=$winTable/FG=(customLeft, $guideName1, customRight, $guideName2)/N=$("Table" + num2str(i))
+			SF_AddTableExtras(winTable + "#" + S_name)
 			plotGraphs[i][%TABLE] = winTable + "#" + S_name
 		endfor
 	endif
@@ -2402,4 +2410,55 @@ static Function SF_MarkErrorLocationInNotebook(string win)
 	paragraph = str2num(varAssignments[V_row][%LINE])
 	offset    = str2num(varAssignments[V_row][%OFFSET])
 	Notebook $sfWin, selection={(paragraph, 0), (paragraph, offset - 1)}, textRGB=(65535, 0, 0)
+End
+
+/// @brief This function returns a list of JSON properties that are intended to be shown
+///        in the tooltip for table display, when present
+///        This allows to separate meta data for the user from internal meta information like plotting hints
+static Function/WAVE SF_GetTableTooltipProperties()
+
+	Make/FREE/T wv = {SF_META_FORMULA, SF_META_EXPERIMENT, SF_META_DEVICE, SF_META_SWEEPNO, SF_META_CHANNELTYPE, SF_META_CHANNELNUMBER}
+
+	return wv
+End
+
+static Function/S SF_AppendTableTooltip(string s, string key, string value)
+
+	return s + "<b>" + key + ": </b>" + value + "<br>"
+End
+
+Function SF_TableTooltipHook(STRUCT WMTooltipHookStruct &s)
+
+	variable hookResult, val
+	string str, prop, key
+
+	if(WaveExists(s.yWave))
+		hookResult = 1
+		s.tooltip  = ""
+
+		WAVE/T props = SF_GetTableTooltipProperties()
+		for(prop : props)
+			key = RemovePrefix(prop)
+			str = JWN_GetStringFromWaveNote(s.yWave, prop)
+			if(!IsEmpty(str))
+				str       = ReplaceString("\r", str, "")
+				s.tooltip = SF_AppendTableTooltip(s.tooltip, key, str)
+				continue
+			endif
+			val = JWN_GetNumberFromWaveNote(s.yWave, prop)
+			if(IsNaN(val))
+				continue
+			endif
+			if(!CmpStr(prop, SF_META_CHANNELTYPE))
+				s.tooltip = SF_AppendTableTooltip(s.tooltip, key, ChannelTypeToString(val))
+				continue
+			endif
+			s.tooltip = SF_AppendTableTooltip(s.tooltip, key, num2str(val))
+		endfor
+		s.tooltip     = RemoveEnding(s.tooltip, "<br>")
+		s.isHtml      = 1
+		s.duration_ms = 600000
+	endif
+
+	return hookResult
 End
