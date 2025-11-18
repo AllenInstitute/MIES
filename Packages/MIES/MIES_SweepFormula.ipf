@@ -39,6 +39,8 @@ static Constant SF_NUMTRACES_WARN_THRESHOLD  = 1000
 static Constant SF_SWEEPFORMULA_AXIS_X = 0
 static Constant SF_SWEEPFORMULA_AXIS_Y = 1
 
+static StrConstant SF_UDATA_TABLEFORMULAS = "formulas"
+
 Menu "GraphPopup"
 	"Bring browser to front", /Q, SF_BringBrowserToFront()
 End
@@ -922,7 +924,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 	variable winDisplayMode, showLegend, tagCounter, overrideMarker, line, lineGraph, lineGraphFormula
 	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection, numAnnotations, formulasAreDifferent, postPlotPSX
 	variable formulaCounter, gdIndex, markerCode, lineCode, lineStyle, traceToFront, isCategoryAxis, xFormulaOffset
-	variable showInTable
+	variable showInTable, numTableFormulas, formulaAddedOncePerDataset
 	string win, winTable, wList, winNameTemplate, exWList, wName, annotation, xAxisLabel, yAxisLabel, wvName, info, xAxis
 	string formulasRemain, moreFormulas, yAndXFormula, xFormula, yFormula, tagText, name, winHook
 	STRUCT SF_PlotMetaData plotMetaData
@@ -947,11 +949,12 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 
 	for(j = 0; j < numGraphs; j += 1)
 
-		traceCnt       = 0
-		numAnnotations = 0
-		postPlotPSX    = 0
-		showLegend     = 1
-		formulaCounter = 0
+		traceCnt         = 0
+		numAnnotations   = 0
+		postPlotPSX      = 0
+		showLegend       = 1
+		formulaCounter   = 0
+		numTableFormulas = 0
 		WAVE/Z wvX         = $""
 		WAVE/Z colorGroups = $""
 
@@ -967,14 +970,15 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 			wList = AddListItem(winTable, wList)
 		endif
 
-		Make/FREE=1/T/N=(MINIMUM_WAVE_SIZE) wAnnotations, formulaArgSetup
+		Make/FREE=1/T/N=(MINIMUM_WAVE_SIZE) wAnnotations, formulaArgSetup, tableFormulas
 		Make/FREE=1/WAVE/N=(MINIMUM_WAVE_SIZE) collPlotFormData
 
 		do
 
 			WAVE/WAVE plotFormData = SF_CreatePlotFormulaDataWave()
-			gdIndex    = 0
-			annotation = ""
+			gdIndex                    = 0
+			annotation                 = ""
+			formulaAddedOncePerDataset = 0
 
 			SplitString/E=SF_SWEEPFORMULA_WITH_REGEXP formulasRemain, yAndXFormula, moreFormulas
 			if(!V_flag)
@@ -1057,6 +1061,14 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 					else
 						AppendToTable/W=$winTable wvY.d
 					endif
+
+					if(!formulaAddedOncePerDataset)
+						EnsureLargeEnoughWave(tableFormulas, indexShouldExist = numTableFormulas)
+						tableFormulas[numTableFormulas] = JWN_GetStringFromWaveNote(wvY, SF_META_FORMULA)
+						numTableFormulas               += 1
+						formulaAddedOncePerDataset      = 1
+					endif
+
 					dataCnt += 1
 					continue
 				endif
@@ -1202,6 +1214,11 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 			collPlotFormData[formulaCounter] = plotFormData
 			formulaCounter                  += 1
 		while(1)
+
+		if(numTableFormulas)
+			Redimension/N=(numTableFormulas) tableFormulas
+			SetWindow $winTable, userdata($SF_UDATA_TABLEFORMULAS)=WaveToJSON(tableFormulas)
+		endif
 
 		if(showLegend)
 			customLegend = JWN_GetStringFromWaveNote(formulaResults, SF_META_CUSTOM_LEGEND)
