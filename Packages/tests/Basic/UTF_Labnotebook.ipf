@@ -1417,6 +1417,70 @@ Function LabnotebookUpgradeMissingNoteIndexTextual()
 	CHECK_EQUAL_VAR(idxRedone, 0)
 End
 
+Function LabnotebookUpgradeMissingNoteIndexNumericalWithHoles()
+
+	variable idx, idxRedone
+	string device, key, keyTxt
+
+	device        = "ITC16USB_0_DEV"
+	[key, keyTxt] = PrepareLBN_IGNORE(device)
+
+	WAVE/Z   numericalValues = GetLBNumericalValues(device)
+	WAVE/Z/T numericalKeys   = GetLBNumericalKeys(device)
+
+	idx = GetNumberFromWaveNote(numericalValues, NOTE_INDEX)
+	CHECK_GT_VAR(idx, 0)
+
+	Note/K numericalKeys
+
+	MIES_WAVEGETTERS#UpgradeLabNotebook(device)
+
+	idxRedone = GetNumberFromWaveNote(numericalValues, NOTE_INDEX)
+	CHECK_EQUAL_VAR(idxRedone, idx)
+
+	Note/K numericalKeys
+	Note/K numericalValues
+
+	numericalValues[0][][] = NaN
+
+	MIES_WAVEGETTERS#UpgradeLabNotebook(device)
+
+	idxRedone = GetNumberFromWaveNote(numericalValues, NOTE_INDEX)
+	CHECK_EQUAL_VAR(idxRedone, idx)
+End
+
+Function LabnotebookUpgradeMissingNoteIndexTextualWithHoles()
+
+	variable idx, idxRedone
+	string device, key, keyTxt
+
+	device        = "ITC16USB_0_DEV"
+	[key, keyTxt] = PrepareLBN_IGNORE(device)
+
+	WAVE/Z/T textualValues = GetLBTextualValues(device)
+	WAVE/Z/T textualKeys   = GetLBTextualKeys(device)
+
+	idx = GetNumberFromWaveNote(textualValues, NOTE_INDEX)
+	CHECK_GT_VAR(idx, 0)
+
+	Note/K textualKeys
+
+	MIES_WAVEGETTERS#UpgradeLabNotebook(device)
+
+	idxRedone = GetNumberFromWaveNote(textualValues, NOTE_INDEX)
+	CHECK_EQUAL_VAR(idxRedone, idx)
+
+	Note/K textualValues
+	Note/K textualKeys
+
+	textualValues[0][][] = ""
+
+	MIES_WAVEGETTERS#UpgradeLabNotebook(device)
+
+	idxRedone = GetNumberFromWaveNote(textualValues, NOTE_INDEX)
+	CHECK_EQUAL_VAR(idxRedone, idx)
+End
+
 Function EmptyLabnotebookWorks()
 
 	string device

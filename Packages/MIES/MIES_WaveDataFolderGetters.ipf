@@ -1638,12 +1638,14 @@ static Function UpgradeLabNotebook(string device)
 		nextFreeRow = GetNumberFromWaveNote(numericalValues, NOTE_INDEX)
 
 		if(IsNaN(nextFreeRow))
-			FindValue/FNAN/RMD=[][timeStampColumn][0]/R numericalValues
-			if(!(V_row >= 0))
-				// labnotebook is completely full
-				V_row = DimSize(numericalValues, ROWS)
+			WAVE/Z indizes = FindIndizes(numericalValues, col = timeStampColumn, prop = PROP_NOT | PROP_EMPTY, startLayer = 0, endLayer = 0)
+			if(!WaveExists(indizes))
+				// labnotebook is empty
+				nextFreeRow = 0
+			else
+				nextFreeRow = WaveMax(indizes) + 1
 			endif
-			SetNumberInWaveNote(numericalValues, NOTE_INDEX, V_row)
+			SetNumberInWaveNote(numericalValues, NOTE_INDEX, nextFreeRow)
 		endif
 	endif
 
@@ -1651,11 +1653,14 @@ static Function UpgradeLabNotebook(string device)
 		nextFreeRow = GetNumberFromWaveNote(textualValues, NOTE_INDEX)
 
 		if(IsNaN(nextFreeRow))
-			FindValue/TEXT=("")/RMD=[][timeStampColumn][0]/R textualValues
-			if(!(V_row >= 0))
-				V_row = DimSize(textualValues, ROWS)
+			WAVE/Z indizes = FindIndizes(textualValues, col = timeStampColumn, prop = PROP_NOT | PROP_EMPTY, startLayer = 0, endLayer = 0)
+			if(!WaveExists(indizes))
+				// labnotebook is empty
+				nextFreeRow = 0
+			else
+				nextFreeRow = WaveMax(indizes) + 1
 			endif
-			SetNumberInWaveNote(textualValues, NOTE_INDEX, V_row)
+			SetNumberInWaveNote(textualValues, NOTE_INDEX, nextFreeRow)
 		endif
 	endif
 	// END add note index
