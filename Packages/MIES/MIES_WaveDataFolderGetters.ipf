@@ -1383,7 +1383,7 @@ End
 /// - Fix unit and tolerance of "Repeat Sets"
 /// - Reapplying the dimension labels as the old ones were cut off after 31 bytes
 /// - Making dimension labels valid liberal object names
-/// - Extending the row dimension to 6 for the key waves
+/// - Extending the row dimension to 6 for the key waves including setting the dimension labels
 /// - Fixing empty column dimension labels in the columns of the value waves
 static Function UpgradeLabNotebook(string device)
 
@@ -1658,6 +1658,16 @@ static Function UpgradeLabNotebook(string device)
 		endif
 	endif
 	// END add note index
+
+	// BEGIN add dimension labels for key waves
+	if(IsEmpty(GetDimLabel(numericalKeys, ROWS, DimSize(numericalKeys, ROWS) - 1)))
+		SetLBKeysRowDimensionLabels(numericalKeys)
+	endif
+
+	if(IsEmpty(GetDimLabel(textualKeys, ROWS, DimSize(textualKeys, ROWS) - 1)))
+		SetLBKeysRowDimensionLabels(textualKeys)
+	endif
+	// END add dimension labels for key waves
 End
 
 static Function/S FixInvalidLabnotebookKey(string name)
