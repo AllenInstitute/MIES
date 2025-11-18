@@ -1384,7 +1384,7 @@ End
 /// - Reapplying the dimension labels as the old ones were cut off after 31 bytes
 /// - Making dimension labels valid liberal object names
 /// - Extending the row dimension to 6 for the key waves
-/// - Fixing empty column dimension labels in key waves
+/// - Fixing empty column dimension labels in the columns of the value waves
 static Function UpgradeLabNotebook(string device)
 
 	variable numCols, i, col, numEntries, sourceCol, timeStampColumn, nextFreeRow
@@ -1604,7 +1604,7 @@ static Function UpgradeLabNotebook(string device)
 	endif
 	// END extending rows
 
-	// BEGIN fix missing column dimension labels in keyWaves
+	// BEGIN fix missing column dimension labels in columns of values
 	if(WaveVersionIsSmaller(numericalKeys, 74))
 		numCols = DimSize(numericalValues, COLS)
 		for(i = 0; i < numCols; i += 1)
@@ -1622,7 +1622,7 @@ static Function UpgradeLabNotebook(string device)
 			endif
 		endfor
 	endif
-	// END fix missing column dimension labels in keyWaves
+	// END fix missing column dimension labels in columns of values
 
 	// we don't remove the wavenote entry of sweep rollback as we might need to adapt the reading code
 	// in the future to handle labnotebooks with that specially
