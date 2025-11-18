@@ -2415,3 +2415,95 @@ Function TestConcat_SpecialWaveRef2D()
 	CHECK_EQUAL_WAVES(dest, comp, mode = WAVE_DATA)
 End
 /// @}
+
+/// HasDimLabels
+/// @{
+Function TestHasDimlabels()
+
+	WAVE/ZZ nullRef
+
+	CHECK_EQUAL_VAR(HasDimLabels(nullRef, ROWS), 0)
+
+	Make/FREE/N=0 emptyWave
+	CHECK_EQUAL_VAR(HasDimLabels(emptyWave, ROWS), 0)
+
+	Make/FREE/N=1 wv
+	CHECK_EQUAL_VAR(HasDimLabels(wv, ROWS), 0)
+	CHECK_EQUAL_VAR(HasDimLabels(wv, COLS), 0)
+	CHECK_EQUAL_VAR(HasDimLabels(wv, LAYERS), 0)
+	CHECK_EQUAL_VAR(HasDimLabels(wv, CHUNKS), 0)
+
+	SetDimlabel ROWS, 0, LABEL, wv
+	CHECK_EQUAL_VAR(HasDimLabels(wv, ROWS), 1)
+	CHECK_EQUAL_VAR(HasDimLabels(wv, COLS), 0)
+
+	Make/FREE/N=(1, 1, 1, 1) wv
+	SetDimlabel ROWS, 0, LABEL, wv
+	SetDimlabel COLS, 0, LABEL, wv
+	SetDimlabel LAYERS, 0, LABEL, wv
+	SetDimlabel CHUNKS, 0, LABEL, wv
+	CHECK_EQUAL_VAR(HasDimLabels(wv, ROWS), 1)
+	CHECK_EQUAL_VAR(HasDimLabels(wv, COLS), 1)
+	CHECK_EQUAL_VAR(HasDimLabels(wv, LAYERS), 1)
+	CHECK_EQUAL_VAR(HasDimLabels(wv, CHUNKS), 1)
+
+	Make/FREE/N=(10, 10, 10, 10) wv
+	SetDimlabel ROWS, 0, LABEL, wv
+	SetDimlabel COLS, 1, LABEL, wv
+	SetDimlabel LAYERS, 2, LABEL, wv
+	SetDimlabel CHUNKS, 3, LABEL, wv
+	CHECK_EQUAL_VAR(HasDimLabels(wv, ROWS), 1)
+	CHECK_EQUAL_VAR(HasDimLabels(wv, ROWS, deep = 2), 1)
+	CHECK_EQUAL_VAR(HasDimLabels(wv, COLS), 0)
+	CHECK_EQUAL_VAR(HasDimLabels(wv, COLS, deep = 1), 0)
+	CHECK_EQUAL_VAR(HasDimLabels(wv, COLS, deep = 2), 1)
+	CHECK_EQUAL_VAR(HasDimLabels(wv, COLS, deep = 3), 1)
+	CHECK_EQUAL_VAR(HasDimLabels(wv, LAYERS), 0)
+	CHECK_EQUAL_VAR(HasDimLabels(wv, LAYERS, deep = 2), 0)
+	CHECK_EQUAL_VAR(HasDimLabels(wv, LAYERS, deep = 3), 1)
+	CHECK_EQUAL_VAR(HasDimLabels(wv, LAYERS, deep = 4), 1)
+	CHECK_EQUAL_VAR(HasDimLabels(wv, CHUNKS), 0)
+	CHECK_EQUAL_VAR(HasDimLabels(wv, CHUNKS, deep = 3), 0)
+	CHECK_EQUAL_VAR(HasDimLabels(wv, CHUNKS, deep = 4), 1)
+	CHECK_EQUAL_VAR(HasDimLabels(wv, CHUNKS, deep = 5), 1)
+
+	CHECK_EQUAL_VAR(HasDimLabels(wv, CHUNKS, deep = 20), 1)
+
+	try
+		HasDimLabels(wv, -1)
+	catch
+		PASS()
+	endtry
+
+	try
+		HasDimLabels(wv, 5)
+	catch
+		PASS()
+	endtry
+
+	try
+		HasDimLabels(wv, 0.5)
+	catch
+		PASS()
+	endtry
+
+	try
+		HasDimLabels(wv, ROWS, deep = 0)
+	catch
+		PASS()
+	endtry
+
+	try
+		HasDimLabels(wv, ROWS, deep = Inf)
+	catch
+		PASS()
+	endtry
+
+	try
+		HasDimLabels(wv, ROWS, deep = 1.5)
+	catch
+		PASS()
+	endtry
+
+End
+/// @}
