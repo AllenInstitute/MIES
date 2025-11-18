@@ -30,8 +30,8 @@
 
 #ifdef MEP_DEBUGGING
 
-static StrConstant INPUT_FOLDER  = "C:tim-data:pxp_examples_for_nwb_2:"
-static StrConstant OUTPUT_FOLDER = "C:tim-data:output:"
+static StrConstant INPUT_FOLDER  = "E:tim-data:pxp_examples_for_nwb_2:"
+static StrConstant OUTPUT_FOLDER = "E:tim-data:output:"
 
 #else
 
