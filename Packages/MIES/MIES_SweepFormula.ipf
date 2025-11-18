@@ -1052,7 +1052,11 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 				SFH_ASSERT(!(IsTextWave(wvY) && (WaveExists(wvX) && IsTextWave(wvX))), "One wave needs to be numeric for plotting")
 
 				if(showInTable)
-					AppendToTable/W=$winTable wvY.ld
+					if(HasDimLabels(wvY, ROWS) || HasDimLabels(wvY, COLS))
+						AppendToTable/W=$winTable wvY.ld
+					else
+						AppendToTable/W=$winTable wvY.d
+					endif
 					dataCnt += 1
 					continue
 				endif
