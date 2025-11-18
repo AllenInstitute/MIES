@@ -1372,7 +1372,8 @@ End
 
 /// @brief Handle upgrades of the numerical/textual labnotebooks in one step
 ///
-/// This function is idempotent and must stay that way.
+/// This function is idempotent in the sense that doing the upgrade steps
+/// multiple times must succeed again with the same results.
 ///
 /// Supported upgrades:
 /// - Addition of the third column "TimeStampSinceIgorEpochUTC"
@@ -1668,6 +1669,9 @@ static Function UpgradeLabNotebook(string device)
 		SetLBKeysRowDimensionLabels(textualKeys)
 	endif
 	// END add dimension labels for key waves
+
+	SetWaveVersion(numericalKeys, LABNOTEBOOK_VERSION)
+	SetWaveVersion(textualkeys, LABNOTEBOOK_VERSION)
 End
 
 static Function/S FixInvalidLabnotebookKey(string name)
@@ -1737,7 +1741,6 @@ Function/WAVE GetLBTextualKeys(string device)
 		return wv
 	elseif(WaveExists(wv))
 		UpgradeLabNotebook(device)
-		SetWaveVersion(wv, versionOfNewWave)
 		return wv
 	else
 		Make/T/N=(6, INITIAL_KEY_WAVE_COL_COUNT) newDFR:$newName/WAVE=wv
@@ -1791,7 +1794,6 @@ Function/WAVE GetLBNumericalKeys(string device)
 		return wv
 	elseif(WaveExists(wv))
 		UpgradeLabNotebook(device)
-		SetWaveVersion(wv, versionOfNewWave)
 		return wv
 	else
 		Make/T/N=(6, INITIAL_KEY_WAVE_COL_COUNT) newDFR:$newName/WAVE=wv
