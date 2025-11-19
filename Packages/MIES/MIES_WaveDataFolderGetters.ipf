@@ -1435,7 +1435,7 @@ Function UpgradeLabNotebook(string device)
 	// END IP9 dimension labels
 
 	// BEGIN UTC timestamps
-	if(cmpstr(numericalKeys[0][2], "TimeStampSinceIgorEpochUTC"))
+	if(DimSize(numericalKeys, COLS) < 3 || cmpstr(numericalKeys[0][2], "TimeStampSinceIgorEpochUTC"))
 
 		numCols = DimSize(numericalKeys, COLS)
 
@@ -1452,7 +1452,7 @@ Function UpgradeLabNotebook(string device)
 		DEBUGPRINT("Upgraded numerical labnotebook to hold UTC timestamps")
 	endif
 
-	if(cmpstr(textualKeys[0][2], "TimeStampSinceIgorEpochUTC"))
+	if(DimSize(textualKeys, COLS) < 3 || cmpstr(textualKeys[0][2], "TimeStampSinceIgorEpochUTC"))
 
 		numCols = DimSize(textualKeys, COLS)
 
@@ -1471,7 +1471,7 @@ Function UpgradeLabNotebook(string device)
 	// END UTC timestamps
 
 	// BEGIN epoch source type
-	if(cmpstr(numericalKeys[0][3], "EntrySourceType"))
+	if(DimSize(numericalKeys, COLS) < 4 || cmpstr(numericalKeys[0][3], "EntrySourceType"))
 
 		numCols = DimSize(numericalKeys, COLS)
 
@@ -1488,7 +1488,7 @@ Function UpgradeLabNotebook(string device)
 		DEBUGPRINT("Upgraded numerical labnotebook to hold entry source type column")
 	endif
 
-	if(cmpstr(textualKeys[0][3], "EntrySourceType"))
+	if(DimSize(textualKeys, COLS) < 4 || cmpstr(textualKeys[0][3], "EntrySourceType"))
 
 		numCols = DimSize(textualKeys, COLS)
 
@@ -1560,7 +1560,7 @@ Function UpgradeLabNotebook(string device)
 	endif
 
 	// BEGIN acquisition state
-	if(cmpstr(numericalKeys[0][4], "AcquisitionState"))
+	if(DimSize(numericalKeys, COLS) < 5 || cmpstr(numericalKeys[0][4], "AcquisitionState"))
 
 		numCols = DimSize(numericalKeys, COLS)
 
@@ -1577,7 +1577,7 @@ Function UpgradeLabNotebook(string device)
 		DEBUGPRINT("Upgraded numerical labnotebook to hold acquisition state column")
 	endif
 
-	if(cmpstr(textualKeys[0][4], "AcquisitionState"))
+	if(DimSize(textualKeys, COLS) < 5 || cmpstr(textualKeys[0][4], "AcquisitionState"))
 
 		numCols = DimSize(textualKeys, COLS)
 
