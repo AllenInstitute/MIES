@@ -469,19 +469,19 @@ End
 ///        parameters, possibly including the type, as specified by the function
 ///        `$func_GetParams`
 ///
-/// @param func Analysis function `V3` which must be valid and existing
-/// @param mode Bit mask values from @ref GetListOfParamsModeFlags
-Function/S AFH_GetListOfAnalysisParams(string func, variable mode)
+/// @param funcname Analysis function `V3` which must be valid and existing
+/// @param mode     Bit mask values from @ref GetListOfParamsModeFlags
+Function/S AFH_GetListOfAnalysisParams(string funcname, variable mode)
 
 	string params, re
 
-	FUNCREF AFP_PARAM_GETTER_V3 f = $(func + "_GetParams")
+	FUNCREF AFP_PARAM_GETTER_V3 func = $(funcname + "_GetParams")
 
-	if(!FuncRefIsAssigned(FuncRefInfo(f))) // no such getter functions
+	if(!FuncRefIsAssigned(FuncRefInfo(func))) // no such getter functions
 		return ""
 	endif
 
-	params = f()
+	params = func()
 
 	ASSERT(strsearch(params, ";", 0) == -1, "Entries must be separated with ,")
 
@@ -501,19 +501,19 @@ End
 
 /// @brief Get help string from optional `$func_GetHelp`
 ///
-/// @param func Analysis function `V3`
-/// @param name Parameter name
-Function/S AFH_GetHelpForAnalysisParameter(string func, string name)
+/// @param funcname Analysis function `V3`
+/// @param name     Parameter name
+Function/S AFH_GetHelpForAnalysisParameter(string funcname, string name)
 
-	FUNCREF AFP_PARAM_HELP_GETTER_V3 f = $(func + "_GetHelp")
+	FUNCREF AFP_PARAM_HELP_GETTER_V3 func = $(funcname + "_GetHelp")
 
-	if(!FuncRefIsAssigned(FuncRefInfo(f)))
+	if(!FuncRefIsAssigned(FuncRefInfo(func)))
 		return ""
 	endif
 
 	AssertOnAndClearRTError()
 	try
-		return f(name); AbortOnRTE
+		return func(name); AbortOnRTE
 	catch
 		ClearRTError()
 		// ignoring errors here

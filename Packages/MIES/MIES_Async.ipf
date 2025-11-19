@@ -124,7 +124,7 @@ threadsafe static Function/DF ASYNC_Run_Worker(DFREF dfr)
 	DFREF dfrOut, dfrTemp
 
 	SVAR                 WFunc = dfr:$ASYNC_WORKERFUNC_STR
-	FUNCREF ASYNC_Worker f     = $WFunc
+	FUNCREF ASYNC_Worker func  = $WFunc
 
 	DFREF dfrInp   = dfr:input
 	DFREF dfrAsync = dfr:async
@@ -139,7 +139,7 @@ threadsafe static Function/DF ASYNC_Run_Worker(DFREF dfr)
 	dfrOut = $""
 	AssertOnAndClearRTError()
 	try
-		dfrOut = f(dfrInp); AbortOnRTE
+		dfrOut = func(dfrInp); AbortOnRTE
 	catch
 		rtErrMsg = GetRTErrMessage()
 		rtErr    = ClearRTError()
@@ -243,7 +243,7 @@ Function ASYNC_ThreadReadOut()
 		track[%$workloadClass][%OUTPUTCOUNT] += 1
 
 		SVAR                  RFunc     = dfr:$ASYNC_READOUTFUNC_STR
-		FUNCREF ASYNC_ReadOut f         = $RFunc
+		FUNCREF ASYNC_ReadOut func      = $RFunc
 		NVAR                  rtErr     = dfr:$ASYNC_RTERROR_STR
 		SVAR                  rtErrMsg  = dfr:$ASYNC_RTERRORMSG_STR
 		NVAR                  abortCode = dfr:$ASYNC_ABORTCODE_STR
@@ -256,7 +256,7 @@ Function ASYNC_ThreadReadOut()
 		statCnt += 1
 		AssertOnAndClearRTError()
 		try
-			f(ar); AbortOnRTE
+			func(ar); AbortOnRTE
 		catch
 			msg = GetRTErrMessage()
 			ASSERT(!ClearRTError(), "ReadOut function " + RFunc + " encountered an RTE: " + msg)
