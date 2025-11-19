@@ -1757,6 +1757,7 @@ Function/WAVE GetLBTextualKeys(string device)
 	wv[0][] = StringFromList(q, LABNOTEBOOK_KEYS_INITIAL)
 
 	SetLBKeysRowDimensionLabels(wv)
+	SetDimensionLabels(wv, LABNOTEBOOK_KEYS_INITIAL, COLS)
 
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -1807,6 +1808,7 @@ Function/WAVE GetLBNumericalKeys(string device)
 	wv = ""
 
 	SetLBKeysRowDimensionLabels(wv)
+	SetDimensionLabels(wv, LABNOTEBOOK_KEYS_INITIAL, COLS)
 
 	WAVE/T desc = GetLBNumericalDescription(forceReload = 1)
 	ASSERT(DimSize(desc, ROWS) == DimSize(wv, ROWS), "Non-matching number of rows")
