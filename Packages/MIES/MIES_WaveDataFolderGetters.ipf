@@ -8862,7 +8862,8 @@ threadsafe Function [WAVE/T sortedKeys, WAVE/D indices] GetLogbookSortedKeys(WAV
 	variable numKeys
 	string keysName, sortedKeysName, sortedKeysIndicesName, cacheKey
 
-	WAVE/T keys = GetLogbookKeysFromValues(values)
+	WAVE/Z/T keys = GetLogbookKeysFromValues(values)
+	ASSERT_TS(WaveExists(keys), "Keys wave is missing")
 	cacheKey = CA_GenKeyLogbookSortedKeys(keys)
 
 	DFREF dfrTmp = createDFWithAllParents(GetWavesDataFolder(keys, 1) + LOGBOOK_WAVE_TEMP_FOLDER)
