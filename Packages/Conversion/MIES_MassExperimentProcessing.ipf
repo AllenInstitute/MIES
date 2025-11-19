@@ -16,6 +16,7 @@
 /// - Ensure that only MIES is installed and no other Igor Pro packages
 /// - In the MIES installation folder (All Users: `C:\Program Files\MIES`, User: `C:\Users\$User\Documents\MIES`)
 ///   create an empty file named `UserConfig.txt`.
+/// - Execute CreateEmptyFiles() to create required empty files in `User Procedures`
 ///
 /// Running:
 /// - Start Igor Pro
@@ -233,6 +234,27 @@ static Function AfterFileOpenHook(variable refNum, string file, string pathName,
 	NextFile(prefs)
 
 	return 0 // Tell Igor to handle file in default fashion.
+End
+
+Function CreateEmptyFiles()
+
+	string file
+	string path = SpecialDirPath("Igor Pro User Files", 0, 0, 0) + "User Procedures:"
+
+	Make/T/FREE files = {"MIES_Include.ipf",                \
+	                     "TJ_MIES_AnalysisBrowser.ipf",     \
+	                     "TJ_MIES_Include.ipf",             \
+	                     "UTF_HardwareHelperFunctions.ipf", \
+	                     "UTF_HardwareMain.ipf",            \
+	                     "UserAnalysisFunctions.ipf",       \
+	                     "tango_Panel.ipf",                 \
+	                     "tango_loader.ipf",                \
+	                     "unit-testing.ipf",                \
+	                     "UserConfig.txt"}
+
+	for(file : files)
+		SaveTextFile("", path + file)
+	endfor
 End
 
 // This function enables our special Igor hooks which skip saving the experiment
