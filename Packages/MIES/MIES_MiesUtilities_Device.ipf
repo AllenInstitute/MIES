@@ -78,7 +78,7 @@ static Function DeviceHasUserComments(string device)
 	userComment = ROStr(GetUserComment(device))
 
 	if(WindowExists(device))
-		userCommentDraft = DAG_GetTextualValue(device, "SetVar_DataAcq_Comment")
+		userCommentDraft = GetSetVariableString(device, "SetVar_DataAcq_Comment")
 
 		commentNotebook = DAP_GetCommentNotebook(device)
 		if(WindowExists(commentNotebook))
