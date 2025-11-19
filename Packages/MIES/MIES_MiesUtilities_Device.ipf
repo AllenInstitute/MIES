@@ -14,7 +14,7 @@
 Function/S GetAllDevices()
 
 	variable i, j, numEntries, numDevices
-	string folder, number, device, folders, subFolders, subFolder
+	string folder, number, device, folders, subFolders, subFolder, deviceType, deviceNumber
 	string path
 	string list = ""
 
@@ -50,7 +50,12 @@ Function/S GetAllDevices()
 		else
 			// other hardware has no subfolder
 			device = folder
-			path   = GetDevicePathAsString(device)
+
+			if(ParseDeviceString(device, deviceType, deviceNumber) == 0)
+				continue
+			endif
+
+			path = GetDevicePathAsString(device)
 
 			if(DataFolderExists(path))
 				DFREF dfr = $path
