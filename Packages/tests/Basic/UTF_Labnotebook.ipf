@@ -1499,6 +1499,37 @@ Function LabnotebookUpgradeWithInitialWaveSizes()
 	CHECK_NO_RTE()
 End
 
+Function LabnotebookUpgradeDoesNotModifyDefaultWaves()
+
+	string device
+
+	device = "ITC16USB_0_DEV"
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	Duplicate/FREE numericalValues, numericalValuesRef
+
+	WAVE numericalKeys = GetLBNumericalKeys(device)
+	Duplicate/FREE numericalKeys, numericalKeysRef
+
+	WAVE textualValues = GetLBTextualValues(device)
+	Duplicate/FREE textualValues, textualValuesRef
+
+	WAVE textualKeys = GetLBTextualKeys(device)
+	Duplicate/FREE textualKeys, textualKeysRef
+
+	Note/K numericalValues
+	Note/K numericalKeys
+	Note/K textualValues
+	Note/K textualKeys
+
+	UpgradeLabNotebook(device)
+
+	CHECK_EQUAL_WAVES(numericalValuesRef, numericalValues)
+	CHECK_EQUAL_WAVES(numericalKeysRef, numericalKeys)
+	CHECK_EQUAL_WAVES(textualValuesRef, textualValues)
+	CHECK_EQUAL_WAVES(textualKeysRef, textualKeys)
+End
+
 Function EmptyLabnotebookWorks()
 
 	string device
