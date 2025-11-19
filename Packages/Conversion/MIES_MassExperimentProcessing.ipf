@@ -232,19 +232,7 @@ static Function AfterFileOpenHook(variable refNum, string file, string pathName,
 
 	ProcessCurrentExperiment(prefs)
 
-	// See if there are more experiments to process.
-	string nextExperimentFullPath = FindNextExperiment(prefs)
-	if(strlen(nextExperimentFullPath) == 0)
-		// Process is finished
-		prefs.processRunning = 0 // Flag process is finished.
-		Execute/P "NEWEXPERIMENT " // Post command to close this experiment.
-		print "Multi-experiment process is finished."
-	else
-		// Load the next experiment in the designated folder, if any.
-		PostLoadNextExperiment(nextExperimentFullPath) // Post operation queue commands to load next experiment
-	endif
-
-	SavePackagePrefs(prefs)
+	NextFile(prefs)
 
 	return 0 // Tell Igor to handle file in default fashion.
 End
@@ -331,6 +319,23 @@ Function StartMultiExperimentProcessWrapper()
 	return 0
 End
 
+Function NextFile(STRUCT MultiExperimentProcessPrefs &prefs)
+
+	// See if there are more experiments to process.
+	string nextExperimentFullPath = FindNextExperiment(prefs)
+	if(strlen(nextExperimentFullPath) == 0)
+		// Process is finished
+		prefs.processRunning = 0 // Flag process is finished.
+		Execute/P "NEWEXPERIMENT " // Post command to close this experiment.
+		print "Multi-experiment process is finished."
+	else
+		// Load the next experiment in the designated folder, if any.
+		PostLoadNextExperiment(nextExperimentFullPath) // Post operation queue commands to load next experiment
+	endif
+
+	SavePackagePrefs(prefs)
+End
+
 #ifdef MEP_DEBUGGING
 
 Function TestMe()
@@ -339,6 +344,7 @@ Function TestMe()
 
 	LoadPackagePrefs(prefs)
 	ProcessCurrentExperiment(prefs)
+	NextFile(prefs)
 End
 
 #endif // MEP_DEBUGGING
