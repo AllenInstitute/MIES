@@ -487,8 +487,18 @@ static Function TestOperationMinMax()
 	// note: TestOperationMinMaxHelper calls GetSingleResult that verifies that [1,2] is evaluated as single argument
 	TestOperationMinMaxHelper(win, "{\"min\":[[1,2]]}", "min([1,2])", 1)
 
+	// Check DimOffset/unit removal
+	Make/O/D/N=(1) input = p
+	SetScale/P x, 10, 10, "unit", input
+	wavePath = GetWavesDataFolder(input, 2)
+	str      = "min(wave(" + wavePath + "))"
+	WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_VAR(DimOffset(data, ROWS), 0)
+	str = WaveUnits(data, ROWS)
+	CHECK_EMPTY_STR(str)
+
 	// check limit to 2d waves for min, max, avg
-	Make/D/N=(2, 2, 2) input = p + 2 * q + 4 * r
+	Make/O/D/N=(2, 2, 2) input = p + 2 * q + 4 * r
 	wavePath = GetWavesDataFolder(input, 2)
 	str      = "min(wave(" + wavePath + "))"
 	try
