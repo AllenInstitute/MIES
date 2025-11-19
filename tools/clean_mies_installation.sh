@@ -127,6 +127,9 @@ do
   cp -r  "$top_level"/Packages/tests  "$user_proc"
   cp -r  "$top_level"/Packages/doc/ipf  "$user_proc"
 
+  # only install to $user_proc as it contains specialized igor hooks
+  cp -r  "$top_level"/Packages/conversion  "$user_proc"
+
   if [ "$sourceLoc" = "installer" ]
   then
     # move shortcut to the main include file
