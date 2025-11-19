@@ -47,6 +47,25 @@ End
 
 Menu "TablePopup"
 	"Bring browser to front", /Q, SF_BringBrowserToFront()
+	"Copy formulas", /Q, SF_PutFormulasToClipboard()
+End
+
+Function SF_PutFormulasToClipboard()
+
+	string table, txt, jsonTxt, formula
+
+	table = GetCurrentWindow()
+
+	jsonTxt = GetUserData(table, "", SF_UDATA_TABLEFORMULAS)
+	if(!IsEmpty(jsonTxt))
+		WAVE/T formulas = JSONToWave(jsonTxt)
+		txt = ""
+		for(formula : formulas)
+			txt += TrimString(formula) + "\rwith\r"
+		endfor
+		txt = RemoveEnding(txt, "\rwith\r")
+		PutScrapText txt
+	endif
 End
 
 Function SF_BringBrowserToFront()
