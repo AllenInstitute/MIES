@@ -637,18 +637,24 @@ Function NWB_ExportAllData(variable nwbVersion, [string device, string overrideF
 	             values = {num2str(nwbVersion), num2str(writeStoredTestPulses),                                    \
 	                       num2str(writeIgorHistory), CompressionModeToString(compressionMode)})
 
-	if(ParamIsDefault(device))
-		WAVE/T devicesWithContent = ListToTextWave(GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL), ";")
-		if(!DimSize(devicesWithContent, ROWS))
-			if(verbose)
-				print "No devices with acquired content found for NWB export"
-				ControlWindowToFront()
-			endif
+	UpgradeAllDataFolderLocations()
 
-			LOG_AddEntry(PACKAGE_MIES, "end")
-			return 1
+	WAVE/T devicesWithContent = ListToTextWave(GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL), ";")
+	if(!DimSize(devicesWithContent, ROWS))
+		if(verbose)
+			print "No devices with acquired content found for NWB export"
+			ControlWindowToFront()
 		endif
-	else
+
+		LOG_AddEntry(PACKAGE_MIES, "end")
+		return 1
+	endif
+
+	for(device : devicesWithContent)
+		UpgradeLabNotebook(device)
+	endfor
+
+	if(!ParamIsDefault(device))
 		Make/FREE/T devicesWithContent = {device}
 	endif
 
@@ -678,8 +684,6 @@ Function NWB_ExportAllData(variable nwbVersion, [string device, string overrideF
 	WAVE/T s.textualResultsKeys     = GetTextualResultsKeys()
 
 	for(device : devicesWithContent)
-
-		UpgradeLabNotebook(device)
 
 		if(ParamIsDefault(overrideFullFilePath) && ParamIsDefault(overrideFileTemplate))
 			[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion, device)

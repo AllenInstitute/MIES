@@ -717,6 +717,14 @@ Function/S GetDeviceDataPathAsString(string device)
 	return GetDevicePathAsString(device) + ":Data"
 End
 
+/// @brief Upgrade all DFREF locations we have changed in earlier versions
+///
+/// UTF_NOINSTRUMENTATION
+Function UpgradeAllDataFolderLocations()
+
+	GetDAQDevicesFolder()
+End
+
 /// @brief Returns a data folder reference to the mies base folder
 ///
 /// UTF_NOINSTRUMENTATION
