@@ -48,6 +48,13 @@ static Function/WAVE PrepareLBNTextualValues(WAVE textualValuesSrc)
 	return $LBN_TEXTUAL_VALUES_NAME
 End
 
+static Function PrepareLabnotebookWaves(DFREF sourceDFR, string device)
+
+	DFREF destDFR = GetLabNotebookFolder()
+
+	DuplicateDataFolder/O=1 sourceDFR, destDFR:$(device)
+End
+
 /// GetLastSetting with numeric wave
 /// @{
 Function GetLastSettingEntrySourceTypes()
@@ -1479,6 +1486,17 @@ Function LabnotebookUpgradeMissingNoteIndexTextualWithHoles()
 
 	idxRedone = GetNumberFromWaveNote(textualValues, NOTE_INDEX)
 	CHECK_EQUAL_VAR(idxRedone, idx)
+End
+
+// Labnotebook waves as created in version 5872e55614 (Modified files: DR_MIES_TangoInteract:  changes recommended by Thomas TJ, 2014-09-11)
+Function LabnotebookUpgradeWithInitialWaveSizes()
+
+	DFREF  dfr    = root:Labnotebook_initial_column_sizes
+	string device = "Dev1"
+
+	PrepareLabnotebookWaves(dfr, device)
+	UpgradeLabNotebook(device)
+	CHECK_NO_RTE()
 End
 
 Function EmptyLabnotebookWorks()
