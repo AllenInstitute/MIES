@@ -2025,6 +2025,46 @@ Useful for testing SweepFormula itself mainly.
 
    dataset(1, [2, 3], "abcd") == [1], [2, 3], ["abcd]
 
+table
+"""""
+
+The `table` operation allows to display data in a table instead of a plot.
+The operation accepts one argument. The effective result of the operation is
+identical to the input argument. The change in display mode is only effective if
+table is applied as outermost operation.
+
+If the input is a dataset then each dataset is appended to the table.
+When multiple formulas are specified with the `with` keyword for plotting in the same window
+then the results are also appended to the table.
+
+If `table` is applied for the y-wave expression and the `vs` keyword follows with an expression for the x-wave
+then the expression for the x-wave is evaluated by SweepFormula but **not displayed** in the table.
+
+The table(s) are displayed in a separate window.
+
+If the input has dimension labels then these are also shown in the table.
+
+When a table is active then through the context menu the formula of the results shown can be
+copied to the clipboard. Multiple formulas are separated by the `with` keyword.
+
+.. code-block:: bash
+
+   table(data(select()))
+
+Shows the last sweep data in a table
+
+.. code-block:: bash
+
+   table(1)
+   with
+   table(2)
+   with
+   3
+   and
+   table(4)
+
+Shows 1 and 2 in the first table, 4 in the second table and 3 in the plot window.
+
 Plotting
 ^^^^^^^^
 
