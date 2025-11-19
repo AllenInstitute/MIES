@@ -86,7 +86,7 @@ End
 static Function ProcessCurrentExperiment(STRUCT MultiExperimentProcessPrefs &prefs)
 
 	variable jsonID, index
-	string outputFilePath, inputFile, outputFolder
+	string outputFileTemplate, inputFile, outputFolder
 
 	jsonID = GetJSON(prefs)
 
@@ -97,24 +97,23 @@ static Function ProcessCurrentExperiment(STRUCT MultiExperimentProcessPrefs &pre
 		PathInfo home
 		inputFile = S_path + GetExperimentName() + ".pxp"
 
-		outputFilePath = outputFolder + S_path + GetExperimentName() + ".nwb"
+		outputFileTemplate = outputFolder + S_path + GetExperimentName()
 
 		index = JSON_GetVariable(jsonID, "/index")
 		JSON_AddString(jsonID, "/log/" + num2str(index) + "/from", inputFile)
-		JSON_AddString(jsonID, "/log/" + num2str(index) + "/to", outputFilePath)
+		JSON_AddString(jsonID, "/log/" + num2str(index) + "/to", outputFileTemplate)
 
 		DoWindow/K HistoryCarbonCopy
 		NewNotebook/V=0/F=0/N=HistoryCarbonCopy
 
 		try
-			PerformMiesTasks(outputFilePath); AbortOnRTE
+			PerformMiesTasks(outputFileTemplate); AbortOnRTE
 		catch
 			ClearRTError()
 			print "Caught an RTE"
 			JSON_AddBoolean(jsonID, "/log/" + num2str(index) + "/error", 1)
 			JSON_SetVariable(jsonID, "/errors", JSON_GetVariable(jsonID, "/errors") + 1)
 			HDF5CloseFile/A/Z 0
-			DeleteFile/Z outputFilePath
 		endtry
 
 		Notebook HistoryCarbonCopy, getData=1
@@ -130,14 +129,14 @@ static Function ProcessCurrentExperiment(STRUCT MultiExperimentProcessPrefs &pre
 	StoreJSON(prefs, jsonID)
 End
 
-static Function PerformMiesTasks(string outputFilePath)
+static Function PerformMiesTasks(string outputFileTemplate)
 
 	string folder, message
 	variable nwbVersion, error
 
 	printf "Free Memory: %g GB\r", GetFreeMemory()
 
-	folder = GetFolder(outputFilePath)
+	folder = GetFolder(outputFileTemplate)
 
 	if(!FolderExists(folder))
 		CreateFolderOnDisk(folder)
@@ -146,7 +145,7 @@ static Function PerformMiesTasks(string outputFilePath)
 	ClearRTError()
 
 	nwbVersion = 2
-	NWB_ExportAllData(nwbVersion, overrideFullFilePath = outputFilePath)
+	NWB_ExportAllData(nwbVersion, overrideFileTemplate = outputFileTemplate)
 	HDF5CloseFile/A/Z 0
 
 	message = GetRTErrMessage()
