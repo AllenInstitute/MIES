@@ -3665,3 +3665,56 @@ static Function TestOperationTable()
 	val = JWN_GetNumberFromWaveNote(output, SF_PROPERTY_TABLE)
 	CHECK_EQUAL_VAR(val, 1)
 End
+
+static Function TestOperationExtract()
+
+	string str, wavePath
+	string win
+
+	win = GetDataBrowserWithData()
+
+	str = "extract(1)"
+	try
+		WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	str = "extract(1,1,1)"
+	try
+		WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	str = "extract(1,a)"
+	try
+		WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	str = "extract(1,0)"
+	WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, {1}, mode = WAVE_DATA)
+
+	str = "extract(a,0)"
+	WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	Make/FREE/T ref = {"a"}
+	CHECK_EQUAL_WAVES(data, ref, mode = WAVE_DATA)
+
+	str = "extract([1,2],0)"
+	WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, {1, 2}, mode = WAVE_DATA)
+
+	str = "extract(dataset(1,2),0)"
+	WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, {1}, mode = WAVE_DATA)
+
+	str = "extract(dataset(1,2),1)"
+	WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, {2}, mode = WAVE_DATA)
+End

@@ -2540,6 +2540,7 @@ StrConstant SF_OP_TPSS                = "tpss"
 StrConstant SF_OP_TPINST              = "tpinst"
 StrConstant SF_OP_TPBASE              = "tpbase"
 StrConstant SF_OP_TPFIT               = "tpfit"
+StrConstant SF_OP_EXTRACT             = "extract"
 ///@}
 
 StrConstant SF_PROPERTY_TABLE = "Table"

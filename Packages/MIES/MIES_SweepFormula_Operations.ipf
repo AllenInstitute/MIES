@@ -489,7 +489,7 @@ End
 Function/WAVE SFO_OperationAvg(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs
-	string mode
+	string   mode
 	string opShort = SF_OP_AVG
 
 	numArgs = SFH_CheckArgumentCount(exd, opShort, 1, maxArgs = 2)
@@ -737,6 +737,24 @@ Function/WAVE SFO_OperationDataset(STRUCT SF_ExecutionData &exd)
 	output[] = SFH_GetArgumentAsWave(exd, SF_OP_DATASET, p, singleResult = 1)
 
 	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_DATASET)
+End
+
+// extract(<dataset>, index)
+Function/WAVE SFO_OperationExtract(STRUCT SF_ExecutionData &exd)
+
+	variable idx
+	string opShort = SF_OP_EXTRACT
+
+	SFH_CheckArgumentCount(exd, opShort, 2, maxArgs = 2)
+
+	WAVE/WAVE datasets = SFH_GetArgumentAsWave(exd, opShort, 0)
+	idx = SFH_GetArgumentAsNumeric(exd, opShort, 1)
+	SFH_ASSERT(idx >= 0 && idx < DimSize(datasets, ROWS), "index out of range")
+
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 1)
+	output[0] = datasets[idx]
+
+	return SFH_GetOutputForExecutor(output, exd.graph, opShort)
 End
 
 Function/WAVE SFO_OperationDerivative(STRUCT SF_ExecutionData &exd)
