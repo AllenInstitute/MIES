@@ -2234,13 +2234,13 @@ static Function TestTraceColors()
 	TestTraceColor(graph, traces, 0, {7967, 7710, 7710})
 	TestTraceColor(graph, traces, 1, {60395, 52685, 15934})
 
-	code    = "data(select(selchannels(AD6)))\r with\r data(select(selchannels(AD6)))"
+	code    = "data(select(selchannels(AD6)))\r with\r data(select(selchannels(AD6)))\r with\r 1"
 	winBase = ExecuteSweepFormulaCode(win, code)
 
 	graph = winBase + "#Graph0"
 
 	traces = TraceNameList(graph, ";", 1 + 2)
-	CHECK_EQUAL_VAR(ItemsInList(traces), 2)
+	CHECK_EQUAL_VAR(ItemsInList(traces), 3)
 
 	// color groups:
 	// black
@@ -2249,6 +2249,9 @@ static Function TestTraceColors()
 	// and
 	// yellow
 	TestTraceColor(graph, traces, 1, {59110, 40863, 0})
+
+	// and red (as default color) as `1` does not have a color group
+	TestTraceColor(graph, traces, 2, {65535, 0, 0})
 End
 
 // UTF_TD_GENERATOR DataGenerators#DG_SourceLocationsBrackets
