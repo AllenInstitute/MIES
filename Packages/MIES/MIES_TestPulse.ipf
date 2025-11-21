@@ -323,7 +323,7 @@ Function TP_ROAnalysis(STRUCT ASYNC_ReadOutStruct &ar)
 
 	if(ar.rtErr || ar.abortCode)
 		ASSERT(!ar.rtErr, "TP analysis thread encountered RTE " + ar.rtErrMsg)
-		ASSERT(!ar.abortCode, "TP analysis thread aborted with code: " + GetErrMessage(ar.abortCode))
+		ASSERT(!ar.abortCode, "TP analysis thread aborted with code: " + num2str(ar.abortCode))
 	endif
 
 	DFREF dfr = ar.dfr
