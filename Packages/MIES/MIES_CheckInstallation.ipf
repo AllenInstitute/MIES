@@ -15,7 +15,7 @@ static StrConstant CHI_NIDAQ_XOP_64_HASH  = "b13267a080053c07b80302212b7f73ac199
 static StrConstant CHI_JSON_XOP_VERSION   = "version-919-g9b6b617"
 static StrConstant CHI_TUF_XOP_VERSION    = "version-163-g686effb"
 static StrConstant CHI_ITC_XOP_VERSION    = "latest-174-gb9915a9"
-static StrConstant CHI_ZEROMQ_XOP_64_HASH = "06b4fab7456a4a8922b42cef6c4ee5081916017e886022461375d48bb555eae3"
+static StrConstant CHI_ZEROMQ_XOP_64_HASH = "a3c471eafacb7c95d2bf4788206c0e78ebc591293a4fc37195e3bba04106a019"
 
 static StrConstant CHI_INSTALLCONFIG_NAME          = "installation_configuration.json"
 static Constant    CHI_INSTALLDEFAULT_WITHHARDWARE = 1
