@@ -54,7 +54,8 @@ Function SF_PutFormulasToClipboard()
 
 	string table, txt, jsonTxt, formula
 
-	table = GetCurrentWindow()
+	table = ROStr(GetSweepFormulaLastRightClickedDisplayWindow())
+	ASSERT(!IsEmpty(table), "Expected window name")
 
 	jsonTxt = GetUserData(table, "", SF_UDATA_TABLEFORMULAS)
 	if(!IsEmpty(jsonTxt))
@@ -619,7 +620,7 @@ static Function/S SF_NewSweepFormulaBaseWindow(string templateName, string graph
 			NewPanel/N=$win/K=1/W=(150, 400, 1000, 700)
 		elseif(winType == WINTYPE_TABLE)
 			Edit/N=$win/K=1/W=(150, 400, 1000, 700)
-			SF_AddTableExtras(S_name)
+			SF_AddTableExtrasSub(S_name)
 		else
 			FATAL_ERROR("Unsupported window type")
 		endif
@@ -631,9 +632,14 @@ static Function/S SF_NewSweepFormulaBaseWindow(string templateName, string graph
 	return win
 End
 
-static Function SF_AddTableExtras(string win)
+static Function SF_AddTableExtrasSub(string win)
 
 	SetWindow $win, tooltipHook(sfTableTooltip)=SF_TableTooltipHook
+End
+
+static Function SF_AddTableExtrasMain(string win)
+
+	SetWindow $win, hook(sfTableGetWindowName)=SF_TableWindowHook
 End
 
 static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string winNameTemplate, string graph, variable winDisplayMode, variable numGraphs)
@@ -677,12 +683,15 @@ static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string wi
 			win                   = winNameTemplate + num2istr(i)
 			plotGraphs[i][%GRAPH] = SF_NewSweepFormulaBaseWindow(win, graph, winType = WINTYPE_GRAPH)
 			win                   = winNameTemplateTable + num2istr(i)
-			plotGraphs[i][%TABLE] = SF_NewSweepFormulaBaseWindow(win, graph, winType = WINTYPE_TABLE)
+			winTable              = SF_NewSweepFormulaBaseWindow(win, graph, winType = WINTYPE_TABLE)
+			SF_AddTableExtrasMain(winTable)
+			plotGraphs[i][%TABLE] = winTable
 		endfor
 	elseif(winDisplayMode == SF_DM_SUBWINDOWS)
 
 		win      = SF_NewSweepFormulaBaseWindow(winNameTemplate, graph)
 		winTable = SF_NewSweepFormulaBaseWindow(winNameTemplateTable, graph)
+		SF_AddTableExtrasMain(winTable)
 
 		// now we have an open panel without any subwindows
 
@@ -710,7 +719,7 @@ static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string wi
 			Display/HOST=$win/FG=(customLeft, $guideName1, customRight, $guideName2)/N=$("Graph" + num2str(i))
 			plotGraphs[i][%GRAPH] = win + "#" + S_name
 			Edit/HOST=$winTable/FG=(customLeft, $guideName1, customRight, $guideName2)/N=$("Table" + num2str(i))
-			SF_AddTableExtras(winTable + "#" + S_name)
+			SF_AddTableExtrasSub(winTable + "#" + S_name)
 			plotGraphs[i][%TABLE] = winTable + "#" + S_name
 		endfor
 	endif
@@ -2501,4 +2510,20 @@ Function SF_TableTooltipHook(STRUCT WMTooltipHookStruct &s)
 	endif
 
 	return hookResult
+End
+
+Function SF_TableWindowHook(STRUCT WMWinHookStruct &s)
+
+	switch(s.eventCode)
+		case EVENT_WINDOW_HOOK_MOUSEDOWN:
+			if(s.eventMod & WINDOW_HOOK_EMOD_RIGHTCLICK)
+				SVAR win = $GetSweepFormulaLastRightClickedDisplayWindow()
+				win = s.winName
+			endif
+			break
+		default:
+			break
+	endswitch
+
+	return 0
 End
