@@ -260,7 +260,7 @@ Function ASYNC_ThreadReadOut()
 		catch
 			msg = GetRTErrMessage()
 			ASSERT(!ClearRTError(), "ReadOut function " + RFunc + " encountered an RTE: " + msg)
-			ASSERT(!V_AbortCode, "ReadOut function " + RFunc + " aborted with code: " + GetErrMessage(V_AbortCode))
+			ASSERT(!V_AbortCode, "ReadOut function " + RFunc + " aborted with code: " + num2str(V_AbortCode))
 		endtry
 
 	endfor

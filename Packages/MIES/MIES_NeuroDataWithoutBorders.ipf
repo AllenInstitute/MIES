@@ -383,7 +383,7 @@ Function NWB_ASYNC_Readout(STRUCT ASYNC_ReadOutStruct &ar)
 		BUG("Async jobs finished with RTE: " + ar.rtErrMsg)
 	endif
 	if(ar.abortCode)
-		BUG("Async jobs finished with Abort: " + GetErrMessage(ar.abortCode))
+		BUG("Async jobs finished with Abort: " + num2str(ar.abortCode))
 	endif
 End
 
