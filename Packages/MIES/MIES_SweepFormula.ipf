@@ -347,7 +347,8 @@ static Function/WAVE SF_GetColorGroups(WAVE/WAVE formulaResults, WAVE/Z colorGro
 	refColorGroup = JWN_GetNumberFromWaveNote(data, SF_META_COLOR_GROUP)
 
 	if(IsNaN(refColorGroup))
-		return colorGroups
+		// current formula does not use color groups
+		return $""
 	endif
 
 	Make/FREE/N=(numFormulas)/D newColorGroups = JWN_GetNumberFromWaveNote(formulaResults[p][%FORMULAY], SF_META_COLOR_GROUP)
