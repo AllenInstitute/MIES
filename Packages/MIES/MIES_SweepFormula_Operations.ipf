@@ -1469,8 +1469,6 @@ static Function/WAVE SFO_OperationMaxImpl(WAVE/Z input)
 	SFH_ASSERT(WaveDims(input) <= 2, "max accepts only upto 2d data")
 	SFH_ASSERT(DimSize(input, ROWS) > 0, "max requires at least one data point")
 	MatrixOP/FREE out = maxCols(input)^t
-	CopyScales input, out
-	SetScale/P x, DimOffset(out, ROWS), DimDelta(out, ROWS), "", out
 	SF_FormulaWaveScaleTransfer(input, out, COLS, ROWS)
 
 	return out
@@ -1539,8 +1537,6 @@ static Function/WAVE SFO_OperationMinImpl(WAVE/Z input)
 	SFH_ASSERT(WaveDims(input) <= 2, "min accepts only upto 2d data")
 	SFH_ASSERT(DimSize(input, ROWS) > 0, "min requires at least one data point")
 	MatrixOP/FREE out = minCols(input)^t
-	CopyScales input, out
-	SetScale/P x, DimOffset(out, ROWS), DimDelta(out, ROWS), "", out
 
 	SF_FormulaWaveScaleTransfer(input, out, COLS, ROWS)
 
