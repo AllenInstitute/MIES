@@ -87,7 +87,7 @@ End
 static Function ProcessCurrentExperiment(STRUCT MultiExperimentProcessPrefs &prefs)
 
 	variable jsonID, index, ref
-	string outputFileTemplate, inputFile, outputFolder, history
+	string outputFileTemplate, inputFile, outputFolder, history, path
 
 	jsonID = GetJSON(prefs)
 
@@ -100,9 +100,9 @@ static Function ProcessCurrentExperiment(STRUCT MultiExperimentProcessPrefs &pre
 
 		outputFileTemplate = outputFolder + S_path + GetExperimentName()
 
-		index = JSON_GetVariable(jsonID, "/index")
-		JSON_AddString(jsonID, "/log/" + num2str(index) + "/from", inputFile)
-		JSON_AddString(jsonID, "/log/" + num2str(index) + "/to", outputFileTemplate)
+		path = "/log/" + num2str(JSON_GetVariable(jsonID, "/index"))
+		JSON_AddString(jsonID, path + "/from", inputFile)
+		JSON_AddString(jsonID, path + "/to", outputFileTemplate)
 
 		ref = CaptureHistoryStart()
 
@@ -111,14 +111,14 @@ static Function ProcessCurrentExperiment(STRUCT MultiExperimentProcessPrefs &pre
 		catch
 			ClearRTError()
 			print "Caught an RTE"
-			JSON_AddBoolean(jsonID, "/log/" + num2str(index) + "/error", 1)
+			JSON_AddBoolean(jsonID, path + "/error", 1)
 			JSON_SetVariable(jsonID, "/errors", JSON_GetVariable(jsonID, "/errors") + 1)
 			HDF5CloseFile/A/Z 0
 		endtry
 
 		history = CaptureHistory(ref, 1)
 
-		JSON_AddString(jsonID, "/log/" + num2str(index) + "/output", trimstring(history))
+		JSON_AddString(jsonID, path + "/output", trimstring(history))
 
 		JSON_SetVariable(jsonID, "/processed", JSON_GetVariable(jsonID, "/processed") + 1)
 	else
