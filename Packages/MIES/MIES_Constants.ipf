@@ -2558,5 +2558,3 @@ Constant SF_STEP_PARSER   = 1
 Constant SF_STEP_EXECUTOR = 2
 Constant SF_STEP_OUTSIDE  = 3
 ///@}
-
-StrConstant ZeroMQ_INFO_UNDEFINED = "undefined"

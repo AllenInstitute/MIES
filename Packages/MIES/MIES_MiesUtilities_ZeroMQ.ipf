@@ -11,7 +11,7 @@
 
 Function GetZeroMQXOPFlags()
 
-	return ZeroMQ_SET_FLAGS_DEFAULT | ZeroMQ_SET_FLAGS_NOBUSYWAITRECV | ZeroMQ_SET_FLAGS_INTERCEPTOR
+	return ZeroMQ_SET_FLAGS_DEFAULT | ZeroMQ_SET_FLAGS_NOBUSYWAITRECV
 End
 
 /// @brief Start the ZeroMQ sockets and the message handler
@@ -53,8 +53,6 @@ Function StartZeroMQSockets([variable forceRestart])
 		zeromq_set(flags | ZeroMQ_SET_FLAGS_DEBUG)
 	endif
 #endif
-
-	zeromq_set_interceptor_func("ZeroMQ_Interceptor")
 
 	for(i = 0; i < ZEROMQ_NUM_BIND_TRIALS; i += 1)
 		port = ZEROMQ_BIND_REP_PORT + i
@@ -103,20 +101,4 @@ Function UpdateXOPLoggingTemplate()
 	HW_ITC_SetLoggingTemplate(str)
 
 	JSON_Release(JSONid)
-End
-
-Function ZeroMQ_Interceptor(string json, string ident, variable mode)
-
-	SVAR info = $GetZeroMQXOPCallInfo()
-
-	switch(mode)
-		case ZeroMQ_INTERCEPT_BEGIN:
-			sprintf info, "ZeroMQ XOP IDLE event call from \"%s\" with payload \"%s\"", ident, json
-			break
-		case ZeroMQ_INTERCEPT_END:
-			info = ZeroMQ_INFO_UNDEFINED
-			break
-		default:
-			FATAL_ERROR("Invalid mode:" + num2str(mode))
-	endswitch
 End
