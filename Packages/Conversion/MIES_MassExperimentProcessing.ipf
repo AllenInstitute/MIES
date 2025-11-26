@@ -86,8 +86,8 @@ End
 
 static Function ProcessCurrentExperiment(STRUCT MultiExperimentProcessPrefs &prefs)
 
-	variable jsonID, index
-	string outputFileTemplate, inputFile, outputFolder
+	variable jsonID, index, ref
+	string outputFileTemplate, inputFile, outputFolder, history
 
 	jsonID = GetJSON(prefs)
 
@@ -104,8 +104,7 @@ static Function ProcessCurrentExperiment(STRUCT MultiExperimentProcessPrefs &pre
 		JSON_AddString(jsonID, "/log/" + num2str(index) + "/from", inputFile)
 		JSON_AddString(jsonID, "/log/" + num2str(index) + "/to", outputFileTemplate)
 
-		DoWindow/K HistoryCarbonCopy
-		NewNotebook/V=0/F=0/N=HistoryCarbonCopy
+		ref = CaptureHistoryStart()
 
 		try
 			PerformMiesTasks(outputFileTemplate); AbortOnRTE
@@ -117,8 +116,9 @@ static Function ProcessCurrentExperiment(STRUCT MultiExperimentProcessPrefs &pre
 			HDF5CloseFile/A/Z 0
 		endtry
 
-		Notebook HistoryCarbonCopy, getData=1
-		JSON_AddString(jsonID, "/log/" + num2str(index) + "/output", trimstring(S_Value))
+		history = CaptureHistory(ref, 1)
+
+		JSON_AddString(jsonID, "/log/" + num2str(index) + "/output", trimstring(history))
 
 		JSON_SetVariable(jsonID, "/processed", JSON_GetVariable(jsonID, "/processed") + 1)
 	else
