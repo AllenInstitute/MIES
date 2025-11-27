@@ -132,7 +132,7 @@ End
 static Function PerformMiesTasks(string outputFileTemplate)
 
 	string folder, message
-	variable nwbVersion, error
+	variable error
 
 	printf "Free Memory: %g GB\r", GetFreeMemory()
 
@@ -144,8 +144,7 @@ static Function PerformMiesTasks(string outputFileTemplate)
 
 	ClearRTError()
 
-	nwbVersion = 2
-	NWB_ExportAllData(nwbVersion, overrideFileTemplate = outputFileTemplate)
+	NWB_ExportAllData(NWB_VERSION_LATEST, overrideFileTemplate = outputFileTemplate)
 	HDF5CloseFile/A/Z 0
 
 	message = GetRTErrMessage()
