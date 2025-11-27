@@ -655,6 +655,7 @@ Function NWB_ExportAllData(variable nwbVersion, [string device, string overrideF
 	endfor
 
 	if(!ParamIsDefault(device))
+		ASSERT(GetRowIndex(devicesWithContent, str = device) >= 0, "Could not find data for device: " + device)
 		Make/FREE/T devicesWithContent = {device}
 	endif
 
