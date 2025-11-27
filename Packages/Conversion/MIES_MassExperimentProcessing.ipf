@@ -86,8 +86,8 @@ End
 
 static Function ProcessCurrentExperiment(STRUCT MultiExperimentProcessPrefs &prefs)
 
-	variable jsonID, index, ref
-	string outputFileTemplate, inputFile, outputFolder, history, path
+	variable jsonID, index, ref, error
+	string outputFileTemplate, inputFile, outputFolder, history, path, message, file, regex
 
 	jsonID = GetJSON(prefs)
 
@@ -106,14 +106,31 @@ static Function ProcessCurrentExperiment(STRUCT MultiExperimentProcessPrefs &pre
 
 		ref = CaptureHistoryStart()
 
+		AssertOnAndClearRTError()
 		try
 			PerformMiesTasks(outputFileTemplate); AbortOnRTE
 		catch
-			ClearRTError()
-			print "Caught an RTE"
+			message = GetRTErrMessage()
+			error   = ClearRTError()
+
+			if(error >= 0)
+				printf "Encountered lingering RTE of %d (message: %s) after executing PerformMiesTasks.\r", error, message
+			else
+				printf "Encountered Abort with V_AbortCode: %d\r", V_AbortCode
+			endif
+
 			JSON_AddBoolean(jsonID, path + "/error", 1)
 			JSON_SetVariable(jsonID, "/errors", JSON_GetVariable(jsonID, "/errors") + 1)
 			HDF5CloseFile/A/Z 0
+
+			regex = "\\Q" + outputFileTemplate + "\\E" + ".*\.nwb$"
+			WAVE/Z/T files = GetAllFilesRecursivelyFromPath("home", regex = regex)
+
+			if(WaveExists(files))
+				for(file : files)
+					DeleteFile/Z file
+				endfor
+			endif
 		endtry
 
 		history = CaptureHistory(ref, 1)
@@ -132,8 +149,7 @@ End
 
 static Function PerformMiesTasks(string outputFileTemplate)
 
-	string folder, message
-	variable error
+	string folder
 
 	printf "Free Memory: %g GB\r", GetFreeMemory()
 
@@ -143,14 +159,8 @@ static Function PerformMiesTasks(string outputFileTemplate)
 		CreateFolderOnDisk(folder)
 	endif
 
-	ClearRTError()
-
 	NWB_ExportAllData(NWB_VERSION_LATEST, overrideFileTemplate = outputFileTemplate)
 	HDF5CloseFile/A/Z 0
-
-	message = GetRTErrMessage()
-	error   = GetRTError(1)
-	ASSERT(error == 0, "Encountered lingering RTE of " + num2str(error) + "(message: " + message + ") after executing NWB_ExportAllData.")
 End
 
 static Function IsAppropriateExperiment()
