@@ -1250,7 +1250,8 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 			params.samplingRate     = ConvertSamplingIntervalToRate(GetSamplingInterval(s.DAQConfigWave, params.channelType)) * KILO_TO_ONE
 			col                     = AFH_GetDAQDataColumn(s.DAQConfigWave, params.channelNumber, params.channelType)
 			writtenDataColumns[col] = 1
-			WAVE params.data = GetDAQDataSingleColumnWaveNG(s.numericalValues, s.textualValues, s.sweep, sweepDFR, params.channelType, params.channelNumber)
+			WAVE/Z params.data = GetDAQDataSingleColumnWaveNG(s.numericalValues, s.textualValues, s.sweep, sweepDFR, params.channelType, params.channelNumber)
+			ASSERT_TS(WaveExists(params.data), "Missing AD data for channel " + num2str(adc) + " of headstage " + num2str(i) + ".")
 			NWB_GetTimeSeriesProperties(s.nwbVersion, s.numericalKeys, s.numericalValues, params, tsp)
 			params.groupIndex = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(s.locationID, path)
 			WriteSingleChannel(s.locationID, path, s.nwbVersion, params, tsp, compressionMode = s.compressionMode)
@@ -1263,7 +1264,8 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 			params.samplingRate     = ConvertSamplingIntervalToRate(GetSamplingInterval(s.DAQConfigWave, params.channelType)) * KILO_TO_ONE
 			col                     = AFH_GetDAQDataColumn(s.DAQConfigWave, params.channelNumber, params.channelType)
 			writtenDataColumns[col] = 1
-			WAVE params.data = GetDAQDataSingleColumnWaveNG(s.numericalValues, s.textualValues, s.sweep, sweepDFR, params.channelType, params.channelNumber)
+			WAVE/Z params.data = GetDAQDataSingleColumnWaveNG(s.numericalValues, s.textualValues, s.sweep, sweepDFR, params.channelType, params.channelNumber)
+			ASSERT_TS(WaveExists(params.data), "Missing DA data for channel " + num2str(dac) + " of headstage " + num2str(i) + ".")
 			NWB_GetTimeSeriesProperties(s.nwbVersion, s.numericalKeys, s.numericalValues, params, tsp)
 			params.groupIndex = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(s.locationID, path)
 			WAVE/Z/T params.epochs = EP_FetchEpochs_TS(s.numericalValues, s.textualValues, s.sweep, params.channelNumber, params.channelType)
@@ -1308,7 +1310,8 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 
 			NWB_GetTimeSeriesProperties(s.nwbVersion, s.numericalKeys, s.numericalValues, params, tsp)
 			params.groupIndex = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(s.locationID, path)
-			WAVE     params.data   = GetDAQDataSingleColumnWaveNG(s.numericalValues, s.textualValues, s.sweep, sweepDFR, params.channelType, i)
+			WAVE/Z params.data = GetDAQDataSingleColumnWaveNG(s.numericalValues, s.textualValues, s.sweep, sweepDFR, params.channelType, i)
+			ASSERT_TS(WaveExists(params.data), "Missing TTL data for channel " + num2str(i) + ".")
 			WAVE/Z/T params.epochs = EP_FetchEpochs_TS(s.numericalValues, s.textualValues, s.sweep, i, params.channelType)
 
 			s.locationID = WriteSingleChannel(s.locationID, path, s.nwbVersion, params, tsp, compressionMode = s.compressionMode, nwbFilePath = s.nwbFilePath)
