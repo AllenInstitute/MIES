@@ -18,8 +18,9 @@ Function/S GetAllDevices()
 	string path
 	string list = ""
 
-	string devicesFolderPath = GetDAQDevicesFolderAsString()
+	// ensure that the folder location upgrade in GetDAQDevicesFolder is done first
 	DFREF  devicesFolder     = GetDAQDevicesFolder()
+	string devicesFolderPath = GetDAQDevicesFolderAsString()
 
 	folders    = GetListOfObjects(devicesFolder, ".*", typeFlag = COUNTOBJECTS_DATAFOLDER)
 	numEntries = ItemsInList(folders)
