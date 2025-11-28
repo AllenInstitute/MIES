@@ -236,7 +236,7 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 			print stacktrace
 
 			print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-			printf "Time: %s\r", GetIso8601TimeStamp(localTimeZone = 1)
+			printf "Time: %s\r", GetIso8601TimeStamp(localTimeZone = 1, numFracSecondsDigits = 3)
 			printf "Locked device: [%s]\r", RemoveEnding(lockedDevicesStr, ";")
 			printf "Current sweep: [%s]\r", TextWaveToList(sweeps, ";", trailSep = 0)
 			printf "DAQ: [%s]\r", TextWaveToList(daqStates, ";", trailSep = 0)
@@ -327,7 +327,7 @@ threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedO
 			print stacktrace
 
 			print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-			printf "Time: %s\r", GetIso8601TimeStamp(localTimeZone = 1)
+			printf "Time: %s\r", GetIso8601TimeStamp(localTimeZone = 1, numFracSecondsDigits = 3)
 			printf "Experiment: %s (%s)\r", GetExperimentName(), GetExperimentFileType()
 			printf "Igor Pro version: %s (%s)\r", GetIgorProVersion(), GetIgorProBuildVersion()
 			print "################################"
