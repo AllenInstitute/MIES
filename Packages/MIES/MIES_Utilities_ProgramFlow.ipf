@@ -148,6 +148,10 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 	try
 		AbortOnValue var == 0, 1
 	catch
+#ifndef AUTOMATED_TESTING
+		AssertOnAndClearRTError()
+#endif // !AUTOMATED_TESTING
+
 		if(ParamIsDefault(extendedOutput))
 			extendedOutput = 1
 		else
@@ -284,6 +288,10 @@ threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedO
 	try
 		AbortOnValue var == 0, 1
 	catch
+#ifndef AUTOMATED_TESTING
+		AssertOnAndClearRTError()
+#endif // !AUTOMATED_TESTING
+
 		if(ParamIsDefault(extendedOutput))
 			extendedOutput = 1
 		else
