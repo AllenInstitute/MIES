@@ -625,8 +625,8 @@ threadsafe Function/WAVE GetLastSetting(WAVE values, variable sweepNo, string se
 		first = rowCache[sweepNo][%first][entrySourceTypeIndex]
 		last  = rowCache[sweepNo][%last][entrySourceTypeIndex]
 
-		WAVE/Z settings = GetLastSettingNoCache(values, sweepNo, setting, entrySourceType,     \
-		                                        first = first, last = last, rowIndex = rowIndex)
+		WAVE/Z settings = GetLastSettingNoCache(values, sweepNo, setting, entrySourceType,                              \
+		                                        first = first, last = last, rowIndex = rowIndex, settingCol = settingCol)
 
 		if(WaveExists(settings))
 			ASSERT_TS(first >= 0 && last >= 0 && rowIndex >= 0, "invalid return combination from GetLastSettingNoCache")
