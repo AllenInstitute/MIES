@@ -332,11 +332,15 @@ avg and mean
 `avg` and `mean` are synonyms for the same operation.
 They calculate the arithmetic average :math:`\frac{1}{n}\sum_i{x_i}`.
 
-data: input data wave(s)
+data: input data wave(s) or array of datasets
 
 mode: optional parameter that defines in which direction the average is applied.
       - `in` default, applies the average over each input data wave. In this mode the operation returns the same number of waves as input waves were specified. Each output wave contains a single data point. If input data type is `SF_DATATYPE_SWEEP` from the data operation the sweep meta data is transferred to the returned data waves. The default suggested x-axis values for the formula plotter are sweep numbers.
       - `over` averages over all input data waves. In this mode the operation returns a single wave. `NaN` values in input waves are ignored in the average calculation. A trace generated from the returned wave will be shown as topmost trace in the default color for averaged data.
+      - `group` accepts an array of datasets as the first argument. The datasets can have different numbers of elements. The average calculation is performed over the n-th elements of each dataset where they exist; for each index, only datasets that have an element at that position are included in the average. For example, if you have three datasets of sweep data: 1, 2, 3; 4, 5, 6; and 7, 8, 9, each prepared in their own variable (`sweepset0`, `sweepset1`, `sweepset2`), then `avg([$sweepset0, $sweepset1, $sweepset2], group)` averages sweep 1, 4, 7 for the first element, 2, 5, 8 for the second, and 3, 6, 9 for the third. If the datasets have different lengths, the result will have the same length as the longest input dataset, and for each position, only the available elements are averaged. The input datasets can be of any type and do not need to be sweep data. The first argument must contain at least two datasets. Meta data transfer: If the first element dataset in the array contains meta data, that meta data is transferred to the result. If the first element has no meta data, then no meta data is transferred. The structure and content of the meta data depend on the type of the first dataset; for example, sweep datasets may have sweep-specific meta data, while other types may have none or different structures. If the meta data is incompatible with the result, only the compatible parts are transferred.
+
+When an argument is of the select type then automatically data is applied to implicitly convert to sweep data.
+This conversion is also applied in the `group` mode for array elements that are of the select type.
 
 The returned data type is `SF_DATATYPE_AVG`.
 
@@ -347,6 +351,23 @@ The returned data type is `SF_DATATYPE_AVG`.
    avg(data(select(selrange(ST), selchannels(AD), selvis(all))), over)
 
    avg(data(select(selrange(ST))), in)
+
+   avg([select(selrange(E1)), select(selrange(E2))], group)
+
+   avg([$sweepset0, $sweepset1], group)  # meta data from $sweepset0 is transferred to the result
+
+extract
+"""""""
+
+.. code-block:: bash
+
+   extract(datasets, index)
+
+`extract` takes datasets as first argument and an index number as second argument. It returns the dataset from position index.
+
+.. code-block:: bash
+
+   sweep2DA = extract(data(select(selsweeps(1, 2, 3), selvis(all), selchannels(DA))), 1)
 
 root mean square
 """"""""""""""""
