@@ -192,8 +192,10 @@ static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incoming
 
 	numCols                = DimSize(incomingTextualValues, COLS)
 	lastValidIncomingLayer = (DimSize(incomingTextualValues, LAYERS) == 0) ? 0 : (DimSize(incomingTextualValues, LAYERS) - 1)
+
+	AssertOnAndClearRTError()
 	for(i = 0; i < numCols; i += 1)
-		values[rowIndex][indizes[i]][0, lastValidIncomingLayer] = NormalizeToEOL(incomingTextualValues[0][i][r], "\n")
+		values[rowIndex][indizes[i]][0, lastValidIncomingLayer] = NormalizeToEOL(incomingTextualValues[0][i][r], "\n"); AbortOnRTE
 	endfor
 
 	SetNumberInWaveNote(values, NOTE_INDEX, rowIndex + 1)
@@ -295,8 +297,10 @@ static Function ED_createWaveNotes(WAVE incomingNumericalValues, WAVE/T incoming
 
 	numCols                = DimSize(incomingNumericalValues, COLS)
 	lastValidIncomingLayer = (DimSize(incomingNumericalValues, LAYERS) == 0) ? 0 : (DimSize(incomingNumericalValues, LAYERS) - 1)
+
+	AssertOnAndClearRTError()
 	for(i = 0; i < numCols; i += 1)
-		values[rowIndex][indizes[i]][0, lastValidIncomingLayer] = incomingNumericalValues[0][i][r]
+		values[rowIndex][indizes[i]][0, lastValidIncomingLayer] = incomingNumericalValues[0][i][r]; AbortOnRTE
 	endfor
 
 	SetNumberInWaveNote(values, NOTE_INDEX, rowIndex + 1)
