@@ -205,6 +205,7 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 			Make/FREE/T tpStates = {NONE}
 			Make/FREE/T daqStates = {NONE}
 			Make/FREE/T acqStates = {NONE}
+			Make/FREE/T fifoPos = {NONE}
 
 			if(!SVAR_Exists(lockedDevices) || IsEmpty(lockedDevices))
 				lockedDevicesStr = NONE
@@ -213,7 +214,7 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 
 				numLockedDevices = ItemsInList(lockedDevicesStr)
 
-				Redimension/N=(numLockedDevices) sweeps, daqStates, tpStates, acqStates
+				Redimension/N=(numLockedDevices) sweeps, daqStates, tpStates, acqStates, fifoPos
 
 				for(i = 0; i < numLockedDevices; i += 1)
 					device = StringFromList(i, lockedDevicesStr)
@@ -224,6 +225,7 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 					tpStates[i]  = TestPulseRunModeToString(testpulseMode)
 					daqStates[i] = DAQRunModeToString(runMode)
 					acqStates[i] = AS_StateToString(ROVar(GetAcquisitionState(device)))
+					fifoPos[i]   = num2istr(ROVar(GetFifoPosition(device)))
 				endfor
 			endif
 
@@ -242,6 +244,7 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 			printf "DAQ: [%s]\r", TextWaveToList(daqStates, ";", trailSep = 0)
 			printf "Testpulse: [%s]\r", TextWaveToList(tpStates, ";", trailSep = 0)
 			printf "Acquisition state: [%s]\r", TextWaveToList(acqStates, ";", trailSep = 0)
+			printf "Fifo position: [%s]\r", TextWaveToList(fifoPos, ";", trailSep = 0)
 			printf "Experiment: %s (%s)\r", GetExperimentName(), GetExperimentFileType()
 			printf "Igor Pro version: %s (%s)\r", GetIgorProVersion(), GetIgorProBuildVersion()
 			print "MIES version:"
