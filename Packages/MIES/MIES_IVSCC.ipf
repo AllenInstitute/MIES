@@ -399,8 +399,7 @@ End
 
 Function IVS_NewExperimentWithCacheAndAutoloader()
 
-	Execute/P/Q "BackupCacheWaves()"
+	// disabling cache for now
 	Execute/P/Q "NEWEXPERIMENT "
-	// restoring is done in IgorStartOrNewHook
 	Execute/P/Q "CONF_AutoLoader()"
 End
