@@ -17,6 +17,8 @@
 /// - In the MIES installation folder (All Users: `C:\Program Files\MIES`, User: `C:\Users\$User\Documents\MIES`)
 ///   create an empty file named `UserConfig.txt`.
 /// - Execute CreateEmptyFiles() to create required empty files in `User Procedures`
+/// - If the files are on a Windows/SMB network share, create a drive letter
+///   via `net use Z: \\$Server\$Share` as UNC paths don't work everywhere in IP.
 ///
 /// Running:
 /// - Start Igor Pro
