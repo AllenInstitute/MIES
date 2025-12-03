@@ -48,12 +48,13 @@ End
 
 Function DQS_DataAcq(string device)
 
-	variable fifoPos, gotTPChannels, moreData
+	variable fifoPos, gotTPChannels, moreData, ADCConfig
 	string oscilloscopeSubwindow = SCOPE_GetGraph(device)
 
 	NVAR deviceID = $GetDAQDeviceID(device)
 
-	HW_PrepareAcq(HARDWARE_ITC_DAC, deviceID, DATA_ACQUISITION_MODE, flags = HARDWARE_ABORT_ON_ERROR)
+	ADCConfig = ROVar(GetDeviceADCConfig(device))
+	HW_PrepareAcq(HARDWARE_ITC_DAC, deviceID, DATA_ACQUISITION_MODE, flags = HARDWARE_ABORT_ON_ERROR, ADCConfig = ADCConfig)
 
 	if(DAG_GetNumericalValue(device, "Check_DataAcq1_RepeatAcq"))
 		DQ_StartDAQDeviceTimer(device)
@@ -89,8 +90,11 @@ End
 /// @ingroup BackgroundFunctions
 Function DQS_BkrdDataAcq(string device)
 
+	variable ADCConfig
+
 	NVAR deviceID = $GetDAQDeviceID(device)
-	HW_PrepareAcq(HARDWARE_ITC_DAC, deviceID, DATA_ACQUISITION_MODE, flags = HARDWARE_ABORT_ON_ERROR)
+	ADCConfig = ROVar(GetDeviceADCConfig(device))
+	HW_PrepareAcq(HARDWARE_ITC_DAC, deviceID, DATA_ACQUISITION_MODE, flags = HARDWARE_ABORT_ON_ERROR, ADCConfig = ADCConfig)
 
 	if(DAG_GetNumericalValue(device, "Check_DataAcq1_RepeatAcq"))
 		DQ_StartDAQDeviceTimer(device)

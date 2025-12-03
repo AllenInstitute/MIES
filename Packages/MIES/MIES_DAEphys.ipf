@@ -2434,6 +2434,17 @@ Function DAP_CheckSettings(string device, variable mode)
 		endif
 	endif
 
+	WAVE statusADFiltered = DC_GetFilteredChannelState(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_ADC)
+	numEntries = DimSize(statusADFiltered, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+
+		if(!statusADFiltered[i])
+			continue
+		endif
+
+		DAP_GatherADCConfiguration(device, i)
+	endfor
+
 	// unlock DAQDataWave, this happens if user functions error out and we don't catch it
 	WAVE DAQDataWave = GetDAQDataWave(device, mode)
 	if(GetLockState(DAQDataWave))
@@ -2451,6 +2462,39 @@ Function DAP_CheckSettings(string device, variable mode)
 	endif
 
 	return 0
+End
+
+/// @brief Gather the ADC configuration bits
+///
+/// Only for NI hardware, also warn users once if RSE can not be used.
+static Function DAP_GatherADCConfiguration(string device, variable ADC)
+
+	variable ADCConfigRead
+
+	if(GetHardwareType(device) != HARDWARE_NI_DAC)
+		// nothing to do
+		return NaN
+	endif
+
+	ADCConfigRead = HW_NI_GetAnalogInputConfig(device, ADC)
+
+	NVAR ADCConfig = $GetDeviceADCConfig(device)
+
+	if(IsNaN(ADCConfig))
+		ADCConfig = ADCConfigRead
+	else
+		ASSERT(ADCConfig == ADCConfigRead, "Differing ADC configurations are not supported.")
+	endif
+
+	if((ADCConfigRead & HW_NI_CONFIG_RSE) == HW_NI_CONFIG_RSE)
+		return NaN
+	endif
+
+	if(!AlreadyCalledOnce(CO_DAP_DIFF_FALLBACK_NI))
+		printf "The NI device %s does not support Single-Ended-Ground-Referenced (RSE) configuration for the ADC channel %d.\r", device, ADC
+		printf "If available we will fallback to Differential (Diff), see also https://knowledge.ni.com/KnowledgeArticleDetails?id=kA00Z0000019QRZSA2.\r"
+		ControlWindowToFront()
+	endif
 End
 
 static Function DAP_CheckAsyncSettings(string device)

@@ -221,6 +221,8 @@ End
 ///                        at the very beginning of DAQ, turn off for RA
 Function DQM_StartDAQMultiDevice(string device, [variable initialSetupReq])
 
+	variable ADCConfig
+
 	ASSERT(WhichListItem(GetRTStackInfo(2), DAQ_ALLOWED_FUNCTIONS) != -1,                          \
 	       "Calling this function directly is not supported, please use PGC_SetAndActivateControl.")
 
@@ -249,7 +251,8 @@ Function DQM_StartDAQMultiDevice(string device, [variable initialSetupReq])
 
 	// configure passed device
 	NVAR deviceID = $GetDAQDeviceID(device)
-	HW_PrepareAcq(GetHardwareType(device), deviceID, DATA_ACQUISITION_MODE, flags = HARDWARE_ABORT_ON_ERROR)
+	ADCConfig = ROVar(GetDeviceADCConfig(device))
+	HW_PrepareAcq(GetHardwareType(device), deviceID, DATA_ACQUISITION_MODE, flags = HARDWARE_ABORT_ON_ERROR, ADCConfig = ADCConfig)
 
 	DAP_UpdateITIAcrossSets(device, maxITI)
 	DQM_BkrdDataAcq(device)

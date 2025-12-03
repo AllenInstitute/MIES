@@ -112,14 +112,19 @@ static Constant SUTTER_ACQUISITION_BACKGROUND = 2
 /// @param configFunc   [optional, defaults to GetDAQConfigWave()] override wave getter for the ITC config wave
 /// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 /// @param offset       [optional, defaults to zero] offset into the data wave in points
-Function HW_PrepareAcq(variable hardwareType, variable deviceID, variable mode, [WAVE/Z data, FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable flags, variable offset])
+/// @param ADCConfig    [optional, defaults to NaN] available ADC configurations (NI hardware only)
+Function HW_PrepareAcq(variable hardwareType, variable deviceID, variable mode, [WAVE/Z data, FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable flags, variable offset, variable ADCConfig])
+
+	if(ParamIsDefault(ADCConfig))
+		ADCConfig = NaN
+	endif
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
 			return HW_ITC_PrepareAcq(deviceID, mode, flags = flags)
 			break
 		case HARDWARE_NI_DAC:
-			return HW_NI_PrepareAcq(deviceID, mode, flags = flags)
+			return HW_NI_PrepareAcq(deviceID, mode, flags = flags, ADCConfig = ADCConfig)
 			break
 		case HARDWARE_SUTTER_DAC:
 			return HW_SU_PrepareAcq(deviceID, mode, flags = flags)
@@ -1691,7 +1696,8 @@ End
 /// @param configFunc  [optional, defaults to GetDAQConfigWave()] override wave getter for the ITC config wave
 /// @param offset      [optional, defaults to zero] offset into the data wave in points
 /// @param flags       [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_ITC_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable flags, variable offset])
+/// @param ADCConfig   [optional] Not supported for ITC hardware
+Function HW_ITC_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable flags, variable offset, variable ADCConfig])
 
 	string   device
 	variable tries
@@ -1718,6 +1724,10 @@ Function HW_ITC_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCR
 
 	if(!ParamIsDefault(offset))
 		config[][%Offset] = offset
+	endif
+
+	if(!ParamIsDefault(ADCConfig))
+		FATAL_ERROR("ADCConfig is not supported")
 	endif
 
 	WAVE config_t = HW_ITC_Transpose(config)
@@ -2018,7 +2028,7 @@ Function HW_ITC_DebugMode(variable state, [variable flags])
 	DEBUGPRINT("Unimplemented")
 End
 
-Function HW_ITC_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable flags, variable offset])
+Function HW_ITC_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable flags, variable offset, variable ADCConfig])
 
 	DEBUGPRINT("Unimplemented")
 End
@@ -2228,11 +2238,11 @@ Function/S HW_NI_AnalogInputToString(variable config)
 	endif
 
 	if(config & HW_NI_CONFIG_DIFFERENTIAL)
-		str += "Differential, "
+		str += "DIFF, "
 	endif
 
 	if(config & HW_NI_CONFIG_PSEUDO_DIFFERENTIAL)
-		str += "Pseudo Differential, "
+		str += "PDIFF, "
 	endif
 
 	ASSERT(!IsEmpty(str), "Invalid config")
@@ -2249,6 +2259,8 @@ static Constant HW_NI_MIN_VOLTAGE = -10.0
 static Constant HW_NI_MAX_VOLTAGE = +10.0
 ///@}
 
+/// Not to be confused with @ref NIAnalogInputConfigs
+/// this is a fDAQmx_ReadChan flag only.
 static Constant HW_NI_DIFFERENTIAL_SETUP = 0
 
 static Constant HW_NI_FIFOSIZE = 120
@@ -2322,10 +2334,11 @@ End
 /// @param configFunc  [optional, defaults to GetDAQConfigWave()] override wave getter for the ITC config wave
 /// @param offset      [optional, defaults to zero] offset into the data wave in points
 /// @param flags       [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_NI_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable flags, variable offset])
+/// @param ADCConfig   Available ADC configurations (NI hardware only)
+Function HW_NI_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable flags, variable offset, variable ADCConfig])
 
 	string device, tempStr, realDeviceOrPressure, filename, clkStr, wavegenStr, TTLStr, fifoName, errMsg
-	variable i, aiCnt, ttlCnt, channels, sampleIntervall, numEntries, fifoSize, err, minimum, maximum
+	variable i, aiCnt, ttlCnt, channels, sampleIntervall, numEntries, fifoSize, err, minimum, maximum, ADCConfigBit
 
 	DEBUGPRINTSTACKINFO()
 
@@ -2352,6 +2365,18 @@ Function HW_NI_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCRE
 		FATAL_ERROR("Offset is not supported")
 	endif
 
+	if(ParamIsDefault(ADCConfig))
+		FATAL_ERROR("ADCConfig is missing")
+	endif
+
+	if((ADCConfig & HW_NI_CONFIG_RSE) == HW_NI_CONFIG_RSE)
+		ADCConfigBit = HW_NI_CONFIG_RSE
+	elseif((ADCConfig & HW_NI_CONFIG_DIFFERENTIAL) == HW_NI_CONFIG_DIFFERENTIAL)
+		ADCConfigBit = HW_NI_CONFIG_DIFFERENTIAL
+	else
+		FATAL_ERROR("Can neither use RSE nor DIFFERENTIAL for DAQ, please file a bug report.")
+	endif
+
 	WAVE gain = SWS_GetChannelGains(device, timing = GAIN_BEFORE_DAQ)
 
 	fifoName = GetNIFIFOName(deviceID)
@@ -2371,7 +2396,7 @@ Function HW_NI_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCRE
 			ASSERT(!IsFreeWave(NIDataWave[i]), "Can not work with free waves")
 			switch(config[i][%ChannelType])
 				case XOP_CHANNEL_TYPE_ADC:
-					scanStr += num2str(config[i][%ChannelNumber]) + "/RSE,"
+					scanStr += num2str(config[i][%ChannelNumber]) + "/" + HW_NI_AnalogInputToString(ADCConfigBit) + ","
 					scanStr += num2str(NI_ADC_MIN) + "," + num2str(NI_ADC_MAX) + ","
 					scanStr += num2str(gain[i]) + ",0"
 					scanStr += ";"
@@ -2549,8 +2574,10 @@ Function HW_NI_PrintPropertiesOfDevices()
 
 		lines = RemoveEnding(lines, ",")
 
+		Make/FREE/N=(numAI) ADCConfigs = HW_NI_GetAnalogInputConfig(device, p)
+
 		printf "Device name: %s\r", device
-		printf "#AI %d, #AO %d, #Cnt %d, #DIO ports %d with (%s) lines\r", numAI, numAO, numCounter, numDIO, lines
+		printf "#AI %d (config bits: [%s]), #AO %d, #Cnt %d, #DIO ports %d with (%s) lines\r", numAI, NumericWaveToList(ADCConfigs, ", ", trailSep = 0), numAO, numCounter, numDIO, lines
 		printf "Last self calibration: %s\r", SelectString(IsFinite(selfCalDate), "na", GetIso8601TimeStamp(secondsSinceIgorEpoch = selfCalDate))
 		printf "Last external calibration: %s\r", GetIso8601TimeStamp(secondsSinceIgorEpoch = extCalDate)
 	endfor
@@ -3112,7 +3139,7 @@ Function HW_NI_StartAcq(variable deviceID, variable triggerMode, [variable flags
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
-Function HW_NI_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable flags, variable offset])
+Function HW_NI_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable flags, variable offset, variable ADCConfig])
 
 	DoAbortNow("NI-DAQ XOP is not available")
 End
@@ -3367,7 +3394,8 @@ End
 /// @param configFunc  [optional, defaults to GetDAQConfigWave()] override wave getter for the ITC config wave
 /// @param offset      [optional, defaults to zero] offset into the data wave in points
 /// @param flags       [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_SU_PrepareAcq(variable deviceId, variable mode, [WAVE/Z data, FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable flags, variable offset])
+/// @param ADCConfig   [optional] Not supported for Sutter hardware
+Function HW_SU_PrepareAcq(variable deviceId, variable mode, [WAVE/Z data, FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable flags, variable offset, variable ADCConfig])
 
 	string device, encodeInfo
 	variable channels, i, haveTTL, unassocADCIndex, unassocDACIndex
@@ -3395,6 +3423,10 @@ Function HW_SU_PrepareAcq(variable deviceId, variable mode, [WAVE/Z data, FUNCRE
 
 	if(!ParamIsDefault(offset))
 		FATAL_ERROR("Offset is not supported")
+	endif
+
+	if(!ParamIsDefault(ADCConfig))
+		FATAL_ERROR("ADCConfig is not supported")
 	endif
 
 	WAVE gain        = SWS_GetChannelGains(device, timing = GAIN_BEFORE_DAQ)
@@ -3764,7 +3796,7 @@ Function HW_SU_StopAcq(variable deviceId, [variable zeroDAC, variable flags])
 	DoAbortNow("SUTTER XOP is not available")
 End
 
-Function HW_SU_PrepareAcq(variable deviceId, variable mode, [WAVE/Z data, FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable flags, variable offset])
+Function HW_SU_PrepareAcq(variable deviceId, variable mode, [WAVE/Z data, FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable flags, variable offset, variable ADCConfig])
 
 	DoAbortNow("SUTTER XOP is not available")
 End

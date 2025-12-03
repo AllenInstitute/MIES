@@ -39,7 +39,7 @@ Constant SWEEP_EPOCH_VERSION = 9
 /// - New/Changed layers of entries
 ///
 ///@{
-Constant LABNOTEBOOK_VERSION = 81
+Constant LABNOTEBOOK_VERSION = 82
 Constant RESULTS_VERSION     = 3
 ///@}
 
@@ -2090,6 +2090,7 @@ StrConstant CO_PSX_CLIPPED_STATS     = "psx_clippedStats"
 StrConstant CO_ARCHIVE_ONCE          = "ArchiveLogs"
 StrConstant CO_PSX_UPGRADE_EVENT     = "psx_updateEvent"
 StrConstant CO_AB_LOADHISTORYFROMPXP = "ABLoadHistoryFromPXP"
+StrConstant CO_DAP_DIFF_FALLBACK_NI  = "DiffFallbackNI"
 ///@}
 
 /// @name Constants for SweepFormula Meta data in JSON format
