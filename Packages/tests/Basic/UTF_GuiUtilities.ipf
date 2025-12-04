@@ -458,3 +458,53 @@ static Function TestScrollListboxIntoView()
 End
 
 /// @}
+
+/// GetAllWindows
+/// @{
+
+Function TestGetAllWindows()
+
+	string wList, nullArg, win, subWin
+	variable exist
+
+	try
+		GetAllWindows(nullArg)
+		FAIL()
+	catch
+		ClearRTError()
+		PASS()
+	endtry
+
+	wList = GetAllWindows("This window does not exist")
+	CHECK_EMPTY_STR(wList)
+
+	Display
+	win   = S_name
+	wList = GetAllWindows("")
+	exist = WhichListItem(win, wList)
+	CHECK_GE_VAR(exist, 0)
+
+	NewPanel
+	win = S_name
+	DisPlay/HOST=#
+	subWin = win + "#" + S_name
+	wList  = GetAllWindows("")
+	exist  = WhichListItem(win, wList)
+	CHECK_GE_VAR(exist, 0)
+	exist = WhichListItem(subWin, wList)
+	CHECK_GE_VAR(exist, 0)
+
+	wList = GetAllWindows(win)
+	exist = WhichListItem(win, wList)
+	CHECK_GE_VAR(exist, 0)
+	exist = WhichListItem(subWin, wList)
+	CHECK_GE_VAR(exist, 0)
+
+	wList = GetAllWindows(subWin)
+	exist = WhichListItem(win, wList)
+	CHECK_EQUAL_VAR(exist, -1)
+	exist = WhichListItem(subWin, wList)
+	CHECK_GE_VAR(exist, 0)
+End
+
+/// @}
