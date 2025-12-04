@@ -2416,3 +2416,15 @@ threadsafe static Function/WAVE SFO_SweepAverageHelper(WAVE/WAVE group)
 
 	return avgResult[0]
 End
+
+/// table(expression)
+Function/WAVE SFO_OperationTable(STRUCT SF_ExecutionData &exd)
+
+	SFH_CheckArgumentCount(exd, SF_OP_TABLE, 1, maxArgs = 1)
+
+	WAVE output = SFH_GetArgumentAsWave(exd, SF_OP_TABLE, 0)
+
+	JWN_SetNumberInWaveNote(output, SF_PROPERTY_TABLE, 1)
+
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_TABLE)
+End

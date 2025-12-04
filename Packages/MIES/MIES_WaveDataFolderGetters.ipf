@@ -9218,3 +9218,13 @@ Function/WAVE GetSFAssertData()
 
 	return wv
 End
+
+/// @brief Used for preparing graph and table window names for the SF plotter
+Function/WAVE GetPlotGraphNames(variable numGraphs)
+
+	Make/FREE/T/N=(numGraphs, 2) plotGraphs
+	SetDimlabel COLS, 0, GRAPH, plotGraphs
+	SetDimlabel COLS, 1, TABLE, plotGraphs
+
+	return plotGraphs
+End

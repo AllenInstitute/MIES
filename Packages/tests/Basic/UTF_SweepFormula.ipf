@@ -723,13 +723,19 @@ static Function TestPlotting()
 	// Reference data waves must be moved out of the working DF for the further tests as
 	// calling the FormulaPlotter later kills the working DF
 	WAVE globalarray2D = SFE_ExecuteFormula(strArray2D, sweepBrowser, singleResult = 1, useVariables = 0)
-	Duplicate/FREE globalarray2D, array2D
+	Duplicate/FREE globalarray2D, array2D, array2Dvs, array2DAsX
+	JWN_SetStringInWaveNote(array2D, SF_META_FORMULA, strArray2D)
+	JWN_SetStringInWaveNote(array2Dvs, SF_META_FORMULA, strArray2D + " ")
 	WAVE globalarray1D = SFE_ExecuteFormula(strArray1D, sweepBrowser, singleResult = 1, useVariables = 0)
-	Duplicate/FREE globalarray1D, array1D
+	Duplicate/FREE globalarray1D, array1D, array1Dvs, array1DAsX
+	JWN_SetStringInWaveNote(array1D, SF_META_FORMULA, strArray1D)
+	JWN_SetStringInWaveNote(array1Dvs, SF_META_FORMULA, strArray1D + " ")
 	WAVE globalarray0D = SFE_ExecuteFormula(strArray0D, sweepBrowser, singleResult = 1, useVariables = 0)
 	Duplicate/FREE globalarray0D, array0D
+	JWN_SetStringInWaveNote(array0D, SF_META_FORMULA, strArray0D)
 	WAVE globalscale1D = SFE_ExecuteFormula(strScale1D, sweepBrowser, singleResult = 1, useVariables = 0)
 	Duplicate/FREE globalscale1D, scale1D
+	JWN_SetStringInWaveNote(scale1D, SF_META_FORMULA, strScale1D)
 
 	win = winBase + "_#Graph" + "0"
 
@@ -745,10 +751,10 @@ static Function TestPlotting()
 	traces = TraceNameList(win, ";", 0x1)
 	REQUIRE_EQUAL_VAR(ItemsInList(traces), DimSize(array2D, COLS))
 	WAVE wvX = XWaveRefFromTrace(win, StringFromList(0, traces))
-	REQUIRE_EQUAL_WAVES(wvX, array2D)
+	REQUIRE_EQUAL_WAVES(wvX, array2DAsX)
 	WAVE wvY = TraceNameToWaveRef(win, StringFromList(0, traces))
 	Redimension/N=(-1, 0) wvY
-	REQUIRE_EQUAL_WAVES(wvY, array1D)
+	REQUIRE_EQUAL_WAVES(wvY, array1Dvs)
 	[minimum, maximum] = GetAxisRange(win, "bottom", mode = AXIS_RANGE_INC_AUTOSCALED)
 	REQUIRE_EQUAL_VAR(minimum, WaveMin(array2D))
 	REQUIRE_EQUAL_VAR(maximum, WaveMax(array2D))
@@ -765,10 +771,10 @@ static Function TestPlotting()
 	traces = TraceNameList(win, ";", 0x1)
 	REQUIRE_EQUAL_VAR(ItemsInList(traces), DimSize(array2D, COLS))
 	WAVE wvY = TraceNameToWaveRef(win, StringFromList(0, traces))
-	REQUIRE_EQUAL_WAVES(wvY, array2D)
+	REQUIRE_EQUAL_WAVES(wvY, array2Dvs)
 	WAVE wvX = XWaveRefFromTrace(win, StringFromList(0, traces))
 	Redimension/N=(-1, 0) wvX
-	REQUIRE_EQUAL_WAVES(wvX, array1D)
+	REQUIRE_EQUAL_WAVES(wvX, array1DAsX)
 	[minimum, maximum] = GetAxisRange(win, "bottom", mode = AXIS_RANGE_INC_AUTOSCALED)
 	REQUIRE_EQUAL_VAR(minimum, WaveMin(array1D))
 	REQUIRE_EQUAL_VAR(maximum, WaveMax(array1D))
@@ -835,11 +841,11 @@ static Function TestPlotting()
 	WAVE wvY1 = GetSweepFormulaY(dfr, 1)
 	WAVE wvX1 = GetSweepFormulaX(dfr, 1)
 	Make/FREE/D wvY0ref = {{1, 2}}
-	CHECK_EQUAL_WAVES(wvY0, wvY0ref)
+	CHECK_EQUAL_WAVES(wvY0, wvY0ref, mode = WAVE_DATA)
 	Make/FREE/D wvX0ref = {{3, 4}}
 	CHECK_EQUAL_WAVES(wvX0, wvX0ref)
 	Make/FREE/D wvY1ref = {{5, 6}}
-	CHECK_EQUAL_WAVES(wvY1, wvY1ref)
+	CHECK_EQUAL_WAVES(wvY1, wvY1ref, mode = WAVE_DATA)
 	Make/FREE/D wvX1ref = {{7, 8}}
 	CHECK_EQUAL_WAVES(wvX1, wvX1ref)
 
@@ -938,23 +944,179 @@ static Function TestPlotting()
 	CHECK_EQUAL_WAVES(wvWin1X1, wvX3)
 	CHECK_EQUAL_WAVES(wvWin1X2, wvX4)
 	Make/FREE/D wvYref = {{1, 2}}
-	CHECK_EQUAL_WAVES(wvY0, wvYref)
+	CHECK_EQUAL_WAVES(wvY0, wvYref, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(wvWin0Y0, wvY0)
 	Make/FREE/D wvYref = {{2, 3}}
-	CHECK_EQUAL_WAVES(wvY1, wvYref)
+	CHECK_EQUAL_WAVES(wvY1, wvYref, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(wvWin0Y1, wvY1)
 	Make/FREE/D wvYref = {{5, 6}}
-	CHECK_EQUAL_WAVES(wvY2, wvYref)
+	CHECK_EQUAL_WAVES(wvY2, wvYref, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(wvWin1Y0, wvY2)
 	Make/FREE/D wvYref = {{2, 3}}
-	CHECK_EQUAL_WAVES(wvY3, wvYref)
+	CHECK_EQUAL_WAVES(wvY3, wvYref, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(wvWin1Y1, wvY3)
 	Make/FREE/D wvYref = {{4, 5}}
-	CHECK_EQUAL_WAVES(wvY4, wvYref)
+	CHECK_EQUAL_WAVES(wvY4, wvYref, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(wvWin1Y2, wvY4)
 	Make/FREE/D wvYref = {{9, 10}}
-	CHECK_EQUAL_WAVES(wvY5, wvYref)
+	CHECK_EQUAL_WAVES(wvY5, wvYref, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(wvWin2Y0, wvY5)
+End
+
+static Function TestPlottingWithTablesSubWindows()
+
+	string win, winBaseTable
+
+	string sweepBrowser = CreateFakeSweepBrowser_IGNORE()
+	DFREF  dfr          = BSP_GetFolder(sweepBrowser, MIES_BSP_PANEL_FOLDER)
+	string winBase      = MIES_SF#SF_GetFormulaWinNameTemplate(sweepBrowser)
+
+	string strSimpleTable          = "table(1)"
+	string strSimpleTableWithTable = "table(1)\rwith\rtable(2)"
+	string strSimpleTableWithPlot  = "table(1)\rwith\r2"
+	string strSimpleTableVsX       = "table(1) vs 2"
+	string strSimpleTableAndTable  = "table(1)\rand\rtable(2)"
+	string strSimpleTableAndPlot   = "table(1)\rand\r2"
+	string strSimpleTableDataset   = "table(dataset(1,2))"
+
+	winBaseTable = winBase + "table"
+
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, strSimpleTable)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable), 1)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable + "#Table0"), 1)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable + "#Table1"), 0)
+	CHECK_EQUAL_VAR(WindowExists(winBase), 0)
+	WAVE wv = WaveRefIndexed(winBaseTable + "#Table0", 0, 3) // data column
+	CHECK_EQUAL_WAVES(wv, {{1}}, mode = WAVE_DATA)
+	WAVE/Z wv = WaveRefIndexed(winBaseTable + "#Table0", 1, 3)
+	CHECK_WAVE(wv, NULL_WAVE)
+
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, strSimpleTableWithTable)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable), 1)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable + "#Table0"), 1)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable + "#Table1"), 0)
+	CHECK_EQUAL_VAR(WindowExists(winBase), 0)
+	WAVE wv = WaveRefIndexed(winBaseTable + "#Table0", 0, 3) // data column first table
+	CHECK_EQUAL_WAVES(wv, {{1}}, mode = WAVE_DATA)
+	WAVE wv = WaveRefIndexed(winBaseTable + "#Table0", 1, 3) // data column second table
+	CHECK_EQUAL_WAVES(wv, {{2}}, mode = WAVE_DATA)
+	WAVE/Z wv = WaveRefIndexed(winBaseTable + "#Table0", 2, 3)
+	CHECK_WAVE(wv, NULL_WAVE)
+
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, strSimpleTableWithPlot)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable), 1)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable + "#Table0"), 1)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable + "#Table1"), 0)
+	CHECK_EQUAL_VAR(WindowExists(winBase), 1)
+	CHECK_EQUAL_VAR(WindowExists(winBase + "#Graph0"), 1)
+	CHECK_EQUAL_VAR(WindowExists(winBase + "#Graph1"), 0)
+
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, strSimpleTableVsX)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable), 1)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable + "#Table0"), 1)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable + "#Table1"), 0)
+	CHECK_EQUAL_VAR(WindowExists(winBase), 0)
+
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, strSimpleTableAndTable)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable), 1)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable + "#Table0"), 1)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable + "#Table1"), 1)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable + "#Table2"), 0)
+	CHECK_EQUAL_VAR(WindowExists(winBase), 0)
+	WAVE wv = WaveRefIndexed(winBaseTable + "#Table0", 0, 3) // data column
+	CHECK_EQUAL_WAVES(wv, {{1}}, mode = WAVE_DATA)
+	WAVE/Z wv = WaveRefIndexed(winBaseTable + "#Table0", 1, 3)
+	CHECK_WAVE(wv, NULL_WAVE)
+	WAVE wv = WaveRefIndexed(winBaseTable + "#Table1", 0, 3) // data column
+	CHECK_EQUAL_WAVES(wv, {{2}}, mode = WAVE_DATA)
+	WAVE/Z wv = WaveRefIndexed(winBaseTable + "#Table1", 1, 3)
+	CHECK_WAVE(wv, NULL_WAVE)
+
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, strSimpleTableAndPlot)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable), 1)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable + "#Table0"), 1)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable + "#Table1"), 0)
+	CHECK_EQUAL_VAR(WindowExists(winBase), 1)
+	CHECK_EQUAL_VAR(WindowExists(winBase + "#Graph0"), 0)
+	CHECK_EQUAL_VAR(WindowExists(winBase + "#Graph1"), 1)
+	CHECK_EQUAL_VAR(WindowExists(winBase + "#Graph2"), 0)
+
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, strSimpleTableDataset)
+	WAVE wv = WaveRefIndexed(winBaseTable + "#Table0", 0, 3) // data column
+	CHECK_EQUAL_WAVES(wv, {{1}}, mode = WAVE_DATA)
+	WAVE wv = WaveRefIndexed(winBaseTable + "#Table0", 1, 3) // data column
+	CHECK_EQUAL_WAVES(wv, {{2}}, mode = WAVE_DATA)
+	WAVE/Z wv = WaveRefIndexed(winBaseTable + "#Table0", 2, 3)
+	CHECK_WAVE(wv, NULL_WAVE)
+
+	KillWaves/Z waveWithDimlabels
+	Make/N=1 waveWithDimlabels = 1
+	SetDimLabel ROWS, 0, LABEL, waveWithDimlabels
+	string wPath = GetWavesDataFolder(waveWithDimlabels, 2)
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, "table(wave(\"" + wPath + "\"))")
+	WAVE wv = WaveRefIndexed(winBaseTable + "#Table0", 0, 3) // dimlabel column
+	CHECK_EQUAL_WAVES(wv, {{1}}, mode = WAVE_DATA)
+	WAVE wv = WaveRefIndexed(winBaseTable + "#Table0", 1, 3) // data column
+	CHECK_EQUAL_WAVES(wv, {{1}}, mode = WAVE_DATA)
+	WAVE wv = WaveRefIndexed(winBaseTable + "#Table0", 2, 3) // end of data
+	CHECK_WAVE(wv, NULL_WAVE)
+
+	KillWaves/Z waveWithDimlabels
+End
+
+static Function TestPlottingWithTablesNormal()
+
+	string win, winBaseTable
+
+	string sweepBrowser = CreateFakeSweepBrowser_IGNORE()
+	DFREF  dfr          = BSP_GetFolder(sweepBrowser, MIES_BSP_PANEL_FOLDER)
+	string winBase      = MIES_SF#SF_GetFormulaWinNameTemplate(sweepBrowser)
+
+	string strSimpleTable          = "table(1)"
+	string strSimpleTableWithTable = "table(1)\rwith\rtable(2)"
+	string strSimpleTableWithPlot  = "table(1)\rwith\r2"
+	string strSimpleTableVsX       = "table(1) vs 2"
+	string strSimpleTableAndTable  = "table(1)\rand\rtable(2)"
+	string strSimpleTableAndPlot   = "table(1)\rand\r2"
+
+	winBaseTable = winBase + "table"
+
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, strSimpleTable, dmMode = SF_DM_NORMAL)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable), 0)
+	CHECK_EQUAL_VAR(WindowExists(winBase), 0)
+
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable + "0"), 1)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable + "1"), 0)
+	CHECK_EQUAL_VAR(WindowExists(winBase + "0"), 0)
+
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, strSimpleTableWithTable, dmMode = SF_DM_NORMAL)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable + "0"), 1)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable + "1"), 0)
+	CHECK_EQUAL_VAR(WindowExists(winBase + "0"), 0)
+
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, strSimpleTableWithPlot, dmMode = SF_DM_NORMAL)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable + "0"), 1)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable + "1"), 0)
+	CHECK_EQUAL_VAR(WindowExists(winBase + "0"), 1)
+	CHECK_EQUAL_VAR(WindowExists(winBase + "1"), 0)
+
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, strSimpleTableVsX, dmMode = SF_DM_NORMAL)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable + "0"), 1)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable + "1"), 0)
+	CHECK_EQUAL_VAR(WindowExists(winBase + "1"), 0)
+
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, strSimpleTableAndTable, dmMode = SF_DM_NORMAL)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable + "0"), 1)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable + "1"), 1)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable + "2"), 0)
+	CHECK_EQUAL_VAR(WindowExists(winBase + "0"), 0)
+
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, strSimpleTableAndPlot, dmMode = SF_DM_NORMAL)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable + "0"), 1)
+	CHECK_EQUAL_VAR(WindowExists(winBaseTable + "1"), 0)
+	CHECK_EQUAL_VAR(WindowExists(winBase + "0"), 0)
+	CHECK_EQUAL_VAR(WindowExists(winBase + "1"), 1)
+	CHECK_EQUAL_VAR(WindowExists(winBase + "2"), 0)
 End
 
 static Function TestSFPreprocessor()

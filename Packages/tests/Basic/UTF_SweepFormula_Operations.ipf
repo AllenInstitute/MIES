@@ -3547,3 +3547,37 @@ static Function TestOperationAnaFuncParam()
 		idx += 1
 	endfor
 End
+
+static Function TestOperationTable()
+
+	string str, win
+	variable val
+
+	win = GetDataBrowserWithData()
+
+	str = "table()"
+	try
+		WAVE output = SFE_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	str = "table(1,1)"
+	try
+		WAVE output = SFE_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	str = "table(1)"
+	WAVE/WAVE output = SFE_ExecuteFormula(str, win, useVariables = 0)
+	val = JWN_GetNumberFromWaveNote(output, SF_PROPERTY_TABLE)
+	CHECK_EQUAL_VAR(val, 1)
+
+	str = "table(dataset(1,2))"
+	WAVE/WAVE output = SFE_ExecuteFormula(str, win, useVariables = 0)
+	val = JWN_GetNumberFromWaveNote(output, SF_PROPERTY_TABLE)
+	CHECK_EQUAL_VAR(val, 1)
+End

@@ -818,3 +818,9 @@ Function/S GetDeviceADCConfig(string device)
 
 	return GetNVARAsString(GetDevicePath(device), "ADCConfig", initialValue = NaN)
 End
+
+/// @brief Returns the last right clicked sweep formula display (plot/table) window
+Function/S GetSweepFormulaLastRightClickedDisplayWindow()
+
+	return GetSVARAsString(GetSweepFormulaPath(), "LastRightClickedDisplayWindow", initialValue = "")
+End

@@ -511,6 +511,9 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLoc
 		case SF_OP_SELECTRANGE:
 			WAVE out = SFOS_OperationSelectRange(exdop)
 			break
+		case SF_OP_TABLE:
+			WAVE out = SFO_OperationTable(exdop)
+			break
 		default:
 			SFH_FATAL_ERROR("Undefined Operation", jsonId = exdop.jsonId)
 	endswitch

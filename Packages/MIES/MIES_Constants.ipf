@@ -1619,6 +1619,21 @@ Constant WINTYPE_CAMERA   = 15
 Constant WINTYPE_GIZMO    = 17
 ///@}
 
+/// @name WindowTypes for the WinList function (bitwise)
+/// @anchor WinListWindowTypes
+///@{
+Constant WINDOWTYPE_GRAPH     = 1
+Constant WINDOWTYPE_TABLE     = 2
+Constant WINDOWTYPE_LAYOUT    = 4
+Constant WINDOWTYPE_NOTEBOOK  = 16
+Constant WINDOWTYPE_PANEL     = 64
+Constant WINDOWTYPE_PROCEDURE = 128
+Constant WINDOWTYPE_HELP      = 512
+Constant WINDOWTYPE_XOP       = 4096
+Constant WINDOWTYPE_CAMERA    = 16384
+Constant WINDOWTYPE_GIZMO     = 65536
+///@}
+
 /// @name Panel tag codes to identify panel types, set in creation macro as main window userdata($EXPCONFIG_UDATA_PANELTYPE)
 /// @anchor panelTags
 ///@{
@@ -2125,6 +2140,7 @@ StrConstant SF_META_TRACE_MODE         = "/TraceMode"        // number, one of @
 StrConstant SF_META_TRACETOFRONT       = "/TraceToFront"     // number, boolean, defaults to false (0)
 StrConstant SF_META_DONOTPLOT          = "/DoNotPlot"        // number, boolean, defaults to false (0)
 StrConstant SF_META_WINDOW_HOOK        = "/WindowHook"       // string
+StrConstant SF_META_FORMULA            = "/Formula"          // string
 
 /// A color group allows to have matching colors for sweep data with the same channel type/number and sweep.
 /// It is applied before the matching headstage/average colors in #SF_GetTraceColor().
@@ -2519,11 +2535,14 @@ StrConstant SF_OP_SELECTIVSCCSWEEPQC  = "selivsccsweepqc"
 StrConstant SF_OP_SELECTIVSCCSETQC    = "selivsccsetqc"
 StrConstant SF_OP_SELECTRANGE         = "selrange"
 StrConstant SF_OP_POWERSPECTRUM       = "powerspectrum"
+StrConstant SF_OP_TABLE               = "table"
 StrConstant SF_OP_TPSS                = "tpss"
 StrConstant SF_OP_TPINST              = "tpinst"
 StrConstant SF_OP_TPBASE              = "tpbase"
 StrConstant SF_OP_TPFIT               = "tpfit"
 ///@}
+
+StrConstant SF_PROPERTY_TABLE = "Table"
 
 /// @name SF operations shorts
 ///
