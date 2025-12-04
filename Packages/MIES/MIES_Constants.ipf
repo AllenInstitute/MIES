@@ -1619,6 +1619,21 @@ Constant WINTYPE_CAMERA   = 15
 Constant WINTYPE_GIZMO    = 17
 ///@}
 
+/// @name WindowTypes for the WinList function (bitwise)
+/// @anchor WinListWindowTypes
+///@{
+Constant WINDOWTYPE_GRAPH     = 1
+Constant WINDOWTYPE_TABLE     = 2
+Constant WINDOWTYPE_LAYOUT    = 4
+Constant WINDOWTYPE_NOTEBOOK  = 16
+Constant WINDOWTYPE_PANEL     = 64
+Constant WINDOWTYPE_PROCEDURE = 128
+Constant WINDOWTYPE_HELP      = 512
+Constant WINDOWTYPE_XOP       = 4096
+Constant WINDOWTYPE_CAMERA    = 16384
+Constant WINDOWTYPE_GIZMO     = 65536
+///@}
+
 /// @name Panel tag codes to identify panel types, set in creation macro as main window userdata($EXPCONFIG_UDATA_PANELTYPE)
 /// @anchor panelTags
 ///@{

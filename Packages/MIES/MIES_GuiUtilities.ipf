@@ -1864,33 +1864,45 @@ End
 /// @brief Recursively build a list of windows, including all child
 ///        windows, starting with wName.
 ///
-/// @param wName parent window name to start with
+/// @param wName parent window name to start with, if wName is empty then all graphs, tables, layouts, notebooks and panels
+///              with subwindows (possible for graphs and panels) are returned
 /// @return A string containing names of windows.  This list is a semicolon separated list.  It will include the window
-///         wName and all of its children and children of children, etc.
+///         wName, if wName was not empty, and all of its children and children of children, etc.
 Function/S GetAllWindows(string wName)
 
 	string windowList = ""
-	GetAllWindowsImpl(wName, windowList)
+	[windowList] = GetAllWindowsImpl(wName)
 
 	return windowList
 End
 
-static Function GetAllWindowsImpl(string wName, string &windowList)
+static Function [string windowList] GetAllWindowsImpl(string wName)
 
-	string children
-	variable i, numChildren, err
+	string children, topLevelWindows, win
+	variable windowsWithUserdata
 
-	windowList = AddListItem(wName, windowList, ";", Inf)
+	if(IsEmpty(wName))
+		windowsWithUserdata = WINDOWTYPE_GRAPH | WINDOWTYPE_TABLE | WINDOWTYPE_LAYOUT | WINDOWTYPE_NOTEBOOK | WINDOWTYPE_PANEL | WINDOWTYPE_GIZMO
+		topLevelWindows     = WinList("*", ";", "WIN:" + num2istr(windowsWithUserdata))
+		WAVE/T wList = ListToTextWave(topLevelWindows, ";")
+		for(win : wList)
+			[windowList] = GetAllWindowsImpl(win)
+		endfor
+	else
+		windowList = AddListItem(wName, windowList, ";", Inf)
 
-	if(!WindowTypeCanHaveChildren(wName))
-		return NaN
+		if(!WindowTypeCanHaveChildren(wName))
+			return [windowList]
+		endif
+
+		children = ChildWindowList(wName)
+		WAVE/T wList = ListToTextWave(children, ";")
+		for(win : wList)
+			[windowList] = GetAllWindowsImpl(wName + "#" + win)
+		endfor
 	endif
 
-	children    = ChildWindowList(wName)
-	numChildren = ItemsInList(children, ";")
-	for(i = 0; i < numChildren; i += 1)
-		GetAllWindowsImpl(wName + "#" + StringFromList(i, children, ";"), windowList)
-	endfor
+	return [windowList]
 End
 
 Function IsSubwindow(string win)
