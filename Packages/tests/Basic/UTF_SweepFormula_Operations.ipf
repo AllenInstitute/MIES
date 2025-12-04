@@ -1218,6 +1218,90 @@ static Function TestOperationAverage()
 	CHECK_EQUAL_VAR(JWN_GetNumberFromWaveNote(data, SF_META_LINESTYLE), 0)
 	WAVE/Z tColor = JWN_GetNumericWaveFromWaveNote(data, SF_META_TRACECOLOR)
 	CHECK_EQUAL_WAVES(tColor, {s.red, s.green, s.blue}, mode = WAVE_DATA)
+
+	str = "ds0 = dataset(1, 2, 3)\rds1 = dataset(2, 3, 4)\r\ravg([$ds0, $ds1], group)"
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 3)
+	WAVE wv0 = dataRef[0]
+	CHECK_EQUAL_WAVES(wv0, {1.5}, mode = WAVE_DATA)
+	WAVE wv1 = dataRef[1]
+	CHECK_EQUAL_WAVES(wv1, {2.5}, mode = WAVE_DATA)
+	WAVE wv2 = dataRef[2]
+	CHECK_EQUAL_WAVES(wv2, {3.5}, mode = WAVE_DATA)
+
+	str = "ds0 = dataset(1, 2, 3)\rds1 = dataset(2, 3, 4)\rds2 = dataset(6, 10, 14)\r\ravg([$ds0, $ds1, $ds2], group)"
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 3)
+	WAVE wv0 = dataRef[0]
+	CHECK_EQUAL_WAVES(wv0, {3}, mode = WAVE_DATA)
+	WAVE wv1 = dataRef[1]
+	CHECK_EQUAL_WAVES(wv1, {5}, mode = WAVE_DATA)
+	WAVE wv2 = dataRef[2]
+	CHECK_EQUAL_WAVES(wv2, {7}, mode = WAVE_DATA)
+
+	try
+		str = "ds0 = dataset(1, 2, 3)\r\ravg([$ds0], group)"
+		WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		str = "avg(1, group)"
+		WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+static Function TestOperationAverage2()
+
+	string win, device
+	string str
+	variable sweepNo, numResults, i
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	sweepNo = 0
+
+	win = CreateFakeSweepData(win, device, sweepNo = sweepNo)
+	win = CreateFakeSweepData(win, device, sweepNo = sweepNo + 1)
+
+	// Meta Data Transfer from first group
+	str = "ds0 = data(select(selsweeps(0), selvis(all)))\rds1 = data(select(selsweeps(1), selvis(all)))\r\ravg([$ds0, $ds1], group)"
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 4)
+	WAVE wv0 = dataRef[0]
+	sweepNo = JWN_GetNumberFromWaveNote(wv0, SF_META_SWEEPNO)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	// Use implicit select resolve instead
+	str = "avg([select(selsweeps(0), selvis(all)), select(selsweeps(1), selvis(all))], group)"
+	WAVE/WAVE dataRef2 = SFE_ExecuteFormula(str, win)
+	CHECK_EQUAL_VAR(DimSize(dataRef2, ROWS), 4)
+
+	numResults = DimSize(dataRef2, ROWS)
+	for(i = 0; i < numResults; i += 1)
+		WAVE wv0 = dataRef[i]
+		WAVE wv1 = dataRef2[i]
+		JWN_SetNumberInWaveNote(wv0, SF_META_COLOR_GROUP, 0)
+		JWN_SetNumberInWaveNote(wv1, SF_META_COLOR_GROUP, 0)
+		CHECK_EQUAL_WAVES(wv0, wv1)
+	endfor
+
+	str = "avg(select(selsweeps(0, 1), selvis(all)))"
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 8)
+	WAVE wv0 = dataRef[0]
+	CHECK_EQUAL_WAVES(wv0, {4.5}, mode = WAVE_DATA)
+
+	str = "avg(select(selsweeps(0, 1), selvis(all)), over)"
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 1)
+	WAVE wv0 = dataRef[0]
+	CHECK_EQUAL_WAVES(wv0, {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, mode = WAVE_DATA)
 End
 
 static Function CheckSweepsFromData(WAVE/WAVE dataWref, WAVE sweepRef, variable numResults, WAVE chanIndex, [WAVE ranges])
@@ -3580,4 +3664,57 @@ static Function TestOperationTable()
 	WAVE/WAVE output = SFE_ExecuteFormula(str, win, useVariables = 0)
 	val = JWN_GetNumberFromWaveNote(output, SF_PROPERTY_TABLE)
 	CHECK_EQUAL_VAR(val, 1)
+End
+
+static Function TestOperationExtract()
+
+	string str, wavePath
+	string win
+
+	win = GetDataBrowserWithData()
+
+	str = "extract(1)"
+	try
+		WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	str = "extract(1,1,1)"
+	try
+		WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	str = "extract(1,a)"
+	try
+		WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	str = "extract(1,0)"
+	WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, {1}, mode = WAVE_DATA)
+
+	str = "extract(a,0)"
+	WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	Make/FREE/T ref = {"a"}
+	CHECK_EQUAL_WAVES(data, ref, mode = WAVE_DATA)
+
+	str = "extract([1,2],0)"
+	WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, {1, 2}, mode = WAVE_DATA)
+
+	str = "extract(dataset(1,2),0)"
+	WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, {1}, mode = WAVE_DATA)
+
+	str = "extract(dataset(1,2),1)"
+	WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, {2}, mode = WAVE_DATA)
 End

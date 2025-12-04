@@ -248,7 +248,9 @@ End
 /// @param copy              [optional, defaults to 0] If the returned data should be safe for modification (true) or is only read (false)
 /// @param[out] wvNote       [optional, defaults to None] Wave note of the dataset, useful for single result cases where you still need
 ///                          to query JSON wave note entries
-Function/WAVE SFH_GetArgumentAsWave(STRUCT SF_ExecutionData &exd, string opShort, variable argNum, [string defOp, WAVE/Z defWave, variable singleResult, variable expectedMinorType, variable expectedMajorType, variable copy, string &wvNote])
+/// @param resolveSelect     [optional, defaults to 0] If set then argument of the select type are automatically converted to sweep data, effectively the data() operation is applied
+///                          As with data, if the argument is an array of selects, each sweep result gets concatenated to a wref wave
+Function/WAVE SFH_GetArgumentAsWave(STRUCT SF_ExecutionData &exd, string opShort, variable argNum, [string defOp, WAVE/Z defWave, variable singleResult, variable expectedMinorType, variable expectedMajorType, variable copy, string &wvNote, variable resolveSelect])
 
 	variable checkExist, numArgs, checkMinorType, checkMajorType, result
 	string msg
@@ -273,12 +275,23 @@ Function/WAVE SFH_GetArgumentAsWave(STRUCT SF_ExecutionData &exd, string opShort
 	else
 		singleResult = !!singleResult
 	endif
-	copy = ParamIsDefault(copy) ? 0 : !!copy
+	copy          = ParamIsDefault(copy) ? 0 : !!copy
+	resolveSelect = ParamIsDefault(resolveSelect) ? 0 : !!resolveSelect
 
 	numArgs = SFH_GetNumberOfArguments(exd)
 
 	if(argNum < numArgs)
-		WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, argNum)
+		if(resolveSelect)
+			WAVE/Z/WAVE input = SFH_GetArgumentSelect(exd, argNum, doNotEnforce = 1)
+			if(WaveExists(input))
+				WAVE/WAVE data  = SFH_GetDataFromSelect(exd.graph, input)
+				WAVE      input = data
+			else
+				WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, argNum)
+			endif
+		else
+			WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, argNum)
+		endif
 
 		if(singleResult)
 			sprintf msg, "Argument #%d of operation %s: Too many input values", argNum, opShort
@@ -1067,16 +1080,24 @@ End
 ///        There is also a quick path for argNum >= numArgs, which is the case for e.g. data()
 ///        For that case numArgs is 0 and select is expected at argNum 0. Then the result of "select()" is
 ///        returned (as selectArray with a single element)
+///        If the doNotEnforce flag is set then a select type value at the arguments location is not enforced.
+///        If the argument is neither a single select or an array of selects then a null wave is returned.
 ///
 ///        selectArray is wave reference wave containing select composite wave reference waves with SELECTION, RANGE each.
 ///
 ///        This allows operations with selects as arguments to iterate over different selections given by the user
-Function/WAVE SFH_GetArgumentSelect(STRUCT SF_ExecutionData &exd, string opShort, variable argNum)
+Function/WAVE SFH_GetArgumentSelect(STRUCT SF_ExecutionData &exd, variable argNum, [variable doNotEnforce])
 
-	variable numArgs
-	string   type
+	variable numArgs, cond
+	string type
+
+	doNotEnforce = ParamIsDefault(doNotEnforce) ? 0 : !!doNotEnforce
 
 	numArgs = SFH_GetNumberOfArguments(exd)
+	if(argNum >= numArgs && doNotEnforce)
+		return $""
+	endif
+
 	if(argNum < numArgs)
 
 		WAVE/WAVE selectComp = SF_ResolveDatasetFromJSON(exd, argNum)
@@ -1087,15 +1108,31 @@ Function/WAVE SFH_GetArgumentSelect(STRUCT SF_ExecutionData &exd, string opShort
 			return selectArray
 		endif
 
-		SFH_ASSERT(DimSize(selectComp, ROWS) == 1, "Expected a single array")
+		cond = DimSize(selectComp, ROWS) == 1
+		if(doNotEnforce && !cond)
+			return $""
+		endif
+		SFH_ASSERT(cond, "Expected a single array")
 		WAVE array = selectComp[0]
-		SFH_ASSERT(IsTextWave(array), "Expected a text wave")
+		cond = IsTextWave(array)
+		if(doNotEnforce && !cond)
+			return $""
+		endif
+		SFH_ASSERT(cond, "Expected a text wave")
 
 		Make/FREE/WAVE/N=(DimSize(array, ROWS)) selectArray = SFH_AttemptDatasetResolve(WaveText(array, row = p), checkWithSFHAssert = 1)
 		for(WAVE/Z/WAVE selectComp : selectArray)
-			ASSERT(WaveExists(selectComp), "Expected select composite")
+			cond = WaveExists(selectComp)
+			if(doNotEnforce && !cond)
+				return $""
+			endif
+			ASSERT(cond, "Expected select composite")
 			type = JWN_GetStringFromWaveNote(selectComp, SF_META_DATATYPE)
-			SFH_ASSERT(!CmpStr(type, SF_DATATYPE_SELECTCOMP), "Expected select data as argument")
+			cond = !CmpStr(type, SF_DATATYPE_SELECTCOMP)
+			if(doNotEnforce && !cond)
+				return $""
+			endif
+			SFH_ASSERT(cond, "Expected select data as argument")
 		endfor
 
 		return selectArray
@@ -2069,4 +2106,54 @@ Function SFH_StoreAssertInfoExecutor(variable jsonId, variable srcLocId, string 
 	info[%SRCLOCID] = num2istr(srcLocId)
 	info[%JSONPATH] = jsonPath
 	info[%STEP]     = num2istr(SF_STEP_EXECUTOR)
+End
+
+Function/WAVE SFH_GetDataFromSelect(string graph, WAVE/WAVE selectData)
+
+	WAVE/WAVE output = SFH_GetSweepsForFormula(graph, selectData, SF_OP_DATA)
+	if(!DimSize(output, ROWS))
+		DebugPrint("Call to SFH_GetSweepsForFormula returned no results")
+	endif
+
+	SFH_AddOpToOpStack(output, "", SF_OP_DATA)
+	SFH_ResetArgSetupStack(output, SF_OP_DATA)
+
+	return output
+End
+
+/// @brief Function returns a wave reference wave with one wave for each element of the dataset array
+///        Each wave contains the resolved dataset (as wave references)
+///
+/// @param exd               Execution data structure
+/// @param argNum            Argument index
+/// @param resolveSelect     [optional, defaults to 0] If set then argument of the select type are automatically converted to sweep data, effectively the data() operation is applied
+///                          As with data, if the argument is an array of selects, each sweep result gets concatenated to a wref wave
+/// @returns wref wave with one wave for each dataset array element. Each wave contains the resolved dataset as waveref wave.
+Function/WAVE SFH_GetDatasetArrayAsResolvedWaverefs(STRUCT SF_ExecutionData &exd, variable argNum, [variable resolveSelect])
+
+	variable numGroups
+
+	resolveSelect = ParamIsDefault(resolveSelect) ? 0 : !!resolveSelect
+
+	SFH_ASSERT(argNum < SFH_GetNumberOfArguments(exd), "operation has no argument number " + num2istr(argNum))
+	if(resolveSelect)
+		WAVE/Z/WAVE input = SFH_GetArgumentSelect(exd, argNum, doNotEnforce = 1)
+		if(WaveExists(input))
+			// In contrast to SFH_GetArgumentAsWave, resolve all selects from the array separately
+			numGroups = DimSize(input, ROWS)
+			SFH_ASSERT(numGroups >= 2, "First argument must be an array with at least two elements")
+			Make/FREE/WAVE/N=(numGroups) dataFromEachGroup = SFH_GetDataFromSelect(exd.graph, {input[p]})
+		endif
+	endif
+
+	if(!WaveExists(dataFromEachGroup))
+		WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, argNum)
+		SFH_ASSERT(IsTextWave(input[0]), "Expected a dataset")
+		WAVE/T elemRefs = input[0]
+		numGroups = DimSize(elemRefs, ROWS)
+		SFH_ASSERT(numGroups >= 2, "First argument must be an array with at least two elements")
+		Make/FREE/WAVE/N=(numGroups) dataFromEachGroup = SFH_AttemptDatasetResolve(elemRefs[p], checkWithSFHAssert = 1)
+	endif
+
+	return dataFromEachGroup
 End

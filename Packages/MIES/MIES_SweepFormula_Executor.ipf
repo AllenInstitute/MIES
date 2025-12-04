@@ -469,6 +469,9 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLoc
 		case SF_OP_DATASET:
 			WAVE out = SFO_OperationDataset(exdop)
 			break
+		case SF_OP_EXTRACT:
+			WAVE out = SFO_OperationExtract(exdop)
+			break
 		case SF_OP_SELECTVIS:
 			WAVE out = SFOS_OperationSelectVis(exdop)
 			break
