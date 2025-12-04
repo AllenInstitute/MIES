@@ -855,7 +855,7 @@ static Function SF_KillEmptyDataWindows(WAVE/T plotGraphs)
 	endfor
 End
 
-/// @brief Tiles the subwindows in the panels acording to existing data, requires SF_DM_SUBWINDOWS mode
+/// @brief Tiles the subwindows in the panels according to existing data, requires SF_DM_SUBWINDOWS mode
 static Function SF_TileExistingData(WAVE/T plotGraphs)
 
 	variable numSubWins, numData, guidePos, subWindowIndex, posIndex, col, numCols
