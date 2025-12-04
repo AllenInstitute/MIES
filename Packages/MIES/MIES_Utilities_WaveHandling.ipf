@@ -1517,7 +1517,7 @@ Function ConcatenateWavesWithNoteIndex(WAVE/Z dest, WAVE/Z src)
 End
 
 /// @brief Returns true (1) if a wave has dimlabels in a given dimension
-///        In the utmost cases if waves have dimension labels then already the first index has a label.
+///        In most cases if waves have dimension labels then already the first index has a label.
 ///
 /// @param wv   wave, can also be null wave
 /// @param dim  dimension to check
@@ -1535,6 +1535,7 @@ Function HasDimLabels(WAVE/Z wv, variable dim, [variable deep])
 	deep = ParamIsDefault(deep) ? 1 : deep
 	ASSERT(IsInteger(deep) && deep > 0, "deep must be integer and greater than zero")
 	ASSERT(IsInteger(dim) && dim >= ROWS && dim < MAX_DIMENSION_COUNT, "dim must be a valid dimension")
+	deep = min(deep, DimSize(wv, dim))
 
 	for(i = 0; i < deep; i += 1)
 		if(!IsEmpty(GetDimLabel(wv, dim, i)))
