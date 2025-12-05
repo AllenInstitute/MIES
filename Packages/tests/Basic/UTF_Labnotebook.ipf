@@ -48,6 +48,13 @@ static Function/WAVE PrepareLBNTextualValues(WAVE textualValuesSrc)
 	return $LBN_TEXTUAL_VALUES_NAME
 End
 
+static Function PrepareLabnotebookWaves(DFREF sourceDFR, string device)
+
+	DFREF destDFR = GetLabNotebookFolder()
+
+	DuplicateDataFolder/O=1 sourceDFR, destDFR:$(device)
+End
+
 /// GetLastSetting with numeric wave
 /// @{
 Function GetLastSettingEntrySourceTypes()
@@ -1415,6 +1422,112 @@ Function LabnotebookUpgradeMissingNoteIndexTextual()
 
 	idxRedone = GetNumberFromWaveNote(textualValues, NOTE_INDEX)
 	CHECK_EQUAL_VAR(idxRedone, 0)
+End
+
+Function LabnotebookUpgradeMissingNoteIndexNumericalWithHoles()
+
+	variable idx, idxRedone
+	string device, key, keyTxt
+
+	device        = "ITC16USB_0_DEV"
+	[key, keyTxt] = PrepareLBN_IGNORE(device)
+
+	WAVE/Z   numericalValues = GetLBNumericalValues(device)
+	WAVE/Z/T numericalKeys   = GetLBNumericalKeys(device)
+
+	idx = GetNumberFromWaveNote(numericalValues, NOTE_INDEX)
+	CHECK_GT_VAR(idx, 0)
+
+	Note/K numericalKeys
+
+	MIES_WAVEGETTERS#UpgradeLabNotebook(device)
+
+	idxRedone = GetNumberFromWaveNote(numericalValues, NOTE_INDEX)
+	CHECK_EQUAL_VAR(idxRedone, idx)
+
+	Note/K numericalKeys
+	Note/K numericalValues
+
+	numericalValues[0][][] = NaN
+
+	MIES_WAVEGETTERS#UpgradeLabNotebook(device)
+
+	idxRedone = GetNumberFromWaveNote(numericalValues, NOTE_INDEX)
+	CHECK_EQUAL_VAR(idxRedone, idx)
+End
+
+Function LabnotebookUpgradeMissingNoteIndexTextualWithHoles()
+
+	variable idx, idxRedone
+	string device, key, keyTxt
+
+	device        = "ITC16USB_0_DEV"
+	[key, keyTxt] = PrepareLBN_IGNORE(device)
+
+	WAVE/Z/T textualValues = GetLBTextualValues(device)
+	WAVE/Z/T textualKeys   = GetLBTextualKeys(device)
+
+	idx = GetNumberFromWaveNote(textualValues, NOTE_INDEX)
+	CHECK_GT_VAR(idx, 0)
+
+	Note/K textualKeys
+
+	MIES_WAVEGETTERS#UpgradeLabNotebook(device)
+
+	idxRedone = GetNumberFromWaveNote(textualValues, NOTE_INDEX)
+	CHECK_EQUAL_VAR(idxRedone, idx)
+
+	Note/K textualValues
+	Note/K textualKeys
+
+	textualValues[0][][] = ""
+
+	MIES_WAVEGETTERS#UpgradeLabNotebook(device)
+
+	idxRedone = GetNumberFromWaveNote(textualValues, NOTE_INDEX)
+	CHECK_EQUAL_VAR(idxRedone, idx)
+End
+
+// Labnotebook waves as created in version 5872e55614 (Modified files: DR_MIES_TangoInteract:  changes recommended by Thomas TJ, 2014-09-11)
+Function LabnotebookUpgradeWithInitialWaveSizes()
+
+	DFREF  dfr    = root:Labnotebook_initial_column_sizes
+	string device = "Dev1"
+
+	PrepareLabnotebookWaves(dfr, device)
+	UpgradeLabNotebook(device)
+	CHECK_NO_RTE()
+End
+
+Function LabnotebookUpgradeDoesNotModifyDefaultWaves()
+
+	string device
+
+	device = "ITC16USB_0_DEV"
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	Duplicate/FREE numericalValues, numericalValuesRef
+
+	WAVE numericalKeys = GetLBNumericalKeys(device)
+	Duplicate/FREE numericalKeys, numericalKeysRef
+
+	WAVE textualValues = GetLBTextualValues(device)
+	Duplicate/FREE textualValues, textualValuesRef
+
+	WAVE textualKeys = GetLBTextualKeys(device)
+	Duplicate/FREE textualKeys, textualKeysRef
+
+	Note/K numericalValues
+	Note/K numericalKeys
+	Note/K textualValues
+	Note/K textualKeys
+
+	UpgradeLabNotebook(device)
+
+	CHECK_EQUAL_WAVES(numericalValuesRef, numericalValues)
+	CHECK_EQUAL_WAVES(numericalKeysRef, numericalKeys)
+	CHECK_EQUAL_WAVES(textualValuesRef, textualValues)
+	CHECK_EQUAL_WAVES(textualKeysRef, textualKeys)
 End
 
 Function EmptyLabnotebookWorks()

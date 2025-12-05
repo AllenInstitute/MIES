@@ -717,6 +717,14 @@ Function/S GetDeviceDataPathAsString(string device)
 	return GetDevicePathAsString(device) + ":Data"
 End
 
+/// @brief Upgrade all DFREF locations we have changed in earlier versions
+///
+/// UTF_NOINSTRUMENTATION
+Function UpgradeAllDataFolderLocations()
+
+	GetDAQDevicesFolder()
+End
+
 /// @brief Returns a data folder reference to the mies base folder
 ///
 /// UTF_NOINSTRUMENTATION
@@ -1372,7 +1380,8 @@ End
 
 /// @brief Handle upgrades of the numerical/textual labnotebooks in one step
 ///
-/// This function is idempotent and must stay that way.
+/// This function is idempotent in the sense that doing the upgrade steps
+/// multiple times must succeed again with the same results.
 ///
 /// Supported upgrades:
 /// - Addition of the third column "TimeStampSinceIgorEpochUTC"
@@ -1383,9 +1392,9 @@ End
 /// - Fix unit and tolerance of "Repeat Sets"
 /// - Reapplying the dimension labels as the old ones were cut off after 31 bytes
 /// - Making dimension labels valid liberal object names
-/// - Extending the row dimension to 6 for the key waves
-/// - Fixing empty column dimension labels in key waves
-static Function UpgradeLabNotebook(string device)
+/// - Extending the row dimension to 6 for the key waves including setting the dimension labels
+/// - Fixing empty column dimension labels in the columns of the value waves
+Function UpgradeLabNotebook(string device)
 
 	variable numCols, i, col, numEntries, sourceCol, timeStampColumn, nextFreeRow
 	string list, key
@@ -1434,7 +1443,7 @@ static Function UpgradeLabNotebook(string device)
 	// END IP9 dimension labels
 
 	// BEGIN UTC timestamps
-	if(cmpstr(numericalKeys[0][2], "TimeStampSinceIgorEpochUTC"))
+	if(DimSize(numericalKeys, COLS) < 3 || cmpstr(numericalKeys[0][2], "TimeStampSinceIgorEpochUTC"))
 
 		numCols = DimSize(numericalKeys, COLS)
 
@@ -1451,7 +1460,7 @@ static Function UpgradeLabNotebook(string device)
 		DEBUGPRINT("Upgraded numerical labnotebook to hold UTC timestamps")
 	endif
 
-	if(cmpstr(textualKeys[0][2], "TimeStampSinceIgorEpochUTC"))
+	if(DimSize(textualKeys, COLS) < 3 || cmpstr(textualKeys[0][2], "TimeStampSinceIgorEpochUTC"))
 
 		numCols = DimSize(textualKeys, COLS)
 
@@ -1470,7 +1479,7 @@ static Function UpgradeLabNotebook(string device)
 	// END UTC timestamps
 
 	// BEGIN epoch source type
-	if(cmpstr(numericalKeys[0][3], "EntrySourceType"))
+	if(DimSize(numericalKeys, COLS) < 4 || cmpstr(numericalKeys[0][3], "EntrySourceType"))
 
 		numCols = DimSize(numericalKeys, COLS)
 
@@ -1487,7 +1496,7 @@ static Function UpgradeLabNotebook(string device)
 		DEBUGPRINT("Upgraded numerical labnotebook to hold entry source type column")
 	endif
 
-	if(cmpstr(textualKeys[0][3], "EntrySourceType"))
+	if(DimSize(textualKeys, COLS) < 4 || cmpstr(textualKeys[0][3], "EntrySourceType"))
 
 		numCols = DimSize(textualKeys, COLS)
 
@@ -1559,7 +1568,7 @@ static Function UpgradeLabNotebook(string device)
 	endif
 
 	// BEGIN acquisition state
-	if(cmpstr(numericalKeys[0][4], "AcquisitionState"))
+	if(DimSize(numericalKeys, COLS) < 5 || cmpstr(numericalKeys[0][4], "AcquisitionState"))
 
 		numCols = DimSize(numericalKeys, COLS)
 
@@ -1576,7 +1585,7 @@ static Function UpgradeLabNotebook(string device)
 		DEBUGPRINT("Upgraded numerical labnotebook to hold acquisition state column")
 	endif
 
-	if(cmpstr(textualKeys[0][4], "AcquisitionState"))
+	if(DimSize(textualKeys, COLS) < 5 || cmpstr(textualKeys[0][4], "AcquisitionState"))
 
 		numCols = DimSize(textualKeys, COLS)
 
@@ -1604,7 +1613,7 @@ static Function UpgradeLabNotebook(string device)
 	endif
 	// END extending rows
 
-	// BEGIN fix missing column dimension labels in keyWaves
+	// BEGIN fix missing column dimension labels in columns of values
 	if(WaveVersionIsSmaller(numericalKeys, 74))
 		numCols = DimSize(numericalValues, COLS)
 		for(i = 0; i < numCols; i += 1)
@@ -1622,7 +1631,7 @@ static Function UpgradeLabNotebook(string device)
 			endif
 		endfor
 	endif
-	// END fix missing column dimension labels in keyWaves
+	// END fix missing column dimension labels in columns of values
 
 	// we don't remove the wavenote entry of sweep rollback as we might need to adapt the reading code
 	// in the future to handle labnotebooks with that specially
@@ -1637,12 +1646,14 @@ static Function UpgradeLabNotebook(string device)
 		nextFreeRow = GetNumberFromWaveNote(numericalValues, NOTE_INDEX)
 
 		if(IsNaN(nextFreeRow))
-			FindValue/FNAN/RMD=[][timeStampColumn][0]/R numericalValues
-			if(!(V_row >= 0))
-				// labnotebook is completely full
-				V_row = DimSize(numericalValues, ROWS)
+			WAVE/Z indizes = FindIndizes(numericalValues, col = timeStampColumn, prop = PROP_NOT | PROP_EMPTY, startLayer = 0, endLayer = 0)
+			if(!WaveExists(indizes))
+				// labnotebook is empty
+				nextFreeRow = 0
+			else
+				nextFreeRow = WaveMax(indizes) + 1
 			endif
-			SetNumberInWaveNote(numericalValues, NOTE_INDEX, V_row)
+			SetNumberInWaveNote(numericalValues, NOTE_INDEX, nextFreeRow)
 		endif
 	endif
 
@@ -1650,14 +1661,30 @@ static Function UpgradeLabNotebook(string device)
 		nextFreeRow = GetNumberFromWaveNote(textualValues, NOTE_INDEX)
 
 		if(IsNaN(nextFreeRow))
-			FindValue/TEXT=("")/RMD=[][timeStampColumn][0]/R textualValues
-			if(!(V_row >= 0))
-				V_row = DimSize(textualValues, ROWS)
+			WAVE/Z indizes = FindIndizes(textualValues, col = timeStampColumn, prop = PROP_NOT | PROP_EMPTY, startLayer = 0, endLayer = 0)
+			if(!WaveExists(indizes))
+				// labnotebook is empty
+				nextFreeRow = 0
+			else
+				nextFreeRow = WaveMax(indizes) + 1
 			endif
-			SetNumberInWaveNote(textualValues, NOTE_INDEX, V_row)
+			SetNumberInWaveNote(textualValues, NOTE_INDEX, nextFreeRow)
 		endif
 	endif
 	// END add note index
+
+	// BEGIN add dimension labels for key waves
+	if(IsEmpty(GetDimLabel(numericalKeys, ROWS, DimSize(numericalKeys, ROWS) - 1)))
+		SetLBKeysRowDimensionLabels(numericalKeys)
+	endif
+
+	if(IsEmpty(GetDimLabel(textualKeys, ROWS, DimSize(textualKeys, ROWS) - 1)))
+		SetLBKeysRowDimensionLabels(textualKeys)
+	endif
+	// END add dimension labels for key waves
+
+	SetWaveVersion(numericalKeys, LABNOTEBOOK_VERSION)
+	SetWaveVersion(textualkeys, LABNOTEBOOK_VERSION)
 End
 
 static Function/S FixInvalidLabnotebookKey(string name)
@@ -1727,7 +1754,6 @@ Function/WAVE GetLBTextualKeys(string device)
 		return wv
 	elseif(WaveExists(wv))
 		UpgradeLabNotebook(device)
-		SetWaveVersion(wv, versionOfNewWave)
 		return wv
 	else
 		Make/T/N=(6, INITIAL_KEY_WAVE_COL_COUNT) newDFR:$newName/WAVE=wv
@@ -1739,6 +1765,7 @@ Function/WAVE GetLBTextualKeys(string device)
 	wv[0][] = StringFromList(q, LABNOTEBOOK_KEYS_INITIAL)
 
 	SetLBKeysRowDimensionLabels(wv)
+	SetDimensionLabels(wv, LABNOTEBOOK_KEYS_INITIAL, COLS)
 
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -1781,7 +1808,6 @@ Function/WAVE GetLBNumericalKeys(string device)
 		return wv
 	elseif(WaveExists(wv))
 		UpgradeLabNotebook(device)
-		SetWaveVersion(wv, versionOfNewWave)
 		return wv
 	else
 		Make/T/N=(6, INITIAL_KEY_WAVE_COL_COUNT) newDFR:$newName/WAVE=wv
@@ -1790,6 +1816,7 @@ Function/WAVE GetLBNumericalKeys(string device)
 	wv = ""
 
 	SetLBKeysRowDimensionLabels(wv)
+	SetDimensionLabels(wv, LABNOTEBOOK_KEYS_INITIAL, COLS)
 
 	WAVE/T desc = GetLBNumericalDescription(forceReload = 1)
 	ASSERT(DimSize(desc, ROWS) == DimSize(wv, ROWS), "Non-matching number of rows")
@@ -8845,7 +8872,8 @@ threadsafe Function [WAVE/T sortedKeys, WAVE/D indices] GetLogbookSortedKeys(WAV
 	variable numKeys
 	string keysName, sortedKeysName, sortedKeysIndicesName, cacheKey
 
-	WAVE/T keys = GetLogbookKeysFromValues(values)
+	WAVE/Z/T keys = GetLogbookKeysFromValues(values)
+	ASSERT_TS(WaveExists(keys), "Keys wave is missing")
 	cacheKey = CA_GenKeyLogbookSortedKeys(keys)
 
 	DFREF dfrTmp = createDFWithAllParents(GetWavesDataFolder(keys, 1) + LOGBOOK_WAVE_TEMP_FOLDER)

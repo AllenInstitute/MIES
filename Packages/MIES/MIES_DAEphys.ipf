@@ -4645,11 +4645,7 @@ Function DAP_LockDevice(string win)
 	headstage = GetSliderPositionIndex(deviceLocked, "slider_DataAcq_ActiveHeadstage")
 	P_SaveUserSelectedHeadstage(deviceLocked, headstage)
 
-	// upgrade all four labnotebook waves in wanna-be atomic way
-	GetLBNumericalKeys(deviceLocked)
-	GetLBNumericalValues(deviceLocked)
-	GetLBTextualKeys(deviceLocked)
-	GetLBTextualValues(deviceLocked)
+	UpgradeLabNotebook(deviceLocked)
 
 	NVAR sessionStartTime = $GetSessionStartTime()
 	sessionStartTime = DateTimeInUTC()

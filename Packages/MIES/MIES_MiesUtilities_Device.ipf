@@ -14,12 +14,13 @@
 Function/S GetAllDevices()
 
 	variable i, j, numEntries, numDevices
-	string folder, number, device, folders, subFolders, subFolder
+	string folder, number, device, folders, subFolders, subFolder, deviceType, deviceNumber
 	string path
 	string list = ""
 
-	string devicesFolderPath = GetDAQDevicesFolderAsString()
+	// ensure that the folder location upgrade in GetDAQDevicesFolder is done first
 	DFREF  devicesFolder     = GetDAQDevicesFolder()
+	string devicesFolderPath = GetDAQDevicesFolderAsString()
 
 	folders    = GetListOfObjects(devicesFolder, ".*", typeFlag = COUNTOBJECTS_DATAFOLDER)
 	numEntries = ItemsInList(folders)
@@ -50,7 +51,12 @@ Function/S GetAllDevices()
 		else
 			// other hardware has no subfolder
 			device = folder
-			path   = GetDevicePathAsString(device)
+
+			if(ParseDeviceString(device, deviceType, deviceNumber) == 0)
+				continue
+			endif
+
+			path = GetDevicePathAsString(device)
 
 			if(DataFolderExists(path))
 				DFREF dfr = $path
@@ -73,7 +79,7 @@ static Function DeviceHasUserComments(string device)
 	userComment = ROStr(GetUserComment(device))
 
 	if(WindowExists(device))
-		userCommentDraft = DAG_GetTextualValue(device, "SetVar_DataAcq_Comment")
+		userCommentDraft = GetSetVariableString(device, "SetVar_DataAcq_Comment")
 
 		commentNotebook = DAP_GetCommentNotebook(device)
 		if(WindowExists(commentNotebook))
