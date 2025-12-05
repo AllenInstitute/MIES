@@ -5021,7 +5021,7 @@ static Function SetPressureWaveDimLabels(WAVE wv)
 	// "good" as it is
 	SetDimLabel COLS, 26, TimeOfLastRSlopeCheck, wv
 	SetDimLabel COLS, 27, LastPressureCommand, wv
-	SetDimLabel COLS, 28, OngoingPessurePulse, wv
+	SetDimLabel COLS, 28, OngoingPressurePulse, wv
 	SetDimLabel COLS, 29, LastVcom, wv
 	SetDimLabel COLS, 30, ManSSPressure, wv
 	SetDimLabel COLS, 31, ManPPPressure, wv
