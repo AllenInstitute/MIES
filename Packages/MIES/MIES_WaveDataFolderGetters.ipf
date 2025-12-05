@@ -9228,3 +9228,25 @@ Function/WAVE GetPlotGraphNames(variable numGraphs)
 
 	return plotGraphs
 End
+
+/// @brief Wave storing sf plot meta information per formularesult, filled in SF_GatherFormulaResults
+Function/WAVE GetSFPlotMetaData()
+
+	Make/FREE/T/N=(5) wv
+	SetDimensionLabels(wv, "DATATYPE;OPSTACK;ARGSETUPSTACK;XAXISLABEL;YAXISLABEL;", ROWS)
+
+	return wv
+End
+
+/// @brief Returns a free wave that stores the data per graph that is split by "AND" in the formula
+///        Rows: Entry per graph
+///        Column 0: waveref to formula results (from GetFormulaGatherWave())
+///        Column 1: waveref to meta data for plot
+Function/WAVE GetSFDataInGraph()
+
+	Make/FREE/WAVE/N=(MINIMUM_WAVE_SIZE, 2) dataInGraph
+	SetDimLabel COLS, 0, DATA, dataInGraph
+	SetDimLabel COLS, 1, META, dataInGraph
+
+	return dataInGraph
+End

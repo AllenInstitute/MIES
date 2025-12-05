@@ -1864,13 +1864,15 @@ End
 /// @brief Recursively build a list of windows, including all child
 ///        windows, starting with wName.
 ///
-/// @param wName parent window name to start with, if wName is empty then all graphs, tables, layouts, notebooks and panels
+/// @param wName parent window name to start with, if wName is empty then all graphs, tables, layouts, notebooks, panels and gizmo
 ///              with subwindows (possible for graphs and panels) are returned
 /// @return A string containing names of windows.  This list is a semicolon separated list.  It will include the window
 ///         wName, if wName was not empty, and all of its children and children of children, etc.
 Function/S GetAllWindows(string wName)
 
 	string windowList = ""
+
+	ASSERT(!IsNull(wName), "Can not work with null string")
 	[windowList] = GetAllWindowsImpl(wName)
 
 	return windowList
@@ -1889,6 +1891,9 @@ static Function [string windowList] GetAllWindowsImpl(string wName)
 			[windowList] = GetAllWindowsImpl(win)
 		endfor
 	else
+		if(!WindowExists(wName))
+			return [windowList]
+		endif
 		windowList = AddListItem(wName, windowList, ";", Inf)
 
 		if(!WindowTypeCanHaveChildren(wName))
