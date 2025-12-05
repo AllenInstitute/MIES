@@ -625,8 +625,8 @@ threadsafe Function/WAVE GetLastSetting(WAVE values, variable sweepNo, string se
 		first = rowCache[sweepNo][%first][entrySourceTypeIndex]
 		last  = rowCache[sweepNo][%last][entrySourceTypeIndex]
 
-		WAVE/Z settings = GetLastSettingNoCache(values, sweepNo, setting, entrySourceType,     \
-		                                        first = first, last = last, rowIndex = rowIndex)
+		WAVE/Z settings = GetLastSettingNoCache(values, sweepNo, setting, entrySourceType,                              \
+		                                        first = first, last = last, rowIndex = rowIndex, settingCol = settingCol)
 
 		if(WaveExists(settings))
 			ASSERT_TS(first >= 0 && last >= 0 && rowIndex >= 0, "invalid return combination from GetLastSettingNoCache")
@@ -749,8 +749,10 @@ threadsafe Function/WAVE GetLastSettingNoCache(WAVE values, variable sweepNo, st
 				endif
 			endif
 
-			statusText[] = textualValues[i][settingCol][p]
-			lengths[]    = strlen(statusTexT[p])
+			AssertOnAndClearRTError()
+			statusText[] = textualValues[i][settingCol][p]; AbortOnRTE
+
+			lengths[] = strlen(statusTexT[p])
 
 			// return if we have at least one non-empty entry
 			if(Sum(lengths) > 0)
@@ -848,7 +850,8 @@ threadsafe Function/WAVE GetLastSettingNoCache(WAVE values, variable sweepNo, st
 				endif
 			endif
 
-			status[] = numericalValues[i][settingCol][p]
+			AssertOnAndClearRTError()
+			status[] = numericalValues[i][settingCol][p]; AbortOnRTE
 
 			if(HasOneValidEntry(status))
 				if(!ParamIsDefault(rowIndex))

@@ -14,7 +14,7 @@
 /// @return Valid analysis function return types, zero otherwise, see also @ref AnalysisFunctionReturnTypes
 Function AFM_CallAnalysisFunctions(string device, variable eventType)
 
-	variable i, valid_f1, valid_f2, valid_f3, ret, DAC, sweepsInSet, hwIsSutter
+	variable i, valid_f1, valid_f2, valid_f3, ret, DAC, sweepsInSet, hwIsSutter, err
 	variable realDataLengthAD, realDataLengthDA, sweepNo, fifoPositionAD, fifoPositionDA, sampleIntDA, sampleIntAD
 	string func, msg
 	STRUCT AnalysisFunction_V3 s
@@ -170,8 +170,12 @@ Function AFM_CallAnalysisFunctions(string device, variable eventType)
 			endif
 		catch
 			msg = GetRTErrMessage()
-			ClearRTError()
-			printf "The analysis function %s aborted with error \"%s\", this is dangerous and must *not* happen!\r", func, msg
+			err = ClearRTError()
+			if(err)
+				printf "The analysis function %s aborted due to a runtime error (%d) \"%s\".\r", func, err, msg
+			else
+				printf "The analysis function %s aborted with V_AbortCode (%d).\r", func, V_AbortCode
+			endif
 
 			NVAR errorCounter = $GetAnalysisFuncErrorCounter(device)
 			errorCounter += 1
