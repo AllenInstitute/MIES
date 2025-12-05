@@ -473,18 +473,20 @@ static Function P_CloseDevice(string device)
 	variable i, j
 
 	numDevices = ItemsInList(ListOfDevicesToClose)
+	variable numLocked = ItemsInList(ListOfLockedDA_Ephys)
 	for(i = 0; i < numDevices; i += 1) // for all the devices used for pressure regulation
 		// find device ID
-		do
+		for(j = 0; j < numLocked; j += 1)
 			device        = StringFromList(j, ListOfLockedDA_Ephys)
 			DeviceToClose = StringFromList(i, ListOfDevicesToClose)
 
 			ListOfHeadstagesUsingDevice = P_HeadstageUsingDevice(device, DeviceToClose)
-			j                          += 1
-		while(cmpstr("", ListOfHeadstagesUsingDevice) == 0)
-		j         = 0
-		headStage = NumberFromList(0, ListOfHeadstagesUsingDevice)
-		P_CloseDeviceLowLevel(device, DeviceToClose, headstage)
+			if(cmpstr("", ListOfHeadstagesUsingDevice) != 0)
+				headStage = NumberFromList(0, ListOfHeadstagesUsingDevice)
+				P_CloseDeviceLowLevel(device, DeviceToClose, headstage)
+				break
+			endif
+		endfor
 	endfor
 End
 
@@ -1050,8 +1052,8 @@ static Function P_DataAcq(string device, variable headStage)
 	HW_StopAcq(hwType, deviceID, flags = HARDWARE_ABORT_ON_ERROR)
 
 	// record onset of data acquisition
-	pressureDataWv[][%OngoingPessurePulse]          = 0 // ensure that only one headstage is recorded as having an ongoing pressure pulse
-	pressureDataWv[headStage][%OngoingPessurePulse] = 1 // record headstage with ongoing pressure pulse
+	pressureDataWv[][%OngoingPressurePulse]          = 0 // ensure that only one headstage is recorded as having an ongoing pressure pulse
+	pressureDataWv[headStage][%OngoingPressurePulse] = 1 // record headstage with ongoing pressure pulse
 
 	if(hwType == HARDWARE_ITC_DAC)
 		HW_ITC_PrepareAcq(deviceID, UNKNOWN_MODE, dataFunc = P_GetITCData, configFunc = P_GetITCChanConfig)
@@ -1128,7 +1130,7 @@ Function P_ITC_FIFOMonitorProc(STRUCT WMBackgroundStruct &s)
 
 	if(!moreData)
 		HW_StopAcq(hwType, deviceID)
-		pressureDataWv[][%OngoingPessurePulse] = 0
+		pressureDataWv[][%OngoingPressurePulse] = 0
 		print "Pressure pulse is complete"
 		return 1
 	endif
@@ -1162,7 +1164,7 @@ static Function P_FindDeviceExecutingPP(string &device, variable &deviceID, vari
 		device = StringFromList(i, ListOfLockedDevices)
 		WAVE pressureDataWv = P_GetPressureDataWaveRef(device)
 		for(headStage = 0; headstage < NUM_HEADSTAGES; headStage += 1)
-			if(pressureDataWv[headStage][%OngoingPessurePulse])
+			if(pressureDataWv[headStage][%OngoingPressurePulse])
 				deviceID = pressureDataWv[headStage][%DAC_DevID]
 				return 1
 			endif
