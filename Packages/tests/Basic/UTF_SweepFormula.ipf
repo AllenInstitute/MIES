@@ -1058,7 +1058,7 @@ static Function TestPlottingWithTablesSubWindows()
 	CHECK_EQUAL_WAVES(wv, {{1}}, mode = WAVE_DATA)
 	WAVE wv = WaveRefIndexed(winBaseTable + "#Table0", 1, 3) // data column
 	CHECK_EQUAL_WAVES(wv, {{1}}, mode = WAVE_DATA)
-	WAVE wv = WaveRefIndexed(winBaseTable + "#Table0", 2, 3) // end of data
+	WAVE/Z wv = WaveRefIndexed(winBaseTable + "#Table0", 2, 3) // end of data
 	CHECK_WAVE(wv, NULL_WAVE)
 
 	KillWaves/Z waveWithDimlabels
