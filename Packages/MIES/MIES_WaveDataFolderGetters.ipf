@@ -9226,8 +9226,9 @@ Function/WAVE GetSFOutputWindowNames()
 	SetDimlabel ROWS, 0, GRAPH, wv
 	SetDimlabel ROWS, 1, TABLE, wv
 
-	Make/FREE/T/N=0 winGraphs
-	Make/FREE/T/N=0 winTables
+	Make/FREE/T/N=0 winGraphs, winTables
+	SetNumberInWaveNote(winGraphs, NOTE_INDEX, 0)
+	SetNumberInWaveNote(winTables, NOTE_INDEX, 0)
 	wv[%GRAPH] = winGraphs
 	wv[%TABLE] = winTables
 
@@ -9246,8 +9247,9 @@ End
 /// @brief Stores plot properties like AxesProperties, CursorInfos, AnnotationInfos
 Function/WAVE GetSFPlotProperties()
 
-	Make/FREE/WAVE/N=(0, 3) wv
-	SetDimensionLabels(wv, "axes;cursors;annotations", COLS)
+	Make/FREE/WAVE/N=(0, 4) wv
+	SetDimensionLabels(wv, "NAME;AXES;CURSORS;ANNOTATIONS", COLS)
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 
 	return wv
 End

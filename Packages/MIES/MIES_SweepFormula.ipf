@@ -27,7 +27,8 @@ static StrConstant SF_CHAR_COMMENT = "#"
 static StrConstant SF_CHAR_CR      = "\r"
 static StrConstant SF_CHAR_NEWLINE = "\n"
 
-static StrConstant SF_WINNAME_TABLE_SUFFIX = "table"
+static StrConstant SF_WINNAME_SUFFIX_GRAPH = "graph"
+static StrConstant SF_WINNAME_SUFFIX_TABLE = "table"
 
 static StrConstant SF_PLOTTER_GUIDENAME = "HOR"
 
@@ -38,6 +39,9 @@ static Constant SF_NUMTRACES_WARN_THRESHOLD  = 1000
 
 static Constant SF_SWEEPFORMULA_AXIS_X = 0
 static Constant SF_SWEEPFORMULA_AXIS_Y = 1
+
+static Constant SF_DISPLAYTYPE_GRAPH = 0
+static Constant SF_DISPLAYTYPE_TABLE = 1
 
 static StrConstant SF_UDATA_TABLEFORMULAS = "formulas"
 
@@ -643,102 +647,55 @@ static Function SF_AddTableExtrasMain(string win)
 	SetWindow $win, hook(sfTableGetWindowName)=SF_TableWindowHook
 End
 
-static Function [WAVE/WAVE outputWindows, WAVE/WAVE infos] SF_PreparePlotter(string winNameTemplate, string graph, variable winDisplayMode, variable numGraphs)
+static Function/S SF_GetDataDisplayWindowName(string graph, variable type, variable mode, variable idx)
 
-	variable i, guidePos, restoreCursorInfo
-	string panelName, guideName1, guideName2, win, winTable, winNameTemplateTable
+	string suffix          = ""
+	string winNameTemplate = SF_GetFormulaWinNameTemplate(graph)
 
-	ASSERT(numGraphs > 0, "Can not prepare plotter window for zero graphs")
-
-	winNameTemplateTable = winNameTemplate + SF_WINNAME_TABLE_SUFFIX
-
-	WAVE/WAVE outputWindows = GetSFOutputWindowNames()
-	WAVE/T    winGraphs     = outputWindows[%GRAPH]
-	WAVE/T    winTables     = outputWindows[%TABLE]
-	Redimension/N=(numGraphs) winGraphs, winTables
-
-	WAVE/WAVE infos = GetSFPlotProperties()
-	Redimension/N=(numGraphs, -1) infos
-
-	// collect infos
-	for(i = 0; i < numGraphs; i += 1)
-		if(winDisplayMode == SF_DM_NORMAL)
-			win = winNameTemplate + num2istr(i)
-		elseif(winDisplayMode == SF_DM_SUBWINDOWS)
-			win = winNameTemplate + "#" + "Graph" + num2istr(i)
-		endif
-
-		if(WindowExists(win))
-			WAVE/Z/T axes     = GetAxesProperties(win)
-			WAVE/Z/T cursors  = GetCursorInfos(win)
-			WAVE/Z/T annoInfo = GetAnnotationInfo(win)
-
-			if(WaveExists(cursors) && winDisplayMode == SF_DM_SUBWINDOWS)
-				restoreCursorInfo = 1
-			endif
-
-			infos[i][%axes]        = axes
-			infos[i][%cursors]     = cursors
-			infos[i][%annotations] = annoInfo
-		endif
-	endfor
-
-	if(winDisplayMode == SF_DM_NORMAL)
-		for(i = 0; i < numGraphs; i += 1)
-			win          = winNameTemplate + num2istr(i)
-			winGraphs[i] = SF_NewSweepFormulaBaseWindow(win, graph, winType = WINTYPE_GRAPH)
-			win          = winNameTemplateTable + num2istr(i)
-			winTable     = SF_NewSweepFormulaBaseWindow(win, graph, winType = WINTYPE_TABLE)
-			SF_AddTableExtrasMain(winTable)
-			winTables[i] = winTable
-		endfor
-	elseif(winDisplayMode == SF_DM_SUBWINDOWS)
-
-		win      = SF_NewSweepFormulaBaseWindow(winNameTemplate, graph)
-		winTable = SF_NewSweepFormulaBaseWindow(winNameTemplateTable, graph)
-		SF_AddTableExtrasMain(winTable)
-
-		// now we have an open panel without any subwindows
-
-		if(restoreCursorInfo)
-			ShowInfo/W=$win
-		endif
-
-		// create horizontal guides (one more than graphs)
-		for(i = 0; i < (numGraphs + 1); i += 1)
-			guideName1 = SF_PLOTTER_GUIDENAME + num2istr(i)
-			guidePos   = i / numGraphs
-			DefineGuide/W=$win $guideName1={FT, guidePos, FB}
-			DefineGuide/W=$winTable $guideName1={FT, guidePos, FB}
-		endfor
-
-		DefineGuide/W=$win customLeft={FL, 0.0, FR}
-		DefineGuide/W=$win customRight={FL, 1.0, FR}
-		DefineGuide/W=$winTable customLeft={FL, 0.0, FR}
-		DefineGuide/W=$winTable customRight={FL, 1.0, FR}
-
-		// and now the subwindow graphs
-		for(i = 0; i < numGraphs; i += 1)
-			guideName1 = SF_PLOTTER_GUIDENAME + num2istr(i)
-			guideName2 = SF_PLOTTER_GUIDENAME + num2istr(i + 1)
-			Display/HOST=$win/FG=(customLeft, $guideName1, customRight, $guideName2)/N=$("Graph" + num2str(i))
-			winGraphs[i] = win + "#" + S_name
-			Edit/HOST=$winTable/FG=(customLeft, $guideName1, customRight, $guideName2)/N=$("Table" + num2str(i))
-			SF_AddTableExtrasSub(winTable + "#" + S_name)
-			winTables[i] = winTable + "#" + S_name
-		endfor
+	if(type == SF_DISPLAYTYPE_TABLE)
+		suffix = SF_WINNAME_SUFFIX_TABLE
+	elseif(type == SF_DISPLAYTYPE_GRAPH)
+		suffix = SF_WINNAME_SUFFIX_GRAPH
+	else
+		FATAL_ERROR("Unknown display type")
 	endif
 
-	for(i = 0; i < numGraphs; i += 1)
-		win = winGraphs[i]
-		RemoveTracesFromGraph(win)
-		ModifyGraph/W=$win swapXY=0
+	if(mode == SF_DM_NORMAL)
+		return winNameTemplate + suffix + num2istr(idx)
+	endif
 
-		win = winTables[i]
-		RemoveAllColumnsFromTable(win)
-	endfor
+	if(mode == SF_DM_SUBWINDOWS)
+		return winNameTemplate + suffix + "#" + suffix + num2istr(idx)
+	endif
 
-	return [outputWindows, infos]
+	FATAL_ERROR("Unknown display mode")
+End
+
+/// @brief Store window properties of previous graph (if existed)
+static Function SF_CollectPreviousPlotProperties(string win, WAVE/WAVE prevPlotProperties, variable mode)
+
+	variable restoreCursorInfo, idx
+
+	if(WindowExists(win))
+		Make/FREE/T name = {win}
+		WAVE/Z/T axes     = GetAxesProperties(win)
+		WAVE/Z/T cursors  = GetCursorInfos(win)
+		WAVE/Z/T annoInfo = GetAnnotationInfo(win)
+
+		if(WaveExists(cursors) && mode == SF_DM_SUBWINDOWS)
+			restoreCursorInfo = 1
+		endif
+
+		idx = GetNumberFromWaveNote(prevPlotProperties, NOTE_INDEX)
+		EnsureLargeEnoughWave(prevPlotProperties, indexShouldExist = idx)
+		prevPlotProperties[idx][%NAME]        = name
+		prevPlotProperties[idx][%AXES]        = axes
+		prevPlotProperties[idx][%CURSORS]     = cursors
+		prevPlotProperties[idx][%ANNOTATIONS] = annoInfo
+		SetNumberInWaveNote(prevPlotProperties, NOTE_INDEX, idx + 1)
+	endif
+
+	return restoreCursorInfo
 End
 
 static Function SF_CommonWindowSetup(string win, string graph)
@@ -867,7 +824,7 @@ static Function SF_TileExistingData(WAVE/WAVE outputWindows)
 	string guideName, win
 
 	for(WAVE/T typedOutputWins : outputWindows)
-		numRows = DimSize(typedOutputWins, ROWS)
+		numRows = GetNumberFromWaveNote(typedOutputWins, NOTE_INDEX)
 		if(!numRows)
 			continue
 		endif
@@ -1130,11 +1087,10 @@ static Function [variable dataCnt, variable traceCnt, variable gdIndex, string a
 	return [dataCnt, traceCnt, gdIndex, annotation, formulaAddedOncePerDataset, showLegend]
 End
 
-static Function [variable dataCnt, variable traceCnt, WAVE/Z colorGroups, variable showLegend] SF_CreateTracesForResults(string graph, WAVE/WAVE formulaResults, variable formulaCounter, WAVE/T plotMetaData, string winPlot, string winTable, WAVE/T tableFormulas, WAVE/T wAnnotations, WAVE/T formulaArgSetup, WAVE/WAVE collPlotFormData)
+static Function [variable dataCnt, variable traceCnt, WAVE/Z colorGroups, variable showLegend] SF_CreateTracesForResults(string graph, WAVE/WAVE formulaResults, variable formulaCounter, WAVE/T plotMetaData, string win, WAVE/T tableFormulas, WAVE/T wAnnotations, WAVE/T formulaArgSetup, WAVE/WAVE collPlotFormData)
 
 	variable i, idx, showInTable, numData, formulaAddedOncePerDataset
 	variable gdIndex // indexes in tracesInGraph wave and dataInGraph wave in SF_CollectTraceData(), both waves are stored in plotformData
-	string   win
 	string annotation = ""
 
 	WAVE/WAVE plotFormData = SF_CreatePlotFormulaDataWave()
@@ -1148,7 +1104,6 @@ static Function [variable dataCnt, variable traceCnt, WAVE/Z colorGroups, variab
 	endif
 	WAVE/Z colorGroups = SF_GetColorGroups(formulaResults, previousColorGroups)
 	showInTable = SF_IsDataForTableDisplay(formulaResults)
-	win         = Selectstring(showInTable, winPlot, winTable)
 
 	numData = DimSize(formulaResults, ROWS)
 	for(i = 0; i < numData; i += 1)
@@ -1184,6 +1139,132 @@ static Function [variable dataCnt, variable traceCnt, WAVE/Z colorGroups, variab
 	collPlotFormData[formulaCounter] = plotFormData
 End
 
+static Function SF_RestorePlotProperties(WAVE/WAVE prevPlotProperties)
+
+	variable i, numPrevPlots
+	string win
+
+	numPrevPlots = GetNumberFromWaveNote(prevPlotProperties, NOTE_INDEX)
+	for(i = 0; i < numPrevPlots; i += 1)
+		WAVE/T plotName       = prevPlotProperties[i][%NAME]
+		WAVE/Z cursorInfos    = prevPlotProperties[i][%CURSORS]
+		WAVE/Z axesProperties = prevPlotProperties[i][%AXES]
+		WAVE/Z annoInfos      = prevPlotProperties[i][%ANNOTATIONS]
+		win = plotName[0]
+
+		if(WaveExists(cursorInfos))
+			RestoreCursors(win, cursorInfos)
+		endif
+
+		if(WaveExists(axesProperties))
+			SetAxesProperties(win, axesProperties)
+		endif
+
+		if(WaveExists(annoInfos))
+			WAVE/T annoInfosFiltered = FilterAnnotations(annoInfos, "^tag.*$")
+			RestoreAnnotationPositions(win, annoInfosFiltered)
+		endif
+	endfor
+End
+
+static Function/S SF_CreateDataDisplayWindow(string graph, WAVE/WAVE formulaResults, WAVE/WAVE outputWindows, variable mode, WAVE prevPlotProperties)
+
+	variable displayType, winIndex, restoreCursorInfo, winExists, isTableWindow
+	string win, parentWin, subWin, guideName1, guideName2
+
+	isTableWindow = SF_IsDataForTableDisplay(formulaResults)
+	if(isTableWindow)
+		displayType = SF_DISPLAYTYPE_TABLE
+		WAVE/T winTables = outputWindows[%TABLE]
+		winIndex = GetNumberFromWaveNote(winTables, NOTE_INDEX)
+	else
+		displayType = SF_DISPLAYTYPE_GRAPH
+		WAVE/T winGraphs = outputWindows[%GRAPH]
+		winIndex = GetNumberFromWaveNote(winGraphs, NOTE_INDEX)
+	endif
+	win = SF_GetDataDisplayWindowName(graph, displayType, mode, winIndex)
+	if(!isTableWindow)
+		restoreCursorInfo = SF_CollectPreviousPlotProperties(win, prevPlotProperties, mode)
+	endif
+
+	if(mode == SF_DM_NORMAL)
+		if(displayType == SF_DISPLAYTYPE_TABLE)
+			win = SF_NewSweepFormulaBaseWindow(win, graph, winType = WINTYPE_TABLE)
+			SF_AddTableExtrasMain(win)
+			EnsureLargeEnoughWave(winTables, indexShouldExist = winIndex)
+			winTables[winIndex] = win
+			SetNumberInWaveNote(winTables, NOTE_INDEX, winIndex + 1)
+		elseif(displayType == SF_DISPLAYTYPE_GRAPH)
+			win = SF_NewSweepFormulaBaseWindow(win, graph, winType = WINTYPE_GRAPH)
+			EnsureLargeEnoughWave(winGraphs, indexShouldExist = winIndex)
+			winGraphs[winIndex] = win
+			SetNumberInWaveNote(winGraphs, NOTE_INDEX, winIndex + 1)
+		else
+			FATAL_ERROR("Unknown Display Type")
+		endif
+	elseif(mode == SF_DM_SUBWINDOWS)
+
+		subWin    = LastStringFromList(win, sep = "#")
+		parentWin = RemoveEnding(win, "#" + subWin)
+		if(WindowExists(parentWin) && winIndex == 0)
+			SF_ClearPlotPanel(parentWin)
+		elseif(!WindowExists(parentWin))
+			parentWin = SF_NewSweepFormulaBaseWindow(parentWin, graph)
+
+			// base window setup if window did not exist before calling SF_NewSweepFormulaBaseWindow
+			DefineGuide/W=$parentWin customLeft={FL, 0.0, FR}
+			DefineGuide/W=$parentWin customRight={FL, 1.0, FR}
+
+			if(displayType == SF_DISPLAYTYPE_TABLE)
+				SF_AddTableExtrasMain(parentWin)
+			endif
+		endif
+
+		if(restoreCursorInfo)
+			ShowInfo/W=$parentWin
+		endif
+
+		if(winIndex == 0)
+			guideName1 = SF_PLOTTER_GUIDENAME + num2istr(0)
+			DefineGuide/W=$parentWin $guideName1={FT, 0, FB}
+		endif
+
+		guideName1 = SF_PLOTTER_GUIDENAME + num2istr(winIndex)
+		guideName2 = SF_PLOTTER_GUIDENAME + num2istr(winIndex + 1)
+		DefineGuide/W=$parentWin $guideName2={FT, 0, FB}
+
+		if(displayType == SF_DISPLAYTYPE_TABLE)
+			Edit/HOST=$parentWin/FG=(customLeft, $guideName1, customRight, $guideName2)/N=$subWin
+			win = parentWin + "#" + S_name
+			SF_AddTableExtrasSub(win)
+			EnsureLargeEnoughWave(winTables, indexShouldExist = winIndex)
+			winTables[winIndex] = win
+			SetNumberInWaveNote(winTables, NOTE_INDEX, winIndex + 1)
+		elseif(displayType == SF_DISPLAYTYPE_GRAPH)
+			Display/HOST=$parentWin/FG=(customLeft, $guideName1, customRight, $guideName2)/N=$subWin
+			win = parentWin + "#" + S_name
+			EnsureLargeEnoughWave(winGraphs, indexShouldExist = winIndex)
+			winGraphs[winIndex] = win
+			SetNumberInWaveNote(winGraphs, NOTE_INDEX, winIndex + 1)
+		else
+			FATAL_ERROR("Unknown Display Type")
+		endif
+	else
+		FATAL_ERROR("Unknown Window Mode")
+	endif
+
+	if(displayType == SF_DISPLAYTYPE_TABLE)
+		RemoveAllColumnsFromTable(win)
+	elseif(displayType == SF_DISPLAYTYPE_GRAPH)
+		RemoveTracesFromGraph(win)
+		ModifyGraph/W=$win swapXY=0
+	else
+		FATAL_ERROR("Unknown Display Type")
+	endif
+
+	return win
+End
+
 /// @brief  Plot the formula using the data from graph
 ///
 /// @param graph  graph to pass to SF_FormulaExecutor
@@ -1193,12 +1274,12 @@ End
 static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode, variable lineVars])
 
 	string trace, customLegend
-	variable i, j, k, l, dataCnt, numTraces, splitTraces, numGraphs, numWins, traceCnt
+	variable i, j, k, l, dataCnt, numTraces, splitTraces, numGraphs, traceCnt
 	variable winDisplayMode, showLegend, tagCounter, overrideMarker, line, lineGraph, lineGraphFormula
 	variable keepUserSelection, numAnnotations, formulasAreDifferent, postPlotPSX
 	variable formulaCounter, markerCode, lineCode, lineStyle, traceToFront, isCategoryAxis, xFormulaOffset
-	variable numTableFormulas, formulaAddedOncePerDataset
-	string win, winTable, wList, winNameTemplate, exWList, wName, annotation, xAxisLabel, yAxisLabel, wvName, info, xAxis
+	variable numTableFormulas, formulaAddedOncePerDataset, showInTable
+	string win, wList, annotation, xAxisLabel, yAxisLabel, wvName, info, xAxis
 	string formulasRemain, moreFormulas, yAndXFormula, xFormula, yFormula, tagText, name, winHook
 
 	winDisplayMode = ParamIsDefault(dmMode) ? SF_DM_SUBWINDOWS : dmMode
@@ -1210,13 +1291,19 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 	WAVE/T graphCode = SF_SplitCodeToGraphs(formula)
 
 	SVAR lastCode = $GetLastSweepFormulaCode(dfr)
-	keepUserSelection = !cmpstr(lastCode, formula)
+	keepUserSelection = !CmpStr(lastCode, formula)
 
-	numGraphs       = DimSize(graphCode, ROWS)
-	wList           = ""
-	winNameTemplate = SF_GetFormulaWinNameTemplate(graph)
+	numGraphs = DimSize(graphCode, ROWS)
+	wList     = ""
 
-	[WAVE/WAVE outputWindows, WAVE/WAVE infos] = SF_PreparePlotter(winNameTemplate, graph, winDisplayMode, numGraphs)
+	WAVE/WAVE outputWindows      = GetSFOutputWindowNames()
+	WAVE/T    winTables          = outputWindows[%TABLE]
+	WAVE/T    winGraphs          = outputWindows[%GRAPH]
+	WAVE/WAVE prevPlotProperties = GetSFPlotProperties()
+
+	Make/FREE/D/N=2 panelsCreated
+	SetDimLabel ROWS, 0, GRAPH, panelsCreated
+	SetDimLabel ROWS, 1, TABLE, panelsCreated
 
 	for(j = 0; j < numGraphs; j += 1)
 
@@ -1225,20 +1312,12 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 		showLegend     = 1
 		formulaCounter = 0
 		WAVE/Z colorGroups = $""
+		FastOp panelsCreated = 0
 
 		Make/FREE/T/N=0 xAxisLabels, yAxisLabels
 
 		formulasRemain = graphCode[j][%GRAPHCODE]
 		lineGraph      = str2num(graphCode[j][%LINE])
-
-		WAVE/T winGraphs = outputWindows[%GRAPH]
-		win = winGraphs[j]
-		WAVE/T winTables = outputWindows[%TABLE]
-		winTable = winTables[j]
-		if(winDisplayMode == SF_DM_NORMAL)
-			wList = AddListItem(win, wList)
-			wList = AddListItem(winTable, wList)
-		endif
 
 		Make/FREE=1/T/N=(MINIMUM_WAVE_SIZE) wAnnotations, formulaArgSetup, tableFormulas
 		SetNumberInWaveNote(wAnnotations, NOTE_INDEX, 0)
@@ -1270,201 +1349,209 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 			SF_GatherAxisLabels(formulaResults, plotMetaData[%XAXISLABEL], "FORMULAX", xAxisLabels)
 			SF_GatherAxisLabels(formulaResults, plotMetaData[%YAXISLABEL], "FORMULAY", yAxisLabels)
 
+			showInTable = SF_IsDataForTableDisplay(formulaResults)
+			if(!panelsCreated[%GRAPH] && !showInTable)
+				win                   = SF_CreateDataDisplayWindow(graph, formulaResults, outputWindows, winDisplayMode, prevPlotProperties)
+				panelsCreated[%GRAPH] = 1
+				if(winDisplaymode == SF_DM_NORMAL)
+					wList = AddListItem(win, wList)
+				endif
+			elseif(!panelsCreated[%TABLE] && showInTable)
+				win                   = SF_CreateDataDisplayWindow(graph, formulaResults, outputWindows, winDisplayMode, prevPlotProperties)
+				panelsCreated[%TABLE] = 1
+				if(winDisplaymode == SF_DM_NORMAL)
+					wList = AddListItem(win, wList)
+				endif
+			elseif(!showInTable)
+				win = winGraphs[GetNumberFromWaveNote(winGraphs, NOTE_INDEX) - 1]
+			else
+				win = winTables[GetNumberFromWaveNote(winTables, NOTE_INDEX) - 1]
+			endif
+
 			if(!cmpstr(plotMetaData[%DATATYPE], SF_DATATYPE_PSX))
 				PSX_Plot(win, graph, formulaResults, plotMetaData)
 				postPlotPSX = 1
 				continue
 			endif
 
-			[dataCnt, traceCnt, colorGroups, showLegend] = SF_CreateTracesForResults(graph, formulaResults, formulaCounter, plotMetaData, win, winTable, tableFormulas, wAnnotations, formulaArgSetup, collPlotFormData)
+			[dataCnt, traceCnt, colorGroups, showLegend] = SF_CreateTracesForResults(graph, formulaResults, formulaCounter, plotMetaData, win, tableFormulas, wAnnotations, formulaArgSetup, collPlotFormData)
 			formulaCounter                              += 1
 		while(1)
 
 		numTableFormulas = GetNumberFromWaveNote(tableFormulas, NOTE_INDEX)
 		if(numTableFormulas)
 			Redimension/N=(numTableFormulas) tableFormulas
-			SetWindow $winTable, userdata($SF_UDATA_TABLEFORMULAS)=WaveToJSON(tableFormulas)
+			SetWindow $win, userdata($SF_UDATA_TABLEFORMULAS)=WaveToJSON(tableFormulas)
 		endif
 
-		if(showLegend)
-			annotation     = ""
-			numAnnotations = GetNumberFromWaveNote(wAnnotations, NOTE_INDEX)
-			customLegend   = JWN_GetStringFromWaveNote(formulaResults, SF_META_CUSTOM_LEGEND)
+		if(panelsCreated[%GRAPH])
+			win = winGraphs[GetNumberFromWaveNote(winGraphs, NOTE_INDEX) - 1]
+			if(showLegend)
+				annotation     = ""
+				numAnnotations = GetNumberFromWaveNote(wAnnotations, NOTE_INDEX)
+				customLegend   = JWN_GetStringFromWaveNote(formulaResults, SF_META_CUSTOM_LEGEND)
 
-			if(!IsEmpty(customLegend))
-				annotation = customLegend
-			elseif(numAnnotations > 0)
-				for(k = 0; k < numAnnotations; k += 1)
-					wAnnotations[k] = SF_ShrinkLegend(wAnnotations[k])
-				endfor
-				Redimension/N=(numAnnotations) wAnnotations, formulaArgSetup
-				formulasAreDifferent = SFH_EnrichAnnotations(wAnnotations, formulaArgSetup)
-				annotation           = TextWaveToList(wAnnotations, "\r")
-				annotation           = UnPadString(annotation, char2num("\r"))
+				if(!IsEmpty(customLegend))
+					annotation = customLegend
+				elseif(numAnnotations > 0)
+					for(k = 0; k < numAnnotations; k += 1)
+						wAnnotations[k] = SF_ShrinkLegend(wAnnotations[k])
+					endfor
+					Redimension/N=(numAnnotations) wAnnotations, formulaArgSetup
+					formulasAreDifferent = SFH_EnrichAnnotations(wAnnotations, formulaArgSetup)
+					annotation           = TextWaveToList(wAnnotations, "\r")
+					annotation           = UnPadString(annotation, char2num("\r"))
+				endif
+
+				if(!IsEmpty(annotation))
+					Legend/W=$win/C/N=metadata/F=2 annotation
+				endif
 			endif
 
-			if(!IsEmpty(annotation))
-				Legend/W=$win/C/N=metadata/F=2 annotation
+			WAVE/Z xTickLabelsAsFree    = JWN_GetTextWaveFromWaveNote(formulaResults, SF_META_XTICKLABELS)
+			WAVE/Z xTickPositionsAsFree = JWN_GetNumericWaveFromWaveNote(formulaResults, SF_META_XTICKPOSITIONS)
+
+			if(WaveExists(xTickLabelsAsFree) && WaveExists(xTickPositionsAsFree))
+				DFREF dfrWork = SFH_GetWorkingDF(graph)
+				wvName = "xTickLabels_" + win + "_" + NameOfWave(formulaResults)
+				WAVE xTickLabels = MoveFreeWaveToPermanent(xTickLabelsAsFree, dfrWork, wvName)
+
+				wvName = "xTickPositions_" + win + "_" + NameOfWave(formulaResults)
+				WAVE xTickPositions = MoveFreeWaveToPermanent(xTickPositionsAsFree, dfrWork, wvName)
+
+				ModifyGraph/Z/W=$win userticks(bottom)={xTickPositions, xTickLabels}
 			endif
-		endif
 
-		WAVE/Z xTickLabelsAsFree    = JWN_GetTextWaveFromWaveNote(formulaResults, SF_META_XTICKLABELS)
-		WAVE/Z xTickPositionsAsFree = JWN_GetNumericWaveFromWaveNote(formulaResults, SF_META_XTICKPOSITIONS)
+			WAVE/Z yTickLabelsAsFree    = JWN_GetTextWaveFromWaveNote(formulaResults, SF_META_YTICKLABELS)
+			WAVE/Z yTickPositionsAsFree = JWN_GetNumericWaveFromWaveNote(formulaResults, SF_META_YTICKPOSITIONS)
 
-		if(WaveExists(xTickLabelsAsFree) && WaveExists(xTickPositionsAsFree))
-			DFREF dfrWork = SFH_GetWorkingDF(graph)
-			wvName = "xTickLabels_" + win + "_" + NameOfWave(formulaResults)
-			WAVE xTickLabels = MoveFreeWaveToPermanent(xTickLabelsAsFree, dfrWork, wvName)
+			if(WaveExists(yTickLabelsAsFree) && WaveExists(yTickPositionsAsFree))
+				DFREF dfrWork = SFH_GetWorkingDF(graph)
+				wvName = "yTickLabels_" + win + "_" + NameOfWave(formulaResults)
+				WAVE yTickLabels = MoveFreeWaveToPermanent(yTickLabelsAsFree, dfrWork, wvName)
 
-			wvName = "xTickPositions_" + win + "_" + NameOfWave(formulaResults)
-			WAVE xTickPositions = MoveFreeWaveToPermanent(xTickPositionsAsFree, dfrWork, wvName)
+				wvName = "yTickPositions_" + win + "_" + NameOfWave(formulaResults)
+				WAVE yTickPositions = MoveFreeWaveToPermanent(yTickPositionsAsFree, dfrWork, wvName)
 
-			ModifyGraph/Z/W=$win userticks(bottom)={xTickPositions, xTickLabels}
-		endif
+				ModifyGraph/Z/W=$win userticks(left)={yTickPositions, yTickLabels}
 
-		WAVE/Z yTickLabelsAsFree    = JWN_GetTextWaveFromWaveNote(formulaResults, SF_META_YTICKLABELS)
-		WAVE/Z yTickPositionsAsFree = JWN_GetNumericWaveFromWaveNote(formulaResults, SF_META_YTICKPOSITIONS)
-
-		if(WaveExists(yTickLabelsAsFree) && WaveExists(yTickPositionsAsFree))
-			DFREF dfrWork = SFH_GetWorkingDF(graph)
-			wvName = "yTickLabels_" + win + "_" + NameOfWave(formulaResults)
-			WAVE yTickLabels = MoveFreeWaveToPermanent(yTickLabelsAsFree, dfrWork, wvName)
-
-			wvName = "yTickPositions_" + win + "_" + NameOfWave(formulaResults)
-			WAVE yTickPositions = MoveFreeWaveToPermanent(yTickPositionsAsFree, dfrWork, wvName)
-
-			ModifyGraph/Z/W=$win userticks(left)={yTickPositions, yTickLabels}
-
-			Make/FREE yTickPositionsWorkaround = {0, 1}
-			if(EqualWaves(yTickPositions, yTickPositionsWorkaround, EQWAVES_DATA))
-				// @todo workaround bug 4531 so that we get tick labels even with only constant y values
-				SetAxis/W=$win/Z left, 0, 1
+				Make/FREE yTickPositionsWorkaround = {0, 1}
+				if(EqualWaves(yTickPositions, yTickPositionsWorkaround, EQWAVES_DATA))
+					// @todo workaround bug 4531 so that we get tick labels even with only constant y values
+					SetAxis/W=$win/Z left, 0, 1
+				endif
 			endif
-		endif
 
-		winHook = JWN_GetStringFromWaveNote(formulaResults, SF_META_WINDOW_HOOK)
-		if(!IsEmpty(winHook))
-			SetWindow $win, tooltipHook(SweepFormulaTraceValue)=$winHook
-		endif
+			winHook = JWN_GetStringFromWaveNote(formulaResults, SF_META_WINDOW_HOOK)
+			if(!IsEmpty(winHook))
+				SetWindow $win, tooltipHook(SweepFormulaTraceValue)=$winHook
+			endif
 
-		for(k = 0; k < formulaCounter; k += 1)
-			WAVE/WAVE plotFormData  = collPlotFormData[k]
-			WAVE/T    tracesInGraph = plotFormData[0]
-			WAVE/WAVE dataInGraph   = plotFormData[1]
-			numTraces  = DimSize(tracesInGraph, ROWS)
-			markerCode = formulasAreDifferent ? k : 0
-			markerCode = SFH_GetPlotMarkerCodeSelection(markerCode)
-			lineCode   = formulasAreDifferent ? k : 0
-			lineCode   = SFH_GetPlotLineCodeSelection(lineCode)
-			for(l = 0; l < numTraces; l += 1)
+			for(k = 0; k < formulaCounter; k += 1)
+				WAVE/WAVE plotFormData  = collPlotFormData[k]
+				WAVE/T    tracesInGraph = plotFormData[0]
+				WAVE/WAVE dataInGraph   = plotFormData[1]
+				numTraces  = DimSize(tracesInGraph, ROWS)
+				markerCode = formulasAreDifferent ? k : 0
+				markerCode = SFH_GetPlotMarkerCodeSelection(markerCode)
+				lineCode   = formulasAreDifferent ? k : 0
+				lineCode   = SFH_GetPlotLineCodeSelection(lineCode)
+				for(l = 0; l < numTraces; l += 1)
 
-				WAVE/Z wvX = dataInGraph[l][%WAVEX]
-				WAVE   wvY = dataInGraph[l][%WAVEY]
-				trace = tracesInGraph[l]
+					WAVE/Z wvX = dataInGraph[l][%WAVEX]
+					WAVE   wvY = dataInGraph[l][%WAVEY]
+					trace = tracesInGraph[l]
 
-				info           = AxisInfo(win, "left")
-				isCategoryAxis = (NumberByKey("ISCAT", info) == 1)
+					info           = AxisInfo(win, "left")
+					isCategoryAxis = (NumberByKey("ISCAT", info) == 1)
 
-				if(isCategoryAxis)
-					WAVE traceColorHolder = wvX
-				else
-					WAVE traceColorHolder = wvY
-				endif
-
-				WAVE/Z traceColor = JWN_GetNumericWaveFromWaveNote(traceColorHolder, SF_META_TRACECOLOR)
-				if(WaveExists(traceColor))
-					switch(DimSize(traceColor, ROWS))
-						case 3:
-							ModifyGraph/W=$win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2])
-							break
-						case 4:
-							ModifyGraph/W=$win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2], traceColor[3])
-							break
-						default:
-							FATAL_ERROR("Invalid size of trace color wave")
-					endswitch
-				endif
-
-				tagText = JWN_GetStringFromWaveNote(wvY, SF_META_TAG_TEXT)
-				if(!IsEmpty(tagText))
-					name = "tag" + num2str(tagCounter++)
-					Tag/C/N=$name/W=$win/F=0/L=0/X=0.00/Y=0.00 $trace, 0, tagText
-				endif
-
-				ModifyGraph/W=$win mode($trace)=SF_DeriveTraceDisplayMode(wvX, wvY)
-
-				lineStyle = JWN_GetNumberFromWaveNote(wvY, SF_META_LINESTYLE)
-				if(IsValidTraceLineStyle(lineStyle))
-					ModifyGraph/W=$win lStyle($trace)=lineStyle
-				elseif(formulasAreDifferent)
-					ModifyGraph/W=$win lStyle($trace)=lineCode
-				endif
-
-				WAVE/Z customMarkerAsFree = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_MOD_MARKER)
-				if(WaveExists(customMarkerAsFree))
-					DFREF dfrWork = SFH_GetWorkingDF(graph)
-					wvName = "customMarker_" + NameOfWave(wvY)
-					WAVE customMarker = MoveFreeWaveToPermanent(customMarkerAsFree, dfrWork, wvName)
-					ASSERT(DimSize(wvY, ROWS) == DimSize(customMarker, ROWS), "Marker size mismatch")
-					ModifyGraph/W=$win zmrkNum($trace)={customMarker}
-				else
-					overrideMarker = JWN_GetNumberFromWaveNote(wvY, SF_META_MOD_MARKER)
-
-					if(!IsNaN(overrideMarker))
-						markerCode = overrideMarker
+					if(isCategoryAxis)
+						WAVE traceColorHolder = wvX
+					else
+						WAVE traceColorHolder = wvY
 					endif
 
-					ModifyGraph/W=$win marker($trace)=markerCode
-				endif
+					WAVE/Z traceColor = JWN_GetNumericWaveFromWaveNote(traceColorHolder, SF_META_TRACECOLOR)
+					if(WaveExists(traceColor))
+						switch(DimSize(traceColor, ROWS))
+							case 3:
+								ModifyGraph/W=$win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2])
+								break
+							case 4:
+								ModifyGraph/W=$win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2], traceColor[3])
+								break
+							default:
+								FATAL_ERROR("Invalid size of trace color wave")
+						endswitch
+					endif
 
-				traceToFront = JWN_GetNumberFromWaveNote(wvY, SF_META_TRACETOFRONT)
-				traceToFront = IsNaN(traceToFront) ? 0 : !!traceToFront
-				if(traceToFront)
-					ReorderTraces/W=$win _front_, {$trace}
-				endif
+					tagText = JWN_GetStringFromWaveNote(wvY, SF_META_TAG_TEXT)
+					if(!IsEmpty(tagText))
+						name = "tag" + num2str(tagCounter++)
+						Tag/C/N=$name/W=$win/F=0/L=0/X=0.00/Y=0.00 $trace, 0, tagText
+					endif
 
+					ModifyGraph/W=$win mode($trace)=SF_DeriveTraceDisplayMode(wvX, wvY)
+
+					lineStyle = JWN_GetNumberFromWaveNote(wvY, SF_META_LINESTYLE)
+					if(IsValidTraceLineStyle(lineStyle))
+						ModifyGraph/W=$win lStyle($trace)=lineStyle
+					elseif(formulasAreDifferent)
+						ModifyGraph/W=$win lStyle($trace)=lineCode
+					endif
+
+					WAVE/Z customMarkerAsFree = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_MOD_MARKER)
+					if(WaveExists(customMarkerAsFree))
+						DFREF dfrWork = SFH_GetWorkingDF(graph)
+						wvName = "customMarker_" + NameOfWave(wvY)
+						WAVE customMarker = MoveFreeWaveToPermanent(customMarkerAsFree, dfrWork, wvName)
+						ASSERT(DimSize(wvY, ROWS) == DimSize(customMarker, ROWS), "Marker size mismatch")
+						ModifyGraph/W=$win zmrkNum($trace)={customMarker}
+					else
+						overrideMarker = JWN_GetNumberFromWaveNote(wvY, SF_META_MOD_MARKER)
+
+						if(!IsNaN(overrideMarker))
+							markerCode = overrideMarker
+						endif
+
+						ModifyGraph/W=$win marker($trace)=markerCode
+					endif
+
+					traceToFront = JWN_GetNumberFromWaveNote(wvY, SF_META_TRACETOFRONT)
+					traceToFront = IsNaN(traceToFront) ? 0 : !!traceToFront
+					if(traceToFront)
+						ReorderTraces/W=$win _front_, {$trace}
+					endif
+
+				endfor
 			endfor
-		endfor
 
-		if(traceCnt > 0)
-			xAxisLabel = SF_CombineAxisLabels(xAxisLabels)
-			if(!IsEmpty(xAxisLabel))
-				Label/W=$win bottom, xAxisLabel
-				ModifyGraph/W=$win tickUnit(bottom)=1
+			if(traceCnt > 0)
+				xAxisLabel = SF_CombineAxisLabels(xAxisLabels)
+				if(!IsEmpty(xAxisLabel))
+					Label/W=$win bottom, xAxisLabel
+					ModifyGraph/W=$win tickUnit(bottom)=1
+				endif
+
+				yAxisLabel = SF_CombineAxisLabels(yAxisLabels)
+				if(!IsEmpty(yAxisLabel))
+					Label/W=$win left, yAxisLabel
+					ModifyGraph/W=$win tickUnit(left)=1
+				endif
+
+				ModifyGraph/W=$win zapTZ(bottom)=1
 			endif
-
-			yAxisLabel = SF_CombineAxisLabels(yAxisLabels)
-			if(!IsEmpty(yAxisLabel))
-				Label/W=$win left, yAxisLabel
-				ModifyGraph/W=$win tickUnit(left)=1
-			endif
-
-			ModifyGraph/W=$win zapTZ(bottom)=1
 		endif
 
 		if(postPlotPSX)
 			PSX_PostPlot(win)
 		endif
 
-		if(keepUserSelection)
-			WAVE/Z cursorInfos    = infos[j][%cursors]
-			WAVE/Z axesProperties = infos[j][%axes]
-			WAVE/Z annoInfos      = infos[j][%annotations]
-
-			if(WaveExists(cursorInfos))
-				RestoreCursors(win, cursorInfos)
-			endif
-
-			if(WaveExists(axesProperties))
-				SetAxesProperties(win, axesProperties)
-			endif
-
-			if(WaveExists(annoInfos))
-				WAVE/T annoInfosFiltered = FilterAnnotations(annoInfos, "^tag.*$")
-				RestoreAnnotationPositions(win, annoInfosFiltered)
-			endif
-		endif
 	endfor
+
+	if(keepUserSelection)
+		SF_RestorePlotProperties(prevPlotProperties)
+	endif
 
 	if(winDisplayMode == SF_DM_SUBWINDOWS)
 		SF_TileExistingData(outputWindows)
@@ -1472,15 +1559,42 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 	SF_KillEmptyDataWindows(winGraphs)
 	SF_KillEmptyDataWindows(winTables)
 
-	if(winDisplayMode == SF_DM_NORMAL)
-		exWList = WinList(winNameTemplate + "*", ";", "WIN:1")
-		numWins = ItemsInList(exWList)
+	SF_KillOldDataDisplayWindows(graph, winDisplayMode, wList, outputWindows)
+End
+
+/// @brief Kills sweepformula display windows (graph/table) that might be open from a previous formula plotter call
+///        This function does not kill windows when the displaymodes is switched SF_DM_NORMAL <-> SF_DM_SUBWINDOWS in subsequent plotter calls.
+static Function SF_KillOldDataDisplayWindows(string graph, variable mode, string wList, WAVE/WAVE outputWindows)
+
+	variable i, wType, numWins
+	string win, winNameTemplate, exWList
+
+	if(mode == SF_DM_NORMAL)
+		winNameTemplate = SF_GetFormulaWinNameTemplate(graph)
+		wType           = WINDOWTYPE_GRAPH | WINDOWTYPE_TABLE
+		exWList         = WinList(winNameTemplate + "*", ";", "WIN:" + num2istr(wType))
+		numWins         = ItemsInList(exWList)
 		for(i = 0; i < numWins; i += 1)
-			wName = StringFromList(i, exWList)
-			if(WhichListItem(wName, wList) == -1)
-				KillWindow/Z $wName
+			win = StringFromList(i, exWList)
+			if(WhichListItem(win, wList) == -1)
+				KillWindow/Z $win
 			endif
 		endfor
+	elseif(mode == SF_DM_SUBWINDOWS)
+		WAVE/T winTables = outputWindows[%TABLE]
+		numWins = GetNumberFromWaveNote(winTables, NOTE_INDEX)
+		if(!numWins)
+			win = SF_GetDataDisplayWindowName(graph, SF_DISPLAYTYPE_TABLE, SF_DM_SUBWINDOWS, 0)
+			win = RemoveEnding(win, "#" + LastStringFromList(win, sep = "#"))
+			KillWindow/Z $win
+		endif
+		WAVE/T winGraphs = outputWindows[%GRAPH]
+		numWins = GetNumberFromWaveNote(winGraphs, NOTE_INDEX)
+		if(!numWins)
+			win = SF_GetDataDisplayWindowName(graph, SF_DISPLAYTYPE_GRAPH, SF_DM_SUBWINDOWS, 0)
+			win = RemoveEnding(win, "#" + LastStringFromList(win, sep = "#"))
+			KillWindow/Z $win
+		endif
 	endif
 End
 

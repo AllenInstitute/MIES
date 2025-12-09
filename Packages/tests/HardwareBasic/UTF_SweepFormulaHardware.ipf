@@ -44,7 +44,7 @@ static Function TestSweepFormulaButtons(string device)
 
 	refStr = MIES_SF#SF_GetFormulaWinNameTemplate(graph)
 	DoWindow/B $refStr
-	refStr = refStr + "#" + "Graph0" // graph in panel with counter
+	refStr = refStr + "graph#" + "graph0" // graph in panel with counter
 	PGC_SetAndActivateControl(dbPanel, "button_sweepFormula_tofront")
 	win = GetCurrentWindow()
 	CHECK_EQUAL_STR(refStr, win)
@@ -121,7 +121,7 @@ static Function [string dbPanel, string plotWin] GetNewDBforSF_IGNORE()
 	PGC_SetAndActivateControl(dbPanel, "check_BrowserSettings_SF", val = 1)
 	formulaPanel  = MIES_SF#SF_GetFormulaWinNameTemplate(dbPanel)
 	formulaSubwin = "Graph" + num2istr(0)
-	return [dbPanel, formulaPanel + "#" + formulaSubwin]
+	return [dbPanel, formulaPanel + "graph#" + formulaSubwin]
 End
 
 static Function TestSweepFormulaAxisLabels(string device)
