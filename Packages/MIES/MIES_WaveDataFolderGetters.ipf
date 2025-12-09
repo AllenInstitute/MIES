@@ -9228,3 +9228,12 @@ Function/WAVE GetPlotGraphNames(variable numGraphs)
 
 	return plotGraphs
 End
+
+/// @brief Wave storing sf plot meta information per formularesult, filled in SF_GatherFormulaResults
+Function/WAVE GetSFPlotMetaData()
+
+	Make/FREE/T/N=(5) wv
+	SetDimensionLabels(wv, "DATATYPE;OPSTACK;ARGSETUPSTACK;XAXISLABEL;YAXISLABEL;", ROWS)
+
+	return wv
+End
