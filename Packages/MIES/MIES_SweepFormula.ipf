@@ -643,7 +643,7 @@ static Function SF_AddTableExtrasMain(string win)
 	SetWindow $win, hook(sfTableGetWindowName)=SF_TableWindowHook
 End
 
-static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string winNameTemplate, string graph, variable winDisplayMode, variable numGraphs)
+static Function [WAVE/WAVE outputWindows, WAVE/WAVE infos] SF_PreparePlotter(string winNameTemplate, string graph, variable winDisplayMode, variable numGraphs)
 
 	variable i, guidePos, restoreCursorInfo
 	string panelName, guideName1, guideName2, win, winTable, winNameTemplateTable
@@ -652,9 +652,13 @@ static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string wi
 
 	winNameTemplateTable = winNameTemplate + SF_WINNAME_TABLE_SUFFIX
 
-	WAVE/T plotGraphs = GetPlotGraphNames(numGraphs)
-	Make/FREE/WAVE/N=(numGraphs, 3) infos
-	SetDimensionLabels(infos, "axes;cursors;annotations", COLS)
+	WAVE/WAVE outputWindows = GetSFOutputWindowNames()
+	WAVE/T    winGraphs     = outputWindows[%GRAPH]
+	WAVE/T    winTables     = outputWindows[%TABLE]
+	Redimension/N=(numGraphs) winGraphs, winTables
+
+	WAVE/WAVE infos = GetSFPlotProperties()
+	Redimension/N=(numGraphs, -1) infos
 
 	// collect infos
 	for(i = 0; i < numGraphs; i += 1)
@@ -681,12 +685,12 @@ static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string wi
 
 	if(winDisplayMode == SF_DM_NORMAL)
 		for(i = 0; i < numGraphs; i += 1)
-			win                   = winNameTemplate + num2istr(i)
-			plotGraphs[i][%GRAPH] = SF_NewSweepFormulaBaseWindow(win, graph, winType = WINTYPE_GRAPH)
-			win                   = winNameTemplateTable + num2istr(i)
-			winTable              = SF_NewSweepFormulaBaseWindow(win, graph, winType = WINTYPE_TABLE)
+			win          = winNameTemplate + num2istr(i)
+			winGraphs[i] = SF_NewSweepFormulaBaseWindow(win, graph, winType = WINTYPE_GRAPH)
+			win          = winNameTemplateTable + num2istr(i)
+			winTable     = SF_NewSweepFormulaBaseWindow(win, graph, winType = WINTYPE_TABLE)
 			SF_AddTableExtrasMain(winTable)
-			plotGraphs[i][%TABLE] = winTable
+			winTables[i] = winTable
 		endfor
 	elseif(winDisplayMode == SF_DM_SUBWINDOWS)
 
@@ -718,23 +722,23 @@ static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string wi
 			guideName1 = SF_PLOTTER_GUIDENAME + num2istr(i)
 			guideName2 = SF_PLOTTER_GUIDENAME + num2istr(i + 1)
 			Display/HOST=$win/FG=(customLeft, $guideName1, customRight, $guideName2)/N=$("Graph" + num2str(i))
-			plotGraphs[i][%GRAPH] = win + "#" + S_name
+			winGraphs[i] = win + "#" + S_name
 			Edit/HOST=$winTable/FG=(customLeft, $guideName1, customRight, $guideName2)/N=$("Table" + num2str(i))
 			SF_AddTableExtrasSub(winTable + "#" + S_name)
-			plotGraphs[i][%TABLE] = winTable + "#" + S_name
+			winTables[i] = winTable + "#" + S_name
 		endfor
 	endif
 
 	for(i = 0; i < numGraphs; i += 1)
-		win = plotGraphs[i][%GRAPH]
+		win = winGraphs[i]
 		RemoveTracesFromGraph(win)
 		ModifyGraph/W=$win swapXY=0
 
-		win = plotGraphs[i][%TABLE]
+		win = winTables[i]
 		RemoveAllColumnsFromTable(win)
 	endfor
 
-	return [plotGraphs, infos]
+	return [outputWindows, infos]
 End
 
 static Function SF_CommonWindowSetup(string win, string graph)
@@ -857,19 +861,22 @@ static Function SF_KillEmptyDataWindows(WAVE/T plotGraphs)
 End
 
 /// @brief Tiles the subwindows in the panels acording to existing data, requires SF_DM_SUBWINDOWS mode
-static Function SF_TileExistingData(WAVE/T plotGraphs)
+static Function SF_TileExistingData(WAVE/WAVE outputWindows)
 
-	variable numSubWins, numData, guidePos, subWindowIndex, posIndex, col, numCols
+	variable numSubWins, numData, guidePos, subWindowIndex, posIndex, numRows
 	string guideName, win
 
-	numCols = DimSize(plotGraphs, COLS)
-	for(col = 0; col < numCols; col += 1)
-		win = plotGraphs[0][col]
+	for(WAVE/T typedOutputWins : outputWindows)
+		numRows = DimSize(typedOutputWins, ROWS)
+		if(!numRows)
+			continue
+		endif
+
+		win = typedOutputWins[0]
 		win = RemoveEnding(win, "#" + LastStringFromList(win, sep = "#"))
 
-		numSubWins = DimSize(plotGraphs, ROWS)
-		Make/FREE/N=(numSubWins) hasData
-		hasData[] = WaveExists(WaveRefIndexed(plotGraphs[p][col], 0, 1))
+		Make/FREE/N=(numRows) hasData
+		hasData[] = WaveExists(WaveRefIndexed(typedOutputWins[p], 0, 1))
 
 		WAVE/Z subWindowsWithData = FindIndizes(hasData, var = 1)
 		if(!WaveExists(subWindowsWithData))
@@ -1209,7 +1216,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 	wList           = ""
 	winNameTemplate = SF_GetFormulaWinNameTemplate(graph)
 
-	[WAVE/T plotGraphs, WAVE/WAVE infos] = SF_PreparePlotter(winNameTemplate, graph, winDisplayMode, numGraphs)
+	[WAVE/WAVE outputWindows, WAVE/WAVE infos] = SF_PreparePlotter(winNameTemplate, graph, winDisplayMode, numGraphs)
 
 	for(j = 0; j < numGraphs; j += 1)
 
@@ -1224,8 +1231,10 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 		formulasRemain = graphCode[j][%GRAPHCODE]
 		lineGraph      = str2num(graphCode[j][%LINE])
 
-		win      = plotGraphs[j][%GRAPH]
-		winTable = plotGraphs[j][%TABLE]
+		WAVE/T winGraphs = outputWindows[%GRAPH]
+		win = winGraphs[j]
+		WAVE/T winTables = outputWindows[%TABLE]
+		winTable = winTables[j]
 		if(winDisplayMode == SF_DM_NORMAL)
 			wList = AddListItem(win, wList)
 			wList = AddListItem(winTable, wList)
@@ -1253,7 +1262,8 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 			try
 				[WAVE/WAVE formulaResults, WAVE/T plotMetaData] = SF_GatherFormulaResults(xFormula, yFormula, graph, line, xFormulaOffset)
 			catch
-				SF_KillEmptyDataWindows(plotGraphs)
+				SF_KillEmptyDataWindows(winGraphs)
+				SF_KillEmptyDataWindows(winTables)
 				Abort
 			endtry
 
@@ -1457,9 +1467,10 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 	endfor
 
 	if(winDisplayMode == SF_DM_SUBWINDOWS)
-		SF_TileExistingData(plotGraphs)
+		SF_TileExistingData(outputWindows)
 	endif
-	SF_KillEmptyDataWindows(plotGraphs)
+	SF_KillEmptyDataWindows(winGraphs)
+	SF_KillEmptyDataWindows(winTables)
 
 	if(winDisplayMode == SF_DM_NORMAL)
 		exWList = WinList(winNameTemplate + "*", ";", "WIN:1")
