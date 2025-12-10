@@ -1273,10 +1273,10 @@ End
 /// @param lineVars  [optional, default NaN] number of lines in the SF notebook with variable assignments in front of the formula
 static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode, variable lineVars])
 
-	string trace, customLegend
+	string trace
 	variable i, j, k, l, dataCnt, numTraces, splitTraces, numGraphs, traceCnt
 	variable winDisplayMode, showLegend, tagCounter, overrideMarker, line, lineGraph, lineGraphFormula
-	variable keepUserSelection, numAnnotations, formulasAreDifferent, postPlotPSX
+	variable keepUserSelection, formulasAreDifferent, postPlotPSX
 	variable formulaCounter, markerCode, lineCode, lineStyle, traceToFront, isCategoryAxis, xFormulaOffset
 	variable numTableFormulas, formulaAddedOncePerDataset, showInTable
 	string win, wList, annotation, wvName, info, xAxis
@@ -1387,25 +1387,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 		if(panelsCreated[%GRAPH])
 			win = winGraphs[GetNumberFromWaveNote(winGraphs, NOTE_INDEX) - 1]
 			if(showLegend)
-				annotation     = ""
-				numAnnotations = GetNumberFromWaveNote(wAnnotations, NOTE_INDEX)
-				customLegend   = JWN_GetStringFromWaveNote(formulaResults, SF_META_CUSTOM_LEGEND)
-
-				if(!IsEmpty(customLegend))
-					annotation = customLegend
-				elseif(numAnnotations > 0)
-					for(k = 0; k < numAnnotations; k += 1)
-						wAnnotations[k] = SF_ShrinkLegend(wAnnotations[k])
-					endfor
-					Redimension/N=(numAnnotations) wAnnotations, formulaArgSetup
-					formulasAreDifferent = SFH_EnrichAnnotations(wAnnotations, formulaArgSetup)
-					annotation           = TextWaveToList(wAnnotations, "\r")
-					annotation           = UnPadString(annotation, char2num("\r"))
-				endif
-
-				if(!IsEmpty(annotation))
-					Legend/W=$win/C/N=metadata/F=2 annotation
-				endif
+				formulasAreDifferent = SF_AddPlotLegend(win, wAnnotations, formulaArgSetup, formulaResults)
 			endif
 
 			WAVE/Z xTickLabelsAsFree    = JWN_GetTextWaveFromWaveNote(formulaResults, SF_META_XTICKLABELS)
@@ -1548,6 +1530,32 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 	SF_KillEmptyDataWindows(winTables)
 
 	SF_KillOldDataDisplayWindows(graph, winDisplayMode, wList, outputWindows)
+End
+
+static Function SF_AddPlotLegend(string win, WAVE/T wAnnotations, WAVE formulaArgSetup, WAVE formulaResults)
+
+	variable numAnnotations, formulasAreDifferent
+	string customLegend
+	string annotation = ""
+
+	numAnnotations = GetNumberFromWaveNote(wAnnotations, NOTE_INDEX)
+	customLegend   = JWN_GetStringFromWaveNote(formulaResults, SF_META_CUSTOM_LEGEND)
+
+	if(!IsEmpty(customLegend))
+		annotation = customLegend
+	elseif(numAnnotations > 0)
+		wAnnotations[0, numAnnotations - 1] = SF_ShrinkLegend(wAnnotations[p])
+		Redimension/N=(numAnnotations) wAnnotations, formulaArgSetup
+		formulasAreDifferent = SFH_EnrichAnnotations(wAnnotations, formulaArgSetup)
+		annotation           = TextWaveToList(wAnnotations, "\r")
+		annotation           = UnPadString(annotation, char2num("\r"))
+	endif
+
+	if(!IsEmpty(annotation))
+		Legend/W=$win/C/N=metadata/F=2 annotation
+	endif
+
+	return formulasAreDifferent
 End
 
 static Function SF_AddPlotLabels(string win, WAVE xAxisLabels, WAVE yAxisLabels)
