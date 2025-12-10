@@ -3269,7 +3269,7 @@ Internal
 - Fix version generation with latest tag
 - CreateMiesVersion: Support more git install locations
 - Started cleanup of DC_PlaceDataInHardwareDataWave
-- Check that ASLR is turned off on Windows 10 64-bit. This is required for ITC hardware to work, see https://github.com/AllenInstitute/ITCXOP2/#windows-10.
+- Check that ASLR is turned off on Windows 11 64-bit. This is required for ITC hardware to work, see https://github.com/AllenInstitute/ITCXOP2/#windows-10.
 - Add generic wave cache accessor ``CA_TemporaryWaveKey`` for using the returned wave in multihread statements as target junk wave
 - Add ROVar/ROStr for mapping global variables and strings to a read-only version
 - Update our documentation toolchain to sphinx 3

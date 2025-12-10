@@ -54,11 +54,11 @@ Video tutorial of the postsynaptic potential/postsynaptic current data (PSX) ana
 
 ### For Data Analysis
 
-- Windows 10 64-bit or MacOSX 10.10
+- Windows 11 64-bit or MacOSX 10.10
 
 ### For Data Acquisition
 
-- Windows 10 64-bit
+- Windows 11 64-bit
 - [NIDAQ MX XOP](https://www.wavemetrics.com/products/nidaqtools/nidaqtools.htm)
 
 ## Supported Hardware
