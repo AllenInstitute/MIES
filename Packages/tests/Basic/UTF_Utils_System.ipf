@@ -131,7 +131,7 @@ static Function TestCacheBackupAndRestore()
 	DFREF dfr = GetCacheFolder()
 
 	name = GetListOfObjects(dfr, ".*")
-	CHECK_EQUAL_STR(name, "data;")
+	CHECK_EQUAL_STR(name, "data;keys;")
 
 	WAVE/Z/SDFR=dfr new = $StringFromList(0, name)
 	CHECK(!WaveRefsEqual(new, old))
