@@ -205,7 +205,7 @@ Setup Github Actions runner
 Setting up a continuous integration runner (Windows, ``ITC18``, ``ITC1600``  and ``NI``)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  Windows 10 with "Remote Desktop" and "SSH Server" enabled user
+-  Windows 11 with "Remote Desktop" and "SSH Server" enabled user
 -  Install the folllowing programs:
 
    -  Git (choose the installer option which will make the Unix tools
@@ -225,7 +225,7 @@ Setting up a continuous integration runner (Windows, ``ITC18``, ``ITC1600``  and
 Setting up a continuous integration runner (Windows, ``IgorPro``)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  Windows 10 with "Remote Desktop" enabled user
+-  Windows 11 with "Remote Desktop" enabled user
 -  Install the folllowing programs:
 
    -  Git (choose the installer option which will make the Unix tools
