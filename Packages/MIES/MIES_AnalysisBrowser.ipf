@@ -3113,10 +3113,7 @@ Function AB_ButtonProc_AddFolder(STRUCT WMButtonAction &ba) : ButtonControl
 				break
 			endif
 
-			AB_AddElementToSourceList(folder)
-
-			Make/FREE/T wFolder = {folder}
-			AB_AddExperimentEntries(ba.win, wFolder)
+			AB_AddFolder(ba.win, {folder})
 			AB_CollapseAll()
 			break
 		default:
@@ -3226,6 +3223,21 @@ static Function AB_AddFiles(string win, WAVE/T selFiles)
 	Redimension/N=(index) newFiles
 
 	AB_AddExperimentEntries(win, newFiles)
+End
+
+/// @brief Add folders to the analysis browser
+///
+/// @param win     analysis browser window
+/// @param folders text wave with absolute folder paths containing pxps (backslashes need escaping)
+Function AB_AddFolder(string win, WAVE/T folders)
+
+	string folder
+
+	for(folder : folders)
+		AB_AddElementToSourceList(folder)
+	endfor
+
+	AB_AddExperimentEntries(win, folders)
 End
 
 static Function AB_AddElementToSourceList(string entry)
