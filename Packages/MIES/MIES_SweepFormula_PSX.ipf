@@ -2382,9 +2382,9 @@ static Function PSX_StoreIntoResultsWave(string browser, variable resultType, WA
 	string lastBrowser
 	string rawCode = NONE
 
-	WAVE/T formulaGraphs = SFH_GetFormulaGraphs()
+	WAVE/T formulaPanels = SFH_GetFormulaPlotPanels()
 
-	if(DimSize(formulaGraphs, ROWS) > 1)
+	if(DimSize(formulaPanels, ROWS) > 1)
 		WAVE/T textualResultsValues = GetLogbookWaves(LBT_RESULTS, LBN_TEXTUAL_VALUES)
 		lastBrowser = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula browser", UNKNOWN_MODE)
 
@@ -3352,7 +3352,7 @@ static Function/WAVE PSX_GetEventContainer(string graph, [string requestID])
 		check = 1
 	endif
 
-	win = SFH_GetFormulaGraphForBrowser(graph)
+	win = SFH_GetFormulaPanelFromBrowser(graph, SF_DISPLAYTYPE_GRAPH)
 
 	if(IsEmpty(win))
 		// no psx operation active
@@ -3464,7 +3464,7 @@ End
 /// @brief Return the name of the possibly non-existing stats subwindow
 static Function/S PSX_GetPSXStatsGraph(string win)
 
-	return GetMainWindow(win) + "#Graph1"
+	return GetMainWindow(win) + "#" + SF_WINNAME_SUFFIX_GRAPH + "1"
 End
 
 static Function/WAVE PSX_GetEventsInsideAxisRange(string win, string traceName, variable first, variable last, WAVE xCrds)

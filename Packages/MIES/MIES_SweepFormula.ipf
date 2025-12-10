@@ -27,9 +27,6 @@ static StrConstant SF_CHAR_COMMENT = "#"
 static StrConstant SF_CHAR_CR      = "\r"
 static StrConstant SF_CHAR_NEWLINE = "\n"
 
-static StrConstant SF_WINNAME_SUFFIX_GRAPH = "graph"
-static StrConstant SF_WINNAME_SUFFIX_TABLE = "table"
-
 static StrConstant SF_PLOTTER_GUIDENAME = "HOR"
 
 static StrConstant SF_XLABEL_USER = ""
@@ -39,9 +36,6 @@ static Constant SF_NUMTRACES_WARN_THRESHOLD  = 1000
 
 static Constant SF_SWEEPFORMULA_AXIS_X = 0
 static Constant SF_SWEEPFORMULA_AXIS_Y = 1
-
-static Constant SF_DISPLAYTYPE_GRAPH = 0
-static Constant SF_DISPLAYTYPE_TABLE = 1
 
 static StrConstant SF_UDATA_TABLEFORMULAS = "formulas"
 

@@ -24,6 +24,7 @@ static Function/S CreateFormulaGraphForBrowser(string browser)
 	win = CleanupName(SF_PLOT_NAME_TEMPLATE, 0)
 	NewPanel/N=$win
 	win = S_name
+	Display/HOST=$win/N=$"subwin"
 
 	SetWindow $win, userData($SFH_USER_DATA_BROWSER)=browser
 
@@ -1383,10 +1384,10 @@ static Function BrowserGraphConnectionWorks()
 	result = SFH_GetBrowserForFormulaGraph(formulaGraph)
 	CHECK_EQUAL_STR(result, browser)
 
-	result = SFH_GetFormulaGraphForBrowser(browser)
+	result = SFH_GetFormulaPanelFromBrowser(browser, SF_DISPLAYTYPE_GRAPH)
 	CHECK_EQUAL_STR(result, formulaGraph)
 
-	result = SFH_GetFormulaGraphForBrowser("I don't exist")
+	result = SFH_GetFormulaPanelFromBrowser("I don't exist", SF_DISPLAYTYPE_GRAPH)
 	CHECK_EMPTY_STR(result)
 End
 
@@ -2357,8 +2358,7 @@ static Function TestKeepsUnitsWhenMappingMultipleYToOne()
 
 	string win, graph, xAxis, yAxis, code
 
-	win   = GetDataBrowserWithData()
-	graph = SFH_GetFormulaGraphForBrowser(win)
+	win = GetDataBrowserWithData()
 
 	Make/O data1 = {1}
 	SetScale/P x, 0, 1, "x1", data1
@@ -2368,8 +2368,10 @@ static Function TestKeepsUnitsWhenMappingMultipleYToOne()
 	SetScale/P x, 0, 1, "x2", data2
 	SetScale/P y, 0, 1, "y2", data2
 
-	code = "dataset(wave(data1), wave(data1)) vs dataset(wave(data2))"
-	ExecuteSweepFormulaCode(win, code)
+	code   = "dataset(wave(data1), wave(data1)) vs dataset(wave(data2))"
+	graph  = ExecuteSweepFormulaCode(win, code)
+	graph += "#" + SF_WINNAME_SUFFIX_GRAPH + "0"
+
 	yAxis = AxisLabel(graph, "left")
 	CHECK_EQUAL_STR(yAxis, "(y1)")
 	xAxis = AxisLabel(graph, "bottom")
@@ -2382,8 +2384,7 @@ static Function TestAxisLabelGathering()
 
 	string win, graph, xAxis, yAxis, code
 
-	win   = GetDataBrowserWithData()
-	graph = SFH_GetFormulaGraphForBrowser(win)
+	win = GetDataBrowserWithData()
 
 	Make/O data1 = {1}
 	SetScale/P x, 0, 1, "x1", data1
@@ -2397,10 +2398,12 @@ static Function TestAxisLabelGathering()
 	SetScale/P x, 0, 1, "x3", data3
 	SetScale/P y, 0, 1, "y3", data3
 
-	code = "wave(data1)\r"            + \
-	       "with \r"                  + \
-	       "wave(data2) vs wave(data3)\r"
-	ExecuteSweepFormulaCode(win, code)
+	code   = "wave(data1)\r"            + \
+	         "with \r"                  + \
+	         "wave(data2) vs wave(data3)\r"
+	graph  = ExecuteSweepFormulaCode(win, code)
+	graph += "#" + SF_WINNAME_SUFFIX_GRAPH + "0"
+
 	yAxis = AxisLabel(graph, "left")
 	CHECK_EQUAL_STR(yAxis, "(y1) / (y2)")
 	xAxis = AxisLabel(graph, "bottom")

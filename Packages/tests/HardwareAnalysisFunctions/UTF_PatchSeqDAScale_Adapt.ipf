@@ -266,7 +266,7 @@ static Function CheckSurveyPlot(string device, WAVE/WAVE entries)
 	databrowser = DB_FindDatabrowser(device, mode = BROWSER_MODE_AUTOMATION)
 	CHECK(WindowExists(databrowser))
 
-	sfgraph = SFH_GetFormulaGraphForBrowser(databrowser)
+	sfgraph = SFH_GetFormulaPanelFromBrowser(databrowser, SF_DISPLAYTYPE_GRAPH)
 	CHECK(WindowExists(sfgraph))
 
 	allGraphs = GetAllWindows(sfGraph)
