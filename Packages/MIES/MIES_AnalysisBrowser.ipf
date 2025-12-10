@@ -3228,7 +3228,7 @@ static Function AB_AddFiles(string win, WAVE/T selFiles)
 	AB_AddExperimentEntries(win, newFiles)
 End
 
-Function AB_AddElementToSourceList(string entry)
+static Function AB_AddElementToSourceList(string entry)
 
 	variable size
 
