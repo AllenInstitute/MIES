@@ -1279,7 +1279,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 	variable keepUserSelection, numAnnotations, formulasAreDifferent, postPlotPSX
 	variable formulaCounter, markerCode, lineCode, lineStyle, traceToFront, isCategoryAxis, xFormulaOffset
 	variable numTableFormulas, formulaAddedOncePerDataset, showInTable
-	string win, wList, annotation, xAxisLabel, yAxisLabel, wvName, info, xAxis
+	string win, wList, annotation, wvName, info, xAxis
 	string formulasRemain, moreFormulas, yAndXFormula, xFormula, yFormula, tagText, name, winHook
 
 	winDisplayMode = ParamIsDefault(dmMode) ? SF_DM_SUBWINDOWS : dmMode
@@ -1527,19 +1527,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 			endfor
 
 			if(traceCnt > 0)
-				xAxisLabel = SF_CombineAxisLabels(xAxisLabels)
-				if(!IsEmpty(xAxisLabel))
-					Label/W=$win bottom, xAxisLabel
-					ModifyGraph/W=$win tickUnit(bottom)=1
-				endif
-
-				yAxisLabel = SF_CombineAxisLabels(yAxisLabels)
-				if(!IsEmpty(yAxisLabel))
-					Label/W=$win left, yAxisLabel
-					ModifyGraph/W=$win tickUnit(left)=1
-				endif
-
-				ModifyGraph/W=$win zapTZ(bottom)=1
+				SF_AddPlotLabels(win, xAxisLabels, yAxisLabels)
 			endif
 		endif
 
@@ -1560,6 +1548,25 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 	SF_KillEmptyDataWindows(winTables)
 
 	SF_KillOldDataDisplayWindows(graph, winDisplayMode, wList, outputWindows)
+End
+
+static Function SF_AddPlotLabels(string win, WAVE xAxisLabels, WAVE yAxisLabels)
+
+	string xAxisLabel, yAxisLabel
+
+	xAxisLabel = SF_CombineAxisLabels(xAxisLabels)
+	if(!IsEmpty(xAxisLabel))
+		Label/W=$win bottom, xAxisLabel
+		ModifyGraph/W=$win tickUnit(bottom)=1
+	endif
+
+	yAxisLabel = SF_CombineAxisLabels(yAxisLabels)
+	if(!IsEmpty(yAxisLabel))
+		Label/W=$win left, yAxisLabel
+		ModifyGraph/W=$win tickUnit(left)=1
+	endif
+
+	ModifyGraph/W=$win zapTZ(bottom)=1
 End
 
 /// @brief Kills sweepformula display windows (graph/table) that might be open from a previous formula plotter call
