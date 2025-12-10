@@ -6,7 +6,7 @@ Installation instructions
 Installing Igor Pro
 -------------------
 
-Requirements: Windows 11 64bit or MaxOSX 64bit (analysis only)
+Requirements: Windows 11 64bit or MacOSX 64bit (analysis only)
 
 - Install `Igor Pro <https://www.wavemetrics.com/downloads/current>`__
 
