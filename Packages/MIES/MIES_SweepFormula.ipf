@@ -1306,10 +1306,11 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 
 	for(i = 0; i < numGraphs; i += 1)
 
-		traceCnt       = 0
-		postPlotPSX    = 0
-		showLegend     = 1
-		formulaCounter = 0
+		traceCnt             = 0
+		postPlotPSX          = 0
+		showLegend           = 1
+		formulaCounter       = 0
+		formulasAreDifferent = 0
 		WAVE/Z colorGroups = $""
 		FastOp panelsCreated = 0
 
