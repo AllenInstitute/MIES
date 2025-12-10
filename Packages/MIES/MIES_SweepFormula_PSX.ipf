@@ -5205,7 +5205,7 @@ Function/WAVE PSX_Operation(STRUCT SF_ExecutionData &exd)
 	variable minFilterOrderSweep, minFilterOrderDeconv
 	string parameterPath, id, psxParameters, dataUnit, path, msg
 
-	SFH_CheckArgumentCount(exd, SF_OP_PSX, 1, maxArgs = 8)
+	SFH_CheckArgumentCount(exd, SF_OP_PSX, 1, maxArgs = 7)
 
 	id = SFH_GetArgumentAsText(exd, SF_OP_PSX, 0, checkFunc = IsValidObjectName)
 
@@ -5213,10 +5213,10 @@ Function/WAVE PSX_Operation(STRUCT SF_ExecutionData &exd)
 
 	numberOfSDs = SFH_GetArgumentAsNumeric(exd, SF_OP_PSX, 2, defValue = PSX_NUMBER_OF_SDS_DEFAULT, checkFunc = IsStrictlyPositiveAndFinite)
 	WAVE sweepFilter = SFH_GetArgumentAsWave(exd, SF_OP_PSX, 3, defOp = "psxSweepBPFilter()", singleResult = 1)
-	maxTauFactor = SFH_GetArgumentAsNumeric(exd, SF_OP_PSX, 5, defValue = PSX_DEFAULT_MAX_TAU_FACTOR, checkFunc = IsStrictlyPositiveAndFinite)
-	WAVE riseTime = SFH_GetArgumentAsWave(exd, SF_OP_PSX, 6, defOp = "psxRiseTime()", expectedMinorType = IGOR_TYPE_64BIT_FLOAT, singleResult = 1)
+	maxTauFactor = SFH_GetArgumentAsNumeric(exd, SF_OP_PSX, 4, defValue = PSX_DEFAULT_MAX_TAU_FACTOR, checkFunc = IsStrictlyPositiveAndFinite)
+	WAVE riseTime = SFH_GetArgumentAsWave(exd, SF_OP_PSX, 5, defOp = "psxRiseTime()", expectedMinorType = IGOR_TYPE_64BIT_FLOAT, singleResult = 1)
 	ASSERT(IsNumericWave(riseTime), "Invalid return from psxRiseTime")
-	WAVE deconvFilter = SFH_GetArgumentAsWave(exd, SF_OP_PSX, 7, defOp = "psxDeconvBPFilter()", singleResult = 1)
+	WAVE deconvFilter = SFH_GetArgumentAsWave(exd, SF_OP_PSX, 6, defOp = "psxDeconvBPFilter()", singleResult = 1)
 
 	path          = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX_KERNEL
 	kernelRiseTau = JWN_GetNumberFromWaveNote(psxKernelDataset, path + "/riseTau")
