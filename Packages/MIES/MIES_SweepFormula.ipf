@@ -1424,23 +1424,23 @@ End
 
 static Function SF_AddPlotTraceStyle(string graph, string win, variable formulaCounter, WAVE/WAVE collPlotFormData, variable formulasAreDifferent)
 
-	variable k, l, numTraces, markerCode, lineCode, isCategoryAxis, tagCounter, lineStyle, overrideMarker, traceToFront
+	variable i, j, numTraces, markerCode, lineCode, isCategoryAxis, tagCounter, lineStyle, overrideMarker, traceToFront
 	string trace, info, tagText, name, wvName
 
-	for(k = 0; k < formulaCounter; k += 1)
-		WAVE/WAVE plotFormData  = collPlotFormData[k]
+	for(i = 0; i < formulaCounter; i += 1)
+		WAVE/WAVE plotFormData  = collPlotFormData[i]
 		WAVE/T    tracesInGraph = plotFormData[0]
 		WAVE/WAVE dataInGraph   = plotFormData[1]
 		numTraces  = DimSize(tracesInGraph, ROWS)
-		markerCode = formulasAreDifferent ? k : 0
+		markerCode = formulasAreDifferent ? i : 0
 		markerCode = SFH_GetPlotMarkerCodeSelection(markerCode)
-		lineCode   = formulasAreDifferent ? k : 0
+		lineCode   = formulasAreDifferent ? i : 0
 		lineCode   = SFH_GetPlotLineCodeSelection(lineCode)
-		for(l = 0; l < numTraces; l += 1)
+		for(j = 0; j < numTraces; j += 1)
 
-			WAVE/Z wvX = dataInGraph[l][%WAVEX]
-			WAVE   wvY = dataInGraph[l][%WAVEY]
-			trace = tracesInGraph[l]
+			WAVE/Z wvX = dataInGraph[j][%WAVEX]
+			WAVE   wvY = dataInGraph[j][%WAVEY]
+			trace = tracesInGraph[j]
 
 			info           = AxisInfo(win, "left")
 			isCategoryAxis = (NumberByKey("ISCAT", info) == 1)
