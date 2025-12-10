@@ -1273,14 +1273,13 @@ End
 /// @param lineVars  [optional, default NaN] number of lines in the SF notebook with variable assignments in front of the formula
 static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode, variable lineVars])
 
-	string trace
-	variable i, j, k, l, dataCnt, numTraces, splitTraces, numGraphs, traceCnt
-	variable winDisplayMode, showLegend, tagCounter, overrideMarker, line, lineGraph, lineGraphFormula
+	variable j, dataCnt, splitTraces, numGraphs, traceCnt
+	variable winDisplayMode, showLegend, line, lineGraph, lineGraphFormula
 	variable keepUserSelection, formulasAreDifferent, postPlotPSX
-	variable formulaCounter, markerCode, lineCode, lineStyle, traceToFront, isCategoryAxis, xFormulaOffset
+	variable formulaCounter, xFormulaOffset
 	variable numTableFormulas, formulaAddedOncePerDataset, showInTable
-	string win, wList, annotation, wvName, info, xAxis
-	string formulasRemain, moreFormulas, yAndXFormula, xFormula, yFormula, tagText, name, winHook
+	string win, wList, xAxis
+	string formulasRemain, moreFormulas, yAndXFormula, xFormula, yFormula, winHook
 
 	winDisplayMode = ParamIsDefault(dmMode) ? SF_DM_SUBWINDOWS : dmMode
 	lineVars       = ParamIsDefault(lineVars) ? NaN : lineVars
@@ -1397,84 +1396,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 				SetWindow $win, tooltipHook(SweepFormulaTraceValue)=$winHook
 			endif
 
-			for(k = 0; k < formulaCounter; k += 1)
-				WAVE/WAVE plotFormData  = collPlotFormData[k]
-				WAVE/T    tracesInGraph = plotFormData[0]
-				WAVE/WAVE dataInGraph   = plotFormData[1]
-				numTraces  = DimSize(tracesInGraph, ROWS)
-				markerCode = formulasAreDifferent ? k : 0
-				markerCode = SFH_GetPlotMarkerCodeSelection(markerCode)
-				lineCode   = formulasAreDifferent ? k : 0
-				lineCode   = SFH_GetPlotLineCodeSelection(lineCode)
-				for(l = 0; l < numTraces; l += 1)
-
-					WAVE/Z wvX = dataInGraph[l][%WAVEX]
-					WAVE   wvY = dataInGraph[l][%WAVEY]
-					trace = tracesInGraph[l]
-
-					info           = AxisInfo(win, "left")
-					isCategoryAxis = (NumberByKey("ISCAT", info) == 1)
-
-					if(isCategoryAxis)
-						WAVE traceColorHolder = wvX
-					else
-						WAVE traceColorHolder = wvY
-					endif
-
-					WAVE/Z traceColor = JWN_GetNumericWaveFromWaveNote(traceColorHolder, SF_META_TRACECOLOR)
-					if(WaveExists(traceColor))
-						switch(DimSize(traceColor, ROWS))
-							case 3:
-								ModifyGraph/W=$win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2])
-								break
-							case 4:
-								ModifyGraph/W=$win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2], traceColor[3])
-								break
-							default:
-								FATAL_ERROR("Invalid size of trace color wave")
-						endswitch
-					endif
-
-					tagText = JWN_GetStringFromWaveNote(wvY, SF_META_TAG_TEXT)
-					if(!IsEmpty(tagText))
-						name = "tag" + num2str(tagCounter++)
-						Tag/C/N=$name/W=$win/F=0/L=0/X=0.00/Y=0.00 $trace, 0, tagText
-					endif
-
-					ModifyGraph/W=$win mode($trace)=SF_DeriveTraceDisplayMode(wvX, wvY)
-
-					lineStyle = JWN_GetNumberFromWaveNote(wvY, SF_META_LINESTYLE)
-					if(IsValidTraceLineStyle(lineStyle))
-						ModifyGraph/W=$win lStyle($trace)=lineStyle
-					elseif(formulasAreDifferent)
-						ModifyGraph/W=$win lStyle($trace)=lineCode
-					endif
-
-					WAVE/Z customMarkerAsFree = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_MOD_MARKER)
-					if(WaveExists(customMarkerAsFree))
-						DFREF dfrWork = SFH_GetWorkingDF(graph)
-						wvName = "customMarker_" + NameOfWave(wvY)
-						WAVE customMarker = MoveFreeWaveToPermanent(customMarkerAsFree, dfrWork, wvName)
-						ASSERT(DimSize(wvY, ROWS) == DimSize(customMarker, ROWS), "Marker size mismatch")
-						ModifyGraph/W=$win zmrkNum($trace)={customMarker}
-					else
-						overrideMarker = JWN_GetNumberFromWaveNote(wvY, SF_META_MOD_MARKER)
-
-						if(!IsNaN(overrideMarker))
-							markerCode = overrideMarker
-						endif
-
-						ModifyGraph/W=$win marker($trace)=markerCode
-					endif
-
-					traceToFront = JWN_GetNumberFromWaveNote(wvY, SF_META_TRACETOFRONT)
-					traceToFront = IsNaN(traceToFront) ? 0 : !!traceToFront
-					if(traceToFront)
-						ReorderTraces/W=$win _front_, {$trace}
-					endif
-
-				endfor
-			endfor
+			SF_AddPlotTraceStyle(graph, win, formulaCounter, collPlotFormData, formulasAreDifferent)
 
 			if(traceCnt > 0)
 				SF_AddPlotLabels(win, xAxisLabels, yAxisLabels)
@@ -1498,6 +1420,91 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 	SF_KillEmptyDataWindows(winTables)
 
 	SF_KillOldDataDisplayWindows(graph, winDisplayMode, wList, outputWindows)
+End
+
+static Function SF_AddPlotTraceStyle(string graph, string win, variable formulaCounter, WAVE/WAVE collPlotFormData, variable formulasAreDifferent)
+
+	variable k, l, numTraces, markerCode, lineCode, isCategoryAxis, tagCounter, lineStyle, overrideMarker, traceToFront
+	string trace, info, tagText, name, wvName
+
+	for(k = 0; k < formulaCounter; k += 1)
+		WAVE/WAVE plotFormData  = collPlotFormData[k]
+		WAVE/T    tracesInGraph = plotFormData[0]
+		WAVE/WAVE dataInGraph   = plotFormData[1]
+		numTraces  = DimSize(tracesInGraph, ROWS)
+		markerCode = formulasAreDifferent ? k : 0
+		markerCode = SFH_GetPlotMarkerCodeSelection(markerCode)
+		lineCode   = formulasAreDifferent ? k : 0
+		lineCode   = SFH_GetPlotLineCodeSelection(lineCode)
+		for(l = 0; l < numTraces; l += 1)
+
+			WAVE/Z wvX = dataInGraph[l][%WAVEX]
+			WAVE   wvY = dataInGraph[l][%WAVEY]
+			trace = tracesInGraph[l]
+
+			info           = AxisInfo(win, "left")
+			isCategoryAxis = (NumberByKey("ISCAT", info) == 1)
+
+			if(isCategoryAxis)
+				WAVE traceColorHolder = wvX
+			else
+				WAVE traceColorHolder = wvY
+			endif
+
+			WAVE/Z traceColor = JWN_GetNumericWaveFromWaveNote(traceColorHolder, SF_META_TRACECOLOR)
+			if(WaveExists(traceColor))
+				switch(DimSize(traceColor, ROWS))
+					case 3:
+						ModifyGraph/W=$win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2])
+						break
+					case 4:
+						ModifyGraph/W=$win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2], traceColor[3])
+						break
+					default:
+						FATAL_ERROR("Invalid size of trace color wave")
+				endswitch
+			endif
+
+			tagText = JWN_GetStringFromWaveNote(wvY, SF_META_TAG_TEXT)
+			if(!IsEmpty(tagText))
+				name = "tag" + num2str(tagCounter++)
+				Tag/C/N=$name/W=$win/F=0/L=0/X=0.00/Y=0.00 $trace, 0, tagText
+			endif
+
+			ModifyGraph/W=$win mode($trace)=SF_DeriveTraceDisplayMode(wvX, wvY)
+
+			lineStyle = JWN_GetNumberFromWaveNote(wvY, SF_META_LINESTYLE)
+			if(IsValidTraceLineStyle(lineStyle))
+				ModifyGraph/W=$win lStyle($trace)=lineStyle
+			elseif(formulasAreDifferent)
+				ModifyGraph/W=$win lStyle($trace)=lineCode
+			endif
+
+			WAVE/Z customMarkerAsFree = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_MOD_MARKER)
+			if(WaveExists(customMarkerAsFree))
+				DFREF dfrWork = SFH_GetWorkingDF(graph)
+				wvName = "customMarker_" + NameOfWave(wvY)
+				WAVE customMarker = MoveFreeWaveToPermanent(customMarkerAsFree, dfrWork, wvName)
+				ASSERT(DimSize(wvY, ROWS) == DimSize(customMarker, ROWS), "Marker size mismatch")
+				ModifyGraph/W=$win zmrkNum($trace)={customMarker}
+			else
+				overrideMarker = JWN_GetNumberFromWaveNote(wvY, SF_META_MOD_MARKER)
+
+				if(!IsNaN(overrideMarker))
+					markerCode = overrideMarker
+				endif
+
+				ModifyGraph/W=$win marker($trace)=markerCode
+			endif
+
+			traceToFront = JWN_GetNumberFromWaveNote(wvY, SF_META_TRACETOFRONT)
+			traceToFront = IsNaN(traceToFront) ? 0 : !!traceToFront
+			if(traceToFront)
+				ReorderTraces/W=$win _front_, {$trace}
+			endif
+
+		endfor
+	endfor
 End
 
 static Function SF_AddPlotTicks(string graph, string win, WAVE formulaResults)
