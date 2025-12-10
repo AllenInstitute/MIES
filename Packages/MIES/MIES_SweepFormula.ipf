@@ -1273,7 +1273,7 @@ End
 /// @param lineVars  [optional, default NaN] number of lines in the SF notebook with variable assignments in front of the formula
 static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode, variable lineVars])
 
-	variable j, dataCnt, splitTraces, numGraphs, traceCnt
+	variable i, dataCnt, splitTraces, numGraphs, traceCnt
 	variable winDisplayMode, showLegend, line, lineGraph, lineGraphFormula
 	variable keepUserSelection, formulasAreDifferent, postPlotPSX
 	variable formulaCounter, xFormulaOffset
@@ -1304,7 +1304,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 	SetDimLabel ROWS, 0, GRAPH, panelsCreated
 	SetDimLabel ROWS, 1, TABLE, panelsCreated
 
-	for(j = 0; j < numGraphs; j += 1)
+	for(i = 0; i < numGraphs; i += 1)
 
 		traceCnt       = 0
 		postPlotPSX    = 0
@@ -1315,8 +1315,8 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 
 		Make/FREE/T/N=0 xAxisLabels, yAxisLabels
 
-		formulasRemain = graphCode[j][%GRAPHCODE]
-		lineGraph      = str2num(graphCode[j][%LINE])
+		formulasRemain = graphCode[i][%GRAPHCODE]
+		lineGraph      = str2num(graphCode[i][%LINE])
 
 		Make/FREE=1/T/N=(MINIMUM_WAVE_SIZE) wAnnotations, formulaArgSetup, tableFormulas
 		SetNumberInWaveNote(wAnnotations, NOTE_INDEX, 0)
