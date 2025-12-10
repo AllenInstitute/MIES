@@ -1390,39 +1390,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 				formulasAreDifferent = SF_AddPlotLegend(win, wAnnotations, formulaArgSetup, formulaResults)
 			endif
 
-			WAVE/Z xTickLabelsAsFree    = JWN_GetTextWaveFromWaveNote(formulaResults, SF_META_XTICKLABELS)
-			WAVE/Z xTickPositionsAsFree = JWN_GetNumericWaveFromWaveNote(formulaResults, SF_META_XTICKPOSITIONS)
-
-			if(WaveExists(xTickLabelsAsFree) && WaveExists(xTickPositionsAsFree))
-				DFREF dfrWork = SFH_GetWorkingDF(graph)
-				wvName = "xTickLabels_" + win + "_" + NameOfWave(formulaResults)
-				WAVE xTickLabels = MoveFreeWaveToPermanent(xTickLabelsAsFree, dfrWork, wvName)
-
-				wvName = "xTickPositions_" + win + "_" + NameOfWave(formulaResults)
-				WAVE xTickPositions = MoveFreeWaveToPermanent(xTickPositionsAsFree, dfrWork, wvName)
-
-				ModifyGraph/Z/W=$win userticks(bottom)={xTickPositions, xTickLabels}
-			endif
-
-			WAVE/Z yTickLabelsAsFree    = JWN_GetTextWaveFromWaveNote(formulaResults, SF_META_YTICKLABELS)
-			WAVE/Z yTickPositionsAsFree = JWN_GetNumericWaveFromWaveNote(formulaResults, SF_META_YTICKPOSITIONS)
-
-			if(WaveExists(yTickLabelsAsFree) && WaveExists(yTickPositionsAsFree))
-				DFREF dfrWork = SFH_GetWorkingDF(graph)
-				wvName = "yTickLabels_" + win + "_" + NameOfWave(formulaResults)
-				WAVE yTickLabels = MoveFreeWaveToPermanent(yTickLabelsAsFree, dfrWork, wvName)
-
-				wvName = "yTickPositions_" + win + "_" + NameOfWave(formulaResults)
-				WAVE yTickPositions = MoveFreeWaveToPermanent(yTickPositionsAsFree, dfrWork, wvName)
-
-				ModifyGraph/Z/W=$win userticks(left)={yTickPositions, yTickLabels}
-
-				Make/FREE yTickPositionsWorkaround = {0, 1}
-				if(EqualWaves(yTickPositions, yTickPositionsWorkaround, EQWAVES_DATA))
-					// @todo workaround bug 4531 so that we get tick labels even with only constant y values
-					SetAxis/W=$win/Z left, 0, 1
-				endif
-			endif
+			SF_AddPlotTicks(graph, win, formulaResults)
 
 			winHook = JWN_GetStringFromWaveNote(formulaResults, SF_META_WINDOW_HOOK)
 			if(!IsEmpty(winHook))
@@ -1530,6 +1498,45 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 	SF_KillEmptyDataWindows(winTables)
 
 	SF_KillOldDataDisplayWindows(graph, winDisplayMode, wList, outputWindows)
+End
+
+static Function SF_AddPlotTicks(string graph, string win, WAVE formulaResults)
+
+	string wvName
+
+	WAVE/Z xTickLabelsAsFree    = JWN_GetTextWaveFromWaveNote(formulaResults, SF_META_XTICKLABELS)
+	WAVE/Z xTickPositionsAsFree = JWN_GetNumericWaveFromWaveNote(formulaResults, SF_META_XTICKPOSITIONS)
+
+	if(WaveExists(xTickLabelsAsFree) && WaveExists(xTickPositionsAsFree))
+		DFREF dfrWork = SFH_GetWorkingDF(graph)
+		wvName = "xTickLabels_" + win + "_" + NameOfWave(formulaResults)
+		WAVE xTickLabels = MoveFreeWaveToPermanent(xTickLabelsAsFree, dfrWork, wvName)
+
+		wvName = "xTickPositions_" + win + "_" + NameOfWave(formulaResults)
+		WAVE xTickPositions = MoveFreeWaveToPermanent(xTickPositionsAsFree, dfrWork, wvName)
+
+		ModifyGraph/Z/W=$win userticks(bottom)={xTickPositions, xTickLabels}
+	endif
+
+	WAVE/Z yTickLabelsAsFree    = JWN_GetTextWaveFromWaveNote(formulaResults, SF_META_YTICKLABELS)
+	WAVE/Z yTickPositionsAsFree = JWN_GetNumericWaveFromWaveNote(formulaResults, SF_META_YTICKPOSITIONS)
+
+	if(WaveExists(yTickLabelsAsFree) && WaveExists(yTickPositionsAsFree))
+		DFREF dfrWork = SFH_GetWorkingDF(graph)
+		wvName = "yTickLabels_" + win + "_" + NameOfWave(formulaResults)
+		WAVE yTickLabels = MoveFreeWaveToPermanent(yTickLabelsAsFree, dfrWork, wvName)
+
+		wvName = "yTickPositions_" + win + "_" + NameOfWave(formulaResults)
+		WAVE yTickPositions = MoveFreeWaveToPermanent(yTickPositionsAsFree, dfrWork, wvName)
+
+		ModifyGraph/Z/W=$win userticks(left)={yTickPositions, yTickLabels}
+
+		Make/FREE yTickPositionsWorkaround = {0, 1}
+		if(EqualWaves(yTickPositions, yTickPositionsWorkaround, EQWAVES_DATA))
+			// @todo workaround bug 4531 so that we get tick labels even with only constant y values
+			SetAxis/W=$win/Z left, 0, 1
+		endif
+	endif
 End
 
 static Function SF_AddPlotLegend(string win, WAVE/T wAnnotations, WAVE formulaArgSetup, WAVE formulaResults)
