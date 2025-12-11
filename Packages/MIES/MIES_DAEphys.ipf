@@ -3299,15 +3299,7 @@ Function DAP_CheckProc_ClampMode(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 				device  = cba.win
 				control = cba.ctrlName
 				DAP_GetInfoFromControl(device, control, mode, headStage)
-
-				NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
-				if(dataAcqRunMode == DAQ_NOT_RUNNING)
-					DAP_ChangeHeadStageMode(device, mode, headstage, DO_MCC_MIES_SYNCING)
-				else
-					WAVE GuiState = GetDA_EphysGuiStateNum(device)
-					GuiState[headstage][%HSmode_delayed] = mode
-					DAP_SetAmpModeControls(device, headstage, mode, delayed = 1)
-				endif
+				DAP_SetClampMode(device, headstage, mode)
 			catch
 				ClearRTError()
 				SetCheckBoxState(device, control, !cba.checked)
@@ -5838,4 +5830,21 @@ Function DAP_GetDAScaleMax(string device, variable headstage, string stimsetName
 	DEBUGPRINT(msg)
 
 	return result
+End
+
+/// @brief Sets a new clamp mode
+///
+/// @param[in] device    Device title, e.g. "Dev1"
+/// @param[in] headstage headstage number
+/// @param[in] mode      clamp mode @ref AmplifierClampModes
+Function DAP_SetClampMode(string device, variable headstage, variable mode)
+
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
+	if(dataAcqRunMode == DAQ_NOT_RUNNING)
+		DAP_ChangeHeadStageMode(device, mode, headstage, DO_MCC_MIES_SYNCING)
+	else
+		WAVE GuiState = GetDA_EphysGuiStateNum(device)
+		GuiState[headstage][%HSmode_delayed] = mode
+		DAP_SetAmpModeControls(device, headstage, mode, delayed = 1)
+	endif
 End
