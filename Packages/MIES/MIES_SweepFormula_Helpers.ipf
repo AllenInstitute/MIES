@@ -1267,6 +1267,9 @@ End
 
 /// @brief Return the SweepBrowser/DataBrowser from which the given
 ///        SweepFormula plot window originated from
+///        If the plotter runs in normal mode the user data is present for each output window (table/graph)
+///        If the plotter runs in subwindow mode the user data is present for the panel that contains the table/graph subwindows,
+///        thus if win is a subwindow the browser name will be retrieved from the parent panel
 Function/S SFH_GetBrowserForFormulaGraph(string win)
 
 	return GetUserData(GetMainWindow(win), "", SFH_USER_DATA_BROWSER)
@@ -1274,23 +1277,36 @@ End
 
 /// @brief Return the SweepFormula plot created by the given
 ///        SweepBrowser/DataBrowser
-Function/S SFH_GetFormulaGraphForBrowser(string browser)
+///        This function requires the plotter to run in subwindow display mode
+Function/S SFH_GetFormulaPanelFromBrowser(string browser, variable displayType)
 
-	string entry
+	string entry, subWin
 
-	WAVE/T matches = SFH_GetFormulaGraphs()
+	WAVE/T matches = SFH_GetFormulaPlotPanels()
 
 	for(entry : matches)
-		if(!cmpstr(SFH_GetBrowserForFormulaGraph(entry), browser))
-			return entry
+		if(!CmpStr(SFH_GetBrowserForFormulaGraph(entry), browser))
+			if(displayType == SF_DISPLAYTYPE_GRAPH)
+				subWin = StringFromList(0, ChildWindowList(entry))
+				if(!IsEmpty(subWin) && WinType(entry + "#" + subWin) == WINTYPE_GRAPH)
+					return entry
+				endif
+			endif
+			if(displayType == SF_DISPLAYTYPE_TABLE)
+				subWin = StringFromList(0, ChildWindowList(entry))
+				if(!IsEmpty(subWin) && WinType(entry + "#" + subWin) == WINTYPE_TABLE)
+					return entry
+				endif
+			endif
 		endif
 	endfor
 
 	return ""
 End
 
-/// @brief Return a text wave with all formula graph windows
-Function/WAVE SFH_GetFormulaGraphs()
+/// @brief Return a text wave with all formula graph/table panels from all open data/sweep browsers
+///        This function requires the plotter to run in subwindow display mode
+Function/WAVE SFH_GetFormulaPlotPanels()
 
 	return ListToTextWave(WinList(CleanupName(SF_PLOT_NAME_TEMPLATE, 0) + "*", ";", "WIN:64"), ";") // only panels
 End

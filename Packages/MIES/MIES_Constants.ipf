@@ -2579,3 +2579,19 @@ Constant SF_STEP_PARSER   = 1
 Constant SF_STEP_EXECUTOR = 2
 Constant SF_STEP_OUTSIDE  = 3
 ///@}
+
+/// @name Sweepformula suffixes for formula plot windows (graph or table)
+///
+/// @anchor SFPlotWindowSuffixes
+///@{
+StrConstant SF_WINNAME_SUFFIX_GRAPH = "graph"
+StrConstant SF_WINNAME_SUFFIX_TABLE = "table"
+///@}
+
+/// @name Sweepformula display type for formula plot windows (graph or table)
+///
+/// @anchor SFPlotWindowDisplayTypes
+///@{
+Constant SF_DISPLAYTYPE_GRAPH = 0
+Constant SF_DISPLAYTYPE_TABLE = 1
+///@}
