@@ -3869,7 +3869,7 @@ End
 ///
 /// This is only called for the very first `psx` operation output, subsequent
 /// `psx` operation outputs are just added as additional combos.
-static Function PSX_CreatePSXGraphAndSubwindows(string win, string graph, STRUCT SF_PlotMetaData &plotMetaData)
+static Function PSX_CreatePSXGraphAndSubwindows(string win, string graph, WAVE/T plotMetaData)
 
 	string mainWin, extSubWin, extSingleGraph, extAllGraph
 
@@ -3894,7 +3894,7 @@ static Function PSX_CreatePSXGraphAndSubwindows(string win, string graph, STRUCT
 	WAVE sweepDataOffFilt       = GetPSXSweepDataOffFiltWaveFromDFR(comboDFR)
 	WAVE sweepDataOffFiltDeconv = GetPSXSweepDataOffFiltDeconvWaveFromDFR(comboDFR)
 
-	[STRUCT RGBColor color] = SF_GetTraceColor(graph, plotMetaData.opStack, sweepData, $"")
+	[STRUCT RGBColor color] = SF_GetTraceColor(graph, plotMetaData[%OPSTACK], sweepData, $"")
 
 	AppendToGraph/W=$win/C=(color.red, color.green, color.blue)/L=leftOffFilt sweepDataOffFilt
 	AppendToGraph/W=$win/L=leftOffFilt peakYAtFilt vs peakX
@@ -4487,7 +4487,7 @@ static Function PSX_GetNumberOfCombinations(WAVE/WAVE results)
 End
 
 /// @brief High-level function responsible for `psx` data and plot management
-Function PSX_Plot(string win, string graph, WAVE/Z/WAVE results, STRUCT SF_PlotMetaData &plotMetaData)
+Function PSX_Plot(string win, string graph, WAVE/Z/WAVE results, WAVE/T plotMetaData)
 
 	variable numCombos, i, offset, firstOp, numFailures
 

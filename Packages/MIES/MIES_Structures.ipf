@@ -630,15 +630,6 @@ Structure CheckParametersStruct
 	string setName // name of the stimulus set
 EndStructure
 
-/// @brief Helper struct for data gathered by SF formula plotter in SF_GatherFormulaResults
-Structure SF_PlotMetaData
-	string dataType // from SF_META_DATATYPE constant
-	string opStack // from SF_META_OPSTACK constant
-	string argSetupStack // from SF_META_ARGSETUPSTACK constant
-	string xAxisLabel // from SF_META_XAXISLABEL constant
-	string yAxisLabel // from SF_META_YAXISLABEL constant
-EndStructure
-
 /// @brief ReadOut Structure for ASYNC
 Structure ASYNC_ReadOutStruct
 	DFREF dfr // dfr with output data
