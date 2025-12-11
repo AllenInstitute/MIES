@@ -148,6 +148,10 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 	try
 		AbortOnValue var == 0, 1
 	catch
+#ifndef AUTOMATED_TESTING
+		AssertOnAndClearRTError()
+#endif // !AUTOMATED_TESTING
+
 		if(ParamIsDefault(extendedOutput))
 			extendedOutput = 1
 		else
@@ -201,6 +205,7 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 			Make/FREE/T tpStates = {NONE}
 			Make/FREE/T daqStates = {NONE}
 			Make/FREE/T acqStates = {NONE}
+			Make/FREE/T fifoPos = {NONE}
 
 			if(!SVAR_Exists(lockedDevices) || IsEmpty(lockedDevices))
 				lockedDevicesStr = NONE
@@ -209,7 +214,7 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 
 				numLockedDevices = ItemsInList(lockedDevicesStr)
 
-				Redimension/N=(numLockedDevices) sweeps, daqStates, tpStates, acqStates
+				Redimension/N=(numLockedDevices) sweeps, daqStates, tpStates, acqStates, fifoPos
 
 				for(i = 0; i < numLockedDevices; i += 1)
 					device = StringFromList(i, lockedDevicesStr)
@@ -220,6 +225,7 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 					tpStates[i]  = TestPulseRunModeToString(testpulseMode)
 					daqStates[i] = DAQRunModeToString(runMode)
 					acqStates[i] = AS_StateToString(ROVar(GetAcquisitionState(device)))
+					fifoPos[i]   = num2istr(ROVar(GetFifoPosition(device)))
 				endfor
 			endif
 
@@ -232,12 +238,13 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 			print stacktrace
 
 			print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-			printf "Time: %s\r", GetIso8601TimeStamp(localTimeZone = 1)
+			printf "Time: %s\r", GetIso8601TimeStamp(localTimeZone = 1, numFracSecondsDigits = 3)
 			printf "Locked device: [%s]\r", RemoveEnding(lockedDevicesStr, ";")
 			printf "Current sweep: [%s]\r", TextWaveToList(sweeps, ";", trailSep = 0)
 			printf "DAQ: [%s]\r", TextWaveToList(daqStates, ";", trailSep = 0)
 			printf "Testpulse: [%s]\r", TextWaveToList(tpStates, ";", trailSep = 0)
 			printf "Acquisition state: [%s]\r", TextWaveToList(acqStates, ";", trailSep = 0)
+			printf "Fifo position: [%s]\r", TextWaveToList(fifoPos, ";", trailSep = 0)
 			printf "Experiment: %s (%s)\r", GetExperimentName(), GetExperimentFileType()
 			printf "Igor Pro version: %s (%s)\r", GetIgorProVersion(), GetIgorProBuildVersion()
 			print "MIES version:"
@@ -284,6 +291,10 @@ threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedO
 	try
 		AbortOnValue var == 0, 1
 	catch
+#ifndef AUTOMATED_TESTING
+		AssertOnAndClearRTError()
+#endif // !AUTOMATED_TESTING
+
 		if(ParamIsDefault(extendedOutput))
 			extendedOutput = 1
 		else
@@ -319,7 +330,7 @@ threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedO
 			print stacktrace
 
 			print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-			printf "Time: %s\r", GetIso8601TimeStamp(localTimeZone = 1)
+			printf "Time: %s\r", GetIso8601TimeStamp(localTimeZone = 1, numFracSecondsDigits = 3)
 			printf "Experiment: %s (%s)\r", GetExperimentName(), GetExperimentFileType()
 			printf "Igor Pro version: %s (%s)\r", GetIgorProVersion(), GetIgorProBuildVersion()
 			print "################################"

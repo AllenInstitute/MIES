@@ -2218,7 +2218,7 @@ End
 /// - One for each entrySourceType, mapped via EntrySourceTypeMapper()
 threadsafe Function/WAVE GetLBRowCache(WAVE values)
 
-	variable actual, sweepNo, first, last
+	variable actual, sweepNo, first, last, expected
 	string key
 
 	variable versionOfNewWave = 6
@@ -2229,32 +2229,41 @@ threadsafe Function/WAVE GetLBRowCache(WAVE values)
 	WAVE/Z/D wv = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
-		if(actual == GetNumberFromWaveNote(wv, LABNOTEBOOK_MOD_COUNT))
+		expected = GetNumberFromWaveNote(wv, LABNOTEBOOK_MOD_COUNT)
+
+		// wave modification count tracking is only reliable while running
+		// inside a single experiment, not across experiments
+		if(actual == expected)
 			return wv
 		elseif(!MU_RunningInMainThread() && GetLockState(values) == 1)
 			return wv
 		else
-			// new entries were added so we need to propagate all entries to LABNOTEBOOK_GET_RANGE
-			// for sweep numbers >= than the currently acquired sweep
-			// this is required as the `last` element of the range can be changed if you add labnotebook
-			// entries and then query them and then add again.
+			if(actual > expected)
+				// new entries were added so we need to propagate all entries to LABNOTEBOOK_GET_RANGE
+				// for sweep numbers >= than the currently acquired sweep
+				// this is required as the `last` element of the range can be changed if you add labnotebook
+				// entries and then query them and then add again.
 
-			if(IsNumericWave(values))
-				WAVE/Z sweeps = GetLastSweepWithSetting(values, "SweepNum", sweepNo)
-			elseif(IsTextWave(values))
-				WAVE/Z sweeps = GetLastSweepWithSettingText(values, "SweepNum", sweepNo)
-			endif
+				if(IsNumericWave(values))
+					WAVE/Z sweeps = GetLastSweepWithSetting(values, "SweepNum", sweepNo)
+				elseif(IsTextWave(values))
+					WAVE/Z sweeps = GetLastSweepWithSettingText(values, "SweepNum", sweepNo)
+				endif
 
-			if(IsFinite(sweepNo))
-				EnsureLargeEnoughWave(wv, indexShouldExist = sweepNo, dimension = ROWS, initialValue = LABNOTEBOOK_GET_RANGE)
-				first = limit(sweepNo - 1, 0, Inf)
-				last  = sweepNo
-				Multithread wv[first, last][][] = LABNOTEBOOK_GET_RANGE
+				if(IsFinite(sweepNo))
+					EnsureLargeEnoughWave(wv, indexShouldExist = sweepNo, dimension = ROWS, initialValue = LABNOTEBOOK_GET_RANGE)
+					first = limit(sweepNo - 1, 0, Inf)
+					last  = sweepNo
+					Multithread wv[first, last][][] = LABNOTEBOOK_GET_RANGE
 
-				// now we are up to date
-				SetNumberInWaveNote(wv, LABNOTEBOOK_MOD_COUNT, actual)
+					// now we are up to date
+					SetNumberInWaveNote(wv, LABNOTEBOOK_MOD_COUNT, actual)
 
-				return wv
+					return wv
+				endif
+			else
+				// cache across experiments, so the stored wave modification is
+				// larger than the last labnotebook we cached, go for a full reset
 			endif
 		endif
 	else
@@ -2293,7 +2302,7 @@ End
 ///   could not be found, and #LABNOTEBOOK_UNCACHED_VALUE if the cache is empty.
 threadsafe Function/WAVE GetLBIndexCache(WAVE values)
 
-	variable actual, sweepNo, first, last
+	variable actual, sweepNo, first, last, expected
 	string key
 
 	variable versionOfNewWave = 5
@@ -2304,30 +2313,39 @@ threadsafe Function/WAVE GetLBIndexCache(WAVE values)
 	WAVE/Z/D wv = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
-		if(actual == GetNumberFromWaveNote(wv, LABNOTEBOOK_MOD_COUNT))
+		expected = GetNumberFromWaveNote(wv, LABNOTEBOOK_MOD_COUNT)
+
+		// wave modification count tracking is only reliable while running
+		// inside a single experiment, not across experiments
+		if(actual == expected)
 			return wv
 		elseif(!MU_RunningInMainThread() && GetLockState(values) == 1)
 			return wv
 		else
-			// new entries were added so we need to propagate all entries to uncached values
-			// for sweep numbers >= than the currently acquired sweep
+			if(actual > expected)
+				// new entries were added so we need to propagate all entries to uncached values
+				// for sweep numbers >= than the currently acquired sweep
 
-			if(IsNumericWave(values))
-				WAVE/Z sweeps = GetLastSweepWithSetting(values, "SweepNum", sweepNo)
-			elseif(IsTextWave(values))
-				WAVE/Z sweeps = GetLastSweepWithSettingText(values, "SweepNum", sweepNo)
-			endif
+				if(IsNumericWave(values))
+					WAVE/Z sweeps = GetLastSweepWithSetting(values, "SweepNum", sweepNo)
+				elseif(IsTextWave(values))
+					WAVE/Z sweeps = GetLastSweepWithSettingText(values, "SweepNum", sweepNo)
+				endif
 
-			if(IsFinite(sweepNo))
-				EnsureLargeEnoughWave(wv, indexShouldExist = sweepNo, dimension = ROWS, initialValue = LABNOTEBOOK_UNCACHED_VALUE)
-				first = limit(sweepNo - 1, 0, Inf)
-				last  = sweepNo
-				Multithread wv[first, last][][] = LABNOTEBOOK_UNCACHED_VALUE
+				if(IsFinite(sweepNo))
+					EnsureLargeEnoughWave(wv, indexShouldExist = sweepNo, dimension = ROWS, initialValue = LABNOTEBOOK_UNCACHED_VALUE)
+					first = limit(sweepNo - 1, 0, Inf)
+					last  = sweepNo
+					Multithread wv[first, last][][] = LABNOTEBOOK_UNCACHED_VALUE
 
-				// now we are up to date
-				SetNumberInWaveNote(wv, LABNOTEBOOK_MOD_COUNT, actual)
+					// now we are up to date
+					SetNumberInWaveNote(wv, LABNOTEBOOK_MOD_COUNT, actual)
 
-				return wv
+					return wv
+				endif
+			else
+				// cache across experiments, so the stored wave modification is
+				// larger than the last labnotebook we cached, go for a full reset
 			endif
 		endif
 	else
