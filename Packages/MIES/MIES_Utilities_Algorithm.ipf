@@ -219,7 +219,7 @@ End
 ///
 /// The function's type must be #CALL_FUNCTION_LIST_PROTOTYPE where the return
 /// type is ignored.
-Function CallFunctionForEachListItem(FUNCREF CALL_FUNCTION_LIST_PROTOTYPE f, string list, [string sep])
+Function CallFunctionForEachListItem(FUNCREF CALL_FUNCTION_LIST_PROTOTYPE func, string list, [string sep])
 
 	variable i, numEntries
 	string entry
@@ -232,14 +232,14 @@ Function CallFunctionForEachListItem(FUNCREF CALL_FUNCTION_LIST_PROTOTYPE f, str
 	for(i = 0; i < numEntries; i += 1)
 		entry = StringFromList(i, list, sep)
 
-		f(entry)
+		func(entry)
 	endfor
 End
 
 /// Compatibility wrapper for threadsafe functions `f`
 ///
 /// @see CallFunctionForEachListItem()
-threadsafe Function CallFunctionForEachListItem_TS(FUNCREF CALL_FUNCTION_LIST_PROTOTYPE_TS f, string list, [string sep])
+threadsafe Function CallFunctionForEachListItem_TS(FUNCREF CALL_FUNCTION_LIST_PROTOTYPE_TS func, string list, [string sep])
 
 	variable i, numEntries
 	string entry
@@ -252,7 +252,7 @@ threadsafe Function CallFunctionForEachListItem_TS(FUNCREF CALL_FUNCTION_LIST_PR
 	for(i = 0; i < numEntries; i += 1)
 		entry = StringFromList(i, list, sep)
 
-		f(entry)
+		func(entry)
 	endfor
 End
 

@@ -16,6 +16,9 @@
 /// - Ensure that only MIES is installed and no other Igor Pro packages
 /// - In the MIES installation folder (All Users: `C:\Program Files\MIES`, User: `C:\Users\$User\Documents\MIES`)
 ///   create an empty file named `UserConfig.txt`.
+/// - Execute CreateEmptyFiles() to create required empty files in `User Procedures`
+/// - If the files are on a Windows/SMB network share, create a drive letter
+///   via `net use Z: \\$Server\$Share` as UNC paths don't work everywhere in IP.
 ///
 /// Running:
 /// - Start Igor Pro
@@ -30,8 +33,8 @@
 
 #ifdef MEP_DEBUGGING
 
-static StrConstant INPUT_FOLDER  = "C:tim-data:pxp_examples_for_nwb_2:"
-static StrConstant OUTPUT_FOLDER = "C:tim-data:output:"
+static StrConstant INPUT_FOLDER  = "E:tim-data:pxp_examples_for_nwb_2:"
+static StrConstant OUTPUT_FOLDER = "E:tim-data:output:"
 
 #else
 
@@ -85,8 +88,8 @@ End
 
 static Function ProcessCurrentExperiment(STRUCT MultiExperimentProcessPrefs &prefs)
 
-	variable jsonID, index
-	string outputFilePath, inputFile, outputFolder
+	variable jsonID, index, ref, error
+	string outputFileTemplate, inputFile, outputFolder, history, path, message, file, regex
 
 	jsonID = GetJSON(prefs)
 
@@ -97,28 +100,44 @@ static Function ProcessCurrentExperiment(STRUCT MultiExperimentProcessPrefs &pre
 		PathInfo home
 		inputFile = S_path + GetExperimentName() + ".pxp"
 
-		outputFilePath = outputFolder + S_path + GetExperimentName() + ".nwb"
+		outputFileTemplate = outputFolder + S_path + GetExperimentName()
 
-		index = JSON_GetVariable(jsonID, "/index")
-		JSON_AddString(jsonID, "/log/" + num2str(index) + "/from", inputFile)
-		JSON_AddString(jsonID, "/log/" + num2str(index) + "/to", outputFilePath)
+		path = "/log/" + num2str(JSON_GetVariable(jsonID, "/index"))
+		JSON_AddString(jsonID, path + "/from", inputFile)
+		JSON_AddString(jsonID, path + "/to", outputFileTemplate)
 
-		DoWindow/K HistoryCarbonCopy
-		NewNotebook/V=0/F=0/N=HistoryCarbonCopy
+		ref = CaptureHistoryStart()
 
+		AssertOnAndClearRTError()
 		try
-			PerformMiesTasks(outputFilePath); AbortOnRTE
+			PerformMiesTasks(outputFileTemplate); AbortOnRTE
 		catch
-			ClearRTError()
-			print "Caught an RTE"
-			JSON_AddBoolean(jsonID, "/log/" + num2str(index) + "/error", 1)
+			message = GetRTErrMessage()
+			error   = ClearRTError()
+
+			if(error >= 0)
+				printf "Encountered lingering RTE of %d (message: %s) after executing PerformMiesTasks.\r", error, message
+			else
+				printf "Encountered Abort with V_AbortCode: %d\r", V_AbortCode
+			endif
+
+			JSON_AddBoolean(jsonID, path + "/error", 1)
 			JSON_SetVariable(jsonID, "/errors", JSON_GetVariable(jsonID, "/errors") + 1)
 			HDF5CloseFile/A/Z 0
-			DeleteFile/Z outputFilePath
+
+			regex = "\\Q" + outputFileTemplate + "\\E" + ".*\.nwb$"
+			WAVE/Z/T files = GetAllFilesRecursivelyFromPath("home", regex = regex)
+
+			if(WaveExists(files))
+				for(file : files)
+					DeleteFile/Z file
+				endfor
+			endif
 		endtry
 
-		Notebook HistoryCarbonCopy, getData=1
-		JSON_AddString(jsonID, "/log/" + num2str(index) + "/output", trimstring(S_Value))
+		history = CaptureHistory(ref, 1)
+
+		JSON_AddString(jsonID, path + "/output", trimstring(history))
 
 		JSON_SetVariable(jsonID, "/processed", JSON_GetVariable(jsonID, "/processed") + 1)
 	else
@@ -130,28 +149,20 @@ static Function ProcessCurrentExperiment(STRUCT MultiExperimentProcessPrefs &pre
 	StoreJSON(prefs, jsonID)
 End
 
-static Function PerformMiesTasks(string outputFilePath)
+static Function PerformMiesTasks(string outputFileTemplate)
 
-	string folder, message
-	variable nwbVersion, error
+	string folder
 
 	printf "Free Memory: %g GB\r", GetFreeMemory()
 
-	folder = GetFolder(outputFilePath)
+	folder = GetFolder(outputFileTemplate)
 
 	if(!FolderExists(folder))
 		CreateFolderOnDisk(folder)
 	endif
 
-	ClearRTError()
-
-	nwbVersion = 2
-	NWB_ExportAllData(nwbVersion, overrideFullFilePath = outputFilePath)
+	NWB_ExportAllData(NWB_VERSION_LATEST, overrideFileTemplate = outputFileTemplate)
 	HDF5CloseFile/A/Z 0
-
-	message = GetRTErrMessage()
-	error   = GetRTError(1)
-	ASSERT(error == 0, "Encountered lingering RTE of " + num2str(error) + "(message: " + message + ") after executing NWB_ExportAllData.")
 End
 
 static Function IsAppropriateExperiment()
@@ -232,21 +243,30 @@ static Function AfterFileOpenHook(variable refNum, string file, string pathName,
 
 	ProcessCurrentExperiment(prefs)
 
-	// See if there are more experiments to process.
-	string nextExperimentFullPath = FindNextExperiment(prefs)
-	if(strlen(nextExperimentFullPath) == 0)
-		// Process is finished
-		prefs.processRunning = 0 // Flag process is finished.
-		Execute/P "NEWEXPERIMENT " // Post command to close this experiment.
-		print "Multi-experiment process is finished."
-	else
-		// Load the next experiment in the designated folder, if any.
-		PostLoadNextExperiment(nextExperimentFullPath) // Post operation queue commands to load next experiment
-	endif
-
-	SavePackagePrefs(prefs)
+	NextFile(prefs)
 
 	return 0 // Tell Igor to handle file in default fashion.
+End
+
+Function CreateEmptyFiles()
+
+	string file
+	string path = SpecialDirPath("Igor Pro User Files", 0, 0, 0) + "User Procedures:"
+
+	Make/T/FREE files = {"MIES_Include.ipf",                \
+	                     "TJ_MIES_AnalysisBrowser.ipf",     \
+	                     "TJ_MIES_Include.ipf",             \
+	                     "UTF_HardwareHelperFunctions.ipf", \
+	                     "UTF_HardwareMain.ipf",            \
+	                     "UserAnalysisFunctions.ipf",       \
+	                     "tango_Panel.ipf",                 \
+	                     "tango_loader.ipf",                \
+	                     "unit-testing.ipf",                \
+	                     "UserConfig.txt"}
+
+	for(file : files)
+		SaveTextFile("", path + file)
+	endfor
 End
 
 // This function enables our special Igor hooks which skip saving the experiment
@@ -260,7 +280,7 @@ End
 // Allow user to choose the folder containing the experiment files and start the process.
 Function StartMultiExperimentProcessWrapper()
 
-	string message, settingsFile, inputFolder, outputFolder, files
+	string message, settingsFile, inputFolder, outputFolder
 	variable jsonID
 
 	STRUCT MultiExperimentProcessPrefs prefs
@@ -296,7 +316,7 @@ Function StartMultiExperimentProcessWrapper()
 	outputFolder = S_Path
 	ASSERT(V_flag, "Invalid path")
 
-	WAVE/Z files = GetAllFilesRecursivelyFromPath("MultiExperimentInputFolder", regex = "(?i)\.pxp$")
+	WAVE/Z/T files = GetAllFilesRecursivelyFromPath("MultiExperimentInputFolder", regex = "(?i)\.pxp$")
 
 	if(WaveExists(files))
 		Sort/A=2 files, files
@@ -312,10 +332,10 @@ Function StartMultiExperimentProcessWrapper()
 	JSON_AddVariable(jsonID, "/processed", 0)
 	JSON_AddVariable(jsonID, "/errors", 0)
 	JSON_AddVariable(jsonID, "/skipped", 0)
-	JSON_AddVariable(jsonID, "/total", DimSize(inputPXPs, ROWS))
+	JSON_AddVariable(jsonID, "/total", DimSize(files, ROWS))
 
 	JSON_AddTreeArray(jsonID, "/log")
-	JSON_AddObjects(jsonID, "/log", objCount = DimSize(inputPXPs, ROWS))
+	JSON_AddObjects(jsonID, "/log", objCount = DimSize(files, ROWS))
 
 	prefs.settingsFile = outputFolder + "conversion.json"
 	StoreJSON(prefs, jsonID)
@@ -331,6 +351,23 @@ Function StartMultiExperimentProcessWrapper()
 	return 0
 End
 
+Function NextFile(STRUCT MultiExperimentProcessPrefs &prefs)
+
+	// See if there are more experiments to process.
+	string nextExperimentFullPath = FindNextExperiment(prefs)
+	if(strlen(nextExperimentFullPath) == 0)
+		// Process is finished
+		prefs.processRunning = 0 // Flag process is finished.
+		Execute/P "NEWEXPERIMENT " // Post command to close this experiment.
+		print "Multi-experiment process is finished."
+	else
+		// Load the next experiment in the designated folder, if any.
+		PostLoadNextExperiment(nextExperimentFullPath) // Post operation queue commands to load next experiment
+	endif
+
+	SavePackagePrefs(prefs)
+End
+
 #ifdef MEP_DEBUGGING
 
 Function TestMe()
@@ -339,6 +376,7 @@ Function TestMe()
 
 	LoadPackagePrefs(prefs)
 	ProcessCurrentExperiment(prefs)
+	NextFile(prefs)
 End
 
 #endif // MEP_DEBUGGING
