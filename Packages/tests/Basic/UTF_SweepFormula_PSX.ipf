@@ -1352,9 +1352,9 @@ static Function CheckEventDataHelper(WAVE/Z/WAVE dataWref, variable index, varia
 
 	INFO("index = %d, V_numNaNs = %d, kernelAmpSign = %d", n0 = index, n1 = V_numNans, n2 = kernelAmpSign)
 
-	// 1 NaN for the first event only, the rest is onset Time
+	// 5 NaNs for the first event only, the rest is onset Time
 	if(kernelAmpSign == 1)
-		CHECK_EQUAL_VAR(V_numNaNs, 1)
+		CHECK_EQUAL_VAR(V_numNaNs, 5)
 	elseif(kernelAmpSign == -1)
 		CHECK_EQUAL_VAR(V_numNaNs, 9)
 	else
@@ -1694,6 +1694,50 @@ static Function MouseSelectionStatsPostProcNonFinite()
 
 	// changed
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_ACCEPT)
+End
+
+static Function KeyboardSelectionPSXStatsVS()
+
+	string win, browser, code, psxGraph, psxStatsGraph, postProc, comboKey, tracenames, trace
+	variable numEvents, logMode
+
+	Make/FREE/T/N=2 combos
+	sprintf comboKey, "Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[0] = comboKey
+	sprintf comboKey, "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[1] = comboKey
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
+
+	browser = SetupDatabrowserWithSomeData()
+
+	code = GetTestCode("nothing") + "\n vs [1, 2]"
+
+	// combo0 is the current one
+
+	win = ExecuteSweepFormulaCode(browser, code)
+
+	psxGraph      = MIES_PSX#PSX_GetPSXGraph(win)
+	psxStatsGraph = MIES_PSX#PSX_GetPSXStatsGraph(psxGraph)
+
+	REQUIRE(WindowExists(psxStatsGraph))
+
+	SetActiveSubwindow $psxStatsGraph
+
+	tracenames = TraceNameList(psxStatsGraph, ";", 1)
+	trace      = StringFromList(0, tracenames)
+	CHECK_PROPER_STR(trace)
+
+	Cursor/W=$psxStatsGraph/P A, $trace, 0
+
+	CheckCurrentEvent(psxStatsGraph, 0, 0, 0)
+
+	SendKey(psxGraph, LEFT_KEY)
+	SendKey(psxGraph, LEFT_KEY)
+	CHECK_NO_RTE()
 End
 
 static Function/WAVE GetTracesHelper(string win, variable options)
@@ -2815,6 +2859,9 @@ static Function KeyboardInteractionsStatsPostProcNonFinite()
 	overrideResults[1][%$combos[0]][%$"Fit Result"] = 1
 	overrideResults[1][%$combos[0]][%$"Tau"]        = -Inf
 
+	overrideResults[3][%$combos[0]][%$"Fit Result"] = 1
+	overrideResults[3][%$combos[0]][%$"Tau"]        = -Inf
+
 	overrideResults[0][%$combos[0]][%$"Fit Result"] = 0
 	overrideResults[0][%$combos[0]][%$"Tau"]        = NaN
 
@@ -2847,11 +2894,10 @@ static Function KeyboardInteractionsStatsPostProcNonFinite()
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxStatsGraph)
 
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {0, 3}, PSX_REJECT)
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {1, 2}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {0}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {1, 2, 3}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_0}, {"Event manual QC call"}, {0, 1, 2, 3}, PSX_UNDET)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {0, 1}, PSX_UNDET)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {2}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {0, 1, 2}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {0, 1, 2}, PSX_UNDET)
 
 	SendKey(psxStatsGraph, UP_KEY)
@@ -2859,7 +2905,7 @@ static Function KeyboardInteractionsStatsPostProcNonFinite()
 	SendKey(psxStatsGraph, DOWN_KEY)
 	SendKey(psxStatsGraph, UP_KEY)
 
-	CheckCurrentEvent(psxStatsGraph, 1, 2, 4)
+	CheckCurrentEvent(psxStatsGraph, 1, 0, 3)
 
 	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {0, 3}, PSX_REJECT)
 	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {2}, PSX_UNDET)
@@ -2871,8 +2917,7 @@ static Function KeyboardInteractionsStatsPostProcNonFinite()
 	CheckPSXEventField({psxEvent_0}, {"Event manual QC call"}, {3}, PSX_REJECT)
 
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {0}, PSX_ACCEPT)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {1}, PSX_UNDET)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {2}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {1, 2}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {0}, PSX_ACCEPT)
 	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {1}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {2}, PSX_UNDET)
@@ -3395,44 +3440,46 @@ static Function [variable filterLow, variable filterHigh, variable filterOrder] 
 	return [filterLow, filterHigh, filterOrder]
 End
 
-static Function TestOperationDeconvFilter()
+static Function TestOperationDeconvBPFilter()
 
 	string win, str
 	variable filterLow, filterHigh, filterOrder
 
 	win = SetupDatabrowserWithSomeData()
 
-	str = "psxDeconvFilter()"
+	str = "psxDeconvBPFilter()"
 	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	[filterLow, filterHigh, filterOrder] = TestDevonvFilterContainer(dataWref)
 	CHECK_EQUAL_VAR(filterLow, NaN)
 	CHECK_EQUAL_VAR(filterHigh, NaN)
 	CHECK_EQUAL_VAR(filterOrder, NaN)
 
-	str = "psxDeconvFilter(40)"
+	str = "psxDeconvBPFilter(40)"
 	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	[filterLow, filterHigh, filterOrder] = TestDevonvFilterContainer(dataWref)
 	CHECK_EQUAL_VAR(filterLow, 40)
 	CHECK_EQUAL_VAR(filterHigh, NaN)
 	CHECK_EQUAL_VAR(filterOrder, NaN)
 
-	str = "psxDeconvFilter(40, 50)"
+	str = "psxDeconvBPFilter(40, 50)"
 	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	[filterLow, filterHigh, filterOrder] = TestDevonvFilterContainer(dataWref)
-	CHECK_EQUAL_VAR(filterLow, 40)
-	CHECK_EQUAL_VAR(filterHigh, 50)
+	// we automatically fixup the order for the user
+	CHECK_EQUAL_VAR(filterLow, 50)
+	CHECK_EQUAL_VAR(filterHigh, 40)
 	CHECK_EQUAL_VAR(filterOrder, NaN)
 
-	str = "psxDeconvFilter(40, 50, 11)"
+	str = "psxDeconvBPFilter(40, 50, 11)"
 	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	[filterLow, filterHigh, filterOrder] = TestDevonvFilterContainer(dataWref)
-	CHECK_EQUAL_VAR(filterLow, 40)
-	CHECK_EQUAL_VAR(filterHigh, 50)
+	// we automatically fixup the order for the user
+	CHECK_EQUAL_VAR(filterLow, 50)
+	CHECK_EQUAL_VAR(filterHigh, 40)
 	CHECK_EQUAL_VAR(filterOrder, 11)
 
 	// check parameters
 	try
-		str = "psxDeconvFilter(-1)"
+		str = "psxDeconvBPFilter(-1)"
 		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
@@ -3440,7 +3487,7 @@ static Function TestOperationDeconvFilter()
 	endtry
 
 	try
-		str = "psxDeconvFilter(1, -1)"
+		str = "psxDeconvBPFilter(1, -1)"
 		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
@@ -3448,7 +3495,7 @@ static Function TestOperationDeconvFilter()
 	endtry
 
 	try
-		str = "psxDeconvFilter(1, 1, -1)"
+		str = "psxDeconvBPFilter(1, 1, -1)"
 		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
