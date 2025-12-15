@@ -2151,6 +2151,10 @@ StrConstant SF_META_ERRORBARYPLUS      = "/ErrorYPlus"       // numeric wave
 StrConstant SF_META_ERRORBARYMINUS     = "/ErrorYMinus"      // numeric wave
 StrConstant SF_META_ERRORBARXPLUS      = "/ErrorXPlus"       // numeric wave
 StrConstant SF_META_ERRORBARXMINUS     = "/ErrorXMinus"      // numeric wave
+StrConstant SF_META_XAXISOFFSET        = "/XAxisOffset"      // number
+StrConstant SF_META_YAXISOFFSET        = "/YAxisOffset"      // number
+StrConstant SF_META_XAXISPERCENT       = "/XAxisPercent"     // number
+StrConstant SF_META_YAXISPERCENT       = "/YAxisPercent"     // number
 
 /// A color group allows to have matching colors for sweep data with the same channel type/number and sweep.
 /// It is applied before the matching headstage/average colors in #SF_GetTraceColor().
@@ -2555,6 +2559,7 @@ StrConstant SF_OP_MERGE               = "merge"
 StrConstant SF_OP_FIT                 = "fit"
 StrConstant SF_OP_FITLINE             = "fitline"
 StrConstant SF_OP_DATASET             = "dataset"
+StrConstant SF_OP_IVSCCAPFREQUENCY    = "ivscc_apfrequency"
 
 #ifdef AUTOMATED_TESTING
 StrConstant SF_OP_TESTOP = "testop"
