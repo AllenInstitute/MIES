@@ -2349,3 +2349,38 @@ static Function PS_DS_Sub11_REENTRY([string str])
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
 End
+
+static Function PS_DS_Sub12_preAcq(string device)
+
+	Make/FREE asyncChannels = {2, 3}
+	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
+static Function PS_DS_Sub12([string str])
+
+	PS_DS_Sub2(str = str)
+End
+
+static Function PS_DS_Sub12_REENTRY([string str])
+
+	PS_DS_Sub2_REENTRY(str = str)
+
+	BackupCacheWaves()
+End
+
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
+static Function PS_DS_Sub13([string str])
+
+	CA_FLushCache()
+	RestoreCacheWaves()
+
+	PS_DS_Sub2(str = str)
+End
+
+static Function PS_DS_Sub13_REENTRY([string str])
+
+	PS_DS_Sub2_REENTRY(str = str)
+End

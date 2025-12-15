@@ -625,8 +625,8 @@ threadsafe Function/WAVE GetLastSetting(WAVE values, variable sweepNo, string se
 		first = rowCache[sweepNo][%first][entrySourceTypeIndex]
 		last  = rowCache[sweepNo][%last][entrySourceTypeIndex]
 
-		WAVE/Z settings = GetLastSettingNoCache(values, sweepNo, setting, entrySourceType,     \
-		                                        first = first, last = last, rowIndex = rowIndex)
+		WAVE/Z settings = GetLastSettingNoCache(values, sweepNo, setting, entrySourceType,                              \
+		                                        first = first, last = last, rowIndex = rowIndex, settingCol = settingCol)
 
 		if(WaveExists(settings))
 			ASSERT_TS(first >= 0 && last >= 0 && rowIndex >= 0, "invalid return combination from GetLastSettingNoCache")
@@ -749,8 +749,10 @@ threadsafe Function/WAVE GetLastSettingNoCache(WAVE values, variable sweepNo, st
 				endif
 			endif
 
-			statusText[] = textualValues[i][settingCol][p]
-			lengths[]    = strlen(statusTexT[p])
+			AssertOnAndClearRTError()
+			statusText[] = textualValues[i][settingCol][p]; AbortOnRTE
+
+			lengths[] = strlen(statusTexT[p])
 
 			// return if we have at least one non-empty entry
 			if(Sum(lengths) > 0)
@@ -848,7 +850,8 @@ threadsafe Function/WAVE GetLastSettingNoCache(WAVE values, variable sweepNo, st
 				endif
 			endif
 
-			status[] = numericalValues[i][settingCol][p]
+			AssertOnAndClearRTError()
+			status[] = numericalValues[i][settingCol][p]; AbortOnRTE
 
 			if(HasOneValidEntry(status))
 				if(!ParamIsDefault(rowIndex))
@@ -1983,4 +1986,41 @@ Function/S StringifyLogbookMode(variable mode)
 			FATAL_ERROR("Unsupported logbook mode")
 			break
 	endswitch
+End
+
+/// @brief Invalidates the row and index caches for all labnotebook and results wave
+Function InvalidateLBIndexAndRowCaches()
+
+	string device
+
+	DFREF dfr = GetCacheFolder()
+
+	if(IsDataFolderEmpty(dfr))
+		return NaN
+	endif
+
+	WAVE/T devices = ListToTextWave(GetAllDevices(), ";")
+
+	// labnotebook (numerical and textual) of all devices
+	for(device : devices)
+		Make/FREE/WAVE valuesWave = {GetLBNumericalValues(device), GetLBTextualValues(device)}
+
+		InvalidateLBIndexAndRowCaches_Impl(valuesWave)
+	endfor
+
+	Make/FREE/WAVE valuesWave = {GetNumericalResultsValues(), GetTextualResultsValues()}
+	InvalidateLBIndexAndRowCaches_Impl(valuesWave)
+End
+
+static Function InvalidateLBIndexAndRowCaches_Impl(WAVE valuesWave)
+
+	string key
+
+	for(WAVE values : valuesWave)
+		Make/FREE/T keys = {CA_CreateLBIndexCacheKey(values), CA_CreateLBRowCacheKey(values)}
+
+		for(key : keys)
+			CA_DeleteCacheEntry(key)
+		endfor
+	endfor
 End
