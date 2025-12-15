@@ -30,6 +30,11 @@ static StrConstant SF_OP_APFREQUENCY_NONORM             = "nonorm"
 static StrConstant SF_OP_APFREQUENCY_X_COUNT            = "count"
 static StrConstant SF_OP_APFREQUENCY_X_TIME             = "time"
 
+static StrConstant SF_OP_IVSCCAPFREQUENCY_FIRST = "first"
+static StrConstant SF_OP_IVSCCAPFREQUENCY_MIN   = "min"
+static StrConstant SF_OP_IVSCCAPFREQUENCY_MAX   = "max"
+static StrConstant SF_OP_IVSCCAPFREQUENCY_NONE  = "none"
+
 static StrConstant SF_OP_AVG_INSWEEPS   = "in"
 static StrConstant SF_OP_AVG_OVERSWEEPS = "over"
 static StrConstant SF_OP_AVG_GROUPS     = "group"
@@ -2509,3 +2514,149 @@ Function/WAVE SFO_OperationTestop(STRUCT SF_ExecutionData &exd)
 	return wv
 End
 #endif // AUTOMATED_TESTING
+
+/// @brief Sets the plot meta data for the ivscc_apfrequency operation
+static Function SFO_OperationIVSCCApFrequencySetPlotProperties(WAVE wvY, variable xAxisPercentage, variable yAxisPercentage)
+
+	JWN_SetNumberInWaveNote(wvY, SF_META_XAXISPERCENT, xAxisPercentage)
+	JWN_SetNumberInWaveNote(wvY, SF_META_YAXISPERCENT, yAxisPercentage)
+End
+
+// ivscc_apfrequency([xaxisOffset, yaxisOffset, xAxisPercentage, yAxisPercentage])
+Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
+
+	string   opShort    = SF_OP_IVSCCAPFREQUENCY
+	variable numArgsMin = 0
+	variable numArgsMax = 9
+	string formula, expr, exprPart
+	variable i, numArgs, col, size, numExp
+	variable xAxisPercentage, yAxisPercentage
+	string xaxisOffset, yaxisOffset
+	variable method, level
+	string timeFreq, normalize, xAxisType
+	STRUCT RGBColor s
+
+	SFH_ASSERT(BSP_IsSweepBrowser(exd.graph), "ivscc_apfrequency only works with sweepbrowser")
+
+	numArgs = SFH_GetNumberOfArguments(exd)
+	SFH_ASSERT(numArgs <= numArgsMax, "ivscc_apfrequency has " + num2istr(numArgsMax) + " arguments at most.")
+	SFH_ASSERT(numArgs >= numArgsMin, "ivscc_apfrequency needs at least " + num2istr(numArgsMin) + " argument(s).")
+
+	xaxisOffset                                     = SFH_GetArgumentAsText(exd, opShort, 0, defValue = SF_OP_IVSCCAPFREQUENCY_MIN, allowedValues = {SF_OP_IVSCCAPFREQUENCY_FIRST, SF_OP_IVSCCAPFREQUENCY_MIN, SF_OP_IVSCCAPFREQUENCY_MAX, SF_OP_IVSCCAPFREQUENCY_NONE})
+	yaxisOffset                                     = SFH_GetArgumentAsText(exd, opShort, 1, defValue = SF_OP_IVSCCAPFREQUENCY_MIN, allowedValues = {SF_OP_IVSCCAPFREQUENCY_FIRST, SF_OP_IVSCCAPFREQUENCY_MIN, SF_OP_IVSCCAPFREQUENCY_MAX, SF_OP_IVSCCAPFREQUENCY_NONE})
+	xAxisPercentage                                 = SFH_GetArgumentAsNumeric(exd, opShort, 2, defValue = 100, checkFunc = BetweenZeroAndOneHoundred)
+	yAxisPercentage                                 = SFH_GetArgumentAsNumeric(exd, opShort, 3, defValue = 100, checkFunc = BetweenZeroAndOneHoundred)
+	[method, level, timeFreq, normalize, xAxisType] = SFO_GetApFrequencyArguments(exd, opShort, 4)
+
+	WAVE/T sweepMap = SB_GetSweepMap(exd.graph)
+	col  = FindDimlabel(sweepMap, COLS, "FileName")
+	size = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
+	Duplicate/FREE/RMD=[0, size - 1][col] sweepMap, fileNames
+	WAVE/T uniqueFiles = GetUniqueEntries(fileNames, dontDuplicate = 1)
+	Sort uniqueFiles, uniqueFiles
+	numExp = DimSize(uniqueFiles, ROWS)
+	SFH_ASSERT(numExp > 0, "ivscc_apfrequency: data from at least one experiment has to be loaded")
+
+	Make/FREE/T/N=(numExp) elems
+
+	formula = "sel = select(selsweeps(), selstimset(\"*rheo*\", \"*supra*\"), selvis(all), selivsccsweepqc(passed))\r"
+	for(i = 0; i < numExp; i += 1)
+		sprintf expr, "selexpAD%d = select(selexp(\"%s\"), $sel, selchannels(AD0), selrange(E1))", i, uniqueFiles[i]
+		formula = SF_AddExpressionToFormula(formula, expr)
+		sprintf expr, "selexpDA%d = select(selexp(\"%s\"), $sel, selchannels(DA0), selrange(E1))", i, uniqueFiles[i]
+		formula = SF_AddExpressionToFormula(formula, expr)
+		sprintf expr, "freq%d = apfrequency(data($selexpAD%d), %d, %f, %s, %s, %s)", i, i, method, level, timeFreq, normalize, xAxisType
+		formula = SF_AddExpressionToFormula(formula, expr)
+		sprintf expr, "current%d = max(data($selexpDA%d))", i, i
+		formula = SF_AddExpressionToFormula(formula, expr)
+		if(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_FIRST))
+			sprintf expr, "currentNorm%d = $current%d - extract($current%d, 0)", i, i, i
+		elseif(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_MIN))
+			sprintf expr, "currentNorm%d = $current%d - min(merge($current%d))", i, i, i
+		elseif(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_MAX))
+			sprintf expr, "currentNorm%d = $current%d - max(merge($current%d))", i, i, i
+		else // SF_OP_IVSCCAPFREQUENCY_NONE
+			sprintf expr, "currentNorm%d = $current%d", i, i
+		endif
+		formula = SF_AddExpressionToFormula(formula, expr)
+	endfor
+
+	elems[] = "$freq" + num2istr(p)
+	expr    = "ivsccavg = avg([" + TextWaveToList(elems, ",", trailSep = 0) + "], group)"
+	formula = SF_AddExpressionToFormula(formula, expr)
+
+	elems[] = "$currentNorm" + num2istr(p)
+	expr    = "ivscccurrentavg = avg([" + TextWaveToList(elems, ",", trailSep = 0) + "], group)"
+	formula = SF_AddExpressionToFormula(formula, expr)
+
+	elems[] = "\"" + uniqueFiles[p] + "\""
+	expr    = "ivscc_apfrequency_explist = [" + TextWaveToList(elems, ",", trailSep = 0) + "]"
+	formula = SF_AddExpressionToFormula(formula, expr)
+
+	WAVE/WAVE varStorage = GetSFVarStorage(exd.graph)
+	Duplicate/FREE varStorage, varBackup
+	SFE_ExecuteVariableAssignments(exd.graph, formula)
+
+	WAVE/WAVE varStorageOp = GetSFVarStorage(exd.graph)
+	WAVE      wvResult     = varStorageOp[%ivscc_apfrequency_explist]
+
+	WAVE/WAVE plotAND = SFH_CreateSFRefWave(exd.graph, opShort, 1)
+	Make/FREE/WAVE/N=(numExp + 1, 2) plotWITH
+	SetDimlabel COLS, 0, FORMULAX, plotWITH
+	SetDimlabel COLS, 1, FORMULAY, plotWITH
+	plotAND[0] = plotWITH
+
+	for(i = 0; i < numExp; i += 1)
+		if(!CmpStr(yaxisOffset, SF_OP_IVSCCAPFREQUENCY_FIRST))
+			sprintf formula, "merge($freq%d - extract($freq%d, 0))", i, i
+		elseif(!CmpStr(yaxisOffset, SF_OP_IVSCCAPFREQUENCY_MIN))
+			sprintf formula, "merge($freq%d - min(merge($freq%d)))", i, i
+		elseif(!CmpStr(yaxisOffset, SF_OP_IVSCCAPFREQUENCY_MAX))
+			sprintf formula, "merge($freq%d - max(merge($freq%d)))", i, i
+		else // SF_OP_IVSCCAPFREQUENCY_NONE
+			sprintf formula, "merge($freq%d)", i
+		endif
+		WAVE/WAVE wvY = SFE_ExecuteFormula(formula, exd.graph, preProcess = 0)
+		[s] = GetTraceColor(i)
+		Make/FREE/W/U traceColor = {s.red, s.green, s.blue}
+		JWN_SetWaveInWaveNote(wvY[0], SF_META_TRACECOLOR, traceColor)
+		JWN_SetNumberInWaveNote(wvY[0], SF_META_MOD_MARKER, 17)
+		JWN_SetStringInWaveNote(wvY[0], SF_META_LEGEND_LINE_PREFIX, uniqueFiles[i])
+		plotWITH[i][%FORMULAY] = wvY
+		SFO_OperationIVSCCApFrequencySetPlotProperties(plotWITH[i][%FORMULAY], xAxisPercentage, yAxisPercentage)
+		sprintf formula, "merge($currentNorm%d)", i
+		plotWITH[i][%FORMULAX] = SFE_ExecuteFormula(formula, exd.graph, preProcess = 0)
+	endfor
+
+	if(!CmpStr(yaxisOffset, SF_OP_IVSCCAPFREQUENCY_FIRST))
+		formula = "merge($ivsccavg - extract($ivsccavg, 0))"
+	elseif(!CmpStr(yaxisOffset, SF_OP_IVSCCAPFREQUENCY_MIN))
+		formula = "merge($ivsccavg - min(merge($ivsccavg)))"
+	elseif(!CmpStr(yaxisOffset, SF_OP_IVSCCAPFREQUENCY_MAX))
+		formula = "merge($ivsccavg - max(merge($ivsccavg)))"
+	else // SF_OP_IVSCCAPFREQUENCY_NONE
+		formula = "merge($ivsccavg)"
+	endif
+	WAVE/WAVE wvY = SFE_ExecuteFormula(formula, exd.graph, preProcess = 0)
+	JWN_SetStringInWaveNote(wvY[0], SF_META_LEGEND_LINE_PREFIX, "ivscc_apfrequency average")
+	plotWITH[i][%FORMULAY] = wvY
+	SFO_OperationIVSCCApFrequencySetPlotProperties(plotWITH[i][%FORMULAY], xAxisPercentage, yAxisPercentage)
+
+	if(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_FIRST))
+		formula = "merge($ivscccurrentavg - extract($ivscccurrentavg, 0))"
+	elseif(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_MIN))
+		formula = "merge($ivscccurrentavg - min(merge($ivscccurrentavg)))"
+	elseif(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_MAX))
+		formula = "merge($ivscccurrentavg - max(merge($ivscccurrentavg)))"
+	else // SF_OP_IVSCCAPFREQUENCY_NONE
+		formula = "merge($ivscccurrentavg)"
+	endif
+	plotWITH[i][%FORMULAX] = SFE_ExecuteFormula(formula, exd.graph, preProcess = 0)
+
+	Duplicate/O varBackup, varStorage
+	SFH_AddVariableToStorage(exd.graph, "ivscc_apfrequency_explist", wvResult)
+
+	JWN_SetNumberInWaveNote(plotAND, SF_META_PLOT, 1)
+
+	return SFH_GetOutputForExecutor(plotAND, exd.graph, opShort)
+End
