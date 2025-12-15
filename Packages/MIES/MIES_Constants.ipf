@@ -2142,6 +2142,10 @@ StrConstant SF_META_DONOTPLOT          = "/DoNotPlot"        // number, boolean,
 StrConstant SF_META_WINDOW_HOOK        = "/WindowHook"       // string
 StrConstant SF_META_FORMULA            = "/Formula"          // string
 StrConstant SF_META_PLOT               = "/Plot"             // number, boolean, defaults to false (0)
+StrConstant SF_META_XAXISOFFSET        = "/XAxisOffset"      // number
+StrConstant SF_META_YAXISOFFSET        = "/YAxisOffset"      // number
+StrConstant SF_META_XAXISPERCENT       = "/XAxisPercent"     // number
+StrConstant SF_META_YAXISPERCENT       = "/YAxisPercent"     // number
 
 /// A color group allows to have matching colors for sweep data with the same channel type/number and sweep.
 /// It is applied before the matching headstage/average colors in #SF_GetTraceColor().
@@ -2542,6 +2546,7 @@ StrConstant SF_OP_TPINST              = "tpinst"
 StrConstant SF_OP_TPBASE              = "tpbase"
 StrConstant SF_OP_TPFIT               = "tpfit"
 StrConstant SF_OP_EXTRACT             = "extract"
+StrConstant SF_OP_IVSCCAPFREQUENCY    = "ivscc_apfrequency"
 ///@}
 
 StrConstant SF_PROPERTY_TABLE = "Table"

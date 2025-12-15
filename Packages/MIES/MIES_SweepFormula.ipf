@@ -96,7 +96,8 @@ Function/WAVE SF_GetNamedOperations()
 	                  SF_OP_MERGE, SF_OP_FIT, SF_OP_FITLINE, SF_OP_DATASET, SF_OP_SELECTVIS, SF_OP_SELECTCM, SF_OP_SELECTSTIMSET,       \
 	                  SF_OP_SELECTIVSCCSWEEPQC, SF_OP_SELECTIVSCCSETQC, SF_OP_SELECTRANGE, SF_OP_SELECTEXP, SF_OP_SELECTDEV,            \
 	                  SF_OP_SELECTEXPANDSCI, SF_OP_SELECTEXPANDRAC, SF_OP_SELECTSETCYCLECOUNT, SF_OP_SELECTSETSWEEPCOUNT,               \
-	                  SF_OP_SELECTSCIINDEX, SF_OP_SELECTRACINDEX, SF_OP_ANAFUNCPARAM, SF_OP_CONCAT, SF_OP_TABLE, SF_OP_EXTRACT}
+	                  SF_OP_SELECTSCIINDEX, SF_OP_SELECTRACINDEX, SF_OP_ANAFUNCPARAM, SF_OP_CONCAT, SF_OP_TABLE, SF_OP_EXTRACT,         \
+	                  SF_OP_IVSCCAPFREQUENCY}
 
 	return wt
 End
@@ -171,6 +172,10 @@ static Function/WAVE SF_FillPlotMetaData(WAVE wvYRef, variable useXLabel, string
 	plotMetaData[%ARGSETUPSTACK] = JWN_GetStringFromWaveNote(wvYRef, SF_META_ARGSETUPSTACK)
 	plotMetaData[%XAXISLABEL]    = SelectString(useXLabel, SF_XLABEL_USER, JWN_GetStringFromWaveNote(wvYRef, SF_META_XAXISLABEL))
 	plotMetaData[%YAXISLABEL]    = JWN_GetStringFromWaveNote(wvYRef, SF_META_YAXISLABEL) + dataUnits
+	plotMetaData[%XAXISOFFSET]   = num2str(JWN_GetNumberFromWaveNote(wvYRef, SF_META_XAXISOFFSET), "%f")
+	plotMetaData[%YAXISOFFSET]   = num2str(JWN_GetNumberFromWaveNote(wvYRef, SF_META_YAXISOFFSET), "%f")
+	plotMetaData[%XAXISPERCENT]  = num2str(JWN_GetNumberFromWaveNote(wvYRef, SF_META_XAXISPERCENT), "%f")
+	plotMetaData[%YAXISPERCENT]  = num2str(JWN_GetNumberFromWaveNote(wvYRef, SF_META_YAXISPERCENT), "%f")
 
 	return plotMetaData
 End
@@ -1497,6 +1502,31 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 	SF_KillOldDataDisplayWindows(graph, winDisplayMode, wList, outputWindows)
 End
 
+/// @brief Sets axis properties for plots of the SF formula plotter. The properties are stored in the plotMetaData wave.
+static Function [STRUCT SF_PlotterGraphStruct pg] SF_SetAxisProperties()
+
+	variable xaxisOffset, yaxisOffset, xaxisPercent, yaxisPercent
+
+	xaxisOffset = str2num(pg.plotMetaData[%XAXISOFFSET])
+	if(!IsNaN(xaxisOffset))
+		ModifyGraph/W=$pg.win axOffset(bottom)=xaxisOffset
+	endif
+	yaxisOffset = str2num(pg.plotMetaData[%YAXISOFFSET])
+	if(!IsNaN(yaxisOffset))
+		ModifyGraph/W=$pg.win axOffset(left)=yaxisOffset
+	endif
+	xaxisPercent = str2num(pg.plotMetaData[%XAXISPERCENT])
+	if(!IsNaN(xaxisPercent))
+		ModifyGraph/W=$pg.win axisEnab(bottom)={0, xaxisPercent * PERCENT_TO_ONE}
+	endif
+	yaxisPercent = str2num(pg.plotMetaData[%YAXISPERCENT])
+	if(!IsNaN(yaxisPercent))
+		ModifyGraph/W=$pg.win axisEnab(left)={0, yaxisPercent * PERCENT_TO_ONE}
+	endif
+
+	return [pg]
+End
+
 static Function [STRUCT SF_PlotterGraphStruct pg] SF_FinishPlotWindow(WAVE/T winGraphs)
 
 	variable formulasAreDifferent, numTableFormulas
@@ -1509,7 +1539,11 @@ static Function [STRUCT SF_PlotterGraphStruct pg] SF_FinishPlotWindow(WAVE/T win
 	endif
 
 	if(pg.panelsCreated[%GRAPH])
+
 		pg.win = winGraphs[GetNumberFromWaveNote(winGraphs, NOTE_INDEX) - 1]
+
+		[pg] = SF_SetAxisProperties()
+
 		if(pg.showLegend)
 			[formulasAreDifferent, pg] = SF_AddPlotLegend()
 		endif
@@ -2824,4 +2858,10 @@ Function SF_TableWindowHook(STRUCT WMWinHookStruct &s)
 	endswitch
 
 	return 0
+End
+
+/// @brief Adds an expression to a formula string with the proper termination character
+Function/S SF_AddExpressionToFormula(string formula, string expr)
+
+	return formula + expr + SF_CHAR_CR
 End
