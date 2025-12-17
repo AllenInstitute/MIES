@@ -9266,11 +9266,36 @@ Function/WAVE GetSFAssertData()
 End
 
 /// @brief Used for preparing graph and table window names for the SF plotter
-Function/WAVE GetPlotGraphNames(variable numGraphs)
+Function/WAVE GetSFOutputWindowNames()
 
-	Make/FREE/T/N=(numGraphs, 2) plotGraphs
-	SetDimlabel COLS, 0, GRAPH, plotGraphs
-	SetDimlabel COLS, 1, TABLE, plotGraphs
+	Make/FREE/WAVE/N=(2) wv
+	SetDimlabel ROWS, 0, GRAPH, wv
+	SetDimlabel ROWS, 1, TABLE, wv
 
-	return plotGraphs
+	Make/FREE/T/N=0 winGraphs, winTables
+	SetNumberInWaveNote(winGraphs, NOTE_INDEX, 0)
+	SetNumberInWaveNote(winTables, NOTE_INDEX, 0)
+	wv[%GRAPH] = winGraphs
+	wv[%TABLE] = winTables
+
+	return wv
+End
+
+/// @brief Wave storing sf plot meta information per formularesult, filled in SF_GatherFormulaResults
+Function/WAVE GetSFPlotMetaData()
+
+	Make/FREE/T/N=(5) wv
+	SetDimensionLabels(wv, "DATATYPE;OPSTACK;ARGSETUPSTACK;XAXISLABEL;YAXISLABEL;", ROWS)
+
+	return wv
+End
+
+/// @brief Stores plot properties like AxesProperties, CursorInfos, AnnotationInfos
+Function/WAVE GetSFPlotProperties()
+
+	Make/FREE/WAVE/N=(0, 4) wv
+	SetDimensionLabels(wv, "NAME;AXES;CURSORS;ANNOTATIONS", COLS)
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
 End

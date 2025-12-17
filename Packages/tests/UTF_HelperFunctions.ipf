@@ -1750,7 +1750,7 @@ Function/S ExecuteSweepFormulaCode(string browser, string code, [variable expect
 		CHECK_EQUAL_VAR(errorSeverity, SF_MSG_OK)
 	endif
 
-	return SFH_GetFormulaGraphForBrowser(browser)
+	return SFH_GetFormulaPanelFromBrowser(browser, SF_DISPLAYTYPE_GRAPH)
 End
 
 Function MarkDeviceAsLocked(string device)

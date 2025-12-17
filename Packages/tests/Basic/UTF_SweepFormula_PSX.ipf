@@ -26,6 +26,7 @@ Function/S GetSweepFormulaGraph()
 	win = CleanupName(SF_PLOT_NAME_TEMPLATE, 0)
 	NewPanel/N=$win
 	win = S_name
+	Display/HOST=$win/N=$"subwin"
 
 	DFREF workDFR = UniqueDataFolder(GetMiesPath(), "psx_test")
 

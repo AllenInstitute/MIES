@@ -266,7 +266,7 @@ static Function CheckSurveyPlot(string device, WAVE/WAVE entries)
 	databrowser = DB_FindDatabrowser(device, mode = BROWSER_MODE_AUTOMATION)
 	CHECK(WindowExists(databrowser))
 
-	sfgraph = SFH_GetFormulaGraphForBrowser(databrowser)
+	sfgraph = SFH_GetFormulaPanelFromBrowser(databrowser, SF_DISPLAYTYPE_GRAPH)
 	CHECK(WindowExists(sfgraph))
 
 	allGraphs = GetAllWindows(sfGraph)
@@ -318,11 +318,11 @@ static Function CheckSurveyPlot(string device, WAVE/WAVE entries)
 			CHECK_WAVE(xWave, NUMERIC_WAVE)
 			Redimension/E=1/N=(-1, 0) xWave
 
-			if(strsearch(graph, "Graph0", 0) >= 0)
+			if(strsearch(graph, "graph0", 0) >= 0)
 				// frequency vs DAScale
 				CHECK_EQUAL_WAVES(DAScaleFiltered, xWave, mode = WAVE_DATA, tol = 1e-6)
 				CHECK_EQUAL_WAVES(apFreqFiltered, yWave, mode = WAVE_DATA, tol = 1e-6)
-			elseif(strsearch(graph, "Graph1", 0) >= 0)
+			elseif(strsearch(graph, "graph1", 0) >= 0)
 				// f-I slopes vs DAScale
 				CHECK_EQUAL_WAVES(DAScaleFilteredWithoutFirstPoint, xWave, mode = WAVE_DATA, tol = 1e-6)
 				CHECK_EQUAL_WAVES(fISlopeFiltered, yWave, mode = WAVE_DATA, tol = 1e-6)
