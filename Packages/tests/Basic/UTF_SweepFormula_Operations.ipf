@@ -1270,9 +1270,9 @@ static Function TestOperationAverage2()
 	win = CreateFakeSweepData(win, device, sweepNo = sweepNo + 1)
 
 	// Meta Data Transfer from first group
-	str = "ds0 = data(select(selsweeps(0), selvis(all)))\rds1 = data(select(selsweeps(1), selvis(all)))\r\ravg([$ds0, $ds1], group)"
+	str = "ds0 = data(select(selsweeps(0), selvis(all)))\rds1 = data(select(selsweeps(0, 1), selvis(all)))\r\ravg([$ds0, $ds1], group)"
 	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win)
-	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 4)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 8)
 	WAVE wv0 = dataRef[0]
 	sweepNo = JWN_GetNumberFromWaveNote(wv0, SF_META_SWEEPNO)
 	CHECK_EQUAL_VAR(sweepNo, 0)

@@ -515,7 +515,6 @@ Function/WAVE SFO_OperationAvg(STRUCT SF_ExecutionData &exd)
 	elseif(!CmpStr(mode, SF_OP_AVG_GROUPS))
 		WAVE/WAVE dataFromEachGroup = SFH_GetDatasetArrayAsResolvedWaverefs(exd, 0, resolveSelect = 1)
 		WAVE/WAVE averagedGroup     = SFO_OperationAvgImplSweepGroups(dataFromEachGroup, exd.graph, opShort)
-		SFH_TransferFormulaDataWaveNoteAndMeta(dataFromEachGroup[0], averagedGroup, opShort, SF_DATATYPE_AVG)
 
 		return SFH_GetOutputForExecutor(averagedGroup, exd.graph, opShort)
 	else
@@ -525,7 +524,7 @@ End
 
 static Function/WAVE SFO_OperationAvgImplSweepGroups(WAVE/WAVE sweepsFromEachSelection, string graph, string opShort)
 
-	variable numData, numMaxSweeps, numGroups, i, j
+	variable numData, numMaxSweeps, numGroups, i, j, maxIdx
 	STRUCT RGBColor s
 
 	[s] = GetTraceColorForAverage()
@@ -533,7 +532,9 @@ static Function/WAVE SFO_OperationAvgImplSweepGroups(WAVE/WAVE sweepsFromEachSel
 
 	numGroups = DimSize(sweepsFromEachSelection, ROWS)
 	Make/FREE/D/N=(numGroups) sweepCnts = DimSize(sweepsFromEachSelection[p], ROWS)
-	numMaxSweeps = WaveMax(sweepCnts)
+	WaveStats/Q/M=1 sweepCnts
+	numMaxSweeps = V_max
+	maxIdx       = V_maxRowLoc
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, numMaxSweeps)
 	for(i = 0; i < numMaxSweeps; i += 1)
 		Make/FREE/WAVE/N=(numGroups) avgSet
@@ -551,6 +552,8 @@ static Function/WAVE SFO_OperationAvgImplSweepGroups(WAVE/WAVE sweepsFromEachSel
 		JWN_SetNumberInWaveNote(output[i], SF_META_TRACETOFRONT, 1)
 		JWN_SetNumberInWaveNote(output[i], SF_META_LINESTYLE, 0)
 	endfor
+
+	SFH_TransferFormulaDataWaveNoteAndMeta(sweepsFromEachSelection[maxIdx], output, opShort, SF_DATATYPE_AVG)
 
 	return output
 End
