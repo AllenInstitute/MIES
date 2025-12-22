@@ -2208,3 +2208,14 @@ Function/WAVE SFH_AddVariableToStorageByFormula(string graph, string name, strin
 
 	return result
 End
+
+/// @brief Copy plot meta data JSON properties from a source to a target wave
+Function SFH_CopyPlotMetaData(WAVE input, WAVE output)
+
+	WAVE/Z wv = JWN_GetNumericWaveFromWaveNote(input, SF_META_TRACECOLOR)
+	if(WaveExists(wv))
+		JWN_SetWaveInWaveNote(output, SF_META_TRACECOLOR, wv)
+	endif
+	JWN_SetNumberInWaveNote(output, SF_META_TRACETOFRONT, JWN_GetNumberFromWaveNote(input, SF_META_TRACETOFRONT))
+	JWN_SetNumberInWaveNote(output, SF_META_LINESTYLE, JWN_GetNumberFromWaveNote(input, SF_META_LINESTYLE))
+End
