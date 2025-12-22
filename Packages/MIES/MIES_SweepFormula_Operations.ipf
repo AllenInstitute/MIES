@@ -1579,6 +1579,8 @@ Function/WAVE SFO_OperationMerge(STRUCT SF_ExecutionData &exd)
 
 	output[0] = content
 
+	SFH_CopyPlotMetaData(input[0], output[0])
+
 	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_MERGE)
 End
 
