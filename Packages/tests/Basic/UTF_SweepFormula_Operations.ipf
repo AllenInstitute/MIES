@@ -3283,6 +3283,23 @@ static Function TestOperationSelect()
 	CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, wvList)
 End
 
+Function/WAVE TestHelperOP(STRUCT SF_ExecutionData &exd)
+
+	string opShort = SF_OP_TESTOP
+
+	Make/FREE/N=1 val = 4711
+	JWN_SetNumberInWaveNote(val, SF_META_MOD_MARKER, 3)
+	JWN_SetWaveInWaveNote(val, SF_META_TRACECOLOR, {0, 1, 2, 3})
+	JWN_SetNumberInWaveNote(val, SF_META_TRACE_MODE, TRACE_DISPLAY_MODE_LINES)
+	JWN_SetNumberInWaveNote(val, SF_META_TRACETOFRONT, 1)
+	JWN_SetNumberInWaveNote(val, SF_META_LINESTYLE, 4)
+
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 1)
+	output[0] = val
+
+	return SFH_GetOutputForExecutor(output, exd.graph, opShort)
+End
+
 static Function TestOperationMerge()
 
 	string win, device, code
@@ -3322,13 +3339,13 @@ static Function TestOperationMerge()
 	WAVE wv = SFE_ExecuteFormula(code, win, useVariables = 0, singleResult = 1)
 	CHECK_WAVE(wv, FREE_WAVE, minorType = DOUBLE_WAVE)
 	Make/FREE/D refWv = {1, 2}
-	CHECK_EQUAL_WAVES(wv, refWv)
+	CHECK_EQUAL_WAVES(wv, refWv, mode = WAVE_DATA)
 
 	code = "merge(dataset([\"a\"], [\"b\"]))"
 	WAVE wv = SFE_ExecuteFormula(code, win, useVariables = 0, singleResult = 1)
 	CHECK_WAVE(wv, TEXT_WAVE)
 	Make/FREE/T refWvTxt = {"a", "b"}
-	CHECK_EQUAL_WAVES(wv, refWvTxt)
+	CHECK_EQUAL_WAVES(wv, refWvTxt, mode = WAVE_DATA)
 
 	code = "merge(dataset())"
 	WAVE/Z/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
@@ -3339,6 +3356,21 @@ static Function TestOperationMerge()
 	WAVE/Z/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 0)
+
+	SVAR funcName = $GetSFTestopName(win)
+	funcName = "TestHelperOP"
+
+	code = "merge(testop())"
+	WAVE/Z/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1)
+	WAVE wv = output[0]
+
+	CHECK_EQUAL_VAR(JWN_GetNumberFromWaveNote(wv, SF_META_MOD_MARKER), 3)
+	CHECK_EQUAL_WAVES(JWN_GetNumericWaveFromWaveNote(wv, SF_META_TRACECOLOR), {0, 1, 2, 3}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(JWN_GetNumberFromWaveNote(wv, SF_META_TRACE_MODE), TRACE_DISPLAY_MODE_LINES)
+	CHECK_EQUAL_VAR(JWN_GetNumberFromWaveNote(wv, SF_META_TRACETOFRONT), 1)
+	CHECK_EQUAL_VAR(JWN_GetNumberFromWaveNote(wv, SF_META_LINESTYLE), 4)
 End
 
 static Function TestOperationFitLine()
