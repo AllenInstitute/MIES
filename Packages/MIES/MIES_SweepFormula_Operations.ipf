@@ -235,6 +235,25 @@ static Function/WAVE SFO_OperationAnaFuncParamImplAllNames(WAVE/T names, WAVE/WA
 	return GetUniqueEntries(allNames)
 End
 
+static Function [variable method, variable level, string timeFreq, string normalize, string xAxisType] SFO_GetApFrequencyArguments(STRUCT SF_ExecutionData &exd, string opShort, variable offset)
+
+	method    = SFH_GetArgumentAsNumeric(exd, opShort, offset, defValue = SF_APFREQUENCY_FULL, allowedValues = {SF_APFREQUENCY_FULL, SF_APFREQUENCY_INSTANTANEOUS, SF_APFREQUENCY_APCOUNT, SF_APFREQUENCY_INSTANTANEOUS_PAIR})
+	level     = SFH_GetArgumentAsNumeric(exd, opShort, offset + 1, defValue = 0)
+	timeFreq  = SFH_GetArgumentAsText(exd, opShort, offset + 2, defValue = SF_OP_APFREQUENCY_Y_FREQ, allowedValues = {SF_OP_APFREQUENCY_Y_TIME, SF_OP_APFREQUENCY_Y_FREQ})
+	normalize = SFH_GetArgumentAsText(exd, opShort, offset + 3, defValue = SF_OP_APFREQUENCY_NONORM, allowedValues = {                                      \
+	                                                                                                                  SF_OP_APFREQUENCY_NONORM,             \
+	                                                                                                                  SF_OP_APFREQUENCY_NORMOVERSWEEPSMIN,  \
+	                                                                                                                  SF_OP_APFREQUENCY_NORMOVERSWEEPSMAX,  \
+	                                                                                                                  SF_OP_APFREQUENCY_NORMOVERSWEEPSAVG,  \
+	                                                                                                                  SF_OP_APFREQUENCY_NORMWITHINSWEEPMIN, \
+	                                                                                                                  SF_OP_APFREQUENCY_NORMWITHINSWEEPMAX, \
+	                                                                                                                  SF_OP_APFREQUENCY_NORMWITHINSWEEPAVG  \
+	                                                                                                                 })
+	xAxisType = SFH_GetArgumentAsText(exd, opShort, offset + 4, defValue = SF_OP_APFREQUENCY_X_TIME, allowedValues = {SF_OP_APFREQUENCY_X_TIME, SF_OP_APFREQUENCY_X_COUNT})
+
+	return [method, level, timeFreq, normalize, xAxisType]
+End
+
 // apfrequency(data, [frequency calculation method], [spike detection crossing level], [result value type], [normalize], [x-axis type])
 Function/WAVE SFO_OperationApFrequency(STRUCT SF_ExecutionData &exd)
 
@@ -249,19 +268,7 @@ Function/WAVE SFO_OperationApFrequency(STRUCT SF_ExecutionData &exd)
 	SFH_ASSERT(numArgs >= numArgsMin, "ApFrequency needs at least " + num2istr(numArgsMin) + " argument(s).")
 
 	WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, 0)
-	method    = SFH_GetArgumentAsNumeric(exd, opShort, 1, defValue = SF_APFREQUENCY_FULL, allowedValues = {SF_APFREQUENCY_FULL, SF_APFREQUENCY_INSTANTANEOUS, SF_APFREQUENCY_APCOUNT, SF_APFREQUENCY_INSTANTANEOUS_PAIR})
-	level     = SFH_GetArgumentAsNumeric(exd, opShort, 2, defValue = 0)
-	timeFreq  = SFH_GetArgumentAsText(exd, opShort, 3, defValue = SF_OP_APFREQUENCY_Y_FREQ, allowedValues = {SF_OP_APFREQUENCY_Y_TIME, SF_OP_APFREQUENCY_Y_FREQ})
-	normalize = SFH_GetArgumentAsText(exd, opShort, 4, defValue = SF_OP_APFREQUENCY_NONORM, allowedValues = {                                      \
-	                                                                                                         SF_OP_APFREQUENCY_NONORM,             \
-	                                                                                                         SF_OP_APFREQUENCY_NORMOVERSWEEPSMIN,  \
-	                                                                                                         SF_OP_APFREQUENCY_NORMOVERSWEEPSMAX,  \
-	                                                                                                         SF_OP_APFREQUENCY_NORMOVERSWEEPSAVG,  \
-	                                                                                                         SF_OP_APFREQUENCY_NORMWITHINSWEEPMIN, \
-	                                                                                                         SF_OP_APFREQUENCY_NORMWITHINSWEEPMAX, \
-	                                                                                                         SF_OP_APFREQUENCY_NORMWITHINSWEEPAVG  \
-	                                                                                                        })
-	xAxisType = SFH_GetArgumentAsText(exd, opShort, 5, defValue = SF_OP_APFREQUENCY_X_TIME, allowedValues = {SF_OP_APFREQUENCY_X_TIME, SF_OP_APFREQUENCY_X_COUNT})
+	[method, level, timeFreq, normalize, xAxisType] = SFO_GetApFrequencyArguments(exd, opShort, 1)
 
 	WAVE/T argSetup = SFH_GetNewArgSetupWave(numArgsMax - 1)
 
