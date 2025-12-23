@@ -1189,6 +1189,14 @@ static Function TestOperationAverage()
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
 	CHECK_EQUAL_VAR(data[0], 2)
 
+	str = "avg(1, in, stuff)"
+	try
+		WAVE/Z data = SFE_ExecuteFormula(str, win, singleResult = 1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
 	str = "avg([1, 2, 3], in)"
 	WAVE/Z data = SFE_ExecuteFormula(str, win, singleResult = 1, checkExist = 1)
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
@@ -1254,6 +1262,22 @@ static Function TestOperationAverage()
 	catch
 		PASS()
 	endtry
+
+	str  = ""
+	str += "ds0 = dataset(1, 2, 3)\r"
+	str += "ds1 = dataset(10, 20, 30)\r"
+	str += "bin0 = dataset(1, 1, 5)\r"
+	str += "bin1 = dataset(0, 3, 3)\r"
+	str += "binrange = [0, 4]\r"
+	str += "binwidth = 1\r"
+	str += "avg([$ds0, $ds0, $ds1], bins, $binrange, $binwidth, [$bin0, $bin0, $bin1])"
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win)
+	CHECK_WAVE(dataRef, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 4)
+	CHECK_EQUAL_WAVES(dataRef[0], {10}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(dataRef[1], {1.5}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(dataRef[2], {NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(dataRef[3], {25}, mode = WAVE_DATA)
 End
 
 static Function TestOperationAverage2()
