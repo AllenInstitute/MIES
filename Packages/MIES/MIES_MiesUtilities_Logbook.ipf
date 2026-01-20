@@ -1719,13 +1719,9 @@ Function HasLBNEntrySourceTypeCapability(WAVE values)
 		return 0
 	endif
 
-	if(!DimSize(values, ROWS))
+	// wave with no rows or only NaNs
+	if(!DimSize(values, ROWS) || !HasOneValidEntry(values))
 		return 1
-	endif
-
-	if(IsNumericWave(values))
-		WaveStats/Q/M=1/RMD=[][entryCol][] values
-		return !IsNaN(V_max)
 	endif
 
 	Duplicate/FREE/RMD=[][entryCol][] values, entrySourceTypeValues
