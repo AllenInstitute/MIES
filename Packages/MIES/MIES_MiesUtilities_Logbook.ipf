@@ -2017,25 +2017,28 @@ Function InvalidateLBIndexAndRowCaches()
 	endfor
 
 	Make/FREE/WAVE valuesWave = {GetNumericalResultsValues(), GetTextualResultsValues()}
-	InvalidateLBIndexAndRowCaches_Impl(valuesWave)
+
+	for(WAVE values : valuesWave)
+		InvalidateLBIndexAndRowCache(values)
+	endfor
 End
 
 Function InvalidateLBIndexAndRowCachesForDevice(string device)
 
 	Make/FREE/WAVE valuesWave = {GetLBNumericalValues(device), GetLBTextualValues(device)}
 
-	InvalidateLBIndexAndRowCaches_Impl(valuesWave)
+	for(WAVE values : valuesWave)
+		InvalidateLBIndexAndRowCache(values)
+	endfor
 End
 
-static Function InvalidateLBIndexAndRowCaches_Impl(WAVE/WAVE valuesWave)
+Function InvalidateLBIndexAndRowCache(WAVE values)
 
 	string key
 
-	for(WAVE values : valuesWave)
-		Make/FREE/T keys = {CA_CreateLBIndexCacheKey(values), CA_CreateLBRowCacheKey(values)}
+	Make/FREE/T keys = {CA_CreateLBIndexCacheKey(values), CA_CreateLBRowCacheKey(values)}
 
-		for(key : keys)
-			CA_DeleteCacheEntry(key)
-		endfor
+	for(key : keys)
+		CA_DeleteCacheEntry(key)
 	endfor
 End
