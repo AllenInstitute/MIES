@@ -2005,22 +2005,26 @@ Function InvalidateLBIndexAndRowCaches()
 	for(device : devices)
 		Make/FREE/WAVE valuesWave = {GetLBNumericalValues(device), GetLBTextualValues(device)}
 
-		InvalidateLBIndexAndRowCaches_Impl(valuesWave)
+		for(WAVE values : valuesWave)
+			InvalidateLBIndexAndRowCache(values)
+		endfor
 	endfor
 
 	Make/FREE/WAVE valuesWave = {GetNumericalResultsValues(), GetTextualResultsValues()}
-	InvalidateLBIndexAndRowCaches_Impl(valuesWave)
+
+	for(WAVE values : valuesWave)
+		InvalidateLBIndexAndRowCache(values)
+	endfor
 End
 
-static Function InvalidateLBIndexAndRowCaches_Impl(WAVE valuesWave)
+/// @brief Invalidates the row and index caches for a single numerical or textual logbook
+Function InvalidateLBIndexAndRowCache(WAVE values)
 
 	string key
 
-	for(WAVE values : valuesWave)
-		Make/FREE/T keys = {CA_CreateLBIndexCacheKey(values), CA_CreateLBRowCacheKey(values)}
+	Make/FREE/T keys = {CA_CreateLBIndexCacheKey(values), CA_CreateLBRowCacheKey(values)}
 
-		for(key : keys)
-			CA_DeleteCacheEntry(key)
-		endfor
+	for(key : keys)
+		CA_DeleteCacheEntry(key)
 	endfor
 End
