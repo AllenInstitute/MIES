@@ -164,6 +164,10 @@ End
 /// @brief Return the path converted to a windows style path
 threadsafe Function/S GetWindowsPath(string path)
 
+	// forward slashes to backslashes
+	// @todo workaround IP issue #7584 in ParseFilePath
+	path = ReplaceString("/", path, "\\")
+
 	return ParseFilepath(5, path, "\\", 0, 0)
 End
 
