@@ -69,6 +69,8 @@ Video tutorial of the postsynaptic potential/postsynaptic current data (PSX) ana
     - [PCIe-6343](https://www.ni.com/en-us/support/model.pcie-6343.html)
     - [PXI-6259](https://www.ni.com/en-us/support/model.pxi-6259.html)
     - [USB-6346](https://www.ni.com/de-de/support/model.usb-6346.html)
+    - [USB-6356](https://www.ni.com/en-us/shop/model/usb-6356.html) but this device does not support
+      Referenced Single Ended (RSE) channels, see the caveat below.
 
       Other NI hardware models can be added on request. Please open an issue from within MIES,
   `MIES Panels->Report an issue`, for that.
