@@ -1554,7 +1554,7 @@ Function AI_SelectMultiClamp(string device, variable headStage)
 End
 
 /// @brief Set the clamp mode of user linked MCC based on the headstage number
-Function AI_SetClampMode(string device, variable headStage, variable mode, [variable zeroStep])
+Function AI_SetClampMode(string device, variable headStage, variable mode, [variable zeroStep, variable selectAmp])
 
 	if(ParamIsDefault(zeroStep))
 		zeroStep = 0
@@ -1562,10 +1562,18 @@ Function AI_SetClampMode(string device, variable headStage, variable mode, [vari
 		zeroStep = !!zeroStep
 	endif
 
+	if(ParamIsDefault(selectAmp))
+		selectAmp = 1
+	else
+		selectAmp = !!selectAmp
+	endif
+
 	AI_AssertOnInvalidClampMode(mode)
 
-	if(AI_SelectMultiClamp(device, headStage) != AMPLIFIER_CONNECTION_SUCCESS)
-		return NaN
+	if(selectAmp)
+		if(AI_SelectMultiClamp(device, headStage) != AMPLIFIER_CONNECTION_SUCCESS)
+			return NaN
+		endif
 	endif
 
 	if(zeroStep && (mode == I_CLAMP_MODE || mode == V_CLAMP_MODE))
@@ -2237,7 +2245,7 @@ Function AI_SelectMultiClamp(string device, variable headStage)
 	DEBUGPRINT("Unimplemented")
 End
 
-Function AI_SetClampMode(string device, variable headStage, variable mode, [variable zeroStep])
+Function AI_SetClampMode(string device, variable headStage, variable mode, [variable zeroStep, variable selectAmp])
 
 	DEBUGPRINT("Unimplemented")
 End
