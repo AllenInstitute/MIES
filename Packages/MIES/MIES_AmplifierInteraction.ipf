@@ -2111,7 +2111,7 @@ Function AI_QueryGainsFromMCC(string device)
 		AI_QueryGainsUnitsForClampMode(device, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
 		AI_UpdateChanAmpAssign(device, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
 
-		AI_SetClampMode(device, i, old_clampMode)
+		AI_SetClampMode(device, i, old_clampMode, selectAmp = 0)
 	endfor
 
 	return numConnAmplifiers
