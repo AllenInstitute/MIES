@@ -1952,7 +1952,7 @@ Function AI_EnsureCorrectMode(string device, variable headStage, [variable selec
 
 	if(setMode != storedMode)
 		print "There was a mismatch in clamp mode between MIES and the MCC. The MCC mode was switched to match the mode specified by MIES."
-		AI_SetClampMode(device, headStage, storedMode)
+		AI_SetClampMode(device, headStage, storedMode, selectAmp = 0)
 	endif
 
 	return 0
