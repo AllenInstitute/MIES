@@ -145,6 +145,14 @@ Function ELE_Returns1WithCheckMem()
 	CHECK_EQUAL_VAR(DimSize(wv, ROWS), MINIMUM_WAVE_SIZE)
 End
 
+Function ELE_WorksWithPowerOfTwoValue()
+
+	Make/FREE/N=(MINIMUM_WAVE_SIZE) wv
+	CHECK_EQUAL_VAR(MINIMUM_WAVE_SIZE, 64)
+	EnsureLargeEnoughWave(wv, indexShouldExist = 128)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 256)
+End
+
 Function ELE_AbortsWithTooLargeValue()
 
 	Make/FREE/N=(MINIMUM_WAVE_SIZE) wv
