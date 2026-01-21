@@ -1508,19 +1508,17 @@ End
 /// @brief Changes the mode of the amplifier between I-Clamp and V-Clamp depending on the currently set mode
 ///
 /// Assumes that the correct amplifier is selected.
-static Function AI_SwitchAxonAmpMode()
-
-	variable mode
-
-	mode = MCC_GetMode()
+static Function AI_SwitchAxonAmpMode(variable mode)
 
 	if(mode == V_CLAMP_MODE)
 		MCC_SetMode(I_CLAMP_MODE)
+		return I_CLAMP_MODE
 	elseif(mode == I_CLAMP_MODE || mode == I_EQUAL_ZERO_MODE)
 		MCC_SetMode(V_CLAMP_MODE)
-	else
-		// do nothing
+		return V_CLAMP_MODE
 	endif
+
+	FATAL_ERROR("Invalid mode")
 End
 
 /// @brief Wrapper for MCC_SelectMultiClamp700B
@@ -2104,9 +2102,7 @@ Function AI_QueryGainsFromMCC(string device)
 		AI_WriteToAmplifier(device, i, clampMode, MCC_HOLDINGENABLE_FUNC, 0, selectAmp = 0)
 
 		old_clampMode = clampMode
-		AI_SwitchAxonAmpMode()
-
-		clampMode = MCC_GetMode()
+		clampMode     = AI_SwitchAxonAmpMode(old_clampMode)
 
 		AI_QueryGainsUnitsForClampMode(device, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
 		AI_UpdateChanAmpAssign(device, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
@@ -2235,7 +2231,7 @@ static Function AI_RetrieveGains(string device, variable headstage, variable cla
 	DEBUGPRINT("Unimplemented")
 End
 
-static Function AI_SwitchAxonAmpMode()
+static Function AI_SwitchAxonAmpMode(variable mode)
 
 	DEBUGPRINT("Unimplemented")
 End
