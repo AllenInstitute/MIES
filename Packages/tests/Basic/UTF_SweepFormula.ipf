@@ -1594,14 +1594,14 @@ static Function TestVariables2()
 	CHECK_EQUAL_STR(str, code)
 
 	// varName with all chars
-	str  = "abcdefghijklmnopqrstuvwxyz0123456789_=cursors(A,B)\r"
+	str  = "abcdefghijklmnopqrstuvwxyz0123456789_=cursors(A,B)\r12345\r"
 	code = MIES_SFE#SFE_ExecuteVariableAssignments(win, str)
-	CHECK_EQUAL_STR("", code)
+	CHECK_EQUAL_STR("12345\r", code)
 
 	// WhiteSpaces are ok
-	str  = " \ta \t= \tcursors(A,B)\r"
+	str  = " \ta \t= \tcursors(A,B)\r12345\r"
 	code = MIES_SFE#SFE_ExecuteVariableAssignments(win, str)
-	CHECK_EQUAL_STR("", code)
+	CHECK_EQUAL_STR("12345\r", code)
 End
 
 static Function TestDefaultFormula()

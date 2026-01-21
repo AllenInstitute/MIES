@@ -1818,6 +1818,10 @@ Function [WAVE/T varAssignments, string code] SF_GetVariableAssignments(string p
 		SFH_ASSERT(!DimSize(dups, ROWS), "Duplicate variable name.")
 	endif
 
+	if(!cmpstr(RemoveEnding(varPart, lineEnd), RemoveEnding(preProcCode, lineEnd)))
+		return [varAssignments, ""]
+	endif
+
 	return [varAssignments, ReplaceString(varPart, preProcCode, "")]
 End
 
