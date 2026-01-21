@@ -2075,7 +2075,7 @@ End
 /// @return number of connected amplifiers
 Function AI_QueryGainsFromMCC(string device)
 
-	variable clampMode, old_ClampMode, i, numConnAmplifiers, clampModeSwitchAllowed
+	variable clampMode, old_ClampMode, i, numConnAmplifiers
 	variable DAGain, ADGain
 	string DAUnit, ADUnit
 
@@ -2093,31 +2093,17 @@ Function AI_QueryGainsFromMCC(string device)
 		AI_QueryGainsUnitsForClampMode(device, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
 		AI_UpdateChanAmpAssign(device, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
 
-		clampModeSwitchAllowed = !MCC_GetHoldingEnable()
+		AI_WriteToAmplifier(device, i, clampMode, MCC_HOLDINGENABLE_FUNC, 0, selectAmp = 0)
 
-#ifdef AUTOMATED_TESTING
-		if(!clampModeSwitchAllowed)
-			printf "AI_QueryGainsFromMCC: Turning off holding potential for automated testing!\r"
-			MCC_SetHoldingEnable(0)
-			clampModeSwitchAllowed = 1
-		endif
-#endif // AUTOMATED_TESTING
+		old_clampMode = clampMode
+		AI_SwitchAxonAmpMode()
 
-		if(clampModeSwitchAllowed)
-			old_clampMode = clampMode
-			AI_SwitchAxonAmpMode()
+		clampMode = MCC_GetMode()
 
-			clampMode = MCC_GetMode()
+		AI_QueryGainsUnitsForClampMode(device, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
+		AI_UpdateChanAmpAssign(device, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
 
-			AI_QueryGainsUnitsForClampMode(device, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
-			AI_UpdateChanAmpAssign(device, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
-
-			AI_SetClampMode(device, i, old_clampMode)
-		else
-			printf "It appears that a holding potential is being applied, therefore as a precaution, "
-			printf "the gains cannot be imported for the %s.\r", ConvertAmplifierModeToString((clampMode == V_CLAMP_MODE) ? I_CLAMP_MODE : V_CLAMP_MODE)
-			printf "The gains were successfully imported for the %s on i: %d\r", ConvertAmplifierModeToString(clampMode), i
-		endif
+		AI_SetClampMode(device, i, old_clampMode)
 	endfor
 
 	return numConnAmplifiers
