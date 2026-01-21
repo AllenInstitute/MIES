@@ -1505,22 +1505,16 @@ static Function AI_RetrieveGains(string device, variable headstage, variable cla
 	endif
 End
 
-/// @brief Changes the mode of the amplifier between I-Clamp and V-Clamp depending on the currently set mode
-///
-/// Assumes that the correct amplifier is selected.
-static Function AI_SwitchAxonAmpMode()
-
-	variable mode
-
-	mode = MCC_GetMode()
+/// @brief Return the opposite clamp mode depending on the current one
+static Function AI_GetOppositeClampAmpMode(variable mode)
 
 	if(mode == V_CLAMP_MODE)
-		MCC_SetMode(I_CLAMP_MODE)
+		return I_CLAMP_MODE
 	elseif(mode == I_CLAMP_MODE || mode == I_EQUAL_ZERO_MODE)
-		MCC_SetMode(V_CLAMP_MODE)
-	else
-		// do nothing
+		return V_CLAMP_MODE
 	endif
+
+	FATAL_ERROR("Invalid clamp mode: " + num2str(mode))
 End
 
 /// @brief Wrapper for MCC_SelectMultiClamp700B
@@ -2075,7 +2069,7 @@ End
 /// @return number of connected amplifiers
 Function AI_QueryGainsFromMCC(string device)
 
-	variable clampMode, old_ClampMode, i, numConnAmplifiers, clampModeSwitchAllowed
+	variable clampMode, old_ClampMode, i, numConnAmplifiers
 	variable DAGain, ADGain
 	string DAUnit, ADUnit
 
@@ -2087,37 +2081,28 @@ Function AI_QueryGainsFromMCC(string device)
 
 		numConnAmplifiers += 1
 
-		clampMode = MCC_GetMode()
+		clampMode = DAG_GetHeadstageMode(device, i)
+
+		DAP_ChangeHeadStageMode(device, clampMode, i, MCC_SKIP_UPDATES)
+
 		AI_AssertOnInvalidClampMode(clampMode)
 
 		AI_QueryGainsUnitsForClampMode(device, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
 		AI_UpdateChanAmpAssign(device, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
 
-		clampModeSwitchAllowed = !MCC_GetHoldingEnable()
+		AI_WriteToAmplifier(device, i, clampMode, MCC_HOLDINGENABLE_FUNC, 0, selectAmp = 0)
 
-#ifdef AUTOMATED_TESTING
-		if(!clampModeSwitchAllowed)
-			printf "AI_QueryGainsFromMCC: Turning off holding potential for automated testing!\r"
-			MCC_SetHoldingEnable(0)
-			clampModeSwitchAllowed = 1
-		endif
-#endif // AUTOMATED_TESTING
+		old_clampMode = clampMode
+		clampMode     = AI_GetOppositeClampAmpMode(old_clampMode)
 
-		if(clampModeSwitchAllowed)
-			old_clampMode = clampMode
-			AI_SwitchAxonAmpMode()
+		DAP_ChangeHeadStageMode(device, clampMode, i, MCC_SKIP_UPDATES)
 
-			clampMode = MCC_GetMode()
+		AI_QueryGainsUnitsForClampMode(device, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
+		AI_UpdateChanAmpAssign(device, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
 
-			AI_QueryGainsUnitsForClampMode(device, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
-			AI_UpdateChanAmpAssign(device, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
+		AI_WriteToAmplifier(device, i, clampMode, MCC_HOLDINGENABLE_FUNC, 0, selectAmp = 0)
 
-			AI_SetClampMode(device, i, old_clampMode)
-		else
-			printf "It appears that a holding potential is being applied, therefore as a precaution, "
-			printf "the gains cannot be imported for the %s.\r", ConvertAmplifierModeToString((clampMode == V_CLAMP_MODE) ? I_CLAMP_MODE : V_CLAMP_MODE)
-			printf "The gains were successfully imported for the %s on i: %d\r", ConvertAmplifierModeToString(clampMode), i
-		endif
+		DAP_ChangeHeadStageMode(device, old_clampMode, i, MCC_SKIP_UPDATES)
 	endfor
 
 	return numConnAmplifiers
@@ -2241,7 +2226,7 @@ static Function AI_RetrieveGains(string device, variable headstage, variable cla
 	DEBUGPRINT("Unimplemented")
 End
 
-static Function AI_SwitchAxonAmpMode()
+static Function AI_GetOppositeClampAmpMode(variable mode)
 
 	DEBUGPRINT("Unimplemented")
 End
