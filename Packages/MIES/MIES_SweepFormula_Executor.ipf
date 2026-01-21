@@ -65,7 +65,7 @@ Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode)
 
 	STRUCT SF_ExecutionData exd
 	variable i, numAssignments, jsonId, srcLocId, line, offset
-	string code
+	string code, sfWin, nbText
 
 	exd.graph = graph
 
@@ -95,6 +95,18 @@ Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode)
 		JSON_Release(exd.jsonId)
 		JSON_Release(srcLocId)
 	endfor
+
+	if(IsEmpty(code))
+		if(!StringEndsWith(preProcCode, SF_CHAR_CR))
+			sfWin   = BSP_GetSFFormula(graph)
+			nbText  = GetNotebookText(sfWin, mode = 2)
+			nbText += SF_CHAR_CR
+			ReplaceNotebookText(sfWin, nbText)
+		endif
+
+		SFH_StoreAssertInfoParser(line + 1, 0, formula = "")
+		SFH_FATAL_ERROR("Only variables are present")
+	endif
 
 	return code
 End

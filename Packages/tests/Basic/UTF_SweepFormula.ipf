@@ -2581,6 +2581,19 @@ static Function TestSourceLocationTrackingVariables()
 		CHECK_EQUAL_VAR(str2numSafe(assertData[%OFFSET]), 3)
 		CHECK_EQUAL_VAR(str2numSafe(assertData[%INFORMULAOFFSET]), 13)
 	endtry
+
+	str = "a = 1\r"
+	try
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 1)
+		FAIL()
+	catch
+		WAVE/T assertData = GetSFAssertData()
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%STEP]), SF_STEP_PARSER)
+		CHECK_EQUAL_STR(assertData[%FORMULA], "")
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%LINE]), 1)
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%OFFSET]), 0)
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%INFORMULAOFFSET]), 1)
+	endtry
 End
 
 static Function TestSourceLocationTrackingPosition()
