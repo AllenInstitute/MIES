@@ -66,7 +66,7 @@ threadsafe Function EnsureLargeEnoughWave(WAVE wv, [variable indexShouldExist, v
 		return 0
 	endif
 
-	indexShouldExist = max(max(2^FindNextPower(indexShouldExist, 2), 2 * DimSize(wv, dimension)), MINIMUM_WAVE_SIZE)
+	indexShouldExist = max(2^FindNextPower(indexShouldExist + 1, 2), 2 * DimSize(wv, dimension), MINIMUM_WAVE_SIZE)
 
 	if(checkFreeMemory)
 		if((GetWaveSize(wv) * (indexShouldExist / DimSize(wv, dimension)) / 1024 / 1024 / 1024) >= GetFreeMemory())
