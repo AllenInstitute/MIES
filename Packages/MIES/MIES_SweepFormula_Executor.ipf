@@ -65,7 +65,7 @@ Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode)
 
 	STRUCT SF_ExecutionData exd
 	variable i, numAssignments, jsonId, srcLocId, line, offset
-	string code
+	string code, formula
 
 	exd.graph = graph
 
@@ -95,6 +95,14 @@ Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode)
 		JSON_Release(exd.jsonId)
 		JSON_Release(srcLocId)
 	endfor
+
+	if(IsEmpty(code))
+		line    = ItemsInList(preProcCode, SF_CHAR_CR) - 1
+		formula = StringFromList(line, preProcCode, SF_CHAR_CR)
+		offset  = max(0, strlen(formula) - 1)
+		SFH_StoreAssertInfoParser(line, offset, formula = formula)
+		SFH_FATAL_ERROR("Only variables are present")
+	endif
 
 	return code
 End

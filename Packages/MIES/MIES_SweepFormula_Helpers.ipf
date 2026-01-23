@@ -2107,12 +2107,16 @@ Function/WAVE SFH_GetLabNoteBookForSweep(string graph, variable sweepNo, variabl
 	return BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, logbookWaveType, sweepNumber = sweepNo)
 End
 
-Function SFH_StoreAssertInfoParser(variable line, variable offset)
+Function SFH_StoreAssertInfoParser(variable line, variable offset, [string formula])
 
 	WAVE/T info = GetSFAssertData()
 	info[%STEP]   = num2istr(SF_STEP_PARSER)
 	info[%LINE]   = num2istr(line)
 	info[%OFFSET] = num2istr(offset)
+
+	if(!ParamIsDefault(formula))
+		info[%FORMULA] = formula
+	endif
 End
 
 Function SFH_StoreAssertInfoExecutor(variable jsonId, variable srcLocId, string jsonPath)
