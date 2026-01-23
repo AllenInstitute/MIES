@@ -6462,14 +6462,15 @@ End
 
 Function PSX_CalculateOnsetTimeFromAvg(WAVE AvgEvent, variable kernelAmp, variable meanOnsetTime, variable meanPeakTime)
 
+	variable eventPeak, eventPeak_t, edge, backwardEdge, level, slewrate, slewrate_t
+
 	duplicate/FREE AvgEvent, AvgEventDiff
 	differentiate AvgEventDiff
-	smooth 500, AvgEventDiff
-	wavestats/Q AvgEvent
-	duplicate/O AvgEventDiff, root:forDisp
-	smooth 500, root:forDisp
 
-	variable eventPeak, eventPeak_t, edge, backwardEdge, level, slewrate, slewrate_t
+	AssertOnAndClearRTError()
+	smooth 500, AvgEventDiff; ClearRTError()
+
+	wavestats/Q AvgEvent
 
 	if(kernelAmp > 0)
 		eventPeak    = V_max
@@ -6508,7 +6509,7 @@ Function PSX_CalculateOnsetTimeFromAvg(WAVE AvgEvent, variable kernelAmp, variab
 	// --- Fallback: Use second derivative to enforce slope direction ---
 	duplicate/FREE AvgEventDiff, d2
 	differentiate d2
-	smooth 200, d2 // optional smoothing for stability
+	smooth 200, d2; ClearRTError() // optional smoothing for stability
 
 	variable closestIdx  = -1
 	variable closestDist = Inf
