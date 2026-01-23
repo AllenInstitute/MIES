@@ -479,7 +479,6 @@ static Function NWB_AddDeviceSpecificData(STRUCT NWBAsyncParameters &s, variable
 
 	AddModificationTimeEntry(s.locationID, s.nwbVersion)
 	NWB_AddDevice(s)
-	NWB_WriteLabnotebooksAndComments(s)
 	NWB_WriteTestpulseData(s, writeStoredTestPulses)
 End
 
@@ -588,12 +587,13 @@ End
 /// @param overwrite             [optional, defaults to false] overwrite any existing NWB file with the same name, only
 ///                              used when overrideFilePath is passed
 /// @param verbose               [optional, defaults to true] get diagnostic output to the command line
+/// @param recreateEpochs        [optional, defaults to false] when set to true, epoch information is recreated if the version of the data in the experiment is older than the latest version
 ///
 /// @return 0 on success, non-zero on failure
-Function NWB_ExportAllData(variable nwbVersion, [string device, string overrideFullFilePath, string overrideFileTemplate, variable writeStoredTestPulses, variable writeIgorHistory, variable compressionMode, variable keepFileOpen, variable overwrite, variable verbose])
+Function NWB_ExportAllData(variable nwbVersion, [string device, string overrideFullFilePath, string overrideFileTemplate, variable writeStoredTestPulses, variable writeIgorHistory, variable compressionMode, variable keepFileOpen, variable overwrite, variable verbose, variable recreateEpochs])
 
 	string list, name, fileName
-	variable locationID, sweep, createdNewNWBFile, argCheck
+	variable locationID, sweep, createdNewNWBFile, argCheck, epochVersion
 	string stimsetList = ""
 
 	if(ParamIsDefault(keepFileOpen))
@@ -629,6 +629,8 @@ Function NWB_ExportAllData(variable nwbVersion, [string device, string overrideF
 	else
 		verbose = !!verbose
 	endif
+
+	recreateEpochs = ParamIsDefault(recreateEpochs) ? 0 : !!recreateEpochs
 
 	argCheck = ParamIsDefault(overrideFullFilePath) + ParamIsDefault(overrideFileTemplate)
 	ASSERT(argCheck >= 1 && argCheck <= 2, "Either arg overrideFullFilePath or arg overrideFileTemplate must be given or none (auto-gen)")
@@ -741,6 +743,13 @@ Function NWB_ExportAllData(variable nwbVersion, [string device, string overrideF
 			WAVE s.DAQDataWave   = TextSweepToWaveRef(sweepWave)
 			WAVE s.DAQConfigWave = configWave
 
+			if(recreateEpochs)
+				epochVersion = GetLastSettingIndep(s.numericalValues, s.sweep, SWEEP_EPOCH_VERSION_ENTRY_KEY, DATA_ACQUISITION_MODE, defValue = NaN)
+				if(IsNaN(epochVersion) || epochVersion < SWEEP_EPOCH_VERSION)
+					InsertRecreatedEpochsIntoLBN(s.numericalValues, s.textualValues, s.device, s.sweep)
+				endif
+			endif
+
 			NWB_AppendSweepLowLevel(s)
 			stimsetList += AB_GetStimsetFromPanel(device, sweep)
 
@@ -748,6 +757,8 @@ Function NWB_ExportAllData(variable nwbVersion, [string device, string overrideF
 			fileIDExport = s.locationID
 		endfor
 		LOG_AddEntry(PACKAGE_MIES, "export", keys = {"size [MiB]"}, values = {num2str(NWB_GetExportedFileSize(device))})
+
+		NWB_WriteLabnotebooksAndComments(s)
 
 		NWB_AppendStimset(nwbVersion, s.locationID, stimsetList, compressionMode)
 
