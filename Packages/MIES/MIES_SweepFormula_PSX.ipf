@@ -2598,6 +2598,9 @@ static Function PSX_FitAverage(string win, DFREF averageDFR, WAVE eventOnsetTime
 
 	AssertOnAndClearRTError()
 
+	DFREF currentDFR = GetDataFolderDFR()
+	SetDataFolder NewFreeDataFolder()
+
 	Make/FREE/T/N=(11, 2) InputAvg, InputRise, InputDecay
 
 	Make/FREE/D/N=5 coefWave
@@ -2644,6 +2647,8 @@ static Function PSX_FitAverage(string win, DFREF averageDFR, WAVE eventOnsetTime
 
 	sprintf msg, "Fit in the range [%g, %g] finished with %d (%s)\r", riseStart, decayStop, err, GetErrMessage(err)
 	DEBUGPRINT(msg)
+
+	SetDataFolder currentDFR
 
 	if(err)
 		return NaN
