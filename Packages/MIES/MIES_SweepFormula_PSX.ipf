@@ -2520,7 +2520,7 @@ static Function PSX_FitAverage(string win, DFREF averageDFR, WAVE eventOnsetTime
 	string specialEventPanel, str, htmlStr, rawCode, browser, msg, fitFunc
 	variable err, numAveragePoints, start, stop, meanStopTime, meanOnsetTime, meanPeakTime, meanKernelAmp
 	variable xStart, xEnd, yStart, yEnd, riselowerThreshold, riseAndDecayUpperThreshold
-	variable extrema, extrema_t, edge, riseStart, riseStop, decayStart, decayStop, wTau, backwardEdge
+	variable extrema, extrema_t, edge, riseStart, riseStop, decayStart, decayStop, wTau, backwardEdge, onsetX, level
 
 	WAVE AverageFit      = GetPSXAverageFitWaveFromDFR(averageDFR, state)
 	WAVE RiseAverageFit  = GetPSXRiseAverageFitWaveFromDFR(averageDFR, state)
@@ -2579,9 +2579,14 @@ static Function PSX_FitAverage(string win, DFREF averageDFR, WAVE eventOnsetTime
 	riselowerThreshold         = GetSetVariable(specialEventPanel, "setvar_fit_start_amplitude") * PERCENT_TO_ONE
 	riseAndDecayUpperThreshold = 0.9
 	//	FindLevel/EDGE=(edge)/Q average, (riselowerThreshold * extrema)
-	variable onsetX = PSX_CalculateOnsetTimeFromAvg(average, meanKernelAmp, meanOnsetTime, meanPeakTime)
-	assert(!isNaN(onsetX), "onset time calculation must cannot be Nan")
-	variable level = (riseLowerThreshold * (extrema - average(onsetX))) + average(onsetX)
+	onsetX = PSX_CalculateOnsetTimeFromAvg(average, meanKernelAmp, meanOnsetTime, meanPeakTime)
+
+	if(IsNaN(onsetX))
+		print "onset time calculation must not be Nan, skipping average fits"
+		return NaN
+	endif
+
+	level = (riseLowerThreshold * (extrema - average(onsetX))) + average(onsetX)
 	FindLevel/EDGE=(edge)/R=(extrema_t, onsetX)/Q average, level
 	riseStart = V_LevelX
 	FindLevel/EDGE=(edge)/Q average, (riseAndDecayUpperThreshold * extrema)
