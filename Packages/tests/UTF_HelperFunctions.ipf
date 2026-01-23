@@ -1839,8 +1839,6 @@ Function/S GetTestCode(string postProc, [string eventState, string prop])
 		prop = "peaktime"
 	endif
 
-	code = "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all))), 5, 100, 0)"
-
 	code  = "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all))), 1.5, 100, 0)"
 	code += "\r and \r"
 	code += "psxStats(myId, select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), " + prop + ", " + eventState + ", " + postProc + ")"
