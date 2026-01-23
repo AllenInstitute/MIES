@@ -174,10 +174,6 @@ End
 
 static Function PSX_GetFindPeakBoxSize()
 
-#ifdef AUTOMATED_TESTING
-	return 10
-#endif // AUTOMATED_TESTING
-
 	return 10
 End
 
