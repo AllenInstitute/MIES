@@ -2984,9 +2984,89 @@ static Function NoEventsAtAll()
 	endtry
 End
 
-static Function CheckResultsWavesForAverageFitResult()
+static Function CheckNumUserTicksForAxis(string graph, string axis, variable enabled)
 
-	string browser, code, psxGraph, win, mainWindow, specialEventPanel, name, entry, comboKey
+	string   info
+	variable numUserTicks
+
+	enabled = !!enabled
+
+	// disabled axis has
+	// userticks(x)=0
+	// and an enabled one has
+	// userticks(x)={::MIES:HardwareDevices:ITC16:Device0:Databrowser0:FormulaData:psx:combo_0:eventTicks_freeDeconvAxis,
+	// ::MIES:HardwareDevices:ITC16:Device0:Databrowser0:FormulaData:psx:combo_0:eventLabels_freeDeconvAxis}
+	// which converts to NaN as numerical
+	info = AxisInfo(graph, axis)
+	CHECK_PROPER_STR(info)
+	numUserTicks = GetNumFromModifyStr(info, "userTicks", "", 0); ClearRTError()
+
+	if(enabled)
+		CHECK_EQUAL_VAR(numUserTicks, NaN)
+	else
+		CHECK_EQUAL_VAR(numUserTicks, 0)
+	endif
+End
+
+// IUTF_TD_GENERATOR s0:DataGenerators#GetPSXHelperAxisTypes
+static Function CheckHelperFreeAxis([STRUCT IUTF_mData &m])
+
+	string browser, code, psxGraph, win, mainWindow, specialEventPanel, name, entry, comboKey, state, axisType, ctrl
+	string info, axisName
+	variable numUserTicks, numTicks
+
+	axisType = m.s0
+
+	Make/FREE/T/N=2 combos
+	sprintf comboKey, "Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[0] = comboKey
+	sprintf comboKey, "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[1] = comboKey
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
+
+	browser = SetupDatabrowserWithSomeData()
+
+	code = GetTestCode("nothing")
+
+	win = ExecuteSweepFormulaCode(browser, code)
+
+	mainWindow        = GetMainWindow(win)
+	psxGraph          = MIES_PSX#PSX_GetPSXGraph(win)
+	specialEventPanel = MIES_PSX#PSX_GetSpecialPanel(win)
+
+	REQUIRE(WindowExists(psxGraph))
+
+	SetActiveSubwindow $psxGraph
+
+	CHECK_EQUAL_STR(AxisList(psxGraph), "leftOffFilt;bottom;leftOffFiltDeconv;freeDeconvAxis;freePeakAxis;freeBaselineAxis;")
+
+	// by default shown
+	CheckNumUserTicksForAxis(psxGraph, "freeDeconvAxis", 1)
+
+	// hidden by default
+	CheckNumUserTicksForAxis(psxGraph, "freePeakAxis", 0)
+	CheckNumUserTicksForAxis(psxGraph, "freeBaselineAxis", 0)
+
+	if(cmpstr(axisType, NONE))
+		PGC_SetAndActivateControl(mainWindow, "checkbox_show_deconv_lines", val = 0)
+		CheckNumUserTicksForAxis(psxGraph, "freeDeconvAxis", 0)
+
+		sprintf ctrl, "checkbox_show_%s_lines", axisType
+		PGC_SetAndActivateControl(mainWindow, ctrl, val = 1)
+
+		sprintf axisName, "free%sAxis", UpperCaseFirstChar(axisType)
+
+		CheckNumUserTicksForAxis(psxGraph, axisName, 1)
+	endif
+End
+
+// IUTF_TD_GENERATOR v0:DataGenerators#GetAllPSXStates
+static Function CheckResultsWavesForAverageFitResult([STRUCT IUTF_mData &m])
+
+	string browser, code, psxGraph, win, mainWindow, specialEventPanel, name, entry, comboKey, state
+	state = MIES_PSX#PSX_StateToString(m.v0)
 
 	Make/FREE/T/N=2 combos
 	sprintf comboKey, "Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
@@ -3017,14 +3097,23 @@ static Function CheckResultsWavesForAverageFitResult()
 	WAVE/T textualResultsValues = GetLogbookWaves(LBT_RESULTS, LBN_TEXTUAL_VALUES)
 	CHECK_EQUAL_VAR(GetNumberFromWaveNote(textualResultsValues, NOTE_INDEX), 1)
 
-	PGC_SetAndActivateControl(specialEventPanel, "checkbox_average_events_accept", val = 1)
+	PGC_SetAndActivateControl(specialEventPanel, "checkbox_average_events_" + state, val = 1)
 	CHECK_EQUAL_VAR(GetNumberFromWaveNote(textualResultsValues, NOTE_INDEX), 1)
 
-	PGC_SetAndActivateControl(specialEventPanel, "checkbox_events_fit_accept", val = 1)
+	PGC_SetAndActivateControl(specialEventPanel, "checkbox_events_fit_" + state, val = 1)
+
 	// our data makes the fit fail
-	CHECK_EQUAL_VAR(GetNumberFromWaveNote(textualResultsValues, NOTE_INDEX), 1)
+	strswitch(state)
+		case "all": // fallthrough
+		case "undetermined":
+			CHECK_EQUAL_VAR(GetNumberFromWaveNote(textualResultsValues, NOTE_INDEX), 2)
+			break
+		default:
+			CHECK_EQUAL_VAR(GetNumberFromWaveNote(textualResultsValues, NOTE_INDEX), 1)
+			break
+	endswitch
 
-	name  = SFH_FormatResultsKey(SFH_RESULT_TYPE_PSX_MISC, "accepted average fit results")
+	name  = SFH_FormatResultsKey(SFH_RESULT_TYPE_PSX_MISC, state + "ed average fit results")
 	entry = GetLastSettingTextIndep(textualResultsValues, NaN, name, SWEEP_FORMULA_RESULT)
 	CHECK_EMPTY_STR(entry)
 End
@@ -3487,28 +3576,31 @@ static Function [variable filterLow, variable filterHigh, variable filterOrder] 
 	return [filterLow, filterHigh, filterOrder]
 End
 
-static Function TestOperationDeconvBPFilter()
+/// IUTF_TD_GENERATOR s0:DataGenerators#GetAllPSXFilterOperations
+static Function TestOperationFilters([STRUCT IUTF_mData &m])
 
-	string win, str
+	string win, str, op
 	variable filterLow, filterHigh, filterOrder
 
 	win = SetupDatabrowserWithSomeData()
 
-	str = "psxDeconvBPFilter()"
+	op = m.s0
+
+	sprintf str, "%s()", op
 	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	[filterLow, filterHigh, filterOrder] = TestDevonvFilterContainer(dataWref)
 	CHECK_EQUAL_VAR(filterLow, NaN)
 	CHECK_EQUAL_VAR(filterHigh, NaN)
 	CHECK_EQUAL_VAR(filterOrder, NaN)
 
-	str = "psxDeconvBPFilter(40)"
+	sprintf str, "%s(40)", op
 	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	[filterLow, filterHigh, filterOrder] = TestDevonvFilterContainer(dataWref)
 	CHECK_EQUAL_VAR(filterLow, 40)
 	CHECK_EQUAL_VAR(filterHigh, NaN)
 	CHECK_EQUAL_VAR(filterOrder, NaN)
 
-	str = "psxDeconvBPFilter(40, 50)"
+	sprintf str, "%s(40, 50)", op
 	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	[filterLow, filterHigh, filterOrder] = TestDevonvFilterContainer(dataWref)
 	// we automatically fixup the order for the user
@@ -3516,7 +3608,7 @@ static Function TestOperationDeconvBPFilter()
 	CHECK_EQUAL_VAR(filterHigh, 40)
 	CHECK_EQUAL_VAR(filterOrder, NaN)
 
-	str = "psxDeconvBPFilter(40, 50, 11)"
+	sprintf str, "%s(40, 50, 11)", op
 	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	[filterLow, filterHigh, filterOrder] = TestDevonvFilterContainer(dataWref)
 	// we automatically fixup the order for the user
@@ -3526,7 +3618,7 @@ static Function TestOperationDeconvBPFilter()
 
 	// check parameters
 	try
-		str = "psxDeconvBPFilter(-1)"
+		sprintf str, "%s(-1)", op
 		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
@@ -3534,7 +3626,7 @@ static Function TestOperationDeconvBPFilter()
 	endtry
 
 	try
-		str = "psxDeconvBPFilter(1, -1)"
+		sprintf str, "%s(1, -1)", op
 		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
@@ -3542,7 +3634,7 @@ static Function TestOperationDeconvBPFilter()
 	endtry
 
 	try
-		str = "psxDeconvBPFilter(1, 1, -1)"
+		sprintf str, "%s(1, 1, -1)", op
 		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch

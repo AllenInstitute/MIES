@@ -1965,3 +1965,32 @@ static Function/WAVE DG_SourceLocationsContent()
 
 	return wv
 End
+
+static Function/WAVE GetAllPSXFilterOperations()
+
+	Make/FREE/T wv = {"psxDeconvBPFilter", "psxSweepBPFilter"}
+
+	SetDimensionLabelsFromWaveContents(wv)
+
+	return wv
+End
+
+static Function/WAVE GetAllPSXStates()
+
+	WAVE wv = MIES_PSX#PSX_GetStates(withAllState = 1)
+
+	Make/FREE/T/N=(DimSize(wv, ROWS)) labels = MIES_PSX#PSX_StateToString(wv[p])
+
+	SetDimensionLabels(wv, TextWaveToList(labels, ";"), ROWS)
+
+	return wv
+End
+
+static Function/WAVE GetPSXHelperAxisTypes()
+
+	Make/FREE/T wv = {NONE, "deconv", "peak", "baseline"}
+
+	SetDimensionLabelsFromWaveContents(wv)
+
+	return wv
+End
