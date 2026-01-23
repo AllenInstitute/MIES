@@ -790,7 +790,7 @@ static Function PSX_GetGoodTauImpl(WAVE psxEvent)
 
 	variable numEvents, err, xVal, idx, tau
 
-	idx = FindDimLabel(psxEvent, COLS, "tau")
+	idx = FindDimLabel(psxEvent, COLS, "weightedTau")
 	Duplicate/FREE/RMD=[][idx] psxEvent, tauWithNaN
 
 	WAVE/Z taus = ZapNaNs(tauWithNaN)
@@ -921,10 +921,22 @@ static Function PSX_FitEventDecay(WAVE sweepDataOffFilt, WAVE psxEvent, variable
 		err = !overrideResults[eventIndex][%$comboKey][%$"Fit Result"]
 		ASSERT(IsFinite(err), "err needs to be finite")
 
-		overrideTau = overrideResults[eventIndex][%$comboKey][%Tau]
+		overrideTau = overrideResults[eventIndex][%$comboKey][%weightedTau]
 
 		if(!IsNaN(overrideTau))
 			weightedTau = overrideTau
+		endif
+
+		overrideTau = overrideResults[eventIndex][%$comboKey][%slowTau]
+
+		if(!IsNaN(overrideTau))
+			slowTau = overrideTau
+		endif
+
+		overrideTau = overrideResults[eventIndex][%$comboKey][%fastTau]
+
+		if(!IsNaN(overrideTau))
+			fastTau = overrideTau
 		endif
 	endif
 #endif // AUTOMATED_TESTING
@@ -982,9 +994,9 @@ static Function/WAVE PSX_CreateOverrideResults(variable numEvents, WAVE/T combos
 
 	numCombos = DimSize(combos, ROWS)
 
-	Make/D/N=(numEvents, numCombos, 3) root:overrideResults/WAVE=wv
+	Make/D/N=(numEvents, numCombos, 5) root:overrideResults/WAVE=wv
 	SetDimensionLabels(wv, TextWaveToList(combos, ";"), COLS)
-	SetDimensionLabels(wv, "Fit Result;Tau;KernelAmpSignQC", LAYERS)
+	SetDimensionLabels(wv, "Fit Result;WeightedTau;FastTau;SlowTau;KernelAmpSignQC", LAYERS)
 
 	wv[] = NaN
 
@@ -1315,7 +1327,9 @@ static Function [WAVE/D results, WAVE eventIndex, WAVE marker, WAVE/T comboKeys]
 		case "Event manual QC call": // fallthrough
 		case "Slew Rate": // fallthrough
 		case "Slew Rate Time": // fallthrough
+		case "Rise": // fallthrough
 		case "Rise Time": // fallthrough
+		case "Onset": // fallthrough
 		case "Onset Time":
 			stateType = "Event manual QC call"
 			break
@@ -1752,8 +1766,8 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE s
 					// truncate the input data to get usable histogram bins
 					// using allEvents assumes that the same psxKernel was used for
 					// all input events, which sounds reasonable.
-					if(!cmpstr(prop, "tau") || !cmpstr(prop, "amp"))
-						if(!cmpstr(prop, "tau"))
+					if(!cmpstr(prop, "weightedTau") || !cmpstr(prop, "amp"))
+						if(!cmpstr(prop, "weightedTau"))
 							lowerBoundary = 0
 							upperBoundary = PSX_STATS_TAU_FACTOR * JWN_GetNumberFromWaveNote(allEvents, SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/psxKernel/decayTau")
 							ASSERT(IsFinite(upperBoundary) && upperBoundary > 0, "Upper boundary for tau must be finite and positive")
