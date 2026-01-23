@@ -1242,7 +1242,7 @@ static Function/WAVE StatsTest_GetInput()
 	Duplicate/FREE/T template, wv3
 	WAVE/T input = wv3
 
-	input[%prop]     = "tau"
+	input[%prop]     = "weightedTau"
 	input[%state]    = "accept"
 	input[%postProc] = "nothing"
 
@@ -1258,11 +1258,12 @@ static Function/WAVE StatsTest_GetInput()
 	input[%state]    = "accept"
 	input[%postProc] = "stats"
 
-	JWN_SetWaveInWaveNote(input, "/results", {40, 40, 20, 25.81988897471611, 0, -2.0775})
+	JWN_SetWaveInWaveNote(input, "/results", {40, 40, 20, 25.81988897471611, 0, -2.0775, 20, 60, 40, 20, NaN})
 	JWN_SetWaveInWaveNote(input, "/xValues", ListToTextWave(PSX_STATS_LABELS, ";"))
 	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, \
-	                                         PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT})
-
+	                                         PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, \
+	                                         PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, \
+	                                         PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT})
 	// wv5
 	Duplicate/FREE/T template, wv5
 	WAVE/T input = wv5
@@ -1414,7 +1415,7 @@ Function/WAVE StatsTestSpecialCases_GetInput()
 	Duplicate/FREE/T template, wv3
 	WAVE/T input = wv3
 
-	input[%prop]             = "tau"
+	input[%prop]             = "weightedTau"
 	input[%state]            = "undetermined"
 	input[%postProc]         = "hist"
 	input[%refNumOutputRows] = "0"
@@ -1454,10 +1455,12 @@ Function/WAVE StatsTestSpecialCases_GetInput()
 	input[%outOfRange]       = "0"
 
 	JWN_CreatePath(input, "/0")
-	JWN_SetWaveInWaveNote(input, "/0/results", {10, NaN, 0, 0, NaN, NaN})
+	JWN_SetWaveInWaveNote(input, "/0/results", {10, NaN, 0, 0, NaN, NaN, NaN, NaN, NaN, NaN, NaN})
 	JWN_SetWaveInWaveNote(input, "/0/xValues", ListToTextWave(PSX_STATS_LABELS, ";"))
 	JWN_SetWaveInWaveNote(input, "/0/marker", {PSX_MARKER_REJECT, PSX_MARKER_REJECT, PSX_MARKER_REJECT, \
-	                                           PSX_MARKER_REJECT, PSX_MARKER_REJECT, PSX_MARKER_REJECT})
+	                                           PSX_MARKER_REJECT, PSX_MARKER_REJECT, PSX_MARKER_REJECT, \
+	                                           PSX_MARKER_REJECT, PSX_MARKER_REJECT, PSX_MARKER_REJECT, \
+	                                           PSX_MARKER_REJECT, PSX_MARKER_REJECT})
 
 	// wv6
 	// stats ignores NaN and with all data NaN we don't get anything
@@ -1538,27 +1541,24 @@ static Function/WAVE GetCodeVariations()
 
 	string code
 
-	Make/T/N=(3)/FREE wv
-
-	wv[0] = GetTestCode("nothing")
-	code  = ""
+	Make/T/N=(2)/FREE wv
 
 	// one sweep per operation separated with `with`
-	code  = "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0]), selvis(all))), 2, 100, 0)"
+	code  = "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0]), selvis(all))), 2, psxSweepBPFilter(100, 0))"
 	code += "\r with \r"
-	code += "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([2]), selvis(all))), 1.5, 100, 0)"
+	code += "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([2]), selvis(all))), 0.3, psxSweepBPFilter(100, 0))"
 	code += "\r and \r"
 	code += "psxStats(myId, select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), peak, all, nothing)"
-	wv[1] = code
+	wv[0] = code
 	code  = ""
 
 	// same as code[1] but with a select array for stats
-	code  = "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0]), selvis(all))), 2, 100, 0)"
+	code  = "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0]), selvis(all))), 2, psxSweepBPFilter(100, 0))"
 	code += "\r with \r"
-	code += "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([2]), selvis(all))), 1.5, 100, 0)"
+	code += "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([2]), selvis(all))), 0.3, psxSweepBPFilter(100, 0))"
 	code += "\r and \r"
 	code += "psxStats(myId, [select(selrange([50, 150]), selchannels(AD6), selsweeps([0]), selvis(all)), select(selrange([50, 150]), selchannels(AD6), selsweeps([2]), selvis(all))], peak, all, nothing)"
-	wv[2] = code
+	wv[1] = code
 	code  = ""
 
 	return wv
