@@ -857,7 +857,7 @@ static Function [variable start, variable stop] PSX_GetEventFitRange(WAVE sweepD
 	if(eventIndex == (DimSize(psxEvent, ROWS) - 1))
 		stop = start + maxLength
 	else
-		stop = min(start + 5 * decayTau, psxEvent[eventIndex + 1][%baseline_t]) // min(psxEvent[eventIndex + 1][%peak_t] * PSX_FIT_RANGE_PERC, psxEvent[eventIndex + 1][%baseline_t])
+		stop = min(start + 5 * decayTau, psxEvent[eventIndex + 1][%baseline_t])
 	endif
 
 	stop = min(stop, IndexToScale(sweepDataOffFilt, DimSize(sweepDataOffFilt, ROWS), ROWS))
@@ -2214,7 +2214,7 @@ End
 /// @param forceSingleEventUpdate [optional, defaults to false] update every single event trace regardless of its old state
 static Function PSX_AdaptColorsInAllEventGraph(string win, [variable forceAverageUpdate, variable forceSingleEventUpdate])
 
-	string extAllGraph, trace, stateType
+	string extAllGraph, trace, stateType, msg
 	variable i, numWaves, stateMatchPattern, numCombos, stateColumn
 	variable idx, averageUpdateRequired, numSingleEventTraces
 
@@ -2329,7 +2329,10 @@ static Function PSX_AdaptColorsInAllEventGraph(string win, [variable forceAverag
 
 			trace = traceNames[i]
 
-			// printf "Trace %s changed, differentHideState %d, differentEventState %d, new state %s\r", trace, differentHideState[i], differentEventState[i], PSX_StateToString(stateNew[i])
+#ifdef DEBUGGING_ENABLED
+			sprintf msg, "Trace %s changed, differentHideState %d, differentEventState %d, new state %s\r", trace, differentHideState[i], differentEventState[i], PSX_StateToString(stateNew[i])
+			DEBUGPRINT(msg)
+#endif // DEBUGGING_ENABLED
 
 			if(differentHideState[i] && differentEventState[i])
 				averageUpdateRequired = 1
@@ -2555,7 +2558,6 @@ static Function PSX_FitAverage(string win, DFREF averageDFR, WAVE eventOnsetTime
 	CopyScales average, AverageFit, RiseAverageFit, DecayAverageFit
 
 	meanOnsetTime = PSX_FilterFitAverageParameters(eventOnsetTime, newState, state)
-	//	meanStopTime = PSX_FindDominantStopTimePeak(eventStopTime, newState, state, eventKernelAmp,  binwidth = 0.1, showplot = 1)
 	meanStopTime  = PSX_FindDominantStopTimePeak(eventStopTime, newState, state, eventKernelAmp)
 	meanKernelAmp = PSX_FilterFitAverageParameters(eventKernelAmp, newState, state, requireFiniteResult = 1)
 	meanPeakTime  = PSX_FilterFitAverageParameters(eventPeakTime, newState, state, requireFiniteResult = 1)
@@ -2578,8 +2580,7 @@ static Function PSX_FitAverage(string win, DFREF averageDFR, WAVE eventOnsetTime
 
 	riselowerThreshold         = GetSetVariable(specialEventPanel, "setvar_fit_start_amplitude") * PERCENT_TO_ONE
 	riseAndDecayUpperThreshold = 0.9
-	//	FindLevel/EDGE=(edge)/Q average, (riselowerThreshold * extrema)
-	onsetX = PSX_CalculateOnsetTimeFromAvg(average, meanKernelAmp, meanOnsetTime, meanPeakTime)
+	onsetX                     = PSX_CalculateOnsetTimeFromAvg(average, meanKernelAmp, meanOnsetTime, meanPeakTime)
 
 	if(IsNaN(onsetX))
 		print "onset time calculation must not be Nan, skipping average fits"
