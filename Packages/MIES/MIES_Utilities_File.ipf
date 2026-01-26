@@ -293,6 +293,8 @@ Function/WAVE GetAllFilesRecursivelyFromPath(string pathName, [string regex, var
 		endif
 	endfor
 
+	KillPath $workPath
+
 	if(!numFiles)
 		return $""
 	endif
