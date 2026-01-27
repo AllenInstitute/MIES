@@ -1416,3 +1416,159 @@ static Function TestGetGoodFFTSizes()
 
 	junkWave[] = CheckPrimeFactors(wv[p])
 End
+
+/// ShortenWaveForFFTIfRequired
+/// @{
+
+/// Test pass-through case: wave with good FFT size (only 2 and 3 as prime factors)
+static Function TestShortenWaveForFFTIfRequired_PassThrough()
+
+	variable size
+
+	// Test with power of 2 size
+	size = 1024
+	Make/FREE/N=(size) inputWave = p
+	WAVE result = ShortenWaveForFFTIfRequired(inputWave)
+	CHECK(WaveRefsEqual(result, inputWave))
+
+	// Test with power of 3 size
+	size = 729 // 729 = 3^6
+	Make/FREE/N=(size) inputWave = p
+	WAVE result = ShortenWaveForFFTIfRequired(inputWave)
+	CHECK(WaveRefsEqual(result, inputWave))
+
+	// Test with mixed 2 and 3 factors
+	size = 72 // 72 = 2^3 * 3^2
+	Make/FREE/N=(size) inputWave = p
+	WAVE result = ShortenWaveForFFTIfRequired(inputWave)
+	CHECK(WaveRefsEqual(result, inputWave))
+
+	// Test with size 2^10 * 3
+	size = 3072 // 3072 = 2^10 * 3
+	Make/FREE/N=(size) inputWave = p
+	WAVE result = ShortenWaveForFFTIfRequired(inputWave)
+	CHECK(WaveRefsEqual(result, inputWave))
+End
+
+/// Test truncation case: wave with large prime factors
+static Function TestShortenWaveForFFTIfRequired_Truncation()
+
+	variable size, resultSize
+	string msg
+
+	// Test with a prime number > 1000
+	size = 1009
+	Make/FREE/N=(size) inputWave = p
+	WAVE result = ShortenWaveForFFTIfRequired(inputWave)
+	CHECK(!WaveRefsEqual(result, inputWave))
+	resultSize = DimSize(result, ROWS)
+	sprintf msg, "Result size %d should be less than input size %d", resultSize, size
+	INFO(msg)
+	CHECK(resultSize < size)
+	// Verify content is preserved (first resultSize points)
+	Duplicate/FREE/RMD=[0, resultSize - 1] inputWave, inputSlice
+	CHECK_EQUAL_WAVES(result, inputSlice, mode = WAVE_DATA, tol = 0)
+
+	// Test with a composite number with large prime factor
+	size = 2017 // 2017 is a prime number > 1000
+	Make/FREE/N=(size) inputWave = p * 2
+	WAVE result = ShortenWaveForFFTIfRequired(inputWave)
+	CHECK(!WaveRefsEqual(result, inputWave))
+	resultSize = DimSize(result, ROWS)
+	sprintf msg, "Result size %d should be less than input size %d", resultSize, size
+	INFO(msg)
+	CHECK(resultSize < size)
+	// Verify content is preserved (check first few points)
+	CHECK_EQUAL_VAR(result[0], inputWave[0])
+	CHECK_EQUAL_VAR(result[10], inputWave[10])
+	CHECK_EQUAL_VAR(result[100], inputWave[100])
+
+	// Test with size that has a large prime factor
+	size = 5003 // prime number > 1000
+	Make/FREE/N=(size) inputWave = sin(p / 100)
+	WAVE result = ShortenWaveForFFTIfRequired(inputWave)
+	CHECK(!WaveRefsEqual(result, inputWave))
+	resultSize = DimSize(result, ROWS)
+	sprintf msg, "Result size %d should be less than input size %d", resultSize, size
+	INFO(msg)
+	CHECK(resultSize < size)
+	// Verify wave properties
+	CHECK_EQUAL_VAR(DimDelta(result, ROWS), DimDelta(inputWave, ROWS))
+	// Verify content is preserved (first resultSize points)
+	Duplicate/FREE/RMD=[0, resultSize - 1] inputWave, inputSlice
+	CHECK_EQUAL_WAVES(result, inputSlice, mode = WAVE_DATA, tol = 1e-10)
+End
+
+/// Test cache behavior: verify caching works
+static Function TestShortenWaveForFFTIfRequired_Cache()
+
+	variable size, resultSize1, resultSize2
+	string key
+
+	// Clear cache first
+	key = CA_GetGoodFFTSizesKeys()
+	CA_DeleteCacheEntry(key)
+
+	// First call should miss cache and populate it
+	// Use 2017 as it's a prime number > 1000 that will trigger truncation
+	size = 2017
+	Make/FREE/N=(size) inputWave1 = p
+	WAVE result1 = ShortenWaveForFFTIfRequired(inputWave1)
+	resultSize1 = DimSize(result1, ROWS)
+
+	// Verify cache was populated
+	WAVE/Z cached = CA_TryFetchingEntryFromCache(key)
+	CHECK_WAVE(cached, NUMERIC_WAVE)
+	CHECK_GT_VAR(DimSize(cached, ROWS), 0)
+
+	// Second call should hit cache and produce same result size
+	// Use same size to verify caching behavior
+	size = 2017
+	Make/FREE/N=(size) inputWave2 = p * 3
+	WAVE result2 = ShortenWaveForFFTIfRequired(inputWave2)
+	resultSize2 = DimSize(result2, ROWS)
+
+	// Should produce same truncation size
+	CHECK_EQUAL_VAR(resultSize1, resultSize2)
+
+	// Clean up
+	CA_DeleteCacheEntry(key)
+End
+
+/// Test that truncated wave has good FFT size
+static Function TestShortenWaveForFFTIfRequired_GoodSizeResult()
+
+	variable size, resultSize
+
+	// Test with bad size
+	size = 1009 // prime
+	Make/FREE/N=(size) inputWave = p
+	WAVE result = ShortenWaveForFFTIfRequired(inputWave)
+	resultSize = DimSize(result, ROWS)
+
+	// Verify the result has only small prime factors
+	WAVE primes = GetPrimeFactors(resultSize)
+	CHECK_LE_VAR(WaveMax(primes), 1000)
+
+	// Test with another bad size
+	size = 3001 // prime
+	Make/FREE/N=(size) inputWave = p
+	WAVE result = ShortenWaveForFFTIfRequired(inputWave)
+	resultSize = DimSize(result, ROWS)
+
+	// Verify the result has only small prime factors
+	WAVE primes = GetPrimeFactors(resultSize)
+	CHECK_LE_VAR(WaveMax(primes), 1000)
+
+	// Test with a larger prime number
+	size = 10007 // prime
+	Make/FREE/N=(size) inputWave = p
+	WAVE result = ShortenWaveForFFTIfRequired(inputWave)
+	resultSize = DimSize(result, ROWS)
+
+	// Verify the result has only small prime factors
+	WAVE primes = GetPrimeFactors(resultSize)
+	CHECK_LE_VAR(WaveMax(primes), 1000)
+End
+
+/// @}
