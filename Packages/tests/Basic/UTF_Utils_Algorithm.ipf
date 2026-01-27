@@ -1470,7 +1470,7 @@ static Function TestShortenWaveForFFTIfRequired_Truncation()
 	CHECK_EQUAL_WAVES(result, inputSlice, mode = WAVE_DATA, tol = 0)
 
 	// Test with a composite number with large prime factor
-	size = 2017 // prime number
+	size = 2017 // 2017 is a prime number > 1000
 	Make/FREE/N=(size) inputWave = p * 2
 	WAVE result = ShortenWaveForFFTIfRequired(inputWave)
 	CHECK(!WaveRefsEqual(result, inputWave))
