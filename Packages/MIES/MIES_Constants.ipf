@@ -2375,12 +2375,13 @@ Constant SECONDS_PER_DAY = 86400
 StrConstant DB_AXIS_PART_EPOCHS = "_EP"
 ///@}
 
-StrConstant SF_OP_PSX               = "psx"
-StrConstant SF_OP_PSX_KERNEL        = "psxKernel"
-StrConstant SF_OP_PSX_STATS         = "psxStats"
-StrConstant SF_OP_PSX_RISETIME      = "psxRiseTime"
-StrConstant SF_OP_PSX_PREP          = "psxPrep"
-StrConstant SF_OP_PSX_DECONV_FILTER = "psxDeconvFilter"
+StrConstant SF_OP_PSX                  = "psx"
+StrConstant SF_OP_PSX_KERNEL           = "psxKernel"
+StrConstant SF_OP_PSX_STATS            = "psxStats"
+StrConstant SF_OP_PSX_RISETIME         = "psxRiseTime"
+StrConstant SF_OP_PSX_PREP             = "psxPrep"
+StrConstant SF_OP_PSX_DECONV_BP_FILTER = "psxDeconvBPFilter"
+StrConstant SF_OP_PSX_SWEEP_BP_FILTER  = "psxSweepBPFilter"
 
 /// @name Available PSX states
 /// @anchor PSXStates
@@ -2409,10 +2410,12 @@ Constant PSX_MARKER_UNDET  = 18
 /// @name Custom error codes for PSX_FitEventDecay()
 /// @anchor FitEventDecayCustomErrors
 ///@{
-Constant PSX_DECAY_FIT_ERROR = -10000
+Constant PSX_DECAY_FIT_ERROR               = -10000
+Constant PSX_DECAY_FIT_INVALID_RANGE_ERROR = -10001
+
 ///@}
 
-StrConstant PSX_STATS_LABELS = "Average;Median;Average Deviation;Standard deviation;Skewness;Kurtosis"
+StrConstant PSX_STATS_LABELS = "Average;Median;Average Deviation;Standard deviation;Skewness;Kurtosis;Lower quartile;Upper quartile;Inter-quartile range;Median absolute deviation;Most frequent value"
 
 /// @name Horizontal offset modes in all event graph
 ///
@@ -2425,9 +2428,8 @@ Constant PSX_HORIZ_OFFSET_PEAK  = 1
 Constant PSX_HORIZ_OFFSET_SLEW  = 2
 ///@}
 
-Constant PSX_DECONV_FILTER_DEF_LOW   = 500
-Constant PSX_DECONV_FILTER_DEF_HIGH  = 50
-Constant PSX_DECONV_FILTER_DEF_ORDER = 7
+Constant PSX_SWEEP_FILTER_DEF_ORDER  = 4
+Constant PSX_DECONV_FILTER_DEF_ORDER = 4
 
 StrConstant PSX_JWN_COMBO_KEYS_NAME = "ComboKeys"
 

@@ -8437,15 +8437,15 @@ End
 /// @name SweepFormula PSX
 ///@{
 
-static Constant PSX_WAVE_VERSION       = 3
-static Constant PSX_EVENT_WAVE_COLUMNS = 17
+static Constant PSX_WAVE_VERSION       = 5
+static Constant PSX_EVENT_WAVE_COLUMNS = 21
 
 /// @brief Return the upgraded psxEvent wave
 Function/WAVE UpgradePSXEventWave(WAVE psxEvent)
 
 	if(WaveVersionIsAtLeast(psxEvent, PSX_WAVE_VERSION))
 		return psxEvent
-	elseif(WaveVersionIsAtLeast(psxEvent, 2))
+	elseif(WaveVersionIsAtLeast(psxEvent, 2)) // Version 2-4
 
 		if(!AlreadyCalledOnce(CO_PSX_UPGRADE_EVENT))
 			print "The algorithm for psp/psc event detection was heavily overhauled, therefore we are very sorry " \
@@ -8473,25 +8473,30 @@ End
 /// -  1/deconvPeak: event amplitude in deconvoluted data [y unit of data]
 /// -  2/deconvPeak_t: deconvolved peak time [ms]
 /// -  3/peak: Maximum (positive kernel amp sign) or minimum (negative kernel amp sign) in the range of
-///            [deconvPeak_t – kernelRiseTau or devonvPeak_t of the previous event (whichever comes later),
-///             deconvPeak_t + 0.33 * kernelDecayTau or deconvPeak_t of the next event (which ever comes first)]
+///            [baseline_t – 5 * kernelRiseTau or baseline_t or devonvPeak_t/peak_t of the previous event (whichever comes later),
+///             baseline_t + 0.33 * kernelDecayTau or deconvPeak_t of the next event (which ever comes first)]
 ///            in the filtered sweep wave
 /// -  4/peak_t: peak time
 /// -  5/baseline: Maximum (negative kernel amp sign) or minimum (positive kernel amp sign) in the range of
-///                    [peak_t – 10 * kernelRiseTau, peak_t], averaged over +/- 5 points, in the filtered sweep wave
+///                    [deconvPeak_t – 10 * kernelRiseTau or the minimum of peak_t and deconvPeak_t of previous event (whichever comes later),
+///                     deconvPeak_t], averaged over +/- 5 points, in the filtered sweep wave
 /// -  6/baseline_t: baseline time
 /// -  7/amplitude: Relative amplitude: [3] - [5]
 /// -  8/iei: Time difference to previous event (inter event interval) [ms]
-/// -  9/tau: Decay constant tau of exponential fit
-/// - 10/Fit manual QC call: One of @ref PSXStates
-/// - 11/Fit result: 1 for success, everything smaller than 0 is failure:
+/// -  9/weightedTau: Weighted tau of the double exponential fit
+/// - 11/slowTau: Slow tau of the double exponential fit
+/// - 10/fastTau: Fast tau of the double exponential fit
+/// - 12/Fit manual QC call: One of @ref PSXStates
+/// - 13/Fit result: 1 for success, everything smaller than 0 is failure:
 ///   - `]-10000, 0[`: CurveFit error codes
 ///   - `]-inf, -10000]`: Custom error codes, one of @ref FitEventDecayCustomErrors
-/// - 12/Event manual QC call: One of @ref PSXStates
-/// - 13/Onset time as calculated by PSX_CalculateOnsetTime
-/// - 14/Rise Time as calculated by PSX_CalculateRiseTime
-/// - 15/Slew Rate
-/// - 16/Slew Rate Time
+/// - 14/Event manual QC call: One of @ref PSXStates
+/// - 15/Onset Time as calculated by PSX_CalculateOnsetTime
+/// - 16/Onset y-value
+/// - 17/Rise Time as calculated by PSX_CalculateRiseTime
+/// - 18/Rise y-value
+/// - 19/Slew Rate
+/// - 20/Slew Rate Time
 Function/WAVE GetPSXEventWaveAsFree()
 
 	variable versionOfWave = PSX_WAVE_VERSION
@@ -8516,14 +8521,18 @@ static Function SetPSXEventDimensionLabels(WAVE wv)
 	SetDimLabel COLS, 6, baseline_t, wv
 	SetDimLabel COLS, 7, amplitude, wv
 	SetDimLabel COLS, 8, iei, wv
-	SetDimLabel COLS, 9, tau, wv
-	SetDimLabel COLS, 10, $"Fit manual QC call", wv
-	SetDimLabel COLS, 11, $"Fit result", wv
-	SetDimLabel COLS, 12, $"Event manual QC call", wv
-	SetDimLabel COLS, 13, $"Onset Time", wv
-	SetDimLabel COLS, 14, $"Rise Time", wv
-	SetDimLabel COLS, 15, $"Slew Rate", wv
-	SetDimLabel COLS, 16, $"Slew Rate Time", wv
+	SetDimLabel COLS, 9, weightedTau, wv
+	SetDimLabel COLS, 10, slowTau, wv
+	SetDimLabel COLS, 11, fastTau, wv
+	SetDimLabel COLS, 12, $"Fit manual QC call", wv
+	SetDimLabel COLS, 13, $"Fit result", wv
+	SetDimLabel COLS, 14, $"Event manual QC call", wv
+	SetDimLabel COLS, 15, $"Onset Time", wv
+	SetDimLabel COLS, 16, $"Onset", wv
+	SetDimLabel COLS, 17, $"Rise Time", wv
+	SetDimLabel COLS, 18, $"Rise", wv
+	SetDimLabel COLS, 19, $"Slew Rate", wv
+	SetDimLabel COLS, 20, $"Slew Rate Time", wv
 End
 
 Function/WAVE GetPSXSingleEventFitWaveFromDFR(DFREF dfr)
@@ -8625,14 +8634,41 @@ Function/WAVE GetPSXSweepDataOffFiltDeconvWaveFromDFR(DFREF dfr)
 	return GetWaveFromFolder(dfr, "sweepDataOffFiltDeconv")
 End
 
-Function/WAVE GetPSXEventLocationLabels(DFREF dfr)
+Function/WAVE GetPSXEventLabelsAsFree(variable numEvents, string suffix)
 
-	return GetWaveFromFolder(dfr, "eventLocationLabels")
+	string name = "eventLabels_" + CleanupName(suffix, 0)
+
+	Make/FREE/T/N=(numEvents, 2) wv
+	ChangeFreeWaveName(wv, name)
+
+	SetDimLabel COLS, 1, $"Tick Type", wv
+	wv[][1] = "Major"
+
+	return wv
 End
 
-Function/WAVE GetPSXEventLocationTicks(DFREF dfr)
+Function/WAVE GetPSXEventLabelsFromDFR(DFREF dfr, string suffix)
 
-	return GetWaveFromFolder(dfr, "eventLocationTicks")
+	string name = "eventLabels_" + CleanupName(suffix, 0)
+
+	return GetWaveFromFolder(dfr, name)
+End
+
+Function/WAVE GetPSXEventTicksAsFree(variable numEvents, string suffix)
+
+	string name = "eventTicks_" + CleanupName(suffix, 0)
+
+	Make/D/FREE/N=(numEvents) wv
+	ChangeFreeWaveName(wv, name)
+
+	return wv
+End
+
+Function/WAVE GetPSXEventTicksFromDFR(DFREF dfr, string suffix)
+
+	string name = "eventTicks_" + CleanupName(suffix, 0)
+
+	return GetWaveFromFolder(dfr, name)
 End
 
 Function/S GetPSXFolderForComboAsString(DFREF dfr, variable index)
@@ -8691,15 +8727,62 @@ Function/WAVE GetPSXAverageWave(DFREF dfr, variable state)
 	return wv
 End
 
-Function/WAVE GetPSXAcceptedAverageFitWaveFromDFR(DFREF dfr)
+Function/WAVE GetPSXRiseAverageFitWaveFromDFR(DFREF dfr, variable state)
 
-	WAVE/Z/D/SDFR=dfr wv = acceptedAverageFit
+	string name = "riseAverageFit_" + PSX_StateToString(state)
+
+	WAVE/Z/D/SDFR=dfr wv = $name
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/D/N=(0) dfr:acceptedAverageFit/WAVE=wv
+	Make/D/N=(0) dfr:$name/WAVE=wv
+
+	return wv
+End
+
+Function/WAVE GetPSXDecayAverageFitWaveFromDFR(DFREF dfr, variable state)
+
+	string name = "decayAverageFit_" + PSX_StateToString(state)
+
+	WAVE/Z/D/SDFR=dfr wv = $name
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/D/N=(0) dfr:$name/WAVE=wv
+
+	return wv
+End
+
+Function/WAVE GetPSXAverageFitWaveFromDFR(DFREF dfr, variable state)
+
+	string name = "averageFit_" + PSX_StateToString(state)
+
+	WAVE/Z/D/SDFR=dfr wv = $name
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/D/N=(0) dfr:$name/WAVE=wv
+
+	return wv
+End
+
+Function/WAVE GetPSXAverageFitResultsWaveFromDFR(DFREF dfr, variable state)
+
+	string name = "averageFitResults_" + PSX_StateToString(state)
+
+	WAVE/Z/T/SDFR=dfr wv = $name
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/T/N=(0, 2) dfr:$name/WAVE=wv
 
 	return wv
 End
