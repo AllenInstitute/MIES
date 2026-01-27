@@ -1432,13 +1432,13 @@ static Function TestShortenWaveForFFTIfRequired_PassThrough()
 	CHECK(WaveRefsEqual(result, inputWave))
 
 	// Test with power of 3 size
-	size = 729 // 3^6
+	size = 729 // 729 = 3^6
 	Make/FREE/N=(size) inputWave = p
 	WAVE result = ShortenWaveForFFTIfRequired(inputWave)
 	CHECK(WaveRefsEqual(result, inputWave))
 
 	// Test with mixed 2 and 3 factors
-	size = 72 // 2^3 * 3^2
+	size = 72 // 72 = 2^3 * 3^2
 	Make/FREE/N=(size) inputWave = p
 	WAVE result = ShortenWaveForFFTIfRequired(inputWave)
 	CHECK(WaveRefsEqual(result, inputWave))
@@ -1465,8 +1465,9 @@ static Function TestShortenWaveForFFTIfRequired_Truncation()
 	sprintf msg, "Result size %d should be less than input size %d", resultSize, size
 	INFO(msg)
 	CHECK(resultSize < size)
-	// Verify content is preserved
-	CHECK_EQUAL_WAVES(result, inputWave, mode = WAVE_DATA, tol = 0)
+	// Verify content is preserved (first resultSize points)
+	Duplicate/FREE/RMD=[0, resultSize - 1] inputWave, inputSlice
+	CHECK_EQUAL_WAVES(result, inputSlice, mode = WAVE_DATA, tol = 0)
 
 	// Test with a composite number with large prime factor
 	size = 2017 // prime number
@@ -1482,8 +1483,8 @@ static Function TestShortenWaveForFFTIfRequired_Truncation()
 	CHECK_EQUAL_VAR(result[10], inputWave[10])
 	CHECK_EQUAL_VAR(result[100], inputWave[100])
 
-	// Test with size that has prime factor just over threshold
-	size = 1001 * 2 // 1001 = 7 * 11 * 13
+	// Test with size that has a large prime factor
+	size = 5003 // prime number > 1000
 	Make/FREE/N=(size) inputWave = sin(p / 100)
 	WAVE result = ShortenWaveForFFTIfRequired(inputWave)
 	CHECK(!WaveRefsEqual(result, inputWave))
@@ -1493,6 +1494,9 @@ static Function TestShortenWaveForFFTIfRequired_Truncation()
 	CHECK(resultSize < size)
 	// Verify wave properties
 	CHECK_EQUAL_VAR(DimDelta(result, ROWS), DimDelta(inputWave, ROWS))
+	// Verify content is preserved (first resultSize points)
+	Duplicate/FREE/RMD=[0, resultSize - 1] inputWave, inputSlice
+	CHECK_EQUAL_WAVES(result, inputSlice, mode = WAVE_DATA, tol = 1e-10)
 End
 
 /// Test cache behavior: verify caching works
