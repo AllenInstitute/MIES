@@ -1510,7 +1510,8 @@ static Function TestShortenWaveForFFTIfRequired_Cache()
 	CA_DeleteCacheEntry(key)
 
 	// First call should miss cache and populate it
-	size = 2017 // prime number > 1000
+	// Use 2017 as it's a prime number > 1000 that will trigger truncation
+	size = 2017
 	Make/FREE/N=(size) inputWave1 = p
 	WAVE result1 = ShortenWaveForFFTIfRequired(inputWave1)
 	resultSize1 = DimSize(result1, ROWS)
@@ -1521,6 +1522,7 @@ static Function TestShortenWaveForFFTIfRequired_Cache()
 	CHECK_GT_VAR(DimSize(cached, ROWS), 0)
 
 	// Second call should hit cache and produce same result size
+	// Use same size to verify caching behavior
 	size = 2017
 	Make/FREE/N=(size) inputWave2 = p * 3
 	WAVE result2 = ShortenWaveForFFTIfRequired(inputWave2)
@@ -1550,6 +1552,16 @@ static Function TestShortenWaveForFFTIfRequired_GoodSizeResult()
 
 	// Test with another bad size
 	size = 3001 // prime
+	Make/FREE/N=(size) inputWave = p
+	WAVE result = ShortenWaveForFFTIfRequired(inputWave)
+	resultSize = DimSize(result, ROWS)
+
+	// Verify the result has only small prime factors
+	WAVE primes = GetPrimeFactors(resultSize)
+	CHECK_LE_VAR(WaveMax(primes), 1000)
+
+	// Test with a larger prime number
+	size = 10007 // prime
 	Make/FREE/N=(size) inputWave = p
 	WAVE result = ShortenWaveForFFTIfRequired(inputWave)
 	resultSize = DimSize(result, ROWS)
