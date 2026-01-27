@@ -1444,7 +1444,7 @@ static Function TestShortenWaveForFFTIfRequired_PassThrough()
 	CHECK(WaveRefsEqual(result, inputWave))
 
 	// Test with size 2^10 * 3
-	size = 3072 // 2^10 * 3
+	size = 3072 // 3072 = 2^10 * 3
 	Make/FREE/N=(size) inputWave = p
 	WAVE result = ShortenWaveForFFTIfRequired(inputWave)
 	CHECK(WaveRefsEqual(result, inputWave))
