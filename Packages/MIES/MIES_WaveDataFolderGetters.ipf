@@ -8484,8 +8484,13 @@ End
 /// -  7/amplitude: Relative amplitude: [3] - [5]
 /// -  8/iei: Time difference to previous event (inter event interval) [ms]
 /// -  9/weightedTau: Weighted tau of the double exponential fit
+<<<<<<< HEAD
+/// - 10/fastTau: Fast tau of the double exponential fit
+/// - 11/slowTau: Slow tau of the double exponential fit
+=======
 /// - 11/slowTau: Slow tau of the double exponential fit
 /// - 10/fastTau: Fast tau of the double exponential fit
+>>>>>>> 8d71c757f534f759ffd572bc2a062e2681ef4d8a
 /// - 12/Fit manual QC call: One of @ref PSXStates
 /// - 13/Fit result: 1 for success, everything smaller than 0 is failure:
 ///   - `]-10000, 0[`: CurveFit error codes
