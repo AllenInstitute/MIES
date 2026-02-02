@@ -1326,3 +1326,93 @@ static Function TestFindSequenceReverseWrapper()
 End
 
 /// @}
+
+static Function TestFFTHelperSilverSeries()
+
+	try
+		MIES_UTILS_ALGORITHM#FFTHelperSilverSeries(0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	try
+		MIES_UTILS_ALGORITHM#FFTHelperSilverSeries(30)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	WAVE results = MIES_UTILS_ALGORITHM#FFTHelperSilverSeries(4)
+	CHECK_EQUAL_WAVES(results, {18}, mode = WAVE_DATA)
+
+	WAVE results = MIES_UTILS_ALGORITHM#FFTHelperSilverSeries(5)
+	CHECK_EQUAL_WAVES(results, {36}, mode = WAVE_DATA)
+
+	WAVE results = MIES_UTILS_ALGORITHM#FFTHelperSilverSeries(7)
+	CHECK_EQUAL_WAVES(results, {144, 162}, mode = WAVE_DATA)
+End
+
+static Function TestFFTHelperGoldSeries()
+
+	try
+		MIES_UTILS_ALGORITHM#FFTHelperGoldSeries(0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	try
+		MIES_UTILS_ALGORITHM#FFTHelperGoldSeries(30)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	WAVE results = MIES_UTILS_ALGORITHM#FFTHelperGoldSeries(4)
+	CHECK_EQUAL_WAVES(results, {24, 27}, mode = WAVE_DATA)
+
+	WAVE results = MIES_UTILS_ALGORITHM#FFTHelperGoldSeries(5)
+	CHECK_EQUAL_WAVES(results, {48, 54}, mode = WAVE_DATA)
+
+	WAVE results = MIES_UTILS_ALGORITHM#FFTHelperGoldSeries(7)
+	CHECK_EQUAL_WAVES(results, {192, 216, 243}, mode = WAVE_DATA)
+End
+
+static Function CheckPrimeFactors(variable num)
+
+	variable numEntries
+
+	WAVE   primes = GetPrimeFactors(num)
+	WAVE/Z result = GetUniqueEntries(primes)
+	CHECK_WAVE(result, NUMERIC_WAVE)
+	numEntries = DimSize(result, ROWS)
+
+	Sort result, result
+
+	INFO("result: %s", s0 = NumericWaveToList(result, ", ", trailSep = 0))
+
+	switch(numEntries)
+		case 1:
+			CHECK(result[0] == 2 || result[0] == 3) // NOLINT
+			break
+		case 2:
+			CHECK_EQUAL_WAVES(result, {2, 3}, mode = WAVE_DATA)
+			break
+		default:
+			FAIL()
+	endswitch
+End
+
+static Function TestGetGoodFFTSizes()
+
+	variable numEntries
+
+	WAVE wv = GetGoodFFTSizes()
+	numEntries = DimSize(wv, ROWS)
+	CHECK_GT_VAR(numEntries, 0)
+
+	Make/FREE/N=(numEntries) junkWave
+
+	junkWave[] = CheckPrimeFactors(wv[p])
+End

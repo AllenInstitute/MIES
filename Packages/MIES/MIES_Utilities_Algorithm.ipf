@@ -6,6 +6,8 @@
 #pragma ModuleName = MIES_UTILS_ALGORITHM
 #endif // AUTOMATED_TESTING
 
+static Constant FFT_PRIME_FACTOR_LIMIT = 30
+
 /// @file MIES_Utilities_Algorithm.ipf
 /// @brief utility functions for common algorithms
 
@@ -1040,6 +1042,36 @@ threadsafe Function DoPowerSpectrum(WAVE input, WAVE output, variable col)
 	output[][col] = magsqr(powerSpectrum[p])
 End
 
+/// @brief Cut off some trailing points from the wave to allow fast FFT
+Function/WAVE ShortenWaveForFFTIfRequired(WAVE input)
+
+	variable numRowsOpt, numRows
+	string key
+
+	numRows = DimSize(input, ROWS)
+	WAVE primes = GetPrimeFactors(numRows)
+
+	if(WaveMax(primes) > 1000)
+
+		key = CA_GetGoodFFTSizesKeys()
+		WAVE/Z goodFFTSizes = CA_TryFetchingEntryFromCache(key)
+
+		if(!WaveExists(goodFFTSizes))
+			WAVE goodFFTSizes = GetGoodFFTSizes()
+			CA_StoreEntryIntoCache(key, goodFFTSizes)
+		endif
+
+		FindLevel/Q goodFFTSizes, numRows
+		ASSERT_TS(!V_flag, "Could not find good FFT size")
+
+		numRowsOpt = goodFFTSizes[trunc(V_LevelX)]
+		Duplicate/FREE/RMD=[0, numRowsOpt - 1] input, inputOpt
+		return inputOpt
+	endif
+
+	return input
+End
+
 /// @brief Perform FFT on input with optionally given window function
 ///
 /// @param input   Wave to perform FFT on
@@ -1274,4 +1306,66 @@ Function FindSequenceReverseWrapper(WAVE sequence, WAVE source)
 		foundIndex = V_Value
 		start      = foundIndex + 1
 	endfor
+End
+
+/// @brief Return all prime factors from num as free wave
+threadsafe Function/WAVE GetPrimeFactors(variable num)
+
+	PrimeFactors/Q num
+
+	WAVE W_primeFactors
+	MakeWaveFree(W_primeFactors)
+
+	return W_primeFactors
+End
+
+threadsafe static Function/WAVE FFTHelperSeriesImpl(variable n, variable a, variable b)
+
+	ASSERT_TS(n >= 1 && n < 30, "Invalid range")
+
+	variable numEntries = ceil(n / 3)
+	variable lambda, i
+
+	Make/FREE/D/N=(numEntries) results
+
+	for(i = 0; i < numEntries; i += 1)
+		lambda = n - (a + 3 * i)
+		if(lambda < 0)
+			break
+		endif
+
+		results[i] = 3^(b + 2 * i) * 2^(lambda)
+	endfor
+
+	Redimension/N=(i) results
+
+	return results
+End
+
+threadsafe Function/WAVE FFTHelperSilverSeries(variable n)
+
+	return FFTHelperSeriesImpl(n, 3, 2)
+End
+
+threadsafe Function/WAVE FFTHelperGoldSeries(variable n)
+
+	return FFTHelperSeriesImpl(n, 1, 1)
+End
+
+// @brief Returns a wave with all values which only have 2's and 3's as prime factors up to 2^30
+threadsafe Function/WAVE GetGoodFFTSizes()
+
+	Make/FREE/WAVE/N=(FFT_PRIME_FACTOR_LIMIT) gold, silver
+	gold[0]      = NewFreeWave(IGOR_TYPE_64BIT_FLOAT, 0)
+	gold[1, Inf] = FFTHelperGoldSeries(p)
+
+	silver[0]      = NewFreeWave(IGOR_TYPE_64BIT_FLOAT, 0)
+	silver[1, Inf] = FFTHelperSilverSeries(p)
+
+	Concatenate/FREE/NP=(ROWS) {gold, silver}, resultsWave
+	Concatenate/FREE/NP=(ROWS) {resultsWave}, results
+
+	Sort results, results
+
+	return results
 End

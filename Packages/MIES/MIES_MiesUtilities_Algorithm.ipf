@@ -641,3 +641,80 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 
 	return result
 End
+
+/// @brief Band‑pass filters a wave while automatically reducing IIR filter
+/// order until the output contains no NaNs/Infs and its SEM is not larger than
+/// the original (simple ringing detection).
+///
+/// @param src      – input wave
+/// @param fHigh    – pass‑band edge frequencies in Hz (Igor’s band‑pass requires fLow > fHigh; the routine swaps them if needed)
+/// @param fLow     – low part
+/// @param maxOrder – starting (maximum) IIR filter order to try (>0)
+///
+///  Logic: iteratively lowers the filter order until three conditions are met:
+///           1. FilterIIR executes without error.
+///           2. WaveStats reports       V_numNaNs = 0 and V_numInfs = 0.
+///           3. SEM(filtered) ≤ SEM(original).
+///
+/// @retval realOrder filter order that finally succeeded (NaN if every order failed)
+/// @retval filtered filtered data
+Function [variable realOrder, WAVE filtered] BandPassWithRingingDetection(WAVE src, variable fHigh, variable fLow, variable maxOrder)
+
+	variable err, samp, semOrig, offset, i
+	string msg
+
+	ASSERT(IsInteger(maxOrder) && maxOrder > 0 && isEven(maxOrder), "maxOrder must be a positive and even integer")
+
+	// Igor band-pass expects fLow > fHigh
+	[fHigh, fLow] = MinMax(fLow, fHigh)
+
+	// Sampling rate (Hz) – assumes X scaling is in milliseconds
+	samp = 1 / (DeltaX(src) * MILLI_TO_ONE)
+
+	// Pre-compute SEM(original) once
+	WaveStats/Q src
+	semOrig = V_sem
+	offset  = v_avg
+	ASSERT(V_numNaNs == 0 && V_numInfs == 0, "Expected only finite value in input data")
+
+	// Prepare destination wave
+	Duplicate/FREE src, filtered
+
+	for(i = maxOrder; i > 0; i -= 2)
+		Multithread filtered = src - offset
+
+		FilterIIR/LO=(fLow / samp)/HI=(fHigh / samp)/DIM=(ROWS)/ORD=(i) filtered; err = GetRTError(1)
+		if(err)
+			continue
+		endif
+
+		WaveStats/Q filtered
+		if(V_numNaNs > 0 || V_numInfs > 0)
+			sprintf msg, "V_numNaNs: %g, V_numInfs: %g", V_numNaNs, V_numInfs
+			DEBUGPRINT(msg)
+
+			// bad numerical output → lower order
+			continue
+		endif
+
+		if(V_sem > semOrig)
+			sprintf msg, "V_sem: %g,semOrig: %g", V_sem, semOrig
+			DEBUGPRINT(msg)
+
+			// noisier than original → ringing
+			continue
+		endif
+
+		Multithread filtered += offset
+
+		sprintf msg, "maxOrder: %g, realOrder: %g", maxOrder, i
+		DEBUGPRINT(msg)
+
+		return [i, filtered]
+	endfor
+
+	sprintf msg, "maxOrder: %g, realOrder: NaN", maxOrder
+	DEBUGPRINT(msg)
+
+	return [NaN, $""]
+End

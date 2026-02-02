@@ -596,7 +596,7 @@ static Function StatsRangeTesting()
 	Make/FREE/WAVE psxEventContainer = {psxEventA, psxEventB, psxEventC, psxEventD}
 	MIES_PSX#PSX_StoreIntoResultsWave(browser, SFH_RESULT_TYPE_PSX_EVENTS, psxEventContainer, id)
 
-	prop       = "tau"
+	prop       = "weightedTau"
 	stateAsStr = MIES_PSX#PSX_StateToString(PSX_ACCEPT)
 	postProc   = "nothing"
 
@@ -703,7 +703,7 @@ static Function FillEventWave_IGNORE(WAVE psxEvent, string id, string comboKey)
 
 	INFO("Check that the size of psxEvent is what we expect")
 
-	CHECK_EQUAL_VAR(DimSize(psxEvent, COLS), 17)
+	CHECK_EQUAL_VAR(DimSize(psxEvent, COLS), 21)
 
 	psxEvent[][%index]             = p
 	psxEvent[][%deconvpeak_t]      = 100 * p
@@ -714,7 +714,9 @@ static Function FillEventWave_IGNORE(WAVE psxEvent, string id, string comboKey)
 	psxEvent[][%baseline_t]        = NaN
 	psxEvent[][%amplitude]         = (p == 0) ? NaN : (10 * p)
 	psxEvent[][%iei]               = 1000 * p
-	psxEvent[][%tau]               = 1e-6 * p
+	psxEvent[][%weightedTau]       = 1e-6 * p
+	psxEvent[][%slowTau]           = 1e-5 * p
+	psxEvent[][%fastTau]           = 1e-7 * p
 	psxEvent[][%$"Rise Time"]      = (p == 0) ? NaN : (0.1 * p)
 	psxEvent[][%$"Onset Time"]     = (p == 0) ? NaN : (0.2 * p)
 	psxEvent[][%$"Slew Rate"]      = NaN
@@ -1192,7 +1194,9 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 
 	// all decay fits are successfull
 	overrideResults[][][%$"Fit Result"]      = 1
-	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"fastTau"]         = 1
+	overrideResults[][][%$"slowTau"]         = 1
+	overrideResults[][][%$"weightedTau"]     = 1
 	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
@@ -1200,7 +1204,7 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen = FakeSweepDataGeneratorPSX)
 	win = CreateFakeSweepData(win, device, sweepNo = 2, sweepGen = FakeSweepDataGeneratorPSX)
 
-	str = "psx(myID, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 1, 15, " + num2str(kernelAmp) + "), 2.5, 100, 0)"
+	str = "psx(myID, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 1, 15, " + num2str(kernelAmp) + "), 2.5, psxSweepBPFilter(100, 0))"
 	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 2 * 7)
@@ -1222,7 +1226,7 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 
 	WAVE/Z params = JSON_GetKeys(jsonID, SF_META_USER_GROUP + "Parameters/" + SF_OP_PSX)
 	CHECK_WAVE(params, TEXT_WAVE)
-	CHECK_EQUAL_VAR(DimSize(params, ROWS), 5)
+	CHECK_EQUAL_VAR(DimSize(params, ROWS), 4)
 
 	WAVE/Z params = JSON_GetKeys(jsonID, SF_META_USER_GROUP + "Parameters/" + SF_OP_PSX_RISETIME)
 	CHECK_WAVE(params, TEXT_WAVE)
@@ -1237,7 +1241,7 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 
 	// without events found we get empty waves
-	str = "psx(myID, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 10, 15, -5), 250, 10, 0)"
+	str = "psx(myID, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 10, 15, -5), 250, psxSweepBPFilter(10, 0))"
 	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 	Make/FREE/N=(DimSize(dataWref, ROWS)) sizes = WaveExists(dataWref[p]) ? DimSize(dataWref[p], ROWS) : NaN
@@ -1245,7 +1249,7 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 
 	// complains with no sweep data
 	try
-		str = "psx(myID, psxKernel(select(selrange([150, 160]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 1, 2, -5), 2.5, 100, 0)"
+		str = "psx(myID, psxKernel(select(selrange([150, 160]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 1, 2, -5), 2.5, psxSweepBPFilter(100, 0))"
 		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
@@ -1281,7 +1285,7 @@ static Function PSXHandlesPartialResults()
 	overrideResults[][][%$"Fit Result"]      = 1
 	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
-	str = "psx(myID, psxKernel(select(selrange([25, 120]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 1, 2, -5), 2.5, 10, 0)"
+	str = "psx(myID, psxKernel(select(selrange([25, 120]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 1, 2, -5), 2.5, psxSweepBPFilter(10, 0))"
 	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, browser, useVariables = 0)
 	PASS()
 End
@@ -1299,7 +1303,7 @@ static Function TestOperationPSXTooLargeDecayTau()
 
 	// all decay fits are successfull
 	overrideResults[][][%$"Fit Result"]      = 1
-	overrideResults[][][%Tau]                = 1000
+	overrideResults[][][%weightedTau]        = 1000
 	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
@@ -1307,7 +1311,7 @@ static Function TestOperationPSXTooLargeDecayTau()
 	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen = FakeSweepDataGeneratorPSX)
 	win = CreateFakeSweepData(win, device, sweepNo = 2, sweepGen = FakeSweepDataGeneratorPSX)
 
-	str = "psx(myID, psxKernel(select(selrange([50, 150]),selchannels(AD6), selsweeps([0]), selvis(all)), 1, 15, -5), 10, 100, 0)"
+	str = "psx(myID, psxKernel(select(selrange([50, 150]),selchannels(AD6), selsweeps([0]), selvis(all)), 1, 15, -5), 10, psxSweepBPFilter(100, 0))"
 	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 
@@ -1353,11 +1357,10 @@ static Function CheckEventDataHelper(WAVE/Z/WAVE dataWref, variable index, varia
 
 	INFO("index = %d, V_numNaNs = %d, kernelAmpSign = %d", n0 = index, n1 = V_numNans, n2 = kernelAmpSign)
 
-	// 1 NaN for the first event only, the rest is onset Time
 	if(kernelAmpSign == 1)
-		CHECK_EQUAL_VAR(V_numNaNs, 1)
+		CHECK_EQUAL_VAR(V_numNaNs, 10)
 	elseif(kernelAmpSign == -1)
-		CHECK_EQUAL_VAR(V_numNaNs, 9)
+		CHECK_EQUAL_VAR(V_numNaNs, 13)
 	else
 		FAIL()
 	endif
@@ -1371,6 +1374,7 @@ static Function CheckPSXEventField(WAVE/WAVE psxEventWaves, WAVE/T colLabels, WA
 	for(colLabel : colLabels)
 		for(WAVE psxEvent : psxEventWaves)
 			for(idx : indices)
+				REQUIRE_LT_VAR(idx, DimSize(psxEvent, ROWS))
 				INFO("psxEvent %s, colLabel \"%s\", index %d, state: actual %s vs ref %s", s0 = NameOfWave(psxEvent), s1 = colLabel, n0 = idx, s3 = MIES_PSX#PSX_StateToString(psxEvent[idx][%$colLabel]), s2 = MIES_PSX#PSX_StateToString(val))
 				CHECK_EQUAL_VAR(psxEvent[idx][%$colLabel], val)
 			endfor
@@ -1406,7 +1410,9 @@ static Function MouseSelectionPSX()
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
 	overrideResults[][][%$"Fit Result"]      = 1
-	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"FastTau"]         = 1
+	overrideResults[][][%$"SlowTau"]         = 1
+	overrideResults[][][%$"WeightedTau"]     = 1
 	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = DB_OpenDataBrowser()
@@ -1417,7 +1423,7 @@ static Function MouseSelectionPSX()
 
 	browser = MIES_DB#DB_LockToDevice(browser, device)
 
-	code = "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all))), 5, 100, 0)"
+	code = "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all))), 5, psxSweepBPFilter(100, 0))"
 
 	// combo0 is the current one
 
@@ -1431,7 +1437,7 @@ static Function MouseSelectionPSX()
 	CheckPSXEventField({psxEvent_0, psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1}, PSX_UNDET)
 
 	// select event 0
-	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftOffFiltDeconv" 80, 15e-2, 110, 5e-2
+	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftOffFiltDeconv" 40, 15e-2, 80, 5e-2
 
 	SetActiveSubwindow $psxPlot
 	PSX_MouseEventSelection(PSX_ACCEPT, PSX_STATE_EVENT)
@@ -1445,7 +1451,7 @@ static Function MouseSelectionPSX()
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1}, PSX_UNDET)
 
 	// select event 1
-	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftOffFiltDeconv" 120, 25e-2, 200, 5e-2
+	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftOffFiltDeconv" 80, 25e-2, 110, 5e-2
 
 	SetActiveSubwindow $psxPlot
 	PSX_MouseEventSelection(PSX_REJECT, PSX_STATE_EVENT)
@@ -1458,7 +1464,7 @@ static Function MouseSelectionPSX()
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1}, PSX_UNDET)
 
 	// select both events top axis pair, event and fit state
-	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftOffFilt" 50, -1, 200, 11
+	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftOffFilt" 40, -1, 110, 11
 
 	SetActiveSubwindow $psxPlot
 	PSX_MouseEventSelection(PSX_REJECT, PSX_STATE_FIT | PSX_STATE_EVENT)
@@ -1551,7 +1557,9 @@ static Function MouseSelectionPSXStats([STRUCT IUTF_mData &m])
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
 	overrideResults[][][%$"Fit Result"]      = 1
-	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"weightedTau"]     = 1
+	overrideResults[][][%$"slowTau"]         = 1
+	overrideResults[][][%$"fastTau"]         = 1
 	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	postProc = m.s0
@@ -1580,7 +1588,7 @@ static Function MouseSelectionPSXStats([STRUCT IUTF_mData &m])
 
 	// select event 0 from combo 0
 	SetActiveSubwindow $psxStatsGraph
-	SetMarquee/W=$psxStatsGraph/HAX=bottom/VAX=left -0.1, AdaptForPostProc(postProc, 110), 0.1, AdaptForPostProc(postProc, 100)
+	SetMarquee/W=$psxStatsGraph/HAX=bottom/VAX=left -0.1, AdaptForPostProc(postProc, 55), 0.1, AdaptForPostProc(postProc, 40)
 
 	PSX_MouseEventSelection(PSX_ACCEPT, PSX_STATE_EVENT)
 
@@ -1598,7 +1606,7 @@ static Function MouseSelectionPSXStats([STRUCT IUTF_mData &m])
 
 	// select event 0 from combo 1
 	SetActiveSubwindow $psxStatsGraph
-	SetMarquee/W=$psxStatsGraph/HAX=bottom/VAX=left -0.1, AdaptForPostProc(postProc, 50), 0.1, AdaptForPostProc(postProc, 80)
+	SetMarquee/W=$psxStatsGraph/HAX=bottom/VAX=left -0.1, AdaptForPostProc(postProc, 60), 0.1, AdaptForPostProc(postProc, 55)
 
 	PSX_MouseEventSelection(PSX_REJECT, PSX_STATE_EVENT)
 
@@ -1638,20 +1646,20 @@ static Function MouseSelectionStatsPostProcNonFinite()
 	combos[1] = comboKey
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
-	overrideResults[1][%$combos[0]][%$"Fit Result"] = 1
-	overrideResults[1][%$combos[0]][%$"Tau"]        = -Inf
+	overrideResults[1][%$combos[0]][%$"Fit Result"]  = 1
+	overrideResults[1][%$combos[0]][%$"weightedTau"] = -Inf
 
-	overrideResults[0][%$combos[0]][%$"Fit Result"] = 0
-	overrideResults[0][%$combos[0]][%$"Tau"]        = NaN
+	overrideResults[0][%$combos[0]][%$"Fit Result"]  = 0
+	overrideResults[0][%$combos[0]][%$"weightedTau"] = NaN
 
-	overrideResults[0][%$combos[1]][%$"Fit Result"] = 1
-	overrideResults[0][%$combos[1]][%$"Tau"]        = +Inf
+	overrideResults[0][%$combos[1]][%$"Fit Result"]  = 1
+	overrideResults[0][%$combos[1]][%$"weightedTau"] = +Inf
 
 	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
-	code = GetTestCode("nonfinite", eventState = "all", prop = "tau")
+	code = GetTestCode("nonfinite", eventState = "all", prop = "weightedTau")
 
 	win = ExecuteSweepFormulaCode(browser, code)
 
@@ -1675,7 +1683,7 @@ static Function MouseSelectionStatsPostProcNonFinite()
 
 	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {0}, PSX_REJECT)
 	CheckPSXEventField({psxEvent_0}, {"Event manual QC call"}, {0}, PSX_UNDET)
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {2}, PSX_UNDET)
 
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
 
@@ -1691,10 +1699,54 @@ static Function MouseSelectionStatsPostProcNonFinite()
 	// unchanged
 	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {0}, PSX_REJECT)
 	CheckPSXEventField({psxEvent_0}, {"Event manual QC call"}, {0}, PSX_UNDET)
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {2}, PSX_UNDET)
 
 	// changed
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_ACCEPT)
+End
+
+static Function KeyboardSelectionPSXStatsVS()
+
+	string win, browser, code, psxGraph, psxStatsGraph, postProc, comboKey, tracenames, trace
+	variable numEvents, logMode
+
+	Make/FREE/T/N=2 combos
+	sprintf comboKey, "Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[0] = comboKey
+	sprintf comboKey, "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[1] = comboKey
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"WeightedTau"]     = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
+
+	browser = SetupDatabrowserWithSomeData()
+
+	code = GetTestCode("nothing") + "\n vs [1, 2]"
+
+	// combo0 is the current one
+
+	win = ExecuteSweepFormulaCode(browser, code)
+
+	psxGraph      = MIES_PSX#PSX_GetPSXGraph(win)
+	psxStatsGraph = MIES_PSX#PSX_GetPSXStatsGraph(psxGraph)
+
+	REQUIRE(WindowExists(psxStatsGraph))
+
+	SetActiveSubwindow $psxStatsGraph
+
+	tracenames = TraceNameList(psxStatsGraph, ";", 1)
+	trace      = StringFromList(0, tracenames)
+	CHECK_PROPER_STR(trace)
+
+	Cursor/W=$psxStatsGraph/P A, $trace, 0
+
+	CheckCurrentEvent(psxStatsGraph, 0, 0, 0)
+
+	SendKey(psxGraph, LEFT_KEY)
+	SendKey(psxGraph, LEFT_KEY)
+	CHECK_NO_RTE()
 End
 
 static Function/WAVE GetTracesHelper(string win, variable options)
@@ -1728,6 +1780,10 @@ static Function CheckTraceColors(string win, WAVE/T traces, variable state)
 	endswitch
 
 	for(trace : traces)
+		if(strsearch(trace, "AverageFit", 0) >= 0)
+			Make/FREE refColors = {65535, 0, 0}
+		endif
+
 		tInfo = TraceInfo(win, trace, 0)
 		WAVE traceColors = NumericWaveByKey("rgb(x)", tInfo, keySep = "=", listSep = ";")
 
@@ -1756,8 +1812,11 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 	combos[1] = comboKey
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
-	overrideResults[][][%$"Fit Result"]      = 1
-	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"Fit Result"]  = 1
+	overrideResults[][][%$"WeightedTau"] = 1
+	overrideResults[][][%$"slowTau"]     = 1
+	overrideResults[][][%$"fastTau"]     = 1
+
 	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
@@ -1793,23 +1852,50 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 
 	WAVE/T allTraces = GetTracesHelper(extAllGraph, 1)
 
-	Make/FREE/T allTracesRef = {"T000000", "T000001", "T000002", "T000003",                                  \
-	                            "T000004_averageAccept_ComboIndex0", "T000005_averageReject_ComboIndex0",    \
-	                            "T000006_averageUndetermined_ComboIndex0", "T000007_averageAll_ComboIndex0", \
-	                            "T000008_acceptAverageFit_ComboIndex0",                                      \
-	                            "T000009", "T000010", "T000011",                                             \
-	                            "T000012_averageAccept_ComboIndex1", "T000013_averageReject_ComboIndex1",    \
-	                            "T000014_averageUndetermined_ComboIndex1", "T000015_averageAll_ComboIndex1", \
-	                            "T000016_acceptAverageFit_ComboIndex1",                                      \
-	                            "T000017_averageAccept_global", "T000018_averageReject_global",              \
-	                            "T000019_averageUndetermined_global", "T000020_averageAll_global",           \
-	                            "T000021_acceptAverageFit_global"}
+	Make/FREE/T allTracesRef = {"T000000", "T000001", "T000002", "T000003_averageAccept_ComboIndex0",         \
+	                            "T000004_Accept_AverageFit_ComboIndex0",                                      \
+	                            "T000005_Accept_RiseAverageFit_ComboIndex0",                                  \
+	                            "T000006_Accept_DecayAverageFit_ComboIndex0",                                 \
+	                            "T000007_averageReject_ComboIndex0", "T000008_Reject_AverageFit_ComboIndex0", \
+	                            "T000009_Reject_RiseAverageFit_ComboIndex0",                                  \
+	                            "T000010_Reject_DecayAverageFit_ComboIndex0",                                 \
+	                            "T000011_averageUndetermined_ComboIndex0",                                    \
+	                            "T000012_Undetermined_AverageFit_ComboIndex0",                                \
+	                            "T000013_Undetermined_RiseAverageFit_ComboIndex0",                            \
+	                            "T000014_Undetermined_DecayAverageFit_ComboIndex0",                           \
+	                            "T000015_averageAll_ComboIndex0", "T000016_All_AverageFit_ComboIndex0",       \
+	                            "T000017_All_RiseAverageFit_ComboIndex0",                                     \
+	                            "T000018_All_DecayAverageFit_ComboIndex0", "T000019", "T000020", "T000021",   \
+	                            "T000022", "T000023_averageAccept_ComboIndex1",                               \
+	                            "T000024_Accept_AverageFit_ComboIndex1",                                      \
+	                            "T000025_Accept_RiseAverageFit_ComboIndex1",                                  \
+	                            "T000026_Accept_DecayAverageFit_ComboIndex1",                                 \
+	                            "T000027_averageReject_ComboIndex1", "T000028_Reject_AverageFit_ComboIndex1", \
+	                            "T000029_Reject_RiseAverageFit_ComboIndex1",                                  \
+	                            "T000030_Reject_DecayAverageFit_ComboIndex1",                                 \
+	                            "T000031_averageUndetermined_ComboIndex1",                                    \
+	                            "T000032_Undetermined_AverageFit_ComboIndex1",                                \
+	                            "T000033_Undetermined_RiseAverageFit_ComboIndex1",                            \
+	                            "T000034_Undetermined_DecayAverageFit_ComboIndex1",                           \
+	                            "T000035_averageAll_ComboIndex1", "T000036_All_AverageFit_ComboIndex1",       \
+	                            "T000037_All_RiseAverageFit_ComboIndex1",                                     \
+	                            "T000038_All_DecayAverageFit_ComboIndex1", "T000039_averageAccept_global",    \
+	                            "T000040_Accept_AverageFit_global", "T000041_Accept_RiseAverageFit_global",   \
+	                            "T000042_Accept_DecayAverageFit_global", "T000043_averageReject_global",      \
+	                            "T000044_Reject_AverageFit_global", "T000045_Reject_RiseAverageFit_global",   \
+	                            "T000046_Reject_DecayAverageFit_global",                                      \
+	                            "T000047_averageUndetermined_global",                                         \
+	                            "T000048_Undetermined_AverageFit_global",                                     \
+	                            "T000049_Undetermined_RiseAverageFit_global",                                 \
+	                            "T000050_Undetermined_DecayAverageFit_global", "T000051_averageAll_global",   \
+	                            "T000052_All_AverageFit_global", "T000053_All_RiseAverageFit_global",         \
+	                            "T000054_All_DecayAverageFit_global"}
 
 	CHECK_EQUAL_TEXTWAVES(allTracesRef, allTraces)
 
 	// currently shown traces
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
-	Make/FREE/T dispTracesRef = {"T000000", "T000001", "T000002", "T000003", "T000009", "T000010", "T000011"}
+	Make/FREE/T dispTracesRef = {"T000000", "T000001", "T000002", "T000019", "T000020", "T000021", "T000022"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 
 	CheckTraceColors(extAllGraph, dispTraces, PSX_UNDET)
@@ -1839,7 +1925,7 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 	PGC_SetAndActivateControl(specialEventPanel, "checkbox_average_events_undetermined", val = 1)
 
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
-	Make/FREE/T dispTracesRef = {"T000019_averageUndetermined_global"}
+	Make/FREE/T dispTracesRef = {"T000047_averageUndetermined_global", "T000048_Undetermined_AverageFit_global", "T000049_Undetermined_RiseAverageFit_global", "T000050_Undetermined_DecayAverageFit_global"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 
 	CheckTraceColors(extAllGraph, dispTraces, PSX_UNDET)
@@ -1849,7 +1935,7 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 	PGC_SetAndActivateControl(specialEventPanel, "checkbox_average_events_all", val = 1)
 
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
-	Make/FREE/T dispTracesRef = {"T000020_averageAll_global"}
+	Make/FREE/T dispTracesRef = {"T000051_averageAll_global", "T000052_All_AverageFit_global", "T000053_All_RiseAverageFit_global", "T000054_All_DecayAverageFit_global"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 
 	CheckTraceColors(extAllGraph, dispTraces, PSX_ALL)
@@ -1857,7 +1943,7 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 	// restrict to current combo
 	PGC_SetAndActivateControl(specialEventPanel, "checkbox_restrict_events_to_current_combination", val = 1)
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
-	Make/FREE/T dispTracesRef = {"T000015_averageAll_ComboIndex1"}
+	Make/FREE/T dispTracesRef = {"T000035_averageAll_ComboIndex1", "T000036_All_AverageFit_ComboIndex1", "T000037_All_RiseAverageFit_ComboIndex1", "T000038_All_DecayAverageFit_ComboIndex1"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 
 	CheckTraceColors(extAllGraph, dispTraces, PSX_ALL)
@@ -1871,13 +1957,13 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 	PGC_SetAndActivateControl(specialEventPanel, "checkbox_average_events_undetermined", val = 0)
 	PGC_SetAndActivateControl(specialEventPanel, "checkbox_average_events_all", val = 1)
 
-	WAVE averageWaveFromTrace = TraceNameToWaveRef(extAllGraph, "T000007_averageAll_ComboIndex0")
+	WAVE averageWaveFromTrace = TraceNameToWaveRef(extAllGraph, "T000015_averageAll_ComboIndex0")
 
 	DFREF comboDFR       = MIES_PSX#PSX_GetCurrentComboFolder(win)
 	DFREF singleEventDFR = GetPSXSingleEventFolder(comboDFR)
 
 	WAVE/WAVE singleEventWaves = ListToWaveRefWave(GetListOfObjects(singleEventDFR, ".*", fullPath = 1))
-	CHECK_EQUAL_VAR(DimSize(singleEventWaves, ROWS), 4)
+	CHECK_EQUAL_VAR(DimSize(singleEventWaves, ROWS), 3)
 	WAVE/Z/WAVE calcAvgPack = MIES_fWaveAverage(singleEventWaves, 1, IGOR_TYPE_64BIT_FLOAT)
 	CHECK_WAVE(calcAvgPack, WAVE_WAVE)
 	WAVE/Z calcAvg = calcAvgPack[0]
@@ -1888,7 +1974,7 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 	PGC_SetAndActivateControl(specialEventPanel, "checkbox_average_events_undetermined", val = 1)
 	PGC_SetAndActivateControl(specialEventPanel, "checkbox_average_events_all", val = 0)
 
-	WAVE averageWaveFromTrace = TraceNameToWaveRef(extAllGraph, "T000006_averageUndetermined_ComboIndex0")
+	WAVE averageWaveFromTrace = TraceNameToWaveRef(extAllGraph, "T000011_averageUndetermined_ComboIndex0")
 	CHECK_EQUAL_WAVES(calcAvg, averageWaveFromTrace, mode = WAVE_DATA)
 
 	// now let's change some event/fit states
@@ -1906,7 +1992,7 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 	MIES_PSX#PSX_UpdateEventWaves(win, val = PSX_ACCEPT, index = 1, stateType = PSX_STATE_FIT)
 
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
-	Make/FREE/T dispTracesRef = {"T000000", "T000001", "T000002", "T000003"}
+	Make/FREE/T dispTracesRef = {"T000000", "T000001", "T000002"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 
 	CheckTraceColors(extAllGraph, dispTraces, PSX_UNDET)
@@ -1917,7 +2003,7 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 	DoUpdate
 
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
-	Make/FREE/T dispTracesRef = {"T000000", "T000001", "T000002", "T000003"}
+	Make/FREE/T dispTracesRef = {"T000000", "T000001", "T000002"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 
 	CheckTraceColors(extAllGraph, {"T000000"}, PSX_REJECT)
@@ -1933,7 +2019,7 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 	PGC_SetAndActivateControl(specialEventPanel, "popupmenu_state_type", str = "Event*")
 
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
-	Make/FREE/T dispTracesRef = {"T000000", "T000002", "T000003"}
+	Make/FREE/T dispTracesRef = {"T000000", "T000002"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 End
 
@@ -2041,7 +2127,7 @@ static Function JumpToSelectedEvents([STRUCT IUTF_mData &m])
 
 	// select event 0, combo 1
 	SetActiveSubwindow $psxStatsGraph
-	SetMarquee/W=$psxStatsGraph/HAX=bottom/VAX=left -0.1, AdaptForPostProc(postProc, 49), 0.1, AdaptForPostProc(postProc, 80)
+	SetMarquee/W=$psxStatsGraph/HAX=bottom/VAX=left -0.1, AdaptForPostProc(postProc, 55), 0.1, AdaptForPostProc(postProc, 80)
 
 	PSX_JumpToEvents()
 
@@ -2050,7 +2136,7 @@ static Function JumpToSelectedEvents([STRUCT IUTF_mData &m])
 
 	// select all events
 	SetActiveSubwindow $psxStatsGraph
-	SetMarquee/W=$psxStatsGraph/HAX=bottom/VAX=left -0.1, AdaptForPostProc(postProc, 49), 1.1, AdaptForPostProc(postProc, 100)
+	SetMarquee/W=$psxStatsGraph/HAX=bottom/VAX=left -0.1, AdaptForPostProc(postProc, 40), 1.1, AdaptForPostProc(postProc, 200)
 
 	PSX_JumpToEvents()
 
@@ -2204,7 +2290,7 @@ static Function KeyboardInteractions()
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
 	overrideResults[][][%$"Fit Result"]      = 1
-	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"WeightedTau"]     = 1
 	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
@@ -2472,7 +2558,7 @@ static Function KeyboardInteractionsStats()
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
 	overrideResults[][][%$"Fit Result"]      = 1
-	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"WeightedTau"]     = 1
 	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
@@ -2742,7 +2828,7 @@ static Function KeyboardInteractionsStatsSpecial()
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
 	overrideResults[][][%$"Fit Result"]      = 1
-	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"WeightedTau"]     = 1
 	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
@@ -2813,20 +2899,23 @@ static Function KeyboardInteractionsStatsPostProcNonFinite()
 	combos[1] = comboKey
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
-	overrideResults[1][%$combos[0]][%$"Fit Result"] = 1
-	overrideResults[1][%$combos[0]][%$"Tau"]        = -Inf
+	overrideResults[1][%$combos[0]][%$"Fit Result"]  = 1
+	overrideResults[1][%$combos[0]][%$"weightedTau"] = -Inf
 
-	overrideResults[0][%$combos[0]][%$"Fit Result"] = 0
-	overrideResults[0][%$combos[0]][%$"Tau"]        = NaN
+	overrideResults[3][%$combos[0]][%$"Fit Result"]  = 1
+	overrideResults[3][%$combos[0]][%$"weightedTau"] = -Inf
 
-	overrideResults[0][%$combos[1]][%$"Fit Result"] = 1
-	overrideResults[0][%$combos[1]][%$"Tau"]        = +Inf
+	overrideResults[0][%$combos[0]][%$"Fit Result"]  = 0
+	overrideResults[0][%$combos[0]][%$"weightedTau"] = NaN
+
+	overrideResults[0][%$combos[1]][%$"Fit Result"]  = 1
+	overrideResults[0][%$combos[1]][%$"weightedTau"] = +Inf
 
 	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
-	code = GetTestCode("nonfinite", eventState = "all", prop = "tau")
+	code = GetTestCode("nonfinite", eventState = "all", prop = "weightedTau")
 
 	win = ExecuteSweepFormulaCode(browser, code)
 
@@ -2848,11 +2937,10 @@ static Function KeyboardInteractionsStatsPostProcNonFinite()
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxStatsGraph)
 
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {0, 3}, PSX_REJECT)
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {1, 2}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {2}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {0, 1, 3}, PSX_REJECT)
 	CheckPSXEventField({psxEvent_0}, {"Event manual QC call"}, {0, 1, 2, 3}, PSX_UNDET)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {0, 1}, PSX_UNDET)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {2}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {0, 1, 2}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {0, 1, 2}, PSX_UNDET)
 
 	SendKey(psxStatsGraph, UP_KEY)
@@ -2860,7 +2948,7 @@ static Function KeyboardInteractionsStatsPostProcNonFinite()
 	SendKey(psxStatsGraph, DOWN_KEY)
 	SendKey(psxStatsGraph, UP_KEY)
 
-	CheckCurrentEvent(psxStatsGraph, 1, 2, 4)
+	CheckCurrentEvent(psxStatsGraph, 1, 0, 3)
 
 	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {0, 3}, PSX_REJECT)
 	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {2}, PSX_UNDET)
@@ -2872,8 +2960,7 @@ static Function KeyboardInteractionsStatsPostProcNonFinite()
 	CheckPSXEventField({psxEvent_0}, {"Event manual QC call"}, {3}, PSX_REJECT)
 
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {0}, PSX_ACCEPT)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {1}, PSX_UNDET)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {2}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {1, 2}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {0}, PSX_ACCEPT)
 	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {1}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {2}, PSX_UNDET)
@@ -2885,7 +2972,7 @@ static Function NoEventsAtAll()
 
 	browser = SetupDatabrowserWithSomeData()
 
-	code = "psx(psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all))), 100, 100, 0)"
+	code = "psx(psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all))), 100, psxSweepBPFilter(100, 0))"
 
 	win = ExecuteSweepFormulaCode(browser, code, expectFailure = 1)
 
@@ -2897,9 +2984,89 @@ static Function NoEventsAtAll()
 	endtry
 End
 
-static Function CheckResultsWavesForAverageFitResult()
+static Function CheckNumUserTicksForAxis(string graph, string axis, variable enabled)
 
-	string browser, code, psxGraph, win, mainWindow, specialEventPanel, name, entry, comboKey
+	string   info
+	variable numUserTicks
+
+	enabled = !!enabled
+
+	// disabled axis has
+	// userticks(x)=0
+	// and an enabled one has
+	// userticks(x)={::MIES:HardwareDevices:ITC16:Device0:Databrowser0:FormulaData:psx:combo_0:eventTicks_freeDeconvAxis,
+	// ::MIES:HardwareDevices:ITC16:Device0:Databrowser0:FormulaData:psx:combo_0:eventLabels_freeDeconvAxis}
+	// which converts to NaN as numerical
+	info = AxisInfo(graph, axis)
+	CHECK_PROPER_STR(info)
+	numUserTicks = GetNumFromModifyStr(info, "userTicks", "", 0); ClearRTError()
+
+	if(enabled)
+		CHECK_EQUAL_VAR(numUserTicks, NaN)
+	else
+		CHECK_EQUAL_VAR(numUserTicks, 0)
+	endif
+End
+
+// IUTF_TD_GENERATOR s0:DataGenerators#GetPSXHelperAxisTypes
+static Function CheckHelperFreeAxis([STRUCT IUTF_mData &m])
+
+	string browser, code, psxGraph, win, mainWindow, specialEventPanel, name, entry, comboKey, state, axisType, ctrl
+	string info, axisName
+	variable numUserTicks, numTicks
+
+	axisType = m.s0
+
+	Make/FREE/T/N=2 combos
+	sprintf comboKey, "Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[0] = comboKey
+	sprintf comboKey, "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[1] = comboKey
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
+
+	browser = SetupDatabrowserWithSomeData()
+
+	code = GetTestCode("nothing")
+
+	win = ExecuteSweepFormulaCode(browser, code)
+
+	mainWindow        = GetMainWindow(win)
+	psxGraph          = MIES_PSX#PSX_GetPSXGraph(win)
+	specialEventPanel = MIES_PSX#PSX_GetSpecialPanel(win)
+
+	REQUIRE(WindowExists(psxGraph))
+
+	SetActiveSubwindow $psxGraph
+
+	CHECK_EQUAL_STR(AxisList(psxGraph), "leftOffFilt;bottom;leftOffFiltDeconv;freeDeconvAxis;freePeakAxis;freeBaselineAxis;")
+
+	// by default shown
+	CheckNumUserTicksForAxis(psxGraph, "freeDeconvAxis", 1)
+
+	// hidden by default
+	CheckNumUserTicksForAxis(psxGraph, "freePeakAxis", 0)
+	CheckNumUserTicksForAxis(psxGraph, "freeBaselineAxis", 0)
+
+	if(cmpstr(axisType, NONE))
+		PGC_SetAndActivateControl(mainWindow, "checkbox_show_deconv_lines", val = 0)
+		CheckNumUserTicksForAxis(psxGraph, "freeDeconvAxis", 0)
+
+		sprintf ctrl, "checkbox_show_%s_lines", axisType
+		PGC_SetAndActivateControl(mainWindow, ctrl, val = 1)
+
+		sprintf axisName, "free%sAxis", UpperCaseFirstChar(axisType)
+
+		CheckNumUserTicksForAxis(psxGraph, axisName, 1)
+	endif
+End
+
+// IUTF_TD_GENERATOR v0:DataGenerators#GetAllPSXStates
+static Function CheckResultsWavesForAverageFitResult([STRUCT IUTF_mData &m])
+
+	string browser, code, psxGraph, win, mainWindow, specialEventPanel, name, entry, comboKey, state
+	state = MIES_PSX#PSX_StateToString(m.v0)
 
 	Make/FREE/T/N=2 combos
 	sprintf comboKey, "Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
@@ -2930,14 +3097,23 @@ static Function CheckResultsWavesForAverageFitResult()
 	WAVE/T textualResultsValues = GetLogbookWaves(LBT_RESULTS, LBN_TEXTUAL_VALUES)
 	CHECK_EQUAL_VAR(GetNumberFromWaveNote(textualResultsValues, NOTE_INDEX), 1)
 
-	PGC_SetAndActivateControl(specialEventPanel, "checkbox_average_events_accept", val = 1)
+	PGC_SetAndActivateControl(specialEventPanel, "checkbox_average_events_" + state, val = 1)
 	CHECK_EQUAL_VAR(GetNumberFromWaveNote(textualResultsValues, NOTE_INDEX), 1)
 
-	PGC_SetAndActivateControl(specialEventPanel, "checkbox_average_events_fit", val = 1)
+	PGC_SetAndActivateControl(specialEventPanel, "checkbox_events_fit_" + state, val = 1)
+
 	// our data makes the fit fail
-	CHECK_EQUAL_VAR(GetNumberFromWaveNote(textualResultsValues, NOTE_INDEX), 1)
+	strswitch(state)
+		case "all": // fallthrough
+		case "undetermined":
+			CHECK_EQUAL_VAR(GetNumberFromWaveNote(textualResultsValues, NOTE_INDEX), 2)
+			break
+		default:
+			CHECK_EQUAL_VAR(GetNumberFromWaveNote(textualResultsValues, NOTE_INDEX), 1)
+			break
+	endswitch
 
-	name  = SFH_FormatResultsKey(SFH_RESULT_TYPE_PSX_MISC, "accepted average fit results")
+	name  = SFH_FormatResultsKey(SFH_RESULT_TYPE_PSX_MISC, state + "ed average fit results")
 	entry = GetLastSettingTextIndep(textualResultsValues, NaN, name, SWEEP_FORMULA_RESULT)
 	CHECK_EMPTY_STR(entry)
 End
@@ -2973,7 +3149,7 @@ static Function TestBlockIndexLogic()
 	CHECK_EQUAL_STR(PSX_GetAllEventBlockNumbers(specialEventPanel), "0;")
 
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
-	Make/FREE/T dispTracesRef = {"T000000", "T000001", "T000002", "T000003", "T000009", "T000010", "T000011"}
+	Make/FREE/T dispTracesRef = {"T000000", "T000001", "T000002", "T000003", "T000020", "T000021", "T000022"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 
 	// 50% block size
@@ -2998,7 +3174,7 @@ static Function TestBlockIndexLogic()
 	CHECK_EQUAL_STR(GetPopupMenuString(specialEventPanel, "popup_block"), "1")
 
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
-	Make/FREE/T dispTracesRef = {"T000003", "T000009", "T000010", "T000011"}
+	Make/FREE/T dispTracesRef = {"T000003", "T000020", "T000021", "T000022"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 
 	// 33% block size
@@ -3049,7 +3225,7 @@ static Function TestBlockIndexLogic()
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
 	// while it is suprising to see four here and only one in the other blocks it
 	// works with larger event numbers from real data
-	Make/FREE/T dispTracesRef = {"T000003", "T000009", "T000010", "T000011"}
+	Make/FREE/T dispTracesRef = {"T000003", "T000020", "T000021", "T000022"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 
 	// current combination only
@@ -3228,7 +3404,7 @@ static Function TestOperationPrep()
 
 	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen = FakeSweepDataGeneratorPSX)
 
-	psxCode = "psx(myID, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 1, 15, -5), 2.5, 100, 0)"
+	psxCode = "psx(myID, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 1, 15, -5), 2.5, psxSweepBPFilter(100, 0))"
 	sprintf code, "psxPrep(%s)", psxCode
 
 	WAVE/WAVE dataWref = SFE_ExecuteFormula(code, win, useVariables = 0)
@@ -3275,7 +3451,7 @@ static Function TestStoreAndLoad()
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
 	overrideResults[][][%$"Fit Result"]      = 1
-	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"WeightedTau"]     = 1
 	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
@@ -3369,7 +3545,7 @@ static Function [variable filterLow, variable filterHigh, variable filterOrder] 
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 1)
 	WAVE/Z data = dataWref[0]
 	CHECK_WAVE(data, NUMERIC_WAVE)
-	CHECK_EQUAL_VAR(DimSize(data, ROWS), 3)
+	CHECK_EQUAL_VAR(DimSize(data, ROWS), 6)
 
 	filterLow = data[%$"Filter Low"]
 	if(IsNaN(filterLow))
@@ -3390,50 +3566,59 @@ static Function [variable filterLow, variable filterHigh, variable filterOrder] 
 	if(IsNaN(filterOrder))
 		PASS()
 	else
-		CHECK(IsOdd(filterOrder))
+		CHECK(IsEven(filterOrder))
 	endif
+
+	CHECK_EQUAL_VAR(data[%$"Filter Low (Default)"], NaN)
+	CHECK_EQUAL_VAR(data[%$"Filter High (Default)"], NaN)
+	CHECK_EQUAL_VAR(data[%$"Filter Order (Default)"], 4)
 
 	return [filterLow, filterHigh, filterOrder]
 End
 
-static Function TestOperationDeconvFilter()
+/// IUTF_TD_GENERATOR s0:DataGenerators#GetAllPSXFilterOperations
+static Function TestOperationFilters([STRUCT IUTF_mData &m])
 
-	string win, str
+	string win, str, op
 	variable filterLow, filterHigh, filterOrder
 
 	win = SetupDatabrowserWithSomeData()
 
-	str = "psxDeconvFilter()"
+	op = m.s0
+
+	sprintf str, "%s()", op
 	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	[filterLow, filterHigh, filterOrder] = TestDevonvFilterContainer(dataWref)
 	CHECK_EQUAL_VAR(filterLow, NaN)
 	CHECK_EQUAL_VAR(filterHigh, NaN)
 	CHECK_EQUAL_VAR(filterOrder, NaN)
 
-	str = "psxDeconvFilter(40)"
+	sprintf str, "%s(40)", op
 	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	[filterLow, filterHigh, filterOrder] = TestDevonvFilterContainer(dataWref)
 	CHECK_EQUAL_VAR(filterLow, 40)
 	CHECK_EQUAL_VAR(filterHigh, NaN)
 	CHECK_EQUAL_VAR(filterOrder, NaN)
 
-	str = "psxDeconvFilter(40, 50)"
+	sprintf str, "%s(40, 50)", op
 	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	[filterLow, filterHigh, filterOrder] = TestDevonvFilterContainer(dataWref)
-	CHECK_EQUAL_VAR(filterLow, 40)
-	CHECK_EQUAL_VAR(filterHigh, 50)
+	// we automatically fixup the order for the user
+	CHECK_EQUAL_VAR(filterLow, 50)
+	CHECK_EQUAL_VAR(filterHigh, 40)
 	CHECK_EQUAL_VAR(filterOrder, NaN)
 
-	str = "psxDeconvFilter(40, 50, 11)"
+	sprintf str, "%s(40, 50, 11)", op
 	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	[filterLow, filterHigh, filterOrder] = TestDevonvFilterContainer(dataWref)
-	CHECK_EQUAL_VAR(filterLow, 40)
-	CHECK_EQUAL_VAR(filterHigh, 50)
-	CHECK_EQUAL_VAR(filterOrder, 11)
+	// we automatically fixup the order for the user
+	CHECK_EQUAL_VAR(filterLow, 50)
+	CHECK_EQUAL_VAR(filterHigh, 40)
+	CHECK_EQUAL_VAR(filterOrder, 12)
 
 	// check parameters
 	try
-		str = "psxDeconvFilter(-1)"
+		sprintf str, "%s(-1)", op
 		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
@@ -3441,7 +3626,7 @@ static Function TestOperationDeconvFilter()
 	endtry
 
 	try
-		str = "psxDeconvFilter(1, -1)"
+		sprintf str, "%s(1, -1)", op
 		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
@@ -3449,7 +3634,7 @@ static Function TestOperationDeconvFilter()
 	endtry
 
 	try
-		str = "psxDeconvFilter(1, 1, -1)"
+		sprintf str, "%s(1, 1, -1)", op
 		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
