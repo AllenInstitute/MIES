@@ -11,7 +11,6 @@
 // GetBaseName
 // GetFileSuffix
 // GetFile
-// GetWindowsPath
 // GetHFSPath
 // GetUniqueSymbolicPath
 // AskUserForExistingFolder
@@ -389,4 +388,21 @@ static Function TestResolveAlias()
 
 	KillPath $symbPath
 	CHECK_NO_RTE()
+End
+
+static Function TestGetWindowsPath()
+
+	string windowsPath = "C:\\windows\\system.ini"
+
+	// backward aka idempotent
+	CHECK_EQUAL_STR(windowsPath, GetWindowsPath(windowsPath))
+
+	// forward
+	CHECK_EQUAL_STR(windowsPath, GetWindowsPath("C:/windows/system.ini"))
+
+	// mixed
+	CHECK_EQUAL_STR(windowsPath, GetWindowsPath("C:/windows\\system.ini"))
+
+	// colon (HFS)
+	CHECK_EQUAL_STR(windowsPath, GetWindowsPath("C:windows:system.ini"))
 End
