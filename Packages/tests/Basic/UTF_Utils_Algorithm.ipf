@@ -1464,7 +1464,7 @@ static Function TestShortenWaveForFFTIfRequired_Truncation()
 	resultSize = DimSize(result, ROWS)
 	sprintf msg, "Result size %d should be less than input size %d", resultSize, size
 	INFO(msg)
-	CHECK(resultSize < size)
+	CHECK_LT_VAR(resultSize, size)
 	// Verify content is preserved (first resultSize points)
 	Duplicate/FREE/RMD=[0, resultSize - 1] inputWave, inputSlice
 	CHECK_EQUAL_WAVES(result, inputSlice, mode = WAVE_DATA, tol = 0)
@@ -1477,7 +1477,7 @@ static Function TestShortenWaveForFFTIfRequired_Truncation()
 	resultSize = DimSize(result, ROWS)
 	sprintf msg, "Result size %d should be less than input size %d", resultSize, size
 	INFO(msg)
-	CHECK(resultSize < size)
+	CHECK_LT_VAR(resultSize, size)
 	// Verify content is preserved (check first few points)
 	CHECK_EQUAL_VAR(result[0], inputWave[0])
 	CHECK_EQUAL_VAR(result[10], inputWave[10])
@@ -1485,13 +1485,13 @@ static Function TestShortenWaveForFFTIfRequired_Truncation()
 
 	// Test with size that has a large prime factor
 	size = 5003 // prime number > 1000
-	Make/FREE/N=(size) inputWave = sin(p / 100)
+	Make/FREE/N=(size) inputWave = sin(p / 100) // NOLINT
 	WAVE result = ShortenWaveForFFTIfRequired(inputWave)
 	CHECK(!WaveRefsEqual(result, inputWave))
 	resultSize = DimSize(result, ROWS)
 	sprintf msg, "Result size %d should be less than input size %d", resultSize, size
 	INFO(msg)
-	CHECK(resultSize < size)
+	CHECK_LT_VAR(resultSize, size)
 	// Verify wave properties
 	CHECK_EQUAL_VAR(DimDelta(result, ROWS), DimDelta(inputWave, ROWS))
 	// Verify content is preserved (first resultSize points)
