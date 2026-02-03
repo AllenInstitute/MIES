@@ -39,6 +39,8 @@ Function/S ListFromList(string list, variable itemBegin, variable itemEnd, [stri
 		listSep = ";"
 	endif
 
+	list = RemoveEnding(list, listSep) + listSep
+
 	ASSERT(itemBegin <= itemEnd, "SubSet missmatch")
 
 	numItems = ItemsInList(list, listSep)
