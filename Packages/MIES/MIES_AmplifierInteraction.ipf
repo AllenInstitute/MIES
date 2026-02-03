@@ -445,6 +445,7 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 				AI_UpdateAmpModel(device, i, ctrl = "setvar_DataAcq_RsCorr", value = AmpStorageWave[%$rowLabel][0][i], selectAmp = 0)
 				break
 			case MCC_NO_AUTOBIAS_V_FUNC: // fallthrough
+				ASSERT(value > -100 && value < 100, "Out of range")
 			case MCC_NO_AUTOBIAS_VRANGE_FUNC: // fallthrough
 			case MCC_NO_AUTOBIAS_IBIASMAX_FUNC: // fallthrough
 			case MCC_NO_AUTOBIAS_ENABLE_FUNC:
@@ -1215,7 +1216,7 @@ Function AI_IsControlFromClampMode(string ctrl, variable clampMode)
 End
 
 /// @brief Convert amplifier controls to row labels for `AmpStorageWave`
-static Function/S AI_AmpStorageControlToRowLabel(string ctrl)
+Function/S AI_AmpStorageControlToRowLabel(string ctrl)
 
 	strswitch(ctrl)
 		// V-Clamp controls
