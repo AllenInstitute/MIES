@@ -650,7 +650,7 @@ Function/WAVE ConvertToUniqueNumber(WAVE/T wv, [variable doZapNaNs, variable doS
 
 	WAVE/T unique = GetUniqueEntries(wv)
 
-	Make/D/FREE/N=(DimSize(unique, ROWS)) numeric = str2num(unique[p])
+	Make/D/FREE/N=(DimSize(unique, ROWS)) numeric = str2numSafe(unique[p])
 
 	if(doZapNaNs)
 		WAVE/Z numericReduced = ZapNaNs(numeric)
