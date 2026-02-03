@@ -321,7 +321,7 @@ Function StringEndsWith(string str, string suffix)
 		return 0
 	endif
 
-	pos = strsearch(str, suffix, Inf, 1)
+	pos = strsearch(str, suffix, Inf, 3)
 	if(pos == -1)
 		return 0
 	endif
