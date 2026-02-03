@@ -208,6 +208,10 @@ Function/S MergeLists(string l1, string l2, [string sep])
 		endif
 	endfor
 
+	if(!IsEmpty(l2))
+		l2 = RemoveEnding(l2, sep) + sep
+	endif
+
 	return l2
 End
 
