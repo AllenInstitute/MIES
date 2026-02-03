@@ -239,7 +239,7 @@ End
 /// @brief Return 1 if the wave is a complex wave
 threadsafe Function IsComplexWave(WAVE wv)
 
-	return WaveType(wv) & IGOR_TYPE_COMPLEX
+	return (WaveType(wv) & IGOR_TYPE_COMPLEX) == IGOR_TYPE_COMPLEX
 End
 
 /// @brief Return true if wv is a free wave, false otherwise
