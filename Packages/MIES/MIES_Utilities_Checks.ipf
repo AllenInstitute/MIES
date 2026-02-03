@@ -211,7 +211,7 @@ threadsafe Function IsFloatingPointWave(WAVE wv)
 
 	variable type = WaveType(wv)
 
-	return (type & IGOR_TYPE_32BIT_FLOAT) || (type & IGOR_TYPE_64BIT_FLOAT)
+	return (type & IGOR_TYPE_32BIT_FLOAT) == IGOR_TYPE_32BIT_FLOAT || (type & IGOR_TYPE_64BIT_FLOAT) == IGOR_TYPE_64BIT_FLOAT
 End
 
 /// @brief Return 1 if the wave is a double (64bit) precision floating point wave
@@ -219,7 +219,7 @@ End
 /// UTF_NOINSTRUMENTATION
 threadsafe Function IsDoubleFloatingPointWave(WAVE wv)
 
-	return WaveType(wv) & IGOR_TYPE_64BIT_FLOAT
+	return (WaveType(wv) & IGOR_TYPE_64BIT_FLOAT) == IGOR_TYPE_64BIT_FLOAT
 End
 
 /// @brief Return 1 if the wave is a single (32bit) precision floating point wave
@@ -227,7 +227,7 @@ End
 /// UTF_NOINSTRUMENTATION
 threadsafe Function IsSingleFloatingPointWave(WAVE wv)
 
-	return WaveType(wv) & IGOR_TYPE_32BIT_FLOAT
+	return (WaveType(wv) & IGOR_TYPE_32BIT_FLOAT) == IGOR_TYPE_32BIT_FLOAT
 End
 
 /// @brief Return 1 if the wave is a global wave (not a null wave and not a free wave)
