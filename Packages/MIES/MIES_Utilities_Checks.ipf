@@ -211,7 +211,7 @@ threadsafe Function IsFloatingPointWave(WAVE wv)
 
 	variable type = WaveType(wv)
 
-	return (type & IGOR_TYPE_32BIT_FLOAT) || (type & IGOR_TYPE_64BIT_FLOAT)
+	return (type & IGOR_TYPE_32BIT_FLOAT) == IGOR_TYPE_32BIT_FLOAT || (type & IGOR_TYPE_64BIT_FLOAT) == IGOR_TYPE_64BIT_FLOAT
 End
 
 /// @brief Return 1 if the wave is a double (64bit) precision floating point wave
@@ -219,7 +219,7 @@ End
 /// UTF_NOINSTRUMENTATION
 threadsafe Function IsDoubleFloatingPointWave(WAVE wv)
 
-	return WaveType(wv) & IGOR_TYPE_64BIT_FLOAT
+	return (WaveType(wv) & IGOR_TYPE_64BIT_FLOAT) == IGOR_TYPE_64BIT_FLOAT
 End
 
 /// @brief Return 1 if the wave is a single (32bit) precision floating point wave
@@ -227,7 +227,7 @@ End
 /// UTF_NOINSTRUMENTATION
 threadsafe Function IsSingleFloatingPointWave(WAVE wv)
 
-	return WaveType(wv) & IGOR_TYPE_32BIT_FLOAT
+	return (WaveType(wv) & IGOR_TYPE_32BIT_FLOAT) == IGOR_TYPE_32BIT_FLOAT
 End
 
 /// @brief Return 1 if the wave is a global wave (not a null wave and not a free wave)
@@ -239,7 +239,7 @@ End
 /// @brief Return 1 if the wave is a complex wave
 threadsafe Function IsComplexWave(WAVE wv)
 
-	return WaveType(wv) & IGOR_TYPE_COMPLEX
+	return (WaveType(wv) & IGOR_TYPE_COMPLEX) == IGOR_TYPE_COMPLEX
 End
 
 /// @brief Return true if wv is a free wave, false otherwise
@@ -321,7 +321,7 @@ Function StringEndsWith(string str, string suffix)
 		return 0
 	endif
 
-	pos = strsearch(str, suffix, Inf, 1)
+	pos = strsearch(str, suffix, Inf, 3)
 	if(pos == -1)
 		return 0
 	endif

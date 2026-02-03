@@ -3,30 +3,6 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = UTILSTEST_CHECKS
 
-// Missing Tests for:
-// IsFinite
-// IsNaN
-// IsInf
-// IsNull
-// IsEmpty
-// WindowExists
-// ValueCanBeWritten
-// IsInteger
-// FuncRefIsAssigned
-// CheckIfClose
-// CheckIfSmall
-// IsTextWave
-// IsNumericWave
-// IsWaveRefWave
-// IsFloatingPointWave
-// IsDoubleFloatingPointWave
-// IsSingleFloatingPointWave
-// IsGlobalWave
-// IsComplexWave
-// IsFreeWave
-// StringEndsWith
-// ListHasOnlyOneUniqueEntry
-
 /// IsEven
 /// @{
 
@@ -496,3 +472,480 @@ static Function TestIsAssociatedChannel()
 	CHECK_EQUAL_VAR(IsAssociatedChannel(NaN), 0)
 	CHECK_EQUAL_VAR(IsAssociatedChannel(1.5), 0)
 End
+
+/// IsFinite
+/// @{
+
+Function IF_Works()
+
+	CHECK(IsFinite(0))
+	CHECK(IsFinite(1))
+	CHECK(IsFinite(-1))
+	CHECK(IsFinite(1.5))
+	CHECK(IsFinite(-1.5))
+	CHECK(!IsFinite(NaN))
+	CHECK(!IsFinite(Inf))
+	CHECK(!IsFinite(-Inf))
+End
+
+/// @}
+
+/// IsNaN
+/// @{
+
+Function ISNAN_Works()
+
+	CHECK(IsNaN(NaN))
+	CHECK(!IsNaN(0))
+	CHECK(!IsNaN(1))
+	CHECK(!IsNaN(-1))
+	CHECK(!IsNaN(Inf))
+	CHECK(!IsNaN(-Inf))
+End
+
+/// @}
+
+/// IsInf
+/// @{
+
+Function ISINF_Works()
+
+	CHECK(IsInf(Inf))
+	CHECK(IsInf(-Inf))
+	CHECK(!IsInf(0))
+	CHECK(!IsInf(1))
+	CHECK(!IsInf(-1))
+	CHECK(!IsInf(NaN))
+End
+
+/// @}
+
+/// IsNull
+/// @{
+
+Function ISNULL_Works()
+
+	string str
+	string nullStr
+
+	str = "test"
+	CHECK(!IsNull(str))
+
+	str = ""
+	CHECK(!IsNull(str))
+
+	CHECK(IsNull(nullStr))
+End
+
+/// @}
+
+/// IsEmpty
+/// @{
+
+Function ISEMPTY_Works()
+
+	CHECK(IsEmpty(""))
+	CHECK(!IsEmpty("test"))
+	CHECK(!IsEmpty(" "))
+	CHECK(!IsEmpty("a"))
+End
+
+/// @}
+
+/// WindowExists
+/// @{
+
+Function WE_Works()
+
+	string win
+
+	// Create a graph
+	Display/N=TestGraph
+	win = "TestGraph"
+	CHECK(WindowExists(win))
+
+	KillWindow $win
+	CHECK(!WindowExists(win))
+
+	// Test with non-existent window
+	CHECK(!WindowExists("NonExistentWindow"))
+End
+
+/// @}
+
+/// ValueCanBeWritten
+/// @{
+
+Function VCW_WorksWithFloatWave()
+
+	Make/FREE/D wv
+	CHECK(ValueCanBeWritten(wv, 0))
+	CHECK(ValueCanBeWritten(wv, 1))
+	CHECK(ValueCanBeWritten(wv, -1))
+	CHECK(ValueCanBeWritten(wv, NaN))
+	CHECK(ValueCanBeWritten(wv, Inf))
+	CHECK(ValueCanBeWritten(wv, -Inf))
+End
+
+Function VCW_WorksWithSingleFloatWave()
+
+	Make/FREE/R wv
+	CHECK(ValueCanBeWritten(wv, 0))
+	CHECK(ValueCanBeWritten(wv, 1))
+	CHECK(ValueCanBeWritten(wv, NaN))
+	CHECK(ValueCanBeWritten(wv, Inf))
+	CHECK(ValueCanBeWritten(wv, -Inf))
+End
+
+Function VCW_WorksWithIntegerWave()
+
+	Make/FREE/I wv
+	CHECK(ValueCanBeWritten(wv, 0))
+	CHECK(ValueCanBeWritten(wv, 1))
+	CHECK(ValueCanBeWritten(wv, -1))
+	CHECK(!ValueCanBeWritten(wv, NaN))
+	CHECK(!ValueCanBeWritten(wv, Inf))
+	CHECK(!ValueCanBeWritten(wv, -Inf))
+End
+
+Function VCW_WorksWithTextWave()
+
+	Make/FREE/T wv
+	CHECK(!ValueCanBeWritten(wv, 0))
+	CHECK(!ValueCanBeWritten(wv, 1))
+End
+
+Function VCW_WorksWithNullWave()
+
+	WAVE wv = $""
+	CHECK(!ValueCanBeWritten(wv, 0))
+	CHECK(!ValueCanBeWritten(wv, NaN))
+End
+
+/// @}
+
+/// IsInteger
+/// @{
+
+Function ISINT_Works()
+
+	CHECK(IsInteger(0))
+	CHECK(IsInteger(1))
+	CHECK(IsInteger(-1))
+	CHECK(IsInteger(100))
+	CHECK(IsInteger(-100))
+	CHECK(!IsInteger(1.5))
+	CHECK(!IsInteger(-1.5))
+	CHECK(!IsInteger(0.1))
+	CHECK(!IsInteger(NaN))
+	CHECK(!IsInteger(Inf))
+	CHECK(!IsInteger(-Inf))
+End
+
+/// @}
+
+/// FuncRefIsAssigned
+/// @{
+
+Function FRIA_Works()
+
+	FUNCREF ProtoFunc_V_IGNORE fref1    = RealFunc_V_IGNORE
+	string                     funcInfo = FuncRefInfo(fref1)
+	CHECK(FuncRefIsAssigned(funcInfo))
+
+	FUNCREF ProtoFunc_V_IGNORE fref2 = $""
+	funcInfo = FuncRefInfo(fref2)
+	CHECK(!FuncRefIsAssigned(funcInfo))
+End
+
+Function ProtoFunc_V_IGNORE()
+End
+
+Function RealFunc_V_IGNORE()
+End
+
+/// @}
+
+/// CheckIfClose
+/// @{
+
+Function CIC_WorksWithDefaultTol()
+
+	CHECK(CheckIfClose(1, 1))
+	CHECK(CheckIfClose(1, 1 + 1e-9))
+	CHECK(CheckIfClose(1 + 1e-9, 1))
+	CHECK(!CheckIfClose(0, 1))
+	CHECK(!CheckIfClose(1, 2))
+End
+
+Function CIC_WorksWithCustomTol()
+
+	CHECK(CheckIfClose(1, 1.05, tol = 0.1))
+	CHECK(CheckIfClose(1.05, 1, tol = 0.1))
+	CHECK(!CheckIfClose(1, 1.2, tol = 0.1))
+End
+
+Function CIC_WorksWithWeakCondition()
+
+	CHECK(CheckIfClose(1, 1.05, tol = 0.1, strong_or_weak = 0))
+	CHECK(!CheckIfClose(1, 2, tol = 0.1, strong_or_weak = 0))
+End
+
+Function CIC_WorksWithStrongCondition()
+
+	CHECK(CheckIfClose(1, 1 + 1e-9, strong_or_weak = 1))
+	CHECK(!CheckIfClose(1, 1.2, tol = 0.1, strong_or_weak = 1))
+End
+
+/// @}
+
+/// CheckIfSmall
+/// @{
+
+Function CIS_WorksWithDefaultTol()
+
+	CHECK(CheckIfSmall(0))
+	CHECK(CheckIfSmall(1e-9))
+	CHECK(CheckIfSmall(-1e-9))
+	CHECK(!CheckIfSmall(1))
+	CHECK(!CheckIfSmall(-1))
+	CHECK(!CheckIfSmall(0.1))
+End
+
+Function CIS_WorksWithCustomTol()
+
+	CHECK(CheckIfSmall(0, tol = 0.1))
+	CHECK(CheckIfSmall(0.05, tol = 0.1))
+	CHECK(CheckIfSmall(-0.05, tol = 0.1))
+	CHECK(!CheckIfSmall(0.2, tol = 0.1))
+	CHECK(!CheckIfSmall(-0.2, tol = 0.1))
+End
+
+/// @}
+
+/// IsTextWave
+/// @{
+
+// UTF_TD_GENERATOR w0:DataGenerators#GetEmptyWavesOfAllTypes
+Function ITW_Works([STRUCT IUTF_mData &m])
+
+	WAVE wv = m.w0
+
+	// Use WaveType to determine the expected result
+	// WaveType(wv, 1) returns: 0=null, 1=numeric, 2=text, 4=datafolder ref, IGOR_TYPE_WAVEREF_WAVE=wave ref
+	variable waveTypeValue = WaveType(wv, 1)
+	variable expected      = (waveTypeValue == 2) // 2 means text wave
+
+	CHECK_EQUAL_VAR(IsTextWave(wv), expected)
+End
+
+/// @}
+
+/// IsNumericWave
+/// @{
+
+// UTF_TD_GENERATOR w0:DataGenerators#GetEmptyWavesOfAllTypes
+Function INW_Works([STRUCT IUTF_mData &m])
+
+	WAVE wv = m.w0
+
+	// Use WaveType to determine the expected result
+	// WaveType(wv, 1) returns: 0=null, 1=numeric, 2=text, 4=datafolder ref, IGOR_TYPE_WAVEREF_WAVE=wave ref
+	variable waveTypeValue = WaveType(wv, 1)
+	variable expected      = (waveTypeValue == 1) // 1 means numeric wave
+
+	CHECK_EQUAL_VAR(IsNumericWave(wv), expected)
+End
+
+/// @}
+
+/// IsWaveRefWave
+/// @{
+
+// UTF_TD_GENERATOR w0:DataGenerators#GetEmptyWavesOfAllTypes
+Function IWRW_Works([STRUCT IUTF_mData &m])
+
+	WAVE wv = m.w0
+
+	// Use WaveType to determine the expected result
+	variable waveTypeValue = WaveType(wv, 1)
+	variable expected      = (waveTypeValue == IGOR_TYPE_WAVEREF_WAVE) // Wave reference wave
+
+	CHECK_EQUAL_VAR(IsWaveRefWave(wv), expected)
+End
+
+/// @}
+
+/// IsFloatingPointWave
+/// @{
+
+// UTF_TD_GENERATOR w0:DataGenerators#GetEmptyWavesOfAllTypes
+Function IFPW_Works([STRUCT IUTF_mData &m])
+
+	WAVE wv = m.w0
+
+	// Check if it's a floating point wave (32-bit or 64-bit)
+	variable waveTypeValue = WaveType(wv)
+	variable expected      = !!(waveTypeValue & (IGOR_TYPE_32BIT_FLOAT | IGOR_TYPE_64BIT_FLOAT))
+
+	CHECK_EQUAL_VAR(IsFloatingPointWave(wv), expected)
+End
+
+/// @}
+
+/// IsDoubleFloatingPointWave
+/// @{
+
+// UTF_TD_GENERATOR w0:DataGenerators#GetEmptyWavesOfAllTypes
+Function IDFPW_Works([STRUCT IUTF_mData &m])
+
+	WAVE wv = m.w0
+
+	// Check if it's a double precision (64-bit) floating point wave
+	variable waveTypeValue = WaveType(wv)
+	variable expected      = !!(waveTypeValue & IGOR_TYPE_64BIT_FLOAT)
+
+	CHECK_EQUAL_VAR(IsDoubleFloatingPointWave(wv), expected)
+End
+
+/// @}
+
+/// IsSingleFloatingPointWave
+/// @{
+
+// UTF_TD_GENERATOR w0:DataGenerators#GetEmptyWavesOfAllTypes
+Function ISFPW_Works([STRUCT IUTF_mData &m])
+
+	WAVE wv = m.w0
+
+	// Check if it's a single precision (32-bit) floating point wave
+	variable waveTypeValue = WaveType(wv)
+	variable expected      = !!(waveTypeValue & IGOR_TYPE_32BIT_FLOAT)
+
+	CHECK_EQUAL_VAR(IsSingleFloatingPointWave(wv), expected)
+End
+
+/// @}
+
+/// IsGlobalWave
+/// @{
+
+Function IGW_Works()
+
+	Make/O wvGlobal
+	CHECK(IsGlobalWave(wvGlobal))
+	KillWaves wvGlobal
+
+	Make/FREE wvFree
+	CHECK(!IsGlobalWave(wvFree))
+End
+
+/// @}
+
+/// IsComplexWave
+/// @{
+
+// UTF_TD_GENERATOR w0:DataGenerators#GetEmptyWavesOfAllTypes
+Function ICW_Works([STRUCT IUTF_mData &m])
+
+	WAVE wv = m.w0
+
+	// Check if it's a complex wave
+	variable waveTypeValue = WaveType(wv)
+	variable expected      = !!(waveTypeValue & IGOR_TYPE_COMPLEX)
+
+	CHECK_EQUAL_VAR(IsComplexWave(wv), expected)
+End
+
+Function ICW_WorksWithComplexWave()
+
+	Make/FREE/C wvComplex
+	CHECK(IsComplexWave(wvComplex))
+End
+
+/// @}
+
+/// IsFreeWave
+/// @{
+
+Function IFW_Works()
+
+	Make/FREE wvFree
+	CHECK(IsFreeWave(wvFree))
+
+	Make/O wvGlobal
+	CHECK(!IsFreeWave(wvGlobal))
+	KillWaves wvGlobal
+End
+
+/// @}
+
+/// StringEndsWith
+/// @{
+
+Function SEW_Works()
+
+	CHECK(StringEndsWith("test", "st"))
+	CHECK(StringEndsWith("test", "test"))
+	CHECK(StringEndsWith("hello world", "world"))
+	CHECK(!StringEndsWith("test", "te"))
+	CHECK(!StringEndsWith("hello", "world"))
+	CHECK(StringEndsWith("test", "TEST"))
+	CHECK(StringEndsWith("TEST", "test"))
+End
+
+Function SEW_WorksWithEmptyStrings()
+
+	string nullStr
+
+	CHECK(!StringEndsWith("", ""))
+	CHECK(!StringEndsWith("test", ""))
+	CHECK(!StringEndsWith("", "test"))
+	CHECK(!StringEndsWith(nullStr, "test"))
+	CHECK(!StringEndsWith("test", nullStr))
+	CHECK(!StringEndsWith(nullStr, nullStr))
+	CHECK_RTE(185)
+End
+
+/// @}
+
+/// ListHasOnlyOneUniqueEntry
+/// @{
+
+Function LHOUE_Works()
+
+	CHECK(ListHasOnlyOneUniqueEntry(""))
+	CHECK(ListHasOnlyOneUniqueEntry("a"))
+	CHECK(ListHasOnlyOneUniqueEntry("a;"))
+	CHECK(ListHasOnlyOneUniqueEntry("a;a"))
+	CHECK(ListHasOnlyOneUniqueEntry("a;a;a"))
+	CHECK(!ListHasOnlyOneUniqueEntry("a;b"))
+	CHECK(!ListHasOnlyOneUniqueEntry("a;b;c"))
+End
+
+Function LHOUE_WorksWithCustomSep()
+
+	CHECK(ListHasOnlyOneUniqueEntry("a", sep = ","))
+	CHECK(ListHasOnlyOneUniqueEntry("a,a", sep = ","))
+	CHECK(ListHasOnlyOneUniqueEntry("a,a,a", sep = ","))
+	CHECK(!ListHasOnlyOneUniqueEntry("a,b", sep = ","))
+	CHECK(!ListHasOnlyOneUniqueEntry("a,b,c", sep = ","))
+End
+
+Function LHOUE_WorksWithDifferentCase()
+
+	// cmpstr is case-insensitive, so different cases should match
+	CHECK(ListHasOnlyOneUniqueEntry("a;A"))
+	CHECK(ListHasOnlyOneUniqueEntry("A;a"))
+	CHECK(ListHasOnlyOneUniqueEntry("test;Test"))
+	CHECK(ListHasOnlyOneUniqueEntry("TEST;test"))
+	CHECK(ListHasOnlyOneUniqueEntry("Hello;hello;HELLO"))
+
+	// Same case should also match
+	CHECK(ListHasOnlyOneUniqueEntry("a;a;a"))
+	CHECK(ListHasOnlyOneUniqueEntry("A;A;A"))
+	CHECK(ListHasOnlyOneUniqueEntry("Test;Test"))
+	CHECK(ListHasOnlyOneUniqueEntry("HELLO;HELLO;HELLO"))
+End
+
+/// @}

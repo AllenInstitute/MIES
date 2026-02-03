@@ -1994,3 +1994,78 @@ static Function/WAVE GetPSXHelperAxisTypes()
 
 	return wv
 End
+
+/// @brief Returns a wave reference wave holding an empty wave of each Igor Pro supported wave type
+///
+/// This is used for testing IsXXXWave functions with actual wave references
+static Function/WAVE GetEmptyWavesOfAllTypes()
+
+	Make/FREE/WAVE/N=15 waveRefs
+
+	// Numeric wave types
+	Make/FREE/D/N=0 wvDouble
+	waveRefs[0] = wvDouble
+	SetDimLabel ROWS, 0, NT_FP64, waveRefs
+
+	Make/FREE/R/N=0 wvSingle
+	waveRefs[1] = wvSingle
+	SetDimLabel ROWS, 1, NT_FP32, waveRefs
+
+	Make/FREE/L/N=0 wvInt64
+	waveRefs[2] = wvInt64
+	SetDimLabel ROWS, 2, NT_I64, waveRefs
+
+	Make/FREE/I/N=0 wvInt32
+	waveRefs[3] = wvInt32
+	SetDimLabel ROWS, 3, NT_I32, waveRefs
+
+	Make/FREE/W/N=0 wvInt16
+	waveRefs[4] = wvInt16
+	SetDimLabel ROWS, 4, NT_I16, waveRefs
+
+	Make/FREE/B/N=0 wvInt8
+	waveRefs[5] = wvInt8
+	SetDimLabel ROWS, 5, NT_I8, waveRefs
+
+	Make/FREE/L/U/N=0 wvUInt64
+	waveRefs[6] = wvUInt64
+	SetDimLabel ROWS, 6, $"NT_I64 | NT_UNSIGNED", waveRefs
+
+	Make/FREE/I/U/N=0 wvUInt32
+	waveRefs[7] = wvUInt32
+	SetDimLabel ROWS, 7, $"NT_I32 | NT_UNSIGNED", waveRefs
+
+	Make/FREE/W/U/N=0 wvUInt16
+	waveRefs[8] = wvUInt16
+	SetDimLabel ROWS, 8, $"NT_I16 | NT_UNSIGNED", waveRefs
+
+	Make/FREE/B/U/N=0 wvUInt8
+	waveRefs[9] = wvUInt8
+	SetDimLabel ROWS, 9, $"NT_I8 | NT_UNSIGNED", waveRefs
+
+	// Special wave types
+	Make/FREE/T/N=0 wvText
+	waveRefs[10] = wvText
+	SetDimLabel ROWS, 10, TEXT_WAVE, waveRefs
+
+	Make/FREE/WAVE/N=0 wvWave
+	waveRefs[11] = wvWave
+	SetDimLabel ROWS, 11, WAVE_WAVE, waveRefs
+
+	// Datafolder reference wave
+	Make/FREE/DF/N=0 wvDFRef
+	waveRefs[12] = wvDFRef
+	SetDimLabel ROWS, 12, DFREF_WAVE, waveRefs
+
+	// Complex waves (double precision complex)
+	Make/FREE/D/C/N=0 wvComplexDouble
+	waveRefs[13] = wvComplexDouble
+	SetDimLabel ROWS, 13, $"NT_FP64 | NT_COMPLEX", waveRefs
+
+	// Complex waves (single precision complex)
+	Make/FREE/R/C/N=0 wvComplexSingle
+	waveRefs[14] = wvComplexSingle
+	SetDimLabel ROWS, 14, $"NT_FP32 | NT_COMPLEX", waveRefs
+
+	return waveRefs
+End
