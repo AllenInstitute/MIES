@@ -1216,11 +1216,15 @@ End
 /// @returns wave reference to the permanent wave
 Function/WAVE ConvertFreeWaveToPermanent(WAVE freeWave, DFREF dfr, string wName)
 
+	ASSERT(!IsFreeDatafolder(dfr), "dfr must be a global datafolder")
+
 	Duplicate/O freeWave, dfr:$wName/WAVE=permWave
 	return permWave
 End
 
 Function/WAVE MoveFreeWaveToPermanent(WAVE freeWave, DFREF dfr, string wvName)
+
+	ASSERT(!IsFreeDatafolder(dfr), "dfr must be a global datafolder")
 
 	wvName = UniqueWaveName(dfr, wvName)
 	MoveWave freeWave, dfr:$wvName
