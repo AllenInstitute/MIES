@@ -3,19 +3,6 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = UTILSTEST_CONVERSIONS
 
-// Missing Tests for:
-// ConvertFromBytesToMiB
-// str2numSafe
-// ToPassFail
-// ToTrueFalse
-// ToOnOff
-// DAQRunModeToString
-// TestPulseRunModeToString
-// ConvertToUniqueNumber
-// GetCodeForWaveContents
-// WaveTypeStringToNumber
-// UTF8StringToTextWave
-
 /// ConvertSamplingIntervalToRate
 /// @{
 
@@ -1088,3 +1075,391 @@ Function TestNumericWaveByKey()
 	CHECK_WAVE(wv, NUMERIC_WAVE, minorType = IGOR_TYPE_8BIT_INT)
 	CHECK_EQUAL_WAVES(wv, {1, 2, 3}, mode = WAVE_DATA)
 End
+
+/// ConvertFromBytesToMiB
+/// @{
+
+Function CFBTMIB_Works()
+
+	// Test basic conversion: 1 MiB = 1024 * 1024 bytes = 1048576 bytes
+	CHECK_CLOSE_VAR(ConvertFromBytesToMiB(1048576), 1)
+	CHECK_CLOSE_VAR(ConvertFromBytesToMiB(2097152), 2)
+	CHECK_CLOSE_VAR(ConvertFromBytesToMiB(0), 0)
+	CHECK_CLOSE_VAR(ConvertFromBytesToMiB(524288), 0.5)
+End
+
+/// @}
+
+/// str2numSafe
+/// @{
+
+Function STR2NS_ValidNumbers()
+
+	CHECK_EQUAL_VAR(str2numSafe("123"), 123)
+	CHECK_EQUAL_VAR(str2numSafe("123.456"), 123.456)
+	CHECK_EQUAL_VAR(str2numSafe("-123"), -123)
+	CHECK_EQUAL_VAR(str2numSafe("1e6"), 1e6)
+	CHECK_EQUAL_VAR(str2numSafe("inf"), Inf)
+	CHECK_EQUAL_VAR(str2numSafe("-inf"), -Inf)
+End
+
+Function STR2NS_InvalidNumbers()
+
+	variable result
+
+	result = str2numSafe("notanumber")
+	CHECK_EQUAL_VAR(numtype(result), 2) // NaN
+
+	result = str2numSafe("")
+	CHECK_EQUAL_VAR(numtype(result), 2) // NaN
+
+	result = str2numSafe("abc123")
+	CHECK_EQUAL_VAR(numtype(result), 2) // NaN
+End
+
+/// @}
+
+/// ToPassFail
+/// @{
+
+Function TPF_Works()
+
+	string result, expected
+
+	result   = ToPassFail(0)
+	expected = "failed"
+	CHECK_EQUAL_STR(result, expected)
+
+	result   = ToPassFail(1)
+	expected = "passed"
+	CHECK_EQUAL_STR(result, expected)
+
+	result   = ToPassFail(42)
+	expected = "passed"
+	CHECK_EQUAL_STR(result, expected)
+
+	result   = ToPassFail(-1)
+	expected = "passed"
+	CHECK_EQUAL_STR(result, expected)
+End
+
+/// @}
+
+/// ToTrueFalse
+/// @{
+
+Function TTF_Works()
+
+	string result, expected
+
+	result   = ToTrueFalse(0)
+	expected = "False"
+	CHECK_EQUAL_STR(result, expected)
+
+	result   = ToTrueFalse(1)
+	expected = "True"
+	CHECK_EQUAL_STR(result, expected)
+
+	result   = ToTrueFalse(42)
+	expected = "True"
+	CHECK_EQUAL_STR(result, expected)
+
+	result   = ToTrueFalse(-1)
+	expected = "True"
+	CHECK_EQUAL_STR(result, expected)
+End
+
+/// @}
+
+/// ToOnOff
+/// @{
+
+Function TOO_Works()
+
+	string result, expected
+
+	result   = ToOnOff(0)
+	expected = "Off"
+	CHECK_EQUAL_STR(result, expected)
+
+	result   = ToOnOff(1)
+	expected = "On"
+	CHECK_EQUAL_STR(result, expected)
+
+	result   = ToOnOff(42)
+	expected = "On"
+	CHECK_EQUAL_STR(result, expected)
+
+	result   = ToOnOff(-1)
+	expected = "On"
+	CHECK_EQUAL_STR(result, expected)
+End
+
+/// @}
+
+/// DAQRunModeToString
+/// @{
+
+Function DRMS_Works()
+
+	string result, expected
+
+	result   = DAQRunModeToString(DAQ_NOT_RUNNING)
+	expected = "DAQ_NOT_RUNNING"
+	CHECK_EQUAL_STR(result, expected)
+
+	result   = DAQRunModeToString(DAQ_BG_SINGLE_DEVICE)
+	expected = "DAQ_BG_SINGLE_DEVICE"
+	CHECK_EQUAL_STR(result, expected)
+
+	result   = DAQRunModeToString(DAQ_BG_MULTI_DEVICE)
+	expected = "DAQ_BG_MULTI_DEVICE"
+	CHECK_EQUAL_STR(result, expected)
+
+	result   = DAQRunModeToString(DAQ_FG_SINGLE_DEVICE)
+	expected = "DAQ_FG_SINGLE_DEVICE"
+	CHECK_EQUAL_STR(result, expected)
+End
+
+Function DRMS_InvalidMode()
+
+	try
+		DAQRunModeToString(999)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+/// @}
+
+/// TestPulseRunModeToString
+/// @{
+
+Function TPRMS_Works()
+
+	string result, expected
+
+	result   = TestPulseRunModeToString(TEST_PULSE_NOT_RUNNING)
+	expected = "TEST_PULSE_NOT_RUNNING"
+	CHECK_EQUAL_STR(result, expected)
+
+	result   = TestPulseRunModeToString(TEST_PULSE_BG_SINGLE_DEVICE)
+	expected = "TEST_PULSE_BG_SINGLE_DEVICE"
+	CHECK_EQUAL_STR(result, expected)
+
+	result   = TestPulseRunModeToString(TEST_PULSE_BG_MULTI_DEVICE)
+	expected = "TEST_PULSE_BG_MULTI_DEVICE"
+	CHECK_EQUAL_STR(result, expected)
+
+	result   = TestPulseRunModeToString(TEST_PULSE_FG_SINGLE_DEVICE)
+	expected = "TEST_PULSE_FG_SINGLE_DEVICE"
+	CHECK_EQUAL_STR(result, expected)
+End
+
+Function TPRMS_InvalidMode()
+
+	try
+		TestPulseRunModeToString(999)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function TPRMS_WorksWithRAMod()
+
+	string result, expected
+
+	// Test with TEST_PULSE_DURING_RA_MOD bit set
+	result   = TestPulseRunModeToString(TEST_PULSE_BG_SINGLE_DEVICE | TEST_PULSE_DURING_RA_MOD)
+	expected = "TEST_PULSE_BG_SINGLE_DEVICE"
+	CHECK_EQUAL_STR(result, expected)
+End
+
+/// @}
+
+/// ConvertToUniqueNumber
+/// @{
+
+Function CTUN_Works()
+
+	Make/FREE/T input = {"1", "2", "3", "2", "1"}
+	WAVE result = ConvertToUniqueNumber(input)
+
+	CHECK_WAVE(result, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(result, ROWS), 3)
+	// Sort to verify actual contents
+	Sort result, result
+	CHECK_EQUAL_WAVES(result, {1, 2, 3}, mode = WAVE_DATA)
+End
+
+Function CTUN_WorksWithSort()
+
+	Make/FREE/T input = {"3", "1", "2", "2", "1"}
+	WAVE result = ConvertToUniqueNumber(input, doSort = 1)
+
+	CHECK_WAVE(result, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+	CHECK_EQUAL_WAVES(result, {1, 2, 3}, mode = WAVE_DATA)
+End
+
+Function CTUN_WorksWithZapNaNs()
+
+	Make/FREE/T input = {"1", "notanumber", "2", "3"}
+	WAVE result = ConvertToUniqueNumber(input, doZapNaNs = 1)
+
+	CHECK_WAVE(result, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(result, ROWS), 3)
+End
+
+Function CTUN_WorksWithAllNaNs()
+
+	Make/FREE/T input = {"notanumber", "alsonotanumber"}
+	WAVE/Z result = ConvertToUniqueNumber(input, doZapNaNs = 1)
+
+	CHECK_WAVE(result, NULL_WAVE)
+End
+
+Function CTUN_WorksWithBothOptions()
+
+	Make/FREE/T input = {"3", "notanumber", "1", "2", "1"}
+	WAVE result = ConvertToUniqueNumber(input, doZapNaNs = 1, doSort = 1)
+
+	CHECK_WAVE(result, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+	CHECK_EQUAL_WAVES(result, {1, 2, 3}, mode = WAVE_DATA)
+End
+
+Function CTUN_EmptyWaveWithZapNaNs()
+
+	Make/FREE/T/N=0 input
+	WAVE/Z result = ConvertToUniqueNumber(input, doZapNaNs = 1)
+
+	CHECK_WAVE(result, NULL_WAVE)
+End
+
+Function CTUN_WithNaNString()
+
+	Make/FREE/T input = {"1", "NaN", "2", "3"}
+	WAVE result = ConvertToUniqueNumber(input, doZapNaNs = 1)
+
+	CHECK_WAVE(result, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(result, ROWS), 3)
+End
+
+/// @}
+
+/// GetCodeForWaveContents
+/// @{
+
+Function GCFWC_Works()
+
+	string result, expected
+
+	Make/FREE/T input = {"abc", "def", "ghi"}
+	result   = GetCodeForWaveContents(input)
+	expected = "{\"abc\", \"def\", \"ghi\"}"
+	CHECK_EQUAL_STR(result, expected)
+End
+
+Function GCFWC_WorksSingleElement()
+
+	string result, expected
+
+	Make/FREE/T input = {"test"}
+	result   = GetCodeForWaveContents(input)
+	expected = "{\"test\"}"
+	CHECK_EQUAL_STR(result, expected)
+End
+
+Function GCFWC_WorksWithSpecialChars()
+
+	string result, expected
+
+	Make/FREE/T input = {"hello world", "test123"}
+	result   = GetCodeForWaveContents(input)
+	expected = "{\"hello world\", \"test123\"}"
+	CHECK_EQUAL_STR(result, expected)
+End
+
+/// @}
+
+/// WaveTypeStringToNumber
+/// @{
+
+Function WTSTN_Works()
+
+	CHECK_EQUAL_VAR(WaveTypeStringToNumber("NT_FP64"), 0x04)
+	CHECK_EQUAL_VAR(WaveTypeStringToNumber("NT_FP32"), 0x02)
+	CHECK_EQUAL_VAR(WaveTypeStringToNumber("NT_I32"), 0x20)
+	CHECK_EQUAL_VAR(WaveTypeStringToNumber("NT_I16"), 0x10)
+	CHECK_EQUAL_VAR(WaveTypeStringToNumber("NT_I8"), 0x08)
+End
+
+Function WTSTN_WorksUnsigned()
+
+	CHECK_EQUAL_VAR(WaveTypeStringToNumber("NT_I32 | NT_UNSIGNED"), 0x20 | 0x40)
+	CHECK_EQUAL_VAR(WaveTypeStringToNumber("NT_I16 | NT_UNSIGNED"), 0x10 | 0x40)
+	CHECK_EQUAL_VAR(WaveTypeStringToNumber("NT_I8 | NT_UNSIGNED"), 0x08 | 0x40)
+End
+
+Function WTSTN_InvalidType()
+
+	try
+		WaveTypeStringToNumber("INVALID_TYPE")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+/// @}
+
+/// UTF8StringToTextWave
+/// @{
+
+Function USTSTW_Works()
+
+	string input  = "abc"
+	WAVE/T result = UTF8StringToTextWave(input)
+
+	CHECK_WAVE(result, TEXT_WAVE | FREE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(result, ROWS), 3)
+	CHECK_EQUAL_STR(result[0], "a")
+	CHECK_EQUAL_STR(result[1], "b")
+	CHECK_EQUAL_STR(result[2], "c")
+End
+
+Function USTSTW_WorksEmpty()
+
+	string input  = ""
+	WAVE/T result = UTF8StringToTextWave(input)
+
+	CHECK_WAVE(result, TEXT_WAVE | FREE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(result, ROWS), 0)
+End
+
+Function USTSTW_WorksSingleChar()
+
+	string input  = "x"
+	WAVE/T result = UTF8StringToTextWave(input)
+
+	CHECK_WAVE(result, TEXT_WAVE | FREE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(result, ROWS), 1)
+	CHECK_EQUAL_STR(result[0], "x")
+End
+
+Function USTSTW_WorksMultiByteUTF8()
+
+	// UTF-8 encoded string with multi-byte characters
+	// This test assumes the function handles UTF-8 properly
+	string input  = "aÄb" // Ä is a 2-byte UTF-8 character
+	WAVE/T result = UTF8StringToTextWave(input)
+
+	CHECK_WAVE(result, TEXT_WAVE | FREE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(result, ROWS), 3)
+	CHECK_EQUAL_STR(result[0], "a")
+	CHECK_EQUAL_STR(result[1], "Ä")
+	CHECK_EQUAL_STR(result[2], "b")
+End
+
+/// @}
