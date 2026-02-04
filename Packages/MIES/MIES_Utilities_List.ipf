@@ -39,6 +39,8 @@ Function/S ListFromList(string list, variable itemBegin, variable itemEnd, [stri
 		listSep = ";"
 	endif
 
+	list = RemoveEnding(list, listSep) + listSep
+
 	ASSERT(itemBegin <= itemEnd, "SubSet missmatch")
 
 	numItems = ItemsInList(list, listSep)
@@ -205,6 +207,10 @@ Function/S MergeLists(string l1, string l2, [string sep])
 			l2 = AddListItem(item, l2, sep, Inf)
 		endif
 	endfor
+
+	if(!IsEmpty(l2))
+		l2 = RemoveEnding(l2, sep) + sep
+	endif
 
 	return l2
 End
