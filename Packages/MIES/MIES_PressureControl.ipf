@@ -38,16 +38,12 @@ static Constant    GIGA_SEAL                       = 1000
 static Constant    PRESSURE_OFFSET                 = 5
 static Constant    MIN_NEG_PRESSURE_PULSE          = -2
 static Constant    MAX_POS_PRESSURE_PULSE          = 0.1
-static Constant    ATMOSPHERIC_PRESSURE            = 0
 static Constant    PRESSURE_CHANGE                 = 1
 static Constant    P_NEGATIVE_PULSE                = 0x0
 static Constant    P_POSITIVE_PULSE                = 0x1
 static Constant    P_MANUAL_PULSE                  = 0x2
 static Constant    SEAL_POTENTIAL                  = -70 // mV
 static Constant    SEAL_RESISTANCE_THRESHOLD       = 100 // MΩ
-static Constant    ACCESS_ATM                      = 0   // Access constants are used to set TTL valve configuration
-static Constant    ACCESS_REGULATOR                = 1
-static Constant    ACCESS_USER                     = 2
 ///@}
 
 /// @brief Filled by P_GetPressureForDA()
@@ -216,7 +212,7 @@ static Function P_AddSealedEntryToTPStorage(string device, variable headstage)
 End
 
 /// @brief Sets the pressure to atmospheric
-static Function P_MethodAtmospheric(string device, variable headstage)
+Function P_MethodAtmospheric(string device, variable headstage)
 
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(device)
 	P_SetPressureValves(device, headStage, P_GetUserAccess(device, headStage, PRESSURE_METHOD_ATM))
@@ -2035,7 +2031,7 @@ static Function/WAVE P_DecToBinary(variable dec)
 End
 
 /// @brief Manual pressure control
-static Function P_ManSetPressure(string device, variable headStage, variable manPressureAll)
+Function P_ManSetPressure(string device, variable headStage, variable manPressureAll)
 
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(device)
 
@@ -2080,7 +2076,7 @@ End
 
 /// @brief Gets the pressure mode for a headstage
 ///
-Function P_GetPressureMode(string device, variable headStage)
+Function P_GetPressureMethod(string device, variable headStage)
 
 	return P_GetPressureDataWaveRef(device)[headStage][%Approach_Seal_BrkIn_Clear]
 End
@@ -2098,7 +2094,7 @@ Function P_SetPressureMode(string device, variable headStage, variable pressureM
 	ASSERT(pressureMode >= PRESSURE_METHOD_ATM && pressureMode <= PRESSURE_METHOD_MANUAL, "Select a pressure mode between -1 and 4")
 
 	WAVE     PressureDataWv     = P_GetPressureDataWaveRef(device)
-	variable activePressureMode = P_GetPressureMode(device, headStage)
+	variable activePressureMode = P_GetPressureMethod(device, headStage)
 	variable UserSelectedHS     = PressureDataWv[headStage][%UserSelectedHeadStage]
 
 	if(!paramIsDefault(pressure) && pressureMode == PRESSURE_METHOD_MANUAL)
@@ -2196,7 +2192,7 @@ Function ButtonProc_Clear(STRUCT WMButtonAction &ba) : ButtonControl
 End
 
 /// @brief Handles the TP depency of the Manual pressure application
-static Function P_SetManual(string device, string cntrlName)
+Function P_SetManual(string device, string cntrlName)
 
 	P_UpdatePressureMode(device, PRESSURE_METHOD_MANUAL, cntrlName, 1)
 	P_RunP_ControlIfTPOFF(device)
@@ -2522,32 +2518,4 @@ Function/S P_PressureMethodToString(variable method)
 
 			FATAL_ERROR("Unknown pressure method: " + num2str(method))
 	endswitch
-End
-
-// for external callers to set manual pressure
-Function DoPressureManual(string device, variable headstage, variable manualOnOff, variable targetPressure)
-
-	// 0) Select the headstage
-	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = headstage)
-
-	// 1) Set the requested pressure value on the GUI control
-	PGC_SetAndActivateControl(device, "setvar_DataAcq_SSPressure", val = targetPressure)
-
-	// 2) Check the current pressure mode
-	variable currentMode = P_GetPressureMode(device, headstage)
-
-	// 3) If we want manual mode ON...
-	if(manualOnOff == 1)
-		// ...and we are NOT in manual mode yet, switch to manual
-		if(currentMode != PRESSURE_METHOD_MANUAL)
-			P_SetManual(device, "button_DataAcq_SSSetPressureMan")
-		endif
-	else
-		// If we want manual mode OFF...
-		// ...and we ARE currently in manual mode, switch to atmospheric (or the "off" state)
-		if(currentMode == PRESSURE_METHOD_MANUAL)
-			P_SetManual(device, "button_DataAcq_SSSetPressureMan")
-		endif
-	endif
-
 End

@@ -1922,7 +1922,7 @@ Function DAP_SetVarProc_CAA(STRUCT WMSetVariableAction &sva) : SetVariableContro
 
 			// --- updates pressure during manual pressure mode when TP is not running ---
 			variable hs = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
-			if(P_GetPressureMode(device, hs) == PRESSURE_METHOD_MANUAL)
+			if(P_GetPressureMethod(device, hs) == PRESSURE_METHOD_MANUAL)
 				P_RunP_ControlIfTPOFF(device)
 			endif
 
