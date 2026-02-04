@@ -857,7 +857,7 @@ Function [WAVE/T withSuffix, WAVE/T woSuffix] SplitTextWaveBySuffix(WAVE/T sourc
 
 	variable i, numElems
 
-	if(IsNull(suffix))
+	if(IsEmpty(suffix))
 		Make/FREE/T woSuffix = {""}
 		return [source, woSuffix]
 	endif
