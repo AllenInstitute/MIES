@@ -389,7 +389,13 @@ End
 /// @sa AddEntryIntoWaveNoteAsList()
 Function HasEntryInWaveNoteList(WAVE wv, string key, string value)
 
-	return GrepString(note(wv), "\\Q" + key + "\\E\\s*=\\s*\\Q" + value + "\\E\\s*;")
+	string wvNote = note(wv)
+
+	if(IsEmpty(value))
+		return GrepString(wvNote, "\\Q" + key + "\\E\\s*;")
+	endif
+
+	return GrepString(wvNote, "\\Q" + key + "\\E\\s*=\\s*\\Q" + value + "\\E\\s*;")
 End
 
 /// @brief Returns a wave name not used in the given datafolder
