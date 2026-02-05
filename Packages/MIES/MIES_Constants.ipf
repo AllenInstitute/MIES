@@ -2564,6 +2564,10 @@ StrConstant SF_OPSHORT_DIV   = "div"
 
 Constant SF_TRANSFER_ALL_DIMS = -1
 
+StrConstant SF_CHAR_COMMENT = "#"
+StrConstant SF_CHAR_CR      = "\r"
+StrConstant SF_CHAR_NEWLINE = "\n"
+
 /// @name Error types for AFH_CheckAnalysisParameter
 ///
 /// @anchor CheckAnalysisParameterErrorTypes

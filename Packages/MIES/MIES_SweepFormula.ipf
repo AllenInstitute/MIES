@@ -23,10 +23,6 @@ static StrConstant SF_SWEEPFORMULA_WITH_REGEXP = "^(.+?)(?:\\r[ \t]*with[ \t]*\\
 
 static Constant SF_MAX_NUMPOINTS_FOR_MARKERS = 1000
 
-static StrConstant SF_CHAR_COMMENT = "#"
-static StrConstant SF_CHAR_CR      = "\r"
-static StrConstant SF_CHAR_NEWLINE = "\n"
-
 static StrConstant SF_PLOTTER_GUIDENAME = "HOR"
 
 static StrConstant SF_XLABEL_USER = ""
@@ -1821,6 +1817,10 @@ Function [WAVE/T varAssignments, string code] SF_GetVariableAssignments(string p
 		Duplicate/FREE/RMD=[][dimVarName] varAssignments, dupCheck
 		FindDuplicates/FREE/CI/DT=dups dupCheck
 		SFH_ASSERT(!DimSize(dups, ROWS), "Duplicate variable name.")
+	endif
+
+	if(!cmpstr(RemoveEnding(varPart, lineEnd), RemoveEnding(preProcCode, lineEnd)))
+		return [varAssignments, ""]
 	endif
 
 	return [varAssignments, ReplaceString(varPart, preProcCode, "")]

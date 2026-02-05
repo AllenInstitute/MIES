@@ -1594,14 +1594,14 @@ static Function TestVariables2()
 	CHECK_EQUAL_STR(str, code)
 
 	// varName with all chars
-	str  = "abcdefghijklmnopqrstuvwxyz0123456789_=cursors(A,B)\r"
+	str  = "abcdefghijklmnopqrstuvwxyz0123456789_=cursors(A,B)\r12345\r"
 	code = MIES_SFE#SFE_ExecuteVariableAssignments(win, str)
-	CHECK_EQUAL_STR("", code)
+	CHECK_EQUAL_STR("12345\r", code)
 
 	// WhiteSpaces are ok
-	str  = " \ta \t= \tcursors(A,B)\r"
+	str  = " \ta \t= \tcursors(A,B)\r12345\r"
 	code = MIES_SFE#SFE_ExecuteVariableAssignments(win, str)
-	CHECK_EQUAL_STR("", code)
+	CHECK_EQUAL_STR("12345\r", code)
 End
 
 static Function TestDefaultFormula()
@@ -2580,6 +2580,19 @@ static Function TestSourceLocationTrackingVariables()
 		CHECK_EQUAL_VAR(str2numSafe(assertData[%LINE]), 0)
 		CHECK_EQUAL_VAR(str2numSafe(assertData[%OFFSET]), 3)
 		CHECK_EQUAL_VAR(str2numSafe(assertData[%INFORMULAOFFSET]), 13)
+	endtry
+
+	str = "a = 1\r"
+	try
+		WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 1)
+		FAIL()
+	catch
+		WAVE/T assertData = GetSFAssertData()
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%STEP]), SF_STEP_PARSER)
+		CHECK_EQUAL_STR(assertData[%FORMULA], "")
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%LINE]), 1)
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%OFFSET]), 0)
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%INFORMULAOFFSET]), 1)
 	endtry
 End
 
