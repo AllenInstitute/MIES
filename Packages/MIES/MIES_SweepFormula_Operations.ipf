@@ -2666,7 +2666,7 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 	numExp = DimSize(uniqueFiles, ROWS)
 	SFH_ASSERT(numExp > 0, "ivscc_apfrequency: data from at least one experiment has to be loaded")
 
-	formula = "sel = select(selsweeps(), selstimset(\"*rheo*\", \"*supra*\"), selvis(all), selivsccsweepqc(passed))\r"
+	formula = "sel = select(selsweeps(), selstimset(\"*LP_Rheo*\", \"*supra*\"), selvis(all), selivsccsweepqc(passed))\r"
 	for(i = 0; i < numExp; i += 1)
 		sprintf expr, "selexpAD%d = select(selexp(\"%s\"), $sel, selchannels(AD0), selrange(E1))", i, uniqueFiles[i]
 		formula = SF_AddExpressionToFormula(formula, expr)
@@ -2729,11 +2729,13 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 			sprintf formula, "merge($freq%d)", i
 		endif
 		WAVE/WAVE wvY = SFE_ExecuteFormula(formula, exd.graph, preProcess = 0)
-		[s] = GetTraceColor(i)
-		Make/FREE/W/U traceColor = {s.red, s.green, s.blue}
-		JWN_SetWaveInWaveNote(wvY[0], SF_META_TRACECOLOR, traceColor)
-		JWN_SetNumberInWaveNote(wvY[0], SF_META_MOD_MARKER, 17)
-		JWN_SetStringInWaveNote(wvY[0], SF_META_LEGEND_LINE_PREFIX, uniqueFiles[i])
+		if(DimSize(wvY, ROWS) > 0)
+			[s] = GetTraceColor(i)
+			Make/FREE/W/U traceColor = {s.red, s.green, s.blue}
+			JWN_SetWaveInWaveNote(wvY[0], SF_META_TRACECOLOR, traceColor)
+			JWN_SetNumberInWaveNote(wvY[0], SF_META_MOD_MARKER, 17)
+			JWN_SetStringInWaveNote(wvY[0], SF_META_LEGEND_LINE_PREFIX, uniqueFiles[i])
+		endif
 		plotWITH[i][%FORMULAY] = wvY
 		SFO_OperationIVSCCApFrequencySetPlotProperties(plotWITH[i][%FORMULAY], xAxisPercentage, yAxisPercentage)
 		sprintf formula, "merge($currentNorm%d)", i
@@ -2750,7 +2752,9 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 		formula = "merge($ivsccavg)"
 	endif
 	WAVE/WAVE wvY = SFE_ExecuteFormula(formula, exd.graph, preProcess = 0)
-	JWN_SetStringInWaveNote(wvY[0], SF_META_LEGEND_LINE_PREFIX, "ivscc_apfrequency average")
+	if(DimSize(wvY, ROWS) > 0)
+		JWN_SetStringInWaveNote(wvY[0], SF_META_LEGEND_LINE_PREFIX, "ivscc_apfrequency average")
+	endif
 	plotWITH[numExp][%FORMULAY] = wvY
 	SFO_OperationIVSCCApFrequencySetPlotProperties(plotWITH[i][%FORMULAY], xAxisPercentage, yAxisPercentage)
 
