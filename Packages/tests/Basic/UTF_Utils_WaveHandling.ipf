@@ -3,30 +3,6 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = UTILSTEST_WAVEHANDLING
 
-// Missing Tests for:
-// EnsureSmallEnoughWave
-// GetSizeOfType
-// GetNumberFromWaveNote
-// AddEntryIntoWaveNoteAsList
-// HasEntryInWaveNoteList
-// UniqueWaveName
-// DuplicateSubRange
-// GetRowWithSameContent
-// GetColfromWavewithDimLabel
-// SetDimensionLabels
-// RemoveAllDimLabels
-// MergeTwoWaves
-// ChangeWaveLock
-// RemoveTextWaveEntry1D
-// SplitTextWaveBySuffix
-// WaveRef
-// WaveText
-// DuplicateWaveToFree
-// ConvertFreeWaveToPermanent
-// MoveFreeWaveToPermanent
-// GetDecimatedWaveSize
-// GetLastNonEmptyEntry
-
 /// EnsureLargeEnoughWave
 /// @{
 
@@ -2514,4 +2490,1197 @@ Function TestHasDimlabels()
 	endtry
 
 End
+/// @}
+
+/// EnsureSmallEnoughWave
+/// @{
+
+Function ESE_WorksWithSmallWave()
+
+	Make/FREE/N=(100) wv
+	EnsureSmallEnoughWave(wv)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 100)
+End
+
+Function ESE_WorksWithMaximumWave()
+
+	Make/FREE/N=(MAXIMUM_WAVE_SIZE) wv
+	EnsureSmallEnoughWave(wv)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), MAXIMUM_WAVE_SIZE)
+End
+
+Function ESE_TruncatesToMaximumSize()
+
+	Make/FREE/N=(MAXIMUM_WAVE_SIZE + 100) wv
+	EnsureSmallEnoughWave(wv)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), MAXIMUM_WAVE_SIZE)
+End
+
+Function ESE_WorksWithCustomMaximumSize()
+
+	variable customMax = 100
+	Make/FREE/N=(200) wv
+	EnsureSmallEnoughWave(wv, maximumSize = customMax)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), customMax)
+End
+
+Function ESE_PreservesMultidimensionalStructure()
+
+	Make/FREE/N=(MAXIMUM_WAVE_SIZE + 100, 5, 3) wv
+	EnsureSmallEnoughWave(wv)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), MAXIMUM_WAVE_SIZE)
+	CHECK_EQUAL_VAR(DimSize(wv, COLS), 5)
+	CHECK_EQUAL_VAR(DimSize(wv, LAYERS), 3)
+End
+
+/// @}
+
+/// GetSizeOfType
+/// @{
+
+// UTF_TD_GENERATOR DataGenerators#GetEmptyWavesOfAllTypes
+Function GST_ReturnsCorrectSize([WAVE wv])
+
+	variable expectedSize
+	variable type = WaveType(wv)
+
+	// Text, wave reference, and datafolder reference waves
+	if(type == 0)
+		expectedSize = 8 // pointer size
+		// Complex waves
+	elseif(type & IGOR_TYPE_COMPLEX)
+		if(type & IGOR_TYPE_32BIT_FLOAT)
+			expectedSize = 8 // single precision complex
+		else
+			expectedSize = 16 // double precision complex
+		endif
+		// Floating point waves
+	elseif(type & IGOR_TYPE_32BIT_FLOAT)
+		expectedSize = 4
+	elseif(type & IGOR_TYPE_64BIT_FLOAT)
+		expectedSize = 8
+		// Integer waves
+	elseif(type & IGOR_TYPE_8BIT_INT)
+		expectedSize = 1
+	elseif(type & IGOR_TYPE_16BIT_INT)
+		expectedSize = 2
+	elseif(type & IGOR_TYPE_32BIT_INT)
+		expectedSize = 4
+	elseif(type & IGOR_TYPE_64BIT_INT)
+		expectedSize = 8
+	else
+		FAIL()
+	endif
+
+	CHECK_EQUAL_VAR(GetSizeOfType(wv), expectedSize)
+End
+
+/// @}
+
+/// GetNumberFromWaveNote
+/// @{
+
+Function GNFWN_AbortsWithMissingWave()
+
+	try
+		GetNumberFromWaveNote($"", "key")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GNFWN_AbortsWithEmptyKey()
+
+	Make/FREE wv
+
+	try
+		GetNumberFromWaveNote(wv, "")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GNFWN_ReturnsNaNForMissingKey()
+
+	Make/FREE wv
+	Note wv, "key1:123;"
+	CHECK_EQUAL_VAR(GetNumberFromWaveNote(wv, "key2"), NaN)
+End
+
+Function GNFWN_ReturnsCorrectValue()
+
+	Make/FREE wv
+	Note wv, "key1:123;key2:456;"
+	CHECK_EQUAL_VAR(GetNumberFromWaveNote(wv, "key1"), 123)
+	CHECK_EQUAL_VAR(GetNumberFromWaveNote(wv, "key2"), 456)
+End
+
+Function GNFWN_WorksWithFloatingPoint()
+
+	Make/FREE wv
+	Note wv, "key:3.14159;"
+	CHECK_CLOSE_VAR(GetNumberFromWaveNote(wv, "key"), 3.14159)
+End
+
+/// @}
+
+/// AddEntryIntoWaveNoteAsList
+/// @{
+
+Function AEINWAL_AbortsWithMissingWave()
+
+	try
+		AddEntryIntoWaveNoteAsList($"", "key")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function AEINWAL_AbortsWithEmptyKey()
+
+	Make/FREE wv
+
+	try
+		AddEntryIntoWaveNoteAsList(wv, "")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function AEINWAL_AbortsWithSemicolonInKey()
+
+	Make/FREE wv
+
+	try
+		AddEntryIntoWaveNoteAsList(wv, "key;bad")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function AEINWAL_AbortsWithSemicolonInString()
+
+	Make/FREE wv
+
+	try
+		AddEntryIntoWaveNoteAsList(wv, "key", str = "value;bad")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function AEINWAL_AbortsWithSemicolonInFormat()
+
+	Make/FREE wv
+
+	try
+		AddEntryIntoWaveNoteAsList(wv, "key", var = 123, format = "%d;bad")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function AEINWAL_AddsKeyOnly()
+
+	Make/FREE wv
+	AddEntryIntoWaveNoteAsList(wv, "key1")
+	string noteStr = note(wv)
+	CHECK_EQUAL_STR(noteStr, "key1;")
+End
+
+Function AEINWAL_AddsKeyWithVariable()
+
+	Make/FREE wv
+	AddEntryIntoWaveNoteAsList(wv, "key1", var = 123)
+	string noteStr = note(wv)
+	CHECK_EQUAL_STR(noteStr, "key1 = 123;")
+End
+
+Function AEINWAL_AddsKeyWithString()
+
+	Make/FREE wv
+	AddEntryIntoWaveNoteAsList(wv, "key1", str = "value")
+	string noteStr = note(wv)
+	CHECK_EQUAL_STR(noteStr, "key1 = value;")
+End
+
+Function AEINWAL_WorksWithCustomFormat()
+
+	Make/FREE wv
+	AddEntryIntoWaveNoteAsList(wv, "key1", var = 123.456, format = "%.2f")
+	string noteStr = note(wv)
+	CHECK_EQUAL_STR(noteStr, "key1 = 123.46;")
+End
+
+Function AEINWAL_ReplacesEntry()
+
+	Make/FREE wv
+	AddEntryIntoWaveNoteAsList(wv, "key1", var = 123)
+	AddEntryIntoWaveNoteAsList(wv, "key1", var = 456, replaceEntry = 1)
+	string noteStr = note(wv)
+	CHECK_EQUAL_STR(noteStr, "key1 = 456;")
+End
+
+Function AEINWAL_WorksWithCarriageReturn()
+
+	Make/FREE wv
+	AddEntryIntoWaveNoteAsList(wv, "key1", var = 123, appendCR = 1)
+	string noteStr = note(wv)
+	CHECK_GE_VAR(strsearch(noteStr, "\r", 0), 0)
+End
+
+/// @}
+
+/// HasEntryInWaveNoteList
+/// @{
+
+Function HEIWNL_ReturnsFalseForMissingEntry()
+
+	Make/FREE wv
+	Note wv, "key1 = value1;"
+	CHECK_EQUAL_VAR(HasEntryInWaveNoteList(wv, "key2", "value2"), 0)
+End
+
+Function HEIWNL_ReturnsTrueForExistingEntry()
+
+	Make/FREE wv
+	Note wv, "key1 = value1;"
+	CHECK_EQUAL_VAR(HasEntryInWaveNoteList(wv, "key1", "value1"), 1)
+End
+
+Function HEIWNL_WorksWithEmptyValue()
+
+	Make/FREE wv
+	Note wv, "key1;"
+	CHECK_EQUAL_VAR(HasEntryInWaveNoteList(wv, "key1", ""), 1)
+End
+
+Function HEIWNL_IgnoresSpaces()
+
+	Make/FREE wv
+	Note wv, "key1=value1;"
+	CHECK_EQUAL_VAR(HasEntryInWaveNoteList(wv, "key1", "value1"), 1)
+
+	Note/K wv
+	Note wv, "key1  =  value1;"
+	CHECK_EQUAL_VAR(HasEntryInWaveNoteList(wv, "key1", "value1"), 1)
+End
+
+Function HEIWNL_WorksWithSpacesInValue()
+
+	Make/FREE wv
+	Note wv, "key1 = value with spaces;"
+	CHECK_EQUAL_VAR(HasEntryInWaveNoteList(wv, "key1", "value with spaces"), 1)
+End
+
+/// @}
+
+/// UniqueWaveName
+/// @{
+
+Function UWN_AbortsWithEmptyBaseName()
+
+	DFREF dfr = NewFreeDataFolder()
+
+	try
+		UniqueWaveName(dfr, "")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function UWN_AbortsWithInvalidDFRef()
+
+	DFREF dfr = $""
+
+	try
+		UniqueWaveName(dfr, "test")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function UWN_ReturnsUniqueNameInEmptyFolder()
+
+	DFREF  dfr  = NewFreeDataFolder()
+	string name = UniqueWaveName(dfr, "test")
+	CHECK_EQUAL_STR(name, "test")
+End
+
+Function UWN_ReturnsUniqueNameWithExistingWaves()
+
+	DFREF dfr = NewFreeDataFolder()
+	Make dfr:test
+	string name = UniqueWaveName(dfr, "test")
+	CHECK_EQUAL_STR(name, "test0")
+End
+
+/// @}
+
+/// DuplicateSubRange
+/// @{
+
+Function DSR_AbortsWithMultidimensionalWave()
+
+	Make/FREE/N=(10, 5) wv
+
+	try
+		WAVE/Z result = DuplicateSubRange(wv, 0, 5)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function DSR_ReturnsCorrectSubrange()
+
+	Make/FREE/N=10 wv = p
+	WAVE result = DuplicateSubRange(wv, 2, 5)
+	CHECK_EQUAL_VAR(DimSize(result, ROWS), 4)
+	CHECK_EQUAL_VAR(result[0], 2)
+	CHECK_EQUAL_VAR(result[3], 5)
+End
+
+Function DSR_WorksWithSingleElement()
+
+	Make/FREE/N=10 wv = p
+	WAVE result = DuplicateSubRange(wv, 5, 5)
+	CHECK_EQUAL_VAR(DimSize(result, ROWS), 1)
+	CHECK_EQUAL_VAR(result[0], 5)
+End
+
+Function DSR_WorksWithFullRange()
+
+	Make/FREE/N=10 wv = p
+	WAVE result = DuplicateSubRange(wv, 0, 9)
+	CHECK_EQUAL_WAVES(result, wv)
+End
+
+/// @}
+
+/// GetRowWithSameContent
+/// @{
+
+Function GRWSC_AbortsWithMismatchedColumns()
+
+	Make/FREE/T/N=(5, 3) refWave
+	Make/FREE/T/N=(5, 2) sourceWave
+
+	try
+		GetRowWithSameContent(refWave, sourceWave, 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GRWSC_ReturnsNaNForNoMatch()
+
+	Make/FREE/T/N=(3, 2) refWave = "ref"
+	Make/FREE/T/N=(3, 2) sourceWave = "source"
+	CHECK_EQUAL_VAR(GetRowWithSameContent(refWave, sourceWave, 0), NaN)
+End
+
+Function GRWSC_FindsMatchingRow()
+
+	Make/FREE/T/N=(3, 2) refWave
+	refWave[0][0] = "a"; refWave[0][1] = "b"
+	refWave[1][0] = "c"; refWave[1][1] = "d"
+	refWave[2][0] = "e"; refWave[2][1] = "f"
+
+	Make/FREE/T/N=(2, 2) sourceWave
+	sourceWave[0][0] = "c"; sourceWave[0][1] = "d"
+	sourceWave[1][0] = "a"; sourceWave[1][1] = "b"
+
+	CHECK_EQUAL_VAR(GetRowWithSameContent(refWave, sourceWave, 0), 1)
+	CHECK_EQUAL_VAR(GetRowWithSameContent(refWave, sourceWave, 1), 0)
+End
+
+Function GRWSC_WorksWith2DWaves()
+
+	Make/FREE/T/N=(3, 2) refWave
+	refWave[0][0] = "a"; refWave[0][1] = "x"
+	refWave[1][0] = "b"; refWave[1][1] = "y"
+	refWave[2][0] = "c"; refWave[2][1] = "z"
+
+	Make/FREE/T/N=(2, 2) sourceWave
+	sourceWave[0][0] = "b"; sourceWave[0][1] = "y"
+	sourceWave[1][0] = "a"; sourceWave[1][1] = "x"
+
+	CHECK_EQUAL_VAR(GetRowWithSameContent(refWave, sourceWave, 0), 1)
+	CHECK_EQUAL_VAR(GetRowWithSameContent(refWave, sourceWave, 1), 0)
+End
+
+/// @}
+
+/// GetColfromWavewithDimLabel
+/// @{
+
+Function GCFWWDL_AbortsWithInvalidLabel()
+
+	Make/FREE/N=(5, 3) wv
+	SetDimLabel COLS, 0, col0, wv
+	SetDimLabel COLS, 1, col1, wv
+
+	try
+		WAVE/Z result = GetColfromWavewithDimLabel(wv, "nonexistent")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GCFWWDL_ReturnsCorrectColumn()
+
+	Make/FREE/N=(5, 3) wv
+	wv[][0] = 1
+	wv[][1] = 2
+	wv[][2] = 3
+	SetDimLabel COLS, 0, col0, wv
+	SetDimLabel COLS, 1, col1, wv
+	SetDimLabel COLS, 2, col2, wv
+
+	WAVE result = GetColfromWavewithDimLabel(wv, "col1")
+	CHECK_EQUAL_VAR(DimSize(result, ROWS), 5)
+	CHECK_EQUAL_VAR(result[0], 2)
+End
+
+Function GCFWWDL_Returns1DWave()
+
+	Make/FREE/N=(5, 3) wv
+	wv[][1] = p
+	SetDimLabel COLS, 1, col1, wv
+
+	WAVE result = GetColfromWavewithDimLabel(wv, "col1")
+	CHECK_EQUAL_VAR(DimSize(result, COLS), 0)
+	CHECK_EQUAL_VAR(DimSize(result, ROWS), 5)
+End
+
+/// @}
+
+/// SetDimensionLabels
+/// @{
+
+Function SDL_AbortsWithNegativeStartPos()
+
+	Make/FREE wv
+
+	try
+		SetDimensionLabels(wv, "a;b;c", ROWS, startPos = -1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function SDL_AbortsWithTooManyLabels()
+
+	Make/FREE/N=3 wv
+
+	try
+		SetDimensionLabels(wv, "a;b;c;d;e", ROWS)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function SDL_SetsRowLabels()
+
+	Make/FREE/N=3 wv
+	SetDimensionLabels(wv, "label0;label1;label2", ROWS)
+	CHECK_EQUAL_STR(GetDimLabel(wv, ROWS, 0), "label0")
+	CHECK_EQUAL_STR(GetDimLabel(wv, ROWS, 1), "label1")
+	CHECK_EQUAL_STR(GetDimLabel(wv, ROWS, 2), "label2")
+End
+
+Function SDL_SetsColumnLabels()
+
+	Make/FREE/N=(3, 3) wv
+	SetDimensionLabels(wv, "col0;col1;col2", COLS)
+	CHECK_EQUAL_STR(GetDimLabel(wv, COLS, 0), "col0")
+	CHECK_EQUAL_STR(GetDimLabel(wv, COLS, 1), "col1")
+	CHECK_EQUAL_STR(GetDimLabel(wv, COLS, 2), "col2")
+End
+
+Function SDL_WorksWithStartPos()
+
+	Make/FREE/N=5 wv
+	SetDimensionLabels(wv, "label2;label3", ROWS, startPos = 2)
+	CHECK_EQUAL_STR(GetDimLabel(wv, ROWS, 0), "")
+	CHECK_EQUAL_STR(GetDimLabel(wv, ROWS, 1), "")
+	CHECK_EQUAL_STR(GetDimLabel(wv, ROWS, 2), "label2")
+	CHECK_EQUAL_STR(GetDimLabel(wv, ROWS, 3), "label3")
+End
+
+Function SDL_WorksWithPartialLabels()
+
+	Make/FREE/N=5 wv
+	SetDimensionLabels(wv, "a;b", ROWS)
+	CHECK_EQUAL_STR(GetDimLabel(wv, ROWS, 0), "a")
+	CHECK_EQUAL_STR(GetDimLabel(wv, ROWS, 1), "b")
+	CHECK_EQUAL_STR(GetDimLabel(wv, ROWS, 2), "")
+End
+
+/// @}
+
+/// RemoveAllDimLabels
+/// @{
+
+Function RADL_WorksWithUnlabeledWave()
+
+	Make/FREE/N=(3, 3) wv
+	RemoveAllDimLabels(wv)
+	CHECK_EQUAL_STR(GetDimLabel(wv, ROWS, 0), "")
+	CHECK_EQUAL_STR(GetDimLabel(wv, COLS, 0), "")
+End
+
+Function RADL_RemovesAllLabels()
+
+	Make/FREE/N=(3, 3) wv
+	SetDimLabel ROWS, 0, row0, wv
+	SetDimLabel ROWS, 1, row1, wv
+	SetDimLabel COLS, 0, col0, wv
+	SetDimLabel COLS, 1, col1, wv
+	SetDimLabel ROWS, -1, rowDim, wv
+	SetDimLabel COLS, -1, colDim, wv
+
+	RemoveAllDimLabels(wv)
+
+	CHECK_EQUAL_STR(GetDimLabel(wv, ROWS, 0), "")
+	CHECK_EQUAL_STR(GetDimLabel(wv, ROWS, 1), "")
+	CHECK_EQUAL_STR(GetDimLabel(wv, COLS, 0), "")
+	CHECK_EQUAL_STR(GetDimLabel(wv, COLS, 1), "")
+	CHECK_EQUAL_STR(GetDimLabel(wv, ROWS, -1), "")
+	CHECK_EQUAL_STR(GetDimLabel(wv, COLS, -1), "")
+End
+
+Function RADL_WorksWithMultidimensionalWave()
+
+	Make/FREE/N=(2, 2, 2, 2) wv
+	SetDimLabel ROWS, 0, r0, wv
+	SetDimLabel COLS, 0, c0, wv
+	SetDimLabel LAYERS, 0, l0, wv
+	SetDimLabel CHUNKS, 0, ch0, wv
+
+	RemoveAllDimLabels(wv)
+
+	CHECK_EQUAL_STR(GetDimLabel(wv, ROWS, 0), "")
+	CHECK_EQUAL_STR(GetDimLabel(wv, COLS, 0), "")
+	CHECK_EQUAL_STR(GetDimLabel(wv, LAYERS, 0), "")
+	CHECK_EQUAL_STR(GetDimLabel(wv, CHUNKS, 0), "")
+End
+
+/// @}
+
+/// MergeTwoWaves
+/// @{
+
+Function MTW_AbortsWithDifferentSizes()
+
+	Make/FREE/N=3 wv1
+	Make/FREE/N=5 wv2
+
+	try
+		WAVE/Z result = MergeTwoWaves(wv1, wv2)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function MTW_AbortsWithDifferentTypes()
+
+	Make/FREE/D wv1
+	Make/FREE/I wv2
+
+	try
+		WAVE/Z result = MergeTwoWaves(wv1, wv2)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function MTW_AbortsWithNonFloatingPoint()
+
+	Make/FREE/I wv1, wv2
+
+	try
+		WAVE/Z result = MergeTwoWaves(wv1, wv2)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function MTW_AbortsWithMultidimensionalWave()
+
+	Make/FREE/N=(3, 2) wv1, wv2
+
+	try
+		WAVE/Z result = MergeTwoWaves(wv1, wv2)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function MTW_PrefersFirstWave()
+
+	Make/FREE/N=3 wv1 = {1, NaN, 3}
+	Make/FREE/N=3 wv2 = {4, 5, 6}
+	WAVE result = MergeTwoWaves(wv1, wv2)
+	CHECK_EQUAL_VAR(result[0], 1)
+	CHECK_EQUAL_VAR(result[1], 5)
+	CHECK_EQUAL_VAR(result[2], 3)
+End
+
+Function MTW_PrefersSecondWaveIfFirstIsNaN()
+
+	Make/FREE/N=3 wv1 = {NaN, NaN, 3}
+	Make/FREE/N=3 wv2 = {4, 5, 6}
+	WAVE result = MergeTwoWaves(wv1, wv2)
+	CHECK_EQUAL_VAR(result[0], 4)
+	CHECK_EQUAL_VAR(result[1], 5)
+	CHECK_EQUAL_VAR(result[2], 3)
+End
+
+Function MTW_LeavesNaNIfBothAreNaN()
+
+	Make/FREE/N=3 wv1 = {1, NaN, 3}
+	Make/FREE/N=3 wv2 = {4, NaN, 6}
+	WAVE result = MergeTwoWaves(wv1, wv2)
+	CHECK_EQUAL_VAR(result[0], 1)
+	CHECK_EQUAL_VAR(result[1], NaN)
+	CHECK_EQUAL_VAR(result[2], 3)
+End
+
+Function MTW_PrefersSecondWaveWhenFirstHasInfinity()
+
+	Make/FREE/N=4 wv1 = {Inf, -Inf, 1, NaN}
+	Make/FREE/N=4 wv2 = {4, 5, 6, 7}
+	WAVE result = MergeTwoWaves(wv1, wv2)
+	CHECK_EQUAL_VAR(result[0], 4) // wv2 preferred since Inf is not finite
+	CHECK_EQUAL_VAR(result[1], 5) // wv2 preferred since -Inf is not finite
+	CHECK_EQUAL_VAR(result[2], 1) // wv1 preferred since 1 is finite
+	CHECK_EQUAL_VAR(result[3], 7) // wv2 preferred since NaN is not finite
+End
+
+/// @}
+
+/// ChangeWaveLock
+/// @{
+
+Function CWL_LocksWave()
+
+	Make/FREE/WAVE/N=1 wv
+	Make/FREE subWave
+	wv[0] = subWave
+
+	ChangeWaveLock(wv, 1)
+	CHECK_EQUAL_VAR(GetLockState(wv), 1)
+	CHECK_EQUAL_VAR(GetLockState(subWave), 1)
+End
+
+Function CWL_UnlocksWave()
+
+	Make/FREE/WAVE/N=1 wv
+	Make/FREE subWave
+	wv[0] = subWave
+	SetWaveLock 1, wv
+	SetWaveLock 1, subWave
+
+	ChangeWaveLock(wv, 0)
+	CHECK_EQUAL_VAR(GetLockState(wv), 0)
+	CHECK_EQUAL_VAR(GetLockState(subWave), 0)
+End
+
+Function CWL_WorksWithNonWaveRefWave()
+
+	Make/FREE wv
+	ChangeWaveLock(wv, 1)
+	CHECK_EQUAL_VAR(GetLockState(wv), 1)
+End
+
+Function CWL_HandlesMissingSubWaves()
+
+	Make/FREE/WAVE/N=2 wv
+	Make/FREE subWave
+	wv[0] = subWave
+	// wv[1] is null
+
+	ChangeWaveLock(wv, 1)
+	CHECK_EQUAL_VAR(GetLockState(wv), 1)
+	CHECK_EQUAL_VAR(GetLockState(subWave), 1)
+End
+
+/// @}
+
+/// RemoveTextWaveEntry1D
+/// @{
+
+Function RTWE1D_AbortsWithNonTextWave()
+
+	Make/FREE wv
+
+	try
+		RemoveTextWaveEntry1D(wv, "entry")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function RTWE1D_ReturnsOneIfNotFound()
+
+	Make/FREE/T wv = {"a", "b", "c"}
+	CHECK_EQUAL_VAR(RemoveTextWaveEntry1D(wv, "d"), 1)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 3)
+End
+
+Function RTWE1D_RemovesFirstEntry()
+
+	Make/FREE/T wv = {"a", "b", "c"}
+	CHECK_EQUAL_VAR(RemoveTextWaveEntry1D(wv, "a"), 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 2)
+	CHECK_EQUAL_STR(wv[0], "b")
+End
+
+Function RTWE1D_RemovesOnlyFirstOccurrence()
+
+	Make/FREE/T wv = {"a", "b", "a", "c"}
+	CHECK_EQUAL_VAR(RemoveTextWaveEntry1D(wv, "a"), 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 3)
+	CHECK_EQUAL_STR(wv[0], "b")
+	CHECK_EQUAL_STR(wv[1], "a")
+	CHECK_EQUAL_STR(wv[2], "c")
+End
+
+Function RTWE1D_RemovesAllOccurrences()
+
+	Make/FREE/T wv = {"a", "b", "a", "c", "a"}
+	CHECK_EQUAL_VAR(RemoveTextWaveEntry1D(wv, "a", all = 1), 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 2)
+	CHECK_EQUAL_STR(wv[0], "b")
+	CHECK_EQUAL_STR(wv[1], "c")
+End
+
+Function RTWE1D_WorksWithCustomOptions()
+
+	variable TXOP_CASE_INSENSITIVE = 2
+	Make/FREE/T wv = {"ABC", "abc", "def"}
+	CHECK_EQUAL_VAR(RemoveTextWaveEntry1D(wv, "abc", options = TXOP_CASE_INSENSITIVE), 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 2)
+	CHECK_EQUAL_STR(wv[0], "abc")
+End
+
+Function RTWE1D_CombinedOptionsWithAll()
+
+	variable TXOP_CASE_INSENSITIVE = 2
+	variable TXOP_WHOLEWORD        = 4
+	variable TXOP_COMBO            = TXOP_CASE_INSENSITIVE | TXOP_WHOLEWORD
+
+	Make/FREE/T wv = {"Testing", "test", "TEST", "tests"}
+	CHECK_EQUAL_VAR(RemoveTextWaveEntry1D(wv, "test", options = TXOP_COMBO, all = 1), 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 2)
+	CHECK_EQUAL_STR(wv[0], "Testing")
+	CHECK_EQUAL_STR(wv[1], "tests")
+End
+
+/// @}
+
+/// SplitTextWaveBySuffix
+/// @{
+
+Function STWBS_WorksWithEmptySuffix()
+
+	Make/FREE/T source = {"test1", "test2"}
+	WAVE/T withSuffix, woSuffix
+	[withSuffix, woSuffix] = SplitTextWaveBySuffix(source, "")
+	CHECK_EQUAL_WAVES(withSuffix, source, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DimSize(woSuffix, ROWS), 1)
+	CHECK_EQUAL_STR(woSuffix[0], "")
+End
+
+Function STWBS_SplitsCorrectly()
+
+	Make/FREE/T source = {"test_1", "data", "test_2", "other"}
+	WAVE/T withSuffix, woSuffix
+	[withSuffix, woSuffix] = SplitTextWaveBySuffix(source, "_1")
+
+	CHECK_EQUAL_VAR(DimSize(withSuffix, ROWS), 1)
+	CHECK_EQUAL_STR(withSuffix[0], "test_1")
+
+	CHECK_EQUAL_VAR(DimSize(woSuffix, ROWS), 3)
+	CHECK_EQUAL_STR(woSuffix[0], "data")
+	CHECK_EQUAL_STR(woSuffix[1], "test_2")
+	CHECK_EQUAL_STR(woSuffix[2], "other")
+End
+
+Function STWBS_EmptyResultsWhenNoMatches()
+
+	Make/FREE/T source = {"test", "data"}
+	WAVE/T withSuffix, woSuffix
+	[withSuffix, woSuffix] = SplitTextWaveBySuffix(source, "_suffix")
+
+	CHECK_EQUAL_VAR(DimSize(withSuffix, ROWS), 0)
+	CHECK_EQUAL_VAR(DimSize(woSuffix, ROWS), 2)
+End
+
+Function STWBS_AllMatchSuffix()
+
+	Make/FREE/T source = {"test_1", "data_1", "other_1"}
+	WAVE/T withSuffix, woSuffix
+	[withSuffix, woSuffix] = SplitTextWaveBySuffix(source, "_1")
+
+	CHECK_EQUAL_VAR(DimSize(withSuffix, ROWS), 3)
+	CHECK_EQUAL_VAR(DimSize(woSuffix, ROWS), 0)
+End
+
+/// @}
+
+/// WaveRef
+/// @{
+
+Function WR_ReturnsNullForMissingWave()
+
+	WAVE/Z result = WaveRef($"")
+	CHECK_WAVE(result, NULL_WAVE)
+End
+
+Function WR_ReturnsWaveRefWaveWithoutIndex()
+
+	Make/FREE data1, data2
+	Make/FREE/WAVE source = {data1, data2}
+	WAVE/WAVE result = WaveRef(source)
+	CHECK(WaveRefsEqual(result, source))
+End
+
+Function WR_ReturnsElementWithRow()
+
+	Make/FREE data1, data2
+	Make/FREE/WAVE source = {data1, data2}
+	WAVE result = WaveRef(source, row = 0)
+	CHECK(WaveRefsEqual(result, data1))
+	WAVE result = WaveRef(source, row = 1)
+	CHECK(WaveRefsEqual(result, data2))
+End
+
+Function WR_ReturnsElementWithRowCol()
+
+	Make/FREE data1, data2, data3, data4
+	Make/FREE/WAVE/N=(2, 2) source
+	source[0][0] = data1
+	source[0][1] = data2
+	source[1][0] = data3
+	source[1][1] = data4
+
+	WAVE result = WaveRef(source, row = 1, col = 1)
+	CHECK(WaveRefsEqual(result, data4))
+End
+
+Function WR_ReturnsElementWithRowColLayer()
+
+	Make/FREE data1, data2
+	Make/FREE/WAVE/N=(1, 1, 2) source
+	source[0][0][0] = data1
+	source[0][0][1] = data2
+
+	WAVE result = WaveRef(source, row = 0, col = 0, layer = 1)
+	CHECK(WaveRefsEqual(result, data2))
+End
+
+Function WR_ReturnsElementWithAllDimensions()
+
+	Make/FREE data1, data2
+	Make/FREE/WAVE/N=(1, 1, 1, 2) source
+	source[0][0][0][0] = data1
+	source[0][0][0][1] = data2
+
+	WAVE result = WaveRef(source, row = 0, col = 0, layer = 0, chunk = 1)
+	CHECK(WaveRefsEqual(result, data2))
+End
+
+/// @}
+
+/// WaveText
+/// @{
+
+Function WT_ReturnsEmptyForMissingWave()
+
+	string result = WaveText($"")
+	CHECK_EMPTY_STR(result)
+End
+
+Function WT_ReturnsElementWithRow()
+
+	Make/FREE/T wv = {"a", "b", "c"}
+	CHECK_EQUAL_STR(WaveText(wv, row = 0), "a")
+	CHECK_EQUAL_STR(WaveText(wv, row = 1), "b")
+	CHECK_EQUAL_STR(WaveText(wv, row = 2), "c")
+End
+
+Function WT_ReturnsElementWithRowCol()
+
+	Make/FREE/T/N=(2, 2) wv
+	wv[0][0] = "a"; wv[0][1] = "b"
+	wv[1][0] = "c"; wv[1][1] = "d"
+
+	CHECK_EQUAL_STR(WaveText(wv, row = 1, col = 1), "d")
+End
+
+Function WT_ReturnsElementWithRowColLayer()
+
+	Make/FREE/T/N=(1, 1, 2) wv
+	wv[0][0][0] = "first"
+	wv[0][0][1] = "second"
+
+	CHECK_EQUAL_STR(WaveText(wv, row = 0, col = 0, layer = 1), "second")
+End
+
+Function WT_ReturnsElementWithAllDimensions()
+
+	Make/FREE/T/N=(1, 1, 1, 2) wv
+	wv[0][0][0][0] = "first"
+	wv[0][0][0][1] = "last"
+
+	CHECK_EQUAL_STR(WaveText(wv, row = 0, col = 0, layer = 0, chunk = 1), "last")
+End
+
+/// @}
+
+/// DuplicateWaveToFree
+/// @{
+
+Function DWTF_CreatesFreeCopy()
+
+	Make/FREE original = p
+	WAVE copy = DuplicateWaveToFree(original)
+	CHECK_EQUAL_WAVES(copy, original)
+	CHECK_WAVE(copy, FREE_WAVE)
+End
+
+Function DWTF_CopyIsIndependent()
+
+	Make/FREE original = {1, 2, 3}
+	WAVE copy = DuplicateWaveToFree(original)
+	copy[0] = 999
+	CHECK_EQUAL_VAR(original[0], 1)
+	CHECK_EQUAL_VAR(copy[0], 999)
+End
+
+Function DWTF_WorksWithTextWave()
+
+	Make/FREE/T original = {"a", "b", "c"}
+	WAVE/T copy = DuplicateWaveToFree(original)
+	CHECK_EQUAL_WAVES(copy, original, mode = WAVE_DATA | DATA_FULL_SCALE)
+End
+
+Function DWTF_WorksWithMultidimensional()
+
+	Make/FREE/N=(3, 3) original = p + q
+	WAVE copy = DuplicateWaveToFree(original)
+	CHECK_EQUAL_WAVES(copy, original)
+End
+
+/// @}
+
+/// ConvertFreeWaveToPermanent
+/// @{
+
+Function CFWTP_CreatesPermanentWave()
+
+	Make/FREE original = {1, 2, 3}
+	NewDataFolder/O root:tempTest
+	DFREF dfr  = root:tempTest
+	WAVE  perm = ConvertFreeWaveToPermanent(original, dfr, "test")
+	CHECK_WAVE(perm, NORMAL_WAVE)
+	CHECK_EQUAL_WAVES(perm, original)
+	KillDataFolder/Z dfr
+End
+
+Function CFWTP_OverwritesExisting()
+
+	Make/FREE original = {1, 2, 3}
+	NewDataFolder/O root:tempTest
+	DFREF dfr = root:tempTest
+	Make dfr:test = {4, 5, 6}
+	WAVE perm = ConvertFreeWaveToPermanent(original, dfr, "test")
+	CHECK_EQUAL_WAVES(perm, original)
+	KillDataFolder/Z dfr
+End
+
+Function CFWTP_WorksWithTextWave()
+
+	Make/FREE/T original = {"a", "b"}
+	NewDataFolder/O root:tempTest
+	DFREF  dfr  = root:tempTest
+	WAVE/T perm = ConvertFreeWaveToPermanent(original, dfr, "test")
+	CHECK_EQUAL_WAVES(perm, original, mode = WAVE_DATA)
+	KillDataFolder/Z dfr
+End
+
+/// @}
+
+/// MoveFreeWaveToPermanent
+/// @{
+
+Function MFWTP_MovesFreeWave()
+
+	Make/FREE original = {1, 2, 3}
+	NewDataFolder/O root:tempTest
+	DFREF dfr  = root:tempTest
+	WAVE  perm = MoveFreeWaveToPermanent(original, dfr, "test")
+	CHECK_WAVE(perm, NORMAL_WAVE)
+	CHECK_EQUAL_VAR(perm[0], 1)
+	KillDataFolder/Z dfr
+End
+
+Function MFWTP_GeneratesUniqueName()
+
+	Make/FREE original = {1, 2, 3}
+	NewDataFolder/O root:tempTest
+	DFREF dfr = root:tempTest
+	Make dfr:test
+	WAVE perm = MoveFreeWaveToPermanent(original, dfr, "test")
+	CHECK_EQUAL_STR(NameOfWave(perm), "test0")
+	KillDataFolder/Z dfr
+End
+
+Function MFWTP_WorksWithTextWave()
+
+	Make/FREE/T original = {"a", "b"}
+	NewDataFolder/O root:tempTest
+	DFREF  dfr  = root:tempTest
+	WAVE/T perm = MoveFreeWaveToPermanent(original, dfr, "test")
+	CHECK_WAVE(perm, NORMAL_WAVE)
+	CHECK_EQUAL_STR(perm[0], "a")
+	KillDataFolder/Z dfr
+End
+
+/// @}
+
+/// GetDecimatedWaveSize
+/// @{
+
+Function GDWS_AbortsWithInvalidDecimationFactor()
+
+	try
+		GetDecimatedWaveSize(100, 1, DECIMATION_MINMAX)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		GetDecimatedWaveSize(100, 0, DECIMATION_MINMAX)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		GetDecimatedWaveSize(100, 2.5, DECIMATION_MINMAX)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GDWS_AbortsWithInvalidMethod()
+
+	try
+		GetDecimatedWaveSize(100, 2, 999)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GDWS_ReturnsOriginalSizeForNone()
+
+	CHECK_EQUAL_VAR(GetDecimatedWaveSize(100, 2, DECIMATION_NONE), 100)
+	CHECK_EQUAL_VAR(GetDecimatedWaveSize(1000, 10, DECIMATION_NONE), 1000)
+End
+
+Function GDWS_CalculatesMinMaxCorrectly()
+
+	// 100 / 2 = 50, already even
+	CHECK_EQUAL_VAR(GetDecimatedWaveSize(100, 2, DECIMATION_MINMAX), 50)
+
+	// 101 / 2 = 50.5 -> ceil to 51 -> make even -> 52
+	CHECK_EQUAL_VAR(GetDecimatedWaveSize(101, 2, DECIMATION_MINMAX), 52)
+
+	// 100 / 3 = 33.33 -> ceil to 34, already even
+	CHECK_EQUAL_VAR(GetDecimatedWaveSize(100, 3, DECIMATION_MINMAX), 34)
+
+	// 99 / 3 = 33 -> make even -> 34
+	CHECK_EQUAL_VAR(GetDecimatedWaveSize(99, 3, DECIMATION_MINMAX), 34)
+End
+
+Function GDWS_AlwaysReturnsEvenNumber()
+
+	variable i, result
+	for(i = 2; i < 20; i += 1)
+		result = GetDecimatedWaveSize(1000, i, DECIMATION_MINMAX)
+		CHECK_EQUAL_VAR(mod(result, 2), 0)
+	endfor
+End
+
+/// @}
+
+/// GetLastNonEmptyEntry
+/// @{
+
+Function GLNEE_ReturnsEmptyForAllEmpty()
+
+	Make/FREE/T/N=(3, 1) wv = ""
+	SetDimLabel COLS, 0, col0, wv
+	string result = GetLastNonEmptyEntry(wv, "col0", 2)
+	CHECK_EMPTY_STR(result)
+End
+
+Function GLNEE_ReturnsLastNonEmpty()
+
+	Make/FREE/T/N=(5, 1) wv
+	wv[0][0] = "first"
+	wv[1][0] = "second"
+	wv[2][0] = ""
+	wv[3][0] = "fourth"
+	wv[4][0] = ""
+	SetDimLabel COLS, 0, col0, wv
+
+	CHECK_EQUAL_STR(GetLastNonEmptyEntry(wv, "col0", 4), "fourth")
+	CHECK_EQUAL_STR(GetLastNonEmptyEntry(wv, "col0", 3), "fourth")
+	CHECK_EQUAL_STR(GetLastNonEmptyEntry(wv, "col0", 2), "second")
+	CHECK_EQUAL_STR(GetLastNonEmptyEntry(wv, "col0", 1), "second")
+	CHECK_EQUAL_STR(GetLastNonEmptyEntry(wv, "col0", 0), "first")
+End
+
+Function GLNEE_WorksWithMultipleColumns()
+
+	Make/FREE/T/N=(3, 2) wv
+	wv[0][0] = "a1"
+	wv[1][0] = "a2"
+	wv[2][0] = ""
+	wv[0][1] = "b1"
+	wv[1][1] = ""
+	wv[2][1] = "b3"
+	SetDimLabel COLS, 0, colA, wv
+	SetDimLabel COLS, 1, colB, wv
+
+	CHECK_EQUAL_STR(GetLastNonEmptyEntry(wv, "colA", 2), "a2")
+	CHECK_EQUAL_STR(GetLastNonEmptyEntry(wv, "colB", 2), "b3")
+End
+
 /// @}

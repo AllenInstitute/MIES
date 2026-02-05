@@ -389,7 +389,13 @@ End
 /// @sa AddEntryIntoWaveNoteAsList()
 Function HasEntryInWaveNoteList(WAVE wv, string key, string value)
 
-	return GrepString(note(wv), "\\Q" + key + "\\E\\s*=\\s*\\Q" + value + "\\E\\s*;")
+	string wvNote = note(wv)
+
+	if(IsEmpty(value))
+		return GrepString(wvNote, "\\Q" + key + "\\E\\s*;")
+	endif
+
+	return GrepString(wvNote, "\\Q" + key + "\\E\\s*=\\s*\\Q" + value + "\\E\\s*;")
 End
 
 /// @brief Returns a wave name not used in the given datafolder
@@ -857,7 +863,7 @@ Function [WAVE/T withSuffix, WAVE/T woSuffix] SplitTextWaveBySuffix(WAVE/T sourc
 
 	variable i, numElems
 
-	if(IsNull(suffix))
+	if(IsEmpty(suffix))
 		Make/FREE/T woSuffix = {""}
 		return [source, woSuffix]
 	endif
@@ -1216,11 +1222,15 @@ End
 /// @returns wave reference to the permanent wave
 Function/WAVE ConvertFreeWaveToPermanent(WAVE freeWave, DFREF dfr, string wName)
 
+	ASSERT(!IsFreeDatafolder(dfr), "dfr must be a global datafolder")
+
 	Duplicate/O freeWave, dfr:$wName/WAVE=permWave
 	return permWave
 End
 
 Function/WAVE MoveFreeWaveToPermanent(WAVE freeWave, DFREF dfr, string wvName)
+
+	ASSERT(!IsFreeDatafolder(dfr), "dfr must be a global datafolder")
 
 	wvName = UniqueWaveName(dfr, wvName)
 	MoveWave freeWave, dfr:$wvName
