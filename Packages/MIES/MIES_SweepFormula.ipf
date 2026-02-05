@@ -1450,8 +1450,8 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 						WAVE/T    pg.plotMetaData   = plotMetaDataInner
 					endif
 
-					SF_GatherAxisLabels(pg.formulaResults, plotMetaData[%XAXISLABEL], "FORMULAX", pg.xAxisLabels)
-					SF_GatherAxisLabels(pg.formulaResults, plotMetaData[%YAXISLABEL], "FORMULAY", pg.yAxisLabels)
+					SF_GatherAxisLabels(pg.formulaResults, pg.plotMetaData[%XAXISLABEL], "FORMULAX", pg.xAxisLabels)
+					SF_GatherAxisLabels(pg.formulaResults, pg.plotMetaData[%YAXISLABEL], "FORMULAY", pg.yAxisLabels)
 
 					showInTable = SF_IsDataForTableDisplay(pg.formulaResults)
 					if(!pg.panelsCreated[%GRAPH] && !showInTable)
