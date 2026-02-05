@@ -3,14 +3,9 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = UTILSTEST_DATAFOLDER
 
-// Missing Tests for:
-// createDFWithAllParents
-// RemoveEmptyDataFolder
-// IsDataFolderEmpty
-// UniqueDataFolder
-// UniqueDataFolderName
-// RefCounterDFIncrease
-// RefCounterDFDecrease
+static Constant CDFWAP_MAX_PATH_DEPTH     = 5
+static Constant TEST_LONG_BASENAME_LENGTH = 100
+static Constant TEST_CHAR_A_UPPERCASE     = 0x41
 
 /// GetListOfObjects
 /// @{
@@ -540,6 +535,783 @@ Function DC_DFREFClear_Free_Works()
 	CHECK(DataFolderExistsDFR(dfr))
 	DFREFClear(dfr)
 	CHECK(!DataFolderExistsDFR(dfr))
+End
+
+/// @}
+
+/// createDFWithAllParents
+/// @{
+
+Function CDFWAP_CreatesSimplePath()
+
+	string path
+	DFREF  dfr
+
+	path = "root:test1"
+	dfr  = createDFWithAllParents(path)
+	CHECK(DataFolderExistsDFR(dfr))
+	CHECK(DataFolderExists(path))
+
+	KillDataFolder/Z test1
+End
+
+Function CDFWAP_CreatesDeepPath()
+
+	string path
+	DFREF  dfr
+
+	path = "root:test1:test2:test3"
+	dfr  = createDFWithAllParents(path)
+	CHECK(DataFolderExistsDFR(dfr))
+	CHECK(DataFolderExists(path))
+	CHECK(DataFolderExists("root:test1"))
+	CHECK(DataFolderExists("root:test1:test2"))
+
+	KillDataFolder/Z test1
+End
+
+Function CDFWAP_ReturnsExistingFolder()
+
+	string path
+	DFREF dfr, dfrExisting
+
+	path = "root:test1:test2"
+
+	NewDataFolder/O root:test1
+	NewDataFolder/O root:test1:test2
+
+	dfrExisting = $path
+	dfr         = createDFWithAllParents(path)
+
+	CHECK(DataFolderExistsDFR(dfr))
+	CHECK(DataFolderExists(path))
+	CHECK_EQUAL_VAR(DataFolderRefsEqual(dfr, dfrExisting), 1)
+
+	KillDataFolder/Z test1
+End
+
+Function CDFWAP_CreatesPartialPath()
+
+	string path
+	DFREF  dfr
+
+	NewDataFolder/O root:existing
+
+	path = "root:existing:newFolder:deepFolder"
+	dfr  = createDFWithAllParents(path)
+
+	CHECK(DataFolderExistsDFR(dfr))
+	CHECK(DataFolderExists(path))
+	CHECK(DataFolderExists("root:existing:newFolder"))
+
+	KillDataFolder/Z existing
+End
+
+Function CDFWAP_HandlesRootFolder()
+
+	string path
+	DFREF  dfr
+
+	path = "root:"
+	dfr  = createDFWithAllParents(path)
+
+	CHECK(DataFolderExistsDFR(dfr))
+	CHECK_EQUAL_VAR(DataFolderRefsEqual(dfr, root:), 1)
+End
+
+static Function CDFWAP_AssertsInvalidName()
+
+	string path
+	DFREF  dfr
+
+	try
+		path = "root:invalid name:test"
+		dfr  = createDFWithAllParents(path)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function CDFWAP_HandlesLongPaths()
+
+	string path, component
+	variable i
+	DFREF    dfr
+
+	path = "root:"
+	for(i = 0; i < CDFWAP_MAX_PATH_DEPTH; i += 1)
+		component = "folder" + num2str(i)
+		path     += component + ":"
+	endfor
+
+	path = RemoveEnding(path, ":")
+	dfr  = createDFWithAllParents(path)
+
+	CHECK(DataFolderExistsDFR(dfr))
+	CHECK(DataFolderExists(path))
+
+	KillDataFolder/Z folder0
+End
+
+/// @}
+
+/// RemoveEmptyDataFolder
+/// @{
+
+Function REDF_RemovesEmptyFolder()
+
+	variable result
+
+	NewDataFolder test
+	DFREF dfr = test
+
+	result = RemoveEmptyDataFolder(dfr)
+	CHECK_EQUAL_VAR(result, 1)
+	CHECK(!DataFolderExists("test"))
+End
+
+Function REDF_DoesNotRemoveNonEmpty()
+
+	variable result
+
+	NewDataFolder test
+	DFREF dfr = test
+	Make dfr:wave1
+
+	result = RemoveEmptyDataFolder(dfr)
+	CHECK_EQUAL_VAR(result, 0)
+	CHECK(DataFolderExists("test"))
+
+	KillDataFolder/Z test
+End
+
+Function REDF_HandlesNonExistentFolder()
+
+	variable result
+	DFREF dfr = $""
+
+	result = RemoveEmptyDataFolder(dfr)
+	CHECK_EQUAL_VAR(result, 0)
+End
+
+Function REDF_HandlesKilledFolder()
+
+	variable result
+
+	NewDataFolder test
+	DFREF dfr = test
+	KillDataFolder test
+
+	result = RemoveEmptyDataFolder(dfr)
+	CHECK_EQUAL_VAR(result, 0)
+End
+
+Function REDF_DoesNotRemoveWithVariable()
+
+	variable result
+
+	NewDataFolder test
+	DFREF dfr = test
+	variable/G dfr:var1
+
+	result = RemoveEmptyDataFolder(dfr)
+	CHECK_EQUAL_VAR(result, 0)
+	CHECK(DataFolderExists("test"))
+
+	KillDataFolder/Z test
+End
+
+Function REDF_DoesNotRemoveWithString()
+
+	variable result
+
+	NewDataFolder test
+	DFREF dfr = test
+	string/G dfr:str1
+
+	result = RemoveEmptyDataFolder(dfr)
+	CHECK_EQUAL_VAR(result, 0)
+	CHECK(DataFolderExists("test"))
+
+	KillDataFolder/Z test
+End
+
+Function REDF_DoesNotRemoveWithSubfolder()
+
+	variable result
+
+	NewDataFolder test
+	DFREF dfr = test
+	NewDataFolder :test:subfolder
+
+	result = RemoveEmptyDataFolder(dfr)
+	CHECK_EQUAL_VAR(result, 0)
+	CHECK(DataFolderExists("test"))
+
+	KillDataFolder/Z test
+End
+
+/// @}
+
+/// IsDataFolderEmpty
+/// @{
+
+Function IDFE_ReturnsTrueForEmpty()
+
+	variable result
+
+	NewDataFolder test
+	DFREF dfr = test
+
+	result = IsDataFolderEmpty(dfr)
+	CHECK_EQUAL_VAR(result, 1)
+
+	KillDataFolder/Z test
+End
+
+Function IDFE_ReturnsFalseWithWave()
+
+	variable result
+
+	NewDataFolder test
+	DFREF dfr = test
+	Make dfr:wave1
+
+	result = IsDataFolderEmpty(dfr)
+	CHECK_EQUAL_VAR(result, 0)
+
+	KillDataFolder/Z test
+End
+
+Function IDFE_ReturnsFalseWithVariable()
+
+	variable result
+
+	NewDataFolder test
+	DFREF dfr = test
+	variable/G dfr:var1
+
+	result = IsDataFolderEmpty(dfr)
+	CHECK_EQUAL_VAR(result, 0)
+
+	KillDataFolder/Z test
+End
+
+Function IDFE_ReturnsFalseWithString()
+
+	variable result
+
+	NewDataFolder test
+	DFREF dfr = test
+	string/G dfr:str1
+
+	result = IsDataFolderEmpty(dfr)
+	CHECK_EQUAL_VAR(result, 0)
+
+	KillDataFolder/Z test
+End
+
+Function IDFE_ReturnsFalseWithSubfolder()
+
+	variable result
+
+	NewDataFolder test
+	DFREF dfr = test
+	NewDataFolder :test:subfolder
+
+	result = IsDataFolderEmpty(dfr)
+	CHECK_EQUAL_VAR(result, 0)
+
+	KillDataFolder/Z test
+End
+
+static Function IDFE_AssertsNonExistent()
+
+	variable result
+
+	try
+		DFREF dfr = $""
+		result = IsDataFolderEmpty(dfr)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function IDFE_ReturnsFalseWithMultipleObjects()
+
+	variable result
+
+	NewDataFolder test
+	DFREF dfr = test
+	Make dfr:wave1
+	variable/G dfr:var1
+	string/G   dfr:str1
+	NewDataFolder :test:subfolder
+
+	result = IsDataFolderEmpty(dfr)
+	CHECK_EQUAL_VAR(result, 0)
+
+	KillDataFolder/Z test
+End
+
+/// @}
+
+/// UniqueDataFolder
+/// @{
+
+Function UDF_CreatesUniqueFolder()
+
+	string path
+	DFREF dfr, dfrNew
+
+	NewDataFolder test
+	dfr = test
+
+	dfrNew = UniqueDataFolder(dfr, "myFolder")
+	CHECK(DataFolderExistsDFR(dfrNew))
+
+	path = GetDataFolder(1, dfrNew)
+	CHECK(GrepString(path, "myFolder"))
+
+	KillDataFolder/Z test
+End
+
+Function UDF_CreatesSecondWhenFirstExists()
+
+	string path1, path2
+	DFREF dfr, dfrNew1, dfrNew2
+
+	NewDataFolder test
+	dfr = test
+
+	NewDataFolder :test:myFolder
+	dfrNew1 = :test:myFolder
+
+	dfrNew2 = UniqueDataFolder(dfr, "myFolder")
+	CHECK(DataFolderExistsDFR(dfrNew2))
+	CHECK(!DataFolderRefsEqual(dfrNew1, dfrNew2))
+
+	path1 = GetDataFolder(1, dfrNew1)
+	path2 = GetDataFolder(1, dfrNew2)
+	CHECK_NEQ_STR(path1, path2)
+
+	KillDataFolder/Z test
+End
+
+Function UDF_CreatesInRoot()
+
+	DFREF dfr, dfrNew
+
+	dfr    = root:
+	dfrNew = UniqueDataFolder(dfr, "testFolder")
+
+	CHECK(DataFolderExistsDFR(dfrNew))
+
+	KillDataFolder dfrNew
+End
+
+Function UDF_HandlesLongBaseName()
+
+	string baseName
+	DFREF dfr, dfrNew
+
+	NewDataFolder test
+	dfr = test
+
+	baseName = PadString("", TEST_LONG_BASENAME_LENGTH, TEST_CHAR_A_UPPERCASE)
+	dfrNew   = UniqueDataFolder(dfr, baseName)
+
+	CHECK(DataFolderExistsDFR(dfrNew))
+
+	KillDataFolder/Z test
+End
+
+Function UDF_CreatesMultipleUnique()
+
+	variable i
+	DFREF    dfr
+	Make/FREE/DF/N=3 folders
+
+	NewDataFolder test
+	dfr = test
+
+	for(i = 0; i < 3; i += 1)
+		folders[i] = UniqueDataFolder(dfr, "folder")
+		CHECK(DataFolderExistsDFR(folders[i]))
+	endfor
+
+	CHECK(!DataFolderRefsEqual(folders[0], folders[1]))
+	CHECK(!DataFolderRefsEqual(folders[1], folders[2]))
+	CHECK(!DataFolderRefsEqual(folders[0], folders[2]))
+
+	KillDataFolder/Z test
+End
+
+/// @}
+
+/// UniqueDataFolderName
+/// @{
+
+Function UDFN_ReturnsUniqueNameSimple()
+
+	string path
+	DFREF  dfr
+
+	NewDataFolder test
+	dfr = test
+
+	path = UniqueDataFolderName(dfr, "myFolder")
+	CHECK(!isEmpty(path))
+	CHECK(GrepString(path, "myFolder"))
+	CHECK(!DataFolderExists(path))
+
+	KillDataFolder/Z test
+End
+
+Function UDFN_ReturnsSecondWhenFirstExists()
+
+	string path1, path2
+	DFREF dfr
+
+	NewDataFolder test
+	dfr = :test
+
+	NewDataFolder :test:myFolder
+
+	path1 = GetDataFolder(1, :test:myFolder)
+	path2 = UniqueDataFolderName(dfr, "myFolder")
+
+	CHECK(!isEmpty(path2))
+	CHECK_NEQ_STR(path1, path2)
+	CHECK(!DataFolderExists(path2))
+	CHECK(GrepString(path2, "myFolder"))
+
+	KillDataFolder/Z test
+End
+
+Function UDFN_ReturnsAbsolutePath()
+
+	string path
+	DFREF  dfr
+
+	NewDataFolder test
+	dfr = test
+
+	path = UniqueDataFolderName(dfr, "myFolder")
+	CHECK(!isEmpty(path))
+	CHECK(GrepString(path, "^root:"))
+
+	KillDataFolder/Z test
+End
+
+static Function UDFN_AssertsEmptyBaseName()
+
+	string path
+
+	try
+		NewDataFolder test
+		DFREF dfr = test
+		path = UniqueDataFolderName(dfr, "")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	KillDataFolder/Z test
+End
+
+static Function UDFN_AssertsNonExistentDFR()
+
+	string path
+
+	try
+		DFREF dfr = $""
+		path = UniqueDataFolderName(dfr, "test")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+static Function UDFN_AssertsFreeDF()
+
+	string path
+
+	try
+		DFREF dfr = NewFreeDataFolder()
+		path = UniqueDataFolderName(dfr, "test")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function UDFN_HandlesLongBaseName()
+
+	string baseName, path
+	DFREF dfr
+
+	NewDataFolder test
+	dfr = test
+
+	baseName = PadString("", TEST_LONG_BASENAME_LENGTH, TEST_CHAR_A_UPPERCASE)
+	path     = UniqueDataFolderName(dfr, baseName)
+
+	CHECK(!isEmpty(path))
+	CHECK(!DataFolderExists(path))
+
+	KillDataFolder/Z test
+End
+
+Function UDFN_ConsecutiveCallsReturnDifferent()
+
+	string path1, path2
+	DFREF dfr
+
+	NewDataFolder test
+	dfr = test
+
+	path1 = UniqueDataFolderName(dfr, "folder")
+	NewDataFolder $path1
+
+	path2 = UniqueDataFolderName(dfr, "folder")
+
+	CHECK_NEQ_STR(path1, path2)
+	CHECK(!DataFolderExists(path2))
+
+	KillDataFolder/Z test
+End
+
+/// @}
+
+/// RefCounterDFIncrease
+/// @{
+
+Function RCDFI_IncreasesRefCount()
+
+	string refPath
+	variable refCountBefore, refCountAfter
+	DFREF dfr
+
+	NewDataFolder test
+	dfr = test
+
+	refPath = GetDFReferenceCount(dfr)
+	NVAR rc = $refPath
+	refCountBefore = rc
+
+	RefCounterDFIncrease(dfr)
+
+	refCountAfter = rc
+
+	CHECK_EQUAL_VAR(refCountAfter, refCountBefore + 1)
+
+	KillDataFolder/Z test
+End
+
+Function RCDFI_IncreasesFromZero()
+
+	string   refPath
+	variable refCountAfter
+	DFREF    dfr
+
+	NewDataFolder test
+	dfr = test
+
+	refPath = GetDFReferenceCount(dfr)
+
+	RefCounterDFIncrease(dfr)
+
+	NVAR rc = $refPath
+	refCountAfter = rc
+
+	CHECK_EQUAL_VAR(refCountAfter, 1)
+
+	KillDataFolder/Z test
+End
+
+Function RCDFI_AllowsMultipleIncreases()
+
+	string refPath
+	variable i, refCountFinal
+	DFREF dfr
+
+	NewDataFolder test
+	dfr = test
+
+	refPath = GetDFReferenceCount(dfr)
+
+	for(i = 0; i < 5; i += 1)
+		RefCounterDFIncrease(dfr)
+	endfor
+
+	NVAR rc = $refPath
+	refCountFinal = rc
+
+	CHECK_EQUAL_VAR(refCountFinal, 5)
+
+	KillDataFolder/Z test
+End
+
+Function RCDFI_WorksWithDifferentFolders()
+
+	string refPath1, refPath2
+	variable refCount1, refCount2
+	DFREF dfr1, dfr2
+
+	NewDataFolder test1
+	NewDataFolder test2
+	dfr1 = test1
+	dfr2 = test2
+
+	refPath1 = GetDFReferenceCount(dfr1)
+	refPath2 = GetDFReferenceCount(dfr2)
+
+	RefCounterDFIncrease(dfr1)
+	RefCounterDFIncrease(dfr1)
+	RefCounterDFIncrease(dfr2)
+
+	NVAR rc1 = $refPath1
+	NVAR rc2 = $refPath2
+	refCount1 = rc1
+	refCount2 = rc2
+
+	CHECK_EQUAL_VAR(refCount1, 2)
+	CHECK_EQUAL_VAR(refCount2, 1)
+
+	KillDataFolder/Z test1
+	KillDataFolder/Z test2
+End
+
+/// @}
+
+/// RefCounterDFDecrease
+/// @{
+
+Function RCDFD_DecreasesRefCount()
+
+	string refPath
+	variable refCountBefore, refCountAfter
+	DFREF dfr
+
+	NewDataFolder test
+	dfr = test
+
+	refPath = GetDFReferenceCount(dfr)
+
+	RefCounterDFIncrease(dfr)
+	RefCounterDFIncrease(dfr)
+
+	NVAR rc = $refPath
+	refCountBefore = rc
+
+	RefCounterDFDecrease(dfr)
+
+	refCountAfter = rc
+
+	CHECK_EQUAL_VAR(refCountAfter, refCountBefore - 1)
+
+	KillDataFolder/Z test
+End
+
+Function RCDFD_AllowsMultipleDecreases()
+
+	string refPath
+	variable i, refCountFinal
+	DFREF dfr
+
+	NewDataFolder test
+	dfr = test
+
+	refPath = GetDFReferenceCount(dfr)
+
+	for(i = 0; i < 5; i += 1)
+		RefCounterDFIncrease(dfr)
+	endfor
+
+	for(i = 0; i < 3; i += 1)
+		RefCounterDFDecrease(dfr)
+	endfor
+
+	NVAR rc = $refPath
+	refCountFinal = rc
+
+	CHECK_EQUAL_VAR(refCountFinal, 2)
+
+	KillDataFolder/Z test
+End
+
+Function RCDFD_KillsFolderAtZero()
+
+	string path
+	DFREF  dfr
+
+	NewDataFolder test
+	path = GetDataFolder(1) + "test"
+	dfr  = test
+
+	RefCounterDFIncrease(dfr)
+	CHECK(DataFolderExists(path))
+
+	RefCounterDFDecrease(dfr)
+	CHECK(!DataFolderExists(path))
+End
+
+Function RCDFD_WorksWithDifferentFolders()
+
+	string refPath1, refPath2, path1, path2
+	variable refCount1, refCount2
+	DFREF dfr1, dfr2
+
+	NewDataFolder test1
+	NewDataFolder test2
+	dfr1  = test1
+	dfr2  = test2
+	path1 = GetDataFolder(1) + "test1"
+	path2 = GetDataFolder(1) + "test2"
+
+	refPath1 = GetDFReferenceCount(dfr1)
+	refPath2 = GetDFReferenceCount(dfr2)
+
+	RefCounterDFIncrease(dfr1)
+	RefCounterDFIncrease(dfr1)
+	RefCounterDFIncrease(dfr2)
+
+	RefCounterDFDecrease(dfr1)
+
+	CHECK(DataFolderExists(path1))
+	CHECK(DataFolderExists(path2))
+
+	NVAR rc1 = $refPath1
+	NVAR rc2 = $refPath2
+	refCount1 = rc1
+	refCount2 = rc2
+
+	CHECK_EQUAL_VAR(refCount1, 1)
+	CHECK_EQUAL_VAR(refCount2, 1)
+
+	KillDataFolder/Z test1
+	KillDataFolder/Z test2
+End
+
+Function RCDFD_HandlesDecreaseToZero()
+
+	string refPath
+	DFREF  dfr
+
+	NewDataFolder test
+	dfr = test
+
+	refPath = GetDFReferenceCount(dfr)
+
+	RefCounterDFIncrease(dfr)
+	RefCounterDFIncrease(dfr)
+	RefCounterDFDecrease(dfr)
+	RefCounterDFDecrease(dfr)
+
+	CHECK(!DataFolderExists("test"))
 End
 
 /// @}
