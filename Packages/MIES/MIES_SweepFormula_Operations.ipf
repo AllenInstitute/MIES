@@ -2337,7 +2337,11 @@ static Function/WAVE SFO_IndexOverDataSetsForPrimitiveOperation(STRUCT SF_Execut
 	WAVE/WAVE arg1 = SF_ResolveDatasetFromJSON(exd, 1)
 	dataSetNum0 = DimSize(arg0, ROWS)
 	dataSetNum1 = DimSize(arg1, ROWS)
-	SFH_ASSERT(dataSetNum0 > 0 && dataSetNum1 > 0, "No input data for " + opShort)
+	if(dataSetNum0 == 0 && dataSetNum1 == 0)
+		WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 0)
+		return output
+	endif
+	SFH_ASSERT(dataSetNum0 > 0 && dataSetNum1 > 0, "No input data on one side for " + opShort)
 	if(dataSetNum0 == dataSetNum1)
 		WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, dataSetNum0)
 		WAVE/WAVE input  = arg0
