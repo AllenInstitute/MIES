@@ -2628,13 +2628,13 @@ static Function SFO_OperationIVSCCApFrequencySetPlotProperties(WAVE wvY, variabl
 	JWN_SetNumberInWaveNote(wvY, SF_META_YAXISPERCENT, yAxisPercentage)
 End
 
-// ivscc_apfrequency([xaxisOffset, yaxisOffset, xAxisPercentage, yAxisPercentage])
+// ivscc_apfrequency([xaxisOffset, yaxisOffset, xAxisPercentage, yAxisPercentage, binRange, binWidth, method, level, timeFreq, normalize, xAxisType])
 Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 
 	string   opShort    = SF_OP_IVSCCAPFREQUENCY
 	variable numArgsMin = 0
 	variable numArgsMax = 9
-	string formula, expr, exprPart
+	string formula, expr
 	variable i, numArgs, col, size, numExp
 	variable xAxisPercentage, yAxisPercentage
 	string xaxisOffset, yaxisOffset
@@ -2756,7 +2756,7 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 		JWN_SetStringInWaveNote(wvY[0], SF_META_LEGEND_LINE_PREFIX, "ivscc_apfrequency average")
 	endif
 	plotWITH[numExp][%FORMULAY] = wvY
-	SFO_OperationIVSCCApFrequencySetPlotProperties(plotWITH[i][%FORMULAY], xAxisPercentage, yAxisPercentage)
+	SFO_OperationIVSCCApFrequencySetPlotProperties(plotWITH[numExp][%FORMULAY], xAxisPercentage, yAxisPercentage)
 
 	if(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_FIRST))
 		formula = "merge($ivscccurrentavg - extract($ivscccurrentavg, 0))"
