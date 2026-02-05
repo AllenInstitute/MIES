@@ -3433,6 +3433,19 @@ static Function TPWithModelCell()
 End
 
 // IUTF_TD_GENERATOR DataGenerators#GetBasicMathOperations
+static Function BasicMathEmptyDatasets([string str])
+
+	string code, win
+
+	win = GetDataBrowserWithData()
+
+	sprintf code, "dataset() %s dataset()", str
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 0)
+End
+
+// IUTF_TD_GENERATOR DataGenerators#GetBasicMathOperations
 static Function BasicMathMismatchedWaves([string str])
 
 	string code, win, opShort, error
