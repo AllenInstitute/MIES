@@ -39,6 +39,7 @@ static StrConstant SF_OP_AVG_INSWEEPS   = "in"
 static StrConstant SF_OP_AVG_OVERSWEEPS = "over"
 static StrConstant SF_OP_AVG_GROUPS     = "group"
 static StrConstant SF_OP_AVG_BINS       = "bins"
+static StrConstant SF_OP_AVG_BINS2      = "bins2"
 
 static StrConstant SF_OP_EPOCHS_TYPE_RANGE     = "range"
 static StrConstant SF_OP_EPOCHS_TYPE_NAME      = "name"
@@ -507,7 +508,7 @@ Function/WAVE SFO_OperationAvg(STRUCT SF_ExecutionData &exd)
 
 	numArgs = SFH_CheckArgumentCount(exd, opShort, 1, maxArgs = 5)
 
-	mode = SFH_GetArgumentAsText(exd, opShort, 1, defValue = SF_OP_AVG_INSWEEPS, allowedValues = {SF_OP_AVG_INSWEEPS, SF_OP_AVG_OVERSWEEPS, SF_OP_AVG_GROUPS, SF_OP_AVG_BINS})
+	mode = SFH_GetArgumentAsText(exd, opShort, 1, defValue = SF_OP_AVG_INSWEEPS, allowedValues = {SF_OP_AVG_INSWEEPS, SF_OP_AVG_OVERSWEEPS, SF_OP_AVG_GROUPS, SF_OP_AVG_BINS, SF_OP_AVG_BINS2})
 	if(!CmpStr(mode, SF_OP_AVG_INSWEEPS) || !CmpStr(mode, SF_OP_AVG_OVERSWEEPS))
 		WAVE/WAVE input = SFH_GetArgumentAsWave(exd, opShort, 0, resolveSelect = 1)
 		strswitch(mode)
@@ -539,7 +540,138 @@ Function/WAVE SFO_OperationAvg(STRUCT SF_ExecutionData &exd)
 		SFH_ASSERT(DimSize(dataFromEachGroup, ROWS) == DimSize(binData, ROWS), "input data and bin data must have the same number of groups")
 		WAVE/WAVE averagedBins = SFO_OperationAvgImplBins(dataFromEachGroup, exd.graph, opShort, binData, binRange, binWidth)
 		return SFH_GetOutputForExecutor(averagedBins, exd.graph, opShort)
+	elseif(!CmpStr(mode, SF_OP_AVG_BINS2))
+		WAVE/WAVE dataFromEachGroup = SFH_GetDatasetArrayAsResolvedWaverefs(exd, 0, resolveSelect = 1)
+		WAVE/WAVE binData           = SFH_GetDatasetArrayAsResolvedWaverefs(exd, 2, resolveSelect = 1)
+		SFH_ASSERT(DimSize(dataFromEachGroup, ROWS) == DimSize(binData, ROWS), "input data and bin data must have the same number of groups")
+		WAVE/WAVE averagedBins = SFO_OperationAvgImplBins2(dataFromEachGroup, exd.graph, opShort, binData)
+		return SFH_GetOutputForExecutor(averagedBins, exd.graph, opShort)
 	endif
+End
+
+static Function/WAVE SFO_OperationAvgImplBins2(WAVE/WAVE input, string graph, string opShort, WAVE/WAVE binData)
+
+	variable i, j, maxBins, numGroups, numDataSets, idx, numBins, numEntries, size, xValue, xSdev, ySdev
+	STRUCT RGBColor s
+
+	[s] = GetTraceColorForAverage()
+	Make/FREE/W/U traceColor = {s.red, s.green, s.blue}
+
+	numGroups = DimSize(input, ROWS)
+
+	// Sort
+	Make/FREE/WAVE/N=(numGroups) sortedDatasetGroups, sortedBinDatasets
+	for(i = 0; i < numGroups; i += 1)
+		WAVE/WAVE dataSets    = input[i]
+		WAVE/WAVE binDataSets = binData[i]
+
+		numDataSets = DimSize(dataSets, ROWS)
+		printf "Group %d, num datasets %d\r", i, numDataSets
+		SFH_ASSERT(numDataSets == DimSize(binDataSets, ROWS), "The number of datasets of the input and bins are not the same for group " + num2istr(i))
+		Make/FREE/D/N=(numDataSets) sortedKey
+		for(j = 0; j < numDataSets; j += 1)
+			SFH_ASSERT(WaveExists(binDataSets[j]), "A bin dataset is null")
+			SFH_ASSERT(IsNumericWave(binDataSets[j]), "A bin dataset must be numeric")
+			SFH_ASSERT(DimSize(binDataSets[j], ROWS) == 1, "A bin dataset must have exactly one value")
+			sortedKey[j] = WaveRef(binDataSets, row = j)[0]
+		endfor
+
+		Duplicate/FREE/WAVE dataSets, sortedDatasets
+		Sort sortedKey, sortedKey, sortedDatasets
+		sortedDatasetGroups[i] = sortedDatasets
+		sortedBinDatasets[i]   = sortedKey
+		maxBins                = max(maxBins, numDataSets)
+	endfor
+
+	// Gather
+	Make/FREE/WAVE/N=(maxBins) filledBins, xValuesBin
+	for(i = 0; i < numGroups; i += 1)
+		WAVE/WAVE sortedDatasets = sortedDatasetGroups[i]
+		WAVE      binXValues     = sortedBinDatasets[i]
+		numDataSets = DimSize(sortedDatasets, ROWS)
+		for(j = 0; j < numDataSets; j += 1)
+			if(!WaveExists(sortedDatasets[j]))
+				continue
+			endif
+			// Add to bin
+			WAVE/Z/WAVE wavesInBin = filledBins[j]
+			if(!WaveExists(wavesInBin))
+				Make/FREE/WAVE wavesInBin = {sortedDatasets[j]}
+				SetNumberInWaveNote(wavesInBin, NOTE_INDEX, 1)
+				filledBins[j] = wavesInBin
+				Make/FREE/D xValues = {binXValues[j]}
+				SetNumberInWaveNote(xValues, NOTE_INDEX, 1)
+				xValuesBin[j] = xValues
+				continue
+			endif
+			idx = GetNumberFromWaveNote(wavesInBin, NOTE_INDEX)
+			printf "Group %d, Bin %d, add at index %d\r", i, j, idx
+			WAVE xValues = xValuesBin[j]
+			EnsureLargeEnoughWave(wavesInBin, indexShouldExist = idx)
+			EnsureLargeEnoughWave(xValues, indexShouldExist = idx)
+			wavesInBin[idx] = sortedDatasets[j]
+			xValues[idx]    = binXValues[j]
+			SetNumberInWaveNote(wavesInBin, NOTE_INDEX, idx + 1)
+			SetNumberInWaveNote(xValues, NOTE_INDEX, idx + 1)
+		endfor
+	endfor
+
+	for(i = 0; i < maxBins; i += 1)
+		if(WaveExists(filledBins[i]))
+			printf "Bin %d, filling %d\r", i, GetNumberFromWaveNote(filledBins[i], NOTE_INDEX)
+		else
+			printf "Bin %d, filling %d\r", i, 0
+		endif
+	endfor
+
+	// Cutoff
+	for(i = 0; i < maxBins; i += 1)
+		if(!WaveExists(filledBins[i]))
+			break
+		endif
+		if(GetNumberFromWaveNote(filledBins[i], NOTE_INDEX) < 2)
+			break
+		endif
+	endfor
+	numBins = i
+	printf "Cutoff after bin %d\r", i - 1
+	Redimension/N=(numBins) filledBins, xValuesBin
+
+	// avg same bins
+	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, numBins)
+	for(i = 0; i < numBins; i += 1)
+		WAVE/WAVE wavesInBin = filledBins[i]
+		numEntries = GetNumberFromWaveNote(wavesInBin, NOTE_INDEX)
+		Redimension/N=(numEntries) wavesInBin
+
+		WAVE/WAVE avg = MIES_fWaveAverage(wavesInBin, 1, IGOR_TYPE_64BIT_FLOAT)
+		output[i] = avg[0]
+
+		size = DimSize(wavesInBin, ROWS)
+		Make/FREE/D/N=(size) valuesFromBin = WaveRef(wavesInBin, row = p)[0]
+		WaveStats/Q valuesFromBin
+		ySdev = V_sdev
+
+		WAVE xValues = xValuesBin[i]
+		Redimension/N=(numEntries) xValues
+		xValue = mean(xValues)
+		WaveStats/Q xValues
+		xSdev = V_sdev
+
+		WAVE wTmp = output[i]
+		printf "Bin: %d Avg result: %f, xValue: %f, ySdev: %f, xSdev: %f\r", i, wTmp[0], xValue, ySdev, xSdev
+
+		JWN_SetWaveInWaveNote(output[i], SF_META_TRACECOLOR, traceColor)
+		JWN_SetNumberInWaveNote(output[i], SF_META_TRACETOFRONT, 1)
+		JWN_SetNumberInWaveNote(output[i], SF_META_LINESTYLE, 0)
+		JWN_SetWaveInWaveNote(output[i], SF_META_XVALUES, {xValue})
+		JWN_SetWaveInWaveNote(output[i], SF_META_ERRORBARYPLUS, {ySdev})
+		JWN_SetWaveInWaveNote(output[i], SF_META_ERRORBARYMINUS, {ySdev})
+		JWN_SetWaveInWaveNote(output[i], SF_META_ERRORBARXPLUS, {xSdev})
+		JWN_SetWaveInWaveNote(output[i], SF_META_ERRORBARXMINUS, {xSdev})
+	endfor
+
+	return output
 End
 
 static Function/WAVE SFO_OperationAvgImplBins(WAVE/WAVE input, string graph, string opShort, WAVE/WAVE binData, WAVE binRange, variable binWidth)
