@@ -1278,6 +1278,25 @@ static Function TestOperationAverage()
 	CHECK_EQUAL_WAVES(dataRef[1], {1.5}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(dataRef[2], {NaN}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(dataRef[3], {25}, mode = WAVE_DATA)
+
+	str  = ""
+	str += "ds0 = dataset(1, 2, 3)\r"
+	str += "ds1 = dataset(10, 20, 30)\r"
+	str += "bin0 = dataset(1, 1, 5)\r"
+	str += "bin1 = dataset(0, 3, 3)\r"
+	str += "avg([$ds0, $ds0, $ds1], bins2, [$bin0, $bin0, $bin1])"
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win)
+	CHECK_WAVE(dataRef, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 3)
+
+	Make/D/FREE ref = {4.666666666666667}
+	CHECK_EQUAL_WAVES(dataRef[0], ref, mode = WAVE_DATA)
+
+	Make/D/FREE ref = {10.66666666666667}
+	CHECK_EQUAL_WAVES(dataRef[1], ref, mode = WAVE_DATA, tol = 1e-12)
+
+	Make/D/FREE ref = {8.666666666666666}
+	CHECK_EQUAL_WAVES(dataRef[2], ref, mode = WAVE_DATA)
 End
 
 static Function TestOperationAverage2()
