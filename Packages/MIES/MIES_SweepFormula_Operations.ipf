@@ -30,9 +30,16 @@ static StrConstant SF_OP_APFREQUENCY_NONORM             = "nonorm"
 static StrConstant SF_OP_APFREQUENCY_X_COUNT            = "count"
 static StrConstant SF_OP_APFREQUENCY_X_TIME             = "time"
 
+static StrConstant SF_OP_IVSCCAPFREQUENCY_FIRST = "first"
+static StrConstant SF_OP_IVSCCAPFREQUENCY_MIN   = "min"
+static StrConstant SF_OP_IVSCCAPFREQUENCY_MAX   = "max"
+static StrConstant SF_OP_IVSCCAPFREQUENCY_NONE  = "none"
+
 static StrConstant SF_OP_AVG_INSWEEPS   = "in"
 static StrConstant SF_OP_AVG_OVERSWEEPS = "over"
 static StrConstant SF_OP_AVG_GROUPS     = "group"
+static StrConstant SF_OP_AVG_BINS       = "bins"
+static StrConstant SF_OP_AVG_BINS2      = "bins2"
 
 static StrConstant SF_OP_EPOCHS_TYPE_RANGE     = "range"
 static StrConstant SF_OP_EPOCHS_TYPE_NAME      = "name"
@@ -235,6 +242,25 @@ static Function/WAVE SFO_OperationAnaFuncParamImplAllNames(WAVE/T names, WAVE/WA
 	return GetUniqueEntries(allNames)
 End
 
+static Function [variable method, variable level, string timeFreq, string normalize, string xAxisType] SFO_GetApFrequencyArguments(STRUCT SF_ExecutionData &exd, string opShort, variable offset)
+
+	method    = SFH_GetArgumentAsNumeric(exd, opShort, offset, defValue = SF_APFREQUENCY_FULL, allowedValues = {SF_APFREQUENCY_FULL, SF_APFREQUENCY_INSTANTANEOUS, SF_APFREQUENCY_APCOUNT, SF_APFREQUENCY_INSTANTANEOUS_PAIR})
+	level     = SFH_GetArgumentAsNumeric(exd, opShort, offset + 1, defValue = 0)
+	timeFreq  = SFH_GetArgumentAsText(exd, opShort, offset + 2, defValue = SF_OP_APFREQUENCY_Y_FREQ, allowedValues = {SF_OP_APFREQUENCY_Y_TIME, SF_OP_APFREQUENCY_Y_FREQ})
+	normalize = SFH_GetArgumentAsText(exd, opShort, offset + 3, defValue = SF_OP_APFREQUENCY_NONORM, allowedValues = {                                      \
+	                                                                                                                  SF_OP_APFREQUENCY_NONORM,             \
+	                                                                                                                  SF_OP_APFREQUENCY_NORMOVERSWEEPSMIN,  \
+	                                                                                                                  SF_OP_APFREQUENCY_NORMOVERSWEEPSMAX,  \
+	                                                                                                                  SF_OP_APFREQUENCY_NORMOVERSWEEPSAVG,  \
+	                                                                                                                  SF_OP_APFREQUENCY_NORMWITHINSWEEPMIN, \
+	                                                                                                                  SF_OP_APFREQUENCY_NORMWITHINSWEEPMAX, \
+	                                                                                                                  SF_OP_APFREQUENCY_NORMWITHINSWEEPAVG  \
+	                                                                                                                 })
+	xAxisType = SFH_GetArgumentAsText(exd, opShort, offset + 4, defValue = SF_OP_APFREQUENCY_X_TIME, allowedValues = {SF_OP_APFREQUENCY_X_TIME, SF_OP_APFREQUENCY_X_COUNT})
+
+	return [method, level, timeFreq, normalize, xAxisType]
+End
+
 // apfrequency(data, [frequency calculation method], [spike detection crossing level], [result value type], [normalize], [x-axis type])
 Function/WAVE SFO_OperationApFrequency(STRUCT SF_ExecutionData &exd)
 
@@ -249,19 +275,7 @@ Function/WAVE SFO_OperationApFrequency(STRUCT SF_ExecutionData &exd)
 	SFH_ASSERT(numArgs >= numArgsMin, "ApFrequency needs at least " + num2istr(numArgsMin) + " argument(s).")
 
 	WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, 0)
-	method    = SFH_GetArgumentAsNumeric(exd, opShort, 1, defValue = SF_APFREQUENCY_FULL, allowedValues = {SF_APFREQUENCY_FULL, SF_APFREQUENCY_INSTANTANEOUS, SF_APFREQUENCY_APCOUNT, SF_APFREQUENCY_INSTANTANEOUS_PAIR})
-	level     = SFH_GetArgumentAsNumeric(exd, opShort, 2, defValue = 0)
-	timeFreq  = SFH_GetArgumentAsText(exd, opShort, 3, defValue = SF_OP_APFREQUENCY_Y_FREQ, allowedValues = {SF_OP_APFREQUENCY_Y_TIME, SF_OP_APFREQUENCY_Y_FREQ})
-	normalize = SFH_GetArgumentAsText(exd, opShort, 4, defValue = SF_OP_APFREQUENCY_NONORM, allowedValues = {                                      \
-	                                                                                                         SF_OP_APFREQUENCY_NONORM,             \
-	                                                                                                         SF_OP_APFREQUENCY_NORMOVERSWEEPSMIN,  \
-	                                                                                                         SF_OP_APFREQUENCY_NORMOVERSWEEPSMAX,  \
-	                                                                                                         SF_OP_APFREQUENCY_NORMOVERSWEEPSAVG,  \
-	                                                                                                         SF_OP_APFREQUENCY_NORMWITHINSWEEPMIN, \
-	                                                                                                         SF_OP_APFREQUENCY_NORMWITHINSWEEPMAX, \
-	                                                                                                         SF_OP_APFREQUENCY_NORMWITHINSWEEPAVG  \
-	                                                                                                        })
-	xAxisType = SFH_GetArgumentAsText(exd, opShort, 5, defValue = SF_OP_APFREQUENCY_X_TIME, allowedValues = {SF_OP_APFREQUENCY_X_TIME, SF_OP_APFREQUENCY_X_COUNT})
+	[method, level, timeFreq, normalize, xAxisType] = SFO_GetApFrequencyArguments(exd, opShort, 1)
 
 	WAVE/T argSetup = SFH_GetNewArgSetupWave(numArgsMax - 1)
 
@@ -488,13 +502,13 @@ End
 
 Function/WAVE SFO_OperationAvg(STRUCT SF_ExecutionData &exd)
 
-	variable numArgs
-	string   mode
+	variable numArgs, binWidth
+	string mode
 	string opShort = SF_OP_AVG
 
-	numArgs = SFH_CheckArgumentCount(exd, opShort, 1, maxArgs = 2)
+	numArgs = SFH_CheckArgumentCount(exd, opShort, 1, maxArgs = 5)
 
-	mode = SFH_GetArgumentAsText(exd, opShort, 1, defValue = SF_OP_AVG_INSWEEPS, allowedValues = {SF_OP_AVG_INSWEEPS, SF_OP_AVG_OVERSWEEPS, SF_OP_AVG_GROUPS})
+	mode = SFH_GetArgumentAsText(exd, opShort, 1, defValue = SF_OP_AVG_INSWEEPS, allowedValues = {SF_OP_AVG_INSWEEPS, SF_OP_AVG_OVERSWEEPS, SF_OP_AVG_GROUPS, SF_OP_AVG_BINS, SF_OP_AVG_BINS2})
 	if(!CmpStr(mode, SF_OP_AVG_INSWEEPS) || !CmpStr(mode, SF_OP_AVG_OVERSWEEPS))
 		WAVE/WAVE input = SFH_GetArgumentAsWave(exd, opShort, 0, resolveSelect = 1)
 		strswitch(mode)
@@ -513,17 +527,247 @@ Function/WAVE SFO_OperationAvg(STRUCT SF_ExecutionData &exd)
 	elseif(!CmpStr(mode, SF_OP_AVG_GROUPS))
 		WAVE/WAVE dataFromEachGroup = SFH_GetDatasetArrayAsResolvedWaverefs(exd, 0, resolveSelect = 1)
 		WAVE/WAVE averagedGroup     = SFO_OperationAvgImplSweepGroups(dataFromEachGroup, exd.graph, opShort)
-		SFH_TransferFormulaDataWaveNoteAndMeta(dataFromEachGroup[0], averagedGroup, opShort, SF_DATATYPE_AVG)
 
 		return SFH_GetOutputForExecutor(averagedGroup, exd.graph, opShort)
-	else
-		FATAL_ERROR("Unhandled avg operation mode")
+	elseif(!CmpStr(mode, SF_OP_AVG_BINS))
+		WAVE/WAVE dataFromEachGroup = SFH_GetDatasetArrayAsResolvedWaverefs(exd, 0, resolveSelect = 1)
+		WAVE/WAVE wTmp              = SFH_GetArgumentAsWave(exd, opShort, 2)
+		WAVE      binRange          = wTmp[0]
+		SFH_ASSERT(DimSize(binRange, ROWS) == 2, "Expected range in the form of [start, end]")
+		SFH_ASSERT(binRange[1] > binRange[0], "The end of the bin range must be greater than the start")
+		binWidth = SFH_GetArgumentAsNumeric(exd, opShort, 3, checkFunc = IsStrictlyPositiveAndFinite)
+		WAVE/WAVE binData = SFH_GetDatasetArrayAsResolvedWaverefs(exd, 4, resolveSelect = 1)
+		SFH_ASSERT(DimSize(dataFromEachGroup, ROWS) == DimSize(binData, ROWS), "input data and bin data must have the same number of groups")
+		WAVE/WAVE averagedBins = SFO_OperationAvgImplBins(dataFromEachGroup, exd.graph, opShort, binData, binRange, binWidth)
+		return SFH_GetOutputForExecutor(averagedBins, exd.graph, opShort)
+	elseif(!CmpStr(mode, SF_OP_AVG_BINS2))
+		WAVE/WAVE dataFromEachGroup = SFH_GetDatasetArrayAsResolvedWaverefs(exd, 0, resolveSelect = 1)
+		WAVE/WAVE binData           = SFH_GetDatasetArrayAsResolvedWaverefs(exd, 2, resolveSelect = 1)
+		SFH_ASSERT(DimSize(dataFromEachGroup, ROWS) == DimSize(binData, ROWS), "input data and bin data must have the same number of groups")
+		WAVE/WAVE averagedBins = SFO_OperationAvgImplBins2(dataFromEachGroup, exd.graph, opShort, binData)
+		return SFH_GetOutputForExecutor(averagedBins, exd.graph, opShort)
 	endif
+End
+
+static Function/WAVE SFO_OperationAvgImplBins2(WAVE/WAVE input, string graph, string opShort, WAVE/WAVE binData)
+
+	variable i, j, maxBins, numGroups, numDataSets, idx, numBins, numEntries, size, xValue, xSdev, ySdev
+	STRUCT RGBColor s
+
+	[s] = GetTraceColorForAverage()
+	Make/FREE/W/U traceColor = {s.red, s.green, s.blue}
+
+	numGroups = DimSize(input, ROWS)
+
+	// Sort
+	Make/FREE/WAVE/N=(numGroups) sortedDatasetGroups, sortedBinDatasets
+	for(i = 0; i < numGroups; i += 1)
+		WAVE/WAVE dataSets    = input[i]
+		WAVE/WAVE binDataSets = binData[i]
+
+		numDataSets = DimSize(dataSets, ROWS)
+		printf "Group %d, num datasets %d\r", i, numDataSets
+		SFH_ASSERT(numDataSets == DimSize(binDataSets, ROWS), "The number of datasets of the input and bins are not the same for group " + num2istr(i))
+		Make/FREE/D/N=(numDataSets) sortedKey
+		for(j = 0; j < numDataSets; j += 1)
+			SFH_ASSERT(WaveExists(binDataSets[j]), "A bin dataset is null")
+			SFH_ASSERT(IsNumericWave(binDataSets[j]), "A bin dataset must be numeric")
+			SFH_ASSERT(DimSize(binDataSets[j], ROWS) == 1, "A bin dataset must have exactly one value")
+			sortedKey[j] = WaveRef(binDataSets, row = j)[0]
+		endfor
+
+		Duplicate/FREE/WAVE dataSets, sortedDatasets
+		Sort sortedKey, sortedKey, sortedDatasets
+		sortedDatasetGroups[i] = sortedDatasets
+		sortedBinDatasets[i]   = sortedKey
+		maxBins                = max(maxBins, numDataSets)
+	endfor
+
+	// Gather
+	Make/FREE/WAVE/N=(maxBins) filledBins, xValuesBin
+	for(i = 0; i < numGroups; i += 1)
+		WAVE/WAVE sortedDatasets = sortedDatasetGroups[i]
+		WAVE      binXValues     = sortedBinDatasets[i]
+		numDataSets = DimSize(sortedDatasets, ROWS)
+		for(j = 0; j < numDataSets; j += 1)
+			if(!WaveExists(sortedDatasets[j]))
+				continue
+			endif
+			// Add to bin
+			WAVE/Z/WAVE wavesInBin = filledBins[j]
+			if(!WaveExists(wavesInBin))
+				Make/FREE/WAVE wavesInBin = {sortedDatasets[j]}
+				SetNumberInWaveNote(wavesInBin, NOTE_INDEX, 1)
+				filledBins[j] = wavesInBin
+				Make/FREE/D xValues = {binXValues[j]}
+				SetNumberInWaveNote(xValues, NOTE_INDEX, 1)
+				xValuesBin[j] = xValues
+				continue
+			endif
+			idx = GetNumberFromWaveNote(wavesInBin, NOTE_INDEX)
+			printf "Group %d, Bin %d, add at index %d\r", i, j, idx
+			WAVE xValues = xValuesBin[j]
+			EnsureLargeEnoughWave(wavesInBin, indexShouldExist = idx)
+			EnsureLargeEnoughWave(xValues, indexShouldExist = idx)
+			wavesInBin[idx] = sortedDatasets[j]
+			xValues[idx]    = binXValues[j]
+			SetNumberInWaveNote(wavesInBin, NOTE_INDEX, idx + 1)
+			SetNumberInWaveNote(xValues, NOTE_INDEX, idx + 1)
+		endfor
+	endfor
+
+	for(i = 0; i < maxBins; i += 1)
+		if(WaveExists(filledBins[i]))
+			printf "Bin %d, filling %d\r", i, GetNumberFromWaveNote(filledBins[i], NOTE_INDEX)
+		else
+			printf "Bin %d, filling %d\r", i, 0
+		endif
+	endfor
+
+	// Cutoff
+	for(i = 0; i < maxBins; i += 1)
+		if(!WaveExists(filledBins[i]))
+			break
+		endif
+		if(GetNumberFromWaveNote(filledBins[i], NOTE_INDEX) < 2)
+			break
+		endif
+	endfor
+	numBins = i
+	printf "Cutoff after bin %d\r", i - 1
+	Redimension/N=(numBins) filledBins, xValuesBin
+
+	// avg same bins
+	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, numBins)
+	for(i = 0; i < numBins; i += 1)
+		WAVE/WAVE wavesInBin = filledBins[i]
+		numEntries = GetNumberFromWaveNote(wavesInBin, NOTE_INDEX)
+		Redimension/N=(numEntries) wavesInBin
+
+		WAVE/WAVE avg = MIES_fWaveAverage(wavesInBin, 1, IGOR_TYPE_64BIT_FLOAT)
+		output[i] = avg[0]
+
+		size = DimSize(wavesInBin, ROWS)
+		Make/FREE/D/N=(size) valuesFromBin = WaveRef(wavesInBin, row = p)[0]
+		WaveStats/Q valuesFromBin
+		ySdev = V_sdev
+
+		WAVE xValues = xValuesBin[i]
+		Redimension/N=(numEntries) xValues
+		xValue = mean(xValues)
+		WaveStats/Q xValues
+		xSdev = V_sdev
+
+		WAVE wTmp = output[i]
+		printf "Bin: %d Avg result: %f, xValue: %f, ySdev: %f, xSdev: %f\r", i, wTmp[0], xValue, ySdev, xSdev
+
+		JWN_SetWaveInWaveNote(output[i], SF_META_TRACECOLOR, traceColor)
+		JWN_SetNumberInWaveNote(output[i], SF_META_TRACETOFRONT, 1)
+		JWN_SetNumberInWaveNote(output[i], SF_META_LINESTYLE, 0)
+		JWN_SetWaveInWaveNote(output[i], SF_META_XVALUES, {xValue})
+		JWN_SetWaveInWaveNote(output[i], SF_META_ERRORBARYPLUS, {ySdev})
+		JWN_SetWaveInWaveNote(output[i], SF_META_ERRORBARYMINUS, {ySdev})
+		JWN_SetWaveInWaveNote(output[i], SF_META_ERRORBARXPLUS, {xSdev})
+		JWN_SetWaveInWaveNote(output[i], SF_META_ERRORBARXMINUS, {xSdev})
+	endfor
+
+	return output
+End
+
+static Function/WAVE SFO_OperationAvgImplBins(WAVE/WAVE input, string graph, string opShort, WAVE/WAVE binData, WAVE binRange, variable binWidth)
+
+	variable i, j, numBins, binStart, binEnd, numGroups, numDataSets, binValue, binPos, idx
+	STRUCT RGBColor s
+
+	[s] = GetTraceColorForAverage()
+	Make/FREE/W/U traceColor = {s.red, s.green, s.blue}
+
+	numGroups = DimSize(input, ROWS)
+	binStart  = binRange[0]
+	binEnd    = binRange[1]
+	numBins   = ceil((binEnd - binStart) / binWidth)
+	SFH_ASSERT(numBins < 1E6, "Maximum number of bins is 1E6.")
+
+	// Gather
+	Make/FREE/WAVE/N=(numBins, numGroups) binnedPerGroup
+	for(i = 0; i < numGroups; i += 1)
+		WAVE/WAVE dataSets    = input[i]
+		WAVE/WAVE binDataSets = binData[i]
+		numDataSets = DimSize(dataSets, ROWS)
+		SFH_ASSERT(numDataSets == DimSize(binDataSets, ROWS), "The number of datasets of the input and bins are not the same for group " + num2istr(i))
+		for(j = 0; j < numDataSets; j += 1)
+			if(!WaveExists(dataSets[j]))
+				continue
+			endif
+			SFH_ASSERT(DimSize(binDataSets[j], ROWS) == 1, "A bin dataset must have exactly one value")
+			binValue = WaveRef(binDataSets, row = j)[0]
+			if(binValue < binStart || binValue >= binEnd)
+				continue
+			endif
+			binPos = floor((binValue - binStart) / binWidth)
+			// Add to bin
+			WAVE/Z/WAVE wavesInBin = binnedPerGroup[binPos][i]
+			if(!WaveExists(wavesInBin))
+				Make/FREE/WAVE wavesInBin = {dataSets[j]}
+				SetNumberInWaveNote(wavesInBin, NOTE_INDEX, 1)
+				binnedPerGroup[binPos][i] = wavesInBin
+				continue
+			endif
+			idx = GetNumberFromWaveNote(wavesInBin, NOTE_INDEX)
+			EnsureLargeEnoughWave(wavesInBin, indexShouldExist = idx)
+			wavesInBin[idx] = dataSets[j]
+			SetNumberInWaveNote(wavesInBin, NOTE_INDEX, idx + 1)
+		endfor
+	endfor
+	// avg bins with multiple filling
+	for(i = 0; i < numBins; i += 1)
+		for(j = 0; j < numGroups; j += 1)
+			if(!WaveExists(binnedPerGroup[i][j]))
+				continue
+			endif
+			WAVE/WAVE wavesInBin = binnedPerGroup[i][j]
+			idx = GetNumberFromWaveNote(wavesInBin, NOTE_INDEX)
+			Redimension/N=(idx) wavesInBin
+			if(idx == 1)
+				continue
+			endif
+			WAVE/WAVE avg = MIES_fWaveAverage(wavesInBin, 1, IGOR_TYPE_64BIT_FLOAT)
+			Redimension/N=(1) wavesInBin
+			wavesInBin[0] = avg[0]
+		endfor
+	endfor
+	// avg same bins
+	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, numBins)
+	for(i = 0; i < numBins; i += 1)
+		Make/FREE/WAVE/N=(numGroups) sameBin
+		idx = 0
+		for(j = 0; j < numGroups; j += 1)
+			if(!WaveExists(binnedPerGroup[i][j]))
+				continue
+			endif
+			WAVE/WAVE wavesInBin = binnedPerGroup[i][j]
+			sameBin[idx] = wavesInBin[0]
+			idx         += 1
+		endfor
+		if(idx == 0)
+			Make/FREE/D tmp = {NaN}
+			output[i] = tmp
+		else
+			Redimension/N=(idx) sameBin
+			WAVE/WAVE avg = MIES_fWaveAverage(sameBin, 1, IGOR_TYPE_64BIT_FLOAT)
+			output[i] = avg[0]
+		endif
+		JWN_SetWaveInWaveNote(output[i], SF_META_TRACECOLOR, traceColor)
+		JWN_SetNumberInWaveNote(output[i], SF_META_TRACETOFRONT, 1)
+		JWN_SetNumberInWaveNote(output[i], SF_META_LINESTYLE, 0)
+	endfor
+
+	return output
 End
 
 static Function/WAVE SFO_OperationAvgImplSweepGroups(WAVE/WAVE sweepsFromEachSelection, string graph, string opShort)
 
-	variable numData, numMaxSweeps, numGroups, i, j
+	variable numData, numMaxSweeps, numGroups, i, j, maxIdx
 	STRUCT RGBColor s
 
 	[s] = GetTraceColorForAverage()
@@ -531,7 +775,9 @@ static Function/WAVE SFO_OperationAvgImplSweepGroups(WAVE/WAVE sweepsFromEachSel
 
 	numGroups = DimSize(sweepsFromEachSelection, ROWS)
 	Make/FREE/D/N=(numGroups) sweepCnts = DimSize(sweepsFromEachSelection[p], ROWS)
-	numMaxSweeps = WaveMax(sweepCnts)
+	WaveStats/Q/M=1 sweepCnts
+	numMaxSweeps = V_max
+	maxIdx       = V_maxRowLoc
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, numMaxSweeps)
 	for(i = 0; i < numMaxSweeps; i += 1)
 		Make/FREE/WAVE/N=(numGroups) avgSet
@@ -549,6 +795,7 @@ static Function/WAVE SFO_OperationAvgImplSweepGroups(WAVE/WAVE sweepsFromEachSel
 		JWN_SetNumberInWaveNote(output[i], SF_META_TRACETOFRONT, 1)
 		JWN_SetNumberInWaveNote(output[i], SF_META_LINESTYLE, 0)
 	endfor
+	SFH_TransferFormulaDataWaveNoteAndMeta(sweepsFromEachSelection[maxIdx], output, opShort, SF_DATATYPE_AVG)
 
 	return output
 End
@@ -1565,6 +1812,8 @@ Function/WAVE SFO_OperationMerge(STRUCT SF_ExecutionData &exd)
 
 	output[0] = content
 
+	SFH_CopyPlotMetaData(input[0], output[0])
+
 	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_MERGE)
 End
 
@@ -2223,7 +2472,11 @@ static Function/WAVE SFO_IndexOverDataSetsForPrimitiveOperation(STRUCT SF_Execut
 	WAVE/WAVE arg1 = SF_ResolveDatasetFromJSON(exd, 1)
 	dataSetNum0 = DimSize(arg0, ROWS)
 	dataSetNum1 = DimSize(arg1, ROWS)
-	SFH_ASSERT(dataSetNum0 > 0 && dataSetNum1 > 0, "No input data for " + opShort)
+	if(dataSetNum0 == 0 && dataSetNum1 == 0)
+		WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 0)
+		return output
+	endif
+	SFH_ASSERT(dataSetNum0 > 0 && dataSetNum1 > 0, "No input data on one side for " + opShort)
 	if(dataSetNum0 == dataSetNum1)
 		WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, dataSetNum0)
 		WAVE/WAVE input  = arg0
@@ -2480,4 +2733,166 @@ Function/WAVE SFO_OperationTable(STRUCT SF_ExecutionData &exd)
 	JWN_SetNumberInWaveNote(output, SF_PROPERTY_TABLE, 1)
 
 	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_TABLE)
+End
+
+/// @brief Sets the plot meta data for the ivscc_apfrequency operation
+static Function SFO_OperationIVSCCApFrequencySetPlotProperties(WAVE wvY, variable xAxisPercentage, variable yAxisPercentage)
+
+	JWN_SetNumberInWaveNote(wvY, SF_META_XAXISPERCENT, xAxisPercentage)
+	JWN_SetNumberInWaveNote(wvY, SF_META_YAXISPERCENT, yAxisPercentage)
+End
+
+// ivscc_apfrequency([xaxisOffset, yaxisOffset, xAxisPercentage, yAxisPercentage, binRange, binWidth, method, level, timeFreq, normalize, xAxisType])
+Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
+
+	string   opShort    = SF_OP_IVSCCAPFREQUENCY
+	variable numArgsMin = 0
+	variable numArgsMax = 9
+	string formula, expr
+	variable i, numArgs, col, size, numExp
+	variable xAxisPercentage, yAxisPercentage
+	string xaxisOffset, yaxisOffset
+	variable method, level, binWidth, numBins
+	string timeFreq, normalize, xAxisType, freqList, currentList, expList, binList
+	STRUCT RGBColor s
+
+	SFH_ASSERT(BSP_IsSweepBrowser(exd.graph), "ivscc_apfrequency only works with sweepbrowser")
+
+	numArgs = SFH_GetNumberOfArguments(exd)
+	SFH_ASSERT(numArgs <= numArgsMax, "ivscc_apfrequency has " + num2istr(numArgsMax) + " arguments at most.")
+	SFH_ASSERT(numArgs >= numArgsMin, "ivscc_apfrequency needs at least " + num2istr(numArgsMin) + " argument(s).")
+
+	xaxisOffset     = SFH_GetArgumentAsText(exd, opShort, 0, defValue = SF_OP_IVSCCAPFREQUENCY_MIN, allowedValues = {SF_OP_IVSCCAPFREQUENCY_FIRST, SF_OP_IVSCCAPFREQUENCY_MIN, SF_OP_IVSCCAPFREQUENCY_MAX, SF_OP_IVSCCAPFREQUENCY_NONE})
+	yaxisOffset     = SFH_GetArgumentAsText(exd, opShort, 1, defValue = SF_OP_IVSCCAPFREQUENCY_MIN, allowedValues = {SF_OP_IVSCCAPFREQUENCY_FIRST, SF_OP_IVSCCAPFREQUENCY_MIN, SF_OP_IVSCCAPFREQUENCY_MAX, SF_OP_IVSCCAPFREQUENCY_NONE})
+	xAxisPercentage = SFH_GetArgumentAsNumeric(exd, opShort, 2, defValue = 100, checkFunc = BetweenZeroAndOneHoundred)
+	yAxisPercentage = SFH_GetArgumentAsNumeric(exd, opShort, 3, defValue = 100, checkFunc = BetweenZeroAndOneHoundred)
+	WAVE/WAVE wTmp     = SFH_GetArgumentAsWave(exd, opShort, 4)
+	WAVE      binRange = wTmp[0]
+	binWidth                                        = SFH_GetArgumentAsNumeric(exd, opShort, 5, checkFunc = IsStrictlyPositiveAndFinite)
+	[method, level, timeFreq, normalize, xAxisType] = SFO_GetApFrequencyArguments(exd, opShort, 6)
+
+	WAVE/T sweepMap = SB_GetSweepMap(exd.graph)
+	col  = FindDimlabel(sweepMap, COLS, "FileName")
+	size = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
+	Duplicate/FREE/RMD=[0, size - 1][col] sweepMap, fileNames
+	WAVE/T uniqueFiles = GetUniqueEntries(fileNames, dontDuplicate = 1)
+	Sort uniqueFiles, uniqueFiles
+	numExp = DimSize(uniqueFiles, ROWS)
+	SFH_ASSERT(numExp > 0, "ivscc_apfrequency: data from at least one experiment has to be loaded")
+
+	formula = "sel = select(selsweeps(), selstimset(\"*LP_Rheo*\", \"*supra*\"), selvis(all), selivsccsweepqc(passed))\r"
+	for(i = 0; i < numExp; i += 1)
+		sprintf expr, "selexpAD%d = select(selexp(\"%s\"), $sel, selchannels(AD0), selrange(E1))", i, uniqueFiles[i]
+		formula = SF_AddExpressionToFormula(formula, expr)
+		sprintf expr, "selexpDA%d = select(selexp(\"%s\"), $sel, selchannels(DA0), selrange(E1))", i, uniqueFiles[i]
+		formula = SF_AddExpressionToFormula(formula, expr)
+		sprintf expr, "freq%d = apfrequency(data($selexpAD%d), %d, %f, %s, %s, %s)", i, i, method, level, timeFreq, normalize, xAxisType
+		formula = SF_AddExpressionToFormula(formula, expr)
+		sprintf expr, "current%d = max(data($selexpDA%d))", i, i
+		formula = SF_AddExpressionToFormula(formula, expr)
+		if(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_FIRST))
+			sprintf expr, "currentNorm%d = $current%d - extract($current%d, 0)", i, i, i
+		elseif(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_MIN))
+			sprintf expr, "currentNorm%d = $current%d - min(merge($current%d))", i, i, i
+		elseif(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_MAX))
+			sprintf expr, "currentNorm%d = $current%d - max(merge($current%d))", i, i, i
+		else // SF_OP_IVSCCAPFREQUENCY_NONE
+			sprintf expr, "currentNorm%d = $current%d", i, i
+		endif
+		formula = SF_AddExpressionToFormula(formula, expr)
+	endfor
+
+	Make/FREE/T/N=(numExp) freqs, currents, exps
+	freqs[]     = "$freq" + num2istr(p)
+	freqList    = TextWaveToList(freqs, ",", trailSep = 0)
+	currents[]  = "$currentNorm" + num2istr(p)
+	currentList = TextWaveToList(currents, ",", trailSep = 0)
+	exps[]      = "\"" + uniqueFiles[p] + "\""
+	expList     = TextWaveToList(exps, ",", trailSep = 0)
+
+	sprintf expr, "ivsccavg = avg([%s], bins, [%f,%f],%f,[%s])", freqList, binRange[0], binRange[1], binWidth, currentList
+	formula = SF_AddExpressionToFormula(formula, expr)
+
+	sprintf expr, "ivscccurrentavg = avg([%s], bins, [%f,%f],%f,[%s])", currentList, binRange[0], binRange[1], binWidth, currentList
+	formula = SF_AddExpressionToFormula(formula, expr)
+
+	sprintf expr, "ivscc_apfrequency_explist = [%s]", expList
+	formula = SF_AddExpressionToFormula(formula, expr)
+
+	WAVE/WAVE varStorage = GetSFVarStorage(exd.graph)
+	Duplicate/FREE varStorage, varBackup
+	SFE_ExecuteVariableAssignments(exd.graph, formula)
+
+	WAVE/WAVE varStorageOp = GetSFVarStorage(exd.graph)
+	WAVE      wvResult     = varStorageOp[%ivscc_apfrequency_explist]
+
+	WAVE/WAVE plotAND = SFH_CreateSFRefWave(exd.graph, opShort, 1)
+	Make/FREE/WAVE/N=(numExp + 1, 2) plotWITH
+	SetDimlabel COLS, 0, FORMULAX, plotWITH
+	SetDimlabel COLS, 1, FORMULAY, plotWITH
+	plotAND[0] = plotWITH
+
+	for(i = 0; i < numExp; i += 1)
+		if(!CmpStr(yaxisOffset, SF_OP_IVSCCAPFREQUENCY_FIRST))
+			sprintf formula, "merge($freq%d - extract($freq%d, 0))", i, i
+		elseif(!CmpStr(yaxisOffset, SF_OP_IVSCCAPFREQUENCY_MIN))
+			sprintf formula, "merge($freq%d - min(merge($freq%d)))", i, i
+		elseif(!CmpStr(yaxisOffset, SF_OP_IVSCCAPFREQUENCY_MAX))
+			sprintf formula, "merge($freq%d - max(merge($freq%d)))", i, i
+		else // SF_OP_IVSCCAPFREQUENCY_NONE
+			sprintf formula, "merge($freq%d)", i
+		endif
+		WAVE/WAVE wvY = SFH_ExecuteFormulaInternal(exd.graph, formula)
+		if(DimSize(wvY, ROWS) > 0)
+			[s] = GetTraceColor(i)
+			Make/FREE/W/U traceColor = {s.red, s.green, s.blue}
+			JWN_SetWaveInWaveNote(wvY[0], SF_META_TRACECOLOR, traceColor)
+			JWN_SetNumberInWaveNote(wvY[0], SF_META_MOD_MARKER, 17)
+			JWN_SetStringInWaveNote(wvY[0], SF_META_LEGEND_LINE_PREFIX, uniqueFiles[i])
+		endif
+		plotWITH[i][%FORMULAY] = wvY
+		SFO_OperationIVSCCApFrequencySetPlotProperties(plotWITH[i][%FORMULAY], xAxisPercentage, yAxisPercentage)
+		sprintf formula, "merge($currentNorm%d)", i
+		plotWITH[i][%FORMULAX] = SFH_ExecuteFormulaInternal(exd.graph, formula)
+	endfor
+
+	if(!CmpStr(yaxisOffset, SF_OP_IVSCCAPFREQUENCY_FIRST))
+		formula = "merge($ivsccavg - extract($ivsccavg, 0))"
+	elseif(!CmpStr(yaxisOffset, SF_OP_IVSCCAPFREQUENCY_MIN))
+		formula = "merge($ivsccavg - min(merge($ivsccavg)))"
+	elseif(!CmpStr(yaxisOffset, SF_OP_IVSCCAPFREQUENCY_MAX))
+		formula = "merge($ivsccavg - max(merge($ivsccavg)))"
+	else // SF_OP_IVSCCAPFREQUENCY_NONE
+		formula = "merge($ivsccavg)"
+	endif
+	WAVE/WAVE wvY = SFH_ExecuteFormulaInternal(exd.graph, formula)
+	if(DimSize(wvY, ROWS) > 0)
+		JWN_SetStringInWaveNote(wvY[0], SF_META_LEGEND_LINE_PREFIX, "ivscc_apfrequency average")
+	endif
+	plotWITH[numExp][%FORMULAY] = wvY
+	SFO_OperationIVSCCApFrequencySetPlotProperties(plotWITH[numExp][%FORMULAY], xAxisPercentage, yAxisPercentage)
+
+	if(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_FIRST))
+		formula = "merge($ivscccurrentavg - extract($ivscccurrentavg, 0))"
+	elseif(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_MIN))
+		formula = "merge($ivscccurrentavg - min(merge($ivscccurrentavg)))"
+	elseif(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_MAX))
+		formula = "merge($ivscccurrentavg - max(merge($ivscccurrentavg)))"
+	else // SF_OP_IVSCCAPFREQUENCY_NONE
+		formula = "merge($ivscccurrentavg)"
+	endif
+
+	numBins = ceil((binRange[1] - binRange[0]) / binWidth)
+	Make/FREE/D/N=(numBins) binValues
+	binValues[] = binRange[0] + p * binWidth + binWidth / 2
+	binList     = NumericWaveToList(binValues, ",", format = "%f", trailSep = 0)
+	sprintf formula, "[%s]", binList
+	plotWITH[numExp][%FORMULAX] = SFH_ExecuteFormulaInternal(exd.graph, formula)
+
+	Duplicate/O varBackup, varStorage
+	SFH_AddVariableToStorage(exd.graph, "ivscc_apfrequency_explist", wvResult)
+
+	JWN_SetNumberInWaveNote(plotAND, SF_META_PLOT, 1)
+
+	return SFH_GetOutputForExecutor(plotAND, exd.graph, opShort)
 End

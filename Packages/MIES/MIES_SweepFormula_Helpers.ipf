@@ -2177,3 +2177,51 @@ Function/WAVE SFH_GetDatasetArrayAsResolvedWaverefs(STRUCT SF_ExecutionData &exd
 
 	return dataFromEachGroup
 End
+
+/// @brief Executes a formula from within an operation with low overhead
+///        - the currently active variable storage is used
+///        - the formula string is not preprocessed
+Function/WAVE SFH_ExecuteFormulaInternal(string graph, string formula)
+
+	STRUCT SF_ExecutionData exd
+	variable jsonId, srcLocId
+
+	exd.graph          = graph
+	[jsonId, srcLocId] = SFP_ParseFormulaToJSON(formula)
+	exd.jsonId         = jsonId
+	WAVE dataRef = SFE_FormulaExecutor(exd, srcLocId = srcLocId)
+
+	JSON_Release(exd.jsonId)
+	JSON_Release(srcLocId)
+
+	WAVE resolved = SF_ResolveDataset(dataRef)
+
+	return resolved
+End
+
+/// @brief Adds a variable to the variable storage. If the variable already exists it is overwritten.
+Function SFH_AddVariableToStorage(string graph, string name, WAVE result)
+
+	variable size, idx
+
+	WAVE/WAVE varStorage = GetSFVarStorage(graph)
+	idx = FindDimLabel(varStorage, ROWS, name)
+	if(idx == -2)
+		size = DimSize(varStorage, ROWS)
+		Redimension/N=(size + 1) varStorage
+		idx = size
+	endif
+	varStorage[idx] = result
+	SetDimLabel ROWS, idx, $name, varStorage
+End
+
+/// @brief Copy plot meta data JSON properties from a source to a target wave
+Function SFH_CopyPlotMetaData(WAVE input, WAVE output)
+
+	WAVE/Z wv = JWN_GetNumericWaveFromWaveNote(input, SF_META_TRACECOLOR)
+	if(WaveExists(wv))
+		JWN_SetWaveInWaveNote(output, SF_META_TRACECOLOR, wv)
+	endif
+	JWN_SetNumberInWaveNote(output, SF_META_TRACETOFRONT, JWN_GetNumberFromWaveNote(input, SF_META_TRACETOFRONT))
+	JWN_SetNumberInWaveNote(output, SF_META_LINESTYLE, JWN_GetNumberFromWaveNote(input, SF_META_LINESTYLE))
+End
