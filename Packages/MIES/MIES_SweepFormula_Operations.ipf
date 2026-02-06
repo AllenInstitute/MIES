@@ -564,6 +564,9 @@ static Function/WAVE SFO_OperationAvgImplBins(WAVE/WAVE input, string graph, str
 		numDataSets = DimSize(dataSets, ROWS)
 		SFH_ASSERT(numDataSets == DimSize(binDataSets, ROWS), "The number of datasets of the input and bins are not the same for group " + num2istr(i))
 		for(j = 0; j < numDataSets; j += 1)
+			if(!WaveExists(dataSets[j]))
+				continue
+			endif
 			SFH_ASSERT(DimSize(binDataSets[j], ROWS) == 1, "A bin dataset must have exactly one value")
 			binValue = WaveRef(binDataSets, row = j)[0]
 			if(binValue < binStart || binValue >= binEnd)
