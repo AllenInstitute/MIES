@@ -1456,7 +1456,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 		if(pg.panelsCreated[%GRAPH])
 			pg.win = winGraphs[GetNumberFromWaveNote(winGraphs, NOTE_INDEX) - 1]
 			if(showLegend)
-				formulasAreDifferent = SF_AddPlotLegend(pg.win, pg.wAnnotations, pg.formulaArgSetup, pg.formulaResults)
+				formulasAreDifferent = SF_AddPlotLegend(pg)
 			endif
 
 			SF_AddPlotTicks(pg.graph, pg.win, pg.formulaResults)
@@ -1466,7 +1466,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 				SetWindow $pg.win, tooltipHook(SweepFormulaTraceValue)=$winHook
 			endif
 
-			SF_AddPlotTraceStyle(pg.graph, pg.win, formulaCounter, pg.collPlotFormData, formulasAreDifferent)
+			SF_AddPlotTraceStyle(pg, formulasAreDifferent)
 
 			if(traceCnt > 0)
 				SF_AddPlotLabels(pg.win, pg.xAxisLabels, pg.yAxisLabels)
@@ -1492,13 +1492,49 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 	SF_KillOldDataDisplayWindows(pg.graph, winDisplayMode, wList, outputWindows)
 End
 
-static Function SF_AddPlotTraceStyle(string graph, string win, variable formulaCounter, WAVE/WAVE collPlotFormData, variable formulasAreDifferent)
+static Function SF_FinishPlotWindow(STRUCT SF_PlotterGraphStruct &pg, WAVE/T winGraphs)
+
+	variable formulasAreDifferent, numTableFormulas
+	string winHook
+
+	numTableFormulas = GetNumberFromWaveNote(pg.tableFormulas, NOTE_INDEX)
+	if(numTableFormulas)
+		Redimension/N=(numTableFormulas) pg.tableFormulas
+		SetWindow $pg.win, userdata($SF_UDATA_TABLEFORMULAS)=WaveToJSON(pg.tableFormulas)
+	endif
+
+	if(pg.panelsCreated[%GRAPH])
+		pg.win = winGraphs[GetNumberFromWaveNote(winGraphs, NOTE_INDEX) - 1]
+		if(pg.showLegend)
+			formulasAreDifferent = SF_AddPlotLegend(pg)
+		endif
+
+		SF_AddPlotTicks(pg.graph, pg.win, pg.formulaResults)
+
+		winHook = JWN_GetStringFromWaveNote(pg.formulaResults, SF_META_WINDOW_HOOK)
+		if(!IsEmpty(winHook))
+			SetWindow $pg.win, tooltipHook(SweepFormulaTraceValue)=$winHook
+		endif
+
+		SF_AddPlotTraceStyle(pg, formulasAreDifferent)
+
+		if(pg.traceCnt > 0)
+			SF_AddPlotLabels(pg.win, pg.xAxisLabels, pg.yAxisLabels)
+		endif
+	endif
+
+	if(pg.postPlotPSX)
+		PSX_PostPlot(pg.win)
+	endif
+End
+
+static Function SF_AddPlotTraceStyle(STRUCT SF_PlotterGraphStruct &pg, variable formulasAreDifferent)
 
 	variable i, j, numTraces, markerCode, lineCode, isCategoryAxis, tagCounter, lineStyle, overrideMarker, traceToFront
 	string trace, info, tagText, name, wvName
 
-	for(i = 0; i < formulaCounter; i += 1)
-		WAVE/WAVE plotFormData  = collPlotFormData[i]
+	for(i = 0; i < pg.formulaCounter; i += 1)
+		WAVE/WAVE plotFormData  = pg.collPlotFormData[i]
 		WAVE/T    tracesInGraph = plotFormData[0]
 		WAVE/WAVE dataInGraph   = plotFormData[1]
 		numTraces  = DimSize(tracesInGraph, ROWS)
@@ -1512,7 +1548,7 @@ static Function SF_AddPlotTraceStyle(string graph, string win, variable formulaC
 			WAVE   wvY = dataInGraph[j][%WAVEY]
 			trace = tracesInGraph[j]
 
-			info           = AxisInfo(win, "left")
+			info           = AxisInfo(pg.win, "left")
 			isCategoryAxis = (NumberByKey("ISCAT", info) == 1)
 
 			if(isCategoryAxis)
@@ -1525,10 +1561,10 @@ static Function SF_AddPlotTraceStyle(string graph, string win, variable formulaC
 			if(WaveExists(traceColor))
 				switch(DimSize(traceColor, ROWS))
 					case 3:
-						ModifyGraph/W=$win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2])
+						ModifyGraph/W=$pg.win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2])
 						break
 					case 4:
-						ModifyGraph/W=$win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2], traceColor[3])
+						ModifyGraph/W=$pg.win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2], traceColor[3])
 						break
 					default:
 						FATAL_ERROR("Invalid size of trace color wave")
@@ -1538,25 +1574,25 @@ static Function SF_AddPlotTraceStyle(string graph, string win, variable formulaC
 			tagText = JWN_GetStringFromWaveNote(wvY, SF_META_TAG_TEXT)
 			if(!IsEmpty(tagText))
 				name = "tag" + num2str(tagCounter++)
-				Tag/C/N=$name/W=$win/F=0/L=0/X=0.00/Y=0.00 $trace, 0, tagText
+				Tag/C/N=$name/W=$pg.win/F=0/L=0/X=0.00/Y=0.00 $trace, 0, tagText
 			endif
 
-			ModifyGraph/W=$win mode($trace)=SF_DeriveTraceDisplayMode(wvX, wvY)
+			ModifyGraph/W=$pg.win mode($trace)=SF_DeriveTraceDisplayMode(wvX, wvY)
 
 			lineStyle = JWN_GetNumberFromWaveNote(wvY, SF_META_LINESTYLE)
 			if(IsValidTraceLineStyle(lineStyle))
-				ModifyGraph/W=$win lStyle($trace)=lineStyle
+				ModifyGraph/W=$pg.win lStyle($trace)=lineStyle
 			elseif(formulasAreDifferent)
-				ModifyGraph/W=$win lStyle($trace)=lineCode
+				ModifyGraph/W=$pg.win lStyle($trace)=lineCode
 			endif
 
 			WAVE/Z customMarkerAsFree = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_MOD_MARKER)
 			if(WaveExists(customMarkerAsFree))
-				DFREF dfrWork = SFH_GetWorkingDF(graph)
+				DFREF dfrWork = SFH_GetWorkingDF(pg.graph)
 				wvName = "customMarker_" + NameOfWave(wvY)
 				WAVE customMarker = MoveFreeWaveToPermanent(customMarkerAsFree, dfrWork, wvName)
 				ASSERT(DimSize(wvY, ROWS) == DimSize(customMarker, ROWS), "Marker size mismatch")
-				ModifyGraph/W=$win zmrkNum($trace)={customMarker}
+				ModifyGraph/W=$pg.win zmrkNum($trace)={customMarker}
 			else
 				overrideMarker = JWN_GetNumberFromWaveNote(wvY, SF_META_MOD_MARKER)
 
@@ -1564,13 +1600,13 @@ static Function SF_AddPlotTraceStyle(string graph, string win, variable formulaC
 					markerCode = overrideMarker
 				endif
 
-				ModifyGraph/W=$win marker($trace)=markerCode
+				ModifyGraph/W=$pg.win marker($trace)=markerCode
 			endif
 
 			traceToFront = JWN_GetNumberFromWaveNote(wvY, SF_META_TRACETOFRONT)
 			traceToFront = IsNaN(traceToFront) ? 0 : !!traceToFront
 			if(traceToFront)
-				ReorderTraces/W=$win _front_, {$trace}
+				ReorderTraces/W=$pg.win _front_, {$trace}
 			endif
 
 		endfor
@@ -1616,27 +1652,27 @@ static Function SF_AddPlotTicks(string graph, string win, WAVE formulaResults)
 	endif
 End
 
-static Function SF_AddPlotLegend(string win, WAVE/T wAnnotations, WAVE formulaArgSetup, WAVE formulaResults)
+static Function SF_AddPlotLegend(STRUCT SF_PlotterGraphStruct &pg)
 
 	variable numAnnotations, formulasAreDifferent
-	string customLegend
+	string   customLegend
 	string annotation = ""
 
-	numAnnotations = GetNumberFromWaveNote(wAnnotations, NOTE_INDEX)
-	customLegend   = JWN_GetStringFromWaveNote(formulaResults, SF_META_CUSTOM_LEGEND)
+	numAnnotations = GetNumberFromWaveNote(pg.wAnnotations, NOTE_INDEX)
+	customLegend   = JWN_GetStringFromWaveNote(pg.formulaResults, SF_META_CUSTOM_LEGEND)
 
 	if(!IsEmpty(customLegend))
 		annotation = customLegend
 	elseif(numAnnotations > 0)
-		wAnnotations[0, numAnnotations - 1] = SF_ShrinkLegend(wAnnotations[p])
-		Redimension/N=(numAnnotations) wAnnotations, formulaArgSetup
-		formulasAreDifferent = SFH_EnrichAnnotations(wAnnotations, formulaArgSetup)
-		annotation           = TextWaveToList(wAnnotations, "\r")
+		pg.wAnnotations[0, numAnnotations - 1] = SF_ShrinkLegend(pg.wAnnotations[p])
+		Redimension/N=(numAnnotations) pg.wAnnotations, pg.formulaArgSetup
+		formulasAreDifferent = SFH_EnrichAnnotations(pg.wAnnotations, pg.formulaArgSetup)
+		annotation           = TextWaveToList(pg.wAnnotations, "\r")
 		annotation           = UnPadString(annotation, char2num("\r"))
 	endif
 
 	if(!IsEmpty(annotation))
-		Legend/W=$win/C/N=metadata/F=2 annotation
+		Legend/W=$pg.win/C/N=metadata/F=2 annotation
 	endif
 
 	return formulasAreDifferent
