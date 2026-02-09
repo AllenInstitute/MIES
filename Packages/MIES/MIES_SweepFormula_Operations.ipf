@@ -730,12 +730,20 @@ static Function/WAVE SFO_OperationAvgImplBins(WAVE/WAVE input, string graph, str
 			WAVE/WAVE wavesInBin = binnedPerGroup[i][j]
 			idx = GetNumberFromWaveNote(wavesInBin, NOTE_INDEX)
 			Redimension/N=(idx) wavesInBin
+			printf "Bin %d, Group %d, NumWaves %d:\r", i, j, idx
 			if(idx == 1)
+				WAVE wTmp = wavesInBin[0]
+				print "Result:", wTmp[0]
+
 				continue
 			endif
 			WAVE/WAVE avg = MIES_fWaveAverage(wavesInBin, 1, IGOR_TYPE_64BIT_FLOAT)
 			Redimension/N=(1) wavesInBin
 			wavesInBin[0] = avg[0]
+
+			WAVE wTmp = avg[0]
+			print "Result:", wTmp[0]
+
 		endfor
 	endfor
 	// avg same bins
@@ -751,6 +759,7 @@ static Function/WAVE SFO_OperationAvgImplBins(WAVE/WAVE input, string graph, str
 			sameBin[idx] = wavesInBin[0]
 			idx         += 1
 		endfor
+		printf "Bin %d, NumWaves/TotalGroups %d/%d:\r", i, idx, numGroups
 		if(idx == 0)
 			Make/FREE/D tmp = {NaN}
 			output[i] = tmp
@@ -758,6 +767,9 @@ static Function/WAVE SFO_OperationAvgImplBins(WAVE/WAVE input, string graph, str
 			Redimension/N=(idx) sameBin
 			WAVE/WAVE avg = MIES_fWaveAverage(sameBin, 1, IGOR_TYPE_64BIT_FLOAT)
 			output[i] = avg[0]
+
+			WAVE wTmp = output[i]
+			printf "Avg result: %f\r", wTmp[0]
 		endif
 		JWN_SetWaveInWaveNote(output[i], SF_META_TRACECOLOR, traceColor)
 		JWN_SetNumberInWaveNote(output[i], SF_META_TRACETOFRONT, 1)
@@ -2833,7 +2845,8 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 	exps[]      = "\"" + uniqueFiles[p] + "\""
 	expList     = TextWaveToList(exps, ",", trailSep = 0)
 
-	sprintf expr, "ivsccavg = avg([%s], bins, [%f,%f],%f,[%s])", freqList, binRange[0], binRange[1], binWidth, currentList
+	//	sprintf expr, "ivsccavg = avg([%s], bins, [%f,%f],%f,[%s])", freqList, binRange[0], binRange[1], binWidth, currentList
+	sprintf expr, "ivsccavg = avg([%s], bins2, [%s])", freqList, currentList
 	formula = SF_AddExpressionToFormula(formula, expr)
 
 	sprintf expr, "ivscccurrentavg = avg([%s], bins, [%f,%f],%f,[%s])", currentList, binRange[0], binRange[1], binWidth, currentList
@@ -2911,6 +2924,15 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 	binList     = NumericWaveToList(binValues, ",", format = "%f", trailSep = 0)
 	sprintf formula, "[%s]", binList
 	plotWITH[numExp][%FORMULAX] = SFE_ExecuteFormula(formula, exd.graph, preProcess = 0)
+
+	WAVE/WAVE wTmp = SF_ResolveDataset(varStorage[%ivsccavg])
+	printf "ivsccavg: "
+	for(WAVE wElem : wTmp)
+		printf "%f, ", wElem[0]
+	endfor
+	printf "\r"
+	WAVE wTmp = SF_ResolveDataset(varStorage[%ivscccurrentavg])
+	print "ivscccurrentavg: \r", wTmp
 
 	Duplicate/O varBackup, varStorage
 	SFH_AddVariableToStorage(exd.graph, "ivscc_apfrequency_explist", wvResult)
