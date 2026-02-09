@@ -939,6 +939,16 @@ static Function/WAVE SF_PrepareResultWaveForPlotting(DFREF dfr, WAVE wvResult, v
 	return plotWave
 End
 
+/// @brief Returns 1 if the result is flagged as full plotting specification, 0 otherwise
+static Function SF_IsDataForFullPlotting(WAVE wv)
+
+	variable plot
+
+	plot = JWN_GetNumberFromWaveNote(wv, SF_META_PLOT)
+
+	return IsNaN(plot) ? 0 : !!plot
+End
+
 static Function SF_IsDataForTableDisplay(WAVE wvY)
 
 	variable useTable
