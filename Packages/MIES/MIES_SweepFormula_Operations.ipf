@@ -699,6 +699,8 @@ static Function/WAVE SFO_OperationAvgImplBins(WAVE/WAVE input, string graph, str
 			if(!WaveExists(dataSets[j]))
 				continue
 			endif
+			SFH_ASSERT(WaveExists(binDataSets[j]), "A bin dataset is null")
+			SFH_ASSERT(IsNumericWave(binDataSets[j]), "A bin dataset must be numeric")
 			SFH_ASSERT(DimSize(binDataSets[j], ROWS) == 1, "A bin dataset must have exactly one value")
 			binValue = WaveRef(binDataSets, row = j)[0]
 			if(binValue < binStart || binValue >= binEnd)
