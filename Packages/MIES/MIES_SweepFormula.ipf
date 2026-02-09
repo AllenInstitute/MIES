@@ -1366,13 +1366,11 @@ End
 /// @param lineVars  [optional, default NaN] number of lines in the SF notebook with variable assignments in front of the formula
 static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode, variable lineVars])
 
-	variable i, dataCnt, splitTraces, numGraphs, traceCnt
-	variable winDisplayMode, showLegend, line, lineGraph, lineGraphFormula
-	variable keepUserSelection, formulasAreDifferent, postPlotPSX
-	variable formulaCounter, xFormulaOffset
-	variable numTableFormulas, formulaAddedOncePerDataset, showInTable
+	variable i, j, k, dataCnt, numGraphs, numPlotAND, numPlotWITH
+	variable winDisplayMode, line, lineGraph, lineGraphFormula, xFormulaOffset
+	variable keepUserSelection, showInTable, isFullPlot
 	string wList
-	string formulasRemain, moreFormulas, yAndXFormula, xFormula, yFormula, winHook
+	string formulasRemain, moreFormulas, yAndXFormula, xFormula, yFormula
 	STRUCT SF_PlotterGraphStruct pg
 
 	winDisplayMode = ParamIsDefault(dmMode) ? SF_DM_SUBWINDOWS : dmMode
@@ -1415,8 +1413,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 			SFH_ASSERT(!IsEmpty(yFormula), "Could not determine y [vs x] formula pair.")
 
 			try
-				[WAVE/WAVE formulaResults, WAVE/T plotMetaData] = SF_GatherFormulaResults(xFormula, yFormula, pg.graph, line, xFormulaOffset)
-
+				[WAVE/WAVE formulaResults, WAVE/T plotMetaData] = SF_GatherFormulaResults(xFormula, yFormula, graph, line, xFormulaOffset)
 				WAVE/WAVE pg.formulaResults = formulaResults
 				WAVE/T    pg.plotMetaData   = plotMetaData
 			catch
@@ -1425,67 +1422,62 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 				Abort
 			endtry
 
-			SF_GatherAxisLabels(pg.formulaResults, pg.plotMetaData[%XAXISLABEL], "FORMULAX", pg.xAxisLabels)
-			SF_GatherAxisLabels(pg.formulaResults, pg.plotMetaData[%YAXISLABEL], "FORMULAY", pg.yAxisLabels)
-
-			showInTable = SF_IsDataForTableDisplay(pg.formulaResults)
-			if(!pg.panelsCreated[%GRAPH] && !showInTable)
-				pg.win                   = SF_CreateDataDisplayWindow(pg.graph, pg.formulaResults, outputWindows, winDisplayMode, prevPlotProperties)
-				pg.panelsCreated[%GRAPH] = 1
-				if(winDisplaymode == SF_DM_NORMAL)
-					wList = AddListItem(pg.win, wList)
+			isFullPlot = SF_IsDataForFullPlotting(formulaResults)
+			numPlotAND = isFullPlot ? DimSize(formulaResults, ROWS) : 1
+			for(j = 0; j < numPlotAND; j += 1)
+				if(isFullPlot)
+					WAVE/WAVE plotsWITH = formulaResults[j][%FORMULAY]
 				endif
-			elseif(!pg.panelsCreated[%TABLE] && showInTable)
-				pg.win                   = SF_CreateDataDisplayWindow(pg.graph, pg.formulaResults, outputWindows, winDisplayMode, prevPlotProperties)
-				pg.panelsCreated[%TABLE] = 1
-				if(winDisplaymode == SF_DM_NORMAL)
-					wList = AddListItem(pg.win, wList)
+				numPlotWITH = isFullPlot ? DimSize(plotsWITH, ROWS) : 1
+				for(k = 0; k < numPlotWITH; k += 1)
+					if(isFullPlot)
+						WAVE/Z/WAVE wvYRef = plotsWITH[k][%FORMULAY]
+						WAVE/Z/WAVE wvXRef = plotsWITH[k][%FORMULAX]
+						[WAVE/WAVE formulaResultsInner, WAVE/T plotMetaDataInner] = SF_FillFormulaResults(wvYRef, wvXRef, yFormula)
+						WAVE/WAVE pg.formulaResults = formulaResultsInner
+						WAVE/T    pg.plotMetaData   = plotMetaDataInner
+					endif
+
+					SF_GatherAxisLabels(pg.formulaResults, pg.plotMetaData[%XAXISLABEL], "FORMULAX", pg.xAxisLabels)
+					SF_GatherAxisLabels(pg.formulaResults, pg.plotMetaData[%YAXISLABEL], "FORMULAY", pg.yAxisLabels)
+
+					showInTable = SF_IsDataForTableDisplay(pg.formulaResults)
+					if(!pg.panelsCreated[%GRAPH] && !showInTable)
+						pg.win                   = SF_CreateDataDisplayWindow(pg.graph, pg.formulaResults, outputWindows, winDisplayMode, prevPlotProperties)
+						pg.panelsCreated[%GRAPH] = 1
+						if(winDisplaymode == SF_DM_NORMAL)
+							wList = AddListItem(pg.win, wList)
+						endif
+					elseif(!pg.panelsCreated[%TABLE] && showInTable)
+						pg.win                   = SF_CreateDataDisplayWindow(pg.graph, pg.formulaResults, outputWindows, winDisplayMode, prevPlotProperties)
+						pg.panelsCreated[%TABLE] = 1
+						if(winDisplaymode == SF_DM_NORMAL)
+							wList = AddListItem(pg.win, wList)
+						endif
+					elseif(!showInTable)
+						pg.win = winGraphs[GetNumberFromWaveNote(winGraphs, NOTE_INDEX) - 1]
+					else
+						pg.win = winTables[GetNumberFromWaveNote(winTables, NOTE_INDEX) - 1]
+					endif
+
+					if(!cmpstr(pg.plotMetaData[%DATATYPE], SF_DATATYPE_PSX))
+						PSX_Plot(pg.win, pg.graph, pg.formulaResults, pg.plotMetaData)
+						pg.postPlotPSX = 1
+						break
+					endif
+
+					[dataCnt]          = SF_CreateTracesForResults(pg)
+					pg.formulaCounter += 1
+				endfor
+
+				if(j < (numPlotAND - 1))
+					SF_FinishPlotWindow(pg, winGraphs)
+					[pg] = SF_ResetPlotterGraphStruct(graph)
 				endif
-			elseif(!showInTable)
-				pg.win = winGraphs[GetNumberFromWaveNote(winGraphs, NOTE_INDEX) - 1]
-			else
-				pg.win = winTables[GetNumberFromWaveNote(winTables, NOTE_INDEX) - 1]
-			endif
-
-			if(!cmpstr(plotMetaData[%DATATYPE], SF_DATATYPE_PSX))
-				PSX_Plot(pg.win, pg.graph, pg.formulaResults, pg.plotMetaData)
-				postPlotPSX = 1
-				continue
-			endif
-
-			[dataCnt]       = SF_CreateTracesForResults(pg)
-			formulaCounter += 1
+			endfor
 		while(1)
 
-		numTableFormulas = GetNumberFromWaveNote(pg.tableFormulas, NOTE_INDEX)
-		if(numTableFormulas)
-			Redimension/N=(numTableFormulas) pg.tableFormulas
-			SetWindow $pg.win, userdata($SF_UDATA_TABLEFORMULAS)=WaveToJSON(pg.tableFormulas)
-		endif
-
-		if(pg.panelsCreated[%GRAPH])
-			pg.win = winGraphs[GetNumberFromWaveNote(winGraphs, NOTE_INDEX) - 1]
-			if(showLegend)
-				formulasAreDifferent = SF_AddPlotLegend(pg)
-			endif
-
-			SF_AddPlotTicks(pg.graph, pg.win, pg.formulaResults)
-
-			winHook = JWN_GetStringFromWaveNote(formulaResults, SF_META_WINDOW_HOOK)
-			if(!IsEmpty(winHook))
-				SetWindow $pg.win, tooltipHook(SweepFormulaTraceValue)=$winHook
-			endif
-
-			SF_AddPlotTraceStyle(pg, formulasAreDifferent)
-
-			if(traceCnt > 0)
-				SF_AddPlotLabels(pg.win, pg.xAxisLabels, pg.yAxisLabels)
-			endif
-		endif
-
-		if(postPlotPSX)
-			PSX_PostPlot(pg.win)
-		endif
+		SF_FinishPlotWindow(pg, winGraphs)
 
 	endfor
 
@@ -1499,7 +1491,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 	SF_KillEmptyDataWindows(winGraphs)
 	SF_KillEmptyDataWindows(winTables)
 
-	SF_KillOldDataDisplayWindows(pg.graph, winDisplayMode, wList, outputWindows)
+	SF_KillOldDataDisplayWindows(graph, winDisplayMode, wList, outputWindows)
 End
 
 static Function SF_FinishPlotWindow(STRUCT SF_PlotterGraphStruct &pg, WAVE/T winGraphs)
