@@ -7664,6 +7664,41 @@ Function/WAVE GetSweepFormulaY(DFREF dfr, variable graphNr)
 	return wv
 End
 
+/// @brief Return a permanent wave for errorBars
+Function/WAVE GetSweepFormulaErrorbar(DFREF dfr, string traceName, string tagName)
+
+	string wName, suffix
+
+	strswitch(tagName)
+		case SF_META_ERRORBARYPLUS:
+			suffix = "yplus"
+			break
+		case SF_META_ERRORBARYMINUS:
+			suffix = "yminus"
+			break
+		case SF_META_ERRORBARXPLUS:
+			suffix = "xplus"
+			break
+		case SF_META_ERRORBARXMINUS:
+			suffix = "xminus"
+			break
+		default:
+			FATAL_ERROR("Unknown errorbar tag")
+	endswitch
+
+	wName = "sf_errorbar_" + traceName + "_" + suffix
+
+	WAVE/Z/D/SDFR=dfr wv = $wName
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=0/D dfr:$wName/WAVE=wv
+
+	return wv
+End
+
 /// @brief Return the global temporary wave for extended popup menu
 Function/WAVE GetPopupExtMenuWave()
 

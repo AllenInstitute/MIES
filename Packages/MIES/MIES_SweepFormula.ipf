@@ -939,6 +939,7 @@ static Function [variable dataCnt, STRUCT SF_PlotterGraphStruct pg, variable gdI
 	STRUCT RGBColor color
 	variable numTraces, yPoints, xPoints, yMxN, xMxN, idx, splitTraces
 	variable i, isCategoryAxis, splitX, splitY
+	variable rangeBeginX, rangeEndX, rangeBeginY, rangeEndY
 	string info
 
 	WAVE/Z wvX = $""
@@ -1006,6 +1007,7 @@ static Function [variable dataCnt, STRUCT SF_PlotterGraphStruct pg, variable gdI
 			SF_CollectTraceData(gdIndex, plotFormData, traces[i], wvX, wvY)
 			AppendTograph/W=$pg.win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$traces[i]
 			annotation += SF_GetMetaDataAnnotationText(pg.plotMetaData, wvResultY, traces[i])
+			SF_AddErrorBars(pg.graph, pg.win, wvY, traces[i])
 		endfor
 	elseif((xMxN == 1) && (yMxN == 1)) // 1D
 		if(yPoints == 1) // 0D vs 1D
@@ -1017,6 +1019,7 @@ static Function [variable dataCnt, STRUCT SF_PlotterGraphStruct pg, variable gdI
 				SF_CollectTraceData(gdIndex, plotFormData, traces[i], wvX, wvY)
 				AppendTograph/W=$pg.win/C=(color.red, color.green, color.blue) wvY[][0]/TN=$traces[i] vs wvX[i][]
 				annotation += SF_GetMetaDataAnnotationText(pg.plotMetaData, wvResultY, traces[i])
+				SF_AddErrorBars(pg.graph, pg.win, wvY, traces[i], rangeBeginX = i, rangeEndX = i)
 			endfor
 		elseif(xPoints == 1) // 1D vs 0D
 			numTraces = yPoints
@@ -1027,8 +1030,10 @@ static Function [variable dataCnt, STRUCT SF_PlotterGraphStruct pg, variable gdI
 				SF_CollectTraceData(gdIndex, plotFormData, traces[i], wvX, wvY)
 				AppendTograph/W=$pg.win/C=(color.red, color.green, color.blue) wvY[i][]/TN=$traces[i] vs wvX[][0]
 				annotation += SF_GetMetaDataAnnotationText(pg.plotMetaData, wvResultY, traces[i])
+				SF_AddErrorBars(pg.graph, pg.win, wvY, traces[i], rangeBeginY = i, rangeEndY = i)
 			endfor
 		else // 1D vs 1D
+
 			splitTraces = min(yPoints, xPoints)
 			numTraces   = floor(max(yPoints, xPoints) / splitTraces)
 			SF_CheckNumTraces(pg.graph, numTraces)
@@ -1057,10 +1062,16 @@ static Function [variable dataCnt, STRUCT SF_PlotterGraphStruct pg, variable gdI
 				endif
 
 				SF_CollectTraceData(gdIndex, plotFormData, traces[i], wvX, wvY)
-				splitY = SF_SplitPlotting(wvY, ROWS, i, splitTraces)
-				splitX = SF_SplitPlotting(wvX, ROWS, i, splitTraces)
-				AppendTograph/W=$pg.win/C=(color.red, color.green, color.blue) wvY[splitY, splitY + splitTraces - 1][0]/TN=$traces[i] vs wvX[splitX, splitX + splitTraces - 1][0]
+				splitY      = SF_SplitPlotting(wvY, ROWS, i, splitTraces)
+				splitX      = SF_SplitPlotting(wvX, ROWS, i, splitTraces)
+				rangeBeginX = splitX
+				rangeEndX   = splitX + splitTraces - 1
+				rangeBeginY = splitY
+				rangeEndY   = splitY + splitTraces - 1
+				AppendTograph/W=$pg.win/C=(color.red, color.green, color.blue) wvY[rangeBeginY, rangeEndY][0]/TN=$traces[i] vs wvX[rangeBeginX, rangeEndX][0]
 				annotation += SF_GetMetaDataAnnotationText(pg.plotMetaData, wvResultY, traces[i])
+
+				SF_AddErrorBars(pg.graph, pg.win, wvY, traces[i], rangeBeginX = rangeBeginX, rangeEndX = rangeEndX, rangeBeginY = rangeBeginY, rangeEndY = rangeEndY)
 			endfor
 		endif
 	elseif(yMxN == 1) // 1D vs 2D
@@ -1072,6 +1083,7 @@ static Function [variable dataCnt, STRUCT SF_PlotterGraphStruct pg, variable gdI
 			SF_CollectTraceData(gdIndex, plotFormData, traces[i], wvX, wvY)
 			AppendTograph/W=$pg.win/C=(color.red, color.green, color.blue) wvY[][0]/TN=$traces[i] vs wvX[][i]
 			annotation += SF_GetMetaDataAnnotationText(pg.plotMetaData, wvResultY, traces[i])
+			SF_AddErrorBars(pg.graph, pg.win, wvY, traces[i])
 		endfor
 	elseif(xMxN == 1) // 2D vs 1D or 0D
 		if(xPoints == 1) // 2D vs 0D -> extend X to 1D with constant value
@@ -1087,6 +1099,7 @@ static Function [variable dataCnt, STRUCT SF_PlotterGraphStruct pg, variable gdI
 			SF_CollectTraceData(gdIndex, plotFormData, traces[i], wvX, wvY)
 			AppendTograph/W=$pg.win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$traces[i] vs wvX
 			annotation += SF_GetMetaDataAnnotationText(pg.plotMetaData, wvResultY, traces[i])
+			SF_AddErrorBars(pg.graph, pg.win, wvY, traces[i])
 		endfor
 	else // 2D vs 2D
 		numTraces = WaveExists(wvX) ? max(1, max(yMxN, xMxN)) : max(1, yMxN)
@@ -1107,6 +1120,7 @@ static Function [variable dataCnt, STRUCT SF_PlotterGraphStruct pg, variable gdI
 				AppendTograph/W=$pg.win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$traces[i]
 			endif
 			annotation += SF_GetMetaDataAnnotationText(pg.plotMetaData, wvResultY, traces[i])
+			SF_AddErrorBars(pg.graph, pg.win, wvY, traces[i])
 		endfor
 	endif
 
@@ -1115,6 +1129,69 @@ static Function [variable dataCnt, STRUCT SF_PlotterGraphStruct pg, variable gdI
 	dataCnt += 1
 
 	return [dataCnt, pg, gdIndex, annotation, formulaAddedOncePerDataset]
+End
+
+static Function SF_AddErrorBars(string graph, string win, WAVE wvY, string traceName, [variable rangeBeginX, variable rangeEndX, variable rangeBeginY, variable rangeEndY])
+
+	rangeBeginX = ParamIsDefault(rangeBeginX) ? 0 : rangeBeginX
+	rangeEndX   = ParamIsDefault(rangeEndX) ? Inf : rangeEndX
+	rangeBeginY = ParamIsDefault(rangeBeginY) ? 0 : rangeBeginY
+	rangeEndY   = ParamIsDefault(rangeEndY) ? Inf : rangeEndY
+
+	DFREF dfr = SF_GetBrowserDF(graph)
+
+	WAVE/Z errorbarYPlus = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_ERRORBARYPLUS)
+	if(WaveExists(errorbarYPlus))
+		WAVE wvYplusPermanent = GetSweepFormulaErrorbar(dfr, traceName, SF_META_ERRORBARYPLUS)
+		Duplicate/O errorbarYPlus, wvYplusPermanent
+	endif
+	WAVE/Z errorbarYMinus = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_ERRORBARYMINUS)
+	if(WaveExists(errorbarYMinus))
+		WAVE wvYminusPermanent = GetSweepFormulaErrorbar(dfr, traceName, SF_META_ERRORBARYMINUS)
+		Duplicate/O errorbarYMinus, wvYminusPermanent
+	endif
+	WAVE/Z errorbarXPlus = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_ERRORBARXPLUS)
+	if(WaveExists(errorbarXPlus))
+		WAVE wvXplusPermanent = GetSweepFormulaErrorbar(dfr, traceName, SF_META_ERRORBARXPLUS)
+		Duplicate/O errorbarXPlus, wvXplusPermanent
+	endif
+	WAVE/Z errorbarXMinus = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_ERRORBARXMINUS)
+	if(WaveExists(errorbarXMinus))
+		WAVE wvXminusPermanent = GetSweepFormulaErrorbar(dfr, traceName, SF_META_ERRORBARXMINUS)
+		Duplicate/O errorbarXMinus, wvXminusPermanent
+	endif
+
+	if(!WaveExists(errorbarYPlus) && !WaveExists(errorbarYMinus) && !WaveExists(errorbarXPlus) && !WaveExists(errorbarXMinus))
+		return NaN
+	endif
+
+	if(WaveExists(errorbarYPlus) && WaveExists(errorbarYMinus) && WaveExists(errorbarXPlus) && WaveExists(errorbarXMinus))
+		ErrorBars/W=$win $traceName, XY, wave=(wvXplusPermanent[rangeBeginX, rangeEndX], wvXminusPermanent[rangeBeginX, rangeEndX]), wave=(wvYplusPermanent[rangeBeginY, rangeEndY], wvYminusPermanent[rangeBeginY, rangeEndY])
+	elseif(WaveExists(errorbarYPlus) && WaveExists(errorbarYMinus) && WaveExists(errorbarXPlus) && !WaveExists(errorbarXMinus))
+		ErrorBars/W=$win $traceName, XY, wave=(wvXplusPermanent[rangeBeginX, rangeEndX],), wave=(wvYplusPermanent[rangeBeginY, rangeEndY], wvYminusPermanent[rangeBeginY, rangeEndY])
+	elseif(WaveExists(errorbarYPlus) && WaveExists(errorbarYMinus) && !WaveExists(errorbarXPlus) && WaveExists(errorbarXMinus))
+		ErrorBars/W=$win $traceName, XY, wave=(, wvXminusPermanent[rangeBeginX, rangeEndX]), wave=(wvYplusPermanent[rangeBeginY, rangeEndY], wvYminusPermanent[rangeBeginY, rangeEndY])
+	elseif(WaveExists(errorbarYPlus) && WaveExists(errorbarYMinus) && !WaveExists(errorbarXPlus) && !WaveExists(errorbarXMinus))
+		ErrorBars/W=$win $traceName, Y, wave=(wvYplusPermanent[rangeBeginY, rangeEndY], wvYminusPermanent[rangeBeginY, rangeEndY])
+	elseif(WaveExists(errorbarYPlus) && !WaveExists(errorbarYMinus) && WaveExists(errorbarXPlus) && WaveExists(errorbarXMinus))
+		ErrorBars/W=$win $traceName, XY, wave=(wvXplusPermanent[rangeBeginX, rangeEndX], wvXminusPermanent[rangeBeginX, rangeEndX]), wave=(wvYplusPermanent[rangeBeginY, rangeEndY],)
+	elseif(WaveExists(errorbarYPlus) && !WaveExists(errorbarYMinus) && WaveExists(errorbarXPlus) && !WaveExists(errorbarXMinus))
+		ErrorBars/W=$win $traceName, XY, wave=(wvXplusPermanent[rangeBeginX, rangeEndX],), wave=(wvYplusPermanent[rangeBeginY, rangeEndY],)
+	elseif(WaveExists(errorbarYPlus) && !WaveExists(errorbarYMinus) && !WaveExists(errorbarXPlus) && !WaveExists(errorbarXMinus))
+		ErrorBars/W=$win $traceName, Y, wave=(wvYplusPermanent[rangeBeginY, rangeEndY],)
+	elseif(!WaveExists(errorbarYPlus) && WaveExists(errorbarYMinus) && WaveExists(errorbarXPlus) && WaveExists(errorbarXMinus))
+		ErrorBars/W=$win $traceName, XY, wave=(wvXplusPermanent[rangeBeginX, rangeEndX], wvXminusPermanent[rangeBeginX, rangeEndX]), wave=(, wvYminusPermanent[rangeBeginY, rangeEndY])
+	elseif(!WaveExists(errorbarYPlus) && WaveExists(errorbarYMinus) && WaveExists(errorbarXPlus) && !WaveExists(errorbarXMinus))
+		ErrorBars/W=$win $traceName, XY, wave=(wvXplusPermanent[rangeBeginX, rangeEndX],), wave=(, wvYminusPermanent[rangeBeginY, rangeEndY])
+	elseif(!WaveExists(errorbarYPlus) && WaveExists(errorbarYMinus) && !WaveExists(errorbarXPlus) && !WaveExists(errorbarXMinus))
+		ErrorBars/W=$win $traceName, Y, wave=(wvYMinusPermanent[rangeBeginY, rangeEndY],)
+	elseif(!WaveExists(errorbarYPlus) && !WaveExists(errorbarYMinus) && WaveExists(errorbarXPlus) && WaveExists(errorbarXMinus))
+		ErrorBars/W=$win $traceName, X, wave=(wvXplusPermanent[rangeBeginX, rangeEndX], wvXminusPermanent[rangeBeginX, rangeEndX])
+	elseif(!WaveExists(errorbarYPlus) && !WaveExists(errorbarYMinus) && WaveExists(errorbarXPlus) && !WaveExists(errorbarXMinus))
+		ErrorBars/W=$win $traceName, X, wave=(wvXplusPermanent[rangeBeginX, rangeEndX],)
+	elseif(!WaveExists(errorbarYPlus) && !WaveExists(errorbarYMinus) && !WaveExists(errorbarXPlus) && WaveExists(errorbarXMinus))
+		ErrorBars/W=$win $traceName, X, wave=(, wvXminusPermanent[rangeBeginX, rangeEndX])
+	endif
 End
 
 static Function [variable dataCnt, STRUCT SF_PlotterGraphStruct pg] SF_CreateTracesForResults()
