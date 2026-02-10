@@ -3414,6 +3414,39 @@ static Function TestOperationMerge()
 	CHECK_EQUAL_VAR(JWN_GetNumberFromWaveNote(wv, SF_META_TRACE_MODE), TRACE_DISPLAY_MODE_LINES)
 	CHECK_EQUAL_VAR(JWN_GetNumberFromWaveNote(wv, SF_META_TRACETOFRONT), 1)
 	CHECK_EQUAL_VAR(JWN_GetNumberFromWaveNote(wv, SF_META_LINESTYLE), 4)
+
+	// test meta data merging
+	Make/O/N=(1) wv0 = {3}, wv1 = {4}
+	JWN_SetWaveInWaveNote(wv0, SF_META_XVALUES, {1})
+	JWN_SetWaveInWaveNote(wv1, SF_META_XVALUES, {2})
+	JWN_SetWaveInWaveNote(wv0, SF_META_ERRORBARXPLUS, {5})
+	JWN_SetWaveInWaveNote(wv1, SF_META_ERRORBARXPLUS, {6})
+	JWN_SetWaveInWaveNote(wv0, SF_META_ERRORBARXMINUS, {7})
+	JWN_SetWaveInWaveNote(wv1, SF_META_ERRORBARXMINUS, {8})
+	JWN_SetWaveInWaveNote(wv0, SF_META_ERRORBARYPLUS, {9})
+	JWN_SetWaveInWaveNote(wv1, SF_META_ERRORBARYPLUS, {10})
+	JWN_SetWaveInWaveNote(wv0, SF_META_ERRORBARYMINUS, {11})
+	JWN_SetWaveInWaveNote(wv1, SF_META_ERRORBARYMINUS, {12})
+
+	code = "merge(dataset(wave(wv0), wave(wv1)))"
+	WAVE data = SFE_ExecuteFormula(code, win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, {3, 4}, mode = WAVE_DATA)
+	WAVE/Z xvalues = JWN_GetNumericWaveFromWaveNote(data, SF_META_XVALUES)
+	CHECK_EQUAL_WAVES(xvalues, {1, 2}, mode = WAVE_DATA)
+
+	WAVE/Z errorbar = JWN_GetNumericWaveFromWaveNote(data, SF_META_ERRORBARXPLUS)
+	CHECK_EQUAL_WAVES(errorbar, {5, 6}, mode = WAVE_DATA)
+
+	WAVE/Z errorbar = JWN_GetNumericWaveFromWaveNote(data, SF_META_ERRORBARXMINUS)
+	CHECK_EQUAL_WAVES(errorbar, {7, 8}, mode = WAVE_DATA)
+
+	WAVE/Z errorbar = JWN_GetNumericWaveFromWaveNote(data, SF_META_ERRORBARYPLUS)
+	CHECK_EQUAL_WAVES(errorbar, {9, 10}, mode = WAVE_DATA)
+
+	WAVE/Z errorbar = JWN_GetNumericWaveFromWaveNote(data, SF_META_ERRORBARYMINUS)
+	CHECK_EQUAL_WAVES(errorbar, {11, 12}, mode = WAVE_DATA)
+
+	KillWaves/Z wv0, wv1
 End
 
 static Function TestOperationFitLine()
