@@ -2929,3 +2929,42 @@ static Function TestAddVariableToStorage()
 	WAVE wv = varStorage[%result1]
 	CHECK_EQUAL_WAVES(result2, wv)
 End
+
+Function/WAVE TestErrorBarsOp(STRUCT SF_ExecutionData &exd)
+
+	string opShort = SF_OP_TESTOP
+
+	Make/FREE data = {1, 2, 3, 4}
+	JWN_SetWaveInWaveNote(data, SF_META_ERRORBARXPLUS, {0.1, 0.2, 0.3, 0.4})
+	JWN_SetWaveInWaveNote(data, SF_META_ERRORBARXMINUS, {0.5, 0.6, 0.7, 0.8})
+	JWN_SetWaveInWaveNote(data, SF_META_ERRORBARYPLUS, {0.9, 0.10, 0.11, 0.12})
+	JWN_SetWaveInWaveNote(data, SF_META_ERRORBARYMINUS, {0.13, 0.14, 0.15, 0.16})
+
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 1)
+
+	output[0] = data
+
+	return SFH_GetOutputForExecutor(output, exd.graph, opShort)
+End
+
+static Function TestErrorBars()
+
+	string win, info, traces, errorBarsInfo
+	string graph, winResultBase
+
+	graph = CreateFakeSweepBrowser_IGNORE()
+	DFREF dfr = BSP_GetFolder(graph, MIES_BSP_PANEL_FOLDER)
+	winResultBase = BSP_GetFormulaGraph(graph)
+
+	SVAR funcName = $GetSFTestopName(graph)
+	funcName = "TestErrorBarsOp"
+
+	MIES_SF#SF_FormulaPlotter(graph, "testop()")
+	win    = winResultBase + "_" + SF_WINNAME_SUFFIX_GRAPH + "#" + SF_WINNAME_SUFFIX_GRAPH + "0"
+	traces = TraceNameList(win, ";", 1 + 2)
+	info   = TraceInfo(win, StringFromList(0, traces, ";"), 0)
+	CHECK_PROPER_STR(info)
+
+	errorBarsInfo = StringByKey("ERRORBARS", info)
+	CHECK_EQUAL_STR(errorBarsInfo, "ErrorBars T000000d0_X XY,wave=(::MIES:trash:sf_errorbar_T000000d0_X_xplus,::MIES:trash:sf_errorbar_T000000d0_X_xminus),wave=(::MIES:trash:sf_errorbar_T000000d0_X_yplus,::MIES:trash:sf_errorbar_T000000d0_X_yminus)")
+End

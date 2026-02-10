@@ -2147,6 +2147,10 @@ StrConstant SF_META_DONOTPLOT          = "/DoNotPlot"        // number, boolean,
 StrConstant SF_META_WINDOW_HOOK        = "/WindowHook"       // string
 StrConstant SF_META_FORMULA            = "/Formula"          // string
 StrConstant SF_META_PLOT               = "/Plot"             // number, boolean, defaults to false (0)
+StrConstant SF_META_ERRORBARYPLUS      = "/ErrorYPlus"       // numeric wave
+StrConstant SF_META_ERRORBARYMINUS     = "/ErrorYMinus"      // numeric wave
+StrConstant SF_META_ERRORBARXPLUS      = "/ErrorXPlus"       // numeric wave
+StrConstant SF_META_ERRORBARXMINUS     = "/ErrorXMinus"      // numeric wave
 
 /// A color group allows to have matching colors for sweep data with the same channel type/number and sweep.
 /// It is applied before the matching headstage/average colors in #SF_GetTraceColor().
