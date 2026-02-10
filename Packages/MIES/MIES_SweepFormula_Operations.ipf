@@ -1792,6 +1792,7 @@ End
 Function/WAVE SFO_OperationMerge(STRUCT SF_ExecutionData &exd)
 
 	variable numElements, numOutputDatasets, wvType
+	string errorTag
 
 	SFH_CheckArgumentCount(exd, SF_OP_MERGE, 1, maxArgs = 1)
 	WAVE/WAVE inputWithNull = SF_ResolveDatasetFromJSON(exd, 0)
@@ -1824,11 +1825,75 @@ Function/WAVE SFO_OperationMerge(STRUCT SF_ExecutionData &exd)
 		contentTxt[] = WaveText(WaveRef(input[p]), row = 0)
 	endif
 
+	WAVE/Z mergedX = SFO_OperationMergeXValues(input)
+	if(WaveExists(mergedX))
+		JWN_SetWaveInWaveNote(content, SF_META_XVALUES, mergedX)
+	endif
+	Make/FREE/T errorBarTags = {SF_META_ERRORBARYPLUS, SF_META_ERRORBARYMINUS, SF_META_ERRORBARXPLUS, SF_META_ERRORBARXMINUS}
+	for(string errorTag : errorBarTags)
+		WAVE/Z errorbarMerged = SFO_OperationMergeErrorBars(input, errorTag)
+		if(WaveExists(errorbarMerged))
+			JWN_SetWaveInWaveNote(content, errorTag, errorbarMerged)
+		endif
+	endfor
+
 	output[0] = content
 
 	SFH_CopyPlotMetaData(input[0], output[0])
 
 	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_MERGE)
+End
+
+static Function/WAVE SFO_OperationMergeXValues(WAVE/WAVE input)
+
+	variable numElements, i
+
+	numElements = DimSize(input, ROWS)
+
+	SFH_ASSERT(DimSize(input, ROWS) > 0, "input must have at least one dataset")
+	WAVE/Z xWave = JWN_GetNumericWaveFromWaveNote(input[0], SF_META_XVALUES)
+	if(!WaveExists(xWave))
+		return $""
+	endif
+
+	SFH_ASSERT(DimSize(xWave, ROWS) == 1, "xValues must be only a one element")
+	Make/FREE/D/N=(numElements) mergedX
+	mergedX[0] = xWave[0]
+	if(numElements > 1)
+		for(i = 1; i < numElements; i += 1)
+			WAVE/Z xWave = JWN_GetNumericWaveFromWaveNote(input[i], SF_META_XVALUES)
+			SFH_ASSERT(WaveExists(xWave), "Can not merge xValues because only some datasets have xValues")
+			SFH_ASSERT(DimSize(xWave, ROWS) == 1, "xValues must be only a one element")
+			mergedX[i] = xWave[0]
+		endfor
+	endif
+
+	return mergedX
+End
+
+static Function/WAVE SFO_OperationMergeErrorBars(WAVE/WAVE input, string metaTag)
+
+	variable numElements, i
+
+	numElements = DimSize(input, ROWS)
+
+	SFH_ASSERT(DimSize(input, ROWS) > 0, "input must have at least one dataset")
+
+	Make/FREE/D/N=(numElements) mergedError
+	FastOp mergedError = (NaN)
+	for(i = 0; i < numElements; i += 1)
+
+		WAVE/Z errorbar = JWN_GetNumericWaveFromWaveNote(input[i], metaTag)
+		if(WaveExists(errorbar))
+			SFH_ASSERT(DimSize(errorbar, ROWS) == 1, "errorBar wave must be only a one element")
+			mergedError[i] = errorbar[0]
+		endif
+	endfor
+	if(!HasOneFiniteEntry(mergedError))
+		return $""
+	endif
+
+	return mergedError
 End
 
 Function/WAVE SFO_OperationMin(STRUCT SF_ExecutionData &exd)
