@@ -552,6 +552,7 @@ End
 static Function/WAVE SFO_OperationAvgImplBins2(WAVE/WAVE input, string graph, string opShort, WAVE/WAVE binData)
 
 	variable i, j, maxBins, numGroups, numDataSets, idx, numBins, numEntries, size, xValue, xSdev, ySdev
+	string          unit
 	STRUCT RGBColor s
 
 	[s] = GetTraceColorForAverage()
@@ -574,6 +575,9 @@ static Function/WAVE SFO_OperationAvgImplBins2(WAVE/WAVE input, string graph, st
 			SFH_ASSERT(IsNumericWave(binDataSets[j]), "A bin dataset must be numeric")
 			SFH_ASSERT(DimSize(binDataSets[j], ROWS) == 1, "A bin dataset must have exactly one value")
 			sortedKey[j] = WaveRef(binDataSets, row = j)[0]
+			if(IsNull(unit))
+				unit = WaveUnits(binDataSets[j], ROWS)
+			endif
 		endfor
 
 		Duplicate/FREE/WAVE dataSets, sortedDatasets
@@ -670,6 +674,11 @@ static Function/WAVE SFO_OperationAvgImplBins2(WAVE/WAVE input, string graph, st
 		JWN_SetWaveInWaveNote(output[i], SF_META_ERRORBARXPLUS, {xSdev})
 		JWN_SetWaveInWaveNote(output[i], SF_META_ERRORBARXMINUS, {xSdev})
 	endfor
+
+	if(IsEmpty(unit))
+		unit = "x"
+	endif
+	JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, unit)
 
 	return output
 End
