@@ -2540,6 +2540,15 @@ static Function/WAVE SFO_OperationXValuesImpl(WAVE/Z input)
 		return $""
 	endif
 
+	WAVE/Z xValues = JWN_GetNumericWaveFromWaveNote(input, SF_META_XVALUES)
+	if(WaveExists(xValues))
+		return xValues
+	endif
+	WAVE/Z/T xValuesT = JWN_GetTextWaveFromWaveNote(input, SF_META_XVALUES)
+	if(WaveExists(xValuesT))
+		return xValuesT
+	endif
+
 	Make/FREE/D/N=(DimSize(input, ROWS), DimSize(input, COLS), DimSize(input, LAYERS), DimSize(input, CHUNKS)) output
 	offset = DimOffset(input, ROWS)
 	delta  = DimDelta(input, ROWS)
