@@ -555,6 +555,8 @@ static Function/WAVE SFO_OperationAvgImplBins2(WAVE/WAVE input, string graph, st
 	string          unit
 	STRUCT RGBColor s
 
+	printf "avg in bins2 mode:\r"
+
 	[s] = GetTraceColorForAverage()
 	Make/FREE/W/U traceColor = {s.red, s.green, s.blue}
 
@@ -606,6 +608,7 @@ static Function/WAVE SFO_OperationAvgImplBins2(WAVE/WAVE input, string graph, st
 				Make/FREE/D xValues = {binXValues[j]}
 				SetNumberInWaveNote(xValues, NOTE_INDEX, 1)
 				xValuesBin[j] = xValues
+				printf "Group %d, Bin %d, add at index %d\r", i, j, 0
 				continue
 			endif
 			idx = GetNumberFromWaveNote(wavesInBin, NOTE_INDEX)
@@ -688,6 +691,8 @@ static Function/WAVE SFO_OperationAvgImplBins(WAVE/WAVE input, string graph, str
 	variable i, j, numBins, binStart, binEnd, numGroups, numDataSets, binValue, binPos, idx
 	STRUCT RGBColor s
 
+	printf "avg in bins mode:\r"
+
 	[s] = GetTraceColorForAverage()
 	Make/FREE/W/U traceColor = {s.red, s.green, s.blue}
 
@@ -730,6 +735,7 @@ static Function/WAVE SFO_OperationAvgImplBins(WAVE/WAVE input, string graph, str
 			SetNumberInWaveNote(wavesInBin, NOTE_INDEX, idx + 1)
 		endfor
 	endfor
+	printf "Averaging bins:\r"
 	// avg bins with multiple filling
 	for(i = 0; i < numBins; i += 1)
 		for(j = 0; j < numGroups; j += 1)
@@ -739,7 +745,7 @@ static Function/WAVE SFO_OperationAvgImplBins(WAVE/WAVE input, string graph, str
 			WAVE/WAVE wavesInBin = binnedPerGroup[i][j]
 			idx = GetNumberFromWaveNote(wavesInBin, NOTE_INDEX)
 			Redimension/N=(idx) wavesInBin
-			printf "Bin %d, Group %d, NumWaves %d:\r", i, j, idx
+			printf "Bin %d, Group %d, NumWaves %d, ", i, j, idx
 			if(idx == 1)
 				WAVE wTmp = wavesInBin[0]
 				print "Result:", wTmp[0]
