@@ -3859,5 +3859,18 @@ static Function TestOperationxValues()
 	WAVE data = SFE_ExecuteFormula(code, win, singleResult = 1, useVariables = 0)
 	Make/FREE/D ref = {0.1, 0.1 + 0.2, 0.1 + 2 * 0.2}
 	CHECK_EQUAL_WAVES(data, ref, mode = WAVE_DATA)
+
+	Make/FREE/D refNum = {7, 8, 9}
+	JWN_SetWaveInWaveNote(wv, SF_META_XVALUES, refNum)
+	code = "xvalues(wave(wv))"
+	WAVE data = SFE_ExecuteFormula(code, win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, refNum, mode = WAVE_DATA)
+
+	Make/FREE/T refTxt = {"a", "b", "c"}
+	JWN_SetWaveInWaveNote(wv, SF_META_XVALUES, refTxt)
+	code = "xvalues(wave(wv))"
+	WAVE data = SFE_ExecuteFormula(code, win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_TEXTWAVES(data, refTxt, mode = WAVE_DATA)
+
 	KillWaves/Z wv
 End
