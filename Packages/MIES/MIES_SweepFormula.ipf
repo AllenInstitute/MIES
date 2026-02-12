@@ -1680,7 +1680,7 @@ static Function [variable formulasAreDifferent] SF_AddPlotLegend(STRUCT SF_Plott
 	endif
 
 	if(!IsEmpty(annotation))
-		Legend/W=$pg.win/C/N=metadata/F=2 annotation
+		Legend/W=$pg.win/C/N=$SF_ANNOTATION_NAME/F=2 annotation
 	endif
 
 	return [formulasAreDifferent]
