@@ -532,6 +532,11 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLoc
 		case SF_OP_TABLE:
 			WAVE out = SFO_OperationTable(exdop)
 			break
+#ifdef AUTOMATED_TESTING
+		case SF_OP_TESTOP:
+			WAVE out = SFO_OperationTestop(exdop)
+			break
+#endif // AUTOMATED_TESTING
 		default:
 			SFH_FATAL_ERROR("Undefined Operation", jsonId = exdop.jsonId)
 	endswitch

@@ -576,6 +576,11 @@ static Function/WAVE TestHelpNotebookGetter_IGNORE()
 
 	SetDimensionLabels(wt, TextWaveToList(wt, ";"), ROWS)
 
+#ifdef AUTOMATED_TESTING
+	FindValue/TEXT=(SF_OP_TESTOP)/TXOP=4 wt
+	DeletePoints/M=(ROWS) V_row, 1, wt
+#endif // AUTOMATED_TESTING
+
 	return wt
 End
 

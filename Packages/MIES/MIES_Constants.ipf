@@ -2549,6 +2549,10 @@ StrConstant SF_OP_TPINST              = "tpinst"
 StrConstant SF_OP_TPBASE              = "tpbase"
 StrConstant SF_OP_TPFIT               = "tpfit"
 StrConstant SF_OP_EXTRACT             = "extract"
+
+#ifdef AUTOMATED_TESTING
+StrConstant SF_OP_TESTOP = "testop"
+#endif // AUTOMATED_TESTING
 ///@}
 
 StrConstant SF_PROPERTY_TABLE = "Table"
