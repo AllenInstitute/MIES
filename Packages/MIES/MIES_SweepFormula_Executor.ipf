@@ -25,7 +25,11 @@ static Constant SFE_VARIABLE_PREFIX = 36
 /// @param useVariables [optional, default 1], when not set, hint the function that the formula string contains only an expression and no variable definitions
 /// @param line         [optional, default NaN], line number of formula in SF notebook, when set, stores the information for the case of an SFH_ASSERT
 /// @param offset       [optional, default NaN], offset of a formula in SF notebook in characters from the start of the line (x-formulas), when set, stores the information for the case of an SFH_ASSERT
-Function/WAVE SFE_ExecuteFormula(string formula, string graph, [variable singleResult, variable checkExist, variable useVariables, variable line, variable offset])
+/// @param preProcess   [optional, default 1], when set to 0 then the formula is not in any way preprocessed and must not contain any variable definitions.
+///                                            Also the current error information for SFH_ASSERT is kept as is. The current variable storage is used.
+///                                            This allows to internally execute a formula  where a triggered SFH_ASSERT should result in the marking
+///                                            of the "outer" formula in the current SF notebook.
+Function/WAVE SFE_ExecuteFormula(string formula, string graph, [variable singleResult, variable checkExist, variable useVariables, variable line, variable offset, variable preProcess])
 
 	STRUCT SF_ExecutionData exd
 	variable jsonId, srcLocId
@@ -37,12 +41,15 @@ Function/WAVE SFE_ExecuteFormula(string formula, string graph, [variable singleR
 	useVariables = ParamIsDefault(useVariables) ? 1 : !!useVariables
 	line         = ParamIsDefault(line) ? NaN : line
 	offset       = ParamIsDefault(offset) ? NaN : offset
+	preProcess   = ParamIsDefault(preProcess) ? 1 : !!preProcess
 
-	formula = SF_PreprocessInput(formula)
-	if(useVariables)
-		formula = SFE_ExecuteVariableAssignments(graph, formula)
+	if(preProcess)
+		formula = SF_PreprocessInput(formula)
+		if(useVariables)
+			formula = SFE_ExecuteVariableAssignments(graph, formula)
+		endif
+		SFH_StoreAssertInfoParser(line, offset)
 	endif
-	SFH_StoreAssertInfoParser(line, offset)
 	[jsonId, srcLocId] = SFP_ParseFormulaToJSON(formula)
 	exd.jsonId         = jsonId
 	WAVE/Z result = SFE_FormulaExecutor(exd, srcLocId = srcLocId)
