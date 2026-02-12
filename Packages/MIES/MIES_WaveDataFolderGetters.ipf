@@ -9382,3 +9382,26 @@ Function/WAVE GetSFPlotProperties()
 
 	return wv
 End
+
+/// @brief Returns a permanent SF wave reference wave for the AND branch of a full plotting specification.
+///        The elements of this wave must be filled with WITH branches from GetFullPlottingWITH.
+///        At the end of the operation code this wave can be returned with
+///        return SFH_GetOutputForExecutor(plotAND, exd.graph, opShort)
+Function/WAVE GetFullPlottingAND(string graph, string opShort, variable size)
+
+	WAVE/WAVE plotAND = SFH_CreateSFRefWave(graph, opShort, size)
+	JWN_SetNumberInWaveNote(plotAND, SF_META_PLOT, 1)
+
+	return plotAND
+End
+
+/// @brief Returns a free wave for the WITH branch of a full plotting specification
+///        At least the FORMULAY element must be filled by the caller
+Function/WAVE GetFullPlottingWITH(variable size)
+
+	Make/FREE/WAVE/N=(size, 2) plotWITH
+	SetDimlabel COLS, 0, FORMULAX, plotWITH
+	SetDimlabel COLS, 1, FORMULAY, plotWITH
+
+	return plotWITH
+End
