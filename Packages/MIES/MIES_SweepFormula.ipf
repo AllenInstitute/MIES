@@ -324,7 +324,8 @@ static Function/S SF_GetTraceAnnotationText(WAVE/T plotMetaData, WAVE data)
 	string channelId, prefix, legendPrefix
 	string traceAnnotation, annotationPrefix
 
-	prefix = RemoveEnding(ReplaceString(";", plotMetaData[%OPSTACK], " "), " ")
+	prefix       = RemoveEnding(ReplaceString(";", plotMetaData[%OPSTACK], " "), " ")
+	legendPrefix = JWN_GetStringFromWaveNote(data, SF_META_LEGEND_LINE_PREFIX)
 
 	strswitch(plotMetaData[%DATATYPE])
 		case SF_DATATYPE_EPOCHS: // fallthrough
@@ -332,8 +333,7 @@ static Function/S SF_GetTraceAnnotationText(WAVE/T plotMetaData, WAVE data)
 		case SF_DATATYPE_LABNOTEBOOK: // fallthrough
 		case SF_DATATYPE_ANAFUNCPARAM: // fallthrough
 		case SF_DATATYPE_TP:
-			sweepNo      = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
-			legendPrefix = JWN_GetStringFromWaveNote(data, SF_META_LEGEND_LINE_PREFIX)
+			sweepNo = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
 
 			if(!IsEmpty(legendPrefix))
 				legendPrefix = " " + legendPrefix + " "
@@ -352,7 +352,8 @@ static Function/S SF_GetTraceAnnotationText(WAVE/T plotMetaData, WAVE data)
 			break
 		default:
 			if(WhichListItem(SF_OP_DATA, plotMetaData[%OPSTACK]) == -1)
-				sprintf traceAnnotation, "%s", prefix
+				sprintf traceAnnotation, "%s %s", prefix, legendPrefix
+				traceAnnotation = TrimString(traceAnnotation)
 			else
 				channelNumber = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
 				channelType   = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
