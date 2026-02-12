@@ -1662,7 +1662,7 @@ End
 static Function SF_AddPlotLegend(STRUCT SF_PlotterGraphStruct &pg)
 
 	variable numAnnotations, formulasAreDifferent
-	string   customLegend
+	string customLegend
 	string annotation = ""
 
 	numAnnotations = GetNumberFromWaveNote(pg.wAnnotations, NOTE_INDEX)
@@ -1674,8 +1674,8 @@ static Function SF_AddPlotLegend(STRUCT SF_PlotterGraphStruct &pg)
 		pg.wAnnotations[0, numAnnotations - 1] = SF_ShrinkLegend(pg.wAnnotations[p])
 		Redimension/N=(numAnnotations) pg.wAnnotations, pg.formulaArgSetup
 		formulasAreDifferent = SFH_EnrichAnnotations(pg.wAnnotations, pg.formulaArgSetup)
-		annotation           = TextWaveToList(pg.wAnnotations, "\r")
-		annotation           = UnPadString(annotation, char2num("\r"))
+		annotation           = TextWaveToList(pg.wAnnotations, "")
+		annotation           = TrimString(annotation)
 	endif
 
 	if(!IsEmpty(annotation))
