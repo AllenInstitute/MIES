@@ -1676,8 +1676,8 @@ static Function [variable formulasAreDifferent] SF_AddPlotLegend(STRUCT SF_Plott
 		pg.wAnnotations[0, numAnnotations - 1] = SF_ShrinkLegend(pg.wAnnotations[p])
 		Redimension/N=(numAnnotations) pg.wAnnotations, pg.formulaArgSetup
 		formulasAreDifferent = SFH_EnrichAnnotations(pg.wAnnotations, pg.formulaArgSetup)
-		annotation           = TextWaveToList(pg.wAnnotations, "\r")
-		annotation           = UnPadString(annotation, char2num("\r"))
+		wfprintf annotation, "%s", pg.wAnnotations
+		annotation = TrimString(annotation)
 	endif
 
 	if(!IsEmpty(annotation))
