@@ -2208,6 +2208,8 @@ StrConstant SF_DATATYPE_ANAFUNCPARAM        = "AnaFunc"
 
 StrConstant SF_WREF_MARKER     = "\"WREF@\":"
 StrConstant SF_VARIABLE_MARKER = "/SF_IsVariable" // numeric
+
+StrConstant SF_ANNOTATION_NAME = "metadata"
 ///@}
 
 /// @name Constants for SweepFormula Clampmode codes returned by operation selcm()
