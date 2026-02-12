@@ -61,11 +61,19 @@ Function/WAVE SFE_ExecuteFormula(string formula, string graph, [variable singleR
 	return out
 End
 
-Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode)
+/// @brief Executes each variable assignment expression and stores the result in the variable storage
+///
+/// @param graph          SweepBrowser graph
+/// @param preProcCode    preprocessed sweep formula notebook text
+/// @param allowEmptyCode [optional, default 0] when set then the check for empty formula code is disabled, such that
+///                       input that contains only variable expressions can be evaluated
+Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode, [variable allowEmptyCode])
 
 	STRUCT SF_ExecutionData exd
 	variable i, numAssignments, jsonId, srcLocId, line, offset
 	string code, sfWin, nbText
+
+	allowEmptyCode = ParamisDefault(allowEmptyCode) ? 0 : !!allowEmptyCode
 
 	exd.graph = graph
 
@@ -96,7 +104,7 @@ Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode)
 		JSON_Release(srcLocId)
 	endfor
 
-	if(IsEmpty(code))
+	if(!allowEmptyCode && IsEmpty(code))
 		if(!StringEndsWith(preProcCode, SF_CHAR_CR))
 			sfWin   = BSP_GetSFFormula(graph)
 			nbText  = GetNotebookText(sfWin, mode = 2)
