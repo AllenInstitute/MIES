@@ -2177,3 +2177,24 @@ Function/WAVE SFH_GetDatasetArrayAsResolvedWaverefs(STRUCT SF_ExecutionData &exd
 
 	return dataFromEachGroup
 End
+
+/// @brief Executes a formula from within an operation with low overhead
+///        - the currently active variable storage is used
+///        - the formula string is not preprocessed
+Function/WAVE SFH_ExecuteFormulaInternal(string graph, string formula)
+
+	STRUCT SF_ExecutionData exd
+	variable jsonId, srcLocId
+
+	exd.graph          = graph
+	[jsonId, srcLocId] = SFP_ParseFormulaToJSON(formula)
+	exd.jsonId         = jsonId
+	WAVE dataRef = SFE_FormulaExecutor(exd, srcLocId = srcLocId)
+
+	JSON_Release(exd.jsonId)
+	JSON_Release(srcLocId)
+
+	WAVE resolved = SF_ResolveDataset(dataRef)
+
+	return resolved
+End
