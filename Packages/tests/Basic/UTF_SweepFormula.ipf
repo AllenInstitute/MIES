@@ -2864,3 +2864,29 @@ static Function TestFullPlottingSpecification()
 	TestFullPlottingSpecificationCheckTrace(win, 1, 7, 8)
 	TestFullPlottingSpecificationCheckTrace(win, 2, 9, 9)
 End
+
+static Function TestAddVariableToStorage()
+
+	string graph
+
+	graph = CreateFakeSweepBrowser_IGNORE()
+
+	WAVE/WAVE varStorage = GetSFVarStorage(graph)
+
+	Make/FREE result1, result2
+	result2[] = 2
+	SFH_AddVariableToStorage(graph, "result1", result1)
+	CHECK_EQUAL_VAR(FindDimLabel(varStorage, ROWS, "result1"), 0)
+	WAVE wv = varStorage[%result1]
+	CHECK_EQUAL_WAVES(result1, wv)
+
+	SFH_AddVariableToStorage(graph, "result2", result2)
+	CHECK_EQUAL_VAR(FindDimLabel(varStorage, ROWS, "result2"), 1)
+	WAVE wv = varStorage[%result2]
+	CHECK_EQUAL_WAVES(result2, wv)
+
+	SFH_AddVariableToStorage(graph, "result1", result2)
+	CHECK_EQUAL_VAR(FindDimLabel(varStorage, ROWS, "result1"), 0)
+	WAVE wv = varStorage[%result1]
+	CHECK_EQUAL_WAVES(result2, wv)
+End

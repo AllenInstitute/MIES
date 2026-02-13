@@ -2198,3 +2198,19 @@ Function/WAVE SFH_ExecuteFormulaInternal(string graph, string formula)
 
 	return resolved
 End
+
+/// @brief Adds a variable to the variable storage. If the variable already exists it is overwritten.
+Function SFH_AddVariableToStorage(string graph, string name, WAVE result)
+
+	variable size, idx
+
+	WAVE/WAVE varStorage = GetSFVarStorage(graph)
+	idx = FindDimLabel(varStorage, ROWS, name)
+	if(idx == -2)
+		size = DimSize(varStorage, ROWS)
+		Redimension/N=(size + 1) varStorage
+		idx = size
+	endif
+	varStorage[idx] = result
+	SetDimLabel ROWS, idx, $name, varStorage
+End
