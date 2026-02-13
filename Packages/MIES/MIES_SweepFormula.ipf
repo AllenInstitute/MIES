@@ -2486,7 +2486,7 @@ End
 
 static Function [string varName, string formula] SF_SplitVariableAssignment(string line)
 
-	string regex = "^(?i)\\s*([A-Z]{1}[A-Z0-9_]*)\\s*=(.+)$"
+	string regex = "^(?i)\\s*(" + SF_VARNAME_REGEXP + ")\\s*=(.+)$"
 
 	SplitString/E=regex line, varName, formula
 	if(V_flag != 2)

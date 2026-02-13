@@ -2210,6 +2210,7 @@ StrConstant SF_WREF_MARKER     = "\"WREF@\":"
 StrConstant SF_VARIABLE_MARKER = "/SF_IsVariable" // numeric
 
 StrConstant SF_ANNOTATION_NAME = "metadata"
+StrConstant SF_VARNAME_REGEXP  = "[A-Z]{1}[A-Z0-9_]*"
 ///@}
 
 /// @name Constants for SweepFormula Clampmode codes returned by operation selcm()

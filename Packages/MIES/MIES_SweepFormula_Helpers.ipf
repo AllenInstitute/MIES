@@ -2177,3 +2177,46 @@ Function/WAVE SFH_GetDatasetArrayAsResolvedWaverefs(STRUCT SF_ExecutionData &exd
 
 	return dataFromEachGroup
 End
+
+/// @brief Executes a formula from within an operation with low overhead
+///        - the currently active variable storage is used
+///        - the formula string is not preprocessed
+Function/WAVE SFH_ExecuteFormulaInternal(string graph, string formula)
+
+	STRUCT SF_ExecutionData exd
+	variable jsonId, srcLocId
+
+	exd.graph          = graph
+	[jsonId, srcLocId] = SFP_ParseFormulaToJSON(formula)
+	exd.jsonId         = jsonId
+	WAVE dataRef = SFE_FormulaExecutor(exd, srcLocId = srcLocId)
+
+	JSON_Release(exd.jsonId)
+	JSON_Release(srcLocId)
+
+	WAVE resolved = SF_ResolveDataset(dataRef)
+
+	return resolved
+End
+
+/// @brief Adds a variable to the variable storage. If the variable already exists it is overwritten.
+Function SFH_AddVariableToStorage(string graph, string name, WAVE result)
+
+	variable size, idx
+	string varName
+	string regex = "^(?i)(" + SF_VARNAME_REGEXP + ")$"
+
+	SplitString/E=regex name, varName
+	ASSERT(V_flag == 1, "Invalid SF variable name")
+
+	WAVE/WAVE varStorage = GetSFVarStorage(graph)
+	idx = FindDimLabel(varStorage, ROWS, varName)
+	if(idx == -2)
+		size = DimSize(varStorage, ROWS)
+		Redimension/N=(size + 1) varStorage
+		idx = size
+		SetDimLabel ROWS, size, $varName, varStorage
+	endif
+	JWN_SetNumberInWaveNote(result, SF_VARIABLE_MARKER, 1)
+	varStorage[idx] = result
+End
