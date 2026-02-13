@@ -2423,6 +2423,180 @@ Thus, `SF_GetArgument` sees with the resolved `wave` operation `[17]`, whereas `
 
 More complex operation such as `data` build the output wave reference wave dynamically. See `SF_GetSweepsForFormula` how the output wave is build depending on selectData and the found sweeps.
 
+Operations returning a Full Plotting Specification
+""""""""""""""""""""""""""""""""""""""""""""""""""
+
+Sweep formula operations can return a result wave that is tagged as full plotting specification with the `SF_META_PLOT` tag. A full plotting specification
+is a wave reference wave that stores formula results as if they would have been specified with the AND / WITH keyword syntax in a sweepformula notebook.
+This represents an evaluated formula specification for plotting that is not yet plotted. An operation can return such full plotting specification as Y-formula
+and the formula plotter will insert this in the output panel with the plots as if the formulas would have been in the sweepformula notebook.
+
+The full plotting specification is a wave reference wave tree with two levels. The topmost level indexes over evaluated formula results as if
+specified through the AND keyword. The second level stores evaluated formulas as if specified through the WITH keyword. For each level a wave getter is
+implemented.
+
+A simple operation that creates and returns a full plotting specification looks like this:
+
+.. code-block:: igorpro
+
+   Function/WAVE FullPlottingOp(STRUCT SF_ExecutionData &exd)
+
+      string opShort = SF_OP_MYOP
+      string formula
+
+      WAVE/WAVE plotAND  = GetFullPlottingAND(exd.graph, opShort, 1)
+      WAVE/WAVE plotWITH = GetFullPlottingWITH(1)
+
+      formula                = "[1, 2, 3]"
+      WAVE/WAVE wvY          = SFE_ExecuteFormula(formula, exd.graph, preProcess=0)
+      plotWITH[0][%FORMULAY] = wvY
+      formula                = "[10, 20, 30]"
+      WAVE/WAVE wvX          = SFE_ExecuteFormula(formula, exd.graph, preProcess=0)
+      plotWITH[0][%FORMULAX] = wvX
+      plotAND[0]             = plotWITH
+
+      return SFH_GetOutputForExecutor(plotAND, exd.graph, opShort)
+   End
+
+This is equivalent to a formula of `[1, 2, 3] vs [10, 20, 30]`. Note that when plotAND is created the `SF_META_PLOT` tag is automatically set.
+
+Multiple plots with AND (for simplicity no optional X-formula set here):
+
+.. code-block:: igorpro
+
+   WAVE/WAVE plotAND  = GetFullPlottingAND(exd.graph, opShort, 2)
+
+   WAVE/WAVE plotWITH     = GetFullPlottingWITH(1)
+   formula                = "[1, 2, 3]"
+   WAVE/WAVE wvY          = SFE_ExecuteFormula(formula, exd.graph, preProcess=0)
+   plotWITH[0][%FORMULAY] = wvY
+   plotAND[0]             = plotWITH
+
+   WAVE/WAVE plotWITH     = GetFullPlottingWITH(1)
+   formula                = "[4, 5, 6]"
+   WAVE/WAVE wvY          = SFE_ExecuteFormula(formula, exd.graph, preProcess=0)
+   plotWITH[0][%FORMULAY] = wvY
+   plotAND[1]             = plotWITH
+
+This is equivalent to a formula of
+
+.. code-block:: igorpro
+
+   [1, 2, 3]
+   and
+   [4, 5, 6]
+
+Multiple traces with WITH (for simplicity no optional X-formula set here):
+
+.. code-block:: igorpro
+
+   WAVE/WAVE plotAND  = GetFullPlottingAND(exd.graph, opShort, 1)
+
+   WAVE/WAVE plotWITH     = GetFullPlottingWITH(2)
+   formula                = "[1, 2, 3]"
+   WAVE/WAVE wvY          = SFE_ExecuteFormula(formula, exd.graph, preProcess=0)
+   plotWITH[0][%FORMULAY] = wvY
+   formula                = "[4, 5, 6]"
+   WAVE/WAVE wvY          = SFE_ExecuteFormula(formula, exd.graph, preProcess=0)
+   plotWITH[1][%FORMULAY] = wvY
+   plotAND[0]             = plotWITH
+
+This is equivalent to a formula of
+
+.. code-block:: igorpro
+
+   [1, 2, 3]
+   with
+   [4, 5, 6]
+
+The evaluated formula result of the full plotting specification will be inserted in the formula specification of the sweep formula notebook.
+For example if there is a `FullPlottingOp()` defined that returns `[1, 2, 3]` then the following sweepformula notebook code results in three plots with one trace each:
+
+.. code-block:: igorpro
+
+   [4, 5, 6]
+   and
+   FullPlottingOp()
+   and
+   [4, 5, 6]
+
+If the connection is done through `with` then there will be only two plots where the trace from the full plotting specification is either added to the first or
+second plot, depending on if `with` is before or after `FullPlottingOp()`.
+
+.. code-block:: igorpro
+
+   # two plots, first plot has two traces, second plot one trace
+   [4, 5, 6]
+   with
+   FullPlottingOp()
+   and
+   [4, 5, 6]
+
+   # upper code is equivalent to
+   [4, 5, 6]
+   with
+   [1, 2, 3]
+   and
+   [4, 5, 6]
+
+.. code-block:: igorpro
+
+   # two plots, first plot has one trace, second plot two traces
+   [4, 5, 6]
+   and
+   FullPlottingOp()
+   with
+   [4, 5, 6]
+
+   # upper code is equivalent to
+   [4, 5, 6]
+   and
+   [1, 2, 3]
+   with
+   [4, 5, 6]
+
+Note: If `FullPlottingOp()` would return more than one entry in the plotAND wave then it would itself create more plots and an `with` keyword
+in the sweepformula notebook would only connect to the first/last plot.
+
+To keep the construction of the full plotting specification simple it is recommended to put most of the formula evaluation in variables.
+The evaluation call to `SFE_ExecuteFormula` with `preProcess=0` uses the current variable storage. This allows to provide already evaluated variables.
+The following code snippet illustrates this:
+
+.. code-block:: igorpro
+
+   // save previous variables
+	WAVE/WAVE varStorage = GetSFVarStorage(exd.graph)
+	Duplicate/FREE varStorage, varBackup
+
+   // evaluate own variables
+	formula = "var1 = 1\rvar2 = $var1 * 2"
+	SFE_ExecuteVariableAssignments(exd.graph, formula, allowEmptyCode = 1)
+
+   // create plotting specification, use own variables
+   WAVE/WAVE plotAND      = GetFullPlottingAND(exd.graph, opShort, 1)
+   WAVE/WAVE plotWITH     = GetFullPlottingWITH(1)
+	formula                = "$var2"
+	WAVE/WAVE wvY          = SFE_ExecuteFormula(formula, exd.graph, preProcess=0)
+	plotWITH[0][%FORMULAY] = wvY
+   plotAND[0]             = plotWITH
+
+   // restore previous variables
+   Duplicate/O varBackup, varStorage
+
+Return Operation Results in Variable
+""""""""""""""""""""""""""""""""""""
+
+In some situations it is useful that the operation returns results in a variable.
+This is done with the utility function `SFH_AddVariableToStorage`.
+
+.. code-block:: igorpro
+
+   SFH_AddVariableToStorage(graph, "varName", result)
+
+`varName` is the name of the new variable. If the variable is already present then it is replaced with the new result.
+`result` is a wave from an evaluated formula. The utility function works on the current variable storage.
+The variable content is available for all later formula evaluations.
+
 Meta Data Handling
 """"""""""""""""""
 
@@ -2517,3 +2691,17 @@ need to be shown with a different marker or line style. It also adapts the legen
    apfrequency(data(select(selrange(ST), selchannels(AD), selvis(all))), 3, 100, freq, normoversweepsavg, count)
    with
    apfrequency(data(select(selrange(ST), selchannels(AD), selvis(all))), 3, 100, time, norminsweepsavg, count)
+
+Dynamic Operation for Testing
+"""""""""""""""""""""""""""""
+
+When `AUTOMATED_TESTING` is defined then the additional operation `testop` is available. The operation function content can be defined specifically for a test case.
+The test case has to implement a non-static function with the same function signature as a sweepformula operation. Then the test case code can set
+the implemented function as body for `testop` by updating a SVAR global:
+
+.. code-block:: igorpro
+
+	SVAR funcName = $GetSFTestopName(graph)
+	funcName = "MySpecialTestCaseOperation"
+
+Formulas that use `testop` will then execute `MySpecialTestCaseOperation` in that case. The global is set per SweepBrowser.
