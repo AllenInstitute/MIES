@@ -67,6 +67,8 @@ static StrConstant SF_AVERAGING_NONSWEEPDATA_LBL = "NOSWEEPDATA"
 
 static Constant SF_IVSCC_APFREQUENCY_OPACITY = 13107 // 0.2 * 65535
 
+static StrConstant SF_PREPAREFIT_NOFUNC    = "none"
+
 Function/WAVE SFO_OperationAnaFuncParam(STRUCT SF_ExecutionData &exd)
 
 	SFH_CheckArgumentCount(exd, SF_OP_ANAFUNCPARAM, 0, maxArgs = 2)
@@ -3074,4 +3076,85 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 	JWN_SetNumberInWaveNote(plotAND, SF_META_PLOT, 1)
 
 	return SFH_GetOutputForExecutor(plotAND, exd.graph, opShort)
+End
+
+Function SFO_OperationPrepareFit_PROTO(WAVE w, variable x)
+	FATAL_ERROR("Prototype function called")
+End
+
+/// preparefit([fitFuncName, coefs, holdStr, range, constraints])
+Function/WAVE SFO_OperationPrepareFit(STRUCT SF_ExecutionData &exd)
+
+	string opShort = SF_OP_PREPAREFIT
+	variable numArgs, numCoefs
+	string fitfuncName, holdStr, checkStr
+
+	SFH_CheckArgumentCount(exd, opShort, 0, maxArgs = 4)
+
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 1)
+	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_PREPAREFIT)
+
+	WAVE/WAVE prepFit = GetSFPrepareFitWave()
+	output[0] = prepFit
+
+	WAVE/T fitArgs = prepFit[%FITARGS]
+
+	numArgs = SFH_GetNumberOfArguments(exd)
+	if(numArgs == 0)
+		fitArgs[%FITFUNCNAME] = SF_PREPAREFIT_NOFUNC
+		return SFH_GetOutputForExecutor(output, exd.graph, opShort)
+	endif
+
+	fitfuncName = SFH_GetArgumentAsText(exd, opShort, 0)
+	if(IsIntegratedFitFunction(fitFuncName))
+		WAVE/Z/WAVE coefsArray = SFH_GetArgumentAsWave(exd, opShort, 1, defWave=$"")
+		if(WaveExists(coefsArray))
+			SFH_ASSERT(SFH_IsArray(coefsArray), "Expected array at coefs arg position")
+			WAVE coefs = coefsArray[0]
+		else
+			WAVE/Z coefs = $""
+			numCoefs = GetIntegratedFitFunctionCoefficientNumber(fitFuncName)
+		endif
+	else
+		FUNCREF SFO_OperationPrepareFit_PROTO func = $fitfuncName
+		SFH_ASSERT(FuncRefIsAssigned(FuncRefInfo(func)), "The specified user fit function does not exist: " + fitfuncName)
+		WAVE/WAVE coefsArray = SFH_GetArgumentAsWave(exd, opShort, 1)
+		SFH_ASSERT(SFH_IsArray(coefsArray), "Expected array at coefs arg position")
+		WAVE coefs = coefsArray[0]
+	endif
+	fitArgs[%FITFUNCNAME] = fitfuncName
+
+	if(WaveExists(coefs))
+		SFH_ASSERT(IsNumericWave(coefs), "Expected numeric wave for coefs argument")
+		numCoefs = DimSize(coefs, ROWS)
+	endif
+	prepFit[%COEFS] = coefs
+
+	holdStr = PadString("", numCoefs, char2num("O"))
+	holdStr = SFH_GetArgumentAsText(exd, opShort, 2, defValue = holdStr, checkFunc = IsSFPrepareFitHoldString)
+	SFH_ASSERT(strlen(holdStr) == numCoefs, "Number of coefficients does not match number of characters in hold string.")
+	holdStr           = ReplaceString(SF_PREPAREFIT_HOLDCHAR_HOLD, holdStr, "1")
+	holdStr           = ReplaceString(SF_PREPAREFIT_HOLDCHAR_FREE, holdStr, "0")
+	fitArgs[%HOLDSTR] = holdStr
+
+	WAVE/Z/WAVE rangeArray = SFH_GetArgumentAsWave(exd, opShort, 3, defWave = $"")
+	if(WaveExists(rangeArray))
+		SFH_ASSERT(SFH_IsArray(rangeArray), "Expected array at range arg position")
+		WAVE range = rangeArray[0]
+		SFH_ASSERT(IsNumericWave(range), "Expected numeric wave for range argument")
+		SFH_ASSERT(DimSize(range, ROWS) == 2, "Expected range wave to have two entries")
+		SFH_ASSERT(range[0] >= 0, "First range element must be >= 0")
+		SFH_ASSERT(range[1] <= 0, "Second range element must be <= 0")
+		prepFit[%RANGE] = range
+	endif
+
+	WAVE/Z/WAVE constraintsArray = SFH_GetArgumentAsWave(exd, opShort, 4, defWave = $"")
+	if(WaveExists(constraintsArray))
+		SFH_ASSERT(SFH_IsArray(constraintsArray), "Expected array at constraints arg position")
+		WAVE/T constraints = constraintsArray[0]
+		SFH_ASSERT(IsTextWave(constraints), "Expected text wave for constraints argument")
+		prepFit[%CONSTRAINTS] = constraints
+	endif
+
+	return SFH_GetOutputForExecutor(output, exd.graph, opShort)
 End

@@ -2213,6 +2213,7 @@ StrConstant SF_DATATYPE_SELECTSETSWEEPCOUNT = "SelectSetSweepCount"
 StrConstant SF_DATATYPE_SELECTSCIINDEX      = "SelectSCIIndex"
 StrConstant SF_DATATYPE_SELECTRACINDEX      = "SelectRACIndex"
 StrConstant SF_DATATYPE_ANAFUNCPARAM        = "AnaFunc"
+StrConstant SF_DATATYPE_PREPAREFIT          = "PrepareFit"
 
 StrConstant SF_WREF_MARKER     = "\"WREF@\":"
 StrConstant SF_VARIABLE_MARKER = "/SF_IsVariable" // numeric
@@ -2561,6 +2562,7 @@ StrConstant SF_OP_TPBASE              = "tpbase"
 StrConstant SF_OP_TPFIT               = "tpfit"
 StrConstant SF_OP_EXTRACT             = "extract"
 StrConstant SF_OP_IVSCCAPFREQUENCY    = "ivscc_apfrequency"
+StrConstant SF_OP_PREPAREFIT          = "preparefit"
 
 #ifdef AUTOMATED_TESTING
 StrConstant SF_OP_TESTOP = "testop"
@@ -2629,4 +2631,12 @@ Constant SF_DISPLAYTYPE_TABLE = 1
 /// @anchor TraceColorMax
 ///@{
 Constant TRACECOLORMAX = 21
+///@}
+
+/// @name Characters allowed in the SF PrepareFit operation to hold a coefficient
+///
+/// @anchor SFPrepareFitHoldStringCharacters
+///@{
+StrConstant SF_PREPAREFIT_HOLDCHAR_HOLD = "X"
+StrConstant SF_PREPAREFIT_HOLDCHAR_FREE = "O"
 ///@}
