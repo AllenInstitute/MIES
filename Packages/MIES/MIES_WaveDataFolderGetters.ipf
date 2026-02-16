@@ -9481,3 +9481,19 @@ Function/WAVE GetSFIgorFitProperties()
 
 	return wv
 End
+
+/// @brief The returned wave reference wave encapsulates the information gathered by the SF operation PrepareFit
+Function/WAVE GetSFPrepareFitWave()
+
+	Make/FREE/T/N=2 txtInfo
+	SetDimLabel ROWS, 0, FITFUNCNAME, txtInfo
+	SetDimLabel ROWS, 1, HOLDSTR, txtInfo
+
+	Make/FREE/WAVE wv = {txtInfo, $"", $"", $""}
+	SetDimLabel ROWS, 0, FITARGS, wv
+	SetDimLabel ROWS, 1, COEFS, wv
+	SetDimLabel ROWS, 2, RANGE, wv
+	SetDimLabel ROWS, 3, CONSTRAINTS, wv
+
+	return wv
+End
