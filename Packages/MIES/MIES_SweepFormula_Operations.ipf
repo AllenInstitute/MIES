@@ -65,6 +65,8 @@ static Constant    SF_POWERSPECTRUM_RATIO_GAUSS_NUMCOEFS   = 4
 
 static StrConstant SF_AVERAGING_NONSWEEPDATA_LBL = "NOSWEEPDATA"
 
+static Constant SF_IVSCC_APFREQUENCY_OPACITY = 13107 // 0.2 * 65535
+
 Function/WAVE SFO_OperationAnaFuncParam(STRUCT SF_ExecutionData &exd)
 
 	SFH_CheckArgumentCount(exd, SF_OP_ANAFUNCPARAM, 0, maxArgs = 2)
@@ -2989,8 +2991,8 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 		endif
 		WAVE/WAVE wvY = SFE_ExecuteFormula(formula, exd.graph, preProcess = 0)
 		if(DimSize(wvY, ROWS) > 0)
-			[s] = GetTraceColor(i)
-			Make/FREE/W/U traceColor = {s.red, s.green, s.blue}
+			[s] = GetTraceColorNonHeadstage(i)
+			Make/FREE/W/U traceColor = {s.red, s.green, s.blue, SF_IVSCC_APFREQUENCY_OPACITY}
 			JWN_SetWaveInWaveNote(wvY[0], SF_META_TRACECOLOR, traceColor)
 			JWN_SetNumberInWaveNote(wvY[0], SF_META_MOD_MARKER, 19)
 			JWN_SetStringInWaveNote(wvY[0], SF_META_LEGEND_LINE_PREFIX, uniqueFiles[i])
