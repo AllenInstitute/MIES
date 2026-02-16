@@ -2614,3 +2614,10 @@ StrConstant SF_WINNAME_SUFFIX_TABLE = "table"
 Constant SF_DISPLAYTYPE_GRAPH = 0
 Constant SF_DISPLAYTYPE_TABLE = 1
 ///@}
+
+/// @name Maximum number of colors for traces defined
+///
+/// @anchor TraceColorMax
+///@{
+Constant TRACECOLORMAX = 21
+///@}
