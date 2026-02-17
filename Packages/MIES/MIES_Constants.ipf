@@ -2566,6 +2566,10 @@ StrConstant SF_OP_FITLINE             = "fitline"
 StrConstant SF_OP_DATASET             = "dataset"
 StrConstant SF_OP_IVSCCAPFREQUENCY    = "ivscc_apfrequency"
 StrConstant SF_OP_PREPAREFIT          = "preparefit"
+StrConstant SF_OP_MERGE               = "merge"
+StrConstant SF_OP_FIT                 = "fit"
+StrConstant SF_OP_FITLINE             = "fitline"
+StrConstant SF_OP_DATASET             = "dataset"
 
 #ifdef AUTOMATED_TESTING
 StrConstant SF_OP_TESTOP = "testop"
