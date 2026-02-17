@@ -69,6 +69,8 @@ static Constant SF_IVSCC_APFREQUENCY_OPACITY = 13107 // 0.2 * 65535
 
 static StrConstant SF_PREPAREFIT_NOFUNC    = "none"
 
+static Constant SF_FIT2_MAX_ITERATIONS = 40
+
 Function/WAVE SFO_OperationAnaFuncParam(STRUCT SF_ExecutionData &exd)
 
 	SFH_CheckArgumentCount(exd, SF_OP_ANAFUNCPARAM, 0, maxArgs = 2)
@@ -3157,4 +3159,673 @@ Function/WAVE SFO_OperationPrepareFit(STRUCT SF_ExecutionData &exd)
 	endif
 
 	return SFH_GetOutputForExecutor(output, exd.graph, opShort)
+End
+
+/// fit2(wvY, wvX, preparefit(...))
+Function/WAVE SFO_OperationFit2(STRUCT SF_ExecutionData &exd)
+
+	string opShort = SF_OP_FIT2
+	string   dataType
+	variable numDatasets
+
+	SFH_CheckArgumentCount(exd, opShort, 2, maxArgs = 3)
+	WAVE/WAVE datasetsWvY = SFH_GetArgumentAsWave(exd, opShort, 0)
+	WAVE/WAVE datasetsWvX = SFH_GetArgumentAsWave(exd, opShort, 1)
+	numDatasets = DimSize(datasetsWvY, ROWS)
+	dataType    = JWN_GetStringFromWaveNote(datasetsWvX, SF_META_DATATYPE)
+	if(!CmpStr(dataType, SF_DATATYPE_PREPAREFIT))
+		WAVE/WAVE prepFit = datasetsWvX[0]
+		Make/WAVE/FREE/N=(numDatasets) datasetsWvX
+	else
+		SFH_ASSERT(numDatasets == DimSize(datasetsWvX, ROWS), "number of datasets for wvY must equal number of datasets for wvX")
+		WAVE/WAVE prepFitRef = SFH_GetArgumentAsWave(exd, opShort, 2)
+		dataType = JWN_GetStringFromWaveNote(prepFitRef, SF_META_DATATYPE)
+		SFH_ASSERT(!CmpStr(dataType, SF_DATATYPE_PREPAREFIT), "Expected argument of type preparefit")
+		WAVE/WAVE prepFit = prepFitRef[0]
+	endif
+
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, numDatasets)
+
+	output[] = SFO_OperationFit2Impl(datasetsWvY[p], datasetsWvX[p], prepFit)
+
+	JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, "x value") // activates x values
+
+	return SFH_GetOutputForExecutor(output, exd.graph, opShort)
+End
+
+static Function/S SFO_OperationFit2GetFitStatusMessage(variable fitError, variable fitQuitReason, variable fitNumIters)
+
+	string msg = ""
+
+	if(FitError == 0)
+		msg += "Fit Ok.\r"
+	endif
+	if((FitError & FIT_ERROR_ANY) == FIT_ERROR_ANY)
+		msg += "Fit Error.\r"
+	endif
+	if((FitError & FIT_ERROR_SINGULARMATRIX) == FIT_ERROR_SINGULARMATRIX)
+		msg += "Singular Matrix.\r"
+	endif
+	if((FitError & FIT_ERROR_OUTOFMEMORY) == FIT_ERROR_OUTOFMEMORY)
+		msg += "Out of memory.\r"
+	endif
+	if((FitError & FIT_ERROR_RETURNEDNANORINF) == FIT_ERROR_RETURNEDNANORINF)
+		msg += "Fit function returned NaN or Inf.\r"
+	endif
+	if((FitError & FIT_ERROR_FUNCREQUESTEDSTOP) == FIT_ERROR_FUNCREQUESTEDSTOP)
+		msg += "Function requested stop.\r"
+	endif
+	if((FitError & FIT_ERROR_REENTRANT_FIT) == FIT_ERROR_REENTRANT_FIT)
+		msg += "Reentrant fit function call encountered.\r"
+	endif
+	if((FitQuitReason & FIT_QUITREASON_ITERATIONLIMITREACHED) == FIT_QUITREASON_ITERATIONLIMITREACHED)
+		msg += "Iteration limit reached.\r"
+	endif
+	if((FitQuitReason & FIT_QUITREASON_STOPPEDBYUSER) == FIT_QUITREASON_STOPPEDBYUSER)
+		msg += "User stopped fit.\r"
+	endif
+	if((FitQuitReason & FIT_QUITREASON_NOCHISQUAREDECREASE) == FIT_QUITREASON_NOCHISQUAREDECREASE)
+		msg += "chiSquare did not decrease in last 9 iterations.\r"
+	endif
+	msg += "Iterations run: " + num2istr(fitNumIters)
+
+	return msg
+End
+
+static Function/WAVE SFO_OperationFit2CalculateWeights(WAVE/Z wMinus, WAVE/Z wPlus)
+
+	if(!WaveExists(wMinus) && !WaveExists(wPlus))
+		return $""
+	endif
+
+	if(!WaveExists(wPlus))
+		Make/FREE/D/N=(DimSize(wMinus, ROWS)) weight
+		MultiThread weight[] = abs(wMinus[p])
+	elseif(!WaveExists(wMinus))
+		Make/FREE/D/N=(DimSize(wPlus, ROWS)) weight
+		MultiThread weight[] = abs(wPlus[p])
+	else
+		Make/FREE/D/N=(DimSize(wMinus, ROWS)) weight
+		MultiThread weight[] = (abs(wPlus[p]) + abs(wMinus[p])) / 2
+	endif
+
+	return weight
+End
+
+static Function/WAVE SFO_OperationFit2Impl(WAVE wvY, WAVE/Z wvX, WAVE/WAVE prepFit)
+
+	string fitFuncName, holdStr, fitStatus
+	variable V_FitError, V_FitQuitReason, V_FitNumIters, V_ChiSq, V_FitMaxIters
+	variable numPoints, xErrorsOut, haveConstraints
+
+	V_FitMaxIters = SF_FIT2_MAX_ITERATIONS
+
+	numPoints = DimSize(wvY, ROWS)
+
+	if(WaveExists(wvX))
+		WAVE/D xWave = wvX
+	else
+		WAVE/Z/D xWave = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_XVALUES)
+		if(WaveExists(xWave))
+			SFH_ASSERT(IsNumericWave(xWave), "Require wvX to be numeric")
+		else
+			Make/FREE/D/N=(numPoints) xWave
+			Multithread xWave[] = IndexToScale(wvY, p, ROWS)
+		endif
+	endif
+	SFH_ASSERT(numPoints == DimSize(xWave, ROWS), "Number of points in xWave must equal number of points in y-wave")
+
+	WAVE/T fitArgs = prepFit[%FITARGS]
+	fitFuncName = fitArgs[%FITFUNCNAME]
+	if(!CmpStr(fitFuncName, SF_PREPAREFIT_NOFUNC))
+		return $""
+	endif
+
+	holdStr = fitArgs[%HOLDSTR]
+	WAVE/Z   coefs       = prepFit[%COEFS]
+	WAVE/Z/T constraints = prepFit[%CONSTRAINTS]
+	haveConstraints = WaveExists(constraints)
+	if(!haveConstraints)
+		// use always a constraints wave to reduce flag combinations for CurveFit
+		Make/FREE/T/N=0 constraints
+	endif
+
+	WAVE/Z/D errorbarYPlus = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_ERRORBARYPLUS)
+	if(WaveExists(errorbarYPlus))
+		SFH_ASSERT(numPoints == DimSize(errorbarYPlus, ROWS), "number of points in errorbar must equal the number of points from y-wave")
+	endif
+	WAVE/Z/D errorbarYMinus = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_ERRORBARYMINUS)
+	if(WaveExists(errorbarYMinus))
+		SFH_ASSERT(numPoints == DimSize(errorbarYMinus, ROWS), "number of points in errorbar must equal the number of points from y-wave")
+	endif
+	WAVE/Z/D errorbarXPlus = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_ERRORBARXPLUS)
+	if(WaveExists(errorbarXPlus))
+		SFH_ASSERT(numPoints == DimSize(errorbarXPlus, ROWS), "number of points in errorbar must equal the number of points from y-wave")
+	endif
+	WAVE/Z/D errorbarXMinus = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_ERRORBARXMINUS)
+	if(WaveExists(errorbarXMinus))
+		SFH_ASSERT(numPoints == DimSize(errorbarXMinus, ROWS), "number of points in errorbar must equal the number of points from y-wave")
+	endif
+
+	WAVE/Z/D weightY = SFO_OperationFit2CalculateWeights(errorbarYMinus, errorbarYPlus)
+	WAVE/Z/D weightX = SFO_OperationFit2CalculateWeights(errorbarXMinus, errorbarXPlus)
+	xErrorsOut = WaveExists(weightX)
+
+	if(!WaveExists(weightY))
+		// use always a weight wave for Y to reduce flag combinations for CurveFit
+		Make/FREE/D/N=(numPoints) weightY
+		FastOp weightY = 1
+	endif
+
+	Make/FREE/D/N=(numPoints) fitOutput, yResiduals, xResiduals, xOutput, mask
+
+	FastOp mask = 1
+	WAVE/Z range = prepFit[%RANGE]
+	if(WaveExists(range))
+		if(range[0] > 0)
+			mask[0, limit(range[0] - 1, 0, numPoints - 1)] = 0
+		endif
+		if(range[1] < 0)
+			mask[limit(numPoints - 1 - range[1], 0, numPoints - 1), Inf] = 0
+		endif
+	endif
+
+	DFREF dfrSave = GetDataFolderDFR()
+	DFREF dfr     = NewFreeDataFolder()
+	SetDataFolder dfr
+
+	if(!IsIntegratedFitFunction(fitFuncName))
+		// FuncFit
+		ASSERT(WaveExists(coefs), "For user fit function coefs must exist")
+		if(xErrorsOut)
+			// ODR fit
+			FuncFit/C/Q/M=2/H=holdStr $fitFuncName, coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+		else
+			FuncFit/C/Q/M=2/H=holdStr $fitFuncName, coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+		endif
+	else
+		// CurveFit
+		strswitch(fitFuncName)
+			case "gauss":
+				if(WaveExists(coefs))
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 gauss, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr gauss, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				else
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 gauss, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr gauss, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				endif
+				break
+			case "lor":
+				if(WaveExists(coefs))
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 lor, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr lor, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				else
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 lor, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr lor, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				endif
+				break
+			case "Voigt":
+				if(WaveExists(coefs))
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 Voigt, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr Voigt, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				else
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 Voigt, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr Voigt, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				endif
+				break
+			case "exp":
+				if(WaveExists(coefs))
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 exp, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr exp, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				else
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 exp, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr exp, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				endif
+				break
+			case "dblexp":
+				if(WaveExists(coefs))
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 dblexp, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr dblexp, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				else
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 dblexp, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr dblexp, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				endif
+				break
+			case "exp_XOffset":
+				if(WaveExists(coefs))
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 exp_XOffset, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr exp_XOffset, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				else
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 exp_XOffset, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr exp_XOffset, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				endif
+				break
+			case "dblexp_XOffset":
+				if(WaveExists(coefs))
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 dblexp_XOffset, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr dblexp_XOffset, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				else
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 dblexp_XOffset, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr dblexp_XOffset, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				endif
+				break
+			case "dblexp_peak":
+				if(WaveExists(coefs))
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 dblexp_peak, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr dblexp_peak, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				else
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 dblexp_peak, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr dblexp_peak, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				endif
+				break
+			case "sin":
+				if(WaveExists(coefs))
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 sin, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr sin, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				else
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 sin, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr sin, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				endif
+				break
+			case "line":
+				if(WaveExists(coefs))
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 line, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr line, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				else
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 line, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr line, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				endif
+				break
+			case "poly 1":
+				if(WaveExists(coefs))
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 poly 1, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr poly 1, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				else
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 poly 1, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr poly 1, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				endif
+				break
+			case "poly 2":
+				if(WaveExists(coefs))
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 poly 2, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr poly 2, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				else
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 poly 2, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr poly 2, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				endif
+				break
+			case "poly 3":
+				if(WaveExists(coefs))
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 poly 3, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr poly 3, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				else
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 poly 3, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr poly 3, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				endif
+				break
+			case "poly 4":
+				if(WaveExists(coefs))
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 poly 4, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr poly 4, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				else
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 poly 4, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr poly 4, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				endif
+				break
+			case "poly_XOffset 1":
+				if(WaveExists(coefs))
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 poly_XOffset 1, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr poly_XOffset 1, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				else
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 poly_XOffset 1, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr poly_XOffset 1, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				endif
+				break
+			case "poly_XOffset 2":
+				if(WaveExists(coefs))
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 poly_XOffset 2, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr poly_XOffset 2, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				else
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 poly_XOffset 2, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr poly_XOffset 2, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				endif
+				break
+			case "poly_XOffset 3":
+				if(WaveExists(coefs))
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 poly_XOffset 3, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr poly_XOffset 3, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				else
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 poly_XOffset 3, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr poly_XOffset 3, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				endif
+				break
+			case "poly_XOffset 4":
+				if(WaveExists(coefs))
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 poly_XOffset 4, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr poly_XOffset 4, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				else
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 poly_XOffset 4, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr poly_XOffset 4, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				endif
+				break
+			case "hillequation":
+				if(WaveExists(coefs))
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 hillequation, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr hillequation, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				else
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 hillequation, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr hillequation, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				endif
+				break
+			case "sigmoid":
+				if(WaveExists(coefs))
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 sigmoid, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr sigmoid, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				else
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 sigmoid, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr sigmoid, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				endif
+				break
+			case "power":
+				if(WaveExists(coefs))
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 power, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr power, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				else
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 power, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr power, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				endif
+				break
+			case "lognormal":
+				if(WaveExists(coefs))
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 lognormal, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr lognormal, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				else
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 lognormal, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr lognormal, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				endif
+				break
+			case "log":
+				if(WaveExists(coefs))
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 log, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr log, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				else
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 log, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr log, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				endif
+				break
+			case "gauss2D":
+				if(WaveExists(coefs))
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 gauss2D, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr gauss2D, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				else
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 gauss2D, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr gauss2D, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				endif
+				break
+			case "poly2D 1":
+				if(WaveExists(coefs))
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 poly2D 1, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr poly2D 1, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				else
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 poly2D 1, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr poly2D 1, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				endif
+				break
+			case "poly2D 2":
+				if(WaveExists(coefs))
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 poly2D 2, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr poly2D 2, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				else
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 poly2D 2, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr poly2D 2, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				endif
+				break
+			case "poly2D 3":
+				if(WaveExists(coefs))
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 poly2D 3, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr poly2D 3, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				else
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 poly2D 3, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr poly2D 3, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				endif
+				break
+			case "poly2D 4":
+				if(WaveExists(coefs))
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 poly2D 4, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr poly2D 4, kwCWave=coefs, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				else
+					if(xErrorsOut)
+						CurveFit/C/Q/M=2/H=holdStr/ODR=2 poly2D 4, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/XW=weightX/XD=xOutput/XR=xResiduals/I=1/M=mask
+					else
+						CurveFit/C/Q/M=2/H=holdStr poly2D 4, wvY/X=xWave/D=fitOutput/C=constraints/W=weightY/A=0/R=yResiduals/I=1/M=mask
+					endif
+				endif
+				break
+			default:
+				SFH_FATAL_ERROR("Unsupported integrated fit function")
+		endswitch
+	endif
+	if(!WaveExists(coefs))
+		WAVE coefs = W_coef
+	endif
+	if(haveConstraints)
+		WAVE/Z mFitConstraints = M_FitConstraint
+		WAVE/Z wFitConstraints = W_FitConstraint
+	endif
+
+	WAVE/Z wSigma = W_Sigma
+	WAVE/Z mCovar = M_Covar
+
+	SetDataFolder dfrSave
+
+	fitStatus = SFO_OperationFit2GetFitStatusMessage(V_FitError, V_FitQuitReason, V_FitNumIters)
+
+	if(V_FitError)
+		Make/FREE/D/N=0 fitOutput
+		JWN_SetNumberInWaveNote(fitOutput, SF_META_FITERROR, V_FitError)
+		JWN_SetNumberInWaveNote(fitOutput, SF_META_FITQUITREASON, V_FitQuitReason)
+		JWN_SetNumberInWaveNote(fitOutput, SF_META_FITNUMITERS, V_FitNumIters)
+	endif
+
+	JWN_SetStringInWaveNote(fitOutput, SF_META_FITSTATUSMESSAGE, fitStatus)
+	JWN_SetStringInWaveNote(fitOutput, SF_META_FITFUNC, fitFuncName)
+
+	if(V_FitError)
+		return fitOutput
+	endif
+
+	JWN_SetWaveInWaveNote(fitOutput, SF_META_FITCOEFS, coefs)
+	JWN_SetWaveInWaveNote(fitOutput, SF_META_ERRORBARYPLUS, yResiduals)
+	JWN_SetWaveInWaveNote(fitOutput, SF_META_ERRORBARYMINUS, yResiduals)
+	if(xErrorsOut)
+		JWN_SetWaveInWaveNote(fitOutput, SF_META_ERRORBARXPLUS, xResiduals)
+		JWN_SetWaveInWaveNote(fitOutput, SF_META_ERRORBARXMINUS, xResiduals)
+		JWN_SetWaveInWaveNote(fitOutput, SF_META_XVALUES, xOutput)
+	else
+		JWN_SetWaveInWaveNote(fitOutput, SF_META_XVALUES, xWave)
+	endif
+
+	// Possible more fit data: V_npnts, V_nterms, V_nheld
+	JWN_SetNumberInWaveNote(fitOutput, SF_META_FITCHISQUARE, V_ChiSq)
+	if(WaveExists(wSigma))
+		JWN_SetWaveInWaveNote(fitOutput, SF_META_FITWSIGMA, wSigma)
+	endif
+	if(WaveExists(mCovar))
+		JWN_SetWaveInWaveNote(fitOutput, SF_META_FITMCOVAR, mCovar)
+	endif
+	if(WaveExists(mFitConstraints))
+		JWN_SetWaveInWaveNote(fitOutput, SF_META_FITMFITCONSTRAINT, mFitConstraints)
+	endif
+	if(WaveExists(wFitConstraints))
+		JWN_SetWaveInWaveNote(fitOutput, SF_META_FITWFITCONSTRAINT, wFitConstraints)
+	endif
+
+	SFH_SetTraceStyleForFit(fitOutput)
+
+	return fitOutput
 End
