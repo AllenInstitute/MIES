@@ -2442,11 +2442,6 @@ Constant PSX_DECONV_FILTER_DEF_ORDER = 4
 
 StrConstant PSX_JWN_COMBO_KEYS_NAME = "ComboKeys"
 
-StrConstant SF_OP_MERGE   = "merge"
-StrConstant SF_OP_FIT     = "fit"
-StrConstant SF_OP_FITLINE = "fitline"
-StrConstant SF_OP_DATASET = "dataset"
-
 StrConstant SWEEP_NOTE_KEY_ORIGCREATIONTIME_UTC = "OriginalCreationTimeInUTC"
 
 StrConstant DF_NAME_FREE = "freeroot"
@@ -2552,6 +2547,10 @@ StrConstant SF_OP_TPINST              = "tpinst"
 StrConstant SF_OP_TPBASE              = "tpbase"
 StrConstant SF_OP_TPFIT               = "tpfit"
 StrConstant SF_OP_EXTRACT             = "extract"
+StrConstant SF_OP_MERGE               = "merge"
+StrConstant SF_OP_FIT                 = "fit"
+StrConstant SF_OP_FITLINE             = "fitline"
+StrConstant SF_OP_DATASET             = "dataset"
 
 #ifdef AUTOMATED_TESTING
 StrConstant SF_OP_TESTOP = "testop"
