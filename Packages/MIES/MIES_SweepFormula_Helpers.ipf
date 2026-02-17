@@ -2219,3 +2219,9 @@ Function SFH_CopyPlotMetaData(WAVE input, WAVE output)
 	JWN_SetNumberInWaveNote(output, SF_META_TRACETOFRONT, JWN_GetNumberFromWaveNote(input, SF_META_TRACETOFRONT))
 	JWN_SetNumberInWaveNote(output, SF_META_LINESTYLE, JWN_GetNumberFromWaveNote(input, SF_META_LINESTYLE))
 End
+
+Function SFH_SetTraceStyleForFit(WAVE fitData)
+
+	JWN_SetWaveInWaveNote(fitData, SF_META_TRACECOLOR, {0, 0, 0}) // black
+	JWN_SetNumberInWaveNote(fitData, SF_META_TRACE_MODE, TRACE_DISPLAY_MODE_LINES)
+End
