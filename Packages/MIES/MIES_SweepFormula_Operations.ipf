@@ -2873,15 +2873,15 @@ static Function SFO_OperationIVSCCApFrequencySetPlotProperties(WAVE wvY, variabl
 End
 
 // for avgMode: bins
-// ivscc_apfrequency([xaxisOffset, yaxisOffset, xAxisPercentage, yAxisPercentage, avgMode, binRange, binWidth, method, level, timeFreq, normalize, xAxisType])
+// ivscc_apfrequency([xaxisOffset, yaxisOffset, xAxisPercentage, yAxisPercentage, prepFit, avgMode, binRange, binWidth, method, level, timeFreq, normalize, xAxisType])
 //
 // for avgMode: bins2
-// ivscc_apfrequency([xaxisOffset, yaxisOffset, xAxisPercentage, yAxisPercentage, avgMode, method, level, timeFreq, normalize, xAxisType])
+// ivscc_apfrequency([xaxisOffset, yaxisOffset, xAxisPercentage, yAxisPercentage, prepFit, avgMode, method, level, timeFreq, normalize, xAxisType])
 Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 
 	string   opShort    = SF_OP_IVSCCAPFREQUENCY
 	variable numArgsMin = 0
-	variable numArgsMax = 12
+	variable numArgsMax = 13
 	string formula, expr
 	variable i, numArgs, col, size, numExp
 	variable xAxisPercentage, yAxisPercentage
@@ -2900,22 +2900,25 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 	yaxisOffset     = SFH_GetArgumentAsText(exd, opShort, 1, defValue = SF_OP_IVSCCAPFREQUENCY_MIN, allowedValues = {SF_OP_IVSCCAPFREQUENCY_FIRST, SF_OP_IVSCCAPFREQUENCY_MIN, SF_OP_IVSCCAPFREQUENCY_MAX, SF_OP_IVSCCAPFREQUENCY_NONE})
 	xAxisPercentage = SFH_GetArgumentAsNumeric(exd, opShort, 2, defValue = 100, checkFunc = BetweenZeroAndOneHoundred)
 	yAxisPercentage = SFH_GetArgumentAsNumeric(exd, opShort, 3, defValue = 100, checkFunc = BetweenZeroAndOneHoundred)
-	avgMode         = SFH_GetArgumentAsText(exd, opShort, 4, defValue = SF_OP_AVG_BINS, allowedValues = {SF_OP_AVG_BINS, SF_OP_AVG_BINS2})
+	WAVE/WAVE prepFit = SFH_GetArgumentAsWave(exd, opShort, 4, defOp = "preparefit()")
+
+	avgMode         = SFH_GetArgumentAsText(exd, opShort, 5, defValue = SF_OP_AVG_BINS, allowedValues = {SF_OP_AVG_BINS, SF_OP_AVG_BINS2})
 
 	if(!CmpStr(avgMode, SF_OP_AVG_BINS))
-		WAVE/WAVE wTmp     = SFH_GetArgumentAsWave(exd, opShort, 5)
+		WAVE/WAVE wTmp     = SFH_GetArgumentAsWave(exd, opShort, 6)
 		WAVE      binRange = wTmp[0]
-		binWidth                                        = SFH_GetArgumentAsNumeric(exd, opShort, 6, checkFunc = IsStrictlyPositiveAndFinite)
-		[method, level, timeFreq, normalize, xAxisType] = SFO_GetApFrequencyArguments(exd, opShort, 7)
+		binWidth                                        = SFH_GetArgumentAsNumeric(exd, opShort, 7, checkFunc = IsStrictlyPositiveAndFinite)
+		[method, level, timeFreq, normalize, xAxisType] = SFO_GetApFrequencyArguments(exd, opShort, 8)
 	else
 		// SF_OP_AVG_BINS2
-		[method, level, timeFreq, normalize, xAxisType] = SFO_GetApFrequencyArguments(exd, opShort, 5)
+		[method, level, timeFreq, normalize, xAxisType] = SFO_GetApFrequencyArguments(exd, opShort, 6)
 	endif
 
 	// create and evaluate variables
 	WAVE/T sweepMap = SB_GetSweepMap(exd.graph)
 	col  = FindDimlabel(sweepMap, COLS, "FileName")
 	size = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
+	SFH_ASSERT(size > 0, "No sweep data loaded")
 	Duplicate/FREE/RMD=[0, size - 1][col] sweepMap, fileNames
 	WAVE/T uniqueFiles = GetUniqueEntries(fileNames, dontDuplicate = 1)
 	Sort uniqueFiles, uniqueFiles
@@ -2960,24 +2963,58 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 		formula = SF_AddExpressionToFormula(formula, expr)
 		sprintf expr, "ivscccurrentavg = avg([%s], bins, [%f,%f],%f,[%s])", currentList, binRange[0], binRange[1], binWidth, currentList
 		formula = SF_AddExpressionToFormula(formula, expr)
+
+		if(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_FIRST))
+			expr = "ivsccavg_norm_x = merge($ivscccurrentavg - extract($ivscccurrentavg, 0))"
+		elseif(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_MIN))
+			expr = "ivsccavg_norm_x = merge($ivscccurrentavg - min(merge($ivscccurrentavg)))"
+		elseif(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_MAX))
+			expr = "ivsccavg_norm_x = merge($ivscccurrentavg - max(merge($ivscccurrentavg)))"
+		else // SF_OP_IVSCCAPFREQUENCY_NONE
+			expr = "ivsccavg_norm_x = merge($ivscccurrentavg)"
+		endif
+		formula = SF_AddExpressionToFormula(formula, expr)
 	else
 		// SF_OP_AVG_BINS2
 		sprintf expr, "ivsccavg = avg([%s], bins2, [%s])", freqList, currentList
 		formula = SF_AddExpressionToFormula(formula, expr)
-		sprintf expr, "ivsccavg_xvalues = xvalues(merge($ivsccavg))"
+		expr = "ivsccavg_xvalues = xvalues(merge($ivsccavg))"
+		formula = SF_AddExpressionToFormula(formula, expr)
+
+		if(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_FIRST))
+			//	expr = "ivsccavg_norm_x = merge($ivscccurrentavg - extract($ivscccurrentavg, 0, 0))"
+		elseif(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_MIN))
+			expr = "ivsccavg_norm_x = $ivsccavg_xvalues - min($ivsccavg_xvalues)"
+		elseif(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_MAX))
+			expr = "ivsccavg_norm_x = $ivsccavg_xvalues - max($ivsccavg_xvalues)"
+		else // SF_OP_IVSCCAPFREQUENCY_NONE
+			expr = "ivsccavg_norm_x = $ivsccavg_xvalues"
+		endif
 		formula = SF_AddExpressionToFormula(formula, expr)
 	endif
+	if(!CmpStr(yaxisOffset, SF_OP_IVSCCAPFREQUENCY_FIRST))
+		expr = "ivsccavg_norm_y = merge($ivsccavg - extract($ivsccavg, 0))"
+	elseif(!CmpStr(yaxisOffset, SF_OP_IVSCCAPFREQUENCY_MIN))
+		expr = "ivsccavg_norm_y = merge($ivsccavg - min(merge($ivsccavg)))"
+	elseif(!CmpStr(yaxisOffset, SF_OP_IVSCCAPFREQUENCY_MAX))
+		expr = "ivsccavg_norm_y = merge($ivsccavg - max(merge($ivsccavg)))"
+	else // SF_OP_IVSCCAPFREQUENCY_NONE
+		expr = "ivsccavg_norm_y = merge($ivsccavg)"
+	endif
+	formula = SF_AddExpressionToFormula(formula, expr)
 
 	WAVE/WAVE varStorage = GetSFVarStorage(exd.graph)
 	Duplicate/FREE varStorage, varBackup
 	SFE_ExecuteVariableAssignments(exd.graph, formula, allowEmptyCode=1)
+
+	SFH_AddVariableToStorage(exd.graph, "pfit", SFH_GetOutputForExecutor(prepFit, exd.graph, opShort))
 
 	// build plot tree
 	WAVE/WAVE varStorageOp = GetSFVarStorage(exd.graph)
 	WAVE      wvResult     = varStorageOp[%ivscc_apfrequency_explist]
 
 	WAVE/WAVE plotAND = SFH_CreateSFRefWave(exd.graph, opShort, 1)
-	Make/FREE/WAVE/N=(numExp + 1, 2) plotWITH
+	Make/FREE/WAVE/N=(numExp + 2, 2) plotWITH
 	SetDimlabel COLS, 0, FORMULAX, plotWITH
 	SetDimlabel COLS, 1, FORMULAY, plotWITH
 	plotAND[0] = plotWITH
@@ -3008,16 +3045,7 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 	endfor
 
 	// avg trace
-
-	if(!CmpStr(yaxisOffset, SF_OP_IVSCCAPFREQUENCY_FIRST))
-		formula = "merge($ivsccavg - extract($ivsccavg, 0))"
-	elseif(!CmpStr(yaxisOffset, SF_OP_IVSCCAPFREQUENCY_MIN))
-		formula = "merge($ivsccavg - min(merge($ivsccavg)))"
-	elseif(!CmpStr(yaxisOffset, SF_OP_IVSCCAPFREQUENCY_MAX))
-		formula = "merge($ivsccavg - max(merge($ivsccavg)))"
-	else // SF_OP_IVSCCAPFREQUENCY_NONE
-		formula = "merge($ivsccavg)"
-	endif
+	formula = "$ivsccavg_norm_y"
 	WAVE/WAVE wvY = SFE_ExecuteFormula(formula, exd.graph, preProcess = 0)
 	if(DimSize(wvY, ROWS) > 0)
 		JWN_SetStringInWaveNote(wvY[0], SF_META_LEGEND_LINE_PREFIX, "ivscc_apfrequency avg " + avgMode)
@@ -3026,30 +3054,17 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 	plotWITH[numExp][%FORMULAY] = wvY
 	SFO_OperationIVSCCApFrequencySetPlotProperties(plotWITH[numExp][%FORMULAY], xAxisPercentage, yAxisPercentage)
 
-	if(!CmpStr(avgMode, SF_OP_AVG_BINS))
-		if(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_FIRST))
-			formula = "merge($ivscccurrentavg - extract($ivscccurrentavg, 0))"
-		elseif(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_MIN))
-			formula = "merge($ivscccurrentavg - min(merge($ivscccurrentavg)))"
-		elseif(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_MAX))
-			formula = "merge($ivscccurrentavg - max(merge($ivscccurrentavg)))"
-		else // SF_OP_IVSCCAPFREQUENCY_NONE
-			formula = "merge($ivscccurrentavg)"
-		endif
-	else
-		// SF_OP_AVG_BINS2
-
-		if(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_FIRST))
-			//			formula = "merge($ivscccurrentavg - extract($ivscccurrentavg, 0, 0))"
-		elseif(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_MIN))
-			formula = "$ivsccavg_xvalues - min($ivsccavg_xvalues)"
-		elseif(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_MAX))
-			formula = "$ivsccavg_xvalues - max($ivsccavg_xvalues)"
-		else // SF_OP_IVSCCAPFREQUENCY_NONE
-			formula = "$ivsccavg_xvalues"
-		endif
-	endif
+	formula = "$ivsccavg_norm_x"
 	plotWITH[numExp][%FORMULAX] = SFE_ExecuteFormula(formula, exd.graph, preProcess = 0)
+
+	numExp += 1
+	// fit trace
+	formula = "fit2($ivsccavg_norm_y, $ivsccavg_norm_x, $pfit)"
+	WAVE/WAVE wvY = SFE_ExecuteFormula(formula, exd.graph, preProcess = 0)
+	if(DimSize(wvY, ROWS) > 0)
+		JWN_SetStringInWaveNote(wvY[0], SF_META_LEGEND_LINE_PREFIX, "ivscc_apfrequency fit")
+	endif
+	plotWITH[numExp][%FORMULAY] = wvY
 
 	Duplicate/O varBackup, varStorage
 	SFH_AddVariableToStorage(exd.graph, "ivscc_apfrequency_explist", wvResult)
@@ -3305,7 +3320,7 @@ static Function/WAVE SFO_OperationFit2Impl(WAVE wvY, WAVE/Z wvX, WAVE/WAVE prepF
 			mask[0, limit(range[0] - 1, 0, numPoints - 1)] = 0
 		endif
 		if(range[1] < 0)
-			mask[limit(numPoints - 1 - range[1], 0, numPoints - 1), Inf] = 0
+			mask[limit(numPoints + range[1], 0, numPoints - 1), Inf] = 0
 		endif
 	endif
 
