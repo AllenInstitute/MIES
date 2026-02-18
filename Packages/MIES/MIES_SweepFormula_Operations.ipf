@@ -2970,7 +2970,7 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 
 	WAVE/WAVE varStorage = GetSFVarStorage(exd.graph)
 	Duplicate/FREE varStorage, varBackup
-	SFE_ExecuteVariableAssignments(exd.graph, formula)
+	SFE_ExecuteVariableAssignments(exd.graph, formula, allowEmptyCode=1)
 
 	// build plot tree
 	WAVE/WAVE varStorageOp = GetSFVarStorage(exd.graph)
