@@ -2360,6 +2360,17 @@ static Function TestVariableReadOnly()
 	KillWaves/Z root:testData
 End
 
+static Function TestAllowedStringContent()
+
+	string win, code
+
+	win  = GetDataBrowserWithData()
+	code = "\"<>\" vs 0"
+
+	ExecuteSweepFormulaCode(win, code)
+	CHECK_NO_RTE()
+End
+
 static Function TestKeepsUnitsWhenMappingMultipleYToOne()
 
 	string win, graph, xAxis, yAxis, code
