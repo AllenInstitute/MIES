@@ -3036,17 +3036,11 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 		else // SF_OP_IVSCCAPFREQUENCY_NONE
 			formula = "merge($ivscccurrentavg)"
 		endif
-
-		//		numBins = ceil((binRange[1] - binRange[0]) / binWidth)
-		//		Make/FREE/D/N=(numBins) binValues
-		//		binValues[] = binRange[0] + p * binWidth + binWidth / 2
-		//		binList     = NumericWaveToList(binValues, ",", format = "%f", trailSep = 0)
-		//		sprintf formula, "[%s]", binList
 	else
 		// SF_OP_AVG_BINS2
 
 		if(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_FIRST))
-			//			formula = "merge($ivscccurrentavg - extract($ivscccurrentavg, 0))"
+			//			formula = "merge($ivscccurrentavg - extract($ivscccurrentavg, 0, 0))"
 		elseif(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_MIN))
 			formula = "$ivsccavg_xvalues - min($ivsccavg_xvalues)"
 		elseif(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_MAX))
@@ -3056,21 +3050,6 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 		endif
 	endif
 	plotWITH[numExp][%FORMULAX] = SFE_ExecuteFormula(formula, exd.graph, preProcess = 0)
-
-	if(!CmpStr(avgMode, SF_OP_AVG_BINS))
-		WAVE/WAVE wTmp = SF_ResolveDataset(varStorage[%ivsccavg])
-		printf "ivsccavg bins mode: "
-		for(WAVE wElem : wTmp)
-			printf "%f, ", wElem[0]
-		endfor
-		printf "\r"
-		printf "ivscccurrentavg: "
-		WAVE/WAVE wTmp = SF_ResolveDataset(varStorage[%ivscccurrentavg])
-		for(WAVE wElem : wTmp)
-			printf "%f, ", wElem[0]
-		endfor
-		printf "\r"
-	endif
 
 	Duplicate/O varBackup, varStorage
 	SFH_AddVariableToStorage(exd.graph, "ivscc_apfrequency_explist", wvResult)
