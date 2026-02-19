@@ -9440,3 +9440,44 @@ Function/WAVE GetFullPlottingWITH(variable size)
 
 	return plotWITH
 End
+
+/// @brief Returns a wave with all Igor integrated fit functions and their respective number of coefficients
+///        For poly functions upto 4th order is included (Igor Pro supports up to 20th order)
+Function/WAVE GetSFIgorFitProperties()
+
+	Make/FREE/T/N=(28, 2) wv
+
+	wv[0][]  = {{"gauss"}, {"4"}}
+	wv[1][]  = {{"lor"}, {"4"}}
+	wv[2][]  = {{"Voigt"}, {"5"}}
+	wv[3][]  = {{"exp"}, {"3"}}
+	wv[4][]  = {{"dblexp"}, {"5"}}
+	wv[5][]  = {{"exp_XOffset"}, {"3"}}
+	wv[6][]  = {{"dblexp_XOffset"}, {"5"}}
+	wv[7][]  = {{"dblexp_peak"}, {"5"}}
+	wv[8][]  = {{"sin"}, {"4"}}
+	wv[9][]  = {{"line"}, {"2"}}
+	wv[10][] = {{"poly 1"}, {"1"}}
+	wv[11][] = {{"poly 2"}, {"2"}}
+	wv[12][] = {{"poly 3"}, {"3"}}
+	wv[13][] = {{"poly 4"}, {"4"}}
+	wv[14][] = {{"poly_XOffset 1"}, {"1"}}
+	wv[15][] = {{"poly_XOffset 2"}, {"2"}}
+	wv[16][] = {{"poly_XOffset 3"}, {"3"}}
+	wv[17][] = {{"poly_XOffset 4"}, {"4"}}
+	wv[18][] = {{"hillequation"}, {"4"}}
+	wv[19][] = {{"sigmoid"}, {"4"}}
+	wv[20][] = {{"power"}, {"3"}}
+	wv[21][] = {{"lognormal"}, {"4"}}
+	wv[22][] = {{"log"}, {"2"}}
+	wv[23][] = {{"gauss2D"}, {"7"}}
+	wv[24][] = {{"poly2D 1"}, {"3"}}
+	wv[25][] = {{"poly2D 2"}, {"6"}}
+	wv[26][] = {{"poly2D 3"}, {"10"}}
+	wv[27][] = {{"poly2D 4"}, {"15"}}
+
+	SetDimLabel COLS, 0, FITFUNC, wv
+	SetDimLabel COLS, 1, NUMCOEFS, wv
+
+	return wv
+End
