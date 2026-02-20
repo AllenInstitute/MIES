@@ -44,35 +44,6 @@ Function TWTLChecksParams()
 		PASS()
 	endtry
 
-	// empty separators
-	try
-		list = TextWaveToList(w, "")
-		FAIL()
-	catch
-		PASS()
-	endtry
-
-	try
-		list = TextWaveToList(w, ";", colSep = "")
-		FAIL()
-	catch
-		PASS()
-	endtry
-
-	try
-		list = TextWaveToList(w, ";", layerSep = "")
-		FAIL()
-	catch
-		PASS()
-	endtry
-
-	try
-		list = TextWaveToList(w, ";", chunkSep = "")
-		FAIL()
-	catch
-		PASS()
-	endtry
-
 	// invalid max elements
 	try
 		list = TextWaveToList(w, ";", maxElements = -1)
@@ -94,6 +65,11 @@ Function TWTLChecksParams()
 	catch
 		PASS()
 	endtry
+
+	// empty separators
+	Make/FREE/T wt = {{{{"a"}, {"e"}}, {{"c"}, {"g"}}}, {{{"b"}, {"f"}}, {{"d"}, {"h"}}}}
+	list = TextWaveToList(wt, "", colSep = "", layerSep = "", chunkSep = "")
+	CHECK_EQUAL_STR(list, "abcdefgh")
 End
 
 // UTF_TD_GENERATOR DataGenerators#TrailSepOptions
