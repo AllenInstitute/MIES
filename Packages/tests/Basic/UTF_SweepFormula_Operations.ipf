@@ -3907,3 +3907,112 @@ static Function TestOperationxValues()
 
 	KillWaves/Z wv
 End
+
+Function/WAVE GetMetaHelperOP(STRUCT SF_ExecutionData &exd)
+
+	string opShort = SF_OP_TESTOP
+	string path
+
+	Make/FREE/N=1 wv
+
+	JWN_CreatePath(wv, SF_SERIALIZE)
+
+	path = SF_SERIALIZE + "/num"
+	JWN_SetNumberInWaveNote(wv, path, 123)
+
+	path = SF_SERIALIZE + "/txt"
+	JWN_SetStringInWaveNote(wv, path, "abcd")
+
+	path = SF_SERIALIZE + "/wvnum"
+	Make/FREE wvnum = {1, 2, 3}
+	JWN_SetWaveInWaveNote(wv, path, wvnum)
+
+	path = SF_SERIALIZE + "/wvtxt"
+	Make/FREE/T wvtxt = {"a", "b", "c"}
+	JWN_SetWaveInWaveNote(wv, path, wvtxt)
+
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 1)
+	output[0] = wv
+
+	return SFH_GetOutputForExecutor(output, exd.graph, opShort)
+End
+
+Function TestGetMeta()
+
+	string win, device, code
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	// too few arguments
+	code = "getmeta()"
+	try
+		WAVE/Z data = SFE_ExecuteFormula(code, win, useVariables = 0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// dataset out of range
+	code = "getmeta([1], \"\", 1)"
+	try
+		WAVE/Z data = SFE_ExecuteFormula(code, win, useVariables = 0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// no serialization data
+	code = "getmeta([1])"
+	try
+		WAVE/Z data = SFE_ExecuteFormula(code, win, useVariables = 0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	SVAR funcName = $GetSFTestopName(win)
+	funcName = "GetMetaHelperOP"
+
+	code = "getmeta(testop(), \"*\")"
+	WAVE/Z/WAVE wvRef = SFE_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(wvRef, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(wvRef, ROWS), 4)
+
+	WAVE wv = wvRef[0]
+	CHECK_EQUAL_WAVES(wv, {123}, mode = WAVE_DATA)
+	CHECK_EQUAL_STR(GetDimLabel(wv, ROWS, -1), "num")
+
+	WAVE wv = wvRef[1]
+	CHECK_EQUAL_TEXTWAVES(wv, {"abcd"}, mode = WAVE_DATA)
+	CHECK_EQUAL_STR(GetDimLabel(wv, ROWS, -1), "txt")
+
+	WAVE wv = wvRef[2]
+	CHECK_EQUAL_WAVES(wv, {1, 2, 3}, mode = WAVE_DATA)
+	CHECK_EQUAL_STR(GetDimLabel(wv, ROWS, -1), "wvnum")
+
+	WAVE wv = wvRef[3]
+	CHECK_EQUAL_TEXTWAVES(wv, {"a", "b", "c"}, mode = WAVE_DATA)
+	CHECK_EQUAL_STR(GetDimLabel(wv, ROWS, -1), "wvtxt")
+
+	code = "getmeta(testop(), I_DONT_EXIST)"
+	try
+		WAVE/Z data = SFE_ExecuteFormula(code, win, useVariables = 0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// dataset indexing works
+	code = "getmeta(dataset([1], testop()), \"*\", 1)"
+	WAVE/Z/WAVE wvRef = SFE_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(wvRef, WAVE_WAVE)
+
+	// no data in indexed dataset
+	code = "getmeta(wave(I_DONT_EXIST))"
+	WAVE/Z/WAVE wvRef = SFE_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(wvRef, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(wvRef, ROWS), 1)
+	CHECK_WAVE(wvRef[0], NULL_WAVE)
+End

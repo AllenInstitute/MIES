@@ -3832,3 +3832,79 @@ static Function/WAVE SFO_OperationFit2Impl(WAVE wvY, WAVE/Z wvX, WAVE/WAVE prepF
 
 	return fitOutput
 End
+
+static Function/WAVE SFO_OperationGetMetaImpl(WAVE data, string key)
+
+	string path, str
+	variable val
+
+	path = SF_SERIALIZE + "/" + key
+	val  = JWN_GetNumberFromWaveNote(data, path)
+	if(!IsNaN(val))
+		Make/D/FREE wvD = {val}
+		return wvD
+	endif
+
+	str = JWN_GetStringFromWaveNote(data, path)
+	if(!IsEmpty(str))
+		Make/T/FREE wvT = {str}
+		return wvT
+	endif
+
+	WAVE/Z wv = JWN_GetNumericWaveFromWaveNote(data, path)
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	WAVE/Z wv = JWN_GetTextWaveFromWaveNote(data, path)
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	SFH_FATAL_ERROR("Unhandled data type found at: " + path)
+End
+
+/// getmeta(data, [keyStr, datasetNumber]
+Function/WAVE SFO_OperationGetMeta(STRUCT SF_ExecutionData &exd)
+
+	string opShort = SF_OP_GETMETA
+	string key
+	variable dsNum, numDatasets, i, numKeys
+
+	SFH_CheckArgumentCount(exd, opShort, 1, maxArgs = 3)
+	WAVE/WAVE datasets = SFH_GetArgumentAsWave(exd, opShort, 0)
+	key   = SFH_GetArgumentAsText(exd, opShort, 1, defValue = "*")
+	dsNum = SFH_GetArgumentAsNumeric(exd, opShort, 2, defValue = 0)
+
+	numDatasets = DimSize(datasets, ROWS)
+	SFH_ASSERT(dsNum < numDatasets, "Dataset with given number does not exist in input data")
+	WAVE/Z data = datasets[dsNum]
+
+	if(!WaveExists(data))
+		WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 1)
+		return SFH_GetOutputForExecutor(output, exd.graph, opShort)
+	endif
+
+	WAVE/Z/T existingKeys = JWN_GetKeys(data, SF_SERIALIZE)
+	SFH_ASSERT(WaveExists(existingKeys), "Could not find any keys")
+
+	if(!Cmpstr(key, "*"))
+		WAVE/T keys = existingKeys
+	else
+		SFH_ASSERT(!IsNaN(GetRowIndex(existingKeys, str = key)), "Could not find the key: " + key)
+		Make/FREE/T keys = {key}
+		WaveClear existingKeys
+	endif
+
+	numKeys = DimSize(keys, ROWS)
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, numKeys)
+
+	for(i = 0; i < numKeys; i += 1)
+		key = keys[i]
+		WAVE meta = SFO_OperationGetMetaImpl(data, key)
+		SetDimLabel ROWS, -1, $CleanupName(key, 0), meta
+		output[i] = meta
+	endfor
+
+	return SFH_GetOutputForExecutor(output, exd.graph, opShort)
+End

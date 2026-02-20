@@ -2241,6 +2241,7 @@ StrConstant SF_VARIABLE_MARKER = "/SF_IsVariable" // numeric
 
 StrConstant SF_ANNOTATION_NAME = "metadata"
 StrConstant SF_VARNAME_REGEXP  = "[A-Z]{1}[A-Z0-9_]*"
+StrConstant SF_SERIALIZE       = "/serial" // path prefix
 ///@}
 
 /// @name Constants for SweepFormula Clampmode codes returned by operation selcm()
@@ -2585,6 +2586,7 @@ StrConstant SF_OP_DATASET             = "dataset"
 StrConstant SF_OP_IVSCCAPFREQUENCY    = "ivscc_apfrequency"
 StrConstant SF_OP_PREPAREFIT          = "preparefit"
 StrConstant SF_OP_FIT2                = "fit2"
+StrConstant SF_OP_GETMETA             = "getmeta"
 
 #ifdef AUTOMATED_TESTING
 StrConstant SF_OP_TESTOP = "testop"
