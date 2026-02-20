@@ -327,8 +327,6 @@ threadsafe Function/WAVE JWN_GetKeysAt(WAVE wv, string jsonPath)
 
 	variable jsonID
 
-	ASSERT_TS(!IsEmpty(jsonPath), "Empty jsonPath")
-
 	jsonID = JWN_GetWaveNoteAsJSON(wv)
 	WAVE/Z keys = JSON_GetKeys(jsonID, jsonPath, ignoreErr = 1)
 	JSON_Release(jsonID)
