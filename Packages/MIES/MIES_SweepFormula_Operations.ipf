@@ -3069,7 +3069,7 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 
 	Duplicate/O varBackup, varStorage
 	SFH_AddVariableToStorage(exd.graph, "ivscc_apfrequency_explist", wvResult)
-	SFH_AddVariableToStorage(exd.graph, "ivscc_apfrequency_fit", fitResult)
+	SFH_AddVariableToStorage(exd.graph, "ivscc_apfrequency_fit", SFH_GetOutputForExecutor(fitResult, exd.graph, opShort))
 
 	JWN_SetNumberInWaveNote(plotAND, SF_META_PLOT, 1)
 
@@ -3781,21 +3781,22 @@ static Function/WAVE SFO_OperationFit2Impl(WAVE wvY, WAVE/Z wvX, WAVE/WAVE prepF
 
 	fitStatus = SFO_OperationFit2GetFitStatusMessage(V_FitError, V_FitQuitReason, V_FitNumIters)
 
+	JWN_CreatePath(fitOutput, SF_SERIALIZE)
 	if(V_FitError)
 		Make/FREE/D/N=0 fitOutput
-		JWN_SetNumberInWaveNote(fitOutput, SF_META_FITERROR, V_FitError)
-		JWN_SetNumberInWaveNote(fitOutput, SF_META_FITQUITREASON, V_FitQuitReason)
-		JWN_SetNumberInWaveNote(fitOutput, SF_META_FITNUMITERS, V_FitNumIters)
+		JWN_SetNumberInWaveNote(fitOutput, SF_SERIALIZE + SF_META_FITERROR, V_FitError)
+		JWN_SetNumberInWaveNote(fitOutput, SF_SERIALIZE + SF_META_FITQUITREASON, V_FitQuitReason)
+		JWN_SetNumberInWaveNote(fitOutput, SF_SERIALIZE + SF_META_FITNUMITERS, V_FitNumIters)
 	endif
 
-	JWN_SetStringInWaveNote(fitOutput, SF_META_FITSTATUSMESSAGE, fitStatus)
-	JWN_SetStringInWaveNote(fitOutput, SF_META_FITFUNC, fitFuncName)
+	JWN_SetStringInWaveNote(fitOutput, SF_SERIALIZE + SF_META_FITSTATUSMESSAGE, fitStatus)
+	JWN_SetStringInWaveNote(fitOutput, SF_SERIALIZE + SF_META_FITFUNC, fitFuncName)
 
 	if(V_FitError)
 		return fitOutput
 	endif
 
-	JWN_SetWaveInWaveNote(fitOutput, SF_META_FITCOEFS, coefs)
+	JWN_SetWaveInWaveNote(fitOutput, SF_SERIALIZE + SF_META_FITCOEFS, coefs)
 	JWN_SetWaveInWaveNote(fitOutput, SF_META_ERRORBARYPLUS, yResiduals)
 	JWN_SetWaveInWaveNote(fitOutput, SF_META_ERRORBARYMINUS, yResiduals)
 	if(xErrorsOut)
@@ -3807,18 +3808,18 @@ static Function/WAVE SFO_OperationFit2Impl(WAVE wvY, WAVE/Z wvX, WAVE/WAVE prepF
 	endif
 
 	// Possible more fit data: V_npnts, V_nterms, V_nheld
-	JWN_SetNumberInWaveNote(fitOutput, SF_META_FITCHISQUARE, V_ChiSq)
+	JWN_SetNumberInWaveNote(fitOutput, SF_SERIALIZE + SF_META_FITCHISQUARE, V_ChiSq)
 	if(WaveExists(wSigma))
-		JWN_SetWaveInWaveNote(fitOutput, SF_META_FITWSIGMA, wSigma)
+		JWN_SetWaveInWaveNote(fitOutput, SF_SERIALIZE + SF_META_FITWSIGMA, wSigma)
 	endif
 	if(WaveExists(mCovar))
-		JWN_SetWaveInWaveNote(fitOutput, SF_META_FITMCOVAR, mCovar)
+		JWN_SetWaveInWaveNote(fitOutput, SF_SERIALIZE + SF_META_FITMCOVAR, mCovar)
 	endif
 	if(WaveExists(mFitConstraints))
-		JWN_SetWaveInWaveNote(fitOutput, SF_META_FITMFITCONSTRAINT, mFitConstraints)
+		JWN_SetWaveInWaveNote(fitOutput, SF_SERIALIZE + SF_META_FITMFITCONSTRAINT, mFitConstraints)
 	endif
 	if(WaveExists(wFitConstraints))
-		JWN_SetWaveInWaveNote(fitOutput, SF_META_FITWFITCONSTRAINT, wFitConstraints)
+		JWN_SetWaveInWaveNote(fitOutput, SF_SERIALIZE + SF_META_FITWFITCONSTRAINT, wFitConstraints)
 	endif
 
 	SFH_SetTraceStyleForFit(fitOutput)
