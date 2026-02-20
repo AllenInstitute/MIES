@@ -3825,3 +3825,82 @@ static Function/WAVE SFO_OperationFit2Impl(WAVE wvY, WAVE/Z wvX, WAVE/WAVE prepF
 
 	return fitOutput
 End
+
+/// getmeta(data, [keyStr, datasetNumber]
+Function/WAVE SFO_OperationGetMeta(STRUCT SF_ExecutionData &exd)
+
+	string opShort = SF_OP_GETMETA
+	string key, str, path, serStr
+	variable dsNum, numDatasets, val
+
+	SFH_CheckArgumentCount(exd, opShort, 0, maxArgs = 3)
+	WAVE/WAVE datasets = SFH_GetArgumentAsWave(exd, opShort, 0)
+	key = SFH_GetArgumentAsText(exd, opShort, 1, defValue="")
+	dsNum = SFH_GetArgumentAsNumeric(exd, opShort, 2, defValue=0)
+
+	numDatasets = DimSize(datasets, ROWS)
+	SFH_ASSERT(dsNum < numDatasets, "Dataset with given number does not exist in input data")
+	WAVE/Z data = datasets[dsNum]
+
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 1)
+	if(!WaveExists(data))
+		return SFH_GetOutputForExecutor(output, exd.graph, opShort)
+	endif
+
+	if(IsEmpty(key))
+		WAVE/Z/T keys = JWN_GetKeysAt(data, SF_SERIALIZE)
+		serStr = ""
+		for(string key : keys)
+			path = SF_SERIALIZE + "/" + key
+			val = JWN_GetNumberFromWaveNote(data, path)
+			if(!IsNaN(val))
+				serStr += key + ": " + num2str(val, "%f") + "\r"
+				continue
+			endif
+			str = JWN_GetStringFromWaveNote(data, path)
+			if(!IsEmpty(str))
+				serStr += key + ":\r" + str + "\r"
+				continue
+			endif
+			WAVE/Z wvn = JWN_GetNumericWaveFromWaveNote(data, path)
+			if(WaveExists(wvn))
+				str = NumericWaveToList(wvn, "\r")
+				serStr += key + ":\r" + str
+				continue
+			endif
+			WAVE/Z/T wt = JWN_GetTextWaveFromWaveNote(data, path)
+			if(WaveExists(wt))
+				str = TextWaveToList(wt, "\r")
+				serStr += key + ":\r" + str
+				continue
+			endif
+		endfor
+		serStr = RemoveEnding(serStr, "\r")
+		Make/FREE/T wvt = {serStr}
+		output[0] = wvt
+	else
+		path = SF_SERIALIZE + "/" + key
+		val = JWN_GetNumberFromWaveNote(data, path)
+		if(!IsNaN(val))
+			Make/FREE/D wv = {val}
+			SetDimLabel ROWS, 0, $key, wv
+			output[0] = wv
+		endif
+		str = JWN_GetStringFromWaveNote(data, path)
+		if(!IsEmpty(str))
+			Make/FREE/T wvt = {str}
+			SetDimLabel ROWS, 0, $key, wvt
+			output[0] = wvt
+		endif
+		WAVE/Z wvn = JWN_GetNumericWaveFromWaveNote(data, path)
+		if(WaveExists(wvn))
+			output[0] = wvn
+		endif
+		WAVE/Z/T wvt = JWN_GetTextWaveFromWaveNote(data, path)
+		if(WaveExists(wvt))
+			output[0] = wvt
+		endif
+	endif
+
+	return SFH_GetOutputForExecutor(output, exd.graph, opShort)
+End
