@@ -3008,6 +3008,7 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 	SFE_ExecuteVariableAssignments(exd.graph, formula, allowEmptyCode=1)
 
 	SFH_AddVariableToStorage(exd.graph, "pfit", SFH_GetOutputForExecutor(prepFit, exd.graph, opShort))
+	WAVE/WAVE fitResult = SFH_AddVariableToStorageByFormula(exd.graph, "ivscc_apfrequency_fit", "fit2($ivsccavg_norm_y, $ivsccavg_norm_x, $pfit)", opShort)
 
 	// build plot tree
 	WAVE/WAVE varStorageOp = GetSFVarStorage(exd.graph)
@@ -3059,7 +3060,7 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 
 	numExp += 1
 	// fit trace
-	formula = "fit2($ivsccavg_norm_y, $ivsccavg_norm_x, $pfit)"
+	formula = "$ivscc_apfrequency_fit"
 	WAVE/WAVE wvY = SFE_ExecuteFormula(formula, exd.graph, preProcess = 0)
 	if(DimSize(wvY, ROWS) > 0)
 		JWN_SetStringInWaveNote(wvY[0], SF_META_LEGEND_LINE_PREFIX, "ivscc_apfrequency fit")
@@ -3068,6 +3069,7 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 
 	Duplicate/O varBackup, varStorage
 	SFH_AddVariableToStorage(exd.graph, "ivscc_apfrequency_explist", wvResult)
+	SFH_AddVariableToStorage(exd.graph, "ivscc_apfrequency_fit", fitResult)
 
 	JWN_SetNumberInWaveNote(plotAND, SF_META_PLOT, 1)
 
