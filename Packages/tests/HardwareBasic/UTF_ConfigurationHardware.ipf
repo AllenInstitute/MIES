@@ -114,6 +114,9 @@ static Function CheckIfConfigurationRestoresMCCFilterGain([string str])
 
 	AcquireData_NG(s, str)
 
+	// throw away existing message from auto gain setting
+	PrepareForPublishTest()
+
 	biasCurrent = 123
 	PGC_SetAndActivateControl(str, "setvar_DataAcq_Hold_IC", val = biasCurrent)
 
