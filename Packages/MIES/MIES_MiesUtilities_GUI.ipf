@@ -904,7 +904,7 @@ End
 Function ExportGraphToSVG(string winName)
 
 	string savePath, fileName, fullPath, baseName, timeStamp, documentsPath
-	variable maxFileNameLen
+	variable maxFileNameLen = 240
 
 	ASSERT(!IsEmpty(winName), "Window name must not be empty (menu invocation failed)")
 	ASSERT(WindowExists(winName), "Graph window does not exist or is not accessible: " + winName)
@@ -922,7 +922,7 @@ Function ExportGraphToSVG(string winName)
 	if(!IsEmpty(downloadsPath) && FolderExists(downloadsPath))
 		savePath = downloadsPath
 	else
-		print "Downloads folder unavailable, using Documents: " + documentsPath
+		print "Info: Downloads folder unavailable, using Documents: " + documentsPath
 	endif
 #endif // WINDOWS
 
@@ -935,7 +935,6 @@ Function ExportGraphToSVG(string winName)
 	timeStamp = ReplaceString(":", timeStamp, "_")
 	timeStamp = ReplaceString("-", timeStamp, "_")
 	// Keep filename under 240 chars to leave headroom for Windows MAX_PATH; this caps only the filename
-	maxFileNameLen = 240
 	fileName = baseName + "_" + timeStamp
 	if(strlen(fileName) > maxFileNameLen)
 		fileName = fileName[0, maxFileNameLen - 1]
