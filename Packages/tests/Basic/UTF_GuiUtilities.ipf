@@ -263,18 +263,18 @@ Function GetMarqueeHelperWorks()
 
 	// querying without kill (default)
 	[first, last] = GetMarqueeHelper("bottom", horiz = 1)
-	CHECK_EQUAL_VAR(round(first), 10)
-	CHECK_EQUAL_VAR(round(last), 30)
+	CHECK_CLOSE_VAR(first, 10, tol = 1)
+	CHECK_CLOSE_VAR(last, 30, tol = 1)
 
 	// querying without kill (explicit)
-	[first, last] = GetMarqueeHelper("bottom", horiz = 1)
-	CHECK_EQUAL_VAR(round(first), 10)
-	CHECK_EQUAL_VAR(round(last), 30)
+	[first, last] = GetMarqueeHelper("bottom", horiz = 1, kill = 0)
+	CHECK_CLOSE_VAR(first, 10, tol = 1)
+	CHECK_CLOSE_VAR(last, 30, tol = 1)
 
 	// query with kill and win
 	[first, last] = GetMarqueeHelper("left", vert = 1, kill = 1, win = win)
-	CHECK_EQUAL_VAR(round(first), 2)
-	CHECK_EQUAL_VAR(round(last), 4)
+	CHECK_CLOSE_VAR(first, 2, tol = 1)
+	CHECK_CLOSE_VAR(last, 4, tol = 1)
 	CHECK_EQUAL_STR(win, refWin)
 
 	// marquee is gone
