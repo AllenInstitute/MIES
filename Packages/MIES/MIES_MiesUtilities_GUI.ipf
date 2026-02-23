@@ -858,6 +858,7 @@ End
 static Function/S GetDownloadsPathIgor()
 
 	string ps, cmd, native, igorPath
+	variable igorPathLen
 
 	ps  = "(New-Object -ComObject Shell.Application).NameSpace('shell:Downloads').Self.Path"
 	cmd = "powershell.exe -nologo -noprofile -command \"" + ps + "\""
@@ -885,7 +886,8 @@ static Function/S GetDownloadsPathIgor()
 		return ""
 	endif
 
-	if(strlen(igorPath) > 0 && cmpstr(igorPath[strlen(igorPath) - 1], ":") != 0)
+	igorPathLen = strlen(igorPath)
+	if(igorPathLen > 0 && cmpstr(igorPath[igorPathLen - 1], ":") != 0)
 		igorPath += ":"
 	endif
 
@@ -902,6 +904,7 @@ End
 Function ExportGraphToSVG(string winName)
 
 	string savePath, fileName, fullPath, baseName, timeStamp, documentsPath
+	variable maxFileNameLen
 
 	ASSERT(!IsEmpty(winName), "Window name must not be empty")
 	ASSERT(WindowExists(winName), "Graph window does not exist or is not accessible: " + winName)
@@ -915,6 +918,7 @@ Function ExportGraphToSVG(string winName)
 #ifdef WINDOWS
 	// On Windows, prefer Downloads folder over Documents
 	string downloadsPath = GetDownloadsPathIgor()
+	// Verify Downloads path exists in case the shell lookup returns an unavailable location
 	if(!IsEmpty(downloadsPath) && FolderExists(downloadsPath))
 		savePath = downloadsPath
 	else
@@ -930,9 +934,10 @@ Function ExportGraphToSVG(string winName)
 	timeStamp = ReplaceString(":", timeStamp, "_")
 	timeStamp = ReplaceString("-", timeStamp, "_")
 	// Keep filename under 240 chars to leave headroom for full path (<260 incl. extension on Windows)
+	maxFileNameLen = 240
 	fileName = baseName + "_" + timeStamp
-	if(strlen(fileName) > 240)
-		fileName = fileName[0, 239]
+	if(strlen(fileName) > maxFileNameLen)
+		fileName = fileName[0, maxFileNameLen - 1]
 	endif
 	fileName = fileName + ".svg"
 	ASSERT(!IsEmpty(fileName), "File name must not be empty")
