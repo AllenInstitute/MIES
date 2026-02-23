@@ -862,6 +862,7 @@ static Function/S GetDownloadsPathIgor()
 	ps  = "(New-Object -ComObject Shell.Application).NameSpace('shell:Downloads').Self.Path"
 	cmd = "powershell.exe -nologo -noprofile -command \"" + ps + "\""
 
+	// 10s timeout to avoid hanging on PowerShell invocation
 	ExecuteScriptText/B/Z/W=10 cmd
 	if(V_flag != 0)
 		return ""
@@ -906,9 +907,6 @@ Function ExportGraphToSVG(string winName)
 	// Get Documents folder path as fallback
 	documentsPath = SpecialDirPath("Documents", 0, 0, 0)
 	ASSERT(!IsEmpty(documentsPath), "Could not determine Documents folder location.")
-	if(IsEmpty(documentsPath))
-		return NaN
-	endif
 
 	savePath = documentsPath
 
@@ -931,7 +929,7 @@ Function ExportGraphToSVG(string winName)
 	// Replace colons and other problematic characters with underscores for filename
 	timeStamp = ReplaceString(":", timeStamp, "_")
 	timeStamp = ReplaceString("-", timeStamp, "_")
-	// Ensure filename doesn't exceed OS limits (leave room for path and .svg extension)
+	// Keep filename under 240 chars to leave headroom for full path (<260 incl. extension on Windows)
 	fileName = baseName + "_" + timeStamp
 	if(strlen(fileName) > 240)
 		fileName = fileName[0, 239]
