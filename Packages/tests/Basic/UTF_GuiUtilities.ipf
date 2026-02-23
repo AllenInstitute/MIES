@@ -267,7 +267,7 @@ Function GetMarqueeHelperWorks()
 	CHECK_EQUAL_VAR(round(last), 30)
 
 	// querying without kill (explicit)
-	[first, last] = GetMarqueeHelper("bottom", horiz = 1)
+	[first, last] = GetMarqueeHelper("bottom", horiz = 1, kill = 0)
 	CHECK_EQUAL_VAR(round(first), 10)
 	CHECK_EQUAL_VAR(round(last), 30)
 
