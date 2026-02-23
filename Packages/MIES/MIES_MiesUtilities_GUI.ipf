@@ -852,7 +852,7 @@ End
 
 /// @brief Get Downloads folder path using PowerShell (Windows only)
 ///
-/// Returns a colon-separated Igor path, including a terminating colon.
+/// Returns a colon-delimited HFS path, including a terminating colon.
 ///
 /// @return Igor-formatted path to Downloads folder, or empty string on failure
 static Function/S GetDownloadsPathIgor()
@@ -865,6 +865,7 @@ static Function/S GetDownloadsPathIgor()
 	// 10s timeout to avoid hanging on PowerShell invocation
 	ExecuteScriptText/B/Z/W=10 cmd
 	if(V_flag != 0)
+		DEBUGPRINT("Failed to determine Downloads folder via PowerShell")
 		return ""
 	endif
 
@@ -878,6 +879,7 @@ static Function/S GetDownloadsPathIgor()
 		return ""
 	endif
 
+	// Convert native Windows path to Igor's HFS format
 	igorPath = GetHFSPath(native)
 	if(IsEmpty(igorPath))
 		return ""
@@ -915,10 +917,8 @@ Function ExportGraphToSVG(string winName)
 	string downloadsPath = GetDownloadsPathIgor()
 	if(!IsEmpty(downloadsPath) && FolderExists(downloadsPath))
 		savePath = downloadsPath
-	elseif(IsEmpty(downloadsPath))
-		print "Could not determine Downloads folder, using Documents: " + documentsPath
 	else
-		print "Downloads folder not accessible, using Documents: " + documentsPath
+		print "Downloads folder unavailable, using Documents: " + documentsPath
 	endif
 #endif // WINDOWS
 
@@ -926,7 +926,7 @@ Function ExportGraphToSVG(string winName)
 	baseName  = CleanupName(winName, 0)
 	timeStamp = GetISO8601TimeStamp(localTimeZone = 1)
 	ASSERT(!IsEmpty(timeStamp), "Timestamp must not be empty")
-	// Replace colons and other problematic characters with underscores for filename
+	// Replace colons and hyphens with underscores for filename
 	timeStamp = ReplaceString(":", timeStamp, "_")
 	timeStamp = ReplaceString("-", timeStamp, "_")
 	// Keep filename under 240 chars to leave headroom for full path (<260 incl. extension on Windows)
@@ -944,7 +944,6 @@ Function ExportGraphToSVG(string winName)
 		print "Graph exported to SVG: " + fullPath
 	catch
 		ASSERT(0, "Failed to save SVG file: " + fullPath)
-		return NaN
 	endtry
 
 	return 0
