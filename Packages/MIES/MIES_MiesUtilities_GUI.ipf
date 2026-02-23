@@ -863,7 +863,7 @@ static Function/S GetDownloadsPathIgor()
 	ps  = "(New-Object -ComObject Shell.Application).NameSpace('shell:Downloads').Self.Path"
 	cmd = "powershell.exe -nologo -noprofile -command \"" + ps + "\""
 
-	// 10s timeout to avoid hanging on PowerShell invocation
+	// 10s timeout to avoid hanging on PowerShell invocation; ample for a shell lookup
 	ExecuteScriptText/B/Z/W=10 cmd
 	if(V_flag != 0)
 		DEBUGPRINT("Failed to determine Downloads folder via PowerShell")
@@ -934,7 +934,7 @@ Function ExportGraphToSVG(string winName)
 	// Replace colons and hyphens with underscores for filename
 	timeStamp = ReplaceString(":", timeStamp, "_")
 	timeStamp = ReplaceString("-", timeStamp, "_")
-	// Keep filename under 240 chars to leave headroom for Windows MAX_PATH; this caps only the filename
+	// Keep filename under 240 chars to leave ~20 chars for directory path under Windows MAX_PATH; this caps only the filename
 	fileName = baseName + "_" + timeStamp
 	if(strlen(fileName) > maxFileNameLen)
 		fileName = fileName[0, maxFileNameLen - 1]
