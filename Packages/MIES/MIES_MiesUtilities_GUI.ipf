@@ -885,7 +885,7 @@ static Function/S GetDownloadsPathIgor()
 		return ""
 	endif
 
-	if(cmpstr(igorPath[strlen(igorPath) - 1], ":") != 0)
+	if(strlen(igorPath) > 0 && cmpstr(igorPath[strlen(igorPath) - 1], ":") != 0)
 		igorPath += ":"
 	endif
 
@@ -904,7 +904,7 @@ Function ExportGraphToSVG(string winName)
 	string savePath, fileName, fullPath, baseName, timeStamp, documentsPath
 
 	ASSERT(!IsEmpty(winName), "Window name must not be empty")
-	ASSERT(WindowExists(winName), "Window does not exist: " + winName)
+	ASSERT(WindowExists(winName), "Graph window does not exist or is not accessible: " + winName)
 
 	// Get Documents folder path as fallback
 	documentsPath = SpecialDirPath("Documents", 0, 0, 0)
@@ -925,7 +925,7 @@ Function ExportGraphToSVG(string winName)
 	// Generate file name from window name and timestamp
 	baseName  = CleanupName(winName, 0)
 	timeStamp = GetISO8601TimeStamp(localTimeZone = 1)
-	ASSERT(!IsEmpty(timeStamp), "Timestamp must not be empty")
+	ASSERT(!IsEmpty(timeStamp), "Failed to generate timestamp for filename")
 	// Replace colons and hyphens with underscores for filename
 	timeStamp = ReplaceString(":", timeStamp, "_")
 	timeStamp = ReplaceString("-", timeStamp, "_")
