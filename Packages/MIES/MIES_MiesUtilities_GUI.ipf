@@ -883,6 +883,7 @@ static Function/S GetDownloadsPathIgor()
 	// Convert native Windows path to Igor's HFS format
 	igorPath = GetHFSPath(native)
 	if(IsEmpty(igorPath))
+		DEBUGPRINT("Failed to convert Downloads path to HFS format")
 		return ""
 	endif
 
@@ -928,7 +929,7 @@ Function ExportGraphToSVG(string winName)
 
 	// Generate file name from window name and timestamp
 	baseName  = CleanupName(winName, 0)
-	// localTimeZone is a boolean flag in GetISO8601TimeStamp
+	// localTimeZone is a boolean flag in GetISO8601TimeStamp; use local time for filenames
 	timeStamp = GetISO8601TimeStamp(localTimeZone = 1)
 	ASSERT(!IsEmpty(timeStamp), "Failed to generate timestamp for filename")
 	// Replace colons and hyphens with underscores for filename
