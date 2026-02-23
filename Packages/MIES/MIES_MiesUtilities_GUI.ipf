@@ -934,7 +934,7 @@ Function ExportGraphToSVG(string winName)
 	// Replace colons and hyphens with underscores for filename
 	timeStamp = ReplaceString(":", timeStamp, "_")
 	timeStamp = ReplaceString("-", timeStamp, "_")
-	// Keep filename under 240 chars to leave ~20 chars for directory path under Windows MAX_PATH; this caps only the filename
+	// Cap filename at 240 chars to avoid extreme lengths; full path may still exceed Windows MAX_PATH
 	fileName = baseName + "_" + timeStamp
 	if(strlen(fileName) > maxFileNameLen)
 		fileName = fileName[0, maxFileNameLen - 1]
@@ -948,7 +948,7 @@ Function ExportGraphToSVG(string winName)
 		SavePICT/O/E=-9/WIN=$winName as fullPath
 		print "Graph exported to SVG: " + fullPath
 	catch
-		ASSERT(0, "Failed to save SVG file: " + fullPath)
+		ASSERT(0, "Failed to save SVG file: " + fullPath + "\r" + GetRTErrMessage())
 	endtry
 
 	return 0
