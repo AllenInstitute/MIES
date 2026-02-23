@@ -11,6 +11,10 @@
 /// @file MIES_MiesUtilities_GUI.ipf
 /// @brief This file holds MIES utility functions for GUI
 
+Menu "GraphPopup"
+	"Export graph to SVG", /Q, ExportGraphToSVG(GetCurrentWindow())
+End
+
 /// @brief Return the dimension label for the special, aka non-unique, controls
 Function/S GetSpecialControlLabel(variable channelType, variable controlType)
 
@@ -842,6 +846,108 @@ Function StoreWindowCoordinatesHook(STRUCT WMWinHookStruct &s)
 		default:
 			break
 	endswitch
+
+	return 0
+End
+
+/// @brief Get Downloads folder path using PowerShell (Windows only)
+///
+/// Returns a colon-separated Igor path, including a terminating colon.
+///
+/// @return Igor-formatted path to Downloads folder, or empty string on failure
+static Function/S GetDownloadsPathIgor()
+
+	string ps, cmd, native, igorPath
+
+	ps  = "(New-Object -ComObject Shell.Application).NameSpace('shell:Downloads').Self.Path"
+	cmd = "powershell.exe -nologo -noprofile -command \"" + ps + "\""
+
+	ExecuteScriptText/B/Z/W=10 cmd
+	if(V_flag != 0)
+		return ""
+	endif
+
+	native = S_value
+
+	// Strip CR/LF aggressively
+	native = ReplaceString("\r", native, "")
+	native = ReplaceString("\n", native, "")
+
+	if(IsEmpty(native))
+		return ""
+	endif
+
+	igorPath = GetHFSPath(native)
+	if(IsEmpty(igorPath))
+		return ""
+	endif
+
+	if(cmpstr(igorPath[strlen(igorPath) - 1], ":") != 0)
+		igorPath += ":"
+	endif
+
+	return igorPath
+End
+
+/// @brief Export a graph to SVG format
+///
+/// Saves the graph as SVG to:
+/// - Windows: Downloads folder (falls back to Documents if Downloads doesn't exist)
+/// - Mac: Documents folder
+/// @param winName Name of the window (graph) to export
+/// @return 0 on success, NaN on failure
+Function ExportGraphToSVG(string winName)
+
+	string savePath, fileName, fullPath, baseName, timeStamp, documentsPath
+
+	ASSERT(!IsEmpty(winName), "Window name must not be empty")
+	ASSERT(WindowExists(winName), "Window does not exist: " + winName)
+
+	// Get Documents folder path as fallback
+	documentsPath = SpecialDirPath("Documents", 0, 0, 0)
+	ASSERT(!IsEmpty(documentsPath), "Could not determine Documents folder location.")
+	if(IsEmpty(documentsPath))
+		return NaN
+	endif
+
+	savePath = documentsPath
+
+#ifdef WINDOWS
+	// On Windows, prefer Downloads folder over Documents
+	string downloadsPath = GetDownloadsPathIgor()
+	if(!IsEmpty(downloadsPath) && FolderExists(downloadsPath))
+		savePath = downloadsPath
+	elseif(IsEmpty(downloadsPath))
+		print "Could not determine Downloads folder, using Documents: " + documentsPath
+	else
+		print "Downloads folder not accessible, using Documents: " + documentsPath
+	endif
+#endif // WINDOWS
+
+	// Generate file name from window name and timestamp
+	baseName  = CleanupName(winName, 0)
+	timeStamp = GetISO8601TimeStamp(localTimeZone = 1)
+	ASSERT(!IsEmpty(timeStamp), "Timestamp must not be empty")
+	// Replace colons and other problematic characters with underscores for filename
+	timeStamp = ReplaceString(":", timeStamp, "_")
+	timeStamp = ReplaceString("-", timeStamp, "_")
+	// Ensure filename doesn't exceed OS limits (leave room for path and .svg extension)
+	fileName = baseName + "_" + timeStamp
+	if(strlen(fileName) > 240)
+		fileName = fileName[0, 239]
+	endif
+	fileName = fileName + ".svg"
+	ASSERT(!IsEmpty(fileName), "File name must not be empty")
+	fullPath = savePath + fileName
+
+	// Save graph as SVG (E=-9 is SVG format)
+	try
+		SavePICT/O/E=-9/WIN=$winName as fullPath
+		print "Graph exported to SVG: " + fullPath
+	catch
+		ASSERT(0, "Failed to save SVG file: " + fullPath)
+		return NaN
+	endtry
 
 	return 0
 End
