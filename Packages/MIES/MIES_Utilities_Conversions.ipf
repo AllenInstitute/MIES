@@ -54,24 +54,17 @@ threadsafe Function/S TextWaveToList(WAVE/Z/T txtWave, string rowSep, [string co
 	endif
 
 	ASSERT_TS(IsTextWave(txtWave), "Expected a text wave")
-	ASSERT_TS(!IsEmpty(rowSep), "Expected a non-empty row list separator")
 
 	if(ParamIsDefault(colSep))
 		colSep = ","
-	else
-		ASSERT_TS(!IsEmpty(colSep), "Expected a non-empty column list separator")
 	endif
 
 	if(ParamIsDefault(layerSep))
 		layerSep = ":"
-	else
-		ASSERT_TS(!IsEmpty(layerSep), "Expected a non-empty layer list separator")
 	endif
 
 	if(ParamIsDefault(chunkSep))
 		chunkSep = "/"
-	else
-		ASSERT_TS(!IsEmpty(chunkSep), "Expected a non-empty chunk list separator")
 	endif
 
 	if(ParamIsDefault(maxElements))

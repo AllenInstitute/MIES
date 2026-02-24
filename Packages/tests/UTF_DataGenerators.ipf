@@ -576,6 +576,10 @@ static Function/WAVE TestHelpNotebookGetter_IGNORE()
 
 	SetDimensionLabels(wt, TextWaveToList(wt, ";"), ROWS)
 
+#ifdef AUTOMATED_TESTING
+	RemoveTextWaveEntry1D(wt, SF_OP_TESTOP)
+#endif // AUTOMATED_TESTING
+
 	return wt
 End
 

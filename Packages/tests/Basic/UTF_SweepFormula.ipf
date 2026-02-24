@@ -2692,3 +2692,229 @@ static Function TestSourceLocationContent([WAVE/WAVE wv])
 	Redimension/N=(size, -1) srcLocs
 	CHECK_EQUAL_WAVES(srcLocs, wSrcLocs, mode = WAVE_DATA)
 End
+
+Function/WAVE TestFullPlottingOp(STRUCT SF_ExecutionData &exd)
+
+	string opShort = SF_OP_TESTOP
+	string formula
+
+	formula = "var = 1"
+
+	WAVE/WAVE varStorage = GetSFVarStorage(exd.graph)
+	Duplicate/FREE varStorage, varBackup
+	SFE_ExecuteVariableAssignments(exd.graph, formula, allowEmptyCode = 1)
+
+	WAVE/WAVE plotAND = GetFullPlottingAND(exd.graph, opShort, 2)
+	// build the following construct for the full plot specification, $var is created independently in the code above beforehand
+	// $var vs 2
+	// with
+	// 3 vs 4
+	// and
+	// 5 vs 6
+	// with
+	// 7 vs 8
+
+	WAVE/WAVE plotWITH = GetFullPlottingWITH(2)
+	formula = "$var"
+	WAVE/WAVE wvY = SFE_ExecuteFormula(formula, exd.graph, preProcess = 0)
+	JWN_SetStringInWaveNote(wvY[0], SF_META_LEGEND_LINE_PREFIX, "legend")
+	JWN_SetStringInWaveNote(wvY, SF_META_YAXISLABEL, "yaxislabel")
+	plotWITH[0][%FORMULAY] = wvY
+	formula                = "2"
+	WAVE/WAVE wvX = SFE_ExecuteFormula(formula, exd.graph, preProcess = 0)
+	plotWITH[0][%FORMULAX] = wvX
+
+	formula = "3"
+	WAVE/WAVE wvY = SFE_ExecuteFormula(formula, exd.graph, preProcess = 0)
+	plotWITH[1][%FORMULAY] = wvY
+	formula                = "4"
+	WAVE/WAVE wvX = SFE_ExecuteFormula(formula, exd.graph, preProcess = 0)
+	plotWITH[1][%FORMULAX] = wvX
+
+	plotAND[0] = plotWITH
+
+	WAVE/WAVE plotWITH = GetFullPlottingWITH(2)
+	formula = "5"
+	WAVE/WAVE wvY = SFE_ExecuteFormula(formula, exd.graph, preProcess = 0)
+	plotWITH[0][%FORMULAY] = wvY
+	formula                = "6"
+	WAVE/WAVE wvX = SFE_ExecuteFormula(formula, exd.graph, preProcess = 0)
+	plotWITH[0][%FORMULAX] = wvX
+
+	formula = "7"
+	WAVE/WAVE wvY = SFE_ExecuteFormula(formula, exd.graph, preProcess = 0)
+	plotWITH[1][%FORMULAY] = wvY
+	formula                = "8"
+	WAVE/WAVE wvX = SFE_ExecuteFormula(formula, exd.graph, preProcess = 0)
+	plotWITH[1][%FORMULAX] = wvX
+
+	plotAND[1] = plotWITH
+
+	Duplicate/O varBackup, varStorage
+
+	return SFH_GetOutputForExecutor(plotAND, exd.graph, opShort)
+End
+
+static Function TestFullPlottingSpecificationCheckTrace(string win, variable traceIndex, variable yRef, variable xRef)
+
+	string traces = TraceNameList(win, ";", 0x1)
+	WAVE   wvY    = TraceNameToWaveRef(win, StringFromList(traceIndex, traces))
+	WAVE   wvX    = XWaveRefFromTrace(win, StringFromList(traceIndex, traces))
+	Make/FREE/D wvRef = {{yRef}}
+	CHECK_EQUAL_WAVES(wvY, wvRef, mode = WAVE_DATA)
+	wvRef[] = xRef
+	CHECK_EQUAL_WAVES(wvX, wvRef, mode = WAVE_DATA)
+End
+
+static Function TestFullPlottingSpecification()
+
+	string win, traces, lbl, annoText
+	string graph, winResultBase
+
+	graph = CreateFakeSweepBrowser_IGNORE()
+	DFREF dfr = BSP_GetFolder(graph, MIES_BSP_PANEL_FOLDER)
+	winResultBase = BSP_GetFormulaGraph(graph)
+
+	SVAR funcName = $GetSFTestopName(graph)
+	funcName = "TestFullPlottingOp"
+
+	MIES_SF#SF_FormulaPlotter(graph, "testop()")
+	win = winResultBase + "_" + SF_WINNAME_SUFFIX_GRAPH + "#" + SF_WINNAME_SUFFIX_GRAPH + "0"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	traces = TraceNameList(win, ";", 0x1)
+	CHECK_EQUAL_VAR(ItemsInList(traces), 2)
+	TestFullPlottingSpecificationCheckTrace(win, 0, 1, 2)
+	TestFullPlottingSpecificationCheckTrace(win, 1, 3, 4)
+	lbl = AxisLabel(win, "left")
+	CHECK_EQUAL_STR(lbl, "yaxislabel")
+	annoText = StringByKey("TEXT", AnnotationInfo(win, SF_ANNOTATION_NAME))
+	CHECK_GT_VAR(strsearch(annoText, " legend", 0), 0)
+	win = winResultBase + "_" + SF_WINNAME_SUFFIX_GRAPH + "#" + SF_WINNAME_SUFFIX_GRAPH + "1"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	traces = TraceNameList(win, ";", 0x1)
+	CHECK_EQUAL_VAR(ItemsInList(traces), 2)
+	TestFullPlottingSpecificationCheckTrace(win, 0, 5, 6)
+	TestFullPlottingSpecificationCheckTrace(win, 1, 7, 8)
+
+	MIES_SF#SF_FormulaPlotter(graph, "9 vs 9\rand\rtestop()")
+	win = winResultBase + "_" + SF_WINNAME_SUFFIX_GRAPH + "#" + SF_WINNAME_SUFFIX_GRAPH + "0"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	traces = TraceNameList(win, ";", 0x1)
+	CHECK_EQUAL_VAR(ItemsInList(traces), 1)
+	TestFullPlottingSpecificationCheckTrace(win, 0, 9, 9)
+	win = winResultBase + "_" + SF_WINNAME_SUFFIX_GRAPH + "#" + SF_WINNAME_SUFFIX_GRAPH + "1"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	traces = TraceNameList(win, ";", 0x1)
+	CHECK_EQUAL_VAR(ItemsInList(traces), 2)
+	TestFullPlottingSpecificationCheckTrace(win, 0, 1, 2)
+	TestFullPlottingSpecificationCheckTrace(win, 1, 3, 4)
+	win = winResultBase + "_" + SF_WINNAME_SUFFIX_GRAPH + "#" + SF_WINNAME_SUFFIX_GRAPH + "2"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	traces = TraceNameList(win, ";", 0x1)
+	CHECK_EQUAL_VAR(ItemsInList(traces), 2)
+	TestFullPlottingSpecificationCheckTrace(win, 0, 5, 6)
+	TestFullPlottingSpecificationCheckTrace(win, 1, 7, 8)
+
+	MIES_SF#SF_FormulaPlotter(graph, "9 vs 9\rwith\rtestop()")
+	win = winResultBase + "_" + SF_WINNAME_SUFFIX_GRAPH + "#" + SF_WINNAME_SUFFIX_GRAPH + "0"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	traces = TraceNameList(win, ";", 0x1)
+	CHECK_EQUAL_VAR(ItemsInList(traces), 3)
+	TestFullPlottingSpecificationCheckTrace(win, 0, 9, 9)
+	TestFullPlottingSpecificationCheckTrace(win, 1, 1, 2)
+	TestFullPlottingSpecificationCheckTrace(win, 2, 3, 4)
+	win = winResultBase + "_" + SF_WINNAME_SUFFIX_GRAPH + "#" + SF_WINNAME_SUFFIX_GRAPH + "1"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	traces = TraceNameList(win, ";", 0x1)
+	CHECK_EQUAL_VAR(ItemsInList(traces), 2)
+	TestFullPlottingSpecificationCheckTrace(win, 0, 5, 6)
+	TestFullPlottingSpecificationCheckTrace(win, 1, 7, 8)
+
+	MIES_SF#SF_FormulaPlotter(graph, "testop()\rand\r9 vs 9")
+	win = winResultBase + "_" + SF_WINNAME_SUFFIX_GRAPH + "#" + SF_WINNAME_SUFFIX_GRAPH + "0"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	traces = TraceNameList(win, ";", 0x1)
+	CHECK_EQUAL_VAR(ItemsInList(traces), 2)
+	TestFullPlottingSpecificationCheckTrace(win, 0, 1, 2)
+	TestFullPlottingSpecificationCheckTrace(win, 1, 3, 4)
+	win = winResultBase + "_" + SF_WINNAME_SUFFIX_GRAPH + "#" + SF_WINNAME_SUFFIX_GRAPH + "1"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	traces = TraceNameList(win, ";", 0x1)
+	CHECK_EQUAL_VAR(ItemsInList(traces), 2)
+	TestFullPlottingSpecificationCheckTrace(win, 0, 5, 6)
+	TestFullPlottingSpecificationCheckTrace(win, 1, 7, 8)
+	win = winResultBase + "_" + SF_WINNAME_SUFFIX_GRAPH + "#" + SF_WINNAME_SUFFIX_GRAPH + "2"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	traces = TraceNameList(win, ";", 0x1)
+	CHECK_EQUAL_VAR(ItemsInList(traces), 1)
+	TestFullPlottingSpecificationCheckTrace(win, 0, 9, 9)
+
+	MIES_SF#SF_FormulaPlotter(graph, "testop()\rwith\r9 vs 9")
+	win = winResultBase + "_" + SF_WINNAME_SUFFIX_GRAPH + "#" + SF_WINNAME_SUFFIX_GRAPH + "0"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	traces = TraceNameList(win, ";", 0x1)
+	CHECK_EQUAL_VAR(ItemsInList(traces), 2)
+	TestFullPlottingSpecificationCheckTrace(win, 0, 1, 2)
+	TestFullPlottingSpecificationCheckTrace(win, 1, 3, 4)
+	win = winResultBase + "_" + SF_WINNAME_SUFFIX_GRAPH + "#" + SF_WINNAME_SUFFIX_GRAPH + "1"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	traces = TraceNameList(win, ";", 0x1)
+	CHECK_EQUAL_VAR(ItemsInList(traces), 3)
+	TestFullPlottingSpecificationCheckTrace(win, 0, 5, 6)
+	TestFullPlottingSpecificationCheckTrace(win, 1, 7, 8)
+	TestFullPlottingSpecificationCheckTrace(win, 2, 9, 9)
+End
+
+static Function TestAddVariableToStorage()
+
+	string graph
+
+	graph = CreateFakeSweepBrowser_IGNORE()
+
+	WAVE/WAVE varStorage = GetSFVarStorage(graph)
+	Make/FREE result1, result2
+
+	try
+		SFH_AddVariableToStorage(graph, "", result1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		SFH_AddVariableToStorage(graph, "0VAR", result1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		SFH_AddVariableToStorage(graph, " VAR", result1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		SFH_AddVariableToStorage(graph, "VAR ", result1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	result2[] = 2
+	SFH_AddVariableToStorage(graph, "result1", result1)
+	CHECK_EQUAL_VAR(FindDimLabel(varStorage, ROWS, "result1"), 0)
+	WAVE wv = varStorage[%result1]
+	CHECK_EQUAL_WAVES(result1, wv)
+
+	SFH_AddVariableToStorage(graph, "result2", result2)
+	CHECK_EQUAL_VAR(FindDimLabel(varStorage, ROWS, "result2"), 1)
+	WAVE wv = varStorage[%result2]
+	CHECK_EQUAL_WAVES(result2, wv)
+
+	SFH_AddVariableToStorage(graph, "result1", result2)
+	CHECK_EQUAL_VAR(FindDimLabel(varStorage, ROWS, "result1"), 0)
+	WAVE wv = varStorage[%result1]
+	CHECK_EQUAL_WAVES(result2, wv)
+End

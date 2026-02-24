@@ -72,7 +72,7 @@ static Function TestSweepFormulaAnnotations(string device)
 	formula = "data(select(selrange(cursors(A,B)),selchannels(AD),selsweeps(),selvis(all)))"
 	SF_SetFormula(dbPanel, formula)
 	PGC_SetAndActivateControl(dbPanel, "button_sweepFormula_display", val = 1)
-	annoInfo = AnnotationInfo(plotWin, "metadata", 1)
+	annoInfo = AnnotationInfo(plotWin, SF_ANNOTATION_NAME, 1)
 	typeRef  = "Legend"
 	flagsRef = "/N=metadata/J/I=0/V=1/D=1/LS=0/O=0/F=2/S=0/H=0/Q/Z=0/G=(0,0,0)/B=(65535,65535,65535)/T=36/A=RT/X=5.00/Y=5.00"
 	textRef  = "\\s(T000000d0_Sweep_0_AD1) Sweep 0 AD1\r\\s(T000001d1_Sweep_0_AD2) Sweep 0 AD2\r\\s(T000002d2_Sweep_1_AD1) Sweep 1 AD1\r\\s(T000003d3_Sweep_1_AD2) Sweep 1 AD2\r\\s(T000004d4_Sweep_2_AD1) Sweep 2 AD1\r\\s(T000005d5_Sweep_2_AD2) Sweep 2 AD2"
@@ -86,7 +86,7 @@ static Function TestSweepFormulaAnnotations(string device)
 	formula = "avg(data(select(selrange(cursors(A,B)),selchannels(AD),selsweeps(),selvis(all))))"
 	SF_SetFormula(dbPanel, formula)
 	PGC_SetAndActivateControl(dbPanel, "button_sweepFormula_display", val = 1)
-	annoInfo = AnnotationInfo(plotWin, "metadata", 1)
+	annoInfo = AnnotationInfo(plotWin, SF_ANNOTATION_NAME, 1)
 	typeRef  = "Legend"
 	flagsRef = "/N=metadata/J/I=0/V=1/D=1/LS=0/O=0/F=2/S=0/H=0/Q/Z=0/G=(0,0,0)/B=(65535,65535,65535)/T=36/A=RT/X=5.00/Y=5.00"
 	textRef  = "\\s(T000000d0_avg_data_Sweep_0_AD1) avg data Sweep 0 AD1\r\\s(T000001d1_avg_data_Sweep_0_AD2) avg data Sweep 0 AD2\r\\s(T000002d2_avg_data_Sweep_1_AD1) avg data Sweep 1 AD1\r\\s(T000003d3_avg_data_Sweep_1_AD2) avg data Sweep 1 AD2\r\\s(T000004d4_avg_data_Sweep_2_AD1) avg data Sweep 2 AD1\r\\s(T000005d5_avg_data_Sweep_2_AD2) avg data Sweep 2 AD2"
@@ -100,7 +100,7 @@ static Function TestSweepFormulaAnnotations(string device)
 	formula = "avg(avg(data(select(selrange(cursors(A,B)),selchannels(AD),selsweeps(),selvis(all)))))"
 	SF_SetFormula(dbPanel, formula)
 	PGC_SetAndActivateControl(dbPanel, "button_sweepFormula_display", val = 1)
-	annoInfo = AnnotationInfo(plotWin, "metadata", 1)
+	annoInfo = AnnotationInfo(plotWin, SF_ANNOTATION_NAME, 1)
 	typeRef  = "Legend"
 	flagsRef = "/N=metadata/J/I=0/V=1/D=1/LS=0/O=0/F=2/S=0/H=0/Q/Z=0/G=(0,0,0)/B=(65535,65535,65535)/T=36/A=RT/X=5.00/Y=5.00"
 	textRef  = "\\s(T000000d0_avg_avg_data_Sweep_0_AD1) avg avg data Sweep 0 AD1\r\\s(T000001d1_avg_avg_data_Sweep_0_AD2) avg avg data Sweep 0 AD2\r\\s(T000002d2_avg_avg_data_Sweep_1_AD1) avg avg data Sweep 1 AD1\r\\s(T000003d3_avg_avg_data_Sweep_1_AD2) avg avg data Sweep 1 AD2\r\\s(T000004d4_avg_avg_data_Sweep_2_AD1) avg avg data Sweep 2 AD1\r\\s(T000005d5_avg_avg_data_Sweep_2_AD2) avg avg data Sweep 2 AD2"

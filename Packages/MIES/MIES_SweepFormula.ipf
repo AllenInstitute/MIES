@@ -35,6 +35,42 @@ static Constant SF_SWEEPFORMULA_AXIS_Y = 1
 
 static StrConstant SF_UDATA_TABLEFORMULAS = "formulas"
 
+static Structure SF_PlotterGraphStruct
+
+	/// Name of the sweep formula graph this struct is associated with
+	string graph
+	/// Name of the window in which the plot/table is displayed
+	string win
+	/// Number of traces currently plotted
+	variable traceCnt
+	/// flag to call PSX plot creation when evaluated formulas contained psx operation
+	variable postPlotPSX
+	/// Non-zero if the legend should be shown for this plot
+	variable showLegend
+	/// Counter tracking how many formulas have been processed
+	variable formulaCounter
+	/// Wave holding x-axis labels used for the plotted data
+	WAVE xAxisLabels
+	/// Wave holding y-axis labels used for the plotted data
+	WAVE yAxisLabels
+	/// Text wave storing annotations to be displayed
+	WAVE/T wAnnotations
+	/// Text wave describing the argument setup for each formula
+	WAVE/T formulaArgSetup
+	/// Text wave containing the formulas for data displayed in tables
+	WAVE/T tableFormulas
+	/// Wave of waves storing collected plot formatting data for each formula
+	WAVE/WAVE collPlotFormData
+	/// Wave tracking which panels (graph/table) have been created
+	WAVE panelsCreated
+	/// Wave of waves with the evaluation results of a formula
+	WAVE/WAVE formulaResults
+	/// Text wave holding meta data about the plotted formulas and traces
+	WAVE/T plotMetaData
+	/// Wave assigning color groups to plotted traces
+	WAVE colorGroups
+EndStructure
+
 Menu "GraphPopup"
 	"Bring browser to front", /Q, SF_BringBrowserToFront()
 End
@@ -94,6 +130,10 @@ Function/WAVE SF_GetNamedOperations()
 	                  SF_OP_SELECTIVSCCSWEEPQC, SF_OP_SELECTIVSCCSETQC, SF_OP_SELECTRANGE, SF_OP_SELECTEXP, SF_OP_SELECTDEV,            \
 	                  SF_OP_SELECTEXPANDSCI, SF_OP_SELECTEXPANDRAC, SF_OP_SELECTSETCYCLECOUNT, SF_OP_SELECTSETSWEEPCOUNT,               \
 	                  SF_OP_SELECTSCIINDEX, SF_OP_SELECTRACINDEX, SF_OP_ANAFUNCPARAM, SF_OP_CONCAT, SF_OP_TABLE, SF_OP_EXTRACT}
+#ifdef AUTOMATED_TESTING
+	Make/FREE/T wtTest = {SF_OP_TESTOP}
+	Concatenate/NP/T {wtTest}, wt
+#endif // AUTOMATED_TESTING
 
 	return wt
 End
@@ -110,6 +150,19 @@ End
 Function/S SF_EscapeJsonPath(string str)
 
 	return ReplaceString("/", str, "~1")
+End
+
+/// @brief Retrieves the plot meta data from the JSON wave note or other sources and stores it in the plotMetaData wave
+static Function/WAVE SF_FillPlotMetaData(WAVE wvYRef, variable useXLabel, string dataUnits)
+
+	WAVE/T plotMetaData = GetSFPlotMetaData()
+	plotMetaData[%DATATYPE]      = JWN_GetStringFromWaveNote(wvYRef, SF_META_DATATYPE)
+	plotMetaData[%OPSTACK]       = JWN_GetStringFromWaveNote(wvYRef, SF_META_OPSTACK)
+	plotMetaData[%ARGSETUPSTACK] = JWN_GetStringFromWaveNote(wvYRef, SF_META_ARGSETUPSTACK)
+	plotMetaData[%XAXISLABEL]    = SelectString(useXLabel, SF_XLABEL_USER, JWN_GetStringFromWaveNote(wvYRef, SF_META_XAXISLABEL))
+	plotMetaData[%YAXISLABEL]    = JWN_GetStringFromWaveNote(wvYRef, SF_META_YAXISLABEL) + dataUnits
+
+	return plotMetaData
 End
 
 /// @brief transfer the wave scaling from one wave to another
@@ -159,22 +212,14 @@ Function SF_FormulaWaveScaleTransfer(WAVE source, WAVE dest, variable dimSource,
 	endswitch
 End
 
-static Function [WAVE/WAVE formulaResults, WAVE/T plotMetaData] SF_GatherFormulaResults(string xFormula, string yFormula, string graph, variable lineNr, variable offset)
+static Function [WAVE/WAVE formulaResults, WAVE/T plotMetaData] SF_FillFormulaResults(WAVE/Z/WAVE wvYRef, WAVE/Z/WAVE wvXRef, string yFormula)
 
 	variable i, numResultsY, numResultsX
 	variable useXLabel, addDataUnitsInAnnotation
 	string dataUnits, dataUnitCheck
 
-	WAVE/WAVE formulaResults = GetFormulaGatherWave()
-	WAVE/T    plotMetaData   = GetSFPlotMetaData()
-
-	WAVE/Z/WAVE wvXRef = $""
-	if(!IsEmpty(xFormula))
-		WAVE/WAVE wvXRef = SFE_ExecuteFormula(xFormula, graph, useVariables = 0, line = lineNr, offset = offset)
-		SFH_ASSERT(WaveExists(wvXRef), "x part of formula returned no result.")
-	endif
-	WAVE/WAVE wvYRef = SFE_ExecuteFormula(yFormula, graph, useVariables = 0, line = lineNr, offset = 0)
 	SFH_ASSERT(WaveExists(wvYRef), "y part of formula returned no result.")
+
 	numResultsY = DimSize(wvYRef, ROWS)
 	if(WaveExists(wvXRef))
 		numResultsX = DimSize(wvXRef, ROWS)
@@ -183,6 +228,7 @@ static Function [WAVE/WAVE formulaResults, WAVE/T plotMetaData] SF_GatherFormula
 
 	useXLabel                = 1
 	addDataUnitsInAnnotation = 1
+	WAVE/WAVE formulaResults = GetFormulaGatherWave()
 	Redimension/N=(numResultsY, -1) formulaResults
 
 	if(DimSize(wvYRef, ROWS) > 0 && DimSize(formulaResults, ROWS) > 0)
@@ -230,11 +276,21 @@ static Function [WAVE/WAVE formulaResults, WAVE/T plotMetaData] SF_GatherFormula
 		dataUnits = SelectString(addDataUnitsInAnnotation && !IsEmpty(dataUnitCheck), "", SF_FormatUnit(dataUnitCheck))
 	endif
 
-	plotMetaData[%DATATYPE]      = JWN_GetStringFromWaveNote(wvYRef, SF_META_DATATYPE)
-	plotMetaData[%OPSTACK]       = JWN_GetStringFromWaveNote(wvYRef, SF_META_OPSTACK)
-	plotMetaData[%ARGSETUPSTACK] = JWN_GetStringFromWaveNote(wvYRef, SF_META_ARGSETUPSTACK)
-	plotMetaData[%XAXISLABEL]    = SelectString(useXLabel, SF_XLABEL_USER, JWN_GetStringFromWaveNote(wvYRef, SF_META_XAXISLABEL))
-	plotMetaData[%YAXISLABEL]    = JWN_GetStringFromWaveNote(wvYRef, SF_META_YAXISLABEL) + dataUnits
+	WAVE/T plotMetaData = SF_FillPlotMetaData(wvyRef, useXLabel, dataUnits)
+
+	return [formulaResults, plotMetaData]
+End
+
+static Function [WAVE/WAVE formulaResults, WAVE/T plotMetaData] SF_GatherFormulaResults(string xFormula, string yFormula, string graph, variable lineNr, variable offset)
+
+	WAVE/Z/WAVE wvXRef = $""
+	if(!IsEmpty(xFormula))
+		WAVE/WAVE wvXRef = SFE_ExecuteFormula(xFormula, graph, useVariables = 0, line = lineNr, offset = offset)
+		SFH_ASSERT(WaveExists(wvXRef), "x part of formula returned no result.")
+	endif
+	WAVE/WAVE wvYRef = SFE_ExecuteFormula(yFormula, graph, useVariables = 0, line = lineNr, offset = 0)
+
+	[WAVE/WAVE formulaResults, WAVE/T plotMetaData] = SF_FillFormulaResults(wvYRef, wvXRef, yFormula)
 
 	return [formulaResults, plotMetaData]
 End
@@ -268,7 +324,8 @@ static Function/S SF_GetTraceAnnotationText(WAVE/T plotMetaData, WAVE data)
 	string channelId, prefix, legendPrefix
 	string traceAnnotation, annotationPrefix
 
-	prefix = RemoveEnding(ReplaceString(";", plotMetaData[%OPSTACK], " "), " ")
+	prefix       = RemoveEnding(ReplaceString(";", plotMetaData[%OPSTACK], " "), " ")
+	legendPrefix = JWN_GetStringFromWaveNote(data, SF_META_LEGEND_LINE_PREFIX)
 
 	strswitch(plotMetaData[%DATATYPE])
 		case SF_DATATYPE_EPOCHS: // fallthrough
@@ -276,8 +333,7 @@ static Function/S SF_GetTraceAnnotationText(WAVE/T plotMetaData, WAVE data)
 		case SF_DATATYPE_LABNOTEBOOK: // fallthrough
 		case SF_DATATYPE_ANAFUNCPARAM: // fallthrough
 		case SF_DATATYPE_TP:
-			sweepNo      = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
-			legendPrefix = JWN_GetStringFromWaveNote(data, SF_META_LEGEND_LINE_PREFIX)
+			sweepNo = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
 
 			if(!IsEmpty(legendPrefix))
 				legendPrefix = " " + legendPrefix + " "
@@ -296,7 +352,8 @@ static Function/S SF_GetTraceAnnotationText(WAVE/T plotMetaData, WAVE data)
 			break
 		default:
 			if(WhichListItem(SF_OP_DATA, plotMetaData[%OPSTACK]) == -1)
-				sprintf traceAnnotation, "%s", prefix
+				sprintf traceAnnotation, "%s %s", prefix, legendPrefix
+				traceAnnotation = TrimString(traceAnnotation)
 			else
 				channelNumber = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
 				channelType   = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
@@ -488,12 +545,12 @@ End
 ///
 /// @retval traces   generated trace names
 /// @retval traceCnt total count of all traces (input *and* output)
-static Function [WAVE/T traces, variable traceCnt] SF_CreateTraceNames(variable numTraces, variable dataNum, WAVE/T plotMetaData, WAVE data)
+static Function [WAVE/T traces, STRUCT SF_PlotterGraphStruct pg] SF_CreateTraceNames(variable numTraces, variable dataNum, WAVE/T plotMetaData, WAVE data)
 
 	string traceAnnotation
 
 	if(!numTraces)
-		return [$"", traceCnt]
+		return [$"", pg]
 	endif
 
 	traceAnnotation = SF_GetTraceAnnotationText(plotMetaData, data)
@@ -502,9 +559,10 @@ static Function [WAVE/T traces, variable traceCnt] SF_CreateTraceNames(variable 
 
 	Make/T/N=(numTraces)/FREE traces
 
-	traces[] = GetTraceNamePrefix(traceCnt + p) + "d" + num2istr(dataNum) + "_" + traceAnnotation
+	traces[]     = GetTraceNamePrefix(pg.traceCnt + p) + "d" + num2istr(dataNum) + "_" + traceAnnotation
+	pg.traceCnt += numTraces
 
-	return [traces, traceCnt + numTraces]
+	return [traces, pg]
 End
 
 /// Reduces a multi line legend to a single line if only the sweep number changes.
@@ -886,6 +944,16 @@ static Function/WAVE SF_PrepareResultWaveForPlotting(DFREF dfr, WAVE wvResult, v
 	return plotWave
 End
 
+/// @brief Returns 1 if the result is flagged as full plotting specification, 0 otherwise
+static Function SF_IsDataForFullPlotting(WAVE wv)
+
+	variable plot
+
+	plot = JWN_GetNumberFromWaveNote(wv, SF_META_PLOT)
+
+	return IsNaN(plot) ? 0 : !!plot
+End
+
 static Function SF_IsDataForTableDisplay(WAVE wvY)
 
 	variable useTable
@@ -895,7 +963,7 @@ static Function SF_IsDataForTableDisplay(WAVE wvY)
 	return IsNaN(useTable) ? 0 : !!useTable
 End
 
-static Function [variable dataCnt, variable traceCnt, variable gdIndex, string annotation, variable formulaAddedOncePerDataset, variable showLegend] SF_CreateTracesForResultsImpl(string graph, WAVE wvResultY, WAVE/Z wvResultX, WAVE/T plotMetaData, variable dataNum, WAVE/Z colorGroups, variable showInTable, string win, WAVE/T tableFormulas, WAVE plotFormData)
+static Function [variable dataCnt, variable gdIndex, string annotation, variable formulaAddedOncePerDataset] SF_CreateTracesForResultsImpl(STRUCT SF_PlotterGraphStruct &pg, WAVE wvResultY, WAVE/Z wvResultX, variable dataNum, variable showInTable, WAVE plotFormData)
 
 	STRUCT RGBColor color
 	variable numTraces, yPoints, xPoints, yMxN, xMxN, idx, splitTraces
@@ -906,11 +974,11 @@ static Function [variable dataCnt, variable traceCnt, variable gdIndex, string a
 
 	SFH_ASSERT(!(IsTextWave(wvResultY) && WaveDims(wvResultY) > 1), "Plotter got 2d+ text wave as y data.")
 
-	DFREF dfr = SF_GetBrowserDF(graph)
+	DFREF dfr = SF_GetBrowserDF(pg.graph)
 
-	[color] = SF_GetTraceColor(graph, plotMetaData[%OPSTACK], wvResultY, colorGroups)
+	[color] = SF_GetTraceColor(pg.graph, pg.plotMetaData[%OPSTACK], wvResultY, pg.colorGroups)
 
-	if(!WaveExists(wvResultX) && !IsEmpty(plotMetaData[%XAXISLABEL]))
+	if(!WaveExists(wvResultX) && !IsEmpty(pg.plotMetaData[%XAXISLABEL]))
 		WAVE/Z wvResultX = JWN_GetNumericWaveFromWaveNote(wvResultY, SF_META_XVALUES)
 
 		if(!WaveExists(wvResultX))
@@ -933,26 +1001,26 @@ static Function [variable dataCnt, variable traceCnt, variable gdIndex, string a
 
 	if(showInTable)
 		if(HasDimLabels(wvY, ROWS) || HasDimLabels(wvY, COLS))
-			AppendToTable/W=$win wvY.ld
+			AppendToTable/W=$pg.win wvY.ld
 		else
-			AppendToTable/W=$win wvY.d
+			AppendToTable/W=$pg.win wvY.d
 		endif
 
 		if(!formulaAddedOncePerDataset)
-			idx = GetNumberFromWaveNote(tableFormulas, NOTE_INDEX)
-			EnsureLargeEnoughWave(tableFormulas, indexShouldExist = idx)
-			tableFormulas[idx] = JWN_GetStringFromWaveNote(wvY, SF_META_FORMULA)
-			SetNumberInWaveNote(tableFormulas, NOTE_INDEX, idx + 1)
+			idx = GetNumberFromWaveNote(pg.tableFormulas, NOTE_INDEX)
+			EnsureLargeEnoughWave(pg.tableFormulas, indexShouldExist = idx)
+			pg.tableFormulas[idx] = JWN_GetStringFromWaveNote(wvY, SF_META_FORMULA)
+			SetNumberInWaveNote(pg.tableFormulas, NOTE_INDEX, idx + 1)
 			formulaAddedOncePerDataset = 1
 		endif
 
 		dataCnt += 1
-		return [dataCnt, traceCnt, gdIndex, annotation, formulaAddedOncePerDataset, showLegend]
+		return [dataCnt, gdIndex, annotation, formulaAddedOncePerDataset]
 	endif
 
 	if(IsTextWave(wvY))
 		SFH_ASSERT(WaveExists(wvX), "Cannot plot a single text wave")
-		ModifyGraph/W=$win swapXY=1
+		ModifyGraph/W=$pg.win swapXY=1
 		WAVE dummy = wvY
 		WAVE wvY   = wvX
 		WAVE wvX   = dummy
@@ -960,48 +1028,48 @@ static Function [variable dataCnt, variable traceCnt, variable gdIndex, string a
 
 	if(!WaveExists(wvX))
 		numTraces = yMxN
-		SF_CheckNumTraces(graph, numTraces)
-		[WAVE/T traces, traceCnt] = SF_CreateTraceNames(numTraces, dataNum, plotMetaData, wvResultY)
+		SF_CheckNumTraces(pg.graph, numTraces)
+		[WAVE/T traces, pg] = SF_CreateTraceNames(numTraces, dataNum, pg.plotMetaData, wvResultY)
 
 		for(i = 0; i < numTraces; i += 1)
 			SF_CollectTraceData(gdIndex, plotFormData, traces[i], wvX, wvY)
-			AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$traces[i]
-			annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, traces[i])
+			AppendTograph/W=$pg.win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$traces[i]
+			annotation += SF_GetMetaDataAnnotationText(pg.plotMetaData, wvResultY, traces[i])
 		endfor
 	elseif((xMxN == 1) && (yMxN == 1)) // 1D
 		if(yPoints == 1) // 0D vs 1D
 			numTraces = xPoints
-			SF_CheckNumTraces(graph, numTraces)
-			[WAVE/T traces, traceCnt] = SF_CreateTraceNames(numTraces, dataNum, plotMetaData, wvResultY)
+			SF_CheckNumTraces(pg.graph, numTraces)
+			[WAVE/T traces, pg] = SF_CreateTraceNames(numTraces, dataNum, pg.plotMetaData, wvResultY)
 
 			for(i = 0; i < numTraces; i += 1)
 				SF_CollectTraceData(gdIndex, plotFormData, traces[i], wvX, wvY)
-				AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][0]/TN=$traces[i] vs wvX[i][]
-				annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, traces[i])
+				AppendTograph/W=$pg.win/C=(color.red, color.green, color.blue) wvY[][0]/TN=$traces[i] vs wvX[i][]
+				annotation += SF_GetMetaDataAnnotationText(pg.plotMetaData, wvResultY, traces[i])
 			endfor
 		elseif(xPoints == 1) // 1D vs 0D
 			numTraces = yPoints
-			SF_CheckNumTraces(graph, numTraces)
-			[WAVE/T traces, traceCnt] = SF_CreateTraceNames(numTraces, dataNum, plotMetaData, wvResultY)
+			SF_CheckNumTraces(pg.graph, numTraces)
+			[WAVE/T traces, pg] = SF_CreateTraceNames(numTraces, dataNum, pg.plotMetaData, wvResultY)
 
 			for(i = 0; i < numTraces; i += 1)
 				SF_CollectTraceData(gdIndex, plotFormData, traces[i], wvX, wvY)
-				AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[i][]/TN=$traces[i] vs wvX[][0]
-				annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, traces[i])
+				AppendTograph/W=$pg.win/C=(color.red, color.green, color.blue) wvY[i][]/TN=$traces[i] vs wvX[][0]
+				annotation += SF_GetMetaDataAnnotationText(pg.plotMetaData, wvResultY, traces[i])
 			endfor
 		else // 1D vs 1D
 			splitTraces = min(yPoints, xPoints)
 			numTraces   = floor(max(yPoints, xPoints) / splitTraces)
-			SF_CheckNumTraces(graph, numTraces)
-			[WAVE/T traces, traceCnt] = SF_CreateTraceNames(numTraces, dataNum, plotMetaData, wvResultY)
+			SF_CheckNumTraces(pg.graph, numTraces)
+			[WAVE/T traces, pg] = SF_CreateTraceNames(numTraces, dataNum, pg.plotMetaData, wvResultY)
 
 			if(mod(max(yPoints, xPoints), splitTraces) == 0)
 				DebugPrint("Unmatched Data Alignment in ROWS.")
 			endif
 
 			for(i = 0; i < numTraces; i += 1)
-				if(WindowExists(win) && WhichListItem("bottom", AxisList(win)) >= 0)
-					info           = AxisInfo(win, "bottom")
+				if(WindowExists(pg.win) && WhichListItem("bottom", AxisList(pg.win)) >= 0)
+					info           = AxisInfo(pg.win, "bottom")
 					isCategoryAxis = NumberByKey("ISCAT", info) == 1
 
 					if(isCategoryAxis)
@@ -1020,19 +1088,19 @@ static Function [variable dataCnt, variable traceCnt, variable gdIndex, string a
 				SF_CollectTraceData(gdIndex, plotFormData, traces[i], wvX, wvY)
 				splitY = SF_SplitPlotting(wvY, ROWS, i, splitTraces)
 				splitX = SF_SplitPlotting(wvX, ROWS, i, splitTraces)
-				AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[splitY, splitY + splitTraces - 1][0]/TN=$traces[i] vs wvX[splitX, splitX + splitTraces - 1][0]
-				annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, traces[i])
+				AppendTograph/W=$pg.win/C=(color.red, color.green, color.blue) wvY[splitY, splitY + splitTraces - 1][0]/TN=$traces[i] vs wvX[splitX, splitX + splitTraces - 1][0]
+				annotation += SF_GetMetaDataAnnotationText(pg.plotMetaData, wvResultY, traces[i])
 			endfor
 		endif
 	elseif(yMxN == 1) // 1D vs 2D
 		numTraces = xMxN
-		SF_CheckNumTraces(graph, numTraces)
-		[WAVE/T traces, traceCnt] = SF_CreateTraceNames(numTraces, dataNum, plotMetaData, wvResultY)
+		SF_CheckNumTraces(pg.graph, numTraces)
+		[WAVE/T traces, pg] = SF_CreateTraceNames(numTraces, dataNum, pg.plotMetaData, wvResultY)
 
 		for(i = 0; i < numTraces; i += 1)
 			SF_CollectTraceData(gdIndex, plotFormData, traces[i], wvX, wvY)
-			AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][0]/TN=$traces[i] vs wvX[][i]
-			annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, traces[i])
+			AppendTograph/W=$pg.win/C=(color.red, color.green, color.blue) wvY[][0]/TN=$traces[i] vs wvX[][i]
+			annotation += SF_GetMetaDataAnnotationText(pg.plotMetaData, wvResultY, traces[i])
 		endfor
 	elseif(xMxN == 1) // 2D vs 1D or 0D
 		if(xPoints == 1) // 2D vs 0D -> extend X to 1D with constant value
@@ -1041,18 +1109,18 @@ static Function [variable dataCnt, variable traceCnt, variable gdIndex, string a
 			wvX     = wvX[0]
 		endif
 		numTraces = yMxN
-		SF_CheckNumTraces(graph, numTraces)
-		[WAVE/T traces, traceCnt] = SF_CreateTraceNames(numTraces, dataNum, plotMetaData, wvResultY)
+		SF_CheckNumTraces(pg.graph, numTraces)
+		[WAVE/T traces, pg] = SF_CreateTraceNames(numTraces, dataNum, pg.plotMetaData, wvResultY)
 
 		for(i = 0; i < numTraces; i += 1)
 			SF_CollectTraceData(gdIndex, plotFormData, traces[i], wvX, wvY)
-			AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$traces[i] vs wvX
-			annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, traces[i])
+			AppendTograph/W=$pg.win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$traces[i] vs wvX
+			annotation += SF_GetMetaDataAnnotationText(pg.plotMetaData, wvResultY, traces[i])
 		endfor
 	else // 2D vs 2D
 		numTraces = WaveExists(wvX) ? max(1, max(yMxN, xMxN)) : max(1, yMxN)
-		SF_CheckNumTraces(graph, numTraces)
-		[WAVE/T traces, traceCnt] = SF_CreateTraceNames(numTraces, dataNum, plotMetaData, wvResultY)
+		SF_CheckNumTraces(pg.graph, numTraces)
+		[WAVE/T traces, pg] = SF_CreateTraceNames(numTraces, dataNum, pg.plotMetaData, wvResultY)
 
 		if(yPoints != xPoints)
 			DebugPrint("Size mismatch in data rows for plotting waves.")
@@ -1063,22 +1131,22 @@ static Function [variable dataCnt, variable traceCnt, variable gdIndex, string a
 		for(i = 0; i < numTraces; i += 1)
 			SF_CollectTraceData(gdIndex, plotFormData, traces[i], wvX, wvY)
 			if(WaveExists(wvX))
-				AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][min(yMxN - 1, i)]/TN=$traces[i] vs wvX[][min(xMxN - 1, i)]
+				AppendTograph/W=$pg.win/C=(color.red, color.green, color.blue) wvY[][min(yMxN - 1, i)]/TN=$traces[i] vs wvX[][min(xMxN - 1, i)]
 			else
-				AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$traces[i]
+				AppendTograph/W=$pg.win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$traces[i]
 			endif
-			annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, traces[i])
+			annotation += SF_GetMetaDataAnnotationText(pg.plotMetaData, wvResultY, traces[i])
 		endfor
 	endif
 
-	showLegend = showLegend && SF_GetShowLegend(wvY)
+	pg.showLegend = pg.showLegend && SF_GetShowLegend(wvY)
 
 	dataCnt += 1
 
-	return [dataCnt, traceCnt, gdIndex, annotation, formulaAddedOncePerDataset, showLegend]
+	return [dataCnt, gdIndex, annotation, formulaAddedOncePerDataset]
 End
 
-static Function [variable dataCnt, variable traceCnt, WAVE/Z colorGroups, variable showLegend] SF_CreateTracesForResults(string graph, WAVE/WAVE formulaResults, variable formulaCounter, WAVE/T plotMetaData, string win, WAVE/T tableFormulas, WAVE/T wAnnotations, WAVE/T formulaArgSetup, WAVE/WAVE collPlotFormData)
+static Function [variable dataCnt] SF_CreateTracesForResults(STRUCT SF_PlotterGraphStruct &pg)
 
 	variable i, idx, showInTable, numData, formulaAddedOncePerDataset
 	variable gdIndex // indexes in tracesInGraph wave and dataInGraph wave in SF_CollectTraceData(), both waves are stored in plotformData
@@ -1086,21 +1154,21 @@ static Function [variable dataCnt, variable traceCnt, WAVE/Z colorGroups, variab
 
 	WAVE/WAVE plotFormData = SF_CreatePlotFormulaDataWave()
 
-	SF_FormulaPlotterExtendResultsIfCompatible(formulaResults)
+	SF_FormulaPlotterExtendResultsIfCompatible(pg.formulaResults)
 
-	if(WaveExists(colorGroups))
-		Duplicate/FREE colorGroups, previousColorGroups
+	if(WaveExists(pg.colorGroups))
+		Duplicate/FREE pg.colorGroups, previousColorGroups
 	else
 		WAVE/ZZ previousColorGroups
 	endif
-	WAVE/Z colorGroups = SF_GetColorGroups(formulaResults, previousColorGroups)
-	showInTable = SF_IsDataForTableDisplay(formulaResults)
+	WAVE/Z pg.colorGroups = SF_GetColorGroups(pg.formulaResults, previousColorGroups)
+	showInTable = SF_IsDataForTableDisplay(pg.formulaResults)
 
-	numData = DimSize(formulaResults, ROWS)
+	numData = DimSize(pg.formulaResults, ROWS)
 	for(i = 0; i < numData; i += 1)
 
-		WAVE/Z wvResultX = formulaResults[i][%FORMULAX]
-		WAVE/Z wvResultY = formulaResults[i][%FORMULAY]
+		WAVE/Z wvResultX = pg.formulaResults[i][%FORMULAX]
+		WAVE/Z wvResultY = pg.formulaResults[i][%FORMULAY]
 		if(!WaveExists(wvResultY))
 			continue
 		endif
@@ -1108,26 +1176,28 @@ static Function [variable dataCnt, variable traceCnt, WAVE/Z colorGroups, variab
 			continue
 		endif
 
-		[dataCnt, traceCnt, gdIndex, annotation, formulaAddedOncePerDataset, showLegend] = SF_CreateTracesForResultsImpl(graph, wvResultY, wvResultX, plotMetaData, i, colorGroups, showInTable, win, tableFormulas, plotFormData)
+		[dataCnt, gdIndex, annotation, formulaAddedOncePerDataset] = SF_CreateTracesForResultsImpl(pg, wvResultY, wvResultX, i, showInTable, plotFormData)
 	endfor
 
 	if(!IsEmpty(annotation))
-		idx = GetNumberFromWaveNote(wAnnotations, NOTE_INDEX)
-		EnsureLargeEnoughWave(wAnnotations, indexShouldExist = idx)
-		wAnnotations[idx] = annotation
-		SetNumberInWaveNote(wAnnotations, NOTE_INDEX, idx + 1)
+		idx = GetNumberFromWaveNote(pg.wAnnotations, NOTE_INDEX)
+		EnsureLargeEnoughWave(pg.wAnnotations, indexShouldExist = idx)
+		pg.wAnnotations[idx] = annotation
+		SetNumberInWaveNote(pg.wAnnotations, NOTE_INDEX, idx + 1)
 
-		idx = GetNumberFromWaveNote(formulaArgSetup, NOTE_INDEX)
-		EnsureLargeEnoughWave(formulaArgSetup, indexShouldExist = idx)
-		formulaArgSetup[idx] = plotMetaData[%ARGSETUPSTACK]
-		SetNumberInWaveNote(formulaArgSetup, NOTE_INDEX, idx + 1)
+		idx = GetNumberFromWaveNote(pg.formulaArgSetup, NOTE_INDEX)
+		EnsureLargeEnoughWave(pg.formulaArgSetup, indexShouldExist = idx)
+		pg.formulaArgSetup[idx] = pg.plotMetaData[%ARGSETUPSTACK]
+		SetNumberInWaveNote(pg.formulaArgSetup, NOTE_INDEX, idx + 1)
 	endif
 
-	EnsureLargeEnoughWave(collPlotFormData, indexShouldExist = formulaCounter)
+	EnsureLargeEnoughWave(pg.collPlotFormData, indexShouldExist = pg.formulaCounter)
 	WAVE/T    tracesInGraph = plotFormData[0]
 	WAVE/WAVE dataInGraph   = plotFormData[1]
 	Redimension/N=(gdIndex, -1) tracesInGraph, dataInGraph
-	collPlotFormData[formulaCounter] = plotFormData
+	pg.collPlotFormData[pg.formulaCounter] = plotFormData
+
+	return [dataCnt]
 End
 
 static Function SF_RestorePlotProperties(WAVE/WAVE prevPlotProperties)
@@ -1256,6 +1326,43 @@ static Function/S SF_CreateDataDisplayWindow(string graph, WAVE/WAVE formulaResu
 	return win
 End
 
+static Function [STRUCT SF_PlotterGraphStruct pg] SF_ResetPlotterGraphStruct(string graph)
+
+	pg.graph = graph
+	pg.win   = ""
+
+	WAVE/Z pg.colorGroups = $""
+	pg.traceCnt       = 0
+	pg.postPlotPSX    = 0
+	pg.showLegend     = 1
+	pg.formulaCounter = 0
+
+	Make/FREE/T/N=0 xAxisLabels, yAxisLabels
+	WAVE pg.xAxisLabels = xAxisLabels
+	WAVE pg.yAxisLabels = yAxisLabels
+
+	Make/FREE=1/T/N=(MINIMUM_WAVE_SIZE) wAnnotations, formulaArgSetup, tableFormulas
+	SetNumberInWaveNote(wAnnotations, NOTE_INDEX, 0)
+	SetNumberInWaveNote(formulaArgSetup, NOTE_INDEX, 0)
+	SetNumberInWaveNote(tableFormulas, NOTE_INDEX, 0)
+	WAVE/T pg.wAnnotations    = wAnnotations
+	WAVE/T pg.formulaArgSetup = formulaArgSetup
+	WAVE/T pg.tableFormulas   = tableFormulas
+
+	Make/FREE=1/WAVE/N=(MINIMUM_WAVE_SIZE) collPlotFormData
+	WAVE pg.collPlotFormData = collPlotFormData
+
+	Make/FREE=1/D/N=2 panelsCreated
+	SetDimLabel ROWS, 0, GRAPH, panelsCreated
+	SetDimLabel ROWS, 1, TABLE, panelsCreated
+	WAVE pg.panelsCreated = panelsCreated
+
+	WAVE/Z/WAVE pg.formulaResults = $""
+	WAVE/Z/T    pg.plotMetaData   = $""
+
+	return [pg]
+End
+
 /// @brief  Plot the formula using the data from graph
 ///
 /// @param graph  graph to pass to SF_FormulaExecutor
@@ -1264,13 +1371,12 @@ End
 /// @param lineVars  [optional, default NaN] number of lines in the SF notebook with variable assignments in front of the formula
 static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode, variable lineVars])
 
-	variable i, dataCnt, splitTraces, numGraphs, traceCnt
-	variable winDisplayMode, showLegend, line, lineGraph, lineGraphFormula
-	variable keepUserSelection, formulasAreDifferent, postPlotPSX
-	variable formulaCounter, xFormulaOffset
-	variable numTableFormulas, formulaAddedOncePerDataset, showInTable
-	string win, wList, xAxis
-	string formulasRemain, moreFormulas, yAndXFormula, xFormula, yFormula, winHook
+	variable i, j, k, dataCnt, numGraphs, numPlotAND, numPlotWITH
+	variable winDisplayMode, line, lineGraph, lineGraphFormula, xFormulaOffset
+	variable keepUserSelection, showInTable, isFullPlot
+	string wList
+	string formulasRemain, moreFormulas, yAndXFormula, xFormula, yFormula
+	STRUCT SF_PlotterGraphStruct pg
 
 	winDisplayMode = ParamIsDefault(dmMode) ? SF_DM_SUBWINDOWS : dmMode
 	lineVars       = ParamIsDefault(lineVars) ? NaN : lineVars
@@ -1291,30 +1397,12 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 	WAVE/T    winGraphs          = outputWindows[%GRAPH]
 	WAVE/WAVE prevPlotProperties = GetSFPlotProperties()
 
-	Make/FREE/D/N=2 panelsCreated
-	SetDimLabel ROWS, 0, GRAPH, panelsCreated
-	SetDimLabel ROWS, 1, TABLE, panelsCreated
-
 	for(i = 0; i < numGraphs; i += 1)
-
-		traceCnt             = 0
-		postPlotPSX          = 0
-		showLegend           = 1
-		formulaCounter       = 0
-		formulasAreDifferent = 0
-		WAVE/Z colorGroups = $""
-		FastOp panelsCreated = 0
-
-		Make/FREE/T/N=0 xAxisLabels, yAxisLabels
 
 		formulasRemain = graphCode[i][%GRAPHCODE]
 		lineGraph      = str2num(graphCode[i][%LINE])
 
-		Make/FREE=1/T/N=(MINIMUM_WAVE_SIZE) wAnnotations, formulaArgSetup, tableFormulas
-		SetNumberInWaveNote(wAnnotations, NOTE_INDEX, 0)
-		SetNumberInWaveNote(formulaArgSetup, NOTE_INDEX, 0)
-		SetNumberInWaveNote(tableFormulas, NOTE_INDEX, 0)
-		Make/FREE=1/WAVE/N=(MINIMUM_WAVE_SIZE) collPlotFormData
+		[pg] = SF_ResetPlotterGraphStruct(graph)
 
 		do
 
@@ -1331,73 +1419,70 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 
 			try
 				[WAVE/WAVE formulaResults, WAVE/T plotMetaData] = SF_GatherFormulaResults(xFormula, yFormula, graph, line, xFormulaOffset)
+				WAVE/WAVE pg.formulaResults = formulaResults
+				WAVE/T    pg.plotMetaData   = plotMetaData
 			catch
 				SF_KillEmptyDataWindows(winGraphs)
 				SF_KillEmptyDataWindows(winTables)
 				Abort
 			endtry
 
-			SF_GatherAxisLabels(formulaResults, plotMetaData[%XAXISLABEL], "FORMULAX", xAxisLabels)
-			SF_GatherAxisLabels(formulaResults, plotMetaData[%YAXISLABEL], "FORMULAY", yAxisLabels)
-
-			showInTable = SF_IsDataForTableDisplay(formulaResults)
-			if(!panelsCreated[%GRAPH] && !showInTable)
-				win                   = SF_CreateDataDisplayWindow(graph, formulaResults, outputWindows, winDisplayMode, prevPlotProperties)
-				panelsCreated[%GRAPH] = 1
-				if(winDisplaymode == SF_DM_NORMAL)
-					wList = AddListItem(win, wList)
+			isFullPlot = SF_IsDataForFullPlotting(formulaResults)
+			numPlotAND = isFullPlot ? DimSize(formulaResults, ROWS) : 1
+			for(j = 0; j < numPlotAND; j += 1)
+				if(isFullPlot)
+					WAVE/WAVE plotsWITH = formulaResults[j][%FORMULAY]
 				endif
-			elseif(!panelsCreated[%TABLE] && showInTable)
-				win                   = SF_CreateDataDisplayWindow(graph, formulaResults, outputWindows, winDisplayMode, prevPlotProperties)
-				panelsCreated[%TABLE] = 1
-				if(winDisplaymode == SF_DM_NORMAL)
-					wList = AddListItem(win, wList)
+				numPlotWITH = isFullPlot ? DimSize(plotsWITH, ROWS) : 1
+				for(k = 0; k < numPlotWITH; k += 1)
+					if(isFullPlot)
+						WAVE/Z/WAVE wvYRef = plotsWITH[k][%FORMULAY]
+						WAVE/Z/WAVE wvXRef = plotsWITH[k][%FORMULAX]
+						[WAVE/WAVE formulaResultsInner, WAVE/T plotMetaDataInner] = SF_FillFormulaResults(wvYRef, wvXRef, yFormula)
+						WAVE/WAVE pg.formulaResults = formulaResultsInner
+						WAVE/T    pg.plotMetaData   = plotMetaDataInner
+					endif
+
+					SF_GatherAxisLabels(pg.formulaResults, pg.plotMetaData[%XAXISLABEL], "FORMULAX", pg.xAxisLabels)
+					SF_GatherAxisLabels(pg.formulaResults, pg.plotMetaData[%YAXISLABEL], "FORMULAY", pg.yAxisLabels)
+
+					showInTable = SF_IsDataForTableDisplay(pg.formulaResults)
+					if(!pg.panelsCreated[%GRAPH] && !showInTable)
+						pg.win                   = SF_CreateDataDisplayWindow(pg.graph, pg.formulaResults, outputWindows, winDisplayMode, prevPlotProperties)
+						pg.panelsCreated[%GRAPH] = 1
+						if(winDisplaymode == SF_DM_NORMAL)
+							wList = AddListItem(pg.win, wList)
+						endif
+					elseif(!pg.panelsCreated[%TABLE] && showInTable)
+						pg.win                   = SF_CreateDataDisplayWindow(pg.graph, pg.formulaResults, outputWindows, winDisplayMode, prevPlotProperties)
+						pg.panelsCreated[%TABLE] = 1
+						if(winDisplaymode == SF_DM_NORMAL)
+							wList = AddListItem(pg.win, wList)
+						endif
+					elseif(!showInTable)
+						pg.win = winGraphs[GetNumberFromWaveNote(winGraphs, NOTE_INDEX) - 1]
+					else
+						pg.win = winTables[GetNumberFromWaveNote(winTables, NOTE_INDEX) - 1]
+					endif
+
+					if(!cmpstr(pg.plotMetaData[%DATATYPE], SF_DATATYPE_PSX))
+						PSX_Plot(pg.win, pg.graph, pg.formulaResults, pg.plotMetaData)
+						pg.postPlotPSX = 1
+						break
+					endif
+
+					[dataCnt]          = SF_CreateTracesForResults(pg)
+					pg.formulaCounter += 1
+				endfor
+
+				if(j < (numPlotAND - 1))
+					SF_FinishPlotWindow(pg, winGraphs)
+					[pg] = SF_ResetPlotterGraphStruct(graph)
 				endif
-			elseif(!showInTable)
-				win = winGraphs[GetNumberFromWaveNote(winGraphs, NOTE_INDEX) - 1]
-			else
-				win = winTables[GetNumberFromWaveNote(winTables, NOTE_INDEX) - 1]
-			endif
-
-			if(!cmpstr(plotMetaData[%DATATYPE], SF_DATATYPE_PSX))
-				PSX_Plot(win, graph, formulaResults, plotMetaData)
-				postPlotPSX = 1
-				continue
-			endif
-
-			[dataCnt, traceCnt, colorGroups, showLegend] = SF_CreateTracesForResults(graph, formulaResults, formulaCounter, plotMetaData, win, tableFormulas, wAnnotations, formulaArgSetup, collPlotFormData)
-			formulaCounter                              += 1
+			endfor
 		while(1)
 
-		numTableFormulas = GetNumberFromWaveNote(tableFormulas, NOTE_INDEX)
-		if(numTableFormulas)
-			Redimension/N=(numTableFormulas) tableFormulas
-			SetWindow $win, userdata($SF_UDATA_TABLEFORMULAS)=WaveToJSON(tableFormulas)
-		endif
-
-		if(panelsCreated[%GRAPH])
-			win = winGraphs[GetNumberFromWaveNote(winGraphs, NOTE_INDEX) - 1]
-			if(showLegend)
-				formulasAreDifferent = SF_AddPlotLegend(win, wAnnotations, formulaArgSetup, formulaResults)
-			endif
-
-			SF_AddPlotTicks(graph, win, formulaResults)
-
-			winHook = JWN_GetStringFromWaveNote(formulaResults, SF_META_WINDOW_HOOK)
-			if(!IsEmpty(winHook))
-				SetWindow $win, tooltipHook(SweepFormulaTraceValue)=$winHook
-			endif
-
-			SF_AddPlotTraceStyle(graph, win, formulaCounter, collPlotFormData, formulasAreDifferent)
-
-			if(traceCnt > 0)
-				SF_AddPlotLabels(win, xAxisLabels, yAxisLabels)
-			endif
-		endif
-
-		if(postPlotPSX)
-			PSX_PostPlot(win)
-		endif
+		SF_FinishPlotWindow(pg, winGraphs)
 
 	endfor
 
@@ -1414,13 +1499,49 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 	SF_KillOldDataDisplayWindows(graph, winDisplayMode, wList, outputWindows)
 End
 
-static Function SF_AddPlotTraceStyle(string graph, string win, variable formulaCounter, WAVE/WAVE collPlotFormData, variable formulasAreDifferent)
+static Function SF_FinishPlotWindow(STRUCT SF_PlotterGraphStruct &pg, WAVE/T winGraphs)
+
+	variable formulasAreDifferent, numTableFormulas
+	string winHook
+
+	numTableFormulas = GetNumberFromWaveNote(pg.tableFormulas, NOTE_INDEX)
+	if(numTableFormulas)
+		Redimension/N=(numTableFormulas) pg.tableFormulas
+		SetWindow $pg.win, userdata($SF_UDATA_TABLEFORMULAS)=WaveToJSON(pg.tableFormulas)
+	endif
+
+	if(pg.panelsCreated[%GRAPH])
+		pg.win = winGraphs[GetNumberFromWaveNote(winGraphs, NOTE_INDEX) - 1]
+		if(pg.showLegend)
+			formulasAreDifferent = SF_AddPlotLegend(pg)
+		endif
+
+		SF_AddPlotTicks(pg.graph, pg.win, pg.formulaResults)
+
+		winHook = JWN_GetStringFromWaveNote(pg.formulaResults, SF_META_WINDOW_HOOK)
+		if(!IsEmpty(winHook))
+			SetWindow $pg.win, tooltipHook(SweepFormulaTraceValue)=$winHook
+		endif
+
+		SF_AddPlotTraceStyle(pg, formulasAreDifferent)
+
+		if(pg.traceCnt > 0)
+			SF_AddPlotLabels(pg.win, pg.xAxisLabels, pg.yAxisLabels)
+		endif
+	endif
+
+	if(pg.postPlotPSX)
+		PSX_PostPlot(pg.win)
+	endif
+End
+
+static Function SF_AddPlotTraceStyle(STRUCT SF_PlotterGraphStruct &pg, variable formulasAreDifferent)
 
 	variable i, j, numTraces, markerCode, lineCode, isCategoryAxis, tagCounter, lineStyle, overrideMarker, traceToFront
 	string trace, info, tagText, name, wvName
 
-	for(i = 0; i < formulaCounter; i += 1)
-		WAVE/WAVE plotFormData  = collPlotFormData[i]
+	for(i = 0; i < pg.formulaCounter; i += 1)
+		WAVE/WAVE plotFormData  = pg.collPlotFormData[i]
 		WAVE/T    tracesInGraph = plotFormData[0]
 		WAVE/WAVE dataInGraph   = plotFormData[1]
 		numTraces  = DimSize(tracesInGraph, ROWS)
@@ -1434,7 +1555,7 @@ static Function SF_AddPlotTraceStyle(string graph, string win, variable formulaC
 			WAVE   wvY = dataInGraph[j][%WAVEY]
 			trace = tracesInGraph[j]
 
-			info           = AxisInfo(win, "left")
+			info           = AxisInfo(pg.win, "left")
 			isCategoryAxis = (NumberByKey("ISCAT", info) == 1)
 
 			if(isCategoryAxis)
@@ -1447,10 +1568,10 @@ static Function SF_AddPlotTraceStyle(string graph, string win, variable formulaC
 			if(WaveExists(traceColor))
 				switch(DimSize(traceColor, ROWS))
 					case 3:
-						ModifyGraph/W=$win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2])
+						ModifyGraph/W=$pg.win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2])
 						break
 					case 4:
-						ModifyGraph/W=$win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2], traceColor[3])
+						ModifyGraph/W=$pg.win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2], traceColor[3])
 						break
 					default:
 						FATAL_ERROR("Invalid size of trace color wave")
@@ -1460,25 +1581,25 @@ static Function SF_AddPlotTraceStyle(string graph, string win, variable formulaC
 			tagText = JWN_GetStringFromWaveNote(wvY, SF_META_TAG_TEXT)
 			if(!IsEmpty(tagText))
 				name = "tag" + num2str(tagCounter++)
-				Tag/C/N=$name/W=$win/F=0/L=0/X=0.00/Y=0.00 $trace, 0, tagText
+				Tag/C/N=$name/W=$pg.win/F=0/L=0/X=0.00/Y=0.00 $trace, 0, tagText
 			endif
 
-			ModifyGraph/W=$win mode($trace)=SF_DeriveTraceDisplayMode(wvX, wvY)
+			ModifyGraph/W=$pg.win mode($trace)=SF_DeriveTraceDisplayMode(wvX, wvY)
 
 			lineStyle = JWN_GetNumberFromWaveNote(wvY, SF_META_LINESTYLE)
 			if(IsValidTraceLineStyle(lineStyle))
-				ModifyGraph/W=$win lStyle($trace)=lineStyle
+				ModifyGraph/W=$pg.win lStyle($trace)=lineStyle
 			elseif(formulasAreDifferent)
-				ModifyGraph/W=$win lStyle($trace)=lineCode
+				ModifyGraph/W=$pg.win lStyle($trace)=lineCode
 			endif
 
 			WAVE/Z customMarkerAsFree = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_MOD_MARKER)
 			if(WaveExists(customMarkerAsFree))
-				DFREF dfrWork = SFH_GetWorkingDF(graph)
+				DFREF dfrWork = SFH_GetWorkingDF(pg.graph)
 				wvName = "customMarker_" + NameOfWave(wvY)
 				WAVE customMarker = MoveFreeWaveToPermanent(customMarkerAsFree, dfrWork, wvName)
 				ASSERT(DimSize(wvY, ROWS) == DimSize(customMarker, ROWS), "Marker size mismatch")
-				ModifyGraph/W=$win zmrkNum($trace)={customMarker}
+				ModifyGraph/W=$pg.win zmrkNum($trace)={customMarker}
 			else
 				overrideMarker = JWN_GetNumberFromWaveNote(wvY, SF_META_MOD_MARKER)
 
@@ -1486,13 +1607,13 @@ static Function SF_AddPlotTraceStyle(string graph, string win, variable formulaC
 					markerCode = overrideMarker
 				endif
 
-				ModifyGraph/W=$win marker($trace)=markerCode
+				ModifyGraph/W=$pg.win marker($trace)=markerCode
 			endif
 
 			traceToFront = JWN_GetNumberFromWaveNote(wvY, SF_META_TRACETOFRONT)
 			traceToFront = IsNaN(traceToFront) ? 0 : !!traceToFront
 			if(traceToFront)
-				ReorderTraces/W=$win _front_, {$trace}
+				ReorderTraces/W=$pg.win _front_, {$trace}
 			endif
 
 		endfor
@@ -1538,27 +1659,27 @@ static Function SF_AddPlotTicks(string graph, string win, WAVE formulaResults)
 	endif
 End
 
-static Function SF_AddPlotLegend(string win, WAVE/T wAnnotations, WAVE formulaArgSetup, WAVE formulaResults)
+static Function SF_AddPlotLegend(STRUCT SF_PlotterGraphStruct &pg)
 
 	variable numAnnotations, formulasAreDifferent
 	string customLegend
 	string annotation = ""
 
-	numAnnotations = GetNumberFromWaveNote(wAnnotations, NOTE_INDEX)
-	customLegend   = JWN_GetStringFromWaveNote(formulaResults, SF_META_CUSTOM_LEGEND)
+	numAnnotations = GetNumberFromWaveNote(pg.wAnnotations, NOTE_INDEX)
+	customLegend   = JWN_GetStringFromWaveNote(pg.formulaResults, SF_META_CUSTOM_LEGEND)
 
 	if(!IsEmpty(customLegend))
 		annotation = customLegend
 	elseif(numAnnotations > 0)
-		wAnnotations[0, numAnnotations - 1] = SF_ShrinkLegend(wAnnotations[p])
-		Redimension/N=(numAnnotations) wAnnotations, formulaArgSetup
-		formulasAreDifferent = SFH_EnrichAnnotations(wAnnotations, formulaArgSetup)
-		annotation           = TextWaveToList(wAnnotations, "\r")
-		annotation           = UnPadString(annotation, char2num("\r"))
+		pg.wAnnotations[0, numAnnotations - 1] = SF_ShrinkLegend(pg.wAnnotations[p])
+		Redimension/N=(numAnnotations) pg.wAnnotations, pg.formulaArgSetup
+		formulasAreDifferent = SFH_EnrichAnnotations(pg.wAnnotations, pg.formulaArgSetup)
+		annotation           = TextWaveToList(pg.wAnnotations, "")
+		annotation           = TrimString(annotation)
 	endif
 
 	if(!IsEmpty(annotation))
-		Legend/W=$win/C/N=metadata/F=2 annotation
+		Legend/W=$pg.win/C/N=$SF_ANNOTATION_NAME/F=2 annotation
 	endif
 
 	return formulasAreDifferent
@@ -2365,7 +2486,7 @@ End
 
 static Function [string varName, string formula] SF_SplitVariableAssignment(string line)
 
-	string regex = "^(?i)\\s*([A-Z]{1}[A-Z0-9_]*)\\s*=(.+)$"
+	string regex = "^(?i)\\s*(" + SF_VARNAME_REGEXP + ")\\s*=(.+)$"
 
 	SplitString/E=regex line, varName, formula
 	if(V_flag != 2)

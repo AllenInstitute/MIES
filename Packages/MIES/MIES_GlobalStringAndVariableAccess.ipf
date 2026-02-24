@@ -824,3 +824,14 @@ Function/S GetSweepFormulaLastRightClickedDisplayWindow()
 
 	return GetSVARAsString(GetSweepFormulaPath(), "LastRightClickedDisplayWindow", initialValue = "")
 End
+
+#ifdef AUTOMATED_TESTING
+/// @brief Returns the full path to the global with the name of the function that is declared in a test
+///        that is called when testop is executed in a formula, used in testing
+Function/S GetSFTestopName(string graph)
+
+	DFREF dfr = SF_GetBrowserDF(graph)
+
+	return GetSVARAsString(dfr, "TestopFunctionName", initialValue = "")
+End
+#endif // AUTOMATED_TESTING

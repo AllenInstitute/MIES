@@ -25,7 +25,11 @@ static Constant SFE_VARIABLE_PREFIX = 36
 /// @param useVariables [optional, default 1], when not set, hint the function that the formula string contains only an expression and no variable definitions
 /// @param line         [optional, default NaN], line number of formula in SF notebook, when set, stores the information for the case of an SFH_ASSERT
 /// @param offset       [optional, default NaN], offset of a formula in SF notebook in characters from the start of the line (x-formulas), when set, stores the information for the case of an SFH_ASSERT
-Function/WAVE SFE_ExecuteFormula(string formula, string graph, [variable singleResult, variable checkExist, variable useVariables, variable line, variable offset])
+/// @param preProcess   [optional, default 1], when set to 0 then the formula is not in any way preprocessed and must not contain any variable definitions.
+///                                            Also the current error information for SFH_ASSERT is kept as is. The current variable storage is used.
+///                                            This allows to internally execute a formula  where a triggered SFH_ASSERT should result in the marking
+///                                            of the "outer" formula in the current SF notebook.
+Function/WAVE SFE_ExecuteFormula(string formula, string graph, [variable singleResult, variable checkExist, variable useVariables, variable line, variable offset, variable preProcess])
 
 	STRUCT SF_ExecutionData exd
 	variable jsonId, srcLocId
@@ -37,12 +41,15 @@ Function/WAVE SFE_ExecuteFormula(string formula, string graph, [variable singleR
 	useVariables = ParamIsDefault(useVariables) ? 1 : !!useVariables
 	line         = ParamIsDefault(line) ? NaN : line
 	offset       = ParamIsDefault(offset) ? NaN : offset
+	preProcess   = ParamIsDefault(preProcess) ? 1 : !!preProcess
 
-	formula = SF_PreprocessInput(formula)
-	if(useVariables)
-		formula = SFE_ExecuteVariableAssignments(graph, formula)
+	if(preProcess)
+		formula = SF_PreprocessInput(formula)
+		if(useVariables)
+			formula = SFE_ExecuteVariableAssignments(graph, formula)
+		endif
+		SFH_StoreAssertInfoParser(line, offset)
 	endif
-	SFH_StoreAssertInfoParser(line, offset)
 	[jsonId, srcLocId] = SFP_ParseFormulaToJSON(formula)
 	exd.jsonId         = jsonId
 	WAVE/Z result = SFE_FormulaExecutor(exd, srcLocId = srcLocId)
@@ -61,11 +68,19 @@ Function/WAVE SFE_ExecuteFormula(string formula, string graph, [variable singleR
 	return out
 End
 
-Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode)
+/// @brief Executes each variable assignment expression and stores the result in the variable storage
+///
+/// @param graph          SweepBrowser graph
+/// @param preProcCode    preprocessed sweep formula notebook text
+/// @param allowEmptyCode [optional, default 0] when set then the check for empty formula code is disabled, such that
+///                       input that contains only variable expressions can be evaluated
+Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode, [variable allowEmptyCode])
 
 	STRUCT SF_ExecutionData exd
 	variable i, numAssignments, jsonId, srcLocId, line, offset
 	string code, sfWin, nbText
+
+	allowEmptyCode = ParamisDefault(allowEmptyCode) ? 0 : !!allowEmptyCode
 
 	exd.graph = graph
 
@@ -96,7 +111,7 @@ Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode)
 		JSON_Release(srcLocId)
 	endfor
 
-	if(IsEmpty(code))
+	if(!allowEmptyCode && IsEmpty(code))
 		if(!StringEndsWith(preProcCode, SF_CHAR_CR))
 			sfWin   = BSP_GetSFFormula(graph)
 			nbText  = GetNotebookText(sfWin, mode = 2)
@@ -532,6 +547,11 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLoc
 		case SF_OP_TABLE:
 			WAVE out = SFO_OperationTable(exdop)
 			break
+#ifdef AUTOMATED_TESTING
+		case SF_OP_TESTOP:
+			WAVE out = SFO_OperationTestop(exdop)
+			break
+#endif // AUTOMATED_TESTING
 		default:
 			SFH_FATAL_ERROR("Undefined Operation", jsonId = exdop.jsonId)
 	endswitch

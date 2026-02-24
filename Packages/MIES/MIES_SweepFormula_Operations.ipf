@@ -2481,3 +2481,24 @@ Function/WAVE SFO_OperationTable(STRUCT SF_ExecutionData &exd)
 
 	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_TABLE)
 End
+
+#ifdef AUTOMATED_TESTING
+Function/WAVE SFO_OperationTestop_PROTO(STRUCT SF_ExecutionData &exd)
+
+	INFO("TestOp PROTO function was called. A proper implementation function for testop must be registered by setting the SVAR from GetSFTestopName")
+	FAIL()
+End
+
+/// testop(...)
+Function/WAVE SFO_OperationTestop(STRUCT SF_ExecutionData &exd)
+
+	string funcName = ROStr(GetSFTestopName(exd.graph))
+
+	REQUIRE_PROPER_STR(funcName)
+
+	FUNCREF SFO_OperationTestop_PROTO func = $funcName
+	WAVE                              wv   = func(exd)
+
+	return wv
+End
+#endif // AUTOMATED_TESTING
