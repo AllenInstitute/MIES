@@ -39,7 +39,7 @@ CODEOWNERS              export-ignore
 ctags.cnf               export-ignore
 .editorconfig           export-ignore
 Packages/Artwork        export-ignore
-XOPs-MacOSX-IP9-64bit   export-ignore
+XOPs-MacOSX-64bit       export-ignore
 
 *.dot !diff
 

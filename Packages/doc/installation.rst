@@ -195,7 +195,8 @@ Windows (with hardware support)
    <https://github.com/AllenInstitute/MIES/blob/main/tools/installer/vc_redist.x64.exe>`__
 -  Quit Igor Pro. If you have never opened it, open it once and then close it.
 -  Get the MIES source code and initialize the repo, see :ref:`getting MIES`
--  Create the following shortcuts in ``C:\Users\$username\Documents\WaveMetrics\Igor Pro 9 User Files``
+-  Create the following shortcuts in ``C:\Users\$username\Documents\WaveMetrics\Igor Pro XXX User Files``
+   where ``XXX`` is either ``9`` or ``10``:
 
    -  In ``User Procedures`` a shortcut pointing to
 
@@ -203,8 +204,15 @@ Windows (with hardware support)
       -  ``Packages\MIES``
 
    -  In ``Igor Procedures`` a shortcut pointing to ``Packages\MIES_Include.ipf``
-   -  In ``Igor Extensions (64-bit)`` a shortcut pointing to ``XOPs-IP9-64bit``
-   -  In ``Igor Help Files`` a shortcut pointing to ``HelpFiles-IP9``
+   -  In ``Igor Extensions (64-bit)`` a shortcut pointing to
+
+      - ``XOPs-IPXXX-64bit``
+      - ``XOPs-64bit``
+
+   -  In ``Igor Help Files`` a shortcut pointing to
+
+      - ``HelpFiles-IPXXX``
+      - ``HelpFiles``
 
 -  ITC hardware:
 
@@ -239,8 +247,8 @@ require, you can also install MIES without any hardware related XOPs present.
 -  Install the `Visual C++ Redistributable package <https://github.com/AllenInstitute/MIES/blob/main/tools/installer/vc_redist.x64.exe>`__
 -  Quit Igor Pro
 -  Get the MIES source code, see :ref:`getting MIES`
--  Create the following shortcuts in
-   ``C:\Users\$username\Documents\WaveMetrics\Igor Pro 9 User Files``
+-  Create the following shortcuts in ``C:\Users\$username\Documents\WaveMetrics\Igor Pro XXX User Files``
+   where ``XXX`` is either ``9`` or ``10``:
 
    -  In ``User Procedures`` a shortcut pointing to
 
@@ -251,13 +259,13 @@ require, you can also install MIES without any hardware related XOPs present.
 
    -  In ``Igor Extensions (64-bit)`` a shortcut pointing to
 
-      -  ``XOPs-IP9-64bit\JSON-64.xop``
-      -  ``XOPs-IP9-64bit\MIESUtils-64.xop``
-      -  ``XOPs-IP9-64bit\ZeroMQ-64.xop``
-      -  ``XOPs-IP9-64bit\TUFXOP-64.xop``
-      -  ``XOPs-IP9-64bit\mies-nwb2-compound-XOP-64.xop``
+      -  ``XOPs-64bit\JSON-64.xop``
+      -  ``XOPs-64bit\MIESUtils-64.xop``
+      -  ``XOPs-64bit\ZeroMQ-64.xop``
+      -  ``XOPs-64bit\TUFXOP-64.xop``
+      -  ``XOPs-64bit\mies-nwb2-compound-XOP-64.xop``
 
-   -  In ``Igor Help Files`` a shortcut pointing to HelpFiles-IP9
+   -  In ``Igor Help Files`` a shortcut pointing to ``HelpFiles``
 
 -  Start Igor Pro
 
@@ -280,9 +288,9 @@ Analysis support only. Data acquisition and NWBv2 export are not supported on Ma
 
    -  In ``Igor Extensions (64-bit)`` a symlink pointing to
 
-      -  ``XOPs-MacOSX-IP9-64bit``
+      -  ``XOPs-MacOSX-64bit``
 
-   -  In ``Igor Help Files`` a shortcut pointing to HelpFiles-IP9
+   -  In ``Igor Help Files`` a shortcut pointing to ``HelpFiles``
 
 -  Start Igor Pro
 

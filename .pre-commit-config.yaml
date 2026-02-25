@@ -12,7 +12,7 @@ exclude: |
            .*patch$|
            .*svg$|
            # don't touch MacOSX XOPs
-           ^XOPs-MacOSX-IP9-64bit|
+           ^XOPs-MacOSX-64bit|
            ^Packages/ITCXOP2/tools/Disable-ASLR-for-Igor64.ps1
          ) # end alternations
 repos:
