@@ -29,17 +29,14 @@ and a dialog appears with a button which opens this documentation.
 
 In that case please perform the following steps:
 
-- Download the package for |IgorPro9WindowsNightly| or |IgorPro9MacOSXNightly|.
+- Download the package for |IgorPro9WindowsNightly|, |IgorPro10WindowsNightly| or |IgorPro9MacOSXNightly|.
   Either from within Igor Pro or from a web browser.
 - Close Igor Pro
-- Windows: Replace the folders ``IgorBinaries_x64`` and ``IgorBinaries_Win32``
-           in ``C:\Program Files\WaveMetrics\Igor Pro 9`` with the ones from the
-           downloaded zip package. This requires admin access.
+- Windows:
+  - Igor Pro 9: Replace the folders ``IgorBinaries_x64`` and ``IgorBinaries_Win32`` in ``C:\Program Files\WaveMetrics\Igor Pro 9`` with the ones from the downloaded zip package. This requires admin access.
+  - Igor Pro 10: Install as usual
 - MacOSX: Install from image as usual
 - Restart Igor Pro
-
-For Igor Pro 10, download the installer for |IgorPro10WindowsNightly|. This requires access to the beta
-program of WaveMetrics.
 
 Installation using the installer (preferred)
 --------------------------------------------
