@@ -4,7 +4,7 @@ env:
   # if this environment variable is set it will use the igor version from
   # C:\Program Files\WaveMetrics\Igor Pro ${VERSION} Folder\IgorBinaries_x64_${CI_IGOR${VERSION}_REVISION}
   CI_IGOR9_REVISION: "r56565"
-  CI_IGOR10_REVISION: "r29756"
+  CI_IGOR10_REVISION: "r29764"
 on:
   workflow_call:
     inputs:
