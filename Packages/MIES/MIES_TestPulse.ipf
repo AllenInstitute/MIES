@@ -415,7 +415,7 @@ static Function/WAVE TP_CreateOverrideResults(string device, variable type)
 
 	switch(type)
 		case TP_OVERRIDE_RESULTS_AUTO_TP:
-			numRows   = MINIMUM_WAVE_SIZE
+			numRows   = MINIMUM_WAVE_SIZE_LARGE
 			numCols   = NUM_HEADSTAGES
 			numLayers = 3
 			labels    = "Factor;Voltage;BaselineFitResult"
