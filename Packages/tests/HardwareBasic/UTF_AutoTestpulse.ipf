@@ -299,11 +299,17 @@ End
 
 static Function AutoTP_ClampModeChange_preAcq(string device)
 
+	WAVE overrideResults = MIES_TP#TP_CreateOverrideResults(device, TP_OVERRIDE_RESULTS_AUTO_TP)
+
+	// 2 HS in IC mode intially
+	overrideResults[][0, 1][%Factor]            = TP_BASELINE_RATIO_OPT
+	overrideResults[][0, 1][%Voltage]           = 1 // V
+	overrideResults[][0, 1][%BaselineFitResult] = TP_BASELINE_FIT_RESULT_OK
+
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoTP", val = 1)
 End
 
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
-// IUTF_RETRY_FAILED
 static Function AutoTP_ClampModeChange([string str])
 
 	[STRUCT DAQSettings s] = AutoTP_GetDAQSettings(str)
@@ -317,13 +323,14 @@ static Function AutoTP_ClampModeChange_REENTRY([string str])
 
 	WAVE/WAVE entries = GetLBNSingleEntry_IGNORE(str)
 
-	CHECK_EQUAL_WAVES(entries[%autoTPQC], {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%autoTPQC], {NaN, 0, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	// AutoTP was enabled for both headstages before stopping the TP
-	CHECK_EQUAL_WAVES(entries[%autoTPEnable], {0, 0, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	// but now only HS1 is still in IC and trying
+	CHECK_EQUAL_WAVES(entries[%autoTPEnable], {1, 0, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE TPSettings   = GetTPSettings(str)
 	WAVE autoTPEnable = LBN_GetNumericWave()
 	autoTPEnable[] = TPSettings[%autoTPEnable][p]
-	CHECK_EQUAL_WAVES(autoTPEnable, {0, 0, 1, 1, 1, 1, 1, 1, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(autoTPEnable, {1, 0, 1, 1, 1, 1, 1, 1, NaN}, mode = WAVE_DATA)
 End
