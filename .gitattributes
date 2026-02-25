@@ -65,3 +65,5 @@ Packages/doc/** linguist-documentation
 tools/installer/nsis/** linguist-vendored
 tools/installer/Shelllink/** linguist-vendored
 tools/installer/AccessControl/** linguist-vendored
+
+PkgInfo -diff
