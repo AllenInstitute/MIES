@@ -567,7 +567,7 @@ static Function CONF_SaveDAEphys(string fName)
 
 		saveResult = SaveTextFile(out, fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Save configuration for DA_Ephys panel", savedFileName = newFileName, showDialogOnOverwrite = 1)
 		if(!IsNaN(saveResult))
-			printf "Configuration saved in %s.\r", fName
+			printf "Configuration saved in %s.\r", GetWindowsPath(fName)
 		endif
 		if(JSON_IsValid(prevRigJsonId) && !IsEmpty(newFileName))
 			JSON_Release(prevRigJsonId)
@@ -575,7 +575,7 @@ static Function CONF_SaveDAEphys(string fName)
 			newRigFullFilePath = HFSPathToNative(newRigFullFilePath)
 			saveResult         = SaveTextFile(jsonTxt, newRigFullFilePath, fileFilter = EXPCONFIG_FILEFILTER, message = "Save Rig configuration for DA_Ephys panel", savedFileName = newFileName, showDialogOnOverwrite = 1)
 			if(!IsNaN(saveResult))
-				printf "Rig configuration saved in %s.\r", newRigFullFilePath
+				printf "Rig configuration saved in %s.\r", GetWindowsPath(newRigFullFilePath)
 			endif
 		endif
 
