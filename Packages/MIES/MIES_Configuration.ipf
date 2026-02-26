@@ -96,7 +96,7 @@
 ///
 /// *_rig.json configuration files store settings that are specific to a rig.
 /// When restoring a DAEphys panel the settings from the rig file are joined with the settings in the DAEphys configuration file.
-/// Having entries for the same setting in both files is invalid and an assertion will be thrown.
+/// Rig entries overwrite entries from the main file.
 ///
 /// Saving a DAEphys panel that was originally restored from a configuration file:
 /// - entries from the "Common configuration data" block are updated with the values from the previous configuration,
@@ -2609,7 +2609,7 @@ static Function CONF_JoinRigFile(variable jsonID, string rigFileName)
 		return 0
 	endif
 	jsonIDRig = CONF_ParseJSON(input)
-	JSON_SyncJSON(jsonIDRig, jsonID, "", "", JSON_SYNC_ADD_TO_TARGET)
+	JSON_SyncJSON(jsonIDRig, jsonID, "", "", JSON_SYNC_OVERWRITE_IN_TARGET)
 	JSON_Release(jsonIDRig)
 End
 
