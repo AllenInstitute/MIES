@@ -12,6 +12,8 @@
 *.vbs whitespace=cr-at-eol
 *.rc  eol=crlf
 *.rc  whitespace=cr-at-eol
+*.nsi eol=crlf
+*.nsi whitespace=cr-at-eol
 
 LICENSE eol=crlf
 LICENSE whitespace=cr-at-eol
