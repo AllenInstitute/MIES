@@ -744,7 +744,7 @@ Function StoreWaveOnDisk(WAVE wv, string name)
 	RemoveEmptyDataFolder(dfr)
 End
 
-/// @brief Returns the path to the users documents folder
+/// @brief Returns the path to the user's documents folder
 Function/S GetUserDocumentsFolderPath()
 
 	string userDir = GetEnvironmentVariable("USERPROFILE")
@@ -752,6 +752,16 @@ Function/S GetUserDocumentsFolderPath()
 	userDir = ParseFilePath(2, ParseFilePath(5, userDir, ":", 0, 0), ":", 0, 0)
 
 	return userDir + "Documents:"
+End
+
+/// @brief Returns the path to the user's downloads folder
+Function/S GetUserDownloadsFolderPath()
+
+	string userDir = GetEnvironmentVariable("USERPROFILE")
+
+	userDir = ParseFilePath(2, ParseFilePath(5, userDir, ":", 0, 0), ":", 0, 0)
+
+	return userDir + "Downloads:"
 End
 
 #ifdef MACINTOSH

@@ -11,6 +11,10 @@
 /// @file MIES_MiesUtilities_GUI.ipf
 /// @brief This file holds MIES utility functions for GUI
 
+Menu "GraphPopup"
+	"Export graph to SVG", /Q, ExportGraphToSVG(GetCurrentWindow())
+End
+
 /// @brief Return the dimension label for the special, aka non-unique, controls
 Function/S GetSpecialControlLabel(variable channelType, variable controlType)
 
@@ -844,4 +848,59 @@ Function StoreWindowCoordinatesHook(STRUCT WMWinHookStruct &s)
 	endswitch
 
 	return 0
+End
+
+/// @brief Export a graph to SVG format
+///
+/// Saves the graph as SVG to:
+/// - Windows: Downloads folder (falls back to Documents if Downloads doesn't exist)
+/// - Mac: Documents folder
+/// @param winName Name of the window (graph) to export
+Function ExportGraphToSVG(string winName)
+
+	string savePath, fileName, fullPath, timeStamp, documentsPath, msg
+
+	ASSERT(!IsEmpty(winName), "Window name must not be empty")
+	ASSERT(WindowExists(winName), "Window does not exist: " + winName)
+
+	// Get Documents folder path as fallback
+#ifdef WINDOWS
+	documentsPath = GetUserDocumentsFolderPath()
+#else
+	documentsPath = SpecialDirPath("Documents", 0, 0, 0)
+#endif // WINDOWS
+	ASSERT(!IsEmpty(documentsPath), "Could not determine Documents folder location")
+	if(!FolderExists(documentsPath))
+		CreateFolderOnDisk(documentsPath)
+	endif
+	ASSERT(FolderExists(documentsPath), "Documents folder does not exist and could not be created")
+
+	savePath = documentsPath
+
+#ifdef WINDOWS
+	// On Windows, prefer Downloads folder over Documents
+	string downloadsPath = GetUserDownloadsFolderPath()
+	ASSERT(!IsEmpty(downloadsPath), "Could not determine Downloads folder location")
+	if(!FolderExists(downloadsPath))
+		CreateFolderOnDisk(downloadsPath)
+	endif
+	ASSERT(FolderExists(downloadsPath), "Downloads folder does not exist and could not be created")
+	savePath = downloadsPath
+#endif // WINDOWS
+
+	// Generate file name from window name and timestamp
+	timeStamp = GetISO8601TimeStamp(localTimeZone = 1)
+	ASSERT(!IsEmpty(timeStamp), "Timestamp must not be empty")
+	fileName = SanitizeFilename(winName + "_" + timeStamp) + ".svg"
+	ASSERT(!IsEmpty(fileName), "File name must not be empty")
+	fullPath = savePath + fileName
+
+	// Save graph as SVG (E=-9 is SVG format)
+	try
+		SavePICT/O/E=-9/WIN=$winName as fullPath; AbortOnRTE
+	catch
+		msg = GetRTErrMessage()
+		ClearRTError()
+		FATAL_ERROR("Failed to save SVG file: " + fullPath + ", RTE: " + msg)
+	endtry
 End
