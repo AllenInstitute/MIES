@@ -3,7 +3,7 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = ConfigurationHardwareTesting
 
-static StrConstant REF_DAEPHYS_CONFIG_FILE = "DA_Ephys.json"
+static StrConstant REF_DAEPHYS_CONFIG_FILE = "input/DA_Ephys.json"
 
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RestoreDAEphysPanel([string str])
