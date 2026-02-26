@@ -75,10 +75,12 @@ End
 
 /// Adapts JSON configuration files for test execution specialities
 ///
+/// Works for both main and rig files.
+///
 /// Returns the full path to the rewritten JSON configuration file the corresponding jsonID.
 Function [variable jsonID, string fullPath] FixupJSONConfig_IGNORE(string path, string device)
 
-	string data, fName, rewrittenConfigPath
+	string data, fName, rewrittenConfigPath, basename
 
 	[data, fName] = LoadTextFile(path)
 	CHECK_PROPER_STR(data)
@@ -88,9 +90,14 @@ Function [variable jsonID, string fullPath] FixupJSONConfig_IGNORE(string path, 
 	PathInfo home
 	CHECK_PROPER_STR(S_path)
 
-	FixupJSONConfigImpl(jsonId, device)
+	if(StringEndsWith(path, "_rig.json"))
+		FixupJSONConfigImplRig(jsonId)
+	else
+		FixupJSONConfigImpl(jsonId, device)
+	endif
 
-	rewrittenConfigPath = S_Path + "rewritten_config.json"
+	basename            = GetBaseName(GetWindowsPath(path), sep = "\\")
+	rewrittenConfigPath = S_Path + "rewritten_config_" + basename + ".json"
 	SaveTextFile(JSON_Dump(jsonID), rewrittenConfigPath)
 
 	return [jsonID, rewrittenConfigPath]
