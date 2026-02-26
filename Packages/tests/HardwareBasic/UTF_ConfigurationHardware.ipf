@@ -433,3 +433,29 @@ static Function CheckIfConfigurationSavesAndRestores([string str])
 
 	CHECK_NO_RTE()
 End
+
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
+static Function RigSettingOverwritesSettingInMainFile([string str])
+
+	string fName, rewrittenConfigPath, rewrittenConfigPath_rig
+	variable jsonID
+
+	// main file
+	fName = PrependExperimentFolder_IGNORE("input/rig-overwrites.json")
+
+	[jsonID, rewrittenConfigPath] = FixupJSONConfig_IGNORE(fName, str)
+	JSON_Release(jsonID)
+
+	// rig file
+	fName = PrependExperimentFolder_IGNORE("input/rig-overwrites_rig.json")
+
+	[jsonID, rewrittenConfigPath_rig] = FixupJSONConfig_IGNORE(fName, str)
+	JSON_Release(jsonID)
+
+	CONF_RestoreWindow(rewrittenConfigPath, rigFile = rewrittenConfigPath_rig)
+	TP_StopTestPulse(str)
+
+	WAVE statusHS = DAG_GetChannelState(str, CHANNEL_TYPE_HEADSTAGE)
+	// HS1 is defined in the main file but is overwritten with null from the rig file
+	CHECK_EQUAL_WAVES(statusHS, {1, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
+End
