@@ -1778,7 +1778,7 @@ End
 /// @param sweepDFR        single sweep folder, e.g. for measurement with a device this wold be DFREF sweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
 /// @param sweepNo         sweep number
 /// @returns recreated 4D epoch wave
-static Function/WAVE EP_RecreateEpochsFromLoadedData(WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo)
+Function/WAVE EP_RecreateEpochsFromLoadedData(WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo)
 
 	STRUCT DataConfigurationResult s
 	variable channelNr, plannedTime, acquiredTime, adSize, firstUnacquiredIndex
@@ -1794,6 +1794,7 @@ static Function/WAVE EP_RecreateEpochsFromLoadedData(WAVE numericalValues, WAVE/
 
 	WAVE/T recEpochWave = GetEpochsWaveAsFree()
 	EP_CollectEpochInfoDA(recEpochWave, s)
+	EP_CollectEpochInfoTTL(recEpochWave, s)
 	EP_AddRecreatedUserEpochs(numericalValues, textualValues, sweepDFR, sweepNo, s, recEpochWave)
 
 	WAVE/Z channelDA = GetDAQDataSingleColumnWaveNG(numericalValues, textualValues, sweepNo, sweepDFR, XOP_CHANNEL_TYPE_DAC, s.DACList[0])

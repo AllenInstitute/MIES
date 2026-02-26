@@ -2062,3 +2062,138 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 		RunTest(testsuite, name = name, enableJU = enableJU, enableRegExp = enableRegExp, debugMode = debugMode, testcase = testcase, traceOptions = traceOptions, traceWinList = traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode, retry = IUTF_RETRY_FAILED_UNTIL_PASS)
 	endif
 End
+
+Function/WAVE GatherEpochVersions()
+
+	variable i
+
+	WAVE/T devicesWithContent = ListToTextWave(GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL), ";")
+	Make/FREE/WAVE/N=(DimSize(devicesWithContent, ROWS)) devEpochVersion
+	for(device : devicesWithContent)
+		WAVE  numericalValues = GetLBNumericalValues(device)
+		DFREF dfr             = GetDeviceDataPath(device)
+
+		WAVE/T sweepWaveNames = ListToTextWave(GetListOfObjects(dfr, DATA_SWEEP_REGEXP), ";")
+		Make/FREE/N=(DimSize(sweepWaveNames, ROWS)) sweepNums
+		sweepNums[] = ExtractSweepNumber(sweepWaveNames[p])
+		Make/FREE/D/N=(WaveMax(sweepNums) + 1) epochVersion
+		for(sweep : sweepNums)
+			epochVersion[sweep] = GetLastSettingIndep(numericalValues, sweep, SWEEP_EPOCH_VERSION_ENTRY_KEY, DATA_ACQUISITION_MODE, defValue = NaN)
+		endfor
+		devEpochVersion[i] = epochVersion
+		i                 += 1
+	endfor
+
+	return devEpochVersion
+End
+
+/// @brief A simple function to find the last row of a sweep number/DATA_ACQUISITION_MODE block for a specific headstage in the LBN
+///        Depending on the flag findAny there are two search modes
+///        findAny 0 (default): a value val or string str must have been specified, the search finds the last entry with that value
+///                             (in case of text the comparison is case-insensitive)
+///        findAny 1: The first non-empty/non-NaN entry is found
+///        The search is backwards and returns the LBN row of the first match or NaN if nothing was found
+///
+/// @param values    LBN values wave
+/// @param sweep     sweep number
+/// @param key       key of the LBN column to search
+/// @param headstage headstage (LBN layer)
+/// @param val       [optional] value to search for, use if LBN values wave is numeric
+/// @param str       [optional] string to search for, use if LBN values wave is text
+/// @param findAny   [optional, default 0] For default, search explicitly for a value (val/str), when set find the last row with any value
+///
+/// @returns last LBN row found or NaN if not found
+Function FindLastLBNRow(WAVE values, variable sweep, string key, variable headstage, [variable val, string str, variable findAny])
+
+	variable sweepCol, i, keyCol
+	variable firstValue, lastValue
+
+	findAny = ParamIsDefault(findAny) ? 0 : !!findAny
+	if(!findAny)
+		REQUIRE_EQUAL_VAR(ParamIsDefault(val) + ParamIsDefault(str), 1)
+	endif
+
+	sweepCol = GetSweepColumn(values)
+	FindRange(values, sweepCol, sweep, DATA_ACQUISITION_MODE, firstValue, lastValue)
+	REQUIRE_NEQ_VAR(firstValue, NaN)
+	REQUIRE_NEQ_VAR(lastValue, NaN)
+	REQUIRE_LE_VAR(firstValue, lastValue)
+	keyCol = FindDimLabel(values, COLS, key)
+	CHECK_NEQ_VAR(keyCol, -2)
+	if(IsTextWave(values))
+		WAVE/T valuesT = values
+		for(i = lastValue; i >= firstValue; i -= 1)
+			if(findAny)
+				if(!IsEmpty(valuesT[i][keyCol][headstage]))
+					return i
+				endif
+			else
+				if(!CmpStr(valuesT[i][keyCol][headstage], str))
+					return i
+				endif
+			endif
+		endfor
+	else
+		for(i = lastValue; i >= firstValue; i -= 1)
+			if(findAny)
+				if(!IsNaN(values[i][keyCol][headstage]))
+					return i
+				endif
+			else
+				if(values[i][keyCol][headstage] == val)
+					return i
+				endif
+			endif
+		endfor
+	endif
+
+	return NaN
+End
+
+Function CheckIfPostProcessedEpochsAreAdded(WAVE/WAVE devEpochVersionPre)
+
+	variable devCnt, sweep, keyCol, row, i
+
+	WAVE/WAVE devEpochVersionAfter = GatherEpochVersions()
+
+	WAVE/T devicesWithContent = ListToTextWave(GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL), ";")
+	for(device : devicesWithContent)
+		// check for postProcessed epoch info
+		WAVE   numericalValues = GetLBNumericalValues(device)
+		WAVE/T textualValues   = GetLBTextualValues(device)
+
+		DFREF  dfr            = GetDeviceDataPath(device)
+		WAVE/T sweepWaveNames = ListToTextWave(GetListOfObjects(dfr, DATA_SWEEP_REGEXP), ";")
+
+		WAVE epochVersionsPre   = devEpochVersionPre[devCnt]
+		WAVE epochVersionsAfter = devEpochVersionAfter[devCnt]
+
+		for(name : sweepWaveNames)
+			sweep = ExtractSweepNumber(name)
+			if(epochVersionsPre[sweep] < SWEEP_EPOCH_VERSION)
+				CHECK_EQUAL_VAR(SWEEP_EPOCH_VERSION, epochVersionsAfter[sweep])
+
+				row = FindLastLBNRow(numericalValues, sweep, SWEEP_EPOCH_VERSION_ENTRY_KEY, INDEP_HEADSTAGE, val = SWEEP_EPOCH_VERSION)
+				CHECK_NEQ_VAR(row, NaN)
+
+				keyCol = FindDimLabel(numericalValues, COLS, POSTPROCESSED_ENTRY_KEY)
+				CHECK_NEQ_VAR(keyCol, -2)
+				CHECK_EQUAL_VAR(numericalValues[row][keyCol][INDEP_HEADSTAGE], 1)
+
+				for(i = 0; i < NUM_HEADSTAGES; i += 1)
+					row = FindLastLBNRow(textualValues, sweep, EPOCHS_ENTRY_KEY, i, findAny = 1)
+					if(!IsNaN(row))
+						break
+					endif
+				endfor
+				CHECK_NEQ_VAR(row, NaN)
+
+				keyCol = FindDimLabel(textualValues, COLS, POSTPROCESSED_ENTRY_KEY)
+				CHECK_NEQ_VAR(keyCol, -2)
+				CHECK_EQUAL_STR(textualValues[row][keyCol][INDEP_HEADSTAGE], "1")
+			endif
+
+		endfor
+		devCnt += 1
+	endfor
+End

@@ -1,5 +1,5 @@
 IGOR
-WAVES/T/N=(197,6)	labnotebook_numerical_description
+WAVES/T/N=(198,6)	labnotebook_numerical_description
 BEGIN
 	"Name"	"Unit"	"Tolerance"	"Description"	"Headstage Contingency"	"ClampMode"
 	"SweepNum"	""	"-"	"Sweep number: Non-repeating non-negative numeric identifier for sweep time series. Increments in the order of acquisition. Starts at zero."	"ALL"	""
@@ -198,6 +198,7 @@ BEGIN
 	"Skip Ahead"	""	"1"	"Determines how many sweeps are skipped from the stimset whan starting data acquisition."	"INDEP"	"IC;VC;I=0"
 	"Skip Sweeps source"	""	"0.1"	"Stores who is responsible for sweep skipping. Current values are 0x1 for the user and 0x2 for automatic/internal reasons."	"INDEP"	"IC;VC;I=0"
 	"ADC Configuration bits"	""	"0.1"	"Supported bits (1: RSE, 2: NRSE, 4: Diff, 8: Pseudo-Diff)"	"INDEP"	"IC;VC;I=0"
+	"PostProcessed"	"On/Off"	"-"	"Information added at a later time through a post processing step. (e.g. recreated epoch information)"	"ALL"	""
 END
 X SetScale/P x 0,1,"", labnotebook_numerical_description; SetScale/P y 0,1,"", labnotebook_numerical_description; SetScale d 0,0,"", labnotebook_numerical_description
 X Note labnotebook_numerical_description, "WAVE_LAYOUT_VERSION:2;"

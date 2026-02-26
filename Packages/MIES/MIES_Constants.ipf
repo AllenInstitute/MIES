@@ -39,8 +39,8 @@ Constant SWEEP_EPOCH_VERSION = 9
 /// - New/Changed layers of entries
 ///
 ///@{
-Constant LABNOTEBOOK_VERSION = 82
-Constant RESULTS_VERSION     = 3
+Constant LABNOTEBOOK_VERSION = 84
+Constant RESULTS_VERSION     = 4
 ///@}
 
 /// @name Analysis function versions
@@ -1001,6 +1001,7 @@ StrConstant STIMSET_SIZE_KEY              = "Stimset Size"
 StrConstant STIMSET_ERROR_KEY             = "Wavebuilder Error"
 StrConstant AUTOBIAS_PERC_KEY             = "Autobias %"
 StrConstant SWEEP_EPOCH_VERSION_ENTRY_KEY = "Epochs Version"
+StrConstant POSTPROCESSED_ENTRY_KEY       = "PostProcessed"
 
 Constant WAVEBUILDER_STATUS_ERROR = 1
 
@@ -2613,4 +2614,10 @@ StrConstant SF_WINNAME_SUFFIX_TABLE = "table"
 ///@{
 Constant SF_DISPLAYTYPE_GRAPH = 0
 Constant SF_DISPLAYTYPE_TABLE = 1
+///@}
+
+/// Labnotebook capabilities are stored in the key wave note
+/// @anchor LabnotebookCapabilityKeys
+///@{
+StrConstant LBN_CAP_SUPPORTS_ENTRYSOURCETYPE = "SupportsEntrySourceType"
 ///@}
