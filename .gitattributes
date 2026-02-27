@@ -26,6 +26,7 @@ LICENSE whitespace=cr-at-eol
 *.itx eol=lf
 *.tex eol=lf
 *.awk eol=lf
+*.json eol=lf
 
 .git*                   export-ignore
 .pre-commit-config.yaml export-ignore

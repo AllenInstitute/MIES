@@ -62,3 +62,8 @@ repos:
       name: Hacky code linting
       language: script
       entry: ./tools/check-code.sh
+- repo: https://github.com/jsh9/format-json
+  rev: 0.1.2
+  hooks:
+    - id: format-json
+      args: [--autofix, --no-ensure-ascii, --no-sort-keys]
