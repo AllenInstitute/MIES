@@ -191,7 +191,7 @@ jobs:
       expensive_checks: "1"
       instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
       timeout_minutes: 180
-      major_igorpro_version: 9
+      major_igorpro_version: 10
 
   TestITC18:
     name: 🧪 Test ITC18-USB ${{ matrix.name }}
