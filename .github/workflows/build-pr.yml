@@ -84,7 +84,7 @@ jobs:
       matrix:
         source: [ git, installer ]
         hardware: [ false, true ]
-        version: [9]
+        version: [9, 10]
         exclude:
           # the git source is always checked with hardware support
           - source: git
@@ -142,7 +142,7 @@ jobs:
       - CompilationTest
     strategy:
       matrix:
-        version: [9]
+        version: [9, 10]
         name: [Basic, PAPlot, HistoricData]
         include:
           - experiment: Packages/tests/Basic/Basic.pxp
@@ -150,6 +150,11 @@ jobs:
           - experiment: Packages/tests/PAPlot/PAPlot.pxp
             name: PAPlot
           - experiment: Packages/tests/HistoricData/HistoricData.pxp
+            name: HistoricData
+        exclude:
+          - version: 10
+            name: PAPlot
+          - version: 10
             name: HistoricData
     uses: ./.github/workflows/test-igor-workflow.yml
     with:
