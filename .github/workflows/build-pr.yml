@@ -168,13 +168,15 @@ jobs:
       major_igorpro_version: ${{ matrix.version }}
 
   TestNI:
-    name: 🧪 Test NI ${{ matrix.name }}
+    name: 🧪 Test NI ${{ matrix.name }} v${{ matrix.version }}
     needs:
       - BuildInstaller
       - CompilationTest
       - TestWithoutHardware
     strategy:
       matrix:
+        version: [9]
+        name: [HardwareBasic, HardwareAnalysisFunctions]
         include:
           - experiment: Packages/tests/HardwareBasic/HardwareBasic-NI.pxp
             name: HardwareBasic
@@ -190,15 +192,18 @@ jobs:
       expensive_checks: "1"
       instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
       timeout_minutes: 180
+      major_igorpro_version: ${{ matrix.version }}
 
   TestITC18:
-    name: 🧪 Test ITC18-USB ${{ matrix.name }}
+    name: 🧪 Test ITC18-USB ${{ matrix.name }} v${{ matrix.version }}
     needs:
       - BuildInstaller
       - CompilationTest
       - TestWithoutHardware
     strategy:
       matrix:
+        version: [9]
+        name: [HardwareBasic, HardwareAnalysisFunctions]
         include:
           - experiment: Packages/tests/HardwareBasic/HardwareBasic.pxp
             name: HardwareBasic
@@ -214,15 +219,18 @@ jobs:
       expensive_checks: "1"
       instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
       timeout_minutes: 180
+      major_igorpro_version: ${{ matrix.version }}
 
   TestITC1600:
-    name: 🧪 Test ITC1600 ${{ matrix.name }}
+    name: 🧪 Test ITC1600 ${{ matrix.name }} v${{ matrix.version }}
     needs:
       - BuildInstaller
       - CompilationTest
       - TestWithoutHardware
     strategy:
       matrix:
+        version: [9]
+        name: [HardwareBasic, HardwareAnalysisFunctions]
         include:
           - experiment: Packages/tests/HardwareBasic/HardwareBasic-ITC1600.pxp
             name: HardwareBasic
@@ -238,6 +246,7 @@ jobs:
       expensive_checks: "1"
       instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
       timeout_minutes: 180
+      major_igorpro_version: ${{ matrix.version }}
 
   ValidateNwb:
     name: 👮🏼 Validate NWBv2
