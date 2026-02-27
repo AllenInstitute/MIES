@@ -176,7 +176,7 @@ jobs:
       - TestWithoutHardware
     strategy:
       matrix:
-        version: [9]
+        version: [10]
         name: [HardwareBasic, HardwareAnalysisFunctions]
         include:
           - experiment: Packages/tests/HardwareBasic/HardwareBasic-NI.pxp
