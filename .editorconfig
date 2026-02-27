@@ -14,7 +14,7 @@ charset = utf-8
 indent_style = tab
 indent_size = 4
 
-[*.{bat,vcproj,vcxproj,sln,vbs,rc}]
+[*.{bat,vcproj,vcxproj,sln,vbs,rc,nsi}]
 end_of_line = crlf
 
 [LICENSE]

@@ -20,7 +20,7 @@
 // They are defined here so that we can parse them from within IP.
 //
 // .. |IgorPro9WindowsNightly| replace:: `Igor Pro 9 (Windows) <https://www.byte-physics.de/Downloads/WinIgor9_01Dec2023.zip>`__
-// .. |IgorPro10WindowsNightly| replace:: `Igor Pro 10 (Windows) <https://www.wavemetrics.net/Downloads/latest10/>`__
+// .. |IgorPro10WindowsNightly| replace:: `Igor Pro 10 (Windows) <https://www.byte-physics.de/Downloads/setupIgor10-r29764.exe>`__
 // .. |IgorPro9MacOSXNightly| replace:: `Igor Pro 9 (MacOSX) <https://www.byte-physics.de/Downloads/MacIgor9_01Dec2023.dmg>`__
 
 #pragma IgorVersion = 9.00
@@ -28,7 +28,7 @@
 ///@cond HIDDEN_SYMBOL
 #if IgorVersion() < 10 && (NumberByKey("BUILD", IgorInfo(0)) < 56565)
 #define TOO_OLD_IGOR
-#elif IgorVersion() == 10 && (NumberByKey("BUILD", IgorInfo(0)) < 29756)
+#elif IgorVersion() == 10 && (NumberByKey("BUILD", IgorInfo(0)) < 29764)
 #define TOO_OLD_IGOR
 #endif
 
@@ -75,10 +75,6 @@ static Function/S GetDownloadLink()
 #else
 	FATAL_ERROR("Unsupported OS")
 #endif
-
-	if(cmpstr(igorMajorVersion, "9"))
-		Abort "Download for Igor Pro 10 is not yet supported.\r Please manually download the nightly build from the documentation link."
-	endif
 
 	text         = ProcedureText("", 0, "MIES_Include.ipf")
 	lineWithLink = GrepList(text, "\\Q|IgorPro" + igorMajorVersion + os + "Nightly|\\E", 0, "\r")
