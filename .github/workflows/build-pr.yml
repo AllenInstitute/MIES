@@ -84,7 +84,7 @@ jobs:
       matrix:
         source: [ git, installer ]
         hardware: [ false, true ]
-        version: [9]
+        version: [9, 10]
         exclude:
           # the git source is always checked with hardware support
           - source: git
@@ -111,6 +111,7 @@ jobs:
       installer_flags: "-s git"
       artifact_name: Compilation-Each-Commit-assets
       timeout_minutes: 180
+      major_igorpro_version: 9
 
   Documentation:
     name: 👷 Documentation
@@ -142,7 +143,7 @@ jobs:
       - CompilationTest
     strategy:
       matrix:
-        version: [9]
+        version: [9, 10]
         name: [Basic, PAPlot, HistoricData]
         include:
           - experiment: Packages/tests/Basic/Basic.pxp
@@ -150,6 +151,11 @@ jobs:
           - experiment: Packages/tests/PAPlot/PAPlot.pxp
             name: PAPlot
           - experiment: Packages/tests/HistoricData/HistoricData.pxp
+            name: HistoricData
+        exclude:
+          - version: 10
+            name: PAPlot
+          - version: 10
             name: HistoricData
     uses: ./.github/workflows/test-igor-workflow.yml
     with:
@@ -185,6 +191,7 @@ jobs:
       expensive_checks: "1"
       instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
       timeout_minutes: 180
+      major_igorpro_version: 10
 
   TestITC18:
     name: 🧪 Test ITC18-USB ${{ matrix.name }}
@@ -209,6 +216,7 @@ jobs:
       expensive_checks: "1"
       instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
       timeout_minutes: 180
+      major_igorpro_version: 9
 
   TestITC1600:
     name: 🧪 Test ITC1600 ${{ matrix.name }}
@@ -233,6 +241,7 @@ jobs:
       expensive_checks: "1"
       instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
       timeout_minutes: 180
+      major_igorpro_version: 9
 
   ValidateNwb:
     name: 👮🏼 Validate NWBv2

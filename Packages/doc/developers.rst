@@ -201,6 +201,7 @@ Setup Github Actions runner
 -  Don't install the runner as a service but use the local user
 -  Add a fitting label to the agent in the repository settings at
    Github (see `detailed description <https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/using-labels-with-self-hosted-runners>`)
+-  Open the Startup folder, via ``shell:startup`` in the explorer, and add a shortcut to ``c:\\actions-runner\\run.cmd``
 
 Setting up a continuous integration runner (Windows, ``ITC18``, ``ITC1600``  and ``NI``)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -220,7 +221,8 @@ Setting up a continuous integration runner (Windows, ``ITC18``, ``ITC1600``  and
 
 -  Start Igor Pro and open a DA\_Ephys panel, lock the device. This will
    not work, so follow the posted suggestions to get it working (registry fix and ASLR fix).
--  Add shortcuts to ``MC700B.exe`` and ``C:\actions-runner\run.cmd`` into ``C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp``
+-  Start all Igor Pro versions used in CI and ensure that you have set
+   ``Misc->Miscellaneous Settings->Miscellaneous->Operations that overwrite or delete folders`` to ``Always give permission``
 
 Setting up a continuous integration runner (Windows, ``IgorPro``)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -228,13 +230,15 @@ Setting up a continuous integration runner (Windows, ``IgorPro``)
 -  Windows 11 with "Remote Desktop" enabled user
 -  Install the folllowing programs:
 
-   -  Git (choose the installer option which will make the Unix tools
-      available in cmd as well)
+   -  Git (choose the installer option which makes all Unix tools
+      available in cmd as well [third option])
    -  Igor Pro (latest required versions), the binary folder needs to be named ``IgorBinaries_x64_r$revision``
    -  Multiclamp Commander (the MCC library is required to run the non-hardware tests,
       but the application itself does not have to run)
    -  Github Actions runner as described above
    -  VC Redistributable package from ``tools/installer/vc_redist.x64.exe``
+-  Start all Igor Pro versions used in CI and ensure that you have set
+   ``Misc->Miscellaneous Settings->Miscellaneous->Operations that overwrite or delete folders`` to ``Always give permission``
 
 Setting up a continuous integration runner (Windows, ``Certificate``)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
