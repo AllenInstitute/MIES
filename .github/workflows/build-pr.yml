@@ -111,6 +111,7 @@ jobs:
       installer_flags: "-s git"
       artifact_name: Compilation-Each-Commit-assets
       timeout_minutes: 180
+      major_igorpro_version: 9
 
   Documentation:
     name: 👷 Documentation
@@ -190,6 +191,7 @@ jobs:
       expensive_checks: "1"
       instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
       timeout_minutes: 180
+      major_igorpro_version: 9
 
   TestITC18:
     name: 🧪 Test ITC18-USB ${{ matrix.name }}
@@ -214,6 +216,7 @@ jobs:
       expensive_checks: "1"
       instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
       timeout_minutes: 180
+      major_igorpro_version: 9
 
   TestITC1600:
     name: 🧪 Test ITC1600 ${{ matrix.name }}
@@ -238,6 +241,7 @@ jobs:
       expensive_checks: "1"
       instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
       timeout_minutes: 180
+      major_igorpro_version: 9
 
   ValidateNwb:
     name: 👮🏼 Validate NWBv2
