@@ -2116,37 +2116,56 @@ StrConstant CO_DAP_DIFF_FALLBACK_NI  = "DiffFallbackNI"
 /// @name Constants for SweepFormula Meta data in JSON format
 /// @anchor SFMetaDataConstants
 ///@{
-StrConstant SF_META_DATATYPE           = "/DataType"         // string
-StrConstant SF_META_SWEEPNO            = "/SweepNumber"      // number
-StrConstant SF_META_RANGE              = "/Range"            // numeric wave
-StrConstant SF_META_CHANNELTYPE        = "/ChannelType"      // number
-StrConstant SF_META_CHANNELNUMBER      = "/ChannelNumber"    // number
-StrConstant SF_META_DEVICE             = "/Device"           // string
-StrConstant SF_META_EXPERIMENT         = "/Experiment"       // string
-StrConstant SF_META_SWEEPMAPINDEX      = "/SweepMapIndex"    // number
-StrConstant SF_META_ISAVERAGED         = "/IsAveraged"       // number
-StrConstant SF_META_XVALUES            = "/XValues"          // numeric wave
-StrConstant SF_META_XTICKLABELS        = "/XTickLabels"      // text wave
-StrConstant SF_META_XTICKPOSITIONS     = "/XTickPositions"   // numeric wave
-StrConstant SF_META_YTICKLABELS        = "/YTickLabels"      // text wave
-StrConstant SF_META_YTICKPOSITIONS     = "/YTickPositions"   // numeric wave
-StrConstant SF_META_XAXISLABEL         = "/XAxisLabel"       // string
-StrConstant SF_META_YAXISLABEL         = "/YAxisLabel"       // string
-StrConstant SF_META_LEGEND_LINE_PREFIX = "/LegendLinePrefix" // string
-StrConstant SF_META_TAG_TEXT           = "/TagText"          // string
-StrConstant SF_META_OPSTACK            = "/OperationStack"   // string
-StrConstant SF_META_MOD_MARKER         = "/Marker"           // numeric wave (per point) or number (all points)
-StrConstant SF_META_SHOW_LEGEND        = "/ShowLegend"       // numeric, boolean, defaults to true (1)
-StrConstant SF_META_CUSTOM_LEGEND      = "/CustomLegend"     // string with custom legend text, honours /ShowLegend
-StrConstant SF_META_ARGSETUPSTACK      = "/ArgSetupStack"    // string
-StrConstant SF_META_TRACECOLOR         = "/TraceColor"       // numeric wave, applies to markers and lines
-StrConstant SF_META_LINESTYLE          = "/LineStyle"        // number
-StrConstant SF_META_TRACE_MODE         = "/TraceMode"        // number, one of @ref TraceDisplayTypes
-StrConstant SF_META_TRACETOFRONT       = "/TraceToFront"     // number, boolean, defaults to false (0)
-StrConstant SF_META_DONOTPLOT          = "/DoNotPlot"        // number, boolean, defaults to false (0)
-StrConstant SF_META_WINDOW_HOOK        = "/WindowHook"       // string
-StrConstant SF_META_FORMULA            = "/Formula"          // string
-StrConstant SF_META_PLOT               = "/Plot"             // number, boolean, defaults to false (0)
+StrConstant SF_META_DATATYPE           = "/DataType"          // string
+StrConstant SF_META_SWEEPNO            = "/SweepNumber"       // number
+StrConstant SF_META_RANGE              = "/Range"             // numeric wave
+StrConstant SF_META_CHANNELTYPE        = "/ChannelType"       // number
+StrConstant SF_META_CHANNELNUMBER      = "/ChannelNumber"     // number
+StrConstant SF_META_DEVICE             = "/Device"            // string
+StrConstant SF_META_EXPERIMENT         = "/Experiment"        // string
+StrConstant SF_META_SWEEPMAPINDEX      = "/SweepMapIndex"     // number
+StrConstant SF_META_ISAVERAGED         = "/IsAveraged"        // number
+StrConstant SF_META_XVALUES            = "/XValues"           // numeric wave
+StrConstant SF_META_XTICKLABELS        = "/XTickLabels"       // text wave
+StrConstant SF_META_XTICKPOSITIONS     = "/XTickPositions"    // numeric wave
+StrConstant SF_META_YTICKLABELS        = "/YTickLabels"       // text wave
+StrConstant SF_META_YTICKPOSITIONS     = "/YTickPositions"    // numeric wave
+StrConstant SF_META_XAXISLABEL         = "/XAxisLabel"        // string
+StrConstant SF_META_YAXISLABEL         = "/YAxisLabel"        // string
+StrConstant SF_META_LEGEND_LINE_PREFIX = "/LegendLinePrefix"  // string
+StrConstant SF_META_TAG_TEXT           = "/TagText"           // string
+StrConstant SF_META_OPSTACK            = "/OperationStack"    // string
+StrConstant SF_META_MOD_MARKER         = "/Marker"            // numeric wave (per point) or number (all points)
+StrConstant SF_META_SHOW_LEGEND        = "/ShowLegend"        // numeric, boolean, defaults to true (1)
+StrConstant SF_META_CUSTOM_LEGEND      = "/CustomLegend"      // string with custom legend text, honours /ShowLegend
+StrConstant SF_META_ARGSETUPSTACK      = "/ArgSetupStack"     // string
+StrConstant SF_META_TRACECOLOR         = "/TraceColor"        // numeric wave, applies to markers and lines
+StrConstant SF_META_LINESTYLE          = "/LineStyle"         // number
+StrConstant SF_META_TRACE_MODE         = "/TraceMode"         // number, one of @ref TraceDisplayTypes
+StrConstant SF_META_TRACETOFRONT       = "/TraceToFront"      // number, boolean, defaults to false (0)
+StrConstant SF_META_DONOTPLOT          = "/DoNotPlot"         // number, boolean, defaults to false (0)
+StrConstant SF_META_WINDOW_HOOK        = "/WindowHook"        // string
+StrConstant SF_META_FORMULA            = "/Formula"           // string
+StrConstant SF_META_PLOT               = "/Plot"              // number, boolean, defaults to false (0)
+StrConstant SF_META_XAXISOFFSET        = "/XAxisOffset"       // number
+StrConstant SF_META_YAXISOFFSET        = "/YAxisOffset"       // number
+StrConstant SF_META_XAXISPERCENT       = "/XAxisPercent"      // number
+StrConstant SF_META_YAXISPERCENT       = "/YAxisPercent"      // number
+StrConstant SF_META_ERRORBARYPLUS      = "/ErrorYPlus"        // numeric wave
+StrConstant SF_META_ERRORBARYMINUS     = "/ErrorYMinus"       // numeric wave
+StrConstant SF_META_ERRORBARXPLUS      = "/ErrorXPlus"        // numeric wave
+StrConstant SF_META_ERRORBARXMINUS     = "/ErrorXMinus"       // numeric wave
+StrConstant SF_META_FITCOEFS           = "/FitCoefs"          // numeric wave
+StrConstant SF_META_FITERROR           = "/FitError"          // number
+StrConstant SF_META_FITQUITREASON      = "/FitQuitReason"     // number
+StrConstant SF_META_FITNUMITERS        = "/FitNumIters"       // number
+StrConstant SF_META_FITSTATUSMESSAGE   = "/FitStatusMessage"  // string
+StrConstant SF_META_FITWSIGMA          = "/FitWSigma"         // numeric wave
+StrConstant SF_META_FITMCOVAR          = "/FitMCovar"         // numeric wave
+StrConstant SF_META_FITMFITCONSTRAINT  = "/FitMFitConstraint" // numeric wave
+StrConstant SF_META_FITWFITCONSTRAINT  = "/FitWFitConstraint" // numeric wave
+StrConstant SF_META_FITCHISQUARE       = "/FitChiSquare"      // number
+StrConstant SF_META_FITFUNC            = "/FitFunc"           // string
 
 /// A color group allows to have matching colors for sweep data with the same channel type/number and sweep.
 /// It is applied before the matching headstage/average colors in #SF_GetTraceColor().
@@ -2205,12 +2224,14 @@ StrConstant SF_DATATYPE_SELECTSETSWEEPCOUNT = "SelectSetSweepCount"
 StrConstant SF_DATATYPE_SELECTSCIINDEX      = "SelectSCIIndex"
 StrConstant SF_DATATYPE_SELECTRACINDEX      = "SelectRACIndex"
 StrConstant SF_DATATYPE_ANAFUNCPARAM        = "AnaFunc"
+StrConstant SF_DATATYPE_PREPAREFIT          = "PrepareFit"
 
 StrConstant SF_WREF_MARKER     = "\"WREF@\":"
 StrConstant SF_VARIABLE_MARKER = "/SF_IsVariable" // numeric
 
 StrConstant SF_ANNOTATION_NAME = "metadata"
 StrConstant SF_VARNAME_REGEXP  = "[A-Z]{1}[A-Z0-9_]*"
+StrConstant SF_SERIALIZE       = "/serial" // path prefix
 ///@}
 
 /// @name Constants for SweepFormula Clampmode codes returned by operation selcm()
@@ -2442,11 +2463,6 @@ Constant PSX_DECONV_FILTER_DEF_ORDER = 4
 
 StrConstant PSX_JWN_COMBO_KEYS_NAME = "ComboKeys"
 
-StrConstant SF_OP_MERGE   = "merge"
-StrConstant SF_OP_FIT     = "fit"
-StrConstant SF_OP_FITLINE = "fitline"
-StrConstant SF_OP_DATASET = "dataset"
-
 StrConstant SWEEP_NOTE_KEY_ORIGCREATIONTIME_UTC = "OriginalCreationTimeInUTC"
 
 StrConstant DF_NAME_FREE = "freeroot"
@@ -2552,6 +2568,14 @@ StrConstant SF_OP_TPINST              = "tpinst"
 StrConstant SF_OP_TPBASE              = "tpbase"
 StrConstant SF_OP_TPFIT               = "tpfit"
 StrConstant SF_OP_EXTRACT             = "extract"
+StrConstant SF_OP_IVSCCAPFREQUENCY    = "ivscc_apfrequency"
+StrConstant SF_OP_PREPAREFIT          = "preparefit"
+StrConstant SF_OP_MERGE               = "merge"
+StrConstant SF_OP_FIT                 = "fit"
+StrConstant SF_OP_FITLINE             = "fitline"
+StrConstant SF_OP_DATASET             = "dataset"
+StrConstant SF_OP_FIT2                = "fit2"
+StrConstant SF_OP_GETMETA             = "getmeta"
 
 #ifdef AUTOMATED_TESTING
 StrConstant SF_OP_TESTOP = "testop"
@@ -2613,4 +2637,39 @@ StrConstant SF_WINNAME_SUFFIX_TABLE = "table"
 ///@{
 Constant SF_DISPLAYTYPE_GRAPH = 0
 Constant SF_DISPLAYTYPE_TABLE = 1
+///@}
+
+/// @name Maximum number of colors for traces defined
+///
+/// @anchor TraceColorMax
+///@{
+Constant TRACECOLORMAX = 21
+///@}
+
+/// @name Characters allowed in the SF PrepareFit operation to hold a coefficient
+///
+/// @anchor SFPrepareFitHoldStringCharacters
+///@{
+StrConstant SF_PREPAREFIT_HOLDCHAR_HOLD = "X"
+StrConstant SF_PREPAREFIT_HOLDCHAR_FREE = "O"
+///@}
+
+/// @name Bits for Fit Errors
+/// @anchor FitErrors
+///@{
+Constant FIT_ERROR_ANY               = 1
+Constant FIT_ERROR_SINGULARMATRIX    = 2
+Constant FIT_ERROR_OUTOFMEMORY       = 4
+Constant FIT_ERROR_RETURNEDNANORINF  = 8
+Constant FIT_ERROR_FUNCREQUESTEDSTOP = 16
+Constant FIT_ERROR_REENTRANT_FIT     = 32
+///@}
+
+/// @name Codes for Fit Quit Reasons
+/// @anchor FitQuitReason
+///@{
+Constant FIT_QUITREASON_OK                    = 0
+Constant FIT_QUITREASON_ITERATIONLIMITREACHED = 1
+Constant FIT_QUITREASON_STOPPEDBYUSER         = 2
+Constant FIT_QUITREASON_NOCHISQUAREDECREASE   = 3
 ///@}

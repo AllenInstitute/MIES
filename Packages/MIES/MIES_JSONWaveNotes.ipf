@@ -318,3 +318,18 @@ threadsafe Function/WAVE JWN_CreatePath(WAVE wv, string jsonPath)
 	JSON_AddTreeObject(jsonID, jsonPath)
 	JWN_WriteWaveNote(wv, JWN_GetWaveNoteHeader(wv), jsonID)
 End
+
+/// @brief Returns a text wave with the json keys available at path, null wave if path does not exist
+///
+/// @param wv       wave reference where the WaveNote is taken from
+/// @param jsonPath path to create as object
+threadsafe Function/WAVE JWN_GetKeysAt(WAVE wv, string jsonPath)
+
+	variable jsonID
+
+	jsonID = JWN_GetWaveNoteAsJSON(wv)
+	WAVE/Z keys = JSON_GetKeys(jsonID, jsonPath, ignoreErr = 1)
+	JSON_Release(jsonID)
+
+	return keys
+End
