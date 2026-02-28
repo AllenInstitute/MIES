@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Group LabnotebookQueryFunctions &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Group StimsetAPIFunctions" href="group___stimset_a_p_i_functions.html" />
+    <link rel="prev" title="Group BackgroundFunctions" href="group___background_functions.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="group___stimset_a_p_i_functions.html" title="Group StimsetAPIFunctions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="group___background_functions.html" title="Group BackgroundFunctions"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../grouplist.html" accesskey="U">Group list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Group LabnotebookQueryFunctions</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="group-labnotebookqueryfunctions">
+<span id="id1"></span><h1>Group LabnotebookQueryFunctions<a class="headerlink" href="#group-labnotebookqueryfunctions" title="Link to this heading">¶</a></h1>
+<dl>
+<dt class="sig sig-object cpp">
+<span class="target" id="group___labnotebook_query_functions"></span><em><span class="pre">group</span></em> <span class="sig-name descname"><span class="pre">Labnotebook</span> <span class="pre">Query</span> <span class="pre">Functions</span></span></dt>
+<dd><p>The labnotebook querying functions can be categorized into the following categories:</p>
+<p>Return the stored settings of a <em>single</em> sweep. The functions return a wave with <a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787"><span class="std std-ref">LABNOTEBOOK_LAYER_COUNT</span></a> rows, where the first <a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8"><span class="std std-ref">NUM_HEADSTAGES</span></a> hold headstage dependent data and the row returned by <a class="reference internal" href="../file/_m_i_e_s___mies_utilities___logbook_8ipf.html#_m_i_e_s___mies_utilities___logbook_8ipf_1ae8fc2ed79de8e4cabaf75cc552e8fad6"><span class="std std-ref">GetIndexForHeadstageIndepData()</span></a> the headstage independent data.<ul class="simple">
+<li><p><a class="reference internal" href="#group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346"><span class="std std-ref">GetLastSetting()</span></a></p></li>
+</ul>
+</p>
+<p>Return the <em>headstage independent</em> data of a single sweep. Trimmed down a special default value in case the setting could not be found.<ul class="simple">
+<li><p><a class="reference internal" href="#group___labnotebook_query_functions_1gaaeb8e71885194bd016698fbb183988df"><span class="std std-ref">GetLastSettingIndep()</span></a></p></li>
+<li><p><a class="reference internal" href="#group___labnotebook_query_functions_1ga50e942902c7780980cf6225250252320"><span class="std std-ref">GetLastSettingTextIndep()</span></a></p></li>
+</ul>
+</p>
+<p>If you want to query the information on a per-channel basis the following functions are helpful. They also take care of unassociated channels automatically.<ul class="simple">
+<li><p><a class="reference internal" href="#group___labnotebook_query_functions_1gabb16f09410b8b243f293391ec3c7823d"><span class="std std-ref">GetLastSettingChannel()</span></a></p></li>
+</ul>
+</p>
+<p>Return the data of <em>one</em> of the sweeps of a repeated acquistion cycle (RAC). The functions return only the <em>first</em> valid setting searching the sweeps from the end to the begin of the RAC.<ul class="simple">
+<li><p><a class="reference internal" href="#group___labnotebook_query_functions_1ga97d548734a1242647c804cf369e9a917"><span class="std std-ref">GetLastSettingTextRAC()</span></a></p></li>
+<li><p><a class="reference internal" href="#group___labnotebook_query_functions_1gaf36c35c0f7025c17c3d0f66f0dd86f84"><span class="std std-ref">GetLastSettingTextIndepRAC()</span></a></p></li>
+<li><p><a class="reference internal" href="#group___labnotebook_query_functions_1ga1e666613b436430efca00e4217e5760e"><span class="std std-ref">GetLastSettingIndepRAC()</span></a></p></li>
+<li><p><a class="reference internal" href="#group___labnotebook_query_functions_1ga31b4cc4c6079e5962f8f3de35fe27778"><span class="std std-ref">GetLastSettingRAC()</span></a></p></li>
+</ul>
+</p>
+<p>Return the data of <em>all</em> sweeps of a repeated acquistion cycle (RAC) with the following functions:<ul class="simple">
+<li><p><a class="reference internal" href="#group___labnotebook_query_functions_1ga92dce4f1be728e252cfce6ed5f41cfba"><span class="std std-ref">GetLastSettingTextEachRAC()</span></a></p></li>
+<li><p><a class="reference internal" href="#group___labnotebook_query_functions_1gade836af69ad469c2c7401af393376c2d"><span class="std std-ref">GetLastSettingTextIndepEachRAC()</span></a></p></li>
+<li><p><a class="reference internal" href="#group___labnotebook_query_functions_1ga4beed703a25c190467dc724a61c6d96d"><span class="std std-ref">GetLastSettingIndepEachRAC()</span></a></p></li>
+<li><p><a class="reference internal" href="#group___labnotebook_query_functions_1ga93ab37b6d9b4bbbd21676ef059dda999"><span class="std std-ref">GetLastSettingEachRAC()</span></a></p></li>
+</ul>
+</p>
+<p>All the above functions are concerned with querying data from the labnotebook where the sweep number is known. In case you are looking for data from an arbitrary sweep use one of the following functions:<ul class="simple">
+<li><p><a class="reference internal" href="#group___labnotebook_query_functions_1ga9d3d5d1aaeb2e20f055f5b41c236b662"><span class="std std-ref">GetLastSweepWithSetting()</span></a></p></li>
+<li><p><a class="reference internal" href="#group___labnotebook_query_functions_1gafbf540fa1c319197615bd6c73ad2a34c"><span class="std std-ref">GetLastSweepWithSettingText()</span></a></p></li>
+<li><p><a class="reference internal" href="#group___labnotebook_query_functions_1gaf0699b541ed20bdebfb3ff5ad3cac656"><span class="std std-ref">GetLastSweepWithSettingTextI()</span></a></p></li>
+<li><p><a class="reference internal" href="#group___labnotebook_query_functions_1gaf69ef19ad8b95b18c583590e13fbd437"><span class="std std-ref">GetLastSweepWithSettingIndep()</span></a></p></li>
+<li><p><a class="reference internal" href="#group___labnotebook_query_functions_1ga54037f7c9b9d2034bf0ac71e2bde6a90"><span class="std std-ref">GetSweepsWithSetting()</span></a></p></li>
+</ul>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419GetLastSettingIndep4wave8variable6string8variable8variable">
+<span id="_CPPv319GetLastSettingIndep4wave8variable6string8variable8variable"></span><span id="_CPPv219GetLastSettingIndep4wave8variable6string8variable8variable"></span><span id="GetLastSettingIndep__wave.variable.string.variable.variable"></span><span class="target" id="group___labnotebook_query_functions_1gaaeb8e71885194bd016698fbb183988df"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastSettingIndep</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entrySourceType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">defValue</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419GetLastSettingIndep4wave8variable6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a headstage independent setting from the numerical labnotebook. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346"><span class="std std-ref">GetLastSetting()</span></a></p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the headstage independent setting or <code class="docutils literal notranslate"><span class="pre">defValue</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423GetLastSettingTextIndep8WaveText8variable6string8variable6string">
+<span id="_CPPv323GetLastSettingTextIndep8WaveText8variable6string8variable6string"></span><span id="_CPPv223GetLastSettingTextIndep8WaveText8variable6string8variable6string"></span><span id="GetLastSettingTextIndep__WaveText.variable.string.variable.string"></span><span class="target" id="group___labnotebook_query_functions_1ga50e942902c7780980cf6225250252320"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastSettingTextIndep</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">textualValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entrySourceType</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">defValue</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423GetLastSettingTextIndep8WaveText8variable6string8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a headstage independent setting from the textual labnotebook. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346"><span class="std std-ref">GetLastSetting()</span></a></p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the headstage independent setting or <code class="docutils literal notranslate"><span class="pre">defValue</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422GetLastSettingIndepRAC4wave8variable6string8variable8variable">
+<span id="_CPPv322GetLastSettingIndepRAC4wave8variable6string8variable8variable"></span><span id="_CPPv222GetLastSettingIndepRAC4wave8variable6string8variable8variable"></span><span id="GetLastSettingIndepRAC__wave.variable.string.variable.variable"></span><span class="target" id="group___labnotebook_query_functions_1ga1e666613b436430efca00e4217e5760e"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastSettingIndepRAC</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entrySourceType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">defValue</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422GetLastSettingIndepRAC4wave8variable6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a headstage independent setting from the numerical labnotebook of the sweeps in the same RA cycle. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346"><span class="std std-ref">GetLastSetting()</span></a></p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the headstage independent setting or <code class="docutils literal notranslate"><span class="pre">defValue</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422GetLastSettingIndepSCI4wave8variable6string8variable8variable8variable">
+<span id="_CPPv322GetLastSettingIndepSCI4wave8variable6string8variable8variable8variable"></span><span id="_CPPv222GetLastSettingIndepSCI4wave8variable6string8variable8variable8variable"></span><span id="GetLastSettingIndepSCI__wave.variable.string.variable.variable.variable"></span><span class="target" id="group___labnotebook_query_functions_1gac3cd9e047893c735d188326d267bb203"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastSettingIndepSCI</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entrySourceType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">defValue</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422GetLastSettingIndepSCI4wave8variable6string8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a headstage independent setting from the numerical labnotebook of the sweeps in the same SCI cycle. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346"><span class="std std-ref">GetLastSetting()</span></a></p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the headstage independent setting or <code class="docutils literal notranslate"><span class="pre">defValue</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426GetLastSettingTextIndepSCI4wave8WaveText8variable6string8variable8variable6string">
+<span id="_CPPv326GetLastSettingTextIndepSCI4wave8WaveText8variable6string8variable8variable6string"></span><span id="_CPPv226GetLastSettingTextIndepSCI4wave8WaveText8variable6string8variable8variable6string"></span><span id="GetLastSettingTextIndepSCI__wave.WaveText.variable.string.variable.variable.string"></span><span class="target" id="group___labnotebook_query_functions_1gaaa302efb8d55eb1ed4515b3f653d51eb"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastSettingTextIndepSCI</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <a class="reference internal" href="../file/_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">textualValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entrySourceType</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">defValue</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426GetLastSettingTextIndepSCI4wave8WaveText8variable6string8variable8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a headstage independent setting from the textual labnotebook of the sweeps in the same SCI cycle. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346"><span class="std std-ref">GetLastSetting()</span></a></p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the headstage independent setting or <code class="docutils literal notranslate"><span class="pre">defValue</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426GetLastSettingTextIndepRAC4wave8WaveText8variable6string8variable6string">
+<span id="_CPPv326GetLastSettingTextIndepRAC4wave8WaveText8variable6string8variable6string"></span><span id="_CPPv226GetLastSettingTextIndepRAC4wave8WaveText8variable6string8variable6string"></span><span id="GetLastSettingTextIndepRAC__wave.WaveText.variable.string.variable.string"></span><span class="target" id="group___labnotebook_query_functions_1gaf36c35c0f7025c17c3d0f66f0dd86f84"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastSettingTextIndepRAC</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <a class="reference internal" href="../file/_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">textualValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entrySourceType</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">defValue</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426GetLastSettingTextIndepRAC4wave8WaveText8variable6string8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a headstage independent setting from the numerical labnotebook of the sweeps in the same RA cycle. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the headstage independent setting or <code class="docutils literal notranslate"><span class="pre">defValue</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421GetLastSettingChannel4wave14WaveTextOrNull8variable6string8variable8variable8variable">
+<span id="_CPPv321GetLastSettingChannel4wave14WaveTextOrNull8variable6string8variable8variable8variable"></span><span id="_CPPv221GetLastSettingChannel4wave14WaveTextOrNull8variable6string8variable8variable8variable"></span><span id="GetLastSettingChannel__wave.WaveTextOrNull.variable.string.variable.variable.variable"></span><span class="target" id="group___labnotebook_query_functions_1gabb16f09410b8b243f293391ec3c7823d"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">WaveOrNull</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastSettingChannel</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">WaveTextOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">textualValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelNumber</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entrySourceType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421GetLastSettingChannel4wave14WaveTextOrNull8variable6string8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a numerical or text setting for the given channel. </p>
+<p>It also returns headstage independent entries when the given channel refers to an active channel.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../file/_m_i_e_s___mies_utilities___logbook_8ipf.html#_m_i_e_s___mies_utilities___logbook_8ipf_1abeb861dc5fb3bba0d1b31a327cfe35b8"><span class="std std-ref">GetLastSettingChannelInternal()</span></a></p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the wave containing the setting and the index into it.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414GetLastSetting4wave8variable6string8variable">
+<span id="_CPPv314GetLastSetting4wave8variable6string8variable"></span><span id="_CPPv214GetLastSetting4wave8variable6string8variable"></span><span id="GetLastSetting__wave.variable.string.variable"></span><span class="target" id="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastSetting</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">values</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entrySourceType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414GetLastSetting4wave8variable6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a numeric/textual wave with the latest value of a setting from the numerical/labnotebook labnotebook for the given sweep number. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values</strong> – numerical/textual labnotebook </p></li>
+<li><p><strong>sweepNo</strong> – sweep number </p></li>
+<li><p><strong>setting</strong> – name of the setting to query </p></li>
+<li><p><strong>entrySourceType</strong> – type of the labnotebook entry, one of <a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1DataAcqModes"><span class="std std-ref">DataAcqModes</span></a>. If you don’t care about the entry source type pass <a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6"><span class="std std-ref">UNKNOWN_MODE</span></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a free wave with <a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787"><span class="std std-ref">LABNOTEBOOK_LAYER_COUNT</span></a> rows. In case the setting could not be found an invalid wave reference is returned. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421GetLastSettingNoCache4wave8variable6string8variableP8variableP8variableP8variable8variable">
+<span id="_CPPv321GetLastSettingNoCache4wave8variable6string8variableP8variableP8variableP8variable8variable"></span><span id="_CPPv221GetLastSettingNoCache4wave8variable6string8variableP8variableP8variableP8variable8variable"></span><span id="GetLastSettingNoCache__wave.variable.string.variable.variableP.variableP.variableP.variable"></span><span class="target" id="group___labnotebook_query_functions_1gac4d86bb65ab882d1ffb405f142d03de2"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastSettingNoCache</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">values</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entrySourceType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">first</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">last</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">rowIndex</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">settingCol</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421GetLastSettingNoCache4wave8variable6string8variableP8variableP8variableP8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a wave with the latest value of a setting from the numerical/textual labnotebook for the given sweep number. Uncached version, general users should prefer <a class="reference internal" href="#group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346"><span class="std std-ref">GetLastSetting()</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values</strong> – numerical/textual labnotebook </p></li>
+<li><p><strong>sweepNo</strong> – sweep number </p></li>
+<li><p><strong>setting</strong> – name of the setting to query </p></li>
+<li><p><strong>entrySourceType</strong> – type of the labnotebook entry, one of <a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1DataAcqModes"><span class="std std-ref">DataAcqModes</span></a></p></li>
+<li><p><strong>first</strong> – <strong>[inout]</strong> [optional] Can be used to query and return the labnotebook row range. Useful for routines which must make a lot of queries to the same sweep and want to avoid the overhead of calculating <code class="docutils literal notranslate"><span class="pre">first</span></code> and <code class="docutils literal notranslate"><span class="pre">last</span></code>. Passing <a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1afcacd60859c3899f5093408148ce2bec"><span class="std std-ref">LABNOTEBOOK_GET_RANGE</span></a> will set the calculated values of <code class="docutils literal notranslate"><span class="pre">first</span></code> and <code class="docutils literal notranslate"><span class="pre">last</span></code> after the function returns. Passing a value greater or equal zero will use these values instead. </p></li>
+<li><p><strong>last</strong> – <strong>[inout]</strong> [optional] see <code class="docutils literal notranslate"><span class="pre">first</span></code></p></li>
+<li><p><strong>rowIndex</strong> – <strong>[out]</strong> [optional] return the row where the setting could be found, otherwise it is set to <a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a4dc284d7016608cd800cf4b470676a8d"><span class="std std-ref">LABNOTEBOOK_MISSING_VALUE</span></a></p></li>
+<li><p><strong>settingCol</strong> – [optional, default: determined by function] if the caller has already determined the setting column, it can set this argument then GetLastSettingNoCache saves the find</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a free wave with <a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787"><span class="std std-ref">LABNOTEBOOK_LAYER_COUNT</span></a> rows. In case the setting could not be found an invalid wave reference is returned. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421GetLastSettingTextRAC4wave8WaveText8variable6string8variable">
+<span id="_CPPv321GetLastSettingTextRAC4wave8WaveText8variable6string8variable"></span><span id="_CPPv221GetLastSettingTextRAC4wave8WaveText8variable6string8variable"></span><span id="GetLastSettingTextRAC__wave.WaveText.variable.string.variable"></span><span class="target" id="group___labnotebook_query_functions_1ga97d548734a1242647c804cf369e9a917"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastSettingTextRAC</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <a class="reference internal" href="../file/_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">textualValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entrySourceType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421GetLastSettingTextRAC4wave8WaveText8variable6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the last textual value of the sweeps in the same RA cycle. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346"><span class="std std-ref">GetLastSetting()</span></a></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417GetLastSettingRAC4wave8variable6string8variable">
+<span id="_CPPv317GetLastSettingRAC4wave8variable6string8variable"></span><span id="_CPPv217GetLastSettingRAC4wave8variable6string8variable"></span><span id="GetLastSettingRAC__wave.variable.string.variable"></span><span class="target" id="group___labnotebook_query_functions_1ga31b4cc4c6079e5962f8f3de35fe27778"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastSettingRAC</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entrySourceType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417GetLastSettingRAC4wave8variable6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the last numerical value of the sweeps in the same RA cycle. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346"><span class="std std-ref">GetLastSetting()</span></a></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426GetLastSettingIndepEachRAC4wave8variable6string8variable8variable">
+<span id="_CPPv326GetLastSettingIndepEachRAC4wave8variable6string8variable8variable"></span><span id="_CPPv226GetLastSettingIndepEachRAC4wave8variable6string8variable8variable"></span><span id="GetLastSettingIndepEachRAC__wave.variable.string.variable.variable"></span><span class="target" id="group___labnotebook_query_functions_1ga4beed703a25c190467dc724a61c6d96d"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastSettingIndepEachRAC</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entrySourceType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">defValue</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426GetLastSettingIndepEachRAC4wave8variable6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the last numerical value for the given setting of <em>each</em> sweep in the same RA cycle. </p>
+<p>The returned wave will have <code class="docutils literal notranslate"><span class="pre">NaN</span></code> for sweeps which do not have that entry. This is done in order to keep the indizes intact.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346"><span class="std std-ref">GetLastSetting()</span></a></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430GetLastSettingTextIndepEachRAC4wave8WaveText8variable6string8variable6string">
+<span id="_CPPv330GetLastSettingTextIndepEachRAC4wave8WaveText8variable6string8variable6string"></span><span id="_CPPv230GetLastSettingTextIndepEachRAC4wave8WaveText8variable6string8variable6string"></span><span id="GetLastSettingTextIndepEachRAC__wave.WaveText.variable.string.variable.string"></span><span class="target" id="group___labnotebook_query_functions_1gade836af69ad469c2c7401af393376c2d"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastSettingTextIndepEachRAC</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <a class="reference internal" href="../file/_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">textualValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entrySourceType</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">defValue</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430GetLastSettingTextIndepEachRAC4wave8WaveText8variable6string8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the last textual value for the given setting of <em>each</em> sweep in the same RA cycle. </p>
+<p>The returned wave will have <code class="docutils literal notranslate"><span class="pre">NaN</span></code> for sweeps which do not have that entry. This is done in order to keep the indizes intact.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346"><span class="std std-ref">GetLastSetting()</span></a></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421GetLastSettingEachRAC4wave8variable6string8variable8variable">
+<span id="_CPPv321GetLastSettingEachRAC4wave8variable6string8variable8variable"></span><span id="_CPPv221GetLastSettingEachRAC4wave8variable6string8variable8variable"></span><span id="GetLastSettingEachRAC__wave.variable.string.variable.variable"></span><span class="target" id="group___labnotebook_query_functions_1ga93ab37b6d9b4bbbd21676ef059dda999"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastSettingEachRAC</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entrySourceType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421GetLastSettingEachRAC4wave8variable6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the last numerical value for the given setting of <em>each</em> sweep for a given headstage in the same RA cycle. </p>
+<p>The returned wave will have <code class="docutils literal notranslate"><span class="pre">NaN</span></code> for sweeps which do not have that entry. This is done in order to keep the indizes intact.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346"><span class="std std-ref">GetLastSetting</span></a></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425GetLastSettingTextEachRAC4wave8WaveText8variable6string8variable8variable">
+<span id="_CPPv325GetLastSettingTextEachRAC4wave8WaveText8variable6string8variable8variable"></span><span id="_CPPv225GetLastSettingTextEachRAC4wave8WaveText8variable6string8variable8variable"></span><span id="GetLastSettingTextEachRAC__wave.WaveText.variable.string.variable.variable"></span><span class="target" id="group___labnotebook_query_functions_1ga92dce4f1be728e252cfce6ed5f41cfba"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastSettingTextEachRAC</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <a class="reference internal" href="../file/_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">textualValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entrySourceType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425GetLastSettingTextEachRAC4wave8WaveText8variable6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the last textual value for the given setting of <em>each</em> sweep for a given headstage in the same RA cycle. </p>
+<p>The returned wave will have <code class="docutils literal notranslate"><span class="pre">NaN</span></code> for sweeps which do not have that entry. This is done in order to keep the indizes intact.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346"><span class="std std-ref">GetLastSetting()</span></a></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421GetLastSettingTextSCI4wave8WaveText8variable6string8variable8variable">
+<span id="_CPPv321GetLastSettingTextSCI4wave8WaveText8variable6string8variable8variable"></span><span id="_CPPv221GetLastSettingTextSCI4wave8WaveText8variable6string8variable8variable"></span><span id="GetLastSettingTextSCI__wave.WaveText.variable.string.variable.variable"></span><span class="target" id="group___labnotebook_query_functions_1gad111b2ba70447e45e67656279a5d4d84"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastSettingTextSCI</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <a class="reference internal" href="../file/_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">textualValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entrySourceType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421GetLastSettingTextSCI4wave8WaveText8variable6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the last textual value of the sweeps in the same stimset cycle. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346"><span class="std std-ref">GetLastSetting()</span></a></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417GetLastSettingSCI4wave8variable6string8variable8variable">
+<span id="_CPPv317GetLastSettingSCI4wave8variable6string8variable8variable"></span><span id="_CPPv217GetLastSettingSCI4wave8variable6string8variable8variable"></span><span id="GetLastSettingSCI__wave.variable.string.variable.variable"></span><span class="target" id="group___labnotebook_query_functions_1gab844c29989d2e24e8882e9be6c8568b4"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastSettingSCI</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entrySourceType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417GetLastSettingSCI4wave8variable6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the last numerical value of the sweeps in the same stimset cycle. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346"><span class="std std-ref">GetLastSetting()</span></a></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426GetLastSettingIndepEachSCI4wave8variable6string8variable8variable8variable">
+<span id="_CPPv326GetLastSettingIndepEachSCI4wave8variable6string8variable8variable8variable"></span><span id="_CPPv226GetLastSettingIndepEachSCI4wave8variable6string8variable8variable8variable"></span><span id="GetLastSettingIndepEachSCI__wave.variable.string.variable.variable.variable"></span><span class="target" id="group___labnotebook_query_functions_1ga16f474f839dfe1041c8fcddea7fb8961"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastSettingIndepEachSCI</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entrySourceType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">defValue</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426GetLastSettingIndepEachSCI4wave8variable6string8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the last numerical value for the given setting of <em>each</em> sweep in the same stimset cycle. </p>
+<p>The returned wave will have <code class="docutils literal notranslate"><span class="pre">NaN</span></code> for sweeps which do not have that entry. This is done in order to keep the indizes intact.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346"><span class="std std-ref">GetLastSetting()</span></a></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430GetLastSettingTextIndepEachSCI4wave8WaveText8variable8variable6string8variable6string">
+<span id="_CPPv330GetLastSettingTextIndepEachSCI4wave8WaveText8variable8variable6string8variable6string"></span><span id="_CPPv230GetLastSettingTextIndepEachSCI4wave8WaveText8variable8variable6string8variable6string"></span><span id="GetLastSettingTextIndepEachSCI__wave.WaveText.variable.variable.string.variable.string"></span><span class="target" id="group___labnotebook_query_functions_1ga0423691e2aa695e83c96f647c68202de"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastSettingTextIndepEachSCI</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <a class="reference internal" href="../file/_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">textualValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entrySourceType</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">defValue</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430GetLastSettingTextIndepEachSCI4wave8WaveText8variable8variable6string8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the last textual value for the given setting of <em>each</em> sweep in the same stimset cycle. </p>
+<p>The returned wave will have <code class="docutils literal notranslate"><span class="pre">NaN</span></code> for sweeps which do not have that entry. This is done in order to keep the indizes intact.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346"><span class="std std-ref">GetLastSetting()</span></a></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421GetLastSettingEachSCI4wave8variable6string8variable8variable">
+<span id="_CPPv321GetLastSettingEachSCI4wave8variable6string8variable8variable"></span><span id="_CPPv221GetLastSettingEachSCI4wave8variable6string8variable8variable"></span><span id="GetLastSettingEachSCI__wave.variable.string.variable.variable"></span><span class="target" id="group___labnotebook_query_functions_1gafa905829f2a8ca5827a115b0bc10e260"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastSettingEachSCI</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entrySourceType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421GetLastSettingEachSCI4wave8variable6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the last numerical value for the given setting of <em>each</em> sweep for a given headstage in the same stimset cycle. </p>
+<p>The returned wave will have <code class="docutils literal notranslate"><span class="pre">NaN</span></code> for sweeps which do not have that entry. This is done in order to keep the indizes intact.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346"><span class="std std-ref">GetLastSetting</span></a></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425GetLastSettingTextEachSCI4wave8WaveText8variable6string8variable8variable">
+<span id="_CPPv325GetLastSettingTextEachSCI4wave8WaveText8variable6string8variable8variable"></span><span id="_CPPv225GetLastSettingTextEachSCI4wave8WaveText8variable6string8variable8variable"></span><span id="GetLastSettingTextEachSCI__wave.WaveText.variable.string.variable.variable"></span><span class="target" id="group___labnotebook_query_functions_1ga3d79a377c5eb8689c43d346367ad8f09"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastSettingTextEachSCI</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <a class="reference internal" href="../file/_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">textualValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entrySourceType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425GetLastSettingTextEachSCI4wave8WaveText8variable6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the last textual value for the given setting of <em>each</em> sweep for a given headstage in the same stimset cycle. </p>
+<p>The returned wave will have <code class="docutils literal notranslate"><span class="pre">NaN</span></code> for sweeps which do not have that entry. This is done in order to keep the indizes intact.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346"><span class="std std-ref">GetLastSetting()</span></a></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420GetSweepsWithSetting4wave6string">
+<span id="_CPPv320GetSweepsWithSetting4wave6string"></span><span id="_CPPv220GetSweepsWithSetting4wave6string"></span><span id="GetSweepsWithSetting__wave.string"></span><span class="target" id="group___labnotebook_query_functions_1ga54037f7c9b9d2034bf0ac71e2bde6a90"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSweepsWithSetting</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">labnotebookValues</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420GetSweepsWithSetting4wave6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a wave with all sweep numbers which have a non-empty entry for setting. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>labnotebookValues</strong> – numerical/textual labnotebook </p></li>
+<li><p><strong>setting</strong> – name of the value to search</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a 1D free wave with the matching sweep numbers. In case the setting could not be found an invalid wave reference is returned. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423GetLastSweepWithSetting4wave6stringP8variable">
+<span id="_CPPv323GetLastSweepWithSetting4wave6stringP8variable"></span><span id="_CPPv223GetLastSweepWithSetting4wave6stringP8variable"></span><span id="GetLastSweepWithSetting__wave.string.variableP"></span><span class="target" id="group___labnotebook_query_functions_1ga9d3d5d1aaeb2e20f055f5b41c236b662"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastSweepWithSetting</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">sweepNo</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423GetLastSweepWithSetting4wave6stringP8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the last numerical value of a setting from the labnotebook and the sweep it was set. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>numericalValues</strong> – <strong>[in]</strong> numerical labnotebook </p></li>
+<li><p><strong>setting</strong> – <strong>[in]</strong> name of the value to search </p></li>
+<li><p><strong>sweepNo</strong> – <strong>[out]</strong> sweep number the value was last set</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a free wave with <a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787"><span class="std std-ref">LABNOTEBOOK_LAYER_COUNT</span></a> rows. In case the setting could not be found an invalid wave reference is returned. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428GetLastSweepWithSettingIndep4wave6stringP8variable8variable">
+<span id="_CPPv328GetLastSweepWithSettingIndep4wave6stringP8variable8variable"></span><span id="_CPPv228GetLastSweepWithSettingIndep4wave6stringP8variable8variable"></span><span id="GetLastSweepWithSettingIndep__wave.string.variableP.variable"></span><span class="target" id="group___labnotebook_query_functions_1gaf69ef19ad8b95b18c583590e13fbd437"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastSweepWithSettingIndep</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">defValue</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428GetLastSweepWithSettingIndep4wave6stringP8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the last numerical value of a headstage independent setting from the labnotebook and the sweep it was set. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>numericalValues</strong> – <strong>[in]</strong> numerical labnotebook </p></li>
+<li><p><strong>setting</strong> – <strong>[in]</strong> name of the value to search </p></li>
+<li><p><strong>sweepNo</strong> – <strong>[out]</strong> sweep number the value was last set </p></li>
+<li><p><strong>defValue</strong> – <strong>[in]</strong> [optional, defaults to <code class="docutils literal notranslate"><span class="pre">NaN</span></code>] value to return in case nothing could be found </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427GetLastSweepWithSettingText8WaveText6stringP8variable">
+<span id="_CPPv327GetLastSweepWithSettingText8WaveText6stringP8variable"></span><span id="_CPPv227GetLastSweepWithSettingText8WaveText6stringP8variable"></span><span id="GetLastSweepWithSettingText__WaveText.string.variableP"></span><span class="target" id="group___labnotebook_query_functions_1gafbf540fa1c319197615bd6c73ad2a34c"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastSweepWithSettingText</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">textualValues</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">sweepNo</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427GetLastSweepWithSettingText8WaveText6stringP8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the last textual value of a setting from the labnotebook and the sweep it was set. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>textualValues</strong> – <strong>[in]</strong> textual labnotebook </p></li>
+<li><p><strong>setting</strong> – <strong>[in]</strong> name of the value to search </p></li>
+<li><p><strong>sweepNo</strong> – <strong>[out]</strong> sweep number the value was last set</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a free wave with <a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787"><span class="std std-ref">LABNOTEBOOK_LAYER_COUNT</span></a> rows. In case the setting could not be found an invalid wave reference is returned. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428GetLastSweepWithSettingTextI4wave6stringP8variable6string">
+<span id="_CPPv328GetLastSweepWithSettingTextI4wave6stringP8variable6string"></span><span id="_CPPv228GetLastSweepWithSettingTextI4wave6stringP8variable6string"></span><span id="GetLastSweepWithSettingTextI__wave.string.variableP.string"></span><span class="target" id="group___labnotebook_query_functions_1gaf0699b541ed20bdebfb3ff5ad3cac656"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastSweepWithSettingTextI</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">defValue</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428GetLastSweepWithSettingTextI4wave6stringP8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the last textual value of a headstage independent setting from the labnotebook and the sweep it was set. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>numericalValues</strong> – <strong>[in]</strong> numerical labnotebook </p></li>
+<li><p><strong>setting</strong> – <strong>[in]</strong> name of the value to search </p></li>
+<li><p><strong>sweepNo</strong> – <strong>[out]</strong> sweep number the value was last set </p></li>
+<li><p><strong>defValue</strong> – <strong>[in]</strong> [optional, defaults to an empty string] value to return in case nothing could be found </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../grouplist.html">Group list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="group___analysis_function_parameter_helpers.html">Group AnalysisFunctionParameterHelpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group___background_functions.html">Group BackgroundFunctions</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Group LabnotebookQueryFunctions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419GetLastSettingIndep4wave8variable6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">GetLastSettingIndep()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423GetLastSettingTextIndep8WaveText8variable6string8variable6string"><code class="docutils literal notranslate"><span class="pre">GetLastSettingTextIndep()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422GetLastSettingIndepRAC4wave8variable6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">GetLastSettingIndepRAC()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422GetLastSettingIndepSCI4wave8variable6string8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">GetLastSettingIndepSCI()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426GetLastSettingTextIndepSCI4wave8WaveText8variable6string8variable8variable6string"><code class="docutils literal notranslate"><span class="pre">GetLastSettingTextIndepSCI()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426GetLastSettingTextIndepRAC4wave8WaveText8variable6string8variable6string"><code class="docutils literal notranslate"><span class="pre">GetLastSettingTextIndepRAC()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421GetLastSettingChannel4wave14WaveTextOrNull8variable6string8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">GetLastSettingChannel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414GetLastSetting4wave8variable6string8variable"><code class="docutils literal notranslate"><span class="pre">GetLastSetting()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421GetLastSettingNoCache4wave8variable6string8variableP8variableP8variableP8variable8variable"><code class="docutils literal notranslate"><span class="pre">GetLastSettingNoCache()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421GetLastSettingTextRAC4wave8WaveText8variable6string8variable"><code class="docutils literal notranslate"><span class="pre">GetLastSettingTextRAC()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417GetLastSettingRAC4wave8variable6string8variable"><code class="docutils literal notranslate"><span class="pre">GetLastSettingRAC()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426GetLastSettingIndepEachRAC4wave8variable6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">GetLastSettingIndepEachRAC()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430GetLastSettingTextIndepEachRAC4wave8WaveText8variable6string8variable6string"><code class="docutils literal notranslate"><span class="pre">GetLastSettingTextIndepEachRAC()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421GetLastSettingEachRAC4wave8variable6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">GetLastSettingEachRAC()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425GetLastSettingTextEachRAC4wave8WaveText8variable6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">GetLastSettingTextEachRAC()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421GetLastSettingTextSCI4wave8WaveText8variable6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">GetLastSettingTextSCI()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417GetLastSettingSCI4wave8variable6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">GetLastSettingSCI()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426GetLastSettingIndepEachSCI4wave8variable6string8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">GetLastSettingIndepEachSCI()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430GetLastSettingTextIndepEachSCI4wave8WaveText8variable8variable6string8variable6string"><code class="docutils literal notranslate"><span class="pre">GetLastSettingTextIndepEachSCI()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421GetLastSettingEachSCI4wave8variable6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">GetLastSettingEachSCI()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425GetLastSettingTextEachSCI4wave8WaveText8variable6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">GetLastSettingTextEachSCI()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420GetSweepsWithSetting4wave6string"><code class="docutils literal notranslate"><span class="pre">GetSweepsWithSetting()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423GetLastSweepWithSetting4wave6stringP8variable"><code class="docutils literal notranslate"><span class="pre">GetLastSweepWithSetting()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428GetLastSweepWithSettingIndep4wave6stringP8variable8variable"><code class="docutils literal notranslate"><span class="pre">GetLastSweepWithSettingIndep()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427GetLastSweepWithSettingText8WaveText6stringP8variable"><code class="docutils literal notranslate"><span class="pre">GetLastSweepWithSettingText()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428GetLastSweepWithSettingTextI4wave6stringP8variable6string"><code class="docutils literal notranslate"><span class="pre">GetLastSweepWithSettingTextI()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="group___stimset_a_p_i_functions.html">Group StimsetAPIFunctions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group___wave_versioning_support.html">Group WaveVersioningSupport</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="group___background_functions.html"
+                          title="previous chapter">Group BackgroundFunctions</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="group___stimset_a_p_i_functions.html"
+                          title="next chapter">Group StimsetAPIFunctions</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="group___stimset_a_p_i_functions.html" title="Group StimsetAPIFunctions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="group___background_functions.html" title="Group BackgroundFunctions"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../grouplist.html" >Group list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Group LabnotebookQueryFunctions</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

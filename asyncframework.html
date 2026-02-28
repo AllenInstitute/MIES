@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Async Framework &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Labnotebook documentation for developers" href="labnotebook-docs.html" />
+    <link rel="prev" title="Testpulse Analysis Algorithm" href="TPAnalysis_algorithm.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="labnotebook-docs.html" title="Labnotebook documentation for developers"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="TPAnalysis_algorithm.html" title="Testpulse Analysis Algorithm"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Async Framework</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <blockquote>
+<div></div></blockquote>
+<section id="async-framework">
+<span id="async-framework-doc"></span><h1>Async Framework<a class="headerlink" href="#async-framework" title="Link to this heading">¶</a></h1>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Link to this heading">¶</a></h2>
+<p>The Async Framework enables the user to execute code in parallel in separated
+threads. The API reduces the efforts to accomplish parallel execution greatly
+compared to the general approach Igor Pro provides.</p>
+<p>For a specific job only two functions have to be implemented by the user of the
+framework.</p>
+<ul class="simple">
+<li><p>A worker function that will be executed in a separate thread. It receives
+input data through a data folder. At the end it returns output data through
+another data folder to the main program.</p></li>
+<li><p>A ReadOut function that receives the output data and puts it back to the main programs data.</p></li>
+</ul>
+<p>The frameworks API helps to setup an input data folder for workers. It also
+supports running different jobs at the same time. By default the order of input
+data send to a worker is tracked per job type. The associated readout function
+is then called in the same order with the output data.</p>
+<p>Though, if output in the same order as the input is not required there is also
+an option to readout data just as worker functions output it.</p>
+</section>
+<section id="quick-guide">
+<h2>Quick Guide<a class="headerlink" href="#quick-guide" title="Link to this heading">¶</a></h2>
+<section id="start-and-stop">
+<h3>Start and Stop<a class="headerlink" href="#start-and-stop" title="Link to this heading">¶</a></h3>
+<p>The framework is started by <a class="reference internal" href="file/_m_i_e_s___async_8ipf.html#_CPPv411ASYNC_Start8variable8variable" title="ASYNC_Start"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">ASYNC_Start()</span></code></a> that creates a given number
+of threads that run in the background and wait for work.</p>
+<blockquote>
+<div><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>ASYNC_Start(numThreads,<span class="w"> </span>disableTask)
+</pre></div>
+</div>
+</div></blockquote>
+<p>By default a task is started that reads out data from finished workers in the
+background. If this is not desired, setting the optional parameter
+<code class="docutils literal notranslate"><span class="pre">disableTask=1</span></code> prevents creation of the task. The user has to call <a class="reference internal" href="file/_m_i_e_s___async_8ipf.html#_CPPv419ASYNC_ThreadReadOutv" title="ASYNC_ThreadReadOut"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">ASYNC_ThreadReadOut()</span></code></a>
+themselves to retrieve data from finished workers.</p>
+<p>In the end the framework can be stopped by <a class="reference internal" href="file/_m_i_e_s___async_8ipf.html#_CPPv410ASYNC_Stop8variable8variable" title="ASYNC_Stop"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">ASYNC_Stop()</span></code></a> that sends
+all threads the request to abort. As there might be still input and/or output
+data in the queue <a class="reference internal" href="file/_m_i_e_s___async_8ipf.html#_CPPv410ASYNC_Stop8variable8variable" title="ASYNC_Stop"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">ASYNC_Stop()</span></code></a> waits a given timeout to finish
+processing. If timeout is reached further processing is stopped and the threads
+are released.</p>
+<blockquote>
+<div><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>ASYNC_Stop(timeout)
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="creating-of-a-job">
+<h3>Creating of a job<a class="headerlink" href="#creating-of-a-job" title="Link to this heading">¶</a></h3>
+<p>The worker function for a job that the user has to implement must have the form</p>
+<blockquote>
+<div><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kr">threadsafe</span><span class="w"> </span><span class="kr">Function</span>/DF<span class="w"> </span>MyWorkerFunction(dfr)
+<span class="w">  </span><span class="kt">DFREF</span><span class="w"> </span>dfr
+</pre></div>
+</div>
+</div></blockquote>
+<p>Input data is received in the data folder <code class="docutils literal notranslate"><span class="pre">dfr</span></code>. As prepared by <a class="reference internal" href="file/_m_i_e_s___async_8ipf.html#_CPPv414ASYNC_AddParam5dfref4wave8variable6string8variable6string" title="ASYNC_AddParam"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">ASYNC_AddParam()</span></code></a>
+input objects such as variables, strings or waves are named <code class="docutils literal notranslate"><span class="pre">param0</span></code>, <code class="docutils literal notranslate"><span class="pre">param1</span></code>,
+<code class="docutils literal notranslate"><span class="pre">param2</span></code> and so on. The input data folder contains a variable <code class="docutils literal notranslate"><span class="pre">paramCount</span></code> that
+stores the number of available <em>param</em> objects.</p>
+<p>The function has to return a data folder reference to the data folder containing
+the output data. The readout function will receive this data.</p>
+<p>If no or an invalid data folder reference is returned the readout function
+receives an empty data folder. This happens as well, if the worker aborts with a
+runtime error.</p>
+<p>The readout function must have the form</p>
+<blockquote>
+<div><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kr">Function</span><span class="w"> </span>MyReadOutFunction(dfr,<span class="w"> </span>err,<span class="w"> </span>errmsg)
+<span class="w">  </span><span class="kt">DFREF</span><span class="w"> </span>dfr
+<span class="w">  </span><span class="kt">variable</span><span class="w"> </span>err
+<span class="w">  </span><span class="kt">string</span><span class="w"> </span>errmsg
+</pre></div>
+</div>
+</div></blockquote>
+<p>Output data from the associated worker is received in the free data folder <code class="docutils literal notranslate"><span class="pre">dfr</span></code>.
+The readout function should put the result data back to the main threads data.</p>
+<p>By default <em>err</em> contains the return code of the worker and <em>errmsg</em> is emtpy. If
+the worker aborts prematurely with a runtime error, <em>err</em> contains the runtime error
+code and <em>errmsg</em> the corresponding error message.</p>
+<p>By default <a class="reference internal" href="file/_m_i_e_s___async_8ipf.html#_CPPv411ASYNC_Start8variable8variable" title="ASYNC_Start"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">ASYNC_Start()</span></code></a> creates a background task that automatically
+calls the users readout function when output data is received from workers.</p>
+</section>
+<section id="preparing-and-executing-a-job">
+<h3>Preparing and executing a job<a class="headerlink" href="#preparing-and-executing-a-job" title="Link to this heading">¶</a></h3>
+<p>Input data for the worker is given through a free data folder that is created by</p>
+<blockquote>
+<div><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kt">DFREF</span><span class="w"> </span>threadDF<span class="w"> </span>=<span class="w"> </span>ASYNC_PrepareDF(<span class="s">&quot;WorkerFunction&quot;</span>,<span class="w"> </span><span class="s">&quot;ReadOutFunction&quot;</span>,<span class="w"> </span><span class="s">&quot;WorkLoadClass&quot;</span>,<span class="w"> </span>inOrder=flag)
+</pre></div>
+</div>
+</div></blockquote>
+<p>The <a class="reference internal" href="file/_m_i_e_s___async_8ipf.html#_CPPv415ASYNC_PrepareDF6string6string6string8variable" title="ASYNC_PrepareDF"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">ASYNC_PrepareDF()</span></code></a> function returns a reference to a prepared data
+folder. WorkerFunction and ReadOutFunction are the function names of worker and
+readout this job type. The work load class is a string that registers the work
+load in a named group. It allows to keep track of the work loads of this group,
+e.g. if all work loads that were pushed to execution are already read out and
+thus finished.</p>
+<p>For a work load class the readout function gets called in the same
+order as the work loads were executed by <a class="reference internal" href="file/_m_i_e_s___async_8ipf.html#_CPPv413ASYNC_Execute5dfref" title="ASYNC_Execute"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">ASYNC_Execute()</span></code></a>.</p>
+<p>Setting the optional parameter <code class="docutils literal notranslate"><span class="pre">inOrder=0</span></code> allows to process read outs as soon
+as output data arrives from the worker function.</p>
+<p>Input data for the worker is added with <a class="reference internal" href="file/_m_i_e_s___async_8ipf.html#_CPPv414ASYNC_AddParam5dfref4wave8variable6string8variable6string" title="ASYNC_AddParam"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">ASYNC_AddParam()</span></code></a> :</p>
+<blockquote>
+<div><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>ASYNC_AddParam(threadDF,<span class="w"> </span>w=<span class="kt">wave</span>,<span class="w"> </span>var=<span class="kt">variable</span>,<span class="w"> </span>str=<span class="kt">string</span>,<span class="w"> </span>move=0)
+</pre></div>
+</div>
+</div></blockquote>
+<p>Either a variable, string or wave can be added to the data folder per call. The
+added data is put in order of addition as <em>param0</em>, <em>param1</em>, <em>param2</em> and so on into
+the data folder.</p>
+<p>By default waves are duplicated when put into the data folder. Setting the
+optional parameter <code class="docutils literal notranslate"><span class="pre">move=1</span></code> moves the wave instead. It can only be used with
+waves.</p>
+<p>It is possible to vary the number of input parameters for the same job type.
+As the worker function can read <code class="docutils literal notranslate"><span class="pre">paramCount</span></code> from its input data folder the
+user is able to handle different input data setups in the worker.</p>
+<p>If all desired input data was added the job is started by calling <a class="reference internal" href="file/_m_i_e_s___async_8ipf.html#_CPPv413ASYNC_Execute5dfref" title="ASYNC_Execute"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">ASYNC_Execute()</span></code></a></p>
+<blockquote>
+<div><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>ASYNC_Execute(threadDF)
+</pre></div>
+</div>
+</div></blockquote>
+<p>The function takes the prepared data folder as input and puts it into the queue
+for the workers. If the work load class given when the <code class="docutils literal notranslate"><span class="pre">threadDF</span></code> was created was not known to the Async frame work it is registered and
+the execution order <code class="docutils literal notranslate"><span class="pre">inOrder</span></code> is set for this work load class. All following work loads of this class must have the same order set.
+The registered worker will receive the input data and execute
+in parallel. After the worker finishes its output data is queued to be received
+by the registered readout function.</p>
+</section>
+<section id="work-class-types-and-execution-order">
+<h3>Work class types and execution order<a class="headerlink" href="#work-class-types-and-execution-order" title="Link to this heading">¶</a></h3>
+<p>The work class type setup on <a class="reference internal" href="file/_m_i_e_s___async_8ipf.html#_CPPv415ASYNC_PrepareDF6string6string6string8variable" title="ASYNC_PrepareDF"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">ASYNC_PrepareDF()</span></code></a> is also used to attribute jobs
+for ordered/unordered execution.</p>
+<blockquote>
+<div><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kt">DFREF</span><span class="w"> </span>threadDF1<span class="w"> </span>=<span class="w"> </span>ASYNC_PrepareDF(<span class="s">&quot;Worker1&quot;</span>,<span class="w"> </span><span class="s">&quot;ReadOut1&quot;</span>,<span class="w"> </span><span class="s">&quot;workload1&quot;</span>)
+
+<span class="c1">// This work load is read out unordered (as it is done executing).</span>
+<span class="kt">DFREF</span><span class="w"> </span>threadDF2<span class="w"> </span>=<span class="w"> </span>ASYNC_PrepareDF(<span class="s">&quot;Worker1&quot;</span>,<span class="w"> </span><span class="s">&quot;ReadOut1&quot;</span>,<span class="w"> </span><span class="s">&quot;workload2&quot;</span>,<span class="w"> </span>inOrder=0)
+</pre></div>
+</div>
+</div></blockquote>
+<p>Any number of job types can be executed with <a class="reference internal" href="file/_m_i_e_s___async_8ipf.html#_CPPv413ASYNC_Execute5dfref" title="ASYNC_Execute"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">ASYNC_Execute()</span></code></a> .
+Their respective worker functions will be executed by the threads in parallel.
+All jobs are scheduled in the order they were queued by <a class="reference internal" href="file/_m_i_e_s___async_8ipf.html#_CPPv413ASYNC_Execute5dfref" title="ASYNC_Execute"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">ASYNC_Execute()</span></code></a>
+independent of their respective type.</p>
+<p>By default the Async framework tracks the order of jobs as they are queued by
+<a class="reference internal" href="file/_m_i_e_s___async_8ipf.html#_CPPv413ASYNC_Execute5dfref" title="ASYNC_Execute"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">ASYNC_Execute()</span></code></a> per work load class type. The associated readout functions are
+called in the same order. If a newer job finishes earlier, the jobs output data
+is buffered by the framework until it is the jobs turn to be readout.</p>
+<p>Execution of different work load classes and in-order or without ordered
+readout can be mixed.</p>
+</section>
+<section id="check-if-jobs-are-finished">
+<h3>Check if jobs are finished<a class="headerlink" href="#check-if-jobs-are-finished" title="Link to this heading">¶</a></h3>
+<p>With the work load class each job gets attributed to a named group as it is queued
+by <a class="reference internal" href="file/_m_i_e_s___async_8ipf.html#_CPPv413ASYNC_Execute5dfref" title="ASYNC_Execute"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">ASYNC_Execute()</span></code></a>. The Async framework keeps track if the queued and read out
+jobs of each work load class. By calling <a class="reference internal" href="file/_m_i_e_s___async_8ipf.html#_CPPv425ASYNC_IsWorkloadClassDone6string8variable" title="ASYNC_IsWorkloadClassDone"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">ASYNC_IsWorkloadClassDone()</span></code></a>
+the user can check if for all queued work loads of this class the read out of
+their respective results were already called. If the number of sent work loads
+and received results match, the work load class is considered “done”.
+Optionally the same function allows to remove the registration of the work load class,
+if it is done, from the Async framework. It is recommended to remove it, when
+it is finished.</p>
+<p>For the case that the user just wants to wait until work loads are finished the function
+<a class="reference internal" href="file/_m_i_e_s___async_8ipf.html#_CPPv433ASYNC_WaitForWLCToFinishAndRemove6string8variable" title="ASYNC_WaitForWLCToFinishAndRemove"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">ASYNC_WaitForWLCToFinishAndRemove()</span></code></a> should be used. It allows to wait for a
+given work load class to finish with a time out. When the work loads finish within the time
+out they are removed automatically.</p>
+</section>
+<section id="changing-execution-order-of-a-work-load-class">
+<h3>Changing execution order of a work load class<a class="headerlink" href="#changing-execution-order-of-a-work-load-class" title="Link to this heading">¶</a></h3>
+<p>Generally for a new work load class <a class="reference internal" href="file/_m_i_e_s___async_8ipf.html#_CPPv413ASYNC_Execute5dfref" title="ASYNC_Execute"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">ASYNC_Execute()</span></code></a> registers the order for this class as well.
+Afterwards the order is fixed for all subsequent work loads of this class.</p>
+<p>The order can be changed by finishing and removing the work load class with <a class="reference internal" href="file/_m_i_e_s___async_8ipf.html#_CPPv433ASYNC_WaitForWLCToFinishAndRemove6string8variable" title="ASYNC_WaitForWLCToFinishAndRemove"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">ASYNC_WaitForWLCToFinishAndRemove()</span></code></a>.
+Afterwards the work load class is unknown to Async frame work. Thus, <a class="reference internal" href="file/_m_i_e_s___async_8ipf.html#_CPPv413ASYNC_Execute5dfref" title="ASYNC_Execute"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">ASYNC_Execute()</span></code></a> will accept a <code class="docutils literal notranslate"><span class="pre">threadDF</span></code>
+with the same work load class name but a different <code class="docutils literal notranslate"><span class="pre">inOrder</span></code> setting.</p>
+</section>
+<section id="details-on-stopping-threads">
+<h3>Details on Stopping Threads<a class="headerlink" href="#details-on-stopping-threads" title="Link to this heading">¶</a></h3>
+<p>When calling <a class="reference internal" href="file/_m_i_e_s___async_8ipf.html#_CPPv410ASYNC_Stop8variable8variable" title="ASYNC_Stop"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">ASYNC_Stop()</span></code></a> all threads are requested to quit after
+their current worker finished. The stop process runs through the following
+stages:</p>
+<ul class="simple">
+<li><p>quit of thread(s) after worker(s) finish(es) is issued</p></li>
+<li><p>within timeout time, remaining readouts are processed in main thread</p></li>
+<li><p>within timeout time, ThreadGroupWait sets the Igor internal abort flag for all threads</p></li>
+<li><p>previous stages finished or after timeout: ThreadGroupRelease releases all threads</p></li>
+</ul>
+<p>If a worker is still running when the main thread issues ThreadGroupRelease in
+Igor Pro 8 the thread is killed including all data in the queue. In Igor Pro 7
+a ‘virtual’ runtime error is injected into the thread. The threading loop for
+the workers from the Async framework catches this runtime error and quits the
+thread gracefully. This kind of behavior in Igor Pro 7 requires to introduce an
+additional rule for worker functions that use try-catch-endtry itself. If a
+runtime error is caught in a worker the worker has to check the code without
+deleting the error state. If the code is zero the worker has to return to the
+threading loop.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Igor Pro 7 try-catch-endtry worker example</span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="k">try</span>
+<span class="w">  </span>subworker()
+<span class="k">catch</span>
+<span class="w">  </span><span class="k">if</span>(!<span class="nf">getRTError</span>(0))
+<span class="w">    </span><span class="k">return</span><span class="w"> </span>0
+<span class="w">  </span><span class="k">endif</span>
+<span class="w">  </span><span class="c1">// further error handler</span>
+<span class="k">endtry</span>
+</pre></div>
+</div>
+</div>
+<figure class="align-center" id="figure-async-framework">
+<img alt="_images/async_framework.svg" src="_images/async_framework.svg" />
+</figure>
+<p>Depiction of frameworks working principle.</p>
+</section>
+</section>
+<section id="code-example">
+<h2>Code example<a class="headerlink" href="#code-example" title="Link to this heading">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Code example</span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kt">Constant</span><span class="w"> </span>NUMBER_OF_JOBS<span class="w"> </span>= 200
+
+<span class="kr">Function</span><span class="w"> </span>AsyncExample(<span class="kt">variable</span><span class="w"> </span>inOrder)
+<span class="w">        </span><span class="kt">variable</span><span class="w"> </span><span class="nf">i</span>
+
+<span class="w">        </span><span class="c1">// Start Async FrameWork</span>
+<span class="w">        </span>ASYNC_Start(<span class="nf">ThreadProcessorCount</span>)
+
+<span class="w">        </span><span class="c1">// Some data</span>
+<span class="w">        </span><span class="nc">Make</span>/O/N=(NUMBER_OF_JOBS)<span class="w"> </span>data<span class="w"> </span>= 31337
+
+<span class="w">        </span><span class="c1">// We want to setup NUMBER_OF_JOBS workers to run</span>
+<span class="w">        </span><span class="k">for</span>(<span class="nf">i</span><span class="w"> </span>=<span class="w"> </span>0;<span class="nf">i</span><span class="w"> </span>&lt;<span class="w"> </span>NUMBER_OF_JOBS;<span class="w"> </span><span class="nf">i</span><span class="w"> </span>+= 1)
+
+<span class="w">                </span><span class="c1">// Prepare a thread df</span>
+<span class="w">                </span><span class="kt">DFREF</span><span class="w"> </span>threadDF<span class="w"> </span>=<span class="w"> </span>ASYNC_PrepareDF(<span class="s">&quot;Worker&quot;</span>,<span class="w"> </span><span class="s">&quot;ReadOut&quot;</span>,<span class="w"> </span><span class="s">&quot;myworkload&quot;</span>,<span class="w"> </span>inOrder=inOrder)
+
+<span class="w">                </span><span class="c1">// Add parameter</span>
+<span class="w">                </span>ASYNC_AddParam(threadDF,<span class="w"> </span>var=<span class="nf">i</span>,<span class="w"> </span>name<span class="w"> </span>=<span class="w"> </span><span class="s">&quot;jobCounter&quot;</span>)
+<span class="w">                </span>ASYNC_AddParam(threadDF,<span class="w"> </span>w=data,<span class="w"> </span>move=0,<span class="w"> </span>name<span class="w"> </span>=<span class="w"> </span><span class="s">&quot;data&quot;</span>)
+<span class="w">                </span><span class="nc">Make</span>/O/N=(NUMBER_OF_JOBS)<span class="w"> </span>moreData<span class="w"> </span>= 31337
+<span class="w">                </span>ASYNC_AddParam(threadDF,<span class="w"> </span>w=moreData,<span class="w"> </span>move=1,<span class="w"> </span>name<span class="w"> </span>=<span class="w"> </span><span class="s">&quot;moreData&quot;</span>)
+
+<span class="w">                </span>ASYNC_Execute(threadDF)
+<span class="w">        </span><span class="k">endfor</span>
+<span class="w">        </span>ASYNC_Stop()
+<span class="kr">End</span>
+
+<span class="c1">// example worker function</span>
+<span class="kr">threadsafe</span><span class="w"> </span><span class="kr">Function</span>/DF<span class="w"> </span>Worker(<span class="kt">DFREF</span><span class="w"> </span>dfr)
+<span class="w">        </span><span class="kt">variable</span><span class="w"> </span><span class="nf">i</span>,<span class="w"> </span>j,<span class="w"> </span>wID
+<span class="w">        </span><span class="kt">string</span><span class="w"> </span>s
+
+<span class="w">        </span><span class="c1">// lets assume there happens a runtime error each 50 jobs</span>
+<span class="w">        </span>wID<span class="w"> </span>=<span class="w"> </span>ASYNC_FetchVariable(dfr,<span class="w"> </span><span class="s">&quot;jobCounter&quot;</span>)
+<span class="w">        </span><span class="k">if</span>(!<span class="nf">mod</span>(wID, 50))
+<span class="w">                </span><span class="kt">WAVE</span><span class="w"> </span>w<span class="w"> </span>=<span class="w"> </span>$<span class="s">&quot;&quot;</span>
+<span class="w">                </span>w[0] = 0
+<span class="w">        </span><span class="k">endif</span>
+
+<span class="w">        </span><span class="c1">// some processing that has a random runtime</span>
+<span class="w">        </span><span class="kt">variable</span><span class="w"> </span>runtime<span class="w"> </span>=<span class="w"> </span><span class="nf">abs</span>(<span class="nf">floor</span>(<span class="nf">gnoise</span>(1))) * 10
+<span class="w">        </span><span class="k">for</span>(<span class="nf">i</span><span class="w"> </span>=<span class="w"> </span>0;<span class="w"> </span><span class="nf">i</span><span class="w"> </span>&lt;<span class="w"> </span>runtime;<span class="w"> </span><span class="nf">i</span><span class="w"> </span>+= 1)
+<span class="w">                </span><span class="c1">// waste some time</span>
+<span class="w">                </span><span class="k">for</span>(j<span class="w"> </span>=<span class="w"> </span>0;<span class="w"> </span>j<span class="w"> </span>&lt;<span class="w"> </span>100;<span class="w"> </span>j<span class="w"> </span>+= 1)
+<span class="w">                        </span>s<span class="w"> </span>=<span class="w"> </span><span class="nf">num2str</span>(<span class="nf">i</span>)
+<span class="w">                </span><span class="k">endfor</span>
+<span class="w">        </span><span class="k">endfor</span>
+
+<span class="w">        </span><span class="c1">// Get input parameter wave references</span>
+<span class="w">        </span><span class="kt">WAVE</span><span class="w"> </span>data<span class="w"> </span>=<span class="w"> </span>ASYNC_FetchWave(dfr,<span class="w"> </span><span class="s">&quot;data&quot;</span>)
+<span class="w">        </span><span class="kt">WAVE</span><span class="w"> </span>moreData<span class="w"> </span>=<span class="w"> </span>ASYNC_FetchWave(dfr,<span class="w"> </span><span class="s">&quot;moredata&quot;</span>)
+
+<span class="w">        </span><span class="c1">// process wave</span>
+<span class="w">        </span>moreData[wID]<span class="w"> </span>+=<span class="w"> </span>wID
+
+<span class="w">        </span><span class="c1">// create a data folder for output data</span>
+<span class="w">        </span><span class="kt">DFREF</span><span class="w"> </span>dfrOut<span class="w"> </span>=<span class="w"> </span><span class="nf">NewFreeDataFolder</span>()
+
+<span class="w">        </span><span class="c1">// put counter in output data</span>
+<span class="w">        </span><span class="kt">variable</span>/G<span class="w"> </span>dfrOut:counter<span class="w"> </span>=<span class="w"> </span>wID
+
+<span class="w">        </span><span class="c1">// Move processed wave to output DF</span>
+<span class="w">        </span><span class="nc">MoveWave</span><span class="w"> </span>moreData,<span class="w"> </span>dfrOut:outWave
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span>dfrOut
+<span class="kr">End</span>
+
+<span class="c1">// example readout function</span>
+<span class="kr">Function</span><span class="w"> </span>ReadOut(<span class="kt">DFREF</span><span class="w"> </span>dfr,<span class="w"> </span><span class="kt">variable</span><span class="w"> </span>err,<span class="w"> </span><span class="kt">string</span><span class="w"> </span>errmsg)
+<span class="w">        </span><span class="kt">variable</span><span class="w"> </span>counter
+
+<span class="w">        </span><span class="k">if</span>(err)
+<span class="w">                </span><span class="c1">// Insert error handling here</span>
+<span class="w">                </span><span class="nc">print</span><span class="w"> </span><span class="s">&quot;error caught code: &quot;</span><span class="w"> </span>+<span class="w"> </span><span class="nf">num2str</span>(err)<span class="w"> </span>+<span class="w"> </span><span class="s">&quot;\r&quot;</span><span class="w"> </span>+<span class="w"> </span>errmsg
+<span class="w">        </span><span class="k">else</span>
+<span class="w">                </span><span class="c1">// do the readout here</span>
+<span class="w">                </span><span class="kt">WAVE</span><span class="w"> </span>outWave<span class="w"> </span>=<span class="w"> </span>ASYNC_FetchWave(dfr,<span class="w"> </span><span class="s">&quot;outWave&quot;</span>)
+<span class="w">                </span>counter<span class="w"> </span>=<span class="w"> </span>ASYNC_FetchVariable(dfr,<span class="w"> </span><span class="s">&quot;counter&quot;</span>)
+
+<span class="w">                </span><span class="k">if</span>(outWave[counter]<span class="w"> </span>!=<span class="w"> </span>31337<span class="w"> </span>+<span class="w"> </span>counter)
+<span class="w">                        </span><span class="nc">print</span><span class="w"> </span><span class="s">&quot;Processing by worker yielded unexpected result&quot;</span>
+<span class="w">                </span><span class="k">endif</span>
+<span class="w">        </span><span class="k">endif</span>
+<span class="kr">End</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grouplist.html">Group list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Async Framework</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#description">Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#quick-guide">Quick Guide</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#start-and-stop">Start and Stop</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-of-a-job">Creating of a job</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#preparing-and-executing-a-job">Preparing and executing a job</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#work-class-types-and-execution-order">Work class types and execution order</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#check-if-jobs-are-finished">Check if jobs are finished</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#changing-execution-order-of-a-work-load-class">Changing execution order of a work load class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#details-on-stopping-threads">Details on Stopping Threads</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#code-example">Code example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="TPAnalysis_algorithm.html"
+                          title="previous chapter">Testpulse Analysis Algorithm</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="labnotebook-docs.html"
+                          title="next chapter">Labnotebook documentation for developers</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="labnotebook-docs.html" title="Labnotebook documentation for developers"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="TPAnalysis_algorithm.html" title="Testpulse Analysis Algorithm"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Async Framework</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

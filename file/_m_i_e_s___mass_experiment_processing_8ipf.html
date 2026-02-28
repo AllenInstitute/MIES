@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File MIES_MassExperimentProcessing.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_Menu.ipf" href="_m_i_e_s___menu_8ipf.html" />
+    <link rel="prev" title="File MIES_Logging.ipf" href="_m_i_e_s___logging_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___menu_8ipf.html" title="File MIES_Menu.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___logging_8ipf.html" title="File MIES_Logging.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_MassExperimentProcessing.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-massexperimentprocessing-ipf">
+<span id="id1"></span><h1>File MIES_MassExperimentProcessing.ipf<a class="headerlink" href="#file-mies-massexperimentprocessing-ipf" title="Link to this heading">¶</a></h1>
+<p><strong>MEP</strong> Process multiple MIES pxps to convert data into NWBv2 </p>
+<p>Installation:<ul class="simple">
+<li><p>Stop Igor Pro</p></li>
+<li><p>Install MIES from the installer</p></li>
+<li><p>Create a shortcut to this file and place it in the <code class="docutils literal notranslate"><span class="pre">Igor</span> <span class="pre">Procedures</span></code> folder</p></li>
+<li><p>Ensure that only MIES is installed and no other Igor Pro packages</p></li>
+<li><p>In the MIES installation folder (All Users: <code class="docutils literal notranslate"><span class="pre">C:\Program</span> <span class="pre">Files\MIES</span></code>, User: <code class="docutils literal notranslate"><span class="pre">C:\Users\$User\Documents\MIES</span></code>) create an empty file named <code class="docutils literal notranslate"><span class="pre">UserConfig.txt</span></code>.</p></li>
+<li><p>Execute <a class="reference internal" href="#_m_i_e_s___mass_experiment_processing_8ipf_1ab65b17939643a4668360513d4e19502c"><span class="std std-ref">CreateEmptyFiles()</span></a> to create required empty files in <code class="docutils literal notranslate"><span class="pre">User</span> <span class="pre">Procedures</span></code></p></li>
+<li><p>If the files are on a Windows/SMB network share, create a drive letter via <code class="docutils literal notranslate"><span class="pre">net</span> <span class="pre">use</span> <span class="pre">Z:</span> <span class="pre">\\$Server\$Share</span></code> as UNC paths don’t work everywhere in IP.</p></li>
+</ul>
+</p>
+<p>Running:<ul class="simple">
+<li><p>Start Igor Pro</p></li>
+<li><p>Select “Macros” -&gt; “Mass convert PXPs to NWBv2”</p></li>
+<li><p>Enter an input and output folder for the conversion</p></li>
+<li><p>Wait until it’s done</p></li>
+</ul>
+</p>
+<p>In the output folder there will be a <code class="docutils literal notranslate"><span class="pre">conversion.json</span></code> file with results of the conversion process. Search for the <code class="docutils literal notranslate"><span class="pre">error</span></code> key for failed conversions. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416LoadPackagePrefsP27MultiExperimentProcessPrefs">
+<span id="_CPPv316LoadPackagePrefsP27MultiExperimentProcessPrefs"></span><span id="_CPPv216LoadPackagePrefsP27MultiExperimentProcessPrefs"></span><span id="LoadPackagePrefs__MultiExperimentProcessPrefsP"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1abb7563acd587c8d9889e2094356e2303"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LoadPackagePrefs</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv427MultiExperimentProcessPrefs" title="MultiExperimentProcessPrefs"><span class="n"><span class="pre">MultiExperimentProcessPrefs</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">prefs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416LoadPackagePrefsP27MultiExperimentProcessPrefs" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416SavePackagePrefsP27MultiExperimentProcessPrefs">
+<span id="_CPPv316SavePackagePrefsP27MultiExperimentProcessPrefs"></span><span id="_CPPv216SavePackagePrefsP27MultiExperimentProcessPrefs"></span><span id="SavePackagePrefs__MultiExperimentProcessPrefsP"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a0fcda65fa64e6bce9dc454eab1409877"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SavePackagePrefs</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv427MultiExperimentProcessPrefs" title="MultiExperimentProcessPrefs"><span class="n"><span class="pre">MultiExperimentProcessPrefs</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">prefs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416SavePackagePrefsP27MultiExperimentProcessPrefs" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424ProcessCurrentExperimentP27MultiExperimentProcessPrefs">
+<span id="_CPPv324ProcessCurrentExperimentP27MultiExperimentProcessPrefs"></span><span id="_CPPv224ProcessCurrentExperimentP27MultiExperimentProcessPrefs"></span><span id="ProcessCurrentExperiment__MultiExperimentProcessPrefsP"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a13a6e6b730d37e94b8893fbe65f17f25"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ProcessCurrentExperiment</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv427MultiExperimentProcessPrefs" title="MultiExperimentProcessPrefs"><span class="n"><span class="pre">MultiExperimentProcessPrefs</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">prefs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424ProcessCurrentExperimentP27MultiExperimentProcessPrefs" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416PerformMiesTasks6string">
+<span id="_CPPv316PerformMiesTasks6string"></span><span id="_CPPv216PerformMiesTasks6string"></span><span id="PerformMiesTasks__string"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a016af4e2c8653a5f4b608a866b131426"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PerformMiesTasks</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">outputFileTemplate</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416PerformMiesTasks6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423IsAppropriateExperimentv">
+<span id="_CPPv323IsAppropriateExperimentv"></span><span id="_CPPv223IsAppropriateExperimentv"></span><span id="IsAppropriateExperiment"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a83e077e416b4cd4c9eb6f12a0d679b7d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsAppropriateExperiment</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423IsAppropriateExperimentv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418FindNextExperimentP27MultiExperimentProcessPrefs">
+<span id="_CPPv318FindNextExperimentP27MultiExperimentProcessPrefs"></span><span id="_CPPv218FindNextExperimentP27MultiExperimentProcessPrefs"></span><span id="FindNextExperiment__MultiExperimentProcessPrefsP"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1aaa50f1b5fd5e81ebf2a3f5c6db48a3e8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FindNextExperiment</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv427MultiExperimentProcessPrefs" title="MultiExperimentProcessPrefs"><span class="n"><span class="pre">MultiExperimentProcessPrefs</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">prefs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418FindNextExperimentP27MultiExperimentProcessPrefs" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv47GetJSONP27MultiExperimentProcessPrefs">
+<span id="_CPPv37GetJSONP27MultiExperimentProcessPrefs"></span><span id="_CPPv27GetJSONP27MultiExperimentProcessPrefs"></span><span id="GetJSON__MultiExperimentProcessPrefsP"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a38f605d62fef0eebe598b416f6268ebd"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetJSON</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv427MultiExperimentProcessPrefs" title="MultiExperimentProcessPrefs"><span class="n"><span class="pre">MultiExperimentProcessPrefs</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">prefs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv47GetJSONP27MultiExperimentProcessPrefs" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv49StoreJSONP27MultiExperimentProcessPrefs8variable">
+<span id="_CPPv39StoreJSONP27MultiExperimentProcessPrefs8variable"></span><span id="_CPPv29StoreJSONP27MultiExperimentProcessPrefs8variable"></span><span id="StoreJSON__MultiExperimentProcessPrefsP.variable"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a2552f2d6a5229f8dc9318488d82453a2"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StoreJSON</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv427MultiExperimentProcessPrefs" title="MultiExperimentProcessPrefs"><span class="n"><span class="pre">MultiExperimentProcessPrefs</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">prefs</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonID</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49StoreJSONP27MultiExperimentProcessPrefs8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422PostLoadNextExperiment6string">
+<span id="_CPPv322PostLoadNextExperiment6string"></span><span id="_CPPv222PostLoadNextExperiment6string"></span><span id="PostLoadNextExperiment__string"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1aa0d27caeba2db8e00bd18ba8115834ae"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PostLoadNextExperiment</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nextExperimentFullPath</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422PostLoadNextExperiment6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417AfterFileOpenHook8variable6string6string6string6string8variable">
+<span id="_CPPv317AfterFileOpenHook8variable6string6string6string6string8variable"></span><span id="_CPPv217AfterFileOpenHook8variable6string6string6string6string8variable"></span><span id="AfterFileOpenHook__variable.string.string.string.string.variable"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a3f524f5190341d2accc8cb8c3ed2ceb5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AfterFileOpenHook</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">refNum</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">file</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pathName</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">creator</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">kind</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417AfterFileOpenHook8variable6string6string6string6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416CreateEmptyFilesv">
+<span id="_CPPv316CreateEmptyFilesv"></span><span id="_CPPv216CreateEmptyFilesv"></span><span id="CreateEmptyFiles"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1ab65b17939643a4668360513d4e19502c"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreateEmptyFiles</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416CreateEmptyFilesv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427StartMultiExperimentProcessv">
+<span id="_CPPv327StartMultiExperimentProcessv"></span><span id="_CPPv227StartMultiExperimentProcessv"></span><span id="StartMultiExperimentProcess"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1ad8d3f09f223ab74d90ce9e92d2aa4094"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StartMultiExperimentProcess</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427StartMultiExperimentProcessv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv434StartMultiExperimentProcessWrapperv">
+<span id="_CPPv334StartMultiExperimentProcessWrapperv"></span><span id="_CPPv234StartMultiExperimentProcessWrapperv"></span><span id="StartMultiExperimentProcessWrapper"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a3321c792ec71d6785e785c6fc64dd013"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StartMultiExperimentProcessWrapper</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv434StartMultiExperimentProcessWrapperv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv48NextFileP27MultiExperimentProcessPrefs">
+<span id="_CPPv38NextFileP27MultiExperimentProcessPrefs"></span><span id="_CPPv28NextFileP27MultiExperimentProcessPrefs"></span><span id="NextFile__MultiExperimentProcessPrefsP"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a7a974da25281f0c1b75dd9a8d12d3f54"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NextFile</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv427MultiExperimentProcessPrefs" title="MultiExperimentProcessPrefs"><span class="n"><span class="pre">MultiExperimentProcessPrefs</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">prefs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv48NextFileP27MultiExperimentProcessPrefs" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv412INPUT_FOLDER">
+<span id="_CPPv312INPUT_FOLDER"></span><span id="_CPPv212INPUT_FOLDER"></span><span id="INPUT_FOLDER__stringC"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a21a35036409bb978e8988f8d2f72dbcd"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">INPUT_FOLDER</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;&quot;</span></span><a class="headerlink" href="#_CPPv412INPUT_FOLDER" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv413OUTPUT_FOLDER">
+<span id="_CPPv313OUTPUT_FOLDER"></span><span id="_CPPv213OUTPUT_FOLDER"></span><span id="OUTPUT_FOLDER__stringC"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a410a2e375802f86de47466e80292a102"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OUTPUT_FOLDER</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;&quot;</span></span><a class="headerlink" href="#_CPPv413OUTPUT_FOLDER" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv412kPackageName">
+<span id="_CPPv312kPackageName"></span><span id="_CPPv212kPackageName"></span><span id="kPackageName__stringC"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a3cadbf173cf62142fa3ad2c736f5c814"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">kPackageName</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;MIES</span> <span class="pre">PXP</span> <span class="pre">to</span> <span class="pre">NWBv2&quot;</span></span><a class="headerlink" href="#_CPPv412kPackageName" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420kPreferencesFileName">
+<span id="_CPPv320kPreferencesFileName"></span><span id="_CPPv220kPreferencesFileName"></span><span id="kPreferencesFileName__stringC"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a4224140433ed0ecac04ad78bc031707c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">kPreferencesFileName</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;ProcessPrefsMIESNWBv2.bin&quot;</span></span><a class="headerlink" href="#_CPPv420kPreferencesFileName" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv414kPrefsRecordID">
+<span id="_CPPv314kPrefsRecordID"></span><span id="_CPPv214kPrefsRecordID"></span><span id="kPrefsRecordID__doubleC"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a2eb4c303b9cb8a11f173668f43ab8726"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">kPrefsRecordID</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv414kPrefsRecordID" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv419kPrefsVersionNumber">
+<span id="_CPPv319kPrefsVersionNumber"></span><span id="_CPPv219kPrefsVersionNumber"></span><span id="kPrefsVersionNumber__doubleC"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a4837f42c81ca26404e4b575b4df1a67a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">kPrefsVersionNumber</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">102</span></span><a class="headerlink" href="#_CPPv419kPrefsVersionNumber" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv427MultiExperimentProcessPrefs">
+<span id="_CPPv327MultiExperimentProcessPrefs"></span><span id="_CPPv227MultiExperimentProcessPrefs"></span><span id="MultiExperimentProcessPrefs"></span><span class="target" id="struct_multi_experiment_process_prefs"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MultiExperimentProcessPrefs</span></span></span><a class="headerlink" href="#_CPPv427MultiExperimentProcessPrefs" title="Link to this definition">¶</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N27MultiExperimentProcessPrefs7versionE">
+<span id="_CPPv3N27MultiExperimentProcessPrefs7versionE"></span><span id="_CPPv2N27MultiExperimentProcessPrefs7versionE"></span><span id="MultiExperimentProcessPrefs::version__uint32"></span><span class="target" id="struct_multi_experiment_process_prefs_1a584eb068918113d4382a658d2eed937c"></span><span class="n"><span class="pre">uint32</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">version</span></span></span><a class="headerlink" href="#_CPPv4N27MultiExperimentProcessPrefs7versionE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N27MultiExperimentProcessPrefs14processRunningE">
+<span id="_CPPv3N27MultiExperimentProcessPrefs14processRunningE"></span><span id="_CPPv2N27MultiExperimentProcessPrefs14processRunningE"></span><span id="MultiExperimentProcessPrefs::processRunning__uint32"></span><span class="target" id="struct_multi_experiment_process_prefs_1a1049252c562c363b3ff6e348864af0e3"></span><span class="n"><span class="pre">uint32</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">processRunning</span></span></span><a class="headerlink" href="#_CPPv4N27MultiExperimentProcessPrefs14processRunningE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N27MultiExperimentProcessPrefs12settingsFileE">
+<span id="_CPPv3N27MultiExperimentProcessPrefs12settingsFileE"></span><span id="_CPPv2N27MultiExperimentProcessPrefs12settingsFileE"></span><span id="MultiExperimentProcessPrefs::settingsFile__cA"></span><span class="target" id="struct_multi_experiment_process_prefs_1aa5a6628ddc430e3cbdc21059581d3847"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">settingsFile</span></span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">256</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv4N27MultiExperimentProcessPrefs12settingsFileE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_MassExperimentProcessing.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416LoadPackagePrefsP27MultiExperimentProcessPrefs"><code class="docutils literal notranslate"><span class="pre">LoadPackagePrefs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416SavePackagePrefsP27MultiExperimentProcessPrefs"><code class="docutils literal notranslate"><span class="pre">SavePackagePrefs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424ProcessCurrentExperimentP27MultiExperimentProcessPrefs"><code class="docutils literal notranslate"><span class="pre">ProcessCurrentExperiment()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416PerformMiesTasks6string"><code class="docutils literal notranslate"><span class="pre">PerformMiesTasks()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423IsAppropriateExperimentv"><code class="docutils literal notranslate"><span class="pre">IsAppropriateExperiment()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418FindNextExperimentP27MultiExperimentProcessPrefs"><code class="docutils literal notranslate"><span class="pre">FindNextExperiment()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv47GetJSONP27MultiExperimentProcessPrefs"><code class="docutils literal notranslate"><span class="pre">GetJSON()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv49StoreJSONP27MultiExperimentProcessPrefs8variable"><code class="docutils literal notranslate"><span class="pre">StoreJSON()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422PostLoadNextExperiment6string"><code class="docutils literal notranslate"><span class="pre">PostLoadNextExperiment()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417AfterFileOpenHook8variable6string6string6string6string8variable"><code class="docutils literal notranslate"><span class="pre">AfterFileOpenHook()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416CreateEmptyFilesv"><code class="docutils literal notranslate"><span class="pre">CreateEmptyFiles()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427StartMultiExperimentProcessv"><code class="docutils literal notranslate"><span class="pre">StartMultiExperimentProcess()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv434StartMultiExperimentProcessWrapperv"><code class="docutils literal notranslate"><span class="pre">StartMultiExperimentProcessWrapper()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv48NextFileP27MultiExperimentProcessPrefs"><code class="docutils literal notranslate"><span class="pre">NextFile()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412INPUT_FOLDER"><code class="docutils literal notranslate"><span class="pre">INPUT_FOLDER</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413OUTPUT_FOLDER"><code class="docutils literal notranslate"><span class="pre">OUTPUT_FOLDER</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412kPackageName"><code class="docutils literal notranslate"><span class="pre">kPackageName</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420kPreferencesFileName"><code class="docutils literal notranslate"><span class="pre">kPreferencesFileName</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414kPrefsRecordID"><code class="docutils literal notranslate"><span class="pre">kPrefsRecordID</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419kPrefsVersionNumber"><code class="docutils literal notranslate"><span class="pre">kPrefsVersionNumber</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427MultiExperimentProcessPrefs"><code class="docutils literal notranslate"><span class="pre">MultiExperimentProcessPrefs</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N27MultiExperimentProcessPrefs7versionE"><code class="docutils literal notranslate"><span class="pre">version</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N27MultiExperimentProcessPrefs14processRunningE"><code class="docutils literal notranslate"><span class="pre">processRunning</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N27MultiExperimentProcessPrefs12settingsFileE"><code class="docutils literal notranslate"><span class="pre">settingsFile</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___logging_8ipf.html"
+                          title="previous chapter">File MIES_Logging.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___menu_8ipf.html"
+                          title="next chapter">File MIES_Menu.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___menu_8ipf.html" title="File MIES_Menu.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___logging_8ipf.html" title="File MIES_Logging.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_MassExperimentProcessing.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File MIES_Utilities_GUI.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_Utilities_Generators.ipf" href="_m_i_e_s___utilities___generators_8ipf.html" />
+    <link rel="prev" title="File MIES_Utilities_File.ipf" href="_m_i_e_s___utilities___file_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___utilities___generators_8ipf.html" title="File MIES_Utilities_Generators.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___utilities___file_8ipf.html" title="File MIES_Utilities_File.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Utilities_GUI.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-utilities-gui-ipf">
+<span id="id1"></span><h1>File MIES_Utilities_GUI.ipf<a class="headerlink" href="#file-mies-utilities-gui-ipf" title="Link to this heading">¶</a></h1>
+<p>utility functions for GUI </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422IsWaveDisplayedOnGraph6string10WaveOrNull5dfref">
+<span id="_CPPv322IsWaveDisplayedOnGraph6string10WaveOrNull5dfref"></span><span id="_CPPv222IsWaveDisplayedOnGraph6string10WaveOrNull5dfref"></span><span id="IsWaveDisplayedOnGraph__string.WaveOrNull.dfref"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1a29fe8b993c45f56f6eadc52147f14c88"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsWaveDisplayedOnGraph</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422IsWaveDisplayedOnGraph6string10WaveOrNull5dfref" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Check if a given wave, or at least one wave from the dfr, is displayed on a graph. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>one if one is displayed, zero otherwise </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418KillCursorInGraphs6string6string">
+<span id="_CPPv318KillCursorInGraphs6string6string"></span><span id="_CPPv218KillCursorInGraphs6string6string"></span><span id="KillCursorInGraphs__string.string"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1ac6c1f8e71c3079bb93d4c7b976b8bafd"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">KillCursorInGraphs</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graphs</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cursorName</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418KillCursorInGraphs6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Kill all cursors in a given list of graphs. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graphs</strong> – semicolon separated list of graph names </p></li>
+<li><p><strong>cursorName</strong> – name of cursor as string </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418FindCursorInGraphs6string6string">
+<span id="_CPPv318FindCursorInGraphs6string6string"></span><span id="_CPPv218FindCursorInGraphs6string6string"></span><span id="FindCursorInGraphs__string.string"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1a56c3b3f7b3258c5386c195083ff751e3"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FindCursorInGraphs</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graphs</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cursorName</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418FindCursorInGraphs6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Find the first match for a given cursor in a list of graph names. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graphs</strong> – semicolon separated list of graph names </p></li>
+<li><p><strong>cursorName</strong> – name of cursor as string</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>graph where cursor was found </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420GetCursorXPositionAB6stringP8variableP8variable">
+<span id="_CPPv320GetCursorXPositionAB6stringP8variableP8variable"></span><span id="_CPPv220GetCursorXPositionAB6stringP8variableP8variable"></span><span id="GetCursorXPositionAB__string.variableP.variableP"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1a8271d5071d74155084ff0de595e240a4"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetCursorXPositionAB</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">csrAx</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">csrBx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420GetCursorXPositionAB6stringP8variableP8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>get the x value of the cursors A and B </p>
+<p><dl>
+<dt class="sig sig-object cpp">
+<a class="reference internal" href="../todo.html#todo_1_todo000026"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<dd><p>make this a generic cursor getter function and merge with <code class="docutils literal notranslate"><span class="pre">cursors()</span></code> in</p>
+</dd></dl>
+
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>SF_FormulaExecutor</p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> – <strong>[in]</strong> where the cursor are </p></li>
+<li><p><strong>csrAx</strong> – <strong>[out]</strong> Position of cursor A </p></li>
+<li><p><strong>csrBx</strong> – <strong>[out]</strong> Position of cursor B </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426RemoveAnnotationsFromGraph6string">
+<span id="_CPPv326RemoveAnnotationsFromGraph6string"></span><span id="_CPPv226RemoveAnnotationsFromGraph6string"></span><span id="RemoveAnnotationsFromGraph__string"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1a176a9327d7af68da7d6973f9b587365b"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RemoveAnnotationsFromGraph</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426RemoveAnnotationsFromGraph6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Removes all annotations from the graph. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415UniqueTraceName6string6string">
+<span id="_CPPv315UniqueTraceName6string6string"></span><span id="_CPPv215UniqueTraceName6string6string"></span><span id="UniqueTraceName__string.string"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1a7a92f59a3edcc0563b56464bd12476c0"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UniqueTraceName</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">baseName</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415UniqueTraceName6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a unique trace name in the graph. </p>
+<p>Remember that it might be necessary to call <code class="docutils literal notranslate"><span class="pre">DoUpdate</span></code> if you added possibly colliding trace names in the current function run.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> – existing graph </p></li>
+<li><p><strong>baseName</strong> – base name of the trace, must not be empty </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413GetMarkerSkip8variable8variable">
+<span id="_CPPv313GetMarkerSkip8variable8variable"></span><span id="_CPPv213GetMarkerSkip8variable8variable"></span><span id="GetMarkerSkip__variable.variable"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1a86f51e9518414cc74c036e701fcd3a47"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetMarkerSkip</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numPoints</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numMarkers</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413GetMarkerSkip8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Calculate the value for <code class="docutils literal notranslate"><span class="pre">mskip</span></code> of <code class="docutils literal notranslate"><span class="pre">ModifyGraph</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>numPoints</strong> – number of points shown </p></li>
+<li><p><strong>numMarkers</strong> – desired number of markers </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411KillWindows6string">
+<span id="_CPPv311KillWindows6string"></span><span id="_CPPv211KillWindows6string"></span><span id="KillWindows__string"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1a60fe4376b2619d7181f1c29cb7c8a7a3"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">KillWindows</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411KillWindows6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Kill all passed windows. </p>
+<p>Silently ignore errors. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425GetAllAxesWithOrientation6string8variable">
+<span id="_CPPv325GetAllAxesWithOrientation6string8variable"></span><span id="_CPPv225GetAllAxesWithOrientation6string8variable"></span><span id="GetAllAxesWithOrientation__string.variable"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1aea61a5764b6537a2acd966a31c70946f"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetAllAxesWithOrientation</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">axisOrientation</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425GetAllAxesWithOrientation6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return all axes with the given orientation. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> – graph </p></li>
+<li><p><strong>axisOrientation</strong> – One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1AxisOrientationConstants"><span class="std std-ref">AxisOrientationConstants</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419GetNumFromModifyStr6string6string6string8variable">
+<span id="_CPPv319GetNumFromModifyStr6string6string6string8variable"></span><span id="_CPPv219GetNumFromModifyStr6string6string6string8variable"></span><span id="GetNumFromModifyStr__string.string.string.variable"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1a67976b3461206d7b9cbcbc243db4646a"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumFromModifyStr</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">info</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">listChar</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">item</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419GetNumFromModifyStr6string6string6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Polished version of <code class="docutils literal notranslate"><span class="pre">GetNumFromModifyStr</span></code> from <code class="docutils literal notranslate"><span class="pre">Readback</span> <span class="pre">ModifyStr.ipf</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>info</strong> – string as returned by AxisInfo or TraceInfo </p></li>
+<li><p><strong>key</strong> – keyword </p></li>
+<li><p><strong>listChar</strong> – empty, <code class="docutils literal notranslate"><span class="pre">{</span></code> or <code class="docutils literal notranslate"><span class="pre">(</span></code> depending on keyword style </p></li>
+<li><p><strong>item</strong> – return the given element from the extracted list </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412SortAxisList6string6string">
+<span id="_CPPv312SortAxisList6string6string"></span><span id="_CPPv212SortAxisList6string6string"></span><span id="SortAxisList__string.string"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1af15fc165d33b174eed652e4a5cae75f2"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SortAxisList</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412SortAxisList6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the list of axis sorted from highest to lowest starting value of the <code class="docutils literal notranslate"><span class="pre">axisEnab</span></code> keyword. </p>
+<p><code class="docutils literal notranslate"><span class="pre">list</span></code> must be from one orientation, usually something returned by <a class="reference internal" href="#_m_i_e_s___utilities___g_u_i_8ipf_1aea61a5764b6537a2acd966a31c70946f"><span class="std std-ref">GetAllAxesWithOrientation()</span></a></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411GetPlotArea6stringP5RectD">
+<span id="_CPPv311GetPlotArea6stringP5RectD"></span><span id="_CPPv211GetPlotArea6stringP5RectD"></span><span id="GetPlotArea__string.RectDP"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1ad3a73400c1868f71bb0bf1ccbaa9707e"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetPlotArea</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv45RectD" title="RectD"><span class="n"><span class="pre">RectD</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411GetPlotArea6stringP5RectD" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414ParseColorSpec6string">
+<span id="_CPPv314ParseColorSpec6string"></span><span id="_CPPv214ParseColorSpec6string"></span><span id="ParseColorSpec__string"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1a56682707b62942c2360bf97ad1367ab2"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">RGBAColor</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ParseColorSpec</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414ParseColorSpec6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Parse a color specification as used by ModifyGraph having an optionl translucency part. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428StoreCurrentPanelsResizeInfo6string">
+<span id="_CPPv328StoreCurrentPanelsResizeInfo6string"></span><span id="_CPPv228StoreCurrentPanelsResizeInfo6string"></span><span id="StoreCurrentPanelsResizeInfo__string"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1a6928b66709263cbb38c08b33239ec014"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StoreCurrentPanelsResizeInfo</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">panel</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428StoreCurrentPanelsResizeInfo6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>If the layout of an panel was changed, this function calls the ResizeControlsPanel module functions of the Igor Pro native package to store the changed resize info. The originally intended way to do this was through the Packages GUI, which is clunky for some workflows. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414GetNotebookCRC6string">
+<span id="_CPPv314GetNotebookCRC6string"></span><span id="_CPPv214GetNotebookCRC6string"></span><span id="GetNotebookCRC__string"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1a39b863ad5777bf87038d768573db7598"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNotebookCRC</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414GetNotebookCRC6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the CRC of the contents of the plain/formatted notebook. </p>
+<p>Takes into account formatting but ignores selection. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423FormatTextWaveForLegend8WaveText">
+<span id="_CPPv323FormatTextWaveForLegend8WaveText"></span><span id="_CPPv223FormatTextWaveForLegend8WaveText"></span><span id="FormatTextWaveForLegend__WaveText"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1a5c41ad3db7db2c1c8a23835dd547cfd2"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FormatTextWaveForLegend</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">input</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423FormatTextWaveForLegend8WaveText" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Format the 2D text wave into a string usable for a legend. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421IsValidTraceLineStyle8variable">
+<span id="_CPPv321IsValidTraceLineStyle8variable"></span><span id="_CPPv221IsValidTraceLineStyle8variable"></span><span id="IsValidTraceLineStyle__variable"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1aa69c4539f2cf3ffe33b1473bae5785b7"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsValidTraceLineStyle</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lineStyleCode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421IsValidTraceLineStyle8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Checks if given lineStyle code is valid (as of Igor Pro 9) </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>lineStyleCode</strong> – line style code value for a trace </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>1 if valid, 0 otherwise </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423IsValidTraceDisplayMode8variable">
+<span id="_CPPv323IsValidTraceDisplayMode8variable"></span><span id="_CPPv223IsValidTraceDisplayMode8variable"></span><span id="IsValidTraceDisplayMode__variable"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1aef24131ce31be364acb1f661b365f717"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsValidTraceDisplayMode</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">traceDisplayCode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423IsValidTraceDisplayMode8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Checks if given trace display code is valid (as of Igor Pro 9) </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>traceDisplayCode</strong> – line style code value for a trace </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>1 if valid, 0 otherwise </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420UpdateInfoButtonHelp6string6string4wave">
+<span id="_CPPv320UpdateInfoButtonHelp6string6string4wave"></span><span id="_CPPv220UpdateInfoButtonHelp6string6string4wave"></span><span id="UpdateInfoButtonHelp__string.string.wave"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1afbbbabb73c8c3a16b943d4f58f5fd6d8"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateInfoButtonHelp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ctrl</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">info</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420UpdateInfoButtonHelp6string6string4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Update the help and user data of a button used as info/copy button. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419HorizExpandWithVisXv">
+<span id="_CPPv319HorizExpandWithVisXv"></span><span id="_CPPv219HorizExpandWithVisXv"></span><span id="HorizExpandWithVisX"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1a69d33f55ee0d6f1a292db58acc198651"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HorizExpandWithVisX</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419HorizExpandWithVisXv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Custom graph marquee. </p>
+<p>Requires an existing marquee and a graph as current top window </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416EquallySpaceAxis6string6string8variable8variable8variable6string6string">
+<span id="_CPPv316EquallySpaceAxis6string6string8variable8variable8variable6string6string"></span><span id="_CPPv216EquallySpaceAxis6string6string8variable8variable8variable6string6string"></span><span id="EquallySpaceAxis__string.string.variable.variable.variable.string.string"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1a5a010ce2abfb157f1fa7b3805a431c73"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EquallySpaceAxis</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">axisRegExp</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">axisOffset</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">axisOrientation</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sortOrder</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">listForBegin</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">listForEnd</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416EquallySpaceAxis6string6string8variable8variable8variable6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Space the matching axis in an equal manner. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> – graph </p></li>
+<li><p><strong>axisRegExp</strong> – [optional, defaults to “.*”] regular expression matching the axes names </p></li>
+<li><p><strong>axisOffset</strong> – [optional, defaults to 0] offset of first axis in parts of total width </p></li>
+<li><p><strong>axisOrientation</strong> – [optional, defaults to all] allows to apply equalization to all axis of one orientation </p></li>
+<li><p><strong>sortOrder</strong> – [optional, defaults to no sorting (NaN)] apply different sorting schemes to list of axes, see sortingOrder parameter of <code class="docutils literal notranslate"><span class="pre">SortList</span></code></p></li>
+<li><p><strong>listForBegin</strong> – [optional, defaults to an empty list] list of axes to move to the front of the sorted axis list </p></li>
+<li><p><strong>listForEnd</strong> – [optional, defaults to an empty list] list of axes to move to the end of the sorted axis list </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418EquallySpaceAxisPA6string6string6string8variable">
+<span id="_CPPv318EquallySpaceAxisPA6string6string6string8variable"></span><span id="_CPPv218EquallySpaceAxisPA6string6string6string8variable"></span><span id="EquallySpaceAxisPA__string.string.string.variable"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1af1c6b667e13a5325981749a3049c454b"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EquallySpaceAxisPA</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">allAxes</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">distAxes</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">axisOffset</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418EquallySpaceAxisPA6string6string6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>This is a light weight adapted version of. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_m_i_e_s___utilities___g_u_i_8ipf_1a5a010ce2abfb157f1fa7b3805a431c73"><span class="std std-ref">EquallySpaceAxis</span></a> It allows to give a list of distAxes that do not require to exist. Non-existing axes are taken into account on the distribution, but are skipped when the graph is accessed. Also removing images from a graph does not update AxisList until the graph is updated, so we can not rely on Axislist here as we do the Layout after pending changes So with allAxes = “1;2;3;4;” and distAxes = “2;3;” axis 2 and 3 are set at 25% to 50% and 50% to 75% respectively. </p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> – <strong>[in]</strong> Name of graph where axes from distAxes list exist </p></li>
+<li><p><strong>allAxes</strong> – <strong>[in]</strong> List of all axes, that should be distributed. May include non-existing axes. </p></li>
+<li><p><strong>distAxes</strong> – <strong>[in]</strong> List of axes that are distributed. Only axes that appear in allAxes as well are modified. </p></li>
+<li><p><strong>axisOffset</strong> – <strong>[in]</strong> [optional, default = 0] offset between 0 and 1 where distribution starts. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423RemoveFreeAxisFromGraph6string">
+<span id="_CPPv323RemoveFreeAxisFromGraph6string"></span><span id="_CPPv223RemoveFreeAxisFromGraph6string"></span><span id="RemoveFreeAxisFromGraph__string"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1a84aaf20149b706a3696cda50fb4b3e94"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RemoveFreeAxisFromGraph</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423RemoveFreeAxisFromGraph6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Remove all free axis from the given graph. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416RemoveDrawLayers6string">
+<span id="_CPPv316RemoveDrawLayers6string"></span><span id="_CPPv216RemoveDrawLayers6string"></span><span id="RemoveDrawLayers__string"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1a9f617b4fe7d51f67553a809aeb6d0513"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RemoveDrawLayers</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416RemoveDrawLayers6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Remove all draw layers from the graph. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421RemoveTracesFromGraph6string6string10WaveOrNull5dfref">
+<span id="_CPPv321RemoveTracesFromGraph6string6string10WaveOrNull5dfref"></span><span id="_CPPv221RemoveTracesFromGraph6string6string10WaveOrNull5dfref"></span><span id="RemoveTracesFromGraph__string.string.WaveOrNull.dfref"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1aacbbdbe2b064f15947381c226bfb500b"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RemoveTracesFromGraph</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">trace</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421RemoveTracesFromGraph6string6string10WaveOrNull5dfref" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Remove traces from a graph. </p>
+<p>
+Only one of trace/wv/dfr may be supplied. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> – graph </p></li>
+<li><p><strong>trace</strong> – [optional, default: all] remove the given trace only </p></li>
+<li><p><strong>wv</strong> – [optional, default: ignored] remove all traces which stem from the given wave </p></li>
+<li><p><strong>dfr</strong> – [optional, default: ignored] remove all traces which stem from one of the waves in dfr</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425RemoveAllColumnsFromTable6string">
+<span id="_CPPv325RemoveAllColumnsFromTable6string"></span><span id="_CPPv225RemoveAllColumnsFromTable6string"></span><span id="RemoveAllColumnsFromTable__string"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1a2f41033870a963659c90c96ba4c4208c"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RemoveAllColumnsFromTable</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425RemoveAllColumnsFromTable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Removes all wave columns from a table. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>win</strong> – name of a window containing a table </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417AddVersionToPanel6string8variable">
+<span id="_CPPv317AddVersionToPanel6string8variable"></span><span id="_CPPv217AddVersionToPanel6string8variable"></span><span id="AddVersionToPanel__string.variable"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1ac752b8be19afa877493a6ebdda385db0"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddVersionToPanel</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">version</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417AddVersionToPanel6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Add user data “panelVersion” to the panel. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421HasPanelLatestVersion6string8variable">
+<span id="_CPPv321HasPanelLatestVersion6string8variable"></span><span id="_CPPv221HasPanelLatestVersion6string8variable"></span><span id="HasPanelLatestVersion__string.variable"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1a0822c204e344c3bb09650dc354b60775"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HasPanelLatestVersion</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expectedVersion</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421HasPanelLatestVersion6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return 1 if the panel is up to date, zero otherwise. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415GetPanelVersion6string">
+<span id="_CPPv315GetPanelVersion6string"></span><span id="_CPPv215GetPanelVersion6string"></span><span id="GetPanelVersion__string"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1a16e89722ec941ad138c203fee1beb29b"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetPanelVersion</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415GetPanelVersion6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Get the user data “panelVersion”. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>win</strong> – panel window as string </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>numeric panel version greater 0 and -1 if no version is present or -2 if the windows does not exist </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416ToggleCheckBoxes6string6string6string8variable">
+<span id="_CPPv316ToggleCheckBoxes6string6string6string8variable"></span><span id="_CPPv216ToggleCheckBoxes6string6string6string8variable"></span><span id="ToggleCheckBoxes__string.string.string.variable"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1a75a4aaf29e1faaaaf514546583188bf7"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToggleCheckBoxes</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">checkBoxIn</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">checkBoxPartner</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">checkBoxInState</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416ToggleCheckBoxes6string6string6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Places paired checkboxes in opposite state. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>win</strong> – window name </p></li>
+<li><p><strong>checkBoxIn</strong> – ctrl checkbox ex. cba.ctrlName </p></li>
+<li><p><strong>checkBoxPartner</strong> – checkbox that will be placed in opposite state </p></li>
+<li><p><strong>checkBoxInState</strong> – state of the ctrl checkbox </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418EqualizeCheckBoxes6string6string6string8variable">
+<span id="_CPPv318EqualizeCheckBoxes6string6string6string8variable"></span><span id="_CPPv218EqualizeCheckBoxes6string6string6string8variable"></span><span id="EqualizeCheckBoxes__string.string.string.variable"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1a12d554858b23ded08ca4497f090a4b11"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EqualizeCheckBoxes</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">checkBoxIn</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">checkBoxPartner</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">checkBoxInState</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418EqualizeCheckBoxes6string6string6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Placed paired checkboxes in same state. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>win</strong> – window name </p></li>
+<li><p><strong>checkBoxIn</strong> – ctrl checkbox ex. cba.ctrlName </p></li>
+<li><p><strong>checkBoxPartner</strong> – checkbox that will be placed in the same state </p></li>
+<li><p><strong>checkBoxInState</strong> – state of the ctrl checkbox </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417RemoveAllControls6string">
+<span id="_CPPv317RemoveAllControls6string"></span><span id="_CPPv217RemoveAllControls6string"></span><span id="RemoveAllControls__string"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1ac4e0d9123d616eba549fbe2be5ca9d4f"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RemoveAllControls</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417RemoveAllControls6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419RemoveAllDrawLayers6string">
+<span id="_CPPv319RemoveAllDrawLayers6string"></span><span id="_CPPv219RemoveAllDrawLayers6string"></span><span id="RemoveAllDrawLayers__string"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1ae27a40b22e46ffe1badad80c447972b8"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RemoveAllDrawLayers</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419RemoveAllDrawLayers6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419GetUnusedWindowName6string">
+<span id="_CPPv319GetUnusedWindowName6string"></span><span id="_CPPv219GetUnusedWindowName6string"></span><span id="GetUnusedWindowName__string"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1a062424d9638e8ea3c2a46afbb233153b"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetUnusedWindowName</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">baseName</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419GetUnusedWindowName6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv432GetExteriorSubWindowOrientations6string">
+<span id="_CPPv332GetExteriorSubWindowOrientations6string"></span><span id="_CPPv232GetExteriorSubWindowOrientations6string"></span><span id="GetExteriorSubWindowOrientations__string"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1a0080c427b7f92b657530e56a06a99c10"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">WAVE</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetExteriorSubWindowOrientations</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">recMacro</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv432GetExteriorSubWindowOrientations6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Get the names and orientations of exterior subwindows. </p>
+<p>See <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1ExtSubWindowOrientations"><span class="std std-ref">ExtSubWindowOrientations</span></a> for possible values of <code class="docutils literal notranslate"><span class="pre">orientation</span></code>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422DropInteriorSubWindows8WaveText">
+<span id="_CPPv322DropInteriorSubWindows8WaveText"></span><span id="_CPPv222DropInteriorSubWindows8WaveText"></span><span id="DropInteriorSubWindows__WaveText"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1a956434ee6da19634221b9e509c9fc9c7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">WAVE</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DropInteriorSubWindows</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">list</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422DropInteriorSubWindows8WaveText" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419IsExteriorSubWindow6string">
+<span id="_CPPv319IsExteriorSubWindow6string"></span><span id="_CPPv219IsExteriorSubWindow6string"></span><span id="IsExteriorSubWindow__string"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1ad89509d13075def1623c1072b47551fe"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsExteriorSubWindow</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419IsExteriorSubWindow6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the truth that win is an exterior subwindow. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv426SUBWINDOW_MACRO_PARSER_EXT">
+<span id="_CPPv326SUBWINDOW_MACRO_PARSER_EXT"></span><span id="_CPPv226SUBWINDOW_MACRO_PARSER_EXT"></span><span id="SUBWINDOW_MACRO_PARSER_EXT__doubleC"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1ab28ea3544fc05fedd3a0c8884ee3ea8d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SUBWINDOW_MACRO_PARSER_EXT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv426SUBWINDOW_MACRO_PARSER_EXT" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv426SUBWINDOW_MACRO_PARSER_WIN">
+<span id="_CPPv326SUBWINDOW_MACRO_PARSER_WIN"></span><span id="_CPPv226SUBWINDOW_MACRO_PARSER_WIN"></span><span id="SUBWINDOW_MACRO_PARSER_WIN__doubleC"></span><span class="target" id="_m_i_e_s___utilities___g_u_i_8ipf_1a8c7a5884bc718bb98aa2a1a9c8f729e1"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SUBWINDOW_MACRO_PARSER_WIN</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><a class="headerlink" href="#_CPPv426SUBWINDOW_MACRO_PARSER_WIN" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_Utilities_GUI.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422IsWaveDisplayedOnGraph6string10WaveOrNull5dfref"><code class="docutils literal notranslate"><span class="pre">IsWaveDisplayedOnGraph()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418KillCursorInGraphs6string6string"><code class="docutils literal notranslate"><span class="pre">KillCursorInGraphs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418FindCursorInGraphs6string6string"><code class="docutils literal notranslate"><span class="pre">FindCursorInGraphs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420GetCursorXPositionAB6stringP8variableP8variable"><code class="docutils literal notranslate"><span class="pre">GetCursorXPositionAB()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426RemoveAnnotationsFromGraph6string"><code class="docutils literal notranslate"><span class="pre">RemoveAnnotationsFromGraph()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415UniqueTraceName6string6string"><code class="docutils literal notranslate"><span class="pre">UniqueTraceName()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413GetMarkerSkip8variable8variable"><code class="docutils literal notranslate"><span class="pre">GetMarkerSkip()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411KillWindows6string"><code class="docutils literal notranslate"><span class="pre">KillWindows()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425GetAllAxesWithOrientation6string8variable"><code class="docutils literal notranslate"><span class="pre">GetAllAxesWithOrientation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419GetNumFromModifyStr6string6string6string8variable"><code class="docutils literal notranslate"><span class="pre">GetNumFromModifyStr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412SortAxisList6string6string"><code class="docutils literal notranslate"><span class="pre">SortAxisList()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411GetPlotArea6stringP5RectD"><code class="docutils literal notranslate"><span class="pre">GetPlotArea()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414ParseColorSpec6string"><code class="docutils literal notranslate"><span class="pre">ParseColorSpec()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428StoreCurrentPanelsResizeInfo6string"><code class="docutils literal notranslate"><span class="pre">StoreCurrentPanelsResizeInfo()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414GetNotebookCRC6string"><code class="docutils literal notranslate"><span class="pre">GetNotebookCRC()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423FormatTextWaveForLegend8WaveText"><code class="docutils literal notranslate"><span class="pre">FormatTextWaveForLegend()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421IsValidTraceLineStyle8variable"><code class="docutils literal notranslate"><span class="pre">IsValidTraceLineStyle()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423IsValidTraceDisplayMode8variable"><code class="docutils literal notranslate"><span class="pre">IsValidTraceDisplayMode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420UpdateInfoButtonHelp6string6string4wave"><code class="docutils literal notranslate"><span class="pre">UpdateInfoButtonHelp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419HorizExpandWithVisXv"><code class="docutils literal notranslate"><span class="pre">HorizExpandWithVisX()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416EquallySpaceAxis6string6string8variable8variable8variable6string6string"><code class="docutils literal notranslate"><span class="pre">EquallySpaceAxis()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418EquallySpaceAxisPA6string6string6string8variable"><code class="docutils literal notranslate"><span class="pre">EquallySpaceAxisPA()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423RemoveFreeAxisFromGraph6string"><code class="docutils literal notranslate"><span class="pre">RemoveFreeAxisFromGraph()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416RemoveDrawLayers6string"><code class="docutils literal notranslate"><span class="pre">RemoveDrawLayers()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421RemoveTracesFromGraph6string6string10WaveOrNull5dfref"><code class="docutils literal notranslate"><span class="pre">RemoveTracesFromGraph()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425RemoveAllColumnsFromTable6string"><code class="docutils literal notranslate"><span class="pre">RemoveAllColumnsFromTable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417AddVersionToPanel6string8variable"><code class="docutils literal notranslate"><span class="pre">AddVersionToPanel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421HasPanelLatestVersion6string8variable"><code class="docutils literal notranslate"><span class="pre">HasPanelLatestVersion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415GetPanelVersion6string"><code class="docutils literal notranslate"><span class="pre">GetPanelVersion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416ToggleCheckBoxes6string6string6string8variable"><code class="docutils literal notranslate"><span class="pre">ToggleCheckBoxes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418EqualizeCheckBoxes6string6string6string8variable"><code class="docutils literal notranslate"><span class="pre">EqualizeCheckBoxes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417RemoveAllControls6string"><code class="docutils literal notranslate"><span class="pre">RemoveAllControls()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419RemoveAllDrawLayers6string"><code class="docutils literal notranslate"><span class="pre">RemoveAllDrawLayers()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419GetUnusedWindowName6string"><code class="docutils literal notranslate"><span class="pre">GetUnusedWindowName()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv432GetExteriorSubWindowOrientations6string"><code class="docutils literal notranslate"><span class="pre">GetExteriorSubWindowOrientations()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422DropInteriorSubWindows8WaveText"><code class="docutils literal notranslate"><span class="pre">DropInteriorSubWindows()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419IsExteriorSubWindow6string"><code class="docutils literal notranslate"><span class="pre">IsExteriorSubWindow()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426SUBWINDOW_MACRO_PARSER_EXT"><code class="docutils literal notranslate"><span class="pre">SUBWINDOW_MACRO_PARSER_EXT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426SUBWINDOW_MACRO_PARSER_WIN"><code class="docutils literal notranslate"><span class="pre">SUBWINDOW_MACRO_PARSER_WIN</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___utilities___file_8ipf.html"
+                          title="previous chapter">File MIES_Utilities_File.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___utilities___generators_8ipf.html"
+                          title="next chapter">File MIES_Utilities_Generators.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___utilities___generators_8ipf.html" title="File MIES_Utilities_Generators.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___utilities___file_8ipf.html" title="File MIES_Utilities_File.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Utilities_GUI.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

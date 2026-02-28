@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Pulse Average (PA) plot &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="SweepFormula" href="databrowser_sweepformula.html" />
+    <link rel="prev" title="Artefact Removal" href="databrowser_artefactremoval.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="databrowser_sweepformula.html" title="SweepFormula"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="databrowser_artefactremoval.html" title="Artefact Removal"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="user.html" >User documentation</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="databrowser.html" accesskey="U">DataBrowser</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Pulse Average (PA) plot</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="pulse-average-pa-plot">
+<span id="db-paplot"></span><h1>Pulse Average (PA) plot<a class="headerlink" href="#pulse-average-pa-plot" title="Link to this heading">¶</a></h1>
+<p>The purpose of the pulse averaging (PA) plot is to identify synaptic
+connections by pooling (via time alignment) and averaging the responses within
+and across sweeps to pulses (intended to produce action potentials) on a single
+headstage. It repeats this process for all headstages with pulses (action
+potentials).</p>
+<p>Although the stimulus set will contain <a class="reference internal" href="wavebuilder.html#wavebuilder-pulsetrain"><span class="std std-ref">Pulse Train</span></a> epochs in
+most cases, the pulse extraction algorithm works with all epoch types and
+special measurement modes like <a class="reference internal" href="daephys.html#daephys-ddaq"><span class="std std-ref">Distributed DAQ (dDAQ)</span></a> or <a class="reference internal" href="daephys.html#daephys-ooddaq"><span class="std std-ref">Optimized overlap distributed DAQ (oodDAQ)</span></a>.</p>
+<p>The dDAQ slider from the <a class="reference internal" href="databrowser_settings.html#db-settings"><span class="std std-ref">Settings</span></a> tab is respected as is the <a class="reference internal" href="databrowser_channelselection.html#db-channelselection"><span class="std std-ref">Channel Selection</span></a>.</p>
+<p>For instructional purposes, assume pulse train acquisition on four different
+headstages with oodDAQ (to distribute the pulses in time, across headstages).
+The PA plot shows AD data from each headstage and will have 16 (4 rows x 4
+columns) PA sets (either in 16 plots on a single graph or 16 individual graphs;
+user-defined).</p>
+<p>The diagonal entries hold the extracted single pulses for each headstage. In the other rows of each column are the
+regions plotted which are extracted from the other headstages at the same time coordinates as the diagonal pulses.
+So each row shows different regions from the same headstages, and each column shows the same region but from different
+headstages.</p>
+<p>The following two figures, <a class="reference internal" href="#figure-pulse-average-trace-plot"><span class="std std-ref">Trace plot</span></a> and
+<a class="reference internal" href="#figure-pulse-average-image-plot"><span class="std std-ref">Image plot</span></a>, were created with multiple sweeps
+overlayed, see <a class="reference internal" href="databrowser_overlaysweeps.html#db-overlaysweeps"><span class="std std-ref">Overlay Sweeps</span></a>, and time alignment and zeroing turned on.</p>
+<section id="trace-plot">
+<span id="figure-pulse-average-trace-plot"></span><h2>Trace plot<a class="headerlink" href="#trace-plot" title="Link to this heading">¶</a></h2>
+<figure class="align-center" id="id7">
+<a class="reference internal image-reference" href="_images/PulseAverage_traces.png"><img alt="_images/PulseAverage_traces.png" src="_images/PulseAverage_traces.png" style="width: 75%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Trace plot</span><a class="headerlink" href="#id7" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>The trace plot displays data in each PA set as voltage or current time-series.
+Scale bars, shown in black, are provided for each y axes and for each column’s
+shared x (time) axes. PA trace colors match databrowser trace colors and encode
+the headstage, see also <a class="reference internal" href="databrowser.html#figure-relevant-colors"><span class="std std-ref">Relevant Colors</span></a>.</p>
+</section>
+<section id="image-plot">
+<span id="figure-pulse-average-image-plot"></span><h2>Image plot<a class="headerlink" href="#image-plot" title="Link to this heading">¶</a></h2>
+<figure class="align-left" style="width: 70%">
+<a class="reference internal image-reference" href="_images/PulseAverage_images.png"><img alt="_images/PulseAverage_images.png" src="_images/PulseAverage_images.png" style="width: 848.0px; height: 858.5px;" />
+</a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="_images/PulseAverage_images_colorscales.png"><img alt="_images/PulseAverage_images_colorscales.png" src="_images/PulseAverage_images_colorscales.png" style="height: 870px;" />
+</a>
+</figure>
+<p>&nbsp;&nbsp;&nbsp;<br></p><p>The image graph supplements the trace plot <a class="reference internal" href="#figure-pulse-average-trace-plot"><span class="std std-ref">Trace plot</span></a>. It renders more quickly than the
+trace plot, especially with many (overlayed) sweeps. Each (horizontal) line of the image plot corresponds to a pulse
+(unique time-series) and encodes the voltage or current in color (user-defined color mapping). Deconvolution and average
+lines (extra wide) are at the bottom of each set image. Image-space is left blank when data is not shown. The image is
+filled from top to bottom where the interleaving between pulses and sweeps depends on the
+<a class="reference internal" href="#db-paplot-image-sortorder"><span class="std std-ref">Sort Order</span></a>.</p>
+<section id="sort-order">
+<span id="db-paplot-image-sortorder"></span><h3>Sort Order<a class="headerlink" href="#sort-order" title="Link to this heading">¶</a></h3>
+<p>The following tables visualizes the display of one image set with two sweeps
+overlayed and three pulses using different <code class="docutils literal notranslate"><span class="pre">Sort</span> <span class="pre">Order</span></code> settings. The
+ordering is always ascending and from top to bottom. Due to implementation
+details the <code class="docutils literal notranslate"><span class="pre">Sweep</span></code> sort order allows <strong>much</strong> faster incremental updates
+(only relevant during data acqisition).</p>
+<table class="docutils align-default" id="id8">
+<caption><span class="caption-text">Comparing different sort orders</span><a class="headerlink" href="#id8" title="Link to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Sweep</p></th>
+<th class="head"><p>Pulse</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Pulse 0, Sweep 0</p></td>
+<td><p>Pulse 0, Sweep 0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Pulse 1, Sweep 0</p></td>
+<td><p>Pulse 0, Sweep 1</p></td>
+</tr>
+<tr class="row-even"><td><p>Pulse 2, Sweep 0</p></td>
+<td><p>Pulse 1, Sweep 1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Pulse 0, Sweep 1</p></td>
+<td><p>Pulse 1, Sweep 0</p></td>
+</tr>
+<tr class="row-even"><td><p>Pulse 1, Sweep 1</p></td>
+<td><p>Pulse 2, Sweep 1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Pulse 2, Sweep 1</p></td>
+<td><p>Pulse 2, Sweep 0</p></td>
+</tr>
+<tr class="row-even"><td><p>Average</p></td>
+<td><p>Average</p></td>
+</tr>
+<tr class="row-odd"><td><p>Deconvolution</p></td>
+<td><p>Deconvolution</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="time-alignment">
+<span id="db-paplot-timealignment"></span><h3>Time Alignment<a class="headerlink" href="#time-alignment" title="Link to this heading">¶</a></h3>
+<p>Time alignment removes the pulse to pulse jitter in pulse evoked event (action potential) timing.</p>
+<p>The algorithm is as follows:</p>
+<ul class="simple">
+<li><p>Get the feature position <code class="docutils literal notranslate"><span class="pre">featurePos</span></code> (wave maximum) for all pulses which belong to the
+same set. Store these feature positions using their sweep number and pulse
+index as key.</p></li>
+<li><p>Now shift all pulses in all sets from the same region by <code class="docutils literal notranslate"><span class="pre">-featurePos</span></code>
+where <code class="docutils literal notranslate"><span class="pre">featurePos</span></code> is used from the same sweep and pulse index.</p></li>
+</ul>
+</section>
+<section id="operation-order">
+<span id="db-paplot-operation-order"></span><h3>Operation order<a class="headerlink" href="#operation-order" title="Link to this heading">¶</a></h3>
+<p>Data operations occur in the following (fixed) order:</p>
+<ul class="simple">
+<li><p>Gather pulses</p></li>
+<li><p>Pulse sorting</p></li>
+<li><p>Failed pulse search</p></li>
+<li><p>Zeroing</p></li>
+<li><p>Time alignment</p></li>
+<li><p>Averaging</p></li>
+</ul>
+</section>
+<section id="pa-plot-settings">
+<h3>PA plot settings<a class="headerlink" href="#pa-plot-settings" title="Link to this heading">¶</a></h3>
+<p>The following sections describe PA settings. Settings are configured on the
+data browser PA settings tab (shown below).</p>
+<figure class="align-center" id="id9">
+<span id="figure-pulse-average-browser-settings"></span><img alt="_images/BrowserSettingsPanel-PA-plot.png" src="_images/BrowserSettingsPanel-PA-plot.png" />
+<figcaption>
+<p><span class="caption-text">Settings for the pulse average plot</span><a class="headerlink" href="#id9" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="pulse-averaging">
+<h2>Pulse Averaging<a class="headerlink" href="#pulse-averaging" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">enable</span></code>: Toggle the display of the PA image/trace plots.</dt><dd><p>To adjust multiple settings at-a-time, disable the PA plot, adjust settings, and re-enable.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="image-settings">
+<h2>Image settings<a class="headerlink" href="#image-settings" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Enable</span> <span class="pre">image</span> <span class="pre">plot</span></code>: Toggle the display of the <a class="reference internal" href="#figure-pulse-average-image-plot"><span class="std std-ref">Image plot</span></a></p></li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">Draw</span> <span class="pre">X</span> <span class="pre">zero</span> <span class="pre">line</span></code>: Draws vertical line at <code class="docutils literal notranslate"><span class="pre">X</span> <span class="pre">==</span> <span class="pre">0</span></code> in each column. Requires time alignment</dt><dd><p>(see below). Facilitates measurement of event latency.</p>
+</dd>
+</dl>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Popup</span> <span class="pre">Menu</span></code>: Color scheme for image plots</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Sort</span> <span class="pre">order</span></code>: Sort order of the displayed pulses. For <code class="docutils literal notranslate"><span class="pre">Sweep</span></code> the pulses are
+first ordered by sweep number and then by pulse index. For <code class="docutils literal notranslate"><span class="pre">Pulse</span></code> it is
+first pulse index and then sweep number. See also
+<a class="reference internal" href="#db-paplot-image-sortorder"><span class="std std-ref">Sort Order</span></a>.</p></li>
+</ul>
+</section>
+<section id="trace-settings">
+<h2>Trace settings<a class="headerlink" href="#trace-settings" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Enable</span> <span class="pre">trace</span> <span class="pre">plot</span></code>: Toggle the display of the <a class="reference internal" href="#figure-pulse-average-trace-plot"><span class="std std-ref">Trace plot</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Vertical</span> <span class="pre">scale</span> <span class="pre">bar</span></code>: Size of the vertical scale bar in y-axis units</p></li>
+</ul>
+</section>
+<section id="deconvolution">
+<h2>Deconvolution<a class="headerlink" href="#deconvolution" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Deconvolution</span></code>: Enables deconvolution <a class="footnote-reference brackets" href="#id4" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a> of the average pulse.
+Deconvolution trace is displayed with the average trace in the trace plot and
+immediately above the average line in the image plot.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Tau</span> <span class="pre">[ms]</span></code>: Time constant <a class="footnote-reference brackets" href="#id5" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Smoothing</span></code>: Smoothing parameter, use <code class="docutils literal notranslate"><span class="pre">1</span></code> to disable smoothing</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Display</span> <span class="pre">[ms]</span></code>: Time range of the average pulse used for the deconvolution, use <code class="docutils literal notranslate"><span class="pre">inf</span></code> to use the full range</p></li>
+</ul>
+</section>
+<section id="general">
+<h2>General<a class="headerlink" href="#general" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Zero</span> <span class="pre">pulse</span></code>: Toggle Pulse Zeroing. Zeroing is carried out by
+differentiation, followed by the integration of each pulse.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Time</span> <span class="pre">alignment</span></code>: Toggle time alignment of pulses from one column. See
+<a class="reference internal" href="#db-paplot-timealignment"><span class="std std-ref">Time Alignment</span></a> for an in-depth explanation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Show</span> <span class="pre">average</span></code>: Toggle average pulse display. For the image plot, the
+average is the bottom-most row. Failed pulses (see below) are not included
+in the average.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Use</span> <span class="pre">multiple</span> <span class="pre">graphs</span></code>: Creates a panel for each PA set. Normally, multiple
+PA sets are distributed onto a single panel.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Show</span> <span class="pre">individual</span> <span class="pre">pulses</span></code>: Enables the display of individual pulses. Turning
+that off can increase the display update performance. The average and
+deconvolution are still shown if enabled.</p></li>
+</ul>
+</section>
+<section id="pulses">
+<h2>Pulses<a class="headerlink" href="#pulses" title="Link to this heading">¶</a></h2>
+<p>Select a subset of the pulses from a train of pulses (contained within a sweep).</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Starting</span> <span class="pre">pulse</span></code>: First pulse index to display, 0-based.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Ending</span> <span class="pre">pulse</span></code>: Last pulse index to display, use <code class="docutils literal notranslate"><span class="pre">inf</span></code> to use the last pulse.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Fixed</span> <span class="pre">pulse</span> <span class="pre">length</span></code>: Choose the calculation method of the pulse lengths.
+When unchecked the pulse length is calculated as the average pulse length
+from the extracted pulses. When checked the <code class="docutils literal notranslate"><span class="pre">Override</span> <span class="pre">length</span></code> is used.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Override</span> <span class="pre">length</span></code>: Pulse length to use when no length can be calculated
+<a class="footnote-reference brackets" href="#id6" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a> or when <code class="docutils literal notranslate"><span class="pre">Fixed</span> <span class="pre">pulse</span> <span class="pre">length</span></code> is checked</p></li>
+</ul>
+</section>
+<section id="failed-pulses">
+<h2>Failed Pulses<a class="headerlink" href="#failed-pulses" title="Link to this heading">¶</a></h2>
+<p>Pulse responses may be filtered by their amplitude.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Search</span> <span class="pre">failed</span> <span class="pre">pulses</span></code>: Toggle the failed pulse search</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Hide</span> <span class="pre">failed</span> <span class="pre">pulses</span></code>: When a pulse failed, hide instead of highlight.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Level</span></code>: Level in y-data units to search for failed pulses. Every pulse not
+reaching that level is considered failing. As mentioned in
+<a class="reference internal" href="#db-paplot-operation-order"><span class="std std-ref">Operation order</span></a> that search is done before zeroing.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Number</span> <span class="pre">of</span> <span class="pre">Spikes</span></code>: Number of required spikes for each pulse. Use <code class="docutils literal notranslate"><span class="pre">NaN</span></code> for accepting any non-zero spike count as
+passing.</p></li>
+</ul>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id4" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">4</a><span class="fn-bracket">]</span></span>
+<p>See <a class="reference external" href="https://www.physiology.org/doi/full/10.1152/jn.00942.2007">doi:10.1152/jn.00942.2007</a> for the implemented method</p>
+</aside>
+<aside class="footnote brackets" id="id5" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">5</a><span class="fn-bracket">]</span></span>
+<p>The following equation holds:</p>
+</aside>
+</aside>
+<div class="math notranslate nohighlight">
+\[\tau \cdot \frac{dV}{dt} + V = f\]</div>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id6" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">6</a><span class="fn-bracket">]</span></span>
+<p>Pulse length cannot be calculated when a sweep contains a single pulse
+or when the pulse length is variable, e.g., <code class="docutils literal notranslate"><span class="pre">Poisson</span> <span class="pre">distribution</span></code> from the
+<code class="docutils literal notranslate"><span class="pre">Pulse</span> <span class="pre">Train</span></code> stimulus epoch type.</p>
+</aside>
+</aside>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="user.html">User documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="analysisbrowser.html">AnalysisBrowser</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="databrowser.html">DataBrowser</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="databrowser_settings.html">Settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="databrowser_overlaysweeps.html">Overlay Sweeps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="databrowser_channelselection.html">Channel Selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="databrowser_artefactremoval.html">Artefact Removal</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Pulse Average (PA) plot</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#trace-plot">Trace plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#image-plot">Image plot</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#sort-order">Sort Order</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#time-alignment">Time Alignment</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#operation-order">Operation order</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#pa-plot-settings">PA plot settings</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#pulse-averaging">Pulse Averaging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#image-settings">Image settings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#trace-settings">Trace settings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#deconvolution">Deconvolution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#general">General</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pulses">Pulses</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#failed-pulses">Failed Pulses</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="databrowser_sweepformula.html">SweepFormula</a></li>
+<li class="toctree-l3"><a class="reference internal" href="databrowser_note.html">Note</a></li>
+<li class="toctree-l3"><a class="reference internal" href="databrowser_dashboard.html">Dashboard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="databrowser_sweepcontrol.html">Sweep Control</a></li>
+<li class="toctree-l3"><a class="reference internal" href="databrowser_settingshistory.html">Settings History</a></li>
+<li class="toctree-l3"><a class="reference internal" href="databrowser.html#relevant-colors">Relevant Colors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="databrowser.html#sweepbrowser-vs-databrowser">SweepBrowser vs DataBrowser</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="wavebuilder.html">WaveBuilder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="daephys.html">Da_Ephys</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testpulse.html">TPStorage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="auto_testpulse_tuning.html">Automatic test pulse tuning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SweepFormula.html">The Sweep Formula Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labnotebook-descriptions.html">Labnotebook descriptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis-function-parameters.html">Analysis function parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SweepFormula_PSX.html">SweepFormula PSC/PSP classification</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grouplist.html">Group list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="databrowser_artefactremoval.html"
+                          title="previous chapter">Artefact Removal</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="databrowser_sweepformula.html"
+                          title="next chapter">SweepFormula</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="databrowser_sweepformula.html" title="SweepFormula"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="databrowser_artefactremoval.html" title="Artefact Removal"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="user.html" >User documentation</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="databrowser.html" >DataBrowser</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Pulse Average (PA) plot</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

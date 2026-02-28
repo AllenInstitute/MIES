@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File MIES_Utilities_System.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_Utilities_Time.ipf" href="_m_i_e_s___utilities___time_8ipf.html" />
+    <link rel="prev" title="File MIES_Utilities_Strings.ipf" href="_m_i_e_s___utilities___strings_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___utilities___time_8ipf.html" title="File MIES_Utilities_Time.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___utilities___strings_8ipf.html" title="File MIES_Utilities_Strings.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Utilities_System.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-utilities-system-ipf">
+<span id="id1"></span><h1>File MIES_Utilities_System.ipf<a class="headerlink" href="#file-mies-utilities-system-ipf" title="Link to this heading">¶</a></h1>
+<p>utility functions for system operations </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417GetExperimentNamev">
+<span id="_CPPv317GetExperimentNamev"></span><span id="_CPPv217GetExperimentNamev"></span><span id="GetExperimentName"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1acef9080de18c3031de55d8803620fad0"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetExperimentName</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Return the name of the experiment without the file suffix. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421GetExperimentFileTypev">
+<span id="_CPPv321GetExperimentFileTypev"></span><span id="_CPPv221GetExperimentFileTypev"></span><span id="GetExperimentFileType"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1aaefbec13fe21babbe9a028aa898f58ec"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetExperimentFileType</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Return the experiment file type. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413GetFreeMemoryv">
+<span id="_CPPv313GetFreeMemoryv"></span><span id="_CPPv213GetFreeMemoryv"></span><span id="GetFreeMemory"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1a3f7d8bef223395d9a2d3817d58ceb615"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetFreeMemory</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413GetFreeMemoryv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the amount of free memory in GB. </p>
+<p>Due to memory fragmentation you can not assume that you can still create a wave occupying as much space as returned. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423IsBackgroundTaskRunning6string">
+<span id="_CPPv323IsBackgroundTaskRunning6string"></span><span id="_CPPv223IsBackgroundTaskRunning6string"></span><span id="IsBackgroundTaskRunning__string"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1a2b9212df07b847c7a21ed240a043f30a"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsBackgroundTaskRunning</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">task</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423IsBackgroundTaskRunning6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Check wether the given background task is currently running. </p>
+<p>Note: Background functions which are currently waiting for their period to be reached are also running.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>task</strong> – Named background task identifier, this is <em>not</em> the function set with <code class="docutils literal notranslate"><span class="pre">proc=</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418QuerySetIgorOption6string8variable">
+<span id="_CPPv318QuerySetIgorOption6string8variable"></span><span id="_CPPv218QuerySetIgorOption6string8variable"></span><span id="QuerySetIgorOption__string.variable"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1a60dc2d5036f9120303d88fd28e34b119"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">QuerySetIgorOption</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">globalSymbol</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418QuerySetIgorOption6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Query a numeric option settable with <code class="docutils literal notranslate"><span class="pre">SetIgorOption</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – name of the keyword/setting </p></li>
+<li><p><strong>globalSymbol</strong> – [optional, defaults to false] <code class="docutils literal notranslate"><span class="pre">name</span></code> refers to a global symbol set via <code class="docutils literal notranslate"><span class="pre">poundDefine</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414ForceRecompilev">
+<span id="_CPPv314ForceRecompilev"></span><span id="_CPPv214ForceRecompilev"></span><span id="ForceRecompile"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1a19f54ad3a06cf9e11b80d07b314e9997"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ForceRecompile</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414ForceRecompilev" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Force recompilation of all procedure files. </p>
+<p>Uses the “Operation Queue”. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426GetIgorExtensionFolderNamev">
+<span id="_CPPv326GetIgorExtensionFolderNamev"></span><span id="_CPPv226GetIgorExtensionFolderNamev"></span><span id="GetIgorExtensionFolderName"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1a1a38220b009261b544a2dbef04046860"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetIgorExtensionFolderName</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426GetIgorExtensionFolderNamev" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the disc folder name where the XOPs are located. </p>
+<p>Distinguishes between i386 and x64 Igor versions </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417GetIgorExecutablev">
+<span id="_CPPv317GetIgorExecutablev"></span><span id="_CPPv217GetIgorExecutablev"></span><span id="GetIgorExecutable"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1ae92b41022500ededda4547d843f515b6"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetIgorExecutable</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417GetIgorExecutablev" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return an Igor-style path to the Igor Pro executable. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419GetArchitectureBitsv">
+<span id="_CPPv319GetArchitectureBitsv"></span><span id="_CPPv219GetArchitectureBitsv"></span><span id="GetArchitectureBits"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1a1d83dd0074789e90293e5b7bc33be609"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetArchitectureBits</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419GetArchitectureBitsv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the number of bits of the architecture Igor Pro was built for. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411GetIgorInfo8variable">
+<span id="_CPPv311GetIgorInfo8variable"></span><span id="_CPPv211GetIgorInfo8variable"></span><span id="GetIgorInfo__variable"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1a8e6b2130e45c39c844af7f05096c4a6a"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetIgorInfo</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">selector</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411GetIgorInfo8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the given IgorInfo (cached) </p>
+<p>This is faster than calling <code class="docutils literal notranslate"><span class="pre">IgorInfo</span></code> everytime. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417GetIgorProVersionv">
+<span id="_CPPv317GetIgorProVersionv"></span><span id="_CPPv217GetIgorProVersionv"></span><span id="GetIgorProVersion"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1a6131be46d04acfb6cb9dc55ff539acf5"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetIgorProVersion</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Return the Igor Pro version string. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422GetIgorProMajorVersionv">
+<span id="_CPPv322GetIgorProMajorVersionv"></span><span id="_CPPv222GetIgorProMajorVersionv"></span><span id="GetIgorProMajorVersion"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1a3e7b669bbb0c7b08c3e1d8e3040f62dc"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetIgorProMajorVersion</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422GetIgorProMajorVersionv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the major Igor Pro version. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422GetIgorProBuildVersionv">
+<span id="_CPPv322GetIgorProBuildVersionv"></span><span id="_CPPv222GetIgorProBuildVersionv"></span><span id="GetIgorProBuildVersion"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1ac27c800c64d7427959ecfa7ddd556fae"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetIgorProBuildVersion</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422GetIgorProBuildVersionv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the Igor Pro build version string. </p>
+<p>This allows to distinguish different builds from the same major/minor version. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417GetSystemUserNamev">
+<span id="_CPPv317GetSystemUserNamev"></span><span id="_CPPv217GetSystemUserNamev"></span><span id="GetSystemUserName"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1a8986311194bf0486ce5ee66cb7e683d0"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSystemUserName</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417GetSystemUserNamev" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the user name of the running user. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420ControlWindowToFrontv">
+<span id="_CPPv320ControlWindowToFrontv"></span><span id="_CPPv220ControlWindowToFrontv"></span><span id="ControlWindowToFront"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1ab419ee680d3adc6de1230fe9234640f5"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ControlWindowToFront</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420ControlWindowToFrontv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Bring the control window (the window with the command line) to the front of the desktop. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422ExecuteListOfFunctions6string">
+<span id="_CPPv322ExecuteListOfFunctions6string"></span><span id="_CPPv222ExecuteListOfFunctions6string"></span><span id="ExecuteListOfFunctions__string"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1a1b1effca33001624bd9189f9c1bba794"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExecuteListOfFunctions</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">funcList</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422ExecuteListOfFunctions6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Execute a list of functions via the Operation Queue. </p>
+<p>Special purpose function. Not intended for normal use. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418SleepHighPrecision8variable">
+<span id="_CPPv318SleepHighPrecision8variable"></span><span id="_CPPv218SleepHighPrecision8variable"></span><span id="SleepHighPrecision__variable"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1a2a11b6dc4f88d48ae0ce5a875f5caf04"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SleepHighPrecision</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418SleepHighPrecision8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>High precision version of the builtin Sleep command. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>var</strong> – time in seconds to busy-sleep (current precision is around 0.1ms) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417GetMachineEpsilon8variable">
+<span id="_CPPv317GetMachineEpsilon8variable"></span><span id="_CPPv217GetMachineEpsilon8variable"></span><span id="GetMachineEpsilon__variable"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1a2780553f6a32f6f47da1284e627ffbbe"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetMachineEpsilon</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417GetMachineEpsilon8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the machine epsilon for the given wave type. </p>
+<p>Experimentally determined with Igor Pro 7.08 </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421CreateHistoryNotebookv">
+<span id="_CPPv321CreateHistoryNotebookv"></span><span id="_CPPv221CreateHistoryNotebookv"></span><span id="CreateHistoryNotebook"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1add57d49e5b565160292fa3a7c5d321a2"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreateHistoryNotebook</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421CreateHistoryNotebookv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Create the special Notebook “HistoryCarbonCopy” which will hold a readable copy of the history starting from the time of the notebook creation. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422GetHistoryNotebookTextv">
+<span id="_CPPv322GetHistoryNotebookTextv"></span><span id="_CPPv222GetHistoryNotebookTextv"></span><span id="GetHistoryNotebookText"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1a7a3b02b50ad19f69e3fe35273adf0da6"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetHistoryNotebookText</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422GetHistoryNotebookTextv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the text of the history notebook. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412GetProcessIdv">
+<span id="_CPPv312GetProcessIdv"></span><span id="_CPPv212GetProcessIdv"></span><span id="GetProcessId"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1a6278e4baaeb6ff6e1e35f3e0bf2ca088"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetProcessId</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412GetProcessIdv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the process id of this process. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419GetASLREnabledStatev">
+<span id="_CPPv319GetASLREnabledStatev"></span><span id="_CPPv219GetASLREnabledStatev"></span><span id="GetASLREnabledState"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1a02b77b61286695059a89c8226736d20f"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetASLREnabledState</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419GetASLREnabledStatev" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the per application setting of ASLR for the Igor Pro executable. </p>
+<p>See <a class="reference external" href="https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-exploit-guard/enable-exploit-protection">https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-exploit-guard/enable-exploit-protection</a> for the powershell cmdlet documentation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0 or 1 </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411TurnOffASLRv">
+<span id="_CPPv311TurnOffASLRv"></span><span id="_CPPv211TurnOffASLRv"></span><span id="TurnOffASLR"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1aa054b74fa1fb03df0208de0ded089bf2"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TurnOffASLR</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411TurnOffASLRv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Turn off ASLR. </p>
+<p>Requires administrative privileges via UAC. Only required once for ITC hardware. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415IsWindows10Or11v">
+<span id="_CPPv315IsWindows10Or11v"></span><span id="_CPPv215IsWindows10Or11v"></span><span id="IsWindows10Or11"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1a077bbd2c143d8c5b3b22cf66eeda780c"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsWindows10Or11</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415IsWindows10Or11v" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Check if we are running on Windows 10/11. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422UploadJSONPayloadAsync8variable">
+<span id="_CPPv322UploadJSONPayloadAsync8variable"></span><span id="_CPPv222UploadJSONPayloadAsync8variable"></span><span id="UploadJSONPayloadAsync__variable"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1a9052e85503721924c978ae94779a18ea"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UploadJSONPayloadAsync</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonID</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422UploadJSONPayloadAsync8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428UploadJSONPayloadAsyncWorker5dfref">
+<span id="_CPPv328UploadJSONPayloadAsyncWorker5dfref"></span><span id="_CPPv228UploadJSONPayloadAsyncWorker5dfref"></span><span id="UploadJSONPayloadAsyncWorker__dfref"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1a352eb148423f9060fa7bd46119c1193e"></span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UploadJSONPayloadAsyncWorker</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">threadDFR</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428UploadJSONPayloadAsyncWorker5dfref" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429UploadJSONPayloadAsyncReadoutP19ASYNC_ReadOutStruct">
+<span id="_CPPv329UploadJSONPayloadAsyncReadoutP19ASYNC_ReadOutStruct"></span><span id="_CPPv229UploadJSONPayloadAsyncReadoutP19ASYNC_ReadOutStruct"></span><span id="UploadJSONPayloadAsyncReadout__ASYNC_ReadOutStructP"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1a6de7137bb33bb85c2ef8edf7b6dff256"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UploadJSONPayloadAsyncReadout</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv419ASYNC_ReadOutStruct" title="ASYNC_ReadOutStruct"><span class="n"><span class="pre">ASYNC_ReadOutStruct</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ar</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429UploadJSONPayloadAsyncReadoutP19ASYNC_ReadOutStruct" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417UploadJSONPayload8variable">
+<span id="_CPPv317UploadJSONPayload8variable"></span><span id="_CPPv217UploadJSONPayload8variable"></span><span id="UploadJSONPayload__variable"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1a56646ac45f18bfe541d5e755a584a088"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UploadJSONPayload</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonID</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417UploadJSONPayload8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Upload the given JSON document and release it. </p>
+<p>See <code class="docutils literal notranslate"><span class="pre">tools/http-upload/upload-json-payload-v1.php</span></code> for the JSON format description. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417GetIgorInstanceIDv">
+<span id="_CPPv317GetIgorInstanceIDv"></span><span id="_CPPv217GetIgorInstanceIDv"></span><span id="GetIgorInstanceID"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1aa301aa0e6c4715ed621f25202714eec4"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetIgorInstanceID</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417GetIgorInstanceIDv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns a hex string which is unique for the given Igor Pro session. </p>
+<p>It allows to distinguish multiple Igor instances, but is not globally unique. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427CleanupOperationQueueResultv">
+<span id="_CPPv327CleanupOperationQueueResultv"></span><span id="_CPPv227CleanupOperationQueueResultv"></span><span id="CleanupOperationQueueResult"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1ac69c5d92542e7a14a13967fdf2e75337"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CleanupOperationQueueResult</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427CleanupOperationQueueResultv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Allows to remove V_flag which will be present after using the operation queue with <code class="docutils literal notranslate"><span class="pre">/Z</span></code></p>
+<p>Example usage: <p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="nc">Execute</span>/P/Q/Z<span class="w"> </span><span class="s">&quot;SomeFunction()&quot;</span>
+CleanupOperationQueueResult()
+</pre></div>
+</div>
+</p>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419ConvertXOPErrorCode8variable">
+<span id="_CPPv319ConvertXOPErrorCode8variable"></span><span id="_CPPv219ConvertXOPErrorCode8variable"></span><span id="ConvertXOPErrorCode__variable"></span><span class="target" id="_m_i_e_s___utilities___system_8ipf_1ad723dbf8b7c5a48b86b4373ebb3e3fd3"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ConvertXOPErrorCode</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">err</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419ConvertXOPErrorCode8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Remove the volatile part of the XOP error code. </p>
+<p>The result is constant and can therefore be compared with constants. </p>
+</dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_Utilities_System.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417GetExperimentNamev"><code class="docutils literal notranslate"><span class="pre">GetExperimentName()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421GetExperimentFileTypev"><code class="docutils literal notranslate"><span class="pre">GetExperimentFileType()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413GetFreeMemoryv"><code class="docutils literal notranslate"><span class="pre">GetFreeMemory()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423IsBackgroundTaskRunning6string"><code class="docutils literal notranslate"><span class="pre">IsBackgroundTaskRunning()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418QuerySetIgorOption6string8variable"><code class="docutils literal notranslate"><span class="pre">QuerySetIgorOption()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414ForceRecompilev"><code class="docutils literal notranslate"><span class="pre">ForceRecompile()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426GetIgorExtensionFolderNamev"><code class="docutils literal notranslate"><span class="pre">GetIgorExtensionFolderName()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417GetIgorExecutablev"><code class="docutils literal notranslate"><span class="pre">GetIgorExecutable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419GetArchitectureBitsv"><code class="docutils literal notranslate"><span class="pre">GetArchitectureBits()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411GetIgorInfo8variable"><code class="docutils literal notranslate"><span class="pre">GetIgorInfo()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417GetIgorProVersionv"><code class="docutils literal notranslate"><span class="pre">GetIgorProVersion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422GetIgorProMajorVersionv"><code class="docutils literal notranslate"><span class="pre">GetIgorProMajorVersion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422GetIgorProBuildVersionv"><code class="docutils literal notranslate"><span class="pre">GetIgorProBuildVersion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417GetSystemUserNamev"><code class="docutils literal notranslate"><span class="pre">GetSystemUserName()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420ControlWindowToFrontv"><code class="docutils literal notranslate"><span class="pre">ControlWindowToFront()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422ExecuteListOfFunctions6string"><code class="docutils literal notranslate"><span class="pre">ExecuteListOfFunctions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418SleepHighPrecision8variable"><code class="docutils literal notranslate"><span class="pre">SleepHighPrecision()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417GetMachineEpsilon8variable"><code class="docutils literal notranslate"><span class="pre">GetMachineEpsilon()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421CreateHistoryNotebookv"><code class="docutils literal notranslate"><span class="pre">CreateHistoryNotebook()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422GetHistoryNotebookTextv"><code class="docutils literal notranslate"><span class="pre">GetHistoryNotebookText()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412GetProcessIdv"><code class="docutils literal notranslate"><span class="pre">GetProcessId()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419GetASLREnabledStatev"><code class="docutils literal notranslate"><span class="pre">GetASLREnabledState()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411TurnOffASLRv"><code class="docutils literal notranslate"><span class="pre">TurnOffASLR()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415IsWindows10Or11v"><code class="docutils literal notranslate"><span class="pre">IsWindows10Or11()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422UploadJSONPayloadAsync8variable"><code class="docutils literal notranslate"><span class="pre">UploadJSONPayloadAsync()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428UploadJSONPayloadAsyncWorker5dfref"><code class="docutils literal notranslate"><span class="pre">UploadJSONPayloadAsyncWorker()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429UploadJSONPayloadAsyncReadoutP19ASYNC_ReadOutStruct"><code class="docutils literal notranslate"><span class="pre">UploadJSONPayloadAsyncReadout()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417UploadJSONPayload8variable"><code class="docutils literal notranslate"><span class="pre">UploadJSONPayload()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417GetIgorInstanceIDv"><code class="docutils literal notranslate"><span class="pre">GetIgorInstanceID()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427CleanupOperationQueueResultv"><code class="docutils literal notranslate"><span class="pre">CleanupOperationQueueResult()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419ConvertXOPErrorCode8variable"><code class="docutils literal notranslate"><span class="pre">ConvertXOPErrorCode()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___utilities___strings_8ipf.html"
+                          title="previous chapter">File MIES_Utilities_Strings.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___utilities___time_8ipf.html"
+                          title="next chapter">File MIES_Utilities_Time.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___utilities___time_8ipf.html" title="File MIES_Utilities_Time.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___utilities___strings_8ipf.html" title="File MIES_Utilities_Strings.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Utilities_System.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Installation instructions &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Developer" href="developers.html" />
+    <link rel="prev" title="SweepFormula PSC/PSP classification" href="SweepFormula_PSX.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="developers.html" title="Developer"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="SweepFormula_PSX.html" title="SweepFormula PSC/PSP classification"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Installation instructions</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="installation-instructions">
+<h1>Installation instructions<a class="headerlink" href="#installation-instructions" title="Link to this heading">¶</a></h1>
+<section id="installing-igor-pro">
+<h2>Installing Igor Pro<a class="headerlink" href="#installing-igor-pro" title="Link to this heading">¶</a></h2>
+<p>Requirements: Windows 11 64bit or MacOSX 64bit (analysis only)</p>
+<ul class="simple">
+<li><p>Install <a class="reference external" href="https://www.wavemetrics.com/downloads/current">Igor Pro</a></p></li>
+</ul>
+</section>
+<section id="igor-pro-update-nightly">
+<h2>Igor Pro Update Nightly<a class="headerlink" href="#igor-pro-update-nightly" title="Link to this heading">¶</a></h2>
+<p>We rely on a fixed intermediate Igor Pro version. This is not available as
+installer package but only as zip file.</p>
+<section id="update-steps">
+<h3>Update steps<a class="headerlink" href="#update-steps" title="Link to this heading">¶</a></h3>
+<ul>
+<li><p>When you open a new MIES version you might get the following message in the history:</p>
+<blockquote>
+<div><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Your Igor Pro version is too old to be usable for MIES.
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ul>
+<p>and a dialog appears with a button which opens this documentation.</p>
+<p>In that case please perform the following steps:</p>
+<ul class="simple">
+<li><p>Download the package for <a class="reference external" href="https://www.byte-physics.de/Downloads/WinIgor9_01Dec2023.zip">Igor Pro 9 (Windows)</a>, <a class="reference external" href="https://www.byte-physics.de/Downloads/setupIgor10-r29764.exe">Igor Pro 10 (Windows)</a> or <a class="reference external" href="https://www.byte-physics.de/Downloads/MacIgor9_01Dec2023.dmg">Igor Pro 9 (MacOSX)</a>.
+Either from within Igor Pro or from a web browser.</p></li>
+<li><p>Close Igor Pro</p></li>
+<li><p>Windows:
+- Igor Pro 9: Replace the folders <code class="docutils literal notranslate"><span class="pre">IgorBinaries_x64</span></code> and <code class="docutils literal notranslate"><span class="pre">IgorBinaries_Win32</span></code> in <code class="docutils literal notranslate"><span class="pre">C:\Program</span> <span class="pre">Files\WaveMetrics\Igor</span> <span class="pre">Pro</span> <span class="pre">9</span></code> with the ones from the downloaded zip package. This requires admin access.
+- Igor Pro 10: Install as usual</p></li>
+<li><p>MacOSX: Install from image as usual</p></li>
+<li><p>Restart Igor Pro</p></li>
+</ul>
+</section>
+</section>
+<section id="installation-using-the-installer-preferred">
+<h2>Installation using the installer (preferred)<a class="headerlink" href="#installation-using-the-installer-preferred" title="Link to this heading">¶</a></h2>
+<p>Select the installer for the latest release from <a class="reference external" href="https://github.com/AllenInstitute/MIES/releases/tag/latest">here</a>.</p>
+<p>Pressure control may be implemented with ITC and/or NIDAQ hardware. For
+NIDAQ hardware, install the <a class="reference external" href="https://www.wavemetrics.com/products/nidaqtools/nidaqtools.htm">NIDAQ Tool
+MX</a>
+package from Wavemetrics.</p>
+<p>Install version 2.2.2 of the Multiclamp Commander (64bit) from <a class="reference external" href="http://mdc.custhelp.com/app/answers/detail/a_id/20059">here</a>.</p>
+<p>When using ITC hardware it is necessary to disable ASLR for Igor64.exe.</p>
+<p>The installer does include a signed PowerShell script to do so. But this
+requires that signed scripts are allowed. You can enable this by running the following command in a PowerShell window, which sets the execution policy to allow only signed scripts for the current user:</p>
+<div class="highlight-powershell notranslate"><div class="highlight"><pre><span></span><span class="nb">Set-ExecutionPolicy</span> <span class="n">-ExecutionPolicy</span> <span class="n">AllSigned</span> <span class="n">-Scope</span> <span class="n">CurrentUser</span>
+</pre></div>
+</div>
+<p>and that the certificate in <cite>tools/installer/public-key.cer</cite> is added to the certificate store as trusted publisher.</p>
+<section id="signed-installer">
+<h3>Signed installer<a class="headerlink" href="#signed-installer" title="Link to this heading">¶</a></h3>
+<p>Starting with release 2.3 the installer executable is signed with an Extended
+Validation (EV) Code Signing certificate. See <a class="reference external" href="https://en.wikipedia.org/wiki/Code_signing#Extended_validation_(EV)_code_signing">Wikipedia</a>
+for more information. Signing the installer should avoid most issues with
+antivirus software treating the MIES installer as potentially malicious. The
+public key of the certificate can be downloaded from <a class="reference download internal" download="" href="_downloads/94e6e1968a7e69c4ef61a5bb51aad2a2/public-key.cer"><code class="xref download docutils literal notranslate"><span class="pre">here</span></code></a>.</p>
+</section>
+<section id="silent-installation">
+<h3>Silent installation<a class="headerlink" href="#silent-installation" title="Link to this heading">¶</a></h3>
+<p>The installer is developed using <a class="reference external" href="https://nsis.sourceforge.io">NSIS</a> which also
+supports silent installation.</p>
+<p>To perform a silent installation pass the <cite>/S</cite> command line option which will
+install with the following settings:</p>
+<ul class="simple">
+<li><p>Install for Igor Pro 9 64bit</p></li>
+<li><p>Admin installation into <cite>%PROGRAMFILES%MIES</cite> for the current user, pass <cite>/ALLUSER</cite> to install for all users</p></li>
+<li><p>Install all Hardware XOPs</p></li>
+</ul>
+<p>Previously existing MIES installations of the admin will be silently uninstalled.</p>
+</section>
+<section id="installer-details-and-limitations">
+<h3>Installer details and limitations<a class="headerlink" href="#installer-details-and-limitations" title="Link to this heading">¶</a></h3>
+<p>The installer uses the Nullsoft Installer System <a class="reference external" href="https://nsis.sourceforge.io">NSIS</a>.
+NSIS allows to create installers that require admin privileges and installers that
+run with user privileges only. When executing <code class="docutils literal notranslate"><span class="pre">tools/create-installer.sh</span></code> from a MingW64 bash
+an installer is build that requests elevated privileges when run.
+With an additional argument, like <code class="docutils literal notranslate"><span class="pre">tools/create-installer.sh</span> <span class="pre">1</span></code>, a user mode installer is created.</p>
+<p>It is recommended to use the user mode installer, that is also provided in the regular MIES release.
+Elevation can be achieved by running the user mode installer as a user with admin privileges.</p>
+<p>The installer tries to detect if and where the required Igor Pro versions are is installed.
+If in silent mode no Igor Pro installations are detected then only the main MIES files get installed.</p>
+<section id="installing-with-admin-privileges">
+<h4>Installing with admin privileges<a class="headerlink" href="#installing-with-admin-privileges" title="Link to this heading">¶</a></h4>
+<p>For installation with admin privileges the installer needs to be run as user that is admin.</p>
+<p>Thus, the default user mode installer must be run as admin.
+If an admin installer was created then it will ask for privilege elevation if required.</p>
+<p>Installs by default to the admin user folder e.g. <cite>\Users\Admin\Documents\MIES folder</cite>.
+Igor Pro integration through shortcuts is put to the user Igor Pro procedures/extensions folders in
+<cite>\Users\Admin\Documents\WaveMetrics\Igor Pro X Folder</cite>.</p>
+<p>Installs with <cite>/ALLUSER</cite> or corresponding dialog selection to the <cite>\Program Files\MIES</cite> folder.
+Igor Pro integration through shortcuts is put to the global Igor Pro procedures/extensions folders in
+<cite>\Program Files\Wavemetrics\Igor Pro X Folder</cite>.</p>
+<p>Prior installation it is detected by checking the installed programs list of windows (Apps &amp; Features)
+if MIES is already installed. If MIES is already installed then the uninstaller is called first without user interaction.
+If the installation was run silent then the uninstaller is also called silent.</p>
+<p>A limitation is that the installer can not detect if another user has a user installation of MIES.
+Thus, such installation will remain in parallel and result in a double installation for that user (global and local).
+The local installation of this user has to be uninstalled. This can be done when the user is logged in through
+windows Apps &amp; Features or Administrative Templates.</p>
+</section>
+<section id="installing-with-user-privileges">
+<h4>Installing with user privileges<a class="headerlink" href="#installing-with-user-privileges" title="Link to this heading">¶</a></h4>
+<p>Installs by default to the user folder e.g. <cite>\Users\User\Documents\MIES</cite> folder.
+Igor Pro integration through shortcuts is put to the users Igor Pro procedures/extensions folders in
+<cite>\Users\User\Documents\WaveMetrics\Igor Pro X Folder</cite>.</p>
+<p>Installation for all users is not supported as it would require administrative privileges.
+Thus, the dialog option is greyed out. When <cite>/ALLUSER</cite> is specified an error message is shown.
+If <cite>/ALLUSER</cite> and <cite>/S</cite> for silent installation is specified the installer silently quits.</p>
+<p>Prior installation it is detected by checking the installed programs list of windows (Apps &amp; Features)
+if MIES is already installed. If MIES is already installed then the uninstaller is called first.
+If the installation was run silent then the uninstaller is also called silent.
+The user can only uninstall previous installations from himself. If the previous installation
+was done by an admin for all users the uninstaller quits without uninstalling due to insufficient rights.</p>
+</section>
+<section id="list-of-installer-return-codes">
+<h4>List of Installer Return Codes<a class="headerlink" href="#list-of-installer-return-codes" title="Link to this heading">¶</a></h4>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Return Code</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+740</p></td>
+<td><p>No Error
+Another instance of the installer is already running
+Another instance of the uninstaller is already running
+Can not retrieve list of currently running processes
+The installation is run as non-admin user but a MIES installation that was installed with admin privileges is already present.
+Igor.exe is currently running
+Igor64.exe is currently running
+MIES requires a 64-bit operating system
+Admin privileges required
+MIES was already manually installed. It needs a manual deinstallation before it can be installed.
+Could not determine path to Igor 9 executable.
+Could not determine path to Igor 10 executable.
+The file list for deinstallation could not be written
+An error occurred when trying to disable ASLR for Igor64.exe (requires for ITC XOP)
+The installation configuration could not be written
+Admin privileges required. The installer was run as regular user with the argument /ALLUSER</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="corrupted-installations">
+<h4>Corrupted installations<a class="headerlink" href="#corrupted-installations" title="Link to this heading">¶</a></h4>
+<p>After the installer has called a potential uninstaller it checks if the target Igor Pro procedures folder
+for the MIES integration has no shortcut to MIES. If there still exists a shortcut to MIES then further installation
+is aborted. The graphical installer gives a message box requesting a manual cleanup.
+Such case typically happens if shortcuts in the Igor Pro folders for integrating MIES were created manually.
+Then the shortcuts have to be removed manually first before a MIES installation is run.</p>
+</section>
+</section>
+</section>
+<section id="manual-installation">
+<h2>Manual Installation<a class="headerlink" href="#manual-installation" title="Link to this heading">¶</a></h2>
+<p>The manual installation instructions are here for historical/compatibility
+reasons or in case you are on MacOSX. Windows users should always prefer to
+install via the Installer package.</p>
+<section id="windows-with-hardware-support">
+<h3>Windows (with hardware support)<a class="headerlink" href="#windows-with-hardware-support" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Install the <a class="reference external" href="https://github.com/AllenInstitute/MIES/blob/main/tools/installer/vc_redist.x64.exe">Visual C++ Redistributable package</a></p></li>
+<li><p>Quit Igor Pro. If you have never opened it, open it once and then close it.</p></li>
+<li><p>Get the MIES source code and initialize the repo, see <a class="reference internal" href="developers.html#getting-mies"><span class="std std-ref">Getting MIES</span></a></p></li>
+<li><p>Create the following shortcuts in <code class="docutils literal notranslate"><span class="pre">C:\Users\$username\Documents\WaveMetrics\Igor</span> <span class="pre">Pro</span> <span class="pre">XXX</span> <span class="pre">User</span> <span class="pre">Files</span></code>
+where <code class="docutils literal notranslate"><span class="pre">XXX</span></code> is either <code class="docutils literal notranslate"><span class="pre">9</span></code> or <code class="docutils literal notranslate"><span class="pre">10</span></code>:</p>
+<ul>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">User</span> <span class="pre">Procedures</span></code> a shortcut pointing to</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Packages\IPNWB</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Packages\MIES</span></code></p></li>
+</ul>
+</li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">Igor</span> <span class="pre">Procedures</span></code> a shortcut pointing to <code class="docutils literal notranslate"><span class="pre">Packages\MIES_Include.ipf</span></code></p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">Igor</span> <span class="pre">Extensions</span> <span class="pre">(64-bit)</span></code> a shortcut pointing to</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">XOPs-IPXXX-64bit</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">XOPs-64bit</span></code></p></li>
+</ul>
+</li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">Igor</span> <span class="pre">Help</span> <span class="pre">Files</span></code> a shortcut pointing to</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">HelpFiles-IPXXX</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">HelpFiles</span></code></p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>ITC hardware:</p>
+<ul>
+<li><p>Open a powershell console as administrator and execute the following script:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Packages\ITCXOP2\tools\Disable-ASLR-for-Igor64.ps1</span></code>. This script can also be executed from within
+Igor Pro via <code class="docutils literal notranslate"><span class="pre">Mies</span> <span class="pre">Panels-&gt;Advanced-&gt;Turn</span> <span class="pre">off</span> <span class="pre">ASLR</span> <span class="pre">(requires</span> <span class="pre">UAC</span> <span class="pre">elevation)</span></code> which as the name
+suggests needs an Igor Pro instance started as Administrator.</p></li>
+</ul>
+</li>
+<li><p>Install the ITC drivers from Heka</p></li>
+<li><p>Execute their <code class="docutils literal notranslate"><span class="pre">ITCDemoG64.exe</span></code> program as administrator. You should see some cute sinuses.</p></li>
+<li><p>Open regedit, go to <code class="docutils literal notranslate"><span class="pre">HKEY_LOCAL_MACHINE\SOFTWARE\Instrutech</span></code>, select <code class="docutils literal notranslate"><span class="pre">Permissions...</span></code> from the
+context menu. In the opened window select <code class="docutils literal notranslate"><span class="pre">Full</span> <span class="pre">Control</span></code> in the <code class="docutils literal notranslate"><span class="pre">Allow</span></code> column for <code class="docutils literal notranslate"><span class="pre">ALL</span> <span class="pre">APPLICATION</span>
+<span class="pre">PACKAGES</span></code> for this key and close with <code class="docutils literal notranslate"><span class="pre">OK</span></code>.</p></li>
+</ul>
+</li>
+<li><p>NI hardware:</p></li>
+</ul>
+<blockquote>
+<div><ul class="simple">
+<li><p>Install the <a class="reference external" href="https://www.ni.com/de/support/downloads/drivers/download.ni-daq-mx.html#559060">NI-DAQ mx</a> package from NI.</p></li>
+<li><p>Get and install the <a class="reference external" href="https://www.wavemetrics.com/products/nidaqtools/nidaqtools.htm">NIDAQ Tool MX</a>
+package from Wavemetrics.</p></li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li><p>Install version 2.2.2 of the Multiclamp Commander (64bit) from <a class="reference external" href="http://mdc.custhelp.com/app/answers/detail/a_id/20059">here</a>.</p></li>
+<li><p>Start Igor Pro</p></li>
+</ul>
+</section>
+<section id="windows-without-hardware">
+<h3>Windows (without hardware)<a class="headerlink" href="#windows-without-hardware" title="Link to this heading">¶</a></h3>
+<p>In case you don’t have the hardware connected/available which some XOPs
+require, you can also install MIES without any hardware related XOPs present.</p>
+<ul class="simple">
+<li><p>Install the <a class="reference external" href="https://github.com/AllenInstitute/MIES/blob/main/tools/installer/vc_redist.x64.exe">Visual C++ Redistributable package</a></p></li>
+<li><p>Quit Igor Pro</p></li>
+<li><p>Get the MIES source code, see <a class="reference internal" href="developers.html#getting-mies"><span class="std std-ref">Getting MIES</span></a></p></li>
+<li><p>Create the following shortcuts in <code class="docutils literal notranslate"><span class="pre">C:\Users\$username\Documents\WaveMetrics\Igor</span> <span class="pre">Pro</span> <span class="pre">XXX</span> <span class="pre">User</span> <span class="pre">Files</span></code>
+where <code class="docutils literal notranslate"><span class="pre">XXX</span></code> is either <code class="docutils literal notranslate"><span class="pre">9</span></code> or <code class="docutils literal notranslate"><span class="pre">10</span></code>:</p>
+<ul>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">User</span> <span class="pre">Procedures</span></code> a shortcut pointing to</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Packages\IPNWB</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Packages\MIES</span></code></p></li>
+</ul>
+</li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">Igor</span> <span class="pre">Procedures</span></code> a shortcut pointing to <code class="docutils literal notranslate"><span class="pre">Packages\MIES_Include.ipf</span></code></p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">Igor</span> <span class="pre">Extensions</span> <span class="pre">(64-bit)</span></code> a shortcut pointing to</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">XOPs-64bit\JSON-64.xop</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">XOPs-64bit\MIESUtils-64.xop</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">XOPs-64bit\ZeroMQ-64.xop</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">XOPs-64bit\TUFXOP-64.xop</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">XOPs-64bit\mies-nwb2-compound-XOP-64.xop</span></code></p></li>
+</ul>
+</li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">Igor</span> <span class="pre">Help</span> <span class="pre">Files</span></code> a shortcut pointing to <code class="docutils literal notranslate"><span class="pre">HelpFiles</span></code></p></li>
+</ul>
+</li>
+<li><p>Start Igor Pro</p></li>
+</ul>
+</section>
+<section id="macosx-without-hardware">
+<h3>MacOSX (without hardware)<a class="headerlink" href="#macosx-without-hardware" title="Link to this heading">¶</a></h3>
+<p>Analysis support only. Data acquisition and NWBv2 export are not supported on MacOSx.</p>
+<ul class="simple">
+<li><p>Quit Igor Pro</p></li>
+<li><p>Get the MIES source code, see <a class="reference internal" href="developers.html#getting-mies"><span class="std std-ref">Getting MIES</span></a></p></li>
+<li><p>Create the following symlinks in
+<code class="docutils literal notranslate"><span class="pre">/Users/$username/Documents/WaveMetrics/Igor</span> <span class="pre">Pro</span> <span class="pre">9</span> <span class="pre">User</span> <span class="pre">Files</span></code></p>
+<ul>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">User</span> <span class="pre">Procedures</span></code> a symlink pointing to</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Packages/IPNWB</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Packages/MIES</span></code></p></li>
+</ul>
+</li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">Igor</span> <span class="pre">Procedures</span></code> a symlink pointing to <code class="docutils literal notranslate"><span class="pre">Packages\MIES_Include.ipf</span></code></p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">Igor</span> <span class="pre">Extensions</span> <span class="pre">(64-bit)</span></code> a symlink pointing to</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">XOPs-MacOSX-64bit</span></code></p></li>
+</ul>
+</li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">Igor</span> <span class="pre">Help</span> <span class="pre">Files</span></code> a shortcut pointing to <code class="docutils literal notranslate"><span class="pre">HelpFiles</span></code></p></li>
+</ul>
+</li>
+<li><p>Start Igor Pro</p></li>
+</ul>
+</section>
+<section id="json-configuration-folders">
+<h3>JSON Configuration folders<a class="headerlink" href="#json-configuration-folders" title="Link to this heading">¶</a></h3>
+<p>MIES supports JSON files for loading and storing panel configurations. Although it is
+possible to load files from arbitrary paths manually, one can also put the
+files into one of the following folders</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Packages/Settings</span></code> in the installation location</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C:/ProgramData/AllenInstitute/MIES/Settings</span></code></p></li>
+</ul>
+<p>to execute all of them via <span class="menuselection">MIES Panels ‣ Automation ‣ Load standard configuration</span>
+or by pressing <kbd class="kbd docutils literal notranslate">CONTROL</kbd>-<kbd class="kbd docutils literal notranslate">1</kbd>.</p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="user.html">User documentation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation instructions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installing-igor-pro">Installing Igor Pro</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#igor-pro-update-nightly">Igor Pro Update Nightly</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#update-steps">Update steps</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#installation-using-the-installer-preferred">Installation using the installer (preferred)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#signed-installer">Signed installer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#silent-installation">Silent installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#installer-details-and-limitations">Installer details and limitations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#installing-with-admin-privileges">Installing with admin privileges</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#installing-with-user-privileges">Installing with user privileges</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#list-of-installer-return-codes">List of Installer Return Codes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#corrupted-installations">Corrupted installations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#manual-installation">Manual Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#windows-with-hardware-support">Windows (with hardware support)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#windows-without-hardware">Windows (without hardware)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#macosx-without-hardware">MacOSX (without hardware)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#json-configuration-folders">JSON Configuration folders</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grouplist.html">Group list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="SweepFormula_PSX.html"
+                          title="previous chapter">SweepFormula PSC/PSP classification</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="developers.html"
+                          title="next chapter">Developer</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="developers.html" title="Developer"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="SweepFormula_PSX.html" title="SweepFormula PSC/PSP classification"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Installation instructions</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

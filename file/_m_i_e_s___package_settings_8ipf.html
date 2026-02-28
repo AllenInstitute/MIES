@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File MIES_PackageSettings.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_Pictures.ipf" href="_m_i_e_s___pictures_8ipf.html" />
+    <link rel="prev" title="File MIES_OverlaySweeps.ipf" href="_m_i_e_s___overlay_sweeps_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___pictures_8ipf.html" title="File MIES_Pictures.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___overlay_sweeps_8ipf.html" title="File MIES_OverlaySweeps.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_PackageSettings.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-packagesettings-ipf">
+<span id="id1"></span><h1>File MIES_PackageSettings.ipf<a class="headerlink" href="#file-mies-packagesettings-ipf" title="Link to this heading">¶</a></h1>
+<p><strong>LOG</strong> Routines for dealing with JSON log files </p>
+<p><strong>PS</strong> Routines for dealing with JSON settings</p>
+<p>See <a class="reference external" href="https://jsonlines.org">https://jsonlines.org</a> and <a class="reference external" href="https://en.wikipedia.org/wiki/JSON_streaming">Line-delimited JSON</a> for background.</p>
+<p>In short the log will contain a complete JSON document in each line. The lines are separated by <code class="docutils literal notranslate"><span class="pre">\n</span></code>.</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413PS_Initialize6string">
+<span id="_CPPv313PS_Initialize6string"></span><span id="_CPPv213PS_Initialize6string"></span><span id="PS_Initialize__string"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1ae06d342cb72b42fe335659c4bcaaf5e4"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_Initialize</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">package</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413PS_Initialize6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Initialize the <code class="docutils literal notranslate"><span class="pre">PackageFolder</span></code> symbolic path. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427PS_GenerateSettingsDefaultsv">
+<span id="_CPPv327PS_GenerateSettingsDefaultsv"></span><span id="_CPPv227PS_GenerateSettingsDefaultsv"></span><span id="PS_GenerateSettingsDefaults"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1aae77f77cdd2f37af463781d8228c08dc"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_GenerateSettingsDefaults</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427PS_GenerateSettingsDefaultsv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>This functions should return a JSON ID with the default settings. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415PS_ReadSettings6string27PS_GenerateSettingsDefaults">
+<span id="_CPPv315PS_ReadSettings6string27PS_GenerateSettingsDefaults"></span><span id="_CPPv215PS_ReadSettings6string27PS_GenerateSettingsDefaults"></span><span id="PS_ReadSettings__string.PS_GenerateSettingsDefaults"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1a5916d98b9d69bfadfe61f396baa773b7"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_ReadSettings</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">package</span></span>, <a class="reference internal" href="#_CPPv427PS_GenerateSettingsDefaultsv" title="PS_GenerateSettingsDefaults"><span class="n"><span class="pre">PS_GenerateSettingsDefaults</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">generateDefaults</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415PS_ReadSettings6string27PS_GenerateSettingsDefaults" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a JSON ID with an opened JSON settings file. </p>
+<p>Caller is responsible for releasing the document. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416PS_WriteSettings6string8variable">
+<span id="_CPPv316PS_WriteSettings6string8variable"></span><span id="_CPPv216PS_WriteSettings6string8variable"></span><span id="PS_WriteSettings__string.variable"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1ac3eef04e71139d72b98539394b162c05"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_WriteSettings</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">package</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">JSONid</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416PS_WriteSettings6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Write the settings from <code class="docutils literal notranslate"><span class="pre">JSONid</span></code> for <code class="docutils literal notranslate"><span class="pre">package</span></code> to disc. </p>
+<p>Call this function in <code class="docutils literal notranslate"><span class="pre">BeforeExperimentSaveHook</span></code> to write the settings to disc </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423PS_GetSettingsFolder_TS6string">
+<span id="_CPPv323PS_GetSettingsFolder_TS6string"></span><span id="_CPPv223PS_GetSettingsFolder_TS6string"></span><span id="PS_GetSettingsFolder_TS__string"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1ac5304191aa7828af37bdc9a5f3bbb6b0"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_GetSettingsFolder_TS</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">package</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423PS_GetSettingsFolder_TS6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the absolute path to the settings folder for <code class="docutils literal notranslate"><span class="pre">package</span></code></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>   Threadsafe variant which requires the symbolic path `PackageFolder` created by
+   PS_Initialize() to exist.
+
+   The returned folder location includes a trailing colon (&quot;:&quot;)
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420PS_GetSettingsFolder6string">
+<span id="_CPPv320PS_GetSettingsFolder6string"></span><span id="_CPPv220PS_GetSettingsFolder6string"></span><span id="PS_GetSettingsFolder__string"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1a22b90fc672f1dd73cfcadc1a5ce4630c"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_GetSettingsFolder</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">package</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420PS_GetSettingsFolder6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the absolute path to the settings folder for <code class="docutils literal notranslate"><span class="pre">package</span></code> creating it when necessary. </p>
+<p>The returned folder location includes a trailing colon (“:”) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418PS_GetSettingsFile6string">
+<span id="_CPPv318PS_GetSettingsFile6string"></span><span id="_CPPv218PS_GetSettingsFile6string"></span><span id="PS_GetSettingsFile__string"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1a2f3489074158386b58d6a643060684a8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_GetSettingsFile</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">package</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418PS_GetSettingsFile6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the absolute path to the JSON settings file for <code class="docutils literal notranslate"><span class="pre">package</span></code></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419PS_GetAllWindowsExt6string">
+<span id="_CPPv319PS_GetAllWindowsExt6string"></span><span id="_CPPv219PS_GetAllWindowsExt6string"></span><span id="PS_GetAllWindowsExt__string"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1a1aaa89b1e4fa0d531d778ac558e5679f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_GetAllWindowsExt</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419PS_GetAllWindowsExt6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418PS_BuildWindowPath6string">
+<span id="_CPPv318PS_BuildWindowPath6string"></span><span id="_CPPv218PS_BuildWindowPath6string"></span><span id="PS_BuildWindowPath__string"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1a0ad3c6417e17d3f0e0020442c6ac6ec3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_BuildWindowPath</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418PS_BuildWindowPath6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430PS_ApplyStoredWindowCoordinate8variable6string8variable">
+<span id="_CPPv330PS_ApplyStoredWindowCoordinate8variable6string8variable"></span><span id="_CPPv230PS_ApplyStoredWindowCoordinate8variable6string8variable"></span><span id="PS_ApplyStoredWindowCoordinate__variable.string.variable"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1a22487372131cb253abf8684fcb295537"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_ApplyStoredWindowCoordinate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">JSONid</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">orientation</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430PS_ApplyStoredWindowCoordinate8variable6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Move the window to the stored location. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430PS_RegisterForCoordinateSaving6string">
+<span id="_CPPv330PS_RegisterForCoordinateSaving6string"></span><span id="_CPPv230PS_RegisterForCoordinateSaving6string"></span><span id="PS_RegisterForCoordinateSaving__string"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1a47ac1de9c6a412ec9fd96d6663e9df11"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_RegisterForCoordinateSaving</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430PS_RegisterForCoordinateSaving6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Add user data to mark the window as using coordinate saving. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425PS_RemoveCoordinateSaving6string">
+<span id="_CPPv325PS_RemoveCoordinateSaving6string"></span><span id="_CPPv225PS_RemoveCoordinateSaving6string"></span><span id="PS_RemoveCoordinateSaving__string"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1a237b60b5064b1b8e8639c9c6954b6c90"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_RemoveCoordinateSaving</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425PS_RemoveCoordinateSaving6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Remove user data related to coordinate saving. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425PS_StoreWindowCoordinates8variable">
+<span id="_CPPv325PS_StoreWindowCoordinates8variable"></span><span id="_CPPv225PS_StoreWindowCoordinates8variable"></span><span id="PS_StoreWindowCoordinates__variable"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1af0970db055744451d88b4348460c175b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_StoreWindowCoordinates</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">JSONid</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425PS_StoreWindowCoordinates8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Store the coordinates of all registered windows in the JSON settings file. </p>
+<p>The windows must have been registered beforehand with <a class="reference internal" href="#_m_i_e_s___package_settings_8ipf_1a5d24431cc1719a6e4ae440d54f8662ca"><span class="std std-ref">PS_InitCoordinates()</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424PS_StoreWindowCoordinate8variable6string">
+<span id="_CPPv324PS_StoreWindowCoordinate8variable6string"></span><span id="_CPPv224PS_StoreWindowCoordinate8variable6string"></span><span id="PS_StoreWindowCoordinate__variable.string"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1a3fb317ccd37c832917b2c54b8cb677f8"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_StoreWindowCoordinate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">JSONid</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424PS_StoreWindowCoordinate8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Store the window coordinates of <code class="docutils literal notranslate"><span class="pre">win</span></code> in the JSON settings file. </p>
+<p>The window must have been registered beforehand with <a class="reference internal" href="#_m_i_e_s___package_settings_8ipf_1a5d24431cc1719a6e4ae440d54f8662ca"><span class="std std-ref">PS_InitCoordinates()</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418PS_InitCoordinates8variable6string8variable8variable">
+<span id="_CPPv318PS_InitCoordinates8variable6string8variable8variable"></span><span id="_CPPv218PS_InitCoordinates8variable6string8variable8variable"></span><span id="PS_InitCoordinates__variable.string.variable.variable"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1a5d24431cc1719a6e4ae440d54f8662ca"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_InitCoordinates</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">JSONid</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">recursive</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">addHook</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418PS_InitCoordinates8variable6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Add support for window coordinate storing and loading. </p>
+<p>Takes care of:<ul class="simple">
+<li><p>Marking the window as using it with the given name</p></li>
+<li><p>Adding a hook to store the coordinates on window killing</p></li>
+<li><p>Read the current coordinates from the JSON settings file and applying them</p></li>
+</ul>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>JSONid</strong> – JSON document with settings </p></li>
+<li><p><strong>win</strong> – window name, must be the one before locking </p></li>
+<li><p><strong>recursive</strong> – [optional, defaults to false] Add hook also to all exterior subwindows </p></li>
+<li><p><strong>addHook</strong> – [optional, defaults to true] Add a window hook to store the coordinates on window killing. Users with their own kill event handling must pass <code class="docutils literal notranslate"><span class="pre">addHook=0</span></code>. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420PS_SerializeSettings6string8variable">
+<span id="_CPPv320PS_SerializeSettings6string8variable"></span><span id="_CPPv220PS_SerializeSettings6string8variable"></span><span id="PS_SerializeSettings__string.variable"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1a32ad82bdafa61863fc20a64fcbd7c534"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_SerializeSettings</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">package</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">JSONid</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420PS_SerializeSettings6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Write the current JSON settings to disc. </p>
+<p>Caller <em>must</em> invalidate JSONid after return. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415PS_OpenNotebook6string8variable">
+<span id="_CPPv315PS_OpenNotebook6string8variable"></span><span id="_CPPv215PS_OpenNotebook6string8variable"></span><span id="PS_OpenNotebook__string.variable"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1a2150ff6da7f3eaa1cd0133612a69456a"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_OpenNotebook</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">package</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">JSONid</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415PS_OpenNotebook6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Caller <em>must</em> invalidate JSONid after return. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421PS_FixPackageLocation6string">
+<span id="_CPPv321PS_FixPackageLocation6string"></span><span id="_CPPv221PS_FixPackageLocation6string"></span><span id="PS_FixPackageLocation__string"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1a422a5f69c7fa4d50b8eb17098549656d"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_FixPackageLocation</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">package</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421PS_FixPackageLocation6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Fixup the settings and log file location for Igor Pro prior to 0855279d (Fix package folder location on disk, 2021-04-01).</p>
+<p>Package JSON:<ul class="simple">
+<li><p>Incorrect is moved to the correct location</p></li>
+</ul>
+</p>
+<p>JSONL logfile:<ul class="simple">
+<li><p>Incorrect is moved to the correct location only if the correct does not exists</p></li>
+<li><p>If the correct does exist as well, the incorrect is read and appened to to the correct one </p></li>
+</ul>
+</p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420PS_STORE_COORDINATES">
+<span id="_CPPv320PS_STORE_COORDINATES"></span><span id="_CPPv220PS_STORE_COORDINATES"></span><span id="PS_STORE_COORDINATES__stringC"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1aca61846bb1975b5c82c56f3949fd4e23"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_STORE_COORDINATES</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;JSONSettings_StoreCoordinates&quot;</span></span><a class="headerlink" href="#_CPPv420PS_STORE_COORDINATES" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv414PS_WINDOW_NAME">
+<span id="_CPPv314PS_WINDOW_NAME"></span><span id="_CPPv214PS_WINDOW_NAME"></span><span id="PS_WINDOW_NAME__stringC"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1a22c964a593a3e2e11671374565d6db29"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_WINDOW_NAME</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;JSONSettings_WindowName&quot;</span></span><a class="headerlink" href="#_CPPv414PS_WINDOW_NAME" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv415PS_WINDOW_GROUP">
+<span id="_CPPv315PS_WINDOW_GROUP"></span><span id="_CPPv215PS_WINDOW_GROUP"></span><span id="PS_WINDOW_GROUP__stringC"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1a734566295eeb4be976569b76c84eb58d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_WINDOW_GROUP</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;JSONSettings_WindowGroup&quot;</span></span><a class="headerlink" href="#_CPPv415PS_WINDOW_GROUP" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv425PS_COORDINATE_SAVING_HOOK">
+<span id="_CPPv325PS_COORDINATE_SAVING_HOOK"></span><span id="_CPPv225PS_COORDINATE_SAVING_HOOK"></span><span id="PS_COORDINATE_SAVING_HOOK__stringC"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1a370d2344d4d312a7c0758cac40317053"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_COORDINATE_SAVING_HOOK</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;windowCoordinateSaving&quot;</span></span><a class="headerlink" href="#_CPPv425PS_COORDINATE_SAVING_HOOK" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_PackageSettings.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413PS_Initialize6string"><code class="docutils literal notranslate"><span class="pre">PS_Initialize()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427PS_GenerateSettingsDefaultsv"><code class="docutils literal notranslate"><span class="pre">PS_GenerateSettingsDefaults()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415PS_ReadSettings6string27PS_GenerateSettingsDefaults"><code class="docutils literal notranslate"><span class="pre">PS_ReadSettings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416PS_WriteSettings6string8variable"><code class="docutils literal notranslate"><span class="pre">PS_WriteSettings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423PS_GetSettingsFolder_TS6string"><code class="docutils literal notranslate"><span class="pre">PS_GetSettingsFolder_TS()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420PS_GetSettingsFolder6string"><code class="docutils literal notranslate"><span class="pre">PS_GetSettingsFolder()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418PS_GetSettingsFile6string"><code class="docutils literal notranslate"><span class="pre">PS_GetSettingsFile()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419PS_GetAllWindowsExt6string"><code class="docutils literal notranslate"><span class="pre">PS_GetAllWindowsExt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418PS_BuildWindowPath6string"><code class="docutils literal notranslate"><span class="pre">PS_BuildWindowPath()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430PS_ApplyStoredWindowCoordinate8variable6string8variable"><code class="docutils literal notranslate"><span class="pre">PS_ApplyStoredWindowCoordinate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430PS_RegisterForCoordinateSaving6string"><code class="docutils literal notranslate"><span class="pre">PS_RegisterForCoordinateSaving()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425PS_RemoveCoordinateSaving6string"><code class="docutils literal notranslate"><span class="pre">PS_RemoveCoordinateSaving()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425PS_StoreWindowCoordinates8variable"><code class="docutils literal notranslate"><span class="pre">PS_StoreWindowCoordinates()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424PS_StoreWindowCoordinate8variable6string"><code class="docutils literal notranslate"><span class="pre">PS_StoreWindowCoordinate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418PS_InitCoordinates8variable6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">PS_InitCoordinates()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420PS_SerializeSettings6string8variable"><code class="docutils literal notranslate"><span class="pre">PS_SerializeSettings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415PS_OpenNotebook6string8variable"><code class="docutils literal notranslate"><span class="pre">PS_OpenNotebook()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421PS_FixPackageLocation6string"><code class="docutils literal notranslate"><span class="pre">PS_FixPackageLocation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420PS_STORE_COORDINATES"><code class="docutils literal notranslate"><span class="pre">PS_STORE_COORDINATES</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414PS_WINDOW_NAME"><code class="docutils literal notranslate"><span class="pre">PS_WINDOW_NAME</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415PS_WINDOW_GROUP"><code class="docutils literal notranslate"><span class="pre">PS_WINDOW_GROUP</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425PS_COORDINATE_SAVING_HOOK"><code class="docutils literal notranslate"><span class="pre">PS_COORDINATE_SAVING_HOOK</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___overlay_sweeps_8ipf.html"
+                          title="previous chapter">File MIES_OverlaySweeps.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___pictures_8ipf.html"
+                          title="next chapter">File MIES_Pictures.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___pictures_8ipf.html" title="File MIES_Pictures.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___overlay_sweeps_8ipf.html" title="File MIES_OverlaySweeps.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_PackageSettings.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

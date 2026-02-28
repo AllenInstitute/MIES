@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File MIES_DataConfigurator.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_DebugPanel.ipf" href="_m_i_e_s___debug_panel_8ipf.html" />
+    <link rel="prev" title="File MIES_DataConfiguratonRecreation.ipf" href="_m_i_e_s___data_configuraton_recreation_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___debug_panel_8ipf.html" title="File MIES_DebugPanel.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___data_configuraton_recreation_8ipf.html" title="File MIES_DataConfiguratonRecreation.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_DataConfigurator.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-dataconfigurator-ipf">
+<span id="id1"></span><h1>File MIES_DataConfigurator.ipf<a class="headerlink" href="#file-mies-dataconfigurator-ipf" title="Link to this heading">¶</a></h1>
+<p><strong>DC</strong> Handle preparations before data acquisition or test pulse related to the DAQ data and config waves </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416DC_UpdateGlobals6string8variable">
+<span id="_CPPv316DC_UpdateGlobals6string8variable"></span><span id="_CPPv216DC_UpdateGlobals6string8variable"></span><span id="DC_UpdateGlobals__string.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a2f21897fc24af086935c7141fc5bf9e3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_UpdateGlobals</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataAcqOrTP</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416DC_UpdateGlobals6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Update global variables used by the Testpulse or DAQ. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412DC_Configure6string8variable8variable">
+<span id="_CPPv312DC_Configure6string8variable8variable"></span><span id="_CPPv212DC_Configure6string8variable8variable"></span><span id="DC_Configure__string.variable.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a979ecb7392a91bc75ff4f7e3e471e6b0"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_Configure</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataAcqOrTP</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">multiDevice</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412DC_Configure6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Prepare test pulse/data acquisition. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – panel title </p></li>
+<li><p><strong>dataAcqOrTP</strong> – one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785"><span class="std std-ref">DATA_ACQUISITION_MODE</span></a> or <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151"><span class="std std-ref">TEST_PULSE_MODE</span></a></p></li>
+<li><p><strong>multiDevice</strong> – [optional: defaults to false] Fine tune data handling for single device (false) or multi device (true)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">Abort</span></span></span> – configuration failure </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421DC_UpdateHSProperties6string4wave">
+<span id="_CPPv321DC_UpdateHSProperties6string4wave"></span><span id="_CPPv221DC_UpdateHSProperties6string4wave"></span><span id="DC_UpdateHSProperties__string.wave"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a40244fd2f38d0b9c83a22ba19724432d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_UpdateHSProperties</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ADCs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421DC_UpdateHSProperties6string4wave" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423DC_NoOfChannelsSelected6string8variable">
+<span id="_CPPv323DC_NoOfChannelsSelected6string8variable"></span><span id="_CPPv223DC_NoOfChannelsSelected6string8variable"></span><span id="DC_NoOfChannelsSelected__string.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1aa3de43922174fb3a7441863c75ce00cf"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_NoOfChannelsSelected</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423DC_NoOfChannelsSelected6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the number of selected checkboxes for the given type. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430DC_ChannelCalcForDAQConfigWave6string8variable">
+<span id="_CPPv330DC_ChannelCalcForDAQConfigWave6string8variable"></span><span id="_CPPv230DC_ChannelCalcForDAQConfigWave6string8variable"></span><span id="DC_ChannelCalcForDAQConfigWave__string.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1ae6b9627557eeb66fe7a96f2068b04c0d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_ChannelCalcForDAQConfigWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataAcqOrTP</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430DC_ChannelCalcForDAQConfigWave6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the total number of combined channel types (DA, AD, and front TTLs) selected in the DA_Ephys Gui. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – panel title </p></li>
+<li><p><strong>dataAcqOrTP</strong> – acquisition mode, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785"><span class="std std-ref">DATA_ACQUISITION_MODE</span></a> or <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151"><span class="std std-ref">TEST_PULSE_MODE</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423DC_AreTTLsInRackChecked6string8variable">
+<span id="_CPPv323DC_AreTTLsInRackChecked6string8variable"></span><span id="_CPPv223DC_AreTTLsInRackChecked6string8variable"></span><span id="DC_AreTTLsInRackChecked__string.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a8cd9b4b35b374d51e213b9794c45fa53"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_AreTTLsInRackChecked</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rackNo</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423DC_AreTTLsInRackChecked6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the ON/OFF status of the front TTLs on a specified rack. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>rackNo</strong> – Only the ITC1600 can have two racks. For all other ITC devices RackNo = 0. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420DC_LongestOutputWave6string8variable8variable">
+<span id="_CPPv320DC_LongestOutputWave6string8variable8variable"></span><span id="_CPPv220DC_LongestOutputWave6string8variable8variable"></span><span id="DC_LongestOutputWave__string.variable.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1afa513abcf3e090330d1d10dfaf303936"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_LongestOutputWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataAcqOrTP</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420DC_LongestOutputWave6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the number of points in the longest stimset. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>dataAcqOrTP</strong> – acquisition mode, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785"><span class="std std-ref">DATA_ACQUISITION_MODE</span></a> or <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151"><span class="std std-ref">TEST_PULSE_MODE</span></a></p></li>
+<li><p><strong>channelType</strong> – channel type, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1ChannelTypeAndControlConstants"><span class="std std-ref">ChannelTypeAndControlConstants</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429DC_CalculateDAQDataWaveLength6string8variable8variable">
+<span id="_CPPv329DC_CalculateDAQDataWaveLength6string8variable8variable"></span><span id="_CPPv229DC_CalculateDAQDataWaveLength6string8variable8variable"></span><span id="DC_CalculateDAQDataWaveLength__string.variable.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a3c0d3e2fe99770d62427bd8499d26c3f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_CalculateDAQDataWaveLength</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataAcqOrTP</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429DC_CalculateDAQDataWaveLength6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Calculate the required length of the DAQDataWave. </p>
+<p>ITC Hardware:<ul class="simple">
+<li><p>The DAQDataWave length = 2^x where is the first integer large enough to contain the longest output wave plus one. X also has a minimum value of 17 to ensure sufficient time for communication with the ITC device to prevent FIFO overflow or underrun.</p></li>
+</ul>
+</p>
+<p>NI Hardware:<ul class="simple">
+<li><p>Returns stopCollectionPoint</p></li>
+</ul>
+</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>XopChannelConstants </p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – panel title </p></li>
+<li><p><strong>dataAcqOrTP</strong> – acquisition mode, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785"><span class="std std-ref">DATA_ACQUISITION_MODE</span></a> or <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151"><span class="std std-ref">TEST_PULSE_MODE</span></a></p></li>
+<li><p><strong>channelType</strong> – channel type, one of </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv433DC_CalculateDAQDataWaveLengthImpl8variable8variable8variable">
+<span id="_CPPv333DC_CalculateDAQDataWaveLengthImpl8variable8variable8variable"></span><span id="_CPPv233DC_CalculateDAQDataWaveLengthImpl8variable8variable8variable"></span><span id="DC_CalculateDAQDataWaveLengthImpl__variable.variable.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a61af1db1272ad13b73c48650fa61c15d"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_CalculateDAQDataWaveLengthImpl</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataLength</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hardwareType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataAcqOrTP</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv433DC_CalculateDAQDataWaveLengthImpl8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>device independent implkementation for <a class="reference internal" href="#_m_i_e_s___data_configurator_8ipf_1a3c0d3e2fe99770d62427bd8499d26c3f"><span class="std std-ref">DC_CalculateDAQDataWaveLength</span></a></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420DC_MakeDAQConfigWave6string8variable">
+<span id="_CPPv320DC_MakeDAQConfigWave6string8variable"></span><span id="_CPPv220DC_MakeDAQConfigWave6string8variable"></span><span id="DC_MakeDAQConfigWave__string.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a7a27ce45cd60fb23f0dc33e824160433"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_MakeDAQConfigWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numActiveChannels</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420DC_MakeDAQConfigWave6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Create the DAQConfigWave used to configure the DAQ device. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – panel title </p></li>
+<li><p><strong>numActiveChannels</strong> – number of active channels as returned by <a class="reference internal" href="#_m_i_e_s___data_configurator_8ipf_1ae6b9627557eeb66fe7a96f2068b04c0d"><span class="std std-ref">DC_ChannelCalcForDAQConfigWave()</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424DC_MakeAndGetDAQDataWave6stringP23DataConfigurationResult8variable">
+<span id="_CPPv324DC_MakeAndGetDAQDataWave6stringP23DataConfigurationResult8variable"></span><span id="_CPPv224DC_MakeAndGetDAQDataWave6stringP23DataConfigurationResult8variable"></span><span id="DC_MakeAndGetDAQDataWave__string.DataConfigurationResultP.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a7b7925786969eb6e7927d1387149b0d3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">WaveOrNull</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">WaveRefWave</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_MakeAndGetDAQDataWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv423DataConfigurationResult" title="DataConfigurationResult"><span class="n"><span class="pre">DataConfigurationResult</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataAcqOrTP</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424DC_MakeAndGetDAQDataWave6stringP23DataConfigurationResult8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Creates DAQDataWave; The wave that the device takes DA and TTL data from and passes AD data to for all channels. </p>
+<p>Config all refers to configuring all the channels at once</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – panel title </p></li>
+<li><p><strong>s</strong> – <a class="reference internal" href="../struct/struct_data_configuration_result.html#struct_data_configuration_result"><span class="std std-ref">DataConfigurationResult</span></a> structure </p></li>
+<li><p><strong>dataAcqOrTP</strong> – one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785"><span class="std std-ref">DATA_ACQUISITION_MODE</span></a> or <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151"><span class="std std-ref">TEST_PULSE_MODE</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430DC_SetDataScaleNISUChannelWave4wave8variable">
+<span id="_CPPv330DC_SetDataScaleNISUChannelWave4wave8variable"></span><span id="_CPPv230DC_SetDataScaleNISUChannelWave4wave8variable"></span><span id="DC_SetDataScaleNISUChannelWave__wave.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a348fbea81d6655ab3b4121968fabf537"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_SetDataScaleNISUChannelWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channel</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430DC_SetDataScaleNISUChannelWave4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>set a data scale for channel waves, this is not required for operation but allows to keep track of the scales The waves for the hardware that output data and read back data are typically in V because any other unit, like pA in current clamp mode on DAC channels is converted by the gain from pA to voltage and then by the hardware amplifier converted back from V to pA. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420DC_MakeNIChannelWave6string8variable8variable8variable8variable8variable">
+<span id="_CPPv320DC_MakeNIChannelWave6string8variable8variable8variable8variable8variable"></span><span id="_CPPv220DC_MakeNIChannelWave6string8variable8variable8variable8variable8variable"></span><span id="DC_MakeNIChannelWave__string.variable.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1af8982531d9b2798e5f36cb6f20b08e63"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_MakeNIChannelWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataAcqOrTP</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">samplingInterval</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420DC_MakeNIChannelWave6string8variable8variable8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Creates a single NIChannel wave. </p>
+<p>Config all refers to configuring all the channels at once</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>XopChannelConstants </p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – panel title </p></li>
+<li><p><strong>dataAcqOrTP</strong> – one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785"><span class="std std-ref">DATA_ACQUISITION_MODE</span></a> or <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151"><span class="std std-ref">TEST_PULSE_MODE</span></a></p></li>
+<li><p><strong>channelType</strong> – channel type, one of </p></li>
+<li><p><strong>samplingInterval</strong> – minimum sample intervall in microseconds </p></li>
+<li><p><strong>index</strong> – number of NI channel </p></li>
+<li><p><strong>dataType</strong> – numeric data type of NI channel</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Wave Reference to NI Channel wave </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424DC_MakeSUTTERChannelWave6string8variable8variable8variable8variable8variable">
+<span id="_CPPv324DC_MakeSUTTERChannelWave6string8variable8variable8variable8variable8variable"></span><span id="_CPPv224DC_MakeSUTTERChannelWave6string8variable8variable8variable8variable8variable"></span><span id="DC_MakeSUTTERChannelWave__string.variable.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a54df439aa8ec15bfe91cba00a2068fae"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_MakeSUTTERChannelWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataAcqOrTP</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">samplingInterval</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424DC_MakeSUTTERChannelWave6string8variable8variable8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Creates a single SUTTER Channel wave. </p>
+<p>Config all refers to configuring all the channels at once</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>XopChannelConstants </p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – panel title </p></li>
+<li><p><strong>dataAcqOrTP</strong> – one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785"><span class="std std-ref">DATA_ACQUISITION_MODE</span></a> or <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151"><span class="std std-ref">TEST_PULSE_MODE</span></a></p></li>
+<li><p><strong>channelType</strong> – channel type, one of </p></li>
+<li><p><strong>samplingInterval</strong> – minimum sample intervall in microseconds </p></li>
+<li><p><strong>index</strong> – number of NI channel </p></li>
+<li><p><strong>dataType</strong> – numeric data type of NI channel</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Wave Reference to NI Channel wave </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418DC_MakeHelperWaves6string8variable">
+<span id="_CPPv318DC_MakeHelperWaves6string8variable"></span><span id="_CPPv218DC_MakeHelperWaves6string8variable"></span><span id="DC_MakeHelperWaves__string.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1ac460c639d4bf52f10cef831b2ccc5263"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_MakeHelperWaves</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataAcqOrTP</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418DC_MakeHelperWaves6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Initializes the waves used for displaying DAQ/TP results in the oscilloscope window and the scaled data wave. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – panel title </p></li>
+<li><p><strong>dataAcqOrTP</strong> – one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785"><span class="std std-ref">DATA_ACQUISITION_MODE</span></a> or <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151"><span class="std std-ref">TEST_PULSE_MODE</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv436DC_CalculateChannelSizeForScaledData6string8variable8variable">
+<span id="_CPPv336DC_CalculateChannelSizeForScaledData6string8variable8variable"></span><span id="_CPPv236DC_CalculateChannelSizeForScaledData6string8variable8variable"></span><span id="DC_CalculateChannelSizeForScaledData__string.variable.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a6673587972164f9704dd5fd46a8aa5b6"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_CalculateChannelSizeForScaledData</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataAcqOrTP</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelIndex</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv436DC_CalculateChannelSizeForScaledData6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the size of a channel for scaledData wave creation. The DAQDataWave must already be existing at this point. channelIndex must be given for non-ITC hardware in DATA_ACQUISITION_MODE. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421DC_InitScaledDataWave6string8variable">
+<span id="_CPPv321DC_InitScaledDataWave6string8variable"></span><span id="_CPPv221DC_InitScaledDataWave6string8variable"></span><span id="DC_InitScaledDataWave__string.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a2afe93a609cf7a551efa1a3c215defd2"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_InitScaledDataWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataAcqOrTP</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421DC_InitScaledDataWave6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Initialize scaledDataWave, as NI and SUTTER output already properly scaled data, we can prefill output channels. So in in the more time critical SCOPE_xx_UpdateOscilloscope we can optimize by only copying the ADC data over (ADC data from SUTTER and NI is already properly scaled by hardware) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427DC_InitOscilloscopeDataWave4wave8variable8variable8variable8variable8variable8variable8variable">
+<span id="_CPPv327DC_InitOscilloscopeDataWave4wave8variable8variable8variable8variable8variable8variable8variable"></span><span id="_CPPv227DC_InitOscilloscopeDataWave4wave8variable8variable8variable8variable8variable8variable8variable"></span><span id="DC_InitOscilloscopeDataWave__wave.variable.variable.variable.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a4740ad0900d55d40e7a0b0259aa1a356"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_InitOscilloscopeDataWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numRows</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sampleInterval</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numDACs</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numADCs</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numTTLs</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">isFourierTransform</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427DC_InitOscilloscopeDataWave4wave8variable8variable8variable8variable8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Initialize OscilloscopeData waves to NaN. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426DC_GetFilteredChannelState6string8variable8variable8variable">
+<span id="_CPPv326DC_GetFilteredChannelState6string8variable8variable8variable"></span><span id="_CPPv226DC_GetFilteredChannelState6string8variable8variable8variable"></span><span id="DC_GetFilteredChannelState__string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a73d19177ac094c33e6b85a3035ad4307"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_GetFilteredChannelState</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataAcqOrTP</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">DAQChannelType</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426DC_GetFilteredChannelState6string8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the list of active channels, filtered for various special cases. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – panel title </p></li>
+<li><p><strong>dataAcqOrTP</strong> – one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785"><span class="std std-ref">DATA_ACQUISITION_MODE</span></a> or <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151"><span class="std std-ref">TEST_PULSE_MODE</span></a></p></li>
+<li><p><strong>channelType</strong> – one of the channel type constants from <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1ChannelTypeAndControlConstants"><span class="std std-ref">ChannelTypeAndControlConstants</span></a></p></li>
+<li><p><strong>DAQChannelType</strong> – only return channels as active if they have the desired DAQChannel type (only respected for DA channel) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427DC_PlaceDataInDAQConfigWave6string8variable">
+<span id="_CPPv327DC_PlaceDataInDAQConfigWave6string8variable"></span><span id="_CPPv227DC_PlaceDataInDAQConfigWave6string8variable"></span><span id="DC_PlaceDataInDAQConfigWave__string.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a40a0c18605f4ac77129adcf2968a31f1"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_PlaceDataInDAQConfigWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataAcqOrTP</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427DC_PlaceDataInDAQConfigWave6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Places channel (DA, AD, and TTL) settings data into DAQConfigWave. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – panel title </p></li>
+<li><p><strong>dataAcqOrTP</strong> – one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785"><span class="std std-ref">DATA_ACQUISITION_MODE</span></a> or <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151"><span class="std std-ref">TEST_PULSE_MODE</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422DC_GetDecimationFactor6string8variable">
+<span id="_CPPv322DC_GetDecimationFactor6string8variable"></span><span id="_CPPv222DC_GetDecimationFactor6string8variable"></span><span id="DC_GetDecimationFactor__string.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1aa138c088925a9c62e68b90b6e53b6154"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_GetDecimationFactor</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataAcqOrTP</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422DC_GetDecimationFactor6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Get the decimation factor for the current channel configuration. </p>
+<p>This is the factor between the minimum sampling interval and the real. If the multiplier is taken into account depends on <code class="docutils literal notranslate"><span class="pre">dataAcqOrTP</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>dataAcqOrTP</strong> – one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785"><span class="std std-ref">DATA_ACQUISITION_MODE</span></a> or <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151"><span class="std std-ref">TEST_PULSE_MODE</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426DC_GetDecimationFactorCalc8variable">
+<span id="_CPPv326DC_GetDecimationFactorCalc8variable"></span><span id="_CPPv226DC_GetDecimationFactorCalc8variable"></span><span id="DC_GetDecimationFactorCalc__variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1ac44cbaa7f1d59a88bcd60a9d240fb02b"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_GetDecimationFactorCalc</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">samplingInterval</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426DC_GetDecimationFactorCalc8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Calculcate decimation factor device independent. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>samplingInterval</strong> – sampling interval in microseconds </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424DC_CalculateLongestSweep6string8variable8variable">
+<span id="_CPPv324DC_CalculateLongestSweep6string8variable8variable"></span><span id="_CPPv224DC_CalculateLongestSweep6string8variable8variable"></span><span id="DC_CalculateLongestSweep__string.variable.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a38a88f5050ef2b6741f92c45b6419780"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_CalculateLongestSweep</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataAcqOrTP</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424DC_CalculateLongestSweep6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the longest sweep in a stimulus set across the given channel type. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>dataAcqOrTP</strong> – mode, either <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785"><span class="std std-ref">DATA_ACQUISITION_MODE</span></a> or <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151"><span class="std std-ref">TEST_PULSE_MODE</span></a></p></li>
+<li><p><strong>channelType</strong> – One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1ChannelTypeAndControlConstants"><span class="std std-ref">ChannelTypeAndControlConstants</span></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>number of data points, <em>not</em> time </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425DC_CalculateStimsetLength4wave6string8variable">
+<span id="_CPPv325DC_CalculateStimsetLength4wave6string8variable"></span><span id="_CPPv225DC_CalculateStimsetLength4wave6string8variable"></span><span id="DC_CalculateStimsetLength__wave.string.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a6dfd8591caf5570bc90926a59001fe08"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_CalculateStimsetLength</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stimSet</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataAcqOrTP</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425DC_CalculateStimsetLength4wave6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Get the stimset length for the real sampling interval. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stimSet</strong> – stimset wave </p></li>
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>dataAcqOrTP</strong> – one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785"><span class="std std-ref">DATA_ACQUISITION_MODE</span></a> or <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151"><span class="std std-ref">TEST_PULSE_MODE</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429DC_CalculateGeneratedDataSize6string8variable8variable">
+<span id="_CPPv329DC_CalculateGeneratedDataSize6string8variable8variable"></span><span id="_CPPv229DC_CalculateGeneratedDataSize6string8variable8variable"></span><span id="DC_CalculateGeneratedDataSize__string.variable.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a3c0ef533e9c270f3b19f7ba72a18616a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_CalculateGeneratedDataSize</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataAcqOrTP</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">genLength</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429DC_CalculateGeneratedDataSize6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Get the length for the real sampling interval from a generated wave with length. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>dataAcqOrTP</strong> – one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785"><span class="std std-ref">DATA_ACQUISITION_MODE</span></a> or <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151"><span class="std std-ref">TEST_PULSE_MODE</span></a></p></li>
+<li><p><strong>genLength</strong> – length of a generated data wave </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv436DC_CalculateGeneratedDataSizeDAQMode8variable8variable">
+<span id="_CPPv336DC_CalculateGeneratedDataSizeDAQMode8variable8variable"></span><span id="_CPPv236DC_CalculateGeneratedDataSizeDAQMode8variable8variable"></span><span id="DC_CalculateGeneratedDataSizeDAQMode__variable.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1ab3980cb60498c715cbb0f3fcd92c922b"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_CalculateGeneratedDataSizeDAQMode</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">genLength</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">decimationFactor</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv436DC_CalculateGeneratedDataSizeDAQMode8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425DC_PlaceDataInDAQDataWave6string8variable8variable8variable">
+<span id="_CPPv325DC_PlaceDataInDAQDataWave6string8variable8variable8variable"></span><span id="_CPPv225DC_PlaceDataInDAQDataWave6string8variable8variable8variable"></span><span id="DC_PlaceDataInDAQDataWave__string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a65e4f8857cf448ecf8c108ce005223f4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_PlaceDataInDAQDataWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numActiveChannels</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataAcqOrTP</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">multiDevice</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425DC_PlaceDataInDAQDataWave6string8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Places data from appropriate DA and TTL stimulus set(s) into DAQDataWave. Also records certain DA_Ephys GUI settings into sweepDataLNB and sweepDataTxTLNB. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – panel title </p></li>
+<li><p><strong>numActiveChannels</strong> – number of active channels as returned by <a class="reference internal" href="#_m_i_e_s___data_configurator_8ipf_1ae6b9627557eeb66fe7a96f2068b04c0d"><span class="std std-ref">DC_ChannelCalcForDAQConfigWave()</span></a></p></li>
+<li><p><strong>dataAcqOrTP</strong> – one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785"><span class="std std-ref">DATA_ACQUISITION_MODE</span></a> or <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151"><span class="std std-ref">TEST_PULSE_MODE</span></a></p></li>
+<li><p><strong>multiDevice</strong> – Fine tune data handling for single device (false) or multi device (true)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">Abort</span></span></span> – configuration failure </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414DC_MakeTTLWave6stringP23DataConfigurationResult">
+<span id="_CPPv314DC_MakeTTLWave6stringP23DataConfigurationResult"></span><span id="_CPPv214DC_MakeTTLWave6stringP23DataConfigurationResult"></span><span id="DC_MakeTTLWave__string.DataConfigurationResultP"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1af4fe9427fbc159a8968ba47695339e82"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_MakeTTLWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv423DataConfigurationResult" title="DataConfigurationResult"><span class="n"><span class="pre">DataConfigurationResult</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414DC_MakeTTLWave6stringP23DataConfigurationResult" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426DC_WriteTTLIntoDAQDataWave6stringP23DataConfigurationResult">
+<span id="_CPPv326DC_WriteTTLIntoDAQDataWave6stringP23DataConfigurationResult"></span><span id="_CPPv226DC_WriteTTLIntoDAQDataWave6stringP23DataConfigurationResult"></span><span id="DC_WriteTTLIntoDAQDataWave__string.DataConfigurationResultP"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a52f6919b8816decca79171e2a802c7fb"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_WriteTTLIntoDAQDataWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv423DataConfigurationResult" title="DataConfigurationResult"><span class="n"><span class="pre">DataConfigurationResult</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426DC_WriteTTLIntoDAQDataWave6stringP23DataConfigurationResult" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420DC_PrepareLBNEntries6stringP23DataConfigurationResult">
+<span id="_CPPv320DC_PrepareLBNEntries6stringP23DataConfigurationResult"></span><span id="_CPPv220DC_PrepareLBNEntries6stringP23DataConfigurationResult"></span><span id="DC_PrepareLBNEntries__string.DataConfigurationResultP"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_PrepareLBNEntries</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv423DataConfigurationResult" title="DataConfigurationResult"><span class="n"><span class="pre">DataConfigurationResult</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420DC_PrepareLBNEntries6stringP23DataConfigurationResult" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419DC_FillSetEventFlag6stringP23DataConfigurationResult">
+<span id="_CPPv319DC_FillSetEventFlag6stringP23DataConfigurationResult"></span><span id="_CPPv219DC_FillSetEventFlag6stringP23DataConfigurationResult"></span><span id="DC_FillSetEventFlag__string.DataConfigurationResultP"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a17020c20eb35b681b7e958f2196ba2ee"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_FillSetEventFlag</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv423DataConfigurationResult" title="DataConfigurationResult"><span class="n"><span class="pre">DataConfigurationResult</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419DC_FillSetEventFlag6stringP23DataConfigurationResult" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423DC_FillDAQDataWaveForTP6stringP23DataConfigurationResult">
+<span id="_CPPv323DC_FillDAQDataWaveForTP6stringP23DataConfigurationResult"></span><span id="_CPPv223DC_FillDAQDataWaveForTP6stringP23DataConfigurationResult"></span><span id="DC_FillDAQDataWaveForTP__string.DataConfigurationResultP"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_FillDAQDataWaveForTP</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv423DataConfigurationResult" title="DataConfigurationResult"><span class="n"><span class="pre">DataConfigurationResult</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423DC_FillDAQDataWaveForTP6stringP23DataConfigurationResult" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424DC_FillDAQDataWaveForDAQ6stringP23DataConfigurationResult">
+<span id="_CPPv324DC_FillDAQDataWaveForDAQ6stringP23DataConfigurationResult"></span><span id="_CPPv224DC_FillDAQDataWaveForDAQ6stringP23DataConfigurationResult"></span><span id="DC_FillDAQDataWaveForDAQ__string.DataConfigurationResultP"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a4cff93761f5ca7e2a1943579f37dcbce"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_FillDAQDataWaveForDAQ</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv423DataConfigurationResult" title="DataConfigurationResult"><span class="n"><span class="pre">DataConfigurationResult</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424DC_FillDAQDataWaveForDAQ6stringP23DataConfigurationResult" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419DC_GetConfiguration6string8variable8variable8variable">
+<span id="_CPPv319DC_GetConfiguration6string8variable8variable8variable"></span><span id="_CPPv219DC_GetConfiguration6string8variable8variable8variable"></span><span id="DC_GetConfiguration__string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a19b307c760b9a7f1cb9f8355c0b327c4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv423DataConfigurationResult" title="DataConfigurationResult"><span class="n"><span class="pre">DataConfigurationResult</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_GetConfiguration</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numActiveChannels</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataAcqOrTP</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">multiDevice</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419DC_GetConfiguration6string8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423DC_CalculateInsertStartP23DataConfigurationResult">
+<span id="_CPPv323DC_CalculateInsertStartP23DataConfigurationResult"></span><span id="_CPPv223DC_CalculateInsertStartP23DataConfigurationResult"></span><span id="DC_CalculateInsertStart__DataConfigurationResultP"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a7c64e6afdb4e9667bcd89cacfabeeb56"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_CalculateInsertStart</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv423DataConfigurationResult" title="DataConfigurationResult"><span class="n"><span class="pre">DataConfigurationResult</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423DC_CalculateInsertStartP23DataConfigurationResult" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Calculate s.insertStart for DATA_ACQUISITION_MODE. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv432DC_SetupConfigurationTTLstimSets6stringP23DataConfigurationResult">
+<span id="_CPPv332DC_SetupConfigurationTTLstimSets6stringP23DataConfigurationResult"></span><span id="_CPPv232DC_SetupConfigurationTTLstimSets6stringP23DataConfigurationResult"></span><span id="DC_SetupConfigurationTTLstimSets__string.DataConfigurationResultP"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1ae06e03cf50dd314d1cbbce6346684c3b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_SetupConfigurationTTLstimSets</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv423DataConfigurationResult" title="DataConfigurationResult"><span class="n"><span class="pre">DataConfigurationResult</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv432DC_SetupConfigurationTTLstimSets6stringP23DataConfigurationResult" title="Link to this definition">¶</a><br /></dt>
+<dd><p>fills in TTL stimset wave references in <a class="reference internal" href="../struct/struct_data_configuration_result.html#struct_data_configuration_result"><span class="std std-ref">DataConfigurationResult</span></a> structure needs: s.hardwareType, s.numXXXEntries fields </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429DC_DocumentHardwareProperties6string8variable">
+<span id="_CPPv329DC_DocumentHardwareProperties6string8variable"></span><span id="_CPPv229DC_DocumentHardwareProperties6string8variable"></span><span id="DC_DocumentHardwareProperties__string.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1ad9582c9c6bc12f0ff274c6ed7117df5d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_DocumentHardwareProperties</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hardwareType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429DC_DocumentHardwareProperties6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Document hardware type/name/serial number into the labnotebook. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423DC_GetStimsetAcqCycleID6string8variable8variable">
+<span id="_CPPv323DC_GetStimsetAcqCycleID6string8variable8variable"></span><span id="_CPPv223DC_GetStimsetAcqCycleID6string8variable8variable"></span><span id="DC_GetStimsetAcqCycleID__string.variable.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a935ac93d1d57d33048db268ee1bbd7af"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_GetStimsetAcqCycleID</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fingerprint</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">DAC</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423DC_GetStimsetAcqCycleID6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the stimset acquisition cycle ID. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>fingerprint</strong> – fingerprint as returned by <a class="reference internal" href="#_m_i_e_s___data_configurator_8ipf_1a9e222bd73a95d9ef40234b0dc68a867b"><span class="std std-ref">DC_GenerateStimsetFingerprint()</span></a></p></li>
+<li><p><strong>DAC</strong> – DA channel </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429DC_GenerateStimsetFingerprint8variable6string8variable8variable">
+<span id="_CPPv329DC_GenerateStimsetFingerprint8variable6string8variable8variable"></span><span id="_CPPv229DC_GenerateStimsetFingerprint8variable6string8variable8variable"></span><span id="DC_GenerateStimsetFingerprint__variable.string.variable.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a9e222bd73a95d9ef40234b0dc68a867b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_GenerateStimsetFingerprint</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">raCycleID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setName</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setCycleCount</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setChecksum</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429DC_GenerateStimsetFingerprint8variable6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Generate the stimset fingerprint. </p>
+<p>This fingerprint is unique for the combination of the following properties:<ul class="simple">
+<li><p>Repeated acquisition cycle ID</p></li>
+<li><p>stimset name</p></li>
+<li><p>stimset checksum</p></li>
+<li><p>set cycle count</p></li>
+</ul>
+</p>
+<p>Always then this fingerprint changes, a new stimset acquisition cycle ID has to be generated. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv431DC_CheckIfDataWaveHasBorderVals6string8variable">
+<span id="_CPPv331DC_CheckIfDataWaveHasBorderVals6string8variable"></span><span id="_CPPv231DC_CheckIfDataWaveHasBorderVals6string8variable"></span><span id="DC_CheckIfDataWaveHasBorderVals__string.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a6ea61cf897b46890249f1334d2c7b083"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_CheckIfDataWaveHasBorderVals</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataAcqOrTP</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431DC_CheckIfDataWaveHasBorderVals6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426DC_DocumentChannelProperty6string6string8variable8variable8variable8variable6string">
+<span id="_CPPv326DC_DocumentChannelProperty6string6string8variable8variable8variable8variable6string"></span><span id="_CPPv226DC_DocumentChannelProperty6string6string8variable8variable8variable8variable6string"></span><span id="DC_DocumentChannelProperty__string.string.variable.variable.variable.variable.string"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a63b2b2b8ad7145aa0733ec574f91f477"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_DocumentChannelProperty</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entry</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelNumber</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426DC_DocumentChannelProperty6string6string8variable8variable8variable8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Document channel properties of DA and AD channels. </p>
+<p>Knows about unassociated channels and creates the special key returned by <a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html#_m_i_e_s___mies_utilities___logbook_8ipf_1ae108771ac43b05625f852e6cdc84c0d9"><span class="std std-ref">CreateLBNUnassocKey()</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>entry</strong> – name of the property </p></li>
+<li><p><strong>headstage</strong> – number of headstage, must be <code class="docutils literal notranslate"><span class="pre">NaN</span></code> for unassociated channels </p></li>
+<li><p><strong>channelNumber</strong> – number of the channel </p></li>
+<li><p><strong>channelType</strong> – type of the channel </p></li>
+<li><p><strong>var</strong> – [optional] numeric value </p></li>
+<li><p><strong>str</strong> – [optional] string value </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418DC_ITC_MakeTTLWave6stringP23DataConfigurationResult">
+<span id="_CPPv318DC_ITC_MakeTTLWave6stringP23DataConfigurationResult"></span><span id="_CPPv218DC_ITC_MakeTTLWave6stringP23DataConfigurationResult"></span><span id="DC_ITC_MakeTTLWave__string.DataConfigurationResultP"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1aa937fa6b5dcb4edfa862666c2497ca24"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_ITC_MakeTTLWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv423DataConfigurationResult" title="DataConfigurationResult"><span class="n"><span class="pre">DataConfigurationResult</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418DC_ITC_MakeTTLWave6stringP23DataConfigurationResult" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Combines the TTL stimulus sweeps across different TTL channels into a single wave. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – panel title </p></li>
+<li><p><strong>s</strong> – <a class="reference internal" href="../struct/struct_data_configuration_result.html#struct_data_configuration_result"><span class="std std-ref">DataConfigurationResult</span></a> structure </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417DC_NI_MakeTTLWave6stringP23DataConfigurationResult">
+<span id="_CPPv317DC_NI_MakeTTLWave6stringP23DataConfigurationResult"></span><span id="_CPPv217DC_NI_MakeTTLWave6stringP23DataConfigurationResult"></span><span id="DC_NI_MakeTTLWave__string.DataConfigurationResultP"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a95a78b3ee92a620afa5f543e9d59ddf3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_NI_MakeTTLWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv423DataConfigurationResult" title="DataConfigurationResult"><span class="n"><span class="pre">DataConfigurationResult</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417DC_NI_MakeTTLWave6stringP23DataConfigurationResult" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427DC_CalculateChannelColumnNo6string6string8variable8variable">
+<span id="_CPPv327DC_CalculateChannelColumnNo6string6string8variable8variable"></span><span id="_CPPv227DC_CalculateChannelColumnNo6string6string8variable8variable"></span><span id="DC_CalculateChannelColumnNo__string.string.variable.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a4da424534b92d0fdd58b1fdcb704f21f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_CalculateChannelColumnNo</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setName</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427DC_CalculateChannelColumnNo6string6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns column number/step of the stimulus set, independent of the times the set is being cycled through (as defined by SetVar_DataAcq_SetRepeats) </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – panel title </p></li>
+<li><p><strong>setName</strong> – name of the stimulus set </p></li>
+<li><p><strong>channelNo</strong> – channel number </p></li>
+<li><p><strong>channelType</strong> – channel type, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2"><span class="std std-ref">CHANNEL_TYPE_DAC</span></a> or <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff"><span class="std std-ref">CHANNEL_TYPE_TTL</span></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return values<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>column</strong> – stimset column </p></li>
+<li><p><strong>setCycleCount</strong> – set cycle count </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428DC_ReturnTotalLengthIncreaseP23DataConfigurationResult">
+<span id="_CPPv328DC_ReturnTotalLengthIncreaseP23DataConfigurationResult"></span><span id="_CPPv228DC_ReturnTotalLengthIncreaseP23DataConfigurationResult"></span><span id="DC_ReturnTotalLengthIncrease__DataConfigurationResultP"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1ad27c6a11cf63592e9b21f338aff801b2"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_ReturnTotalLengthIncrease</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv423DataConfigurationResult" title="DataConfigurationResult"><span class="n"><span class="pre">DataConfigurationResult</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428DC_ReturnTotalLengthIncreaseP23DataConfigurationResult" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the length increase of the DAQDataWave following onset/termination delay insertion and distributed data aquisition. Does not incorporate adaptations for oodDAQ. </p>
+<p>All returned values are in number of points, <em>not</em> in time. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425DC_GetStopCollectionPoint6stringP23DataConfigurationResult">
+<span id="_CPPv325DC_GetStopCollectionPoint6stringP23DataConfigurationResult"></span><span id="_CPPv225DC_GetStopCollectionPoint6stringP23DataConfigurationResult"></span><span id="DC_GetStopCollectionPoint__string.DataConfigurationResultP"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a7a8ed5daa3612d4a061a63cbee165aa6"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_GetStopCollectionPoint</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv423DataConfigurationResult" title="DataConfigurationResult"><span class="n"><span class="pre">DataConfigurationResult</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425DC_GetStopCollectionPoint6stringP23DataConfigurationResult" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Calculate the stop collection point, includes all required global adjustments. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423DC_GotTPChannelWhileDAQ6string">
+<span id="_CPPv323DC_GotTPChannelWhileDAQ6string"></span><span id="_CPPv223DC_GotTPChannelWhileDAQ6string"></span><span id="DC_GotTPChannelWhileDAQ__string"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1ac6c5a7d64273ee109ec3a50522844b45"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_GotTPChannelWhileDAQ</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423DC_GotTPChannelWhileDAQ6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns 1 if a channel is set to TP, the check is through the stimset name from the GUI. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423DC_GetChannelTypefromHS6string8variable">
+<span id="_CPPv323DC_GetChannelTypefromHS6string8variable"></span><span id="_CPPv223DC_GetChannelTypefromHS6string8variable"></span><span id="DC_GetChannelTypefromHS__string.variable"></span><span class="target" id="_m_i_e_s___data_configurator_8ipf_1a8830b0524b8751928a9fdcc6889cc7b6"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DC_GetChannelTypefromHS</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423DC_GetChannelTypefromHS6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Get the channel type of given headstage. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – panel title </p></li>
+<li><p><strong>headstage</strong> – head stage</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1DaqChannelTypeConstants"><span class="std std-ref">DaqChannelTypeConstants</span></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_DataConfigurator.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416DC_UpdateGlobals6string8variable"><code class="docutils literal notranslate"><span class="pre">DC_UpdateGlobals()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412DC_Configure6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">DC_Configure()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421DC_UpdateHSProperties6string4wave"><code class="docutils literal notranslate"><span class="pre">DC_UpdateHSProperties()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423DC_NoOfChannelsSelected6string8variable"><code class="docutils literal notranslate"><span class="pre">DC_NoOfChannelsSelected()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430DC_ChannelCalcForDAQConfigWave6string8variable"><code class="docutils literal notranslate"><span class="pre">DC_ChannelCalcForDAQConfigWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423DC_AreTTLsInRackChecked6string8variable"><code class="docutils literal notranslate"><span class="pre">DC_AreTTLsInRackChecked()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420DC_LongestOutputWave6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">DC_LongestOutputWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429DC_CalculateDAQDataWaveLength6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">DC_CalculateDAQDataWaveLength()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv433DC_CalculateDAQDataWaveLengthImpl8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">DC_CalculateDAQDataWaveLengthImpl()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420DC_MakeDAQConfigWave6string8variable"><code class="docutils literal notranslate"><span class="pre">DC_MakeDAQConfigWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424DC_MakeAndGetDAQDataWave6stringP23DataConfigurationResult8variable"><code class="docutils literal notranslate"><span class="pre">DC_MakeAndGetDAQDataWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430DC_SetDataScaleNISUChannelWave4wave8variable"><code class="docutils literal notranslate"><span class="pre">DC_SetDataScaleNISUChannelWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420DC_MakeNIChannelWave6string8variable8variable8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">DC_MakeNIChannelWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424DC_MakeSUTTERChannelWave6string8variable8variable8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">DC_MakeSUTTERChannelWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418DC_MakeHelperWaves6string8variable"><code class="docutils literal notranslate"><span class="pre">DC_MakeHelperWaves()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv436DC_CalculateChannelSizeForScaledData6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">DC_CalculateChannelSizeForScaledData()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421DC_InitScaledDataWave6string8variable"><code class="docutils literal notranslate"><span class="pre">DC_InitScaledDataWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427DC_InitOscilloscopeDataWave4wave8variable8variable8variable8variable8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">DC_InitOscilloscopeDataWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426DC_GetFilteredChannelState6string8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">DC_GetFilteredChannelState()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427DC_PlaceDataInDAQConfigWave6string8variable"><code class="docutils literal notranslate"><span class="pre">DC_PlaceDataInDAQConfigWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422DC_GetDecimationFactor6string8variable"><code class="docutils literal notranslate"><span class="pre">DC_GetDecimationFactor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426DC_GetDecimationFactorCalc8variable"><code class="docutils literal notranslate"><span class="pre">DC_GetDecimationFactorCalc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424DC_CalculateLongestSweep6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">DC_CalculateLongestSweep()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425DC_CalculateStimsetLength4wave6string8variable"><code class="docutils literal notranslate"><span class="pre">DC_CalculateStimsetLength()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429DC_CalculateGeneratedDataSize6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">DC_CalculateGeneratedDataSize()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv436DC_CalculateGeneratedDataSizeDAQMode8variable8variable"><code class="docutils literal notranslate"><span class="pre">DC_CalculateGeneratedDataSizeDAQMode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425DC_PlaceDataInDAQDataWave6string8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">DC_PlaceDataInDAQDataWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414DC_MakeTTLWave6stringP23DataConfigurationResult"><code class="docutils literal notranslate"><span class="pre">DC_MakeTTLWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426DC_WriteTTLIntoDAQDataWave6stringP23DataConfigurationResult"><code class="docutils literal notranslate"><span class="pre">DC_WriteTTLIntoDAQDataWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420DC_PrepareLBNEntries6stringP23DataConfigurationResult"><code class="docutils literal notranslate"><span class="pre">DC_PrepareLBNEntries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419DC_FillSetEventFlag6stringP23DataConfigurationResult"><code class="docutils literal notranslate"><span class="pre">DC_FillSetEventFlag()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423DC_FillDAQDataWaveForTP6stringP23DataConfigurationResult"><code class="docutils literal notranslate"><span class="pre">DC_FillDAQDataWaveForTP()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424DC_FillDAQDataWaveForDAQ6stringP23DataConfigurationResult"><code class="docutils literal notranslate"><span class="pre">DC_FillDAQDataWaveForDAQ()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419DC_GetConfiguration6string8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">DC_GetConfiguration()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423DC_CalculateInsertStartP23DataConfigurationResult"><code class="docutils literal notranslate"><span class="pre">DC_CalculateInsertStart()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv432DC_SetupConfigurationTTLstimSets6stringP23DataConfigurationResult"><code class="docutils literal notranslate"><span class="pre">DC_SetupConfigurationTTLstimSets()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429DC_DocumentHardwareProperties6string8variable"><code class="docutils literal notranslate"><span class="pre">DC_DocumentHardwareProperties()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423DC_GetStimsetAcqCycleID6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">DC_GetStimsetAcqCycleID()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429DC_GenerateStimsetFingerprint8variable6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">DC_GenerateStimsetFingerprint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv431DC_CheckIfDataWaveHasBorderVals6string8variable"><code class="docutils literal notranslate"><span class="pre">DC_CheckIfDataWaveHasBorderVals()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426DC_DocumentChannelProperty6string6string8variable8variable8variable8variable6string"><code class="docutils literal notranslate"><span class="pre">DC_DocumentChannelProperty()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418DC_ITC_MakeTTLWave6stringP23DataConfigurationResult"><code class="docutils literal notranslate"><span class="pre">DC_ITC_MakeTTLWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417DC_NI_MakeTTLWave6stringP23DataConfigurationResult"><code class="docutils literal notranslate"><span class="pre">DC_NI_MakeTTLWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427DC_CalculateChannelColumnNo6string6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">DC_CalculateChannelColumnNo()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428DC_ReturnTotalLengthIncreaseP23DataConfigurationResult"><code class="docutils literal notranslate"><span class="pre">DC_ReturnTotalLengthIncrease()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425DC_GetStopCollectionPoint6stringP23DataConfigurationResult"><code class="docutils literal notranslate"><span class="pre">DC_GetStopCollectionPoint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423DC_GotTPChannelWhileDAQ6string"><code class="docutils literal notranslate"><span class="pre">DC_GotTPChannelWhileDAQ()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423DC_GetChannelTypefromHS6string8variable"><code class="docutils literal notranslate"><span class="pre">DC_GetChannelTypefromHS()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___data_configuraton_recreation_8ipf.html"
+                          title="previous chapter">File MIES_DataConfiguratonRecreation.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___debug_panel_8ipf.html"
+                          title="next chapter">File MIES_DebugPanel.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___debug_panel_8ipf.html" title="File MIES_DebugPanel.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___data_configuraton_recreation_8ipf.html" title="File MIES_DataConfiguratonRecreation.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_DataConfigurator.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

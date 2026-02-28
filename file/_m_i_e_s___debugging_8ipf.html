@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File MIES_Debugging.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_Downsample.ipf" href="_m_i_e_s___downsample_8ipf.html" />
+    <link rel="prev" title="File MIES_DebugPanel_Macro.ipf" href="_m_i_e_s___debug_panel___macro_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___downsample_8ipf.html" title="File MIES_Downsample.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___debug_panel___macro_8ipf.html" title="File MIES_DebugPanel_Macro.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Debugging.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-debugging-ipf">
+<span id="id1"></span><h1>File MIES_Debugging.ipf<a class="headerlink" href="#file-mies-debugging-ipf" title="Link to this heading">¶</a></h1>
+<p>Holds functions for handling debugging information. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422FindFirstOutsideCallerP6stringP6stringP6string">
+<span id="_CPPv322FindFirstOutsideCallerP6stringP6stringP6string"></span><span id="_CPPv222FindFirstOutsideCallerP6stringP6stringP6string"></span><span id="FindFirstOutsideCaller__stringP.stringP.stringP"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1a4318db20e5899d75148e9d470caad4df"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FindFirstOutsideCaller</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">func</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">line</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">file</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422FindFirstOutsideCallerP6stringP6stringP6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the first function from the stack trace not located in this file. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411DEBUGPRINTv8variable6string">
+<span id="_CPPv311DEBUGPRINTv8variable6string"></span><span id="_CPPv211DEBUGPRINTv8variable6string"></span><span id="DEBUGPRINTv__variable.string"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1a2768b775c34c6e7149bef6a2f25f952d"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DEBUGPRINTv</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Output debug information and return the parameter var. </p>
+<p>Debug function especially designed for usage in return statements.</p>
+<p>For example calling the following function <p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kr">Function</span><span class="w"> </span>doStuff()
+<span class="w">    </span><span class="kt">variable</span><span class="w"> </span>var<span class="w"> </span>= 1 + 2
+<span class="w">    </span><span class="k">return</span><span class="w"> </span>DEBUGPRINTv(var)
+<span class="kr">End</span>
+</pre></div>
+</div>
+</p>
+</p>
+<p>will output <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>DEBUG doStuff(...)#L5: return value 3
+</pre></div>
+</div>
+ to the history. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>var</strong> – numerical argument for debug output </p></li>
+<li><p><strong>format</strong> – optional format string to override the default of “%g” </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411DEBUGPRINTw10WaveOrNull6string">
+<span id="_CPPv311DEBUGPRINTw10WaveOrNull6string"></span><span id="_CPPv211DEBUGPRINTw10WaveOrNull6string"></span><span id="DEBUGPRINTw__WaveOrNull.string"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1a60663651acfeb60f3f5503f66018db61"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DEBUGPRINTw</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411DEBUGPRINTw10WaveOrNull6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Output debug information and return the wave wv. </p>
+<p>Debug function especially designed for usage in return statements.</p>
+<p>For example calling the following function <p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kr">Function</span>/<span class="kt">WAVE</span><span class="w"> </span>doStuff()
+<span class="w">    </span><span class="nc">Make</span>/D/N=5<span class="w"> </span>data<span class="w"> </span>=<span class="w"> </span>p
+<span class="w">    </span><span class="k">return</span><span class="w"> </span>DEBUGPRINTw(data)
+<span class="kr">End</span>
+</pre></div>
+</div>
+</p>
+</p>
+<p>will output <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>DEBUG doStuff(...)#L5: return value {0, 1, 2, 3, 4}
+</pre></div>
+</div>
+ to the history. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wv</strong> – wave argument for debug output </p></li>
+<li><p><strong>format</strong> – optional format string to override the default of “%g” </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411DEBUGPRINTs6string6string">
+<span id="_CPPv311DEBUGPRINTs6string6string"></span><span id="_CPPv211DEBUGPRINTs6string6string"></span><span id="DEBUGPRINTs__string.string"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1a2e70157cc4677a547ad715dae949db78"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DEBUGPRINTs</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Output debug information and return the parameter str. </p>
+<p>Debug function especially designed for usage in return statements.</p>
+<p>For example calling the following function <p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kr">Function</span>/s<span class="w"> </span>doStuff()
+<span class="w">    </span><span class="kt">variable</span><span class="w"> </span>str=<span class="w"> </span><span class="s">&quot;a&quot;</span><span class="w"> </span>+<span class="w"> </span><span class="s">&quot;b&quot;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span>DEBUGPRINTs(str)
+<span class="kr">End</span>
+</pre></div>
+</div>
+</p>
+ will output <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>DEBUG doStuff(...)#L5: return value ab
+</pre></div>
+</div>
+ to the history. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>str</strong> – string argument for debug output </p></li>
+<li><p><strong>format</strong> – optional format string to override the default of “%s” </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410DEBUGPRINT6string8variable6string10WaveOrNull6string">
+<span id="_CPPv310DEBUGPRINT6string8variable6string10WaveOrNull6string"></span><span id="_CPPv210DEBUGPRINT6string8variable6string10WaveOrNull6string"></span><span id="DEBUGPRINT__string.variable.string.WaveOrNull.string"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1ab782b581b2c11a4d80eed302a3fc0afa"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DEBUGPRINT</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">msg</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410DEBUGPRINT6string8variable6string10WaveOrNull6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Generic debug output function. </p>
+<p>Outputs variables and strings with optional format argument.</p>
+<p>Examples: <p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>DEBUGPRINT(<span class="s">&quot;before a possible crash&quot;</span>)
+DEBUGPRINT(<span class="s">&quot;some variable&quot;</span>,<span class="w"> </span>var=myVariable)
+DEBUGPRINT(<span class="s">&quot;my string&quot;</span>,<span class="w"> </span>str=myString)
+DEBUGPRINT(<span class="s">&quot;Current state&quot;</span>,<span class="w"> </span>var=state,<span class="w"> </span>format=<span class="s">&quot;%.5f&quot;</span>)
+</pre></div>
+</div>
+</p>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> – descriptive string for the debug message </p></li>
+<li><p><strong>var</strong> – variable </p></li>
+<li><p><strong>str</strong> – string </p></li>
+<li><p><strong>wv</strong> – wave (can be null) </p></li>
+<li><p><strong>format</strong> – format string overrides the default of “%g” for variables and “%s” for strings </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413DEBUGPRINT_TS6string8variable6string6string">
+<span id="_CPPv313DEBUGPRINT_TS6string8variable6string6string"></span><span id="_CPPv213DEBUGPRINT_TS6string8variable6string6string"></span><span id="DEBUGPRINT_TS__string.variable.string.string"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1ae1b4dbcdd945014c38601021c67cb4ec"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DEBUGPRINT_TS</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">msg</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413DEBUGPRINT_TS6string8variable6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Generic debug output function (threadsafe variant) </p>
+<p>Outputs variables and strings with optional format argument.</p>
+<p>Examples: <p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>DEBUGPRINT(<span class="s">&quot;before a possible crash&quot;</span>)
+DEBUGPRINT(<span class="s">&quot;some variable&quot;</span>,<span class="w"> </span>var=myVariable)
+DEBUGPRINT(<span class="s">&quot;my string&quot;</span>,<span class="w"> </span>str=myString)
+DEBUGPRINT(<span class="s">&quot;Current state&quot;</span>,<span class="w"> </span>var=state,<span class="w"> </span>format=<span class="s">&quot;%.5f&quot;</span>)
+</pre></div>
+</div>
+</p>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> – descriptive string for the debug message </p></li>
+<li><p><strong>var</strong> – variable </p></li>
+<li><p><strong>str</strong> – string </p></li>
+<li><p><strong>format</strong> – format string overrides the default of “%g” for variables and “%s” for strings </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419DEBUGPRINTSTACKINFOv">
+<span id="_CPPv319DEBUGPRINTSTACKINFOv"></span><span id="_CPPv219DEBUGPRINTSTACKINFOv"></span><span id="DEBUGPRINTSTACKINFO"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1a79a700a0d52db2593a8076e4034db872"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DEBUGPRINTSTACKINFO</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419DEBUGPRINTSTACKINFOv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Print a nicely formatted stack trace to the history. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416CreateHistoryLogv">
+<span id="_CPPv316CreateHistoryLogv"></span><span id="_CPPv216CreateHistoryLogv"></span><span id="CreateHistoryLog"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1ad24400026f807d681e80402248d51c4b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreateHistoryLog</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416CreateHistoryLogv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Creates a notebook with the special name “HistoryCarbonCopy” which will hold a copy of the history </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414SaveHistoryLogv">
+<span id="_CPPv314SaveHistoryLogv"></span><span id="_CPPv214SaveHistoryLogv"></span><span id="SaveHistoryLog"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1aed0303f3935f540e6a4938b4d42446f6"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SaveHistoryLog</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414SaveHistoryLogv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Save the contents of the history notebook on disk in the same folder as this experiment as timestamped file “run_*_*.log” </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419DEBUGPRINT_OR_ABORT6string">
+<span id="_CPPv319DEBUGPRINT_OR_ABORT6string"></span><span id="_CPPv219DEBUGPRINT_OR_ABORT6string"></span><span id="DEBUGPRINT_OR_ABORT__string"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1a35b5140430c647c1b49b618772b8e7d6"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DEBUGPRINT_OR_ABORT</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">msg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419DEBUGPRINT_OR_ABORT6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Prints a message to the command history in debug mode, aborts with dialog in release mode. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417DEBUG_TIMER_STARTv">
+<span id="_CPPv317DEBUG_TIMER_STARTv"></span><span id="_CPPv217DEBUG_TIMER_STARTv"></span><span id="DEBUG_TIMER_START"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1affad99c7844123d3460c5210da9409d9"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DEBUG_TIMER_START</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Start a timer for performance measurements. </p>
+<p>Usage: <p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kt">variable</span><span class="w"> </span>referenceTime<span class="w"> </span>=<span class="w"> </span>DEBUG_TIMER_START()
+<span class="c1">// part one to benchmark</span>
+DEBUGPRINT_ELAPSED(referenceTime)
+<span class="c1">// part two to benchmark</span>
+DEBUGPRINT_ELAPSED(referenceTime)
+</pre></div>
+</div>
+</p>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418DEBUGPRINT_ELAPSED8variable">
+<span id="_CPPv318DEBUGPRINT_ELAPSED8variable"></span><span id="_CPPv218DEBUGPRINT_ELAPSED8variable"></span><span id="DEBUGPRINT_ELAPSED__variable"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1a1b85d46a25553b71c9621635b9475fc5"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DEBUGPRINT_ELAPSED</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">referenceTime</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Print the elapsed time for performance measurements in seconds. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_m_i_e_s___debugging_8ipf_1affad99c7844123d3460c5210da9409d9"><span class="std std-ref">DEBUG_TIMER_START()</span></a></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423DEBUGPRINT_ELAPSED_WAVE8variable">
+<span id="_CPPv323DEBUGPRINT_ELAPSED_WAVE8variable"></span><span id="_CPPv223DEBUGPRINT_ELAPSED_WAVE8variable"></span><span id="DEBUGPRINT_ELAPSED_WAVE__variable"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1aeb4863e5642fd422199d5caf87d32cb2"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DEBUGPRINT_ELAPSED_WAVE</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">referenceTime</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423DEBUGPRINT_ELAPSED_WAVE8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Print and store the elapsed time for performance measurements. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_m_i_e_s___debugging_8ipf_1affad99c7844123d3460c5210da9409d9"><span class="std std-ref">DEBUG_TIMER_START()</span></a></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415EnableDebugModev">
+<span id="_CPPv315EnableDebugModev"></span><span id="_CPPv215EnableDebugModev"></span><span id="EnableDebugMode"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1a2af0a90aca41a7f32f3d5ba4aef09f63"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EnableDebugMode</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Enable debug mode. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416DisableDebugModev">
+<span id="_CPPv316DisableDebugModev"></span><span id="_CPPv216DisableDebugModev"></span><span id="DisableDebugMode"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1a1a35450e9a3c571a26682c687262b2e9"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DisableDebugMode</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Disable debug mode. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414EnableEvilModev">
+<span id="_CPPv314EnableEvilModev"></span><span id="_CPPv214EnableEvilModev"></span><span id="EnableEvilMode"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1ab1f2adbeeb7eefbdb9bdbe5bb2dfd730"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EnableEvilMode</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414EnableEvilModev" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Enable evil mode. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415DisableEvilModev">
+<span id="_CPPv315DisableEvilModev"></span><span id="_CPPv215DisableEvilModev"></span><span id="DisableEvilMode"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1aeef103e7d115e2170d8c7e374e402d01"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DisableEvilMode</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415DisableEvilModev" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Disable evil mode. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424DisableThreadsafeSupportv">
+<span id="_CPPv324DisableThreadsafeSupportv"></span><span id="_CPPv224DisableThreadsafeSupportv"></span><span id="DisableThreadsafeSupport"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1a64792f75aa8d428d5d5f7d2c8f3c2093"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DisableThreadsafeSupport</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424DisableThreadsafeSupportv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Disable threadsafe support. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423EnableThreadsafeSupportv">
+<span id="_CPPv323EnableThreadsafeSupportv"></span><span id="_CPPv223EnableThreadsafeSupportv"></span><span id="EnableThreadsafeSupport"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1a764eccb35ef44f8bc7f0abec4c0fef99"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EnableThreadsafeSupport</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423EnableThreadsafeSupportv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Enable threadsafe support again (default on IP startup) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416DisableWaveCachev">
+<span id="_CPPv316DisableWaveCachev"></span><span id="_CPPv216DisableWaveCachev"></span><span id="DisableWaveCache"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1a2ec85c7c70290e34dca4cbdcd8029e7c"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DisableWaveCache</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416DisableWaveCachev" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Disable wave caching support. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415EnableWaveCachev">
+<span id="_CPPv315EnableWaveCachev"></span><span id="_CPPv215EnableWaveCachev"></span><span id="EnableWaveCache"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1a68e24f0f9ee20f6e2fe767990db09a43"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EnableWaveCache</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415EnableWaveCachev" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Enable wave caching support again. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424EnableDangerousDebuggingv">
+<span id="_CPPv324EnableDangerousDebuggingv"></span><span id="_CPPv224EnableDangerousDebuggingv"></span><span id="EnableDangerousDebugging"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1a6c52f059ff1d9d7a31d81a7f149705db"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EnableDangerousDebugging</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424EnableDangerousDebuggingv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Enable dangerous debugging (allows to call user-defined functions in the debugger) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415QueryIgorOption6string">
+<span id="_CPPv315QueryIgorOption6string"></span><span id="_CPPv215QueryIgorOption6string"></span><span id="QueryIgorOption__string"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1a63980283417933bab648174a4eddd76d"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">QueryIgorOption</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">option</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415QueryIgorOption6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418ReportBugToLogfile6string14WaveTextOrNull14WaveTextOrNull">
+<span id="_CPPv318ReportBugToLogfile6string14WaveTextOrNull14WaveTextOrNull"></span><span id="_CPPv218ReportBugToLogfile6string14WaveTextOrNull14WaveTextOrNull"></span><span id="ReportBugToLogfile__string.WaveTextOrNull.WaveTextOrNull"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1a19965a3ab71cf244a5adf90e9702e7c8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReportBugToLogfile</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">msg</span></span>, <span class="n"><span class="pre">WaveTextOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">keys</span></span>, <span class="n"><span class="pre">WaveTextOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">values</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418ReportBugToLogfile6string14WaveTextOrNull14WaveTextOrNull" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv43BUG6string8WaveText8WaveText">
+<span id="_CPPv33BUG6string8WaveText8WaveText"></span><span id="_CPPv23BUG6string8WaveText8WaveText"></span><span id="BUG__string.WaveText.WaveText"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1a56e7ac7e88c87d97ecad2dd83ec7d3d1"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BUG</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">msg</span></span>, <a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">keys</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">values</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv43BUG6string8WaveText8WaveText" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Complain and ask the user to report the error. </p>
+<p>In nearly all cases <a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html#_m_i_e_s___utilities___program_flow_8ipf_1a34d370fb776d339d7f60e24c364eff69"><span class="std std-ref">ASSERT()</span></a> is the more appropriate method to use.</p>
+<p>If a testcase wants to trigger a BUG message <em>and</em> needs to treat that as non-fatal, it needs to set <code class="docutils literal notranslate"><span class="pre">bugCount</span></code> to NaN before. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv46BUG_TS6string8WaveText8WaveText">
+<span id="_CPPv36BUG_TS6string8WaveText8WaveText"></span><span id="_CPPv26BUG_TS6string8WaveText8WaveText"></span><span id="BUG_TS__string.WaveText.WaveText"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1ab26db4f5db224eed4273af8e334e67f4"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BUG_TS</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">msg</span></span>, <a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">keys</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">values</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv46BUG_TS6string8WaveText8WaveText" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Threadsafe variant of <a class="reference internal" href="#_m_i_e_s___debugging_8ipf_1a56e7ac7e88c87d97ecad2dd83ec7d3d1"><span class="std std-ref">BUG()</span></a></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429GetSizeOfAllWavesInExperimentv">
+<span id="_CPPv329GetSizeOfAllWavesInExperimentv"></span><span id="_CPPv229GetSizeOfAllWavesInExperimentv"></span><span id="GetSizeOfAllWavesInExperiment"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1af652499213b7e4030890a1b08def0e98"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSizeOfAllWavesInExperiment</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429GetSizeOfAllWavesInExperimentv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Debug helper which creates a textwave which will hold the names of all waves and their size in MiB. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423CheckAllDimensionLabelsv">
+<span id="_CPPv323CheckAllDimensionLabelsv"></span><span id="_CPPv223CheckAllDimensionLabelsv"></span><span id="CheckAllDimensionLabels"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1a21945e559c0ccd5edbfa0c2e39baea14"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CheckAllDimensionLabels</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423CheckAllDimensionLabelsv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Check that all stored waves (permanent and free) adhere to the liberal naming rules. </p>
+<p>These are only enforced since IP9 beta9 or later.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Number of waves not matching </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420CheckDimensionLabels10WaveOrNull">
+<span id="_CPPv320CheckDimensionLabels10WaveOrNull"></span><span id="_CPPv220CheckDimensionLabels10WaveOrNull"></span><span id="CheckDimensionLabels__WaveOrNull"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1ad3262ea7e1b1486e81b9d22d34478ff9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CheckDimensionLabels</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420CheckDimensionLabels10WaveOrNull" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419DEBUG_STOREFUNCTIONv">
+<span id="_CPPv319DEBUG_STOREFUNCTIONv"></span><span id="_CPPv219DEBUG_STOREFUNCTIONv"></span><span id="DEBUG_STOREFUNCTION"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1af54dd9466d715ed3c4e498a2f7d7d56c"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DEBUG_STOREFUNCTION</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv421functionReturnMessage">
+<span id="_CPPv321functionReturnMessage"></span><span id="_CPPv221functionReturnMessage"></span><span id="functionReturnMessage__stringC"></span><span class="target" id="_m_i_e_s___debugging_8ipf_1a09a63e7b15919a810beb339a7c9cf55d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">functionReturnMessage</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;return</span> <span class="pre">value&quot;</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_Debugging.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422FindFirstOutsideCallerP6stringP6stringP6string"><code class="docutils literal notranslate"><span class="pre">FindFirstOutsideCaller()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411DEBUGPRINTv8variable6string"><code class="docutils literal notranslate"><span class="pre">DEBUGPRINTv()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411DEBUGPRINTw10WaveOrNull6string"><code class="docutils literal notranslate"><span class="pre">DEBUGPRINTw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411DEBUGPRINTs6string6string"><code class="docutils literal notranslate"><span class="pre">DEBUGPRINTs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv410DEBUGPRINT6string8variable6string10WaveOrNull6string"><code class="docutils literal notranslate"><span class="pre">DEBUGPRINT()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413DEBUGPRINT_TS6string8variable6string6string"><code class="docutils literal notranslate"><span class="pre">DEBUGPRINT_TS()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419DEBUGPRINTSTACKINFOv"><code class="docutils literal notranslate"><span class="pre">DEBUGPRINTSTACKINFO()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416CreateHistoryLogv"><code class="docutils literal notranslate"><span class="pre">CreateHistoryLog()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414SaveHistoryLogv"><code class="docutils literal notranslate"><span class="pre">SaveHistoryLog()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419DEBUGPRINT_OR_ABORT6string"><code class="docutils literal notranslate"><span class="pre">DEBUGPRINT_OR_ABORT()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417DEBUG_TIMER_STARTv"><code class="docutils literal notranslate"><span class="pre">DEBUG_TIMER_START()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418DEBUGPRINT_ELAPSED8variable"><code class="docutils literal notranslate"><span class="pre">DEBUGPRINT_ELAPSED()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423DEBUGPRINT_ELAPSED_WAVE8variable"><code class="docutils literal notranslate"><span class="pre">DEBUGPRINT_ELAPSED_WAVE()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415EnableDebugModev"><code class="docutils literal notranslate"><span class="pre">EnableDebugMode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416DisableDebugModev"><code class="docutils literal notranslate"><span class="pre">DisableDebugMode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414EnableEvilModev"><code class="docutils literal notranslate"><span class="pre">EnableEvilMode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415DisableEvilModev"><code class="docutils literal notranslate"><span class="pre">DisableEvilMode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424DisableThreadsafeSupportv"><code class="docutils literal notranslate"><span class="pre">DisableThreadsafeSupport()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423EnableThreadsafeSupportv"><code class="docutils literal notranslate"><span class="pre">EnableThreadsafeSupport()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416DisableWaveCachev"><code class="docutils literal notranslate"><span class="pre">DisableWaveCache()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415EnableWaveCachev"><code class="docutils literal notranslate"><span class="pre">EnableWaveCache()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424EnableDangerousDebuggingv"><code class="docutils literal notranslate"><span class="pre">EnableDangerousDebugging()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415QueryIgorOption6string"><code class="docutils literal notranslate"><span class="pre">QueryIgorOption()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418ReportBugToLogfile6string14WaveTextOrNull14WaveTextOrNull"><code class="docutils literal notranslate"><span class="pre">ReportBugToLogfile()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv43BUG6string8WaveText8WaveText"><code class="docutils literal notranslate"><span class="pre">BUG()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv46BUG_TS6string8WaveText8WaveText"><code class="docutils literal notranslate"><span class="pre">BUG_TS()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429GetSizeOfAllWavesInExperimentv"><code class="docutils literal notranslate"><span class="pre">GetSizeOfAllWavesInExperiment()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423CheckAllDimensionLabelsv"><code class="docutils literal notranslate"><span class="pre">CheckAllDimensionLabels()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420CheckDimensionLabels10WaveOrNull"><code class="docutils literal notranslate"><span class="pre">CheckDimensionLabels()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419DEBUG_STOREFUNCTIONv"><code class="docutils literal notranslate"><span class="pre">DEBUG_STOREFUNCTION()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421functionReturnMessage"><code class="docutils literal notranslate"><span class="pre">functionReturnMessage</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___debug_panel___macro_8ipf.html"
+                          title="previous chapter">File MIES_DebugPanel_Macro.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___downsample_8ipf.html"
+                          title="next chapter">File MIES_Downsample.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___downsample_8ipf.html" title="File MIES_Downsample.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___debug_panel___macro_8ipf.html" title="File MIES_DebugPanel_Macro.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Debugging.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

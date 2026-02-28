@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File IPNWB_Writer.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_AcceleratedModifyGraph.ipf" href="_m_i_e_s___accelerated_modify_graph_8ipf.html" />
+    <link rel="prev" title="File IPNWB_Utils.ipf" href="_i_p_n_w_b___utils_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___accelerated_modify_graph_8ipf.html" title="File MIES_AcceleratedModifyGraph.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_i_p_n_w_b___utils_8ipf.html" title="File IPNWB_Utils.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File IPNWB_Writer.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-ipnwb-writer-ipf">
+<span id="id1"></span><h1>File IPNWB_Writer.ipf<a class="headerlink" href="#file-ipnwb-writer-ipf" title="Link to this heading">¶</a></h1>
+<p>Generic functions related to export into the NeuroDataWithoutBorders format. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418CreateCommonGroups8variableP12ToplevelInfoP11GeneralInfoP11SubjectInfo">
+<span id="_CPPv318CreateCommonGroups8variableP12ToplevelInfoP11GeneralInfoP11SubjectInfo"></span><span id="_CPPv218CreateCommonGroups8variableP12ToplevelInfoP11GeneralInfoP11SubjectInfo"></span><span id="CreateCommonGroups__variable.ToplevelInfoP.GeneralInfoP.SubjectInfoP"></span><span class="target" id="_i_p_n_w_b___writer_8ipf_1a4a1ff4b7d13c19d37de10116be39d0b2"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreateCommonGroups</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span>, <a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html#_CPPv412ToplevelInfo" title="ToplevelInfo"><span class="n"><span class="pre">ToplevelInfo</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">toplevelInfo</span></span>, <a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html#_CPPv411GeneralInfo" title="GeneralInfo"><span class="n"><span class="pre">GeneralInfo</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">generalInfo</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html#_CPPv411SubjectInfo" title="SubjectInfo"><span class="n"><span class="pre">SubjectInfo</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">subjectInfo</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418CreateCommonGroups8variableP12ToplevelInfoP11GeneralInfoP11SubjectInfo" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Create and fill common HDF5 groups and datasets. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>locationID</strong> – HDF5 identifier </p></li>
+<li><p><strong>toplevelInfo</strong> – [optional, see <a class="reference internal" href="../struct/struct_toplevel_info.html#struct_toplevel_info"><span class="std std-ref">ToplevelInfo()</span></a> for defaults] datasets directly below <code class="docutils literal notranslate"><span class="pre">/</span></code></p></li>
+<li><p><strong>generalInfo</strong> – [optional, see <a class="reference internal" href="../struct/struct_general_info.html#struct_general_info"><span class="std std-ref">GeneralInfo()</span></a> for defaults] datasets directly below <code class="docutils literal notranslate"><span class="pre">/general</span></code></p></li>
+<li><p><strong>subjectInfo</strong> – [optional, see <a class="reference internal" href="../struct/struct_subject_info.html#struct_subject_info"><span class="std std-ref">SubjectInfo()</span></a> for defaults] datasets below <code class="docutils literal notranslate"><span class="pre">/general/subject</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424CreateIntraCellularEphys8variable">
+<span id="_CPPv324CreateIntraCellularEphys8variable"></span><span id="_CPPv224CreateIntraCellularEphys8variable"></span><span id="CreateIntraCellularEphys__variable"></span><span class="target" id="_i_p_n_w_b___writer_8ipf_1a36f4a2ca7ca44d104d29d6da692527ca"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreateIntraCellularEphys</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424CreateIntraCellularEphys8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Create the HDF5 group for intracellular ephys. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>locationID</strong> – HDF5 identifier </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv49AddDevice8variable6string8variable6string">
+<span id="_CPPv39AddDevice8variable6string8variable6string"></span><span id="_CPPv29AddDevice8variable6string8variable6string"></span><span id="AddDevice__variable.string.variable.string"></span><span class="target" id="_i_p_n_w_b___writer_8ipf_1aec0a30203e6b3fa69f55dc1f615b8394"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddDevice</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">version</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">description</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49AddDevice8variable6string8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Add an entry for the device <code class="docutils literal notranslate"><span class="pre">name</span></code> in the nwb file specified by <code class="docutils literal notranslate"><span class="pre">locationID</span></code>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>locationID</strong> – HDF5 identifier </p></li>
+<li><p><strong>name</strong> – name of device to create </p></li>
+<li><p><strong>version</strong> – major NWB version </p></li>
+<li><p><strong>description</strong> – a string describing the created device </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>1 if a new device was created and 0 if it already existed </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412AddElectrode8variable6string8variable6string6string">
+<span id="_CPPv312AddElectrode8variable6string8variable6string6string"></span><span id="_CPPv212AddElectrode8variable6string8variable6string6string"></span><span id="AddElectrode__variable.string.variable.string.string"></span><span class="target" id="_i_p_n_w_b___writer_8ipf_1a7ff3532616c5bd4627ed116891baf86a"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddElectrode</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">version</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">data</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412AddElectrode8variable6string8variable6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Add an entry for the electrode <code class="docutils literal notranslate"><span class="pre">name</span></code> with contents <code class="docutils literal notranslate"><span class="pre">data</span></code></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424AddModificationTimeEntry8variable8variable">
+<span id="_CPPv324AddModificationTimeEntry8variable8variable"></span><span id="_CPPv224AddModificationTimeEntry8variable8variable"></span><span id="AddModificationTimeEntry__variable.variable"></span><span class="target" id="_i_p_n_w_b___writer_8ipf_1ae48e5a57f65679716d0effed07ddad45"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddModificationTimeEntry</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">version</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424AddModificationTimeEntry8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Add a modification timestamp to the NWB file. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417MarkAsCustomEntry8variable6string">
+<span id="_CPPv317MarkAsCustomEntry8variable6string"></span><span id="_CPPv217MarkAsCustomEntry8variable6string"></span><span id="MarkAsCustomEntry__variable.string"></span><span class="target" id="_i_p_n_w_b___writer_8ipf_1a1468f15718ea147e165fe922a0ddb90c"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MarkAsCustomEntry</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417MarkAsCustomEntry8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Mark a dataset/group as custom. </p>
+<p>According to the NWB spec everything not required should be specifically marked. In NWBv2, schema extensions can be used to accomplish this.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>locationID</strong> – HDF5 identifier </p></li>
+<li><p><strong>name</strong> – dataset or group name </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423AddTimeSeriesUnitAndRes8variable6string6string8variable8variable">
+<span id="_CPPv323AddTimeSeriesUnitAndRes8variable6string6string8variable8variable"></span><span id="_CPPv223AddTimeSeriesUnitAndRes8variable6string6string8variable8variable"></span><span id="AddTimeSeriesUnitAndRes__variable.string.string.variable.variable"></span><span class="target" id="_i_p_n_w_b___writer_8ipf_1a20cadcd05da04b40bbdcf3e6cddd5e9e"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddTimeSeriesUnitAndRes</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fullAbsPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">unitWithPrefix</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">resolution</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">overwrite</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423AddTimeSeriesUnitAndRes8variable6string6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Add unit and resolution to TimeSeries dataset. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html#_m_i_e_s___utilities___strings_8ipf_1a2a183c21c3a75a0e517c7f7e46908e26"><span class="std std-ref">ParseUnit</span></a></p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>locationID</strong> – HDF5 identifier </p></li>
+<li><p><strong>fullAbsPath</strong> – absolute path to the TimeSeries dataset </p></li>
+<li><p><strong>unitWithPrefix</strong> – unit with optional prefix of the data in the TimeSeries, </p></li>
+<li><p><strong>resolution</strong> – [optional, defaults to <code class="docutils literal notranslate"><span class="pre">NaN</span></code> for unknown] experimental resolution </p></li>
+<li><p><strong>overwrite</strong> – [optional, defaults to false] should existing attributes be overwritten </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411AddPropertyP20TimeSeriesProperties6string8variable6string">
+<span id="_CPPv311AddPropertyP20TimeSeriesProperties6string8variable6string"></span><span id="_CPPv211AddPropertyP20TimeSeriesProperties6string8variable6string"></span><span id="AddProperty__TimeSeriesPropertiesP.string.variable.string"></span><span class="target" id="_i_p_n_w_b___writer_8ipf_1a0577d52c544f02cb980c2c8e9a6459f5"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddProperty</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html#_CPPv420TimeSeriesProperties" title="TimeSeriesProperties"><span class="n"><span class="pre">TimeSeriesProperties</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">tsp</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nwbProp</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">unit</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411AddPropertyP20TimeSeriesProperties6string8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Add a TimeSeries property to the <code class="docutils literal notranslate"><span class="pre">tsp</span></code> structure. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417AddCustomPropertyP20TimeSeriesProperties6string8variable">
+<span id="_CPPv317AddCustomPropertyP20TimeSeriesProperties6string8variable"></span><span id="_CPPv217AddCustomPropertyP20TimeSeriesProperties6string8variable"></span><span id="AddCustomProperty__TimeSeriesPropertiesP.string.variable"></span><span class="target" id="_i_p_n_w_b___writer_8ipf_1abed1242d30a804f55b15907947a62b86"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddCustomProperty</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html#_CPPv420TimeSeriesProperties" title="TimeSeriesProperties"><span class="n"><span class="pre">TimeSeriesProperties</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">tsp</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nwbProp</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417AddCustomPropertyP20TimeSeriesProperties6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Add a custom TimeSeries property to the <code class="docutils literal notranslate"><span class="pre">names</span></code> and <code class="docutils literal notranslate"><span class="pre">data</span></code> waves. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_i_p_n_w_b___writer_8ipf_1a1468f15718ea147e165fe922a0ddb90c"><span class="std std-ref">MarkAsCustomEntry</span></a></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421GetNextFreeGroupIndex8variable6string">
+<span id="_CPPv321GetNextFreeGroupIndex8variable6string"></span><span id="_CPPv221GetNextFreeGroupIndex8variable6string"></span><span id="GetNextFreeGroupIndex__variable.string"></span><span class="target" id="_i_p_n_w_b___writer_8ipf_1a15ed5fbb86a4c8d28f5928d33a8e4d4d"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNextFreeGroupIndex</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421GetNextFreeGroupIndex8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the next free group index of the format <code class="docutils literal notranslate"><span class="pre">data_$NUM</span></code></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418WriteSingleChannel8variable6string8variableP18WriteChannelParamsP20TimeSeriesProperties8variable6string">
+<span id="_CPPv318WriteSingleChannel8variable6string8variableP18WriteChannelParamsP20TimeSeriesProperties8variable6string"></span><span id="_CPPv218WriteSingleChannel8variable6string8variableP18WriteChannelParamsP20TimeSeriesProperties8variable6string"></span><span id="WriteSingleChannel__variable.string.variable.WriteChannelParamsP.TimeSeriesPropertiesP.variable.string"></span><span class="target" id="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WriteSingleChannel</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">version</span></span>, <a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html#_CPPv418WriteChannelParams" title="WriteChannelParams"><span class="n"><span class="pre">WriteChannelParams</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">p</span></span>, <a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html#_CPPv420TimeSeriesProperties" title="TimeSeriesProperties"><span class="n"><span class="pre">TimeSeriesProperties</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">tsp</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">compressionMode</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nwbFilePath</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418WriteSingleChannel8variable6string8variableP18WriteChannelParamsP20TimeSeriesProperties8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Write the data of a single channel to the NWB file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>locationID</strong> – HDF5 file identifier </p></li>
+<li><p><strong>path</strong> – Absolute path in the HDF5 file where the data should be stored </p></li>
+<li><p><strong>version</strong> – major NWB version </p></li>
+<li><p><strong>p</strong> – Filled <a class="reference internal" href="../struct/struct_write_channel_params.html#struct_write_channel_params"><span class="std std-ref">WriteChannelParams</span></a> structure </p></li>
+<li><p><strong>tsp</strong> – Filled <a class="reference internal" href="../struct/struct_time_series_properties.html#struct_time_series_properties"><span class="std std-ref">TimeSeriesProperties</span></a> structure </p></li>
+<li><p><strong>compressionMode</strong> – [optional, defaults to NO_COMPRESSION] Type of compression to use, one of <a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html#_i_p_n_w_b___constants_8ipf_1CompressionMode"><span class="std std-ref">CompressionMode</span></a></p></li>
+<li><p><strong>nwbFilePath</strong> – [optional, required only for epoch writing] disc location of the NWB file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>locationID, this is different from the parameter if epoch information was written </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411WriteEpochs6string8WaveText6string8variable8variable">
+<span id="_CPPv311WriteEpochs6string8WaveText6string8variable8variable"></span><span id="_CPPv211WriteEpochs6string8WaveText6string8variable8variable"></span><span id="WriteEpochs__string.WaveText.string.variable.variable"></span><span class="target" id="_i_p_n_w_b___writer_8ipf_1ac08ac71c6ce1cc78e1612352b5c27120"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WriteEpochs</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nwbFilePath</span></span>, <a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">epochs</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">timeseries</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">startingTime</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">samplingRate</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411WriteEpochs6string8WaveText6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418AppendToEpochTable6string8variable8variable8WaveText8WaveText4wave4wave8variable">
+<span id="_CPPv318AppendToEpochTable6string8variable8variable8WaveText8WaveText4wave4wave8variable"></span><span id="_CPPv218AppendToEpochTable6string8variable8variable8WaveText8WaveText4wave4wave8variable"></span><span id="AppendToEpochTable__string.variable.variable.WaveText.WaveText.wave.wave.variable"></span><span class="target" id="_i_p_n_w_b___writer_8ipf_1a158fd13569672fde86ae958036aa2081"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AppendToEpochTable</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nwbFilePath</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">startTime</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stopTime</span></span>, <a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">tags</span></span>, <a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">timeseries</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">startingTime</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rate</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">treelevel</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418AppendToEpochTable6string8variable8variable8WaveText8WaveText4wave4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Append an epoch to the TimeIntervals table. </p>
+<p>Note: NWBv2 specific function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nwbFilePath</strong> – HDF5 file path (required for writing the timeseries compound using a custom XOP) </p></li>
+<li><p><strong>startTime</strong> – start time of the epoch in seconds in the global time coordinate system (included in the range) </p></li>
+<li><p><strong>stopTime</strong> – stop time of the epoch in seconds in the global time coordinate system (<em>not</em> included in the range) </p></li>
+<li><p><strong>tags</strong> – text wave with strings for the epoch, format is unspecified </p></li>
+<li><p><strong>timeseries</strong> – absolute paths to <em>existing</em> timeseries groups </p></li>
+<li><p><strong>startingTime</strong> – timeseries starting time in s according to NWBv2 spec </p></li>
+<li><p><strong>rate</strong> – timeseries rate in Hz according to NWBv2 spec </p></li>
+<li><p><strong>treelevel</strong> – Tree level of the epoch </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418CreateDynamicTable8variable6stringP12DynamicTable">
+<span id="_CPPv318CreateDynamicTable8variable6stringP12DynamicTable"></span><span id="_CPPv218CreateDynamicTable8variable6stringP12DynamicTable"></span><span id="CreateDynamicTable__variable.string.DynamicTableP"></span><span class="target" id="_i_p_n_w_b___writer_8ipf_1a78a850ef2a6a7e71419a47de5920b830"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreateDynamicTable</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html#_CPPv412DynamicTable" title="DynamicTable"><span class="n"><span class="pre">DynamicTable</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">dt</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418CreateDynamicTable8variable6stringP12DynamicTable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Create a Dynamic Table group at path. </p>
+<p>Note: A dynamic table needs at least an <code class="docutils literal notranslate"><span class="pre">id</span></code> and a <code class="docutils literal notranslate"><span class="pre">vectorData</span></code> column</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>NaN if the group already exists, 1 otherwise </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418AppendToSweepTable8variable6string8variable">
+<span id="_CPPv318AppendToSweepTable8variable6string8variable"></span><span id="_CPPv218AppendToSweepTable8variable6string8variable"></span><span id="AppendToSweepTable__variable.string.variable"></span><span class="target" id="_i_p_n_w_b___writer_8ipf_1abc06575d5481284eb6ce0d2bcf64565c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AppendToSweepTable</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">reference</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNumber</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418AppendToSweepTable8variable6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Append a sweep to the sweep table. </p>
+<p>Note: NWBv2 specific function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>locationID</strong> – HDF5 identifier </p></li>
+<li><p><strong>reference</strong> – path to dataset where sweep is stored </p></li>
+<li><p><strong>sweepNumber</strong> – sweep number </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419WriteSpecifications8variable">
+<span id="_CPPv319WriteSpecifications8variable"></span><span id="_CPPv219WriteSpecifications8variable"></span><span id="WriteSpecifications__variable"></span><span class="target" id="_i_p_n_w_b___writer_8ipf_1ab55a88a1027596756d2963a669f6fe08"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WriteSpecifications</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419WriteSpecifications8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>write NWB:N specifications that were used for creating this file </p>
+<p>Note: non threadsafe due to limitations in <code class="docutils literal notranslate"><span class="pre">LoadSpecification</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>locationID</strong> – open HDF5 file identifier </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418WriteSpecification8variable6string6string6string6string6string">
+<span id="_CPPv318WriteSpecification8variable6string6string6string6string6string"></span><span id="_CPPv218WriteSpecification8variable6string6string6string6string6string"></span><span id="WriteSpecification__variable.string.string.string.string.string"></span><span class="target" id="_i_p_n_w_b___writer_8ipf_1a4ec91452d4dad484c9fe9f93213609e1"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WriteSpecification</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">spec_name</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">spec_version</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">spec_location</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">spec_start</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">spec_include</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418WriteSpecification8variable6string6string6string6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>write a specifications group to <a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html#_i_p_n_w_b___constants_8ipf_1a3a222ea5de6d5510d28dc6c55495e683"><span class="std std-ref">NWB_SPECIFICATIONS</span></a> and link its location in <code class="docutils literal notranslate"></code>.specloc </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>locationID</strong> – open HDF5 file identifier </p></li>
+<li><p><strong>spec_name</strong> – name of namespace, e.g. “core” </p></li>
+<li><p><strong>spec_version</strong> – version of added namespace as string </p></li>
+<li><p><strong>spec_location</strong> – Igor File Path to location of *.json files in IPNWB repository </p></li>
+<li><p><strong>spec_start</strong> – namespace.json declaration file </p></li>
+<li><p><strong>spec_include</strong> – “;” separated list of include files for defining extensions within the namespace </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418WriteNeuroDataType8variable6string6string">
+<span id="_CPPv318WriteNeuroDataType8variable6string6string"></span><span id="_CPPv218WriteNeuroDataType8variable6string6string"></span><span id="WriteNeuroDataType__variable.string.string"></span><span class="target" id="_i_p_n_w_b___writer_8ipf_1a1ce67de3bb44b87b62fe61855f6bc18b"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WriteNeuroDataType</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">neurodata_type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418WriteNeuroDataType8variable6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Write a NeuroDataType. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html#_i_p_n_w_b___reader_8ipf_1a07f977bf847318adc5386687575e9aaa"><span class="std std-ref">ReadNeuroDataType</span></a></p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>locationID</strong> – HDF5 identifier </p></li>
+<li><p><strong>path</strong> – Path to element who’s DataType is queried </p></li>
+<li><p><strong>neurodata_type</strong> – String version of the data type that should get written </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424DetermineDataTypeRefTree6string">
+<span id="_CPPv324DetermineDataTypeRefTree6string"></span><span id="_CPPv224DetermineDataTypeRefTree6string"></span><span id="DetermineDataTypeRefTree__string"></span><span class="target" id="_i_p_n_w_b___writer_8ipf_1a1a2c3adab2a0ceab953783f1a15ad1f1"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DetermineDataTypeRefTree</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ancestry</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424DetermineDataTypeRefTree6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Determine the ancestry tree for the specified neurodata type definition. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ancestry</strong> – A list of all previously ancester dataTypes </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a specified neurodata type definition string json </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File IPNWB_Writer.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418CreateCommonGroups8variableP12ToplevelInfoP11GeneralInfoP11SubjectInfo"><code class="docutils literal notranslate"><span class="pre">CreateCommonGroups()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424CreateIntraCellularEphys8variable"><code class="docutils literal notranslate"><span class="pre">CreateIntraCellularEphys()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv49AddDevice8variable6string8variable6string"><code class="docutils literal notranslate"><span class="pre">AddDevice()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412AddElectrode8variable6string8variable6string6string"><code class="docutils literal notranslate"><span class="pre">AddElectrode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424AddModificationTimeEntry8variable8variable"><code class="docutils literal notranslate"><span class="pre">AddModificationTimeEntry()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417MarkAsCustomEntry8variable6string"><code class="docutils literal notranslate"><span class="pre">MarkAsCustomEntry()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423AddTimeSeriesUnitAndRes8variable6string6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">AddTimeSeriesUnitAndRes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411AddPropertyP20TimeSeriesProperties6string8variable6string"><code class="docutils literal notranslate"><span class="pre">AddProperty()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417AddCustomPropertyP20TimeSeriesProperties6string8variable"><code class="docutils literal notranslate"><span class="pre">AddCustomProperty()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421GetNextFreeGroupIndex8variable6string"><code class="docutils literal notranslate"><span class="pre">GetNextFreeGroupIndex()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418WriteSingleChannel8variable6string8variableP18WriteChannelParamsP20TimeSeriesProperties8variable6string"><code class="docutils literal notranslate"><span class="pre">WriteSingleChannel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411WriteEpochs6string8WaveText6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">WriteEpochs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418AppendToEpochTable6string8variable8variable8WaveText8WaveText4wave4wave8variable"><code class="docutils literal notranslate"><span class="pre">AppendToEpochTable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418CreateDynamicTable8variable6stringP12DynamicTable"><code class="docutils literal notranslate"><span class="pre">CreateDynamicTable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418AppendToSweepTable8variable6string8variable"><code class="docutils literal notranslate"><span class="pre">AppendToSweepTable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419WriteSpecifications8variable"><code class="docutils literal notranslate"><span class="pre">WriteSpecifications()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418WriteSpecification8variable6string6string6string6string6string"><code class="docutils literal notranslate"><span class="pre">WriteSpecification()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418WriteNeuroDataType8variable6string6string"><code class="docutils literal notranslate"><span class="pre">WriteNeuroDataType()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424DetermineDataTypeRefTree6string"><code class="docutils literal notranslate"><span class="pre">DetermineDataTypeRefTree()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_i_p_n_w_b___utils_8ipf.html"
+                          title="previous chapter">File IPNWB_Utils.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___accelerated_modify_graph_8ipf.html"
+                          title="next chapter">File MIES_AcceleratedModifyGraph.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___accelerated_modify_graph_8ipf.html" title="File MIES_AcceleratedModifyGraph.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_i_p_n_w_b___utils_8ipf.html" title="File IPNWB_Utils.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File IPNWB_Writer.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

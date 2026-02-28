@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Igor Pro module for reading and writing NeurodataWithoutBorder files &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="NWB version 1" href="doc/nwb1.html" />
+    <link rel="prev" title="CalculateTPLikePropsFromSweep Algorithm" href="../CalculateTPLikePropsFromSweep.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="doc/nwb1.html" title="NWB version 1"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../CalculateTPLikePropsFromSweep.html" title="CalculateTPLikePropsFromSweep Algorithm"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="igor-pro-module-for-reading-and-writing-neurodatawithoutborder-files">
+<h1>Igor Pro module for reading and writing NeurodataWithoutBorder files<a class="headerlink" href="#igor-pro-module-for-reading-and-writing-neurodatawithoutborder-files" title="Link to this heading">¶</a></h1>
+<p>This modules allows to easily write and read valid <a class="reference external" href="https://nwb.org">NeurodataWithoutBorder</a> style HDF5 files. It encapsulates the most commonly used
+parts of the specification in easy to use functions.</p>
+<section id="main-features">
+<h2>Main features<a class="headerlink" href="#main-features" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Read and write NWB compliant files</p>
+<ul>
+<li><p><a class="reference external" href="https://github.com/NeurodataWithoutBorders/specification/raw/master/version_1.0.5_beta/nwb_file_format_specification_1.0.5_beta.pdf">specification version 1.0.5, Aug 8 2016</a></p></li>
+<li><p><a class="reference external" href="NWB2HTML">specification version 2.9.0</a>, June 2025</p></li>
+</ul>
+</li>
+<li><p>Compatible with Igor Pro 7 or later on Windows/MacOSX</p></li>
+<li><p>Requires the stock HDF5 XOP only</p></li>
+</ul>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Quit Igor Pro</p></li>
+<li><p>Install the HDF5 XOP and the HDF5 Browser as described in <code class="docutils literal notranslate"><span class="pre">DisplayHelpTopic</span>
+<span class="pre">&quot;Installing</span> <span class="pre">The</span> <span class="pre">HDF5</span> <span class="pre">Package&quot;</span></code></p></li>
+<li><p>Create the following shortcut in
+<code class="docutils literal notranslate"><span class="pre">C:\Users\$username\Documents\WaveMetrics\Igor</span> <span class="pre">Pro</span> <span class="pre">XXX</span> <span class="pre">User</span> <span class="pre">Files</span></code>
+where XXX is your major Igor Pro version</p>
+<ul>
+<li><p>In “Igor Procedures” a shortcut pointing to the basefolder of the IPNWB
+package</p></li>
+</ul>
+</li>
+<li><p>Restart Igor Pro</p></li>
+</ul>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
+<p>The following examples show how to read and write into NWB version 1.0.5</p>
+<section id="writing-into-nwb">
+<h3>writing into NWB<a class="headerlink" href="#writing-into-nwb" title="Link to this heading">¶</a></h3>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="nd">#pragma</span><span class="w"> </span>rtGlobals<span class="w">        </span>= 3
+<span class="nd">#pragma</span><span class="w"> </span>rtFunctionErrors<span class="w"> </span>= 1
+<span class="nd">#pragma</span><span class="w"> </span>TextEncoding<span class="w">     </span>=<span class="w"> </span><span class="s">&quot;UTF-8&quot;</span>
+
+<span class="nd">#define</span><span class="w"> </span>IPNWB_DEFINE_IM
+
+<span class="nd">#include</span><span class="w"> </span><span class="s">&quot;IPNWB_include&quot;</span>
+
+<span class="kr">Function</span><span class="w"> </span>NWBWriterExample()
+
+<span class="w">	</span><span class="kt">variable</span><span class="w"> </span>fileID
+<span class="w">	</span><span class="kt">string</span><span class="w"> </span>contents,<span class="w"> </span>device
+<span class="w">	</span><span class="kt">variable</span><span class="w"> </span>version<span class="w"> </span>= 1
+
+<span class="w">	</span><span class="c1">// Open a dialog for selecting an HDF5 file name</span>
+<span class="w">	</span><span class="nc">HDF5CreateFile</span><span class="w"> </span>fileID<span class="w"> </span>as<span class="w"> </span><span class="s">&quot;&quot;</span>
+
+<span class="w">	</span><span class="c1">// fill gi/ti/si with appropriate data for your lab and experiment</span>
+<span class="w">	</span><span class="c1">// if you don&#39;t care about that info just pass the initialized structures</span>
+<span class="w">	</span><span class="kt">STRUCT</span><span class="w"> </span>IPNWB#GeneralInfo<span class="w">  </span>gi
+<span class="w">	</span><span class="kt">STRUCT</span><span class="w"> </span>IPNWB#ToplevelInfo<span class="w"> </span>ti
+<span class="w">	</span><span class="kt">STRUCT</span><span class="w"> </span>IPNWB#SubjectInfo<span class="w">  </span>si
+
+<span class="w">	</span><span class="c1">// takes care of initializing</span>
+<span class="w">	</span>IPNWB#InitToplevelInfo(ti,<span class="w"> </span>version)
+<span class="w">	</span>IPNWB#InitGeneralInfo(gi)
+<span class="w">	</span>IPNWB#InitSubjectInfo(si)
+
+<span class="w">	</span>IPNWB#CreateCommonGroups(fileID,<span class="w"> </span>toplevelInfo<span class="w"> </span>=<span class="w"> </span>ti,<span class="w"> </span>generalInfo<span class="w"> </span>=<span class="w"> </span>gi,<span class="w"> </span>subjectInfo<span class="w"> </span>=<span class="w"> </span>si)
+
+<span class="w">	</span><span class="c1">// If you open an existing NWB file to append to, use the following command</span>
+<span class="w">	</span><span class="c1">// to add an modification time entry, is implicitly called in IPNWB#CreateCommonGroups</span>
+<span class="w">	</span><span class="c1">// IPNWB#AddModificationTimeEntry(locationID)</span>
+
+<span class="w">	</span><span class="c1">// 1D waves from your measurement program</span>
+<span class="w">	</span><span class="c1">// we use fake data here</span>
+<span class="w">	</span><span class="nc">Make</span>/FREE/N=1000<span class="w"> </span>AD<span class="w"> </span>=<span class="w"> </span>(<span class="nf">sin</span>(p)<span class="w"> </span>+<span class="w"> </span><span class="nf">cos</span>(p<span class="w"> </span>/<span class="w"> </span>10))<span class="w"> </span>*<span class="w"> </span><span class="nf">enoise</span>(0.1)
+<span class="w">	</span><span class="nc">SetScale</span>/P<span class="w"> </span>x,<span class="w"> </span>0,<span class="w"> </span>5e-6,<span class="w"> </span><span class="s">&quot;s&quot;</span>
+
+<span class="w">	</span><span class="c1">// write AD data to the file</span>
+<span class="w">	</span><span class="kt">STRUCT</span><span class="w"> </span>IPNWB#WriteChannelParams<span class="w"> </span>params
+<span class="w">	</span>IPNWB#InitWriteChannelParams(params)
+
+<span class="w">	</span>params.device<span class="w">          </span>=<span class="w"> </span><span class="s">&quot;My Hardware&quot;</span>
+<span class="w">	</span>params.clampMode<span class="w">       </span>=<span class="w"> </span>0<span class="w"> </span><span class="c1">// 0 for V_CLAMP_MODE, 1 for I_CLAMP_MODE</span>
+<span class="w">	</span>params.channelSuffix<span class="w">   </span>=<span class="w"> </span><span class="s">&quot;&quot;</span>
+<span class="w">	</span>params.sweep<span class="w">           </span>= 123
+<span class="w">	</span>params.electrodeNumber<span class="w"> </span>= 1
+<span class="w">	</span>params.electrodeName<span class="w">   </span>=<span class="w"> </span><span class="s">&quot;Nose of the mouse&quot;</span>
+<span class="w">	</span>params.stimset<span class="w">         </span>=<span class="w"> </span><span class="s">&quot;My fancy sine curve&quot;</span>
+<span class="w">	</span>params.channelType<span class="w">     </span>=<span class="w"> </span>0<span class="w"> </span><span class="c1">// @see IPNWBChannelTypes</span>
+<span class="w">	</span><span class="kt">WAVE</span><span class="w"> </span>params.data<span class="w"> </span>=<span class="w"> </span>AD
+
+<span class="w">	</span>device<span class="w"> </span>=<span class="w"> </span><span class="s">&quot;My selfbuilt DAC&quot;</span>
+
+<span class="w">	</span>IPNWB#CreateIntraCellularEphys(fileID)
+<span class="w">	</span><span class="nc">sprintf</span><span class="w"> </span>contents,<span class="w"> </span><span class="s">&quot;Electrode %d&quot;</span>,<span class="w"> </span>params.ElectrodeNumber
+<span class="w">	</span>IPNWB#AddElectrode(fileID,<span class="w"> </span>params.electrodeName,<span class="w"> </span>version,<span class="w"> </span>contents,<span class="w"> </span>device)
+
+<span class="w">	</span><span class="c1">// calculate the timepoint of the first wave point relative to the session_start_time</span>
+<span class="w">	</span><span class="c1">// last time the wave was modified (UTC)</span>
+<span class="w">	</span>params.startingTime<span class="w">  </span>=<span class="w"> </span><span class="nf">NumberByKeY</span>(<span class="s">&quot;MODTIME&quot;</span>,<span class="w"> </span><span class="nf">WaveInfo</span>(AD,<span class="w"> </span>0))<span class="w"> </span>-<span class="w"> </span><span class="nf">date2secs</span>(-1, -1, -1)
+<span class="w">	</span>params.startingTime<span class="w"> </span>-=<span class="w"> </span>ti.session_start_time<span class="w"> </span><span class="c1">// relative to the start of the session</span>
+<span class="w">	</span><span class="c1">// we want the timestamp of the beginning of the measurement</span>
+<span class="w">	</span>params.startingTime<span class="w"> </span>-=<span class="w"> </span><span class="nf">IndexToScale</span>(AD,<span class="w"> </span><span class="nf">DimSize</span>(AD, 0) - 1, 0)
+
+<span class="w">	</span>IPNWB#AddDevice(fileID,<span class="w"> </span><span class="s">&quot;Device name&quot;</span>,<span class="w"> </span>version,<span class="w"> </span><span class="s">&quot;My hardware specs&quot;</span>)
+
+<span class="w">	</span><span class="kt">STRUCT</span><span class="w"> </span>IPNWB#TimeSeriesProperties<span class="w"> </span>tsp
+<span class="w">	</span>IPNWB#InitTimeSeriesProperties(tsp,<span class="w"> </span>params.channelType,<span class="w"> </span>params.clampMode)
+
+<span class="w">	</span><span class="c1">// all values not added are written into the missing_fields dataset</span>
+<span class="w">	</span>IPNWB#AddProperty(tsp,<span class="w"> </span><span class="s">&quot;capacitance_fast&quot;</span>, 1.0)
+<span class="w">	</span>IPNWB#AddProperty(tsp,<span class="w"> </span><span class="s">&quot;capacitance_slow&quot;</span>, 1.0)
+
+<span class="w">	</span><span class="c1">// setting chunkedLayout to zero makes writing faster but increases the final filesize</span>
+<span class="w">	</span>IPNWB#WriteSingleChannel(fileID,<span class="w"> </span><span class="s">&quot;/acquisition/timeseries&quot;</span>,<span class="w"> </span>version,<span class="w"> </span>params,<span class="w"> </span>tsp)
+
+<span class="w">	</span><span class="c1">// write DA, stimulus presentation and stimulus template accordingly</span>
+<span class="w">	</span><span class="c1">// ...</span>
+
+<span class="w">	</span><span class="c1">// close file</span>
+<span class="w">	</span>IPNWB#H5_CloseFile(fileID)
+<span class="kr">End</span>
+</pre></div>
+</div>
+</section>
+<section id="reading-from-nwb">
+<h3>reading from NWB<a class="headerlink" href="#reading-from-nwb" title="Link to this heading">¶</a></h3>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="nd">#pragma</span><span class="w"> </span>rtGlobals<span class="w">        </span>= 3
+<span class="nd">#pragma</span><span class="w"> </span>rtFunctionErrors<span class="w"> </span>= 1
+<span class="nd">#pragma</span><span class="w"> </span>TextEncoding<span class="w">     </span>=<span class="w"> </span><span class="s">&quot;UTF-8&quot;</span>
+
+<span class="nd">#define</span><span class="w"> </span>IPNWB_DEFINE_IM
+
+<span class="nd">#include</span><span class="w"> </span><span class="s">&quot;IPNWB_include&quot;</span>
+
+<span class="kr">Function</span><span class="w"> </span>NWBReaderExample()
+
+<span class="w">	</span><span class="kt">variable</span><span class="w"> </span>fileID,<span class="w"> </span>groupID,<span class="w"> </span>integrityCheck,<span class="w"> </span>numChannels,<span class="w"> </span><span class="nf">i</span>,<span class="w"> </span>version
+<span class="w">	</span><span class="kt">string</span><span class="w"> </span>contents,<span class="w"> </span>device,<span class="w"> </span>listOfDevices,<span class="w"> </span>elem,<span class="w"> </span>list
+<span class="w">	</span><span class="kt">STRUCT</span><span class="w"> </span>IPNWB#TimeSeriesProperties<span class="w"> </span>tsp
+
+<span class="w">	</span><span class="c1">// Open a dialog for selecting an HDF5 file name</span>
+<span class="w">	</span>fileID<span class="w">  </span>=<span class="w"> </span>IPNWB#H5_OpenFile(<span class="s">&quot;c:\\NWB-Sample-20160216.nwb&quot;</span>)
+<span class="w">	</span>version<span class="w"> </span>=<span class="w"> </span>IPNWB#GetNWBMajorVersion(IPNWB#ReadNWBVersion(fileID))
+
+<span class="w">	</span>integrityCheck<span class="w"> </span>=<span class="w"> </span>IPNWB#CheckIntegrity(fileID)
+<span class="w">	</span><span class="nc">printf</span><span class="w"> </span><span class="s">&quot;NWB integrity check: %s\r&quot;</span>,<span class="w"> </span><span class="nf">SelectString</span>(integrityCheck,<span class="w"> </span><span class="s">&quot;failed&quot;</span>,<span class="w"> </span><span class="s">&quot;passed&quot;</span>)
+
+<span class="w">	</span>listOfDevices<span class="w"> </span>=<span class="w"> </span>IPNWB#ReadDevices(fileID,<span class="w"> </span>version)
+<span class="w">	</span><span class="nc">printf</span><span class="w"> </span><span class="s">&quot;List of devices: %s\r&quot;</span>,<span class="w"> </span>listOfDevices
+
+<span class="w">	</span>list<span class="w">    </span>=<span class="w"> </span>IPNWB#ReadAcquisition(fileID,<span class="w"> </span>version)
+<span class="w">	</span>groupID<span class="w"> </span>=<span class="w"> </span>IPNWB#OpenAcquisition(fileID,<span class="w"> </span>version)
+
+<span class="w">	</span>numChannels<span class="w"> </span>=<span class="w"> </span><span class="nf">ItemsInList</span>(list)
+
+<span class="w">	</span><span class="nc">printf</span><span class="w"> </span><span class="s">&quot;\rLoading acquired data (%d)\r&quot;</span>,<span class="w"> </span>numChannels
+
+<span class="w">	</span><span class="k">for</span>(<span class="nf">i</span><span class="w"> </span>=<span class="w"> </span>0;<span class="w"> </span><span class="nf">i</span><span class="w"> </span>&lt;<span class="w"> </span>numChannels;<span class="w"> </span><span class="nf">i</span><span class="w"> </span>+= 1)
+<span class="w">		</span>elem<span class="w"> </span>=<span class="w"> </span><span class="nf">StringFromList</span>(<span class="nf">i</span>,<span class="w"> </span>list)
+
+<span class="w">		</span><span class="nc">printf</span><span class="w"> </span><span class="s">&quot;sweep number: %d\r&quot;</span>,<span class="w"> </span>IPNWB#LoadSweepNumber(groupID,<span class="w"> </span>elem,<span class="w"> </span>version)
+
+<span class="w">		</span><span class="kt">WAVE</span><span class="w"> </span>wv<span class="w"> </span>=<span class="w"> </span>IPNWB#LoadDataWave(groupID,<span class="w"> </span>elem)
+<span class="w">		</span><span class="nc">Duplicate</span>/O<span class="w"> </span>wv,<span class="w"> </span>$elem
+
+<span class="w">		</span>IPNWB#ReadTimeSeriesProperties(groupID,<span class="w"> </span>elem,<span class="w"> </span>tsp)
+<span class="w">		</span><span class="nc">print</span><span class="w"> </span>tsp
+<span class="w">	</span><span class="k">endfor</span>
+
+<span class="w">	</span><span class="nc">HDF5CloseGroup</span><span class="w"> </span>groupID
+
+<span class="w">	</span>list<span class="w">    </span>=<span class="w"> </span>IPNWB#ReadStimulus(fileID)
+<span class="w">	</span>groupID<span class="w"> </span>=<span class="w"> </span>IPNWB#OpenStimulus(fileID)
+
+<span class="w">	</span>numChannels<span class="w"> </span>=<span class="w"> </span><span class="nf">ItemsInList</span>(list)
+
+<span class="w">	</span><span class="nc">printf</span><span class="w"> </span><span class="s">&quot;\rLoading presentation data (%d)\r&quot;</span>,<span class="w"> </span>numChannels
+
+<span class="w">	</span><span class="k">for</span>(<span class="nf">i</span><span class="w"> </span>=<span class="w"> </span>0;<span class="w"> </span><span class="nf">i</span><span class="w"> </span>&lt;<span class="w"> </span>numChannels;<span class="w"> </span><span class="nf">i</span><span class="w"> </span>+= 1)
+<span class="w">		</span>elem<span class="w"> </span>=<span class="w"> </span><span class="nf">StringFromList</span>(<span class="nf">i</span>,<span class="w"> </span>list)
+
+<span class="w">		</span><span class="nc">printf</span><span class="w"> </span><span class="s">&quot;sweep number: %d\r&quot;</span>,<span class="w"> </span>IPNWB#LoadSweepNumber(groupID,<span class="w"> </span>elem,<span class="w"> </span>version)
+
+<span class="w">		</span><span class="kt">WAVE</span><span class="w"> </span>wv<span class="w"> </span>=<span class="w"> </span>IPNWB#LoadDataWave(groupID,<span class="w"> </span>elem)
+<span class="w">		</span><span class="nc">Duplicate</span>/O<span class="w"> </span>wv,<span class="w"> </span>$elem
+
+<span class="w">		</span>IPNWB#ReadTimeSeriesProperties(groupID,<span class="w"> </span>elem,<span class="w"> </span>tsp)
+<span class="w">		</span><span class="nc">print</span><span class="w"> </span>tsp
+<span class="w">	</span><span class="k">endfor</span>
+
+<span class="w">	</span><span class="nc">HDF5CloseGroup</span><span class="w"> </span>groupID
+
+<span class="w">	</span><span class="kt">STRUCT</span><span class="w"> </span>IPNWB#ToplevelInfo<span class="w"> </span>toplevelInfo
+<span class="w">	</span>IPNWB#ReadTopLevelInfo(fileID,<span class="w"> </span>toplevelInfo)
+<span class="w">	</span><span class="nc">print</span><span class="w"> </span>toplevelInfo
+<span class="w">	</span><span class="nc">print</span><span class="w"> </span>toplevelInfo.file_create_date
+
+<span class="w">	</span><span class="kt">STRUCT</span><span class="w"> </span>IPNWB#GeneralInfo<span class="w"> </span>generalInfo
+<span class="w">	</span>IPNWB#ReadGeneralInfo(fileID,<span class="w"> </span>generalInfo)
+<span class="w">	</span><span class="nc">print</span><span class="w"> </span>generalInfo
+
+<span class="w">	</span><span class="kt">STRUCT</span><span class="w"> </span>IPNWB#SubjectInfo<span class="w"> </span>subjectInfo
+<span class="w">	</span>IPNWB#ReadSubjectInfo(fileID,<span class="w"> </span>subjectInfo)
+<span class="w">	</span><span class="nc">print</span><span class="w"> </span>subjectInfo
+
+<span class="w">	</span><span class="c1">// close file</span>
+<span class="w">	</span><span class="nc">HDF5CloseFile</span><span class="w"> </span>fileID
+<span class="kr">End</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="nwb-file-format-description">
+<h2>NWB file format description<a class="headerlink" href="#nwb-file-format-description" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Datasets which originate from Igor Pro waves have the special attributes
+IGORWaveScaling, IGORWaveType, IGORWaveUnits, IGORWaveNote. These attributes
+allow easy and convenient loading of the data into Igor Pro back.</p></li>
+<li><p>For AD/DA/TTL groups the naming scheme is data_<code class="docutils literal notranslate"><span class="pre">XXXXX</span></code>_[AD/DA/TTL]
+<code class="docutils literal notranslate"><span class="pre">suffix</span></code> where <code class="docutils literal notranslate"><span class="pre">XXXXX</span></code> is a running number and <code class="docutils literal notranslate"><span class="pre">suffix</span></code> the channel
+number.  For some hardware types the <code class="docutils literal notranslate"><span class="pre">suffix</span></code> includes the TTL line as
+well. It is important to note that the number of digits in <code class="docutils literal notranslate"><span class="pre">XXXXX</span></code> is
+variable und subject to change, and that <code class="docutils literal notranslate"><span class="pre">XXXXX</span></code> is <em>not</em> the sweep number.</p></li>
+<li><p>In NWB v1, the sweep number is accessible from the source attribute only.
+Example source contents:
+<code class="docutils literal notranslate"><span class="pre">Device=ITC18USB_Dev_0;Sweep=0;AD=0;ElectrodeNumber=0;ElectrodeName=0</span></code></p></li>
+<li><p>For I=0 clamp mode neither the DA data nor the stimset is saved.</p></li>
+<li><p>Some entries in the following tree are specific to MIES, these are marked as
+custom entries. Users running MIES are encouraged to use the same NWB layout
+and extensions.</p></li>
+</ul>
+<section id="nwb-file-organization">
+<h3>NWB File Organization<a class="headerlink" href="#nwb-file-organization" title="Link to this heading">¶</a></h3>
+<p>The current major version of the file format is 2. Version 1 is considered
+supported but deprecated.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="doc/nwb1.html">NWB version 1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doc/nwb2.html">NWB version 2</a></li>
+</ul>
+</div>
+</section>
+<section id="nwb-schema-upgrade">
+<h3>NWB schema upgrade<a class="headerlink" href="#nwb-schema-upgrade" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>python -m venv ~/.venvs/ipnwb</p></li>
+<li><p>pip install -r requirements.txt</p></li>
+<li><p>./update_specifications.sh</p></li>
+<li><p># The last command should not change anything in the repo, if yes investigate why and commit the changes</p></li>
+<li><p>Choose a new nwb-schema version</p></li>
+<li><p>Update the <cite>specifcations</cite> submodule to that version</p></li>
+<li><p>./update_specifications.sh</p></li>
+<li><p>Commit the changes, update versions in README.rst and check if MIES works with this new IPNWB version</p></li>
+</ul>
+</section>
+<section id="online-resources">
+<h3>Online Resources<a class="headerlink" href="#online-resources" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://neurodatawithoutborders.github.io">https://neurodatawithoutborders.github.io</a></p></li>
+<li><p><a class="reference external" href="https://crcns.org/NWB">https://crcns.org/NWB</a></p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Igor Pro module for reading and writing NeurodataWithoutBorder files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#main-features">Main features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#writing-into-nwb">writing into NWB</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reading-from-nwb">reading from NWB</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#nwb-file-format-description">NWB file format description</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nwb-file-organization">NWB File Organization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="doc/nwb1.html">NWB version 1</a></li>
+<li class="toctree-l4"><a class="reference internal" href="doc/nwb2.html">NWB version 2</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#nwb-schema-upgrade">NWB schema upgrade</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#online-resources">Online Resources</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="../CalculateTPLikePropsFromSweep.html"
+                          title="previous chapter">CalculateTPLikePropsFromSweep Algorithm</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="doc/nwb1.html"
+                          title="next chapter">NWB version 1</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="doc/nwb1.html" title="NWB version 1"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../CalculateTPLikePropsFromSweep.html" title="CalculateTPLikePropsFromSweep Algorithm"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File MIES_SweepFormula_Parser.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_SweepSaving.ipf" href="_m_i_e_s___sweep_saving_8ipf.html" />
+    <link rel="prev" title="File MIES_SweepFormula_PSX_Macro.ipf" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___sweep_saving_8ipf.html" title="File MIES_SweepSaving.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html" title="File MIES_SweepFormula_PSX_Macro.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_SweepFormula_Parser.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-sweepformula-parser-ipf">
+<span id="id1"></span><h1>File MIES_SweepFormula_Parser.ipf<a class="headerlink" href="#file-mies-sweepformula-parser-ipf" title="Link to this heading">¶</a></h1>
+<p><strong>SFP</strong> Sweep formula parser </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422SFP_ParseFormulaToJSON6string">
+<span id="_CPPv322SFP_ParseFormulaToJSON6string"></span><span id="_CPPv222SFP_ParseFormulaToJSON6string"></span><span id="SFP_ParseFormulaToJSON__string"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1aa950e8a81fae6680beca8cf4afefb090"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFP_ParseFormulaToJSON</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">formula</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422SFP_ParseFormulaToJSON6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418SFP_StringifyState8variable">
+<span id="_CPPv318SFP_StringifyState8variable"></span><span id="_CPPv218SFP_StringifyState8variable"></span><span id="SFP_StringifyState__variable"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a8c6270ede98d84daa70fc264aedcb5e6"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFP_StringifyState</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">state</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418SFP_StringifyState8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419SFP_StringifyAction8variable">
+<span id="_CPPv319SFP_StringifyAction8variable"></span><span id="_CPPv219SFP_StringifyAction8variable"></span><span id="SFP_StringifyAction__variable"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a4f16a24a839d913730b6d84419b20907"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFP_StringifyAction</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">action</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419SFP_StringifyAction8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418SFP_LogParserState6string8variable8variable8variable8variable8variable">
+<span id="_CPPv318SFP_LogParserState6string8variable8variable8variable8variable8variable"></span><span id="_CPPv218SFP_LogParserState6string8variable8variable8variable8variable8variable"></span><span id="SFP_LogParserState__string.variable.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a995669fee6231d6f117e1273b0c46dea"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFP_LogParserState</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">token</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">state</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lastState</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lastCalculation</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">action</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">level</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418SFP_LogParserState6string8variable8variable8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423SFP_LogParserErrorState6string">
+<span id="_CPPv323SFP_LogParserErrorState6string"></span><span id="_CPPv223SFP_LogParserErrorState6string"></span><span id="SFP_LogParserErrorState__string"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1ac44ca7384822a6afe3094ad6a335ff89"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFP_LogParserErrorState</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">msg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423SFP_LogParserErrorState6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422SFP_LogParserStateInit6string">
+<span id="_CPPv322SFP_LogParserStateInit6string"></span><span id="_CPPv222SFP_LogParserStateInit6string"></span><span id="SFP_LogParserStateInit__string"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a79a18049269bc5d6eb0c46182506517a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFP_LogParserStateInit</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">formula</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422SFP_LogParserStateInit6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422SFP_SaveParserStateLogv">
+<span id="_CPPv322SFP_SaveParserStateLogv"></span><span id="_CPPv222SFP_SaveParserStateLogv"></span><span id="SFP_SaveParserStateLog"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1ab711aa9d1dc38836293490e2bbb525df"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFP_SaveParserStateLog</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422SFP_SaveParserStateLogv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417SFP_FormulaParser6string8variableP8variable8variable">
+<span id="_CPPv317SFP_FormulaParser6string8variableP8variable8variable"></span><span id="_CPPv217SFP_FormulaParser6string8variableP8variable8variable"></span><span id="SFP_FormulaParser__string.variable.variableP.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1ae27a0a56860cfd22df8f719771d48909"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFP_FormulaParser</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">formula</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bufOffset</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">createdArray</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">indentLevel</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417SFP_FormulaParser6string8variableP8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>serialize a string formula into JSON </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>formula</strong> – string formula </p></li>
+<li><p><strong>bufOffset</strong> – Parser internal character offset into the initial formula string. When SFP_FormulaParser is called from a outside the parser this should be zero. </p></li>
+<li><p><strong>createdArray</strong> – [optional, default 0] set on recursive calls, returns boolean if parser created a JSON array </p></li>
+<li><p><strong>indentLevel</strong> – [internal use only] recursive call level, used for debug output </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a JSONid representation </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv431SFP_ParserHandleRemainingBufferP13SF_ParserData6string6string">
+<span id="_CPPv331SFP_ParserHandleRemainingBufferP13SF_ParserData6string6string"></span><span id="_CPPv231SFP_ParserHandleRemainingBufferP13SF_ParserData6string6string"></span><span id="SFP_ParserHandleRemainingBuffer__SF_ParserDataP.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a701b2e70f5101908a41f0559b41e5c47"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFP_ParserHandleRemainingBuffer</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv413SF_ParserData" title="SF_ParserData"><span class="n"><span class="pre">SF_ParserData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">pad</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">formula</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">buffer</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431SFP_ParserHandleRemainingBufferP13SF_ParserData6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420SFP_ParserModifyJSON8variable8variable8variable6string6string8variable">
+<span id="_CPPv320SFP_ParserModifyJSON8variable8variable8variable6string6string8variable"></span><span id="_CPPv220SFP_ParserModifyJSON8variable8variable8variable6string6string8variable"></span><span id="SFP_ParserModifyJSON__variable.variable.variable.string.string.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a1c0349cfb415d417040095425a568b6b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv413SF_ParserData" title="SF_ParserData"><span class="n"><span class="pre">SF_ParserData</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFP_ParserModifyJSON</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">action</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lastAction</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">state</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">buffer</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">token</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">indentLevel</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420SFP_ParserModifyJSON8variable8variable8variable6string6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428SFP_ParserGetActionFromState8variable8variable8variable8variable">
+<span id="_CPPv328SFP_ParserGetActionFromState8variable8variable8variable8variable"></span><span id="_CPPv228SFP_ParserGetActionFromState8variable8variable8variable8variable"></span><span id="SFP_ParserGetActionFromState__variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a123d83d003b8a3f35ef4b9df75944b13"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFP_ParserGetActionFromState</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">state</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lastCalculation</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bufferIsEmpty</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428SFP_ParserGetActionFromState8variable8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427SFP_ParserGetStateFromToken6string8variable6string">
+<span id="_CPPv327SFP_ParserGetStateFromToken6string8variable6string"></span><span id="_CPPv227SFP_ParserGetStateFromToken6string8variable6string"></span><span id="SFP_ParserGetStateFromToken__string.variable.string"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a0c196d442d5b7c385aa4a14b92297e79"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFP_ParserGetStateFromToken</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">token</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">buffer</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427SFP_ParserGetStateFromToken6string8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430SFP_ParserEvaluatePossibleSignv">
+<span id="_CPPv330SFP_ParserEvaluatePossibleSignv"></span><span id="_CPPv230SFP_ParserEvaluatePossibleSignv"></span><span id="SFP_ParserEvaluatePossibleSign"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a73c3d68d34dd6e2efb82acac197f4fd5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv413SF_ParserData" title="SF_ParserData"><span class="n"><span class="pre">SF_ParserData</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFP_ParserEvaluatePossibleSign</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430SFP_ParserEvaluatePossibleSignv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>If buffer has a sign then it is removed from buffer. If the sign was a minus then a negation is prefixed in the json. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417SFP_ParserAddJSON6string8variable8variable">
+<span id="_CPPv317SFP_ParserAddJSON6string8variable8variable"></span><span id="_CPPv217SFP_ParserAddJSON6string8variable8variable"></span><span id="SFP_ParserAddJSON__string.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1aefade3427c164b5e6589246f09bd2767"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv413SF_ParserData" title="SF_ParserData"><span class="n"><span class="pre">SF_ParserData</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFP_ParserAddJSON</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">formula</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bufOffset</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">indentLevel</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417SFP_ParserAddJSON6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Parses a formula to json and puts it at jsonPath into the current json. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424SFP_ParserInsertNegationv">
+<span id="_CPPv324SFP_ParserInsertNegationv"></span><span id="_CPPv224SFP_ParserInsertNegationv"></span><span id="SFP_ParserInsertNegation"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1ac497bf69ea652f34269eeba68ba7fb9e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv413SF_ParserData" title="SF_ParserData"><span class="n"><span class="pre">SF_ParserData</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFP_ParserInsertNegation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424SFP_ParserInsertNegationv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422SFP_ParserAdaptSubPath6string">
+<span id="_CPPv322SFP_ParserAdaptSubPath6string"></span><span id="_CPPv222SFP_ParserAdaptSubPath6string"></span><span id="SFP_ParserAdaptSubPath__string"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a97584b05058661f32dede1a23342763d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv413SF_ParserData" title="SF_ParserData"><span class="n"><span class="pre">SF_ParserData</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFP_ParserAdaptSubPath</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">subPath</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422SFP_ParserAdaptSubPath6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422SFP_FPPutInArrayAtPath6string">
+<span id="_CPPv322SFP_FPPutInArrayAtPath6string"></span><span id="_CPPv222SFP_FPPutInArrayAtPath6string"></span><span id="SFP_FPPutInArrayAtPath__string"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a525000b2a1808bcb00d172159b503a07"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv413SF_ParserData" title="SF_ParserData"><span class="n"><span class="pre">SF_ParserData</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFP_FPPutInArrayAtPath</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPathArray</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422SFP_FPPutInArrayAtPath6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Create a new empty array object, add mainId into it at path and return created json, release subId. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414SFP_FPAddArray8variable8variable8variable">
+<span id="_CPPv314SFP_FPAddArray8variable8variable8variable"></span><span id="_CPPv214SFP_FPAddArray8variable8variable8variable"></span><span id="SFP_FPAddArray__variable.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a41b5b4d6060f36d987f0bdcb25130ff1"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv413SF_ParserData" title="SF_ParserData"><span class="n"><span class="pre">SF_ParserData</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFP_FPAddArray</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">subId</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">createArray</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">firstElementOffset</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414SFP_FPAddArray8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Adds subId to mainId, if necessary puts subId into an array, release subId. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417SF_GetAddJSONPath8variable6string">
+<span id="_CPPv317SF_GetAddJSONPath8variable6string"></span><span id="_CPPv217SF_GetAddJSONPath8variable6string"></span><span id="SF_GetAddJSONPath__variable.string"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a03b47db29eaf2ca089c174e685296f14"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_GetAddJSONPath</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417SF_GetAddJSONPath8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421SF_ExpandWithBasePath8WaveText">
+<span id="_CPPv321SF_ExpandWithBasePath8WaveText"></span><span id="_CPPv221SF_ExpandWithBasePath8WaveText"></span><span id="SF_ExpandWithBasePath__WaveText"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a29df9398d33ecebc5861d811f01067c5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_ExpandWithBasePath</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">srcLocs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421SF_ExpandWithBasePath8WaveText" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421SFP_AddSourceLocationP13SF_ParserData8variable8variable">
+<span id="_CPPv321SFP_AddSourceLocationP13SF_ParserData8variable8variable"></span><span id="_CPPv221SFP_AddSourceLocationP13SF_ParserData8variable8variable"></span><span id="SFP_AddSourceLocation__SF_ParserDataP.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1acbef30793609af83c8f3663c62e50471"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFP_AddSourceLocation</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv413SF_ParserData" title="SF_ParserData"><span class="n"><span class="pre">SF_ParserData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">pad</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">formulaOffset</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">arrayOnly</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421SFP_AddSourceLocationP13SF_ParserData8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Adds the current jsonPath with formulaOffset as source location to the source location wave. </p>
+<p>The following modifications are made to the path string:<ul class="simple">
+<li><p>the path is always prefixed with a “/” if it is not empty and has no “/” at the start</p></li>
+<li><p>if the current pad.jsonPath points to an array then the last existing array index is added to the path, e.g. “/array” -&gt; “/array/3”</p></li>
+<li><p>if arrayOnly flag is set and pad.jsonPath points to an array then only the path to the array without index is added </p></li>
+</ul>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423SFP_AdaptSourceSubPathsP13SF_ParserData8WaveText8variable">
+<span id="_CPPv323SFP_AdaptSourceSubPathsP13SF_ParserData8WaveText8variable"></span><span id="_CPPv223SFP_AdaptSourceSubPathsP13SF_ParserData8WaveText8variable"></span><span id="SFP_AdaptSourceSubPaths__SF_ParserDataP.WaveText.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a39b889bec062b856fcad1bc09ec749f6"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFP_AdaptSourceSubPaths</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv413SF_ParserData" title="SF_ParserData"><span class="n"><span class="pre">SF_ParserData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">pad</span></span>, <a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">srcLocsSub</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">addArrayIndex</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423SFP_AdaptSourceSubPathsP13SF_ParserData8WaveText8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>When the parsing returns from a recursion where a deeper level of the formula was parsed it also returns the gathered source locations from this deeper level. These source locations need to be prefixed by the path where the JSON returned by the recursion is inserted for the current level. This function applies that prefixing. The caller usually concatenates the wave with the modified paths to the wave with the paths from the current recursion level. The prefix is the current pad.jsonPath with the following modifications: </p>
+<p><ul class="simple">
+<li><p>the prefix is always prefixed with a “/” if it is not empty and has no “/” at the start</p></li>
+<li><p>if addArrayIndex flag is set and the current pad.jsonPath is an array then the last existing array index is added to the prefix e.g. “/currentPath” -&gt; “/currentPath/3” All source location paths from the deeper recursion are then prefixed with this path </p></li>
+</ul>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427SFP_AddToSourceLocationWave8WaveText6string8variable">
+<span id="_CPPv327SFP_AddToSourceLocationWave8WaveText6string8variable"></span><span id="_CPPv227SFP_AddToSourceLocationWave8WaveText6string8variable"></span><span id="SFP_AddToSourceLocationWave__WaveText.string.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a4087925e9ed73163ac6653df6dd3bd56"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFP_AddToSourceLocationWave</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">srcLocs</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">srcPath</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">loc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427SFP_AddToSourceLocationWave8WaveText6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430SFP_ConvertSourceLocWaveToJSON8WaveText6string">
+<span id="_CPPv330SFP_ConvertSourceLocWaveToJSON8WaveText6string"></span><span id="_CPPv230SFP_ConvertSourceLocWaveToJSON8WaveText6string"></span><span id="SFP_ConvertSourceLocWaveToJSON__WaveText.string"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a21490b30cd4243865cb65ec179040437"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFP_ConvertSourceLocWaveToJSON</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">srcLocs</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">formula</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430SFP_ConvertSourceLocWaveToJSON8WaveText6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>After parsing a SF formula the gathered source locations are put into a JSON by this function. The JSON has a simple format and is used a key/value store: </p>
+<p><em>key : value </em></p>
+<p>“” : formula (string) “&lt;path1&gt;” : character offset (numeric) “&lt;path2&gt;” : character offset (numeric) … : …</p>
+<p>The JSON has to be released by the caller of SFP_ParseFormulaToJSON after its information is no longer needed or in the case of a SFH_ASSERT by the assertion handler (currently in SFH_GetAssertLocationMessage) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412SFP_AddArrayP13SF_ParserData8WaveText8variable8variable">
+<span id="_CPPv312SFP_AddArrayP13SF_ParserData8WaveText8variable8variable"></span><span id="_CPPv212SFP_AddArrayP13SF_ParserData8WaveText8variable8variable"></span><span id="SFP_AddArray__SF_ParserDataP.WaveText.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a4f2815c5ea89e2c17d8c46b2775dcdf3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFP_AddArray</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv413SF_ParserData" title="SF_ParserData"><span class="n"><span class="pre">SF_ParserData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">pad</span></span>, <a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">srcLocsSub</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">subId</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">createArray</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412SFP_AddArrayP13SF_ParserData8WaveText8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv433SFP_AdaptSourceSubPathsAtJSONPathP13SF_ParserData8WaveText6string">
+<span id="_CPPv333SFP_AdaptSourceSubPathsAtJSONPathP13SF_ParserData8WaveText6string"></span><span id="_CPPv233SFP_AdaptSourceSubPathsAtJSONPathP13SF_ParserData8WaveText6string"></span><span id="SFP_AdaptSourceSubPathsAtJSONPath__SF_ParserDataP.WaveText.string"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a8835ed4cb57c38cd34ee41f9f007759a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFP_AdaptSourceSubPathsAtJSONPath</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv413SF_ParserData" title="SF_ParserData"><span class="n"><span class="pre">SF_ParserData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">pad</span></span>, <a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">srcLocsSub</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv433SFP_AdaptSourceSubPathsAtJSONPathP13SF_ParserData8WaveText6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv422SF_STATE_UNINITIALIZED">
+<span id="_CPPv322SF_STATE_UNINITIALIZED"></span><span id="_CPPv222SF_STATE_UNINITIALIZED"></span><span id="SF_STATE_UNINITIALIZED__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1aee34425a9ddc2654a52103839a6fc964"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_UNINITIALIZED</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv422SF_STATE_UNINITIALIZED" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv416SF_STATE_COLLECT">
+<span id="_CPPv316SF_STATE_COLLECT"></span><span id="_CPPv216SF_STATE_COLLECT"></span><span id="SF_STATE_COLLECT__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a3974b3d01675964948d18f374f71ab65"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_COLLECT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv416SF_STATE_COLLECT" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417SF_STATE_ADDITION">
+<span id="_CPPv317SF_STATE_ADDITION"></span><span id="_CPPv217SF_STATE_ADDITION"></span><span id="SF_STATE_ADDITION__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1aca836bde9a6feafa4bec06707705cb80"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_ADDITION</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><a class="headerlink" href="#_CPPv417SF_STATE_ADDITION" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420SF_STATE_SUBTRACTION">
+<span id="_CPPv320SF_STATE_SUBTRACTION"></span><span id="_CPPv220SF_STATE_SUBTRACTION"></span><span id="SF_STATE_SUBTRACTION__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1aee9a7526bb1761c5ed5a8be8a13dc6f7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_SUBTRACTION</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">3</span></span><a class="headerlink" href="#_CPPv420SF_STATE_SUBTRACTION" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv423SF_STATE_MULTIPLICATION">
+<span id="_CPPv323SF_STATE_MULTIPLICATION"></span><span id="_CPPv223SF_STATE_MULTIPLICATION"></span><span id="SF_STATE_MULTIPLICATION__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1aa335a2ee571cdcf4493aa924550c2ce7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_MULTIPLICATION</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><a class="headerlink" href="#_CPPv423SF_STATE_MULTIPLICATION" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420SF_STATE_PARENTHESIS">
+<span id="_CPPv320SF_STATE_PARENTHESIS"></span><span id="_CPPv220SF_STATE_PARENTHESIS"></span><span id="SF_STATE_PARENTHESIS__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a6560bc7a41e15cb06b40852832fde08e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_PARENTHESIS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">6</span></span><a class="headerlink" href="#_CPPv420SF_STATE_PARENTHESIS" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417SF_STATE_FUNCTION">
+<span id="_CPPv317SF_STATE_FUNCTION"></span><span id="_CPPv217SF_STATE_FUNCTION"></span><span id="SF_STATE_FUNCTION__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1aae6b7a59a5235ff51bfdb3b13c17277c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_FUNCTION</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">7</span></span><a class="headerlink" href="#_CPPv417SF_STATE_FUNCTION" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv414SF_STATE_ARRAY">
+<span id="_CPPv314SF_STATE_ARRAY"></span><span id="_CPPv214SF_STATE_ARRAY"></span><span id="SF_STATE_ARRAY__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a77553b0b997dac77d79fd638e914e1de"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_ARRAY</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">8</span></span><a class="headerlink" href="#_CPPv414SF_STATE_ARRAY" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv421SF_STATE_ARRAYELEMENT">
+<span id="_CPPv321SF_STATE_ARRAYELEMENT"></span><span id="_CPPv221SF_STATE_ARRAYELEMENT"></span><span id="SF_STATE_ARRAYELEMENT__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a3fed87f42ab3b88445bb7ca47a08b23e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_ARRAYELEMENT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">9</span></span><a class="headerlink" href="#_CPPv421SF_STATE_ARRAYELEMENT" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv419SF_STATE_WHITESPACE">
+<span id="_CPPv319SF_STATE_WHITESPACE"></span><span id="_CPPv219SF_STATE_WHITESPACE"></span><span id="SF_STATE_WHITESPACE__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1af8c671b59d1a17bf844868a4748e03d3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_WHITESPACE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">10</span></span><a class="headerlink" href="#_CPPv419SF_STATE_WHITESPACE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv416SF_STATE_NEWLINE">
+<span id="_CPPv316SF_STATE_NEWLINE"></span><span id="_CPPv216SF_STATE_NEWLINE"></span><span id="SF_STATE_NEWLINE__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1ab0d942a311bb952c4811ebea6f5de5fb"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_NEWLINE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">12</span></span><a class="headerlink" href="#_CPPv416SF_STATE_NEWLINE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417SF_STATE_DIVISION">
+<span id="_CPPv317SF_STATE_DIVISION"></span><span id="_CPPv217SF_STATE_DIVISION"></span><span id="SF_STATE_DIVISION__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a26ac81ccda01590f07f6a1d02d1ff697"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_DIVISION</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">13</span></span><a class="headerlink" href="#_CPPv417SF_STATE_DIVISION" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv415SF_STATE_STRING">
+<span id="_CPPv315SF_STATE_STRING"></span><span id="_CPPv215SF_STATE_STRING"></span><span id="SF_STATE_STRING__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1ad1455d342c4612f9e25f0bcc157a9eae"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_STRING</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">14</span></span><a class="headerlink" href="#_CPPv415SF_STATE_STRING" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv425SF_STATE_STRINGTERMINATOR">
+<span id="_CPPv325SF_STATE_STRINGTERMINATOR"></span><span id="_CPPv225SF_STATE_STRINGTERMINATOR"></span><span id="SF_STATE_STRINGTERMINATOR__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1abd7e066c51af3564fe2112b920610eb1"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_STRINGTERMINATOR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">15</span></span><a class="headerlink" href="#_CPPv425SF_STATE_STRINGTERMINATOR" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv423SF_ACTION_UNINITIALIZED">
+<span id="_CPPv323SF_ACTION_UNINITIALIZED"></span><span id="_CPPv223SF_ACTION_UNINITIALIZED"></span><span id="SF_ACTION_UNINITIALIZED__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1afe2f21d8104ac6bfc8470c560322e75f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_ACTION_UNINITIALIZED</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv423SF_ACTION_UNINITIALIZED" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv414SF_ACTION_SKIP">
+<span id="_CPPv314SF_ACTION_SKIP"></span><span id="_CPPv214SF_ACTION_SKIP"></span><span id="SF_ACTION_SKIP__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a31c825bc269fc6ef8b24f7efe997111a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_ACTION_SKIP</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv414SF_ACTION_SKIP" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417SF_ACTION_COLLECT">
+<span id="_CPPv317SF_ACTION_COLLECT"></span><span id="_CPPv217SF_ACTION_COLLECT"></span><span id="SF_ACTION_COLLECT__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a1f378f9145947bd611817b682e712ec4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_ACTION_COLLECT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv417SF_ACTION_COLLECT" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420SF_ACTION_LOWERORDER">
+<span id="_CPPv320SF_ACTION_LOWERORDER"></span><span id="_CPPv220SF_ACTION_LOWERORDER"></span><span id="SF_ACTION_LOWERORDER__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1ab9610d788ccb7b776d6d4a48bbd66cea"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_ACTION_LOWERORDER</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><a class="headerlink" href="#_CPPv420SF_ACTION_LOWERORDER" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv421SF_ACTION_HIGHERORDER">
+<span id="_CPPv321SF_ACTION_HIGHERORDER"></span><span id="_CPPv221SF_ACTION_HIGHERORDER"></span><span id="SF_ACTION_HIGHERORDER__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a50fc25a29d346da7edba3ed5e26b3349"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_ACTION_HIGHERORDER</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">3</span></span><a class="headerlink" href="#_CPPv421SF_ACTION_HIGHERORDER" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv422SF_ACTION_ARRAYELEMENT">
+<span id="_CPPv322SF_ACTION_ARRAYELEMENT"></span><span id="_CPPv222SF_ACTION_ARRAYELEMENT"></span><span id="SF_ACTION_ARRAYELEMENT__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1ac11bd7180808edbe8807a5c678fced7a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_ACTION_ARRAYELEMENT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><a class="headerlink" href="#_CPPv422SF_ACTION_ARRAYELEMENT" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv421SF_ACTION_PARENTHESIS">
+<span id="_CPPv321SF_ACTION_PARENTHESIS"></span><span id="_CPPv221SF_ACTION_PARENTHESIS"></span><span id="SF_ACTION_PARENTHESIS__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1af54f6cd5b396a6afd4ff9add80ef2d9b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_ACTION_PARENTHESIS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">5</span></span><a class="headerlink" href="#_CPPv421SF_ACTION_PARENTHESIS" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv418SF_ACTION_FUNCTION">
+<span id="_CPPv318SF_ACTION_FUNCTION"></span><span id="_CPPv218SF_ACTION_FUNCTION"></span><span id="SF_ACTION_FUNCTION__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1aadae63818c171849977a1d4ae0173bb8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_ACTION_FUNCTION</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">6</span></span><a class="headerlink" href="#_CPPv418SF_ACTION_FUNCTION" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv415SF_ACTION_ARRAY">
+<span id="_CPPv315SF_ACTION_ARRAY"></span><span id="_CPPv215SF_ACTION_ARRAY"></span><span id="SF_ACTION_ARRAY__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1ad591b58999b6e5f532cabe9e2205c47d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_ACTION_ARRAY</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">7</span></span><a class="headerlink" href="#_CPPv415SF_ACTION_ARRAY" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv429SF_PARSER_REGEX_SIGNED_NUMBER">
+<span id="_CPPv329SF_PARSER_REGEX_SIGNED_NUMBER"></span><span id="_CPPv229SF_PARSER_REGEX_SIGNED_NUMBER"></span><span id="SF_PARSER_REGEX_SIGNED_NUMBER__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1ab0d5deec96f2f55c954bfbfb14405315"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_PARSER_REGEX_SIGNED_NUMBER</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;^(?i)[+-]?[0-9]+(?:\.[0-9]+)?(?:[\+-]?E[0-9]+)?$&quot;</span></span><a class="headerlink" href="#_CPPv429SF_PARSER_REGEX_SIGNED_NUMBER" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv429SF_PARSER_REGEX_QUOTED_STRING">
+<span id="_CPPv329SF_PARSER_REGEX_QUOTED_STRING"></span><span id="_CPPv229SF_PARSER_REGEX_QUOTED_STRING"></span><span id="SF_PARSER_REGEX_QUOTED_STRING__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a074f72921b5c1a8dedba619924a9772c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_PARSER_REGEX_QUOTED_STRING</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;^\&quot;.*\&quot;$&quot;</span></span><a class="headerlink" href="#_CPPv429SF_PARSER_REGEX_QUOTED_STRING" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv434SF_PARSER_REGEX_SIGNED_PARENTHESIS">
+<span id="_CPPv334SF_PARSER_REGEX_SIGNED_PARENTHESIS"></span><span id="_CPPv234SF_PARSER_REGEX_SIGNED_PARENTHESIS"></span><span id="SF_PARSER_REGEX_SIGNED_PARENTHESIS__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1a62c3b04f66951f4aacc895e9739c7f21"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_PARSER_REGEX_SIGNED_PARENTHESIS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;^(?i)[+-]?\\([\s\S]*$&quot;</span></span><a class="headerlink" href="#_CPPv434SF_PARSER_REGEX_SIGNED_PARENTHESIS" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv431SF_PARSER_REGEX_SIGNED_FUNCTION">
+<span id="_CPPv331SF_PARSER_REGEX_SIGNED_FUNCTION"></span><span id="_CPPv231SF_PARSER_REGEX_SIGNED_FUNCTION"></span><span id="SF_PARSER_REGEX_SIGNED_FUNCTION__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1ac8fc142c6ff64207c64771e586a845fe"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_PARSER_REGEX_SIGNED_FUNCTION</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;^(?i)[+-]?[A-Za-z]+&quot;</span></span><a class="headerlink" href="#_CPPv431SF_PARSER_REGEX_SIGNED_FUNCTION" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv433SF_PARSER_REGEX_OTHER_VALID_CHARS">
+<span id="_CPPv333SF_PARSER_REGEX_OTHER_VALID_CHARS"></span><span id="_CPPv233SF_PARSER_REGEX_OTHER_VALID_CHARS"></span><span id="SF_PARSER_REGEX_OTHER_VALID_CHARS__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula___parser_8ipf_1af4bbe64eb39efc39077434cf55348471"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_PARSER_REGEX_OTHER_VALID_CHARS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;[A-Za-z0-9_\.:;=!$]&quot;</span></span><a class="headerlink" href="#_CPPv433SF_PARSER_REGEX_OTHER_VALID_CHARS" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv413SF_ParserData">
+<span id="_CPPv313SF_ParserData"></span><span id="_CPPv213SF_ParserData"></span><span id="SF_ParserData"></span><span class="target" id="struct_s_f___parser_data"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_ParserData</span></span></span><a class="headerlink" href="#_CPPv413SF_ParserData" title="Link to this definition">¶</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N13SF_ParserData6jsonIdE">
+<span id="_CPPv3N13SF_ParserData6jsonIdE"></span><span id="_CPPv2N13SF_ParserData6jsonIdE"></span><span id="SF_ParserData::jsonId__variable"></span><span class="target" id="struct_s_f___parser_data_1a02bba5b51b85382491aed10e429c092d"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">jsonId</span></span></span><a class="headerlink" href="#_CPPv4N13SF_ParserData6jsonIdE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N13SF_ParserData8jsonPathE">
+<span id="_CPPv3N13SF_ParserData8jsonPathE"></span><span id="_CPPv2N13SF_ParserData8jsonPathE"></span><span id="SF_ParserData::jsonPath__string"></span><span class="target" id="struct_s_f___parser_data_1ac29638e99534c872a0eb93e76a4ee624"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">jsonPath</span></span></span><a class="headerlink" href="#_CPPv4N13SF_ParserData8jsonPathE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N13SF_ParserData7srcLocsE">
+<span id="_CPPv3N13SF_ParserData7srcLocsE"></span><span id="_CPPv2N13SF_ParserData7srcLocsE"></span><span id="SF_ParserData::srcLocs__WaveText"></span><span class="target" id="struct_s_f___parser_data_1aea6ea8e60224c17fc719d8ea85669d22"></span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">srcLocs</span></span></span><a class="headerlink" href="#_CPPv4N13SF_ParserData7srcLocsE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N13SF_ParserData12bufferOffsetE">
+<span id="_CPPv3N13SF_ParserData12bufferOffsetE"></span><span id="_CPPv2N13SF_ParserData12bufferOffsetE"></span><span id="SF_ParserData::bufferOffset__variable"></span><span class="target" id="struct_s_f___parser_data_1aa470428f0a3a16b553d0014d88222849"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bufferOffset</span></span></span><a class="headerlink" href="#_CPPv4N13SF_ParserData12bufferOffsetE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_SweepFormula_Parser.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422SFP_ParseFormulaToJSON6string"><code class="docutils literal notranslate"><span class="pre">SFP_ParseFormulaToJSON()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418SFP_StringifyState8variable"><code class="docutils literal notranslate"><span class="pre">SFP_StringifyState()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419SFP_StringifyAction8variable"><code class="docutils literal notranslate"><span class="pre">SFP_StringifyAction()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418SFP_LogParserState6string8variable8variable8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">SFP_LogParserState()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423SFP_LogParserErrorState6string"><code class="docutils literal notranslate"><span class="pre">SFP_LogParserErrorState()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422SFP_LogParserStateInit6string"><code class="docutils literal notranslate"><span class="pre">SFP_LogParserStateInit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422SFP_SaveParserStateLogv"><code class="docutils literal notranslate"><span class="pre">SFP_SaveParserStateLog()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417SFP_FormulaParser6string8variableP8variable8variable"><code class="docutils literal notranslate"><span class="pre">SFP_FormulaParser()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv431SFP_ParserHandleRemainingBufferP13SF_ParserData6string6string"><code class="docutils literal notranslate"><span class="pre">SFP_ParserHandleRemainingBuffer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420SFP_ParserModifyJSON8variable8variable8variable6string6string8variable"><code class="docutils literal notranslate"><span class="pre">SFP_ParserModifyJSON()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428SFP_ParserGetActionFromState8variable8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">SFP_ParserGetActionFromState()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427SFP_ParserGetStateFromToken6string8variable6string"><code class="docutils literal notranslate"><span class="pre">SFP_ParserGetStateFromToken()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430SFP_ParserEvaluatePossibleSignv"><code class="docutils literal notranslate"><span class="pre">SFP_ParserEvaluatePossibleSign()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417SFP_ParserAddJSON6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">SFP_ParserAddJSON()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424SFP_ParserInsertNegationv"><code class="docutils literal notranslate"><span class="pre">SFP_ParserInsertNegation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422SFP_ParserAdaptSubPath6string"><code class="docutils literal notranslate"><span class="pre">SFP_ParserAdaptSubPath()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422SFP_FPPutInArrayAtPath6string"><code class="docutils literal notranslate"><span class="pre">SFP_FPPutInArrayAtPath()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414SFP_FPAddArray8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">SFP_FPAddArray()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417SF_GetAddJSONPath8variable6string"><code class="docutils literal notranslate"><span class="pre">SF_GetAddJSONPath()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421SF_ExpandWithBasePath8WaveText"><code class="docutils literal notranslate"><span class="pre">SF_ExpandWithBasePath()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421SFP_AddSourceLocationP13SF_ParserData8variable8variable"><code class="docutils literal notranslate"><span class="pre">SFP_AddSourceLocation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423SFP_AdaptSourceSubPathsP13SF_ParserData8WaveText8variable"><code class="docutils literal notranslate"><span class="pre">SFP_AdaptSourceSubPaths()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427SFP_AddToSourceLocationWave8WaveText6string8variable"><code class="docutils literal notranslate"><span class="pre">SFP_AddToSourceLocationWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430SFP_ConvertSourceLocWaveToJSON8WaveText6string"><code class="docutils literal notranslate"><span class="pre">SFP_ConvertSourceLocWaveToJSON()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412SFP_AddArrayP13SF_ParserData8WaveText8variable8variable"><code class="docutils literal notranslate"><span class="pre">SFP_AddArray()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv433SFP_AdaptSourceSubPathsAtJSONPathP13SF_ParserData8WaveText6string"><code class="docutils literal notranslate"><span class="pre">SFP_AdaptSourceSubPathsAtJSONPath()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422SF_STATE_UNINITIALIZED"><code class="docutils literal notranslate"><span class="pre">SF_STATE_UNINITIALIZED</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416SF_STATE_COLLECT"><code class="docutils literal notranslate"><span class="pre">SF_STATE_COLLECT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417SF_STATE_ADDITION"><code class="docutils literal notranslate"><span class="pre">SF_STATE_ADDITION</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420SF_STATE_SUBTRACTION"><code class="docutils literal notranslate"><span class="pre">SF_STATE_SUBTRACTION</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423SF_STATE_MULTIPLICATION"><code class="docutils literal notranslate"><span class="pre">SF_STATE_MULTIPLICATION</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420SF_STATE_PARENTHESIS"><code class="docutils literal notranslate"><span class="pre">SF_STATE_PARENTHESIS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417SF_STATE_FUNCTION"><code class="docutils literal notranslate"><span class="pre">SF_STATE_FUNCTION</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414SF_STATE_ARRAY"><code class="docutils literal notranslate"><span class="pre">SF_STATE_ARRAY</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421SF_STATE_ARRAYELEMENT"><code class="docutils literal notranslate"><span class="pre">SF_STATE_ARRAYELEMENT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419SF_STATE_WHITESPACE"><code class="docutils literal notranslate"><span class="pre">SF_STATE_WHITESPACE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416SF_STATE_NEWLINE"><code class="docutils literal notranslate"><span class="pre">SF_STATE_NEWLINE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417SF_STATE_DIVISION"><code class="docutils literal notranslate"><span class="pre">SF_STATE_DIVISION</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415SF_STATE_STRING"><code class="docutils literal notranslate"><span class="pre">SF_STATE_STRING</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425SF_STATE_STRINGTERMINATOR"><code class="docutils literal notranslate"><span class="pre">SF_STATE_STRINGTERMINATOR</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423SF_ACTION_UNINITIALIZED"><code class="docutils literal notranslate"><span class="pre">SF_ACTION_UNINITIALIZED</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414SF_ACTION_SKIP"><code class="docutils literal notranslate"><span class="pre">SF_ACTION_SKIP</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417SF_ACTION_COLLECT"><code class="docutils literal notranslate"><span class="pre">SF_ACTION_COLLECT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420SF_ACTION_LOWERORDER"><code class="docutils literal notranslate"><span class="pre">SF_ACTION_LOWERORDER</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421SF_ACTION_HIGHERORDER"><code class="docutils literal notranslate"><span class="pre">SF_ACTION_HIGHERORDER</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422SF_ACTION_ARRAYELEMENT"><code class="docutils literal notranslate"><span class="pre">SF_ACTION_ARRAYELEMENT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421SF_ACTION_PARENTHESIS"><code class="docutils literal notranslate"><span class="pre">SF_ACTION_PARENTHESIS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418SF_ACTION_FUNCTION"><code class="docutils literal notranslate"><span class="pre">SF_ACTION_FUNCTION</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415SF_ACTION_ARRAY"><code class="docutils literal notranslate"><span class="pre">SF_ACTION_ARRAY</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429SF_PARSER_REGEX_SIGNED_NUMBER"><code class="docutils literal notranslate"><span class="pre">SF_PARSER_REGEX_SIGNED_NUMBER</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429SF_PARSER_REGEX_QUOTED_STRING"><code class="docutils literal notranslate"><span class="pre">SF_PARSER_REGEX_QUOTED_STRING</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv434SF_PARSER_REGEX_SIGNED_PARENTHESIS"><code class="docutils literal notranslate"><span class="pre">SF_PARSER_REGEX_SIGNED_PARENTHESIS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv431SF_PARSER_REGEX_SIGNED_FUNCTION"><code class="docutils literal notranslate"><span class="pre">SF_PARSER_REGEX_SIGNED_FUNCTION</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv433SF_PARSER_REGEX_OTHER_VALID_CHARS"><code class="docutils literal notranslate"><span class="pre">SF_PARSER_REGEX_OTHER_VALID_CHARS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413SF_ParserData"><code class="docutils literal notranslate"><span class="pre">SF_ParserData</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N13SF_ParserData6jsonIdE"><code class="docutils literal notranslate"><span class="pre">jsonId</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N13SF_ParserData8jsonPathE"><code class="docutils literal notranslate"><span class="pre">jsonPath</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N13SF_ParserData7srcLocsE"><code class="docutils literal notranslate"><span class="pre">srcLocs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N13SF_ParserData12bufferOffsetE"><code class="docutils literal notranslate"><span class="pre">bufferOffset</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html"
+                          title="previous chapter">File MIES_SweepFormula_PSX_Macro.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___sweep_saving_8ipf.html"
+                          title="next chapter">File MIES_SweepSaving.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___sweep_saving_8ipf.html" title="File MIES_SweepSaving.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html" title="File MIES_SweepFormula_PSX_Macro.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_SweepFormula_Parser.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

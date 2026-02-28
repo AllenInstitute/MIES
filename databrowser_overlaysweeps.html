@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Overlay Sweeps &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Channel Selection" href="databrowser_channelselection.html" />
+    <link rel="prev" title="Settings" href="databrowser_settings.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="databrowser_channelselection.html" title="Channel Selection"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="databrowser_settings.html" title="Settings"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="user.html" >User documentation</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="databrowser.html" accesskey="U">DataBrowser</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Overlay Sweeps</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="overlay-sweeps">
+<span id="db-overlaysweeps"></span><h1>Overlay Sweeps<a class="headerlink" href="#overlay-sweeps" title="Link to this heading">¶</a></h1>
+<p>The OVS tab allows to overlay multiple sweeps in the same graph. The
+selection of the sweeps can be done by criteria like stimsets, clamp mode or
+similiar, using a step and offset calculation based on sweep numbers, or by
+selecting them from the listbox. Ignoring selected headstages of a specific
+sweep when overlaying is supported as well.</p>
+<p>The following section describe the OVS settings.</p>
+<figure class="align-center" id="id1">
+<span id="figure-overlay-sweeps"></span><img alt="_images/BrowserSettingsPanel-Overlay-Sweeps.png" src="_images/BrowserSettingsPanel-Overlay-Sweeps.png" />
+<figcaption>
+<p><span class="caption-text">Settings for overlaying sweeps</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Enable</span></code>: Toggle the overlay sweeps mode. When turned on, all selected
+sweeps in the lower list box are displayed. In the off state, only the sweep
+selected in <a class="reference internal" href="databrowser_sweepcontrol.html#figure-databrowser-sweep-control"><span class="std std-ref">Sweep Control</span></a> will be shown.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Select</span></code>: Select multiple sweeps based on criteria like stimulus set (DA
+and TTL) and clamp mode. Includes also <code class="docutils literal notranslate"><span class="pre">None</span></code> for unselecting all of them.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Offset</span></code> and <code class="docutils literal notranslate"><span class="pre">Step</span></code>: Select every sweep number <span class="math notranslate nohighlight">\(x\)</span> which satisfies
+the condition <span class="math notranslate nohighlight">\(x = o + n \cdot s\)</span> where <span class="math notranslate nohighlight">\(o\)</span> is the <code class="docutils literal notranslate"><span class="pre">Offset</span></code>,
+<span class="math notranslate nohighlight">\(s\)</span> the <code class="docutils literal notranslate"><span class="pre">Step</span></code> and <span class="math notranslate nohighlight">\(n &gt;= 0\)</span> an integer.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Headstage</span> <span class="pre">Removal</span></code>: Toggle the ignoring of headstages. When an existing
+headstage is entered in the second column in the listbox, this headstage will
+not be displayed in the Databrowser. Headstages can also be selected
+interactively from the context menu in the Databrowser. For this hover over
+the trace you want to remove, right-click and select <code class="docutils literal notranslate"><span class="pre">Ignore</span> <span class="pre">Headstage</span> <span class="pre">in</span> <span class="pre">Overlay</span> <span class="pre">Sweeps</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Non-commulative</span> <span class="pre">update</span></code>: If you have enabled <code class="docutils literal notranslate"><span class="pre">Display</span> <span class="pre">last</span> <span class="pre">sweep</span> <span class="pre">acquired</span></code>
+in <a class="reference internal" href="databrowser_sweepcontrol.html#figure-databrowser-sweep-control"><span class="std std-ref">Sweep Control</span></a> this option will remove the
+previous last sweep from the list of overlayed sweeps before adding the newly
+acquired sweep.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Clear</span> <span class="pre">on</span> <span class="pre">new</span> <span class="pre">RAC</span></code>: Clear the list of overlayed sweeps when a new repeated acquisition cycle (RAC) starts.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Clear</span> <span class="pre">on</span> <span class="pre">new</span> <span class="pre">SCI</span></code>: Same approach but this time based on the stimset cycle (SCI).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Listbox</span></code>: The listbox allows to select which sweeps to overlay
+individually. The first colum has the sweep numbers and the second column
+holds the headstages for removal. The <code class="docutils literal notranslate"><span class="pre">Headstages</span></code> column can only be
+edited when <code class="docutils literal notranslate"><span class="pre">Headstage</span> <span class="pre">Removal</span></code> is checked. The headstages to be removed
+can be single headstages <code class="docutils literal notranslate"><span class="pre">0</span></code> to <code class="docutils literal notranslate"><span class="pre">7</span></code>, list of headstages <code class="docutils literal notranslate"><span class="pre">0;2;6</span></code> or a
+range <code class="docutils literal notranslate"><span class="pre">0-2</span></code>.</p></li>
+</ul>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="user.html">User documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="analysisbrowser.html">AnalysisBrowser</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="databrowser.html">DataBrowser</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="databrowser_settings.html">Settings</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Overlay Sweeps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="databrowser_channelselection.html">Channel Selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="databrowser_artefactremoval.html">Artefact Removal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="databrowser_paplot.html">Pulse Average (PA) plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="databrowser_sweepformula.html">SweepFormula</a></li>
+<li class="toctree-l3"><a class="reference internal" href="databrowser_note.html">Note</a></li>
+<li class="toctree-l3"><a class="reference internal" href="databrowser_dashboard.html">Dashboard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="databrowser_sweepcontrol.html">Sweep Control</a></li>
+<li class="toctree-l3"><a class="reference internal" href="databrowser_settingshistory.html">Settings History</a></li>
+<li class="toctree-l3"><a class="reference internal" href="databrowser.html#relevant-colors">Relevant Colors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="databrowser.html#sweepbrowser-vs-databrowser">SweepBrowser vs DataBrowser</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="wavebuilder.html">WaveBuilder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="daephys.html">Da_Ephys</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testpulse.html">TPStorage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="auto_testpulse_tuning.html">Automatic test pulse tuning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SweepFormula.html">The Sweep Formula Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labnotebook-descriptions.html">Labnotebook descriptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis-function-parameters.html">Analysis function parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SweepFormula_PSX.html">SweepFormula PSC/PSP classification</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grouplist.html">Group list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="databrowser_settings.html"
+                          title="previous chapter">Settings</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="databrowser_channelselection.html"
+                          title="next chapter">Channel Selection</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="databrowser_channelselection.html" title="Channel Selection"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="databrowser_settings.html" title="Settings"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="user.html" >User documentation</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="databrowser.html" >DataBrowser</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Overlay Sweeps</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

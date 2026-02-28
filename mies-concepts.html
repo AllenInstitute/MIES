@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Important MIES concepts for developers &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="DAQ details" href="daq-details.html" />
+    <link rel="prev" title="Epoch Information" href="epoch_information.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="daq-details.html" title="DAQ details"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="epoch_information.html" title="Epoch Information"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Important MIES concepts for developers</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="important-mies-concepts-for-developers">
+<h1>Important MIES concepts for developers<a class="headerlink" href="#important-mies-concepts-for-developers" title="Link to this heading">¶</a></h1>
+<p>This document should help new developers understand some of the guiding
+principles behind MIES.</p>
+<section id="coding-guidelines">
+<h2>Coding Guidelines<a class="headerlink" href="#coding-guidelines" title="Link to this heading">¶</a></h2>
+<p>Can be found <a class="reference external" href="https://github.com/byte-physics/igor-pro-coding-conventions">here</a>.</p>
+</section>
+<section id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading">¶</a></h2>
+<p>Our documentation toolchain consists of doxygen/breathe/sphinx. All
+documentation for the code should be in procedure files. All public accessible
+functions should have a documentation block, for complex interfaces the use of
+<cite>&#64;param</cite> is recommended. See <a class="reference internal" href="file/_m_i_e_s___analysis_function_helpers_8ipf.html#_CPPv430AFH_ExtractOneDimDataFromSweep6string4wave8variable8variable4wave" title="AFH_ExtractOneDimDataFromSweep"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">AFH_ExtractOneDimDataFromSweep()</span></code></a> for an
+example.</p>
+<p>Caller/Callee graphs can be created by executing <cite>doxygen</cite> in <cite>Packages/doc</cite>
+and can be browsed at <cite>Packages/doc/html/index.html</cite>.</p>
+<p>The full documentation can be generated with <cite>tools/build-documentation.sh</cite>.</p>
+</section>
+<section id="global-objects">
+<h2>Global objects<a class="headerlink" href="#global-objects" title="Link to this heading">¶</a></h2>
+<p>Global objects like variables, strings, waves and datafolders should only be
+used if necessary. Local variables, strings, free waves and free datafolders
+should therefore be preferred if possible.</p>
+<p>Reasons to use global objects:</p>
+<ul class="simple">
+<li><p>Persistent storage</p></li>
+<li><p>Performance reasons</p></li>
+</ul>
+<p>All access to global objects <em>must</em> be handled via getter functions in
+<a class="reference internal" href="file/_m_i_e_s___wave_data_folder_getters_8ipf.html#file-mies-wavedatafoldergetters-ipf"><span class="std std-ref">File MIES_WaveDataFolderGetters.ipf</span></a> or <a class="reference internal" href="file/_m_i_e_s___global_string_and_variable_access_8ipf.html#file-mies-globalstringandvariableaccess-ipf"><span class="std std-ref">File MIES_GlobalStringAndVariableAccess.ipf</span></a>.
+The documentation for these getter functions must include the wave layout, and
+purpose of the object. This documentation should be the primary, and only,
+source for finding out what the object holds. Using a single access point for
+global objects allows to quickly find all users of that object.</p>
+<p>For waves we use wave versioning, see <a class="reference internal" href="group/group___wave_versioning_support.html#group-waveversioningsupport"><span class="std std-ref">Group WaveVersioningSupport</span></a>. This is
+done in order to enable a smooth upgrade when the wave layout changes and old
+experiments are loaded with the old wave layout.</p>
+<p>The use of dimension labels in waves for better readability is recommended.</p>
+<p>User data on GUI objects or traces should only be used sparingly.</p>
+</section>
+<section id="convenience-wrapper">
+<h2>Convenience Wrapper<a class="headerlink" href="#convenience-wrapper" title="Link to this heading">¶</a></h2>
+<p>Some Igor Pro functionality is wrapped in separate functions for better
+readability and error checking. These include interacting with GUI controls,
+see <a class="reference internal" href="file/_m_i_e_s___gui_utilities_8ipf.html#file-mies-guiutilities-ipf"><span class="std std-ref">File MIES_GuiUtilities.ipf</span></a>, checking strings <a class="reference internal" href="file/_m_i_e_s___utilities___checks_8ipf.html#_CPPv47IsEmpty6string" title="IsEmpty"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">IsEmpty()</span></code></a> or numbers
+<a class="reference internal" href="file/_i_p_n_w_b___utils_8ipf.html#_CPPv48IsFinite8variable" title="IsFinite"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">IsFinite()</span></code></a>.</p>
+<p>Setting GUI values programmatically must always be done via
+<a class="reference internal" href="file/_m_i_e_s___programmatic_g_u_i_control_8ipf.html#_CPPv425PGC_SetAndActivateControl6string6string8variable6string8variable8variable" title="PGC_SetAndActivateControl"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">PGC_SetAndActivateControl()</span></code></a> as that calls the GUI procedure as well.</p>
+</section>
+<section id="assertions">
+<h2>Assertions<a class="headerlink" href="#assertions" title="Link to this heading">¶</a></h2>
+<p>We employ assertions to check function <a class="reference external" href="https://en.wikipedia.org/wiki/Invariant_(computer_science)">invariants</a> . The relevant
+functions are <a class="reference internal" href="file/_m_i_e_s___utilities___program_flow_8ipf.html#_CPPv46ASSERT8variable6string8variable" title="ASSERT"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">ASSERT()</span></code></a> and <a class="reference internal" href="file/_i_p_n_w_b___debugging_8ipf.html#_CPPv49ASSERT_TS8variable6string" title="ASSERT_TS"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">ASSERT_TS()</span></code></a>. Adding assertions
+to the code greatly improves the error reporting capabilities of MIES and
+should be used where appropriate.</p>
+</section>
+<section id="debug-output">
+<h2>Debug output<a class="headerlink" href="#debug-output" title="Link to this heading">¶</a></h2>
+<p>MIES uses the <cite>DEBUGGING_ENABLED</cite> symbol for toggling compilation with and
+without debug output. The relevant functions are <a class="reference internal" href="file/_i_p_n_w_b___debugging_8ipf.html#_CPPv410DEBUGPRINT6string8variable6string6string" title="DEBUGPRINT"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">DEBUGPRINT()</span></code></a>,
+<a class="reference internal" href="file/_m_i_e_s___debugging_8ipf.html#_CPPv413DEBUGPRINT_TS6string8variable6string6string" title="DEBUGPRINT_TS"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">DEBUGPRINT_TS()</span></code></a>, <a class="reference internal" href="file/_i_p_n_w_b___debugging_8ipf.html#_CPPv411DEBUGPRINTv8variable6string" title="DEBUGPRINTv"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">DEBUGPRINTv()</span></code></a>,
+<a class="reference internal" href="file/_i_p_n_w_b___debugging_8ipf.html#_CPPv411DEBUGPRINTs6string6string" title="DEBUGPRINTs"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">DEBUGPRINTs()</span></code></a> and <a class="reference internal" href="file/_m_i_e_s___debugging_8ipf.html#_CPPv419DEBUGPRINTSTACKINFOv" title="DEBUGPRINTSTACKINFO"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">DEBUGPRINTSTACKINFO()</span></code></a>. The debug mode
+can be toggled on a per-file basis from <cite>MIES Panels-&gt;Advanced-&gt;Open debug
+panel</cite> or globally via <a class="reference internal" href="file/_i_p_n_w_b___debugging_8ipf.html#_CPPv415EnableDebugModev" title="EnableDebugMode"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EnableDebugMode()</span></code></a>/<a class="reference internal" href="file/_i_p_n_w_b___debugging_8ipf.html#_CPPv416DisableDebugModev" title="DisableDebugMode"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">DisableDebugMode()</span></code></a>.</p>
+</section>
+<section id="dynamically-growing-waves">
+<h2>Dynamically growing waves<a class="headerlink" href="#dynamically-growing-waves" title="Link to this heading">¶</a></h2>
+<p>Often one is adding entries to a wave one at a time. In order to minimize the
+performance cost one can employ a technique where the actual size of the wave
+and the used size differ in order to minimize the number of resize operations.
+The relevant functions are <a class="reference internal" href="file/_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv421EnsureLargeEnoughWave4wave8variable8variable8variable8variable" title="EnsureLargeEnoughWave"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EnsureLargeEnoughWave()</span></code></a> (with example
+code), <a class="reference internal" href="file/_i_p_n_w_b___utils_8ipf.html#_CPPv419SetNumberInWaveNote4wave6string8variable6string" title="SetNumberInWaveNote"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">SetNumberInWaveNote()</span></code></a>, <a class="reference internal" href="file/_i_p_n_w_b___utils_8ipf.html#_CPPv421GetNumberFromWaveNote4wave6string" title="GetNumberFromWaveNote"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">GetNumberFromWaveNote()</span></code></a> and
+<a class="reference internal" href="file/_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv416RemoveUnusedRows4wave" title="RemoveUnusedRows"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">RemoveUnusedRows()</span></code></a>.</p>
+</section>
+<section id="datafolders">
+<h2>Datafolders<a class="headerlink" href="#datafolders" title="Link to this heading">¶</a></h2>
+<p>The current data folder (<cite>cdf</cite>) should never be set or expected to be something
+fixed. For dealing with that environment the following functions have been
+created: <a class="reference internal" href="file/_i_p_n_w_b___utils_8ipf.html#_CPPv414UniqueWaveName5dfref6string" title="UniqueWaveName"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">UniqueWaveName()</span></code></a>, <a class="reference internal" href="file/_m_i_e_s___utilities___data_folder_8ipf.html#_CPPv416UniqueDataFolder5dfref6string" title="UniqueDataFolder"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">UniqueDataFolder()</span></code></a>,
+<a class="reference internal" href="file/_m_i_e_s___utilities___data_folder_8ipf.html#_CPPv422createDFWithAllParents6string" title="createDFWithAllParents"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">createDFWithAllParents()</span></code></a> and <a class="reference internal" href="file/_m_i_e_s___utilities___data_folder_8ipf.html#_CPPv416GetListOfObjects5dfref6string8variable8variable8variable8variable" title="GetListOfObjects"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">GetListOfObjects()</span></code></a>.</p>
+</section>
+<section id="deleting-waves-and-datafolders">
+<h2>Deleting waves and datafolders<a class="headerlink" href="#deleting-waves-and-datafolders" title="Link to this heading">¶</a></h2>
+<p>Due to the way Igor Pro works deleting a datafolder/wave may not succeed as the
+object is currently in use. Use <a class="reference internal" href="file/_m_i_e_s___mies_utilities___data_management_8ipf.html#_CPPv417KillOrMoveToTrash10WaveOrNull5dfref" title="KillOrMoveToTrash"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">KillOrMoveToTrash()</span></code></a> to work around
+that issue.</p>
+</section>
+<section id="wave-cache">
+<h2>Wave cache<a class="headerlink" href="#wave-cache" title="Link to this heading">¶</a></h2>
+<p>In order to avoid having to do the same lengthy calculation over and over again
+MIES has a wave cache.  To use that cache you have to implement a function
+which derives a key from all the input parameters and is unique for the
+combination of parameters and different for all other combinations. This key is
+then used to store and retrieve the wave from the cache. See <a class="reference internal" href="file/_m_i_e_s___cache_8ipf.html#file-mies-cache-ipf"><span class="std std-ref">File MIES_Cache.ipf</span></a> for further examples.</p>
+</section>
+<section id="background-functions">
+<h2>Background functions<a class="headerlink" href="#background-functions" title="Link to this heading">¶</a></h2>
+<p>For DAQ we use a variety of background functions, all are listed at <a class="reference internal" href="group/group___background_functions.html#group-backgroundfunctions"><span class="std std-ref">Group BackgroundFunctions</span></a>. For debugging purposes the background watchdog panel
+from <cite>MIES Panels-&gt;Advanced-&gt;Start Background …</cite> allows to view the state of
+the background functions during execution.</p>
+</section>
+<section id="structured-wave-metadata">
+<h2>Structured wave metadata<a class="headerlink" href="#structured-wave-metadata" title="Link to this heading">¶</a></h2>
+<p>Structured metadata can be stored and retrieved into/from the wave note using
+<a class="reference internal" href="file/_i_p_n_w_b___utils_8ipf.html#_CPPv421GetNumberFromWaveNote4wave6string" title="GetNumberFromWaveNote"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">GetNumberFromWaveNote()</span></code></a>/<a class="reference internal" href="file/_i_p_n_w_b___utils_8ipf.html#_CPPv419SetNumberInWaveNote4wave6string8variable6string" title="SetNumberInWaveNote"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">SetNumberInWaveNote()</span></code></a>,
+<a class="reference internal" href="file/_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv421GetStringFromWaveNote4wave6string6string6string8variable" title="GetStringFromWaveNote"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">GetStringFromWaveNote()</span></code></a>/<a class="reference internal" href="file/_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv419SetStringInWaveNote4wave6string6string8variable6string6string" title="SetStringInWaveNote"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">SetStringInWaveNote()</span></code></a> and
+<a class="reference internal" href="file/_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv426AddEntryIntoWaveNoteAsList4wave6string8variable6string8variable8variable6string" title="AddEntryIntoWaveNoteAsList"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">AddEntryIntoWaveNoteAsList()</span></code></a>/<a class="reference internal" href="file/_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv422HasEntryInWaveNoteList4wave6string6string" title="HasEntryInWaveNoteList"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">HasEntryInWaveNoteList()</span></code></a>.</p>
+</section>
+<section id="da-ephys-panel">
+<h2>DA_Ephys panel<a class="headerlink" href="#da-ephys-panel" title="Link to this heading">¶</a></h2>
+<p>The main data acquisition panel is created via the window macro
+<a class="reference internal" href="file/_m_i_e_s___d_a_ephys___macro_8ipf.html#_CPPv48DA_Ephysv" title="DA_Ephys"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">DA_Ephys()</span></code></a>. After changing it, be sure to call <cite>MIES
+Panels-&gt;Advanced-&gt;Reset And Store …</cite> for setting the default values and
+recreating the window macro.</p>
+<p>Access to the GUI control settings is done via the GUI state wave which caches
+the settings for performance reasons. The functions
+<a class="reference internal" href="file/_m_i_e_s___d_a_ephys___gui_state_8ipf.html#_CPPv421DAG_GetNumericalValue6string6string8variable" title="DAG_GetNumericalValue"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">DAG_GetNumericalValue()</span></code></a> and <a class="reference internal" href="file/_m_i_e_s___d_a_ephys___gui_state_8ipf.html#_CPPv419DAG_GetTextualValue6string6string8variable" title="DAG_GetTextualValue"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">DAG_GetTextualValue()</span></code></a> can be used to
+query the values of (nearly) all GUI controls.</p>
+<p>The names of GUI controls which come in groups, like headstages, DA/AD/TTL
+channels must be derived by calling <a class="reference internal" href="file/_m_i_e_s___mies_utilities___g_u_i_8ipf.html#_CPPv415GetPanelControl8variable8variable8variable" title="GetPanelControl"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">GetPanelControl()</span></code></a>. Their state can be
+queried with <a class="reference internal" href="file/_m_i_e_s___d_a_ephys___gui_state_8ipf.html#_CPPv419DAG_GetChannelState6string8variable" title="DAG_GetChannelState"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">DAG_GetChannelState()</span></code></a>.</p>
+</section>
+<section id="versioned-panels">
+<h2>Versioned panels<a class="headerlink" href="#versioned-panels" title="Link to this heading">¶</a></h2>
+<p>All panels are versioned. The version number must be increased if a stored
+panel in an old experiment would misbehave with new code. The relevant
+constants are <a class="reference internal" href="file/_m_i_e_s___constants_8ipf.html#_CPPv422DA_EPHYS_PANEL_VERSION" title="DA_EPHYS_PANEL_VERSION"><code class="xref cpp cpp-var docutils literal notranslate"><span class="pre">DA_EPHYS_PANEL_VERSION</span></code></a>, <code class="xref cpp cpp-var docutils literal notranslate"><span class="pre">DATABROWSER_PANEL_VERSION</span></code>,
+<code class="xref cpp cpp-var docutils literal notranslate"><span class="pre">SWEEPBROWSER_PANEL_VERSION</span></code> and <a class="reference internal" href="file/_m_i_e_s___constants_8ipf.html#_CPPv425WAVEBUILDER_PANEL_VERSION" title="WAVEBUILDER_PANEL_VERSION"><code class="xref cpp cpp-var docutils literal notranslate"><span class="pre">WAVEBUILDER_PANEL_VERSION</span></code></a>.</p>
+</section>
+<section id="tabbed-panels">
+<h2>Tabbed panels<a class="headerlink" href="#tabbed-panels" title="Link to this heading">¶</a></h2>
+<p>For <cite>TabControl</cite> GUI elements we use routines from <cite>ACL_TabUtilities.ipf</cite> and
+<cite>ACL_UserdataEditor.ipf</cite> for convenient programming.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grouplist.html">Group list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Important MIES concepts for developers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#coding-guidelines">Coding Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#global-objects">Global objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#convenience-wrapper">Convenience Wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#assertions">Assertions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#debug-output">Debug output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dynamically-growing-waves">Dynamically growing waves</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#datafolders">Datafolders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#deleting-waves-and-datafolders">Deleting waves and datafolders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#wave-cache">Wave cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#background-functions">Background functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#structured-wave-metadata">Structured wave metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#da-ephys-panel">DA_Ephys panel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#versioned-panels">Versioned panels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tabbed-panels">Tabbed panels</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="epoch_information.html"
+                          title="previous chapter">Epoch Information</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="daq-details.html"
+                          title="next chapter">DAQ details</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="daq-details.html" title="DAQ details"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="epoch_information.html" title="Epoch Information"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Important MIES concepts for developers</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

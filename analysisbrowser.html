@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>AnalysisBrowser &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="DataBrowser" href="databrowser.html" />
+    <link rel="prev" title="User documentation" href="user.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="databrowser.html" title="DataBrowser"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="user.html" title="User documentation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="user.html" accesskey="U">User documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">AnalysisBrowser</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="analysisbrowser">
+<span id="id1"></span><h1>AnalysisBrowser<a class="headerlink" href="#analysisbrowser" title="Link to this heading">¶</a></h1>
+<p>The AnalysisBrowser allows browsing and loading acquired data from Igor Experiment files
+(pxp and uxp) and NeuroDataWithoutBorders files (NWB, v1 and v2) into one Igor
+Experiment. The user can also combine sweeps from multiple experiments in one
+SweepBrowser, see <a class="reference internal" href="databrowser.html#databrowser"><span class="std std-ref">DataBrowser</span></a>, inspect the labnotebook entries of these
+sweeps and view the <a class="reference internal" href="testpulse.html#tpstorage"><span class="std std-ref">TPStorage</span></a> data.</p>
+<figure class="align-center" id="id2">
+<span id="figure-analysis-browser-panel"></span><img alt="_images/AnalysisBrowser.png" src="_images/AnalysisBrowser.png" />
+<figcaption>
+<p><span class="caption-text">AnalysisBrowser panel</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<section id="user-interface">
+<h2>User Interface<a class="headerlink" href="#user-interface" title="Link to this heading">¶</a></h2>
+<p>The upper listbox shows folders and files where the analysis browser looks for data files.
+Folders are searched recursively including all subfolders.</p>
+<ul class="simple">
+<li><p>Button “Add folder”: Opens a file dialog where a folder can be selected that is added to the list</p></li>
+<li><p>Button “Add file(s)”: Opens a file dialog where file(s) can be selected that are added to the list</p></li>
+<li><p>Button “Remove”: Removes the selected elements from the list</p></li>
+<li><p>Button “Refresh”: Indexes the listed folder(s) and file(s) again</p></li>
+<li><p>Button “Open”: Shows the last selected list element in the Windows Explorer</p></li>
+<li><p>Checkbox “NWB”: When selected the file search looks for .nwb files</p></li>
+<li><p>Checkbox “PXP”: When selected the file search looks for .pxp and .uxp files</p></li>
+<li><p>Checkbox “Load results”: When selected the result waves of the data files get also loaded</p></li>
+<li><p>Checkbox “Load comments”: When selected the comments of the data files get also loaded</p></li>
+</ul>
+<p>Only PXP or NWB can be selected. When the selected file type is changed the list is automatically refreshed.</p>
+<p>The lower listbox shows by default a collapsed tree view with meta information of the data files.
+By clicking the “+” the tree view can be expanded. The leftmost “+” expands the tree view for a whole experiment file.
+The “+” in front of the device name expands a single device.
+The meta-information includes file name, file type, device name, number of sweeps per device, sweep number,
+headstage, stimset name, set count, number of DAC channels, number of ADC channels.</p>
+<ul class="simple">
+<li><p>Button “Select same stim sets sweeps”: Selects all sweeps with the same stim set from all files.</p></li>
+<li><p>Button “Collapse all”: Collapses all tree branches</p></li>
+<li><p>Button “Expand all”: Expands all tree branches</p></li>
+<li><p>Button “Open comment”: Shows the user comment of a sweep in a notebook. This requires that only a single row is selected.</p></li>
+<li><p>Button “Resave as NWBv2”: For all NWBv1 files in the list, resaves as NWBv2. This is independent of any selection.</p></li>
+<li><p>Checkbox “Overwrite”: When selected existing files get overwritten.</p></li>
+<li><p>Popupmenu “New”: Here a target SweepBrowser can be selected. Sweeps are loaded to that SweepBrowser. Select “New” to load to a new SweepBrowser.</p></li>
+<li><p>Button “Load Sweeps”: Loads the selected sweeps to the SweepBrowser chosen in the popupmenu. If a file was selected all sweeps of that file are loaded.</p></li>
+<li><p>Button “Load Stimsets”: Loads the Stimsets of the selected sweeps.  If a file was selected all stimsets of that file are loaded.</p></li>
+<li><p>Button “Load both”: Loads sweeps and stimsets.</p></li>
+<li><p>Button “Load TPStorage”: Loads TP storage data.</p></li>
+<li><p>Button “Load History”: Loads experiment history and shows it in a notebook.</p></li>
+</ul>
+<p>The tree view is collapsed after loading sweeps/stimsets or refreshing the list.</p>
+</section>
+<section id="known-limitations">
+<h2>Known Limitations<a class="headerlink" href="#known-limitations" title="Link to this heading">¶</a></h2>
+<p>If the experiment file contains acquisitions from multiple devices, e.g. ITC18 and Dev1 then for NWBv1 and NWBv2 files
+an under certain circumstances sweeps can not be loaded. The loading attempt results in an Asssertion where multiple waves with the same name are present in the experiment file.
+This is related to <a class="reference external" href="https://github.com/AllenInstitute/MIES/issues/978">issue 978</a> and
+<a class="reference external" href="https://github.com/AllenInstitute/MIES/issues/1710">issue 1710</a>.
+This limitation does not apply when loading sweeps from Igor Pro experiment files (pxp).</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="user.html">User documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">AnalysisBrowser</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#user-interface">User Interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#known-limitations">Known Limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="databrowser.html">DataBrowser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wavebuilder.html">WaveBuilder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="daephys.html">Da_Ephys</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testpulse.html">TPStorage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="auto_testpulse_tuning.html">Automatic test pulse tuning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SweepFormula.html">The Sweep Formula Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labnotebook-descriptions.html">Labnotebook descriptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis-function-parameters.html">Analysis function parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SweepFormula_PSX.html">SweepFormula PSC/PSP classification</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grouplist.html">Group list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="user.html"
+                          title="previous chapter">User documentation</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="databrowser.html"
+                          title="next chapter">DataBrowser</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="databrowser.html" title="DataBrowser"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="user.html" title="User documentation"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="user.html" >User documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">AnalysisBrowser</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

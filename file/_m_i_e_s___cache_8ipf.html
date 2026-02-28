@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File MIES_Cache.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_CheckInstallation.ipf" href="_m_i_e_s___check_installation_8ipf.html" />
+    <link rel="prev" title="File MIES_BrowserSettingsPanel.ipf" href="_m_i_e_s___browser_settings_panel_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___check_installation_8ipf.html" title="File MIES_CheckInstallation.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___browser_settings_panel_8ipf.html" title="File MIES_BrowserSettingsPanel.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Cache.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-cache-ipf">
+<span id="id1"></span><h1>File MIES_Cache.ipf<a class="headerlink" href="#file-mies-cache-ipf" title="Link to this heading">¶</a></h1>
+<p><strong>CA</strong> This file holds functions related to caching of waves. </p>
+<p>The cache allows to store waves using a unique key for later retrieval. The stored waves are kept until they are explicitly removed.</p>
+<p>Usage:<ul class="simple">
+<li><p>Write a key generator function returning a string The parameters to CA_GenKey() must completely determine the wave you will later store. The appended version string to the key allows you to invalidate old keys if the algorithm creating the wave changes, but all input stays the same.</p></li>
+</ul>
+</p>
+<p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kr">Function</span>/S<span class="w"> </span>CA_GenKey(input)
+<span class="w">    </span><span class="kt">variable</span><span class="w"> </span>input
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nf">stringCRC</span>(0,<span class="w"> </span><span class="nf">num2str</span>(input))<span class="w"> </span>+<span class="w"> </span><span class="s">&quot;Version 1&quot;</span>
+<span class="kr">End</span>
+</pre></div>
+</div>
+</p>
+<p><ul class="simple">
+<li><p>Write your main function as in the following example. The first time MyFancyCalculation(input) is called you get a cache miss and result has to be created from scratch, but all subsequent calls are fast as the entry is fetched from the cache.</p></li>
+</ul>
+</p>
+<p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kr">Function</span>/<span class="kt">WAVE</span><span class="w"> </span>MyFancyCalculation(input)
+<span class="w">    </span><span class="kt">variable</span><span class="w"> </span>input
+
+<span class="w">    </span><span class="kt">string</span><span class="w"> </span>key<span class="w"> </span>=<span class="w"> </span>CA_GenKey(input)
+
+<span class="w">    </span><span class="kt">WAVE</span>/Z<span class="w"> </span>result<span class="w"> </span>=<span class="w"> </span>CA_TryFetchingEntryFromCache(key)
+
+<span class="w">    </span><span class="k">if</span>(<span class="nf">WaveExists</span>(result))
+<span class="w">        </span><span class="k">return</span><span class="w"> </span>result
+<span class="w">    </span><span class="k">endif</span>
+
+<span class="w">    </span><span class="c1">// create result from scratch</span>
+<span class="w">    </span><span class="c1">// ...</span>
+
+<span class="w">    </span>CA_StoreEntryIntoCache(key,<span class="w"> </span>result)
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span>result
+<span class="kr">End</span>
+</pre></div>
+</div>
+</p>
+<p><ul class="simple">
+<li><p>Deleting cache entries has to be done <em>manually</em> via <a class="reference internal" href="#_m_i_e_s___cache_8ipf_1a95de4c6b9d2d345a13e7bf2bb891fc82"><span class="std std-ref">CA_DeleteCacheEntry()</span></a>. The cache is also stored in a packed experiment.</p></li>
+<li><p>The entries in the cache are stored as free wave copies of what you feed into <a class="reference internal" href="#_m_i_e_s___cache_8ipf_1aef2e1f9e902a836b78923a0cb348e97a"><span class="std std-ref">CA_StoreEntryIntoCache()</span></a>. Similiary you get a free wave copy from <a class="reference internal" href="#_m_i_e_s___cache_8ipf_1a647d0bbb41e2d3e699c682f03beb15e6"><span class="std std-ref">CA_TryFetchingEntryFromCache()</span></a>.</p></li>
+<li><p>Storing 1D wave reference waves is supported, they are by default deep copied. </p></li>
+</ul>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-cache-key-generators">Cache key generators</p>
+<p><span class="target" id="_m_i_e_s___cache_8ipf_1CacheKeyGenerators"></span></p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417CA_MiesVersionKeyv">
+<span id="_CPPv317CA_MiesVersionKeyv"></span><span id="_CPPv217CA_MiesVersionKeyv"></span><span id="CA_MiesVersionKey"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a2b413c58fe0cead96e16ec429c3a3c00"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_MiesVersionKey</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417CA_MiesVersionKeyv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416CA_DACDevicesKey8variable">
+<span id="_CPPv316CA_DACDevicesKey8variable"></span><span id="_CPPv216CA_DACDevicesKey8variable"></span><span id="CA_DACDevicesKey__variable"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a2f396a7c67fabe976a7bad626903d960"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_DACDevicesKey</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hardwareType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416CA_DACDevicesKey8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428CA_AmplifierHardwareWavesKeyv">
+<span id="_CPPv328CA_AmplifierHardwareWavesKeyv"></span><span id="_CPPv228CA_AmplifierHardwareWavesKeyv"></span><span id="CA_AmplifierHardwareWavesKey"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a8ecf10b1e5535334d0aa3fbf69119fde"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_AmplifierHardwareWavesKey</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428CA_AmplifierHardwareWavesKeyv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421CA_KeyRecreatedEpochs4wave8WaveText5dfref8variable">
+<span id="_CPPv321CA_KeyRecreatedEpochs4wave8WaveText5dfref8variable"></span><span id="_CPPv221CA_KeyRecreatedEpochs4wave8WaveText5dfref8variable"></span><span id="CA_KeyRecreatedEpochs__wave.WaveText.dfref.variable"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a365c9b7fb6803c9eaa71fcdfbf6ddbb6"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_KeyRecreatedEpochs</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">textualValues</span></span>, <span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepDFR</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421CA_KeyRecreatedEpochs4wave8WaveText5dfref8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Cache key generator for recreated epochs wave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424CA_DistDAQCreateCacheKeyP12OOdDAQParams">
+<span id="_CPPv324CA_DistDAQCreateCacheKeyP12OOdDAQParams"></span><span id="_CPPv224CA_DistDAQCreateCacheKeyP12OOdDAQParams"></span><span id="CA_DistDAQCreateCacheKey__OOdDAQParamsP"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a3d26c7b337569593a134c240048a5c40"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_DistDAQCreateCacheKey</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv412OOdDAQParams" title="OOdDAQParams"><span class="n"><span class="pre">OOdDAQParams</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424CA_DistDAQCreateCacheKeyP12OOdDAQParams" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Cache key generator for oodDAQ offset waves. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413CA_PulseTimes4wave6string8variable8variable">
+<span id="_CPPv313CA_PulseTimes4wave6string8variable8variable"></span><span id="_CPPv213CA_PulseTimes4wave6string8variable8variable"></span><span id="CA_PulseTimes__wave.string.variable.variable"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a86cb122576432a33c014ac7d319bb6ed"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_PulseTimes</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fullPath</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelNumber</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">totalOnsetDelay</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413CA_PulseTimes4wave6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Cache key generator for <code class="docutils literal notranslate"><span class="pre">FindLevel</span></code> in PA_CalculatePulseTimes() </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415CA_SmoothDeconv4wave8variable8variable">
+<span id="_CPPv315CA_SmoothDeconv4wave8variable8variable"></span><span id="_CPPv215CA_SmoothDeconv4wave8variable8variable"></span><span id="CA_SmoothDeconv__wave.variable.variable"></span><span class="target" id="_m_i_e_s___cache_8ipf_1ab35cc2210efb6e8d88baf134ee83b122"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_SmoothDeconv</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">smoothingFactor</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">range_pnts</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415CA_SmoothDeconv4wave8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Cache key generator for <a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html#_m_i_e_s___pulse_averaging_8ipf_1a68c9fae97d0952aa07e24b78bbaaf7d4"><span class="std std-ref">PA_SmoothDeconv()</span></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wv</strong> – input wave (average) </p></li>
+<li><p><strong>smoothingFactor</strong> – smoothing factor </p></li>
+<li><p><strong>range_pnts</strong> – number of points (p) the smoothing was performed </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv49CA_Deconv4wave8variable">
+<span id="_CPPv39CA_Deconv4wave8variable"></span><span id="_CPPv29CA_Deconv4wave8variable"></span><span id="CA_Deconv__wave.variable"></span><span class="target" id="_m_i_e_s___cache_8ipf_1ac786f553849c9e524f8ffb0106995d12"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_Deconv</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tau</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49CA_Deconv4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Cache key generator for <a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html#_m_i_e_s___pulse_averaging_8ipf_1a05a8f53e8af393873d044a2ae73ad796"><span class="std std-ref">PA_Deconvolution()</span></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wv</strong> – input wave (smoothed average) </p></li>
+<li><p><strong>tau</strong> – convolution time </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426CA_GenKeyGetActiveChannels4wave4wave8variable8variable8variable">
+<span id="_CPPv326CA_GenKeyGetActiveChannels4wave4wave8variable8variable8variable"></span><span id="_CPPv226CA_GenKeyGetActiveChannels4wave4wave8variable8variable8variable"></span><span id="CA_GenKeyGetActiveChannels__wave.wave.variable.variable.variable"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a49de6a9572c8d9217dd603bd663ec0e8"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_GenKeyGetActiveChannels</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">textualValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">TTLmode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426CA_GenKeyGetActiveChannels4wave4wave8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Cache key generator for GetActiveChannels. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424CA_CreateLBIndexCacheKey4wave">
+<span id="_CPPv324CA_CreateLBIndexCacheKey4wave"></span><span id="_CPPv224CA_CreateLBIndexCacheKey4wave"></span><span id="CA_CreateLBIndexCacheKey__wave"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a4f555cf27d47c368c17c0ed258f290bd"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_CreateLBIndexCacheKey</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">values</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424CA_CreateLBIndexCacheKey4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Cache key generator for LBN index cache. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422CA_CreateLBRowCacheKey4wave">
+<span id="_CPPv322CA_CreateLBRowCacheKey4wave"></span><span id="_CPPv222CA_CreateLBRowCacheKey4wave"></span><span id="CA_CreateLBRowCacheKey__wave"></span><span class="target" id="_m_i_e_s___cache_8ipf_1aaa0bf256884c43a253d902502cb972a0"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_CreateLBRowCacheKey</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">values</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422CA_CreateLBRowCacheKey4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Cache key generator for LBN row cache. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426CA_GenKeyLogbookSortedKeys4wave">
+<span id="_CPPv326CA_GenKeyLogbookSortedKeys4wave"></span><span id="_CPPv226CA_GenKeyLogbookSortedKeys4wave"></span><span id="CA_GenKeyLogbookSortedKeys__wave"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a5a0bf173e8c90c59fe94bec2dadacb7c"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_GenKeyLogbookSortedKeys</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">keys</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426CA_GenKeyLogbookSortedKeys4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Cache key generator for Logbook sortedKeyWave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427CA_ArtefactRemovalRangesKey5dfref8variable">
+<span id="_CPPv327CA_ArtefactRemovalRangesKey5dfref8variable"></span><span id="_CPPv227CA_ArtefactRemovalRangesKey5dfref8variable"></span><span id="CA_ArtefactRemovalRangesKey__dfref.variable"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a54ec1862ee17609d964b9056258c2370"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_ArtefactRemovalRangesKey</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">singleSweepDFR</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427CA_ArtefactRemovalRangesKey5dfref8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Cache key generator for artefact removal ranges. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415CA_AveragingKey11WaveRefWave">
+<span id="_CPPv315CA_AveragingKey11WaveRefWave"></span><span id="_CPPv215CA_AveragingKey11WaveRefWave"></span><span id="CA_AveragingKey__WaveRefWave"></span><span class="target" id="_m_i_e_s___cache_8ipf_1ad14ced48ec463a07ebffd588541b1870"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_AveragingKey</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">waveRefs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415CA_AveragingKey11WaveRefWave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Cache key generator for averaging. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422CA_AveragingWaveModKey4wave">
+<span id="_CPPv322CA_AveragingWaveModKey4wave"></span><span id="_CPPv222CA_AveragingWaveModKey4wave"></span><span id="CA_AveragingWaveModKey__wave"></span><span class="target" id="_m_i_e_s___cache_8ipf_1abe2e1a25fc13052c5606b06bce022735"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_AveragingWaveModKey</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422CA_AveragingWaveModKey4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Cache key generator for averaging info from non-free waves. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423CA_PSXEventGoodTauRange4wave">
+<span id="_CPPv323CA_PSXEventGoodTauRange4wave"></span><span id="_CPPv223CA_PSXEventGoodTauRange4wave"></span><span id="CA_PSXEventGoodTauRange__wave"></span><span class="target" id="_m_i_e_s___cache_8ipf_1ad78948c74ef6ffe5f347499142d350f7"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_PSXEventGoodTauRange</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423CA_PSXEventGoodTauRange4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Cache key generator for the tau range calculation of psx events. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422CA_RecursiveWavemodCRC10WaveOrNull8variable">
+<span id="_CPPv322CA_RecursiveWavemodCRC10WaveOrNull8variable"></span><span id="_CPPv222CA_RecursiveWavemodCRC10WaveOrNull8variable"></span><span id="CA_RecursiveWavemodCRC__WaveOrNull.variable"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a8fe43bef6e34abc5c9b25fed3311431c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_RecursiveWavemodCRC</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">prevCRC</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422CA_RecursiveWavemodCRC10WaveOrNull8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Calculated a CRC from non wave reference waves using modification data, wave modification count and wave location. If the given wave is a wave reference wave, then the CRC is calculated recursively from all non wave reference waves and null wave references found. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416CA_GetWaveModCRC4wave8variable">
+<span id="_CPPv316CA_GetWaveModCRC4wave8variable"></span><span id="_CPPv216CA_GetWaveModCRC4wave8variable"></span><span id="CA_GetWaveModCRC__wave.variable"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a142b0494e83c12ebebdcb70ecd91871d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_GetWaveModCRC</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">crc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416CA_GetWaveModCRC4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417CA_WaveScalingCRC8variable4wave8variable">
+<span id="_CPPv317CA_WaveScalingCRC8variable4wave8variable"></span><span id="_CPPv217CA_WaveScalingCRC8variable4wave8variable"></span><span id="CA_WaveScalingCRC__variable.wave.variable"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a7269f1c8c871a35bfbf0bd400405de73"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_WaveScalingCRC</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">crc</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dimension</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417CA_WaveScalingCRC8variable4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Calculate the CRC of all metadata of all or the given dimension. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414CA_WaveSizeCRC4wave">
+<span id="_CPPv314CA_WaveSizeCRC4wave"></span><span id="_CPPv214CA_WaveSizeCRC4wave"></span><span id="CA_WaveSizeCRC__wave"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a478d24bf77ecf783710b1ef1ebe9949f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_WaveSizeCRC</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dims</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414CA_WaveSizeCRC4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Calculate CRC values of the wave <code class="docutils literal notranslate"><span class="pre">dims</span></code> giving the dimensions of a wave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411CA_WaveCRCs11WaveRefWave8variable8variable8variable">
+<span id="_CPPv311CA_WaveCRCs11WaveRefWave8variable8variable8variable"></span><span id="_CPPv211CA_WaveCRCs11WaveRefWave8variable8variable8variable"></span><span id="CA_WaveCRCs__WaveRefWave.variable.variable.variable"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a2fde132d1deb4f50f7151dcf95203eb3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_WaveCRCs</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">waveRefs</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">crcMode</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">includeWaveScalingAndUnits</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dims</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411CA_WaveCRCs11WaveRefWave8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Calculate all CRC values of the waves referenced in waveRefs. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>waveRefs</strong> – wave reference wave </p></li>
+<li><p><strong>crcMode</strong> – [optional] parameter to WaveCRC </p></li>
+<li><p><strong>includeWaveScalingAndUnits</strong> – [optional] include the wave scaling and units of filled dimensions </p></li>
+<li><p><strong>dims</strong> – [optional] number of dimensions to include wave scaling and units in crc </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422CA_SamplingIntervalKey4waveP14ActiveChannels">
+<span id="_CPPv322CA_SamplingIntervalKey4waveP14ActiveChannels"></span><span id="_CPPv222CA_SamplingIntervalKey4waveP14ActiveChannels"></span><span id="CA_SamplingIntervalKey__wave.ActiveChannelsP"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a0828481ac777584943e8515f85aa33f0"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_SamplingIntervalKey</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lut</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv414ActiveChannels" title="ActiveChannels"><span class="n"><span class="pre">ActiveChannels</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422CA_SamplingIntervalKey4waveP14ActiveChannels" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Calculate the cache key for SI_FindMatchingTableEntry. </p>
+<p>We are deliberatly not using a WaveCRC here as know that the wave is not changed in IP once loaded. Therefore using its name and ModDate is enough. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419CA_TemporaryWaveKey4wave">
+<span id="_CPPv319CA_TemporaryWaveKey4wave"></span><span id="_CPPv219CA_TemporaryWaveKey4wave"></span><span id="CA_TemporaryWaveKey__wave"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a99b32cb4314d07355b5fe0b722062004"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_TemporaryWaveKey</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dims</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419CA_TemporaryWaveKey4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Generic key generator for storing throw away waves used for Multithread assignments. </p>
+<p>Only the size is relevant, the rest is undefined. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417CA_FindIndizesKey4wave">
+<span id="_CPPv317CA_FindIndizesKey4wave"></span><span id="_CPPv217CA_FindIndizesKey4wave"></span><span id="CA_FindIndizesKey__wave"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a47972d7b4d2b11c5ae7db8a399ef966e"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_FindIndizesKey</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dims</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417CA_FindIndizesKey4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Key generator for FindIndizes. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418CA_HWDeviceInfoKey6string8variable8variable">
+<span id="_CPPv318CA_HWDeviceInfoKey6string8variable8variable"></span><span id="_CPPv218CA_HWDeviceInfoKey6string8variable8variable"></span><span id="CA_HWDeviceInfoKey__string.variable.variable"></span><span class="target" id="_m_i_e_s___cache_8ipf_1aaf0df7bce7ca22ca2703175f99a80456"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_HWDeviceInfoKey</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hardwareType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">deviceID</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418CA_HWDeviceInfoKey6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Calculate the cache key for the hardware device info wave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420CA_HardwareDataTPKeyP19HardwareDataTPInput">
+<span id="_CPPv320CA_HardwareDataTPKeyP19HardwareDataTPInput"></span><span id="_CPPv220CA_HardwareDataTPKeyP19HardwareDataTPInput"></span><span id="CA_HardwareDataTPKey__HardwareDataTPInputP"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a0145f1d317c754307839019251d9bbd1"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_HardwareDataTPKey</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv419HardwareDataTPInput" title="HardwareDataTPInput"><span class="n"><span class="pre">HardwareDataTPInput</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420CA_HardwareDataTPKeyP19HardwareDataTPInput" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Generate a key for the DAQDataWave in TEST_PULSE_MODE. </p>
+<p>Properties which influence the Testpulse:<ul class="simple">
+<li><p>hardwareType</p></li>
+<li><p>numDA (filled columns)</p></li>
+<li><p>numActiveChannels (number of columns)</p></li>
+<li><p>number of rows, return from DC_CalculateDAQDataWaveLength(device, TEST_PULSE_MODE)</p></li>
+<li><p>samplingInterval</p></li>
+<li><p>DAGain</p></li>
+<li><p>DACAmp[][TPAmp] column</p></li>
+<li><p>testPulseLength, baselineFrac </p></li>
+</ul>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424CA_PSXKernelOperationKey8variable8variable8variable8variable8variable4wave">
+<span id="_CPPv324CA_PSXKernelOperationKey8variable8variable8variable8variable8variable4wave"></span><span id="_CPPv224CA_PSXKernelOperationKey8variable8variable8variable8variable8variable4wave"></span><span id="CA_PSXKernelOperationKey__variable.variable.variable.variable.variable.wave"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a0fa70a58ae4fa4d8b2499def667ac292"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_PSXKernelOperationKey</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">riseTau</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">decayTau</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">amp</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numPoints</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dt</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">range</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424CA_PSXKernelOperationKey8variable8variable8variable8variable8variable4wave" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413CA_PSXBaseKey6string6string">
+<span id="_CPPv313CA_PSXBaseKey6string6string"></span><span id="_CPPv213CA_PSXBaseKey6string6string"></span><span id="CA_PSXBaseKey__string.string"></span><span class="target" id="_m_i_e_s___cache_8ipf_1aeb45fe64244e163fb33848cb41ec2e0e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_PSXBaseKey</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">comboKey</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">psxParameters</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413CA_PSXBaseKey6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415CA_PSXEventsKey6string6string">
+<span id="_CPPv315CA_PSXEventsKey6string6string"></span><span id="_CPPv215CA_PSXEventsKey6string6string"></span><span id="CA_PSXEventsKey__string.string"></span><span class="target" id="_m_i_e_s___cache_8ipf_1ac105f3d4442d893e4b6825fb1893e5c2"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_PSXEventsKey</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">comboKey</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">psxParameters</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415CA_PSXEventsKey6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Generate the key for the cache and the results wave for psxEvent data of the <code class="docutils literal notranslate"><span class="pre">psx</span></code> SweepFormula operation. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>comboKey</strong> – combination key, see <a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html#_m_i_e_s___sweep_formula___p_s_x_8ipf_1aa28c6d9ef134abec502dba99cdf06b5f"><span class="std std-ref">PSX_GenerateComboKey()</span></a></p></li>
+<li><p><strong>psxParameters</strong> – JSON dump of the psx/psxKernel operation parameters </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418CA_PSXOperationKey6string6string">
+<span id="_CPPv318CA_PSXOperationKey6string6string"></span><span id="_CPPv218CA_PSXOperationKey6string6string"></span><span id="CA_PSXOperationKey__string.string"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a0e41ed91ddb2a61a2cbe80b00d400f0d"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_PSXOperationKey</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">comboKey</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">psxParameters</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418CA_PSXOperationKey6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418CA_PSXAnalyzePeaks6string6string">
+<span id="_CPPv318CA_PSXAnalyzePeaks6string6string"></span><span id="_CPPv218CA_PSXAnalyzePeaks6string6string"></span><span id="CA_PSXAnalyzePeaks__string.string"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a15c0cc9eada30a3802df386f089a20fb"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_PSXAnalyzePeaks</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">comboKey</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">psxParameters</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418CA_PSXAnalyzePeaks6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414CA_IgorInfoKey8variable">
+<span id="_CPPv314CA_IgorInfoKey8variable"></span><span id="_CPPv214CA_IgorInfoKey8variable"></span><span id="CA_IgorInfoKey__variable"></span><span class="target" id="_m_i_e_s___cache_8ipf_1ae82535557679fb3ebad132d5eab41f36"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_IgorInfoKey</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">selector</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414CA_IgorInfoKey8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the key for the igor info entries. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425CA_GetLabnotebookNamesKey14WaveTextOrNull14WaveTextOrNull">
+<span id="_CPPv325CA_GetLabnotebookNamesKey14WaveTextOrNull14WaveTextOrNull"></span><span id="_CPPv225CA_GetLabnotebookNamesKey14WaveTextOrNull14WaveTextOrNull"></span><span id="CA_GetLabnotebookNamesKey__WaveTextOrNull.WaveTextOrNull"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a36e4679ed98d27d9a1e27b32df6793cd"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_GetLabnotebookNamesKey</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveTextOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">textualValues</span></span>, <span class="n"><span class="pre">WaveTextOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425CA_GetLabnotebookNamesKey14WaveTextOrNull14WaveTextOrNull" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the key for the filled labnotebook parameter names. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421CA_CalculateEpochsKey4wave4wave8variable8variable8variable6string8variable5dfref">
+<span id="_CPPv321CA_CalculateEpochsKey4wave4wave8variable8variable8variable6string8variable5dfref"></span><span id="_CPPv221CA_CalculateEpochsKey4wave4wave8variable8variable8variable6string8variable5dfref"></span><span id="CA_CalculateEpochsKey__wave.wave.variable.variable.variable.string.variable.dfref"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a56125d1525bf1c7b02eee225d8dbbb4f"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_CalculateEpochsKey</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalvalues</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">textualValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelNumber</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">shortName</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">treelevel</span></span>, <span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepDFR</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421CA_CalculateEpochsKey4wave4wave8variable8variable8variable6string8variable5dfref" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426CA_CalculateFetchEpochsKey4wave4wave8variable8variable8variable">
+<span id="_CPPv326CA_CalculateFetchEpochsKey4wave4wave8variable8variable8variable"></span><span id="_CPPv226CA_CalculateFetchEpochsKey4wave4wave8variable8variable8variable"></span><span id="CA_CalculateFetchEpochsKey__wave.wave.variable.variable.variable"></span><span class="target" id="_m_i_e_s___cache_8ipf_1ab8a47fd1be5f7cb143b25b0b3d860bc8"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_CalculateFetchEpochsKey</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalvalues</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">textualValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelNumber</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426CA_CalculateFetchEpochsKey4wave4wave8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422CA_GetGoodFFTSizesKeysv">
+<span id="_CPPv322CA_GetGoodFFTSizesKeysv"></span><span id="_CPPv222CA_GetGoodFFTSizesKeysv"></span><span id="CA_GetGoodFFTSizesKeys"></span><span class="target" id="_m_i_e_s___cache_8ipf_1aaa68c384743072f6b5e9a09f5fee8eb9"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_GetGoodFFTSizesKeys</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422CA_GetGoodFFTSizesKeysv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423CA_MakeSpaceForNewEntryv">
+<span id="_CPPv323CA_MakeSpaceForNewEntryv"></span><span id="_CPPv223CA_MakeSpaceForNewEntryv"></span><span id="CA_MakeSpaceForNewEntry"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a2dbd1b09f1004095a88dfd6129a0f890"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_MakeSpaceForNewEntry</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423CA_MakeSpaceForNewEntryv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Make space for one new entry in the cache waves. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>index into cache waves </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422CA_StoreEntryIntoCache6string10WaveOrNull8variable">
+<span id="_CPPv322CA_StoreEntryIntoCache6string10WaveOrNull8variable"></span><span id="_CPPv222CA_StoreEntryIntoCache6string10WaveOrNull8variable"></span><span id="CA_StoreEntryIntoCache__string.WaveOrNull.variable"></span><span class="target" id="_m_i_e_s___cache_8ipf_1aef2e1f9e902a836b78923a0cb348e97a"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_StoreEntryIntoCache</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">options</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422CA_StoreEntryIntoCache6string10WaveOrNull8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Add a new entry into the cache. </p>
+<p>
+Existing entries with the same key are overwritten. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – string which uniquely identifies the cached wave </p></li>
+<li><p><strong>val</strong> – wave to store </p></li>
+<li><p><strong>options</strong> – [optional, defaults to none] One or multiple constants from <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1CacheFetchOptions"><span class="std std-ref">CacheFetchOptions</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416CA_GetCacheIndex4wave6string">
+<span id="_CPPv316CA_GetCacheIndex4wave6string"></span><span id="_CPPv216CA_GetCacheIndex4wave6string"></span><span id="CA_GetCacheIndex__wave.string"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a4435e7ce321ff1c81eb0387e01241d8d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_GetCacheIndex</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">keys</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416CA_GetCacheIndex4wave6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the index of the entry <code class="docutils literal notranslate"><span class="pre">key</span></code></p>
+<p>
+UTF_NOINSTRUMENTATION </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>non-negative number or <code class="docutils literal notranslate"><span class="pre">NaN</span></code> if it could not be found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428CA_TryFetchingEntryFromCache6string8variable">
+<span id="_CPPv328CA_TryFetchingEntryFromCache6string8variable"></span><span id="_CPPv228CA_TryFetchingEntryFromCache6string8variable"></span><span id="CA_TryFetchingEntryFromCache__string.variable"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a647d0bbb41e2d3e699c682f03beb15e6"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_TryFetchingEntryFromCache</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">options</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428CA_TryFetchingEntryFromCache6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Try to fetch the wave stored under key from the cache. </p>
+<p>
+Prefer CA_TryFetchingEntryFromCacheWithNull if you stored an invalid wave reference and need to query that.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – string which uniquely identifies the cached wave </p></li>
+<li><p><strong>options</strong> – [optional, defaults to none] One or multiple constants from <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1CacheFetchOptions"><span class="std std-ref">CacheFetchOptions</span></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>wave reference with stored data or an invalid wave reference. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv436CA_TryFetchingEntryFromCacheWithNull6string8variable">
+<span id="_CPPv336CA_TryFetchingEntryFromCacheWithNull6string8variable"></span><span id="_CPPv236CA_TryFetchingEntryFromCacheWithNull6string8variable"></span><span id="CA_TryFetchingEntryFromCacheWithNull__string.variable"></span><span class="target" id="_m_i_e_s___cache_8ipf_1aa1ff3812ec45be52ae52592bc48ac34d"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">WAVE</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_TryFetchingEntryFromCacheWithNull</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">options</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv436CA_TryFetchingEntryFromCacheWithNull6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Try to fetch the wave stored under key from the cache. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – string which uniquely identifies the cached wave </p></li>
+<li><p><strong>options</strong> – [optional, defaults to none] One or multiple constants from <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1CacheFetchOptions"><span class="std std-ref">CacheFetchOptions</span></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return values<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>entry</strong> – wave reference with the stored data or an invalid wave reference </p></li>
+<li><p><strong>found</strong> – true/false value if something could be found. Allows to distinguish no match from null wave stored. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419CA_DeleteCacheEntry6string">
+<span id="_CPPv319CA_DeleteCacheEntry6string"></span><span id="_CPPv219CA_DeleteCacheEntry6string"></span><span id="CA_DeleteCacheEntry__string"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a95de4c6b9d2d345a13e7bf2bb891fc82"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_DeleteCacheEntry</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419CA_DeleteCacheEntry6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Try to delete a cache entry. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>One if it could be found and deleted, zero otherwise </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413CA_FlushCachev">
+<span id="_CPPv313CA_FlushCachev"></span><span id="_CPPv213CA_FlushCachev"></span><span id="CA_FlushCache"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a91d9ef3e90908e66941751cf3a7aad96"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_FlushCache</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413CA_FlushCachev" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Remove all entries from the wave cache. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424CA_OutputCacheStatisticsv">
+<span id="_CPPv324CA_OutputCacheStatisticsv"></span><span id="_CPPv224CA_OutputCacheStatisticsv"></span><span id="CA_OutputCacheStatistics"></span><span class="target" id="_m_i_e_s___cache_8ipf_1a067b1f76ae48b5838434dfcc42d780c5"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CA_OutputCacheStatistics</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424CA_OutputCacheStatisticsv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Output cache statistics. </p>
+</dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_Cache.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417CA_MiesVersionKeyv"><code class="docutils literal notranslate"><span class="pre">CA_MiesVersionKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416CA_DACDevicesKey8variable"><code class="docutils literal notranslate"><span class="pre">CA_DACDevicesKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428CA_AmplifierHardwareWavesKeyv"><code class="docutils literal notranslate"><span class="pre">CA_AmplifierHardwareWavesKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421CA_KeyRecreatedEpochs4wave8WaveText5dfref8variable"><code class="docutils literal notranslate"><span class="pre">CA_KeyRecreatedEpochs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424CA_DistDAQCreateCacheKeyP12OOdDAQParams"><code class="docutils literal notranslate"><span class="pre">CA_DistDAQCreateCacheKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413CA_PulseTimes4wave6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">CA_PulseTimes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415CA_SmoothDeconv4wave8variable8variable"><code class="docutils literal notranslate"><span class="pre">CA_SmoothDeconv()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv49CA_Deconv4wave8variable"><code class="docutils literal notranslate"><span class="pre">CA_Deconv()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426CA_GenKeyGetActiveChannels4wave4wave8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">CA_GenKeyGetActiveChannels()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424CA_CreateLBIndexCacheKey4wave"><code class="docutils literal notranslate"><span class="pre">CA_CreateLBIndexCacheKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422CA_CreateLBRowCacheKey4wave"><code class="docutils literal notranslate"><span class="pre">CA_CreateLBRowCacheKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426CA_GenKeyLogbookSortedKeys4wave"><code class="docutils literal notranslate"><span class="pre">CA_GenKeyLogbookSortedKeys()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427CA_ArtefactRemovalRangesKey5dfref8variable"><code class="docutils literal notranslate"><span class="pre">CA_ArtefactRemovalRangesKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415CA_AveragingKey11WaveRefWave"><code class="docutils literal notranslate"><span class="pre">CA_AveragingKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422CA_AveragingWaveModKey4wave"><code class="docutils literal notranslate"><span class="pre">CA_AveragingWaveModKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423CA_PSXEventGoodTauRange4wave"><code class="docutils literal notranslate"><span class="pre">CA_PSXEventGoodTauRange()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422CA_RecursiveWavemodCRC10WaveOrNull8variable"><code class="docutils literal notranslate"><span class="pre">CA_RecursiveWavemodCRC()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416CA_GetWaveModCRC4wave8variable"><code class="docutils literal notranslate"><span class="pre">CA_GetWaveModCRC()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417CA_WaveScalingCRC8variable4wave8variable"><code class="docutils literal notranslate"><span class="pre">CA_WaveScalingCRC()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414CA_WaveSizeCRC4wave"><code class="docutils literal notranslate"><span class="pre">CA_WaveSizeCRC()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411CA_WaveCRCs11WaveRefWave8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">CA_WaveCRCs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422CA_SamplingIntervalKey4waveP14ActiveChannels"><code class="docutils literal notranslate"><span class="pre">CA_SamplingIntervalKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419CA_TemporaryWaveKey4wave"><code class="docutils literal notranslate"><span class="pre">CA_TemporaryWaveKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417CA_FindIndizesKey4wave"><code class="docutils literal notranslate"><span class="pre">CA_FindIndizesKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418CA_HWDeviceInfoKey6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">CA_HWDeviceInfoKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420CA_HardwareDataTPKeyP19HardwareDataTPInput"><code class="docutils literal notranslate"><span class="pre">CA_HardwareDataTPKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424CA_PSXKernelOperationKey8variable8variable8variable8variable8variable4wave"><code class="docutils literal notranslate"><span class="pre">CA_PSXKernelOperationKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413CA_PSXBaseKey6string6string"><code class="docutils literal notranslate"><span class="pre">CA_PSXBaseKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415CA_PSXEventsKey6string6string"><code class="docutils literal notranslate"><span class="pre">CA_PSXEventsKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418CA_PSXOperationKey6string6string"><code class="docutils literal notranslate"><span class="pre">CA_PSXOperationKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418CA_PSXAnalyzePeaks6string6string"><code class="docutils literal notranslate"><span class="pre">CA_PSXAnalyzePeaks()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414CA_IgorInfoKey8variable"><code class="docutils literal notranslate"><span class="pre">CA_IgorInfoKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425CA_GetLabnotebookNamesKey14WaveTextOrNull14WaveTextOrNull"><code class="docutils literal notranslate"><span class="pre">CA_GetLabnotebookNamesKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421CA_CalculateEpochsKey4wave4wave8variable8variable8variable6string8variable5dfref"><code class="docutils literal notranslate"><span class="pre">CA_CalculateEpochsKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426CA_CalculateFetchEpochsKey4wave4wave8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">CA_CalculateFetchEpochsKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422CA_GetGoodFFTSizesKeysv"><code class="docutils literal notranslate"><span class="pre">CA_GetGoodFFTSizesKeys()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423CA_MakeSpaceForNewEntryv"><code class="docutils literal notranslate"><span class="pre">CA_MakeSpaceForNewEntry()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422CA_StoreEntryIntoCache6string10WaveOrNull8variable"><code class="docutils literal notranslate"><span class="pre">CA_StoreEntryIntoCache()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416CA_GetCacheIndex4wave6string"><code class="docutils literal notranslate"><span class="pre">CA_GetCacheIndex()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428CA_TryFetchingEntryFromCache6string8variable"><code class="docutils literal notranslate"><span class="pre">CA_TryFetchingEntryFromCache()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv436CA_TryFetchingEntryFromCacheWithNull6string8variable"><code class="docutils literal notranslate"><span class="pre">CA_TryFetchingEntryFromCacheWithNull()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419CA_DeleteCacheEntry6string"><code class="docutils literal notranslate"><span class="pre">CA_DeleteCacheEntry()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413CA_FlushCachev"><code class="docutils literal notranslate"><span class="pre">CA_FlushCache()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424CA_OutputCacheStatisticsv"><code class="docutils literal notranslate"><span class="pre">CA_OutputCacheStatistics()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___browser_settings_panel_8ipf.html"
+                          title="previous chapter">File MIES_BrowserSettingsPanel.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___check_installation_8ipf.html"
+                          title="next chapter">File MIES_CheckInstallation.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___check_installation_8ipf.html" title="File MIES_CheckInstallation.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___browser_settings_panel_8ipf.html" title="File MIES_BrowserSettingsPanel.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Cache.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

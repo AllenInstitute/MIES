@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File MIES_PressureControl.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_ProgrammaticGUIControl.ipf" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html" />
+    <link rel="prev" title="File MIES_Pictures.ipf" href="_m_i_e_s___pictures_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html" title="File MIES_ProgrammaticGUIControl.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___pictures_8ipf.html" title="File MIES_Pictures.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_PressureControl.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-pressurecontrol-ipf">
+<span id="id1"></span><h1>File MIES_PressureControl.ipf<a class="headerlink" href="#file-mies-pressurecontrol-ipf" title="Link to this heading">¶</a></h1>
+<p><strong>P</strong> Supports use of analog pressure regulators controlled via a ITC device for automated pressure control during approach, seal, break in, and clearing of pipette. </p>
+<p><dl>
+<dt class="sig sig-object cpp">
+<a class="reference internal" href="../todo.html#todo_1_todo000020"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<dd><p>TPbackground can crash while operating pressure regulators if called in the middle of a TP. Need to call P_Pressure control from TP functions that occur between TPs to prevent this from happening </p>
+</dd></dl>
+
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-constants-used-by-pressure-control">Constants used by pressure control</p>
+<p><span class="target" id="_m_i_e_s___pressure_control_8ipf_1PRESSURE_CONSTANTS"></span></p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv429PRESSURE_CONTROLS_BUTTON_LIST">
+<span id="_CPPv329PRESSURE_CONTROLS_BUTTON_LIST"></span><span id="_CPPv229PRESSURE_CONTROLS_BUTTON_LIST"></span><span id="PRESSURE_CONTROLS_BUTTON_LIST__stringC"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a708335ab4a3576802bff1401566a31f4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PRESSURE_CONTROLS_BUTTON_LIST</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;button_DataAcq_Approach;button_DataAcq_Seal;button_DataAcq_BreakIn;button_DataAcq_Clear;button_DataAcq_SSSetPressureMan&quot;</span></span><a class="headerlink" href="#_CPPv429PRESSURE_CONTROLS_BUTTON_LIST" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv427PRESSURE_CONTROL_TITLE_LIST">
+<span id="_CPPv327PRESSURE_CONTROL_TITLE_LIST"></span><span id="_CPPv227PRESSURE_CONTROL_TITLE_LIST"></span><span id="PRESSURE_CONTROL_TITLE_LIST__stringC"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a807a43b8fc9bd461bbe423be66a38e77"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PRESSURE_CONTROL_TITLE_LIST</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Approach;Seal;Break</span> <span class="pre">In;Clear;Apply&quot;</span></span><a class="headerlink" href="#_CPPv427PRESSURE_CONTROL_TITLE_LIST" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv430PRESSURE_CONTROL_CHECKBOX_LIST">
+<span id="_CPPv330PRESSURE_CONTROL_CHECKBOX_LIST"></span><span id="_CPPv230PRESSURE_CONTROL_CHECKBOX_LIST"></span><span id="PRESSURE_CONTROL_CHECKBOX_LIST__stringC"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1adf94fbcb9ef1460b1fd8b500c9ff18e0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PRESSURE_CONTROL_CHECKBOX_LIST</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;check_DatAcq_ApproachAll;check_DatAcq_SealAll;check_DatAcq_BreakInAll;check_DatAcq_ClearEnable;check_DataAcq_ManPressureAll&quot;</span></span><a class="headerlink" href="#_CPPv430PRESSURE_CONTROL_CHECKBOX_LIST" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv430PRESSURE_CONTROL_PRESSURE_DISP">
+<span id="_CPPv330PRESSURE_CONTROL_PRESSURE_DISP"></span><span id="_CPPv230PRESSURE_CONTROL_PRESSURE_DISP"></span><span id="PRESSURE_CONTROL_PRESSURE_DISP__stringC"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a3237da59653726a7e0d41ff061db617f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PRESSURE_CONTROL_PRESSURE_DISP</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;valdisp_DataAcq_P_0;valdisp_DataAcq_P_1;valdisp_DataAcq_P_2;valdisp_DataAcq_P_3;valdisp_DataAcq_P_4;valdisp_DataAcq_P_5;valdisp_DataAcq_P_6;valdisp_DataAcq_P_7&quot;</span></span><a class="headerlink" href="#_CPPv430PRESSURE_CONTROL_PRESSURE_DISP" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv430PRESSURE_CONTROL_LED_MODE_USER">
+<span id="_CPPv330PRESSURE_CONTROL_LED_MODE_USER"></span><span id="_CPPv230PRESSURE_CONTROL_LED_MODE_USER"></span><span id="PRESSURE_CONTROL_LED_MODE_USER__stringC"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a6a248315df08009e10da6c4ac3748402"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PRESSURE_CONTROL_LED_MODE_USER</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;valdisp_DataAcq_P_LED_Approach;valdisp_DataAcq_P_LED_Seal;valdisp_DataAcq_P_LED_BreakIn;valdisp_DataAcq_P_LED_Clear&quot;</span></span><a class="headerlink" href="#_CPPv430PRESSURE_CONTROL_LED_MODE_USER" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv431PRESSURE_CONTROL_USER_CHECBOXES">
+<span id="_CPPv331PRESSURE_CONTROL_USER_CHECBOXES"></span><span id="_CPPv231PRESSURE_CONTROL_USER_CHECBOXES"></span><span id="PRESSURE_CONTROL_USER_CHECBOXES__stringC"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a5c105c7a73fd5825b14d88a8f15fb743"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PRESSURE_CONTROL_USER_CHECBOXES</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;check_Settings_UserP_Approach;check_Settings_UserP_Seal;check_Settings_UserP_BreakIn;check_Settings_UserP_Clear&quot;</span></span><a class="headerlink" href="#_CPPv431PRESSURE_CONTROL_USER_CHECBOXES" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv416LOW_COLOR_HILITE">
+<span id="_CPPv316LOW_COLOR_HILITE"></span><span id="_CPPv216LOW_COLOR_HILITE"></span><span id="LOW_COLOR_HILITE__stringC"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1afa0a94233f8a2d795017fd3494dba2ae"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LOW_COLOR_HILITE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;0;0;0&quot;</span></span><a class="headerlink" href="#_CPPv416LOW_COLOR_HILITE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417ZERO_COLOR_HILITE">
+<span id="_CPPv317ZERO_COLOR_HILITE"></span><span id="_CPPv217ZERO_COLOR_HILITE"></span><span id="ZERO_COLOR_HILITE__stringC"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a37bba97cdca14b030785f0d1f632f3c6"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZERO_COLOR_HILITE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;0;0;65535&quot;</span></span><a class="headerlink" href="#_CPPv417ZERO_COLOR_HILITE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417HIGH_COLOR_HILITE">
+<span id="_CPPv317HIGH_COLOR_HILITE"></span><span id="_CPPv217HIGH_COLOR_HILITE"></span><span id="HIGH_COLOR_HILITE__stringC"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a8d623009ea782007bacd56d1e2e91706"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIGH_COLOR_HILITE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;65278;0;0&quot;</span></span><a class="headerlink" href="#_CPPv417HIGH_COLOR_HILITE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv49LOW_COLOR">
+<span id="_CPPv39LOW_COLOR"></span><span id="_CPPv29LOW_COLOR"></span><span id="LOW_COLOR__stringC"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a98634e1f8961e413fbc50ab8eb419656"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LOW_COLOR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;65535;65535;65535&quot;</span></span><a class="headerlink" href="#_CPPv49LOW_COLOR" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv410ZERO_COLOR">
+<span id="_CPPv310ZERO_COLOR"></span><span id="_CPPv210ZERO_COLOR"></span><span id="ZERO_COLOR__stringC"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a5bc76b08a114f304e17218b424328d96"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZERO_COLOR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;49151;53155;65535&quot;</span></span><a class="headerlink" href="#_CPPv410ZERO_COLOR" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv410HIGH_COLOR">
+<span id="_CPPv310HIGH_COLOR"></span><span id="_CPPv210HIGH_COLOR"></span><span id="HIGH_COLOR__stringC"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a51f3fe896aae91b06b83e6557e1462d0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIGH_COLOR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;65535;49000;49000&quot;</span></span><a class="headerlink" href="#_CPPv410HIGH_COLOR" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv428NEG_PRESSURE_PULSE_INCREMENT">
+<span id="_CPPv328NEG_PRESSURE_PULSE_INCREMENT"></span><span id="_CPPv228NEG_PRESSURE_PULSE_INCREMENT"></span><span id="NEG_PRESSURE_PULSE_INCREMENT__doubleC"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a49963522efbd53908b1f40f552f5f053"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NEG_PRESSURE_PULSE_INCREMENT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.2</span></span><a class="headerlink" href="#_CPPv428NEG_PRESSURE_PULSE_INCREMENT" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv428POS_PRESSURE_PULSE_INCREMENT">
+<span id="_CPPv328POS_PRESSURE_PULSE_INCREMENT"></span><span id="_CPPv228POS_PRESSURE_PULSE_INCREMENT"></span><span id="POS_PRESSURE_PULSE_INCREMENT__doubleC"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a54de87fd59c765c14917fcb8dfa3f090"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">POS_PRESSURE_PULSE_INCREMENT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.1</span></span><a class="headerlink" href="#_CPPv428POS_PRESSURE_PULSE_INCREMENT" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420PRESSURE_PULSE_ENDpt">
+<span id="_CPPv320PRESSURE_PULSE_ENDpt"></span><span id="_CPPv220PRESSURE_PULSE_ENDpt"></span><span id="PRESSURE_PULSE_ENDpt__doubleC"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a1225a7678ba6ecb8854220a3541b92af"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PRESSURE_PULSE_ENDpt</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">70000</span></span><a class="headerlink" href="#_CPPv420PRESSURE_PULSE_ENDpt" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv423PRESSURE_TTL_HIGH_START">
+<span id="_CPPv323PRESSURE_TTL_HIGH_START"></span><span id="_CPPv223PRESSURE_TTL_HIGH_START"></span><span id="PRESSURE_TTL_HIGH_START__doubleC"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1ad7fb8384209d5b0a901cfee917cc8f94"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PRESSURE_TTL_HIGH_START</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">20000</span></span><a class="headerlink" href="#_CPPv423PRESSURE_TTL_HIGH_START" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv49GIGA_SEAL">
+<span id="_CPPv39GIGA_SEAL"></span><span id="_CPPv29GIGA_SEAL"></span><span id="GIGA_SEAL__doubleC"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1af0e0a1c74309a6d78449e32a4879b2cd"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GIGA_SEAL</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1000</span></span><a class="headerlink" href="#_CPPv49GIGA_SEAL" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv415PRESSURE_OFFSET">
+<span id="_CPPv315PRESSURE_OFFSET"></span><span id="_CPPv215PRESSURE_OFFSET"></span><span id="PRESSURE_OFFSET__doubleC"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1ae22f32abdeabd21948901a945fec2c78"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PRESSURE_OFFSET</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">5</span></span><a class="headerlink" href="#_CPPv415PRESSURE_OFFSET" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv422MIN_NEG_PRESSURE_PULSE">
+<span id="_CPPv322MIN_NEG_PRESSURE_PULSE"></span><span id="_CPPv222MIN_NEG_PRESSURE_PULSE"></span><span id="MIN_NEG_PRESSURE_PULSE__doubleC"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1adba8371fe01006a9b3d7bbb9b519df35"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MIN_NEG_PRESSURE_PULSE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="m"><span class="pre">2</span></span><a class="headerlink" href="#_CPPv422MIN_NEG_PRESSURE_PULSE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv422MAX_POS_PRESSURE_PULSE">
+<span id="_CPPv322MAX_POS_PRESSURE_PULSE"></span><span id="_CPPv222MAX_POS_PRESSURE_PULSE"></span><span id="MAX_POS_PRESSURE_PULSE__doubleC"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a121984cfe694f91a17aafae8793daa8e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MAX_POS_PRESSURE_PULSE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.1</span></span><a class="headerlink" href="#_CPPv422MAX_POS_PRESSURE_PULSE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv415PRESSURE_CHANGE">
+<span id="_CPPv315PRESSURE_CHANGE"></span><span id="_CPPv215PRESSURE_CHANGE"></span><span id="PRESSURE_CHANGE__doubleC"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a1bb9bdf7e58350a9f5a4e6914eae9dd0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PRESSURE_CHANGE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv415PRESSURE_CHANGE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv416P_NEGATIVE_PULSE">
+<span id="_CPPv316P_NEGATIVE_PULSE"></span><span id="_CPPv216P_NEGATIVE_PULSE"></span><span id="P_NEGATIVE_PULSE__doubleC"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a95fb82b5ae18ea9467ccf0906bd4c732"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_NEGATIVE_PULSE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x0</span></span><a class="headerlink" href="#_CPPv416P_NEGATIVE_PULSE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv416P_POSITIVE_PULSE">
+<span id="_CPPv316P_POSITIVE_PULSE"></span><span id="_CPPv216P_POSITIVE_PULSE"></span><span id="P_POSITIVE_PULSE__doubleC"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a2bce75ee31c131e47a55b320886c6afc"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_POSITIVE_PULSE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x1</span></span><a class="headerlink" href="#_CPPv416P_POSITIVE_PULSE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv414P_MANUAL_PULSE">
+<span id="_CPPv314P_MANUAL_PULSE"></span><span id="_CPPv214P_MANUAL_PULSE"></span><span id="P_MANUAL_PULSE__doubleC"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a9043d78537023263f263217c64277e07"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_MANUAL_PULSE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x2</span></span><a class="headerlink" href="#_CPPv414P_MANUAL_PULSE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv414SEAL_POTENTIAL">
+<span id="_CPPv314SEAL_POTENTIAL"></span><span id="_CPPv214SEAL_POTENTIAL"></span><span id="SEAL_POTENTIAL__doubleC"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1ad645a10359c15a34e670e26c60054354"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SEAL_POTENTIAL</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="m"><span class="pre">70</span></span><a class="headerlink" href="#_CPPv414SEAL_POTENTIAL" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv425SEAL_RESISTANCE_THRESHOLD">
+<span id="_CPPv325SEAL_RESISTANCE_THRESHOLD"></span><span id="_CPPv225SEAL_RESISTANCE_THRESHOLD"></span><span id="SEAL_RESISTANCE_THRESHOLD__doubleC"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a76220dfc7a21df610c1c89b679762942"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SEAL_RESISTANCE_THRESHOLD</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">100</span></span><a class="headerlink" href="#_CPPv425SEAL_RESISTANCE_THRESHOLD" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417P_PressureControl6string">
+<span id="_CPPv317P_PressureControl6string"></span><span id="_CPPv217P_PressureControl6string"></span><span id="P_PressureControl__string"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a66721d2365eea4774f62178d3b679766"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_PressureControl</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417P_PressureControl6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Applies pressure methods based on data in PressureDataWv. </p>
+<p>This function gets called by TP_RecordTP. It also gets called when the approach button is pushed. A key point is that data acquisition used to run pressure pulses cannot be active if the TP is inactive. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420P_RecordUserPressure6string">
+<span id="_CPPv320P_RecordUserPressure6string"></span><span id="_CPPv220P_RecordUserPressure6string"></span><span id="P_RecordUserPressure__string"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a65af5586de73b535cf5bc13b06af09b7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_RecordUserPressure</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420P_RecordUserPressure6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417P_UpdateTPStorage6string8variable">
+<span id="_CPPv317P_UpdateTPStorage6string8variable"></span><span id="_CPPv217P_UpdateTPStorage6string8variable"></span><span id="P_UpdateTPStorage__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a2c7e9235438f28aaa3d9413f072cd325"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_UpdateTPStorage</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417P_UpdateTPStorage6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Record pressure in TPStorage wave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418P_FindLastSetEntry4wave8variable8variable6string">
+<span id="_CPPv318P_FindLastSetEntry4wave8variable8variable6string"></span><span id="_CPPv218P_FindLastSetEntry4wave8variable8variable6string"></span><span id="P_FindLastSetEntry__wave.variable.variable.string"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1ad1cdccf670b50229fc96c8076b50bc19"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_FindLastSetEntry</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">row</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">col</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418P_FindLastSetEntry4wave8variable8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the last non-NaN entry from the wave’s column <code class="docutils literal notranslate"><span class="pre">col</span></code> and layer <code class="docutils literal notranslate"><span class="pre">name</span></code> starting from the row <code class="docutils literal notranslate"><span class="pre">row</span></code> going to 0. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427P_AddSealedEntryToTPStorage6string8variable">
+<span id="_CPPv327P_AddSealedEntryToTPStorage6string8variable"></span><span id="_CPPv227P_AddSealedEntryToTPStorage6string8variable"></span><span id="P_AddSealedEntryToTPStorage__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1afeb5cafb35cb9766d8631bc6635512be"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_AddSealedEntryToTPStorage</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427P_AddSealedEntryToTPStorage6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419P_MethodAtmospheric6string8variable">
+<span id="_CPPv319P_MethodAtmospheric6string8variable"></span><span id="_CPPv219P_MethodAtmospheric6string8variable"></span><span id="P_MethodAtmospheric__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1ae037a77859ea3931d9f858ca9c3fb84e"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_MethodAtmospheric</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419P_MethodAtmospheric6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Sets the pressure to atmospheric. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416P_MethodApproach6string8variable">
+<span id="_CPPv316P_MethodApproach6string8variable"></span><span id="_CPPv216P_MethodApproach6string8variable"></span><span id="P_MethodApproach__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1ae2a40ac9b7c4d3e2115d04a83a13c1db"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_MethodApproach</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416P_MethodApproach6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Applies approach pressures. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412P_MethodSeal6string8variable">
+<span id="_CPPv312P_MethodSeal6string8variable"></span><span id="_CPPv212P_MethodSeal6string8variable"></span><span id="P_MethodSeal__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1aff6a0c1879eba9ad4645cca0e8e1342a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_MethodSeal</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412P_MethodSeal6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Applies seal methods. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415P_MethodBreakIn6string8variable">
+<span id="_CPPv315P_MethodBreakIn6string8variable"></span><span id="_CPPv215P_MethodBreakIn6string8variable"></span><span id="P_MethodBreakIn__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a1b941aac845c04d360fbf52bc3cb54ce"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_MethodBreakIn</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415P_MethodBreakIn6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Applies break-in method. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413P_MethodClear6string8variable">
+<span id="_CPPv313P_MethodClear6string8variable"></span><span id="_CPPv213P_MethodClear6string8variable"></span><span id="P_MethodClear__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a55d95c2f1d5d4baa7c4468b780e7676f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_MethodClear</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413P_MethodClear6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Applies pipette clearing method. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411P_ApplyNegV6string8variable">
+<span id="_CPPv311P_ApplyNegV6string8variable"></span><span id="_CPPv211P_ApplyNegV6string8variable"></span><span id="P_ApplyNegV__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a0bbf396a1828bed80e7d0e3ad59c4615"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_ApplyNegV</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411P_ApplyNegV6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Applies updates the command voltage to the <a class="reference internal" href="#_m_i_e_s___pressure_control_8ipf_1ad645a10359c15a34e670e26c60054354"><span class="std std-ref">SEAL_POTENTIAL</span></a> when <a class="reference internal" href="#_m_i_e_s___pressure_control_8ipf_1a76220dfc7a21df610c1c89b679762942"><span class="std std-ref">SEAL_RESISTANCE_THRESHOLD</span></a> is crossed. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412P_UpdateVcom6string8variable8variable">
+<span id="_CPPv312P_UpdateVcom6string8variable8variable"></span><span id="_CPPv212P_UpdateVcom6string8variable8variable"></span><span id="P_UpdateVcom__string.variable.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1ae7f6628f1dedf5089bdf994a9aa944e4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_UpdateVcom</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">vCom</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412P_UpdateVcom6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Updates the command voltage. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413P_CloseDevice6string">
+<span id="_CPPv313P_CloseDevice6string"></span><span id="_CPPv213P_CloseDevice6string"></span><span id="P_CloseDevice__string"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a36e23e763f5b037a0fdc57cc24210245"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_CloseDevice</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413P_CloseDevice6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Determines which devices to close. Ensures all DA_Ephys panels using a particular device for pressure regulation are updated correctly. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412P_OpenDevice6string6string">
+<span id="_CPPv312P_OpenDevice6string6string"></span><span id="_CPPv212P_OpenDevice6string6string"></span><span id="P_OpenDevice__string.string"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1aec2b0e9de15c4c50695395c8efbdb892"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_OpenDevice</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mainDevice</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressureDevice</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412P_OpenDevice6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Open device used for pressure regulation. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417P_PrepareITCWaves6string6string8variable">
+<span id="_CPPv317P_PrepareITCWaves6string6string8variable"></span><span id="_CPPv217P_PrepareITCWaves6string6string8variable"></span><span id="P_PrepareITCWaves__string.string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a82549bf57bde8a51b6e6d1e6c44a4610"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_PrepareITCWaves</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mainDevice</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressureDevice</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">deviceID</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417P_PrepareITCWaves6string6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Adapt the ITC DAQ waves for hardware specialities. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421P_CloseDeviceLowLevel6string6string8variable">
+<span id="_CPPv321P_CloseDeviceLowLevel6string6string8variable"></span><span id="_CPPv221P_CloseDeviceLowLevel6string6string8variable"></span><span id="P_CloseDeviceLowLevel__string.string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1ae0e8fd919ba84f8739fe72664ffd395c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_CloseDeviceLowLevel</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">deviceToClose</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">refHeadstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421P_CloseDeviceLowLevel6string6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Used to close the device used for pressure regulation. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422P_HeadstageUsingDevice6string6string">
+<span id="_CPPv322P_HeadstageUsingDevice6string6string"></span><span id="_CPPv222P_HeadstageUsingDevice6string6string"></span><span id="P_HeadstageUsingDevice__string.string"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1af1724669670411e5579b9ca39c0578f7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_HeadstageUsingDevice</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressureDevice</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422P_HeadstageUsingDevice6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns a list of rows that contain a particular string. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430P_GetListOfPressureCtrlDevices6string">
+<span id="_CPPv330P_GetListOfPressureCtrlDevices6string"></span><span id="_CPPv230P_GetListOfPressureCtrlDevices6string"></span><span id="P_GetListOfPressureCtrlDevices__string"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a7af69558317cea20f976cd4fd178bd1c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_GetListOfPressureCtrlDevices</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430P_GetListOfPressureCtrlDevices6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns a list of ITC/NI devices to open. </p>
+<p>Pulls a non repeating list of ITC/NI devices to open from the device specific pressure data wave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419P_SetAndGetPressure6string8variable8variable">
+<span id="_CPPv319P_SetAndGetPressure6string8variable8variable"></span><span id="_CPPv219P_SetAndGetPressure6string8variable8variable"></span><span id="P_SetAndGetPressure__string.variable.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1ae7fd4b641bf5776860a08c21cd6d222f"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_SetAndGetPressure</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">psi</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419P_SetAndGetPressure6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Sets the pressure on a headStage. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415P_GetUserAccess6string8variable8variable">
+<span id="_CPPv315P_GetUserAccess6string8variable8variable"></span><span id="_CPPv215P_GetUserAccess6string8variable8variable"></span><span id="P_GetUserAccess__string.variable.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a3e451270893a4dc2ebcd52c23c128bb3"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_GetUserAccess</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressureMode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415P_GetUserAccess6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns pressure access defined in <a class="reference internal" href="#_m_i_e_s___pressure_control_8ipf_1PRESSURE_CONSTANTS"><span class="std std-ref">PRESSURE_CONSTANTS</span></a> of the headstage. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – The DAQ device for which user access is being queried </p></li>
+<li><p><strong>headStage</strong> – MIES headstage number, must be in the range [0, NUM_HEADSTAGES] </p></li>
+<li><p><strong>pressureMode</strong> – One of the pressure modes defined in <a class="reference internal" href="#_m_i_e_s___pressure_control_8ipf_1PRESSURE_CONSTANTS"><span class="std std-ref">PRESSURE_CONSTANTS</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419P_SetPressureValves6string8variable8variable">
+<span id="_CPPv319P_SetPressureValves6string8variable8variable"></span><span id="_CPPv219P_SetPressureValves6string8variable8variable"></span><span id="P_SetPressureValves__string.variable.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1acda44ac2c5736aad029007ed72c4f158"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_SetPressureValves</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Access</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419P_SetPressureValves6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Maps the access (defined in <a class="reference internal" href="#_m_i_e_s___pressure_control_8ipf_1PRESSURE_CONSTANTS"><span class="std std-ref">PRESSURE_CONSTANTS</span></a>) to the TTL settings. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416P_UpdateTTLstate6string8variable8variable8variable">
+<span id="_CPPv316P_UpdateTTLstate6string8variable8variable8variable"></span><span id="_CPPv216P_UpdateTTLstate6string8variable8variable8variable"></span><span id="P_UpdateTTLstate__string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a9511efbc9f1de088966e93c7b6f14684"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_UpdateTTLstate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ONorOFFA</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ONorOFFB</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416P_UpdateTTLstate6string8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Updates the TTL channel associated with headStage while maintaining existing channel states. </p>
+<p>When setting TTLs, all channels are set at once. To keep existing TTL state on some channels, active state must be known. This function queries the hardware to determine the active state.</p>
+<p>ITC hardware: This requires the TTL out to be looped back to the TTL in on the ITC DAC.</p>
+<p>NI hardware: There are no dedicated input or output channels for DIO. The last written value is read according to documentation. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422P_UpdateSSRSlopeAndSSR6string">
+<span id="_CPPv322P_UpdateSSRSlopeAndSSR6string"></span><span id="_CPPv222P_UpdateSSRSlopeAndSSR6string"></span><span id="P_UpdateSSRSlopeAndSSR__string"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1aeca549e172609d53e1929217e92866f5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_UpdateSSRSlopeAndSSR</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422P_UpdateSSRSlopeAndSSR6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Updates resistance slope and the resistance in PressureDataWv from TPStorageWave param. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429P_UpdatePressureDataStorageWv6string">
+<span id="_CPPv329P_UpdatePressureDataStorageWv6string"></span><span id="_CPPv229P_UpdatePressureDataStorageWv6string"></span><span id="P_UpdatePressureDataStorageWv__string"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a865e74dae87bca8666c9073f25f96ceb"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_UpdatePressureDataStorageWv</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429P_UpdatePressureDataStorageWv6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Updates the pressure state (approach, seal, break in, or clear) from DA_Ephys panel to the pressureData wave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424P_UpdatePressureControls6string8variable">
+<span id="_CPPv324P_UpdatePressureControls6string8variable"></span><span id="_CPPv224P_UpdatePressureControls6string8variable"></span><span id="P_UpdatePressureControls__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1abfaeb39ab96ad8b384a2d87a9892a85d"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_UpdatePressureControls</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStageNo</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424P_UpdatePressureControls6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Retrieves the parameters stored in the PressureData wave and passes them to the GUI controls. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420P_UpdatePopupDevices6string8variable">
+<span id="_CPPv320P_UpdatePopupDevices6string8variable"></span><span id="_CPPv220P_UpdatePopupDevices6string8variable"></span><span id="P_UpdatePopupDevices__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a79151d2a5c7490e5f2c4220f22716dd8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_UpdatePopupDevices</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStageNo</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420P_UpdatePopupDevices6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Updates the popupmenu popup_Settings_Pressure_dev. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418P_ManPressurePulse6string8variable">
+<span id="_CPPv318P_ManPressurePulse6string8variable"></span><span id="_CPPv218P_ManPressurePulse6string8variable"></span><span id="P_ManPressurePulse__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a83b3616839ea81958cdbd53a1834a69a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_ManPressurePulse</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418P_ManPressurePulse6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Initiates a pressure pulse who’s settings are are controlled in the manual tab of the pressure regulation controls. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418P_NegPressurePulse6string8variable">
+<span id="_CPPv318P_NegPressurePulse6string8variable"></span><span id="_CPPv218P_NegPressurePulse6string8variable"></span><span id="P_NegPressurePulse__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a269ae494988efed71d67a7aac7718baf"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_NegPressurePulse</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418P_NegPressurePulse6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Sends a negative pressure pulse to the pressure regulator. Gates the TTLs apropriately to maintain the exisiting TTL state while opening the TTL on the channel with the pressure pulse. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418P_PosPressurePulse6string8variable">
+<span id="_CPPv318P_PosPressurePulse6string8variable"></span><span id="_CPPv218P_PosPressurePulse6string8variable"></span><span id="P_PosPressurePulse__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1af7a96fee1234888f18b0060724523a0d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_PosPressurePulse</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418P_PosPressurePulse6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Initiates a positive pressure pulse to the pressure regulator. Gates the TTLs apropriately to maintain the exisiting TTL state while opening the TTL on the channel with the pressure pulse. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417P_ITC_SetChannels6string8variable">
+<span id="_CPPv317P_ITC_SetChannels6string8variable"></span><span id="_CPPv217P_ITC_SetChannels6string8variable"></span><span id="P_ITC_SetChannels__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a1a4ce862cfddae76b04614527fe65254"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_ITC_SetChannels</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417P_ITC_SetChannels6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429P_DeviceIsUsedForPressureCtrl6string6string">
+<span id="_CPPv329P_DeviceIsUsedForPressureCtrl6string6string"></span><span id="_CPPv229P_DeviceIsUsedForPressureCtrl6string6string"></span><span id="P_DeviceIsUsedForPressureCtrl__string.string"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a60ecc19b41ebd12ab6dbe9339dc7801a"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_DeviceIsUsedForPressureCtrl</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressureDevice</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429P_DeviceIsUsedForPressureCtrl6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Check wether the given device is used as pressure device already. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv49P_DataAcq6string8variable">
+<span id="_CPPv39P_DataAcq6string8variable"></span><span id="_CPPv29P_DataAcq6string8variable"></span><span id="P_DataAcq__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a719544896791ed07a31656ebd2cf8aa5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_DataAcq</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49P_DataAcq6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Perform an acquisition cycle on the pressure device for pressure control. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412P_NI_StopDAQ6string8variable">
+<span id="_CPPv312P_NI_StopDAQ6string8variable"></span><span id="_CPPv212P_NI_StopDAQ6string8variable"></span><span id="P_NI_StopDAQ__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a011eaae6a75433f2bddd06f66a2adb47"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_NI_StopDAQ</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412P_NI_StopDAQ6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423P_FindDeviceExecutingPPP6stringP8variableP8variable">
+<span id="_CPPv323P_FindDeviceExecutingPPP6stringP8variableP8variable"></span><span id="_CPPv223P_FindDeviceExecutingPPP6stringP8variableP8variable"></span><span id="P_FindDeviceExecutingPP__stringP.variableP.variableP"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1ab2ba6976132322218e4cbdc166ea1220"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_FindDeviceExecutingPP</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">deviceID</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423P_FindDeviceExecutingPPP6stringP8variableP8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the device of the device associated with device conducting a pressure pulse. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418P_GetPressureForDA6string8variable8variableP12P_PressureDA">
+<span id="_CPPv318P_GetPressureForDA6string8variable8variableP12P_PressureDA"></span><span id="_CPPv218P_GetPressureForDA6string8variable8variableP12P_PressureDA"></span><span id="P_GetPressureForDA__string.variable.variable.P_PressureDAP"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a9d52e1830287ccfd65904aeff42c1b47"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_GetPressureForDA</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressureMode</span></span>, <a class="reference internal" href="#_CPPv412P_PressureDA" title="P_PressureDA"><span class="n"><span class="pre">P_PressureDA</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">p</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418P_GetPressureForDA6string8variable8variableP12P_PressureDA" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Fill the passed structure with pressure details for the DA wave. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – <strong>[in]</strong> device </p></li>
+<li><p><strong>headStage</strong> – <strong>[in]</strong> headstage </p></li>
+<li><p><strong>pressureMode</strong> – <strong>[in]</strong> one of <a class="reference internal" href="#_m_i_e_s___pressure_control_8ipf_1a95fb82b5ae18ea9467ccf0906bd4c732"><span class="std std-ref">P_NEGATIVE_PULSE</span></a>, <a class="reference internal" href="#_m_i_e_s___pressure_control_8ipf_1a2bce75ee31c131e47a55b320886c6afc"><span class="std std-ref">P_POSITIVE_PULSE</span></a>, <a class="reference internal" href="#_m_i_e_s___pressure_control_8ipf_1a9043d78537023263f263217c64277e07"><span class="std std-ref">P_MANUAL_PULSE</span></a></p></li>
+<li><p><strong>p</strong> – <strong>[out]</strong> pressure details </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414P_NI_GetDAWave6string8variable">
+<span id="_CPPv314P_NI_GetDAWave6string8variable"></span><span id="_CPPv214P_NI_GetDAWave6string8variable"></span><span id="P_NI_GetDAWave__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1abfae843ad30fba30c6208f34c5cc4dc4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_NI_GetDAWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414P_NI_GetDAWave6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414P_NI_GetADWave6string8variable">
+<span id="_CPPv314P_NI_GetADWave6string8variable"></span><span id="_CPPv214P_NI_GetADWave6string8variable"></span><span id="P_NI_GetADWave__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a6b06361d530ba5682173e44738e1e71d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_NI_GetADWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414P_NI_GetADWave6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414P_FillDAQWaves6string8variableP12P_PressureDA">
+<span id="_CPPv314P_FillDAQWaves6string8variableP12P_PressureDA"></span><span id="_CPPv214P_FillDAQWaves6string8variableP12P_PressureDA"></span><span id="P_FillDAQWaves__string.variable.P_PressureDAP"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a421a42b88d6c4d9a9e08992a6dd6bd1b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_FillDAQWaves</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span>, <a class="reference internal" href="#_CPPv412P_PressureDA" title="P_PressureDA"><span class="n"><span class="pre">P_PressureDA</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">p</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414P_FillDAQWaves6string8variableP12P_PressureDA" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416P_DAforNegPpulse6string8variable">
+<span id="_CPPv316P_DAforNegPpulse6string8variable"></span><span id="_CPPv216P_DAforNegPpulse6string8variable"></span><span id="P_DAforNegPpulse__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a4dfaeedb3b77e35e730bc33807599e11"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_DAforNegPpulse</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416P_DAforNegPpulse6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Updates the DA data used for ITC controlled pressure devices for a negative pressure pulse. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413P_GetPulseAmp6string8variable">
+<span id="_CPPv313P_GetPulseAmp6string8variable"></span><span id="_CPPv213P_GetPulseAmp6string8variable"></span><span id="P_GetPulseAmp__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a752a7c364cdd40de006f19457235d695"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_GetPulseAmp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413P_GetPulseAmp6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the negative pressure pulse amplitude. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416P_LastPulseCount8variable">
+<span id="_CPPv316P_LastPulseCount8variable"></span><span id="_CPPv216P_LastPulseCount8variable"></span><span id="P_LastPulseCount__variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a8f04643009058c0fee6cd80c3c80edc8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_LastPulseCount</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pulseAmp</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416P_LastPulseCount8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the pulse count. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416P_DAforPosPpulse6string8variable">
+<span id="_CPPv316P_DAforPosPpulse6string8variable"></span><span id="_CPPv216P_DAforPosPpulse6string8variable"></span><span id="P_DAforPosPpulse__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1aecff9f9fa596ec2dad840206f5469e92"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_DAforPosPpulse</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416P_DAforPosPpulse6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Updates the DA data used for ITC controlled pressure devices for a positive pressure pulse. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416P_DAforManPpulse6string8variable">
+<span id="_CPPv316P_DAforManPpulse6string8variable"></span><span id="_CPPv216P_DAforManPpulse6string8variable"></span><span id="P_DAforManPpulse__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a0b14c8452927a5a9a691c0988f1da25d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_DAforManPpulse</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416P_DAforManPpulse6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Updates the DA data used for ITC controlled pressure devices for a manual pressure pulse. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414P_TTLforPpulse6string8variable">
+<span id="_CPPv314P_TTLforPpulse6string8variable"></span><span id="_CPPv214P_TTLforPpulse6string8variable"></span><span id="P_TTLforPpulse__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1ad075364653e827608610ded2f94a0be1"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_TTLforPpulse</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414P_TTLforPpulse6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Updates the rack 0 and rack 1 TTL waves used for ITC controlled pressure devices. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418P_UpdateTTLdecimal6string8variable8variable8variable">
+<span id="_CPPv318P_UpdateTTLdecimal6string8variable8variable8variable"></span><span id="_CPPv218P_UpdateTTLdecimal6string8variable8variable8variable"></span><span id="P_UpdateTTLdecimal__string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1af0f47706e9f49eaa09c08bce29ddf46c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_UpdateTTLdecimal</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressureDevice</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dec</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ttlBit</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ONorOFF</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418P_UpdateTTLdecimal6string8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>returns the new TTL state based on the starting TTL state. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420P_UpdatePressureMode6string8variable6string8variable">
+<span id="_CPPv320P_UpdatePressureMode6string8variable6string8variable"></span><span id="_CPPv220P_UpdatePressureMode6string8variable6string8variable"></span><span id="P_UpdatePressureMode__string.variable.string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a614511a1d2bf077dc5a360a396b399ce"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_UpdatePressureMode</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressureMode</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressureControlName</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">checkALL</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420P_UpdatePressureMode6string8variable6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Updates the pressure mode button state in the DA_Ephys Data Acq tab. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419P_ResetPressureData6string8variable">
+<span id="_CPPv319P_ResetPressureData6string8variable"></span><span id="_CPPv219P_ResetPressureData6string8variable"></span><span id="P_ResetPressureData__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a4cdda64e7178474337786b12f51d9db7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_ResetPressureData</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStageNo</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419P_ResetPressureData6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Resets pressure data to base state. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410P_CheckAll6string8variable8variable">
+<span id="_CPPv310P_CheckAll6string8variable8variable"></span><span id="_CPPv210P_CheckAll6string8variable8variable"></span><span id="P_CheckAll__string.variable.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1abe403c18593730e35285b091ef0bf8f7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_CheckAll</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressureMode</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">SavedPressureMode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410P_CheckAll6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Applies pressure mode to all headstages with valid pressure settings. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419P_SetPressureOffset6string8variable8variable">
+<span id="_CPPv319P_SetPressureOffset6string8variable8variable"></span><span id="_CPPv219P_SetPressureOffset6string8variable8variable"></span><span id="P_SetPressureOffset__string.variable.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a5523c374d3a5c8287f7d1f204131ef88"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_SetPressureOffset</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">userOffset</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419P_SetPressureOffset6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414P_InitBeforeTP6string">
+<span id="_CPPv314P_InitBeforeTP6string"></span><span id="_CPPv214P_InitBeforeTP6string"></span><span id="P_InitBeforeTP__string"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a7163067ce52b5f19c86cd58a1e207fb5"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_InitBeforeTP</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414P_InitBeforeTP6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425P_LoadPressureButtonState6string">
+<span id="_CPPv325P_LoadPressureButtonState6string"></span><span id="_CPPv225P_LoadPressureButtonState6string"></span><span id="P_LoadPressureButtonState__string"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a1710756d32b67efac122d32e5b9d4b91"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_LoadPressureButtonState</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425P_LoadPressureButtonState6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Colors and changes the title of the pressure buttons based on the saved pressure mode. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429SetPressureButtonsToBaseState6string">
+<span id="_CPPv329SetPressureButtonsToBaseState6string"></span><span id="_CPPv229SetPressureButtonsToBaseState6string"></span><span id="SetPressureButtonsToBaseState__string"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a561e4673d51cd69d6d705cc543a2433d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetPressureButtonsToBaseState</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429SetPressureButtonsToBaseState6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Sets the pressure toggle buttons to disabled, default color, default title. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422P_EnableButtonsIfValid6string8variable">
+<span id="_CPPv322P_EnableButtonsIfValid6string8variable"></span><span id="_CPPv222P_EnableButtonsIfValid6string8variable"></span><span id="P_EnableButtonsIfValid__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a80c5b73d56524facdcc8dedcfbe75978"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_EnableButtonsIfValid</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStageNo</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422P_EnableButtonsIfValid6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Checks if the Approach button can be enabled or all pressure mode buttons can be enabled. Enables buttons that pass checks. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424P_UpdatePressureModeTabs6string8variable">
+<span id="_CPPv324P_UpdatePressureModeTabs6string8variable"></span><span id="_CPPv224P_UpdatePressureModeTabs6string8variable"></span><span id="P_UpdatePressureModeTabs__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a6ad5a9a56d8ac3d5fa576a6f6c47ffd4"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_UpdatePressureModeTabs</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424P_UpdatePressureModeTabs6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>updates the tablabels for the pressure tabControl according to the pressure mode </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430P_ValidatePressureSetHeadstage6string8variable">
+<span id="_CPPv330P_ValidatePressureSetHeadstage6string8variable"></span><span id="_CPPv230P_ValidatePressureSetHeadstage6string8variable"></span><span id="P_ValidatePressureSetHeadstage__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a5c531776ae7abc7e92f19dd0f821f210"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_ValidatePressureSetHeadstage</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStageNo</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430P_ValidatePressureSetHeadstage6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Checks if all the pressure settings for a headStage are valid. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>1 if all settings are valid, 0 otherwise </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421P_DACIsCollectingData6string8variable">
+<span id="_CPPv321P_DACIsCollectingData6string8variable"></span><span id="_CPPv221P_DACIsCollectingData6string8variable"></span><span id="P_DACIsCollectingData__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1aabcca8f9f6317c6aed9af51adfc03335"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_DACIsCollectingData</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421P_DACIsCollectingData6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Determines if device is active (i.e. collecting data) </p>
+<p>used to determine if pressure pulse has completed. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424P_PressureMethodPossible6string8variable">
+<span id="_CPPv324P_PressureMethodPossible6string8variable"></span><span id="_CPPv224P_PressureMethodPossible6string8variable"></span><span id="P_PressureMethodPossible__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a75bfb9e2d185fec19aa5a70d234c862b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_PressureMethodPossible</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424P_PressureMethodPossible6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return true if pressure methods can be used on that headstage now. </p>
+<p>Does not check if the headstage has valid settings, see <a class="reference internal" href="#_m_i_e_s___pressure_control_8ipf_1a5c531776ae7abc7e92f19dd0f821f210"><span class="std std-ref">P_ValidatePressureSetHeadstage()</span></a>, or that no pressure pulse is currently ongoing, see <a class="reference internal" href="#_m_i_e_s___pressure_control_8ipf_1aabcca8f9f6317c6aed9af51adfc03335"><span class="std std-ref">P_DACIsCollectingData()</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423P_IsHSActiveAndInVClamp6string8variable">
+<span id="_CPPv323P_IsHSActiveAndInVClamp6string8variable"></span><span id="_CPPv223P_IsHSActiveAndInVClamp6string8variable"></span><span id="P_IsHSActiveAndInVClamp__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1ae26f87cd3b2f85c911d3e441d7e463c7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_IsHSActiveAndInVClamp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423P_IsHSActiveAndInVClamp6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Determines headStage is on and in V-Clamp mode. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv431P_ResetAll_P_ButtonsToBaseState6string">
+<span id="_CPPv331P_ResetAll_P_ButtonsToBaseState6string"></span><span id="_CPPv231P_ResetAll_P_ButtonsToBaseState6string"></span><span id="P_ResetAll_P_ButtonsToBaseState__string"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a01edeaa5e81a24f9cbd31984f7a99de6"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_ResetAll_P_ButtonsToBaseState</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431P_ResetAll_P_ButtonsToBaseState6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the four pressure buttons to the base state (gray color; removes “Stop” string from button title) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425P_PressureDisplayHighlite6string8variable">
+<span id="_CPPv325P_PressureDisplayHighlite6string8variable"></span><span id="_CPPv225P_PressureDisplayHighlite6string8variable"></span><span id="P_PressureDisplayHighlite__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1ae7de06db4d12b26396df9e70a967a2e9"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_PressureDisplayHighlite</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hilite</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425P_PressureDisplayHighlite6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv432P_CheckDeviceAndChannelSelection6string">
+<span id="_CPPv332P_CheckDeviceAndChannelSelection6string"></span><span id="_CPPv232P_CheckDeviceAndChannelSelection6string"></span><span id="P_CheckDeviceAndChannelSelection__string"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1ac0c2a3663d1a7ae28d6ef9b8e1d4240c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_CheckDeviceAndChannelSelection</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv432P_CheckDeviceAndChannelSelection6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv48P_Enablev">
+<span id="_CPPv38P_Enablev"></span><span id="_CPPv28P_Enablev"></span><span id="P_Enable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1ae16de58da2e96e34b4223c65acbd6e6b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_Enable</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv48P_Enablev" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Enables devices for all locked DA_Ephys panels. Sets the correct pressure button state for all locked DA_Ephys panels. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv49P_Disablev">
+<span id="_CPPv39P_Disablev"></span><span id="_CPPv29P_Disablev"></span><span id="P_Disable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1ac6b9e8129eb5cc06ef27c0a4084e014b"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_Disable</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49P_Disablev" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Disables devices for all locked DA_Ephys panels. Sets the correct pressure button state for all locked DA_Ephys panels. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413P_DecToBinary8variable">
+<span id="_CPPv313P_DecToBinary8variable"></span><span id="_CPPv213P_DecToBinary8variable"></span><span id="P_DecToBinary__variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1af61491c4ddfaf85d8ecd22e95c571948"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_DecToBinary</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dec</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413P_DecToBinary8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Decimal to binary in 8bit wave. </p>
+<p>Wave is always 4 rows long so that each TTL channel on the front of the ITC DAC gets “encoded” </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416P_ManSetPressure6string8variable8variable">
+<span id="_CPPv316P_ManSetPressure6string8variable8variable"></span><span id="_CPPv216P_ManSetPressure6string8variable8variable"></span><span id="P_ManSetPressure__string.variable.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a667d0ab1a364a40aa41ba83a103d68b3"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_ManSetPressure</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">manPressureAll</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416P_ManSetPressure6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Manual pressure control. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427P_SaveUserSelectedHeadstage6string8variable">
+<span id="_CPPv327P_SaveUserSelectedHeadstage6string8variable"></span><span id="_CPPv227P_SaveUserSelectedHeadstage6string8variable"></span><span id="P_SaveUserSelectedHeadstage__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1aa198095818c88b10d10fd9d022e1b578"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_SaveUserSelectedHeadstage</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427P_SaveUserSelectedHeadstage6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Saves user seleted headstage in pressureData wave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423P_SetAllHStoAtmospheric6string">
+<span id="_CPPv323P_SetAllHStoAtmospheric6string"></span><span id="_CPPv223P_SetAllHStoAtmospheric6string"></span><span id="P_SetAllHStoAtmospheric__string"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a8e6493cfa121759090d780d47b7defcf"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_SetAllHStoAtmospheric</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423P_SetAllHStoAtmospheric6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Sets all headstage to atmospheric pressure. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419P_GetPressureMethod6string8variable">
+<span id="_CPPv319P_GetPressureMethod6string8variable"></span><span id="_CPPv219P_GetPressureMethod6string8variable"></span><span id="P_GetPressureMethod__string.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1ac8510cc187851d401e899b0d67793f8f"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_GetPressureMethod</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419P_GetPressureMethod6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Gets the pressure mode for a headstage. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417P_SetPressureMode6string8variable8variable8variable">
+<span id="_CPPv317P_SetPressureMode6string8variable8variable8variable"></span><span id="_CPPv217P_SetPressureMode6string8variable8variable8variable"></span><span id="P_SetPressureMode__string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a910bda719189ff00223b56a10ca62d56"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_SetPressureMode</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressureMode</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417P_SetPressureMode6string8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Sets the pressure mode. </p>
+<p>Intended for use by other processes </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>headStage</strong> – MIES headstage number, must be in the range [0, NUM_HEADSTAGES] </p></li>
+<li><p><strong>pressureMode</strong> – One of the pressure modes defined in <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1PressureModeConstants"><span class="std std-ref">PressureModeConstants</span></a></p></li>
+<li><p><strong>pressure</strong> – [optional, ignored by default. Sets pressure of manual mode] </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419ButtonProc_ApproachP14WMButtonAction">
+<span id="_CPPv319ButtonProc_ApproachP14WMButtonAction"></span><span id="_CPPv219ButtonProc_ApproachP14WMButtonAction"></span><span id="ButtonProc_Approach__WMButtonActionP"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a3d3d413be5486f4b02fa3d90e839409a"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ButtonProc_Approach</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419ButtonProc_ApproachP14WMButtonAction" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Approach button. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413P_SetApproach6string6string">
+<span id="_CPPv313P_SetApproach6string6string"></span><span id="_CPPv213P_SetApproach6string6string"></span><span id="P_SetApproach__string.string"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1ac10245ba573b527f70d3f823c76c39f0"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_SetApproach</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cntrlName</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413P_SetApproach6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Sets approach state. </p>
+<p>Handles the TP depency of the approach pressure application </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415ButtonProc_SealP14WMButtonAction">
+<span id="_CPPv315ButtonProc_SealP14WMButtonAction"></span><span id="_CPPv215ButtonProc_SealP14WMButtonAction"></span><span id="ButtonProc_Seal__WMButtonActionP"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a7e447e6d75318d960ddf0d9529d21682"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ButtonProc_Seal</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415ButtonProc_SealP14WMButtonAction" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Seal button. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418ButtonProc_BreakInP14WMButtonAction">
+<span id="_CPPv318ButtonProc_BreakInP14WMButtonAction"></span><span id="_CPPv218ButtonProc_BreakInP14WMButtonAction"></span><span id="ButtonProc_BreakIn__WMButtonActionP"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1ad6974314292bbcca13d796c9406f5c53"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ButtonProc_BreakIn</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418ButtonProc_BreakInP14WMButtonAction" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Break in button. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416ButtonProc_ClearP14WMButtonAction">
+<span id="_CPPv316ButtonProc_ClearP14WMButtonAction"></span><span id="_CPPv216ButtonProc_ClearP14WMButtonAction"></span><span id="ButtonProc_Clear__WMButtonActionP"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a921eb49803dcdf8c8d6153d3e9b9f61a"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ButtonProc_Clear</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416ButtonProc_ClearP14WMButtonAction" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Clear button. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411P_SetManual6string6string">
+<span id="_CPPv311P_SetManual6string6string"></span><span id="_CPPv211P_SetManual6string6string"></span><span id="P_SetManual__string.string"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a0765cb316ef727111cd54e0c7195542c"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_SetManual</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cntrlName</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411P_SetManual6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Handles the TP depency of the Manual pressure application. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421CheckProc_ClearEnableP16WMCheckboxAction">
+<span id="_CPPv321CheckProc_ClearEnableP16WMCheckboxAction"></span><span id="_CPPv221CheckProc_ClearEnableP16WMCheckboxAction"></span><span id="CheckProc_ClearEnable__WMCheckboxActionP"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1ac9edb17c67a11fb14e104eb808b171cf"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CheckProc_ClearEnable</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMCheckboxAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">cba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421CheckProc_ClearEnableP16WMCheckboxAction" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Clear all check box. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430ButtonProc_Hrdwr_P_UpdtDAClistP14WMButtonAction">
+<span id="_CPPv330ButtonProc_Hrdwr_P_UpdtDAClistP14WMButtonAction"></span><span id="_CPPv230ButtonProc_Hrdwr_P_UpdtDAClistP14WMButtonAction"></span><span id="ButtonProc_Hrdwr_P_UpdtDAClist__WMButtonActionP"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a57918f34e6757c508331040f7b000ddf"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ButtonProc_Hrdwr_P_UpdtDAClist</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430ButtonProc_Hrdwr_P_UpdtDAClistP14WMButtonAction" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Update DAC list button. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419P_ButtonProc_EnableP14WMButtonAction">
+<span id="_CPPv319P_ButtonProc_EnableP14WMButtonAction"></span><span id="_CPPv219P_ButtonProc_EnableP14WMButtonAction"></span><span id="P_ButtonProc_Enable__WMButtonActionP"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1addda1c2024d30da14d4f214c1541d353"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_ButtonProc_Enable</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419P_ButtonProc_EnableP14WMButtonAction" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Pressure control device Enable button in Hardware tab of DA_Ephys panel. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420P_ButtonProc_DisableP14WMButtonAction">
+<span id="_CPPv320P_ButtonProc_DisableP14WMButtonAction"></span><span id="_CPPv220P_ButtonProc_DisableP14WMButtonAction"></span><span id="P_ButtonProc_Disable__WMButtonActionP"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a3d41d478b99b40e85397fc80d3fa34b8"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_ButtonProc_Disable</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420P_ButtonProc_DisableP14WMButtonAction" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Pressure control device Disable button in Hardware tab of DA_Ephys panel. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430ButtonProc_DataAcq_ManPressSetP14WMButtonAction">
+<span id="_CPPv330ButtonProc_DataAcq_ManPressSetP14WMButtonAction"></span><span id="_CPPv230ButtonProc_DataAcq_ManPressSetP14WMButtonAction"></span><span id="ButtonProc_DataAcq_ManPressSet__WMButtonActionP"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a1ebca8acd7d94c43b9880f0b2c2fb9bf"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ButtonProc_DataAcq_ManPressSet</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430ButtonProc_DataAcq_ManPressSetP14WMButtonAction" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Set pressure button. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416ButtonProc_ManPPP14WMButtonAction">
+<span id="_CPPv316ButtonProc_ManPPP14WMButtonAction"></span><span id="_CPPv216ButtonProc_ManPPP14WMButtonAction"></span><span id="ButtonProc_ManPP__WMButtonActionP"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a6e8b40701c257615f974e7b3d53d1308"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ButtonProc_ManPP</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416ButtonProc_ManPPP14WMButtonAction" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Manual pressure pulse button. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420P_Check_ApproachNearP16WMCheckboxAction">
+<span id="_CPPv320P_Check_ApproachNearP16WMCheckboxAction"></span><span id="_CPPv220P_Check_ApproachNearP16WMCheckboxAction"></span><span id="P_Check_ApproachNear__WMCheckboxActionP"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a9c5213b966f26f378ed5cd260ab936b1"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_Check_ApproachNear</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMCheckboxAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">cba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420P_Check_ApproachNearP16WMCheckboxAction" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415P_Check_SealAtmP16WMCheckboxAction">
+<span id="_CPPv315P_Check_SealAtmP16WMCheckboxAction"></span><span id="_CPPv215P_Check_SealAtmP16WMCheckboxAction"></span><span id="P_Check_SealAtm__WMCheckboxActionP"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1abd17dcf4102178ded15383192d5e2d37"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_Check_SealAtm</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMCheckboxAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">cba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415P_Check_SealAtmP16WMCheckboxAction" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425P_ButtonProc_UserPressureP14WMButtonAction">
+<span id="_CPPv325P_ButtonProc_UserPressureP14WMButtonAction"></span><span id="_CPPv225P_ButtonProc_UserPressureP14WMButtonAction"></span><span id="P_ButtonProc_UserPressure__WMButtonActionP"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1ab3ca90236953ba7b52431f4176030084"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_ButtonProc_UserPressure</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425P_ButtonProc_UserPressureP14WMButtonAction" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421P_RunP_ControlIfTPOFF6string">
+<span id="_CPPv321P_RunP_ControlIfTPOFF6string"></span><span id="_CPPv221P_RunP_ControlIfTPOFF6string"></span><span id="P_RunP_ControlIfTPOFF__string"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1acf5d5d9e240cf8d19024176997b08cb8"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_RunP_ControlIfTPOFF</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421P_RunP_ControlIfTPOFF6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Runs P_PressureControl if the TP is OFF. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416P_GetAutoUserOff6string">
+<span id="_CPPv316P_GetAutoUserOff6string"></span><span id="_CPPv216P_GetAutoUserOff6string"></span><span id="P_GetAutoUserOff__string"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1aad07b1bd0405f1e48c197f488055c72b"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_GetAutoUserOff</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416P_GetAutoUserOff6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>If auto-user-OFF is checked, then user access is turned off this function is run by the active headstage slider control. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418P_SetLEDValueAssoc6string">
+<span id="_CPPv318P_SetLEDValueAssoc6string"></span><span id="_CPPv218P_SetLEDValueAssoc6string"></span><span id="P_SetLEDValueAssoc__string"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1ab4d95e7459f7cb09864b40185982d2b3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_SetLEDValueAssoc</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418P_SetLEDValueAssoc6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Sets the value of the headstage LED valDisplays to the correct cell in pressureType wave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420P_UpdatePressureType6string">
+<span id="_CPPv320P_UpdatePressureType6string"></span><span id="_CPPv220P_UpdatePressureType6string"></span><span id="P_UpdatePressureType__string"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a0dad90215997b2aa57d806ae966c1b94"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_UpdatePressureType</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420P_UpdatePressureType6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Encodes the pressure type for each headstage. </p>
+<p>See also <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1PressureTypeConstants"><span class="std std-ref">PressureTypeConstants</span></a></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424P_PressureMethodToString8variable">
+<span id="_CPPv324P_PressureMethodToString8variable"></span><span id="_CPPv224P_PressureMethodToString8variable"></span><span id="P_PressureMethodToString__variable"></span><span class="target" id="_m_i_e_s___pressure_control_8ipf_1a3ea19f231273ff723005b677b243ab4b"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_PressureMethodToString</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">method</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424P_PressureMethodToString8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv412P_PressureDA">
+<span id="_CPPv312P_PressureDA"></span><span id="_CPPv212P_PressureDA"></span><span id="P_PressureDA"></span><span class="target" id="struct_p___pressure_d_a"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_PressureDA</span></span></span><a class="headerlink" href="#_CPPv412P_PressureDA" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Filled by <a class="reference internal" href="#_m_i_e_s___pressure_control_8ipf_1a9d52e1830287ccfd65904aeff42c1b47"><span class="std std-ref">P_GetPressureForDA()</span></a></p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12P_PressureDA11calPressureE">
+<span id="_CPPv3N12P_PressureDA11calPressureE"></span><span id="_CPPv2N12P_PressureDA11calPressureE"></span><span id="P_PressureDA::calPressure__variable"></span><span class="target" id="struct_p___pressure_d_a_1abdb1f47ea8983d5d8a9e12740e3d4087"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">calPressure</span></span></span><a class="headerlink" href="#_CPPv4N12P_PressureDA11calPressureE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12P_PressureDA17calPressureOffsetE">
+<span id="_CPPv3N12P_PressureDA17calPressureOffsetE"></span><span id="_CPPv2N12P_PressureDA17calPressureOffsetE"></span><span id="P_PressureDA::calPressureOffset__variable"></span><span class="target" id="struct_p___pressure_d_a_1ab70e2cec35c6e41b973185f9e9c728da"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">calPressureOffset</span></span></span><a class="headerlink" href="#_CPPv4N12P_PressureDA17calPressureOffsetE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>preconditioned for the DAC hardware </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12P_PressureDA8pressureE">
+<span id="_CPPv3N12P_PressureDA8pressureE"></span><span id="_CPPv2N12P_PressureDA8pressureE"></span><span id="P_PressureDA::pressure__variable"></span><span class="target" id="struct_p___pressure_d_a_1ac7d46d393c765549cf546f6db5605ea5"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pressure</span></span></span><a class="headerlink" href="#_CPPv4N12P_PressureDA8pressureE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>[psi] </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12P_PressureDA5firstE">
+<span id="_CPPv3N12P_PressureDA5firstE"></span><span id="_CPPv2N12P_PressureDA5firstE"></span><span id="P_PressureDA::first__variable"></span><span class="target" id="struct_p___pressure_d_a_1abfd75eb5d94d7c92ad15dda54bd7181e"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">first</span></span></span><a class="headerlink" href="#_CPPv4N12P_PressureDA5firstE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12P_PressureDA4lastE">
+<span id="_CPPv3N12P_PressureDA4lastE"></span><span id="_CPPv2N12P_PressureDA4lastE"></span><span id="P_PressureDA::last__variable"></span><span class="target" id="struct_p___pressure_d_a_1a36522270d8d5eb3c126d8299a30cbe0d"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">last</span></span></span><a class="headerlink" href="#_CPPv4N12P_PressureDA4lastE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_PressureControl.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429PRESSURE_CONTROLS_BUTTON_LIST"><code class="docutils literal notranslate"><span class="pre">PRESSURE_CONTROLS_BUTTON_LIST</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427PRESSURE_CONTROL_TITLE_LIST"><code class="docutils literal notranslate"><span class="pre">PRESSURE_CONTROL_TITLE_LIST</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430PRESSURE_CONTROL_CHECKBOX_LIST"><code class="docutils literal notranslate"><span class="pre">PRESSURE_CONTROL_CHECKBOX_LIST</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430PRESSURE_CONTROL_PRESSURE_DISP"><code class="docutils literal notranslate"><span class="pre">PRESSURE_CONTROL_PRESSURE_DISP</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430PRESSURE_CONTROL_LED_MODE_USER"><code class="docutils literal notranslate"><span class="pre">PRESSURE_CONTROL_LED_MODE_USER</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv431PRESSURE_CONTROL_USER_CHECBOXES"><code class="docutils literal notranslate"><span class="pre">PRESSURE_CONTROL_USER_CHECBOXES</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416LOW_COLOR_HILITE"><code class="docutils literal notranslate"><span class="pre">LOW_COLOR_HILITE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417ZERO_COLOR_HILITE"><code class="docutils literal notranslate"><span class="pre">ZERO_COLOR_HILITE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417HIGH_COLOR_HILITE"><code class="docutils literal notranslate"><span class="pre">HIGH_COLOR_HILITE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv49LOW_COLOR"><code class="docutils literal notranslate"><span class="pre">LOW_COLOR</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv410ZERO_COLOR"><code class="docutils literal notranslate"><span class="pre">ZERO_COLOR</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv410HIGH_COLOR"><code class="docutils literal notranslate"><span class="pre">HIGH_COLOR</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428NEG_PRESSURE_PULSE_INCREMENT"><code class="docutils literal notranslate"><span class="pre">NEG_PRESSURE_PULSE_INCREMENT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428POS_PRESSURE_PULSE_INCREMENT"><code class="docutils literal notranslate"><span class="pre">POS_PRESSURE_PULSE_INCREMENT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420PRESSURE_PULSE_ENDpt"><code class="docutils literal notranslate"><span class="pre">PRESSURE_PULSE_ENDpt</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423PRESSURE_TTL_HIGH_START"><code class="docutils literal notranslate"><span class="pre">PRESSURE_TTL_HIGH_START</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv49GIGA_SEAL"><code class="docutils literal notranslate"><span class="pre">GIGA_SEAL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415PRESSURE_OFFSET"><code class="docutils literal notranslate"><span class="pre">PRESSURE_OFFSET</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422MIN_NEG_PRESSURE_PULSE"><code class="docutils literal notranslate"><span class="pre">MIN_NEG_PRESSURE_PULSE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422MAX_POS_PRESSURE_PULSE"><code class="docutils literal notranslate"><span class="pre">MAX_POS_PRESSURE_PULSE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415PRESSURE_CHANGE"><code class="docutils literal notranslate"><span class="pre">PRESSURE_CHANGE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416P_NEGATIVE_PULSE"><code class="docutils literal notranslate"><span class="pre">P_NEGATIVE_PULSE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416P_POSITIVE_PULSE"><code class="docutils literal notranslate"><span class="pre">P_POSITIVE_PULSE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414P_MANUAL_PULSE"><code class="docutils literal notranslate"><span class="pre">P_MANUAL_PULSE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414SEAL_POTENTIAL"><code class="docutils literal notranslate"><span class="pre">SEAL_POTENTIAL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425SEAL_RESISTANCE_THRESHOLD"><code class="docutils literal notranslate"><span class="pre">SEAL_RESISTANCE_THRESHOLD</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417P_PressureControl6string"><code class="docutils literal notranslate"><span class="pre">P_PressureControl()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420P_RecordUserPressure6string"><code class="docutils literal notranslate"><span class="pre">P_RecordUserPressure()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417P_UpdateTPStorage6string8variable"><code class="docutils literal notranslate"><span class="pre">P_UpdateTPStorage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418P_FindLastSetEntry4wave8variable8variable6string"><code class="docutils literal notranslate"><span class="pre">P_FindLastSetEntry()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427P_AddSealedEntryToTPStorage6string8variable"><code class="docutils literal notranslate"><span class="pre">P_AddSealedEntryToTPStorage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419P_MethodAtmospheric6string8variable"><code class="docutils literal notranslate"><span class="pre">P_MethodAtmospheric()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416P_MethodApproach6string8variable"><code class="docutils literal notranslate"><span class="pre">P_MethodApproach()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412P_MethodSeal6string8variable"><code class="docutils literal notranslate"><span class="pre">P_MethodSeal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415P_MethodBreakIn6string8variable"><code class="docutils literal notranslate"><span class="pre">P_MethodBreakIn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413P_MethodClear6string8variable"><code class="docutils literal notranslate"><span class="pre">P_MethodClear()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411P_ApplyNegV6string8variable"><code class="docutils literal notranslate"><span class="pre">P_ApplyNegV()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412P_UpdateVcom6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">P_UpdateVcom()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413P_CloseDevice6string"><code class="docutils literal notranslate"><span class="pre">P_CloseDevice()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412P_OpenDevice6string6string"><code class="docutils literal notranslate"><span class="pre">P_OpenDevice()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417P_PrepareITCWaves6string6string8variable"><code class="docutils literal notranslate"><span class="pre">P_PrepareITCWaves()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421P_CloseDeviceLowLevel6string6string8variable"><code class="docutils literal notranslate"><span class="pre">P_CloseDeviceLowLevel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422P_HeadstageUsingDevice6string6string"><code class="docutils literal notranslate"><span class="pre">P_HeadstageUsingDevice()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430P_GetListOfPressureCtrlDevices6string"><code class="docutils literal notranslate"><span class="pre">P_GetListOfPressureCtrlDevices()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419P_SetAndGetPressure6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">P_SetAndGetPressure()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415P_GetUserAccess6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">P_GetUserAccess()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419P_SetPressureValves6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">P_SetPressureValves()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416P_UpdateTTLstate6string8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">P_UpdateTTLstate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422P_UpdateSSRSlopeAndSSR6string"><code class="docutils literal notranslate"><span class="pre">P_UpdateSSRSlopeAndSSR()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429P_UpdatePressureDataStorageWv6string"><code class="docutils literal notranslate"><span class="pre">P_UpdatePressureDataStorageWv()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424P_UpdatePressureControls6string8variable"><code class="docutils literal notranslate"><span class="pre">P_UpdatePressureControls()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420P_UpdatePopupDevices6string8variable"><code class="docutils literal notranslate"><span class="pre">P_UpdatePopupDevices()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418P_ManPressurePulse6string8variable"><code class="docutils literal notranslate"><span class="pre">P_ManPressurePulse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418P_NegPressurePulse6string8variable"><code class="docutils literal notranslate"><span class="pre">P_NegPressurePulse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418P_PosPressurePulse6string8variable"><code class="docutils literal notranslate"><span class="pre">P_PosPressurePulse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417P_ITC_SetChannels6string8variable"><code class="docutils literal notranslate"><span class="pre">P_ITC_SetChannels()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429P_DeviceIsUsedForPressureCtrl6string6string"><code class="docutils literal notranslate"><span class="pre">P_DeviceIsUsedForPressureCtrl()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv49P_DataAcq6string8variable"><code class="docutils literal notranslate"><span class="pre">P_DataAcq()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412P_NI_StopDAQ6string8variable"><code class="docutils literal notranslate"><span class="pre">P_NI_StopDAQ()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423P_FindDeviceExecutingPPP6stringP8variableP8variable"><code class="docutils literal notranslate"><span class="pre">P_FindDeviceExecutingPP()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418P_GetPressureForDA6string8variable8variableP12P_PressureDA"><code class="docutils literal notranslate"><span class="pre">P_GetPressureForDA()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414P_NI_GetDAWave6string8variable"><code class="docutils literal notranslate"><span class="pre">P_NI_GetDAWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414P_NI_GetADWave6string8variable"><code class="docutils literal notranslate"><span class="pre">P_NI_GetADWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414P_FillDAQWaves6string8variableP12P_PressureDA"><code class="docutils literal notranslate"><span class="pre">P_FillDAQWaves()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416P_DAforNegPpulse6string8variable"><code class="docutils literal notranslate"><span class="pre">P_DAforNegPpulse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413P_GetPulseAmp6string8variable"><code class="docutils literal notranslate"><span class="pre">P_GetPulseAmp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416P_LastPulseCount8variable"><code class="docutils literal notranslate"><span class="pre">P_LastPulseCount()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416P_DAforPosPpulse6string8variable"><code class="docutils literal notranslate"><span class="pre">P_DAforPosPpulse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416P_DAforManPpulse6string8variable"><code class="docutils literal notranslate"><span class="pre">P_DAforManPpulse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414P_TTLforPpulse6string8variable"><code class="docutils literal notranslate"><span class="pre">P_TTLforPpulse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418P_UpdateTTLdecimal6string8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">P_UpdateTTLdecimal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420P_UpdatePressureMode6string8variable6string8variable"><code class="docutils literal notranslate"><span class="pre">P_UpdatePressureMode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419P_ResetPressureData6string8variable"><code class="docutils literal notranslate"><span class="pre">P_ResetPressureData()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv410P_CheckAll6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">P_CheckAll()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419P_SetPressureOffset6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">P_SetPressureOffset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414P_InitBeforeTP6string"><code class="docutils literal notranslate"><span class="pre">P_InitBeforeTP()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425P_LoadPressureButtonState6string"><code class="docutils literal notranslate"><span class="pre">P_LoadPressureButtonState()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429SetPressureButtonsToBaseState6string"><code class="docutils literal notranslate"><span class="pre">SetPressureButtonsToBaseState()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422P_EnableButtonsIfValid6string8variable"><code class="docutils literal notranslate"><span class="pre">P_EnableButtonsIfValid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424P_UpdatePressureModeTabs6string8variable"><code class="docutils literal notranslate"><span class="pre">P_UpdatePressureModeTabs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430P_ValidatePressureSetHeadstage6string8variable"><code class="docutils literal notranslate"><span class="pre">P_ValidatePressureSetHeadstage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421P_DACIsCollectingData6string8variable"><code class="docutils literal notranslate"><span class="pre">P_DACIsCollectingData()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424P_PressureMethodPossible6string8variable"><code class="docutils literal notranslate"><span class="pre">P_PressureMethodPossible()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423P_IsHSActiveAndInVClamp6string8variable"><code class="docutils literal notranslate"><span class="pre">P_IsHSActiveAndInVClamp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv431P_ResetAll_P_ButtonsToBaseState6string"><code class="docutils literal notranslate"><span class="pre">P_ResetAll_P_ButtonsToBaseState()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425P_PressureDisplayHighlite6string8variable"><code class="docutils literal notranslate"><span class="pre">P_PressureDisplayHighlite()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv432P_CheckDeviceAndChannelSelection6string"><code class="docutils literal notranslate"><span class="pre">P_CheckDeviceAndChannelSelection()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv48P_Enablev"><code class="docutils literal notranslate"><span class="pre">P_Enable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv49P_Disablev"><code class="docutils literal notranslate"><span class="pre">P_Disable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413P_DecToBinary8variable"><code class="docutils literal notranslate"><span class="pre">P_DecToBinary()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416P_ManSetPressure6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">P_ManSetPressure()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427P_SaveUserSelectedHeadstage6string8variable"><code class="docutils literal notranslate"><span class="pre">P_SaveUserSelectedHeadstage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423P_SetAllHStoAtmospheric6string"><code class="docutils literal notranslate"><span class="pre">P_SetAllHStoAtmospheric()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419P_GetPressureMethod6string8variable"><code class="docutils literal notranslate"><span class="pre">P_GetPressureMethod()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417P_SetPressureMode6string8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">P_SetPressureMode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419ButtonProc_ApproachP14WMButtonAction"><code class="docutils literal notranslate"><span class="pre">ButtonProc_Approach()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413P_SetApproach6string6string"><code class="docutils literal notranslate"><span class="pre">P_SetApproach()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415ButtonProc_SealP14WMButtonAction"><code class="docutils literal notranslate"><span class="pre">ButtonProc_Seal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418ButtonProc_BreakInP14WMButtonAction"><code class="docutils literal notranslate"><span class="pre">ButtonProc_BreakIn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416ButtonProc_ClearP14WMButtonAction"><code class="docutils literal notranslate"><span class="pre">ButtonProc_Clear()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411P_SetManual6string6string"><code class="docutils literal notranslate"><span class="pre">P_SetManual()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421CheckProc_ClearEnableP16WMCheckboxAction"><code class="docutils literal notranslate"><span class="pre">CheckProc_ClearEnable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430ButtonProc_Hrdwr_P_UpdtDAClistP14WMButtonAction"><code class="docutils literal notranslate"><span class="pre">ButtonProc_Hrdwr_P_UpdtDAClist()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419P_ButtonProc_EnableP14WMButtonAction"><code class="docutils literal notranslate"><span class="pre">P_ButtonProc_Enable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420P_ButtonProc_DisableP14WMButtonAction"><code class="docutils literal notranslate"><span class="pre">P_ButtonProc_Disable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430ButtonProc_DataAcq_ManPressSetP14WMButtonAction"><code class="docutils literal notranslate"><span class="pre">ButtonProc_DataAcq_ManPressSet()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416ButtonProc_ManPPP14WMButtonAction"><code class="docutils literal notranslate"><span class="pre">ButtonProc_ManPP()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420P_Check_ApproachNearP16WMCheckboxAction"><code class="docutils literal notranslate"><span class="pre">P_Check_ApproachNear()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415P_Check_SealAtmP16WMCheckboxAction"><code class="docutils literal notranslate"><span class="pre">P_Check_SealAtm()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425P_ButtonProc_UserPressureP14WMButtonAction"><code class="docutils literal notranslate"><span class="pre">P_ButtonProc_UserPressure()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421P_RunP_ControlIfTPOFF6string"><code class="docutils literal notranslate"><span class="pre">P_RunP_ControlIfTPOFF()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416P_GetAutoUserOff6string"><code class="docutils literal notranslate"><span class="pre">P_GetAutoUserOff()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418P_SetLEDValueAssoc6string"><code class="docutils literal notranslate"><span class="pre">P_SetLEDValueAssoc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420P_UpdatePressureType6string"><code class="docutils literal notranslate"><span class="pre">P_UpdatePressureType()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424P_PressureMethodToString8variable"><code class="docutils literal notranslate"><span class="pre">P_PressureMethodToString()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412P_PressureDA"><code class="docutils literal notranslate"><span class="pre">P_PressureDA</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N12P_PressureDA11calPressureE"><code class="docutils literal notranslate"><span class="pre">calPressure</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N12P_PressureDA17calPressureOffsetE"><code class="docutils literal notranslate"><span class="pre">calPressureOffset</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N12P_PressureDA8pressureE"><code class="docutils literal notranslate"><span class="pre">pressure</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N12P_PressureDA5firstE"><code class="docutils literal notranslate"><span class="pre">first</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N12P_PressureDA4lastE"><code class="docutils literal notranslate"><span class="pre">last</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___pictures_8ipf.html"
+                          title="previous chapter">File MIES_Pictures.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html"
+                          title="next chapter">File MIES_ProgrammaticGUIControl.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html" title="File MIES_ProgrammaticGUIControl.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___pictures_8ipf.html" title="File MIES_Pictures.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_PressureControl.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

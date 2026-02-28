@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File MIES_Utilities_Numeric.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_Utilities_ProgramFlow.ipf" href="_m_i_e_s___utilities___program_flow_8ipf.html" />
+    <link rel="prev" title="File MIES_Utilities_List.ipf" href="_m_i_e_s___utilities___list_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___utilities___program_flow_8ipf.html" title="File MIES_Utilities_ProgramFlow.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___utilities___list_8ipf.html" title="File MIES_Utilities_List.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Utilities_Numeric.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-utilities-numeric-ipf">
+<span id="id1"></span><h1>File MIES_Utilities_Numeric.ipf<a class="headerlink" href="#file-mies-utilities-numeric-ipf" title="Link to this heading">¶</a></h1>
+<p>utility functions for numerical operations </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413NewRandomSeedv">
+<span id="_CPPv313NewRandomSeedv"></span><span id="_CPPv213NewRandomSeedv"></span><span id="NewRandomSeed"></span><span class="target" id="_m_i_e_s___utilities___numeric_8ipf_1a7772fd99baab9df21eb31b087d2d7818"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NewRandomSeed</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Initializes the random number generator with a new seed between (0,1] The time base is assumed to be at least 0.1 microsecond precise, so a new seed is available every 0.1 microsecond. </p>
+<p>Usage example for the case that one needs n non reproducible random numbers. Whenever the following code block is executed a new seed is set, resulting in a different series of numbers</p>
+<p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="nc">Make</span>/D/N=(n)<span class="w"> </span>newRandoms
+NewRandomSeed()<span class="w"> </span><span class="c1">// Initialize random number series with a new seed</span>
+newRandoms[]<span class="w"> </span>=<span class="w"> </span>GetReproducibleRandom()<span class="w"> </span><span class="c1">// Get n randoms from the new series</span>
+</pre></div>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421GetReproducibleRandom8variable">
+<span id="_CPPv321GetReproducibleRandom8variable"></span><span id="_CPPv221GetReproducibleRandom8variable"></span><span id="GetReproducibleRandom__variable"></span><span class="target" id="_m_i_e_s___utilities___numeric_8ipf_1a60bd862b69ee7f6fd05ec1d4655b45c0"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetReproducibleRandom</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">noiseGenMode</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421GetReproducibleRandom8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a random value in the range (0,1] which can be used as a seed for <code class="docutils literal notranslate"><span class="pre">SetRandomSeed</span></code></p>
+<p>Return a reproducible random number depending on the RNG seed. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416GetUniqueIntegerv">
+<span id="_CPPv316GetUniqueIntegerv"></span><span id="_CPPv216GetUniqueIntegerv"></span><span id="GetUniqueInteger"></span><span class="target" id="_m_i_e_s___utilities___numeric_8ipf_1a467799116fdc00550dbd538b68888ae2"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetUniqueInteger</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416GetUniqueIntegerv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a unique integer. </p>
+<p>The returned values can <em>not</em> be used for statistical purposes as the distribution is not uniform anymore. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv46SetBit8variable8variable">
+<span id="_CPPv36SetBit8variable8variable"></span><span id="_CPPv26SetBit8variable8variable"></span><span id="SetBit__variable.variable"></span><span class="target" id="_m_i_e_s___utilities___numeric_8ipf_1a5f83165f8c60adde2528eb5d5aa51167"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetBit</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bit</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv46SetBit8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Set the given bit mask in var. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv48ClearBit8variable8variable">
+<span id="_CPPv38ClearBit8variable8variable"></span><span id="_CPPv28ClearBit8variable8variable"></span><span id="ClearBit__variable.variable"></span><span class="target" id="_m_i_e_s___utilities___numeric_8ipf_1afe5a1b70d29ef8ecdb31df2f7d5830bf"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClearBit</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bit</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv48ClearBit8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Clear the given bit mask in var. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv48PopCount6uint64">
+<span id="_CPPv38PopCount6uint64"></span><span id="_CPPv28PopCount6uint64"></span><span id="PopCount__uint64"></span><span class="target" id="_m_i_e_s___utilities___numeric_8ipf_1a5b46fcf5b5a92a21953f08d50bde654d"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PopCount</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint64</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv48PopCount6uint64" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Count the number of ones in <code class="docutils literal notranslate"><span class="pre">value</span></code> Note: if the argument given is not an unsigned int64 then it will be implicitly converted to an uint64. This mean e.g. for a double precision argument that the maximum number of bits for positive numbers is 53 from 2^53 - 1 and for negative numbers the result is always &gt;= 11. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – will be truncated to an 64 bit unsigned integer value </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv46MinMax8variable8variable">
+<span id="_CPPv36MinMax8variable8variable"></span><span id="_CPPv26MinMax8variable8variable"></span><span id="MinMax__variable.variable"></span><span class="target" id="_m_i_e_s___utilities___numeric_8ipf_1ad210dd8583db24ef1c4877d3208f847d"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MinMax</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">a</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv46MinMax8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the minimum and maximum of both values. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413FindNextPower8variable8variable">
+<span id="_CPPv313FindNextPower8variable8variable"></span><span id="_CPPv213FindNextPower8variable8variable"></span><span id="FindNextPower__variable.variable"></span><span class="target" id="_m_i_e_s___utilities___numeric_8ipf_1a1652054de6929383783b08a520a0a3e8"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FindNextPower</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">a</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">p</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413FindNextPower8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Find an integer <code class="docutils literal notranslate"><span class="pre">x</span></code> which is larger than <code class="docutils literal notranslate"><span class="pre">a</span></code> but the smallest possible power of <code class="docutils literal notranslate"><span class="pre">p</span></code>. </p>
+<p><span class="math notranslate nohighlight">\( x &gt; a \)</span> where <span class="math notranslate nohighlight">\( x = c^p \)</span> holds and <span class="math notranslate nohighlight">\( x \)</span> is the smallest possible value. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417FindPreviousPower8variable8variable">
+<span id="_CPPv317FindPreviousPower8variable8variable"></span><span id="_CPPv217FindPreviousPower8variable8variable"></span><span id="FindPreviousPower__variable.variable"></span><span class="target" id="_m_i_e_s___utilities___numeric_8ipf_1a1c5517eac052891a0cac602a32c24010"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FindPreviousPower</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">a</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">p</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417FindPreviousPower8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Find an integer <code class="docutils literal notranslate"><span class="pre">x</span></code> which is smaller than <code class="docutils literal notranslate"><span class="pre">a</span></code> but the largest possible power of <code class="docutils literal notranslate"><span class="pre">p</span></code>. </p>
+<p><span class="math notranslate nohighlight">\( x &lt; a \)</span> where <span class="math notranslate nohighlight">\( x = c^p \)</span> holds and <span class="math notranslate nohighlight">\( x \)</span> is the largest possible value. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412GetAlignment8variable">
+<span id="_CPPv312GetAlignment8variable"></span><span id="_CPPv212GetAlignment8variable"></span><span id="GetAlignment__variable"></span><span class="target" id="_m_i_e_s___utilities___numeric_8ipf_1a2f0e76a2bfd22be66dc0a1b266a24039"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetAlignment</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412GetAlignment8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the alignment of the decimal number (usually a 32bit/64bit pointer) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412CalculateLCM8variable8variable">
+<span id="_CPPv312CalculateLCM8variable8variable"></span><span id="_CPPv212CalculateLCM8variable8variable"></span><span id="CalculateLCM__variable.variable"></span><span class="target" id="_m_i_e_s___utilities___numeric_8ipf_1a857deb961c934a51d1011f73bd21c0db"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CalculateLCM</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">a</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412CalculateLCM8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Compute the least common multiplier of two variables. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411RoundNumber8variable8variable">
+<span id="_CPPv311RoundNumber8variable8variable"></span><span id="_CPPv211RoundNumber8variable8variable"></span><span id="RoundNumber__variable.variable"></span><span class="target" id="_m_i_e_s___utilities___numeric_8ipf_1a7da64c72560e6b6d8a74c4d27a0f2a30"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RoundNumber</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">precision</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411RoundNumber8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Round the given number to the given number of decimal digits. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419GenerateRFC4122UUIDv">
+<span id="_CPPv319GenerateRFC4122UUIDv"></span><span id="_CPPv219GenerateRFC4122UUIDv"></span><span id="GenerateRFC4122UUID"></span><span class="target" id="_m_i_e_s___utilities___numeric_8ipf_1ae1b75623d2b123242cf13aaed42ab575"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GenerateRFC4122UUID</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Generate a version 4 UUID according to <a class="reference external" href="https://tools.ietf.org/html/rfc4122">https://tools.ietf.org/html/rfc4122</a>. </p>
+<p><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>4.4.  Algorithms for Creating a UUID from Truly Random or
+      Pseudo-Random Numbers
+
+   The version 4 UUID is meant for generating UUIDs from truly-random or
+   pseudo-random numbers.
+
+   The algorithm is as follows:
+
+   o  Set the two most significant bits (bits 6 and 7) of the
+      clock_seq_hi_and_reserved to zero and one, respectively.
+
+   o  Set the four most significant bits (bits 12 through 15) of the
+      time_hi_and_version field to the 4-bit version number from
+      Section 4.1.3.
+
+   o  Set all the other bits to randomly (or pseudo-randomly) chosen
+      values.
+
+See Section 4.5 for a discussion on random numbers.
+
+[...]
+
+ In the absence of explicit application or presentation protocol
+ specification to the contrary, a UUID is encoded as a 128-bit object,
+ as follows:
+
+ The fields are encoded as 16 octets, with the sizes and order of the
+ fields defined above, and with each field encoded with the Most
+ Significant Byte first (known as network byte order).  Note that the
+ field names, particularly for multiplexed fields, follow historical
+ practice.
+
+ 0                   1                   2                   3
+  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |                          time_low                             |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |       time_mid                |         time_hi_and_version   |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |clk_seq_hi_res |  clk_seq_low  |         node (0-1)            |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |                         node (2-5)                            |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+[...]
+
+4.1.3.  Version
+
+   The version number is in the most significant 4 bits of the time
+   stamp (bits 4 through 7 of the time_hi_and_version field).
+
+   The following table lists the currently-defined versions for this
+   UUID variant.
+
+   Msb0  Msb1  Msb2  Msb3   Version  Description
+
+    0     0     0     1        1     The time-based version
+                                     specified in this document.
+
+    0     0     1     0        2     DCE Security version, with
+                                     embedded POSIX UIDs.
+
+    0     0     1     1        3     The name-based version
+                                     specified in this document
+                                     that uses MD5 hashing.
+
+    0     1     0     0        4     The randomly or pseudo-
+                                     randomly generated version
+                                     specified in this document.
+
+    0     1     0     1        5     The name-based version
+                                     specified in this document
+                                     that uses SHA-1 hashing.
+
+   The version is more accurately a sub-type; again, we retain the term
+   for compatibility.
+</pre></div>
+</div>
+</p>
+<p>See also <a class="reference external" href="https://www.rfc-editor.org/errata/eid3546">https://www.rfc-editor.org/errata/eid3546</a> and <a class="reference external" href="https://www.rfc-editor.org/errata/eid1957">https://www.rfc-editor.org/errata/eid1957</a> for some clarifications. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425SymmetrizeRangeAroundZero8variable8variable">
+<span id="_CPPv325SymmetrizeRangeAroundZero8variable8variable"></span><span id="_CPPv225SymmetrizeRangeAroundZero8variable8variable"></span><span id="SymmetrizeRangeAroundZero__variable.variable"></span><span class="target" id="_m_i_e_s___utilities___numeric_8ipf_1a9b0d1b307715cf21dd8e35830dfca140"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SymmetrizeRangeAroundZero</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">minimum</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">maximum</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425SymmetrizeRangeAroundZero8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Given a range <code class="docutils literal notranslate"><span class="pre">[a,</span> <span class="pre">b]</span></code> this returns a symmetric range around zero including both elements. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416LimitWithReplace8variable8variable8variable8variable">
+<span id="_CPPv316LimitWithReplace8variable8variable8variable8variable"></span><span id="_CPPv216LimitWithReplace8variable8variable8variable8variable"></span><span id="LimitWithReplace__variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___utilities___numeric_8ipf_1a98cbb0017c6f632b6fb3f7c508c89795"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LimitWithReplace</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">low</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">high</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">replacement</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416LimitWithReplace8variable8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Acts like the <code class="docutils literal notranslate"><span class="pre">limit</span></code> builtin but replaces values outside the valid range instead of clipping them. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416Base64EncodeSize8variable">
+<span id="_CPPv316Base64EncodeSize8variable"></span><span id="_CPPv216Base64EncodeSize8variable"></span><span id="Base64EncodeSize__variable"></span><span class="target" id="_m_i_e_s___utilities___numeric_8ipf_1a26f609ab59d74c643b934d2c0b3f7598"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Base64EncodeSize</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">unencodedSize</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416Base64EncodeSize8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Calculated the size of Base64 encoded data from the unencoded size. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>unencodedSize</strong> – unencoded size </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>encoded size </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420FindRightMostHighBit6uint64">
+<span id="_CPPv320FindRightMostHighBit6uint64"></span><span id="_CPPv220FindRightMostHighBit6uint64"></span><span id="FindRightMostHighBit__uint64"></span><span class="target" id="_m_i_e_s___utilities___numeric_8ipf_1a28e930b7105629ef5dd9f0192b526348"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FindRightMostHighBit</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint64</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420FindRightMostHighBit6uint64" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Find the right most high bit. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – integer value in the range [0, 2^64]</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>right most high bit or NaN in case nothing could be found </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413RoundAndDelta8variable">
+<span id="_CPPv313RoundAndDelta8variable"></span><span id="_CPPv213RoundAndDelta8variable"></span><span id="RoundAndDelta__variable"></span><span class="target" id="_m_i_e_s___utilities___numeric_8ipf_1a1ea2350d1c145b1c7e8ce5753b5e6867"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RoundAndDelta</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413RoundAndDelta8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the integer result and the difference of it to the original value. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412CeilAndDelta8variable">
+<span id="_CPPv312CeilAndDelta8variable"></span><span id="_CPPv212CeilAndDelta8variable"></span><span id="CeilAndDelta__variable"></span><span class="target" id="_m_i_e_s___utilities___numeric_8ipf_1a6b0b9b12131062368a3ad9b8ec358b57"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CeilAndDelta</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412CeilAndDelta8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the integer result and the difference of it to the original value. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413FloorAndDelta8variable">
+<span id="_CPPv313FloorAndDelta8variable"></span><span id="_CPPv213FloorAndDelta8variable"></span><span id="FloorAndDelta__variable"></span><span class="target" id="_m_i_e_s___utilities___numeric_8ipf_1acff0a130f14454942fdc705eaf8fa4c9"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FloorAndDelta</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413FloorAndDelta8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the integer result and the difference of it to the original value. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420IndexAfterDecimation8variable8variable">
+<span id="_CPPv320IndexAfterDecimation8variable8variable"></span><span id="_CPPv220IndexAfterDecimation8variable8variable"></span><span id="IndexAfterDecimation__variable.variable"></span><span class="target" id="_m_i_e_s___utilities___numeric_8ipf_1a806423a15bee5c7183932b09972e63b3"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IndexAfterDecimation</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sourceIndex</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">decimationFactor</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420IndexAfterDecimation8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the target index closer to zero of a given source index for a decimation in the form target[] = source[round(p * decimationFactor)] Note: For a decimationFactor &lt; 1 a point in source may be decimated to multiple points in target, thus a resulting index in target of sourceIndex + 1 may be equal to the index retrieved for sourceindex. For a decimationFactor &gt; 1 points in source may be skipped on decimation, thus a resulting index in target of sourceIndex + 1 may increase the result by more than 1. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421GetInterpolatedYValue4wave8variable">
+<span id="_CPPv321GetInterpolatedYValue4wave8variable"></span><span id="_CPPv221GetInterpolatedYValue4wave8variable"></span><span id="GetInterpolatedYValue__wave.variable"></span><span class="target" id="_m_i_e_s___utilities___numeric_8ipf_1a5b823f8be0119223abe50c8456749a8b"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetInterpolatedYValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">xCrd</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421GetInterpolatedYValue4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the interpolated y value for <code class="docutils literal notranslate"><span class="pre">wv</span></code> if <code class="docutils literal notranslate"><span class="pre">xCrd</span></code> is inside its range, NaN otherwise. </p>
+</dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv44Uuid">
+<span id="_CPPv34Uuid"></span><span id="_CPPv24Uuid"></span><span id="Uuid"></span><span class="target" id="struct_uuid"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Uuid</span></span></span><br /></dt>
+<dd><p>Helper structure for <a class="reference internal" href="#_m_i_e_s___utilities___numeric_8ipf_1ae1b75623d2b123242cf13aaed42ab575"><span class="std std-ref">GenerateRFC4122UUID()</span></a></p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4Uuid8time_lowE">
+<span id="_CPPv3N4Uuid8time_lowE"></span><span id="_CPPv2N4Uuid8time_lowE"></span><span id="Uuid::time_low__uint32"></span><span class="target" id="struct_uuid_1aa69441777ac89713ac981fbf9d206124"></span><span class="n"><span class="pre">uint32</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">time_low</span></span></span><a class="headerlink" href="#_CPPv4N4Uuid8time_lowE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4Uuid8time_midE">
+<span id="_CPPv3N4Uuid8time_midE"></span><span id="_CPPv2N4Uuid8time_midE"></span><span id="Uuid::time_mid__uint16"></span><span class="target" id="struct_uuid_1a7dd6dd9ddc012574af2031b658e152f9"></span><span class="n"><span class="pre">uint16</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">time_mid</span></span></span><a class="headerlink" href="#_CPPv4N4Uuid8time_midE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4Uuid19time_hi_and_versionE">
+<span id="_CPPv3N4Uuid19time_hi_and_versionE"></span><span id="_CPPv2N4Uuid19time_hi_and_versionE"></span><span id="Uuid::time_hi_and_version__uint16"></span><span class="target" id="struct_uuid_1a73098e5fc047e075e55c9c572432449d"></span><span class="n"><span class="pre">uint16</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">time_hi_and_version</span></span></span><a class="headerlink" href="#_CPPv4N4Uuid19time_hi_and_versionE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4Uuid9clock_seqE">
+<span id="_CPPv3N4Uuid9clock_seqE"></span><span id="_CPPv2N4Uuid9clock_seqE"></span><span id="Uuid::clock_seq__uint16"></span><span class="target" id="struct_uuid_1aa9bc2246baab526384bbc493bda8d5a4"></span><span class="n"><span class="pre">uint16</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">clock_seq</span></span></span><a class="headerlink" href="#_CPPv4N4Uuid9clock_seqE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4Uuid5node0E">
+<span id="_CPPv3N4Uuid5node0E"></span><span id="_CPPv2N4Uuid5node0E"></span><span id="Uuid::node0__uint16"></span><span class="target" id="struct_uuid_1ad054832d82d7c56c1be2c69b831ef4b7"></span><span class="n"><span class="pre">uint16</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">node0</span></span></span><a class="headerlink" href="#_CPPv4N4Uuid5node0E" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4Uuid5node1E">
+<span id="_CPPv3N4Uuid5node1E"></span><span id="_CPPv2N4Uuid5node1E"></span><span id="Uuid::node1__uint16"></span><span class="target" id="struct_uuid_1a3d15d29de74d78cefb60aa5b7d1b2310"></span><span class="n"><span class="pre">uint16</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">node1</span></span></span><a class="headerlink" href="#_CPPv4N4Uuid5node1E" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4Uuid5node2E">
+<span id="_CPPv3N4Uuid5node2E"></span><span id="_CPPv2N4Uuid5node2E"></span><span id="Uuid::node2__uint16"></span><span class="target" id="struct_uuid_1a556a660d2e62fbf453f725da21b23c06"></span><span class="n"><span class="pre">uint16</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">node2</span></span></span><a class="headerlink" href="#_CPPv4N4Uuid5node2E" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_Utilities_Numeric.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413NewRandomSeedv"><code class="docutils literal notranslate"><span class="pre">NewRandomSeed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421GetReproducibleRandom8variable"><code class="docutils literal notranslate"><span class="pre">GetReproducibleRandom()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416GetUniqueIntegerv"><code class="docutils literal notranslate"><span class="pre">GetUniqueInteger()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv46SetBit8variable8variable"><code class="docutils literal notranslate"><span class="pre">SetBit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv48ClearBit8variable8variable"><code class="docutils literal notranslate"><span class="pre">ClearBit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv48PopCount6uint64"><code class="docutils literal notranslate"><span class="pre">PopCount()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv46MinMax8variable8variable"><code class="docutils literal notranslate"><span class="pre">MinMax()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413FindNextPower8variable8variable"><code class="docutils literal notranslate"><span class="pre">FindNextPower()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417FindPreviousPower8variable8variable"><code class="docutils literal notranslate"><span class="pre">FindPreviousPower()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412GetAlignment8variable"><code class="docutils literal notranslate"><span class="pre">GetAlignment()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412CalculateLCM8variable8variable"><code class="docutils literal notranslate"><span class="pre">CalculateLCM()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411RoundNumber8variable8variable"><code class="docutils literal notranslate"><span class="pre">RoundNumber()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419GenerateRFC4122UUIDv"><code class="docutils literal notranslate"><span class="pre">GenerateRFC4122UUID()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425SymmetrizeRangeAroundZero8variable8variable"><code class="docutils literal notranslate"><span class="pre">SymmetrizeRangeAroundZero()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416LimitWithReplace8variable8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">LimitWithReplace()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416Base64EncodeSize8variable"><code class="docutils literal notranslate"><span class="pre">Base64EncodeSize()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420FindRightMostHighBit6uint64"><code class="docutils literal notranslate"><span class="pre">FindRightMostHighBit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413RoundAndDelta8variable"><code class="docutils literal notranslate"><span class="pre">RoundAndDelta()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412CeilAndDelta8variable"><code class="docutils literal notranslate"><span class="pre">CeilAndDelta()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413FloorAndDelta8variable"><code class="docutils literal notranslate"><span class="pre">FloorAndDelta()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420IndexAfterDecimation8variable8variable"><code class="docutils literal notranslate"><span class="pre">IndexAfterDecimation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421GetInterpolatedYValue4wave8variable"><code class="docutils literal notranslate"><span class="pre">GetInterpolatedYValue()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv44Uuid"><code class="docutils literal notranslate"><span class="pre">Uuid</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N4Uuid8time_lowE"><code class="docutils literal notranslate"><span class="pre">time_low</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N4Uuid8time_midE"><code class="docutils literal notranslate"><span class="pre">time_mid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N4Uuid19time_hi_and_versionE"><code class="docutils literal notranslate"><span class="pre">time_hi_and_version</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N4Uuid9clock_seqE"><code class="docutils literal notranslate"><span class="pre">clock_seq</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N4Uuid5node0E"><code class="docutils literal notranslate"><span class="pre">node0</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N4Uuid5node1E"><code class="docutils literal notranslate"><span class="pre">node1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N4Uuid5node2E"><code class="docutils literal notranslate"><span class="pre">node2</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___utilities___list_8ipf.html"
+                          title="previous chapter">File MIES_Utilities_List.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___utilities___program_flow_8ipf.html"
+                          title="next chapter">File MIES_Utilities_ProgramFlow.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___utilities___program_flow_8ipf.html" title="File MIES_Utilities_ProgramFlow.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___utilities___list_8ipf.html" title="File MIES_Utilities_List.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Utilities_Numeric.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

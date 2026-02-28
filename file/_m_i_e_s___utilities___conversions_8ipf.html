@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File MIES_Utilities_Conversions.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_Utilities_DataFolder.ipf" href="_m_i_e_s___utilities___data_folder_8ipf.html" />
+    <link rel="prev" title="File MIES_Utilities_Checks.ipf" href="_m_i_e_s___utilities___checks_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___utilities___data_folder_8ipf.html" title="File MIES_Utilities_DataFolder.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___utilities___checks_8ipf.html" title="File MIES_Utilities_Checks.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Utilities_Conversions.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-utilities-conversions-ipf">
+<span id="id1"></span><h1>File MIES_Utilities_Conversions.ipf<a class="headerlink" href="#file-mies-utilities-conversions-ipf" title="Link to this heading">¶</a></h1>
+<p>Utility functions for conversions. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421ConvertFromBytesToMiB8variable">
+<span id="_CPPv321ConvertFromBytesToMiB8variable"></span><span id="_CPPv221ConvertFromBytesToMiB8variable"></span><span id="ConvertFromBytesToMiB__variable"></span><span class="target" id="_m_i_e_s___utilities___conversions_8ipf_1a5e30d6374c5baf76cd7ab0cabe3660cb"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ConvertFromBytesToMiB</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421ConvertFromBytesToMiB8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Convert Bytes to MiBs, a mebibyte being 2^20. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429ConvertSamplingIntervalToRate8variable">
+<span id="_CPPv329ConvertSamplingIntervalToRate8variable"></span><span id="_CPPv229ConvertSamplingIntervalToRate8variable"></span><span id="ConvertSamplingIntervalToRate__variable"></span><span class="target" id="_m_i_e_s___utilities___conversions_8ipf_1a5fe7e09cc9f0a69e6e36f45dcf6961c7"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ConvertSamplingIntervalToRate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429ConvertSamplingIntervalToRate8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Convert the sampling interval in microseconds (1e-6s) to the rate in kHz. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429ConvertRateToSamplingInterval8variable">
+<span id="_CPPv329ConvertRateToSamplingInterval8variable"></span><span id="_CPPv229ConvertRateToSamplingInterval8variable"></span><span id="ConvertRateToSamplingInterval__variable"></span><span class="target" id="_m_i_e_s___utilities___conversions_8ipf_1afceef779ed2219f04830a390754ef437"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ConvertRateToSamplingInterval</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429ConvertRateToSamplingInterval8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Convert the rate in kHz to the sampling interval in microseconds (1e-6s) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414TextWaveToList14WaveTextOrNull6string6string6string6string8variable8variable8variable">
+<span id="_CPPv314TextWaveToList14WaveTextOrNull6string6string6string6string8variable8variable8variable"></span><span id="_CPPv214TextWaveToList14WaveTextOrNull6string6string6string6string8variable8variable8variable"></span><span id="TextWaveToList__WaveTextOrNull.string.string.string.string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___utilities___conversions_8ipf_1af111261468e6e3bf94103edf8fce0722"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TextWaveToList</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveTextOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">txtWave</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rowSep</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">colSep</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">layerSep</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">chunkSep</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stopOnEmpty</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">maxElements</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">trailSep</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414TextWaveToList14WaveTextOrNull6string6string6string6string8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Convert a text wave to string list. </p>
+<p>
+Counterpart <div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>ConvertListToTextWave </p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_m_i_e_s___utilities___conversions_8ipf_1a381383813433f626b563fc3e9f1796ab"><span class="std std-ref">NumericWaveToList</span></a></p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>txtWave</strong> – input text wave </p></li>
+<li><p><strong>rowSep</strong> – separator for row entries </p></li>
+<li><p><strong>colSep</strong> – [optional, default = “,”] separator for column entries </p></li>
+<li><p><strong>layerSep</strong> – [optional, default = “:”] separator for layer entries </p></li>
+<li><p><strong>chunkSep</strong> – [optional, default = “/”] separator for chunk entries </p></li>
+<li><p><strong>stopOnEmpty</strong> – [optional, default = 0] when 1 stops generating the list when an empty string entry in txtWave is encountered </p></li>
+<li><p><strong>maxElements</strong> – [optional, defaults to inf] output only the first <code class="docutils literal notranslate"><span class="pre">maxElements</span></code> entries </p></li>
+<li><p><strong>trailSep</strong> – [optional, defaults to true] add trailing separators at the very end</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>string with wave entries separated as list using given separators</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416ListToTextWaveMD6string8variable6string6string6string6string">
+<span id="_CPPv316ListToTextWaveMD6string8variable6string6string6string6string"></span><span id="_CPPv216ListToTextWaveMD6string8variable6string6string6string6string"></span><span id="ListToTextWaveMD__string.variable.string.string.string.string"></span><span class="target" id="_m_i_e_s___utilities___conversions_8ipf_1a63b7169303030ff1e72e75071d9532f3"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ListToTextWaveMD</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dims</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rowSep</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">colSep</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">laySep</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">chuSep</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416ListToTextWaveMD6string8variable6string6string6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Converts a list to a multi dimensional text wave, treating it row major order The output wave does not contain unused dimensions, so if dims = 4 is specified but no chunk separator is found then the returned wave is 3 dimensional. An empty list results in a zero dimensional wave. </p>
+<p>
+The following call ListToTextWaveMD(“1/5/6/:8/:,;2/:,;3/7/:,;4/:,;”, 4, rowSep=”;”, colSep=”,”,laySep=”:”, chuSep=”/”) returns ‘<em>free</em>’[0][0][0][0]= {“1”,”2”,”3”,”4”} ‘<em>free</em>’[0][0][1][0]= {“8”,””,””,””} ‘<em>free</em>’[0][0][0][1]= {“5”,””,”7”,””} ‘<em>free</em>’[0][0][1][1]= {“”,””,””,””} ‘<em>free</em>’[0][0][0][2]= {“6”,””,””,””} ‘<em>free</em>’[0][0][1][2]= {“”,””,””,””} </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>list</strong> – <strong>[in]</strong> input string with list </p></li>
+<li><p><strong>dims</strong> – <strong>[in]</strong> number of dimensions the output text wave should have </p></li>
+<li><p><strong>rowSep</strong> – <strong>[in]</strong> [optional, default = “;”] row separator </p></li>
+<li><p><strong>colSep</strong> – <strong>[in]</strong> [optional, default = “,”] column separator </p></li>
+<li><p><strong>laySep</strong> – <strong>[in]</strong> [optional, default = “:”] layer separator </p></li>
+<li><p><strong>chuSep</strong> – <strong>[in]</strong> [optional, default = “/”] chunk separator </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>text wave with at least dims dimensions</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417NumericWaveToList10WaveOrNull6string6string6string8variable">
+<span id="_CPPv317NumericWaveToList10WaveOrNull6string6string6string8variable"></span><span id="_CPPv217NumericWaveToList10WaveOrNull6string6string6string8variable"></span><span id="NumericWaveToList__WaveOrNull.string.string.string.variable"></span><span class="target" id="_m_i_e_s___utilities___conversions_8ipf_1a381383813433f626b563fc3e9f1796ab"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NumericWaveToList</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sep</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">colSep</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">trailSep</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417NumericWaveToList10WaveOrNull6string6string6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Convert a 1D or 2D numeric wave to string list. </p>
+<p>Counterpart <div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_m_i_e_s___utilities___conversions_8ipf_1a158f8da40716e5897e4529bbe1426f80"><span class="std std-ref">ListToNumericWave</span></a></p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_m_i_e_s___utilities___conversions_8ipf_1af111261468e6e3bf94103edf8fce0722"><span class="std std-ref">TextWaveToList</span></a></p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wv</strong> – numeric wave </p></li>
+<li><p><strong>sep</strong> – separator </p></li>
+<li><p><strong>colSep</strong> – [optional, default = <code class="docutils literal notranslate"><span class="pre">,</span></code>] separator for column entries </p></li>
+<li><p><strong>format</strong> – [optional, defaults to <code class="docutils literal notranslate"><span class="pre">g</span></code>] sprintf conversion specifier </p></li>
+<li><p><strong>trailSep</strong> – [optional, defaults to true] don’t add a row separator after the last row </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414WaveToListFast4wave6string6string6string8variable">
+<span id="_CPPv314WaveToListFast4wave6string6string6string8variable"></span><span id="_CPPv214WaveToListFast4wave6string6string6string8variable"></span><span id="WaveToListFast__wave.string.string.string.variable"></span><span class="target" id="_m_i_e_s___utilities___conversions_8ipf_1a32366dccb0db635690e6d0e7c594c98f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WaveToListFast</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sep</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">colSep</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">trailSep</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414WaveToListFast4wave6string6string6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417ListToNumericWave6string6string8variable8variable">
+<span id="_CPPv317ListToNumericWave6string6string8variable8variable"></span><span id="_CPPv217ListToNumericWave6string6string8variable8variable"></span><span id="ListToNumericWave__string.string.variable.variable"></span><span class="target" id="_m_i_e_s___utilities___conversions_8ipf_1a158f8da40716e5897e4529bbe1426f80"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ListToNumericWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sep</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ignoreErr</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417ListToNumericWave6string6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Convert a list to a numeric wave. </p>
+<p>Counterpart <div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_m_i_e_s___utilities___conversions_8ipf_1a381383813433f626b563fc3e9f1796ab"><span class="std std-ref">NumericWaveToList()</span></a>. </p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_m_i_e_s___utilities___conversions_8ipf_1af111261468e6e3bf94103edf8fce0722"><span class="std std-ref">TextWaveToList</span></a></p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>list</strong> – list with numeric entries </p></li>
+<li><p><strong>sep</strong> – separator </p></li>
+<li><p><strong>type</strong> – [optional, defaults to double precision float (<code class="docutils literal notranslate"><span class="pre">IGOR_TYPE_64BIT_FLOAT</span></code>)] type of the created numeric wave </p></li>
+<li><p><strong>ignoreErr</strong> – [optional, defaults 0] when this flag is set conversion errors are ignored, the value placed is NaN (-9223372036854775808 for int type) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411str2numSafe6string">
+<span id="_CPPv311str2numSafe6string"></span><span id="_CPPv211str2numSafe6string"></span><span id="str2numSafe__string"></span><span class="target" id="_m_i_e_s___utilities___conversions_8ipf_1a2af68f9516aa38313fb30e39e6906d54"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">str2numSafe</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411str2numSafe6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>str2num variant with no runtime error on invalid conversions </p>
+<p>UTF_NOINSTRUMENTATION </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421FloatWithMinSigDigits8variable8variable">
+<span id="_CPPv321FloatWithMinSigDigits8variable8variable"></span><span id="_CPPv221FloatWithMinSigDigits8variable8variable"></span><span id="FloatWithMinSigDigits__variable.variable"></span><span class="target" id="_m_i_e_s___utilities___conversions_8ipf_1a7e7fc6be451e2704e8bab9a6d85ee4be"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FloatWithMinSigDigits</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numMinSignDigits</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421FloatWithMinSigDigits8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a floating point value as string rounded to the given number of minimum significant digits. </p>
+<p>This allows to specify the minimum number of significant digits. The normal printf/sprintf specifier only allows the maximum number of significant digits for <code class="docutils literal notranslate"><span class="pre">g</span></code>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410ToPassFail8variable">
+<span id="_CPPv310ToPassFail8variable"></span><span id="_CPPv210ToPassFail8variable"></span><span id="ToPassFail__variable"></span><span class="target" id="_m_i_e_s___utilities___conversions_8ipf_1a5ef0c8ed413fe09dde5835f6aa2b8683"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToPassFail</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">passedOrFailed</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410ToPassFail8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411ToTrueFalse8variable">
+<span id="_CPPv311ToTrueFalse8variable"></span><span id="_CPPv211ToTrueFalse8variable"></span><span id="ToTrueFalse__variable"></span><span class="target" id="_m_i_e_s___utilities___conversions_8ipf_1af1ad7af435433dc29de937c8f92a9a0e"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToTrueFalse</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411ToTrueFalse8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv47ToOnOff8variable">
+<span id="_CPPv37ToOnOff8variable"></span><span id="_CPPv27ToOnOff8variable"></span><span id="ToOnOff__variable"></span><span class="target" id="_m_i_e_s___utilities___conversions_8ipf_1ad3821c0a45aae8a0c829c8b00a15daa2"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToOnOff</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv47ToOnOff8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418DAQRunModeToString8variable">
+<span id="_CPPv318DAQRunModeToString8variable"></span><span id="_CPPv218DAQRunModeToString8variable"></span><span id="DAQRunModeToString__variable"></span><span class="target" id="_m_i_e_s___utilities___conversions_8ipf_1a5fee6c68a7d39ce97464e3170cc76a58"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DAQRunModeToString</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">runMode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418DAQRunModeToString8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Convert the DAQ run mode to a string. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>runMode</strong> – One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1DAQRunModes"><span class="std std-ref">DAQRunModes</span></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424TestPulseRunModeToString8variable">
+<span id="_CPPv324TestPulseRunModeToString8variable"></span><span id="_CPPv224TestPulseRunModeToString8variable"></span><span id="TestPulseRunModeToString__variable"></span><span class="target" id="_m_i_e_s___utilities___conversions_8ipf_1a15420ac755e48ec3f0e381237552464f"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TestPulseRunModeToString</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">runMode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424TestPulseRunModeToString8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Convert the Testpulse run mode to a string. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>runMode</strong> – One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1TestPulseRunModes"><span class="std std-ref">TestPulseRunModes</span></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415num2strHighPrec8variable8variable8variable">
+<span id="_CPPv315num2strHighPrec8variable8variable8variable"></span><span id="_CPPv215num2strHighPrec8variable8variable8variable"></span><span id="num2strHighPrec__variable.variable.variable"></span><span class="target" id="_m_i_e_s___utilities___conversions_8ipf_1a865091e5599194490da83a852235d8bc"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num2strHighPrec</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">precision</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">shorten</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415num2strHighPrec8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Converts a number to a string with specified precision (digits after decimal dot). This function is an extension for the regular num2str that is limited to 5 digits. Input numbers are rounded using the “round-half-to-even” rule to the given precision. The default precision is 5. If val is complex only the real part is converted to a string. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>val</strong> – <strong>[in]</strong> number that should be converted to a string </p></li>
+<li><p><strong>precision</strong> – <strong>[in]</strong> [optional, default 5] number of precision digits after the decimal dot using “round-half-to-even” rounding rule. Precision must be in the range 0 to <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a9435148f5d074c6cc0bd7a53e8e0b7d8"><span class="std std-ref">MAX_DOUBLE_PRECISION</span></a>. </p></li>
+<li><p><strong>shorten</strong> – <strong>[in]</strong> [optional, defaults to false] Remove trailing zeros and optionally the decimal dot to get a minimum length string</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>string with textual number representation </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419ScaleToIndexWrapper4wave8variable8variable">
+<span id="_CPPv319ScaleToIndexWrapper4wave8variable8variable"></span><span id="_CPPv219ScaleToIndexWrapper4wave8variable8variable"></span><span id="ScaleToIndexWrapper__wave.variable.variable"></span><span class="target" id="_m_i_e_s___utilities___conversions_8ipf_1a90a310d1adbd60ce4a948ef2ca5e0631"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ScaleToIndexWrapper</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">scale</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419ScaleToIndexWrapper4wave8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>wrapper to <code class="docutils literal notranslate"><span class="pre">ScaleToIndex</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">ScaleToIndex</span></code> treats input <code class="docutils literal notranslate"><span class="pre">inf</span></code> to <code class="docutils literal notranslate"><span class="pre">scale</span></code> always as the last point in a wave. <code class="docutils literal notranslate"><span class="pre">-inf</span></code> on the other hand is undefined. This wrapper function respects the scaled point wave. <code class="docutils literal notranslate"><span class="pre">-inf</span></code> refers to the negative end of the scaled wave and <code class="docutils literal notranslate"><span class="pre">+inf</span></code> is the positive end of the scaled wave. This means that this wrapper function also respects the <code class="docutils literal notranslate"><span class="pre">DimDelta</span></code> direction of the wave scaling. and always returns the closest matching (existing) point in the wave. This also means that the returned values cannot be negative or larger than the numer of points in the wave.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>an existing index in <code class="docutils literal notranslate"><span class="pre">wv</span></code> between 0 and <code class="docutils literal notranslate"><span class="pre">DimSize(wv,</span> <span class="pre">dim)</span> <span class="pre">-</span> <span class="pre">1</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411HexToNumber6string">
+<span id="_CPPv311HexToNumber6string"></span><span id="_CPPv211HexToNumber6string"></span><span id="HexToNumber__string"></span><span class="target" id="_m_i_e_s___utilities___conversions_8ipf_1a3ba22f0e2d7124c82ac3f2105f8f250f"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HexToNumber</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ch</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Convert a hexadecimal character into a number. </p>
+<p>UTF_NOINSTRUMENTATION </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411NumberToHex8variable">
+<span id="_CPPv311NumberToHex8variable"></span><span id="_CPPv211NumberToHex8variable"></span><span id="NumberToHex__variable"></span><span class="target" id="_m_i_e_s___utilities___conversions_8ipf_1accbf5e1eda5278b1f83bf0c99c89c64c"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NumberToHex</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Convert a number into hexadecimal. </p>
+<p>UTF_NOINSTRUMENTATION </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411HexToBinary6string">
+<span id="_CPPv311HexToBinary6string"></span><span id="_CPPv211HexToBinary6string"></span><span id="HexToBinary__string"></span><span class="target" id="_m_i_e_s___utilities___conversions_8ipf_1a2840fe48dd3564366c174b795388a30d"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HexToBinary</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Convert a string in hex format to an unsigned binary wave. </p>
+<p>This function works on a byte level so it does not care about endianess.</p>
+<p>UTF_NOINSTRUMENTATION </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv435ConvertListToRegexpWithAlternations6string8variable6string">
+<span id="_CPPv335ConvertListToRegexpWithAlternations6string8variable6string"></span><span id="_CPPv235ConvertListToRegexpWithAlternations6string8variable6string"></span><span id="ConvertListToRegexpWithAlternations__string.variable.string"></span><span class="target" id="_m_i_e_s___utilities___conversions_8ipf_1a9c30bfc1fc4ccd74edf1af5c75950e4d"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ConvertListToRegexpWithAlternations</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">literal</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sep</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv435ConvertListToRegexpWithAlternations6string8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Turn a list of entries into a regular expression with alternations. </p>
+<p>Can be used for <a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html#_m_i_e_s___utilities___data_folder_8ipf_1a04c9b33b1a7cc1fdd65d07602c35c3df"><span class="std std-ref">GetListOfObjects()</span></a> if you know in advance which entries to filter out.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>list</strong> – semicolon separated list of strings to match </p></li>
+<li><p><strong>literal</strong> – [optional, default = 1] when this flag is cleared the string elements of the list are treated as regular expressions </p></li>
+<li><p><strong>sep</strong> – [optional, default = “;”] separator for list </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421ConvertToUniqueNumber8WaveText8variable8variable">
+<span id="_CPPv321ConvertToUniqueNumber8WaveText8variable8variable"></span><span id="_CPPv221ConvertToUniqueNumber8WaveText8variable8variable"></span><span id="ConvertToUniqueNumber__WaveText.variable.variable"></span><span class="target" id="_m_i_e_s___utilities___conversions_8ipf_1a1a2b9ddd5ed07cbf08794633fa198948"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ConvertToUniqueNumber</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">doZapNaNs</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">doSort</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421ConvertToUniqueNumber8WaveText8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Convert a text wave to a double wave with optional support for removing NaNs and sorting. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422GetCodeForWaveContents8WaveText">
+<span id="_CPPv322GetCodeForWaveContents8WaveText"></span><span id="_CPPv222GetCodeForWaveContents8WaveText"></span><span id="GetCodeForWaveContents__WaveText"></span><span class="target" id="_m_i_e_s___utilities___conversions_8ipf_1a2805855ec5f257c6973c7453962b8aff"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetCodeForWaveContents</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422GetCodeForWaveContents8WaveText" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Prepare wave for inline definition. </p>
+<p>Outputs a wave in a format so that it can be initialized with these contents in an Igor Pro procedure file. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422WaveTypeStringToNumber6string">
+<span id="_CPPv322WaveTypeStringToNumber6string"></span><span id="_CPPv222WaveTypeStringToNumber6string"></span><span id="WaveTypeStringToNumber__string"></span><span class="target" id="_m_i_e_s___utilities___conversions_8ipf_1a12cee36356f253665f20e3eb35561405"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WaveTypeStringToNumber</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422WaveTypeStringToNumber6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the wave type as constant. </p>
+<p>Same constant as WaveType with selector zero (default) and Redimension/Y. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410WaveToJSON10WaveOrNull">
+<span id="_CPPv310WaveToJSON10WaveOrNull"></span><span id="_CPPv210WaveToJSON10WaveOrNull"></span><span id="WaveToJSON__WaveOrNull"></span><span class="target" id="_m_i_e_s___utilities___conversions_8ipf_1a886fc50d2871361e4d3b17ed9154c3c2"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WaveToJSON</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410WaveToJSON10WaveOrNull" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Serialize a wave as JSON and return it as string. </p>
+<p>The format is documented <a class="reference external" href="https://github.com/AllenInstitute/ZeroMQ-XOP/#wave-serialization-format">here</a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410JSONToWave6string6string">
+<span id="_CPPv310JSONToWave6string6string"></span><span id="_CPPv210JSONToWave6string6string"></span><span id="JSONToWave__string.string"></span><span class="target" id="_m_i_e_s___utilities___conversions_8ipf_1a5aee52ebcf32345fce944fe17737006f"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">JSONToWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410JSONToWave6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Deserialize a JSON document generated by <a class="reference internal" href="#_m_i_e_s___utilities___conversions_8ipf_1a886fc50d2871361e4d3b17ed9154c3c2"><span class="std std-ref">WaveToJSON()</span></a></p>
+<p>Supports only a currently used subset.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_m_i_e_s___utilities___conversions_8ipf_1a886fc50d2871361e4d3b17ed9154c3c2"><span class="std std-ref">WaveToJSON</span></a></p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>str</strong> – serialized JSON document </p></li>
+<li><p><strong>path</strong> – [optional, defaults to “”] json path with the serialized wave info </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420UTF8StringToTextWave6string">
+<span id="_CPPv320UTF8StringToTextWave6string"></span><span id="_CPPv220UTF8StringToTextWave6string"></span><span id="UTF8StringToTextWave__string"></span><span class="target" id="_m_i_e_s___utilities___conversions_8ipf_1ac271ea0a1d79f0359ced8d3dc649bd0f"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UTF8StringToTextWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420UTF8StringToTextWave6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Converts a string in UTF8 encoding to a text wave where each wave element contains one UTF8 characters. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416NumericWaveByKey6string6string6string6string6string8variable8variable">
+<span id="_CPPv316NumericWaveByKey6string6string6string6string6string8variable8variable"></span><span id="_CPPv216NumericWaveByKey6string6string6string6string6string8variable8variable"></span><span id="NumericWaveByKey__string.string.string.string.string.variable.variable"></span><span class="target" id="_m_i_e_s___utilities___conversions_8ipf_1a75a068c48b5edfe7ecae6bc0e1f7bcff"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NumericWaveByKey</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">kwList</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">keySep</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">listSep</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wvListSep</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">matchCase</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wvType</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416NumericWaveByKey6string6string6string6string6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Extract a numeric wave from a keyword list. </p>
+<p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kt">WAVE</span><span class="w"> </span>wv<span class="w"> </span>=<span class="w"> </span>NumericWaveByKey(<span class="s">&quot;kb&quot;</span>,<span class="w"> </span><span class="s">&quot;ka:va;kb:[1,2,3]&quot;</span>)
+<span class="c1">// wv contains {1, 2, 3}</span>
+</pre></div>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – key </p></li>
+<li><p><strong>kwList</strong> – keyword-value list </p></li>
+<li><p><strong>keySep</strong> – [optional, defaults to <code class="docutils literal notranslate"><span class="pre">:</span></code>] separator between keyword and values </p></li>
+<li><p><strong>listSep</strong> – [optional, defaults to <code class="docutils literal notranslate"><span class="pre">;</span></code>] separator between keyword-value items </p></li>
+<li><p><strong>wvListSep</strong> – [optional, defaults to <code class="docutils literal notranslate"><span class="pre">,</span></code>] separator between wave values </p></li>
+<li><p><strong>matchCase</strong> – [optional, defaults to false] match the case of the key (1) or not (0) </p></li>
+<li><p><strong>wvType</strong> – [optional, defaults to IGOR_TYPE_64BIT_FLOAT] type of the created wave </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_Utilities_Conversions.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421ConvertFromBytesToMiB8variable"><code class="docutils literal notranslate"><span class="pre">ConvertFromBytesToMiB()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429ConvertSamplingIntervalToRate8variable"><code class="docutils literal notranslate"><span class="pre">ConvertSamplingIntervalToRate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429ConvertRateToSamplingInterval8variable"><code class="docutils literal notranslate"><span class="pre">ConvertRateToSamplingInterval()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414TextWaveToList14WaveTextOrNull6string6string6string6string8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">TextWaveToList()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416ListToTextWaveMD6string8variable6string6string6string6string"><code class="docutils literal notranslate"><span class="pre">ListToTextWaveMD()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417NumericWaveToList10WaveOrNull6string6string6string8variable"><code class="docutils literal notranslate"><span class="pre">NumericWaveToList()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414WaveToListFast4wave6string6string6string8variable"><code class="docutils literal notranslate"><span class="pre">WaveToListFast()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417ListToNumericWave6string6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">ListToNumericWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411str2numSafe6string"><code class="docutils literal notranslate"><span class="pre">str2numSafe()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421FloatWithMinSigDigits8variable8variable"><code class="docutils literal notranslate"><span class="pre">FloatWithMinSigDigits()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv410ToPassFail8variable"><code class="docutils literal notranslate"><span class="pre">ToPassFail()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411ToTrueFalse8variable"><code class="docutils literal notranslate"><span class="pre">ToTrueFalse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv47ToOnOff8variable"><code class="docutils literal notranslate"><span class="pre">ToOnOff()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418DAQRunModeToString8variable"><code class="docutils literal notranslate"><span class="pre">DAQRunModeToString()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424TestPulseRunModeToString8variable"><code class="docutils literal notranslate"><span class="pre">TestPulseRunModeToString()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415num2strHighPrec8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">num2strHighPrec()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419ScaleToIndexWrapper4wave8variable8variable"><code class="docutils literal notranslate"><span class="pre">ScaleToIndexWrapper()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411HexToNumber6string"><code class="docutils literal notranslate"><span class="pre">HexToNumber()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411NumberToHex8variable"><code class="docutils literal notranslate"><span class="pre">NumberToHex()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411HexToBinary6string"><code class="docutils literal notranslate"><span class="pre">HexToBinary()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv435ConvertListToRegexpWithAlternations6string8variable6string"><code class="docutils literal notranslate"><span class="pre">ConvertListToRegexpWithAlternations()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421ConvertToUniqueNumber8WaveText8variable8variable"><code class="docutils literal notranslate"><span class="pre">ConvertToUniqueNumber()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422GetCodeForWaveContents8WaveText"><code class="docutils literal notranslate"><span class="pre">GetCodeForWaveContents()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422WaveTypeStringToNumber6string"><code class="docutils literal notranslate"><span class="pre">WaveTypeStringToNumber()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv410WaveToJSON10WaveOrNull"><code class="docutils literal notranslate"><span class="pre">WaveToJSON()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv410JSONToWave6string6string"><code class="docutils literal notranslate"><span class="pre">JSONToWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420UTF8StringToTextWave6string"><code class="docutils literal notranslate"><span class="pre">UTF8StringToTextWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416NumericWaveByKey6string6string6string6string6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">NumericWaveByKey()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___utilities___checks_8ipf.html"
+                          title="previous chapter">File MIES_Utilities_Checks.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___utilities___data_folder_8ipf.html"
+                          title="next chapter">File MIES_Utilities_DataFolder.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___utilities___data_folder_8ipf.html" title="File MIES_Utilities_DataFolder.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___utilities___checks_8ipf.html" title="File MIES_Utilities_Checks.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Utilities_Conversions.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

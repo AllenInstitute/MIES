@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File MIES_Utilities_File.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_Utilities_GUI.ipf" href="_m_i_e_s___utilities___g_u_i_8ipf.html" />
+    <link rel="prev" title="File MIES_Utilities_Debugger.ipf" href="_m_i_e_s___utilities___debugger_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___utilities___g_u_i_8ipf.html" title="File MIES_Utilities_GUI.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___utilities___debugger_8ipf.html" title="File MIES_Utilities_Debugger.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Utilities_File.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-utilities-file-ipf">
+<span id="id1"></span><h1>File MIES_Utilities_File.ipf<a class="headerlink" href="#file-mies-utilities-file-ipf" title="Link to this heading">¶</a></h1>
+<p>utility functions for file handling </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418UniqueFileOrFolder6string6string6string">
+<span id="_CPPv318UniqueFileOrFolder6string6string6string"></span><span id="_CPPv218UniqueFileOrFolder6string6string6string"></span><span id="UniqueFileOrFolder__string.string.string"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1af2514b3664cf79bf534d68746d0ceda4"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UniqueFileOrFolder</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">symbPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">baseName</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">suffix</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418UniqueFileOrFolder6string6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns a unique and non-existing file or folder name. </p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This function must <em>not</em> be used for security relevant purposes, as for that the check-and-file-creation must be an atomic operation.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>symbPath</strong> – symbolic path </p></li>
+<li><p><strong>baseName</strong> – base name of the file, must not be empty </p></li>
+<li><p><strong>suffix</strong> – file/folder suffix </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412IsDriveValid6string">
+<span id="_CPPv312IsDriveValid6string"></span><span id="_CPPv212IsDriveValid6string"></span><span id="IsDriveValid__string"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1a8669583b4ea58b8fac99058d26e0d1d8"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsDriveValid</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">absPath</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412IsDriveValid6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return true if the given absolute path refers to an existing drive letter. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv48GetDrive6string">
+<span id="_CPPv38GetDrive6string"></span><span id="_CPPv28GetDrive6string"></span><span id="GetDrive__string"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1a51b81a3f590b625c3c620a586ece5007"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetDrive</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv48GetDrive6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the drive letter of the given path (Windows) or the volume name (Macintosh) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418CreateFolderOnDisk6string">
+<span id="_CPPv318CreateFolderOnDisk6string"></span><span id="_CPPv218CreateFolderOnDisk6string"></span><span id="CreateFolderOnDisk__string"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1ac5fe706b4bf6afd4e77df63b12dd437e"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreateFolderOnDisk</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">absPath</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418CreateFolderOnDisk6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Create a folder recursively on disk given an absolute path. </p>
+<p>If you pass windows style paths using backslashes remember to always <em>double</em> them. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411GetBaseName6string6string">
+<span id="_CPPv311GetBaseName6string6string"></span><span id="_CPPv211GetBaseName6string6string"></span><span id="GetBaseName__string.string"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1ae282b7c6bca56413716cb947a7361891"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetBaseName</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filePathWithSuffix</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sep</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Return the base name of the file. </p>
+<p>Given <code class="docutils literal notranslate"><span class="pre">path/file.suffix</span></code> this gives <code class="docutils literal notranslate"><span class="pre">file</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filePathWithSuffix</strong> – full path </p></li>
+<li><p><strong>sep</strong> – [optional, defaults to “:”] character separating the path components </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413GetFileSuffix6string6string">
+<span id="_CPPv313GetFileSuffix6string6string"></span><span id="_CPPv213GetFileSuffix6string6string"></span><span id="GetFileSuffix__string.string"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1adaf2e6492b4a69f1469a4dbf8c68a043"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetFileSuffix</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filePathWithSuffix</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sep</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Return the file extension (suffix) </p>
+<p>Given <code class="docutils literal notranslate"><span class="pre">path/file.suffix</span></code> this gives <code class="docutils literal notranslate"><span class="pre">suffix</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filePathWithSuffix</strong> – full path </p></li>
+<li><p><strong>sep</strong> – [optional, defaults to “:”] character separating the path components </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv49GetFolder6string6string">
+<span id="_CPPv39GetFolder6string6string"></span><span id="_CPPv29GetFolder6string6string"></span><span id="GetFolder__string.string"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1aca6dce2200aff5ccadabd60d2b966164"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetFolder</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filePathWithSuffix</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sep</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Return the folder of the file. </p>
+<p>Given <code class="docutils literal notranslate"><span class="pre">path/file.suffix</span></code> this gives <code class="docutils literal notranslate"><span class="pre">path</span></code>. The returned result has a trailing separator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filePathWithSuffix</strong> – full path </p></li>
+<li><p><strong>sep</strong> – [optional, defaults to “:”] character separating the path components </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv47GetFile6string6string">
+<span id="_CPPv37GetFile6string6string"></span><span id="_CPPv27GetFile6string6string"></span><span id="GetFile__string.string"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1a3f8c2314ac69c2d2996a85803999cacb"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetFile</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filePathWithSuffix</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sep</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Return the filename with extension. </p>
+<p>Given <code class="docutils literal notranslate"><span class="pre">path/file.suffix</span></code> this gives <code class="docutils literal notranslate"><span class="pre">file.suffix</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filePathWithSuffix</strong> – full path </p></li>
+<li><p><strong>sep</strong> – [optional, defaults to “:”] character separating the path components </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414GetWindowsPath6string">
+<span id="_CPPv314GetWindowsPath6string"></span><span id="_CPPv214GetWindowsPath6string"></span><span id="GetWindowsPath__string"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1a96bce9fe68faa625f250f51788bfcd00"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetWindowsPath</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Return the path converted to a windows style path. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410GetHFSPath6string">
+<span id="_CPPv310GetHFSPath6string"></span><span id="_CPPv210GetHFSPath6string"></span><span id="GetHFSPath__string"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1a43bc00e2f32b763d6da5bff9cb0c16ee"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetHFSPath</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410GetHFSPath6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the path converted to a HFS style (aka “:” separated) path. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412ResolveAlias6string6string">
+<span id="_CPPv312ResolveAlias6string6string"></span><span id="_CPPv212ResolveAlias6string6string"></span><span id="ResolveAlias__string.string"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1aa85fd6a39ca680260a3a54c185625e1e"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ResolveAlias</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pathName</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Recursively resolve shortcuts to files/directories. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>full path or an empty string if the file does not exist or the shortcut points to a non existing file/folder </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421GetUniqueSymbolicPath6string">
+<span id="_CPPv321GetUniqueSymbolicPath6string"></span><span id="_CPPv221GetUniqueSymbolicPath6string"></span><span id="GetUniqueSymbolicPath__string"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1abe7eae12945773c6be75d7a39b731c51"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetUniqueSymbolicPath</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">prefix</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421GetUniqueSymbolicPath6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a unique symbolic path name. </p>
+<p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kt">string</span><span class="w"> </span>symbPath<span class="w"> </span>=<span class="w"> </span>GetUniqueSymbolicPath()
+<span class="nc">NewPath</span>/Q/O<span class="w"> </span>$symbPath,<span class="w"> </span><span class="s">&quot;C:&quot;</span>
+</pre></div>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430GetAllFilesRecursivelyFromPath6string6string8variable">
+<span id="_CPPv330GetAllFilesRecursivelyFromPath6string6string8variable"></span><span id="_CPPv230GetAllFilesRecursivelyFromPath6string6string8variable"></span><span id="GetAllFilesRecursivelyFromPath__string.string.variable"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1a2402043aa76618642824f957e710e1c6"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetAllFilesRecursivelyFromPath</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pathName</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">regex</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">resolveAliases</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430GetAllFilesRecursivelyFromPath6string6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a list of all files from the given symbolic path and its subfolders. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pathName</strong> – igor symbolic path to search recursively </p></li>
+<li><p><strong>regex</strong> – [optional, defaults to all files] regular expression to match the absolute file path against </p></li>
+<li><p><strong>resolveAliases</strong> – [optional, defaults to false] attempt to resolve aliases/shortcuts (slows down execution!) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422GetAllFilesAliasHelper8WaveText">
+<span id="_CPPv322GetAllFilesAliasHelper8WaveText"></span><span id="_CPPv222GetAllFilesAliasHelper8WaveText"></span><span id="GetAllFilesAliasHelper__WaveText"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1aec7451d786ed081efc3e61f6cab1e6a3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">WaveTextOrNull</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">WaveTextOrNull</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetAllFilesAliasHelper</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">files</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422GetAllFilesAliasHelper8WaveText" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424AskUserForExistingFolder6string">
+<span id="_CPPv324AskUserForExistingFolder6string"></span><span id="_CPPv224AskUserForExistingFolder6string"></span><span id="AskUserForExistingFolder__string"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1a65ee676ff1183a8cbc5fec590282d706"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AskUserForExistingFolder</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">baseFolder</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424AskUserForExistingFolder6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Open a folder selection dialog. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>a string denoting the selected folder, or an empty string if nothing was supplied. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422HasEnoughDiskspaceFree6string8variable">
+<span id="_CPPv322HasEnoughDiskspaceFree6string8variable"></span><span id="_CPPv222HasEnoughDiskspaceFree6string8variable"></span><span id="HasEnoughDiskspaceFree__string.variable"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1a55ee34a2dfbf115c6b4cdb0418da3903"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HasEnoughDiskspaceFree</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">diskPath</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">requiredFreeSpace</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422HasEnoughDiskspaceFree6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Check that the given path on disk has enough free space. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>diskPath</strong> – path on disk to check </p></li>
+<li><p><strong>requiredFreeSpace</strong> – required free space in GB </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412GetOpenZFlagv">
+<span id="_CPPv312GetOpenZFlagv"></span><span id="_CPPv212GetOpenZFlagv"></span><span id="GetOpenZFlag"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1ae7c7d18aaaaa8a0a40dfff651ef254a6"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetOpenZFlag</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412GetOpenZFlagv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a <code class="docutils literal notranslate"><span class="pre">/Z</span></code> flag value for the <code class="docutils literal notranslate"><span class="pre">Open</span></code> operation which works with automated testing. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412SaveTextFile6string6string6string6stringP6string8variable">
+<span id="_CPPv312SaveTextFile6string6string6string6stringP6string8variable"></span><span id="_CPPv212SaveTextFile6string6string6string6stringP6string8variable"></span><span id="SaveTextFile__string.string.string.string.stringP.variable"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1afc4c21e74505ad1679e659ca1fda6506"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SaveTextFile</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">data</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fileName</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fileFilter</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">message</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">savedFileName</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">showDialogOnOverwrite</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412SaveTextFile6string6string6string6stringP6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Saves string data to a file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – <strong>[in]</strong> string containing data to save </p></li>
+<li><p><strong>fileName</strong> – <strong>[in]</strong> fileName to use. If the fileName is empty or invalid a file save dialog will be shown. </p></li>
+<li><p><strong>fileFilter</strong> – <strong>[in]</strong> [optional, default = “Plain Text Files (*.txt):.txt;All Files:.*;”] file filter string in Igor specific notation. </p></li>
+<li><p><strong>message</strong> – <strong>[in]</strong> [optional, default = “Create file”] window title of the save file dialog. </p></li>
+<li><p><strong>savedFileName</strong> – <strong>[out]</strong> [optional, default = “”] file name of the saved file </p></li>
+<li><p><strong>showDialogOnOverwrite</strong> – <strong>[in]</strong> [optional, default = 0] opens save file dialog, if the current fileName would cause an overwrite, to allow user to change fileName </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>NaN if file open dialog was aborted or an error was encountered, 0 otherwise </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412LoadTextFile6string6string6string">
+<span id="_CPPv312LoadTextFile6string6string6string"></span><span id="_CPPv212LoadTextFile6string6string6string"></span><span id="LoadTextFile__string.string.string"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1a4ae183ac785c31444a5a2ffe3c7a5bf6"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LoadTextFile</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fileName</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fileFilter</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">message</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412LoadTextFile6string6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Load data from file to a string. The file size must be &lt; 2GB. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fileName</strong> – <strong>[in]</strong> fileName to use. If the fileName is empty or invalid a file load dialog will be shown. </p></li>
+<li><p><strong>fileFilter</strong> – <strong>[in]</strong> [optional, default = “Plain Text Files (*.txt):.txt;All Files:.*;”] file filter string in Igor specific notation. </p></li>
+<li><p><strong>message</strong> – <strong>[in]</strong> [optional, default = “Select file”] window title of the save file dialog. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>loaded string data and full path fileName </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418LoadTextFileToWave6string6string">
+<span id="_CPPv318LoadTextFileToWave6string6string"></span><span id="_CPPv218LoadTextFileToWave6string6string"></span><span id="LoadTextFileToWave__string.string"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1a9f1c78a400d9b4606a70746ba5ac814a"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LoadTextFileToWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fullFilePath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sep</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418LoadTextFileToWave6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Load data from a file to a text wave. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fullFilePath</strong> – <strong>[in]</strong> full path to the file to be loaded </p></li>
+<li><p><strong>sep</strong> – <strong>[in]</strong> separator string that splits the file data to the wave cells, typically the line ending </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>free text wave with the data, a null wave if the file could not be found or there was a problem reading the file </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410FileExists6string">
+<span id="_CPPv310FileExists6string"></span><span id="_CPPv210FileExists6string"></span><span id="FileExists__string"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1a96c36680850ddf105617d23667b0cb53"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FileExists</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filepath</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Check wether the given path points to an existing file. </p>
+<p>Resolves shortcuts and symlinks recursively. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412FolderExists6string">
+<span id="_CPPv312FolderExists6string"></span><span id="_CPPv212FolderExists6string"></span><span id="FolderExists__string"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1a2d3e2b05a6ee62a27968d683de6dd153"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FolderExists</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">folderpath</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Check wether the given path points to an existing folder. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414GetFileVersion6string">
+<span id="_CPPv314GetFileVersion6string"></span><span id="_CPPv214GetFileVersion6string"></span><span id="GetFileVersion__string"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1a7e975dc8cfba3cf15f418603df123192"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetFileVersion</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filepath</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414GetFileVersion6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the file version. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411GetFileSize6string">
+<span id="_CPPv311GetFileSize6string"></span><span id="_CPPv211GetFileSize6string"></span><span id="GetFileSize__string"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1a3ab08a0487a0461ee8a6279a8102a27a"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetFileSize</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filepath</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411GetFileSize6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the file size in bytes. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414HFSPathToPosix6string">
+<span id="_CPPv314HFSPathToPosix6string"></span><span id="_CPPv214HFSPathToPosix6string"></span><span id="HFSPathToPosix__string"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1ad38ee1bf0c46bbe2cb833bdfe09dc4e7"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HFSPathToPosix</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414HFSPathToPosix6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Convert a HFS path (<code class="docutils literal notranslate"><span class="pre">:</span></code>) to a POSIX path (<code class="docutils literal notranslate"><span class="pre">/</span></code>) </p>
+<p>The path <em>must</em> exist. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416HFSPathToWindows6string">
+<span id="_CPPv316HFSPathToWindows6string"></span><span id="_CPPv216HFSPathToWindows6string"></span><span id="HFSPathToWindows__string"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1a23f8451a6a9bb175a6af3c850dcb9253"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HFSPathToWindows</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416HFSPathToWindows6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Convert a HFS path (<code class="docutils literal notranslate"><span class="pre">:</span></code>) to a Windows path (<code class="docutils literal notranslate"><span class="pre">\\</span></code>) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415HFSPathToNative6string">
+<span id="_CPPv315HFSPathToNative6string"></span><span id="_CPPv215HFSPathToNative6string"></span><span id="HFSPathToNative__string"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1a2e497ea1eef496fdf2fb067d3f337a35"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HFSPathToNative</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415HFSPathToNative6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Convert HFS path (<code class="docutils literal notranslate"><span class="pre">:</span></code>) to OS native path (<code class="docutils literal notranslate"><span class="pre">\\</span></code> or <code class="docutils literal notranslate"><span class="pre">/</span></code>) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv438GetSymbolicPathForDiagnosticsDirectoryv">
+<span id="_CPPv338GetSymbolicPathForDiagnosticsDirectoryv"></span><span id="_CPPv238GetSymbolicPathForDiagnosticsDirectoryv"></span><span id="GetSymbolicPathForDiagnosticsDirectory"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1a38dd96904554edd05b9967ff47b82317"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSymbolicPathForDiagnosticsDirectory</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv438GetSymbolicPathForDiagnosticsDirectoryv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the name of a symbolic path which points to the crash dump directory on windows. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424ShowDiagnosticsDirectoryv">
+<span id="_CPPv324ShowDiagnosticsDirectoryv"></span><span id="_CPPv224ShowDiagnosticsDirectoryv"></span><span id="ShowDiagnosticsDirectory"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1a8f562f1732998974202a87d5361d14db"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ShowDiagnosticsDirectory</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424ShowDiagnosticsDirectoryv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416SanitizeFilename6string">
+<span id="_CPPv316SanitizeFilename6string"></span><span id="_CPPv216SanitizeFilename6string"></span><span id="SanitizeFilename__string"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1acdfc98d0e1255b8fb8292e4315f00e80"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SanitizeFilename</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416SanitizeFilename6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Sanitize the given name so that it is a nice file name. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416LoadWaveFromDisk6string">
+<span id="_CPPv316LoadWaveFromDisk6string"></span><span id="_CPPv216LoadWaveFromDisk6string"></span><span id="LoadWaveFromDisk__string"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1aadeabee7aef283599e141c8d2e9cb638"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LoadWaveFromDisk</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416LoadWaveFromDisk6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Load the wave <code class="docutils literal notranslate"><span class="pre">$name.itx</span></code> from the folder of this procedure file and store it in the static data folder. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415StoreWaveOnDisk4wave6string">
+<span id="_CPPv315StoreWaveOnDisk4wave6string"></span><span id="_CPPv215StoreWaveOnDisk4wave6string"></span><span id="StoreWaveOnDisk__wave.string"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1a6c0764bf40ce9bbddd659f78bc57108b"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StoreWaveOnDisk</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415StoreWaveOnDisk4wave6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Store the given wave as <code class="docutils literal notranslate"><span class="pre">$name.itx</span></code> in the same folder as this procedure file on disk. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426GetUserDocumentsFolderPathv">
+<span id="_CPPv326GetUserDocumentsFolderPathv"></span><span id="_CPPv226GetUserDocumentsFolderPathv"></span><span id="GetUserDocumentsFolderPath"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1a5e591c3a711e448342c86d85781da4ca"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetUserDocumentsFolderPath</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426GetUserDocumentsFolderPathv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the path to the user’s documents folder. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426GetUserDownloadsFolderPathv">
+<span id="_CPPv326GetUserDownloadsFolderPathv"></span><span id="_CPPv226GetUserDownloadsFolderPathv"></span><span id="GetUserDownloadsFolderPath"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1a65453a09e6184dfae1b3627163830082"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetUserDownloadsFolderPath</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426GetUserDownloadsFolderPathv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the path to the user’s downloads folder. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421CleanupExperimentName6string">
+<span id="_CPPv321CleanupExperimentName6string"></span><span id="_CPPv221CleanupExperimentName6string"></span><span id="CleanupExperimentName__string"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1ad34031aeb7791833d33dc1b1b959d873"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CleanupExperimentName</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expName</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421CleanupExperimentName6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Cleanup the experiment name. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415CalcHashForFile6string8variable">
+<span id="_CPPv315CalcHashForFile6string8variable"></span><span id="_CPPv215CalcHashForFile6string8variable"></span><span id="CalcHashForFile__string.variable"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1af0e1149d7bc46ab9216abcc41cedc7df"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CalcHashForFile</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">method</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415CalcHashForFile6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Calculate a cryptographic hash for the file contents of path. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – absolute path to a file </p></li>
+<li><p><strong>method</strong> – [optional, defaults to <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1ad280d1a71543d6411706478b61b0c9f9"><span class="std std-ref">HASH_SHA2_256</span></a>] Type of cryptographic hash function, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1ad280d1a71543d6411706478b61b0c9f9"><span class="std std-ref">HASH_SHA2_256</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429CheckIfPathsRefIdenticalFiles8WaveText">
+<span id="_CPPv329CheckIfPathsRefIdenticalFiles8WaveText"></span><span id="_CPPv229CheckIfPathsRefIdenticalFiles8WaveText"></span><span id="CheckIfPathsRefIdenticalFiles__WaveText"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1afc073f74ca8a1c51dc7bed783a609db5"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CheckIfPathsRefIdenticalFiles</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">list</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429CheckIfPathsRefIdenticalFiles8WaveText" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Check if the file paths referenced in <code class="docutils literal notranslate"><span class="pre">list</span></code> are pointing to identical files. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421GetProgramFilesFolderv">
+<span id="_CPPv321GetProgramFilesFolderv"></span><span id="_CPPv221GetProgramFilesFolderv"></span><span id="GetProgramFilesFolder"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1a5395fd0b8002dfbe08df698ab6ca17fc"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetProgramFilesFolder</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421GetProgramFilesFolderv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a path to the program folder with trailing dir separator. </p>
+<p>Hardcoded as Igor does not allow to query that information.</p>
+<p>Distinguishes between i386 and x64 Igor versions </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418OpenExplorerAtFile6string">
+<span id="_CPPv318OpenExplorerAtFile6string"></span><span id="_CPPv218OpenExplorerAtFile6string"></span><span id="OpenExplorerAtFile__string"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1a9e5086b971f33e9ae9453883927cb6dd"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OpenExplorerAtFile</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fullFilePath</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418OpenExplorerAtFile6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Opens the target filepath and selects the file or folder in the explorer. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410GetCmdPathv">
+<span id="_CPPv310GetCmdPathv"></span><span id="_CPPv210GetCmdPathv"></span><span id="GetCmdPath"></span><span class="target" id="_m_i_e_s___utilities___file_8ipf_1a2670122c0cc6f20ed93056eb01e5d8fe"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetCmdPath</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410GetCmdPathv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the absolute path to cmd.exe. </p>
+</dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_Utilities_File.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418UniqueFileOrFolder6string6string6string"><code class="docutils literal notranslate"><span class="pre">UniqueFileOrFolder()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412IsDriveValid6string"><code class="docutils literal notranslate"><span class="pre">IsDriveValid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv48GetDrive6string"><code class="docutils literal notranslate"><span class="pre">GetDrive()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418CreateFolderOnDisk6string"><code class="docutils literal notranslate"><span class="pre">CreateFolderOnDisk()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411GetBaseName6string6string"><code class="docutils literal notranslate"><span class="pre">GetBaseName()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413GetFileSuffix6string6string"><code class="docutils literal notranslate"><span class="pre">GetFileSuffix()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv49GetFolder6string6string"><code class="docutils literal notranslate"><span class="pre">GetFolder()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv47GetFile6string6string"><code class="docutils literal notranslate"><span class="pre">GetFile()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414GetWindowsPath6string"><code class="docutils literal notranslate"><span class="pre">GetWindowsPath()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv410GetHFSPath6string"><code class="docutils literal notranslate"><span class="pre">GetHFSPath()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412ResolveAlias6string6string"><code class="docutils literal notranslate"><span class="pre">ResolveAlias()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421GetUniqueSymbolicPath6string"><code class="docutils literal notranslate"><span class="pre">GetUniqueSymbolicPath()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430GetAllFilesRecursivelyFromPath6string6string8variable"><code class="docutils literal notranslate"><span class="pre">GetAllFilesRecursivelyFromPath()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422GetAllFilesAliasHelper8WaveText"><code class="docutils literal notranslate"><span class="pre">GetAllFilesAliasHelper()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424AskUserForExistingFolder6string"><code class="docutils literal notranslate"><span class="pre">AskUserForExistingFolder()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422HasEnoughDiskspaceFree6string8variable"><code class="docutils literal notranslate"><span class="pre">HasEnoughDiskspaceFree()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412GetOpenZFlagv"><code class="docutils literal notranslate"><span class="pre">GetOpenZFlag()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412SaveTextFile6string6string6string6stringP6string8variable"><code class="docutils literal notranslate"><span class="pre">SaveTextFile()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412LoadTextFile6string6string6string"><code class="docutils literal notranslate"><span class="pre">LoadTextFile()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418LoadTextFileToWave6string6string"><code class="docutils literal notranslate"><span class="pre">LoadTextFileToWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv410FileExists6string"><code class="docutils literal notranslate"><span class="pre">FileExists()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412FolderExists6string"><code class="docutils literal notranslate"><span class="pre">FolderExists()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414GetFileVersion6string"><code class="docutils literal notranslate"><span class="pre">GetFileVersion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411GetFileSize6string"><code class="docutils literal notranslate"><span class="pre">GetFileSize()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414HFSPathToPosix6string"><code class="docutils literal notranslate"><span class="pre">HFSPathToPosix()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416HFSPathToWindows6string"><code class="docutils literal notranslate"><span class="pre">HFSPathToWindows()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415HFSPathToNative6string"><code class="docutils literal notranslate"><span class="pre">HFSPathToNative()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv438GetSymbolicPathForDiagnosticsDirectoryv"><code class="docutils literal notranslate"><span class="pre">GetSymbolicPathForDiagnosticsDirectory()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424ShowDiagnosticsDirectoryv"><code class="docutils literal notranslate"><span class="pre">ShowDiagnosticsDirectory()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416SanitizeFilename6string"><code class="docutils literal notranslate"><span class="pre">SanitizeFilename()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416LoadWaveFromDisk6string"><code class="docutils literal notranslate"><span class="pre">LoadWaveFromDisk()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415StoreWaveOnDisk4wave6string"><code class="docutils literal notranslate"><span class="pre">StoreWaveOnDisk()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426GetUserDocumentsFolderPathv"><code class="docutils literal notranslate"><span class="pre">GetUserDocumentsFolderPath()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426GetUserDownloadsFolderPathv"><code class="docutils literal notranslate"><span class="pre">GetUserDownloadsFolderPath()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421CleanupExperimentName6string"><code class="docutils literal notranslate"><span class="pre">CleanupExperimentName()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415CalcHashForFile6string8variable"><code class="docutils literal notranslate"><span class="pre">CalcHashForFile()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429CheckIfPathsRefIdenticalFiles8WaveText"><code class="docutils literal notranslate"><span class="pre">CheckIfPathsRefIdenticalFiles()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421GetProgramFilesFolderv"><code class="docutils literal notranslate"><span class="pre">GetProgramFilesFolder()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418OpenExplorerAtFile6string"><code class="docutils literal notranslate"><span class="pre">OpenExplorerAtFile()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv410GetCmdPathv"><code class="docutils literal notranslate"><span class="pre">GetCmdPath()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___utilities___debugger_8ipf.html"
+                          title="previous chapter">File MIES_Utilities_Debugger.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___utilities___g_u_i_8ipf.html"
+                          title="next chapter">File MIES_Utilities_GUI.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___utilities___g_u_i_8ipf.html" title="File MIES_Utilities_GUI.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___utilities___debugger_8ipf.html" title="File MIES_Utilities_Debugger.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Utilities_File.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

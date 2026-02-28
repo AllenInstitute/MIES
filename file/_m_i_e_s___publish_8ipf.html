@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File MIES_Publish.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_PulseAveraging.ipf" href="_m_i_e_s___pulse_averaging_8ipf.html" />
+    <link rel="prev" title="File MIES_ProgrammaticGUIControl.ipf" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___pulse_averaging_8ipf.html" title="File MIES_PulseAveraging.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html" title="File MIES_ProgrammaticGUIControl.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Publish.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-publish-ipf">
+<span id="id1"></span><h1>File MIES_Publish.ipf<a class="headerlink" href="#file-mies-publish-ipf" title="Link to this heading">¶</a></h1>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419PUB_GetJSONTemplate6string8variable">
+<span id="_CPPv319PUB_GetJSONTemplate6string8variable"></span><span id="_CPPv219PUB_GetJSONTemplate6string8variable"></span><span id="PUB_GetJSONTemplate__string.variable"></span><span class="target" id="_m_i_e_s___publish_8ipf_1a759f1474202a318be15c1c681479a73f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PUB_GetJSONTemplate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419PUB_GetJSONTemplate6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Get a template for publishing messages. </p>
+<p>Publishers in MIES should in general supply additional information like device/sweep number/timestamp. This function allows to autofill these entries. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411PUB_Publish8variable6string8variable10WaveOrNull">
+<span id="_CPPv311PUB_Publish8variable6string8variable10WaveOrNull"></span><span id="_CPPv211PUB_Publish8variable6string8variable10WaveOrNull"></span><span id="PUB_Publish__variable.string.variable.WaveOrNull"></span><span class="target" id="_m_i_e_s___publish_8ipf_1a1dca53b11083bacf2e787b40b528ff87"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PUB_Publish</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">messageFilter</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">releaseJSON</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">additionalData</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411PUB_Publish8variable6string8variable10WaveOrNull" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Publish the given message as given by the JSON and the filter. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv431PUB_AddLabnotebookEntriesToJSON8variable4wave4wave8variable6string8variable8variable">
+<span id="_CPPv331PUB_AddLabnotebookEntriesToJSON8variable4wave4wave8variable6string8variable8variable"></span><span id="_CPPv231PUB_AddLabnotebookEntriesToJSON8variable4wave4wave8variable6string8variable8variable"></span><span id="PUB_AddLabnotebookEntriesToJSON__variable.wave.wave.variable.string.variable.variable"></span><span class="target" id="_m_i_e_s___publish_8ipf_1af5cea74f1dab9683b9c91310923bc09d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PUB_AddLabnotebookEntriesToJSON</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonID</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">values</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">keys</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">labnotebookLayer</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431PUB_AddLabnotebookEntriesToJSON8variable4wave4wave8variable6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421PUB_AutoBridgeBalance6string8variable8variable">
+<span id="_CPPv321PUB_AutoBridgeBalance6string8variable8variable"></span><span id="_CPPv221PUB_AutoBridgeBalance6string8variable8variable"></span><span id="PUB_AutoBridgeBalance__string.variable.variable"></span><span class="target" id="_m_i_e_s___publish_8ipf_1ac0a0357ef1f7674706207b5fda6e913c"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PUB_AutoBridgeBalance</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">resistance</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421PUB_AutoBridgeBalance6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Filter: <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1abef82c2a1d0fe19ac2a5bea852998c23"><span class="std std-ref">AMPLIFIER_AUTO_BRIDGE_BALANCE</span></a></p>
+<p>Example:</p>
+<p><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;bridge balance resistance&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Ohm&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4711</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;device&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my_device&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;headstage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;sweep number&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NaN&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2022-05-13T18:56:39Z&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417PUB_PipetteInBath6string8variable8variable">
+<span id="_CPPv317PUB_PipetteInBath6string8variable8variable"></span><span id="_CPPv217PUB_PipetteInBath6string8variable8variable"></span><span id="PUB_PipetteInBath__string.variable.variable"></span><span class="target" id="_m_i_e_s___publish_8ipf_1a6f280bb454fc0368d70443ce679d7bae"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PUB_PipetteInBath</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417PUB_PipetteInBath6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Published message in POST_SET_EVENT for the analysis function <a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html#_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae8ddbddfdabe954afda91715bff3eeca"><span class="std std-ref">PSQ_PipetteInBath()</span></a></p>
+<p>Keys under <code class="docutils literal notranslate"><span class="pre">/results</span></code> are labnotebook keys. The arrays under <code class="docutils literal notranslate"><span class="pre">/results/XXX/values</span></code> are the values for each sweep in the stimset cycle. This array has currently always one entry as <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a412cacb18aaf35c5bab3cbb4a9885473"><span class="std std-ref">PSQ_PB_NUM_SWEEPS_PASS</span></a> is one. The encoding is UTF-8.</p>
+<p>Example:</p>
+<p><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w"> </span><span class="nt">&quot;device&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my_device&quot;</span><span class="p">,</span>
+<span class="w"> </span><span class="nt">&quot;headstage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w"> </span><span class="nt">&quot;results&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;USER_Pipette in Bath Chk0 Leak Current BL&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">     </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Amperes&quot;</span><span class="p">,</span>
+<span class="w">     </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">       </span><span class="mf">123.0</span>
+<span class="w">     </span><span class="p">]</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;USER_Pipette in Bath Chk0 Leak Current BL QC&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">     </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;On/Off&quot;</span><span class="p">,</span>
+<span class="w">     </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">       </span><span class="mf">0.0</span>
+<span class="w">     </span><span class="p">]</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;USER_Pipette in Bath Set QC&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">     </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;On/Off&quot;</span><span class="p">,</span>
+<span class="w">     </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">       </span><span class="mf">1.0</span>
+<span class="w">     </span><span class="p">]</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;USER_Pipette in Bath pipette resistance&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">     </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Ω&quot;</span><span class="p">,</span>
+<span class="w">     </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">       </span><span class="mf">456.0</span>
+<span class="w">     </span><span class="p">]</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;USER_Pipette in Bath pipette resistance QC&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">     </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;On/Off&quot;</span><span class="p">,</span>
+<span class="w">     </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">       </span><span class="mf">1.0</span>
+<span class="w">     </span><span class="p">]</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="w"> </span><span class="p">},</span>
+<span class="w"> </span><span class="nt">&quot;sweep number&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NaN&quot;</span><span class="p">,</span>
+<span class="w"> </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2022-02-10T20:48:22Z&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418PUB_SealEvaluation6string8variable8variable">
+<span id="_CPPv318PUB_SealEvaluation6string8variable8variable"></span><span id="_CPPv218PUB_SealEvaluation6string8variable8variable"></span><span id="PUB_SealEvaluation__string.variable.variable"></span><span class="target" id="_m_i_e_s___publish_8ipf_1afd7470def1ece7f1ec971b2c74e338d9"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PUB_SealEvaluation</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418PUB_SealEvaluation6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Published message in POST_SET_EVENT for the analysis function <a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html#_m_i_e_s___analysis_functions___patch_seq_8ipf_1a2189360883b00dfe6bb85b0d2bab0a2d"><span class="std std-ref">PSQ_SealEvaluation()</span></a></p>
+<p>Keys under <code class="docutils literal notranslate"><span class="pre">/results</span></code> are labnotebook keys. The arrays under <code class="docutils literal notranslate"><span class="pre">/results/XXX/values</span></code> are the values for each sweep in the stimset cycle. This array has currently always one entry as <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1ad6b8e951067cc00d86ed3f9132f1f8f4"><span class="std std-ref">PSQ_SE_NUM_SWEEPS_PASS</span></a> is one. The encoding is UTF-8.</p>
+<p>Example:</p>
+<p><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;device&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my_device&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;headstage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;results&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;USER_Seal evaluation Set QC&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;On/Off&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">     </span><span class="mf">1.0</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">     </span><span class="p">},</span>
+<span class="w">     </span><span class="nt">&quot;USER_Seal evaluation seal resistance max&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">       </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Ω&quot;</span><span class="p">,</span>
+<span class="w">       </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">         </span><span class="mf">123.0</span>
+<span class="w">       </span><span class="p">]</span>
+<span class="w">     </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;sweep number&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NaN&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2022-02-22T12:27:07Z&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv432PUB_TrueRestingMembranePotential6string8variable8variable">
+<span id="_CPPv332PUB_TrueRestingMembranePotential6string8variable8variable"></span><span id="_CPPv232PUB_TrueRestingMembranePotential6string8variable8variable"></span><span id="PUB_TrueRestingMembranePotential__string.variable.variable"></span><span class="target" id="_m_i_e_s___publish_8ipf_1a0785eef8b47b3873e245d6650586e5c6"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PUB_TrueRestingMembranePotential</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv432PUB_TrueRestingMembranePotential6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Published message in POST_SET_EVENT for the analysis function <a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html#_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae328d818736913fb5ecbdfe1916aadda"><span class="std std-ref">PSQ_TrueRestingMembranePotential()</span></a></p>
+<p>Keys under <code class="docutils literal notranslate"><span class="pre">/results</span></code> are labnotebook keys. The arrays under <code class="docutils literal notranslate"><span class="pre">/results/XXX/values</span></code> are the values for each sweep in the stimset cycle. This array has currently always one entry as <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a8fe8e2b41b49b19d33ed1e3c37c79958"><span class="std std-ref">PSQ_VM_NUM_SWEEPS_PASS</span></a> is one. The encoding is UTF-8.</p>
+<p>Example:</p>
+<p><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;device&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my_device&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;headstage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;results&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;USER_True Rest Memb. Full Average&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Volt&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="mf">123.0</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;USER_True Rest Memb. Set QC&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;On/Off&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="mf">1.0</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;sweep number&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NaN&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2022-04-27T16:52:28Z&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419PUB_ClampModeChange6string8variable8variable8variable8variable8variable">
+<span id="_CPPv319PUB_ClampModeChange6string8variable8variable8variable8variable8variable"></span><span id="_CPPv219PUB_ClampModeChange6string8variable8variable8variable8variable8variable"></span><span id="PUB_ClampModeChange__string.variable.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___publish_8ipf_1a9982226b4529b5fd60761eebf296320e"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PUB_ClampModeChange</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">oldClampMode</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">newClampMode</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">saveEveryTPisChecked</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">saveEveryTPisDisabled</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419PUB_ClampModeChange6string8variable8variable8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Filter: <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1afa0a6575b585a1993096e0accdbe6091"><span class="std std-ref">AMPLIFIER_CLAMP_MODE_FILTER</span></a></p>
+<p>Example:</p>
+<p><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;clamp mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;new&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;V_CLAMP_MODE&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;old&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;I_CLAMP_MODE&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;device&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my_device&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;headstage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;save every TP&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;checked&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;disabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;sweep number&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NaN&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-10-04T00:52:17Z&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424PUB_PressureMethodChange6string8variable8variable8variable">
+<span id="_CPPv324PUB_PressureMethodChange6string8variable8variable8variable"></span><span id="_CPPv224PUB_PressureMethodChange6string8variable8variable8variable"></span><span id="PUB_PressureMethodChange__string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___publish_8ipf_1a7cae085fe20c0eafea3d71a9c55a654a"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PUB_PressureMethodChange</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">oldMethod</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">newMethod</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424PUB_PressureMethodChange6string8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Filter: <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a788a748870500c2f1b25a9f337d969a9"><span class="std std-ref">PRESSURE_STATE_FILTER</span></a></p>
+<p>Example:</p>
+<p><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;device&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my_device&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;headstage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;pressure method&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;new&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Approach&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;old&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Atmosphere&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;sweep number&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NaN&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2022-05-13T18:45:38Z&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423PUB_PressureSealedState6string8variable">
+<span id="_CPPv323PUB_PressureSealedState6string8variable"></span><span id="_CPPv223PUB_PressureSealedState6string8variable"></span><span id="PUB_PressureSealedState__string.variable"></span><span class="target" id="_m_i_e_s___publish_8ipf_1a2e0a61185544c50fe02ef604487fb287"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PUB_PressureSealedState</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423PUB_PressureSealedState6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Filter: <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a8a0334448197c60df68c552949314e1d"><span class="std std-ref">PRESSURE_SEALED_FILTER</span></a></p>
+<p>Example:</p>
+<p><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;device&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my_device&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;headstage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;sealed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;sweep number&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NaN&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2022-05-13T18:52:14Z&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419PUB_PressureBreakin6string8variable">
+<span id="_CPPv319PUB_PressureBreakin6string8variable"></span><span id="_CPPv219PUB_PressureBreakin6string8variable"></span><span id="PUB_PressureBreakin__string.variable"></span><span class="target" id="_m_i_e_s___publish_8ipf_1a70b52ac3d59f1b09392bf273efefff7c"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PUB_PressureBreakin</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419PUB_PressureBreakin6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Filter: <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a902a202f4caeeef960927f871e6b6079"><span class="std std-ref">PRESSURE_BREAKIN_FILTER</span></a></p>
+<p>Example:</p>
+<p><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;break in&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;device&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my_device&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;headstage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;sweep number&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NaN&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2022-05-13T18:58:04Z&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416PUB_AutoTPResult6string8variable8variable">
+<span id="_CPPv316PUB_AutoTPResult6string8variable8variable"></span><span id="_CPPv216PUB_AutoTPResult6string8variable8variable"></span><span id="PUB_AutoTPResult__string.variable.variable"></span><span class="target" id="_m_i_e_s___publish_8ipf_1acf1fb59143f9b2142c773038f9ff0ebc"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PUB_AutoTPResult</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">result</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416PUB_AutoTPResult6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Filter: <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1afab62eeb921f8fb91316e3167faea989"><span class="std std-ref">AUTO_TP_FILTER</span></a></p>
+<p>Example:</p>
+<p><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;device&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my_device&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;headstage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;results&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;QC&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;amplitude IC&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pA&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">456</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;amplitude VC&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mV&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">789</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;baseline&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;%&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">123</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;delta V&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mV&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;sweep number&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NaN&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2022-05-13T18:59:44Z&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418PUB_DAQStateChange6string8variable8variable8variable">
+<span id="_CPPv318PUB_DAQStateChange6string8variable8variable8variable"></span><span id="_CPPv218PUB_DAQStateChange6string8variable8variable8variable"></span><span id="PUB_DAQStateChange__string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___publish_8ipf_1aba3d9eeea47ad4b0d3894b0a425c29e8"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PUB_DAQStateChange</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mode</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">oldState</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">newState</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418PUB_DAQStateChange6string8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Filter: <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a99d06e7f06ebc4759a3b33042d16d43e"><span class="std std-ref">DAQ_TP_STATE_CHANGE_FILTER</span></a></p>
+<p>DAQ:</p>
+<p><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;daq&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;starting&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;device&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my_device&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;headstage&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NaN&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;sweep number&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NaN&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2022-05-16T17:12:24Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;tp&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+<p>TP:</p>
+<p><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;daq&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;device&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my_device&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;headstage&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NaN&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;sweep number&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NaN&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2022-05-16T17:12:29Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;tp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;stopping&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+<p>The strings for <code class="docutils literal notranslate"><span class="pre">daq</span></code>/<code class="docutils literal notranslate"><span class="pre">tp</span></code> are either <code class="docutils literal notranslate"><span class="pre">starting</span></code> or <code class="docutils literal notranslate"><span class="pre">stopping</span></code>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425PUB_AccessResistanceSmoke6string8variable8variable">
+<span id="_CPPv325PUB_AccessResistanceSmoke6string8variable8variable"></span><span id="_CPPv225PUB_AccessResistanceSmoke6string8variable8variable"></span><span id="PUB_AccessResistanceSmoke__string.variable.variable"></span><span class="target" id="_m_i_e_s___publish_8ipf_1a7caeca2d49b7cf7b6722beccd36af896"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PUB_AccessResistanceSmoke</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425PUB_AccessResistanceSmoke6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Published message in POST_SET_EVENT for the analysis function <a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html#_m_i_e_s___analysis_functions___patch_seq_8ipf_1a829fa3a41138ba78e8bf722a0159d0d5"><span class="std std-ref">PSQ_AccessResistanceSmoke()</span></a></p>
+<p>Keys under <code class="docutils literal notranslate"><span class="pre">/results</span></code> are labnotebook keys. The arrays under <code class="docutils literal notranslate"><span class="pre">/results/XXX/values</span></code> are the values for each sweep in the stimset cycle. This array has currently always one entry as <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a3e4d81cac9864f2f2fd2f8846cba0d1b"><span class="std std-ref">PSQ_AR_NUM_SWEEPS_PASS</span></a> is one. The encoding is UTF-8.</p>
+<p>Example:</p>
+<p><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;device&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my_device&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;headstage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;results&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;USER_Access Res. Smoke Set QC&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;On/Off&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="mf">1.0</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;USER_Access Res. Smoke access resistance&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Ω&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="mf">123.0</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;USER_Access Res. Smoke access resistance QC&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;On/Off&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="mf">0.0</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;USER_Access Res. Smoke access vs steady state ratio&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="mf">0.5</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;USER_Access Res. Smoke access vs steady state ratio QC&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;On/Off&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="mf">1.0</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;sweep number&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NaN&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2022-05-07T13:59:39Z&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420PUB_AddTPResultEntry8variable6string8variable6string">
+<span id="_CPPv320PUB_AddTPResultEntry8variable6string8variable6string"></span><span id="_CPPv220PUB_AddTPResultEntry8variable6string8variable6string"></span><span id="PUB_AddTPResultEntry__variable.string.variable.string"></span><span class="target" id="_m_i_e_s___publish_8ipf_1a43499eddbebb8a70bb4938fa29563b36"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PUB_AddTPResultEntry</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">unit</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420PUB_AddTPResultEntry8variable6string8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420PUB_AddValueWithUnit8variable6string8variable6string">
+<span id="_CPPv320PUB_AddValueWithUnit8variable6string8variable6string"></span><span id="_CPPv220PUB_AddValueWithUnit8variable6string8variable6string"></span><span id="PUB_AddValueWithUnit__variable.string.variable.string"></span><span class="target" id="_m_i_e_s___publish_8ipf_1ac05c747b993547b300d1d2f93e654ad5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PUB_AddValueWithUnit</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">unit</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420PUB_AddValueWithUnit8variable6string8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427PUB_AppendAmplifierSettings8variable6string8variable4wave">
+<span id="_CPPv327PUB_AppendAmplifierSettings8variable6string8variable4wave"></span><span id="_CPPv227PUB_AppendAmplifierSettings8variable6string8variable4wave"></span><span id="PUB_AppendAmplifierSettings__variable.string.variable.wave"></span><span class="target" id="_m_i_e_s___publish_8ipf_1a428a3a9c3c24848c648253c4b642728f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PUB_AppendAmplifierSettings</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">clampMode</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ampParamStorageSlice</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427PUB_AppendAmplifierSettings8variable6string8variable4wave" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412PUB_TPResult6string4wave4wave4wave">
+<span id="_CPPv312PUB_TPResult6string4wave4wave4wave"></span><span id="_CPPv212PUB_TPResult6string4wave4wave4wave"></span><span id="PUB_TPResult__string.wave.wave.wave"></span><span class="target" id="_m_i_e_s___publish_8ipf_1a77f5ba7b7c17e75e135f5101b71dc95d"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PUB_TPResult</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tpData</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ampParamStorageSlice</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">additionalData</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412PUB_TPResult6string4wave4wave4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Filter: <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a126d3cc15d3172e42b01a22c6f616d6a"><span class="std std-ref">ZMQ_FILTER_TPRESULT_NOW</span></a> Filter: <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1abb730e45a64f84f9909f370c3688545f"><span class="std std-ref">ZMQ_FILTER_TPRESULT_1S</span></a> Filter: <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a2b2c49343f37f6e80b35dfd351b4555b"><span class="std std-ref">ZMQ_FILTER_TPRESULT_5S</span></a> Filter: <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a6878ac5793b1a62bd3a9d9a23f93bdf4"><span class="std std-ref">ZMQ_FILTER_TPRESULT_10S</span></a> Filter: <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a339287648f9ccc97fb6ab6065c0e1bd7"><span class="std std-ref">ZMQ_FILTER_TPRESULT_NOW_WITH_DATA</span></a></p>
+<p>Example:</p>
+<p><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;amplifier&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;HoldingPotential&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mV&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">123</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;HoldingPotentialEnable&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;On/Off&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;baseline fraction&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;%&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">35</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;clamp amplitude&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mV&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;clamp mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;device&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;TestDevice&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;headstage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;pulse duration ADC&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;points&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">500</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;pulse duration DAC&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;points&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">600</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;pulse start point ADC&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;point&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">500</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;pulse start point DAC&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;point&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">600</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;sample interval ADC&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ms&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.002</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;sample interval DAC&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ms&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.002</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;s&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">3829047532.83</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;timestampUTC&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;s&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">3829040372.83</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;tp cycle id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">456</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;tp length ADC&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;points&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1500</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;tp length DAC&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;points&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1800</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;tp marker&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1234</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;results&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;average baseline steady state&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pA&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;average tp steady state&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pA&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;instantaneous&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pA&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">11</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;instantaneous resistance&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MΩ&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2345</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;steady state resistance&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MΩ&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1234</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>For I=0 clamp mode the amplifier JSON object will be empty.</p>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423PUB_CheckPublishingTime6string8variable">
+<span id="_CPPv323PUB_CheckPublishingTime6string8variable"></span><span id="_CPPv223PUB_CheckPublishingTime6string8variable"></span><span id="PUB_CheckPublishingTime__string.variable"></span><span class="target" id="_m_i_e_s___publish_8ipf_1a5a1cb1552ff894943f357584aa752a59"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PUB_CheckPublishingTime</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pubFilter</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">period</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423PUB_CheckPublishingTime6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Updates the publishing timestamp in the TUFXOP storage and returns 1 if an update is due (0 otherwise) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425PUB_ConfigurationFinished6string6string6string6string">
+<span id="_CPPv325PUB_ConfigurationFinished6string6string6string6string"></span><span id="_CPPv225PUB_ConfigurationFinished6string6string6string6string"></span><span id="PUB_ConfigurationFinished__string.string.string.string"></span><span class="target" id="_m_i_e_s___publish_8ipf_1afe871480ca74c84e8a1c35bc2891598c"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PUB_ConfigurationFinished</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">windowName</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">panelType</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fileName</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rigfileName</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425PUB_ConfigurationFinished6string6string6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Filter: <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a9deaf04533d0df8c318a287e950bd757"><span class="std std-ref">CONFIG_FINISHED_FILTER</span></a></p>
+<p>Example:</p>
+<p><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;device&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;fileName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fileA&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;headstage&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NaN&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;panelType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DataBrowser&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;rigFileName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fileB&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;sweep number&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NaN&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-25T15:06:19Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;window&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Databrowser&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426PUB_AmplifierSettingChange6string8variable8variable8variable8variable">
+<span id="_CPPv326PUB_AmplifierSettingChange6string8variable8variable8variable8variable"></span><span id="_CPPv226PUB_AmplifierSettingChange6string8variable8variable8variable8variable"></span><span id="PUB_AmplifierSettingChange__string.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___publish_8ipf_1a09725f30036822aba5c06417a6fb35cf"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PUB_AmplifierSettingChange</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mode</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">func</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426PUB_AmplifierSettingChange6string8variable8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Filter: <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1aa84cb7d9d01ab551fe07e41fc20d5e0c"><span class="std std-ref">AMPLIFIER_SET_VALUE</span></a></p>
+<p>The available names are listed in <a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html#_m_i_e_s___amplifier_interaction_8ipf_1adb2dd59b63a610f752ca96761ea95509"><span class="std std-ref">AI_MapFunctionConstantToName()</span></a>.</p>
+<p>Example:</p>
+<p><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;amplifier action&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;HoldingPotentialEnable&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;On/Off&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;clamp mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;V_CLAMP_MODE&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;device&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my_device&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;headstage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;sweep number&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NaN&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-03-25T16:42:21Z&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+<p>The parameter <code class="docutils literal notranslate"><span class="pre">value</span></code> requires MIES units (SI units with prefixes, so <code class="docutils literal notranslate"><span class="pre">mV</span></code> instead of <code class="docutils literal notranslate"><span class="pre">V</span></code>). </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419PUB_TPSettingChange6string8variable6string8variable6string">
+<span id="_CPPv319PUB_TPSettingChange6string8variable6string8variable6string"></span><span id="_CPPv219PUB_TPSettingChange6string8variable6string8variable6string"></span><span id="PUB_TPSettingChange__string.variable.string.variable.string"></span><span class="target" id="_m_i_e_s___publish_8ipf_1a48ca59cbf8b2dcf871317459d123d036"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PUB_TPSettingChange</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">unit</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419PUB_TPSettingChange6string8variable6string8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_Publish.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419PUB_GetJSONTemplate6string8variable"><code class="docutils literal notranslate"><span class="pre">PUB_GetJSONTemplate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411PUB_Publish8variable6string8variable10WaveOrNull"><code class="docutils literal notranslate"><span class="pre">PUB_Publish()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv431PUB_AddLabnotebookEntriesToJSON8variable4wave4wave8variable6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">PUB_AddLabnotebookEntriesToJSON()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421PUB_AutoBridgeBalance6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">PUB_AutoBridgeBalance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417PUB_PipetteInBath6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">PUB_PipetteInBath()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418PUB_SealEvaluation6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">PUB_SealEvaluation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv432PUB_TrueRestingMembranePotential6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">PUB_TrueRestingMembranePotential()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419PUB_ClampModeChange6string8variable8variable8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">PUB_ClampModeChange()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424PUB_PressureMethodChange6string8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">PUB_PressureMethodChange()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423PUB_PressureSealedState6string8variable"><code class="docutils literal notranslate"><span class="pre">PUB_PressureSealedState()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419PUB_PressureBreakin6string8variable"><code class="docutils literal notranslate"><span class="pre">PUB_PressureBreakin()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416PUB_AutoTPResult6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">PUB_AutoTPResult()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418PUB_DAQStateChange6string8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">PUB_DAQStateChange()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425PUB_AccessResistanceSmoke6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">PUB_AccessResistanceSmoke()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420PUB_AddTPResultEntry8variable6string8variable6string"><code class="docutils literal notranslate"><span class="pre">PUB_AddTPResultEntry()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420PUB_AddValueWithUnit8variable6string8variable6string"><code class="docutils literal notranslate"><span class="pre">PUB_AddValueWithUnit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427PUB_AppendAmplifierSettings8variable6string8variable4wave"><code class="docutils literal notranslate"><span class="pre">PUB_AppendAmplifierSettings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412PUB_TPResult6string4wave4wave4wave"><code class="docutils literal notranslate"><span class="pre">PUB_TPResult()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423PUB_CheckPublishingTime6string8variable"><code class="docutils literal notranslate"><span class="pre">PUB_CheckPublishingTime()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425PUB_ConfigurationFinished6string6string6string6string"><code class="docutils literal notranslate"><span class="pre">PUB_ConfigurationFinished()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426PUB_AmplifierSettingChange6string8variable8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">PUB_AmplifierSettingChange()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419PUB_TPSettingChange6string8variable6string8variable6string"><code class="docutils literal notranslate"><span class="pre">PUB_TPSettingChange()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html"
+                          title="previous chapter">File MIES_ProgrammaticGUIControl.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___pulse_averaging_8ipf.html"
+                          title="next chapter">File MIES_PulseAveraging.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___pulse_averaging_8ipf.html" title="File MIES_PulseAveraging.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html" title="File MIES_ProgrammaticGUIControl.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Publish.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File MIES_MiesUtilities_Sweep.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_MiesUtilities_System.ipf" href="_m_i_e_s___mies_utilities___system_8ipf.html" />
+    <link rel="prev" title="File MIES_MiesUtilities_Settings.ipf" href="_m_i_e_s___mies_utilities___settings_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___mies_utilities___system_8ipf.html" title="File MIES_MiesUtilities_System.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___mies_utilities___settings_8ipf.html" title="File MIES_MiesUtilities_Settings.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_MiesUtilities_Sweep.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-miesutilities-sweep-ipf">
+<span id="id1"></span><h1>File MIES_MiesUtilities_Sweep.ipf<a class="headerlink" href="#file-mies-miesutilities-sweep-ipf" title="Link to this heading">¶</a></h1>
+<p>This file holds MIES utility functions for working with sweeps. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427GetDAQDataSingleColumnWaves5dfref8variable">
+<span id="_CPPv327GetDAQDataSingleColumnWaves5dfref8variable"></span><span id="_CPPv227GetDAQDataSingleColumnWaves5dfref8variable"></span><span id="GetDAQDataSingleColumnWaves__dfref.variable"></span><span class="target" id="_m_i_e_s___mies_utilities___sweep_8ipf_1a2423aeb7e32f7d9af36e780b89bed3c4"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetDAQDataSingleColumnWaves</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepDFR</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427GetDAQDataSingleColumnWaves5dfref8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a wave reference wave with all single column waves of the given channel type. </p>
+<p>Holds invalid wave refs for non-existing entries.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_m_i_e_s___mies_utilities___sweep_8ipf_1ae97f5c6c84932611068e5e3b9445b20e"><span class="std std-ref">GetDAQDataSingleColumnWave()</span></a> or SplitSweepIntoComponents() </p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sweepDFR</strong> – datafolder reference with 1D sweep data </p></li>
+<li><p><strong>channelType</strong> – One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1XopChannelConstants"><span class="std std-ref">XopChannelConstants</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428GetDAQDataSingleColumnWaveNG4wave8WaveText8variable5dfref8variable8variable">
+<span id="_CPPv328GetDAQDataSingleColumnWaveNG4wave8WaveText8variable5dfref8variable8variable"></span><span id="_CPPv228GetDAQDataSingleColumnWaveNG4wave8WaveText8variable5dfref8variable8variable"></span><span id="GetDAQDataSingleColumnWaveNG__wave.WaveText.variable.dfref.variable.variable"></span><span class="target" id="_m_i_e_s___mies_utilities___sweep_8ipf_1ab7366b96f3b013046d37c643026e5d77"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetDAQDataSingleColumnWaveNG</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">textualValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepDFR</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">GUIchannelNumber</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428GetDAQDataSingleColumnWaveNG4wave8WaveText8variable5dfref8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a 1D sweep data wave previously created by SplitSweepIntoComponents() </p>
+<p>Returned wave reference can be null.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>numericalValues</strong> – numerical labnotebook </p></li>
+<li><p><strong>textualValues</strong> – textual labnotebook </p></li>
+<li><p><strong>sweepNo</strong> – sweep number </p></li>
+<li><p><strong>sweepDFR</strong> – datafolder holding 1D waves </p></li>
+<li><p><strong>channelType</strong> – One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1XopChannelConstants"><span class="std std-ref">XopChannelConstants</span></a></p></li>
+<li><p><strong>GUIchannelNumber</strong> – GUI channel number </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426GetDAQDataSingleColumnWave5dfref8variable8variable8variable8variable">
+<span id="_CPPv326GetDAQDataSingleColumnWave5dfref8variable8variable8variable8variable"></span><span id="_CPPv226GetDAQDataSingleColumnWave5dfref8variable8variable8variable8variable"></span><span id="GetDAQDataSingleColumnWave__dfref.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___mies_utilities___sweep_8ipf_1ae97f5c6c84932611068e5e3b9445b20e"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetDAQDataSingleColumnWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepDFR</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelNumber</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">splitTTLBits</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ttlBit</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426GetDAQDataSingleColumnWave5dfref8variable8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a 1D data wave previously created by SplitSweepIntoComponents() </p>
+<p>Returned wave reference can be invalid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sweepDFR</strong> – datafolder holding 1D waves </p></li>
+<li><p><strong>channelType</strong> – One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1XopChannelConstants"><span class="std std-ref">XopChannelConstants</span></a></p></li>
+<li><p><strong>channelNumber</strong> – hardware channel number </p></li>
+<li><p><strong>splitTTLBits</strong> – [optional, defaults to false] return a single bit of the TTL wave </p></li>
+<li><p><strong>ttlBit</strong> – [optional] number specifying the TTL bit </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418IsValidSweepNumber8variable">
+<span id="_CPPv318IsValidSweepNumber8variable"></span><span id="_CPPv218IsValidSweepNumber8variable"></span><span id="IsValidSweepNumber__variable"></span><span class="target" id="_m_i_e_s___mies_utilities___sweep_8ipf_1a977256070a5b6c9116f28d870c22b852"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsValidSweepNumber</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418IsValidSweepNumber8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Check if the given sweep number is valid. </p>
+<p>UTF_NOINSTRUMENTATION </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426ExtractOneDimDataFromSweep4wave4wave8variable">
+<span id="_CPPv326ExtractOneDimDataFromSweep4wave4wave8variable"></span><span id="_CPPv226ExtractOneDimDataFromSweep4wave4wave8variable"></span><span id="ExtractOneDimDataFromSweep__wave.wave.variable"></span><span class="target" id="_m_i_e_s___mies_utilities___sweep_8ipf_1aa1ea8b1ce92091ca4aaa3f914affe2cc"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExtractOneDimDataFromSweep</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">config</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweep</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426ExtractOneDimDataFromSweep4wave4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Extract an one dimensional wave from the given sweep/hardware data wave and column. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config</strong> – config wave </p></li>
+<li><p><strong>sweep</strong> – sweep wave or hardware data wave from all hardware types </p></li>
+<li><p><strong>index</strong> – index into <code class="docutils literal notranslate"><span class="pre">sweep</span></code>, can be queried with <a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html#_m_i_e_s___analysis_function_helpers_8ipf_1afdb01f0cee3f65ee2087486779a5b907"><span class="std std-ref">AFH_GetDAQDataColumn</span></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a reference to a free wave with the single channel data </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415CopySweepToWRef4wave4wave">
+<span id="_CPPv315CopySweepToWRef4wave4wave"></span><span id="_CPPv215CopySweepToWRef4wave4wave"></span><span id="CopySweepToWRef__wave.wave"></span><span class="target" id="_m_i_e_s___mies_utilities___sweep_8ipf_1a06bed053a0ff4f9c36fa419f03714d2e"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CopySweepToWRef</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweep</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">config</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415CopySweepToWRef4wave4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Creates a copy of the sweep data and returns it in wRef format. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420SplitAndUpgradeSweep4wave8variable4wave4wave8variable8variable5dfref8variable">
+<span id="_CPPv320SplitAndUpgradeSweep4wave8variable4wave4wave8variable8variable5dfref8variable"></span><span id="_CPPv220SplitAndUpgradeSweep4wave8variable4wave4wave8variable8variable5dfref8variable"></span><span id="SplitAndUpgradeSweep__wave.variable.wave.wave.variable.variable.dfref.variable"></span><span class="target" id="_m_i_e_s___mies_utilities___sweep_8ipf_1ab242a0f99f610bfcc0dcf49abc249434"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SplitAndUpgradeSweep</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweep</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepWave</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">configWave</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rescale</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">doUpgrade</span></span>, <span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">targetDFR</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">createBackup</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420SplitAndUpgradeSweep4wave8variable4wave4wave8variable8variable5dfref8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Split a sweep wave into one 1D-wave per channel/ttlBit and convert the sweep wave to the current text sweep format. Sweeps already in text format are not split (because that already part of their format). When attempted to split, already existing single channel waves are preserved. The old 2D sweep format is converted automatically to the current text sweep format. If targetDFR is a free DF then only splitting is done. The sweepWave can get invalid and must be reobtained after calling. See <a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html#_m_i_e_s___mies_utilities___getter_8ipf_1a856ff2cac3c10fff1b8e9e6e0ab341be"><span class="std std-ref">GetSweepWave</span></a> for detailed documentation of the sweep format. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>numericalValues</strong> – numerical labnotebook </p></li>
+<li><p><strong>sweep</strong> – sweep number </p></li>
+<li><p><strong>sweepWave</strong> – sweep wave, either old 2D numerical sweep wave, wave ref wave or text sweep wave </p></li>
+<li><p><strong>configWave</strong> – config wave </p></li>
+<li><p><strong>rescale</strong> – One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1TTLRescalingOptions"><span class="std std-ref">TTLRescalingOptions</span></a></p></li>
+<li><p><strong>doUpgrade</strong> – When this flag is set, then the sweep wave is upgraded to the latest format. When set, createBackup must be set and targetDFR must not be a free DF. </p></li>
+<li><p><strong>targetDFR</strong> – [optional, defaults to the sweep wave DFR] datafolder where to put the waves, can be a free datafolder </p></li>
+<li><p><strong>createBackup</strong> – [optional, defaults 1] flag to enable/disable backup creation of single channel sweep waves </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412GetParentDFR5dfref">
+<span id="_CPPv312GetParentDFR5dfref"></span><span id="_CPPv212GetParentDFR5dfref"></span><span id="GetParentDFR__dfref"></span><span class="target" id="_m_i_e_s___mies_utilities___sweep_8ipf_1a3bb90b8913e175442d814bae69ae5f40"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetParentDFR</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412GetParentDFR5dfref" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429AreAllSingleSweepWavesPresent5dfref8WaveText8variable">
+<span id="_CPPv329AreAllSingleSweepWavesPresent5dfref8WaveText8variable"></span><span id="_CPPv229AreAllSingleSweepWavesPresent5dfref8WaveText8variable"></span><span id="AreAllSingleSweepWavesPresent__dfref.WaveText.variable"></span><span class="target" id="_m_i_e_s___mies_utilities___sweep_8ipf_1aa22ee331885e9d02e07210c2c6fa89cd"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AreAllSingleSweepWavesPresent</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">targetDFR</span></span>, <a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">componentNames</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">backupMustExist</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429AreAllSingleSweepWavesPresent5dfref8WaveText8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414SplitSweepWave4wave8variable4wave4wave8variable5dfref8WaveText8variable">
+<span id="_CPPv314SplitSweepWave4wave8variable4wave4wave8variable5dfref8WaveText8variable"></span><span id="_CPPv214SplitSweepWave4wave8variable4wave4wave8variable5dfref8WaveText8variable"></span><span id="SplitSweepWave__wave.variable.wave.wave.variable.dfref.WaveText.variable"></span><span class="target" id="_m_i_e_s___mies_utilities___sweep_8ipf_1ac2d19cbf63191a56bf912b41a2318238"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SplitSweepWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweep</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepWave</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">configWave</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rescale</span></span>, <span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">targetDFR</span></span>, <a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">componentNames</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">createBackup</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414SplitSweepWave4wave8variable4wave4wave8variable5dfref8WaveText8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416UpgradeSweepWave4wave8WaveText5dfref">
+<span id="_CPPv316UpgradeSweepWave4wave8WaveText5dfref"></span><span id="_CPPv216UpgradeSweepWave4wave8WaveText5dfref"></span><span id="UpgradeSweepWave__wave.WaveText.dfref"></span><span class="target" id="_m_i_e_s___mies_utilities___sweep_8ipf_1a7eb3d7ccc46126b43ff7a414abbbb539"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpgradeSweepWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepWave</span></span>, <a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">componentNames</span></span>, <span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">targetDFR</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416UpgradeSweepWave4wave8WaveText5dfref" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426SplitTTLWaveIntoComponents4wave8variable5dfref6string8variable8variable">
+<span id="_CPPv326SplitTTLWaveIntoComponents4wave8variable5dfref6string8variable8variable"></span><span id="_CPPv226SplitTTLWaveIntoComponents4wave8variable5dfref6string8variable8variable"></span><span id="SplitTTLWaveIntoComponents__wave.variable.dfref.string.variable.variable"></span><span class="target" id="_m_i_e_s___mies_utilities___sweep_8ipf_1ace35b1fa92ca2a48195c05db54c2ef40"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SplitTTLWaveIntoComponents</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">data</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ttlBits</span></span>, <span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">targetDFR</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wavePrefix</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rescale</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">createBackup</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426SplitTTLWaveIntoComponents4wave8variable5dfref6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Split TTL data into a single wave for each bit. </p>
+<p>This function is only for data from ITC hardware.</p>
+<p>
+The created waves will be named <code class="docutils literal notranslate"><span class="pre">TTL_3_3</span></code> so the final suffix is the running TTL Bit. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – 1D channel data extracted by <a class="reference internal" href="#_m_i_e_s___mies_utilities___sweep_8ipf_1aa1ea8b1ce92091ca4aaa3f914affe2cc"><span class="std std-ref">ExtractOneDimDataFromSweep</span></a></p></li>
+<li><p><strong>ttlBits</strong> – bit mask of the active TTL channels form e.g. <a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html#_m_i_e_s___mies_utilities___channels_8ipf_1a0a7cd0c9a074dfdcd5583cf4c540ac53"><span class="std std-ref">GetTTLBits</span></a></p></li>
+<li><p><strong>targetDFR</strong> – datafolder where to put the waves, can be a free datafolder </p></li>
+<li><p><strong>wavePrefix</strong> – prefix of the created wave names </p></li>
+<li><p><strong>rescale</strong> – One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1TTLRescalingOptions"><span class="std std-ref">TTLRescalingOptions</span></a>. Rescales the data to be in the range [0, 1] when on, does no rescaling when off. </p></li>
+<li><p><strong>createBackup</strong> – when set then backups are created</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419ResolveSweepChannel8WaveText8variable8variable">
+<span id="_CPPv319ResolveSweepChannel8WaveText8variable8variable"></span><span id="_CPPv219ResolveSweepChannel8WaveText8variable8variable"></span><span id="ResolveSweepChannel__WaveText.variable.variable"></span><span class="target" id="_m_i_e_s___mies_utilities___sweep_8ipf_1a27fd2b0f625bc83bac7b4b871431890a"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ResolveSweepChannel</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">sweepWave</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">allowFail</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419ResolveSweepChannel8WaveText8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Resolves a single channel of a text sweep wave and returns a reference to it. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sweepWave</strong> – text sweep wave </p></li>
+<li><p><strong>index</strong> – index of the channel </p></li>
+<li><p><strong>allowFail</strong> – [optional: default = 0] when set a null wave ref is returned if the channel could not be resolved, e.g. through a missing single channel wave. On default the function checks for a valid wave and asserts if none was found. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421SplitTextSweepElement6string">
+<span id="_CPPv321SplitTextSweepElement6string"></span><span id="_CPPv221SplitTextSweepElement6string"></span><span id="SplitTextSweepElement__string"></span><span class="target" id="_m_i_e_s___mies_utilities___sweep_8ipf_1af42c68c895d2b5518a1d5cec93e154f2"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SplitTextSweepElement</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">element</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421SplitTextSweepElement6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Splits a text sweep wave element into the DF and wave name part. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425GetSweepComponentWaveName4wave8variable">
+<span id="_CPPv325GetSweepComponentWaveName4wave8variable"></span><span id="_CPPv225GetSweepComponentWaveName4wave8variable"></span><span id="GetSweepComponentWaveName__wave.variable"></span><span class="target" id="_m_i_e_s___mies_utilities___sweep_8ipf_1a384e7ca85db72e0b1b3489800eabe2c3"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSweepComponentWaveName</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">config</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelIndex</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425GetSweepComponentWaveName4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns a wave name for a single channel sweep wave. The wave name is based on the channel type and channel number and is built from the XOP_CHANNEL_NAMES in the form DA_0, DA_1, AD_0, AD_1, TTL_0 and so on. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config</strong> – config wave </p></li>
+<li><p><strong>channelIndex</strong> – index in config wave </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>string with a constructed wave name </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423UpdateLeftOverSweepTime6string8variable">
+<span id="_CPPv323UpdateLeftOverSweepTime6string8variable"></span><span id="_CPPv223UpdateLeftOverSweepTime6string8variable"></span><span id="UpdateLeftOverSweepTime__string.variable"></span><span class="target" id="_m_i_e_s___mies_utilities___sweep_8ipf_1a8f7f7f86d07bc83ff9fd349c3d1c4e0a"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateLeftOverSweepTime</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fifoPos</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423UpdateLeftOverSweepTime6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Update the repurposed sweep time global variable. </p>
+<p>Currently only useful for handling mid sweep analysis functions. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417LeftOverSweepTime6string8variable">
+<span id="_CPPv317LeftOverSweepTime6string8variable"></span><span id="_CPPv217LeftOverSweepTime6string8variable"></span><span id="LeftOverSweepTime__string.variable"></span><span class="target" id="_m_i_e_s___mies_utilities___sweep_8ipf_1ae06873284f770cf3e40c5997a9da1401"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LeftOverSweepTime</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fifoPos</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417LeftOverSweepTime6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416IsValidSweepWave10WaveOrNull">
+<span id="_CPPv316IsValidSweepWave10WaveOrNull"></span><span id="_CPPv216IsValidSweepWave10WaveOrNull"></span><span id="IsValidSweepWave__WaveOrNull"></span><span class="target" id="_m_i_e_s___mies_utilities___sweep_8ipf_1a372f75cfc872a1dea2f3de590c998c6c"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsValidSweepWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweep</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416IsValidSweepWave10WaveOrNull" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Check if the given wave is a valid DAQDataWave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418GetTotalOnsetDelay4wave8variable">
+<span id="_CPPv318GetTotalOnsetDelay4wave8variable"></span><span id="_CPPv218GetTotalOnsetDelay4wave8variable"></span><span id="GetTotalOnsetDelay__wave.variable"></span><span class="target" id="_m_i_e_s___mies_utilities___sweep_8ipf_1a3d9a7dac997770aae6869bfb40ec9bb2"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetTotalOnsetDelay</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418GetTotalOnsetDelay4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the total onset delay of the given sweep from the labnotebook. </p>
+<p>UTF_NOINSTRUMENTATION </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426SplitAndUpgradeSweepGlobal6string8variable">
+<span id="_CPPv326SplitAndUpgradeSweepGlobal6string8variable"></span><span id="_CPPv226SplitAndUpgradeSweepGlobal6string8variable"></span><span id="SplitAndUpgradeSweepGlobal__string.variable"></span><span class="target" id="_m_i_e_s___mies_utilities___sweep_8ipf_1ae5d348de923f0f22a9672f88de19c1b7"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SplitAndUpgradeSweepGlobal</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426SplitAndUpgradeSweepGlobal6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418TextSweepToWaveRef4wave">
+<span id="_CPPv318TextSweepToWaveRef4wave"></span><span id="_CPPv218TextSweepToWaveRef4wave"></span><span id="TextSweepToWaveRef__wave"></span><span class="target" id="_m_i_e_s___mies_utilities___sweep_8ipf_1a1897920d45bd3caa1fc298793d74b161"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TextSweepToWaveRef</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepWave</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418TextSweepToWaveRef4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Converts a text sweep wave to a free waveRef sweep wave. The waveRef sweep wave contains references to the channels from the text sweep wave, that are local or global waves. See also <a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html#_m_i_e_s___mies_utilities___getter_8ipf_1a856ff2cac3c10fff1b8e9e6e0ab341be"><span class="std std-ref">GetSweepWave</span></a> docu on “intermediate sweep format”. Generally waveRef waves are easier to handle. It is currently used for NWB saving where the sweep channel data needs to be available in a preemptive thread. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418ExtractSweepNumber6string">
+<span id="_CPPv318ExtractSweepNumber6string"></span><span id="_CPPv218ExtractSweepNumber6string"></span><span id="ExtractSweepNumber__string"></span><span class="target" id="_m_i_e_s___mies_utilities___sweep_8ipf_1aaa6e9a758c888e73a8b0a54adb95d51d"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExtractSweepNumber</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418ExtractSweepNumber6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Extract the sweep number from a <code class="docutils literal notranslate"><span class="pre">$something_*</span></code> string. </p>
+</dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_MiesUtilities_Sweep.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427GetDAQDataSingleColumnWaves5dfref8variable"><code class="docutils literal notranslate"><span class="pre">GetDAQDataSingleColumnWaves()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428GetDAQDataSingleColumnWaveNG4wave8WaveText8variable5dfref8variable8variable"><code class="docutils literal notranslate"><span class="pre">GetDAQDataSingleColumnWaveNG()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426GetDAQDataSingleColumnWave5dfref8variable8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">GetDAQDataSingleColumnWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418IsValidSweepNumber8variable"><code class="docutils literal notranslate"><span class="pre">IsValidSweepNumber()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426ExtractOneDimDataFromSweep4wave4wave8variable"><code class="docutils literal notranslate"><span class="pre">ExtractOneDimDataFromSweep()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415CopySweepToWRef4wave4wave"><code class="docutils literal notranslate"><span class="pre">CopySweepToWRef()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420SplitAndUpgradeSweep4wave8variable4wave4wave8variable8variable5dfref8variable"><code class="docutils literal notranslate"><span class="pre">SplitAndUpgradeSweep()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412GetParentDFR5dfref"><code class="docutils literal notranslate"><span class="pre">GetParentDFR()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429AreAllSingleSweepWavesPresent5dfref8WaveText8variable"><code class="docutils literal notranslate"><span class="pre">AreAllSingleSweepWavesPresent()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414SplitSweepWave4wave8variable4wave4wave8variable5dfref8WaveText8variable"><code class="docutils literal notranslate"><span class="pre">SplitSweepWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416UpgradeSweepWave4wave8WaveText5dfref"><code class="docutils literal notranslate"><span class="pre">UpgradeSweepWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426SplitTTLWaveIntoComponents4wave8variable5dfref6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">SplitTTLWaveIntoComponents()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419ResolveSweepChannel8WaveText8variable8variable"><code class="docutils literal notranslate"><span class="pre">ResolveSweepChannel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421SplitTextSweepElement6string"><code class="docutils literal notranslate"><span class="pre">SplitTextSweepElement()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425GetSweepComponentWaveName4wave8variable"><code class="docutils literal notranslate"><span class="pre">GetSweepComponentWaveName()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423UpdateLeftOverSweepTime6string8variable"><code class="docutils literal notranslate"><span class="pre">UpdateLeftOverSweepTime()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417LeftOverSweepTime6string8variable"><code class="docutils literal notranslate"><span class="pre">LeftOverSweepTime()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416IsValidSweepWave10WaveOrNull"><code class="docutils literal notranslate"><span class="pre">IsValidSweepWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418GetTotalOnsetDelay4wave8variable"><code class="docutils literal notranslate"><span class="pre">GetTotalOnsetDelay()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426SplitAndUpgradeSweepGlobal6string8variable"><code class="docutils literal notranslate"><span class="pre">SplitAndUpgradeSweepGlobal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418TextSweepToWaveRef4wave"><code class="docutils literal notranslate"><span class="pre">TextSweepToWaveRef()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418ExtractSweepNumber6string"><code class="docutils literal notranslate"><span class="pre">ExtractSweepNumber()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___mies_utilities___settings_8ipf.html"
+                          title="previous chapter">File MIES_MiesUtilities_Settings.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___mies_utilities___system_8ipf.html"
+                          title="next chapter">File MIES_MiesUtilities_System.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___mies_utilities___system_8ipf.html" title="File MIES_MiesUtilities_System.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___mies_utilities___settings_8ipf.html" title="File MIES_MiesUtilities_Settings.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_MiesUtilities_Sweep.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

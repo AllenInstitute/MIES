@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File MIES_Utilities_Algorithm.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_Utilities_Checks.ipf" href="_m_i_e_s___utilities___checks_8ipf.html" />
+    <link rel="prev" title="File MIES_TraceUserData.ipf" href="_m_i_e_s___trace_user_data_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___utilities___checks_8ipf.html" title="File MIES_Utilities_Checks.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___trace_user_data_8ipf.html" title="File MIES_TraceUserData.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Utilities_Algorithm.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-utilities-algorithm-ipf">
+<span id="id1"></span><h1>File MIES_Utilities_Algorithm.ipf<a class="headerlink" href="#file-mies-utilities-algorithm-ipf" title="Link to this heading">¶</a></h1>
+<p>utility functions for common algorithms </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410Downsample10WaveOrNull8variable8variable8variable6string">
+<span id="_CPPv310Downsample10WaveOrNull8variable8variable8variable6string"></span><span id="_CPPv210Downsample10WaveOrNull8variable8variable8variable6string"></span><span id="Downsample__WaveOrNull.variable.variable.variable.string"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1a019d128090aed62b5148deb9bed6ae47"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Downsample</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">downsampleFactor</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">upsampleFactor</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mode</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">winFunction</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410Downsample10WaveOrNull8variable8variable8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Downsample data. </p>
+<p>Downsampling is performed on each <strong>column</strong> of the input wave. Edge-points of the output wave are by default set to zero. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wv</strong> – numeric wave, its row must hold more points than downsampleFactor. Will hold the downsampled data on successfull return, in the error case the contents are undetermined </p></li>
+<li><p><strong>downsampleFactor</strong> – positive non-zero integer by which the wave should be downsampled </p></li>
+<li><p><strong>upsampleFactor</strong> – positive non-zero integer by which the wave should be upsampled </p></li>
+<li><p><strong>mode</strong> – decimation mode, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a1ee8a4102c964233d6d0192107aebef3"><span class="std std-ref">DECIMATION_BY_OMISSION</span></a>, <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1afffe1d488f67b1765483d00c72c25c93"><span class="std std-ref">DECIMATION_BY_AVERAGING</span></a> or <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1adf9a695780e5efd7419a364e587dfd50"><span class="std std-ref">DECIMATION_BY_SMOOTHING</span></a>. </p></li>
+<li><p><strong>winFunction</strong> – Windowing function for <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1adf9a695780e5efd7419a364e587dfd50"><span class="std std-ref">DECIMATION_BY_SMOOTHING</span></a> mode, must be one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a7389dbfcdba89996a2be82aee4461761"><span class="std std-ref">FFT_WINF</span></a>. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>One on error, zero otherwise </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418CalculateLCMOfWave4wave">
+<span id="_CPPv318CalculateLCMOfWave4wave"></span><span id="_CPPv218CalculateLCMOfWave4wave"></span><span id="CalculateLCMOfWave__wave"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1a66fb0b2993942a21c9f896c25ea7c6b6"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CalculateLCMOfWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418CalculateLCMOfWave4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Compute the least common multiplier of all entries in the 1D-wave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416GetUniqueEntries4wave8variable8variable">
+<span id="_CPPv316GetUniqueEntries4wave8variable8variable"></span><span id="_CPPv216GetUniqueEntries4wave8variable8variable"></span><span id="GetUniqueEntries__wave.variable.variable"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1a544c8b85d77db1a0087a3ca95ccc32b1"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetUniqueEntries</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">caseSensitive</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dontDuplicate</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416GetUniqueEntries4wave8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns an unsorted free wave with all unique entries from wv If dontDuplicate is set, then for a single element input wave no new free wave is created but the input wave is returned. </p>
+<p>uses built-in igor function FindDuplicates. Entries are deleted from left to right.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wv</strong> – wave reference, can be numeric or text </p></li>
+<li><p><strong>caseSensitive</strong> – [optional, default = 1] Indicates whether comparison should be case sensitive. Applies only if the input wave is a text wave </p></li>
+<li><p><strong>dontDuplicate</strong> – [optional, default = 0] for a single element input wave no new free wave is created but the input wave is returned. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428GetUniqueTextEntriesFromList6string6string8variable">
+<span id="_CPPv328GetUniqueTextEntriesFromList6string6string8variable"></span><span id="_CPPv228GetUniqueTextEntriesFromList6string6string8variable"></span><span id="GetUniqueTextEntriesFromList__string.string.variable"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1a7fbd71708aed336a2098df4dee3b4216"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetUniqueTextEntriesFromList</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sep</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">caseSensitive</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Convenience wrapper around <a class="reference internal" href="#_m_i_e_s___utilities___algorithm_8ipf_1a3bd3112b6e0e17a3a5319e54b0c023dc"><span class="std std-ref">GetUniqueTextEntries()</span></a> for string lists. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420GetUniqueTextEntries8WaveText8variable8variable">
+<span id="_CPPv320GetUniqueTextEntries8WaveText8variable8variable"></span><span id="_CPPv220GetUniqueTextEntries8WaveText8variable8variable"></span><span id="GetUniqueTextEntries__WaveText.variable.variable"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1a3bd3112b6e0e17a3a5319e54b0c023dc"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetUniqueTextEntries</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">caseSensitive</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dontDuplicate</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420GetUniqueTextEntries8WaveText8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Search and Remove Duplicates from Text Wave wv. </p>
+<p>Duplicates are removed from left to right</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wv</strong> – text wave reference </p></li>
+<li><p><strong>caseSensitive</strong> – [optional, default = 1] Indicates whether comparison should be case sensitive. </p></li>
+<li><p><strong>dontDuplicate</strong> – [optional, default = 0] for a single element input wave no new free wave is created but the input wave is returned.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>free wave with unique entries </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428CALL_FUNCTION_LIST_PROTOTYPE6string">
+<span id="_CPPv328CALL_FUNCTION_LIST_PROTOTYPE6string"></span><span id="_CPPv228CALL_FUNCTION_LIST_PROTOTYPE6string"></span><span id="CALL_FUNCTION_LIST_PROTOTYPE__string"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1a59794f4f5f3cf0f754d941f854d77f72"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CALL_FUNCTION_LIST_PROTOTYPE</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428CALL_FUNCTION_LIST_PROTOTYPE6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Function prototype for use with <a class="reference internal" href="#_m_i_e_s___utilities___algorithm_8ipf_1aefe8f907f5edf027358cf523fdc256cb"><span class="std std-ref">CallFunctionForEachListItem</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv431CALL_FUNCTION_LIST_PROTOTYPE_TS6string">
+<span id="_CPPv331CALL_FUNCTION_LIST_PROTOTYPE_TS6string"></span><span id="_CPPv231CALL_FUNCTION_LIST_PROTOTYPE_TS6string"></span><span id="CALL_FUNCTION_LIST_PROTOTYPE_TS__string"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1ad824e5c76479e02af3927a969c28df2e"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CALL_FUNCTION_LIST_PROTOTYPE_TS</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431CALL_FUNCTION_LIST_PROTOTYPE_TS6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Function prototype for use with <a class="reference internal" href="#_m_i_e_s___utilities___algorithm_8ipf_1aefe8f907f5edf027358cf523fdc256cb"><span class="std std-ref">CallFunctionForEachListItem</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427CallFunctionForEachListItem28CALL_FUNCTION_LIST_PROTOTYPE6string6string">
+<span id="_CPPv327CallFunctionForEachListItem28CALL_FUNCTION_LIST_PROTOTYPE6string6string"></span><span id="_CPPv227CallFunctionForEachListItem28CALL_FUNCTION_LIST_PROTOTYPE6string6string"></span><span id="CallFunctionForEachListItem__CALL_FUNCTION_LIST_PROTOTYPE.string.string"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1aefe8f907f5edf027358cf523fdc256cb"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CallFunctionForEachListItem</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv428CALL_FUNCTION_LIST_PROTOTYPE6string" title="CALL_FUNCTION_LIST_PROTOTYPE"><span class="n"><span class="pre">CALL_FUNCTION_LIST_PROTOTYPE</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">func</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sep</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427CallFunctionForEachListItem28CALL_FUNCTION_LIST_PROTOTYPE6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Convenience function to call the function f with each list item. </p>
+<p>The function’s type must be <a class="reference internal" href="#_m_i_e_s___utilities___algorithm_8ipf_1a59794f4f5f3cf0f754d941f854d77f72"><span class="std std-ref">CALL_FUNCTION_LIST_PROTOTYPE</span></a> where the return type is ignored. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430CallFunctionForEachListItem_TS31CALL_FUNCTION_LIST_PROTOTYPE_TS6string6string">
+<span id="_CPPv330CallFunctionForEachListItem_TS31CALL_FUNCTION_LIST_PROTOTYPE_TS6string6string"></span><span id="_CPPv230CallFunctionForEachListItem_TS31CALL_FUNCTION_LIST_PROTOTYPE_TS6string6string"></span><span id="CallFunctionForEachListItem_TS__CALL_FUNCTION_LIST_PROTOTYPE_TS.string.string"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1a2cc0ff578653022b55b9dda24e50d6f8"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CallFunctionForEachListItem_TS</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv431CALL_FUNCTION_LIST_PROTOTYPE_TS6string" title="CALL_FUNCTION_LIST_PROTOTYPE_TS"><span class="n"><span class="pre">CALL_FUNCTION_LIST_PROTOTYPE_TS</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">func</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sep</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430CallFunctionForEachListItem_TS31CALL_FUNCTION_LIST_PROTOTYPE_TS6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Compatibility wrapper for threadsafe functions <code class="docutils literal notranslate"><span class="pre">f</span></code></p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_m_i_e_s___utilities___algorithm_8ipf_1aefe8f907f5edf027358cf523fdc256cb"><span class="std std-ref">CallFunctionForEachListItem()</span></a></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411GetRowIndex4wave8variable6string10WaveOrNull8variable8variable">
+<span id="_CPPv311GetRowIndex4wave8variable6string10WaveOrNull8variable8variable"></span><span id="_CPPv211GetRowIndex4wave8variable6string10WaveOrNull8variable8variable"></span><span id="GetRowIndex__wave.variable.string.WaveOrNull.variable.variable"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1a975ed180c7c251f1957c6b71c5924413"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetRowIndex</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">refWave</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">reverseSearch</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">textOp</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411GetRowIndex4wave8variable6string10WaveOrNull8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the row index of the given value, string converted to a variable, or wv. </p>
+<p>Assumes wv being one dimensional and does not use any tolerance for numerical values. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417GetListDifference6string6string8variable">
+<span id="_CPPv317GetListDifference6string6string8variable"></span><span id="_CPPv217GetListDifference6string6string8variable"></span><span id="GetListDifference__string.string.variable"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1ab20e9f80fa537c00b312a7e43bb57944"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetListDifference</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list1</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list2</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">caseSensitive</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417GetListDifference6string6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>calculates the relative complement of list2 in list1 </p>
+<p>Every list item of <code class="docutils literal notranslate"><span class="pre">list2</span></code> must be in <code class="docutils literal notranslate"><span class="pre">list1</span></code>.</p>
+<p>also called the set-theoretic difference of list1 and list2 </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>difference as list </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420InPlaceRandomShuffle4wave8variable">
+<span id="_CPPv320InPlaceRandomShuffle4wave8variable"></span><span id="_CPPv220InPlaceRandomShuffle4wave8variable"></span><span id="InPlaceRandomShuffle__wave.variable"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1aacbb6f5908d389cd22e3e0570bcb51c8"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InPlaceRandomShuffle</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">inwave</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">noiseGenMode</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420InPlaceRandomShuffle4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Random shuffle of the wave contents. </p>
+<p>Function was taken from: <a class="reference external" href="http://www.igorexchange.com/node/1614">http://www.igorexchange.com/node/1614</a> author s.r.chinn</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inwave</strong> – The wave that will have its rows shuffled. </p></li>
+<li><p><strong>noiseGenMode</strong> – [optional, defaults to <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a4535a5dfbff952798b2a0322ee285c7b"><span class="std std-ref">NOISE_GEN_XOSHIRO</span></a>] type of RNG to use </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419ExtractFromSubrange6string8variable">
+<span id="_CPPv319ExtractFromSubrange6string8variable"></span><span id="_CPPv219ExtractFromSubrange6string8variable"></span><span id="ExtractFromSubrange__string.variable"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1aae1a5a8e49a9dc0486a91bc515923794"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExtractFromSubrange</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">listOfRanges</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419ExtractFromSubrange6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Extract the values of a list of subrange specifications See also DisplayHelpTopic “Subrange Display”. </p>
+<p>Example invocations:</p>
+<p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kt">WAVE</span><span class="w"> </span>ranges<span class="w"> </span>=<span class="w"> </span>ExtractFromSubrange(<span class="s">&quot;[3,4]_[*]_[1, *;4]_[]_[5][]&quot;</span>, 0)
+</pre></div>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>listOfRanges</strong> – list of subrange specifications separated by <strong>_</strong></p></li>
+<li><p><strong>dim</strong> – dimension to extract</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>2-dim wave with the start, stop, step as columns and rows as number of elements. Returns -1 instead of <code class="docutils literal notranslate"><span class="pre">*</span></code> or <code class="docutils literal notranslate"><span class="pre">(empty)</span></code>. An invalid wave reference is returned on parsing errors. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411GetSetUnion4wave4wave">
+<span id="_CPPv311GetSetUnion4wave4wave"></span><span id="_CPPv211GetSetUnion4wave4wave"></span><span id="GetSetUnion__wave.wave"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1a26fae6af9b355505ee7d981df13cc3d8"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSetUnion</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wave1</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wave2</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411GetSetUnion4wave4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a wave of the union of all entries from both waves with duplicates removed. </p>
+<p>Given {1, 2, 10} and {2, 5, 11} this will return {1, 2, 5, 10, 11}. The order of the returned entries is not defined. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416GetSetDifference4wave4wave8variable">
+<span id="_CPPv316GetSetDifference4wave4wave8variable"></span><span id="_CPPv216GetSetDifference4wave4wave8variable"></span><span id="GetSetDifference__wave.wave.variable"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1a3debb07175abf60d4eb498fc8e29e576"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSetDifference</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wave1</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wave2</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">getIndices</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416GetSetDifference4wave4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a wave were all elements which are in both wave1 and wave2 have been removed from wave1. </p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>   The text comparison is case insensitive.
+   wave1 must be 1d, the returned wave is 1d.
+   Waves can be text or numeric, both waves must have the same type
+</pre></div>
+</div>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_m_i_e_s___utilities___algorithm_8ipf_1ab20e9f80fa537c00b312a7e43bb57944"><span class="std std-ref">GetListDifference</span></a> for string lists</p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wave1</strong> – first wave </p></li>
+<li><p><strong>wave2</strong> – second wave </p></li>
+<li><p><strong>getIndices</strong> – [optional, default 0] when this flag is set instead of the values the indices in wave1 are returned</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Wave with partial values from wave1 or numeric wave with indices of elements in wave1 </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423GetSetDifferenceNumeric4wave4wave8variable">
+<span id="_CPPv323GetSetDifferenceNumeric4wave4wave8variable"></span><span id="_CPPv223GetSetDifferenceNumeric4wave4wave8variable"></span><span id="GetSetDifferenceNumeric__wave.wave.variable"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1af512051ac26f4b639242b7c6ada64e00"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">WAVE</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSetDifferenceNumeric</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wave1</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wave2</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">getIndices</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423GetSetDifferenceNumeric4wave4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420GetSetDifferenceText8WaveText8WaveText8variable">
+<span id="_CPPv320GetSetDifferenceText8WaveText8WaveText8variable"></span><span id="_CPPv220GetSetDifferenceText8WaveText8WaveText8variable"></span><span id="GetSetDifferenceText__WaveText.WaveText.variable"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1a6d88232156d23810d302629b58ef7530"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">WAVE</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSetDifferenceText</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">wave1</span></span>, <a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">wave2</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">getIndices</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420GetSetDifferenceText8WaveText8WaveText8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418GetSetIntersection4wave4wave8variable">
+<span id="_CPPv318GetSetIntersection4wave4wave8variable"></span><span id="_CPPv218GetSetIntersection4wave4wave8variable"></span><span id="GetSetIntersection__wave.wave.variable"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1aee9b270dc2a97025fd044ab7fb6f254b"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSetIntersection</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wave1</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wave2</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">getIndices</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418GetSetIntersection4wave4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a wave with the set theory style intersection of wave1 and wave2. </p>
+<p>Given {1, 2, 4, 10} and {2, 5, 11} this will return {2}. Given {10, 2, 4, 2, 1} and {11, 5, 2} with getIndices = 1 this will return {1, 3}.</p>
+<p>Inspired by <a class="reference external" href="http://www.igorexchange.com/node/366">http://www.igorexchange.com/node/366</a> but adapted to modern Igor Pro It does work with text waves as well, there it performs case sensitive comparisons</p>
+<p>For wave1 and wave2 numerical and text waves are allowed, wave1 and wave2 must have the same type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wave1</strong> – first wave </p></li>
+<li><p><strong>wave2</strong> – second wave </p></li>
+<li><p><strong>getIndices</strong> – [optional, default 0] when this flag is set then the index positions of the intersecting elements in the first wave are returned. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>free wave with the set intersection or an null wave reference if the intersection is an empty set </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415FindLevelSingle4wave8variable8variable8variable8variable">
+<span id="_CPPv315FindLevelSingle4wave8variable8variable8variable8variable"></span><span id="_CPPv215FindLevelSingle4wave8variable8variable8variable8variable"></span><span id="FindLevelSingle__wave.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1aac7c0cb089450af25a276f3ed0a64b57"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FindLevelSingle</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">data</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">level</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">edge</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">first</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">last</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415FindLevelSingle4wave8variable8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414FindLevelsMult4wave8variable8variable8variable8variable8variable">
+<span id="_CPPv314FindLevelsMult4wave8variable8variable8variable8variable8variable"></span><span id="_CPPv214FindLevelsMult4wave8variable8variable8variable8variable8variable"></span><span id="FindLevelsMult__wave.variable.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1a2e5ee1541b370e177976897293950130"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FindLevelsMult</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">data</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">level</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">edge</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">first</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">last</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">maxNumLevels</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414FindLevelsMult4wave8variable8variable8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416FindLevelWrapper4wave8variable8variable8variable8variable">
+<span id="_CPPv316FindLevelWrapper4wave8variable8variable8variable8variable"></span><span id="_CPPv216FindLevelWrapper4wave8variable8variable8variable8variable"></span><span id="FindLevelWrapper__wave.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1a54f09c2954eb482a46ca7e67fcb7c8d3"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FindLevelWrapper</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">data</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">level</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">edge</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mode</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">maxNumLevels</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416FindLevelWrapper4wave8variable8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>FindLevel wrapper which handles 2D data without copying data. </p>
+<p>
+The returned levels are in the wave’s row units.</p>
+<p>FINDLEVEL_MODE_SINGLE:<ul class="simple">
+<li><p>Return a 1D wave with as many rows as columns in the input data</p></li>
+<li><p>Contents are the x values of the first level or NaN if none could be found</p></li>
+</ul>
+</p>
+<p>FINDLEVEL_MODE_MULTI:<ul class="simple">
+<li><p>Returns a 2D WAVE rows being the number of columns in the input data and columns holding all found x values of the levels per data column.</p></li>
+</ul>
+</p>
+<p>In both cases the dimension label of the each column holds the number of found levels in each data colum. This will be always 1 for FINDLEVEL_MODE_SINGLE. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – input data, can be either 1D or 2D </p></li>
+<li><p><strong>level</strong> – level to search </p></li>
+<li><p><strong>edge</strong> – type of the edge, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1FindLevelEdgeTypes"><span class="std std-ref">FindLevelEdgeTypes</span></a></p></li>
+<li><p><strong>mode</strong> – mode, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1FindLevelModes"><span class="std std-ref">FindLevelModes</span></a></p></li>
+<li><p><strong>maxNumLevels</strong> – [optional, defaults to number of points/rows] maximum number of levels to find</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv48GrepWave8WaveText6string">
+<span id="_CPPv38GrepWave8WaveText6string"></span><span id="_CPPv28GrepWave8WaveText6string"></span><span id="GrepWave__WaveText.string"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1af6a899d70f18cd28cb676272d800a653"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GrepWave</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">regex</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv48GrepWave8WaveText6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Wrapper for <code class="docutils literal notranslate"><span class="pre">Grep</span></code> which uses a textwave for input and ouput. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412GrepTextWave8WaveText6string8variable">
+<span id="_CPPv312GrepTextWave8WaveText6string8variable"></span><span id="_CPPv212GrepTextWave8WaveText6string8variable"></span><span id="GrepTextWave__WaveText.string.variable"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1ae885184983697f47f03ba4d1b0556816"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GrepTextWave</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">in</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">regexp</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">invert</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412GrepTextWave8WaveText6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Grep the given regular expression in the text wave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418DistributeElements8variable8variable">
+<span id="_CPPv318DistributeElements8variable8variable"></span><span id="_CPPv218DistributeElements8variable8variable"></span><span id="DistributeElements__variable.variable"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1ada822a7759aaf66ff507627194e01db0"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">WaveDouble</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">WaveDouble</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DistributeElements</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numElements</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">offset</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418DistributeElements8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Distribute N elements over a range from 0.0 to 1.0 with spacing. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419CalculateNiceLength8variable8variable">
+<span id="_CPPv319CalculateNiceLength8variable8variable"></span><span id="_CPPv219CalculateNiceLength8variable8variable"></span><span id="CalculateNiceLength__variable.variable"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1a33482d53e749234ed89d20a46ed8e5b8"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CalculateNiceLength</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">range</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">multiple</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419CalculateNiceLength8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Calculate a nice length which is an integer number of <code class="docutils literal notranslate"><span class="pre">multiple</span></code> long. </p>
+<p>For small values <span class="math notranslate nohighlight">\( 10^{-x} \)</span> times <code class="docutils literal notranslate"><span class="pre">multiple</span></code> are returned </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416BinarySearchText8WaveText6string8variable8variable8variable">
+<span id="_CPPv316BinarySearchText8WaveText6string8variable8variable8variable"></span><span id="_CPPv216BinarySearchText8WaveText6string8variable8variable8variable"></span><span id="BinarySearchText__WaveText.string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1a18af836005f34e1a9a9255d4c1801c52"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BinarySearchText</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">theWave</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">theText</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">caseSensitive</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">startPos</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">endPos</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416BinarySearchText8WaveText6string8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Finds the first occurrence of a text within a range of points in a SORTED text wave. </p>
+<p>From <a class="reference external" href="https://www.wavemetrics.com/code-snippet/binary-search-pre-sorted-text-waves">https://www.wavemetrics.com/code-snippet/binary-search-pre-sorted-text-waves</a> by Jamie Boyd Completely reworked, fixed and removed unused features </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415DoPowerSpectrum4wave4wave8variable">
+<span id="_CPPv315DoPowerSpectrum4wave4wave8variable"></span><span id="_CPPv215DoPowerSpectrum4wave4wave8variable"></span><span id="DoPowerSpectrum__wave.wave.variable"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1a167dce47f455f2c0119e797e6355d0f3"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DoPowerSpectrum</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">input</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">output</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">col</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415DoPowerSpectrum4wave4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Calculate PowerSpectrum on a per column basis on each input[][col] and write the result into output[][col]. The result is capped to the output rows. No window function is applied. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427ShortenWaveForFFTIfRequired4wave">
+<span id="_CPPv327ShortenWaveForFFTIfRequired4wave"></span><span id="_CPPv227ShortenWaveForFFTIfRequired4wave"></span><span id="ShortenWaveForFFTIfRequired__wave"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1a413a38b6cfb4e99c18e0d85aa30a75e5"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ShortenWaveForFFTIfRequired</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">input</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427ShortenWaveForFFTIfRequired4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Cut off some trailing points from the wave to allow fast FFT. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv45DoFFT4wave6string8variable">
+<span id="_CPPv35DoFFT4wave6string8variable"></span><span id="_CPPv25DoFFT4wave6string8variable"></span><span id="DoFFT__wave.string.variable"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1a1371ea51b9ad1891b941f9f1239999e9"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DoFFT</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">input</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">winFunc</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">padSize</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv45DoFFT4wave6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Perform FFT on input with optionally given window function. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input</strong> – Wave to perform FFT on </p></li>
+<li><p><strong>winFunc</strong> – [optional, defaults to NONE] FFT window function </p></li>
+<li><p><strong>padSize</strong> – [optional, defaults to the next power of 2 of the input wave row size] Target size used for padding </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421CompressNumericalList6string6string">
+<span id="_CPPv321CompressNumericalList6string6string"></span><span id="_CPPv221CompressNumericalList6string6string"></span><span id="CompressNumericalList__string.string"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1ae5b176c9fedf242505536fb709b0d1c5"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CompressNumericalList</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sepChar</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421CompressNumericalList6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Convert a numerical integer list seperated by sepChar to a list including a range sign (“-”) e. g. 1,2,3,4 -&gt; 1-4 1,2,4,5,6 -&gt; 1-2,4-6 1,1,1,2 -&gt; 1-2 the input list does not have to be sorted. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418SplitLogDataBySize8WaveText6string8variable8variable8variable">
+<span id="_CPPv318SplitLogDataBySize8WaveText6string8variable8variable8variable"></span><span id="_CPPv218SplitLogDataBySize8WaveText6string8variable8variable8variable"></span><span id="SplitLogDataBySize__WaveText.string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1a620e917a6bbdfcc8af8da6edfc9b994a"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SplitLogDataBySize</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">logData</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sep</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lim</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lastIndex</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">firstPartSize</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418SplitLogDataBySize8WaveText6string8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Splits a text wave (with e.g. log entries) into parts. The parts are limited by a size in bytes such that each part contains only complete lines and is smaller than the given size limit. A possible separator for line endings is considered in the size calculation. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>logData</strong> – text wave </p></li>
+<li><p><strong>sep</strong> – separator string that is considered in the length calculation. This is useful if the resulting waves are later converted to strings with TextWaveToList, where the size grows by lines * separatorLength. </p></li>
+<li><p><strong>lim</strong> – size limit for each part in bytes </p></li>
+<li><p><strong>lastIndex</strong> – [optional, default DimSize(logData, ROWS) - 1] When set, only elements in logData from index 0 to lastIndex are considered. lastIndex is included. lastIndex is limited between 0 and DimSize(logData, ROWS) - 1. </p></li>
+<li><p><strong>firstPartSize</strong> – [optional, default lim] When set then the first parts size limit is firstPartSize instead of lim </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>wave reference wave containing text waves that are consecutive and sequential parts of logdata </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414SortKeyAndData4wave4wave">
+<span id="_CPPv314SortKeyAndData4wave4wave"></span><span id="_CPPv214SortKeyAndData4wave4wave"></span><span id="SortKeyAndData__wave.wave"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1a91d25110b50c6109dbe39d007ae6eab6"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">WAVE</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">WAVE</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SortKeyAndData</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">data</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414SortKeyAndData4wave4wave" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422MergeSortStableInplace4wave8variable">
+<span id="_CPPv322MergeSortStableInplace4wave8variable"></span><span id="_CPPv222MergeSortStableInplace4wave8variable"></span><span id="MergeSortStableInplace__wave.variable"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1aa24fb5a95df9d3e66e99df5f31a1732c"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MergeSortStableInplace</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">col</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422MergeSortStableInplace4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Sort the given wave in ascending order Passing in a 2D wave also to sort all columns according to <code class="docutils literal notranslate"><span class="pre">col</span></code></p>
+<p>Straight from wikipedia, top-down implementation, <a class="reference external" href="https://en.wikipedia.org/wiki/Merge_sort">https://en.wikipedia.org/wiki/Merge_sort</a> with the addition of <code class="docutils literal notranslate"><span class="pre">col</span></code></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417TopDownSplitMerge4wave8variable8variable4wave8variable">
+<span id="_CPPv317TopDownSplitMerge4wave8variable8variable4wave8variable"></span><span id="_CPPv217TopDownSplitMerge4wave8variable8variable4wave8variable"></span><span id="TopDownSplitMerge__wave.variable.variable.wave.variable"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1a8ae35f9c98bb5d997edbb4be4101fc29"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TopDownSplitMerge</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">B</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">iBegin</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">iEnd</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">col</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417TopDownSplitMerge4wave8variable8variable4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412TopDownMerge4wave8variable8variable8variable4wave8variable">
+<span id="_CPPv312TopDownMerge4wave8variable8variable8variable4wave8variable"></span><span id="_CPPv212TopDownMerge4wave8variable8variable8variable4wave8variable"></span><span id="TopDownMerge__wave.variable.variable.variable.wave.variable"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1ab8c89ede520ab52a6a134553912ccb13"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TopDownMerge</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">B</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">iBegin</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">iMiddle</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">iEnd</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">col</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412TopDownMerge4wave8variable8variable8variable4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426FindSequenceReverseWrapper4wave4wave">
+<span id="_CPPv326FindSequenceReverseWrapper4wave4wave"></span><span id="_CPPv226FindSequenceReverseWrapper4wave4wave"></span><span id="FindSequenceReverseWrapper__wave.wave"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1a3fff5fcef404ad29f1101cc5d0fd15b9"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FindSequenceReverseWrapper</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sequence</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">source</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426FindSequenceReverseWrapper4wave4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the index of the last sequence in source. </p>
+<p><dl>
+<dt class="sig sig-object cpp">
+<a class="reference internal" href="../todo.html#todo_1_todo000025"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<dd><p>helper function for FindSequence/R breakage in IP9, see #6435 </p>
+</dd></dl>
+
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415GetPrimeFactors8variable">
+<span id="_CPPv315GetPrimeFactors8variable"></span><span id="_CPPv215GetPrimeFactors8variable"></span><span id="GetPrimeFactors__variable"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1a4b39d31471f3fac3a93484a4d715c00b"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetPrimeFactors</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">num</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415GetPrimeFactors8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return all prime factors from num as free wave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419FFTHelperSeriesImpl8variable8variable8variable">
+<span id="_CPPv319FFTHelperSeriesImpl8variable8variable8variable"></span><span id="_CPPv219FFTHelperSeriesImpl8variable8variable8variable"></span><span id="FFTHelperSeriesImpl__variable.variable.variable"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1a5bae747ecdca89ea8296c669c624f299"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FFTHelperSeriesImpl</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">a</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419FFTHelperSeriesImpl8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421FFTHelperSilverSeries8variable">
+<span id="_CPPv321FFTHelperSilverSeries8variable"></span><span id="_CPPv221FFTHelperSilverSeries8variable"></span><span id="FFTHelperSilverSeries__variable"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1a78474513550f651f0ee69cea948cd349"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FFTHelperSilverSeries</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421FFTHelperSilverSeries8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419FFTHelperGoldSeries8variable">
+<span id="_CPPv319FFTHelperGoldSeries8variable"></span><span id="_CPPv219FFTHelperGoldSeries8variable"></span><span id="FFTHelperGoldSeries__variable"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1afedcffa1ebd737424855c0a19656b356"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FFTHelperGoldSeries</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419FFTHelperGoldSeries8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415GetGoodFFTSizesv">
+<span id="_CPPv315GetGoodFFTSizesv"></span><span id="_CPPv215GetGoodFFTSizesv"></span><span id="GetGoodFFTSizes"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1a0e0163b3d5b45c49cc63a1aea710e295"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetGoodFFTSizes</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415GetGoodFFTSizesv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv422FFT_PRIME_FACTOR_LIMIT">
+<span id="_CPPv322FFT_PRIME_FACTOR_LIMIT"></span><span id="_CPPv222FFT_PRIME_FACTOR_LIMIT"></span><span id="FFT_PRIME_FACTOR_LIMIT__doubleC"></span><span class="target" id="_m_i_e_s___utilities___algorithm_8ipf_1a7376d88ca4941b18e9d586dc076a9b37"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FFT_PRIME_FACTOR_LIMIT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">30</span></span><a class="headerlink" href="#_CPPv422FFT_PRIME_FACTOR_LIMIT" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_Utilities_Algorithm.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv410Downsample10WaveOrNull8variable8variable8variable6string"><code class="docutils literal notranslate"><span class="pre">Downsample()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418CalculateLCMOfWave4wave"><code class="docutils literal notranslate"><span class="pre">CalculateLCMOfWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416GetUniqueEntries4wave8variable8variable"><code class="docutils literal notranslate"><span class="pre">GetUniqueEntries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428GetUniqueTextEntriesFromList6string6string8variable"><code class="docutils literal notranslate"><span class="pre">GetUniqueTextEntriesFromList()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420GetUniqueTextEntries8WaveText8variable8variable"><code class="docutils literal notranslate"><span class="pre">GetUniqueTextEntries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428CALL_FUNCTION_LIST_PROTOTYPE6string"><code class="docutils literal notranslate"><span class="pre">CALL_FUNCTION_LIST_PROTOTYPE()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv431CALL_FUNCTION_LIST_PROTOTYPE_TS6string"><code class="docutils literal notranslate"><span class="pre">CALL_FUNCTION_LIST_PROTOTYPE_TS()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427CallFunctionForEachListItem28CALL_FUNCTION_LIST_PROTOTYPE6string6string"><code class="docutils literal notranslate"><span class="pre">CallFunctionForEachListItem()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430CallFunctionForEachListItem_TS31CALL_FUNCTION_LIST_PROTOTYPE_TS6string6string"><code class="docutils literal notranslate"><span class="pre">CallFunctionForEachListItem_TS()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411GetRowIndex4wave8variable6string10WaveOrNull8variable8variable"><code class="docutils literal notranslate"><span class="pre">GetRowIndex()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417GetListDifference6string6string8variable"><code class="docutils literal notranslate"><span class="pre">GetListDifference()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420InPlaceRandomShuffle4wave8variable"><code class="docutils literal notranslate"><span class="pre">InPlaceRandomShuffle()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419ExtractFromSubrange6string8variable"><code class="docutils literal notranslate"><span class="pre">ExtractFromSubrange()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411GetSetUnion4wave4wave"><code class="docutils literal notranslate"><span class="pre">GetSetUnion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416GetSetDifference4wave4wave8variable"><code class="docutils literal notranslate"><span class="pre">GetSetDifference()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423GetSetDifferenceNumeric4wave4wave8variable"><code class="docutils literal notranslate"><span class="pre">GetSetDifferenceNumeric()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420GetSetDifferenceText8WaveText8WaveText8variable"><code class="docutils literal notranslate"><span class="pre">GetSetDifferenceText()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418GetSetIntersection4wave4wave8variable"><code class="docutils literal notranslate"><span class="pre">GetSetIntersection()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415FindLevelSingle4wave8variable8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">FindLevelSingle()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414FindLevelsMult4wave8variable8variable8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">FindLevelsMult()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416FindLevelWrapper4wave8variable8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">FindLevelWrapper()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv48GrepWave8WaveText6string"><code class="docutils literal notranslate"><span class="pre">GrepWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412GrepTextWave8WaveText6string8variable"><code class="docutils literal notranslate"><span class="pre">GrepTextWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418DistributeElements8variable8variable"><code class="docutils literal notranslate"><span class="pre">DistributeElements()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419CalculateNiceLength8variable8variable"><code class="docutils literal notranslate"><span class="pre">CalculateNiceLength()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416BinarySearchText8WaveText6string8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">BinarySearchText()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415DoPowerSpectrum4wave4wave8variable"><code class="docutils literal notranslate"><span class="pre">DoPowerSpectrum()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427ShortenWaveForFFTIfRequired4wave"><code class="docutils literal notranslate"><span class="pre">ShortenWaveForFFTIfRequired()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv45DoFFT4wave6string8variable"><code class="docutils literal notranslate"><span class="pre">DoFFT()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421CompressNumericalList6string6string"><code class="docutils literal notranslate"><span class="pre">CompressNumericalList()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418SplitLogDataBySize8WaveText6string8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">SplitLogDataBySize()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414SortKeyAndData4wave4wave"><code class="docutils literal notranslate"><span class="pre">SortKeyAndData()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422MergeSortStableInplace4wave8variable"><code class="docutils literal notranslate"><span class="pre">MergeSortStableInplace()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417TopDownSplitMerge4wave8variable8variable4wave8variable"><code class="docutils literal notranslate"><span class="pre">TopDownSplitMerge()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412TopDownMerge4wave8variable8variable8variable4wave8variable"><code class="docutils literal notranslate"><span class="pre">TopDownMerge()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426FindSequenceReverseWrapper4wave4wave"><code class="docutils literal notranslate"><span class="pre">FindSequenceReverseWrapper()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415GetPrimeFactors8variable"><code class="docutils literal notranslate"><span class="pre">GetPrimeFactors()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419FFTHelperSeriesImpl8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">FFTHelperSeriesImpl()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421FFTHelperSilverSeries8variable"><code class="docutils literal notranslate"><span class="pre">FFTHelperSilverSeries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419FFTHelperGoldSeries8variable"><code class="docutils literal notranslate"><span class="pre">FFTHelperGoldSeries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415GetGoodFFTSizesv"><code class="docutils literal notranslate"><span class="pre">GetGoodFFTSizes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422FFT_PRIME_FACTOR_LIMIT"><code class="docutils literal notranslate"><span class="pre">FFT_PRIME_FACTOR_LIMIT</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___trace_user_data_8ipf.html"
+                          title="previous chapter">File MIES_TraceUserData.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___utilities___checks_8ipf.html"
+                          title="next chapter">File MIES_Utilities_Checks.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___utilities___checks_8ipf.html" title="File MIES_Utilities_Checks.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___trace_user_data_8ipf.html" title="File MIES_TraceUserData.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Utilities_Algorithm.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

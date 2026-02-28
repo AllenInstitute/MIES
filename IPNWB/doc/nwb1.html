@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>NWB version 1 &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="NWB version 2" href="nwb2.html" />
+    <link rel="prev" title="Igor Pro module for reading and writing NeurodataWithoutBorder files" href="../Readme.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="nwb2.html" title="NWB version 2"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../Readme.html" title="Igor Pro module for reading and writing NeurodataWithoutBorder files"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Readme.html" accesskey="U">Igor Pro module for reading and writing NeurodataWithoutBorder files</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">NWB version 1</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="nwb-version-1">
+<h1>NWB version 1<a class="headerlink" href="#nwb-version-1" title="Link to this heading">¶</a></h1>
+<p>The <a class="reference external" href="NWB105FO">File Organization (version 1.0.5)</a> is loosely described in the
+archived repository for the <a class="reference external" href="NWB1Github">NWBv1 schema specification</a></p>
+<p>The following tree describes the NWB layout version 1</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1">#  specifications:</span>
+<span class="c1">#  - version : 1.0.5 beta</span>
+<span class="c1">#    url : https://htmlpreview.github.io/?https://raw.githubusercontent.com/NeurodataWithoutBorders/specification_nwbn_1_0_x/master/version_1.0.5_beta/nwb_file_format_specification_1.0.5_beta.html#File_organization</span>
+
+<span class="nt">acquisition</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">timeseries</span><span class="p">:</span><span class="w"> </span><span class="c1"># empty if no acquired data is saved</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">data_XXXXX_ADY</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">stimulus_description </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">name of the stimset</span><span class="w"> </span><span class="c1"># custom entry</span>
+<span class="w">      </span><span class="nt">data                 </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1D dataset with attributes unit, conversion and resolution</span>
+<span class="w">      </span><span class="nt">electrode_name       </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Name of the electrode headstage, more info in /general/intracellular_ephys/electrode_name</span>
+<span class="w">      </span><span class="nt">gain                 </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scaling factor</span>
+<span class="w">      </span><span class="nt">num_samples          </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Number of rows in data</span>
+<span class="w">      </span><span class="nt">starting_time        </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">relative to /session_start_time with attributes rate and unit</span>
+
+<span class="w">      </span><span class="c1"># For Voltage Clamp (Missing entries are mentioned in missing_fields):</span>
+<span class="w">      </span><span class="nt">capacitance_fast </span><span class="p">:</span>
+<span class="w">      </span><span class="nt">capacitance_slow </span><span class="p">:</span>
+<span class="w">      </span><span class="nt">resistance_comp_bandwidth </span><span class="p">:</span>
+<span class="w">      </span><span class="nt">resistance_comp_correction </span><span class="p">:</span>
+<span class="w">      </span><span class="nt">resistance_comp_prediction </span><span class="p">:</span>
+<span class="w">      </span><span class="nt">whole_cell_capacitance_comp </span><span class="p">:</span>
+<span class="w">      </span><span class="nt">whole_cell_series_resistance_comp </span><span class="p">:</span>
+
+<span class="w">      </span><span class="c1"># For Current Clamp (Missing entries are mentioned in missing_fields):</span>
+<span class="w">      </span><span class="nt">bias_current </span><span class="p">:</span>
+<span class="w">      </span><span class="nt">bridge_balance </span><span class="p">:</span>
+<span class="w">      </span><span class="nt">capacitance_compensation </span><span class="p">:</span>
+
+<span class="w">      </span><span class="nt">description    </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Unused</span>
+<span class="w">      </span><span class="nt">source         </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Human readable description of the source of the data</span>
+<span class="w">      </span><span class="nt">comment        </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">User comment for the sweep</span>
+<span class="w">      </span><span class="nt">missing_fields </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Entries missing for voltage clamp/current clamp data</span>
+<span class="w">      </span><span class="nt">ancestry       </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Class hierarchy defined by NWB spec, important members are</span>
+<span class="w">                       </span><span class="l l-Scalar l-Scalar-Plain">CurrentClampSeries, IZeroClampSeries and VoltageClampSeries</span>
+<span class="w">      </span><span class="nt">neurodata_type </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TimeSeries</span>
+
+<span class="nt">stimulus</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">presentation</span><span class="p">:</span><span class="w"> </span><span class="c1"># empty if no acquired data is saved</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">data_XXXXX_DAY</span><span class="p">:</span><span class="w"> </span><span class="c1"># DA data as sent to the neuron, including delays, scaling, initial TP, etc.</span>
+<span class="w">      </span><span class="nt">data           </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1D dataset</span>
+<span class="w">      </span><span class="nt">electrode_name </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Name of the electrode headstage, more info in /general/intracellular_ephys/electrode_name</span>
+<span class="w">      </span><span class="nt">gain           </span><span class="p">:</span>
+<span class="w">      </span><span class="nt">num_samples    </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Number of rows in data</span>
+<span class="w">      </span><span class="nt">starting_time  </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">relative to /session_start_time with attributes rate and unit</span>
+<span class="w">      </span><span class="nt">description    </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Unused</span>
+<span class="w">      </span><span class="nt">source         </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Human readable description of the source of the data</span>
+<span class="w">      </span><span class="nt">ancestry       </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Class hierarchy defined by NWB spec, important members are</span>
+<span class="w">                       </span><span class="l l-Scalar l-Scalar-Plain">CurrentClampStimulusSeries and VoltageClampStimulusSeries</span>
+<span class="w">      </span><span class="nt">neurodata_type </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TimeSeries</span>
+<span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unused</span>
+
+<span class="nt">general</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">file_create_date    </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text array with UTC modification timestamps</span>
+<span class="w">  </span><span class="nt">identifier          </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SHA256 hash, ensured to be unique</span>
+<span class="w">  </span><span class="nt">nwb_version         </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NWB specification version</span>
+<span class="w">  </span><span class="nt">session_description </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unused</span>
+<span class="w">  </span><span class="nt">session_start_time  </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ISO8601 timestamp in UTC timezone with sub-second precision defining when the recording session started</span>
+<span class="w">  </span><span class="nt">generated_by</span><span class="p">:</span><span class="w"> </span><span class="c1"># custom entry</span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">Nx2 text data array describing the system which created the data. First column is the key, second the value.</span>
+<span class="w">  </span><span class="nt">history</span><span class="p">:</span><span class="w"> </span><span class="c1"># custom entry</span>
+<span class="w">           </span><span class="l l-Scalar l-Scalar-Plain">Full Igor Pro history since measurement start (useful for debugging)</span>
+
+<span class="w">  </span><span class="c1"># The following attributes are only available if explicitly set by the user:</span>
+<span class="w">  </span><span class="nt">data_collection </span><span class="p">:</span>
+<span class="w">  </span><span class="nt">experiment_description </span><span class="p">:</span>
+<span class="w">  </span><span class="nt">experimenter </span><span class="p">:</span>
+<span class="w">  </span><span class="nt">institution </span><span class="p">:</span>
+<span class="w">  </span><span class="nt">lab </span><span class="p">:</span>
+<span class="w">  </span><span class="nt">notes </span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pharmacology </span><span class="p">:</span>
+<span class="w">  </span><span class="nt">protocol </span><span class="p">:</span>
+<span class="w">  </span><span class="nt">related_publications </span><span class="p">:</span>
+<span class="w">  </span><span class="nt">session_id </span><span class="p">:</span>
+<span class="w">  </span><span class="nt">slices </span><span class="p">:</span>
+<span class="w">  </span><span class="nt">stimulus </span><span class="p">:</span>
+<span class="w">  </span><span class="nt">age </span><span class="p">:</span>
+<span class="w">  </span><span class="nt">description </span><span class="p">:</span>
+<span class="w">  </span><span class="nt">genotype </span><span class="p">:</span>
+<span class="w">  </span><span class="nt">sex </span><span class="p">:</span>
+<span class="w">  </span><span class="nt">species </span><span class="p">:</span>
+<span class="w">  </span><span class="nt">subject_id </span><span class="p">:</span>
+<span class="w">  </span><span class="nt">weight </span><span class="p">:</span>
+<span class="w">  </span><span class="nt">surgery </span><span class="p">:</span>
+<span class="w">  </span><span class="nt">virus </span><span class="p">:</span>
+
+<span class="w">  </span><span class="nt">devices</span><span class="p">:</span><span class="w"> </span><span class="c1"># empty if no acquired data is saved</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">device_XXX</span><span class="p">:</span><span class="w"> </span><span class="c1"># Name of the DA_ephys device, something like &quot;Harvard Bioscience ITC 18USB&quot;</span>
+<span class="w">      </span><span class="nt">intracellular_ephys</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">electrode_XXX</span><span class="p">:</span><span class="w"> </span><span class="c1"># XXX can be set by the user via writing into GetCellElectrodeNames()</span>
+<span class="w">        </span><span class="nt">description </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Holds the description of the electrode, something like &quot;Headstage 1&quot;.</span>
+<span class="w">        </span><span class="nt">device      </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Device used to record the data</span>
+<span class="w">  </span><span class="nt">labnotebook</span><span class="p">:</span><span class="w"> </span><span class="c1"># custom entry</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">XXXX</span><span class="p">:</span><span class="w"> </span><span class="c1"># Name of the device</span>
+<span class="w">      </span><span class="nt">numericalKeys   </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Numerical labnotebook</span>
+<span class="w">      </span><span class="nt">numericalValues </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Keys for numerical labnotebook</span>
+<span class="w">      </span><span class="nt">textualKeys     </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Keys for textual labnotebook</span>
+<span class="w">      </span><span class="nt">textualValues   </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Textual labnotebook</span>
+<span class="w">  </span><span class="nt">testpulse</span><span class="p">:</span><span class="w"> </span><span class="c1"># custom entry</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">XXXX</span><span class="p">:</span><span class="w"> </span><span class="c1"># Name of the device</span>
+<span class="w">      </span><span class="nt">TPStorage/TPStorage_X</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">testpulse property waves</span>
+<span class="w">      </span><span class="nt">StoredTestPulses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Raw testpulses as 1D datasets</span>
+<span class="w">  </span><span class="nt">user_comment</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">XXXX</span><span class="p">:</span><span class="w"> </span><span class="c1"># Name of the device</span>
+<span class="w">      </span><span class="nt">userComment</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">All user comments from this session</span>
+<span class="w">  </span><span class="nt">stimsets</span><span class="p">:</span><span class="w"> </span><span class="c1"># custom entry</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">XXXXXX_[DA/TTL]_Y_[SegWvType/WP/WPT]</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">The Wavebuilder parameter waves. These waves will not be available for</span>
+<span class="w">                                          </span><span class="l l-Scalar l-Scalar-Plain">&quot;third party stimsets&quot; created outside of MIES.</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">XXXXXX_[DA/TTL]_Y</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Name of the stimset, referenced from</span>
+<span class="w">                       </span><span class="l l-Scalar l-Scalar-Plain">stimulus_description if acquired data is present. Only present if</span>
+<span class="w">                       </span><span class="l l-Scalar l-Scalar-Plain">not all parameter waves could be found.</span>
+<span class="w">    </span><span class="nt">referenced</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">All referenced custom waves are stored here in a file-system like group-structure.</span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">/general/stimsets/referenced/ relates to root in the igor Experiment.</span>
+<span class="w">  </span><span class="nt">epochs</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unused</span>
+</pre></div>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../grouplist.html">Group list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../Readme.html#main-features">Main features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Readme.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Readme.html#examples">Examples</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../Readme.html#nwb-file-format-description">NWB file format description</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../Readme.html#nwb-file-organization">NWB File Organization</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">NWB version 1</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nwb2.html">NWB version 2</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../Readme.html#nwb-schema-upgrade">NWB schema upgrade</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Readme.html#online-resources">Online Resources</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="../Readme.html"
+                          title="previous chapter">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="nwb2.html"
+                          title="next chapter">NWB version 2</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="nwb2.html" title="NWB version 2"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../Readme.html" title="Igor Pro module for reading and writing NeurodataWithoutBorder files"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Readme.html" >Igor Pro module for reading and writing NeurodataWithoutBorder files</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">NWB version 1</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

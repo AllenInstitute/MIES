@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Analysis function parameters &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="SweepFormula PSC/PSP classification" href="SweepFormula_PSX.html" />
+    <link rel="prev" title="Labnotebook descriptions" href="labnotebook-descriptions.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="SweepFormula_PSX.html" title="SweepFormula PSC/PSP classification"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="labnotebook-descriptions.html" title="Labnotebook descriptions"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="user.html" accesskey="U">User documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Analysis function parameters</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="analysis-function-parameters">
+<h1>Analysis function parameters<a class="headerlink" href="#analysis-function-parameters" title="Link to this heading">¶</a></h1>
+<span id="table-analysis-function-parameters"></span><table class="docutils align-default" id="id1">
+<caption><span class="caption-text">All parameters of the stock analysis functions</span><a class="headerlink" href="#id1" title="Link to this table">¶</a></caption>
+<colgroup>
+<col style="width: 16.7%" />
+<col style="width: 4.2%" />
+<col style="width: 4.2%" />
+<col style="width: 25.0%" />
+<col style="width: 50.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Optionality</p></th>
+<th class="head"><p>Used by</p></th>
+<th class="head"><p>Help</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>AbsFrequencyMinDistance</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>DA</p></td>
+<td><p>AdaptiveSupra: Minimum absolute frequency distance for DAScale estimation.</p></td>
+</tr>
+<tr class="row-odd"><td><p>AbsoluteVoltageDiff</p></td>
+<td><p>variable</p></td>
+<td><p>required</p></td>
+<td><p>VM</p></td>
+<td><dl class="simple">
+<dt>Maximum absolute allowed difference of the baseline membrane potentials [mV].</dt><dd><p>Set to <cite>inf</cite> to disable this check.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="row-even"><td><p>AmpBesselFilter</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>CR</p></td>
+<td><dl class="simple">
+<dt>Applies a bessel filter to the primary output.</dt><dd><p>Defaults to 10e3 [Hz],pass “100000” to select “Bypass”.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="row-odd"><td><p>AmpBesselFilterRestore</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>CR</p></td>
+<td><p>Restores the previously active bessel filter in POST_SET_EVENT. Defaults to ON.</p></td>
+</tr>
+<tr class="row-even"><td><p>AsyncQCChannels</p></td>
+<td><p>wave</p></td>
+<td><p>required</p></td>
+<td><p>AR, CR, DA, PB, RA, RB, SE, SP, VM</p></td>
+<td><p>List of asynchronous channels with alarm enabled, which must <em>not</em> be in alarm state.</p></td>
+</tr>
+<tr class="row-odd"><td><p>AutoBiasBaselineModifier</p></td>
+<td><p>variable</p></td>
+<td><p>required</p></td>
+<td><p>SC</p></td>
+<td><p>Auto bias modifier value in mV on failing baseline QC.</p></td>
+</tr>
+<tr class="row-even"><td><p>AutobiasTargetV</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>CR</p></td>
+<td><p>Autobias targetV [mV] value set in PRE_SET_EVENT</p></td>
+</tr>
+<tr class="row-odd"><td><p>AutobiasTargetVAtSetEnd</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>CR</p></td>
+<td><p>Autobias targetV [mV] value set in POST_SET_EVENT (only set if set QC passes).</p></td>
+</tr>
+<tr class="row-even"><td><p>BaselineChunkLength</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>AR, SE, VM</p></td>
+<td><p>Length of a baseline QC chunk to evaluate (defaults to 500)</p></td>
+</tr>
+<tr class="row-odd"><td><p>BaselineRMSLongThreshold</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>AR, CR, DA, PB, RA, RB, SE, VM</p></td>
+<td><p>Threshold value in mV for the long RMS baseline QC check (defaults to 0.5)</p></td>
+</tr>
+<tr class="row-even"><td><p>BaselineRMSShortThreshold</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>AR, CR, DA, PB, RA, RB, SE, VM</p></td>
+<td><p>Threshold value in mV for the short RMS baseline QC check (defaults to 0.07)</p></td>
+</tr>
+<tr class="row-odd"><td><p>BaselineTargetVThreshold</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>CR, DA, RA, RB</p></td>
+<td><p>Threshold value in mV for the target V baseline QC check (defaults to 1)</p></td>
+</tr>
+<tr class="row-even"><td><p>BoundsEvaluationMode</p></td>
+<td><p>string</p></td>
+<td><p>required</p></td>
+<td><p>CR</p></td>
+<td><p>Select the bounds evaluation mode: Symmetric (Lower and Upper), Depolarized (Upper) or Hyperpolarized (Lower)</p></td>
+</tr>
+<tr class="row-odd"><td><p>DAScaleModifier</p></td>
+<td><p>variable</p></td>
+<td><p>mixed</p></td>
+<td><p>CR, DA, SC</p></td>
+<td><p>Modifier value to the DA Scale of headstages with spikes during chirp
+Supra: Percentage how the DAScale value is adapted if it is outside of the MinimumSpikeCount”/”MaximumSpikeCount” band.
+Modifier value to the DA Scale of headstages for too few spikes</p></td>
+</tr>
+<tr class="row-even"><td><p>DAScaleNegativeSlopePercent</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>DA</p></td>
+<td><p>AdaptiveSupra: Percentage to use for DAScale estimation once the f-I slopes get negative/zero.</p></td>
+</tr>
+<tr class="row-odd"><td><p>DAScaleOperator</p></td>
+<td><p>string</p></td>
+<td><p>mixed</p></td>
+<td><p>CR, SC</p></td>
+<td><p>Set the math operator to use for combining the DAScale and the modifier. Valid strings are “+” (addition) and “*” (multiplication).
+Set the math operator to use for combining the DAScale and the too few spikes modifier. Valid strings are “+” (addition) and “*” (multiplication).</p></td>
+</tr>
+<tr class="row-even"><td><p>DAScaleRangeFactor</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>DA</p></td>
+<td><p>AdaptiveSupra: Fallback factor to apply to the input DAScale range for calculating the DAScale minimum step width when all previous f-I data from Rheobase/Supra/Adaptive is constant.</p></td>
+</tr>
+<tr class="row-odd"><td><p>DAScales</p></td>
+<td><p>wave</p></td>
+<td><p>required</p></td>
+<td><p>DA, DS</p></td>
+<td><p>DA Scale Factors in pA
+Sub and Supra: DA Scale Factors in pA</p></td>
+</tr>
+<tr class="row-even"><td><p>DAScaleSpikePositionModifier</p></td>
+<td><p>variable</p></td>
+<td><p>required</p></td>
+<td><p>SC</p></td>
+<td><p>Modifier value to the DA Scale of headstages with failing spike positions.</p></td>
+</tr>
+<tr class="row-odd"><td><p>DAScaleSpikePositionOperator</p></td>
+<td><p>string</p></td>
+<td><p>required</p></td>
+<td><p>SC</p></td>
+<td><p>Set the math operator to use for combining the DAScale and the spike position modifier. Valid strings are “+” (addition) and “*” (multiplication).</p></td>
+</tr>
+<tr class="row-even"><td><p>DaScaleStepWidthMinMaxRatio</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>DA</p></td>
+<td><p>AdaptiveSupra: Number of times the maximum DAScale step width is larger than the calculated minimum.</p></td>
+</tr>
+<tr class="row-odd"><td><p>DaScaleTooManySpikesModifier</p></td>
+<td><p>variable</p></td>
+<td><p>required</p></td>
+<td><p>SC</p></td>
+<td><p>Modifier value to the DA Scale of headstages for too many spikes</p></td>
+</tr>
+<tr class="row-even"><td><p>DaScaleTooManySpikesOperator</p></td>
+<td><p>string</p></td>
+<td><p>required</p></td>
+<td><p>SC</p></td>
+<td><p>Set the math operator to use for combining the DAScale and the too many spikes modifier. Valid strings are “+” (addition) and “*” (multiplication).</p></td>
+</tr>
+<tr class="row-odd"><td><p>FailedLevel</p></td>
+<td><p>variable</p></td>
+<td><p>mixed</p></td>
+<td><p>CR, VM</p></td>
+<td><p>Absolute level for spike search</p></td>
+</tr>
+<tr class="row-even"><td><p>FailedPulseLevel</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>SC</p></td>
+<td><p>[Optional, uses the already set value] Numeric level to use for the failed pulse search in the PA plot tab.</p></td>
+</tr>
+<tr class="row-odd"><td><p>FailingAdaptiveSCIRange</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>DA</p></td>
+<td><p>AdaptiveSupra: Number of stimset cycles (SCIs) we search backwards in time for failing Adaptive sets, defaults to 1. Set to 0 to turn it off and inf to look into all available SCIs.</p></td>
+</tr>
+<tr class="row-even"><td><p>FinalSlopePercent</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>DA</p></td>
+<td><p>Supra: As additional passing criteria the slope of the f-I plot must be larger than this value. Note: The slope is used in percent.</p></td>
+</tr>
+<tr class="row-odd"><td><p>IdealNumberOfSpikesPerPulse</p></td>
+<td><p>variable</p></td>
+<td><p>required</p></td>
+<td><p>SC</p></td>
+<td><p>Ideal number of spike which should be present. Overwrites the PA plot GUI value.</p></td>
+</tr>
+<tr class="row-even"><td><p>InnerRelativeBound</p></td>
+<td><p>variable</p></td>
+<td><p>required</p></td>
+<td><p>CR</p></td>
+<td><p>Lower bound of a confidence band for the acquired data relative to the pre pulse baseline in mV. Must be positive.</p></td>
+</tr>
+<tr class="row-odd"><td><p>InterTrialInterval</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>VM</p></td>
+<td><p>Inter trial interval to set, defaults to 10 [s]</p></td>
+</tr>
+<tr class="row-even"><td><p>MaxAccessResistance</p></td>
+<td><p>variable</p></td>
+<td><p>required</p></td>
+<td><p>AR</p></td>
+<td><p>Maximum allowed acccess resistance [MΩ]</p></td>
+</tr>
+<tr class="row-odd"><td><p>MaxAccessToSteadyStateResistanceRatio</p></td>
+<td><p>variable</p></td>
+<td><p>required</p></td>
+<td><p>AR</p></td>
+<td><p>Maximum allowed ratio of access to steady state resistance [%]</p></td>
+</tr>
+<tr class="row-even"><td><p>MaxFrequencyChangePercent</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>DA</p></td>
+<td><p>AdaptiveSupra: The maximum allowed difference for the frequency for two consecutive measurements. In case this value is overshot, we redo the measurement with a fitting DAScale in-between.</p></td>
+</tr>
+<tr class="row-odd"><td><p>MaximumDAScale</p></td>
+<td><p>variable</p></td>
+<td><p>required</p></td>
+<td><p>FR</p></td>
+<td><p>Maximum allowed DAScale, set to NaN to turn the check off [pA]</p></td>
+</tr>
+<tr class="row-even"><td><p>MaximumSpikeCount</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>DA</p></td>
+<td><p>Supra: The upper limit of the number of spikes.</p></td>
+</tr>
+<tr class="row-odd"><td><p>MaxLeakCurrent</p></td>
+<td><p>variable</p></td>
+<td><p>required</p></td>
+<td><p>AR, PB</p></td>
+<td><p>Maximum current [pA] which is allowed in the pre pulse baseline</p></td>
+</tr>
+<tr class="row-even"><td><p>MaxPipetteResistance</p></td>
+<td><p>variable</p></td>
+<td><p>required</p></td>
+<td><p>PB</p></td>
+<td><p>Maximum allowed pipette resistance [MΩ]</p></td>
+</tr>
+<tr class="row-odd"><td><p>MaxTrials</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>SC</p></td>
+<td><p>[Optional, defaults to infinity] A sweep is rerun this many times on a failed headstage.</p></td>
+</tr>
+<tr class="row-even"><td><p>MinimumSpikeCount</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>DA</p></td>
+<td><p>Supra: The lower limit of the number of spikes.</p></td>
+</tr>
+<tr class="row-odd"><td><p>MinimumSpikeCountForMaxSlope</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>DA</p></td>
+<td><p>Adaptive: The minimum number of spikes required for a sweep to be considered as having the maximum f-I slope, defaults to 4.</p></td>
+</tr>
+<tr class="row-even"><td><p>MinimumSpikePosition</p></td>
+<td><p>variable</p></td>
+<td><p>required</p></td>
+<td><p>SC</p></td>
+<td><p>Minimum allowed spike positions in pulse active coordinate system (0 - 100).</p></td>
+</tr>
+<tr class="row-odd"><td><p>MinPipetteResistance</p></td>
+<td><p>variable</p></td>
+<td><p>required</p></td>
+<td><p>PB</p></td>
+<td><p>Minimum allowed pipette resistance [MΩ]</p></td>
+</tr>
+<tr class="row-even"><td><p>NextIndexingEndStimSetName</p></td>
+<td><p>string</p></td>
+<td><p>optional</p></td>
+<td><p>AR, PB, SE, VM</p></td>
+<td><dl class="simple">
+<dt>Next indexing end stimulus set which should be set in case of success.</dt><dd><p>Also enables indexing.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="row-odd"><td><p>NextStimSetName</p></td>
+<td><p>string</p></td>
+<td><p>optional</p></td>
+<td><p>AR, PB, SE, VM</p></td>
+<td><p>Next stimulus set which should be set in case of success</p></td>
+</tr>
+<tr class="row-even"><td><p>NumberOfChirpCycles</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>CR</p></td>
+<td><p>Number of acquired chirp cycles before the bounds evaluation starts. Defaults to 1.</p></td>
+</tr>
+<tr class="row-odd"><td><p>NumberOfFailedSweeps</p></td>
+<td><p>variable</p></td>
+<td><p>required</p></td>
+<td><p>AR, CR, PB, SE, VM</p></td>
+<td><p>Number of failed sweeps which marks the set as failed.</p></td>
+</tr>
+<tr class="row-even"><td><p>NumberOfPassingSweeps</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>RA</p></td>
+<td><p>Number of ramp sweeps that must pass for the set to pass.
+Defaults to 3.</p></td>
+</tr>
+<tr class="row-odd"><td><p>NumberOfSpikes</p></td>
+<td><p>variable</p></td>
+<td><p>required</p></td>
+<td><p>RA</p></td>
+<td><p>Number of spikes required to be found after the pulse onset in order to label the cell as having “spiked”.</p></td>
+</tr>
+<tr class="row-even"><td><p>NumberOfTestpulses</p></td>
+<td><p>variable</p></td>
+<td><p>required</p></td>
+<td><p>AR, PB</p></td>
+<td><p>Expected number of testpulses in the stimset</p></td>
+</tr>
+<tr class="row-odd"><td><p>NumSweepsWithSaturation</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>DA</p></td>
+<td><p>AdaptiveSupra: Number of required consecutive passing sweeps to have passing sweep QC and f-I slope QC, defaults to 2.</p></td>
+</tr>
+<tr class="row-even"><td><p>OffsetOperator</p></td>
+<td><p>string</p></td>
+<td><p>optional</p></td>
+<td><p>DA</p></td>
+<td><p>Supra: Set the math operator to use for combining the rheobase DAScale value from the previous run and the DAScales values. Valid strings are “+” (addition) and “*” (multiplication). Defaults to “+”.</p></td>
+</tr>
+<tr class="row-odd"><td><p>OperationMode</p></td>
+<td><p>string</p></td>
+<td><p>required</p></td>
+<td><p>DA</p></td>
+<td><p>Operation mode of the analysis function. Can be either “Sub”/”Supra”/”AdaptiveSupra”.</p></td>
+</tr>
+<tr class="row-even"><td><p>OuterRelativeBound</p></td>
+<td><p>variable</p></td>
+<td><p>required</p></td>
+<td><p>CR</p></td>
+<td><p>Upper bound of a confidence band for the acquired data relative to the pre pulse baseline in mV. Must be positive.</p></td>
+</tr>
+<tr class="row-odd"><td><p>PostDAQDAScale</p></td>
+<td><p>variable</p></td>
+<td><p>required</p></td>
+<td><p>FR</p></td>
+<td><p>If true the found DAScale value will be set at the end of the set</p></td>
+</tr>
+<tr class="row-even"><td><p>PostDAQDAScaleFactor</p></td>
+<td><p>variable</p></td>
+<td><p>required</p></td>
+<td><p>FR</p></td>
+<td><p>Scaling factor for setting the DAScale of passed headstages at the end of the set</p></td>
+</tr>
+<tr class="row-odd"><td><p>PostDAQDAScaleForFailedHS</p></td>
+<td><p>variable</p></td>
+<td><p>required</p></td>
+<td><p>FR</p></td>
+<td><p>Failed headstages will be set to this DAScale value [pA] in the post set event</p></td>
+</tr>
+<tr class="row-even"><td><p>PostDAQDAScaleMinOffset</p></td>
+<td><p>variable</p></td>
+<td><p>required</p></td>
+<td><p>FR</p></td>
+<td><p>Mininum absolute offset value applied to the found DAScale [pA]</p></td>
+</tr>
+<tr class="row-odd"><td><p>RelativeVoltageDiff</p></td>
+<td><p>variable</p></td>
+<td><p>required</p></td>
+<td><p>VM</p></td>
+<td><dl class="simple">
+<dt>Maximum relative allowed difference of the baseline membrane potentials [%].</dt><dd><p>Set to <cite>inf</cite> to disable this check.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="row-even"><td><p>SamplingFrequency</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>AR, CR, DA, PB, RA, RB, SE, SP, VM</p></td>
+<td><p>Required sampling frequency for the acquired data [kHz]. Defaults to ITC:50 NI:50 Sutter:50.
+Required sampling frequency for the acquired data [kHz]. Defaults to ITC:200 NI:250 Sutter:50.
+Required sampling frequency for the acquired data [kHz]. Defaults to ITC:50 NI:50 Sutter:50.
+Required sampling frequency for the acquired data [kHz]. Defaults to ITC:50 NI:50 Sutter:50.
+Required sampling frequency for the acquired data [kHz]. Defaults to ITC:200 NI:250 Sutter:50.
+Required sampling frequency for the acquired data [kHz]. Defaults to ITC:50 NI:50 Sutter:50.
+Required sampling frequency for the acquired data [kHz]. Defaults to ITC:200 NI:250 Sutter:50.</p></td>
+</tr>
+<tr class="row-odd"><td><p>SamplingMultiplier</p></td>
+<td><p>variable</p></td>
+<td><p>required</p></td>
+<td><p>AR, CR, DA, FR, PB, RA, RB, SE, SP, VM</p></td>
+<td><p>Sampling multiplier, use 1 for no multiplier</p></td>
+</tr>
+<tr class="row-even"><td><p>SealThreshold</p></td>
+<td><p>variable</p></td>
+<td><p>required</p></td>
+<td><p>SE</p></td>
+<td><p>Minimum required seal threshold [GΩ]</p></td>
+</tr>
+<tr class="row-odd"><td><p>ShowPlot</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>DA</p></td>
+<td><p>Sub and Supra: Show the resistance (“Sub”) or the f-I (“Supra”) plot, defaults to true.</p></td>
+</tr>
+<tr class="row-even"><td><p>SlopePercentage</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>DA</p></td>
+<td><p>AdaptiveSupra: Once the slope of the f-I fit is x percentage smaller compared with the maximum slope, the stimset cycle is stopped.</p></td>
+</tr>
+<tr class="row-odd"><td><p>SpikeCheck</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>CR</p></td>
+<td><p>Toggle spike check during the chirp. Defaults to off.</p></td>
+</tr>
+<tr class="row-even"><td><p>SpikeFailureIgnoredTime</p></td>
+<td><p>variable</p></td>
+<td><p>required</p></td>
+<td><p>VM</p></td>
+<td><dl class="simple">
+<dt>Time [ms] to ignore around spikes for average calculation.</dt><dd><p>Half of this value before and after each spike.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="row-odd"><td><p>TestPulseGroupSelector</p></td>
+<td><p>string</p></td>
+<td><p>optional</p></td>
+<td><p>SE</p></td>
+<td><p>Group(s) which have their resistance evaluated: One of Both/First/Second, defaults to Both</p></td>
+</tr>
+<tr class="row-even"><td><p>UserOffsetTargetVAutobias</p></td>
+<td><p>variable</p></td>
+<td><p>required</p></td>
+<td><p>VM</p></td>
+<td><p>Offset value for the autobias target voltage in case spikes were found</p></td>
+</tr>
+<tr class="row-odd"><td><p>UserOnsetDelay</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>CR</p></td>
+<td><p>Will be set as user onset delay in PRE_SET_EVENT, the current value will be set back in POST_SET_EVENT.</p></td>
+</tr>
+<tr class="row-even"><td><p>UseTrueRestingMembranePotentialVoltage</p></td>
+<td><p>variable</p></td>
+<td><p>optional</p></td>
+<td><p>CR</p></td>
+<td><p>Use the average voltage of a passing True RMS voltage set as Autobias targetV [mV] instead of “AutobiasTargetVAtSetEnd” in POST_SET_EVENT. Defaults to on.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Abbreviation legend</span><a class="headerlink" href="#id2" title="Link to this table">¶</a></caption>
+<colgroup>
+<col style="width: 33.3%" />
+<col style="width: 66.7%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Abbreviation</p></th>
+<th class="head"><p>Name</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>AR</p></td>
+<td><p><a class="reference internal" href="file/_m_i_e_s___analysis_functions___patch_seq_8ipf.html#_CPPv425PSQ_AccessResistanceSmoke6stringP19AnalysisFunction_V3" title="PSQ_AccessResistanceSmoke"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">PSQ_AccessResistanceSmoke()</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>CR</p></td>
+<td><p><a class="reference internal" href="file/_m_i_e_s___analysis_functions___patch_seq_8ipf.html#_CPPv49PSQ_Chirp6stringP19AnalysisFunction_V3" title="PSQ_Chirp"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">PSQ_Chirp()</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p>DA</p></td>
+<td><p><a class="reference internal" href="file/_m_i_e_s___analysis_functions___patch_seq_8ipf.html#_CPPv411PSQ_DAScale6stringP19AnalysisFunction_V3" title="PSQ_DAScale"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">PSQ_DAScale()</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>DS</p></td>
+<td><p><a class="reference internal" href="file/_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html#_CPPv411MSQ_DAScale6stringP19AnalysisFunction_V3" title="MSQ_DAScale"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">MSQ_DAScale()</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p>FR</p></td>
+<td><p><a class="reference internal" href="file/_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html#_CPPv415MSQ_FastRheoEst6stringP19AnalysisFunction_V3" title="MSQ_FastRheoEst"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">MSQ_FastRheoEst()</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>PB</p></td>
+<td><p><a class="reference internal" href="file/_m_i_e_s___analysis_functions___patch_seq_8ipf.html#_CPPv417PSQ_PipetteInBath6stringP19AnalysisFunction_V3" title="PSQ_PipetteInBath"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">PSQ_PipetteInBath()</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p>RA</p></td>
+<td><p><a class="reference internal" href="file/_m_i_e_s___analysis_functions___patch_seq_8ipf.html#_CPPv48PSQ_Ramp6stringP19AnalysisFunction_V3" title="PSQ_Ramp"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">PSQ_Ramp()</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>RB</p></td>
+<td><p><a class="reference internal" href="file/_m_i_e_s___analysis_functions___patch_seq_8ipf.html#_CPPv412PSQ_Rheobase6stringP19AnalysisFunction_V3" title="PSQ_Rheobase"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">PSQ_Rheobase()</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p>SC</p></td>
+<td><p><a class="reference internal" href="file/_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html#_CPPv415SC_SpikeControl6stringP19AnalysisFunction_V3" title="SC_SpikeControl"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">SC_SpikeControl()</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>SE</p></td>
+<td><p><a class="reference internal" href="file/_m_i_e_s___analysis_functions___patch_seq_8ipf.html#_CPPv418PSQ_SealEvaluation6stringP19AnalysisFunction_V3" title="PSQ_SealEvaluation"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">PSQ_SealEvaluation()</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p>SP</p></td>
+<td><p><a class="reference internal" href="file/_m_i_e_s___analysis_functions___patch_seq_8ipf.html#_CPPv415PSQ_SquarePulse6stringP19AnalysisFunction_V3" title="PSQ_SquarePulse"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">PSQ_SquarePulse()</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>VM</p></td>
+<td><p><a class="reference internal" href="file/_m_i_e_s___analysis_functions___patch_seq_8ipf.html#_CPPv432PSQ_TrueRestingMembranePotential6stringP19AnalysisFunction_V3" title="PSQ_TrueRestingMembranePotential"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">PSQ_TrueRestingMembranePotential()</span></code></a></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="user.html">User documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="analysisbrowser.html">AnalysisBrowser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="databrowser.html">DataBrowser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wavebuilder.html">WaveBuilder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="daephys.html">Da_Ephys</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testpulse.html">TPStorage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="auto_testpulse_tuning.html">Automatic test pulse tuning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SweepFormula.html">The Sweep Formula Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labnotebook-descriptions.html">Labnotebook descriptions</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Analysis function parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SweepFormula_PSX.html">SweepFormula PSC/PSP classification</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grouplist.html">Group list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="labnotebook-descriptions.html"
+                          title="previous chapter">Labnotebook descriptions</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="SweepFormula_PSX.html"
+                          title="next chapter">SweepFormula PSC/PSP classification</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="SweepFormula_PSX.html" title="SweepFormula PSC/PSP classification"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="labnotebook-descriptions.html" title="Labnotebook descriptions"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="user.html" >User documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Analysis function parameters</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File MIES_OverlaySweeps.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_PackageSettings.ipf" href="_m_i_e_s___package_settings_8ipf.html" />
+    <link rel="prev" title="File MIES_Oscilloscope.ipf" href="_m_i_e_s___oscilloscope_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___package_settings_8ipf.html" title="File MIES_PackageSettings.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___oscilloscope_8ipf.html" title="File MIES_Oscilloscope.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_OverlaySweeps.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-overlaysweeps-ipf">
+<span id="id1"></span><h1>File MIES_OverlaySweeps.ipf<a class="headerlink" href="#file-mies-overlaysweeps-ipf" title="Link to this heading">¶</a></h1>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428OVS_IgnoreHeadstageInOverlayv">
+<span id="_CPPv328OVS_IgnoreHeadstageInOverlayv"></span><span id="_CPPv228OVS_IgnoreHeadstageInOverlayv"></span><span id="OVS_IgnoreHeadstageInOverlay"></span><span class="target" id="_m_i_e_s___overlay_sweeps_8ipf_1ae9eb58f7f9077ff3bfd627b1c8cb45c1"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OVS_IgnoreHeadstageInOverlay</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428OVS_IgnoreHeadstageInOverlayv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>This user trace menu function allows the user to select a trace in overlay sweeps mode which should be ignored. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428OVS_GetSweepSelectionChoices6string">
+<span id="_CPPv328OVS_GetSweepSelectionChoices6string"></span><span id="_CPPv228OVS_GetSweepSelectionChoices6string"></span><span id="OVS_GetSweepSelectionChoices__string"></span><span class="target" id="_m_i_e_s___overlay_sweeps_8ipf_1abe010d76f2c7b2917d8dee070f68cdc7"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OVS_GetSweepSelectionChoices</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428OVS_GetSweepSelectionChoices6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a list of choices for the sweep selection popup. </p>
+<p>Includes a unique list of the DA stimsets of all available sweeps </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425OVS_RemoveLowCountEntries8WaveText8WaveText8WaveText8WaveText">
+<span id="_CPPv325OVS_RemoveLowCountEntries8WaveText8WaveText8WaveText8WaveText"></span><span id="_CPPv225OVS_RemoveLowCountEntries8WaveText8WaveText8WaveText8WaveText"></span><span id="OVS_RemoveLowCountEntries__WaveText.WaveText.WaveText.WaveText"></span><span class="target" id="_m_i_e_s___overlay_sweeps_8ipf_1a35af7aeae9ab9308824bbe3fa1bd9b1a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OVS_RemoveLowCountEntries</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">stimsets</span></span>, <a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">setSweepCounts</span></span>, <a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">dupsRemovedSetSweepCounts</span></span>, <a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">dupsRemovedSetCycleCounts</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425OVS_RemoveLowCountEntries8WaveText8WaveText8WaveText8WaveText" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Remove all stimsets which were only acquired once, disregaring RAC/SCI, this means we just look at all sweeps. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413OVS_GetFolder6string">
+<span id="_CPPv313OVS_GetFolder6string"></span><span id="_CPPv213OVS_GetFolder6string"></span><span id="OVS_GetFolder__string"></span><span class="target" id="_m_i_e_s___overlay_sweeps_8ipf_1aaea1af3c75db5ab81b0b100b72db1a0d"></span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OVS_GetFolder</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413OVS_GetFolder6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the datafolder reference to the folder storing the listbox and selection wave. </p>
+<p>Requires the user data <code class="docutils literal notranslate"><span class="pre">PANEL_FOLDER</span></code> of the BrowserSettings panel</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>a valid DFREF or an invalid one in case the external panel could not be found </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415OVS_UpdatePanel6string8variable">
+<span id="_CPPv315OVS_UpdatePanel6string8variable"></span><span id="_CPPv215OVS_UpdatePanel6string8variable"></span><span id="OVS_UpdatePanel__string.variable"></span><span class="target" id="_m_i_e_s___overlay_sweeps_8ipf_1ad0a9603288cb05c4c80aa25a6284c8a1"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OVS_UpdatePanel</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fullUpdate</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415OVS_UpdatePanel6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Update the overlay sweep waves. </p>
+<p>
+Must be called after the sweeps changed. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>win</strong> – databrowser panel or graph </p></li>
+<li><p><strong>fullUpdate</strong> – [optional, defaults to false] Performs a full update instead of an incremental one. Selects the first sweep if nothing is selected as well.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv431OVS_UpdateSweepSelectionChoices6string8WaveText">
+<span id="_CPPv331OVS_UpdateSweepSelectionChoices6string8WaveText"></span><span id="_CPPv231OVS_UpdateSweepSelectionChoices6string8WaveText"></span><span id="OVS_UpdateSweepSelectionChoices__string.WaveText"></span><span class="target" id="_m_i_e_s___overlay_sweeps_8ipf_1aa80280e7b081acf5d5a6dd17ff4b545e"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OVS_UpdateSweepSelectionChoices</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">sweepSelectionChoices</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431OVS_UpdateSweepSelectionChoices6string8WaveText" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Update the sweep selection choices for the popup menu. </p>
+<p>This function is expensive as it iterates over all sweeps. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421OVS_GetSelectedSweeps6string8variable">
+<span id="_CPPv321OVS_GetSelectedSweeps6string8variable"></span><span id="_CPPv221OVS_GetSelectedSweeps6string8variable"></span><span id="OVS_GetSelectedSweeps__string.variable"></span><span class="target" id="_m_i_e_s___overlay_sweeps_8ipf_1ae6a16f8aa22f5d9138b54ae64ea327ed"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OVS_GetSelectedSweeps</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421OVS_GetSelectedSweeps6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the selected sweeps (either indizes or the real sweep numbers) </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>win</strong> – window (databrowser or sweepbrowser) </p></li>
+<li><p><strong>mode</strong> – sweep property<ul>
+<li><p><a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a4c9e30ef5003acf892d37799a3227889"><span class="std std-ref">OVS_SWEEP_SELECTION_INDEX</span></a></p></li>
+<li><p><a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a7ae1ed1e6a848dcd5f0f5cca3350f764"><span class="std std-ref">OVS_SWEEP_SELECTION_SWEEPNO</span></a></p></li>
+<li><p><a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a48fe62f07a8ce2e3cddf7276b796de80"><span class="std std-ref">OVS_SWEEP_ALL_SWEEPNO</span></a></p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>invalid wave reference in case nothing is selected or numeric indizes/sweep numbers depending on mode parameter </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429OVS_ChangeSweepSelectionState6string8variable8variable8variable10WaveOrNull8variable">
+<span id="_CPPv329OVS_ChangeSweepSelectionState6string8variable8variable8variable10WaveOrNull8variable"></span><span id="_CPPv229OVS_ChangeSweepSelectionState6string8variable8variable8variable10WaveOrNull8variable"></span><span id="OVS_ChangeSweepSelectionState__string.variable.variable.variable.WaveOrNull.variable"></span><span class="target" id="_m_i_e_s___overlay_sweeps_8ipf_1aabed0e8073458c1ce198f0f773dfdb6b"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OVS_ChangeSweepSelectionState</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">newState</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweeps</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">invertOthers</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429OVS_ChangeSweepSelectionState6string8variable8variable8variable10WaveOrNull8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Change the selection state of the the given sweep in the listbox wave. </p>
+<p>Triggers a update for the affected sweep.</p>
+<p>
+One of <code class="docutils literal notranslate"><span class="pre">sweepNo</span></code>/<code class="docutils literal notranslate"><span class="pre">index</span></code> is required. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>win</strong> – panel </p></li>
+<li><p><strong>sweepNo</strong> – [optional] sweep number </p></li>
+<li><p><strong>sweeps</strong> – [optional] sweeps to change, can be <code class="docutils literal notranslate"><span class="pre">$&quot;&quot;</span></code></p></li>
+<li><p><strong>index</strong> – [optional] index into the listbox wave </p></li>
+<li><p><strong>newState</strong> – new checkbox state of the given sweeps </p></li>
+<li><p><strong>invertOthers</strong> – [optional, default to false] set the other sweeps to !newState if true</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412OVS_IsActive6string">
+<span id="_CPPv312OVS_IsActive6string"></span><span id="_CPPv212OVS_IsActive6string"></span><span id="OVS_IsActive__string"></span><span class="target" id="_m_i_e_s___overlay_sweeps_8ipf_1ac291682eb164669d98543ca491f52224"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OVS_IsActive</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412OVS_IsActive6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>checks if OVS is active. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419OVS_AddToIgnoreList6string8variable8variable8variable">
+<span id="_CPPv319OVS_AddToIgnoreList6string8variable8variable8variable"></span><span id="_CPPv219OVS_AddToIgnoreList6string8variable8variable8variable"></span><span id="OVS_AddToIgnoreList__string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___overlay_sweeps_8ipf_1a4fb549ce7925e83e2fa3cd04baaea460"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OVS_AddToIgnoreList</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419OVS_AddToIgnoreList6string8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Add <code class="docutils literal notranslate"><span class="pre">headstage</span></code> to the ignore list of the given <code class="docutils literal notranslate"><span class="pre">sweepNo/index</span></code></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426OVS_UpdateHeadstageRemoval6string8variable">
+<span id="_CPPv326OVS_UpdateHeadstageRemoval6string8variable"></span><span id="_CPPv226OVS_UpdateHeadstageRemoval6string8variable"></span><span id="OVS_UpdateHeadstageRemoval__string.variable"></span><span class="target" id="_m_i_e_s___overlay_sweeps_8ipf_1aac7c0c0c789abb2eb52cd768d432bfa0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OVS_UpdateHeadstageRemoval</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426OVS_UpdateHeadstageRemoval6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Update the OVS headstage removal wave from the listbox entry. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423OVS_GetHeadstageRemoval6string8variable8variable">
+<span id="_CPPv323OVS_GetHeadstageRemoval6string8variable8variable"></span><span id="_CPPv223OVS_GetHeadstageRemoval6string8variable8variable"></span><span id="OVS_GetHeadstageRemoval__string.variable.variable"></span><span class="target" id="_m_i_e_s___overlay_sweeps_8ipf_1a8dfa4fda54b7223508021e2021a6afb4"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OVS_GetHeadstageRemoval</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423OVS_GetHeadstageRemoval6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419OVS_ParseIgnoreList6string8variable">
+<span id="_CPPv319OVS_ParseIgnoreList6string8variable"></span><span id="_CPPv219OVS_ParseIgnoreList6string8variable"></span><span id="OVS_ParseIgnoreList__string.variable"></span><span class="target" id="_m_i_e_s___overlay_sweeps_8ipf_1af6f9445dd6426b2d7551fafdb1a4b168"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OVS_ParseIgnoreList</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ignoreList</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419OVS_ParseIgnoreList6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Parse the headstage removal list. </p>
+<p>The expected format of the list entries is a semicolon (“;”) separated list of subranges (without the possibility of denoting the step size).</p>
+<p>Examples:<ul class="simple">
+<li><p>0 (ignore HS 0)</p></li>
+<li><p>1,3;0 (ignore HS 0 to 3)</p></li>
+<li><p>* (ignore all headstages)</p></li>
+</ul>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ignoreList</strong> – list of entries to parse </p></li>
+<li><p><strong>sweepNo</strong> – sweep number </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>free wave of size <code class="docutils literal notranslate"><span class="pre">NUM_HEADSTAGES</span></code> denoting with 0/1 the active state of the headstage </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426OVS_CheckBoxProc_HS_SelectP16WMCheckboxAction">
+<span id="_CPPv326OVS_CheckBoxProc_HS_SelectP16WMCheckboxAction"></span><span id="_CPPv226OVS_CheckBoxProc_HS_SelectP16WMCheckboxAction"></span><span id="OVS_CheckBoxProc_HS_Select__WMCheckboxActionP"></span><span class="target" id="_m_i_e_s___overlay_sweeps_8ipf_1a8d01cfa694b6057aee9c37b35a824e28"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OVS_CheckBoxProc_HS_Select</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMCheckboxAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">cba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426OVS_CheckBoxProc_HS_SelectP16WMCheckboxAction" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418OVS_HighlightSweep6string8variable">
+<span id="_CPPv318OVS_HighlightSweep6string8variable"></span><span id="_CPPv218OVS_HighlightSweep6string8variable"></span><span id="OVS_HighlightSweep__string.variable"></span><span class="target" id="_m_i_e_s___overlay_sweeps_8ipf_1ab5b6b3d9095840cdbb4b01ce34703ef6"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OVS_HighlightSweep</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418OVS_HighlightSweep6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425OVS_GetSweepAndExperiment6string8variable">
+<span id="_CPPv325OVS_GetSweepAndExperiment6string8variable"></span><span id="_CPPv225OVS_GetSweepAndExperiment6string8variable"></span><span id="OVS_GetSweepAndExperiment__string.variable"></span><span class="target" id="_m_i_e_s___overlay_sweeps_8ipf_1a8a5264610ec0c4e51fe70769f57a7a49"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OVS_GetSweepAndExperiment</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425OVS_GetSweepAndExperiment6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the sweep number and experiment name for the given list index. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424OVS_ChangeSweepSelection6string6string">
+<span id="_CPPv324OVS_ChangeSweepSelection6string6string"></span><span id="_CPPv224OVS_ChangeSweepSelection6string6string"></span><span id="OVS_ChangeSweepSelection__string.string"></span><span class="target" id="_m_i_e_s___overlay_sweeps_8ipf_1a36bc7a3160c8be52c7a0357d85b90535"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OVS_ChangeSweepSelection</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">choiceString</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424OVS_ChangeSweepSelection6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Change the selected sweep according to one of the popup menu options. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426OVS_BeginIncrementalUpdate6string8variable">
+<span id="_CPPv326OVS_BeginIncrementalUpdate6string8variable"></span><span id="_CPPv226OVS_BeginIncrementalUpdate6string8variable"></span><span id="OVS_BeginIncrementalUpdate__string.variable"></span><span class="target" id="_m_i_e_s___overlay_sweeps_8ipf_1a2cd1e47a8554bb3f29db215e2f928296"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OVS_BeginIncrementalUpdate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fullUpdate</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426OVS_BeginIncrementalUpdate6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Incremental sweep plot updates for overlay sweeps. </p>
+<p>When modifying the listbox selection and contents wave this function can be called before doing so. After the modifications <a class="reference internal" href="#_m_i_e_s___overlay_sweeps_8ipf_1adaf840f82141dd505da9f150a0feac63"><span class="std std-ref">OVS_EndIncrementalUpdate()</span></a> will take care of updating all sweeps which got changed.</p>
+<p>The returned wave should be considered an opaque handle and <em>not</em> modified.</p>
+<p>Usage:</p>
+<p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kt">WAVE</span><span class="w"> </span>updateHandle<span class="w"> </span>=<span class="w"> </span>OVS_BeginIncrementalUpdate(win)
+
+<span class="c1">// modify list waves</span>
+<span class="c1">// ...</span>
+
+OVS_EndIncrementalUpdate(win,<span class="w"> </span>updateHandle)
+</pre></div>
+</div>
+</p>
+<p>By setting <code class="docutils literal notranslate"><span class="pre">fullUpdate</span></code> to true a conventional full, that means non-incremental, update will be performed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>win</strong> – graph </p></li>
+<li><p><strong>fullUpdate</strong> – [optional, defaults to true when OVS is off, false otherwise] allows to force a full update in <a class="reference internal" href="#_m_i_e_s___overlay_sweeps_8ipf_1adaf840f82141dd505da9f150a0feac63"><span class="std std-ref">OVS_EndIncrementalUpdate()</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424OVS_EndIncrementalUpdate6string11WaveRefWave">
+<span id="_CPPv324OVS_EndIncrementalUpdate6string11WaveRefWave"></span><span id="_CPPv224OVS_EndIncrementalUpdate6string11WaveRefWave"></span><span id="OVS_EndIncrementalUpdate__string.WaveRefWave"></span><span class="target" id="_m_i_e_s___overlay_sweeps_8ipf_1adaf840f82141dd505da9f150a0feac63"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OVS_EndIncrementalUpdate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">updateHandle</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424OVS_EndIncrementalUpdate6string11WaveRefWave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Perform the update of all changed sweeps. </p>
+<p>Counterpart to <a class="reference internal" href="#_m_i_e_s___overlay_sweeps_8ipf_1a2cd1e47a8554bb3f29db215e2f928296"><span class="std std-ref">OVS_BeginIncrementalUpdate()</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419OVS_MainListBoxProcP15WMListboxAction">
+<span id="_CPPv319OVS_MainListBoxProcP15WMListboxAction"></span><span id="_CPPv219OVS_MainListBoxProcP15WMListboxAction"></span><span id="OVS_MainListBoxProc__WMListboxActionP"></span><span class="target" id="_m_i_e_s___overlay_sweeps_8ipf_1a94200107143e3c34a24042063212d915"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OVS_MainListBoxProc</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMListboxAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">lba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419OVS_MainListBoxProcP15WMListboxAction" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422OVS_PopMenuProc_SelectP13WMPopupAction">
+<span id="_CPPv322OVS_PopMenuProc_SelectP13WMPopupAction"></span><span id="_CPPv222OVS_PopMenuProc_SelectP13WMPopupAction"></span><span id="OVS_PopMenuProc_Select__WMPopupActionP"></span><span class="target" id="_m_i_e_s___overlay_sweeps_8ipf_1af348beeba032f944f53b456f678818df"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OVS_PopMenuProc_Select</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMPopupAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">pa</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422OVS_PopMenuProc_SelectP13WMPopupAction" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429OVS_SetVarProc_SelectionRangeP19WMSetVariableAction">
+<span id="_CPPv329OVS_SetVarProc_SelectionRangeP19WMSetVariableAction"></span><span id="_CPPv229OVS_SetVarProc_SelectionRangeP19WMSetVariableAction"></span><span id="OVS_SetVarProc_SelectionRange__WMSetVariableActionP"></span><span class="target" id="_m_i_e_s___overlay_sweeps_8ipf_1aa9e8e209ec0e8c3c5b515ad0ea78b984"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OVS_SetVarProc_SelectionRange</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMSetVariableAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">sva</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429OVS_SetVarProc_SelectionRangeP19WMSetVariableAction" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420OVS_FULL_UPDATE_NOTE">
+<span id="_CPPv320OVS_FULL_UPDATE_NOTE"></span><span id="_CPPv220OVS_FULL_UPDATE_NOTE"></span><span id="OVS_FULL_UPDATE_NOTE__stringC"></span><span class="target" id="_m_i_e_s___overlay_sweeps_8ipf_1aca848c1c1acfc1a553d6e0d85a588c22"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OVS_FULL_UPDATE_NOTE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;FullUpdate&quot;</span></span><a class="headerlink" href="#_CPPv420OVS_FULL_UPDATE_NOTE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_OverlaySweeps.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428OVS_IgnoreHeadstageInOverlayv"><code class="docutils literal notranslate"><span class="pre">OVS_IgnoreHeadstageInOverlay()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428OVS_GetSweepSelectionChoices6string"><code class="docutils literal notranslate"><span class="pre">OVS_GetSweepSelectionChoices()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425OVS_RemoveLowCountEntries8WaveText8WaveText8WaveText8WaveText"><code class="docutils literal notranslate"><span class="pre">OVS_RemoveLowCountEntries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413OVS_GetFolder6string"><code class="docutils literal notranslate"><span class="pre">OVS_GetFolder()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415OVS_UpdatePanel6string8variable"><code class="docutils literal notranslate"><span class="pre">OVS_UpdatePanel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv431OVS_UpdateSweepSelectionChoices6string8WaveText"><code class="docutils literal notranslate"><span class="pre">OVS_UpdateSweepSelectionChoices()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421OVS_GetSelectedSweeps6string8variable"><code class="docutils literal notranslate"><span class="pre">OVS_GetSelectedSweeps()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429OVS_ChangeSweepSelectionState6string8variable8variable8variable10WaveOrNull8variable"><code class="docutils literal notranslate"><span class="pre">OVS_ChangeSweepSelectionState()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412OVS_IsActive6string"><code class="docutils literal notranslate"><span class="pre">OVS_IsActive()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419OVS_AddToIgnoreList6string8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">OVS_AddToIgnoreList()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426OVS_UpdateHeadstageRemoval6string8variable"><code class="docutils literal notranslate"><span class="pre">OVS_UpdateHeadstageRemoval()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423OVS_GetHeadstageRemoval6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">OVS_GetHeadstageRemoval()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419OVS_ParseIgnoreList6string8variable"><code class="docutils literal notranslate"><span class="pre">OVS_ParseIgnoreList()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426OVS_CheckBoxProc_HS_SelectP16WMCheckboxAction"><code class="docutils literal notranslate"><span class="pre">OVS_CheckBoxProc_HS_Select()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418OVS_HighlightSweep6string8variable"><code class="docutils literal notranslate"><span class="pre">OVS_HighlightSweep()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425OVS_GetSweepAndExperiment6string8variable"><code class="docutils literal notranslate"><span class="pre">OVS_GetSweepAndExperiment()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424OVS_ChangeSweepSelection6string6string"><code class="docutils literal notranslate"><span class="pre">OVS_ChangeSweepSelection()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426OVS_BeginIncrementalUpdate6string8variable"><code class="docutils literal notranslate"><span class="pre">OVS_BeginIncrementalUpdate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424OVS_EndIncrementalUpdate6string11WaveRefWave"><code class="docutils literal notranslate"><span class="pre">OVS_EndIncrementalUpdate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419OVS_MainListBoxProcP15WMListboxAction"><code class="docutils literal notranslate"><span class="pre">OVS_MainListBoxProc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422OVS_PopMenuProc_SelectP13WMPopupAction"><code class="docutils literal notranslate"><span class="pre">OVS_PopMenuProc_Select()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429OVS_SetVarProc_SelectionRangeP19WMSetVariableAction"><code class="docutils literal notranslate"><span class="pre">OVS_SetVarProc_SelectionRange()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420OVS_FULL_UPDATE_NOTE"><code class="docutils literal notranslate"><span class="pre">OVS_FULL_UPDATE_NOTE</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___oscilloscope_8ipf.html"
+                          title="previous chapter">File MIES_Oscilloscope.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___package_settings_8ipf.html"
+                          title="next chapter">File MIES_PackageSettings.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___package_settings_8ipf.html" title="File MIES_PackageSettings.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___oscilloscope_8ipf.html" title="File MIES_Oscilloscope.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_OverlaySweeps.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

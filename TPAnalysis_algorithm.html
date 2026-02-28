@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Testpulse Analysis Algorithm &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Async Framework" href="asyncframework.html" />
+    <link rel="prev" title="NWB version 2" href="IPNWB/doc/nwb2.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="asyncframework.html" title="Async Framework"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="IPNWB/doc/nwb2.html" title="NWB version 2"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Testpulse Analysis Algorithm</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <blockquote>
+<div></div></blockquote>
+<section id="testpulse-analysis-algorithm">
+<span id="tp-delta-doc"></span><h1>Testpulse Analysis Algorithm<a class="headerlink" href="#testpulse-analysis-algorithm" title="Link to this heading">¶</a></h1>
+<p>This algorithm has been moved as simpler code to <a class="reference internal" href="file/_m_i_e_s___test_pulse_8ipf.html#_CPPv413TP_TSAnalysis5dfref" title="TP_TSAnalysis"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">TP_TSAnalysis()</span></code></a> and <a class="reference internal" href="file/_m_i_e_s___test_pulse_8ipf.html#_CPPv413TP_ROAnalysisP19ASYNC_ReadOutStruct" title="TP_ROAnalysis"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">TP_ROAnalysis()</span></code></a>.</p>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Link to this heading">¶</a></h2>
+<p>The algorithm analyses the measured test pulse response to determine the <code class="docutils literal notranslate"><span class="pre">instantaneous</span> <span class="pre">resistance</span></code>,
+the <code class="docutils literal notranslate"><span class="pre">steady</span> <span class="pre">state</span> <span class="pre">resistance</span></code> and the <code class="docutils literal notranslate"><span class="pre">baseline</span> <span class="pre">steady</span> <span class="pre">state</span></code>.</p>
+<p>The <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">TP_Delta()</span></code> function is called after data is available for each device.
+This data can contain test pulse responses from several head stages from multiple ADC channels.</p>
+<p>The function is split into several parts:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="#principles">Principles</a></p></li>
+<li><p><a class="reference internal" href="#miscellaneous-at-startup">Miscellaneous at startup</a></p></li>
+<li><p><a class="reference internal" href="#retrieving-input-data">Retrieving input data</a></p></li>
+<li><p><a class="reference internal" href="#extraction-of-ranges">Extraction of ranges</a> in points in the data for <code class="docutils literal notranslate"><span class="pre">baseline</span></code>, <code class="docutils literal notranslate"><span class="pre">elevated</span></code> (aka <code class="docutils literal notranslate"><span class="pre">steady</span> <span class="pre">state</span></code>) and <code class="docutils literal notranslate"><span class="pre">instanenous</span></code></p></li>
+<li><p><a class="reference internal" href="#calculation">Calculation</a></p></li>
+<li><p><a class="reference internal" href="#running-average-of-results">Running Average of results</a></p></li>
+<li><p><a class="reference internal" href="#final-calls">Final Calls</a></p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="principles">
+<h2>Principles<a class="headerlink" href="#principles" title="Link to this heading">¶</a></h2>
+<p>The goal of the algorithm is to determine the base line level,
+steady state resistance and instantaneous resistance of a test pulse response.
+The available data contains the response pulse as
+well as information about the excitation amplitude and length.
+The excitation pulse is in units of current or voltage depending on the used
+clamp mode. The actual data consists of discrete points of analog to digital
+input (response).
+For simplicity this will be neglected in the following.</p>
+<p>The resistance is calculated by</p>
+<div class="math notranslate nohighlight">
+\[R = \frac{U}{I}\]</div>
+<p>Where depending on voltage- or current clamp mode the response test pulse is either
+a current or voltage. The response is the difference between base line live and
+steady state / instantaneous level. For determining the levels in the response data
+ranges are defined where the data points get averaged.</p>
+<p>The known ranges are</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}baselinefraction &amp;= fullTPrange * baselinefrac \\
+duration &amp;= activeTPtime\end{split}\]</div>
+<p>Where <strong>baselinefrac</strong> is the part relative to the full test pulse range in the
+front of the test pulse where the excitation signal was at its base line level.
+The time <strong>duration</strong> is the length of the active portion of the exciting test pulse.</p>
+<p>The range for averaging for the base line level is defined minimum of:</p>
+<div class="math notranslate nohighlight">
+\[baselineAvgRange = Min( 5 ms, 0.2 * duration, 0.2 * baselinefraction)\]</div>
+<p>The reference point for the end of the range is defined to be close to the start
+of the active test pulse:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}end &amp;= baselinefraction - const \\
+begin &amp;= end - baselineAvgRange\end{split}\]</div>
+<p>The base line level is determined by averaging over all discrete data points
+<strong>p</strong> in this range:</p>
+<div class="math notranslate nohighlight">
+\[baselinelevel = \frac{1}{N} \sum^{end}_{n=begin} p_n\]</div>
+<p>The range for averaging for the steady state level is defined to be equal to the
+base line averaging length. The reference point for the end of the range is
+defined to be close to the end of the active test pulse:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}end &amp;= (1 - baselinefrac) * fullTPrange - const \\
+begin &amp;= end - baselineAvgRange\end{split}\]</div>
+<p>The steady state level is determined by averaging over all discrete data points
+<strong>p</strong> in this range:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[steadystatelevel = \frac{1}{N} \sum^{end}_{n=begin} p_n\]</div>
+</div></blockquote>
+<p>The range for averaging for the instantaneous level is <em>0.25 ms</em>. The reference
+point for the start of the range is defined to be close after the start of the
+active test pulse:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}end &amp;= baselinefraction + const \\
+begin &amp;= end - 0.25 ms\end{split}\]</div>
+</div></blockquote>
+<p>In this partial range P <sub>I</sub> of all points p the discrete location of the
+point with maximum value is determined.</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[locMax = MaxLocation(P_I); P_I = P[begin, end]\]</div>
+</div></blockquote>
+<p>The instantaneous level is determined by the data point <strong>p</strong> at
+<strong>locMax</strong>:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[instantaneouslevel = p_{locMax}\]</div>
+</div></blockquote>
+<p>Note that the constant <em>const</em> for the reference point offset is the same for
+all three ranges.</p>
+<p>The current/voltage amplitudes for are the differences of the levels to the base
+line level:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}steadstateAmp &amp;= steadystatelevel - baselinelevel \\
+instantaneousAmp &amp;= instantaneouslevel - baselinelevel\end{split}\]</div>
+<p>With the amplitudes and the known clamp amplitudes the resistances are:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}R_{SS} &amp;= \frac{steadystateAmp}{currentClampAmp} \\
+R_{Inst} &amp;= \frac{instantaneoueAmp}{currentClampAmp}\end{split}\]</div>
+<p>Respectively for voltage clamp:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}R_{SS} &amp;= \frac{voltageClampAmp}{steadystateAmp} \\
+R_{Inst} &amp;= \frac{voltageClampAmp}{instantaneoueAmp}\end{split}\]</div>
+<p>The function returns the resistances as well as the base line level.</p>
+</section>
+<section id="miscellaneous-at-startup">
+<h2>Miscellaneous at startup<a class="headerlink" href="#miscellaneous-at-startup" title="Link to this heading">¶</a></h2>
+<p>To log the function execution time the current time is retrieved by</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>referenceTime<span class="w"> </span>=<span class="w"> </span>DEBUG_TIMER_START()
+</pre></div>
+</div>
+<p>The test pulse response is saved if the GUI checkbox was enabled by <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">TP_StoreFullWave()</span></code>:</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kt">WAVE</span><span class="w"> </span>GUIState<span class="w"> </span>=<span class="w"> </span>GetDA_EphysGuiStateNum(device)
+
+<span class="k">if</span>(GUIState[0][%check_Settings_TP_SaveTP])
+<span class="w">  </span>TP_StoreFullWave(device)
+<span class="k">endif</span>
+</pre></div>
+</div>
+</section>
+<section id="retrieving-input-data">
+<h2>Retrieving input data<a class="headerlink" href="#retrieving-input-data" title="Link to this heading">¶</a></h2>
+<p>The device specific data folder for the test pulse is retrieved. The current and
+voltage clamp parameters are retrieved from it. It is used as well to put the
+calculated <code class="docutils literal notranslate"><span class="pre">BaselineSSAvg</span></code>, <code class="docutils literal notranslate"><span class="pre">SSResistance</span></code> and <code class="docutils literal notranslate"><span class="pre">InstResistance</span></code> back to the
+devices test pulse data folder.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kt">DFREF</span><span class="w"> </span>dfr<span class="w"> </span>=<span class="w"> </span>GetDeviceTestPulse(device)
+</pre></div>
+</div>
+<p>The actual test pulse data is retrieved from OscilloscopeData, where the data
+points are stored in rows and the columns count the DAC, ADC and TTL channels
+(in this order).</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kt">WAVE</span><span class="w"> </span>OscilloscopeData<span class="w"> </span>=<span class="w"> </span>GetOscilloscopeWave(device)
+</pre></div>
+</div>
+<p>Retrieve device specific Current Clamp and Voltage Clamp amplitudes. The values
+are in <code class="docutils literal notranslate"><span class="pre">pA</span></code> and <code class="docutils literal notranslate"><span class="pre">mV</span></code> and can be set on the front panel in the tab
+“Data Acquisition”. Default: -50 pA / 10 mV.</p>
+<p>Retrieve the column of the first ADC channel in OscilloscopeData wave,
+due to the DAC, ADC, TTL order it is 1 for one enabled head stage,
+2 for two enabled head stages a.s.o.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kt">NVAR</span><span class="w"> </span>ADChannelToMonitor<span class="w"> </span>=<span class="w"> </span>$GetADChannelToMonitor(device)
+</pre></div>
+</div>
+<p>Retrieve head stage properties, where rows count the active head stages and
+columns enumerate the properties. It is used later to decide if a certain head
+stage operates in current clamp or voltage clamp mode.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kt">WAVE</span><span class="w"> </span>activeHSProp<span class="w"> </span>=<span class="w"> </span>GetActiveHSProperties(device)
+</pre></div>
+</div>
+<p>The test pulse is centered on a baseline, the baselineFrac is a number &lt; 1, that
+defines the fraction in front and after the test pulse. Example: With a typical
+value of 0.25 for baselineFrac, the whole test pulse consists of parts of
+0.25_baseline + 0.5_testpulse + 0.25_baseline.</p>
+<p>Length of the buffer that stores previous results of <code class="docutils literal notranslate"><span class="pre">BaselineSSAvg</span></code>,
+<code class="docutils literal notranslate"><span class="pre">SSResistance</span></code> and <code class="docutils literal notranslate"><span class="pre">InstResistance</span></code> for a running average. The running
+average is later applied by <a class="reference internal" href="file/_m_i_e_s___test_pulse_8ipf.html#_CPPv419TP_CalculateAverage4wave4wave" title="TP_CalculateAverage"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">TP_CalculateAverage()</span></code></a> if the size is &gt; 1.
+The size is set on the front panel in the <em>Settings</em> tab.</p>
+<p>The later resistance calculation is based on R = U / I. Since R is always
+positive, the sign of the local clamp current/voltage variables is removed.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>amplitudeIC<span class="w"> </span>=<span class="w"> </span><span class="nf">abs</span>(amplitudeICGlobal)
+amplitudeVC<span class="w"> </span>=<span class="w"> </span><span class="nf">abs</span>(amplitudeVCGlobal)
+</pre></div>
+</div>
+</section>
+<section id="extraction-of-ranges">
+<h2>Extraction of ranges<a class="headerlink" href="#extraction-of-ranges" title="Link to this heading">¶</a></h2>
+<p>The duration of the test pulse is converted to time by using the scale delta of
+the OscilloscopeData waves rows, which is the sample interval.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>durationInTime<span class="w"> </span>=<span class="w"> </span>duration<span class="w"> </span>*<span class="w"> </span><span class="nf">DimDelta</span>(OscilloscopeData,<span class="w"> </span>ROWS)
+</pre></div>
+</div>
+<p>The length in time of the base line fraction is calculated by the fraction of the
+full test pulse length multiplied by the scale delta of the OscilloscopeData
+waves rows, which is the sample interval.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>baselineInTime<span class="w"> </span>=<span class="w"> </span>baseLineFrac<span class="w"> </span>*<span class="w"> </span>lengthTPInPoints<span class="w"> </span>*<span class="w"> </span><span class="nf">DimDelta</span>(OscilloscopeData,<span class="w"> </span>ROWS)
+</pre></div>
+</div>
+<p>For the determination of the baseline level and the steady state level a small
+range of points is taken into account. The range the lowest value of either</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>5 ms</p></li>
+<li><p>20% of the test pulse duration</p></li>
+<li><p>20% of the base line duration</p></li>
+</ul>
+</div></blockquote>
+<p>The range is converted to points by dividing through the sample interval.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>evalRangeInPoints<span class="w"> </span>=<span class="w"> </span><span class="nf">min</span>(5,<span class="w"> </span>0.2<span class="w"> </span>*<span class="w"> </span><span class="nf">min</span>(durationInTime,<span class="w"> </span>baselineInTime))<span class="w"> </span>/<span class="w"> </span><span class="nf">DimDelta</span>(OscilloscopeData,<span class="w"> </span>ROWS)
+</pre></div>
+</div>
+<p>The reference point for the base line determination is defined by the base line
+fraction multiplied by the length of the test pulse in points, which gives the
+onset point of the active test pulse.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>evalOffsetPointsCorrected<span class="w"> </span>=<span class="w"> </span>(TP_EVAL_POINT_OFFSET<span class="w"> </span>/<span class="w"> </span>sampleInt)<span class="w"> </span>*<span class="w"> </span>HARDWARE_ITC_MIN_SAMPINT
+refPoint<span class="w"> </span>=<span class="w"> </span>baselineFrac<span class="w"> </span>*<span class="w"> </span>lengthTPInPoints<span class="w"> </span>-<span class="w"> </span>evalOffsetPointsCorrected
+</pre></div>
+</div>
+<p>The base line range in points is defined from the reference point minus the
+<code class="docutils literal notranslate"><span class="pre">evalRangeInPoints</span></code> to the reference point.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>BaselineSSStartPoint<span class="w"> </span>=<span class="w"> </span>refPoint<span class="w"> </span>-<span class="w"> </span>evalRangeInPoints
+BaselineSSEndPoint<span class="w">   </span>=<span class="w"> </span>refPoint
+</pre></div>
+</div>
+<p>The reference point for the steady state level determination is defined by
+1 - base line fraction multiplied by the length of the test pulse, which gives
+the end point of the active test pulse.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>refPoint<span class="w"> </span>=<span class="w"> </span>(1<span class="w"> </span>-<span class="w"> </span>baselineFrac)<span class="w"> </span>*<span class="w"> </span>lengthTPInPoints<span class="w"> </span>-<span class="w"> </span>evalOffsetPointsCorrected
+</pre></div>
+</div>
+<p>The steady state range in points is defined from the reference point minus the
+<code class="docutils literal notranslate"><span class="pre">evalRangeInPoints</span></code> to the reference point.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>TPSSStartPoint<span class="w"> </span>=<span class="w"> </span>refPoint<span class="w"> </span>-<span class="w"> </span>evalRangeInPoints
+TPSSEndPoint<span class="w">   </span>=<span class="w"> </span>refPoint
+</pre></div>
+</div>
+<p>The range for the points to calculate the instantaneous resistance is a fixed range
+of 0.25 ms. It is converted to points by dividing the sample interval.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>evalRangeInPoints<span class="w"> </span>=<span class="w"> </span>0.25<span class="w"> </span>/<span class="w"> </span><span class="nf">DimDelta</span>(OscilloscopeData,<span class="w"> </span>ROWS)
+</pre></div>
+</div>
+<p>The reference point is defined by the base line
+fraction multiplied by the length of the test pulse in points, which gives the
+onset point of the active test pulse.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>refPoint<span class="w"> </span>=<span class="w"> </span>baselineFrac<span class="w"> </span>*<span class="w"> </span>lengthTPInPoints<span class="w"> </span>+<span class="w"> </span>evalOffsetPointsCorrected
+</pre></div>
+</div>
+<p>The range of points for the instantaneous resistance calculation is defined from
+the reference point to the reference point plus 0.25 ms in points.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>TPInstantaneousOnsetPoint<span class="w"> </span>=<span class="w"> </span>refPoint
+TPInstantaneousEndPoint<span class="w">   </span>=<span class="w"> </span>refPoint<span class="w"> </span>+<span class="w"> </span>evalRangeInPoints
+</pre></div>
+</div>
+<dl class="simple">
+<dt>The calculated ranges are used to create free waves <code class="docutils literal notranslate"><span class="pre">BaselineSS</span></code>, <code class="docutils literal notranslate"><span class="pre">TPSS</span></code> and</dt><dd><p><code class="docutils literal notranslate"><span class="pre">Instantaneous</span></code> that store the specific row range of the OscilloscopeData
+wave. This includes all columns.</p>
+</dd>
+</dl>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="nc">Duplicate</span>/FREE/R=[BaselineSSStartPoint,<span class="w"> </span>BaselineSSEndPoint][]<span class="w"> </span>OscilloscopeData,<span class="w"> </span>BaselineSS
+<span class="nc">Duplicate</span>/FREE/R=[TPSSStartPoint,<span class="w"> </span>TPSSEndPoint][]<span class="w"> </span>OscilloscopeData,<span class="w"> </span>TPSS
+<span class="nc">Duplicate</span>/FREE/R=[TPInstantaneousOnsetPoint,<span class="w"> </span>TPInstantaneousEndPoint][]<span class="w"> </span>OscilloscopeData,<span class="w"> </span>Instantaneous
+</pre></div>
+</div>
+<figure class="align-center">
+<img alt="_images/testPulse-visualization_new.svg" src="_images/testPulse-visualization_new.svg" />
+</figure>
+</section>
+<section id="calculation">
+<h2>Calculation<a class="headerlink" href="#calculation" title="Link to this heading">¶</a></h2>
+<p>The steady state ranges are summed by columns (n x m to 1 x m wave) and divided
+the number of rows (i.e. number of points) to get the average per channel. The
+resulting wave is <code class="docutils literal notranslate"><span class="pre">AvgTPSS</span></code> (1 x m) holding the steady state averages.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="nc">MatrixOP</span><span class="w"> </span>/free<span class="w"> </span>/NTHR<span class="w"> </span>=<span class="w"> </span>0<span class="w"> </span>AvgTPSS<span class="w"> </span>=<span class="w"> </span>sumCols(TPSS)
+avgTPSS<span class="w"> </span>/=<span class="w"> </span><span class="nf">dimsize</span>(TPSS,<span class="w"> </span>ROWS)
+</pre></div>
+</div>
+<p>The base line ranges are summed by columns (n x m to 1 x m wave) and divided
+by the number of rows (equals number of points per channel) to get the average
+per channel. The resulting wave is <code class="docutils literal notranslate"><span class="pre">AvgBaselineSS</span></code> (1 x m) holding the base
+line averages.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="nc">MatrixOp</span><span class="w"> </span>/FREE<span class="w"> </span>/NTHR<span class="w"> </span>=<span class="w"> </span>0<span class="w">   </span>AvgBaselineSS<span class="w"> </span>=<span class="w"> </span>sumCols(BaselineSS)
+AvgBaselineSS<span class="w"> </span>/=<span class="w"> </span><span class="nf">dimsize</span>(BaselineSS,<span class="w"> </span>ROWS)
+</pre></div>
+</div>
+<p>The base line average wave is duplicated to a reduced wave containing only the
+active ADC channels and is put back into the test pulse folder. A reference to
+the reduced wave is kept as <code class="docutils literal notranslate"><span class="pre">BaselineSSAvg</span></code>. The current number of AD channels
+is used to skip the DAC channels. The full remaining range is duplicated, requiring
+that no TTL channels are active (original column order from OscilloscopeData
+wave with DAC, ADC, TTL)</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="nc">Duplicate</span>/O/R=[][ADChannelToMonitor,<span class="w"> </span><span class="nf">dimsize</span>(BaselineSS,1)<span class="w"> </span>-<span class="w"> </span>1]<span class="w"> </span>AvgBaselineSS<span class="w"> </span>dfr:BaselineSSAvg/<span class="kt">Wave</span>=BaselineSSAvg
+</pre></div>
+</div>
+<p>The absolute difference of the steady state level and the base line level is
+calculated by abs(AvgTPSS - AvgBaselineSS) per AD channel and stored in
+<code class="docutils literal notranslate"><span class="pre">AvgDeltaSS</span></code>.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="nc">Duplicate</span>/FREE<span class="w"> </span>AvgTPSS,<span class="w"> </span>AvgDeltaSS
+AvgDeltaSS<span class="w"> </span>-=<span class="w"> </span>AvgBaselineSS
+AvgDeltaSS<span class="w"> </span>=<span class="w"> </span><span class="nf">abs</span>(AvgDeltaSS)
+</pre></div>
+</div>
+<p>A free wave <code class="docutils literal notranslate"><span class="pre">InstAvg</span></code> (1 x col) for calculating the instantaneous average is
+created, where col is the column number of OscilloscopeData, but at least 1.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>columnsInWave<span class="w"> </span>=<span class="w"> </span><span class="nf">dimsize</span>(Instantaneous, 1)
+<span class="k">if</span>(columnsInWave<span class="w"> </span>== 0)
+<span class="w">  </span>columnsInWave<span class="w"> </span>= 1
+<span class="k">endif</span>
+
+<span class="nc">Make</span>/FREE/N=(1,<span class="w"> </span>columnsInWave)<span class="w"> </span>InstAvg
+</pre></div>
+</div>
+<p><strong>For each active AD channel</strong>:</p>
+<blockquote>
+<div><p>The column of <code class="docutils literal notranslate"><span class="pre">Instantaneous</span></code> is extracted to a 1d
+free wave <code class="docutils literal notranslate"><span class="pre">Instantaneous1d</span></code>. WaveStats is applied to retrieve the point location
+of the minimum and maximum value <code class="docutils literal notranslate"><span class="pre">V_minRowLoc</span></code> and <code class="docutils literal notranslate"><span class="pre">V_maxRowLoc</span></code> in <code class="docutils literal notranslate"><span class="pre">Instantaneous1d</span></code>.
+The base line level average for the current AD channel is read from <code class="docutils literal notranslate"><span class="pre">AvgBaselineSS</span></code>
+to the variable <code class="docutils literal notranslate"><span class="pre">OndDBaseline</span></code>, which is not further used.
+Depending on the set clamp mode of the current AD channel from <code class="docutils literal notranslate"><span class="pre">activeHSProp</span></code>
+and the sign of V/I-clamp amplitude of the current device the maximum or minimum
+region is averaged:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>V-clamp mode and positive amplitude -&gt; maximum region</p></li>
+<li><p>V-clamp mode and negative amplitude -&gt; minimum region</p></li>
+<li><p>I-clamp mode and positive amplitude -&gt; maximum region</p></li>
+<li><p>I-clamp mode and negative amplitude -&gt; minimum region</p></li>
+</ul>
+</div></blockquote>
+<p>The average is calculated by using the mean function that averages from scaled
+location x1 to x2. x1 is the scaled location for the point at <code class="docutils literal notranslate"><span class="pre">V_maxRowLoc</span> <span class="pre">-</span> <span class="pre">1</span></code>
+and x2 is the scaled location for the point at <code class="docutils literal notranslate"><span class="pre">V_maxRowLoc</span> <span class="pre">+</span> <span class="pre">1</span></code>. This effectively
+calculated the mean from three consecutive points in <code class="docutils literal notranslate"><span class="pre">Instantaneous1d</span></code> and
+puts it into the first row of <code class="docutils literal notranslate"><span class="pre">InstAvg</span></code> at the unreduced column position of
+the active AD channel.</p>
+<p>The same averaging is done when the minimum region is targeted with <code class="docutils literal notranslate"><span class="pre">V_minRowLoc</span></code>.</p>
+<p>The MultiThread directive is questionable here as it is a single value assignment.</p>
+</div></blockquote>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="k">do</span>
+<span class="w">  </span><span class="nc">matrixOp</span><span class="w"> </span>/Free<span class="w"> </span>Instantaneous1d<span class="w"> </span>=<span class="w"> </span>col(Instantaneous,<span class="w"> </span><span class="nf">i</span><span class="w"> </span>+<span class="w"> </span>ADChannelToMonitor)
+<span class="w">  </span><span class="nc">WaveStats</span>/Q/M=1<span class="w"> </span>Instantaneous1d
+<span class="w">  </span>OndDBaseline<span class="w"> </span>=<span class="w"> </span>AvgBaselineSS[0][<span class="nf">i</span><span class="w"> </span>+<span class="w"> </span>ADChannelToMonitor]
+<span class="w">  </span><span class="k">if</span>((activeHSProp[<span class="nf">i</span>][%ClampMode]<span class="w"> </span>==<span class="w"> </span>V_CLAMP_MODE<span class="w"> </span>?<span class="w"> </span><span class="nf">sign</span>(amplitudeVCGlobal)<span class="w"> </span>:<span class="w"> </span><span class="nf">sign</span>(amplitudeICGlobal))<span class="w"> </span>==<span class="w"> </span>1)<span class="w"> </span><span class="c1">// handles positive or negative TPs</span>
+<span class="w">    </span><span class="kr">Multithread</span><span class="w"> </span>InstAvg[0][<span class="nf">i</span><span class="w"> </span>+<span class="w"> </span>ADChannelToMonitor]<span class="w"> </span>=<span class="w"> </span><span class="nf">mean</span>(Instantaneous1d,<span class="w"> </span><span class="nf">pnt2x</span>(Instantaneous1d,<span class="w"> </span>V_maxRowLoc<span class="w"> </span>-<span class="w"> </span>1),<span class="w"> </span><span class="nf">pnt2x</span>(Instantaneous1d,<span class="w"> </span>V_maxRowLoc<span class="w"> </span>+ 1))
+<span class="w">  </span><span class="k">else</span>
+<span class="w">    </span><span class="kr">Multithread</span><span class="w"> </span>InstAvg[0][<span class="nf">i</span><span class="w"> </span>+<span class="w"> </span>ADChannelToMonitor]<span class="w"> </span>=<span class="w"> </span><span class="nf">mean</span>(Instantaneous1d,<span class="w"> </span><span class="nf">pnt2x</span>(Instantaneous1d,<span class="w"> </span>V_minRowLoc<span class="w"> </span>-<span class="w"> </span>1),<span class="w"> </span><span class="nf">pnt2x</span>(Instantaneous1d,<span class="w"> </span>V_minRowLoc<span class="w"> </span>+ 1))
+<span class="w">  </span><span class="k">endif</span>
+<span class="w">  </span><span class="nf">i</span><span class="w"> </span>+= 1
+<span class="k">while</span>(<span class="nf">i</span><span class="w"> </span>&lt;<span class="w"> </span>(columnsInWave<span class="w"> </span>-<span class="w"> </span>ADChannelToMonitor))
+</pre></div>
+</div>
+<p>Afterwards the absolute difference to the base line averages from
+<code class="docutils literal notranslate"><span class="pre">AvgBaselineSS</span></code> is calculated and put back to <code class="docutils literal notranslate"><span class="pre">InstAvg</span></code>. Also here the
+MultiThread is questionable as the wave is (1 x m) with m the number of channels.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kr">Multithread</span><span class="w"> </span>InstAvg<span class="w"> </span>-=<span class="w"> </span>AvgBaselineSS
+<span class="kr">Multithread</span><span class="w"> </span>InstAvg<span class="w"> </span>=<span class="w"> </span><span class="nf">abs</span>(InstAvg)
+</pre></div>
+</div>
+<p>The steady state delta wave is duplicated to a reduced wave containing only the
+active AD channels and is put back into the test pulse folder. A reference to
+the reduced wave is kept as <code class="docutils literal notranslate"><span class="pre">SSResistance</span></code>. The current number of AD channels
+is used to skip the DAC channels. The full remaining range is duplicated, requiring
+that no TTL channels are active (original column order from OscilloscopeData
+wave with DAC, ADC, TTL)</p>
+<p>The x scale of the <code class="docutils literal notranslate"><span class="pre">SSResistance</span></code> wave is set to the time where the
+TPSSEndPoint is located. As <code class="docutils literal notranslate"><span class="pre">SSResistance</span></code> is a (1 x m) wave, this sets the
+time point for the averaged data.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="nc">Duplicate</span>/O/R=[][ADChannelToMonitor,<span class="w"> </span><span class="nf">dimsize</span>(TPSS,1)<span class="w"> </span>-<span class="w"> </span>1]<span class="w"> </span>AvgDeltaSS<span class="w"> </span>dfr:SSResistance/<span class="kt">Wave</span>=SSResistance
+<span class="nc">SetScale</span>/P<span class="w"> </span>x<span class="w"> </span><span class="nf">IndexToScale</span>(OscilloscopeData,<span class="w"> </span>TPSSEndPoint,<span class="w"> </span>ROWS),1,<span class="s">&quot;ms&quot;</span>,<span class="w"> </span>SSResistance<span class="w"> </span><span class="c1">// this line determines where the value sit on the bottom axis of the oscilloscope</span>
+</pre></div>
+</div>
+<p>The instantaneous average wave is duplicated to a reduced wave containing only the
+active AD channels and is put back into the test pulse folder. A reference to
+the reduced wave is kept as <code class="docutils literal notranslate"><span class="pre">InstResistance</span></code>. The current number of AD channels
+is used to skip the DAC channels. The full remaining range is duplicated, requiring
+that no TTL channels are active (original column order from OscilloscopeData
+wave with DAC, ADC, TTL)</p>
+<p>The x scale of the <code class="docutils literal notranslate"><span class="pre">InstResistance</span></code> wave is set to the time where the
+<code class="docutils literal notranslate"><span class="pre">TPInstantaneousOnsetPoint</span></code> is located. As <code class="docutils literal notranslate"><span class="pre">InstResistance</span></code> is a (1 x m) wave,
+this sets the time point for the averaged data.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="nc">Duplicate</span>/O/R=[][(ADChannelToMonitor),<span class="w"> </span>(<span class="nf">dimsize</span>(TPSS,1)<span class="w"> </span>-<span class="w"> </span>1)]<span class="w"> </span>InstAvg<span class="w"> </span>dfr:InstResistance/<span class="kt">Wave</span>=InstResistance
+<span class="nc">SetScale</span>/P<span class="w"> </span>x<span class="w"> </span><span class="nf">IndexToScale</span>(OscilloscopeData,<span class="w"> </span>TPInstantaneousOnsetPoint,<span class="w"> </span>ROWS),1,<span class="s">&quot;ms&quot;</span>,<span class="w"> </span>InstResistance
+</pre></div>
+</div>
+<p>For each active AD channel: The actual resistance is calculated by the formula R = U / I for
+<code class="docutils literal notranslate"><span class="pre">SSResistance</span></code> and <code class="docutils literal notranslate"><span class="pre">InstResistance</span></code>.</p>
+<p>For I-clamp mode of the current channel:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>SSResistance = <code class="docutils literal notranslate"><span class="pre">AvgDeltaSS</span></code> / <code class="docutils literal notranslate"><span class="pre">amplitudeIC</span></code> * 1000</p></li>
+<li><p>InstResistance = <code class="docutils literal notranslate"><span class="pre">InstAvg</span></code> / <code class="docutils literal notranslate"><span class="pre">amplitudeIC</span></code> * 1000</p></li>
+</ul>
+</div></blockquote>
+<p>For V-clamp mode of the current channel:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>SSResistance = <code class="docutils literal notranslate"><span class="pre">amplitudeVC</span></code> / <code class="docutils literal notranslate"><span class="pre">AvgDeltaSS</span></code> * 1000</p></li>
+<li><p>InstResistance = <code class="docutils literal notranslate"><span class="pre">amplitudeVC</span></code> / <code class="docutils literal notranslate"><span class="pre">InstAvg</span></code> * 1000</p></li>
+</ul>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">AvgDeltaSS</span></code> contains the absolute difference of the steady state level and the base line level.
+<code class="docutils literal notranslate"><span class="pre">InstAvg</span></code> contains the absolute difference of the instantaneous level and the base line level.
+By default the current values are in pA and the voltage values in mV, thus the resulting resistance values are
+in MΩ.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="nf">i</span><span class="w"> </span>= 0
+<span class="k">do</span>
+<span class="w">  </span><span class="k">if</span>(activeHSProp[<span class="nf">i</span>][%ClampMode]<span class="w"> </span>==<span class="w"> </span>I_CLAMP_MODE)
+<span class="w">    </span><span class="c1">// R = V / I</span>
+<span class="w">    </span><span class="kr">Multithread</span><span class="w"> </span>SSResistance[0][<span class="nf">i</span>]<span class="w"> </span>=<span class="w"> </span>(AvgDeltaSS[0][<span class="nf">i</span><span class="w"> </span>+<span class="w"> </span>ADChannelToMonitor]<span class="w"> </span>/<span class="w"> </span>(amplitudeIC)) * 1000
+<span class="w">    </span><span class="kr">Multithread</span><span class="w"> </span>InstResistance[0][<span class="nf">i</span>]<span class="w"> </span>=<span class="w">  </span>(InstAvg[0][<span class="nf">i</span><span class="w"> </span>+<span class="w"> </span>ADChannelToMonitor]<span class="w"> </span>/<span class="w"> </span>(amplitudeIC)) * 1000
+<span class="w">  </span><span class="k">else</span>
+<span class="w">    </span><span class="kr">Multithread</span><span class="w"> </span>SSResistance[0][<span class="nf">i</span>]<span class="w"> </span>=<span class="w"> </span>((amplitudeVC)<span class="w"> </span>/<span class="w"> </span>AvgDeltaSS[0][<span class="nf">i</span><span class="w"> </span>+<span class="w"> </span>ADChannelToMonitor]) * 1000
+<span class="w">    </span><span class="kr">Multithread</span><span class="w"> </span>InstResistance[0][<span class="nf">i</span>]<span class="w"> </span>=<span class="w"> </span>((amplitudeVC)<span class="w"> </span>/<span class="w"> </span>InstAvg[0][<span class="nf">i</span><span class="w"> </span>+<span class="w"> </span>ADChannelToMonitor]) * 1000
+<span class="w">  </span><span class="k">endif</span>
+<span class="w">  </span><span class="nf">i</span><span class="w"> </span>+= 1
+<span class="k">while</span>(<span class="nf">i</span><span class="w"> </span>&lt;<span class="w"> </span>(<span class="nf">dimsize</span>(AvgDeltaSS,<span class="w"> </span>1)<span class="w"> </span>-<span class="w"> </span>ADChannelToMonitor))
+</pre></div>
+</div>
+<p>columns is set that holds the number of active AD channels, but at least 1.
+It is later used to set the number of ADCs for calling <a class="reference internal" href="file/_m_i_e_s___test_pulse_8ipf.html#_CPPv411TP_RecordTP6string4wave" title="TP_RecordTP"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">TP_RecordTP()</span></code></a>.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>columns<span class="w"> </span>=<span class="w"> </span><span class="nf">DimSize</span>(TPSS,<span class="w"> </span>1)<span class="w"> </span>-<span class="w"> </span>ADChannelToMonitor
+<span class="k">if</span>(!columns)
+<span class="w">  </span>columns<span class="w"> </span>= 1
+<span class="k">endif</span>
+</pre></div>
+</div>
+<figure class="align-center">
+<img alt="_images/testPulse-averaging.svg" src="_images/testPulse-averaging.svg" />
+</figure>
+</section>
+<section id="running-average-of-results">
+<h2>Running Average of results<a class="headerlink" href="#running-average-of-results" title="Link to this heading">¶</a></h2>
+<p>A running average is applied if <code class="docutils literal notranslate"><span class="pre">tpBufferSize</span></code> is greater than one.
+<code class="docutils literal notranslate"><span class="pre">TPBaselineBuffer</span></code>, <code class="docutils literal notranslate"><span class="pre">TPInstBuffer</span></code> and <code class="docutils literal notranslate"><span class="pre">TPSSBuffer</span></code> are the waves holding
+the values for the running average and are at maximum (tpBufferSize x m) in size.
+<a class="reference internal" href="file/_m_i_e_s___test_pulse_8ipf.html#_CPPv419TP_CalculateAverage4wave4wave" title="TP_CalculateAverage"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">TP_CalculateAverage()</span></code></a> takes the new value from the second parameter and puts the
+averaged value back therein.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="k">if</span>(tpBufferSize<span class="w"> </span>&gt; 1)
+<span class="w">   </span><span class="c1">// the first row will hold the value of the most recent TP,</span>
+<span class="w">   </span><span class="c1">// the waves will be averaged and the value will be passed into what was storing the data for the most recent TP</span>
+<span class="w">   </span><span class="kt">WAVE</span>/SDFR=dfr<span class="w"> </span>TPBaselineBuffer,<span class="w"> </span>TPInstBuffer,<span class="w"> </span>TPSSBuffer
+
+<span class="w">  </span>TP_CalculateAverage(TPBaselineBuffer,<span class="w"> </span>BaselineSSAvg)
+<span class="w">  </span>TP_CalculateAverage(TPInstBuffer,<span class="w"> </span>InstResistance)
+<span class="w">  </span>TP_CalculateAverage(TPSSBuffer,<span class="w"> </span>SSResistance)
+<span class="k">endif</span>
+</pre></div>
+</div>
+</section>
+<section id="final-calls">
+<h2>Final Calls<a class="headerlink" href="#final-calls" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">numADCs</span></code> is set to the value of columns and <a class="reference internal" href="file/_m_i_e_s___test_pulse_8ipf.html#_CPPv411TP_RecordTP6string4wave" title="TP_RecordTP"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">TP_RecordTP()</span></code></a> is called to
+set the TPStorage wave with the given averages. All the input waves are reduced
+waves holding only AD channels. <a class="reference internal" href="file/_m_i_e_s___data_acquisition_8ipf.html#_CPPv416DQ_ApplyAutoBias6string4wave" title="DQ_ApplyAutoBias"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">DQ_ApplyAutoBias()</span></code></a> is called with the
+current values of <code class="docutils literal notranslate"><span class="pre">BaselineSSAvg</span></code> and <code class="docutils literal notranslate"><span class="pre">SSResistance</span></code>.
+Finally the elapsed time since function start is printed to the debug output.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kt">variable</span><span class="w"> </span>numADCs<span class="w"> </span>=<span class="w"> </span>columns
+TP_RecordTP(device,<span class="w"> </span>BaselineSSAvg,<span class="w"> </span>InstResistance,<span class="w"> </span>SSResistance,<span class="w"> </span>numADCs)
+DQ_ApplyAutoBias(device,<span class="w"> </span>BaselineSSAvg,<span class="w"> </span>SSResistance)
+
+DEBUGPRINT_ELAPSED(referenceTime)
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grouplist.html">Group list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Testpulse Analysis Algorithm</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#description">Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#principles">Principles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#miscellaneous-at-startup">Miscellaneous at startup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#retrieving-input-data">Retrieving input data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#extraction-of-ranges">Extraction of ranges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#calculation">Calculation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-average-of-results">Running Average of results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#final-calls">Final Calls</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="IPNWB/doc/nwb2.html"
+                          title="previous chapter">NWB version 2</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="asyncframework.html"
+                          title="next chapter">Async Framework</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="asyncframework.html" title="Async Framework"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="IPNWB/doc/nwb2.html" title="NWB version 2"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Testpulse Analysis Algorithm</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

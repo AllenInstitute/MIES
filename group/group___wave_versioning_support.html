@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Group WaveVersioningSupport &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File list" href="../filelist.html" />
+    <link rel="prev" title="Group StimsetAPIFunctions" href="group___stimset_a_p_i_functions.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../filelist.html" title="File list"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="group___stimset_a_p_i_functions.html" title="Group StimsetAPIFunctions"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../grouplist.html" accesskey="U">Group list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Group WaveVersioningSupport</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="group-waveversioningsupport">
+<span id="id1"></span><h1>Group WaveVersioningSupport<a class="headerlink" href="#group-waveversioningsupport" title="Link to this heading">¶</a></h1>
+<dl>
+<dt class="sig sig-object cpp">
+<span class="target" id="group___wave_versioning_support"></span><em><span class="pre">group</span></em> <span class="sig-name descname"><span class="pre">Wave</span> <span class="pre">versioning</span> <span class="pre">support</span></span></dt>
+<dd><p>The wave getter functions always return an existing wave. This can result in problems if the layout of the wave changes.</p>
+<p>Layout in this context means:<ul class="simple">
+<li><p>Sizes of all dimensions</p></li>
+<li><p>Labels of all dimensions</p></li>
+<li><p>Wave data type</p></li>
+<li><p>Prefilled wave content or wave note</p></li>
+</ul>
+</p>
+<p>This also means that the name and location of the wave does <em>not</em> influence the wave version. Use <a class="reference internal" href="#group___wave_versioning_support_1ga677057601df492f62d924a538eac1afc"><span class="std std-ref">UpgradeWaveLocationAndGetIt()</span></a> if you need to move the wave. The main reason is that for being able to query the wave version you already need to know where it is.</p>
+<p>In order to enable smooth upgrades between old and new wave layouts the following code pattern can be used: <p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kr">Function</span>/<span class="kt">Wave</span><span class="w"> </span>GetMyWave(device)
+<span class="w">    </span><span class="kt">string</span><span class="w"> </span>device
+
+<span class="w">    </span><span class="kt">DFREF</span><span class="w"> </span>dfr<span class="w"> </span>=<span class="w"> </span>GetMyPath(device)
+<span class="w">    </span><span class="kt">variable</span><span class="w"> </span>versionOfNewWave<span class="w"> </span>= 2
+
+<span class="w">    </span><span class="kt">Wave</span>/Z/SDFR=dfr<span class="w"> </span>wv<span class="w"> </span>=<span class="w"> </span>myWave
+
+<span class="w">    </span><span class="k">if</span>(ExistsWithCorrectLayoutVersion(wv,<span class="w"> </span>versionOfNewWave))
+<span class="w">        </span><span class="k">return</span><span class="w"> </span>wv
+<span class="w">    </span><span class="k">elseif</span>(<span class="nf">WaveExists</span>(wv))<span class="w"> </span><span class="c1">// handle upgrade</span>
+<span class="w">        </span><span class="k">if</span>(WaveVersionIsAtLeast(wv,<span class="w"> </span>1))<span class="w"> </span><span class="c1">// 1-&gt;2</span>
+<span class="w">            </span><span class="nc">Redimension</span>/D<span class="w"> </span>wv
+<span class="w">        </span><span class="k">else</span><span class="w"> </span><span class="c1">// no-version-&gt;2</span>
+<span class="w">            </span><span class="c1">// change the required dimensions and leave all others untouched with -1</span>
+<span class="w">            </span><span class="c1">// the extended dimensions are initialized with zero</span>
+<span class="w">            </span><span class="nc">Redimension</span>/D/N=(10,<span class="w"> </span>-1,<span class="w"> </span>-1,<span class="w"> </span>-1)<span class="w"> </span>wv
+<span class="w">        </span><span class="k">endif</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">        </span><span class="nc">Make</span>/R/N=(10,<span class="w"> </span>2)<span class="w"> </span>dfr:myWave/<span class="kt">Wave</span>=wv
+<span class="w">    </span><span class="k">endif</span>
+
+<span class="w">    </span>SetWaveVersion(wv,<span class="w"> </span>versionOfNewWave)
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span>wv
+<span class="kr">End</span>
+</pre></div>
+</div>
+</p>
+</p>
+<p>Now everytime the layout of <code class="docutils literal notranslate"><span class="pre">myWave</span></code> changes, raise <code class="docutils literal notranslate"><span class="pre">versionOfNewWave</span></code> by 1 and add a new <code class="docutils literal notranslate"><span class="pre">WaveVersionIsAtLeast</span></code> branch. When <code class="docutils literal notranslate"><span class="pre">GetMyWave</span></code> is called the first time, the wave is redimensioned or rebuilt as double wave depending on the current version, and on successive calls the wave is returned as is.</p>
+<p>Hints:<ul class="simple">
+<li><p>Wave layout versioning is <em>mandatory</em> if you change the layout of the wave</p></li>
+<li><p>Wave layout versions start with 1 and are integers</p></li>
+<li><p>Rule of thumb: Raise the version if you change anything in or below the <code class="docutils literal notranslate"><span class="pre">Make</span></code> line</p></li>
+<li><p>Wave versioning needs a special wave note style, see <a class="reference internal" href="../file/_m_i_e_s___utilities___wave_handling_8ipf.html#_m_i_e_s___utilities___wave_handling_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513"><span class="std std-ref">GetNumberFromWaveNote</span></a></p></li>
+</ul>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430ExistsWithCorrectLayoutVersion10WaveOrNull8variable">
+<span id="_CPPv330ExistsWithCorrectLayoutVersion10WaveOrNull8variable"></span><span id="_CPPv230ExistsWithCorrectLayoutVersion10WaveOrNull8variable"></span><span id="ExistsWithCorrectLayoutVersion__WaveOrNull.variable"></span><span class="target" id="group___wave_versioning_support_1ga6855576336de95961a286c6adfbab288"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExistsWithCorrectLayoutVersion</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">versionOfNewWave</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430ExistsWithCorrectLayoutVersion10WaveOrNull8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Check if wv exists and has the correct version UTF_NOINSTRUMENTATION. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420WaveVersionIsAtLeast10WaveOrNull8variable">
+<span id="_CPPv320WaveVersionIsAtLeast10WaveOrNull8variable"></span><span id="_CPPv220WaveVersionIsAtLeast10WaveOrNull8variable"></span><span id="WaveVersionIsAtLeast__WaveOrNull.variable"></span><span class="target" id="group___wave_versioning_support_1gaed4ce3b532835da1a8b4d2b3ccae443e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WaveVersionIsAtLeast</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">existingVersion</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420WaveVersionIsAtLeast10WaveOrNull8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Check if the given wave’s version is equal or larger than the given version, if version is not set false is returned. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415IsWaveVersioned4wave">
+<span id="_CPPv315IsWaveVersioned4wave"></span><span id="_CPPv215IsWaveVersioned4wave"></span><span id="IsWaveVersioned__wave"></span><span class="target" id="group___wave_versioning_support_1gafe981e5e5f50aff67d2c77fac89821ca"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsWaveVersioned</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415IsWaveVersioned4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns 1 if the wave has a valid version information attached, 0 otherwise. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420WaveVersionIsSmaller10WaveOrNull8variable">
+<span id="_CPPv320WaveVersionIsSmaller10WaveOrNull8variable"></span><span id="_CPPv220WaveVersionIsSmaller10WaveOrNull8variable"></span><span id="WaveVersionIsSmaller__WaveOrNull.variable"></span><span class="target" id="group___wave_versioning_support_1gad594ea44aa39c25df70e7efe3a48c091"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WaveVersionIsSmaller</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">existingVersion</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420WaveVersionIsSmaller10WaveOrNull8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Check if the given wave’s version is smaller than the given version, if version is not set true is returned. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414GetWaveVersion10WaveOrNull">
+<span id="_CPPv314GetWaveVersion10WaveOrNull"></span><span id="_CPPv214GetWaveVersion10WaveOrNull"></span><span id="GetWaveVersion__WaveOrNull"></span><span class="target" id="group___wave_versioning_support_1gabf2dcd5f72f5e21c82ca805739a0beb4"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetWaveVersion</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414GetWaveVersion10WaveOrNull" title="Link to this definition">¶</a><br /></dt>
+<dd><p>return the Version of the Wave, returns NaN if no version was set UTF_NOINSTRUMENTATION </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414SetWaveVersion4wave8variable">
+<span id="_CPPv314SetWaveVersion4wave8variable"></span><span id="_CPPv214SetWaveVersion4wave8variable"></span><span id="SetWaveVersion__wave.variable"></span><span class="target" id="group___wave_versioning_support_1ga65c056aed5f84f15e4066ea9b63d2088"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetWaveVersion</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414SetWaveVersion4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Set the wave layout version of wave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418IsValidWaveVersion8variable">
+<span id="_CPPv318IsValidWaveVersion8variable"></span><span id="_CPPv218IsValidWaveVersion8variable"></span><span id="IsValidWaveVersion__variable"></span><span class="target" id="group___wave_versioning_support_1ga77ad61982a8945382436bc5fe2f18205"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsValidWaveVersion</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418IsValidWaveVersion8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>A valid wave version is a positive non-zero integer. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430ClearWaveNoteExceptWaveVersion4wave">
+<span id="_CPPv330ClearWaveNoteExceptWaveVersion4wave"></span><span id="_CPPv230ClearWaveNoteExceptWaveVersion4wave"></span><span id="ClearWaveNoteExceptWaveVersion__wave"></span><span class="target" id="group___wave_versioning_support_1ga6913c7a4d9472ebdf9243661f9909d80"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClearWaveNoteExceptWaveVersion</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430ClearWaveNoteExceptWaveVersion4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Clear the wave note but keep any valid wave version. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425UpgradeDataFolderLocation6string6string">
+<span id="_CPPv325UpgradeDataFolderLocation6string6string"></span><span id="_CPPv225UpgradeDataFolderLocation6string6string"></span><span id="UpgradeDataFolderLocation__string.string"></span><span class="target" id="group___wave_versioning_support_1ga8abaacf40aaf250fefd4aa37cfcc79f7"></span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpgradeDataFolderLocation</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">oldFolder</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">newFolder</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425UpgradeDataFolderLocation6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Move/Rename a datafolder across different locations. </p>
+<p>Both parameters must be absolute datafolder locations. Cases where both exist are also handled gracefully.</p>
+<p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kr">Function</span>/DF<span class="w"> </span>GetMyFolder()
+<span class="w">    </span><span class="k">return</span><span class="w"> </span>UpgradeDataFolderLocation(<span class="s">&quot;root:old&quot;</span>,<span class="w"> </span><span class="s">&quot;root:new&quot;</span>)
+<span class="kr">End</span>
+</pre></div>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DFREF to the <code class="docutils literal notranslate"><span class="pre">newFolder</span></code> with the contents of <code class="docutils literal notranslate"><span class="pre">oldFolder</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427UpgradeWaveLocationAndGetItP15WaveLocationMod">
+<span id="_CPPv327UpgradeWaveLocationAndGetItP15WaveLocationMod"></span><span id="_CPPv227UpgradeWaveLocationAndGetItP15WaveLocationMod"></span><span id="UpgradeWaveLocationAndGetIt__WaveLocationModP"></span><span class="target" id="group___wave_versioning_support_1ga677057601df492f62d924a538eac1afc"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpgradeWaveLocationAndGetIt</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/_m_i_e_s___structures_8ipf.html#_CPPv415WaveLocationMod" title="WaveLocationMod"><span class="n"><span class="pre">WaveLocationMod</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">p</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427UpgradeWaveLocationAndGetItP15WaveLocationMod" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Rename/Move a wave to a new location. </p>
+<p>Valid transformations (and all combinations of them):<ul class="simple">
+<li><p>Moving into a new datafolder</p></li>
+<li><p>Renaming to a new name</p></li>
+<li><p>Nothing</p></li>
+</ul>
+</p>
+<p>The function is idempotent (i.e. it can be called also on already relocated waves). Cases where new == old are also handled gracefully.</p>
+<p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kr">Function</span>/<span class="kt">WAVE</span><span class="w"> </span>GetMyWave(device)
+<span class="w">    </span><span class="kt">string</span><span class="w"> </span>device
+
+<span class="w">    </span><span class="kt">variable</span><span class="w"> </span>versionOfNewWave<span class="w"> </span>= 1
+<span class="w">    </span><span class="kt">string</span><span class="w"> </span>newName<span class="w"> </span>=<span class="w"> </span><span class="s">&quot;newAndNiceName&quot;</span>
+<span class="w">    </span><span class="kt">DFREF</span><span class="w"> </span>newDFR<span class="w"> </span>=<span class="w"> </span>GetNewAndFancyFolder(device)
+
+<span class="w">    </span><span class="kt">STRUCT</span><span class="w"> </span>WaveLocationMod<span class="w"> </span>p
+<span class="w">    </span>p.dfr<span class="w">     </span>=<span class="w"> </span>$(GetSomeFolder(device)<span class="w"> </span>+<span class="w"> </span><span class="s">&quot;:oldSubFolder&quot;</span>)
+<span class="w">    </span>p.newDFR<span class="w">  </span>=<span class="w"> </span>newDFR
+<span class="w">    </span>p.name<span class="w">    </span>=<span class="w"> </span><span class="s">&quot;oldAndUglyName&quot;</span>
+<span class="w">    </span>p.newName<span class="w"> </span>=<span class="w"> </span>newName
+
+<span class="w">    </span><span class="kt">WAVE</span>/Z<span class="w"> </span>wv<span class="w"> </span>=<span class="w"> </span>UpgradeWaveLocationAndGetIt(p)
+
+<span class="w">    </span><span class="k">if</span>(ExistsWithCorrectLayoutVersion(wv,<span class="w"> </span>versionOfNewWave))
+<span class="w">        </span><span class="k">return</span><span class="w"> </span>wv
+<span class="w">    </span><span class="k">elseif</span>(<span class="nf">WaveExists</span>(wv))
+<span class="w">        </span><span class="c1">// handle upgrade</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">        </span><span class="nc">Make</span>/R/N=(10,<span class="w"> </span>2)<span class="w"> </span>newDFR:newName/<span class="kt">Wave</span>=wv
+<span class="w">    </span><span class="kr">end</span>
+
+<span class="w">    </span>SetWaveVersion(wv,<span class="w"> </span>versionOfNewWave)
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span>wv
+<span class="kr">End</span>
+</pre></div>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>wave reference to the wave in the new location, an invalid one if the wave does not exist at the specified former location </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../grouplist.html">Group list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="group___analysis_function_parameter_helpers.html">Group AnalysisFunctionParameterHelpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group___background_functions.html">Group BackgroundFunctions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group___labnotebook_query_functions.html">Group LabnotebookQueryFunctions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group___stimset_a_p_i_functions.html">Group StimsetAPIFunctions</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Group WaveVersioningSupport</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430ExistsWithCorrectLayoutVersion10WaveOrNull8variable"><code class="docutils literal notranslate"><span class="pre">ExistsWithCorrectLayoutVersion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420WaveVersionIsAtLeast10WaveOrNull8variable"><code class="docutils literal notranslate"><span class="pre">WaveVersionIsAtLeast()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415IsWaveVersioned4wave"><code class="docutils literal notranslate"><span class="pre">IsWaveVersioned()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420WaveVersionIsSmaller10WaveOrNull8variable"><code class="docutils literal notranslate"><span class="pre">WaveVersionIsSmaller()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414GetWaveVersion10WaveOrNull"><code class="docutils literal notranslate"><span class="pre">GetWaveVersion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414SetWaveVersion4wave8variable"><code class="docutils literal notranslate"><span class="pre">SetWaveVersion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418IsValidWaveVersion8variable"><code class="docutils literal notranslate"><span class="pre">IsValidWaveVersion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430ClearWaveNoteExceptWaveVersion4wave"><code class="docutils literal notranslate"><span class="pre">ClearWaveNoteExceptWaveVersion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425UpgradeDataFolderLocation6string6string"><code class="docutils literal notranslate"><span class="pre">UpgradeDataFolderLocation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427UpgradeWaveLocationAndGetItP15WaveLocationMod"><code class="docutils literal notranslate"><span class="pre">UpgradeWaveLocationAndGetIt()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="group___stimset_a_p_i_functions.html"
+                          title="previous chapter">Group StimsetAPIFunctions</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="../filelist.html"
+                          title="next chapter">File list</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../filelist.html" title="File list"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="group___stimset_a_p_i_functions.html" title="Group StimsetAPIFunctions"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../grouplist.html" >Group list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Group WaveVersioningSupport</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

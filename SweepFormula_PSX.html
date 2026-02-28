@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>SweepFormula PSC/PSP classification &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation instructions" href="installation.html" />
+    <link rel="prev" title="Analysis function parameters" href="analysis-function-parameters.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="installation.html" title="Installation instructions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="analysis-function-parameters.html" title="Analysis function parameters"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="user.html" accesskey="U">User documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">SweepFormula PSC/PSP classification</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="sweepformula-psc-psp-classification">
+<span id="sweepformula-psx"></span><h1>SweepFormula PSC/PSP classification<a class="headerlink" href="#sweepformula-psc-psp-classification" title="Link to this heading">¶</a></h1>
+<section id="algorithm">
+<h2>Algorithm<a class="headerlink" href="#algorithm" title="Link to this heading">¶</a></h2>
+<p>The algorithm for finding psc/psp events can be summarized as follows:</p>
+<ul class="simple">
+<li><p>The deconvolution kernel is created by the <cite>psxKernel</cite> operation using the rise/decay tau and an amplitude</p></li>
+<li><p>Sweep data is zeroed, filtered using a bandpass filter and then deconvoluted with the kernel</p></li>
+<li><p>With the number of standard deviations passed to <cite>psx</cite> we then calculate the peak threshold in the
+deconvoluted data</p></li>
+<li><p>This peak threshold is then used to find the events in the deconvoluted data this gives <cite>deconvPeak</cite> and
+<cite>deoconvPeak_t</cite></p></li>
+<li><p>Throw away events which have an amplitude with different sign as the kernel amplitude</p></li>
+<li><p>Calculate <cite>peak</cite> and <cite>peak_t</cite> via taking the maximum (positive kernel amp sign) or minimum (negative kernel
+amp sign) in the range of <cite>[deconvPeak_t – kernelRiseTau or devonvPeak_t of the previous event (whichever
+comes later), deconvPeak_t + 0.33 * kernelDecayTau or deconvPeak_t of the next event (which ever comes
+first)]</cite> in the filtered sweep wave</p></li>
+<li><p>Calculate <cite>baseline</cite> and <cite>baseline_t</cite> via maximum (negative kernel amp sign) or minimum (positive kernel amp
+sign) in the range of <cite>[peak_t – 10 * kernelRiseTau, peak_t]</cite>, averaged over +/- 5 points, in the filtered
+sweep wave</p></li>
+<li><p><cite>iei</cite> is the time difference between two events’ <cite>peak_t</cite> values</p></li>
+<li><p><cite>tau</cite> and the fit result values are calculated from an exponential fit</p></li>
+<li><p>Calculate <cite>Slew Rate</cite> and <cite>Slew Rate Time</cite> via taking the maximum (positive kernel amp sign) or minimum (negative kernel
+amp sign) in the range of <cite>[peak_t, baseline_t]</cite></p></li>
+<li><p>Calculate <cite>Onset Time</cite> using the y level crossing at differential threshold percentage from <cite>psxRiseTime</cite> of
+the difference between the <cite>Slew Rate</cite> and filteered sweep data at <cite>baseline_t</cite></p></li>
+<li><p>Calculate <cite>Rise Time</cite> by finding the two level crossings, lower and upper thresholds from <cite>psxRiseTime</cite> in
+the range <cite>Onset Time</cite> to <cite>peak_t</cite> corrected by invertred kernel amplitude sign</p></li>
+</ul>
+</section>
+<section id="gui">
+<h2>GUI<a class="headerlink" href="#gui" title="Link to this heading">¶</a></h2>
+<p>When using the <a class="reference internal" href="SweepFormula.html#sf-op-psx"><span class="std std-ref">psx</span></a> SweepFormula operation the normal graphing is
+enhanced by various additional graphs and user interface options.
+The following graph shows the layout for a <cite>psx</cite> and <cite>psxStats</cite> operation with
+real acquired data.</p>
+<figure class="align-center" id="id2">
+<span id="figure-sweepformula-psx"></span><img alt="_images/SweepFormula-PSX-GUI.png" src="_images/SweepFormula-PSX-GUI.png" />
+<figcaption>
+<p><span class="caption-text">SweepFormula PSX GUI</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>The main panel <code class="docutils literal notranslate"><span class="pre">SweepFormula</span> <span class="pre">plot</span> <span class="pre">from</span> <span class="pre">&lt;Browser&gt;</span></code> has a left vertical column
+with UI controls, the <cite>psx</cite> graph at the top and a <cite>psxstats</cite> graph at the bottom.</p>
+<p>Above the main panel are again some UI controls on the very left, the all event
+graph and then the single event graph at the very right.</p>
+<div class="video_wrapper" style="">
+<iframe allowfullscreen="true" src="https://www.youtube.com/embed/O2WxPzBsEfc" style="border: 0; height: 345px; width: 560px">
+</iframe></div></section>
+<section id="main-panel">
+<h2>Main panel<a class="headerlink" href="#main-panel" title="Link to this heading">¶</a></h2>
+<section id="left-ui-controls">
+<h3>Left UI controls<a class="headerlink" href="#left-ui-controls" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Store</span></code>: Store the event properties including the classification results
+(<code class="docutils literal notranslate"><span class="pre">Event</span> <span class="pre">State</span></code> and <code class="docutils literal notranslate"><span class="pre">Fit</span> <span class="pre">State</span></code>) in the results waves using the
+<code class="docutils literal notranslate"><span class="pre">id</span></code> as key and JSON as serialization format.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Load</span></code>: Load the event properties from the results wave using the currently
+active <code class="docutils literal notranslate"><span class="pre">id</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Jump</span></code>: Jump to the next event having event state undetermined, also
+changes the combination if required.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Suppress</span> <span class="pre">Update</span></code>: Avoid updating the top all and single event graphs on
+event/fit state and/or cursor changes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ListBox</span></code>: The combinations listbox has an entry for every combination of
+<code class="docutils literal notranslate"><span class="pre">range</span></code> and <code class="docutils literal notranslate"><span class="pre">select</span></code> where <cite>psx</cite> found at least one event. The <cite>psx</cite>
+graph only ever plots one combination, and therefore one can choose the
+to-be-plotted combination here.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">i</span></code>: Button to copy the <cite>psx</cite>/<cite>psxkernel</cite>/<cite>psxRiseTime</cite> input parameters to
+the clipboard</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">UI</span></code>: Hover over this element with the mouse to learn about the keyboard shortcuts</p></li>
+</ul>
+<section id="psx">
+<h4>psx<a class="headerlink" href="#psx" title="Link to this heading">¶</a></h4>
+<p>The <cite>psx</cite> graph represents the results of the event search and is split
+vertically into two graphs. The top one shows the filtered and offsetted sweep
+data, the lower one in addition the deconvolution with the input from <cite>psxkernel</cite>.</p>
+<p>All found events are marked initially as undetermined for the Event/Fit state.</p>
+<p>The Event state is visualized by colorized markers: a grey square for
+undetermined, a green circle for accept and a red triangle for reject.</p>
+<p>With the <code class="docutils literal notranslate"><span class="pre">A</span></code> cursor a single event can be selected, properties of that event are
+displayed in the single event graph (top right).</p>
+<p>The following options exist to set the event and fit state of a single or multiple events:</p>
+<section id="mouse-control">
+<h5>Mouse Control<a class="headerlink" href="#mouse-control" title="Link to this heading">¶</a></h5>
+<ul>
+<li><p>Toggle the state of a single event by pressing <code class="docutils literal notranslate"><span class="pre">CTRL</span></code> and clicking on it
+with the left mouse button</p></li>
+<li><p>Draw a marquee and select one of following custom menu entries:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">PSX:</span> <span class="pre">Accept</span> <span class="pre">Event</span> <span class="pre">&amp;</span> <span class="pre">Fit</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PSX:</span> <span class="pre">Reject</span> <span class="pre">Event</span> <span class="pre">&amp;</span> <span class="pre">Fit</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PSX:</span> <span class="pre">Accept</span> <span class="pre">Fit</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PSX:</span> <span class="pre">Reject</span> <span class="pre">Fit</span></code></p></li>
+</ul>
+<p>which operate on all events inside the marquee and perform the obvious thing.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">PSX:</span> <span class="pre">Jump</span> <span class="pre">to</span> <span class="pre">Events</span></code> entry is only useful inside the <cite>psxstats</cite> graph as
+it brings the events inside the marquee into view in the <cite>psx</cite> plot.</p>
+</li>
+</ul>
+</section>
+<section id="keyboard-control">
+<h5>Keyboard Control<a class="headerlink" href="#keyboard-control" title="Link to this heading">¶</a></h5>
+<p>The following keyboard shortcuts work for either the <cite>psx</cite> or the <cite>psxstats</cite>
+graphs. All of them require that the cursor <code class="docutils literal notranslate"><span class="pre">A</span></code> is located on an event, which
+is by default the case for the <cite>psx</cite> graph. The current direction for automatic
+advancement defaults to left-to-right.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">↑</span></code> (up): Accept the current event, changing both event and fit state to
+accept, and advance the cursor to the next event in the current direction</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">↓</span></code> (down): Reject the current event, changing both event and fit state to
+reject, and advance the cursor to the next event in the current direction</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">→</span></code> (right): Move the cursor to the next event on the right</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">←</span></code> (left): Move the cursor to the previous event on the left</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">(space)</span></code>: Toggle the event and fit state of the current event without any movement</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">r</span></code>: Reverse the current direction</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">c</span></code>: Center the x-axis around the current event</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">e</span></code>: Toggle the event state</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">f</span></code>: Toggle the fit state</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">z</span></code>: Accept the event state but reject the fit state</p></li>
+</ul>
+</section>
+</section>
+<section id="psxstats">
+<h4>psxstats<a class="headerlink" href="#psxstats" title="Link to this heading">¶</a></h4>
+<p>Visualizes properties of the given combinations. The marquee and the keyboard
+control options from the <cite>psx</cite> graph are also available.</p>
+</section>
+</section>
+</section>
+<section id="top-panel">
+<h2>Top Panel<a class="headerlink" href="#top-panel" title="Link to this heading">¶</a></h2>
+<section id="id1">
+<h3>Left UI controls<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<p>The combination to select the drawn single events and their averages from are
+determined by the state of the <code class="docutils literal notranslate"><span class="pre">Current</span> <span class="pre">combo</span></code> checkbox. The state to use for
+the selection, either fit or event state, is determined by the popup menu.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Accept</span></code>: Show all accepted events</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Reject</span></code>: Show all rejected events</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Undetermined</span></code>: Show all undetermined events</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Average</span></code>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Accept</span></code>: Show all the average of all accepted events</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Reject</span></code>: Show all the average of all rejected events</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Undetermined</span></code>: Show the average of all undetermined events</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">All</span></code>: Show the average of all events regardless of the state</p></li>
+<li><dl>
+<dt><code class="docutils literal notranslate"><span class="pre">Fit</span></code>: Show the fit of the averaged events, the fit coefficients are also</dt><dd><blockquote>
+<div><p>stored in the results wave</p>
+</div></blockquote>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">i</span></code>: Hover over this element with the mouse to view the average fit
+coefficients</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Current</span> <span class="pre">combo</span></code>: Restrict the event selection to the currently selected
+combination (checked) or use all of them (unchecked)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Fit</span> <span class="pre">State/Event</span> <span class="pre">State</span></code>: Select the state to use as basis for selection</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dblexp_peak/dblexp_XOffset</span></code>: Select the fit curve for the average fit</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Onset/Peak/Slew</span></code>: Select the event property to offset the events in the all
+events graph to</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Block</span> <span class="pre">size</span> <span class="pre">[%]</span></code>: Percentage to select what part of the events are
+displayed in the all events graph. This can help with reducing the number of
+plotted events so that the interactive event classification in the all event
+graph is easier.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Block</span></code>: Block number to display in the all events graph in case a block
+size smaller than 100% was selected.</p></li>
+</ul>
+<section id="all-event-graph">
+<h4>All event graph<a class="headerlink" href="#all-event-graph" title="Link to this heading">¶</a></h4>
+<p>The top left graph shows events and average selected by the UI controls to its
+left. The state can be changed by hovering the mouse over an event trace and
+pressing the keyboard shortcuts available for the <cite>psx</cite> graph.</p>
+</section>
+<section id="single-event-graph">
+<h4>Single event graph<a class="headerlink" href="#single-event-graph" title="Link to this heading">¶</a></h4>
+<p>The top right graph shows a single event including its fit (greyish line) which might
+not be present as well. The shown event is selected by cursor <code class="docutils literal notranslate"><span class="pre">A</span></code> in the <cite>psx</cite>
+graph. The textbox has various properties of the shown event.</p>
+<p>No UI options are available for this graph.</p>
+</section>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="user.html">User documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="analysisbrowser.html">AnalysisBrowser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="databrowser.html">DataBrowser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wavebuilder.html">WaveBuilder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="daephys.html">Da_Ephys</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testpulse.html">TPStorage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="auto_testpulse_tuning.html">Automatic test pulse tuning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SweepFormula.html">The Sweep Formula Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labnotebook-descriptions.html">Labnotebook descriptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis-function-parameters.html">Analysis function parameters</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">SweepFormula PSC/PSP classification</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#algorithm">Algorithm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gui">GUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#main-panel">Main panel</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#left-ui-controls">Left UI controls</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#psx">psx</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="#mouse-control">Mouse Control</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#keyboard-control">Keyboard Control</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="#psxstats">psxstats</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#top-panel">Top Panel</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">Left UI controls</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#all-event-graph">All event graph</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#single-event-graph">Single event graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grouplist.html">Group list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="analysis-function-parameters.html"
+                          title="previous chapter">Analysis function parameters</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="installation.html"
+                          title="next chapter">Installation instructions</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="installation.html" title="Installation instructions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="analysis-function-parameters.html" title="Analysis function parameters"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="user.html" >User documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">SweepFormula PSC/PSP classification</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

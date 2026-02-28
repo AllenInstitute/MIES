@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Group StimsetAPIFunctions &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Group WaveVersioningSupport" href="group___wave_versioning_support.html" />
+    <link rel="prev" title="Group LabnotebookQueryFunctions" href="group___labnotebook_query_functions.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="group___wave_versioning_support.html" title="Group WaveVersioningSupport"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="group___labnotebook_query_functions.html" title="Group LabnotebookQueryFunctions"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../grouplist.html" accesskey="U">Group list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Group StimsetAPIFunctions</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="group-stimsetapifunctions">
+<span id="id1"></span><h1>Group StimsetAPIFunctions<a class="headerlink" href="#group-stimsetapifunctions" title="Link to this heading">¶</a></h1>
+<dl>
+<dt class="sig sig-object cpp">
+<span class="target" id="group___stimset_a_p_i_functions"></span><em><span class="pre">group</span></em> <span class="sig-name descname"><span class="pre">Stimset</span> <span class="pre">API</span></span></dt>
+<dd><p>Code example: <p><div class="highlight-igor notranslate"><div class="highlight"><pre><span></span><span class="nd">#pragma</span><span class="w"> </span>TextEncoding<span class="w">     </span>=<span class="w"> </span><span class="s">&quot;UTF-8&quot;</span>
+<span class="nd">#pragma</span><span class="w"> </span>rtGlobals<span class="w">        </span>= 3
+<span class="nd">#pragma</span><span class="w"> </span>rtFunctionErrors<span class="w"> </span>= 1
+
+<span class="kr">Function</span><span class="w"> </span>StimsetAPIExample()
+
+<span class="w">    </span><span class="kt">string</span><span class="w"> </span>setName,<span class="w"> </span>stimsets
+<span class="w">    </span><span class="kt">variable</span><span class="w"> </span>numEpochs
+
+<span class="w">    </span><span class="c1">// create new stimulus set</span>
+<span class="w">    </span>setName<span class="w"> </span>=<span class="w"> </span>ST_CreateStimSet(<span class="s">&quot;myset&quot;</span>,<span class="w"> </span>CHANNEL_TYPE_DAC)
+
+<span class="w">    </span><span class="c1">// check that it is there</span>
+<span class="w">    </span>stimsets<span class="w"> </span>=<span class="w"> </span>ST_GetStimsetList(channelType<span class="w"> </span>=<span class="w"> </span>CHANNEL_TYPE_DAC,<span class="w"> </span>searchString<span class="w"> </span>=<span class="w"> </span><span class="s">&quot;my*&quot;</span>)
+<span class="w">    </span><span class="nc">printf</span><span class="w"> </span><span class="s">&quot;Stimsets %s\r&quot;</span>,<span class="w"> </span>stimsets
+
+<span class="w">    </span><span class="c1">// inspect global stimulus parameters</span>
+<span class="w">    </span><span class="kt">WAVE</span><span class="w"> </span>globalParams<span class="w"> </span>=<span class="w"> </span>ST_GetStimsetParameters(setName)
+<span class="w">    </span><span class="nc">print</span><span class="w"> </span>globalParams
+
+<span class="w">    </span><span class="c1">// use two epochs</span>
+<span class="w">    </span>ST_SetStimsetParameter(setName,<span class="w"> </span><span class="s">&quot;Total number of epochs&quot;</span>,<span class="w"> </span>var<span class="w"> </span>= 2)
+
+<span class="w">    </span><span class="c1">// and three steps/sweeps</span>
+<span class="w">    </span>ST_SetStimsetParameter(setName,<span class="w"> </span><span class="s">&quot;Total number of steps&quot;</span>,<span class="w"> </span>var<span class="w"> </span>= 3)
+
+<span class="w">    </span><span class="c1">// inspect the just set entry</span>
+<span class="w">    </span>numEpochs<span class="w"> </span>=<span class="w"> </span>ST_GetStimSetParameterAsVariable(setName,<span class="w"> </span><span class="s">&quot;Total number of epochs&quot;</span>)
+<span class="w">    </span><span class="nc">printf</span><span class="w"> </span><span class="s">&quot;Number of epochs: %d\r&quot;</span>,<span class="w"> </span>numEpochs
+
+<span class="w">    </span>ST_SetStimsetParameter(setName,<span class="w"> </span><span class="s">&quot;Type of Epoch 0&quot;</span>,<span class="w"> </span>var<span class="w"> </span>=<span class="w"> </span>EPOCH_TYPE_SQUARE_PULSE)
+<span class="w">    </span>ST_SetStimsetParameter(setName,<span class="w"> </span><span class="s">&quot;Type of Epoch 1&quot;</span>,<span class="w"> </span>var<span class="w"> </span>=<span class="w"> </span>EPOCH_TYPE_PULSE_TRAIN)
+
+<span class="w">    </span><span class="c1">// get the list of possible parameters for the square pulse</span>
+<span class="w">    </span><span class="kt">WAVE</span><span class="w"> </span>epochParams<span class="w"> </span>=<span class="w"> </span>ST_GetStimsetParameters(setName,<span class="w"> </span>epochType<span class="w"> </span>=<span class="w"> </span>EPOCH_TYPE_SQUARE_PULSE)
+<span class="w">    </span><span class="nc">print</span><span class="w"> </span>epochParams
+
+<span class="w">    </span><span class="c1">// and pulse train</span>
+<span class="w">    </span><span class="kt">WAVE</span><span class="w"> </span>epochParams<span class="w"> </span>=<span class="w"> </span>ST_GetStimsetParameters(setName,<span class="w"> </span>epochType<span class="w"> </span>=<span class="w"> </span>EPOCH_TYPE_PULSE_TRAIN)
+<span class="w">    </span><span class="nc">print</span><span class="w"> </span>epochParams
+
+<span class="w">    </span><span class="c1">// configure square pulse</span>
+<span class="w">    </span>ST_SetStimsetParameter(setName,<span class="w"> </span><span class="s">&quot;Duration&quot;</span>,<span class="w"> </span>epochIndex<span class="w"> </span>=<span class="w"> </span>0,<span class="w"> </span>var<span class="w"> </span>= 500)
+<span class="w">    </span>ST_SetStimsetParameter(setName,<span class="w"> </span><span class="s">&quot;Amplitude&quot;</span>,<span class="w"> </span>epochIndex<span class="w"> </span>=<span class="w"> </span>0,<span class="w"> </span>var<span class="w"> </span>= 0)
+
+<span class="w">    </span><span class="c1">// configure pulse train</span>
+<span class="w">    </span>ST_SetStimsetParameter(setName,<span class="w"> </span><span class="s">&quot;Duration&quot;</span>,<span class="w"> </span>epochIndex<span class="w"> </span>=<span class="w"> </span>1,<span class="w"> </span>var<span class="w"> </span>= 1500)
+<span class="w">    </span>ST_SetStimsetParameter(setName,<span class="w"> </span><span class="s">&quot;Amplitude&quot;</span>,<span class="w"> </span>epochIndex<span class="w"> </span>=<span class="w"> </span>1,<span class="w"> </span>var<span class="w"> </span>= 1)
+<span class="w">    </span>ST_SetStimsetParameter(setName,<span class="w"> </span><span class="s">&quot;Sin/chirp/saw frequency&quot;</span>,<span class="w"> </span>epochIndex<span class="w"> </span>=<span class="w"> </span>1,<span class="w"> </span>var<span class="w"> </span>= 10)
+<span class="w">    </span>ST_SetStimsetParameter(setName,<span class="w"> </span><span class="s">&quot;Train pulse duration&quot;</span>,<span class="w"> </span>epochIndex<span class="w"> </span>=<span class="w"> </span>1,<span class="w"> </span>var<span class="w"> </span>= 20)
+
+<span class="w">    </span><span class="c1">// set an analysis function</span>
+<span class="w">    </span>ST_SetStimsetParameter(setName,<span class="w"> </span><span class="s">&quot;Analysis function (generic)&quot;</span>,<span class="w"> </span>str<span class="w"> </span>=<span class="w"> </span><span class="s">&quot;TestAnalysisFunction_V3&quot;</span>)
+
+<span class="w">    </span><span class="c1">// add analysis parameter</span>
+<span class="w">    </span>AFH_AddAnalysisParameter(setName,<span class="w"> </span><span class="s">&quot;myVarParam&quot;</span>,<span class="w"> </span>var<span class="w"> </span>= 1.23456)
+
+<span class="w">    </span><span class="c1">// use an explicit delta list for the ITI</span>
+<span class="w">    </span>ST_SetStimsetParameter(setName,<span class="w"> </span><span class="s">&quot;Inter trial interval op&quot;</span>,<span class="w"> </span>str<span class="w"> </span>=<span class="w"> </span><span class="s">&quot;Explicit&quot;</span>)
+<span class="w">    </span>ST_SetStimsetParameter(setName,<span class="w"> </span><span class="s">&quot;Inter trial interval ldel&quot;</span>,<span class="w"> </span>str<span class="w"> </span>=<span class="w"> </span><span class="s">&quot;5;7&quot;</span>)
+<span class="kr">End</span>
+</pre></div>
+</div>
+</p>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions-for-manipulating-stimulus-sets">Functions for manipulating stimulus sets</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417ST_GetStimsetList8variable6stringP6stringP6string">
+<span id="_CPPv317ST_GetStimsetList8variable6stringP6stringP6string"></span><span id="_CPPv217ST_GetStimsetList8variable6stringP6stringP6string"></span><span id="ST_GetStimsetList__variable.string.stringP.stringP"></span><span class="target" id="group___stimset_a_p_i_functions_1gaca4a2980dbf18818ff9174af2788107f"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ST_GetStimsetList</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">searchString</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">WBstimSetList</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">thirdPartyStimSetList</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417ST_GetStimsetList8variable6stringP6stringP6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a sorted list of all DA/TTL stim set waves. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>channelType</strong> – <strong>[in]</strong> [optional, defaults to all] <a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2"><span class="std std-ref">CHANNEL_TYPE_DAC</span></a> or <a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff"><span class="std std-ref">CHANNEL_TYPE_TTL</span></a></p></li>
+<li><p><strong>searchString</strong> – <strong>[in]</strong> [optional, defaults to “*”] search string in wildcard syntax </p></li>
+<li><p><strong>WBstimSetList</strong> – <strong>[out]</strong> [optional] returns the list of stim sets built with the wavebuilder </p></li>
+<li><p><strong>thirdPartyStimSetList</strong> – <strong>[out]</strong> [optional] returns the list of third party stim sets not built with the wavebuilder </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416ST_CreateStimSet6string8variable8variable8variable">
+<span id="_CPPv316ST_CreateStimSet6string8variable8variable8variable"></span><span id="_CPPv216ST_CreateStimSet6string8variable8variable8variable"></span><span id="ST_CreateStimSet__string.variable.variable.variable"></span><span class="target" id="group___stimset_a_p_i_functions_1ga615b9032ac8edb677d206a936138be05"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ST_CreateStimSet</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">baseName</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stimulusType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setNumber</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">saveAsBuiltin</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416ST_CreateStimSet6string8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Create a new stimset with one square pulse epoch with 1ms duration. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>baseName</strong> – user choosable part of the stimset name </p></li>
+<li><p><strong>stimulusType</strong> – one of <a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2"><span class="std std-ref">CHANNEL_TYPE_DAC</span></a> or <a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff"><span class="std std-ref">CHANNEL_TYPE_TTL</span></a></p></li>
+<li><p><strong>setNumber</strong> – [optional, defaults to 0] stimset number, allows for convenient alphabetic increasing names used in indexing </p></li>
+<li><p><strong>saveAsBuiltin</strong> – [optional, defaults to false] allows to create builtin stimsets when enabled </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416ST_RemoveStimSet6string">
+<span id="_CPPv316ST_RemoveStimSet6string"></span><span id="_CPPv216ST_RemoveStimSet6string"></span><span id="ST_RemoveStimSet__string"></span><span class="target" id="group___stimset_a_p_i_functions_1gae97461d89014c40cd121fa725f8bc7f9"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ST_RemoveStimSet</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setName</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416ST_RemoveStimSet6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Remove the given stimulus set and update all relevant GUIs. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423ST_GetStimsetParameters6string8variable">
+<span id="_CPPv323ST_GetStimsetParameters6string8variable"></span><span id="_CPPv223ST_GetStimsetParameters6string8variable"></span><span id="ST_GetStimsetParameters__string.variable"></span><span class="target" id="group___stimset_a_p_i_functions_1ga14df6aafb19a921397498bdbb690beae"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ST_GetStimsetParameters</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setName</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">epochType</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423ST_GetStimsetParameters6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the available stimsets parameters. </p>
+<p>Return the epoch-independent parameters when epochType is not present. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv432ST_GetStimsetParameterAsVariable6string6string8variable">
+<span id="_CPPv332ST_GetStimsetParameterAsVariable6string6string8variable"></span><span id="_CPPv232ST_GetStimsetParameterAsVariable6string6string8variable"></span><span id="ST_GetStimsetParameterAsVariable__string.string.variable"></span><span class="target" id="group___stimset_a_p_i_functions_1ga78821f3a3ce49d32c577beda1b87cb99"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ST_GetStimsetParameterAsVariable</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setName</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entry</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">epochIndex</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv432ST_GetStimsetParameterAsVariable6string6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the given stimset numeric parameter. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>setName</strong> – name of the stimset </p></li>
+<li><p><strong>entry</strong> – name of the parameter, can be global or epoch </p></li>
+<li><p><strong>epochIndex</strong> – [optional, when not given this sets global parameters] epoch index (0-based) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430ST_GetStimsetParameterAsString6string6string8variable">
+<span id="_CPPv330ST_GetStimsetParameterAsString6string6string8variable"></span><span id="_CPPv230ST_GetStimsetParameterAsString6string6string8variable"></span><span id="ST_GetStimsetParameterAsString__string.string.variable"></span><span class="target" id="group___stimset_a_p_i_functions_1ga758aebd603f1dc498a270fa53e51bc8a"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ST_GetStimsetParameterAsString</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setName</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entry</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">epochIndex</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430ST_GetStimsetParameterAsString6string6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the given stimset string parameter. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>setName</strong> – name of the stimset </p></li>
+<li><p><strong>entry</strong> – name of the parameter, can be global or epoch </p></li>
+<li><p><strong>epochIndex</strong> – [optional, when not given this sets global parameters] epoch index (0-based) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422ST_SetStimsetParameter6string6string8variable8variable6string">
+<span id="_CPPv322ST_SetStimsetParameter6string6string8variable8variable6string"></span><span id="_CPPv222ST_SetStimsetParameter6string6string8variable8variable6string"></span><span id="ST_SetStimsetParameter__string.string.variable.variable.string"></span><span class="target" id="group___stimset_a_p_i_functions_1ga7c1e7244a8db5bac9415e8a62302c0fb"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ST_SetStimsetParameter</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setName</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entry</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">epochIndex</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422ST_SetStimsetParameter6string6string8variable8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Set the given stimset parameter. </p>
+<p>If you use this function in analysis functions be sure to use an event which happens <em>before</em> the stimset is read, for example <code class="docutils literal notranslate"><span class="pre">PRE_DAQ_EVENT</span></code>, <code class="docutils literal notranslate"><span class="pre">PRE_SET_EVENT</span></code> or <code class="docutils literal notranslate"><span class="pre">PRE_SWEEP_CONFIG_EVENT</span></code>. The last one is always called for each sweep before it is configured. This also means that if you change a stimset during <code class="docutils literal notranslate"><span class="pre">MID_SWEEP_EVENT</span></code> the changes will not be picked up for the current sweep.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>setName</strong> – name of the stimset </p></li>
+<li><p><strong>entry</strong> – name of the parameter, can be global or epoch </p></li>
+<li><p><strong>epochIndex</strong> – [optional, when not given this sets global parameters] epoch index (0-based) </p></li>
+<li><p><strong>var</strong> – [optional, one of <code class="docutils literal notranslate"><span class="pre">var</span></code>/<code class="docutils literal notranslate"><span class="pre">str</span></code> must be present] numeric parameter to set </p></li>
+<li><p><strong>str</strong> – [optional, one of <code class="docutils literal notranslate"><span class="pre">var</span></code>/<code class="docutils literal notranslate"><span class="pre">str</span></code> must be present] string parameter to set</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>0 on success, 1 on error </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../grouplist.html">Group list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="group___analysis_function_parameter_helpers.html">Group AnalysisFunctionParameterHelpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group___background_functions.html">Group BackgroundFunctions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group___labnotebook_query_functions.html">Group LabnotebookQueryFunctions</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Group StimsetAPIFunctions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417ST_GetStimsetList8variable6stringP6stringP6string"><code class="docutils literal notranslate"><span class="pre">ST_GetStimsetList()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416ST_CreateStimSet6string8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">ST_CreateStimSet()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416ST_RemoveStimSet6string"><code class="docutils literal notranslate"><span class="pre">ST_RemoveStimSet()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423ST_GetStimsetParameters6string8variable"><code class="docutils literal notranslate"><span class="pre">ST_GetStimsetParameters()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv432ST_GetStimsetParameterAsVariable6string6string8variable"><code class="docutils literal notranslate"><span class="pre">ST_GetStimsetParameterAsVariable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430ST_GetStimsetParameterAsString6string6string8variable"><code class="docutils literal notranslate"><span class="pre">ST_GetStimsetParameterAsString()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422ST_SetStimsetParameter6string6string8variable8variable6string"><code class="docutils literal notranslate"><span class="pre">ST_SetStimsetParameter()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="group___wave_versioning_support.html">Group WaveVersioningSupport</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="group___labnotebook_query_functions.html"
+                          title="previous chapter">Group LabnotebookQueryFunctions</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="group___wave_versioning_support.html"
+                          title="next chapter">Group WaveVersioningSupport</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="group___wave_versioning_support.html" title="Group WaveVersioningSupport"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="group___labnotebook_query_functions.html" title="Group LabnotebookQueryFunctions"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../grouplist.html" >Group list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Group StimsetAPIFunctions</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

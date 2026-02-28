@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File MIES_ForeignFunctionInterface.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_GlobalStringAndVariableAccess.ipf" href="_m_i_e_s___global_string_and_variable_access_8ipf.html" />
+    <link rel="prev" title="File MIES_ExperimentDocumentation.ipf" href="_m_i_e_s___experiment_documentation_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___global_string_and_variable_access_8ipf.html" title="File MIES_GlobalStringAndVariableAccess.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___experiment_documentation_8ipf.html" title="File MIES_ExperimentDocumentation.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_ForeignFunctionInterface.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-foreignfunctioninterface-ipf">
+<span id="id1"></span><h1>File MIES_ForeignFunctionInterface.ipf<a class="headerlink" href="#file-mies-foreignfunctioninterface-ipf" title="Link to this heading">¶</a></h1>
+<p><strong>FFI</strong> ACQ4/ZeroMQ accessible functions </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418FFI_ReturnTPValuesv">
+<span id="_CPPv318FFI_ReturnTPValuesv"></span><span id="_CPPv218FFI_ReturnTPValuesv"></span><span id="FFI_ReturnTPValues"></span><span class="target" id="_m_i_e_s___foreign_function_interface_8ipf_1aa65504453f1122772e92fd2b885bbf1a"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FFI_ReturnTPValues</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418FFI_ReturnTPValuesv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Function to return Peak Resistance, Steady State Resistance to ACQ4 (Neurophysiology Acquisition and Analysis System. See <a class="reference external" href="http://acq4.org/">http://acq4.org/</a> for more details) </p>
+<p>The function will pull the values (PeakResistance, SteadyStateResistance, and TimeStamp) out of the TP storage wave and put them in a 3x8 wave, in a designated location where ACQ4 can then find them </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430FFI_GetAvailableMessageFiltersv">
+<span id="_CPPv330FFI_GetAvailableMessageFiltersv"></span><span id="_CPPv230FFI_GetAvailableMessageFiltersv"></span><span id="FFI_GetAvailableMessageFilters"></span><span class="target" id="_m_i_e_s___foreign_function_interface_8ipf_1a94b052bcf0ae3574a8e84e4d8865db9c"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FFI_GetAvailableMessageFilters</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430FFI_GetAvailableMessageFiltersv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a text wave with all available message filters for Publisher/Subscriber ZeroMQ sockets. </p>
+<p>See also <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1ZeroMQMessageFilters"><span class="std std-ref">ZeroMQMessageFilters</span></a>.</p>
+<p>Description of all messages:</p>
+<p><table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Publish function</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>:cpp:var:ZeroMQ_HEARTBEAT</p></td>
+<td><p>Every 5s for alive check</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-odd"><td><p>:cpp:var:PRESSURE_STATE_FILTER</p></td>
+<td><p>Every pressure method change</p></td>
+<td><p>:cpp:func:PUB_PressureMethodChange</p></td>
+</tr>
+<tr class="row-even"><td><p>:cpp:var:PRESSURE_SEALED_FILTER</p></td>
+<td><p>Pressure seal reached</p></td>
+<td><p>:cpp:func:PUB_PressureSealedState</p></td>
+</tr>
+<tr class="row-odd"><td><p>:cpp:var:PRESSURE_BREAKIN_FILTER</p></td>
+<td><p>Pressure breakin</p></td>
+<td><p>:cpp:func:PUB_PressureBreakin</p></td>
+</tr>
+<tr class="row-even"><td><p>:cpp:var:AUTO_TP_FILTER</p></td>
+<td><p>Auto TP has finished</p></td>
+<td><p>:cpp:func:PUB_AutoTPResult</p></td>
+</tr>
+<tr class="row-odd"><td><p>:cpp:var:AMPLIFIER_CLAMP_MODE_FILTER</p></td>
+<td><p>Clamp mode has changed</p></td>
+<td><p>:cpp:func:PUB_ClampModeChange</p></td>
+</tr>
+<tr class="row-even"><td><p>:cpp:var:AMPLIFIER_AUTO_BRIDGE_BALANCE</p></td>
+<td><p>Amplifier auto bridge balance was activated</p></td>
+<td><p>:cpp:func:PUB_AutoBridgeBalance</p></td>
+</tr>
+<tr class="row-odd"><td><p>:cpp:var:ANALYSIS_FUNCTION_PB</p></td>
+<td><p>Pipette in bath analysis function has finished</p></td>
+<td><p>:cpp:func:PUB_PipetteInBath</p></td>
+</tr>
+<tr class="row-even"><td><p>:cpp:var:ANALYSIS_FUNCTION_SE</p></td>
+<td><p>Seal evaluation analysis function has finished</p></td>
+<td><p>:cpp:func:PUB_SealEvaluation</p></td>
+</tr>
+<tr class="row-odd"><td><p>:cpp:var:ANALYSIS_FUNCTION_VM</p></td>
+<td><p>True resting memb. potential function is finished</p></td>
+<td><p>:cpp:func:PUB_TrueRestingMembranePotential</p></td>
+</tr>
+<tr class="row-even"><td><p>:cpp:var:DAQ_TP_STATE_CHANGE_FILTER</p></td>
+<td><p>Data acquisition/Test pulse started or stopped</p></td>
+<td><p>:cpp:func:PUB_DAQStateChange</p></td>
+</tr>
+<tr class="row-odd"><td><p>:cpp:var:ANALYSIS_FUNCTION_AR</p></td>
+<td><p>Access resistance smoke ana. function has finished</p></td>
+<td><p>:cpp:func:PUB_AccessResistanceSmoke</p></td>
+</tr>
+<tr class="row-even"><td><p>:cpp:var:ZMQ_FILTER_TPRESULT_NOW</p></td>
+<td><p>TP evaluation result (all TPs)</p></td>
+<td><p>:cpp:func:PUB_TPResult</p></td>
+</tr>
+<tr class="row-odd"><td><p>:cpp:var:ZMQ_FILTER_TPRESULT_1s</p></td>
+<td><p>TP evaluation result (every 1s)</p></td>
+<td><p>:cpp:func:PUB_TPResult</p></td>
+</tr>
+<tr class="row-even"><td><p>:cpp:var:ZMQ_FILTER_TPRESULT_5s</p></td>
+<td><p>TP evaluation result (every 5s)</p></td>
+<td><p>:cpp:func:PUB_TPResult</p></td>
+</tr>
+<tr class="row-odd"><td><p>:cpp:var:ZMQ_FILTER_TPRESULT_10s</p></td>
+<td><p>TP evaluation result (every 10s)</p></td>
+<td><p>:cpp:func:PUB_TPResult</p></td>
+</tr>
+<tr class="row-even"><td><p>:cpp:var:ZMQ_FILTER_TPRESULT_NOW_WITH_DATA</p></td>
+<td><p>TP evaluation result with AD data (all TPs)</p></td>
+<td><p>:cpp:func:PUB_TPResult</p></td>
+</tr>
+<tr class="row-odd"><td><p>:cpp:var:CONFIG_FINISHED_FILTER</p></td>
+<td><p>JSON configuration for panel has finished</p></td>
+<td><p>:cpp:func:PUB_ConfigurationFinished</p></td>
+</tr>
+<tr class="row-even"><td><p>:cpp:var:AMPLIFIER_SET_VALUE</p></td>
+<td><p>Amplifier setting was changed through MIES</p></td>
+<td><p>:cpp:func:PUB_AmplifierSettingChange</p></td>
+</tr>
+<tr class="row-odd"><td><p>:cpp:var:TESTPULSE_SET_VALUE_FILTER</p></td>
+<td><p>Testpulse setting change</p></td>
+<td><p>:cpp:func:PUB_TPSettingChange</p></td>
+</tr>
+</tbody>
+</table>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424FFI_SetCellElectrodeName6string8variable6string">
+<span id="_CPPv324FFI_SetCellElectrodeName6string8variable6string"></span><span id="_CPPv224FFI_SetCellElectrodeName6string8variable6string"></span><span id="FFI_SetCellElectrodeName__string.variable.string"></span><span class="target" id="_m_i_e_s___foreign_function_interface_8ipf_1a07aa99f245976ed752aff7c9a736f31c"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FFI_SetCellElectrodeName</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424FFI_SetCellElectrodeName6string8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Set the headstage/cell electrode name. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416FFI_QueryLogbook6string8variable8variable6string8variable">
+<span id="_CPPv316FFI_QueryLogbook6string8variable8variable6string8variable"></span><span id="_CPPv216FFI_QueryLogbook6string8variable8variable6string8variable"></span><span id="FFI_QueryLogbook__string.variable.variable.string.variable"></span><span class="target" id="_m_i_e_s___foreign_function_interface_8ipf_1ad473f60cca3af5c9345878613fdc4903"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FFI_QueryLogbook</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">logbookType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entrySourceType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416FFI_QueryLogbook6string8variable8variable6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Query logbook entries from devices. </p>
+<p>This allows to query labnotebook/results entries from associated channels.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html#_m_i_e_s___global_string_and_variable_access_8ipf_1a289b0a1d7414d8eea85391a887528c3e"><span class="std std-ref">GetLockedDevices()</span></a></p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – Name of the hardware device panel, </p></li>
+<li><p><strong>logbookType</strong> – One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1abd7267ba9466bebd228486622b41235e"><span class="std std-ref">LBT_LABNOTEBOOK</span></a> or <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a681a27bebe88795640bbad1f5f26c044"><span class="std std-ref">LBT_RESULTS</span></a></p></li>
+<li><p><strong>sweepNo</strong> – Sweep number </p></li>
+<li><p><strong>setting</strong> – Name of the entry </p></li>
+<li><p><strong>entrySourceType</strong> – One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785"><span class="std std-ref">DATA_ACQUISITION_MODE</span></a>/<a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6"><span class="std std-ref">UNKNOWN_MODE</span></a>/<a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151"><span class="std std-ref">TEST_PULSE_MODE</span></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Numerical/Textual wave with <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787"><span class="std std-ref">LABNOTEBOOK_LAYER_COUNT</span></a> rows or a null wave reference if nothing could be found </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429FFI_QueryLogbookUniqueSetting6string8variable6string">
+<span id="_CPPv329FFI_QueryLogbookUniqueSetting6string8variable6string"></span><span id="_CPPv229FFI_QueryLogbookUniqueSetting6string8variable6string"></span><span id="FFI_QueryLogbookUniqueSetting__string.variable.string"></span><span class="target" id="_m_i_e_s___foreign_function_interface_8ipf_1a9c0c8997d1ecad0f94e0e365f161464e"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FFI_QueryLogbookUniqueSetting</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">logbookType</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429FFI_QueryLogbookUniqueSetting6string8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return all unique logbook entries from devices. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html#_m_i_e_s___global_string_and_variable_access_8ipf_1a289b0a1d7414d8eea85391a887528c3e"><span class="std std-ref">GetLockedDevices()</span></a></p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – Name of the hardware device panel, </p></li>
+<li><p><strong>logbookType</strong> – One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1abd7267ba9466bebd228486622b41235e"><span class="std std-ref">LBT_LABNOTEBOOK</span></a> or <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a681a27bebe88795640bbad1f5f26c044"><span class="std std-ref">LBT_RESULTS</span></a></p></li>
+<li><p><strong>setting</strong> – Name of the entry</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Numerical/Textual 1D wave or a null wave reference if nothing could be found </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424FFI_SaveDataFolderToHDF56string6string">
+<span id="_CPPv324FFI_SaveDataFolderToHDF56string6string"></span><span id="_CPPv224FFI_SaveDataFolderToHDF56string6string"></span><span id="FFI_SaveDataFolderToHDF5__string.string"></span><span class="target" id="_m_i_e_s___foreign_function_interface_8ipf_1ae2116aff839fdd272960444b5e685eaa"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FFI_SaveDataFolderToHDF5</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filepath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">datafolder</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424FFI_SaveDataFolderToHDF56string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Save the given permanent Igor Pro <code class="docutils literal notranslate"><span class="pre">datafolder</span></code> in the HDF5 format into <code class="docutils literal notranslate"><span class="pre">filepath</span></code></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428FFI_SaveDataFolderToHDF5Impl6string8WaveText">
+<span id="_CPPv328FFI_SaveDataFolderToHDF5Impl6string8WaveText"></span><span id="_CPPv228FFI_SaveDataFolderToHDF5Impl6string8WaveText"></span><span id="FFI_SaveDataFolderToHDF5Impl__string.WaveText"></span><span class="target" id="_m_i_e_s___foreign_function_interface_8ipf_1ae8b82b5567d6457e58e58d6dcbfed926"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FFI_SaveDataFolderToHDF5Impl</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filepath</span></span>, <a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">datafolders</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428FFI_SaveDataFolderToHDF5Impl6string8WaveText" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425FFI_GetSweepBrowserTitlesv">
+<span id="_CPPv325FFI_GetSweepBrowserTitlesv"></span><span id="_CPPv225FFI_GetSweepBrowserTitlesv"></span><span id="FFI_GetSweepBrowserTitles"></span><span class="target" id="_m_i_e_s___foreign_function_interface_8ipf_1ab866a2a2d8edc00223aedc2e471201e1"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FFI_GetSweepBrowserTitles</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425FFI_GetSweepBrowserTitlesv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the titles of all sweep browser windows. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427FFI_SavePSXDataFolderToHDF56string6string">
+<span id="_CPPv327FFI_SavePSXDataFolderToHDF56string6string"></span><span id="_CPPv227FFI_SavePSXDataFolderToHDF56string6string"></span><span id="FFI_SavePSXDataFolderToHDF5__string.string"></span><span class="target" id="_m_i_e_s___foreign_function_interface_8ipf_1ac6dd1e9be404070a846306816533f227"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FFI_SavePSXDataFolderToHDF5</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filepath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">winTitle</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427FFI_SavePSXDataFolderToHDF56string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Save the psx data of the sweepbrowser with title <code class="docutils literal notranslate"><span class="pre">wintTitle</span></code> in the HDF5 format into <code class="docutils literal notranslate"><span class="pre">filepath</span></code></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423FFI_TP_DeviceSelectable6string">
+<span id="_CPPv323FFI_TP_DeviceSelectable6string"></span><span id="_CPPv223FFI_TP_DeviceSelectable6string"></span><span id="FFI_TP_DeviceSelectable__string"></span><span class="target" id="_m_i_e_s___foreign_function_interface_8ipf_1a6be22bcc0e553eb242bedb6dc6a78cbb"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FFI_TP_DeviceSelectable</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423FFI_TP_DeviceSelectable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return 1 if the device can be selected (exists/available), 0 otherwise. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>device</strong> – <strong>[in]</strong> Device title, e.g. “ITC1600_Dev_0” </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>1 if selectable, 0 otherwise </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418FFI_StartTestPulse6string">
+<span id="_CPPv318FFI_StartTestPulse6string"></span><span id="_CPPv218FFI_StartTestPulse6string"></span><span id="FFI_StartTestPulse__string"></span><span class="target" id="_m_i_e_s___foreign_function_interface_8ipf_1a914ec3f217bfbacd3282d974ac609365"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FFI_StartTestPulse</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418FFI_StartTestPulse6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Start the test pulse for a device unless it is already running. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>device</strong> – <strong>[in]</strong> Device title, e.g. “ITC1600_Dev_0” </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>0 = started now, 1 = already running (ignored), -1 = device unavailable </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417FFI_StopTestPulse6string">
+<span id="_CPPv317FFI_StopTestPulse6string"></span><span id="_CPPv217FFI_StopTestPulse6string"></span><span id="FFI_StopTestPulse__string"></span><span class="target" id="_m_i_e_s___foreign_function_interface_8ipf_1a54e66faee4b0b8a8997bfd6355384031"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FFI_StopTestPulse</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417FFI_StopTestPulse6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Stop the test pulse for a device unless it is already stopped. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>device</strong> – <strong>[in]</strong> Device title, e.g. “ITC1600_Dev_0” </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>0 = stopped now, 1 = already stopped (ignored), -1 = device unavailable </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415FFI_TestPulseMD6string8variable">
+<span id="_CPPv315FFI_TestPulseMD6string8variable"></span><span id="_CPPv215FFI_TestPulseMD6string8variable"></span><span id="FFI_TestPulseMD__string.variable"></span><span class="target" id="_m_i_e_s___foreign_function_interface_8ipf_1aa0f4e9889d5bfb78dd959aadb465e19c"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FFI_TestPulseMD</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">action</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415FFI_TestPulseMD6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Unified API entry point to start or stop the test pulse. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – <strong>[in]</strong> Device title, e.g. “ITC1600_Dev_0” </p></li>
+<li><p><strong>action</strong> – <strong>[in]</strong> 1 to start, 0 to stop </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Pass-through of API_StartTestPulse()/API_StopTestPulse() return codes </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427FFI_TestPulseMDSingleResult6string8variable">
+<span id="_CPPv327FFI_TestPulseMDSingleResult6string8variable"></span><span id="_CPPv227FFI_TestPulseMDSingleResult6string8variable"></span><span id="FFI_TestPulseMDSingleResult__string.variable"></span><span class="target" id="_m_i_e_s___foreign_function_interface_8ipf_1ab8b9fbbd37b61cf49aeae964dd06eb4e"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FFI_TestPulseMDSingleResult</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">action</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427FFI_TestPulseMDSingleResult6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416DoPressureManual6string8variable8variable8variable8variable">
+<span id="_CPPv316DoPressureManual6string8variable8variable8variable8variable"></span><span id="_CPPv216DoPressureManual6string8variable8variable8variable8variable"></span><span id="DoPressureManual__string.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___foreign_function_interface_8ipf_1a35a0f85f46dd4e623b7f96ccac0df815"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DoPressureManual</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">manualOnOff</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">targetPressure</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">userAccessOnOff</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416DoPressureManual6string8variable8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430FFI_GetWithOptionToSetPressure6string8variable6string8variable">
+<span id="_CPPv330FFI_GetWithOptionToSetPressure6string8variable6string8variable"></span><span id="_CPPv230FFI_GetWithOptionToSetPressure6string8variable6string8variable"></span><span id="FFI_GetWithOptionToSetPressure__string.variable.string.variable"></span><span class="target" id="_m_i_e_s___foreign_function_interface_8ipf_1a5bc703483172168223bd864245212bdc"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FFI_GetWithOptionToSetPressure</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">requestedSource</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">requestedPressure</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430FFI_GetWithOptionToSetPressure6string8variable6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>FFI entry: set/rout pressure per ‘requestedSource’ and/or set regulator setpoint. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – MIES device name </p></li>
+<li><p><strong>headstage</strong> – target headstage index </p></li>
+<li><p><strong>requestedSource</strong> – “atmosphere” | “regulator” | “user” | “default” | “” </p></li>
+<li><p><strong>requestedPressure</strong> – regulator setpoint (psi; &lt;9.9, &gt;-9.9) | NaN </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>regulatorPressure, pipettePressure </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429ReadPressureSourceAndPressure6string8variable">
+<span id="_CPPv329ReadPressureSourceAndPressure6string8variable"></span><span id="_CPPv229ReadPressureSourceAndPressure6string8variable"></span><span id="ReadPressureSourceAndPressure__string.variable"></span><span class="target" id="_m_i_e_s___foreign_function_interface_8ipf_1a7d9eab75808c99d251b074a3db664b34"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReadPressureSourceAndPressure</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429ReadPressureSourceAndPressure6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415FFI_WaitForIdle6string8variable">
+<span id="_CPPv315FFI_WaitForIdle6string8variable"></span><span id="_CPPv215FFI_WaitForIdle6string8variable"></span><span id="FFI_WaitForIdle__string.variable"></span><span class="target" id="_m_i_e_s___foreign_function_interface_8ipf_1a5dd91097ae62ecc7c3b997ad9740aa2b"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FFI_WaitForIdle</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415FFI_WaitForIdle6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return 1 if idle, 0 if we timed out still busy. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421SetPressureToBaselinev">
+<span id="_CPPv321SetPressureToBaselinev"></span><span id="_CPPv221SetPressureToBaselinev"></span><span id="SetPressureToBaseline"></span><span class="target" id="_m_i_e_s___foreign_function_interface_8ipf_1a04b107bb9d64c1de1877ed92b156d9fe"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetPressureToBaseline</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421SetPressureToBaselinev" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv432readoutPressureSourceAndPressurev">
+<span id="_CPPv332readoutPressureSourceAndPressurev"></span><span id="_CPPv232readoutPressureSourceAndPressurev"></span><span id="readoutPressureSourceAndPressure"></span><span class="target" id="_m_i_e_s___foreign_function_interface_8ipf_1a358282e3ae00a6e9c00c3609a17a942f"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">readoutPressureSourceAndPressure</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv432readoutPressureSourceAndPressurev" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420SetRegulatorPressurev">
+<span id="_CPPv320SetRegulatorPressurev"></span><span id="_CPPv220SetRegulatorPressurev"></span><span id="SetRegulatorPressure"></span><span class="target" id="_m_i_e_s___foreign_function_interface_8ipf_1a9e2df90eb04988752388c033ac36c4b3"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetRegulatorPressure</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420SetRegulatorPressurev" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv441SetRegulatorPressureAndSetREgulatorSourcev">
+<span id="_CPPv341SetRegulatorPressureAndSetREgulatorSourcev"></span><span id="_CPPv241SetRegulatorPressureAndSetREgulatorSourcev"></span><span id="SetRegulatorPressureAndSetREgulatorSource"></span><span class="target" id="_m_i_e_s___foreign_function_interface_8ipf_1af4f0a8ea75e226a27ebb8bf88492b370"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetRegulatorPressureAndSetREgulatorSource</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv441SetRegulatorPressureAndSetREgulatorSourcev" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420SetSourceToRegulatorv">
+<span id="_CPPv320SetSourceToRegulatorv"></span><span id="_CPPv220SetSourceToRegulatorv"></span><span id="SetSourceToRegulator"></span><span class="target" id="_m_i_e_s___foreign_function_interface_8ipf_1ab2d94c34782d6a444b4fb4befb6af191"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetSourceToRegulator</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420SetSourceToRegulatorv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv432SetSourceToUserSetPressureToNeg2v">
+<span id="_CPPv332SetSourceToUserSetPressureToNeg2v"></span><span id="_CPPv232SetSourceToUserSetPressureToNeg2v"></span><span id="SetSourceToUserSetPressureToNeg2"></span><span class="target" id="_m_i_e_s___foreign_function_interface_8ipf_1a1eb883d9041c2ba2be0c28a2d7116c0f"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetSourceToUserSetPressureToNeg2</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv432SetSourceToUserSetPressureToNeg2v" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv48RunTestsv">
+<span id="_CPPv38RunTestsv"></span><span id="_CPPv28RunTestsv"></span><span id="RunTests"></span><span class="target" id="_m_i_e_s___foreign_function_interface_8ipf_1ab47f13793e4a07a70636a7fc7588cc6f"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RunTests</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv48RunTestsv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv419kPressurePulseMaxMS">
+<span id="_CPPv319kPressurePulseMaxMS"></span><span id="_CPPv219kPressurePulseMaxMS"></span><span id="kPressurePulseMaxMS__doubleC"></span><span class="target" id="_m_i_e_s___foreign_function_interface_8ipf_1a1da06bbf61eea0982a0dd744ee88c438"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">kPressurePulseMaxMS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">300</span></span><a class="headerlink" href="#_CPPv419kPressurePulseMaxMS" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420kPressureWaitSlackMS">
+<span id="_CPPv320kPressureWaitSlackMS"></span><span id="_CPPv220kPressureWaitSlackMS"></span><span id="kPressureWaitSlackMS__doubleC"></span><span class="target" id="_m_i_e_s___foreign_function_interface_8ipf_1ad5549dce34dec0e4c5b38451c6de0ec5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">kPressureWaitSlackMS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">150</span></span><a class="headerlink" href="#_CPPv420kPressureWaitSlackMS" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_ForeignFunctionInterface.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418FFI_ReturnTPValuesv"><code class="docutils literal notranslate"><span class="pre">FFI_ReturnTPValues()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430FFI_GetAvailableMessageFiltersv"><code class="docutils literal notranslate"><span class="pre">FFI_GetAvailableMessageFilters()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424FFI_SetCellElectrodeName6string8variable6string"><code class="docutils literal notranslate"><span class="pre">FFI_SetCellElectrodeName()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416FFI_QueryLogbook6string8variable8variable6string8variable"><code class="docutils literal notranslate"><span class="pre">FFI_QueryLogbook()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429FFI_QueryLogbookUniqueSetting6string8variable6string"><code class="docutils literal notranslate"><span class="pre">FFI_QueryLogbookUniqueSetting()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424FFI_SaveDataFolderToHDF56string6string"><code class="docutils literal notranslate"><span class="pre">FFI_SaveDataFolderToHDF5()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428FFI_SaveDataFolderToHDF5Impl6string8WaveText"><code class="docutils literal notranslate"><span class="pre">FFI_SaveDataFolderToHDF5Impl()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425FFI_GetSweepBrowserTitlesv"><code class="docutils literal notranslate"><span class="pre">FFI_GetSweepBrowserTitles()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427FFI_SavePSXDataFolderToHDF56string6string"><code class="docutils literal notranslate"><span class="pre">FFI_SavePSXDataFolderToHDF5()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423FFI_TP_DeviceSelectable6string"><code class="docutils literal notranslate"><span class="pre">FFI_TP_DeviceSelectable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418FFI_StartTestPulse6string"><code class="docutils literal notranslate"><span class="pre">FFI_StartTestPulse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417FFI_StopTestPulse6string"><code class="docutils literal notranslate"><span class="pre">FFI_StopTestPulse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415FFI_TestPulseMD6string8variable"><code class="docutils literal notranslate"><span class="pre">FFI_TestPulseMD()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427FFI_TestPulseMDSingleResult6string8variable"><code class="docutils literal notranslate"><span class="pre">FFI_TestPulseMDSingleResult()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416DoPressureManual6string8variable8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">DoPressureManual()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430FFI_GetWithOptionToSetPressure6string8variable6string8variable"><code class="docutils literal notranslate"><span class="pre">FFI_GetWithOptionToSetPressure()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429ReadPressureSourceAndPressure6string8variable"><code class="docutils literal notranslate"><span class="pre">ReadPressureSourceAndPressure()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415FFI_WaitForIdle6string8variable"><code class="docutils literal notranslate"><span class="pre">FFI_WaitForIdle()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421SetPressureToBaselinev"><code class="docutils literal notranslate"><span class="pre">SetPressureToBaseline()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv432readoutPressureSourceAndPressurev"><code class="docutils literal notranslate"><span class="pre">readoutPressureSourceAndPressure()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420SetRegulatorPressurev"><code class="docutils literal notranslate"><span class="pre">SetRegulatorPressure()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv441SetRegulatorPressureAndSetREgulatorSourcev"><code class="docutils literal notranslate"><span class="pre">SetRegulatorPressureAndSetREgulatorSource()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420SetSourceToRegulatorv"><code class="docutils literal notranslate"><span class="pre">SetSourceToRegulator()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv432SetSourceToUserSetPressureToNeg2v"><code class="docutils literal notranslate"><span class="pre">SetSourceToUserSetPressureToNeg2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv48RunTestsv"><code class="docutils literal notranslate"><span class="pre">RunTests()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419kPressurePulseMaxMS"><code class="docutils literal notranslate"><span class="pre">kPressurePulseMaxMS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420kPressureWaitSlackMS"><code class="docutils literal notranslate"><span class="pre">kPressureWaitSlackMS</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___experiment_documentation_8ipf.html"
+                          title="previous chapter">File MIES_ExperimentDocumentation.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___global_string_and_variable_access_8ipf.html"
+                          title="next chapter">File MIES_GlobalStringAndVariableAccess.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___global_string_and_variable_access_8ipf.html" title="File MIES_GlobalStringAndVariableAccess.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___experiment_documentation_8ipf.html" title="File MIES_ExperimentDocumentation.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_ForeignFunctionInterface.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

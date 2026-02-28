@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File MIES_TestPulse.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_TestPulse_Multi.ipf" href="_m_i_e_s___test_pulse___multi_8ipf.html" />
+    <link rel="prev" title="File MIES_TangoInteract.ipf" href="_m_i_e_s___tango_interact_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___test_pulse___multi_8ipf.html" title="File MIES_TestPulse_Multi.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___tango_interact_8ipf.html" title="File MIES_TangoInteract.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_TestPulse.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-testpulse-ipf">
+<span id="id1"></span><h1>File MIES_TestPulse.ipf<a class="headerlink" href="#file-mies-testpulse-ipf" title="Link to this heading">¶</a></h1>
+<p><strong>TP</strong> Basic Testpulse related functionality </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426TP_IsValidBaselineFraction8variable">
+<span id="_CPPv326TP_IsValidBaselineFraction8variable"></span><span id="_CPPv226TP_IsValidBaselineFraction8variable"></span><span id="TP_IsValidBaselineFraction__variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a3d404b4b1a9ece68cd84d31f0ca5c10f"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_IsValidBaselineFraction</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426TP_IsValidBaselineFraction8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Check if the value is a valid baseline fraction. </p>
+<p>Comment in for debugging of TP_TSAnalysis</p>
+<p>For visualising the evaluation ranges from the returned DFREF:</p>
+<p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="nc">Duplicate</span>/O<span class="w"> </span>dfr:data,<span class="w"> </span>root:data
+<span class="nc">Duplicate</span>/O<span class="w"> </span>dfr:colors,<span class="w"> </span>root:colors
+
+<span class="nc">ModifyGraph</span><span class="w"> </span>zColor(data)={colors,*,*,Rainbow,1}
+</pre></div>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427TP_CalculateTestPulseLength8variable8variable">
+<span id="_CPPv327TP_CalculateTestPulseLength8variable8variable"></span><span id="_CPPv227TP_CalculateTestPulseLength8variable8variable"></span><span id="TP_CalculateTestPulseLength__variable.variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a8015bad6004fd3c6dc4dfb70e4fbdb2d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_CalculateTestPulseLength</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pulseDuration</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">baselineFrac</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427TP_CalculateTestPulseLength8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the total length of a single testpulse with baseline. </p>
+<p>Static on purpose as all users during DAQ/TP should prefer <a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html#_m_i_e_s___wave_data_folder_getters_8ipf_1a37720661ee8ec2710bad92d87ab71b52"><span class="std std-ref">GetTPSettingsCalculated()</span></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pulseDuration</strong> – duration of the high portion of the testpulse in points or time </p></li>
+<li><p><strong>baselineFrac</strong> – fraction, <em>not</em> percentage, of the baseline </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428TP_CalculateBaselineFraction8variable8variable">
+<span id="_CPPv328TP_CalculateBaselineFraction8variable8variable"></span><span id="_CPPv228TP_CalculateBaselineFraction8variable8variable"></span><span id="TP_CalculateBaselineFraction__variable.variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1ad29f35b5cca962087f7913fbbb47cdd1"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_CalculateBaselineFraction</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pulseDuration</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">totalLength</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428TP_CalculateBaselineFraction8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Inverse function of TP_CalculateTestPulseLength. </p>
+<p>Can be used when reconstructing the baseline fraction from epoch information. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410TP_StoreTP6string4wave8variable6string">
+<span id="_CPPv310TP_StoreTP6string4wave8variable6string"></span><span id="_CPPv210TP_StoreTP6string4wave8variable6string"></span><span id="TP_StoreTP__string.wave.variable.string"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a18665dbcb88c55fab81be186b1af6504"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_StoreTP</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">TPWave</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tpMarker</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hsList</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410TP_StoreTP6string4wave8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Stores the given TP wave. </p>
+<p>
+The stored test pulse waves will have column dimension labels in the format <code class="docutils literal notranslate"><span class="pre">HS_X</span></code>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>TPWave</strong> – reference to wave holding the TP data, see <a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html#_m_i_e_s___wave_data_folder_getters_8ipf_1a541c78952b41fbb04f3a97a2f6353967"><span class="std std-ref">GetOscilloscopeWave()</span></a></p></li>
+<li><p><strong>tpMarker</strong> – unique number for this set of TPs from all TP channels </p></li>
+<li><p><strong>hsList</strong> – list of headstage numbers in the same order as the columns of TPWave</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419TP_GetStoredTPIndex6string8variable">
+<span id="_CPPv319TP_GetStoredTPIndex6string8variable"></span><span id="_CPPv219TP_GetStoredTPIndex6string8variable"></span><span id="TP_GetStoredTPIndex__string.variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a6a3b29d3ccaf78a29bc15d8281d1569f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_GetStoredTPIndex</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tpMarker</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419TP_GetStoredTPIndex6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418TP_RecreateDACWave8variable8variable8variable8variable8variable8variable">
+<span id="_CPPv318TP_RecreateDACWave8variable8variable8variable8variable8variable8variable"></span><span id="_CPPv218TP_RecreateDACWave8variable8variable8variable8variable8variable8variable"></span><span id="TP_RecreateDACWave__variable.variable.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1ad14a0f4ddbff0ceaa8a47bc8a78fbf7b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_RecreateDACWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tpLengthPointsDAC</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pulseStartPointsDAC</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pulseLengthPointsDAC</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">clampMode</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">clampAmp</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">samplingInterval</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418TP_RecreateDACWave8variable8variable8variable8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416TP_GetTPMetaData4wave8variable8variable">
+<span id="_CPPv316TP_GetTPMetaData4wave8variable8variable"></span><span id="_CPPv216TP_GetTPMetaData4wave8variable8variable"></span><span id="TP_GetTPMetaData__wave.variable.variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a1f7b84961c5f933714dd3f7bba587cba"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_GetTPMetaData</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tpStorage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tpMarker</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416TP_GetTPMetaData4wave8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414TP_GetStoredTP6string8variable8variable8variable">
+<span id="_CPPv314TP_GetStoredTP6string8variable8variable8variable"></span><span id="_CPPv214TP_GetStoredTP6string8variable8variable8variable"></span><span id="TP_GetStoredTP__string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a190b6798e71ee314880c3ed0a39b97be"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_GetStoredTP</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tpMarker</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">includeDAC</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414TP_GetStoredTP6string8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns data about a stored TestPulse from a given tpMarker. </p>
+<p>Returns a wave reference wave with 3 entries: 0 : numeric wave with the acquired AD data of the test pulse (signal) in the format as created by <a class="reference internal" href="#_m_i_e_s___test_pulse_8ipf_1a18665dbcb88c55fab81be186b1af6504"><span class="std std-ref">TP_StoreTP</span></a> 1 : numeric wave with the recreated DA data of the test pulse (command) 2 : Additional information for the test pulse from creation and analysis in the format described for <a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html#_m_i_e_s___wave_data_folder_getters_8ipf_1aeffe559aca7930f6ddc57ed8f683354c"><span class="std std-ref">GetTPStorage</span></a> As the information is for a single TP only, the wave contains a single slice (1 row)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device name </p></li>
+<li><p><strong>tpMarker</strong> – testpulse marker </p></li>
+<li><p><strong>headstage</strong> – headstage number </p></li>
+<li><p><strong>includeDAC</strong> – flag, when set the DAC wave of the testpulse is recreated </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424TP_GetStoredTPsFromCycle6string8variable8variable8variable">
+<span id="_CPPv324TP_GetStoredTPsFromCycle6string8variable8variable8variable"></span><span id="_CPPv224TP_GetStoredTPsFromCycle6string8variable8variable8variable"></span><span id="TP_GetStoredTPsFromCycle__string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1aa3d66871106257bb3f86c91be9168d7c"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_GetStoredTPsFromCycle</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cycleId</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">includeDAC</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424TP_GetStoredTPsFromCycle6string8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns data about stored TestPulses from a given cycle id. </p>
+<p>Returns a wave reference wave with 3 entries: 0 : wave ref wave that stores numeric waves with the acquired AD data of the test pulse (signal) in the format as created by <a class="reference internal" href="#_m_i_e_s___test_pulse_8ipf_1a18665dbcb88c55fab81be186b1af6504"><span class="std std-ref">TP_StoreTP</span></a> The number of elements in the wave ref wave equals the number of test pulses in the cycle. 1 : numeric wave with the recreated DA data of the test pulse (command) Note: here only a single wave is recreated because the DA data for all test pulses of that cycle is identical 2 : wave ref wave that stores additional information for the test pulses from creation and analysis in the format described for <a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html#_m_i_e_s___wave_data_folder_getters_8ipf_1aeffe559aca7930f6ddc57ed8f683354c"><span class="std std-ref">GetTPStorage</span></a> The number of elements in the wave ref wave equals the number of test pulses in the cycle and has the same order as the signal waves from index 0. Each element is a single slice (1 row) of tpStorage.</p>
+<p>If no test pulses exist for the given cycle id a null wave is returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device name </p></li>
+<li><p><strong>cycleId</strong> – test pulse cycle id </p></li>
+<li><p><strong>headstage</strong> – headstage number </p></li>
+<li><p><strong>includeDAC</strong> – flag, when set the DAC wave of the testpulse is recreated </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430TP_GetConsecutiveTPsUptoMarker6string8variable8variable">
+<span id="_CPPv330TP_GetConsecutiveTPsUptoMarker6string8variable8variable"></span><span id="_CPPv230TP_GetConsecutiveTPsUptoMarker6string8variable8variable"></span><span id="TP_GetConsecutiveTPsUptoMarker__string.variable.variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a0fb72c8d5413a6a652304f6afb2ff0c8"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_GetConsecutiveTPsUptoMarker</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tpMarker</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">number</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430TP_GetConsecutiveTPsUptoMarker6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a number of consecutive test pulses ending with the TP identified by tpMarker. </p>
+<p>The wave reference wave will have as many columns as active headstages were used. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427TP_SplitStoredTestPulseWave6string">
+<span id="_CPPv327TP_SplitStoredTestPulseWave6string"></span><span id="_CPPv227TP_SplitStoredTestPulseWave6string"></span><span id="TP_SplitStoredTestPulseWave__string"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a825102e1a659436ef7e511ad09e304f6"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_SplitStoredTestPulseWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427TP_SplitStoredTestPulseWave6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Split the stored testpulse wave reference wave into single waves for easier handling. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413TP_ROAnalysisP19ASYNC_ReadOutStruct">
+<span id="_CPPv313TP_ROAnalysisP19ASYNC_ReadOutStruct"></span><span id="_CPPv213TP_ROAnalysisP19ASYNC_ReadOutStruct"></span><span id="TP_ROAnalysis__ASYNC_ReadOutStructP"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a4531c9fac1be51c65cfb4561daa0286b"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_ROAnalysis</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv419ASYNC_ReadOutStruct" title="ASYNC_ReadOutStruct"><span class="n"><span class="pre">ASYNC_ReadOutStruct</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ar</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413TP_ROAnalysisP19ASYNC_ReadOutStruct" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Receives data from the async function <a class="reference internal" href="#_m_i_e_s___test_pulse_8ipf_1a557cc92c280c222fd1a1f2e86563d74a"><span class="std std-ref">TP_TSAnalysis()</span></a>, buffers partial results and puts complete results back to main thread, results are base line level, steady state resistance, instantaneous resistance and their positions collected results for all channels of a measurement are send to <a class="reference internal" href="#_m_i_e_s___test_pulse_8ipf_1af5b31a60c665d8ae6a518ba45d60287e"><span class="std std-ref">TP_RecordTP()</span></a>, <a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html#_m_i_e_s___data_acquisition_8ipf_1a9fe7057886274ac0efb50058b0ec1a57"><span class="std std-ref">DQ_ApplyAutoBias()</span></a> when complete. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ar</strong> – <a class="reference internal" href="../struct/struct_a_s_y_n_c___read_out_struct.html#struct_a_s_y_n_c___read_out_struct"><span class="std std-ref">ASYNC_ReadOutStruct</span></a> structure with dfr with input data </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424TP_CreateOverrideResults6string8variable">
+<span id="_CPPv324TP_CreateOverrideResults6string8variable"></span><span id="_CPPv224TP_CreateOverrideResults6string8variable"></span><span id="TP_CreateOverrideResults__string.variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a8b236ce33f6094176ab94d092a1e090c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_CreateOverrideResults</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424TP_CreateOverrideResults6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421TP_GetTPWaveForAutoTP6string8variable">
+<span id="_CPPv321TP_GetTPWaveForAutoTP6string8variable"></span><span id="_CPPv221TP_GetTPWaveForAutoTP6string8variable"></span><span id="TP_GetTPWaveForAutoTP__string.variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a490d90d95e8fd2513d841e387d9aa3cc"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_GetTPWaveForAutoTP</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">marker</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421TP_GetTPWaveForAutoTP6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a 2D wave with two testpulses concatenated. </p>
+<p>Rows:<ul class="simple">
+<li><p>TPs</p></li>
+</ul>
+</p>
+<p>Columns:<ul class="simple">
+<li><p>Active headstages </p></li>
+</ul>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415TP_AutoBaseline6string8variable4wave4wave">
+<span id="_CPPv315TP_AutoBaseline6string8variable4wave4wave"></span><span id="_CPPv215TP_AutoBaseline6string8variable4wave4wave"></span><span id="TP_AutoBaseline__string.variable.wave.wave"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a928b85eef9af8a7f8485d810c3b723e7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_AutoBaseline</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">TPResults</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">TPs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415TP_AutoBaseline6string8variable4wave4wave" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418TP_AutoFitBaseline4wave8variable">
+<span id="_CPPv318TP_AutoFitBaseline4wave8variable"></span><span id="_CPPv218TP_AutoFitBaseline4wave8variable"></span><span id="TP_AutoFitBaseline__wave.variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1ae6f166f490f3fee791643e6a71b6ca52"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_AutoFitBaseline</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">data</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pulseLengthMS</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418TP_AutoFitBaseline4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Fit the tail of the first TP with an expontential and return it’s time constant. </p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>///
+///        +----+        +----+
+///        |    |        |    |
+///        |    |        |    |
+///        |    |        |    |
+///        |    |        |    |
+///    ----+    +--------+    +----
+///
+///             &lt;--------&gt;
+///            Fitting range
+///
+///    &lt;------------&gt;
+///        One TP
+///
+///        &lt;----&gt;
+///        Pulse
+///
+///
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – input data </p></li>
+<li><p><strong>pulseLengthMS</strong> – length of the pulse (high part) of the testpulse [ms]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return values<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>result</strong> – One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1TPBaselineFitResults"><span class="std std-ref">TPBaselineFitResults</span></a></p></li>
+<li><p><strong>tau</strong> – time constant of the decay [ms] </p></li>
+<li><p><strong>baseline</strong> – baseline length of one pulse (same as the fitting range) [ms] </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427TP_AutoAmplitudeAndBaseline6string4wave8variable">
+<span id="_CPPv327TP_AutoAmplitudeAndBaseline6string4wave8variable"></span><span id="_CPPv227TP_AutoAmplitudeAndBaseline6string4wave8variable"></span><span id="TP_AutoAmplitudeAndBaseline__string.wave.variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1af00667f335ee1637ed9245e5662911cb"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_AutoAmplitudeAndBaseline</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">TPResults</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">marker</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427TP_AutoAmplitudeAndBaseline6string4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Automatically tune the Testpulse amplitude and baseline. </p>
+<p>Decision logic flowchart:</p>
+<p><a class=""
+               data-lightbox="group-7f9ac0e8-e88c-418d-b9d1-e33217618ba0"
+               href="../_images/auto-testpulse1.svg"
+               title=""
+               data-title=""
+               
+               ><img src="../_images/auto-testpulse1.svg"
+                     class=""
+                     width="100%"
+                     height="auto"
+                     alt=""/>
+                </a></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415TP_AutoTPActive6string">
+<span id="_CPPv315TP_AutoTPActive6string"></span><span id="_CPPv215TP_AutoTPActive6string"></span><span id="TP_AutoTPActive__string"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a90c0656cc0c0d56dd62053fa33aced20"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_AutoTPActive</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415TP_AutoTPActive6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416TP_AutoTPTurnOff6string4wave8variable8variable">
+<span id="_CPPv316TP_AutoTPTurnOff6string4wave8variable8variable"></span><span id="_CPPv216TP_AutoTPTurnOff6string4wave8variable8variable"></span><span id="TP_AutoTPTurnOff__string.wave.variable.variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1af6251d4fb1849df34964edab4da192f0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_AutoTPTurnOff</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">autoTPEnable</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">QC</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416TP_AutoTPTurnOff6string4wave8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429TP_AutoTPDisableIfAppropriate6string4wave8variable8variable8variable">
+<span id="_CPPv329TP_AutoTPDisableIfAppropriate6string4wave8variable8variable8variable"></span><span id="_CPPv229TP_AutoTPDisableIfAppropriate6string4wave8variable8variable8variable"></span><span id="TP_AutoTPDisableIfAppropriate__string.wave.variable.variable.variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1afac8ebbec85c38ad0132ae381394ab75"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_AutoTPDisableIfAppropriate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">TPStorage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">forceFailedQC</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">restartTP</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429TP_AutoTPDisableIfAppropriate6string4wave8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Disable Auto TP if appropriate. </p>
+<p>Disable Auto TP if it passed <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1ab7097ef983cd40a045ed5a5a5ee01a5d"><span class="std std-ref">TP_AUTO_TP_CONSECUTIVE_PASSES</span></a> or failed <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a4b05c5f29bb0410ec9af10bdce32ebf9"><span class="std std-ref">TP_AUTO_TP_BASELINE_RANGE_EXCEEDED_FAILS</span></a> times in a row or forceFailedQC is true.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – Device </p></li>
+<li><p><strong>TPStorage</strong> – TPStorage wave </p></li>
+<li><p><strong>forceFailedQC</strong> – [optional, defaults to false] Stop Auto TP with a QC failure </p></li>
+<li><p><strong>headstage</strong> – [optional, defaults to all IC headstages] Headstage [0, 8[ or use one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1AllHeadstageModeConstants"><span class="std std-ref">AllHeadstageModeConstants</span></a></p></li>
+<li><p><strong>restartTP</strong> – [optional, defaults to true] restart the Testpulse</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns the previously running Test Pulse mode , one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1TestPulseRunModes"><span class="std std-ref">TestPulseRunModes</span></a>, when it was stopped or NaN if the testpulse was not changed </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427TP_AutoTPGenerateNewCycleID6string8variable8variable8variable">
+<span id="_CPPv327TP_AutoTPGenerateNewCycleID6string8variable8variable8variable"></span><span id="_CPPv227TP_AutoTPGenerateNewCycleID6string8variable8variable8variable"></span><span id="TP_AutoTPGenerateNewCycleID__string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a6e6ca9be9646968c8c737b3dbcd512fd"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_AutoTPGenerateNewCycleID</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">first</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">last</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427TP_AutoTPGenerateNewCycleID6string8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Generate new auto TP cycle IDs. </p>
+<p>This is required everytime we lock a device or toggle Auto TP for a headstage</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>headstage</strong> – [optional, default to all headstages] only update it for a specific headstage </p></li>
+<li><p><strong>first</strong> – [optional, default to all headstages] only update the range [first, last] </p></li>
+<li><p><strong>last</strong> – [optional, default to all headstages] only update the range [first, last] </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425TP_GetValuesFromTPStorage4wave8variable6string8variable8variable">
+<span id="_CPPv325TP_GetValuesFromTPStorage4wave8variable6string8variable8variable"></span><span id="_CPPv225TP_GetValuesFromTPStorage4wave8variable6string8variable8variable"></span><span id="TP_GetValuesFromTPStorage__wave.variable.string.variable.variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a2a5cf7e7589bf8ce08ffae78d1b8ac67"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_GetValuesFromTPStorage</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">TPStorage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entry</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numReqEntries</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">options</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425TP_GetValuesFromTPStorage4wave8variable6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the last <code class="docutils literal notranslate"><span class="pre">numReqEntries</span></code> non-NaN values from layer <code class="docutils literal notranslate"><span class="pre">entry</span></code> of <code class="docutils literal notranslate"><span class="pre">headstage</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TPStorage</strong> – TP results wave, see <a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html#_m_i_e_s___wave_data_folder_getters_8ipf_1aeffe559aca7930f6ddc57ed8f683354c"><span class="std std-ref">GetTPStorage()</span></a></p></li>
+<li><p><strong>headstage</strong> – Headstage </p></li>
+<li><p><strong>entry</strong> – Name of the value to search </p></li>
+<li><p><strong>numReqEntries</strong> – Number of entries to return, supports integer values and inf </p></li>
+<li><p><strong>options</strong> – [optional, default to nothing] One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1TPStorageQueryingOptions"><span class="std std-ref">TPStorageQueryingOptions</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413TP_TSAnalysis5dfref">
+<span id="_CPPv313TP_TSAnalysis5dfref"></span><span id="_CPPv213TP_TSAnalysis5dfref"></span><span id="TP_TSAnalysis__dfref"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a557cc92c280c222fd1a1f2e86563d74a"></span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_TSAnalysis</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfrInp</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413TP_TSAnalysis5dfref" title="Link to this definition">¶</a><br /></dt>
+<dd><p>This function analyses a TP data set. It is called by the ASYNC frame work in an own thread. currently six properties are determined. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dfrInp</strong> – input data folder from the ASYNC framework, parameter input order therein follows the setup in <a class="reference internal" href="#_m_i_e_s___test_pulse_8ipf_1a0311b4ce42c9bb65445916af3ba2c9d0"><span class="std std-ref">TP_SendToAnalysis()</span></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419TP_CalculateAverage4wave4wave">
+<span id="_CPPv319TP_CalculateAverage4wave4wave"></span><span id="_CPPv219TP_CalculateAverage4wave4wave"></span><span id="TP_CalculateAverage__wave.wave"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a23c277a8aa8786cc64e676baf4e520e8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_CalculateAverage</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">TPResultsBuffer</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">TPResults</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419TP_CalculateAverage4wave4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Calculates running average [box average] for all entries and all headstages. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411TP_RecordTP6string4wave">
+<span id="_CPPv311TP_RecordTP6string4wave"></span><span id="_CPPv211TP_RecordTP6string4wave"></span><span id="TP_RecordTP__string.wave"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1af5b31a60c665d8ae6a518ba45d60287e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_RecordTP</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">TPResults</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411TP_RecordTP6string4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Records values from TPResults into TPStorage at defined intervals. </p>
+<p>Used for analysis of TP over time. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416TP_FitResistance4wave8variable8variable8variable">
+<span id="_CPPv316TP_FitResistance4wave8variable8variable8variable"></span><span id="_CPPv216TP_FitResistance4wave8variable8variable8variable"></span><span id="TP_FitResistance__wave.variable.variable.variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a0b66cfca83590ab7728e5d7adda28649"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_FitResistance</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">TPStorage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">startRow</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">endRow</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416TP_FitResistance4wave8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Threadsafe wrapper for performing CurveFits on the TPStorage wave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412TP_AnalyzeTP6string10WaveOrNull8variable">
+<span id="_CPPv312TP_AnalyzeTP6string10WaveOrNull8variable"></span><span id="_CPPv212TP_AnalyzeTP6string10WaveOrNull8variable"></span><span id="TP_AnalyzeTP__string.WaveOrNull.variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a21b4ba3e4b8bedf72e0655948656f70c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_AnalyzeTP</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">TPStorage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">endRow</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412TP_AnalyzeTP6string10WaveOrNull8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Determine the slope of the steady state resistance over a user defined window (in seconds) </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – locked device string </p></li>
+<li><p><strong>TPStorage</strong> – test pulse storage wave </p></li>
+<li><p><strong>endRow</strong> – last valid row index in TPStorage </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428TP_StopTestPulseOnAllDevicesv">
+<span id="_CPPv328TP_StopTestPulseOnAllDevicesv"></span><span id="_CPPv228TP_StopTestPulseOnAllDevicesv"></span><span id="TP_StopTestPulseOnAllDevices"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a4c235f43e3ecf246b0a901e37dd068b0"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_StopTestPulseOnAllDevices</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428TP_StopTestPulseOnAllDevicesv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Stop running background testpulse on all locked devices. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420TP_StopTestPulseFast6string">
+<span id="_CPPv320TP_StopTestPulseFast6string"></span><span id="_CPPv220TP_StopTestPulseFast6string"></span><span id="TP_StopTestPulseFast__string"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a12d7a6d3e09c49f52e9523aef5357e7f"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_StopTestPulseFast</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420TP_StopTestPulseFast6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_m_i_e_s___test_pulse_8ipf_1a18adc5fb71c6feefb03dbdedb1f4eba9"><span class="std std-ref">TP_StopTestPulseWrapper</span></a></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416TP_StopTestPulse6string">
+<span id="_CPPv316TP_StopTestPulse6string"></span><span id="_CPPv216TP_StopTestPulse6string"></span><span id="TP_StopTestPulse__string"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a1da417d3cc442a8b750ba55c6106d567"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_StopTestPulse</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416TP_StopTestPulse6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_m_i_e_s___test_pulse_8ipf_1a18adc5fb71c6feefb03dbdedb1f4eba9"><span class="std std-ref">TP_StopTestPulseWrapper</span></a></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423TP_StopTestPulseWrapper6string8variable">
+<span id="_CPPv323TP_StopTestPulseWrapper6string8variable"></span><span id="_CPPv223TP_StopTestPulseWrapper6string8variable"></span><span id="TP_StopTestPulseWrapper__string.variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a18adc5fb71c6feefb03dbdedb1f4eba9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_StopTestPulseWrapper</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fast</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423TP_StopTestPulseWrapper6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Stop any running background test pulses. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>fast</strong> – [optional, defaults to false] Performs only the totally necessary steps for tear down.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1TestPulseRunModes"><span class="std std-ref">TestPulseRunModes</span></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419TP_RestartTestPulse6string8variable8variable">
+<span id="_CPPv319TP_RestartTestPulse6string8variable8variable"></span><span id="_CPPv219TP_RestartTestPulse6string8variable8variable"></span><span id="TP_RestartTestPulse__string.variable.variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a5c5fada37aab47e9caf5d7f7cd69fd44"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_RestartTestPulse</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">testPulseMode</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fast</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419TP_RestartTestPulse6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Restarts a test pulse previously stopped with <a class="reference internal" href="#_m_i_e_s___test_pulse_8ipf_1a1da417d3cc442a8b750ba55c6106d567"><span class="std std-ref">TP_StopTestPulse</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv48TP_Setup6string8variable8variable">
+<span id="_CPPv38TP_Setup6string8variable8variable"></span><span id="_CPPv28TP_Setup6string8variable8variable"></span><span id="TP_Setup__string.variable.variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1aff287a0cc8997a3ac99a0f7e91fbf8ee"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_Setup</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">runMode</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fast</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv48TP_Setup6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Prepare device for TestPulse. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>runMode</strong> – Testpulse running mode, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1TestPulseRunModes"><span class="std std-ref">TestPulseRunModes</span></a></p></li>
+<li><p><strong>fast</strong> – [optional, defaults to false] Performs only the totally necessary steps for setup </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414TP_SetupCommon6string">
+<span id="_CPPv314TP_SetupCommon6string"></span><span id="_CPPv214TP_SetupCommon6string"></span><span id="TP_SetupCommon__string"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a8524989cb8da8be4db48befa9c1c0d76"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_SetupCommon</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414TP_SetupCommon6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Common setup calls for TP and TP during DAQ. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411TP_Teardown6string8variable">
+<span id="_CPPv311TP_Teardown6string8variable"></span><span id="_CPPv211TP_Teardown6string8variable"></span><span id="TP_Teardown__string.variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1ac482a2edae1ae583a0ee1191ca3c51c6"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_Teardown</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fast</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411TP_Teardown6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Perform common actions after the testpulse. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417TP_TeardownCommon6string">
+<span id="_CPPv317TP_TeardownCommon6string"></span><span id="_CPPv217TP_TeardownCommon6string"></span><span id="TP_TeardownCommon__string"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a08c11ff4302a9c3724d3e9b89fce1f64"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_TeardownCommon</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417TP_TeardownCommon6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Common teardown calls for TP and TP during DAQ. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429TP_GetNumDevicesWithTPRunningv">
+<span id="_CPPv329TP_GetNumDevicesWithTPRunningv"></span><span id="_CPPv229TP_GetNumDevicesWithTPRunningv"></span><span id="TP_GetNumDevicesWithTPRunning"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a05c6185043db58f01260c824eb316c3a"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_GetNumDevicesWithTPRunning</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429TP_GetNumDevicesWithTPRunningv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the number of devices which have TP running. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428TP_CheckIfTestpulseIsRunning6string">
+<span id="_CPPv328TP_CheckIfTestpulseIsRunning6string"></span><span id="_CPPv228TP_CheckIfTestpulseIsRunning6string"></span><span id="TP_CheckIfTestpulseIsRunning__string"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a42da53999370e197b1ca563070976d11"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_CheckIfTestpulseIsRunning</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428TP_CheckIfTestpulseIsRunning6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Check if the testpulse is running. </p>
+<p>Can not be used to check for foreground TP as during foreground TP/DAQ nothing else runs. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421TP_TestPulseHasCycled6string8variable">
+<span id="_CPPv321TP_TestPulseHasCycled6string8variable"></span><span id="_CPPv221TP_TestPulseHasCycled6string8variable"></span><span id="TP_TestPulseHasCycled__string.variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a22ac989c8b825350aea646f90a9af5cb"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_TestPulseHasCycled</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cycles</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421TP_TestPulseHasCycled6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>See if the testpulse has run enough times to create valid measurements. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – DA_Ephys panel name </p></li>
+<li><p><strong>cycles</strong> – number of cycles that test pulse must run </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427TP_UpdateHoldCmdInTPStorage6string8variable">
+<span id="_CPPv327TP_UpdateHoldCmdInTPStorage6string8variable"></span><span id="_CPPv227TP_UpdateHoldCmdInTPStorage6string8variable"></span><span id="TP_UpdateHoldCmdInTPStorage__string.variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a43fb930f9583f1bd9e85729de9015184"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_UpdateHoldCmdInTPStorage</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427TP_UpdateHoldCmdInTPStorage6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Save the amplifier holding command in the TPStorage wave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422TP_CreateTestPulseWave6string8variable">
+<span id="_CPPv322TP_CreateTestPulseWave6string8variable"></span><span id="_CPPv222TP_CreateTestPulseWave6string8variable"></span><span id="TP_CreateTestPulseWave__string.variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a4b75c440253625f0cfe91f0ac7a9c001"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_CreateTestPulseWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataAcqOrTP</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422TP_CreateTestPulseWave6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Create the testpulse wave with the current settings. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426TP_CreateTestPulseWaveImpl4wave8variable8variable8variable">
+<span id="_CPPv326TP_CreateTestPulseWaveImpl4wave8variable8variable8variable"></span><span id="_CPPv226TP_CreateTestPulseWaveImpl4wave8variable8variable8variable"></span><span id="TP_CreateTestPulseWaveImpl__wave.variable.variable.variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a852f304a3645daa00fd0f4b1c3a48f91"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_CreateTestPulseWaveImpl</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tp</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">totalLength</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pulseStart</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pulseLength</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426TP_CreateTestPulseWaveImpl4wave8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>device independent test pulse wave creation </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv432TP_GetCreationPropertiesInPoints4wave8variable">
+<span id="_CPPv332TP_GetCreationPropertiesInPoints4wave8variable"></span><span id="_CPPv232TP_GetCreationPropertiesInPoints4wave8variable"></span><span id="TP_GetCreationPropertiesInPoints__wave.variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a5d08a26bdb7cf680fc68559d4ab31e49"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_GetCreationPropertiesInPoints</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">TPSettingsCalc</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataAcqOrTP</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv432TP_GetCreationPropertiesInPoints4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420TP_PrepareAnalysisDF6stringP15TPAnalysisInput">
+<span id="_CPPv320TP_PrepareAnalysisDF6stringP15TPAnalysisInput"></span><span id="_CPPv220TP_PrepareAnalysisDF6stringP15TPAnalysisInput"></span><span id="TP_PrepareAnalysisDF__string.TPAnalysisInputP"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a17d8752b63477c0f13665f8bf029db3f"></span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_PrepareAnalysisDF</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv415TPAnalysisInput" title="TPAnalysisInput"><span class="n"><span class="pre">TPAnalysisInput</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">tpInput</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420TP_PrepareAnalysisDF6stringP15TPAnalysisInput" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Prepares a TP data set data folder to the asynchroneous analysis function TP_TSAnalysis. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – <strong>[in]</strong> title of panel that ran this test pulse </p></li>
+<li><p><strong>tpInput</strong> – holds the parameters send to analysis </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>data folder that can be pushed for execution by the async frame work </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417TP_SendToAnalysis6stringP15TPAnalysisInput">
+<span id="_CPPv317TP_SendToAnalysis6stringP15TPAnalysisInput"></span><span id="_CPPv217TP_SendToAnalysis6stringP15TPAnalysisInput"></span><span id="TP_SendToAnalysis__string.TPAnalysisInputP"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a0311b4ce42c9bb65445916af3ba2c9d0"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_SendToAnalysis</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv415TPAnalysisInput" title="TPAnalysisInput"><span class="n"><span class="pre">TPAnalysisInput</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">tpInput</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417TP_SendToAnalysis6stringP15TPAnalysisInput" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Send a TP data set to the asynchroneous analysis function TP_TSAnalysis. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – <strong>[in]</strong> title of panel that ran this test pulse </p></li>
+<li><p><strong>tpInput</strong> – holds the parameters send to analysis </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429TP_UpdateTPSettingsCalculated6string">
+<span id="_CPPv329TP_UpdateTPSettingsCalculated6string"></span><span id="_CPPv229TP_UpdateTPSettingsCalculated6string"></span><span id="TP_UpdateTPSettingsCalculated__string"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1ad37624addc6464a23456855a939b1b9c"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_UpdateTPSettingsCalculated</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429TP_UpdateTPSettingsCalculated6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv433TP_UpdateTPSettingsCalculatedImpl4wave4wave4wave">
+<span id="_CPPv333TP_UpdateTPSettingsCalculatedImpl4wave4wave4wave"></span><span id="_CPPv233TP_UpdateTPSettingsCalculatedImpl4wave4wave4wave"></span><span id="TP_UpdateTPSettingsCalculatedImpl__wave.wave.wave"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a572275da0d3110fb5535085ba0f403e6"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_UpdateTPSettingsCalculatedImpl</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">TPSettings</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">samplingIntervals</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tpCalculated</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv433TP_UpdateTPSettingsCalculatedImpl4wave4wave4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Device and globals independent calculcation of TPSettingsCalculated. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv431TP_AutoTPLabelToLabnotebookName6string">
+<span id="_CPPv331TP_AutoTPLabelToLabnotebookName6string"></span><span id="_CPPv231TP_AutoTPLabelToLabnotebookName6string"></span><span id="TP_AutoTPLabelToLabnotebookName__string"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a34b7a981fdd68d85e1738b83ecf596c8"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_AutoTPLabelToLabnotebookName</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lbl</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431TP_AutoTPLabelToLabnotebookName6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Convert from row names of <a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html#_m_i_e_s___wave_data_folder_getters_8ipf_1a3c7536b8b83ea48fb52a19ae5d77bcdc"><span class="std std-ref">GetTPSettings()</span></a>/GetTPSettingsCalculated() to GetTPSettingsLBN() column names. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422TP_UpdateTPLBNSettings6string">
+<span id="_CPPv322TP_UpdateTPLBNSettings6string"></span><span id="_CPPv222TP_UpdateTPLBNSettings6string"></span><span id="TP_UpdateTPLBNSettings__string"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1adf3f4a5cdbba8416a7ecd9cbff254080"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_UpdateTPLBNSettings</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422TP_UpdateTPLBNSettings6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Update the Testpulse labnotebook wave. </p>
+<p>DAQ:<ul class="simple">
+<li><p>TPSettings holds the current GUI values</p></li>
+<li><p>TPSettingsLabnotebook holds the settings which were active when the sweep started</p></li>
+</ul>
+</p>
+<p>TP:<ul class="simple">
+<li><p>TPSettings holds the current GUI values</p></li>
+<li><p>TPSettingsLabnotebook is cleared when TP is started and filled from TPSettings when TP is stopped This means we only have the <em>latest</em> values for the TP settings which don’t restart TP. For entries which do restart TP we always have the current values. See also the DAEPHYS_TP_CONTROLS_XXX constants.</p></li>
+</ul>
+</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html#_m_i_e_s___d_a_ephys_8ipf_1aac9d9c497923b511971d5d87dfe91846"><span class="std std-ref">DAP_TPGUISettingToWave()</span></a> for the special auto TP entry handling. </p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415TP_GetTPCycleID6string">
+<span id="_CPPv315TP_GetTPCycleID6string"></span><span id="_CPPv215TP_GetTPCycleID6string"></span><span id="TP_GetTPCycleID__string"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a1e8a31af68a3cb6a11dcc3a71fa79970"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_GetTPCycleID</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415TP_GetTPCycleID6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the TP cycle ID for the given device. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425TP_GetPowerSpectrumLength8variable">
+<span id="_CPPv325TP_GetPowerSpectrumLength8variable"></span><span id="_CPPv225TP_GetPowerSpectrumLength8variable"></span><span id="TP_GetPowerSpectrumLength__variable"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1af34112da898a78b2808eff374b1f0b5f"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_GetPowerSpectrumLength</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tpLength</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425TP_GetPowerSpectrumLength8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the length in points of the power spectrum generated via FFT. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv423TP_MAX_VALID_RESISTANCE">
+<span id="_CPPv323TP_MAX_VALID_RESISTANCE"></span><span id="_CPPv223TP_MAX_VALID_RESISTANCE"></span><span id="TP_MAX_VALID_RESISTANCE__doubleC"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1ae06f2cd0e1a0fc05874c826bbaf6ebc6"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_MAX_VALID_RESISTANCE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">3000</span></span><a class="headerlink" href="#_CPPv423TP_MAX_VALID_RESISTANCE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Units MΩ </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv426TP_TPSTORAGE_EVAL_INTERVAL">
+<span id="_CPPv326TP_TPSTORAGE_EVAL_INTERVAL"></span><span id="_CPPv226TP_TPSTORAGE_EVAL_INTERVAL"></span><span id="TP_TPSTORAGE_EVAL_INTERVAL__doubleC"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1aa857e2cdfe9fed4af3a12f8634093c00"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_TPSTORAGE_EVAL_INTERVAL</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.18</span></span><a class="headerlink" href="#_CPPv426TP_TPSTORAGE_EVAL_INTERVAL" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv413TP_FIT_POINTS">
+<span id="_CPPv313TP_FIT_POINTS"></span><span id="_CPPv213TP_FIT_POINTS"></span><span id="TP_FIT_POINTS__doubleC"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a2e22e3ddeadb7ec50989e4c916efb70e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_FIT_POINTS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">5</span></span><a class="headerlink" href="#_CPPv413TP_FIT_POINTS" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420TP_PRESSURE_INTERVAL">
+<span id="_CPPv320TP_PRESSURE_INTERVAL"></span><span id="_CPPv220TP_PRESSURE_INTERVAL"></span><span id="TP_PRESSURE_INTERVAL__doubleC"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a0d3a3a7526e49893a1257fec815bf1dd"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_PRESSURE_INTERVAL</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.090</span></span><a class="headerlink" href="#_CPPv420TP_PRESSURE_INTERVAL" title="Link to this definition">¶</a><br /></dt>
+<dd><p>[s] </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420TP_EVAL_POINT_OFFSET">
+<span id="_CPPv320TP_EVAL_POINT_OFFSET"></span><span id="_CPPv220TP_EVAL_POINT_OFFSET"></span><span id="TP_EVAL_POINT_OFFSET__doubleC"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1a5d9d227766573695b02c612bb94b3bbe"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_EVAL_POINT_OFFSET</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">5</span></span><a class="headerlink" href="#_CPPv420TP_EVAL_POINT_OFFSET" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv425TP_BASELINE_FITTING_INSET">
+<span id="_CPPv325TP_BASELINE_FITTING_INSET"></span><span id="_CPPv225TP_BASELINE_FITTING_INSET"></span><span id="TP_BASELINE_FITTING_INSET__doubleC"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1aa62097b91c146da3e08befe8feb200f7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_BASELINE_FITTING_INSET</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.3</span></span><a class="headerlink" href="#_CPPv425TP_BASELINE_FITTING_INSET" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv416TP_SET_PRECISION">
+<span id="_CPPv316TP_SET_PRECISION"></span><span id="_CPPv216TP_SET_PRECISION"></span><span id="TP_SET_PRECISION__doubleC"></span><span class="target" id="_m_i_e_s___test_pulse_8ipf_1ad4bf349fc9c0de0c798d854920ca84f0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TP_SET_PRECISION</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><a class="headerlink" href="#_CPPv416TP_SET_PRECISION" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_TestPulse.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426TP_IsValidBaselineFraction8variable"><code class="docutils literal notranslate"><span class="pre">TP_IsValidBaselineFraction()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427TP_CalculateTestPulseLength8variable8variable"><code class="docutils literal notranslate"><span class="pre">TP_CalculateTestPulseLength()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428TP_CalculateBaselineFraction8variable8variable"><code class="docutils literal notranslate"><span class="pre">TP_CalculateBaselineFraction()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv410TP_StoreTP6string4wave8variable6string"><code class="docutils literal notranslate"><span class="pre">TP_StoreTP()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419TP_GetStoredTPIndex6string8variable"><code class="docutils literal notranslate"><span class="pre">TP_GetStoredTPIndex()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418TP_RecreateDACWave8variable8variable8variable8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">TP_RecreateDACWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416TP_GetTPMetaData4wave8variable8variable"><code class="docutils literal notranslate"><span class="pre">TP_GetTPMetaData()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414TP_GetStoredTP6string8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">TP_GetStoredTP()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424TP_GetStoredTPsFromCycle6string8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">TP_GetStoredTPsFromCycle()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430TP_GetConsecutiveTPsUptoMarker6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">TP_GetConsecutiveTPsUptoMarker()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427TP_SplitStoredTestPulseWave6string"><code class="docutils literal notranslate"><span class="pre">TP_SplitStoredTestPulseWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413TP_ROAnalysisP19ASYNC_ReadOutStruct"><code class="docutils literal notranslate"><span class="pre">TP_ROAnalysis()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424TP_CreateOverrideResults6string8variable"><code class="docutils literal notranslate"><span class="pre">TP_CreateOverrideResults()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421TP_GetTPWaveForAutoTP6string8variable"><code class="docutils literal notranslate"><span class="pre">TP_GetTPWaveForAutoTP()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415TP_AutoBaseline6string8variable4wave4wave"><code class="docutils literal notranslate"><span class="pre">TP_AutoBaseline()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418TP_AutoFitBaseline4wave8variable"><code class="docutils literal notranslate"><span class="pre">TP_AutoFitBaseline()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427TP_AutoAmplitudeAndBaseline6string4wave8variable"><code class="docutils literal notranslate"><span class="pre">TP_AutoAmplitudeAndBaseline()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415TP_AutoTPActive6string"><code class="docutils literal notranslate"><span class="pre">TP_AutoTPActive()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416TP_AutoTPTurnOff6string4wave8variable8variable"><code class="docutils literal notranslate"><span class="pre">TP_AutoTPTurnOff()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429TP_AutoTPDisableIfAppropriate6string4wave8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">TP_AutoTPDisableIfAppropriate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427TP_AutoTPGenerateNewCycleID6string8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">TP_AutoTPGenerateNewCycleID()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425TP_GetValuesFromTPStorage4wave8variable6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">TP_GetValuesFromTPStorage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413TP_TSAnalysis5dfref"><code class="docutils literal notranslate"><span class="pre">TP_TSAnalysis()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419TP_CalculateAverage4wave4wave"><code class="docutils literal notranslate"><span class="pre">TP_CalculateAverage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411TP_RecordTP6string4wave"><code class="docutils literal notranslate"><span class="pre">TP_RecordTP()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416TP_FitResistance4wave8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">TP_FitResistance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412TP_AnalyzeTP6string10WaveOrNull8variable"><code class="docutils literal notranslate"><span class="pre">TP_AnalyzeTP()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428TP_StopTestPulseOnAllDevicesv"><code class="docutils literal notranslate"><span class="pre">TP_StopTestPulseOnAllDevices()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420TP_StopTestPulseFast6string"><code class="docutils literal notranslate"><span class="pre">TP_StopTestPulseFast()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416TP_StopTestPulse6string"><code class="docutils literal notranslate"><span class="pre">TP_StopTestPulse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423TP_StopTestPulseWrapper6string8variable"><code class="docutils literal notranslate"><span class="pre">TP_StopTestPulseWrapper()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419TP_RestartTestPulse6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">TP_RestartTestPulse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv48TP_Setup6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">TP_Setup()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414TP_SetupCommon6string"><code class="docutils literal notranslate"><span class="pre">TP_SetupCommon()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411TP_Teardown6string8variable"><code class="docutils literal notranslate"><span class="pre">TP_Teardown()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417TP_TeardownCommon6string"><code class="docutils literal notranslate"><span class="pre">TP_TeardownCommon()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429TP_GetNumDevicesWithTPRunningv"><code class="docutils literal notranslate"><span class="pre">TP_GetNumDevicesWithTPRunning()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428TP_CheckIfTestpulseIsRunning6string"><code class="docutils literal notranslate"><span class="pre">TP_CheckIfTestpulseIsRunning()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421TP_TestPulseHasCycled6string8variable"><code class="docutils literal notranslate"><span class="pre">TP_TestPulseHasCycled()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427TP_UpdateHoldCmdInTPStorage6string8variable"><code class="docutils literal notranslate"><span class="pre">TP_UpdateHoldCmdInTPStorage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422TP_CreateTestPulseWave6string8variable"><code class="docutils literal notranslate"><span class="pre">TP_CreateTestPulseWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426TP_CreateTestPulseWaveImpl4wave8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">TP_CreateTestPulseWaveImpl()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv432TP_GetCreationPropertiesInPoints4wave8variable"><code class="docutils literal notranslate"><span class="pre">TP_GetCreationPropertiesInPoints()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420TP_PrepareAnalysisDF6stringP15TPAnalysisInput"><code class="docutils literal notranslate"><span class="pre">TP_PrepareAnalysisDF()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417TP_SendToAnalysis6stringP15TPAnalysisInput"><code class="docutils literal notranslate"><span class="pre">TP_SendToAnalysis()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429TP_UpdateTPSettingsCalculated6string"><code class="docutils literal notranslate"><span class="pre">TP_UpdateTPSettingsCalculated()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv433TP_UpdateTPSettingsCalculatedImpl4wave4wave4wave"><code class="docutils literal notranslate"><span class="pre">TP_UpdateTPSettingsCalculatedImpl()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv431TP_AutoTPLabelToLabnotebookName6string"><code class="docutils literal notranslate"><span class="pre">TP_AutoTPLabelToLabnotebookName()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422TP_UpdateTPLBNSettings6string"><code class="docutils literal notranslate"><span class="pre">TP_UpdateTPLBNSettings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415TP_GetTPCycleID6string"><code class="docutils literal notranslate"><span class="pre">TP_GetTPCycleID()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425TP_GetPowerSpectrumLength8variable"><code class="docutils literal notranslate"><span class="pre">TP_GetPowerSpectrumLength()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423TP_MAX_VALID_RESISTANCE"><code class="docutils literal notranslate"><span class="pre">TP_MAX_VALID_RESISTANCE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426TP_TPSTORAGE_EVAL_INTERVAL"><code class="docutils literal notranslate"><span class="pre">TP_TPSTORAGE_EVAL_INTERVAL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413TP_FIT_POINTS"><code class="docutils literal notranslate"><span class="pre">TP_FIT_POINTS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420TP_PRESSURE_INTERVAL"><code class="docutils literal notranslate"><span class="pre">TP_PRESSURE_INTERVAL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420TP_EVAL_POINT_OFFSET"><code class="docutils literal notranslate"><span class="pre">TP_EVAL_POINT_OFFSET</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425TP_BASELINE_FITTING_INSET"><code class="docutils literal notranslate"><span class="pre">TP_BASELINE_FITTING_INSET</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416TP_SET_PRECISION"><code class="docutils literal notranslate"><span class="pre">TP_SET_PRECISION</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___tango_interact_8ipf.html"
+                          title="previous chapter">File MIES_TangoInteract.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___test_pulse___multi_8ipf.html"
+                          title="next chapter">File MIES_TestPulse_Multi.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___test_pulse___multi_8ipf.html" title="File MIES_TestPulse_Multi.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___tango_interact_8ipf.html" title="File MIES_TangoInteract.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_TestPulse.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

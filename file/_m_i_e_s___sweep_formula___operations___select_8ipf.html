@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File MIES_SweepFormula_Operations_Select.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_SweepFormula_Operations_TP.ipf" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html" />
+    <link rel="prev" title="File MIES_SweepFormula_Operations.ipf" href="_m_i_e_s___sweep_formula___operations_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html" title="File MIES_SweepFormula_Operations_TP.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___sweep_formula___operations_8ipf.html" title="File MIES_SweepFormula_Operations.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_SweepFormula_Operations_Select.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-sweepformula-operations-select-ipf">
+<span id="id1"></span><h1>File MIES_SweepFormula_Operations_Select.ipf<a class="headerlink" href="#file-mies-sweepformula-operations-select-ipf" title="Link to this heading">¶</a></h1>
+<p><strong>SFOS</strong> Sweep Formula Operations Select </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-constants-for-sweepformula-clampmode-user-argument-strings-used-in-selcm()">Constants for SweepFormula Clampmode user argument strings used in selcm()</p>
+<p><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1SFClampModeStrings"></span></p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv428SF_OP_SELECTCM_CLAMPMODE_ALL">
+<span id="_CPPv328SF_OP_SELECTCM_CLAMPMODE_ALL"></span><span id="_CPPv228SF_OP_SELECTCM_CLAMPMODE_ALL"></span><span id="SF_OP_SELECTCM_CLAMPMODE_ALL__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1acab030adfc8db15e931c34d8dd7572ca"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_SELECTCM_CLAMPMODE_ALL</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;all&quot;</span></span><a class="headerlink" href="#_CPPv428SF_OP_SELECTCM_CLAMPMODE_ALL" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv429SF_OP_SELECTCM_CLAMPMODE_NONE">
+<span id="_CPPv329SF_OP_SELECTCM_CLAMPMODE_NONE"></span><span id="_CPPv229SF_OP_SELECTCM_CLAMPMODE_NONE"></span><span id="SF_OP_SELECTCM_CLAMPMODE_NONE__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a22e0e7f3a10e9ff2b922240c7b1663f7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_SELECTCM_CLAMPMODE_NONE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;none&quot;</span></span><a class="headerlink" href="#_CPPv429SF_OP_SELECTCM_CLAMPMODE_NONE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv427SF_OP_SELECTCM_CLAMPMODE_IC">
+<span id="_CPPv327SF_OP_SELECTCM_CLAMPMODE_IC"></span><span id="_CPPv227SF_OP_SELECTCM_CLAMPMODE_IC"></span><span id="SF_OP_SELECTCM_CLAMPMODE_IC__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1aa833eec5fa97b5e90a129f33574d2d81"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_SELECTCM_CLAMPMODE_IC</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;ic&quot;</span></span><a class="headerlink" href="#_CPPv427SF_OP_SELECTCM_CLAMPMODE_IC" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv427SF_OP_SELECTCM_CLAMPMODE_VC">
+<span id="_CPPv327SF_OP_SELECTCM_CLAMPMODE_VC"></span><span id="_CPPv227SF_OP_SELECTCM_CLAMPMODE_VC"></span><span id="SF_OP_SELECTCM_CLAMPMODE_VC__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a468cc186d0e9b4af717dc8ac80ecf8da"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_SELECTCM_CLAMPMODE_VC</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;vc&quot;</span></span><a class="headerlink" href="#_CPPv427SF_OP_SELECTCM_CLAMPMODE_VC" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv430SF_OP_SELECTCM_CLAMPMODE_IZERO">
+<span id="_CPPv330SF_OP_SELECTCM_CLAMPMODE_IZERO"></span><span id="_CPPv230SF_OP_SELECTCM_CLAMPMODE_IZERO"></span><span id="SF_OP_SELECTCM_CLAMPMODE_IZERO__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a4132d8314d755648aeb88b8366b4e570"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_SELECTCM_CLAMPMODE_IZERO</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;izero&quot;</span></span><a class="headerlink" href="#_CPPv430SF_OP_SELECTCM_CLAMPMODE_IZERO" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420SFOS_OperationSelectP16SF_ExecutionData">
+<span id="_CPPv320SFOS_OperationSelectP16SF_ExecutionData"></span><span id="_CPPv220SFOS_OperationSelectP16SF_ExecutionData"></span><span id="SFOS_OperationSelect__SF_ExecutionDataP"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1ab263f70edcc032ca622663de64561af1"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_OperationSelect</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv416SF_ExecutionData" title="SF_ExecutionData"><span class="n"><span class="pre">SF_ExecutionData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exd</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420SFOS_OperationSelectP16SF_ExecutionData" title="Link to this definition">¶</a><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">select(selectFilterOp...)</span></code></p>
+<p>returns 2 datasets, main wave typed SF_DATATYPE_SELECTCOMP dataset 0: N x 3 with columns [sweepNr][channelType][channelNr], typed SF_DATATYPE_SELECT dataset 1: WaveRef wave with range specifications, typed SF_DATATYPE_SELECTRANGE </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428SFOS_OperationSelectChannelsP16SF_ExecutionData">
+<span id="_CPPv328SFOS_OperationSelectChannelsP16SF_ExecutionData"></span><span id="_CPPv228SFOS_OperationSelectChannelsP16SF_ExecutionData"></span><span id="SFOS_OperationSelectChannels__SF_ExecutionDataP"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a2f433a923aa530e4074922540e7b5b74"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_OperationSelectChannels</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv416SF_ExecutionData" title="SF_ExecutionData"><span class="n"><span class="pre">SF_ExecutionData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exd</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428SFOS_OperationSelectChannelsP16SF_ExecutionData" title="Link to this definition">¶</a><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">selchannels([str</span> <span class="pre">name]+)</span></code> converts a named channel from string to numbers.</p>
+<p>returns [[channelName, channelNumber]+] </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422SFOS_OperationSelectCMP16SF_ExecutionData">
+<span id="_CPPv322SFOS_OperationSelectCMP16SF_ExecutionData"></span><span id="_CPPv222SFOS_OperationSelectCMP16SF_ExecutionData"></span><span id="SFOS_OperationSelectCM__SF_ExecutionDataP"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a241edfffa1f5210e126939ac4022232c"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_OperationSelectCM</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv416SF_ExecutionData" title="SF_ExecutionData"><span class="n"><span class="pre">SF_ExecutionData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exd</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422SFOS_OperationSelectCMP16SF_ExecutionData" title="Link to this definition">¶</a><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">selcm(mode,</span> <span class="pre">mode,</span> <span class="pre">...)</span></code> // mode can be <code class="docutils literal notranslate"><span class="pre">ic</span></code>, <code class="docutils literal notranslate"><span class="pre">vc</span></code>, <code class="docutils literal notranslate"><span class="pre">izero</span></code>, <code class="docutils literal notranslate"><span class="pre">all</span></code> see <a class="reference internal" href="#_m_i_e_s___sweep_formula___operations___select_8ipf_1SFClampModeStrings"><span class="std std-ref">SFClampModeStrings</span></a></p>
+<p>returns a one element numeric wave with SF_OP_SELECTCM_CLAMPMODE_* ORed together from all arguments, see <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1SFClampcodeConstants"><span class="std std-ref">SFClampcodeConstants</span></a></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426SFOS_OperationSelectDeviceP16SF_ExecutionData">
+<span id="_CPPv326SFOS_OperationSelectDeviceP16SF_ExecutionData"></span><span id="_CPPv226SFOS_OperationSelectDeviceP16SF_ExecutionData"></span><span id="SFOS_OperationSelectDevice__SF_ExecutionDataP"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a6d4d3c38e87d2d2256906862551f9539"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_OperationSelectDevice</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv416SF_ExecutionData" title="SF_ExecutionData"><span class="n"><span class="pre">SF_ExecutionData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exd</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426SFOS_OperationSelectDeviceP16SF_ExecutionData" title="Link to this definition">¶</a><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">seldev(device)</span></code> // device is a string with optional wildcards</p>
+<p>returns a one element text wave </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429SFOS_OperationSelectExpandRACP16SF_ExecutionData">
+<span id="_CPPv329SFOS_OperationSelectExpandRACP16SF_ExecutionData"></span><span id="_CPPv229SFOS_OperationSelectExpandRACP16SF_ExecutionData"></span><span id="SFOS_OperationSelectExpandRAC__SF_ExecutionDataP"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1ac24b295c6b565f456a90b25d1864d43c"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_OperationSelectExpandRAC</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv416SF_ExecutionData" title="SF_ExecutionData"><span class="n"><span class="pre">SF_ExecutionData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exd</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429SFOS_OperationSelectExpandRACP16SF_ExecutionData" title="Link to this definition">¶</a><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">selexpandrac()</span></code> // no arguments</p>
+<p>returns a one element numeric wave </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429SFOS_OperationSelectExpandSCIP16SF_ExecutionData">
+<span id="_CPPv329SFOS_OperationSelectExpandSCIP16SF_ExecutionData"></span><span id="_CPPv229SFOS_OperationSelectExpandSCIP16SF_ExecutionData"></span><span id="SFOS_OperationSelectExpandSCI__SF_ExecutionDataP"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1ab1e61123f6c187f1c8026a9a949459c9"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_OperationSelectExpandSCI</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv416SF_ExecutionData" title="SF_ExecutionData"><span class="n"><span class="pre">SF_ExecutionData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exd</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429SFOS_OperationSelectExpandSCIP16SF_ExecutionData" title="Link to this definition">¶</a><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">selexpandsci()</span></code> // no arguments</p>
+<p>returns a one element numeric wave </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430SFOS_OperationSelectExperimentP16SF_ExecutionData">
+<span id="_CPPv330SFOS_OperationSelectExperimentP16SF_ExecutionData"></span><span id="_CPPv230SFOS_OperationSelectExperimentP16SF_ExecutionData"></span><span id="SFOS_OperationSelectExperiment__SF_ExecutionDataP"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1ab2296befa991b6e60ca3a18a33a34eb1"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_OperationSelectExperiment</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv416SF_ExecutionData" title="SF_ExecutionData"><span class="n"><span class="pre">SF_ExecutionData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exd</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430SFOS_OperationSelectExperimentP16SF_ExecutionData" title="Link to this definition">¶</a><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">selexp(expName)</span></code> // expName is a string with optional wildcards</p>
+<p>returns a one element text wave </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430SFOS_OperationSelectIVSCCSetQCP16SF_ExecutionData">
+<span id="_CPPv330SFOS_OperationSelectIVSCCSetQCP16SF_ExecutionData"></span><span id="_CPPv230SFOS_OperationSelectIVSCCSetQCP16SF_ExecutionData"></span><span id="SFOS_OperationSelectIVSCCSetQC__SF_ExecutionDataP"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a904ab4373591214ba2fe44111e0aa18e"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_OperationSelectIVSCCSetQC</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv416SF_ExecutionData" title="SF_ExecutionData"><span class="n"><span class="pre">SF_ExecutionData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exd</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430SFOS_OperationSelectIVSCCSetQCP16SF_ExecutionData" title="Link to this definition">¶</a><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">SelIVSCCSetQC(passed</span> <span class="pre">|</span> <span class="pre">failed)</span></code></p>
+<p>returns a one element numeric wave with either SF_OP_SELECT_IVSCCSETQC_PASSED or SF_OP_SELECT_IVSCCSETQC_FAILED </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv432SFOS_OperationSelectIVSCCSweepQCP16SF_ExecutionData">
+<span id="_CPPv332SFOS_OperationSelectIVSCCSweepQCP16SF_ExecutionData"></span><span id="_CPPv232SFOS_OperationSelectIVSCCSweepQCP16SF_ExecutionData"></span><span id="SFOS_OperationSelectIVSCCSweepQC__SF_ExecutionDataP"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1aff0f622cacc98b3c2757c9b7f7c3ccb9"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_OperationSelectIVSCCSweepQC</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv416SF_ExecutionData" title="SF_ExecutionData"><span class="n"><span class="pre">SF_ExecutionData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exd</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv432SFOS_OperationSelectIVSCCSweepQCP16SF_ExecutionData" title="Link to this definition">¶</a><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">SelIVSCCSweepQC(passed</span> <span class="pre">|</span> <span class="pre">failed)</span></code></p>
+<p>returns a one element numeric wave with either SF_OP_SELECT_IVSCCSWEEPQC_PASSED or SF_OP_SELECT_IVSCCSWEEPQC_FAILED </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428SFOS_OperationSelectRACIndexP16SF_ExecutionData">
+<span id="_CPPv328SFOS_OperationSelectRACIndexP16SF_ExecutionData"></span><span id="_CPPv228SFOS_OperationSelectRACIndexP16SF_ExecutionData"></span><span id="SFOS_OperationSelectRACIndex__SF_ExecutionDataP"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a8cc7a625f2888b93a4c8e1f2412dd715"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_OperationSelectRACIndex</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv416SF_ExecutionData" title="SF_ExecutionData"><span class="n"><span class="pre">SF_ExecutionData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exd</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428SFOS_OperationSelectRACIndexP16SF_ExecutionData" title="Link to this definition">¶</a><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">selracindex(x)</span></code> // one numeric argument</p>
+<p>returns a one element numeric wave </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425SFOS_OperationSelectRangeP16SF_ExecutionData">
+<span id="_CPPv325SFOS_OperationSelectRangeP16SF_ExecutionData"></span><span id="_CPPv225SFOS_OperationSelectRangeP16SF_ExecutionData"></span><span id="SFOS_OperationSelectRange__SF_ExecutionDataP"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1afa1a950becc62302c40368dd829af48a"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_OperationSelectRange</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv416SF_ExecutionData" title="SF_ExecutionData"><span class="n"><span class="pre">SF_ExecutionData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exd</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425SFOS_OperationSelectRangeP16SF_ExecutionData" title="Link to this definition">¶</a><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">selrange(rangespec)</span></code></p>
+<p>returns 1 dataset with range specification (either text or 2 point numerical wave) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428SFOS_OperationSelectSCIIndexP16SF_ExecutionData">
+<span id="_CPPv328SFOS_OperationSelectSCIIndexP16SF_ExecutionData"></span><span id="_CPPv228SFOS_OperationSelectSCIIndexP16SF_ExecutionData"></span><span id="SFOS_OperationSelectSCIIndex__SF_ExecutionDataP"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a3e3018a055b63c9e197b8f850352944b"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_OperationSelectSCIIndex</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv416SF_ExecutionData" title="SF_ExecutionData"><span class="n"><span class="pre">SF_ExecutionData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exd</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428SFOS_OperationSelectSCIIndexP16SF_ExecutionData" title="Link to this definition">¶</a><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">selsciindex(x)</span></code> // one numeric argument</p>
+<p>returns a one element numeric wave </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv433SFOS_OperationSelectSetCycleCountP16SF_ExecutionData">
+<span id="_CPPv333SFOS_OperationSelectSetCycleCountP16SF_ExecutionData"></span><span id="_CPPv233SFOS_OperationSelectSetCycleCountP16SF_ExecutionData"></span><span id="SFOS_OperationSelectSetCycleCount__SF_ExecutionDataP"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1af0645712cdaaacc90b932e32396d501c"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_OperationSelectSetCycleCount</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv416SF_ExecutionData" title="SF_ExecutionData"><span class="n"><span class="pre">SF_ExecutionData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exd</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv433SFOS_OperationSelectSetCycleCountP16SF_ExecutionData" title="Link to this definition">¶</a><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">selsetcyclecount(x)</span></code> // one numeric argument</p>
+<p>returns a one element numeric wave </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv433SFOS_OperationSelectSetSweepCountP16SF_ExecutionData">
+<span id="_CPPv333SFOS_OperationSelectSetSweepCountP16SF_ExecutionData"></span><span id="_CPPv233SFOS_OperationSelectSetSweepCountP16SF_ExecutionData"></span><span id="SFOS_OperationSelectSetSweepCount__SF_ExecutionDataP"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a5b4d35a02294c27a867c4f7f5bb1b80d"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_OperationSelectSetSweepCount</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv416SF_ExecutionData" title="SF_ExecutionData"><span class="n"><span class="pre">SF_ExecutionData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exd</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv433SFOS_OperationSelectSetSweepCountP16SF_ExecutionData" title="Link to this definition">¶</a><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">selsetsweepcount(x)</span></code> // one numeric argument</p>
+<p>returns a one element numeric wave </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427SFOS_OperationSelectStimsetP16SF_ExecutionData">
+<span id="_CPPv327SFOS_OperationSelectStimsetP16SF_ExecutionData"></span><span id="_CPPv227SFOS_OperationSelectStimsetP16SF_ExecutionData"></span><span id="SFOS_OperationSelectStimset__SF_ExecutionDataP"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1aa848404ec4189049ae1096f1c6a0d82f"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_OperationSelectStimset</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv416SF_ExecutionData" title="SF_ExecutionData"><span class="n"><span class="pre">SF_ExecutionData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exd</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427SFOS_OperationSelectStimsetP16SF_ExecutionData" title="Link to this definition">¶</a><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">selstimset(stimsetName,</span> <span class="pre">stimsetName,</span> <span class="pre">...)</span></code></p>
+<p>returns a N element text wave with stimset names </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426SFOS_OperationSelectSweepsP16SF_ExecutionData">
+<span id="_CPPv326SFOS_OperationSelectSweepsP16SF_ExecutionData"></span><span id="_CPPv226SFOS_OperationSelectSweepsP16SF_ExecutionData"></span><span id="SFOS_OperationSelectSweeps__SF_ExecutionDataP"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a9482c1029b93d297b1e93ad36d8d9f11"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_OperationSelectSweeps</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv416SF_ExecutionData" title="SF_ExecutionData"><span class="n"><span class="pre">SF_ExecutionData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exd</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426SFOS_OperationSelectSweepsP16SF_ExecutionData" title="Link to this definition">¶</a><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">selsweeps()</span></code>, <code class="docutils literal notranslate"><span class="pre">selsweeps(1,2,3,</span> <span class="pre">[4...6])</span></code> returns all possible sweeps as 1d array </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423SFOS_OperationSelectVisP16SF_ExecutionData">
+<span id="_CPPv323SFOS_OperationSelectVisP16SF_ExecutionData"></span><span id="_CPPv223SFOS_OperationSelectVisP16SF_ExecutionData"></span><span id="SFOS_OperationSelectVis__SF_ExecutionDataP"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a5a8e8ceaea4295222a9e201111f07b70"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_OperationSelectVis</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv416SF_ExecutionData" title="SF_ExecutionData"><span class="n"><span class="pre">SF_ExecutionData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exd</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423SFOS_OperationSelectVisP16SF_ExecutionData" title="Link to this definition">¶</a><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">selvis(mode)</span></code> // mode can be <code class="docutils literal notranslate"><span class="pre">all</span></code> or <code class="docutils literal notranslate"><span class="pre">displayed</span></code></p>
+<p>returns a one element text wave with either SF_OP_SELECTVIS_ALL or SF_OP_SELECTVIS_DISPLAYED </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv433SFOS_InitSelectFilterUninitalizedP19SF_SelectParameters">
+<span id="_CPPv333SFOS_InitSelectFilterUninitalizedP19SF_SelectParameters"></span><span id="_CPPv233SFOS_InitSelectFilterUninitalizedP19SF_SelectParameters"></span><span id="SFOS_InitSelectFilterUninitalized__SF_SelectParametersP"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a18330baaf38b9e63560ab2f4eca2cfdf"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_InitSelectFilterUninitalized</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv419SF_SelectParameters" title="SF_SelectParameters"><span class="n"><span class="pre">SF_SelectParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv433SFOS_InitSelectFilterUninitalizedP19SF_SelectParameters" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429SFOS_GetSetIntersectionSelect4wave4wave">
+<span id="_CPPv329SFOS_GetSetIntersectionSelect4wave4wave"></span><span id="_CPPv229SFOS_GetSetIntersectionSelect4wave4wave"></span><span id="SFOS_GetSetIntersectionSelect__wave.wave"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a03cbd8709eb139aa02e18bab0a9e4768"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_GetSetIntersectionSelect</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">select1</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">select2</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429SFOS_GetSetIntersectionSelect4wave4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the set intersection of two select waves from operation select. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv431SFOS_SetSelectionFilterDefaults6stringP19SF_SelectParameters8variable">
+<span id="_CPPv331SFOS_SetSelectionFilterDefaults6stringP19SF_SelectParameters8variable"></span><span id="_CPPv231SFOS_SetSelectionFilterDefaults6stringP19SF_SelectParameters8variable"></span><span id="SFOS_SetSelectionFilterDefaults__string.SF_SelectParametersP.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a9d7496860959e759431d7df82ad41bac"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_SetSelectionFilterDefaults</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv419SF_SelectParameters" title="SF_SelectParameters"><span class="n"><span class="pre">SF_SelectParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">filter</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">includeAll</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431SFOS_SetSelectionFilterDefaults6stringP19SF_SelectParameters8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>sets uninitialized fields of the selection filter </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427SFOS_GetSelectionExperiment6string6string">
+<span id="_CPPv327SFOS_GetSelectionExperiment6string6string"></span><span id="_CPPv227SFOS_GetSelectionExperiment6string6string"></span><span id="SFOS_GetSelectionExperiment__string.string"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a88209e03a325189a608dfd65dbae55cc"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_GetSelectionExperiment</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expName</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427SFOS_GetSelectionExperiment6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423SFOS_GetSelectionDevice6string6string">
+<span id="_CPPv323SFOS_GetSelectionDevice6string6string"></span><span id="_CPPv223SFOS_GetSelectionDevice6string6string"></span><span id="SFOS_GetSelectionDevice__string.string"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1ab2403a7c933fb46d2266929e84fb5677"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_GetSelectionDevice</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423SFOS_GetSelectionDevice6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418SFOS_GetSelectData6stringP19SF_SelectParameters">
+<span id="_CPPv318SFOS_GetSelectData6stringP19SF_SelectParameters"></span><span id="_CPPv218SFOS_GetSelectData6stringP19SF_SelectParameters"></span><span id="SFOS_GetSelectData__string.SF_SelectParametersP"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a3a143761f1e3386e155a15cc30bfbb9c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_GetSelectData</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv419SF_SelectParameters" title="SF_SelectParameters"><span class="n"><span class="pre">SF_SelectParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">filter</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418SFOS_GetSelectData6stringP19SF_SelectParameters" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Use the labnotebook information to return the active channel numbers for a given set of sweeps. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> – DataBrowser or SweepBrowser reference graph </p></li>
+<li><p><strong>filter</strong> – filled <a class="reference internal" href="../struct/struct_s_f___select_parameters.html#struct_s_f___select_parameters"><span class="std std-ref">SF_SelectParameters</span></a> structure</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a selectData style wave with three columns containing sweepNumber, channelType and channelNumber </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv435SFOS_GetSelectDataWithRACorSCIIndex6string4wave8variable8variable">
+<span id="_CPPv335SFOS_GetSelectDataWithRACorSCIIndex6string4wave8variable8variable"></span><span id="_CPPv235SFOS_GetSelectDataWithRACorSCIIndex6string4wave8variable8variable"></span><span id="SFOS_GetSelectDataWithRACorSCIIndex__string.wave.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a8bfa9dbc11a0fa2fc63a2cb986b0e428"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_GetSelectDataWithRACorSCIIndex</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">selectData</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv435SFOS_GetSelectDataWithRACorSCIIndex6string4wave8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430SFOS_GetSelectDataWithRACIndex4wave4wave14WaveTextOrNull8variable">
+<span id="_CPPv330SFOS_GetSelectDataWithRACIndex4wave4wave14WaveTextOrNull8variable"></span><span id="_CPPv230SFOS_GetSelectDataWithRACIndex4wave4wave14WaveTextOrNull8variable"></span><span id="SFOS_GetSelectDataWithRACIndex__wave.wave.WaveTextOrNull.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1aed92a2d33dc116f325dc26b3f2fd203d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_GetSelectDataWithRACIndex</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">selectData</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cycleIds</span></span>, <span class="n"><span class="pre">WaveTextOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepMap</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430SFOS_GetSelectDataWithRACIndex4wave4wave14WaveTextOrNull8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430SFOS_GetSelectDataWithSCIIndex4wave4wave4wave14WaveTextOrNull8variable">
+<span id="_CPPv330SFOS_GetSelectDataWithSCIIndex4wave4wave4wave14WaveTextOrNull8variable"></span><span id="_CPPv230SFOS_GetSelectDataWithSCIIndex4wave4wave4wave14WaveTextOrNull8variable"></span><span id="SFOS_GetSelectDataWithSCIIndex__wave.wave.wave.WaveTextOrNull.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a08187f828159d84aca2a4492e39c205f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_GetSelectDataWithSCIIndex</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">selectData</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cycleIds</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstages</span></span>, <span class="n"><span class="pre">WaveTextOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepMap</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430SFOS_GetSelectDataWithSCIIndex4wave4wave4wave14WaveTextOrNull8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv440SFOS_GetAdditionalSweepsWithSameSCIorRAC4wave8variable8variable8variable8variable">
+<span id="_CPPv340SFOS_GetAdditionalSweepsWithSameSCIorRAC4wave8variable8variable8variable8variable"></span><span id="_CPPv240SFOS_GetAdditionalSweepsWithSameSCIorRAC4wave8variable8variable8variable8variable"></span><span id="SFOS_GetAdditionalSweepsWithSameSCIorRAC__wave.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a4f527e5a8ed1e3463bfe5b1c9dafa92e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_GetAdditionalSweepsWithSameSCIorRAC</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mode</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelNumber</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv440SFOS_GetAdditionalSweepsWithSameSCIorRAC4wave8variable8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419SFOS_SortSelectData4wave">
+<span id="_CPPv319SFOS_SortSelectData4wave"></span><span id="_CPPv219SFOS_SortSelectData4wave"></span><span id="SFOS_SortSelectData__wave"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a7cc67a28f536544eb74ad9bb229afd2c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_SortSelectData</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">selectData</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419SFOS_SortSelectData4wave" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427SFOS_CreateSelectWaveRowIds4wave">
+<span id="_CPPv327SFOS_CreateSelectWaveRowIds4wave"></span><span id="_CPPv227SFOS_CreateSelectWaveRowIds4wave"></span><span id="SFOS_CreateSelectWaveRowIds__wave"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a73f3bf5edf191e21b2530d0e933c0071"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_CreateSelectWaveRowIds</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">select</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427SFOS_CreateSelectWaveRowIds4wave" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424SFOS_GetUniqueSelectData4wave">
+<span id="_CPPv324SFOS_GetUniqueSelectData4wave"></span><span id="_CPPv224SFOS_GetUniqueSelectData4wave"></span><span id="SFOS_GetUniqueSelectData__wave"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a2f0824732333dbe728453c3da1c16657"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_GetUniqueSelectData</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">selectData</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424SFOS_GetUniqueSelectData4wave" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430SFOS_GetSelectDataWithSCIorRAC6string4waveP19SF_SelectParameters8variable">
+<span id="_CPPv330SFOS_GetSelectDataWithSCIorRAC6string4waveP19SF_SelectParameters8variable"></span><span id="_CPPv230SFOS_GetSelectDataWithSCIorRAC6string4waveP19SF_SelectParameters8variable"></span><span id="SFOS_GetSelectDataWithSCIorRAC__string.wave.SF_SelectParametersP.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a1c123ba9dd9c74bb52c77aa0e99793bc"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_GetSelectDataWithSCIorRAC</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">selectData</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv419SF_SelectParameters" title="SF_SelectParameters"><span class="n"><span class="pre">SF_SelectParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">filter</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430SFOS_GetSelectDataWithSCIorRAC6string4waveP19SF_SelectParameters8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Takes input selections and extends them. The extension of the selection is chosen through mode, one of SELECTDATA_MODE_* For RAC: For each input selection adds all selections of the same repeated acquisition cycle For SCI: For each input selection adds all selections of the same stimset cycle id and headstage Returns all resulting unique selections. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420SFOS_NewChannelsWave8variable">
+<span id="_CPPv320SFOS_NewChannelsWave8variable"></span><span id="_CPPv220SFOS_NewChannelsWave8variable"></span><span id="SFOS_NewChannelsWave__variable"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a2adb52803d0637ce3c0fb2b39c4bf78f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_NewChannelsWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420SFOS_NewChannelsWave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424SFOS_MatchSweepMapColumn6string6string6string6string">
+<span id="_CPPv324SFOS_MatchSweepMapColumn6string6string6string6string"></span><span id="_CPPv224SFOS_MatchSweepMapColumn6string6string6string6string"></span><span id="SFOS_MatchSweepMapColumn__string.string.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1abc0f80527b6c19fa2f302f059f51ff6f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_MatchSweepMapColumn</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">match</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">colLabel</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">opShort</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424SFOS_MatchSweepMapColumn6string6string6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv433SFOS_MakeSweepPropertiesDisplayed8variable">
+<span id="_CPPv333SFOS_MakeSweepPropertiesDisplayed8variable"></span><span id="_CPPv233SFOS_MakeSweepPropertiesDisplayed8variable"></span><span id="SFOS_MakeSweepPropertiesDisplayed__variable"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a8b985e2bc53d4c7647424cee84348c8e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_MakeSweepPropertiesDisplayed</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numTraces</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv433SFOS_MakeSweepPropertiesDisplayed8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427SFOS_MakeSweepLNBsDisplayed8variable">
+<span id="_CPPv327SFOS_MakeSweepLNBsDisplayed8variable"></span><span id="_CPPv227SFOS_MakeSweepLNBsDisplayed8variable"></span><span id="SFOS_MakeSweepLNBsDisplayed__variable"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a845f021f9dc49f611661887bc518b762"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_MakeSweepLNBsDisplayed</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numTraces</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427SFOS_MakeSweepLNBsDisplayed8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423SFOS_GetSweepMapIndices8WaveText8variable6string6string6string6string">
+<span id="_CPPv323SFOS_GetSweepMapIndices8WaveText8variable6string6string6string6string"></span><span id="_CPPv223SFOS_GetSweepMapIndices8WaveText8variable6string6string6string6string"></span><span id="SFOS_GetSweepMapIndices__WaveText.variable.string.string.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a72b24c3cecf96e7f8f74e7c78568dc9d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_GetSweepMapIndices</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">sweepMap</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expName</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">colLabel</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wildCardPattern</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423SFOS_GetSweepMapIndices8WaveText8variable6string6string6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the matching indices of sweepMap, if expName or device is an emtpy string then it is ignored. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427SFOS_MapClampModeToSelectCM8variable">
+<span id="_CPPv327SFOS_MapClampModeToSelectCM8variable"></span><span id="_CPPv227SFOS_MapClampModeToSelectCM8variable"></span><span id="SFOS_MapClampModeToSelectCM__variable"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a7cdf74f8104ca62c6d2ffd1f1e0e18c3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_MapClampModeToSelectCM</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">clampMode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427SFOS_MapClampModeToSelectCM8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427SFOS_IsValidSingleSelectionP19SF_SelectParameters4wave4wave8variable8variable8variable8variable8variable8variable8variable8variable8variable8variable">
+<span id="_CPPv327SFOS_IsValidSingleSelectionP19SF_SelectParameters4wave4wave8variable8variable8variable8variable8variable8variable8variable8variable8variable8variable"></span><span id="_CPPv227SFOS_IsValidSingleSelectionP19SF_SelectParameters4wave4wave8variable8variable8variable8variable8variable8variable8variable8variable8variable8variable"></span><span id="SFOS_IsValidSingleSelection__SF_SelectParametersP.wave.wave.variable.variable.variable.variable.variable.variable.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1ac3d535d9b6aa02f4e6a042c9097463e9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_IsValidSingleSelection</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv419SF_SelectParameters" title="SF_SelectParameters"><span class="n"><span class="pre">SF_SelectParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">filter</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">textualValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filtSweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filtChannelNumber</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filtChannelType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelNumber</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">clampMode</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setCycleCount</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setSweepCount</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">doStimsetMatching</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427SFOS_IsValidSingleSelectionP19SF_SelectParameters4wave4wave8variable8variable8variable8variable8variable8variable8variable8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429SFOS_FilterByClampModeEnabled8variable8variable">
+<span id="_CPPv329SFOS_FilterByClampModeEnabled8variable8variable"></span><span id="_CPPv229SFOS_FilterByClampModeEnabled8variable8variable"></span><span id="SFOS_FilterByClampModeEnabled__variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a39795be26f880bba3ec865687578af55"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_FilterByClampModeEnabled</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">clampModeFilter</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429SFOS_FilterByClampModeEnabled8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419SFOS_GetSelectRowId4wave8variable">
+<span id="_CPPv319SFOS_GetSelectRowId4wave8variable"></span><span id="_CPPv219SFOS_GetSelectRowId4wave8variable"></span><span id="SFOS_GetSelectRowId__wave.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a016a1930a1d62e938d3382aae428a4ff"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_GetSelectRowId</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">select</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">row</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419SFOS_GetSelectRowId4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430SFOS_RestoreSelectDataFromText8WaveText">
+<span id="_CPPv330SFOS_RestoreSelectDataFromText8WaveText"></span><span id="_CPPv230SFOS_RestoreSelectDataFromText8WaveText"></span><span id="SFOS_RestoreSelectDataFromText__WaveText"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1ad34a5b9ab38eeda9f982d8a723cac0ea"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_RestoreSelectDataFromText</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">selectText</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430SFOS_RestoreSelectDataFromText8WaveText" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426SFOS_DuplicateSelectFilterP19SF_SelectParameters">
+<span id="_CPPv326SFOS_DuplicateSelectFilterP19SF_SelectParameters"></span><span id="_CPPv226SFOS_DuplicateSelectFilterP19SF_SelectParameters"></span><span id="SFOS_DuplicateSelectFilter__SF_SelectParametersP"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a86b065c12d2d692bba0e718405084399"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv419SF_SelectParameters" title="SF_SelectParameters"><span class="n"><span class="pre">SF_SelectParameters</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_DuplicateSelectFilter</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv419SF_SelectParameters" title="SF_SelectParameters"><span class="n"><span class="pre">SF_SelectParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">filter</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426SFOS_DuplicateSelectFilterP19SF_SelectParameters" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424SFOS_CreateSweepMapRowId6string6string6string6string">
+<span id="_CPPv324SFOS_CreateSweepMapRowId6string6string6string6string"></span><span id="_CPPv224SFOS_CreateSweepMapRowId6string6string6string6string"></span><span id="SFOS_CreateSweepMapRowId__string.string.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1ad6dcb77dc8f2434ae12e23d0fed4888c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_CreateSweepMapRowId</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">experiment</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">datafolder</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweep</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424SFOS_CreateSweepMapRowId6string6string6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421SFOS_GetSweepMapRowId8WaveText8variable">
+<span id="_CPPv321SFOS_GetSweepMapRowId8WaveText8variable"></span><span id="_CPPv221SFOS_GetSweepMapRowId8WaveText8variable"></span><span id="SFOS_GetSweepMapRowId__WaveText.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1aef1801ee5f07923c823277f474838d2d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_GetSweepMapRowId</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">sweepMap</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421SFOS_GetSweepMapRowId8WaveText8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428SFOS_GetSweepMapIndexFromIds8WaveText6string6string6string8variable">
+<span id="_CPPv328SFOS_GetSweepMapIndexFromIds8WaveText6string6string6string8variable"></span><span id="_CPPv228SFOS_GetSweepMapIndexFromIds8WaveText6string6string6string8variable"></span><span id="SFOS_GetSweepMapIndexFromIds__WaveText.string.string.string.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a880d163ff9fdb3169cd0f969c255b674"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_GetSweepMapIndexFromIds</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">sweepMapIds</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">experiment</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">datafolder</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428SFOS_GetSweepMapIndexFromIds8WaveText6string6string6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420SFOS_ParseSelectText8WaveText4wave8variable">
+<span id="_CPPv320SFOS_ParseSelectText8WaveText4wave8variable"></span><span id="_CPPv220SFOS_ParseSelectText8WaveText4wave8variable"></span><span id="SFOS_ParseSelectText__WaveText.wave.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a5122dc5348a34bf3b1509aa9a9f5f3a0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFOS_ParseSelectText</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">selectText</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">selectData</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420SFOS_ParseSelectText8WaveText4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv419SELECTDATA_MODE_SCI">
+<span id="_CPPv319SELECTDATA_MODE_SCI"></span><span id="_CPPv219SELECTDATA_MODE_SCI"></span><span id="SELECTDATA_MODE_SCI__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a26c39a9e9a67fb5a7486d859f487dff5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SELECTDATA_MODE_SCI</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv419SELECTDATA_MODE_SCI" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv419SELECTDATA_MODE_RAC">
+<span id="_CPPv319SELECTDATA_MODE_RAC"></span><span id="_CPPv219SELECTDATA_MODE_RAC"></span><span id="SELECTDATA_MODE_RAC__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a92fa174653ee25fea3e1097b346ae718"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SELECTDATA_MODE_RAC</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><a class="headerlink" href="#_CPPv419SELECTDATA_MODE_RAC" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv427SF_OP_SELECT_IVSCCQC_PASSED">
+<span id="_CPPv327SF_OP_SELECT_IVSCCQC_PASSED"></span><span id="_CPPv227SF_OP_SELECT_IVSCCQC_PASSED"></span><span id="SF_OP_SELECT_IVSCCQC_PASSED__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a714542cf9a34eff5b42916459f559486"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_SELECT_IVSCCQC_PASSED</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;passed&quot;</span></span><a class="headerlink" href="#_CPPv427SF_OP_SELECT_IVSCCQC_PASSED" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv427SF_OP_SELECT_IVSCCQC_FAILED">
+<span id="_CPPv327SF_OP_SELECT_IVSCCQC_FAILED"></span><span id="_CPPv227SF_OP_SELECT_IVSCCQC_FAILED"></span><span id="SF_OP_SELECT_IVSCCQC_FAILED__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a7e0d2156a09c725991d55d364571d09e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_SELECT_IVSCCQC_FAILED</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;failed&quot;</span></span><a class="headerlink" href="#_CPPv427SF_OP_SELECT_IVSCCQC_FAILED" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv425SF_OP_SELECT_STIMSETS_ALL">
+<span id="_CPPv325SF_OP_SELECT_STIMSETS_ALL"></span><span id="_CPPv225SF_OP_SELECT_STIMSETS_ALL"></span><span id="SF_OP_SELECT_STIMSETS_ALL__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a7ab5f016a90248451abd965d94af4288"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_SELECT_STIMSETS_ALL</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;*&quot;</span></span><a class="headerlink" href="#_CPPv425SF_OP_SELECT_STIMSETS_ALL" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv419SF_OP_SELECTVIS_ALL">
+<span id="_CPPv319SF_OP_SELECTVIS_ALL"></span><span id="_CPPv219SF_OP_SELECTVIS_ALL"></span><span id="SF_OP_SELECTVIS_ALL__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1ac7fe1f8f2eea6b2c8a0bc32677364114"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_SELECTVIS_ALL</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;all&quot;</span></span><a class="headerlink" href="#_CPPv419SF_OP_SELECTVIS_ALL" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv425SF_OP_SELECTVIS_DISPLAYED">
+<span id="_CPPv325SF_OP_SELECTVIS_DISPLAYED"></span><span id="_CPPv225SF_OP_SELECTVIS_DISPLAYED"></span><span id="SF_OP_SELECTVIS_DISPLAYED__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a4b2f73f5c8dae67a1e8a8700e0fa7b61"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_SELECTVIS_DISPLAYED</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;displayed&quot;</span></span><a class="headerlink" href="#_CPPv425SF_OP_SELECTVIS_DISPLAYED" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv434SF_GETSETINTERSECTIONSELECT_FORMAT">
+<span id="_CPPv334SF_GETSETINTERSECTIONSELECT_FORMAT"></span><span id="_CPPv234SF_GETSETINTERSECTIONSELECT_FORMAT"></span><span id="SF_GETSETINTERSECTIONSELECT_FORMAT__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1ae127cfebca4e6c1ef900b086838c32fd"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_GETSETINTERSECTIONSELECT_FORMAT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;%d_%d_%d_%f&quot;</span></span><a class="headerlink" href="#_CPPv434SF_GETSETINTERSECTIONSELECT_FORMAT" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv419SWEEPPROP_CLAMPMODE">
+<span id="_CPPv319SWEEPPROP_CLAMPMODE"></span><span id="_CPPv219SWEEPPROP_CLAMPMODE"></span><span id="SWEEPPROP_CLAMPMODE__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1aadae0b92291d69dddaed509891d0ab5b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SWEEPPROP_CLAMPMODE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv419SWEEPPROP_CLAMPMODE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv423SWEEPPROP_SETCYCLECOUNT">
+<span id="_CPPv323SWEEPPROP_SETCYCLECOUNT"></span><span id="_CPPv223SWEEPPROP_SETCYCLECOUNT"></span><span id="SWEEPPROP_SETCYCLECOUNT__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1abc423ee8b8c431ad6455730592999dec"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SWEEPPROP_SETCYCLECOUNT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv423SWEEPPROP_SETCYCLECOUNT" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv423SWEEPPROP_SETSWEEPCOUNT">
+<span id="_CPPv323SWEEPPROP_SETSWEEPCOUNT"></span><span id="_CPPv223SWEEPPROP_SETSWEEPCOUNT"></span><span id="SWEEPPROP_SETSWEEPCOUNT__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a2c141ab89e2c93292a913facc6f9840f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SWEEPPROP_SETSWEEPCOUNT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><a class="headerlink" href="#_CPPv423SWEEPPROP_SETSWEEPCOUNT" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv413SWEEPPROP_END">
+<span id="_CPPv313SWEEPPROP_END"></span><span id="_CPPv213SWEEPPROP_END"></span><span id="SWEEPPROP_END__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1ab0e838ba50e0ae7646a87f4e0e7820ad"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SWEEPPROP_END</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">3</span></span><a class="headerlink" href="#_CPPv413SWEEPPROP_END" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv416DB_EXPNAME_DUMMY">
+<span id="_CPPv316DB_EXPNAME_DUMMY"></span><span id="_CPPv216DB_EXPNAME_DUMMY"></span><span id="DB_EXPNAME_DUMMY__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula___operations___select_8ipf_1a44e30c821842118bbe7c74736f7dccba"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DB_EXPNAME_DUMMY</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;|DataBrowserExperiment|&quot;</span></span><a class="headerlink" href="#_CPPv416DB_EXPNAME_DUMMY" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_SweepFormula_Operations_Select.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428SF_OP_SELECTCM_CLAMPMODE_ALL"><code class="docutils literal notranslate"><span class="pre">SF_OP_SELECTCM_CLAMPMODE_ALL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429SF_OP_SELECTCM_CLAMPMODE_NONE"><code class="docutils literal notranslate"><span class="pre">SF_OP_SELECTCM_CLAMPMODE_NONE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427SF_OP_SELECTCM_CLAMPMODE_IC"><code class="docutils literal notranslate"><span class="pre">SF_OP_SELECTCM_CLAMPMODE_IC</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427SF_OP_SELECTCM_CLAMPMODE_VC"><code class="docutils literal notranslate"><span class="pre">SF_OP_SELECTCM_CLAMPMODE_VC</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430SF_OP_SELECTCM_CLAMPMODE_IZERO"><code class="docutils literal notranslate"><span class="pre">SF_OP_SELECTCM_CLAMPMODE_IZERO</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420SFOS_OperationSelectP16SF_ExecutionData"><code class="docutils literal notranslate"><span class="pre">SFOS_OperationSelect()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428SFOS_OperationSelectChannelsP16SF_ExecutionData"><code class="docutils literal notranslate"><span class="pre">SFOS_OperationSelectChannels()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422SFOS_OperationSelectCMP16SF_ExecutionData"><code class="docutils literal notranslate"><span class="pre">SFOS_OperationSelectCM()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426SFOS_OperationSelectDeviceP16SF_ExecutionData"><code class="docutils literal notranslate"><span class="pre">SFOS_OperationSelectDevice()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429SFOS_OperationSelectExpandRACP16SF_ExecutionData"><code class="docutils literal notranslate"><span class="pre">SFOS_OperationSelectExpandRAC()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429SFOS_OperationSelectExpandSCIP16SF_ExecutionData"><code class="docutils literal notranslate"><span class="pre">SFOS_OperationSelectExpandSCI()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430SFOS_OperationSelectExperimentP16SF_ExecutionData"><code class="docutils literal notranslate"><span class="pre">SFOS_OperationSelectExperiment()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430SFOS_OperationSelectIVSCCSetQCP16SF_ExecutionData"><code class="docutils literal notranslate"><span class="pre">SFOS_OperationSelectIVSCCSetQC()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv432SFOS_OperationSelectIVSCCSweepQCP16SF_ExecutionData"><code class="docutils literal notranslate"><span class="pre">SFOS_OperationSelectIVSCCSweepQC()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428SFOS_OperationSelectRACIndexP16SF_ExecutionData"><code class="docutils literal notranslate"><span class="pre">SFOS_OperationSelectRACIndex()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425SFOS_OperationSelectRangeP16SF_ExecutionData"><code class="docutils literal notranslate"><span class="pre">SFOS_OperationSelectRange()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428SFOS_OperationSelectSCIIndexP16SF_ExecutionData"><code class="docutils literal notranslate"><span class="pre">SFOS_OperationSelectSCIIndex()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv433SFOS_OperationSelectSetCycleCountP16SF_ExecutionData"><code class="docutils literal notranslate"><span class="pre">SFOS_OperationSelectSetCycleCount()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv433SFOS_OperationSelectSetSweepCountP16SF_ExecutionData"><code class="docutils literal notranslate"><span class="pre">SFOS_OperationSelectSetSweepCount()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427SFOS_OperationSelectStimsetP16SF_ExecutionData"><code class="docutils literal notranslate"><span class="pre">SFOS_OperationSelectStimset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426SFOS_OperationSelectSweepsP16SF_ExecutionData"><code class="docutils literal notranslate"><span class="pre">SFOS_OperationSelectSweeps()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423SFOS_OperationSelectVisP16SF_ExecutionData"><code class="docutils literal notranslate"><span class="pre">SFOS_OperationSelectVis()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv433SFOS_InitSelectFilterUninitalizedP19SF_SelectParameters"><code class="docutils literal notranslate"><span class="pre">SFOS_InitSelectFilterUninitalized()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429SFOS_GetSetIntersectionSelect4wave4wave"><code class="docutils literal notranslate"><span class="pre">SFOS_GetSetIntersectionSelect()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv431SFOS_SetSelectionFilterDefaults6stringP19SF_SelectParameters8variable"><code class="docutils literal notranslate"><span class="pre">SFOS_SetSelectionFilterDefaults()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427SFOS_GetSelectionExperiment6string6string"><code class="docutils literal notranslate"><span class="pre">SFOS_GetSelectionExperiment()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423SFOS_GetSelectionDevice6string6string"><code class="docutils literal notranslate"><span class="pre">SFOS_GetSelectionDevice()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418SFOS_GetSelectData6stringP19SF_SelectParameters"><code class="docutils literal notranslate"><span class="pre">SFOS_GetSelectData()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv435SFOS_GetSelectDataWithRACorSCIIndex6string4wave8variable8variable"><code class="docutils literal notranslate"><span class="pre">SFOS_GetSelectDataWithRACorSCIIndex()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430SFOS_GetSelectDataWithRACIndex4wave4wave14WaveTextOrNull8variable"><code class="docutils literal notranslate"><span class="pre">SFOS_GetSelectDataWithRACIndex()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430SFOS_GetSelectDataWithSCIIndex4wave4wave4wave14WaveTextOrNull8variable"><code class="docutils literal notranslate"><span class="pre">SFOS_GetSelectDataWithSCIIndex()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv440SFOS_GetAdditionalSweepsWithSameSCIorRAC4wave8variable8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">SFOS_GetAdditionalSweepsWithSameSCIorRAC()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419SFOS_SortSelectData4wave"><code class="docutils literal notranslate"><span class="pre">SFOS_SortSelectData()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427SFOS_CreateSelectWaveRowIds4wave"><code class="docutils literal notranslate"><span class="pre">SFOS_CreateSelectWaveRowIds()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424SFOS_GetUniqueSelectData4wave"><code class="docutils literal notranslate"><span class="pre">SFOS_GetUniqueSelectData()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430SFOS_GetSelectDataWithSCIorRAC6string4waveP19SF_SelectParameters8variable"><code class="docutils literal notranslate"><span class="pre">SFOS_GetSelectDataWithSCIorRAC()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420SFOS_NewChannelsWave8variable"><code class="docutils literal notranslate"><span class="pre">SFOS_NewChannelsWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424SFOS_MatchSweepMapColumn6string6string6string6string"><code class="docutils literal notranslate"><span class="pre">SFOS_MatchSweepMapColumn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv433SFOS_MakeSweepPropertiesDisplayed8variable"><code class="docutils literal notranslate"><span class="pre">SFOS_MakeSweepPropertiesDisplayed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427SFOS_MakeSweepLNBsDisplayed8variable"><code class="docutils literal notranslate"><span class="pre">SFOS_MakeSweepLNBsDisplayed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423SFOS_GetSweepMapIndices8WaveText8variable6string6string6string6string"><code class="docutils literal notranslate"><span class="pre">SFOS_GetSweepMapIndices()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427SFOS_MapClampModeToSelectCM8variable"><code class="docutils literal notranslate"><span class="pre">SFOS_MapClampModeToSelectCM()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427SFOS_IsValidSingleSelectionP19SF_SelectParameters4wave4wave8variable8variable8variable8variable8variable8variable8variable8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">SFOS_IsValidSingleSelection()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429SFOS_FilterByClampModeEnabled8variable8variable"><code class="docutils literal notranslate"><span class="pre">SFOS_FilterByClampModeEnabled()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419SFOS_GetSelectRowId4wave8variable"><code class="docutils literal notranslate"><span class="pre">SFOS_GetSelectRowId()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430SFOS_RestoreSelectDataFromText8WaveText"><code class="docutils literal notranslate"><span class="pre">SFOS_RestoreSelectDataFromText()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426SFOS_DuplicateSelectFilterP19SF_SelectParameters"><code class="docutils literal notranslate"><span class="pre">SFOS_DuplicateSelectFilter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424SFOS_CreateSweepMapRowId6string6string6string6string"><code class="docutils literal notranslate"><span class="pre">SFOS_CreateSweepMapRowId()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421SFOS_GetSweepMapRowId8WaveText8variable"><code class="docutils literal notranslate"><span class="pre">SFOS_GetSweepMapRowId()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428SFOS_GetSweepMapIndexFromIds8WaveText6string6string6string8variable"><code class="docutils literal notranslate"><span class="pre">SFOS_GetSweepMapIndexFromIds()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420SFOS_ParseSelectText8WaveText4wave8variable"><code class="docutils literal notranslate"><span class="pre">SFOS_ParseSelectText()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419SELECTDATA_MODE_SCI"><code class="docutils literal notranslate"><span class="pre">SELECTDATA_MODE_SCI</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419SELECTDATA_MODE_RAC"><code class="docutils literal notranslate"><span class="pre">SELECTDATA_MODE_RAC</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427SF_OP_SELECT_IVSCCQC_PASSED"><code class="docutils literal notranslate"><span class="pre">SF_OP_SELECT_IVSCCQC_PASSED</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427SF_OP_SELECT_IVSCCQC_FAILED"><code class="docutils literal notranslate"><span class="pre">SF_OP_SELECT_IVSCCQC_FAILED</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425SF_OP_SELECT_STIMSETS_ALL"><code class="docutils literal notranslate"><span class="pre">SF_OP_SELECT_STIMSETS_ALL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419SF_OP_SELECTVIS_ALL"><code class="docutils literal notranslate"><span class="pre">SF_OP_SELECTVIS_ALL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425SF_OP_SELECTVIS_DISPLAYED"><code class="docutils literal notranslate"><span class="pre">SF_OP_SELECTVIS_DISPLAYED</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv434SF_GETSETINTERSECTIONSELECT_FORMAT"><code class="docutils literal notranslate"><span class="pre">SF_GETSETINTERSECTIONSELECT_FORMAT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419SWEEPPROP_CLAMPMODE"><code class="docutils literal notranslate"><span class="pre">SWEEPPROP_CLAMPMODE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423SWEEPPROP_SETCYCLECOUNT"><code class="docutils literal notranslate"><span class="pre">SWEEPPROP_SETCYCLECOUNT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423SWEEPPROP_SETSWEEPCOUNT"><code class="docutils literal notranslate"><span class="pre">SWEEPPROP_SETSWEEPCOUNT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413SWEEPPROP_END"><code class="docutils literal notranslate"><span class="pre">SWEEPPROP_END</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416DB_EXPNAME_DUMMY"><code class="docutils literal notranslate"><span class="pre">DB_EXPNAME_DUMMY</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___sweep_formula___operations_8ipf.html"
+                          title="previous chapter">File MIES_SweepFormula_Operations.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html"
+                          title="next chapter">File MIES_SweepFormula_Operations_TP.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html" title="File MIES_SweepFormula_Operations_TP.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___sweep_formula___operations_8ipf.html" title="File MIES_SweepFormula_Operations.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_SweepFormula_Operations_Select.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

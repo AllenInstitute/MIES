@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File MIES_MiesUtilities_Logbook.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_MiesUtilities_Logging.ipf" href="_m_i_e_s___mies_utilities___logging_8ipf.html" />
+    <link rel="prev" title="File MIES_MiesUtilities_Getter.ipf" href="_m_i_e_s___mies_utilities___getter_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___mies_utilities___logging_8ipf.html" title="File MIES_MiesUtilities_Logging.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___mies_utilities___getter_8ipf.html" title="File MIES_MiesUtilities_Getter.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_MiesUtilities_Logbook.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-miesutilities-logbook-ipf">
+<span id="id1"></span><h1>File MIES_MiesUtilities_Logbook.ipf<a class="headerlink" href="#file-mies-miesutilities-logbook-ipf" title="Link to this heading">¶</a></h1>
+<p>This file holds MIES utility functions for working with the various Logbooks. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414GetLogbookType4wave">
+<span id="_CPPv314GetLogbookType4wave"></span><span id="_CPPv214GetLogbookType4wave"></span><span id="GetLogbookType__wave"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1a1ea73b9b6baa307f2fa0ef3a3422fd79"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLogbookType</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414GetLogbookType4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the logbook type, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1LogbookTypes"><span class="std std-ref">LogbookTypes</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415GetLogbookWaves8variable8variable6string">
+<span id="_CPPv315GetLogbookWaves8variable8variable6string"></span><span id="_CPPv215GetLogbookWaves8variable8variable6string"></span><span id="GetLogbookWaves__variable.variable.string"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1abbae0fc823afc2e0cdec5008484aa36a"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLogbookWaves</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">logbookType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">logbookWaveType</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415GetLogbookWaves8variable8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the logbook waves. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – [optional only for LBT_RESULTS] device </p></li>
+<li><p><strong>logbookType</strong> – one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1LogbookTypes"><span class="std std-ref">LogbookTypes</span></a></p></li>
+<li><p><strong>logbookWaveType</strong> – one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1LabnotebookWaveTypes"><span class="std std-ref">LabnotebookWaveTypes</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428ExtractLogbookSliceTimeStamp4wave">
+<span id="_CPPv328ExtractLogbookSliceTimeStamp4wave"></span><span id="_CPPv228ExtractLogbookSliceTimeStamp4wave"></span><span id="ExtractLogbookSliceTimeStamp__wave"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1a74dd79d2b64a28ad003e78a657aaf78f"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExtractLogbookSliceTimeStamp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">logbook</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428ExtractLogbookSliceTimeStamp4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Extract a date/time slice of the logbook wave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428ExtractLogbookSliceDeltaTime4wave">
+<span id="_CPPv328ExtractLogbookSliceDeltaTime4wave"></span><span id="_CPPv228ExtractLogbookSliceDeltaTime4wave"></span><span id="ExtractLogbookSliceDeltaTime__wave"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1aa67ed4be2909d649f797d647d02a2e39"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExtractLogbookSliceDeltaTime</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">logbook</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428ExtractLogbookSliceDeltaTime4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Extract the delta time slice of the logbook wave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424ExtractLogbookSliceSweep4wave">
+<span id="_CPPv324ExtractLogbookSliceSweep4wave"></span><span id="_CPPv224ExtractLogbookSliceSweep4wave"></span><span id="ExtractLogbookSliceSweep__wave"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1a7d4d5599673261a687da74e31d0ad976"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExtractLogbookSliceSweep</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">values</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424ExtractLogbookSliceSweep4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Extract the sweep number slice of the labnotebook values wave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424ExtractLogbookSliceEmpty4wave">
+<span id="_CPPv324ExtractLogbookSliceEmpty4wave"></span><span id="_CPPv224ExtractLogbookSliceEmpty4wave"></span><span id="ExtractLogbookSliceEmpty__wave"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1a51a5b7d4001c72e413c8b512c4ac6ff3"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExtractLogbookSliceEmpty</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">values</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424ExtractLogbookSliceEmpty4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Extract a slice of the logbook wave and makes it empty. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419ExtractLogbookSlice4wave8variable8variable6string">
+<span id="_CPPv319ExtractLogbookSlice4wave8variable8variable6string"></span><span id="_CPPv219ExtractLogbookSlice4wave8variable8variable6string"></span><span id="ExtractLogbookSlice__wave.variable.variable.string"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1ad041600384a80af98d0427742a1f1e14"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExtractLogbookSlice</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">logbook</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">logbookType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">colOrLayer</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">suffix</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419ExtractLogbookSlice4wave8variable8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Extract a single column/layer of the labnotebook/TPStorage values wave. </p>
+<p>This is useful if you want to plot values against e.g time and let Igor do the formatting of the date/time values. Always returns a numerical wave.</p>
+<p>The slice is returned as-is if it exists already. Callers which modify the logbook are responsible to resize the slice as well. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429GetLastSettingChannelInternal4wave4wave8variable6string8variable8variable8variable">
+<span id="_CPPv329GetLastSettingChannelInternal4wave4wave8variable6string8variable8variable8variable"></span><span id="_CPPv229GetLastSettingChannelInternal4wave4wave8variable6string8variable8variable8variable"></span><span id="GetLastSettingChannelInternal__wave.wave.variable.string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1abeb861dc5fb3bba0d1b31a327cfe35b8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">WaveOrNull</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastSettingChannelInternal</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">values</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelNumber</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entrySourceType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429GetLastSettingChannelInternal4wave4wave8variable6string8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a numerical/textual setting for the given channel. </p>
+<p>The function takes care of associated/unassociated channel properties and all other internals.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../group/group___labnotebook_query_functions.html#group___labnotebook_query_functions_1gabb16f09410b8b243f293391ec3c7823d"><span class="std std-ref">GetLastSettingChannel</span></a></p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>numericalValues</strong> – numerical labnotebook </p></li>
+<li><p><strong>values</strong> – labnotebook to read data from, either numerical or textual </p></li>
+<li><p><strong>sweepNo</strong> – sweep number </p></li>
+<li><p><strong>setting</strong> – name of the labnotebook entry to search </p></li>
+<li><p><strong>channelNumber</strong> – channel number </p></li>
+<li><p><strong>channelType</strong> – channel type, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1XopChannelConstants"><span class="std std-ref">XopChannelConstants</span></a></p></li>
+<li><p><strong>entrySourceType</strong> – type of the labnotebook entry, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1DataAcqModes"><span class="std std-ref">DataAcqModes</span></a>. If you don’t care about the entry source type pass <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6"><span class="std std-ref">UNKNOWN_MODE</span></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple of the result wave and the index into it.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424GetLogbookSettingsColumn4wave6string">
+<span id="_CPPv324GetLogbookSettingsColumn4wave6string"></span><span id="_CPPv224GetLogbookSettingsColumn4wave6string"></span><span id="GetLogbookSettingsColumn__wave.string"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1ac1051956f8cae8eedfedc4d508f2c2c5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLogbookSettingsColumn</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">values</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424GetLogbookSettingsColumn4wave6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv434GetLogbookSettingsColumnFromSorted8WaveText4wave6string">
+<span id="_CPPv334GetLogbookSettingsColumnFromSorted8WaveText4wave6string"></span><span id="_CPPv234GetLogbookSettingsColumnFromSorted8WaveText4wave6string"></span><span id="GetLogbookSettingsColumnFromSorted__WaveText.wave.string"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1a62a5fd8330cf9576c8b050bbda424faf"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLogbookSettingsColumnFromSorted</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">sortedKeys</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">indices</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv434GetLogbookSettingsColumnFromSorted8WaveText4wave6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418GetNonEmptyLBNRows4wave6string">
+<span id="_CPPv318GetNonEmptyLBNRows4wave6string"></span><span id="_CPPv218GetNonEmptyLBNRows4wave6string"></span><span id="GetNonEmptyLBNRows__wave.string"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1a523c74caa831cd06b00fe764936e2a3a"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">WAVE</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNonEmptyLBNRows</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">labnotebookValues</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418GetNonEmptyLBNRows4wave6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a wave with all labnotebook rows which have a non-empty entry for setting. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425EnforceIndependentSetting4wave">
+<span id="_CPPv325EnforceIndependentSetting4wave"></span><span id="_CPPv225EnforceIndependentSetting4wave"></span><span id="EnforceIndependentSetting__wave"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1af55402862e2a382d02da60c90659bc68"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EnforceIndependentSetting</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">settings</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425EnforceIndependentSetting4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Test helper to enforce that every query done for an INDEP_HEADSTAGE setting does not search an entry which is HEADSTAGE dependent. The additional check that not all entries are the same is for really old legacy entries which are INDEP but set for all headstages. </p>
+<p>Does nothing outside of CI. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv49FindRange4wave8variable8variable8variableP8variableP8variable">
+<span id="_CPPv39FindRange4wave8variable8variable8variableP8variableP8variable"></span><span id="_CPPv29FindRange4wave8variable8variable8variableP8variableP8variable"></span><span id="FindRange__wave.variable.variable.variable.variableP.variableP"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1aff087008b3369385e4bb3e4e127e3790"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FindRange</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">col</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entrySourceType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">first</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">last</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49FindRange4wave8variable8variable8variableP8variableP8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Find the first and last point index of a consecutive range of values in the labnotebook, searches the range from the back. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wv</strong> – <strong>[in]</strong> wave to search </p></li>
+<li><p><strong>col</strong> – <strong>[in]</strong> column to look for </p></li>
+<li><p><strong>val</strong> – <strong>[in]</strong> value to search </p></li>
+<li><p><strong>entrySourceType</strong> – <strong>[in]</strong> type of the labnotebook entry, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1DataAcqModes"><span class="std std-ref">DataAcqModes</span></a></p></li>
+<li><p><strong>first</strong> – <strong>[out]</strong> point index of the beginning of the range </p></li>
+<li><p><strong>last</strong> – <strong>[out]</strong> point index of the end of the range </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414GetSweepColumn4wave">
+<span id="_CPPv314GetSweepColumn4wave"></span><span id="_CPPv214GetSweepColumn4wave"></span><span id="GetSweepColumn__wave"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1a3bd687338235e2975163affaca2b354f"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSweepColumn</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">labnotebookValues</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414GetSweepColumn4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the numerical index for the sweep number column in the settings history waves (numeric and text) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417GetUniqueSettings4wave6string">
+<span id="_CPPv317GetUniqueSettings4wave6string"></span><span id="_CPPv217GetUniqueSettings4wave6string"></span><span id="GetUniqueSettings__wave.string"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1a3f3ce658cd4e2db69e682c859e83f456"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetUniqueSettings</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">values</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417GetUniqueSettings4wave6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a unique list of labnotebook entries of the given setting. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values</strong> – numerical logbook wave </p></li>
+<li><p><strong>setting</strong> – name of the value to search </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429GetIndexForHeadstageIndepData4wave">
+<span id="_CPPv329GetIndexForHeadstageIndepData4wave"></span><span id="_CPPv229GetIndexForHeadstageIndepData4wave"></span><span id="GetIndexForHeadstageIndepData__wave"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1ae8fc2ed79de8e4cabaf75cc552e8fad6"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetIndexForHeadstageIndepData</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">values</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429GetIndexForHeadstageIndepData4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the index for headstage independent data. </p>
+<p>Before dfe2d862 (Make the function AB_SplitTTLWaveIntoComponents available for all, 2015-10-07) we stored headstage independent data in either all entries or only the first one. Since that commit we store the data in <code class="docutils literal notranslate"><span class="pre">INDEP_HEADSTAGE</span></code>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419CreateLBNUnassocKey6string8variable8variable">
+<span id="_CPPv319CreateLBNUnassocKey6string8variable8variable"></span><span id="_CPPv219CreateLBNUnassocKey6string8variable8variable"></span><span id="CreateLBNUnassocKey__string.variable.variable"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1ae108771ac43b05625f852e6cdc84c0d9"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreateLBNUnassocKey</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setting</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelNumber</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419CreateLBNUnassocKey6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Create a labnotebook key for unassociated channels. </p>
+<p>We support two types of unassociated keys. Old style, prior to 403c8ec2 (Merge pull request #370 from AllenInstitute/feature/sweepformula_enable, 2019-11-13) but after its introduction in ad8dc8ec (Allow AD/DA channels not associated with a headstage again, 2015-10-22) are written as “$Name UNASSOC_$ChannelNumber”.</p>
+<p>New style have the format “$Name u_(AD|DA)$ChannelNumber”, these include the channel type to make them more self explaining. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422CreateTTLChannelLBNKey6string8variable">
+<span id="_CPPv322CreateTTLChannelLBNKey6string8variable"></span><span id="_CPPv222CreateTTLChannelLBNKey6string8variable"></span><span id="CreateTTLChannelLBNKey__string.variable"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1a10127ae19e7b42c2a5426f60086b41de"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreateTTLChannelLBNKey</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entry</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelNumber</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422CreateTTLChannelLBNKey6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Create a LBN key for TTL channels. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415IsUnassocLBNKey6string">
+<span id="_CPPv315IsUnassocLBNKey6string"></span><span id="_CPPv215IsUnassocLBNKey6string"></span><span id="IsUnassocLBNKey__string"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1a5b28479fa4fd36b90b214e6b20b11da8"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsUnassocLBNKey</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415IsUnassocLBNKey6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Check if the given labnotebook entry is from an unassociated DA/AD channel. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425RemoveUnassocLBNKeySuffix6string">
+<span id="_CPPv325RemoveUnassocLBNKeySuffix6string"></span><span id="_CPPv225RemoveUnassocLBNKeySuffix6string"></span><span id="RemoveUnassocLBNKeySuffix__string"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1a718296f24e1cc95d034f61aab08b9620"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RemoveUnassocLBNKeySuffix</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425RemoveUnassocLBNKeySuffix6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Remove the unassociated, old and new, prefix of the given labnotebook entry name. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_m_i_e_s___mies_utilities___logbook_8ipf_1ae108771ac43b05625f852e6cdc84c0d9"><span class="std std-ref">CreateLBNUnassocKey()</span></a></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421EntrySourceTypeMapper8variable">
+<span id="_CPPv321EntrySourceTypeMapper8variable"></span><span id="_CPPv221EntrySourceTypeMapper8variable"></span><span id="EntrySourceTypeMapper__variable"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1a8ed1daec72f2a0bbfc9c85adea14ba45"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EntrySourceTypeMapper</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entrySourceType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421EntrySourceTypeMapper8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Maps the labnotebook entry source type, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1DataAcqModes"><span class="std std-ref">DataAcqModes</span></a>, to a valid wave index. </p>
+<p>UTF_NOINSTRUMENTATION </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428ReverseEntrySourceTypeMapper8variable">
+<span id="_CPPv328ReverseEntrySourceTypeMapper8variable"></span><span id="_CPPv228ReverseEntrySourceTypeMapper8variable"></span><span id="ReverseEntrySourceTypeMapper__variable"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1afa9b762cd345b9156d36399ba1a70b2f"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReverseEntrySourceTypeMapper</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mapped</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428ReverseEntrySourceTypeMapper8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Rerverse the effect of <a class="reference internal" href="#_m_i_e_s___mies_utilities___logbook_8ipf_1a8ed1daec72f2a0bbfc9c85adea14ba45"><span class="std std-ref">EntrySourceTypeMapper()</span></a></p>
+<p>UTF_NOINSTRUMENTATION </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419CreateAnaFuncLBNKey8variable6string8variable8variable8variable">
+<span id="_CPPv319CreateAnaFuncLBNKey8variable6string8variable8variable8variable"></span><span id="_CPPv219CreateAnaFuncLBNKey8variable6string8variable8variable8variable"></span><span id="CreateAnaFuncLBNKey__variable.string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1a8d2a70a858acddc596d99986112883ca"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreateAnaFuncLBNKey</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">formatString</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">chunk</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">query</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">waMode</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419CreateAnaFuncLBNKey8variable6string8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return labnotebook keys for patch seq analysis functions. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>type</strong> – One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1SpecialAnalysisFunctionTypes"><span class="std std-ref">SpecialAnalysisFunctionTypes</span></a></p></li>
+<li><p><strong>formatString</strong> – One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1PatchSeqLabnotebookFormatStrings"><span class="std std-ref">PatchSeqLabnotebookFormatStrings</span></a> or <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1MultiPatchSeqLabnotebookFormatStrings"><span class="std std-ref">MultiPatchSeqLabnotebookFormatStrings</span></a></p></li>
+<li><p><strong>chunk</strong> – [optional] Some format strings expect a chunk number </p></li>
+<li><p><strong>query</strong> – [optional, defaults to false] If the key is to be used for setting or querying the labnotebook </p></li>
+<li><p><strong>waMode</strong> – [optional, defaults to PSQ_LBN_WA_NONE] One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1LBNWorkAroundFlags"><span class="std std-ref">LBNWorkAroundFlags</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426SetAnalysisFunctionVersion6string8variable8variable8variable">
+<span id="_CPPv326SetAnalysisFunctionVersion6string8variable8variable8variable"></span><span id="_CPPv226SetAnalysisFunctionVersion6string8variable8variable8variable"></span><span id="SetAnalysisFunctionVersion__string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1a9f91b320a054dba75b455765737c4bb6"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetAnalysisFunctionVersion</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426SetAnalysisFunctionVersion6string8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Add a labnotebook entry denoting the analysis function version. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422GetHeadstageForChannel4wave8variable8variable8variable8variable">
+<span id="_CPPv322GetHeadstageForChannel4wave8variable8variable8variable8variable"></span><span id="_CPPv222GetHeadstageForChannel4wave8variable8variable8variable8variable"></span><span id="GetHeadstageForChannel__wave.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1af7544d4fd92cdd0ca997562dc8de64e5"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetHeadstageForChannel</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweep</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelNumber</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entrySourceType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422GetHeadstageForChannel4wave8variable8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the active headstage for a given sweep, channelType, channelNumber from the LBN. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>numericalValues</strong> – LBN wave with numerical values </p></li>
+<li><p><strong>sweep</strong> – sweep number </p></li>
+<li><p><strong>channelType</strong> – channel type number </p></li>
+<li><p><strong>channelNumber</strong> – channel number </p></li>
+<li><p><strong>entrySourceType</strong> – type of the labnotebook entry, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1DataAcqModes"><span class="std std-ref">DataAcqModes</span></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>headstage number or NaN if no headstage was found </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422GetTTLLabnotebookEntry8WaveText6string8variable">
+<span id="_CPPv322GetTTLLabnotebookEntry8WaveText6string8variable"></span><span id="_CPPv222GetTTLLabnotebookEntry8WaveText6string8variable"></span><span id="GetTTLLabnotebookEntry__WaveText.string.variable"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1a9093268c0ed35af94d92313312029c39"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetTTLLabnotebookEntry</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">textualValues</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweep</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422GetTTLLabnotebookEntry8WaveText6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a list of TTL stimsets which are indexed by DAEphys TTL channels. </p>
+<p>The indexing here is <strong>hardware independent</strong>. For ITC hardware the assertion “log(ttlBit)/log(2) == DAEphys TTL channel” holds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>textualValues</strong> – Text labnotebook values </p></li>
+<li><p><strong>name</strong> – One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1LabnotebookTTLNames"><span class="std std-ref">LabnotebookTTLNames</span></a></p></li>
+<li><p><strong>sweep</strong> – Sweep number </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428GetTotalOnsetDelayFromDevice6string">
+<span id="_CPPv328GetTotalOnsetDelayFromDevice6string"></span><span id="_CPPv228GetTotalOnsetDelayFromDevice6string"></span><span id="GetTotalOnsetDelayFromDevice__string"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1a449205319dd2e6e660d937e7c3d38e9d"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetTotalOnsetDelayFromDevice</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428GetTotalOnsetDelayFromDevice6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the total onset delay from the given device during DAQ. </p>
+<p>
+UTF_NOINSTRUMENTATION <div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html#_m_i_e_s___mies_utilities___sweep_8ipf_1a3d9a7dac997770aae6869bfb40ec9bb2"><span class="std std-ref">GetTotalOnsetDelay</span></a></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423GetAnalysisFunctionType4wave8WaveText8variable8variable8variable">
+<span id="_CPPv323GetAnalysisFunctionType4wave8WaveText8variable8variable8variable"></span><span id="_CPPv223GetAnalysisFunctionType4wave8WaveText8variable8variable8variable"></span><span id="GetAnalysisFunctionType__wave.WaveText.variable.variable.variable"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1a12dbaebd530406648cd63afcff800bc6"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetAnalysisFunctionType</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">textualValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelNumber</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423GetAnalysisFunctionType4wave8WaveText8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Retrieve the analysis function that was run for a given sweep / channelNumber / channelType. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>numericalValues</strong> – numerical labnotebook </p></li>
+<li><p><strong>textualValues</strong> – textual labnotebook </p></li>
+<li><p><strong>sweepNo</strong> – sweep number </p></li>
+<li><p><strong>channelNumber</strong> – channel number </p></li>
+<li><p><strong>channelType</strong> – channelType</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return values<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>type</strong> – analysis function type <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1SpecialAnalysisFunctionTypes"><span class="std std-ref">SpecialAnalysisFunctionTypes</span></a></p></li>
+<li><p><strong>waMode</strong> – bit-mask of possible workarounds for <a class="reference internal" href="#_m_i_e_s___mies_utilities___logbook_8ipf_1a8d2a70a858acddc596d99986112883ca"><span class="std std-ref">CreateAnaFuncLBNKey()</span></a></p></li>
+<li><p><strong>headstage</strong> – headstage where the analysis function was run on </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422GetHeadstageFromOldLBN4wave8variable8variable8variable8variable">
+<span id="_CPPv322GetHeadstageFromOldLBN4wave8variable8variable8variable8variable"></span><span id="_CPPv222GetHeadstageFromOldLBN4wave8variable8variable8variable8variable"></span><span id="GetHeadstageFromOldLBN__wave.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1a12fba32a1f64eeec4a0bc814495226d7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetHeadstageFromOldLBN</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelNumber</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataAcqOrTP</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422GetHeadstageFromOldLBN4wave8variable8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416ParseLogbookMode6string">
+<span id="_CPPv316ParseLogbookMode6string"></span><span id="_CPPv216ParseLogbookMode6string"></span><span id="ParseLogbookMode__string"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1aa9c970db2f3090199381cb21782e3313"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ParseLogbookMode</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">modeText</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416ParseLogbookMode6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420StringifyLogbookMode8variable">
+<span id="_CPPv320StringifyLogbookMode8variable"></span><span id="_CPPv220StringifyLogbookMode8variable"></span><span id="StringifyLogbookMode__variable"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1a0cd92981e1beeb0daac54ed12197bf70"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StringifyLogbookMode</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420StringifyLogbookMode8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429InvalidateLBIndexAndRowCachesv">
+<span id="_CPPv329InvalidateLBIndexAndRowCachesv"></span><span id="_CPPv229InvalidateLBIndexAndRowCachesv"></span><span id="InvalidateLBIndexAndRowCaches"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1ae2365092c7366d5ebe202875695ca3b4"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InvalidateLBIndexAndRowCaches</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429InvalidateLBIndexAndRowCachesv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Invalidates the row and index caches for all labnotebook and results wave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv434InvalidateLBIndexAndRowCaches_Impl4wave">
+<span id="_CPPv334InvalidateLBIndexAndRowCaches_Impl4wave"></span><span id="_CPPv234InvalidateLBIndexAndRowCaches_Impl4wave"></span><span id="InvalidateLBIndexAndRowCaches_Impl__wave"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1a72e0306d67ac146e7c69498dc2cd41fc"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InvalidateLBIndexAndRowCaches_Impl</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">valuesWave</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv434InvalidateLBIndexAndRowCaches_Impl4wave" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv416GET_LB_MODE_NONE">
+<span id="_CPPv316GET_LB_MODE_NONE"></span><span id="_CPPv216GET_LB_MODE_NONE"></span><span id="GET_LB_MODE_NONE__doubleC"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1af5509d65f79b5c03ae3ead1b32f74bc3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GET_LB_MODE_NONE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv416GET_LB_MODE_NONE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv416GET_LB_MODE_READ">
+<span id="_CPPv316GET_LB_MODE_READ"></span><span id="_CPPv216GET_LB_MODE_READ"></span><span id="GET_LB_MODE_READ__doubleC"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1a1eac996a911fa1e73820e9918d0511f0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GET_LB_MODE_READ</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv416GET_LB_MODE_READ" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417GET_LB_MODE_WRITE">
+<span id="_CPPv317GET_LB_MODE_WRITE"></span><span id="_CPPv217GET_LB_MODE_WRITE"></span><span id="GET_LB_MODE_WRITE__doubleC"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1a56abcae6507106d9331168bf1ab45d23"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GET_LB_MODE_WRITE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><a class="headerlink" href="#_CPPv417GET_LB_MODE_WRITE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv425LBN_UNASSOC_REGEXP_LEGACY">
+<span id="_CPPv325LBN_UNASSOC_REGEXP_LEGACY"></span><span id="_CPPv225LBN_UNASSOC_REGEXP_LEGACY"></span><span id="LBN_UNASSOC_REGEXP_LEGACY__stringC"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1aa592791d0565077252cd657a9419170e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LBN_UNASSOC_REGEXP_LEGACY</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;^(.*)</span> <span class="pre">UNASSOC_[[:digit:]]+$&quot;</span></span><a class="headerlink" href="#_CPPv425LBN_UNASSOC_REGEXP_LEGACY" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv418LBN_UNASSOC_REGEXP">
+<span id="_CPPv318LBN_UNASSOC_REGEXP"></span><span id="_CPPv218LBN_UNASSOC_REGEXP"></span><span id="LBN_UNASSOC_REGEXP__stringC"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1aa5a0dad4ec83b0e7848a005884c4e969"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LBN_UNASSOC_REGEXP</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;^(.*)</span> <span class="pre">u_(AD|DA)[[:digit:]]+$&quot;</span></span><a class="headerlink" href="#_CPPv418LBN_UNASSOC_REGEXP" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417PSQ_PB_LBN_PREFIX">
+<span id="_CPPv317PSQ_PB_LBN_PREFIX"></span><span id="_CPPv217PSQ_PB_LBN_PREFIX"></span><span id="PSQ_PB_LBN_PREFIX__stringC"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1a37a8d90a4857d8b07212b48481938ea5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_PB_LBN_PREFIX</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Pipette</span> <span class="pre">in</span> <span class="pre">Bath&quot;</span></span><a class="headerlink" href="#_CPPv417PSQ_PB_LBN_PREFIX" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417PSQ_CR_LBN_PREFIX">
+<span id="_CPPv317PSQ_CR_LBN_PREFIX"></span><span id="_CPPv217PSQ_CR_LBN_PREFIX"></span><span id="PSQ_CR_LBN_PREFIX__stringC"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1a7588f7595d897ee869be2084ad0a32bf"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_CR_LBN_PREFIX</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Chirp&quot;</span></span><a class="headerlink" href="#_CPPv417PSQ_CR_LBN_PREFIX" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417PSQ_SP_LBN_PREFIX">
+<span id="_CPPv317PSQ_SP_LBN_PREFIX"></span><span id="_CPPv217PSQ_SP_LBN_PREFIX"></span><span id="PSQ_SP_LBN_PREFIX__stringC"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1a0ba0477d192a6e8389c8e1d9fead9602"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_SP_LBN_PREFIX</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Squ.</span> <span class="pre">Pul.&quot;</span></span><a class="headerlink" href="#_CPPv417PSQ_SP_LBN_PREFIX" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417PSQ_DS_LBN_PREFIX">
+<span id="_CPPv317PSQ_DS_LBN_PREFIX"></span><span id="_CPPv217PSQ_DS_LBN_PREFIX"></span><span id="PSQ_DS_LBN_PREFIX__stringC"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1aae50f0d4ff0be28ddc44e19a30546a5a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_DS_LBN_PREFIX</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;DA</span> <span class="pre">Scale&quot;</span></span><a class="headerlink" href="#_CPPv417PSQ_DS_LBN_PREFIX" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417PSQ_RB_LBN_PREFIX">
+<span id="_CPPv317PSQ_RB_LBN_PREFIX"></span><span id="_CPPv217PSQ_RB_LBN_PREFIX"></span><span id="PSQ_RB_LBN_PREFIX__stringC"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1ae36ec480bfb7053a44ff8ca0d355f1f1"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_RB_LBN_PREFIX</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Rheobase&quot;</span></span><a class="headerlink" href="#_CPPv417PSQ_RB_LBN_PREFIX" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417PSQ_RA_LBN_PREFIX">
+<span id="_CPPv317PSQ_RA_LBN_PREFIX"></span><span id="_CPPv217PSQ_RA_LBN_PREFIX"></span><span id="PSQ_RA_LBN_PREFIX__stringC"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1ae37d8f42286b2a39e4572d1a8b9f620b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_RA_LBN_PREFIX</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Ramp&quot;</span></span><a class="headerlink" href="#_CPPv417PSQ_RA_LBN_PREFIX" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417PSQ_SE_LBN_PREFIX">
+<span id="_CPPv317PSQ_SE_LBN_PREFIX"></span><span id="_CPPv217PSQ_SE_LBN_PREFIX"></span><span id="PSQ_SE_LBN_PREFIX__stringC"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1a480477fbd105e1b96e128818b7854db9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_SE_LBN_PREFIX</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Seal</span> <span class="pre">evaluation&quot;</span></span><a class="headerlink" href="#_CPPv417PSQ_SE_LBN_PREFIX" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417PSQ_VM_LBN_PREFIX">
+<span id="_CPPv317PSQ_VM_LBN_PREFIX"></span><span id="_CPPv217PSQ_VM_LBN_PREFIX"></span><span id="PSQ_VM_LBN_PREFIX__stringC"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1ab3254bf3445738d337a060c74823f45a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_VM_LBN_PREFIX</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;True</span> <span class="pre">Rest</span> <span class="pre">Memb.&quot;</span></span><a class="headerlink" href="#_CPPv417PSQ_VM_LBN_PREFIX" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417PSQ_AR_LBN_PREFIX">
+<span id="_CPPv317PSQ_AR_LBN_PREFIX"></span><span id="_CPPv217PSQ_AR_LBN_PREFIX"></span><span id="PSQ_AR_LBN_PREFIX__stringC"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1a92a8a6000d77bd387444186eda4e9b0f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_AR_LBN_PREFIX</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Access</span> <span class="pre">Res.</span> <span class="pre">Smoke&quot;</span></span><a class="headerlink" href="#_CPPv417PSQ_AR_LBN_PREFIX" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv418MSQ_FRE_LBN_PREFIX">
+<span id="_CPPv318MSQ_FRE_LBN_PREFIX"></span><span id="_CPPv218MSQ_FRE_LBN_PREFIX"></span><span id="MSQ_FRE_LBN_PREFIX__stringC"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1aff7777dd8b7f1372ad24d2c41693b478"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MSQ_FRE_LBN_PREFIX</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;F</span> <span class="pre">Rheo</span> <span class="pre">E&quot;</span></span><a class="headerlink" href="#_CPPv418MSQ_FRE_LBN_PREFIX" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417MSQ_DS_LBN_PREFIX">
+<span id="_CPPv317MSQ_DS_LBN_PREFIX"></span><span id="_CPPv217MSQ_DS_LBN_PREFIX"></span><span id="MSQ_DS_LBN_PREFIX__stringC"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1a55113f806f90d76048e2f4b896c8266a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MSQ_DS_LBN_PREFIX</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Da</span> <span class="pre">Scale&quot;</span></span><a class="headerlink" href="#_CPPv417MSQ_DS_LBN_PREFIX" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417MSQ_SC_LBN_PREFIX">
+<span id="_CPPv317MSQ_SC_LBN_PREFIX"></span><span id="_CPPv217MSQ_SC_LBN_PREFIX"></span><span id="MSQ_SC_LBN_PREFIX__stringC"></span><span class="target" id="_m_i_e_s___mies_utilities___logbook_8ipf_1aebd363f8f2111570fbf0e99e418eb853"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MSQ_SC_LBN_PREFIX</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Spike</span> <span class="pre">Control&quot;</span></span><a class="headerlink" href="#_CPPv417MSQ_SC_LBN_PREFIX" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_MiesUtilities_Logbook.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414GetLogbookType4wave"><code class="docutils literal notranslate"><span class="pre">GetLogbookType()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415GetLogbookWaves8variable8variable6string"><code class="docutils literal notranslate"><span class="pre">GetLogbookWaves()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428ExtractLogbookSliceTimeStamp4wave"><code class="docutils literal notranslate"><span class="pre">ExtractLogbookSliceTimeStamp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428ExtractLogbookSliceDeltaTime4wave"><code class="docutils literal notranslate"><span class="pre">ExtractLogbookSliceDeltaTime()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424ExtractLogbookSliceSweep4wave"><code class="docutils literal notranslate"><span class="pre">ExtractLogbookSliceSweep()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424ExtractLogbookSliceEmpty4wave"><code class="docutils literal notranslate"><span class="pre">ExtractLogbookSliceEmpty()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419ExtractLogbookSlice4wave8variable8variable6string"><code class="docutils literal notranslate"><span class="pre">ExtractLogbookSlice()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429GetLastSettingChannelInternal4wave4wave8variable6string8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">GetLastSettingChannelInternal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424GetLogbookSettingsColumn4wave6string"><code class="docutils literal notranslate"><span class="pre">GetLogbookSettingsColumn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv434GetLogbookSettingsColumnFromSorted8WaveText4wave6string"><code class="docutils literal notranslate"><span class="pre">GetLogbookSettingsColumnFromSorted()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418GetNonEmptyLBNRows4wave6string"><code class="docutils literal notranslate"><span class="pre">GetNonEmptyLBNRows()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425EnforceIndependentSetting4wave"><code class="docutils literal notranslate"><span class="pre">EnforceIndependentSetting()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv49FindRange4wave8variable8variable8variableP8variableP8variable"><code class="docutils literal notranslate"><span class="pre">FindRange()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414GetSweepColumn4wave"><code class="docutils literal notranslate"><span class="pre">GetSweepColumn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417GetUniqueSettings4wave6string"><code class="docutils literal notranslate"><span class="pre">GetUniqueSettings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429GetIndexForHeadstageIndepData4wave"><code class="docutils literal notranslate"><span class="pre">GetIndexForHeadstageIndepData()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419CreateLBNUnassocKey6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">CreateLBNUnassocKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422CreateTTLChannelLBNKey6string8variable"><code class="docutils literal notranslate"><span class="pre">CreateTTLChannelLBNKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415IsUnassocLBNKey6string"><code class="docutils literal notranslate"><span class="pre">IsUnassocLBNKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425RemoveUnassocLBNKeySuffix6string"><code class="docutils literal notranslate"><span class="pre">RemoveUnassocLBNKeySuffix()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421EntrySourceTypeMapper8variable"><code class="docutils literal notranslate"><span class="pre">EntrySourceTypeMapper()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428ReverseEntrySourceTypeMapper8variable"><code class="docutils literal notranslate"><span class="pre">ReverseEntrySourceTypeMapper()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419CreateAnaFuncLBNKey8variable6string8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">CreateAnaFuncLBNKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426SetAnalysisFunctionVersion6string8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">SetAnalysisFunctionVersion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422GetHeadstageForChannel4wave8variable8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">GetHeadstageForChannel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422GetTTLLabnotebookEntry8WaveText6string8variable"><code class="docutils literal notranslate"><span class="pre">GetTTLLabnotebookEntry()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428GetTotalOnsetDelayFromDevice6string"><code class="docutils literal notranslate"><span class="pre">GetTotalOnsetDelayFromDevice()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423GetAnalysisFunctionType4wave8WaveText8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">GetAnalysisFunctionType()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422GetHeadstageFromOldLBN4wave8variable8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">GetHeadstageFromOldLBN()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416ParseLogbookMode6string"><code class="docutils literal notranslate"><span class="pre">ParseLogbookMode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420StringifyLogbookMode8variable"><code class="docutils literal notranslate"><span class="pre">StringifyLogbookMode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429InvalidateLBIndexAndRowCachesv"><code class="docutils literal notranslate"><span class="pre">InvalidateLBIndexAndRowCaches()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv434InvalidateLBIndexAndRowCaches_Impl4wave"><code class="docutils literal notranslate"><span class="pre">InvalidateLBIndexAndRowCaches_Impl()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416GET_LB_MODE_NONE"><code class="docutils literal notranslate"><span class="pre">GET_LB_MODE_NONE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416GET_LB_MODE_READ"><code class="docutils literal notranslate"><span class="pre">GET_LB_MODE_READ</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417GET_LB_MODE_WRITE"><code class="docutils literal notranslate"><span class="pre">GET_LB_MODE_WRITE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425LBN_UNASSOC_REGEXP_LEGACY"><code class="docutils literal notranslate"><span class="pre">LBN_UNASSOC_REGEXP_LEGACY</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418LBN_UNASSOC_REGEXP"><code class="docutils literal notranslate"><span class="pre">LBN_UNASSOC_REGEXP</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417PSQ_PB_LBN_PREFIX"><code class="docutils literal notranslate"><span class="pre">PSQ_PB_LBN_PREFIX</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417PSQ_CR_LBN_PREFIX"><code class="docutils literal notranslate"><span class="pre">PSQ_CR_LBN_PREFIX</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417PSQ_SP_LBN_PREFIX"><code class="docutils literal notranslate"><span class="pre">PSQ_SP_LBN_PREFIX</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417PSQ_DS_LBN_PREFIX"><code class="docutils literal notranslate"><span class="pre">PSQ_DS_LBN_PREFIX</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417PSQ_RB_LBN_PREFIX"><code class="docutils literal notranslate"><span class="pre">PSQ_RB_LBN_PREFIX</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417PSQ_RA_LBN_PREFIX"><code class="docutils literal notranslate"><span class="pre">PSQ_RA_LBN_PREFIX</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417PSQ_SE_LBN_PREFIX"><code class="docutils literal notranslate"><span class="pre">PSQ_SE_LBN_PREFIX</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417PSQ_VM_LBN_PREFIX"><code class="docutils literal notranslate"><span class="pre">PSQ_VM_LBN_PREFIX</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417PSQ_AR_LBN_PREFIX"><code class="docutils literal notranslate"><span class="pre">PSQ_AR_LBN_PREFIX</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418MSQ_FRE_LBN_PREFIX"><code class="docutils literal notranslate"><span class="pre">MSQ_FRE_LBN_PREFIX</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417MSQ_DS_LBN_PREFIX"><code class="docutils literal notranslate"><span class="pre">MSQ_DS_LBN_PREFIX</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417MSQ_SC_LBN_PREFIX"><code class="docutils literal notranslate"><span class="pre">MSQ_SC_LBN_PREFIX</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___mies_utilities___getter_8ipf.html"
+                          title="previous chapter">File MIES_MiesUtilities_Getter.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___mies_utilities___logging_8ipf.html"
+                          title="next chapter">File MIES_MiesUtilities_Logging.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___mies_utilities___logging_8ipf.html" title="File MIES_MiesUtilities_Logging.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___mies_utilities___getter_8ipf.html" title="File MIES_MiesUtilities_Getter.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_MiesUtilities_Logbook.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

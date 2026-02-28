@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Struct AnalysisFunction_V3 &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Struct AxonTelegraph_DataStruct" href="struct_axon_telegraph___data_struct.html" />
+    <link rel="prev" title="Struct ActiveChannels" href="struct_active_channels.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="struct_axon_telegraph___data_struct.html" title="Struct AxonTelegraph_DataStruct"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="struct_active_channels.html" title="Struct ActiveChannels"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../structlist.html" accesskey="U">Struct list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Struct AnalysisFunction_V3</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="struct-analysisfunction-v3">
+<h1>Struct AnalysisFunction_V3<a class="headerlink" href="#struct-analysisfunction-v3" title="Link to this heading">¶</a></h1>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv419AnalysisFunction_V3">
+<span id="_CPPv319AnalysisFunction_V3"></span><span id="_CPPv219AnalysisFunction_V3"></span><span id="AnalysisFunction_V3"></span><span class="target" id="struct_analysis_function___v3"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AnalysisFunction_V3</span></span></span><br /></dt>
+<dd><p>The structure passed into <code class="docutils literal notranslate"><span class="pre">V3</span></code> and later analysis functions. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N19AnalysisFunction_V39eventTypeE">
+<span id="_CPPv3N19AnalysisFunction_V39eventTypeE"></span><span id="_CPPv2N19AnalysisFunction_V39eventTypeE"></span><span id="AnalysisFunction_V3::eventType__variable"></span><span class="target" id="struct_analysis_function___v3_1a98dbd3485ee5eedd32a8eb47869cf53a"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">eventType</span></span></span><br /></dt>
+<dd><p>one of <a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1EVENT_TYPE_ANALYSIS_FUNCTIONS"><span class="std std-ref">EVENT_TYPE_ANALYSIS_FUNCTIONS</span></a></p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N19AnalysisFunction_V313scaledDACWaveE">
+<span id="_CPPv3N19AnalysisFunction_V313scaledDACWaveE"></span><span id="_CPPv2N19AnalysisFunction_V313scaledDACWaveE"></span><span id="AnalysisFunction_V3::scaledDACWave__WaveRefWave"></span><span class="target" id="struct_analysis_function___v3_1a313ecf329c0dd6126e5110a1e6ee9480"></span><span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">scaledDACWave</span></span></span><br /></dt>
+<dd><p>scaled and undecimated data from the DAC hardware, wave ref wave where each element is a channel wave. Channels are in the same order as the config wave rows. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N19AnalysisFunction_V39headStageE">
+<span id="_CPPv3N19AnalysisFunction_V39headStageE"></span><span id="_CPPv2N19AnalysisFunction_V39headStageE"></span><span id="AnalysisFunction_V3::headStage__variable"></span><span class="target" id="struct_analysis_function___v3_1a2ce664d720581516eb52c0310d93c466"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">headStage</span></span></span><br /></dt>
+<dd><p>active headstage index, <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">NUM_HEADSTAGES[</span></code></p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N19AnalysisFunction_V37sweepNoE">
+<span id="_CPPv3N19AnalysisFunction_V37sweepNoE"></span><span id="_CPPv2N19AnalysisFunction_V37sweepNoE"></span><span id="AnalysisFunction_V3::sweepNo__variable"></span><span class="target" id="struct_analysis_function___v3_1ab2c24ba7bc87fae5cc96525f69326fe4"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sweepNo</span></span></span><br /></dt>
+<dd><p>Potential <em>future</em> number of the sweep. Once the sweep is finished it will be saved with this number. Use <a class="reference internal" href="../file/_m_i_e_s___mies_utilities___getter_8ipf.html#_m_i_e_s___mies_utilities___getter_8ipf_1a856ff2cac3c10fff1b8e9e6e0ab341be"><span class="std std-ref">GetSweepWave()</span></a> to query the sweep itself. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N19AnalysisFunction_V311sweepsInSetE">
+<span id="_CPPv3N19AnalysisFunction_V311sweepsInSetE"></span><span id="_CPPv2N19AnalysisFunction_V311sweepsInSetE"></span><span id="AnalysisFunction_V3::sweepsInSet__variable"></span><span class="target" id="struct_analysis_function___v3_1a15a0fdc47e6b7c83602fb9c78526584c"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sweepsInSet</span></span></span><br /></dt>
+<dd><p>Number of sweeps in the currently acquired stimset of the passed headstage. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N19AnalysisFunction_V36paramsE">
+<span id="_CPPv3N19AnalysisFunction_V36paramsE"></span><span id="_CPPv2N19AnalysisFunction_V36paramsE"></span><span id="AnalysisFunction_V3::params__string"></span><span class="target" id="struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">params</span></span></span><br /></dt>
+<dd><p>Analysis function parameters set in the stimset’s textual parameter wave. Settable via <a class="reference internal" href="../file/_m_i_e_s___analysis_function_helpers_8ipf.html#_m_i_e_s___analysis_function_helpers_8ipf_1a4bca60887ac721a99a960cb00abd1dec"><span class="std std-ref">AFH_AddAnalysisParameter()</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N19AnalysisFunction_V319lastValidRowIndexDAE">
+<span id="_CPPv3N19AnalysisFunction_V319lastValidRowIndexDAE"></span><span id="_CPPv2N19AnalysisFunction_V319lastValidRowIndexDAE"></span><span id="AnalysisFunction_V3::lastValidRowIndexDA__variable"></span><span class="target" id="struct_analysis_function___v3_1a50b10963ccf3bfd7ab3efd21494dd8a9"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lastValidRowIndexDA</span></span></span><br /></dt>
+<dd><p>last valid row index for DA channels in <code class="docutils literal notranslate"><span class="pre">rawDAQWave</span></code> which will be filled with data at the end of DAQ. If the acquisition was aborted, the remaining samples beyond lastValidRowIndexDA are NaN. The total number of rows in <code class="docutils literal notranslate"><span class="pre">rawDAQWave</span></code> might be higher due to alignment requirements of the data acquisition hardware (e.g. ITC).</p>
+<p>Always <code class="docutils literal notranslate"><span class="pre">NaN</span></code> for <a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1ae48ec0d3fedbdecdcd8689acc8ff7a77"><span class="std std-ref">PRE_DAQ_EVENT</span></a>/<a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a9faf4d8b6c7aa67835f944ea31311c20"><span class="std std-ref">PRE_SET_EVENT</span></a> events. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N19AnalysisFunction_V319lastValidRowIndexADE">
+<span id="_CPPv3N19AnalysisFunction_V319lastValidRowIndexADE"></span><span id="_CPPv2N19AnalysisFunction_V319lastValidRowIndexADE"></span><span id="AnalysisFunction_V3::lastValidRowIndexAD__variable"></span><span class="target" id="struct_analysis_function___v3_1a113b49618592863d979912146a085bb3"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lastValidRowIndexAD</span></span></span><br /></dt>
+<dd><p>last valid row index for AD/TTL channels in <code class="docutils literal notranslate"><span class="pre">rawDAQWave</span></code> which will be filled with data at the end of DAQ. The total number of rows in <code class="docutils literal notranslate"><span class="pre">rawDAQWave</span></code> might be higher due to alignment requirements of the data acquisition hardware (e.g. ITC).</p>
+<p>Always <code class="docutils literal notranslate"><span class="pre">NaN</span></code> for <a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1ae48ec0d3fedbdecdcd8689acc8ff7a77"><span class="std std-ref">PRE_DAQ_EVENT</span></a>/<a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a9faf4d8b6c7aa67835f944ea31311c20"><span class="std std-ref">PRE_SET_EVENT</span></a> events. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N19AnalysisFunction_V319lastKnownRowIndexDAE">
+<span id="_CPPv3N19AnalysisFunction_V319lastKnownRowIndexDAE"></span><span id="_CPPv2N19AnalysisFunction_V319lastKnownRowIndexDAE"></span><span id="AnalysisFunction_V3::lastKnownRowIndexDA__variable"></span><span class="target" id="struct_analysis_function___v3_1a65116eb4d394638188560f72fb1d75c7"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lastKnownRowIndexDA</span></span></span><br /></dt>
+<dd><p>last written row index in <code class="docutils literal notranslate"><span class="pre">rawDAQWave</span></code>/<code class="docutils literal notranslate"><span class="pre">scaledDACWave</span></code>s DA channel(s) with already acquired data</p>
+<p>Always <code class="docutils literal notranslate"><span class="pre">NaN</span></code> for <a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1ae48ec0d3fedbdecdcd8689acc8ff7a77"><span class="std std-ref">PRE_DAQ_EVENT</span></a>/<a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a9faf4d8b6c7aa67835f944ea31311c20"><span class="std std-ref">PRE_SET_EVENT</span></a>/<a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1ae783c50bc0940785b522670d69dbc73d"><span class="std std-ref">PRE_SWEEP_CONFIG_EVENT</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N19AnalysisFunction_V319lastKnownRowIndexADE">
+<span id="_CPPv3N19AnalysisFunction_V319lastKnownRowIndexADE"></span><span id="_CPPv2N19AnalysisFunction_V319lastKnownRowIndexADE"></span><span id="AnalysisFunction_V3::lastKnownRowIndexAD__variable"></span><span class="target" id="struct_analysis_function___v3_1a2cd7f8d29afb340174f4c2ececbf8a6a"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lastKnownRowIndexAD</span></span></span><br /></dt>
+<dd><p>last written row index in <code class="docutils literal notranslate"><span class="pre">rawDAQWave</span></code>/<code class="docutils literal notranslate"><span class="pre">scaledDACWave</span></code>s AD/TTL channel(s) with already acquired data</p>
+<p>Always <code class="docutils literal notranslate"><span class="pre">NaN</span></code> for <a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1ae48ec0d3fedbdecdcd8689acc8ff7a77"><span class="std std-ref">PRE_DAQ_EVENT</span></a>/<a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a9faf4d8b6c7aa67835f944ea31311c20"><span class="std std-ref">PRE_SET_EVENT</span></a>/<a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1ae783c50bc0940785b522670d69dbc73d"><span class="std std-ref">PRE_SWEEP_CONFIG_EVENT</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N19AnalysisFunction_V316sampleIntervalDAE">
+<span id="_CPPv3N19AnalysisFunction_V316sampleIntervalDAE"></span><span id="_CPPv2N19AnalysisFunction_V316sampleIntervalDAE"></span><span id="AnalysisFunction_V3::sampleIntervalDA__variable"></span><span class="target" id="struct_analysis_function___v3_1ab3285780d8f30893eee1cb5eb4330f30"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sampleIntervalDA</span></span></span><br /></dt>
+<dd><p>sample interval of DA channel(s) in ms </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N19AnalysisFunction_V316sampleIntervalADE">
+<span id="_CPPv3N19AnalysisFunction_V316sampleIntervalADE"></span><span id="_CPPv2N19AnalysisFunction_V316sampleIntervalADE"></span><span id="AnalysisFunction_V3::sampleIntervalAD__variable"></span><span class="target" id="struct_analysis_function___v3_1ab68a2b20d96f7b642af5ea47faa782a7"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sampleIntervalAD</span></span></span><br /></dt>
+<dd><p>sample interval of AD channel(s) in ms </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filelist.html">File list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../structlist.html">Struct list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="struct_a_s_y_n_c___read_out_struct.html">Struct ASYNC_ReadOutStruct</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_active_channels.html">Struct ActiveChannels</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Struct AnalysisFunction_V3</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419AnalysisFunction_V3"><code class="docutils literal notranslate"><span class="pre">AnalysisFunction_V3</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N19AnalysisFunction_V39eventTypeE"><code class="docutils literal notranslate"><span class="pre">eventType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N19AnalysisFunction_V313scaledDACWaveE"><code class="docutils literal notranslate"><span class="pre">scaledDACWave</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N19AnalysisFunction_V39headStageE"><code class="docutils literal notranslate"><span class="pre">headStage</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N19AnalysisFunction_V37sweepNoE"><code class="docutils literal notranslate"><span class="pre">sweepNo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N19AnalysisFunction_V311sweepsInSetE"><code class="docutils literal notranslate"><span class="pre">sweepsInSet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N19AnalysisFunction_V36paramsE"><code class="docutils literal notranslate"><span class="pre">params</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N19AnalysisFunction_V319lastValidRowIndexDAE"><code class="docutils literal notranslate"><span class="pre">lastValidRowIndexDA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N19AnalysisFunction_V319lastValidRowIndexADE"><code class="docutils literal notranslate"><span class="pre">lastValidRowIndexAD</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N19AnalysisFunction_V319lastKnownRowIndexDAE"><code class="docutils literal notranslate"><span class="pre">lastKnownRowIndexDA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N19AnalysisFunction_V319lastKnownRowIndexADE"><code class="docutils literal notranslate"><span class="pre">lastKnownRowIndexAD</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N19AnalysisFunction_V316sampleIntervalDAE"><code class="docutils literal notranslate"><span class="pre">sampleIntervalDA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N19AnalysisFunction_V316sampleIntervalADE"><code class="docutils literal notranslate"><span class="pre">sampleIntervalAD</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="struct_axon_telegraph___data_struct.html">Struct AxonTelegraph_DataStruct</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_background_struct.html">Struct BackgroundStruct</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_buffered_draw_info.html">Struct BufferedDrawInfo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_c_h_i___installation_state.html">Struct CHI_InstallationState</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_check_parameters_struct.html">Struct CheckParametersStruct</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_chirp_bounds_info.html">Struct ChirpBoundsInfo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_data_configuration_result.html">Struct DataConfigurationResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_delta_control_names.html">Struct DeltaControlNames</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_dynamic_table.html">Struct DynamicTable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_e_p___epoch_creation_data.html">Struct EP_EpochCreationData</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_element_identifiers.html">Struct ElementIdentifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_formula_properties.html">Struct FormulaProperties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_general_info.html">Struct GeneralInfo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_h_d_f5_data_info.html">Struct HDF5DataInfo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_hardware_data_t_p_input.html">Struct HardwareDataTPInput</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_m_s_q___pulse_settings.html">Struct MSQ_PulseSettings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_multi_experiment_process_prefs.html">Struct MultiExperimentProcessPrefs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_n_w_b_async_parameters.html">Struct NWBAsyncParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_o_od_d_a_q_params.html">Struct OOdDAQParams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_p___pressure_d_a.html">Struct P_PressureDA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_p_a___constant_settings.html">Struct PA_ConstantSettings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_p_s_q___d_s___d_a_scale_params.html">Struct PSQ_DS_DAScaleParams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_p_s_q___pulse_settings.html">Struct PSQ_PulseSettings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_post_plot_settings.html">Struct PostPlotSettings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_pulse_average_deconv_settings.html">Struct PulseAverageDeconvSettings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_pulse_average_set_indices.html">Struct PulseAverageSetIndices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_pulse_average_settings.html">Struct PulseAverageSettings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_read_channel_params.html">Struct ReadChannelParams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_rect_d.html">Struct RectD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_s_b_e___export_settings.html">Struct SBE_ExportSettings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_s_f___execution_data.html">Struct SF_ExecutionData</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_s_f___parser_data.html">Struct SF_ParserData</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_s_f___plotter_graph_struct.html">Struct SF_PlotterGraphStruct</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_s_f___select_parameters.html">Struct SF_SelectParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_segment_parameters.html">Struct SegmentParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_subject_info.html">Struct SubjectInfo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_t_p_analysis_input.html">Struct TPAnalysisInput</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_tiled_graph_settings.html">Struct TiledGraphSettings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_time_series_properties.html">Struct TimeSeriesProperties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_toplevel_info.html">Struct ToplevelInfo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_uuid.html">Struct Uuid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_vector_data.html">Struct VectorData</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_vector_index.html">Struct VectorIndex</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_wave_location_mod.html">Struct WaveLocationMod</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct_write_channel_params.html">Struct WriteChannelParams</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="struct_active_channels.html"
+                          title="previous chapter">Struct ActiveChannels</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="struct_axon_telegraph___data_struct.html"
+                          title="next chapter">Struct AxonTelegraph_DataStruct</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="struct_axon_telegraph___data_struct.html" title="Struct AxonTelegraph_DataStruct"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="struct_active_channels.html" title="Struct ActiveChannels"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../structlist.html" >Struct list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Struct AnalysisFunction_V3</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

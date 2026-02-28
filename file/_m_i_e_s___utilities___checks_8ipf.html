@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File MIES_Utilities_Checks.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_Utilities_Conversions.ipf" href="_m_i_e_s___utilities___conversions_8ipf.html" />
+    <link rel="prev" title="File MIES_Utilities_Algorithm.ipf" href="_m_i_e_s___utilities___algorithm_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___utilities___conversions_8ipf.html" title="File MIES_Utilities_Conversions.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___utilities___algorithm_8ipf.html" title="File MIES_Utilities_Algorithm.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Utilities_Checks.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-utilities-checks-ipf">
+<span id="id1"></span><h1>File MIES_Utilities_Checks.ipf<a class="headerlink" href="#file-mies-utilities-checks-ipf" title="Link to this heading">¶</a></h1>
+<p>Utility functions that check for certain properties and return either 1 (TRUE) or 0 (FALSE) </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv48IsFinite8variable">
+<span id="_CPPv38IsFinite8variable"></span><span id="_CPPv28IsFinite8variable"></span><span id="IsFinite__variable"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1a096c8733076753f7b87aba2a96a70c38"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsFinite</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Returns 1 if var is a finite/normal number, 0 otherwise. </p>
+<p>UTF_NOINSTRUMENTATION </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv45IsNaN8variable">
+<span id="_CPPv35IsNaN8variable"></span><span id="_CPPv25IsNaN8variable"></span><span id="IsNaN__variable"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1a907650c83bf62d17af01f8c90674692c"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsNaN</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Returns 1 if var is a NaN, 0 otherwise. </p>
+<p>UTF_NOINSTRUMENTATION </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv45IsInf8variable">
+<span id="_CPPv35IsInf8variable"></span><span id="_CPPv25IsInf8variable"></span><span id="IsInf__variable"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1ae7d4e67054327450a2a08c630e3484a4"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsInf</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv45IsInf8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns 1 if var is +/- inf, 0 otherwise. </p>
+<p>UTF_NOINSTRUMENTATION </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv46IsNullP6string">
+<span id="_CPPv36IsNullP6string"></span><span id="_CPPv26IsNullP6string"></span><span id="IsNull__stringP"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1ae96078d18c5710629bd2d4b7920e4c9a"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsNull</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">str</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv46IsNullP6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns 1 if str is null, 0 otherwise. </p>
+<p>
+UTF_NOINSTRUMENTATION </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>str</strong> – must not be a SVAR</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv47IsEmpty6string">
+<span id="_CPPv37IsEmpty6string"></span><span id="_CPPv27IsEmpty6string"></span><span id="IsEmpty__string"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1add5b5662ed0b49fcef198e415372bae4"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsEmpty</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv47IsEmpty6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns one if str is empty, zero otherwise. </p>
+<p>
+UTF_NOINSTRUMENTATION </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>str</strong> – any non-null string variable or text wave element</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412WindowExists6string">
+<span id="_CPPv312WindowExists6string"></span><span id="_CPPv212WindowExists6string"></span><span id="WindowExists__string"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1a9d34d63c03290b6608d7f099baf660d3"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WindowExists</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412WindowExists6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Checks if the given name exists as window. </p>
+<p>UTF_NOINSTRUMENTATION </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417ValueCanBeWritten10WaveOrNull8variable">
+<span id="_CPPv317ValueCanBeWritten10WaveOrNull8variable"></span><span id="_CPPv217ValueCanBeWritten10WaveOrNull8variable"></span><span id="ValueCanBeWritten__WaveOrNull.variable"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1a9a4c59ec02061754aea4f88068736ce6"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValueCanBeWritten</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417ValueCanBeWritten10WaveOrNull8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Check that the given value can be stored in the wave. </p>
+<p>Does currently ignore floating point precision and ranges for integer waves </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv49IsInteger8variable">
+<span id="_CPPv39IsInteger8variable"></span><span id="_CPPv29IsInteger8variable"></span><span id="IsInteger__variable"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1a72d9059712b62572474a3ba3c26f6733"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsInteger</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Returns one if var is an integer and zero otherwise UTF_NOINSTRUMENTATION. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv46IsEven8variable">
+<span id="_CPPv36IsEven8variable"></span><span id="_CPPv26IsEven8variable"></span><span id="IsEven__variable"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1ae29f9fecbf8218b153c2ab8b97c01149"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsEven</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv46IsEven8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>UTF_NOINSTRUMENTATION. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv45IsOdd8variable">
+<span id="_CPPv35IsOdd8variable"></span><span id="_CPPv25IsOdd8variable"></span><span id="IsOdd__variable"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1aebe06dec968c468164c1401ffa3a45c1"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsOdd</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv45IsOdd8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>UTF_NOINSTRUMENTATION. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417FuncRefIsAssigned6string">
+<span id="_CPPv317FuncRefIsAssigned6string"></span><span id="_CPPv217FuncRefIsAssigned6string"></span><span id="FuncRefIsAssigned__string"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1a8a4283ac24ef15cfe852824163fa535d"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FuncRefIsAssigned</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">funcInfo</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417FuncRefIsAssigned6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Check wether the function reference points to the prototype function or to an assigned function. </p>
+<p>Due to Igor Pro limitations you need to pass the function info from <code class="docutils literal notranslate"><span class="pre">FuncRefInfo</span></code> and not the function reference itself.</p>
+<p>
+UTF_NOINSTRUMENTATION </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>1 if pointing to prototype function, 0 otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412CheckIfClose8variable8variable8variable8variable">
+<span id="_CPPv312CheckIfClose8variable8variable8variable8variable"></span><span id="_CPPv212CheckIfClose8variable8variable8variable8variable"></span><span id="CheckIfClose__variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1ad2fba114640a1e2276ebfb4c2e9607a4"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CheckIfClose</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var1</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var2</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tol</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">strong_or_weak</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412CheckIfClose8variable8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Compare two variables and determines if they are close. </p>
+<p>Based on the implementation of “Floating-point comparison algorithms” in the C++ Boost unit testing framework.</p>
+<p><p>Literature:</p>
+<p>The art of computer programming (Vol II). Donald. E. Knuth. 0-201-89684-2. Addison-Wesley Professional; 3 edition, page 234 equation (34) and (35).</p>
+</p>
+<p>
+UTF_NOINSTRUMENTATION </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>var1</strong> – first variable </p></li>
+<li><p><strong>var2</strong> – second variable </p></li>
+<li><p><strong>tol</strong> – [optional, defaults to 1e-8] tolerance </p></li>
+<li><p><strong>strong_or_weak</strong> – [optional, defaults to strong] type of condition, can be zero for weak or 1 for strong</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412CheckIfSmall8variable8variable">
+<span id="_CPPv312CheckIfSmall8variable8variable"></span><span id="_CPPv212CheckIfSmall8variable8variable"></span><span id="CheckIfSmall__variable.variable"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1a9155c2b508b88fe1d5d5891d4a08579f"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CheckIfSmall</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tol</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412CheckIfSmall8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Test if a variable is small using the inequality <span class="math notranslate nohighlight">\(  | var | &lt; | tol |  \)</span>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>var</strong> – variable </p></li>
+<li><p><strong>tol</strong> – [optional, defaults to 1e-8] tolerance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410IsTextWave4wave">
+<span id="_CPPv310IsTextWave4wave"></span><span id="_CPPv210IsTextWave4wave"></span><span id="IsTextWave__wave"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1aa3af8db33a71413dd5cf4545eba30348"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsTextWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Return 1 if the wave is a text wave, zero otherwise UTF_NOINSTRUMENTATION. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413IsNumericWave4wave">
+<span id="_CPPv313IsNumericWave4wave"></span><span id="_CPPv213IsNumericWave4wave"></span><span id="IsNumericWave__wave"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1a1fb4d79c126207e9ec0536df2682a25c"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsNumericWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Return 1 if the wave is a numeric wave, zero otherwise UTF_NOINSTRUMENTATION. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413IsWaveRefWave4wave">
+<span id="_CPPv313IsWaveRefWave4wave"></span><span id="_CPPv213IsWaveRefWave4wave"></span><span id="IsWaveRefWave__wave"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1a461bad6d5e26e867fe2c468e5d1adb66"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsWaveRefWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413IsWaveRefWave4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return 1 if the wave is a wave reference wave, zero otherwise UTF_NOINSTRUMENTATION. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419IsFloatingPointWave4wave">
+<span id="_CPPv319IsFloatingPointWave4wave"></span><span id="_CPPv219IsFloatingPointWave4wave"></span><span id="IsFloatingPointWave__wave"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1ad487ff74aa64a76d6a6288d2352126ab"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsFloatingPointWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419IsFloatingPointWave4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return 1 if the wave is a floating point wave UTF_NOINSTRUMENTATION. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425IsDoubleFloatingPointWave4wave">
+<span id="_CPPv325IsDoubleFloatingPointWave4wave"></span><span id="_CPPv225IsDoubleFloatingPointWave4wave"></span><span id="IsDoubleFloatingPointWave__wave"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1a7f9b9fbef83d8bfc4d93798f31dc0734"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsDoubleFloatingPointWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425IsDoubleFloatingPointWave4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return 1 if the wave is a double (64bit) precision floating point wave. </p>
+<p>UTF_NOINSTRUMENTATION </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425IsSingleFloatingPointWave4wave">
+<span id="_CPPv325IsSingleFloatingPointWave4wave"></span><span id="_CPPv225IsSingleFloatingPointWave4wave"></span><span id="IsSingleFloatingPointWave__wave"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1a33402815f93b8581a1ea081fe6a2ee75"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsSingleFloatingPointWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425IsSingleFloatingPointWave4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return 1 if the wave is a single (32bit) precision floating point wave. </p>
+<p>UTF_NOINSTRUMENTATION </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412IsGlobalWave4wave">
+<span id="_CPPv312IsGlobalWave4wave"></span><span id="_CPPv212IsGlobalWave4wave"></span><span id="IsGlobalWave__wave"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1abaf6ef41db7693371213c3bd86f54659"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsGlobalWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412IsGlobalWave4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return 1 if the wave is a global wave (not a null wave and not a free wave) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413IsComplexWave4wave">
+<span id="_CPPv313IsComplexWave4wave"></span><span id="_CPPv213IsComplexWave4wave"></span><span id="IsComplexWave__wave"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1abd9e3c592df8493f65b1e166e500aaba"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsComplexWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413IsComplexWave4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return 1 if the wave is a complex wave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410IsFreeWave4wave">
+<span id="_CPPv310IsFreeWave4wave"></span><span id="_CPPv210IsFreeWave4wave"></span><span id="IsFreeWave__wave"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1a1a1d3af58998e5e6754a9eab7341d955"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsFreeWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410IsFreeWave4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return true if wv is a free wave, false otherwise. </p>
+<p>UTF_NOINSTRUMENTATION </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416HasOneValidEntry4wave">
+<span id="_CPPv316HasOneValidEntry4wave"></span><span id="_CPPv216HasOneValidEntry4wave"></span><span id="HasOneValidEntry__wave"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1aeff517342d701734f3927894088d0087"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HasOneValidEntry</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416HasOneValidEntry4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return true if not all wave entries are NaN, false otherwise. </p>
+<p>UTF_NOINSTRUMENTATION </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417HasOneFiniteEntry4wave">
+<span id="_CPPv317HasOneFiniteEntry4wave"></span><span id="_CPPv217HasOneFiniteEntry4wave"></span><span id="HasOneFiniteEntry__wave"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1a53aadded2818d075f2e3a93898f033ce"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HasOneFiniteEntry</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417HasOneFiniteEntry4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return true if wave has one finite entry (not Inf, -Inf or NaN) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420HasOneNonFiniteEntry4wave">
+<span id="_CPPv320HasOneNonFiniteEntry4wave"></span><span id="_CPPv220HasOneNonFiniteEntry4wave"></span><span id="HasOneNonFiniteEntry__wave"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1a23665df48414edd7b2c0af0e5883869b"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HasOneNonFiniteEntry</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420HasOneNonFiniteEntry4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return true if wave has one infinite entry (Inf, -Inf or NaN) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414StringEndsWith6string6string">
+<span id="_CPPv314StringEndsWith6string6string"></span><span id="_CPPv214StringEndsWith6string6string"></span><span id="StringEndsWith__string.string"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1a253a74a7af9aa7291449bb0bee24417d"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StringEndsWith</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">suffix</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414StringEndsWith6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Checks if a string ends with a specific suffix. The check is case-insensitive. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>str</strong> – <strong>[in]</strong> string to check for suffix </p></li>
+<li><p><strong>suffix</strong> – <strong>[in]</strong> to check for </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>1 if str ends with suffix, 0 otherwise. If str and/or suffix are empty or null 0 is returned. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420EqualValuesOrBothNaN8variable8variable">
+<span id="_CPPv320EqualValuesOrBothNaN8variable8variable"></span><span id="_CPPv220EqualValuesOrBothNaN8variable8variable"></span><span id="EqualValuesOrBothNaN__variable.variable"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1a9d8901c0f9c73834cb49edf1e9f65451"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EqualValuesOrBothNaN</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">left</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">right</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420EqualValuesOrBothNaN8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Check wether <code class="docutils literal notranslate"><span class="pre">val1</span></code> and <code class="docutils literal notranslate"><span class="pre">val2</span></code> are equal or both are NaN. </p>
+<p>UTF_NOINSTRUMENTATION </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426LesserEqualValuesOrBothNaN8variable8variable">
+<span id="_CPPv326LesserEqualValuesOrBothNaN8variable8variable"></span><span id="_CPPv226LesserEqualValuesOrBothNaN8variable8variable"></span><span id="LesserEqualValuesOrBothNaN__variable.variable"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1aadaf0b84dd53cdc4a938f8a67c467311"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LesserEqualValuesOrBothNaN</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">left</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">right</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426LesserEqualValuesOrBothNaN8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Check wether <code class="docutils literal notranslate"><span class="pre">val1</span></code> &lt;= <code class="docutils literal notranslate"><span class="pre">val2</span></code> holds or both are NaN. </p>
+<p>UTF_NOINSTRUMENTATION </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426LargerEqualValuesOrBothNaN8variable8variable">
+<span id="_CPPv326LargerEqualValuesOrBothNaN8variable8variable"></span><span id="_CPPv226LargerEqualValuesOrBothNaN8variable8variable"></span><span id="LargerEqualValuesOrBothNaN__variable.variable"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1aa3c4b9eb59c5db2dcf5d9ac9fc92795d"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LargerEqualValuesOrBothNaN</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">left</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">right</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426LargerEqualValuesOrBothNaN8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Check wether <code class="docutils literal notranslate"><span class="pre">val1</span></code> &gt;= <code class="docutils literal notranslate"><span class="pre">val2</span></code> holds or both are NaN. </p>
+<p>UTF_NOINSTRUMENTATION </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410IsConstant4wave8variable8variable">
+<span id="_CPPv310IsConstant4wave8variable8variable"></span><span id="_CPPv210IsConstant4wave8variable8variable"></span><span id="IsConstant__wave.variable.variable"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1a55022802c4ff371d9ba636f540e5a8b2"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsConstant</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ignoreNaN</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410IsConstant4wave8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Checks wether <code class="docutils literal notranslate"><span class="pre">wv</span></code> is constant and has the value <code class="docutils literal notranslate"><span class="pre">val</span></code></p>
+<p>
+UTF_NOINSTRUMENTATION </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wv</strong> – wave to check </p></li>
+<li><p><strong>val</strong> – value to check </p></li>
+<li><p><strong>ignoreNaN</strong> – [optional, defaults to true] ignore NaN in wv</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413IsValidRegexp6string">
+<span id="_CPPv313IsValidRegexp6string"></span><span id="_CPPv213IsValidRegexp6string"></span><span id="IsValidRegexp__string"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1ab3318d688bb939b1b276c910a3f2827d"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsValidRegexp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">regexp</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413IsValidRegexp6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return true if the passed regular expression is well-formed. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428AreIntervalsIntersectingImpl8variable4wave">
+<span id="_CPPv328AreIntervalsIntersectingImpl8variable4wave"></span><span id="_CPPv228AreIntervalsIntersectingImpl8variable4wave"></span><span id="AreIntervalsIntersectingImpl__variable.wave"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1a254dde6f32cf9def6ab85ea409ecd716"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AreIntervalsIntersectingImpl</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">intervals</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428AreIntervalsIntersectingImpl8variable4wave" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424AreIntervalsIntersecting4wave">
+<span id="_CPPv324AreIntervalsIntersecting4wave"></span><span id="_CPPv224AreIntervalsIntersecting4wave"></span><span id="AreIntervalsIntersecting__wave"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1a8e5306e0278b0eb072d0a5bfcd403cb8"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AreIntervalsIntersecting</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">intervalsParam</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424AreIntervalsIntersecting4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the truth if any of the given intervals ]A, B[ intersect. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>intervalsParam</strong> – Nx2 wave with the intervals </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417HasWildcardSyntax6string">
+<span id="_CPPv317HasWildcardSyntax6string"></span><span id="_CPPv217HasWildcardSyntax6string"></span><span id="HasWildcardSyntax__string"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1ac0285da54b81390a0df1775f5c714836"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HasWildcardSyntax</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417HasWildcardSyntax6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return true if <code class="docutils literal notranslate"><span class="pre">str</span></code> is in wildcard syntax, false if not. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428MatchAgainstWildCardPatterns8WaveText6string">
+<span id="_CPPv328MatchAgainstWildCardPatterns8WaveText6string"></span><span id="_CPPv228MatchAgainstWildCardPatterns8WaveText6string"></span><span id="MatchAgainstWildCardPatterns__WaveText.string"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1a2b3ef396fe7aa2cd24b5f2847e6d90e5"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MatchAgainstWildCardPatterns</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">patterns</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">matchThis</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428MatchAgainstWildCardPatterns8WaveText6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Attempts matching against a number of wildcard patterns. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>patterns</strong> – text wave with wildcard patterns to match against </p></li>
+<li><p><strong>matchThis</strong> – string that is matched </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns 1 if matchThis was successfully matches, 0 otherwise </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425ListHasOnlyOneUniqueEntry6string6string">
+<span id="_CPPv325ListHasOnlyOneUniqueEntry6string6string"></span><span id="_CPPv225ListHasOnlyOneUniqueEntry6string6string"></span><span id="ListHasOnlyOneUniqueEntry__string.string"></span><span class="target" id="_m_i_e_s___utilities___checks_8ipf_1a365ac27e2c6991738cab01651ddced01"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ListHasOnlyOneUniqueEntry</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sep</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425ListHasOnlyOneUniqueEntry6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Check if all elements of the string list are the same. </p>
+<p>Returns true for lists with less than one element </p>
+</dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_Utilities_Checks.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv48IsFinite8variable"><code class="docutils literal notranslate"><span class="pre">IsFinite()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv45IsNaN8variable"><code class="docutils literal notranslate"><span class="pre">IsNaN()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv45IsInf8variable"><code class="docutils literal notranslate"><span class="pre">IsInf()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv46IsNullP6string"><code class="docutils literal notranslate"><span class="pre">IsNull()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv47IsEmpty6string"><code class="docutils literal notranslate"><span class="pre">IsEmpty()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412WindowExists6string"><code class="docutils literal notranslate"><span class="pre">WindowExists()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417ValueCanBeWritten10WaveOrNull8variable"><code class="docutils literal notranslate"><span class="pre">ValueCanBeWritten()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv49IsInteger8variable"><code class="docutils literal notranslate"><span class="pre">IsInteger()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv46IsEven8variable"><code class="docutils literal notranslate"><span class="pre">IsEven()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv45IsOdd8variable"><code class="docutils literal notranslate"><span class="pre">IsOdd()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417FuncRefIsAssigned6string"><code class="docutils literal notranslate"><span class="pre">FuncRefIsAssigned()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412CheckIfClose8variable8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">CheckIfClose()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412CheckIfSmall8variable8variable"><code class="docutils literal notranslate"><span class="pre">CheckIfSmall()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv410IsTextWave4wave"><code class="docutils literal notranslate"><span class="pre">IsTextWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413IsNumericWave4wave"><code class="docutils literal notranslate"><span class="pre">IsNumericWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413IsWaveRefWave4wave"><code class="docutils literal notranslate"><span class="pre">IsWaveRefWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419IsFloatingPointWave4wave"><code class="docutils literal notranslate"><span class="pre">IsFloatingPointWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425IsDoubleFloatingPointWave4wave"><code class="docutils literal notranslate"><span class="pre">IsDoubleFloatingPointWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425IsSingleFloatingPointWave4wave"><code class="docutils literal notranslate"><span class="pre">IsSingleFloatingPointWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412IsGlobalWave4wave"><code class="docutils literal notranslate"><span class="pre">IsGlobalWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413IsComplexWave4wave"><code class="docutils literal notranslate"><span class="pre">IsComplexWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv410IsFreeWave4wave"><code class="docutils literal notranslate"><span class="pre">IsFreeWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416HasOneValidEntry4wave"><code class="docutils literal notranslate"><span class="pre">HasOneValidEntry()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417HasOneFiniteEntry4wave"><code class="docutils literal notranslate"><span class="pre">HasOneFiniteEntry()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420HasOneNonFiniteEntry4wave"><code class="docutils literal notranslate"><span class="pre">HasOneNonFiniteEntry()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414StringEndsWith6string6string"><code class="docutils literal notranslate"><span class="pre">StringEndsWith()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420EqualValuesOrBothNaN8variable8variable"><code class="docutils literal notranslate"><span class="pre">EqualValuesOrBothNaN()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426LesserEqualValuesOrBothNaN8variable8variable"><code class="docutils literal notranslate"><span class="pre">LesserEqualValuesOrBothNaN()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426LargerEqualValuesOrBothNaN8variable8variable"><code class="docutils literal notranslate"><span class="pre">LargerEqualValuesOrBothNaN()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv410IsConstant4wave8variable8variable"><code class="docutils literal notranslate"><span class="pre">IsConstant()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413IsValidRegexp6string"><code class="docutils literal notranslate"><span class="pre">IsValidRegexp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428AreIntervalsIntersectingImpl8variable4wave"><code class="docutils literal notranslate"><span class="pre">AreIntervalsIntersectingImpl()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424AreIntervalsIntersecting4wave"><code class="docutils literal notranslate"><span class="pre">AreIntervalsIntersecting()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417HasWildcardSyntax6string"><code class="docutils literal notranslate"><span class="pre">HasWildcardSyntax()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428MatchAgainstWildCardPatterns8WaveText6string"><code class="docutils literal notranslate"><span class="pre">MatchAgainstWildCardPatterns()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425ListHasOnlyOneUniqueEntry6string6string"><code class="docutils literal notranslate"><span class="pre">ListHasOnlyOneUniqueEntry()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___utilities___algorithm_8ipf.html"
+                          title="previous chapter">File MIES_Utilities_Algorithm.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___utilities___conversions_8ipf.html"
+                          title="next chapter">File MIES_Utilities_Conversions.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___utilities___conversions_8ipf.html" title="File MIES_Utilities_Conversions.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___utilities___algorithm_8ipf.html" title="File MIES_Utilities_Algorithm.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Utilities_Checks.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>NWB version 2 &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Testpulse Analysis Algorithm" href="../../TPAnalysis_algorithm.html" />
+    <link rel="prev" title="NWB version 1" href="nwb1.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../TPAnalysis_algorithm.html" title="Testpulse Analysis Algorithm"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="nwb1.html" title="NWB version 1"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Readme.html" accesskey="U">Igor Pro module for reading and writing NeurodataWithoutBorder files</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">NWB version 2</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="nwb-version-2">
+<h1>NWB version 2<a class="headerlink" href="#nwb-version-2" title="Link to this heading">¶</a></h1>
+<p>Recent NWB (version 2) schema specifications are <a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema">tracked in a separate
+repository</a>.  The
+schema is implemented in version 2.2.0
+(62c73400565afc28f67ede4f2e86023c33167cf8).</p>
+<p>The complete schema tree is described in a hdmf compatible format and
+replicated in this repository under <cite>namespace/{schema}/{yaml,json}/*</cite>. The
+JSON files are stored in the nwb file upon storage. A build script exists to
+generate the JSON files from their YAML files: <cite>update_specifications.sh</cite>.</p>
+<p>The following deviations from <a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/tree/2.2.0/core">NWB schema 2.2.0</a> were
+recorded:</p>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="w"> </span>ce4ff3351e9f3979e24f3620f5c3795e98556a58 ndx-MIES (v0.1.0~1)
+<span class="w"> </span>ade50ef33446beb3c7df4c6f1072ae0e821b5115 specifications (2.9.0)
+
+# diff namespace core upstream vs IPNWB specifications for nwb.base
+# diff namespace core upstream vs IPNWB specifications for nwb.behavior
+# diff namespace core upstream vs IPNWB specifications for nwb.device
+# diff namespace core upstream vs IPNWB specifications for nwb.ecephys
+# diff namespace core upstream vs IPNWB specifications for nwb.epoch
+# diff namespace core upstream vs IPNWB specifications for nwb.file
+# diff namespace core upstream vs IPNWB specifications for nwb.icephys
+# diff namespace core upstream vs IPNWB specifications for nwb.image
+# diff namespace core upstream vs IPNWB specifications for nwb.misc
+# diff namespace core upstream vs IPNWB specifications for nwb.namespace
+<span class="gu">2,60c2,63</span>
+<span class="gd">&lt; - name: core</span>
+<span class="gd">&lt;   doc: NWB namespace</span>
+<span class="gd">&lt;   author:</span>
+<span class="gd">&lt;   - Andrew Tritt</span>
+<span class="gd">&lt;   - Oliver Ruebel</span>
+<span class="gd">&lt;   - Ryan Ly</span>
+<span class="gd">&lt;   - Ben Dichter</span>
+<span class="gd">&lt;   - Keith Godfrey</span>
+<span class="gd">&lt;   - Jeff Teeters</span>
+<span class="gd">&lt;   contact:</span>
+<span class="gd">&lt;   - ajtritt@lbl.gov</span>
+<span class="gd">&lt;   - oruebel@lbl.gov</span>
+<span class="gd">&lt;   - rly@lbl.gov</span>
+<span class="gd">&lt;   - bdichter@lbl.gov</span>
+<span class="gd">&lt;   - keithg@alleninstitute.org</span>
+<span class="gd">&lt;   - jteeters@berkeley.edu</span>
+<span class="gd">&lt;   full_name: NWB core</span>
+<span class="gd">&lt;   schema:</span>
+<span class="gd">&lt;   - namespace: hdmf-common</span>
+<span class="gd">&lt;   - doc: This source module contains base data types used throughout the NWB data</span>
+<span class="gd">&lt;       format.</span>
+<span class="gd">&lt;     source: nwb.base.yaml</span>
+<span class="gd">&lt;     title: Base data types</span>
+<span class="gd">&lt;   - doc: This source module contains neurodata_types for device data.</span>
+<span class="gd">&lt;     source: nwb.device.yaml</span>
+<span class="gd">&lt;     title: Devices</span>
+<span class="gd">&lt;   - doc: This source module contains neurodata_types for epoch data.</span>
+<span class="gd">&lt;     source: nwb.epoch.yaml</span>
+<span class="gd">&lt;     title: Epochs</span>
+<span class="gd">&lt;   - doc: This source module contains neurodata_types for image data.</span>
+<span class="gd">&lt;     source: nwb.image.yaml</span>
+<span class="gd">&lt;     title: Image data</span>
+<span class="gd">&lt;   - doc: Main NWB file specification.</span>
+<span class="gd">&lt;     source: nwb.file.yaml</span>
+<span class="gd">&lt;     title: NWB file</span>
+<span class="gd">&lt;   - doc: Miscellaneous types.</span>
+<span class="gd">&lt;     source: nwb.misc.yaml</span>
+<span class="gd">&lt;     title: Miscellaneous neurodata_types.</span>
+<span class="gd">&lt;   - doc: This source module contains neurodata_types for behavior data.</span>
+<span class="gd">&lt;     source: nwb.behavior.yaml</span>
+<span class="gd">&lt;     title: Behavior</span>
+<span class="gd">&lt;   - doc: This source module contains neurodata_types for extracellular electrophysiology</span>
+<span class="gd">&lt;       data.</span>
+<span class="gd">&lt;     source: nwb.ecephys.yaml</span>
+<span class="gd">&lt;     title: Extracellular electrophysiology</span>
+<span class="gd">&lt;   - doc: This source module contains neurodata_types for intracellular electrophysiology</span>
+<span class="gd">&lt;       data.</span>
+<span class="gd">&lt;     source: nwb.icephys.yaml</span>
+<span class="gd">&lt;     title: Intracellular electrophysiology</span>
+<span class="gd">&lt;   - doc: This source module contains neurodata_types for opto-genetics data.</span>
+<span class="gd">&lt;     source: nwb.ogen.yaml</span>
+<span class="gd">&lt;     title: Optogenetics</span>
+<span class="gd">&lt;   - doc: This source module contains neurodata_types for optical physiology data.</span>
+<span class="gd">&lt;     source: nwb.ophys.yaml</span>
+<span class="gd">&lt;     title: Optical physiology</span>
+<span class="gd">&lt;   - doc: This source module contains neurodata_type for retinotopy data.</span>
+<span class="gd">&lt;     source: nwb.retinotopy.yaml</span>
+<span class="gd">&lt;     title: Retinotopy</span>
+<span class="gd">&lt;   version: &quot;2.9.0&quot;</span>
+<span class="gs">---</span>
+<span class="gi">&gt;   - author:</span>
+<span class="gi">&gt;       - Andrew Tritt</span>
+<span class="gi">&gt;       - Oliver Ruebel</span>
+<span class="gi">&gt;       - Ryan Ly</span>
+<span class="gi">&gt;       - Ben Dichter</span>
+<span class="gi">&gt;       - Keith Godfrey</span>
+<span class="gi">&gt;       - Jeff Teeters</span>
+&gt;
+<span class="gi">&gt;     contact:</span>
+<span class="gi">&gt;       - ajtritt@lbl.gov</span>
+<span class="gi">&gt;       - oruebel@lbl.gov</span>
+<span class="gi">&gt;       - rly@lbl.gov</span>
+<span class="gi">&gt;       - bdichter@lbl.gov</span>
+<span class="gi">&gt;       - keithg@alleninstitute.org</span>
+<span class="gi">&gt;       - jteeters@berkeley.edu</span>
+&gt;
+<span class="gi">&gt;     doc: NWB namespace</span>
+&gt;
+<span class="gi">&gt;     full_name: NWB core</span>
+&gt;
+<span class="gi">&gt;     name: core</span>
+&gt;
+<span class="gi">&gt;     schema:</span>
+<span class="gi">&gt;       - namespace: hdmf-common</span>
+<span class="gi">&gt;       - doc: This source module contains base data types used throughout the NWB data format.</span>
+<span class="gi">&gt;         source: nwb.base</span>
+<span class="gi">&gt;         title: Base data types</span>
+<span class="gi">&gt;       - doc: This source module contains neurodata_types for device data.</span>
+<span class="gi">&gt;         source: nwb.device</span>
+<span class="gi">&gt;         title: Devices</span>
+<span class="gi">&gt;       - doc: This source module contains neurodata_types for epoch data.</span>
+<span class="gi">&gt;         source: nwb.epoch</span>
+<span class="gi">&gt;         title: Epochs</span>
+<span class="gi">&gt;       - doc: This source module contains neurodata_types for image data.</span>
+<span class="gi">&gt;         source: nwb.image</span>
+<span class="gi">&gt;         title: Image data</span>
+<span class="gi">&gt;       - doc: Main NWB file specification.</span>
+<span class="gi">&gt;         source: nwb.file</span>
+<span class="gi">&gt;         title: NWB file</span>
+<span class="gi">&gt;       - doc: Miscellaneous types.</span>
+<span class="gi">&gt;         source: nwb.misc</span>
+<span class="gi">&gt;         title: Miscellaneous neurodata_types.</span>
+<span class="gi">&gt;       - doc: This source module contains neurodata_types for behavior data.</span>
+<span class="gi">&gt;         source: nwb.behavior</span>
+<span class="gi">&gt;         title: Behavior</span>
+<span class="gi">&gt;       - doc: This source module contains neurodata_types for extracellular electrophysiology data.</span>
+<span class="gi">&gt;         source: nwb.ecephys</span>
+<span class="gi">&gt;         title: Extracellular electrophysiology</span>
+<span class="gi">&gt;       - doc: This source module contains neurodata_types for intracellular electrophysiology data.</span>
+<span class="gi">&gt;         source: nwb.icephys</span>
+<span class="gi">&gt;         title: Intracellular electrophysiology</span>
+<span class="gi">&gt;       - doc: This source module contains neurodata_types for opto-genetics data.</span>
+<span class="gi">&gt;         source: nwb.ogen</span>
+<span class="gi">&gt;         title: Optogenetics</span>
+<span class="gi">&gt;       - doc: This source module contains neurodata_types for optical physiology data.</span>
+<span class="gi">&gt;         source: nwb.ophys</span>
+<span class="gi">&gt;         title: Optical physiology</span>
+<span class="gi">&gt;       - doc: This source module contains neurodata_type for retinotopy data.</span>
+<span class="gi">&gt;         source: nwb.retinotopy</span>
+<span class="gi">&gt;         title: Retinotopy</span>
+&gt;
+<span class="gi">&gt;     version: 2.9.0</span>
+# diff namespace core upstream vs IPNWB specifications for nwb.ogen
+# diff namespace core upstream vs IPNWB specifications for nwb.ophys
+# diff namespace core upstream vs IPNWB specifications for nwb.retinotopy
+# diff namespace hdmf-common upstream vs IPNWB specifications for base
+# diff namespace hdmf-common upstream vs IPNWB specifications for experimental
+# diff namespace hdmf-common upstream vs IPNWB specifications for namespace
+<span class="gu">1d0</span>
+<span class="gd">&lt; # hdmf-schema-language=2.0.2</span>
+<span class="gu">3,26d1</span>
+<span class="gd">&lt; - name: hdmf-common</span>
+<span class="gd">&lt;   doc: Common data structures provided by HDMF</span>
+<span class="gd">&lt;   author:</span>
+<span class="gd">&lt;   - Andrew Tritt</span>
+<span class="gd">&lt;   - Oliver Ruebel</span>
+<span class="gd">&lt;   - Ryan Ly</span>
+<span class="gd">&lt;   - Ben Dichter</span>
+<span class="gd">&lt;   contact:</span>
+<span class="gd">&lt;   - ajtritt@lbl.gov</span>
+<span class="gd">&lt;   - oruebel@lbl.gov</span>
+<span class="gd">&lt;   - rly@lbl.gov</span>
+<span class="gd">&lt;   - bdichter@lbl.gov</span>
+<span class="gd">&lt;   full_name: HDMF Common</span>
+<span class="gd">&lt;   schema:</span>
+<span class="gd">&lt;   - doc: base data types</span>
+<span class="gd">&lt;     source: base.yaml</span>
+<span class="gd">&lt;     title: Base data types</span>
+<span class="gd">&lt;   - doc: data types for a column-based table</span>
+<span class="gd">&lt;     source: table.yaml</span>
+<span class="gd">&lt;     title: Table data types</span>
+<span class="gd">&lt;   - doc: data types for different types of sparse matrices</span>
+<span class="gd">&lt;     source: sparse.yaml</span>
+<span class="gd">&lt;     title: Sparse data types</span>
+<span class="gd">&lt;   version: 1.8.0</span>
+28,51c3,52
+<span class="gd">&lt; - name: hdmf-experimental</span>
+<span class="gd">&lt;   doc: Experimental data structures provided by HDMF. These are not guaranteed to be available in the future.</span>
+<span class="gd">&lt;   author:</span>
+<span class="gd">&lt;   - Andrew Tritt</span>
+<span class="gd">&lt;   - Oliver Ruebel</span>
+<span class="gd">&lt;   - Ryan Ly</span>
+<span class="gd">&lt;   - Ben Dichter</span>
+<span class="gd">&lt;   - Matthew Avaylon</span>
+<span class="gd">&lt;   contact:</span>
+<span class="gd">&lt;   - ajtritt@lbl.gov</span>
+<span class="gd">&lt;   - oruebel@lbl.gov</span>
+<span class="gd">&lt;   - rly@lbl.gov</span>
+<span class="gd">&lt;   - bdichter@lbl.gov</span>
+<span class="gd">&lt;   - mavaylon@lbl.gov</span>
+<span class="gd">&lt;   full_name: HDMF Experimental</span>
+<span class="gd">&lt;   schema:</span>
+<span class="gd">&lt;   - namespace: hdmf-common</span>
+<span class="gd">&lt;   - doc: Experimental data types</span>
+<span class="gd">&lt;     source: experimental.yaml</span>
+<span class="gd">&lt;     title: Experimental data types</span>
+<span class="gd">&lt;   - doc: data types for storing references to web accessible resources</span>
+<span class="gd">&lt;     source: resources.yaml</span>
+<span class="gd">&lt;     title: Resource reference data types</span>
+<span class="gd">&lt;   version: 0.5.0</span>
+<span class="gs">---</span>
+<span class="gi">&gt;   - author:</span>
+<span class="gi">&gt;       - Andrew Tritt</span>
+<span class="gi">&gt;       - Oliver Ruebel</span>
+<span class="gi">&gt;       - Ryan Ly</span>
+<span class="gi">&gt;       - Ben Dichter</span>
+<span class="gi">&gt;     contact:</span>
+<span class="gi">&gt;       - ajtritt@lbl.gov</span>
+<span class="gi">&gt;       - oruebel@lbl.gov</span>
+<span class="gi">&gt;       - rly@lbl.gov</span>
+<span class="gi">&gt;       - bdichter@lbl.gov</span>
+<span class="gi">&gt;     doc: Common data structures provided by HDMF</span>
+<span class="gi">&gt;     full_name: HDMF Common</span>
+<span class="gi">&gt;     name: hdmf-common</span>
+<span class="gi">&gt;     schema:</span>
+<span class="gi">&gt;       - doc: base data types</span>
+<span class="gi">&gt;         source: base</span>
+<span class="gi">&gt;         title: Base data types</span>
+<span class="gi">&gt;       - doc: data types for a column-based table</span>
+<span class="gi">&gt;         source: table</span>
+<span class="gi">&gt;         title: Table data types</span>
+<span class="gi">&gt;       - doc: data types for different types of sparse matrices</span>
+<span class="gi">&gt;         source: sparse</span>
+<span class="gi">&gt;         title: Sparse data types</span>
+<span class="gi">&gt;     version: 1.8.0</span>
+&gt;
+<span class="gi">&gt;   - author:</span>
+<span class="gi">&gt;       - Andrew Tritt</span>
+<span class="gi">&gt;       - Oliver Ruebel</span>
+<span class="gi">&gt;       - Ryan Ly</span>
+<span class="gi">&gt;       - Ben Dichter</span>
+<span class="gi">&gt;       - Matthew Avaylon</span>
+<span class="gi">&gt;     contact:</span>
+<span class="gi">&gt;       - ajtritt@lbl.gov</span>
+<span class="gi">&gt;       - oruebel@lbl.gov</span>
+<span class="gi">&gt;       - rly@lbl.gov</span>
+<span class="gi">&gt;       - bdichter@lbl.gov</span>
+<span class="gi">&gt;       - mavaylon@lbl.gov</span>
+<span class="gi">&gt;     doc: Experimental data structures provided by HDMF. These are not guaranteed to be available in the</span>
+<span class="gi">&gt;       future.</span>
+<span class="gi">&gt;     full_name: HDMF Experimental</span>
+<span class="gi">&gt;     name: hdmf-experimental</span>
+<span class="gi">&gt;     schema:</span>
+<span class="gi">&gt;       - namespace: hdmf-common</span>
+<span class="gi">&gt;       - doc: Experimental data types</span>
+<span class="gi">&gt;         source: experimental</span>
+<span class="gi">&gt;         title: Experimental data types</span>
+<span class="gi">&gt;       - doc: data types for storing references to web accessible resources</span>
+<span class="gi">&gt;         source: resources</span>
+<span class="gi">&gt;         title: Resource reference data types</span>
+<span class="gi">&gt;     version: 0.5.0</span>
+# diff namespace hdmf-common upstream vs IPNWB specifications for resources
+# diff namespace hdmf-common upstream vs IPNWB specifications for sparse
+# diff namespace hdmf-common upstream vs IPNWB specifications for table
+# diff namespace ndx-mies upstream vs IPNWB specifications for namespace
+# diff namespace ndx-mies upstream vs IPNWB specifications for ndx-mies.extensions
+</pre></div>
+</div>
+<p>The most important core properties are for intracellular ephys.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">groups</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">neurodata_type_def</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PatchClampSeries</span>
+<span class="w">  </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TimeSeries</span>
+<span class="w">  </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">An abstract base class for patch-clamp data - stimulus or response,</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">current or voltage.</span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stimulus_description</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Protocol/stimulus name for this patch-clamp dataset.</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sweep_number</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uint32</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Sweep number, allows to group different PatchClampSeries together.</span>
+<span class="w">    </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">  </span><span class="nt">datasets</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">data</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">numeric</span>
+<span class="w">    </span><span class="nt">dims</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num_times</span>
+<span class="w">    </span><span class="nt">shape</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Recorded voltage or current.</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unit</span>
+<span class="w">      </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+<span class="w">      </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Base unit of measurement for working with the data. Actual stored values are</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">not necessarily stored in these units. To access the data in these units,</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">multiply &#39;data&#39; by &#39;conversion&#39; and add &#39;offset&#39;.</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gain</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float32</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Gain of the recording, in units Volt/Amp (v-clamp) or Volt/Volt (c-clamp).</span>
+<span class="w">    </span><span class="nt">quantity</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;?&#39;</span>
+<span class="w">  </span><span class="nt">links</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">electrode</span>
+<span class="w">    </span><span class="nt">target_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IntracellularElectrode</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Link to IntracellularElectrode object that describes the electrode that was</span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">used to apply or record this data.</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">neurodata_type_def</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CurrentClampSeries</span>
+<span class="w">  </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PatchClampSeries</span>
+<span class="w">  </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Voltage data from an intracellular current-clamp recording. A</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">corresponding CurrentClampStimulusSeries (stored separately as a stimulus) is</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">used to store the current injected.</span>
+<span class="w">  </span><span class="nt">datasets</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">data</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Recorded voltage.</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unit</span>
+<span class="w">      </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">volts</span>
+<span class="w">      </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Base unit of measurement for working with the data. which is fixed to &#39;volts&#39;.</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">Actual stored values are not necessarily stored in these units. To access the data in these units,</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">multiply &#39;data&#39; by &#39;conversion&#39; and add &#39;offset&#39;.</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bias_current</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float32</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Bias current, in amps.</span>
+<span class="w">    </span><span class="nt">quantity</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;?&#39;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bridge_balance</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float32</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Bridge balance, in ohms.</span>
+<span class="w">    </span><span class="nt">quantity</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;?&#39;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">capacitance_compensation</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float32</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Capacitance compensation, in farads.</span>
+<span class="w">    </span><span class="nt">quantity</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;?&#39;</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">neurodata_type_def</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IZeroClampSeries</span>
+<span class="w">  </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CurrentClampSeries</span>
+<span class="w">  </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Voltage data from an intracellular recording when all current</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">and amplifier settings are off (i.e., CurrentClampSeries fields will be zero).</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">There is no CurrentClampStimulusSeries associated with an IZero series because</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">the amplifier is disconnected and no stimulus can reach the cell.</span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stimulus_description</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">An IZeroClampSeries has no stimulus, so this attribute is automatically set to &quot;N/A&quot;</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">N/A</span>
+<span class="w">  </span><span class="nt">datasets</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bias_current</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float32</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Bias current, in amps, fixed to 0.0.</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bridge_balance</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float32</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Bridge balance, in ohms, fixed to 0.0.</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">capacitance_compensation</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float32</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Capacitance compensation, in farads, fixed to 0.0.</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">neurodata_type_def</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CurrentClampStimulusSeries</span>
+<span class="w">  </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PatchClampSeries</span>
+<span class="w">  </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Stimulus current applied during current clamp recording.</span>
+<span class="w">  </span><span class="nt">datasets</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">data</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Stimulus current applied.</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unit</span>
+<span class="w">      </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">amperes</span>
+<span class="w">      </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Base unit of measurement for working with the data. which is fixed to &#39;amperes&#39;.</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">Actual stored values are not necessarily stored in these units. To access the data in these units,</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">multiply &#39;data&#39; by &#39;conversion&#39; and add &#39;offset&#39;.</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">neurodata_type_def</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">VoltageClampSeries</span>
+<span class="w">  </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PatchClampSeries</span>
+<span class="w">  </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Current data from an intracellular voltage-clamp recording. A</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">corresponding VoltageClampStimulusSeries (stored separately as a stimulus) is</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">used to store the voltage injected.</span>
+<span class="w">  </span><span class="nt">datasets</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">data</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Recorded current.</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unit</span>
+<span class="w">      </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">amperes</span>
+<span class="w">      </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Base unit of measurement for working with the data. which is fixed to &#39;amperes&#39;.</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">Actual stored values are not necessarily stored in these units. To access the data in these units,</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">multiply &#39;data&#39; by &#39;conversion&#39; and add &#39;offset&#39;.</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">capacitance_fast</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float32</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Fast capacitance, in farads.</span>
+<span class="w">    </span><span class="nt">quantity</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;?&#39;</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unit</span>
+<span class="w">      </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">farads</span>
+<span class="w">      </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Unit of measurement for capacitance_fast, which is fixed to &#39;farads&#39;.</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">capacitance_slow</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float32</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Slow capacitance, in farads.</span>
+<span class="w">    </span><span class="nt">quantity</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;?&#39;</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unit</span>
+<span class="w">      </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">farads</span>
+<span class="w">      </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Unit of measurement for capacitance_fast, which is fixed to &#39;farads&#39;.</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resistance_comp_bandwidth</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float32</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Resistance compensation bandwidth, in hertz.</span>
+<span class="w">    </span><span class="nt">quantity</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;?&#39;</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unit</span>
+<span class="w">      </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hertz</span>
+<span class="w">      </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Unit of measurement for resistance_comp_bandwidth, which is fixed to &#39;hertz&#39;.</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resistance_comp_correction</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float32</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Resistance compensation correction, in percent.</span>
+<span class="w">    </span><span class="nt">quantity</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;?&#39;</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unit</span>
+<span class="w">      </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">percent</span>
+<span class="w">      </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Unit of measurement for resistance_comp_correction, which is fixed to &#39;percent&#39;.</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resistance_comp_prediction</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float32</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Resistance compensation prediction, in percent.</span>
+<span class="w">    </span><span class="nt">quantity</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;?&#39;</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unit</span>
+<span class="w">      </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">percent</span>
+<span class="w">      </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Unit of measurement for resistance_comp_prediction, which is fixed to &#39;percent&#39;.</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">whole_cell_capacitance_comp</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float32</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Whole cell capacitance compensation, in farads.</span>
+<span class="w">    </span><span class="nt">quantity</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;?&#39;</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unit</span>
+<span class="w">      </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">farads</span>
+<span class="w">      </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Unit of measurement for whole_cell_capacitance_comp, which is fixed to &#39;farads&#39;.</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">whole_cell_series_resistance_comp</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float32</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Whole cell series resistance compensation, in ohms.</span>
+<span class="w">    </span><span class="nt">quantity</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;?&#39;</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unit</span>
+<span class="w">      </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ohms</span>
+<span class="w">      </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Unit of measurement for whole_cell_series_resistance_comp, which is fixed to &#39;ohms&#39;.</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">neurodata_type_def</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">VoltageClampStimulusSeries</span>
+<span class="w">  </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PatchClampSeries</span>
+<span class="w">  </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Stimulus voltage applied during a voltage clamp recording.</span>
+<span class="w">  </span><span class="nt">datasets</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">data</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Stimulus voltage applied.</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unit</span>
+<span class="w">      </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">volts</span>
+<span class="w">      </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Base unit of measurement for working with the data. which is fixed to &#39;volts&#39;.</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">Actual stored values are not necessarily stored in these units. To access the data in these units,</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">multiply &#39;data&#39; by &#39;conversion&#39; and add &#39;offset&#39;.</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">neurodata_type_def</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IntracellularElectrode</span>
+<span class="w">  </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NWBContainer</span>
+<span class="w">  </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">An intracellular electrode and its metadata.</span>
+<span class="w">  </span><span class="nt">datasets</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cell_id</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unique ID of the cell</span>
+<span class="w">    </span><span class="nt">quantity</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;?&#39;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">description</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Description of electrode (e.g.,  whole-cell, sharp, etc.).</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">filtering</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Electrode specific filtering.</span>
+<span class="w">    </span><span class="nt">quantity</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;?&#39;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">initial_access_resistance</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Initial access resistance.</span>
+<span class="w">    </span><span class="nt">quantity</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;?&#39;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">location</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Location of the electrode. Specify the area, layer, comments on estimation</span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">of area/layer, stereotaxic coordinates if in vivo, etc. Use standard atlas</span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">names for anatomical regions when possible.</span>
+<span class="w">    </span><span class="nt">quantity</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;?&#39;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resistance</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Electrode resistance, in ohms.</span>
+<span class="w">    </span><span class="nt">quantity</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;?&#39;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">seal</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Information about seal used for recording.</span>
+<span class="w">    </span><span class="nt">quantity</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;?&#39;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">slice</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Information about slice used for recording.</span>
+<span class="w">    </span><span class="nt">quantity</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;?&#39;</span>
+<span class="w">  </span><span class="nt">links</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">device</span>
+<span class="w">    </span><span class="nt">target_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Device</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Device that was used to record from this electrode.</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">neurodata_type_def</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SweepTable</span>
+<span class="w">  </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DynamicTable</span>
+<span class="w">  </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;[DEPRECATED]</span><span class="nv"> </span><span class="s">Table</span><span class="nv"> </span><span class="s">used</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">group</span><span class="nv"> </span><span class="s">different</span><span class="nv"> </span><span class="s">PatchClampSeries.</span><span class="nv"> </span><span class="s">SweepTable</span>
+<span class="w">        </span><span class="s">is</span><span class="nv"> </span><span class="s">being</span><span class="nv"> </span><span class="s">replaced</span><span class="nv"> </span><span class="s">by</span><span class="nv"> </span><span class="s">IntracellularRecordingsTable</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">SimultaneousRecordingsTable</span>
+<span class="w">        </span><span class="s">tables.</span><span class="nv"> </span><span class="s">Additional</span><span class="nv"> </span><span class="s">SequentialRecordingsTable,</span><span class="nv"> </span><span class="s">RepetitionsTable,</span><span class="nv"> </span><span class="s">and</span>
+<span class="w">        </span><span class="s">ExperimentalConditions</span><span class="nv"> </span><span class="s">tables</span><span class="nv"> </span><span class="s">provide</span><span class="nv"> </span><span class="s">enhanced</span><span class="nv"> </span><span class="s">support</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">experiment</span><span class="nv"> </span><span class="s">metadata.&#39;</span>
+<span class="w">  </span><span class="nt">datasets</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sweep_number</span>
+<span class="w">    </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">VectorData</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uint32</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Sweep number of the PatchClampSeries in that row.</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">series</span>
+<span class="w">    </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">VectorData</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">target_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PatchClampSeries</span>
+<span class="w">      </span><span class="nt">reftype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">The PatchClampSeries with the sweep number in that row.</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">series_index</span>
+<span class="w">    </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">VectorIndex</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Index for series.</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">neurodata_type_def</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IntracellularElectrodesTable</span>
+<span class="w">  </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DynamicTable</span>
+<span class="w">  </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Table for storing intracellular electrode related metadata.</span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">description</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Table for storing intracellular electrode related metadata.</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Description of what is in this dynamic table.</span>
+<span class="w">  </span><span class="nt">datasets</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">electrode</span>
+<span class="w">    </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">VectorData</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">target_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IntracellularElectrode</span>
+<span class="w">      </span><span class="nt">reftype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Column for storing the reference to the intracellular electrode.</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">neurodata_type_def</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IntracellularStimuliTable</span>
+<span class="w">  </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DynamicTable</span>
+<span class="w">  </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Table for storing intracellular stimulus related metadata.</span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">description</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Table for storing intracellular stimulus related metadata.</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Description of what is in this dynamic table.</span>
+<span class="w">  </span><span class="nt">datasets</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stimulus</span>
+<span class="w">    </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TimeSeriesReferenceVectorData</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Column storing the reference to the recorded stimulus for the recording (rows).</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stimulus_template</span>
+<span class="w">    </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TimeSeriesReferenceVectorData</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Column storing the reference to the stimulus template for the recording (rows).</span>
+<span class="w">    </span><span class="nt">quantity</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;?&#39;</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">neurodata_type_def</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IntracellularResponsesTable</span>
+<span class="w">  </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DynamicTable</span>
+<span class="w">  </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Table for storing intracellular response related metadata.</span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">description</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Table for storing intracellular response related metadata.</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Description of what is in this dynamic table.</span>
+<span class="w">  </span><span class="nt">datasets</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">response</span>
+<span class="w">    </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TimeSeriesReferenceVectorData</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Column storing the reference to the recorded response for the recording (rows)</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">neurodata_type_def</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IntracellularRecordingsTable</span>
+<span class="w">  </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AlignedDynamicTable</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">intracellular_recordings</span>
+<span class="w">  </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A table to group together a stimulus and response from a single electrode and</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">a single simultaneous recording. Each row in the table represents a single recording</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">consisting typically of a stimulus and a corresponding response. In some cases,</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">however, only a stimulus or a response is recorded as part of an experiment.</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">In this case, both the stimulus and response will point to the same TimeSeries</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">while the idx_start and count of the invalid column will be set to -1, thus, indicating</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">that no values have been recorded for the stimulus or response, respectively.</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">Note, a recording MUST contain at least a stimulus or a response. Typically the</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">stimulus and response are PatchClampSeries. However, the use of AD/DA channels</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">that are not associated to an electrode is also common in intracellular electrophysiology,</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">in which case other TimeSeries may be used.</span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">description</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A table to group together a stimulus and response from a single electrode</span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">and a single simultaneous recording and for storing metadata about the intracellular</span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">recording.</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Description of the contents of this table. Inherited from AlignedDynamicTable</span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">and overwritten here to fix the value of the attribute.</span>
+<span class="w">  </span><span class="nt">groups</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">electrodes</span>
+<span class="w">    </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IntracellularElectrodesTable</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Table for storing intracellular electrode related metadata.</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stimuli</span>
+<span class="w">    </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IntracellularStimuliTable</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Table for storing intracellular stimulus related metadata.</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">responses</span>
+<span class="w">    </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IntracellularResponsesTable</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Table for storing intracellular response related metadata.</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">neurodata_type_def</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SimultaneousRecordingsTable</span>
+<span class="w">  </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DynamicTable</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">simultaneous_recordings</span>
+<span class="w">  </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A table for grouping different intracellular recordings from the IntracellularRecordingsTable</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">table together that were recorded simultaneously from different electrodes.</span>
+<span class="w">  </span><span class="nt">datasets</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">recordings</span>
+<span class="w">    </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DynamicTableRegion</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A reference to one or more rows in the IntracellularRecordingsTable table.</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">table</span>
+<span class="w">      </span><span class="nt">dtype</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">target_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IntracellularRecordingsTable</span>
+<span class="w">        </span><span class="nt">reftype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span>
+<span class="w">      </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Reference to the IntracellularRecordingsTable table that this table region</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">applies to. This specializes the attribute inherited from DynamicTableRegion</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">to fix the type of table that can be referenced here.</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">recordings_index</span>
+<span class="w">    </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">VectorIndex</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Index dataset for the recordings column.</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">neurodata_type_def</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SequentialRecordingsTable</span>
+<span class="w">  </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DynamicTable</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequential_recordings</span>
+<span class="w">  </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A table for grouping different sequential recordings from the SimultaneousRecordingsTable</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">table together. This is typically used to group together sequential recordings</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">where a sequence of stimuli of the same type with varying parameters have</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">been presented in a sequence.</span>
+<span class="w">  </span><span class="nt">datasets</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">simultaneous_recordings</span>
+<span class="w">    </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DynamicTableRegion</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A reference to one or more rows in the SimultaneousRecordingsTable table.</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">table</span>
+<span class="w">      </span><span class="nt">dtype</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">target_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SimultaneousRecordingsTable</span>
+<span class="w">        </span><span class="nt">reftype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span>
+<span class="w">      </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Reference to the SimultaneousRecordingsTable table that this table region</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">applies to. This specializes the attribute inherited from DynamicTableRegion</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">to fix the type of table that can be referenced here.</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">simultaneous_recordings_index</span>
+<span class="w">    </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">VectorIndex</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Index dataset for the simultaneous_recordings column.</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stimulus_type</span>
+<span class="w">    </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">VectorData</span>
+<span class="w">    </span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">The type of stimulus used for the sequential recording.</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">neurodata_type_def</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RepetitionsTable</span>
+<span class="w">  </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DynamicTable</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">repetitions</span>
+<span class="w">  </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A table for grouping different sequential intracellular recordings together.</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">With each SequentialRecording typically representing a particular type of stimulus,</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">the RepetitionsTable table is typically used to group sets of stimuli applied</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">in sequence.</span>
+<span class="w">  </span><span class="nt">datasets</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequential_recordings</span>
+<span class="w">    </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DynamicTableRegion</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A reference to one or more rows in the SequentialRecordingsTable table.</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">table</span>
+<span class="w">      </span><span class="nt">dtype</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">target_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SequentialRecordingsTable</span>
+<span class="w">        </span><span class="nt">reftype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span>
+<span class="w">      </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Reference to the SequentialRecordingsTable table that this table region</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">applies to. This specializes the attribute inherited from DynamicTableRegion</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">to fix the type of table that can be referenced here.</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequential_recordings_index</span>
+<span class="w">    </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">VectorIndex</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Index dataset for the sequential_recordings column.</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">neurodata_type_def</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ExperimentalConditionsTable</span>
+<span class="w">  </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DynamicTable</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">experimental_conditions</span>
+<span class="w">  </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A table for grouping different intracellular recording repetitions together</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">that belong to the same experimental condition.</span>
+<span class="w">  </span><span class="nt">datasets</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">repetitions</span>
+<span class="w">    </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DynamicTableRegion</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A reference to one or more rows in the RepetitionsTable table.</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">table</span>
+<span class="w">      </span><span class="nt">dtype</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">target_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RepetitionsTable</span>
+<span class="w">        </span><span class="nt">reftype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span>
+<span class="w">      </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Reference to the RepetitionsTable table that this table region applies</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">to. This specializes the attribute inherited from DynamicTableRegion to fix</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">the type of table that can be referenced here.</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">repetitions_index</span>
+<span class="w">    </span><span class="nt">neurodata_type_inc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">VectorIndex</span>
+<span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Index dataset for the repetitions column.</span>
+</pre></div>
+</div>
+<p>The includes a Dynamic Table at <cite>/general/intracellular_ephys/sweep_table</cite> to
+store the sweep numbers of a list of data sets.  The table is column centric
+and consists of the two columns <cite>sweep_number</cite> and <cite>series</cite>. Series contains
+links to datasets. The <cite>sweep_number</cite> for a dataset is stored under the same
+row index, specified either by the Dataset <cite>id</cite> (zero-based indices) or by
+<cite>series_index</cite> (one-based indices). The sweep_table is intended to easily find
+datasets that belong to a given sweep number.  A sweep table is loaded by
+<cite>LoadSweepTable</cite> and created using <cite>AppendToSweepTable</cite></p>
+<a class=""
+               data-lightbox="group-e55c7669-d271-4632-bb14-b0bf9b18df4b"
+               href="../../_images/sweep_table1.png"
+               title=""
+               data-title=""
+               
+               ><img src="../../_images/sweep_table1.png"
+                     class=""
+                     width="100%"
+                     height="auto"
+                     alt="The structure of the sweep table dataset."/>
+                </a></section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../grouplist.html">Group list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../Readme.html#main-features">Main features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Readme.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Readme.html#examples">Examples</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../Readme.html#nwb-file-format-description">NWB file format description</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../Readme.html#nwb-file-organization">NWB File Organization</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="nwb1.html">NWB version 1</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">NWB version 2</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../Readme.html#nwb-schema-upgrade">NWB schema upgrade</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Readme.html#online-resources">Online Resources</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="nwb1.html"
+                          title="previous chapter">NWB version 1</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="../../TPAnalysis_algorithm.html"
+                          title="next chapter">Testpulse Analysis Algorithm</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../TPAnalysis_algorithm.html" title="Testpulse Analysis Algorithm"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="nwb1.html" title="NWB version 1"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Readme.html" >Igor Pro module for reading and writing NeurodataWithoutBorder files</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">NWB version 2</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

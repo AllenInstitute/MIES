@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File MIES_AnalysisFunctions.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_AnalysisFunctions_Dashboard.ipf" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html" />
+    <link rel="prev" title="File MIES_AnalysisFunctionPrototypes.ipf" href="_m_i_e_s___analysis_function_prototypes_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___analysis_functions___dashboard_8ipf.html" title="File MIES_AnalysisFunctions_Dashboard.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___analysis_function_prototypes_8ipf.html" title="File MIES_AnalysisFunctionPrototypes.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_AnalysisFunctions.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-analysisfunctions-ipf">
+<span id="id1"></span><h1>File MIES_AnalysisFunctions.ipf<a class="headerlink" href="#file-mies-analysisfunctions-ipf" title="Link to this heading">¶</a></h1>
+<p><strong>AF</strong> Analysis functions to be called during data acquisition </p>
+<p>
+Users can implement functions which are called at certain events for each data acquisition cycle. See <a class="reference internal" href="#_m_i_e_s___analysis_functions_8ipf_1a91a20802057919358c1a50a5b739597a"><span class="std std-ref">TestAnalysisFunction_V3()</span></a> for an example.<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>MIES_AnalysisFunctionPrototypes.ipf</p>
+</div>
+</p>
+<p><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1AnalysisFunction_V3DescriptionTable"></span> <p><a class=""
+               data-lightbox="group-be6925f8-c04c-42d6-8ed0-637064eccebf"
+               href="../_images/analysis-functions-calls-during-RA-stages1.svg"
+               title=""
+               data-title=""
+               
+               ><img src="../_images/analysis-functions-calls-during-RA-stages1.svg"
+                     class="align-center"
+                     width="300px"
+                     height="auto"
+                     alt=""/>
+                </a><table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Event</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Specialities</p></th>
+<th class="head"><p>User epochs</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Pre DAQ</p></td>
+<td><p>Before any DAQ occurs</p></td>
+<td><p>Called before the settings are validated completely, only the
+analysis parameters are validated if present. With Indexing ON,
+only the analysis function of the first stimset will receive
+that event.</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Pre Set</p></td>
+<td><p>Before a new set starts</p></td>
+<td><p>None</p></td>
+<td><p>Write</p></td>
+</tr>
+<tr class="row-even"><td><p>Pre Sweep Config</p></td>
+<td><p>Before the sweep is configured</p></td>
+<td><p>None</p></td>
+<td><p>Write</p></td>
+</tr>
+<tr class="row-odd"><td><p>Mid Sweep</p></td>
+<td><p>Each time when new data is polled</p></td>
+<td><p>Available for background DAQ only.
+Will always be called at least once and
+also with the full stimset acquired.</p></td>
+<td><p>Write</p></td>
+</tr>
+<tr class="row-even"><td><p>Post Sweep</p></td>
+<td><p>After each sweep (before possible ITI pause)</p></td>
+<td><p>None</p></td>
+<td><p>Read/Write</p></td>
+</tr>
+<tr class="row-odd"><td><p>Post Set</p></td>
+<td><p>After a <em>full</em> set has been acquired</p></td>
+<td><p>This event is not always reached as the user might not acquire
+all steps of a set. With indexing, locked and unlocked, only
+the post set events for fully acquired stimsets are reached.</p></td>
+<td><p>Read/Write</p></td>
+</tr>
+<tr class="row-even"><td><p>Post DAQ</p></td>
+<td><p>After DAQ has finished and before potential
+“TP after DAQ”</p></td>
+<td><p>None</p></td>
+<td><p>No</p></td>
+</tr>
+</tbody>
+</table>
+<p>User epochs will only be recorded in events which support them, see <a class="reference internal" href="../epoch_information.html#user-epochs-doc"><span class="std std-ref">User epochs</span></a> for more information about user epochs.</p>
+</p>
+</p>
+<p>Useful helper functions are defined in MIES_AnalysisFunctionHelpers.ipf.</p>
+<p>The Post/Pre Sweep/Set/DAQ functions are <em>not</em> executed if a currently running sweep is aborted. Changing the stimset in the Post DAQ event is only possible without indexing active.</p>
+<p><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1AnalysisFunctionReturnTypes"></span>Analysis function return types</p>
+<p>Some event types support a range of different return types which let the user decide what should happen next. See also <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1AnalysisFuncReturnTypesConstants"><span class="std std-ref">AnalysisFuncReturnTypesConstants</span></a>. The first analysis function returning with a special value requesting a DAQ stop or preventing it from starting will immediately do so, thus subsequent analysis functions for other active headstage will not run.</p>
+<p><table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Value</p></th>
+<th class="head"><p>Event Types</p></th>
+<th class="head"><p>Action</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>NaN</p></td>
+<td><p>All</p></td>
+<td><p>Nothing</p></td>
+</tr>
+<tr class="row-odd"><td><p>0</p></td>
+<td><p>All</p></td>
+<td><p>Nothing</p></td>
+</tr>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>Pre DAQ</p></td>
+<td><p>DAQ is prevented to start</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>Pre Set</p></td>
+<td><p>DAQ is stopped</p></td>
+</tr>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>Pre Sweep Config</p></td>
+<td><p>DAQ is stopped</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_CPPv429ANALYSIS_FUNC_RET_REPURP_TIME" title="ANALYSIS_FUNC_RET_REPURP_TIME"><code class="xref cpp cpp-var docutils literal notranslate"><span class="pre">ANALYSIS_FUNC_RET_REPURP_TIME</span></code></a></p></td>
+<td><p>Mid Sweep</p></td>
+<td><p>Current sweep is immediately stopped. Left over time is repurposed for ITI.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_CPPv428ANALYSIS_FUNC_RET_EARLY_STOP" title="ANALYSIS_FUNC_RET_EARLY_STOP"><code class="xref cpp cpp-var docutils literal notranslate"><span class="pre">ANALYSIS_FUNC_RET_EARLY_STOP</span></code></a></p></td>
+<td><p>Mid Sweep</p></td>
+<td><p>Current sweep is immediately stopped without honouring the left over time in a special way.</p></td>
+</tr>
+</tbody>
+</table>
+</p>
+<p><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1AnalysisFunctionParameters"></span>Analysis function user parameters (V3 only)</p>
+<p>For some analysis functions it is beneficial to send in additional data depending on the stimset. This is supported by adding parameters and their values via <a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html#_m_i_e_s___analysis_function_helpers_8ipf_1a4bca60887ac721a99a960cb00abd1dec"><span class="std std-ref">AFH_AddAnalysisParameter()</span></a> to the stimset, or using the Wavebuilder GUI, and then querying them with the help of <a class="reference internal" href="../group/group___analysis_function_parameter_helpers.html#group___analysis_function_parameter_helpers"><span class="std std-ref">Analysis Helper functions for dealing with user parameters</span></a>. The parameters are stored serialized in the <code class="docutils literal notranslate"><span class="pre">WPT</span></code> wave, see <a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html#_m_i_e_s___wave_data_folder_getters_8ipf_1aafefa3e98bab8e2cc26cc1606a70bd8a"><span class="std std-ref">GetWaveBuilderWaveTextParam()</span></a> for the exact format. See <a class="reference internal" href="#_m_i_e_s___analysis_functions_8ipf_1a91a20802057919358c1a50a5b739597a"><span class="std std-ref">TestAnalysisFunction_V3()</span></a> for an example implementation.</p>
+<p>If you want to propose a list of parameters which should/must be present, define an additional function named like your analysis function but suffixed with <code class="docutils literal notranslate"><span class="pre">_GetParams</span></code> and return a comma separated list of names. Adding the type is also possible via <code class="docutils literal notranslate"><span class="pre">$name:$type</span></code> syntax. The list of parameter names and types is then checked before DAQ. The supplied names are taken to be required by default, optional parameters, and their types, must be enclosed with <code class="docutils literal notranslate"><span class="pre">[]</span></code>. The list at <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a20205925aea4ef8dc60c6abd7854e693"><span class="std std-ref">ANALYSIS_FUNCTION_PARAMS_TYPES</span></a> holds all valid types. Case does not matter for the parameter names.</p>
+<p>The optional function <code class="docutils literal notranslate"><span class="pre">_CheckParam</span></code> allows you to validate passed parameters. In case of a valid parameter it must return an emtpy string and an error message in case of failure. Parameters which don’t pass can neither be added to stimsets nor can they be used for data acquisition. All required, optional and present parameters are passed into the check function. Passing in the present parameters as well allows for dynamic parameter names not known beforehand.</p>
+<p>The optional function <code class="docutils literal notranslate"><span class="pre">_GetHelp</span></code> allows you to create per parameter help text which is shown in the Wavebuilder.</p>
+<p>Example:</p>
+<p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kr">Function</span><span class="w"> </span>MyAnalysisFunction(<span class="kt">string</span><span class="w"> </span>device,<span class="w"> </span><span class="kt">struct</span><span class="w"> </span>AnalysisFunction_V3&amp;<span class="w"> </span>s)
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="kr">End</span>
+
+<span class="kr">Function</span>/S<span class="w"> </span>MyAnalysisFunction_GetParams()
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;param1:variable,[optParam1:wave]&quot;</span>
+<span class="kr">End</span>
+
+<span class="kr">Function</span>/S<span class="w"> </span>MyAnalysisFunction_CheckParam(<span class="kt">string</span><span class="w"> </span>name,<span class="w"> </span><span class="kt">struct</span><span class="w"> </span>CheckParametersStruct&amp;<span class="w"> </span>s)
+<span class="w">    </span><span class="kt">variable</span><span class="w"> </span>value
+
+<span class="w">    </span><span class="k">strswitch</span>(name)
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="s">&quot;param1&quot;</span>:
+<span class="w">            </span>value<span class="w"> </span>=<span class="w"> </span>AFH_GetAnalysisParamNumerical(name,<span class="w"> </span>s.params)
+<span class="w">            </span><span class="k">if</span>(!IsFinite(value)<span class="w"> </span>||<span class="w"> </span>!(value<span class="w"> </span>&gt;=<span class="w"> </span>0<span class="w"> </span>&amp;&amp;<span class="w"> </span>value<span class="w"> </span>&lt;= 100))
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;Needs to be between 0 and 100.&quot;</span>
+<span class="w">            </span><span class="k">endif</span>
+<span class="w">            </span><span class="k">break</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="s">&quot;optParam1&quot;</span>:
+<span class="w">            </span><span class="kt">WAVE</span>/Z<span class="w"> </span>wv<span class="w"> </span>=<span class="w"> </span>AFH_GetAnalysisParamWave(name,<span class="w"> </span>s.params)
+<span class="w">            </span><span class="k">if</span>(!<span class="nf">WaveExists</span>(wv)<span class="w"> </span>||<span class="w"> </span>!IsFloatingPointWave(wv))
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;Needs to be an existing floating point wave.&quot;</span>
+<span class="w">            </span><span class="k">endif</span>
+<span class="w">            </span><span class="k">break</span>
+<span class="w">    </span><span class="k">endswitch</span>
+
+<span class="w">    </span><span class="c1">// default to passing for other parameters</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;&quot;</span>
+<span class="kr">End</span>
+
+<span class="kr">Function</span>/S<span class="w"> </span>MyAnalysisFunction_GetHelp(<span class="kt">string</span><span class="w"> </span>name)
+
+<span class="w">    </span><span class="k">strswitch</span>(name)
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="s">&quot;param1&quot;</span>:
+<span class="w">             </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;This parameter helps in finding pink unicorns&quot;</span>
+<span class="w">             </span><span class="k">break</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="s">&quot;optParam1&quot;</span>:
+<span class="w">             </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;This parameter delivers food right to your door&quot;</span>
+<span class="w">             </span><span class="k">break</span>
+<span class="w">        </span><span class="k">default</span>:
+<span class="w">             </span>FATAL_ERROR(<span class="w"> </span><span class="s">&quot;Unimplemented for parameter &quot;</span><span class="w"> </span>+<span class="w"> </span>name)
+<span class="w">             </span><span class="k">break</span>
+<span class="w">    </span><span class="k">endswitch</span>
+<span class="kr">End</span>
+</pre></div>
+</div>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-initial-parameters-for-stimulation">Initial parameters for stimulation</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv414DEFAULT_DEVICE">
+<span id="_CPPv314DEFAULT_DEVICE"></span><span id="_CPPv214DEFAULT_DEVICE"></span><span id="DEFAULT_DEVICE__stringC"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1ab4a06a4b0c81f46bc6e327d7de4a0a8e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DEFAULT_DEVICE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;ITC18USB_Dev_0&quot;</span></span><a class="headerlink" href="#_CPPv414DEFAULT_DEVICE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>device device </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv414STIM_SET_LOCAL">
+<span id="_CPPv314STIM_SET_LOCAL"></span><span id="_CPPv214STIM_SET_LOCAL"></span><span id="STIM_SET_LOCAL__stringC"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1adb1297a79d8cb10bd30e82f228caed7e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">STIM_SET_LOCAL</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;PulseTrain_150Hz_DA_0&quot;</span></span><a class="headerlink" href="#_CPPv414STIM_SET_LOCAL" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Initial stimulus set. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv49VM1_LOCAL">
+<span id="_CPPv39VM1_LOCAL"></span><span id="_CPPv29VM1_LOCAL"></span><span id="VM1_LOCAL__doubleC"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1ab3c0534a24300466edbc18860df8dba0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VM1_LOCAL</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="m"><span class="pre">55</span></span><a class="headerlink" href="#_CPPv49VM1_LOCAL" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Initial holding potential. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv49VM2_LOCAL">
+<span id="_CPPv39VM2_LOCAL"></span><span id="_CPPv29VM2_LOCAL"></span><span id="VM2_LOCAL__doubleC"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1a2fcdfbc7bf83abcc26e8b6d8a60b1468"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VM2_LOCAL</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="m"><span class="pre">85</span></span><a class="headerlink" href="#_CPPv49VM2_LOCAL" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Second holding potential to switch to. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv411SCALE_LOCAL">
+<span id="_CPPv311SCALE_LOCAL"></span><span id="_CPPv211SCALE_LOCAL"></span><span id="SCALE_LOCAL__doubleC"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1a40e571e8b87648c985af2aff4228b573"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SCALE_LOCAL</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">70</span></span><a class="headerlink" href="#_CPPv411SCALE_LOCAL" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Stimulus amplitude. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv416NUM_SWEEPS_LOCAL">
+<span id="_CPPv316NUM_SWEEPS_LOCAL"></span><span id="_CPPv216NUM_SWEEPS_LOCAL"></span><span id="NUM_SWEEPS_LOCAL__doubleC"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1ac183df39126cfd799d5a82030f3f4955"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NUM_SWEEPS_LOCAL</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">6</span></span><a class="headerlink" href="#_CPPv416NUM_SWEEPS_LOCAL" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Number of sweeps to acquire. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv49ITI_LOCAL">
+<span id="_CPPv39ITI_LOCAL"></span><span id="_CPPv29ITI_LOCAL"></span><span id="ITI_LOCAL__doubleC"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1a6abaf3311fdc2b461f03ed1f32ff85dd"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ITI_LOCAL</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">15</span></span><a class="headerlink" href="#_CPPv49ITI_LOCAL" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Inter-trial-interval. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-initial-settings-for-ooddaq-stimulation">Initial settings for oodDAQ stimulation</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv410POST_DELAY">
+<span id="_CPPv310POST_DELAY"></span><span id="_CPPv210POST_DELAY"></span><span id="POST_DELAY__doubleC"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1a5ce58134ce74b1d4335eadcc188c6367"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">POST_DELAY</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">150</span></span><a class="headerlink" href="#_CPPv410POST_DELAY" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Delay after stimulation event in which no other event can occur in ms. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423TestAnalysisFunction_V16string8variable4wave8variable">
+<span id="_CPPv323TestAnalysisFunction_V16string8variable4wave8variable"></span><span id="_CPPv223TestAnalysisFunction_V16string8variable4wave8variable"></span><span id="TestAnalysisFunction_V1__string.variable.wave.variable"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1a42208c8e04b86af6dfc0605cf929e3cb"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TestAnalysisFunction_V1</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">eventType</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">DAQDataWave</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423TestAnalysisFunction_V16string8variable4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423TestAnalysisFunction_V26string8variable4wave8variable8variable">
+<span id="_CPPv323TestAnalysisFunction_V26string8variable4wave8variable8variable"></span><span id="_CPPv223TestAnalysisFunction_V26string8variable4wave8variable8variable"></span><span id="TestAnalysisFunction_V2__string.variable.wave.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1a17eaccc02ea797f2f13e7813d68ba874"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TestAnalysisFunction_V2</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">eventType</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">DAQDataWave</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">realDataLength</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423TestAnalysisFunction_V26string8variable4wave8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423TestAnalysisFunction_V36stringP19AnalysisFunction_V3">
+<span id="_CPPv323TestAnalysisFunction_V36stringP19AnalysisFunction_V3"></span><span id="_CPPv223TestAnalysisFunction_V36stringP19AnalysisFunction_V3"></span><span id="TestAnalysisFunction_V3__string.AnalysisFunction_V3P"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1a91a20802057919358c1a50a5b739597a"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TestAnalysisFunction_V3</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv419AnalysisFunction_V3" title="AnalysisFunction_V3"><span class="n"><span class="pre">AnalysisFunction_V3</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423TestAnalysisFunction_V36stringP19AnalysisFunction_V3" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424MeasureMidSweepTiming_V36stringP19AnalysisFunction_V3">
+<span id="_CPPv324MeasureMidSweepTiming_V36stringP19AnalysisFunction_V3"></span><span id="_CPPv224MeasureMidSweepTiming_V36stringP19AnalysisFunction_V3"></span><span id="MeasureMidSweepTiming_V3__string.AnalysisFunction_V3P"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1a62f74151ff49f293eaac148f6fb4599e"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MeasureMidSweepTiming_V3</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv419AnalysisFunction_V3" title="AnalysisFunction_V3"><span class="n"><span class="pre">AnalysisFunction_V3</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424MeasureMidSweepTiming_V36stringP19AnalysisFunction_V3" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Measure the time between mid sweep calls. </p>
+<p>Used mainly for debugging. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410Enforce_VC6string8variable4wave8variable8variable">
+<span id="_CPPv310Enforce_VC6string8variable4wave8variable8variable"></span><span id="_CPPv210Enforce_VC6string8variable4wave8variable8variable"></span><span id="Enforce_VC__string.variable.wave.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1a1f9eb5cf83246d34c10fbb4731dc49f8"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Enforce_VC</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">eventType</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">DAQDataWave</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">realDataLength</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410Enforce_VC6string8variable4wave8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410Enforce_IC6string8variable4wave8variable8variable">
+<span id="_CPPv310Enforce_IC6string8variable4wave8variable8variable"></span><span id="_CPPv210Enforce_IC6string8variable4wave8variable8variable"></span><span id="Enforce_IC__string.variable.wave.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1a531d7094ed6c42f450f3e6c2c569ef24"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Enforce_IC</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">eventType</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">DAQDataWave</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">realDataLength</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410Enforce_IC6string8variable4wave8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420SetStimConfig_Vclamp6string8variable4wave8variable">
+<span id="_CPPv320SetStimConfig_Vclamp6string8variable4wave8variable"></span><span id="_CPPv220SetStimConfig_Vclamp6string8variable4wave8variable"></span><span id="SetStimConfig_Vclamp__string.variable.wave.variable"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1a335914c4eeb08576208d4db23e546313"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetStimConfig_Vclamp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">eventType</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">DAQDataWave</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420SetStimConfig_Vclamp6string8variable4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Force active headstages into voltage clamp. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420SetStimConfig_Iclamp6string8variable4wave8variable">
+<span id="_CPPv320SetStimConfig_Iclamp6string8variable4wave8variable"></span><span id="_CPPv220SetStimConfig_Iclamp6string8variable4wave8variable"></span><span id="SetStimConfig_Iclamp__string.variable.wave.variable"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1abeff275aed0fa86fa5fc35152871ad52"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetStimConfig_Iclamp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">eventType</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">DAQDataWave</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420SetStimConfig_Iclamp6string8variable4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Force active headstages into current clamp. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422ChangeHoldingPotential6string8variable4wave8variable">
+<span id="_CPPv322ChangeHoldingPotential6string8variable4wave8variable"></span><span id="_CPPv222ChangeHoldingPotential6string8variable4wave8variable"></span><span id="ChangeHoldingPotential__string.variable.wave.variable"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1a4758de2d3f91616bec692b9651b9a591"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ChangeHoldingPotential</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">eventType</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">DAQDataWave</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422ChangeHoldingPotential6string8variable4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Change holding potential midway through stim set. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411LastStimSet6string8variable4wave8variable">
+<span id="_CPPv311LastStimSet6string8variable4wave8variable"></span><span id="_CPPv211LastStimSet6string8variable4wave8variable"></span><span id="LastStimSet__string.variable.wave.variable"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1ab8a9f90c8617189747c745aefbd1e29a"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LastStimSet</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">eventType</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">DAQDataWave</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411LastStimSet6string8variable4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Print last Stim Set run and headstage mode and holding potential. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412StimParamGUIv">
+<span id="_CPPv312StimParamGUIv"></span><span id="_CPPv212StimParamGUIv"></span><span id="StimParamGUI"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1a4eaeed1c1d5d83a1d693697eacd0639e"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StimParamGUI</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412StimParamGUIv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>GUI to set initial stimulus parameters using <a class="reference internal" href="#_m_i_e_s___analysis_functions_8ipf_1a99ae73836d2ef8a55667aaa67707d5ea"><span class="std std-ref">SetStimParam()</span></a> and begin data acquisition. NOTE: DATA ACQUISITION IS INTIATED AT THE END OF FUNCTION! </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412SetStimParam6string8variable8variable8variable8variable">
+<span id="_CPPv312SetStimParam6string8variable8variable8variable8variable"></span><span id="_CPPv212SetStimParam6string8variable8variable8variable8variable"></span><span id="SetStimParam__string.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1a99ae73836d2ef8a55667aaa67707d5ea"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetStimParam</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stimSet</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Vm1</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Scale</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Sweeps</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ITI</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412SetStimParam6string8variable8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Called by StimParamGUI to set initial stimulus parameters. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stimSet</strong> – Stimulus set to run </p></li>
+<li><p><strong>Vm1</strong> – Holding potential </p></li>
+<li><p><strong>Scale</strong> – Stimulus amplitude in mV </p></li>
+<li><p><strong>Sweeps</strong> – Number of sweeps </p></li>
+<li><p><strong>ITI</strong> – Inter-trial-interval </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410setHolding8variable">
+<span id="_CPPv310setHolding8variable"></span><span id="_CPPv210setHolding8variable"></span><span id="setHolding__variable"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1a0d771c01655b70f322149078b487ee1e"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setHolding</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Vm1</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410setHolding8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Set holding potential for active headstages. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Vm1</strong> – Holding potential </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413setVClampModev">
+<span id="_CPPv313setVClampModev"></span><span id="_CPPv213setVClampModev"></span><span id="setVClampMode"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1a2ee8a10c2d3b8f588f74ecff4871abcc"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setVClampMode</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413setVClampModev" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Set active headstages into V-clamp. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413setIClampModev">
+<span id="_CPPv313setIClampModev"></span><span id="_CPPv213setIClampModev"></span><span id="setIClampMode"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1ace2f408ab3904804d16c6c97f09d069d"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setIClampMode</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413setIClampModev" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Set active headstages into I-clamp. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413switchHolding8variable">
+<span id="_CPPv313switchHolding8variable"></span><span id="_CPPv213switchHolding8variable"></span><span id="switchHolding__variable"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1a38c23bdb8dba898658d8257a220d37e7"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">switchHolding</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Vm2</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413switchHolding8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Change holding potential on active headstages to Vm2. Switch occurs after X/2 number of data sweeps. If X!/2 switchSweep = floor(X/2) </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Vm2</strong> – Holding potential to switch to </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410InitoodDAQv">
+<span id="_CPPv310InitoodDAQv"></span><span id="_CPPv210InitoodDAQv"></span><span id="InitoodDAQ"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1a73e99f9018a58e937b43bc84bbebf68e"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InitoodDAQ</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410InitoodDAQv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Initialize oodDAQ settings. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414LastStimSetRunv">
+<span id="_CPPv314LastStimSetRunv"></span><span id="_CPPv214LastStimSetRunv"></span><span id="LastStimSetRun"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1a0c892ac46643e77fa26e24efd9d2a68c"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LastStimSetRun</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414LastStimSetRunv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Print last full stim set aqcuired. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422TestPrematureSweepStop6string8variable4wave8variable8variable">
+<span id="_CPPv322TestPrematureSweepStop6string8variable4wave8variable8variable"></span><span id="_CPPv222TestPrematureSweepStop6string8variable4wave8variable8variable"></span><span id="TestPrematureSweepStop__string.variable.wave.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1afe3629c932ee5ccb5ad76f7b736e1675"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TestPrematureSweepStop</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">eventType</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">DAQDataWave</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">realDataLength</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422TestPrematureSweepStop6string8variable4wave8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Mid sweep analysis function which stops the sweeps and repurposes the left over time at the 20th call. </p>
+<p>This function needs to be set for Pre DAQ, Mid Sweep and Post Sweep Event. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420preDAQ_MP_mainConfig6string8variable4wave8variable8variable">
+<span id="_CPPv320preDAQ_MP_mainConfig6string8variable4wave8variable8variable"></span><span id="_CPPv220preDAQ_MP_mainConfig6string8variable4wave8variable8variable"></span><span id="preDAQ_MP_mainConfig__string.variable.wave.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1ace0073279e7acb6d7798a3f2e7848d54"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">preDAQ_MP_mainConfig</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">eventType</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">DAQDataWave</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">realDataLength</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420preDAQ_MP_mainConfig6string8variable4wave8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417preDAQ_MP_IfMixed6string8variable4wave8variable8variable">
+<span id="_CPPv317preDAQ_MP_IfMixed6string8variable4wave8variable8variable"></span><span id="_CPPv217preDAQ_MP_IfMixed6string8variable4wave8variable8variable"></span><span id="preDAQ_MP_IfMixed__string.variable.wave.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1ad38895547f4736c7207d43c2fed239ac"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">preDAQ_MP_IfMixed</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">eventType</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">DAQDataWave</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">realDataLength</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417preDAQ_MP_IfMixed6string8variable4wave8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422preDAQ_MP_ChirpBlowout6string8variable4wave8variable8variable">
+<span id="_CPPv322preDAQ_MP_ChirpBlowout6string8variable4wave8variable8variable"></span><span id="_CPPv222preDAQ_MP_ChirpBlowout6string8variable4wave8variable8variable"></span><span id="preDAQ_MP_ChirpBlowout__string.variable.wave.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1a920385fd3aa39b7c18e99c5226c216ce"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">preDAQ_MP_ChirpBlowout</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">eventType</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">DAQDataWave</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">realDataLength</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422preDAQ_MP_ChirpBlowout6string8variable4wave8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413AdjustDAScale6string8variable4wave8variable8variable">
+<span id="_CPPv313AdjustDAScale6string8variable4wave8variable8variable"></span><span id="_CPPv213AdjustDAScale6string8variable4wave8variable8variable"></span><span id="AdjustDAScale__string.variable.wave.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1a31fa4935538b5646025ac970672a38a2"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AdjustDAScale</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">eventType</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">DAQDataWave</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">realDataLength</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413AdjustDAScale6string8variable4wave8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Analysis function to set different “DA Scale” values for a sweep. </p>
+<p>Prerequisites:<ul class="simple">
+<li><p>Stimset with multiple but identical sweeps and testpulse-like shape. The number of sweeps must be larger than the number of rows in the DAScales wave below.</p></li>
+<li><p>This stimset must have this analysis function set for the “Pre DAQ” and the “Post Sweep” Event</p></li>
+<li><p>Does currently nothing for “Mid Sweep” Event</p></li>
+<li><p>Does not support DA/AD channels not associated with a MIES headstage (aka unassociated DA/AD Channels)</p></li>
+<li><p>All active headstages must be in “Current Clamp” </p></li>
+</ul>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413FitResistance6string8variable8variable8variable">
+<span id="_CPPv313FitResistance6string8variable8variable8variable"></span><span id="_CPPv213FitResistance6string8variable8variable8variable"></span><span id="FitResistance__string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1a0f541bc0e8496d5498881fa2baa54034"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FitResistance</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">showPlot</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">anaFuncType</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413FitResistance6string8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Plot the resistance of the sweeps of the same SCI</p>
+<p>Usually called by PSQ_AdjustDAScale(). </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415SetDAScaleModOp6string8variable8variable8variable6string8variable8variable8variable">
+<span id="_CPPv315SetDAScaleModOp6string8variable8variable8variable6string8variable8variable8variable"></span><span id="_CPPv215SetDAScaleModOp6string8variable8variable8variable6string8variable8variable8variable"></span><span id="SetDAScaleModOp__string.variable.variable.variable.string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1aa270b745ade0da1a0bb39a7e4b49b490"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetDAScaleModOp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">modifier</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">operator</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">invert</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">roundTopA</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">limitCheck</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415SetDAScaleModOp6string8variable8variable8variable6string8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Helper for setting the DAScale, see also <a class="reference internal" href="#_m_i_e_s___analysis_functions_8ipf_1abe124349282d0654e3fb13ac8d343218"><span class="std std-ref">SetDAScale()</span></a></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410SetDAScale6string8variable8variable8variable8variable8variable8variable8variable">
+<span id="_CPPv310SetDAScale6string8variable8variable8variable8variable8variable8variable8variable"></span><span id="_CPPv210SetDAScale6string8variable8variable8variable8variable8variable8variable8variable"></span><span id="SetDAScale__string.variable.variable.variable.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1abe124349282d0654e3fb13ac8d343218"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetDAScale</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">absolute</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">relative</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">offset</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">roundTopA</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">limitCheck</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410SetDAScale6string8variable8variable8variable8variable8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Set the DAScale value of the given headstage. </p>
+<p>The limit check assumes that the next sweep is the next sweep of the current stimset (aka has a set count + 1).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>headstage</strong> – MIES headstage </p></li>
+<li><p><strong>sweepNo</strong> – Sweep number </p></li>
+<li><p><strong>absolute</strong> – (optional) DAScale value in <code class="docutils literal notranslate"><span class="pre">A</span></code> (Amperes) </p></li>
+<li><p><strong>relative</strong> – (optional) relative DAScale modifier </p></li>
+<li><p><strong>offset</strong> – (optional) offset DAScale value </p></li>
+<li><p><strong>roundTopA</strong> – (optional, defaults to false) round the set DAScale to integer pA values </p></li>
+<li><p><strong>limitCheck</strong> – (optional, defaults to true) check if the new DAScale value would be out of range</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>0 on sucessful limits check, 1 on out-of-range and NaN if the limits check was skipped </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428ReachTargetVoltage_GetParamsv">
+<span id="_CPPv328ReachTargetVoltage_GetParamsv"></span><span id="_CPPv228ReachTargetVoltage_GetParamsv"></span><span id="ReachTargetVoltage_GetParams"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1add0716c2e0ddc65bbe9173db93157d94"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReachTargetVoltage_GetParams</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428ReachTargetVoltage_GetParamsv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a list of required parameters. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426ReachTargetVoltage_GetHelp6string">
+<span id="_CPPv326ReachTargetVoltage_GetHelp6string"></span><span id="_CPPv226ReachTargetVoltage_GetHelp6string"></span><span id="ReachTargetVoltage_GetHelp__string"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1a6a241f9cc4e211e2a6608bf3872ee05b"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReachTargetVoltage_GetHelp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426ReachTargetVoltage_GetHelp6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429ReachTargetVoltage_CheckParam6stringP21CheckParametersStruct">
+<span id="_CPPv329ReachTargetVoltage_CheckParam6stringP21CheckParametersStruct"></span><span id="_CPPv229ReachTargetVoltage_CheckParam6stringP21CheckParametersStruct"></span><span id="ReachTargetVoltage_CheckParam__string.CheckParametersStructP"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1a42a359d53411eab3114bc93ed771f00a"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReachTargetVoltage_CheckParam</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv421CheckParametersStruct" title="CheckParametersStruct"><span class="n"><span class="pre">CheckParametersStruct</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429ReachTargetVoltage_CheckParam6stringP21CheckParametersStruct" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421CreateOverrideResultsv">
+<span id="_CPPv321CreateOverrideResultsv"></span><span id="_CPPv221CreateOverrideResultsv"></span><span id="CreateOverrideResults"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1ac09ec3583d20a1fbdc2f6e69db843529"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreateOverrideResults</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421CreateOverrideResultsv" title="Link to this definition">¶</a><br /></dt>
+<dd><p><a class="reference internal" href="#_m_i_e_s___analysis_functions_8ipf_1ae3eb33b5e068bb8fdc7ebc34c7810192"><span class="std std-ref">ReachTargetVoltage</span></a>:</p>
+<p>Rows:<ul class="simple">
+<li><p>Headstage</p></li>
+</ul>
+</p>
+<p>Cols:<ul class="simple">
+<li><p>0: Resistance [MΩ] </p></li>
+</ul>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418ReachTargetVoltage6stringP19AnalysisFunction_V3">
+<span id="_CPPv318ReachTargetVoltage6stringP19AnalysisFunction_V3"></span><span id="_CPPv218ReachTargetVoltage6stringP19AnalysisFunction_V3"></span><span id="ReachTargetVoltage__string.AnalysisFunction_V3P"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1ae3eb33b5e068bb8fdc7ebc34c7810192"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReachTargetVoltage</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv419AnalysisFunction_V3" title="AnalysisFunction_V3"><span class="n"><span class="pre">AnalysisFunction_V3</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418ReachTargetVoltage6stringP19AnalysisFunction_V3" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Analysis function to experimentally determine the cell resistance by sweeping through a wave of target voltages. </p>
+<p>Prerequisites:<ul class="simple">
+<li><p>Stimset with multiple but identical sweeps and testpulse-like shape. The number of sweeps must be larger than the number of rows in the targetVoltages wave below.</p></li>
+<li><p>Does not support DA/AD channels not associated with a MIES headstage (aka unassociated DA/AD Channels)</p></li>
+<li><p>All active headstages must be in “Current Clamp”</p></li>
+<li><p>All active IC headstages must run this analysis function</p></li>
+<li><p>An inital DAScale of -20pA is used, a fixup value of -100pA is used on the next sweep if the measured resistance is smaller than 20MΩ </p></li>
+</ul>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423ReportOutOfRangeDAScale6string8variable8variable4wave">
+<span id="_CPPv323ReportOutOfRangeDAScale6string8variable8variable4wave"></span><span id="_CPPv223ReportOutOfRangeDAScale6string8variable8variable4wave"></span><span id="ReportOutOfRangeDAScale__string.variable.variable.wave"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1a45435b730b82c4fec29dda1bfd281095"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReportOutOfRangeDAScale</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">anaFuncType</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">oorDAScale</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423ReportOutOfRangeDAScale6string8variable8variable4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Report a future out of range DAScale value to the user and the labnotebook. </p>
+<p>Usage for a single headstage:</p>
+<p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="kt">WAVE</span><span class="w"> </span>oorDAScale<span class="w"> </span>=<span class="w"> </span>LBN_GetNumericWave()
+<span class="w"> </span>oorDAScale[s.headstage]<span class="w"> </span>=<span class="w"> </span>SetDAScale(...)
+
+<span class="k">if</span>(oorDAScale[s.headstage])
+<span class="w">     </span>ReportOutOfRangeDAScale(...)
+<span class="k">endif</span>
+</pre></div>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413ForceSetEvent6string8variable">
+<span id="_CPPv313ForceSetEvent6string8variable"></span><span id="_CPPv213ForceSetEvent6string8variable"></span><span id="ForceSetEvent__string.variable"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1a5c310fd528109e63f50d80473f0a7852"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ForceSetEvent</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413ForceSetEvent6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Manually force the pre/post set events. </p>
+<p>Required to do before skipping sweeps. <dl>
+<dt class="sig sig-object cpp">
+<a class="reference internal" href="../todo.html#todo_1_todo000003"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<dd><p>this hack must go away. </p>
+</dd></dl>
+
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428SetControlInEvent_CheckParam6stringP21CheckParametersStruct">
+<span id="_CPPv328SetControlInEvent_CheckParam6stringP21CheckParametersStruct"></span><span id="_CPPv228SetControlInEvent_CheckParam6stringP21CheckParametersStruct"></span><span id="SetControlInEvent_CheckParam__string.CheckParametersStructP"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1a38ec8dd156f5b578c92d53f7ce237343"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetControlInEvent_CheckParam</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv421CheckParametersStruct" title="CheckParametersStruct"><span class="n"><span class="pre">CheckParametersStruct</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428SetControlInEvent_CheckParam6stringP21CheckParametersStruct" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417SetControlInEvent6stringP19AnalysisFunction_V3">
+<span id="_CPPv317SetControlInEvent6stringP19AnalysisFunction_V3"></span><span id="_CPPv217SetControlInEvent6stringP19AnalysisFunction_V3"></span><span id="SetControlInEvent__string.AnalysisFunction_V3P"></span><span class="target" id="_m_i_e_s___analysis_functions_8ipf_1aa578491b2cd2157c52cb7efa17af77b9"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetControlInEvent</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv419AnalysisFunction_V3" title="AnalysisFunction_V3"><span class="n"><span class="pre">AnalysisFunction_V3</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417SetControlInEvent6stringP19AnalysisFunction_V3" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Analysis function to set GUI controls or notebooks in the events. </p>
+<p>Usage:<ul class="simple">
+<li><p>Add analysis parameters named like the control/notebook</p></li>
+<li><p>Their value must be a textwave with at least one tuple of event type and data.</p></li>
+<li><p>Valid number of rows are therefore 2, 4, 6, …</p></li>
+<li><p>The first tuple element is the event type, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a28163a6f7ba1a79dd48f36d0824ba121"><span class="std std-ref">EVENT_NAME_LIST</span></a> without “Mid Sweep” and “Generic”, and the second element the value to set</p></li>
+<li><p>For PopupMenus the passed value is the menu item and <em>not</em> its index</p></li>
+<li><p>The controls are searched in all open panels and graphs. The notebook can be a toplevel or subwindow notebook.</p></li>
+</ul>
+</p>
+<p>Examples:</p>
+<p><table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>setvar_DataAcq_OnsetDelayUser</p></td>
+<td><p>Pre DAQ;20</p></td>
+</tr>
+<tr class="row-odd"><td><p>Popup_Settings_FixedFreq</p></td>
+<td><p>Pre Sweep;100;Post Sweep;Maximum</p></td>
+</tr>
+<tr class="row-even"><td><p>sweepFormula_formula</p></td>
+<td><p>Pre Set;data(select(selchannels(AD)))</p></td>
+</tr>
+</tbody>
+</table>
+</p>
+</dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_AnalysisFunctions.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414DEFAULT_DEVICE"><code class="docutils literal notranslate"><span class="pre">DEFAULT_DEVICE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414STIM_SET_LOCAL"><code class="docutils literal notranslate"><span class="pre">STIM_SET_LOCAL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv49VM1_LOCAL"><code class="docutils literal notranslate"><span class="pre">VM1_LOCAL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv49VM2_LOCAL"><code class="docutils literal notranslate"><span class="pre">VM2_LOCAL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411SCALE_LOCAL"><code class="docutils literal notranslate"><span class="pre">SCALE_LOCAL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416NUM_SWEEPS_LOCAL"><code class="docutils literal notranslate"><span class="pre">NUM_SWEEPS_LOCAL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv49ITI_LOCAL"><code class="docutils literal notranslate"><span class="pre">ITI_LOCAL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv410POST_DELAY"><code class="docutils literal notranslate"><span class="pre">POST_DELAY</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423TestAnalysisFunction_V16string8variable4wave8variable"><code class="docutils literal notranslate"><span class="pre">TestAnalysisFunction_V1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423TestAnalysisFunction_V26string8variable4wave8variable8variable"><code class="docutils literal notranslate"><span class="pre">TestAnalysisFunction_V2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423TestAnalysisFunction_V36stringP19AnalysisFunction_V3"><code class="docutils literal notranslate"><span class="pre">TestAnalysisFunction_V3()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424MeasureMidSweepTiming_V36stringP19AnalysisFunction_V3"><code class="docutils literal notranslate"><span class="pre">MeasureMidSweepTiming_V3()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv410Enforce_VC6string8variable4wave8variable8variable"><code class="docutils literal notranslate"><span class="pre">Enforce_VC()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv410Enforce_IC6string8variable4wave8variable8variable"><code class="docutils literal notranslate"><span class="pre">Enforce_IC()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420SetStimConfig_Vclamp6string8variable4wave8variable"><code class="docutils literal notranslate"><span class="pre">SetStimConfig_Vclamp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420SetStimConfig_Iclamp6string8variable4wave8variable"><code class="docutils literal notranslate"><span class="pre">SetStimConfig_Iclamp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422ChangeHoldingPotential6string8variable4wave8variable"><code class="docutils literal notranslate"><span class="pre">ChangeHoldingPotential()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411LastStimSet6string8variable4wave8variable"><code class="docutils literal notranslate"><span class="pre">LastStimSet()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412StimParamGUIv"><code class="docutils literal notranslate"><span class="pre">StimParamGUI()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412SetStimParam6string8variable8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">SetStimParam()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv410setHolding8variable"><code class="docutils literal notranslate"><span class="pre">setHolding()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413setVClampModev"><code class="docutils literal notranslate"><span class="pre">setVClampMode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413setIClampModev"><code class="docutils literal notranslate"><span class="pre">setIClampMode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413switchHolding8variable"><code class="docutils literal notranslate"><span class="pre">switchHolding()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv410InitoodDAQv"><code class="docutils literal notranslate"><span class="pre">InitoodDAQ()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414LastStimSetRunv"><code class="docutils literal notranslate"><span class="pre">LastStimSetRun()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422TestPrematureSweepStop6string8variable4wave8variable8variable"><code class="docutils literal notranslate"><span class="pre">TestPrematureSweepStop()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420preDAQ_MP_mainConfig6string8variable4wave8variable8variable"><code class="docutils literal notranslate"><span class="pre">preDAQ_MP_mainConfig()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417preDAQ_MP_IfMixed6string8variable4wave8variable8variable"><code class="docutils literal notranslate"><span class="pre">preDAQ_MP_IfMixed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422preDAQ_MP_ChirpBlowout6string8variable4wave8variable8variable"><code class="docutils literal notranslate"><span class="pre">preDAQ_MP_ChirpBlowout()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413AdjustDAScale6string8variable4wave8variable8variable"><code class="docutils literal notranslate"><span class="pre">AdjustDAScale()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413FitResistance6string8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">FitResistance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415SetDAScaleModOp6string8variable8variable8variable6string8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">SetDAScaleModOp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv410SetDAScale6string8variable8variable8variable8variable8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">SetDAScale()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428ReachTargetVoltage_GetParamsv"><code class="docutils literal notranslate"><span class="pre">ReachTargetVoltage_GetParams()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426ReachTargetVoltage_GetHelp6string"><code class="docutils literal notranslate"><span class="pre">ReachTargetVoltage_GetHelp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429ReachTargetVoltage_CheckParam6stringP21CheckParametersStruct"><code class="docutils literal notranslate"><span class="pre">ReachTargetVoltage_CheckParam()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421CreateOverrideResultsv"><code class="docutils literal notranslate"><span class="pre">CreateOverrideResults()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418ReachTargetVoltage6stringP19AnalysisFunction_V3"><code class="docutils literal notranslate"><span class="pre">ReachTargetVoltage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423ReportOutOfRangeDAScale6string8variable8variable4wave"><code class="docutils literal notranslate"><span class="pre">ReportOutOfRangeDAScale()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413ForceSetEvent6string8variable"><code class="docutils literal notranslate"><span class="pre">ForceSetEvent()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428SetControlInEvent_CheckParam6stringP21CheckParametersStruct"><code class="docutils literal notranslate"><span class="pre">SetControlInEvent_CheckParam()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417SetControlInEvent6stringP19AnalysisFunction_V3"><code class="docutils literal notranslate"><span class="pre">SetControlInEvent()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___analysis_function_prototypes_8ipf.html"
+                          title="previous chapter">File MIES_AnalysisFunctionPrototypes.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___analysis_functions___dashboard_8ipf.html"
+                          title="next chapter">File MIES_AnalysisFunctions_Dashboard.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___analysis_functions___dashboard_8ipf.html" title="File MIES_AnalysisFunctions_Dashboard.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___analysis_function_prototypes_8ipf.html" title="File MIES_AnalysisFunctionPrototypes.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_AnalysisFunctions.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

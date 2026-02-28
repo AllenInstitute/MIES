@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File MIES_SweepFormula_Helpers.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_SweepFormula_Operations.ipf" href="_m_i_e_s___sweep_formula___operations_8ipf.html" />
+    <link rel="prev" title="File MIES_SweepFormula_Executor.ipf" href="_m_i_e_s___sweep_formula___executor_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___sweep_formula___operations_8ipf.html" title="File MIES_SweepFormula_Operations.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___sweep_formula___executor_8ipf.html" title="File MIES_SweepFormula_Executor.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_SweepFormula_Helpers.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-sweepformula-helpers-ipf">
+<span id="id1"></span><h1>File MIES_SweepFormula_Helpers.ipf<a class="headerlink" href="#file-mies-sweepformula-helpers-ipf" title="Link to this heading">¶</a></h1>
+<p><strong>SFH</strong> Sweep formula related helper code </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427SFH_StringChecker_Prototype6string">
+<span id="_CPPv327SFH_StringChecker_Prototype6string"></span><span id="_CPPv227SFH_StringChecker_Prototype6string"></span><span id="SFH_StringChecker_Prototype__string"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a6cb9bb21fcf0f2d7a6d6cae1ed0c0207"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_StringChecker_Prototype</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427SFH_StringChecker_Prototype6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428SFH_NumericChecker_Prototype8variable">
+<span id="_CPPv328SFH_NumericChecker_Prototype8variable"></span><span id="_CPPv228SFH_NumericChecker_Prototype8variable"></span><span id="SFH_NumericChecker_Prototype__variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1ad9f134e1f9ae93298ce10aa4e902fb62"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_NumericChecker_Prototype</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428SFH_NumericChecker_Prototype8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424SFH_GetArgumentAsNumericP16SF_ExecutionData6string8variable8variable10WaveOrNull28SFH_NumericChecker_Prototype8variable">
+<span id="_CPPv324SFH_GetArgumentAsNumericP16SF_ExecutionData6string8variable8variable10WaveOrNull28SFH_NumericChecker_Prototype8variable"></span><span id="_CPPv224SFH_GetArgumentAsNumericP16SF_ExecutionData6string8variable8variable10WaveOrNull28SFH_NumericChecker_Prototype8variable"></span><span id="SFH_GetArgumentAsNumeric__SF_ExecutionDataP.string.variable.variable.WaveOrNull.SFH_NumericChecker_Prototype.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1aea0315308489bdc92b6d87fdc3a53c5d"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetArgumentAsNumeric</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv416SF_ExecutionData" title="SF_ExecutionData"><span class="n"><span class="pre">SF_ExecutionData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exd</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">opShort</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">argNum</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">defValue</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">allowedValues</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <a class="reference internal" href="#_CPPv428SFH_NumericChecker_Prototype8variable" title="SFH_NumericChecker_Prototype"><span class="n"><span class="pre">SFH_NumericChecker_Prototype</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">checkFunc</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">checkDefault</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424SFH_GetArgumentAsNumericP16SF_ExecutionData6string8variable8variable10WaveOrNull28SFH_NumericChecker_Prototype8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Convenience helper function to get a numeric SweepFormula operation argument. </p>
+<p>Given the operation <code class="docutils literal notranslate"><span class="pre">fetchBeer(variable</span> <span class="pre">numBottles,</span> <span class="pre">[variable</span> <span class="pre">size])</span></code> one can fetch both parameters via:</p>
+<p><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>opShort    = &quot;fetchBeer&quot;
+numBottles = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, opShort, 0)
+size       = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, opShort, 1, defValue = 0.5, allowedValues = {0.33, 0.5, 1.0})
+</pre></div>
+</div>
+</p>
+<p>Here <code class="docutils literal notranslate"><span class="pre">numBottles</span></code> is argument number 0 and mandatory as <code class="docutils literal notranslate"><span class="pre">defValue</span></code> is not present.</p>
+<p>The second argument <code class="docutils literal notranslate"><span class="pre">size</span></code> is optional with 0.5 as default and also defines a list of valid values. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421SFH_GetArgumentAsTextP16SF_ExecutionData6string8variable6string14WaveTextOrNull27SFH_StringChecker_Prototype8variable">
+<span id="_CPPv321SFH_GetArgumentAsTextP16SF_ExecutionData6string8variable6string14WaveTextOrNull27SFH_StringChecker_Prototype8variable"></span><span id="_CPPv221SFH_GetArgumentAsTextP16SF_ExecutionData6string8variable6string14WaveTextOrNull27SFH_StringChecker_Prototype8variable"></span><span id="SFH_GetArgumentAsText__SF_ExecutionDataP.string.variable.string.WaveTextOrNull.SFH_StringChecker_Prototype.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1ac7307ba8edacdf7be258fcb9fd049893"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetArgumentAsText</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv416SF_ExecutionData" title="SF_ExecutionData"><span class="n"><span class="pre">SF_ExecutionData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exd</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">opShort</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">argNum</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">defValue</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">WaveTextOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">allowedValues</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <a class="reference internal" href="#_CPPv427SFH_StringChecker_Prototype6string" title="SFH_StringChecker_Prototype"><span class="n"><span class="pre">SFH_StringChecker_Prototype</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">checkFunc</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">checkDefault</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421SFH_GetArgumentAsTextP16SF_ExecutionData6string8variable6string14WaveTextOrNull27SFH_StringChecker_Prototype8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Convenience helper function to get a textual SweepFormula operation argument. </p>
+<p>Given the operation <code class="docutils literal notranslate"><span class="pre">getTrainTable(string</span> <span class="pre">date,</span> <span class="pre">[string</span> <span class="pre">type])</span></code> one can fetch both parameters via:</p>
+<p><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>opShort = &quot;getTrainTable&quot;
+date    = SFH_GetArgumentAsText(exd, opShort, 0)
+type    = SFH_GetArgumentAsText(exd, opShort, 1, defValue = &quot;steam train&quot;, allowedValues = {&quot;steam train&quot;, &quot;light rail&quot;})
+</pre></div>
+</div>
+</p>
+<p>Here <code class="docutils literal notranslate"><span class="pre">date</span></code> is argument number 0 and mandatory as <code class="docutils literal notranslate"><span class="pre">defValue</span></code> is not present.</p>
+<p>The second argument <code class="docutils literal notranslate"><span class="pre">type</span></code> is optional with <code class="docutils literal notranslate"><span class="pre">steam</span> <span class="pre">train</span></code> as default and a list of allowed values.</p>
+<p>The text argument can be abbreviated as long as it is unique, the unabbreviated result is returned in all cases. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421SFH_GetArgumentAsWaveP16SF_ExecutionData6string8variable6string10WaveOrNull8variable8variable8variable8variableP6string8variable">
+<span id="_CPPv321SFH_GetArgumentAsWaveP16SF_ExecutionData6string8variable6string10WaveOrNull8variable8variable8variable8variableP6string8variable"></span><span id="_CPPv221SFH_GetArgumentAsWaveP16SF_ExecutionData6string8variable6string10WaveOrNull8variable8variable8variable8variableP6string8variable"></span><span id="SFH_GetArgumentAsWave__SF_ExecutionDataP.string.variable.string.WaveOrNull.variable.variable.variable.variable.stringP.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a1adc3b37a267dc6c339f385c2bd1d9cf"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetArgumentAsWave</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv416SF_ExecutionData" title="SF_ExecutionData"><span class="n"><span class="pre">SF_ExecutionData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exd</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">opShort</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">argNum</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">defOp</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">defWave</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">singleResult</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expectedMinorType</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expectedMajorType</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">copy</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">wvNote</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">resolveSelect</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421SFH_GetArgumentAsWaveP16SF_ExecutionData6string8variable6string10WaveOrNull8variable8variable8variable8variableP6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Convenience helper function to get a wave SweepFormula operation argument. </p>
+<p>Given the operation <code class="docutils literal notranslate"><span class="pre">countBirds(array</span> <span class="pre">birds,</span> <span class="pre">[birdTypes()])</span></code> one can fetch both parameters via:</p>
+<p><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>opShort      = &quot;countBirds&quot;
+WAVE/D birds = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, opShort, 0, singleResult = 1)
+WAVE/T types = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, opShort, 1, defOp = &quot;birdTypes()&quot;, singleResult = 1, expectedWaveType = IGOR_TYPE_TEXT_WAVE)
+</pre></div>
+</div>
+</p>
+<p>Here <code class="docutils literal notranslate"><span class="pre">birds</span></code> is argument number 0 and mandatory as <code class="docutils literal notranslate"><span class="pre">defOp</span></code> is not present. Passing <code class="docutils literal notranslate"><span class="pre">singleResult</span> <span class="pre">==</span> <span class="pre">1</span></code> already unpacks the outer wave reference wave container. It should always be passed if you only expect one wave to be returned.</p>
+<p>The second argument <code class="docutils literal notranslate"><span class="pre">birdTypes</span></code> is optional, if not present the operation <code class="docutils literal notranslate"><span class="pre">birdTypes()</span></code> is called and its result returned. Alternatively <code class="docutils literal notranslate"><span class="pre">defWave</span></code> can be supplied which is then returned if the argument is not present.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exd</strong> – Execution data structure </p></li>
+<li><p><strong>opShort</strong> – Short name of the operation </p></li>
+<li><p><strong>argNum</strong> – Argument index </p></li>
+<li><p><strong>defOp</strong> – [optional, defaults to None] SF code to execute in case the argument is not present </p></li>
+<li><p><strong>defWave</strong> – [optional] wave to return in case the argument is not present and defOp is not supplied </p></li>
+<li><p><strong>singleResult</strong> – [optional, defaults to 0] Return the first wave of the dataset if it has only one entry </p></li>
+<li><p><strong>expectedMinorType</strong> – [optional, defaults to None] Expected minor wave type, possible values are from WaveType(wv, 0) </p></li>
+<li><p><strong>expectedMajorType</strong> – [optional, defaults to None] Expected major wave type, possible values are from WaveType(wv, 1) </p></li>
+<li><p><strong>copy</strong> – [optional, defaults to 0] If the returned data should be safe for modification (true) or is only read (false) </p></li>
+<li><p><strong>wvNote</strong> – <strong>[out]</strong> [optional, defaults to None] Wave note of the dataset, useful for single result cases where you still need to query JSON wave note entries </p></li>
+<li><p><strong>resolveSelect</strong> – [optional, defaults to 0] If set then argument of the select type are automatically converted to sweep data, effectively the data() operation is applied As with data, if the argument is an array of selects, each sweep result gets concatenated to a wref wave </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428SFH_GetAssertLocationMessagev">
+<span id="_CPPv328SFH_GetAssertLocationMessagev"></span><span id="_CPPv228SFH_GetAssertLocationMessagev"></span><span id="SFH_GetAssertLocationMessage"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a2ba83d2429ed5895ef6cdb0174e0aa1f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetAssertLocationMessage</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428SFH_GetAssertLocationMessagev" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410SFH_ASSERT8variable6string8variable">
+<span id="_CPPv310SFH_ASSERT8variable6string8variable"></span><span id="_CPPv210SFH_ASSERT8variable6string8variable"></span><span id="SFH_ASSERT__variable.string.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a810031102bdc586d324ecb8361549ae2"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_ASSERT</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">condition</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">message</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410SFH_ASSERT8variable6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Assertion for sweep formula. </p>
+<p>This assertion does <em>not</em> indicate a general programmer error but a sweep formula user error.</p>
+<p>All programmer error checks must still use <a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html#_m_i_e_s___utilities___program_flow_8ipf_1a34d370fb776d339d7f60e24c364eff69"><span class="std std-ref">ASSERT()</span></a>.</p>
+<p>UTF_NOINSTRUMENTATION </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429SFH_FormatSourceLocationError6string8variable">
+<span id="_CPPv329SFH_FormatSourceLocationError6string8variable"></span><span id="_CPPv229SFH_FormatSourceLocationError6string8variable"></span><span id="SFH_FormatSourceLocationError__string.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a4b7d353e45522b08d91a1a3d07e5883d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_FormatSourceLocationError</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">formula</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">loc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429SFH_FormatSourceLocationError6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415SFH_FATAL_ERROR6string8variable">
+<span id="_CPPv315SFH_FATAL_ERROR6string8variable"></span><span id="_CPPv215SFH_FATAL_ERROR6string8variable"></span><span id="SFH_FATAL_ERROR__string.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1aaa9a43d4fa52ec005a9d4602115d12d3"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_FATAL_ERROR</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">message</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415SFH_FATAL_ERROR6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Fatal user error for sweep formula. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417SFH_GetEmptyRangev">
+<span id="_CPPv317SFH_GetEmptyRangev"></span><span id="_CPPv217SFH_GetEmptyRangev"></span><span id="SFH_GetEmptyRange"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1afb6040d797cbe41ad02667fa18d6d50e"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetEmptyRange</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417SFH_GetEmptyRangev" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416SFH_IsEmptyRange4wave">
+<span id="_CPPv316SFH_IsEmptyRange4wave"></span><span id="_CPPv216SFH_IsEmptyRange4wave"></span><span id="SFH_IsEmptyRange__wave"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1addb22a38d5e3a059573d84ac6dc456b0"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_IsEmptyRange</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">range</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416SFH_IsEmptyRange4wave" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416SFH_GetFullRangev">
+<span id="_CPPv316SFH_GetFullRangev"></span><span id="_CPPv216SFH_GetFullRangev"></span><span id="SFH_GetFullRange"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1ad0f108bf4c956a452731414eefe1cc31"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetFullRange</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416SFH_GetFullRangev" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415SFH_IsFullRange4wave">
+<span id="_CPPv315SFH_IsFullRange4wave"></span><span id="_CPPv215SFH_IsFullRange4wave"></span><span id="SFH_IsFullRange__wave"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1aba54a0422ad550e6c6b1ebaa40672098"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_IsFullRange</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">range</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415SFH_IsFullRange4wave" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413SFH_AsDataSet4wave">
+<span id="_CPPv313SFH_AsDataSet4wave"></span><span id="_CPPv213SFH_AsDataSet4wave"></span><span id="SFH_AsDataSet__wave"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a6a049c1f4a6863a2d526fbc8cb90f0fb"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_AsDataSet</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">data</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413SFH_AsDataSet4wave" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426SFH_ExtendIncompleteRanges11WaveRefWave">
+<span id="_CPPv326SFH_ExtendIncompleteRanges11WaveRefWave"></span><span id="_CPPv226SFH_ExtendIncompleteRanges11WaveRefWave"></span><span id="SFH_ExtendIncompleteRanges__WaveRefWave"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a5151b1368aade85b3288e8caf74bac75"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_ExtendIncompleteRanges</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ranges</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426SFH_ExtendIncompleteRanges11WaveRefWave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Formula “cursors(A,B)” can return NaNs if no cursor(s) are set. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417SFH_EvaluateRangeP16SF_ExecutionData6string8variable">
+<span id="_CPPv317SFH_EvaluateRangeP16SF_ExecutionData6string8variable"></span><span id="_CPPv217SFH_EvaluateRangeP16SF_ExecutionData6string8variable"></span><span id="SFH_EvaluateRange__SF_ExecutionDataP.string.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a8b390332e7a9fac87f13b6d64d02799c"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_EvaluateRange</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv416SF_ExecutionData" title="SF_ExecutionData"><span class="n"><span class="pre">SF_ExecutionData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exd</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">opShort</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">argNum</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417SFH_EvaluateRangeP16SF_ExecutionData6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Evaluate range parameter. </p>
+<p>Range is read as dataset(s), it can be per dataset:<ul class="simple">
+<li><p>numerical 1D: <code class="docutils literal notranslate"><span class="pre">[start,end]</span></code></p></li>
+<li><p>numerical 2D with multiple ranges: <code class="docutils literal notranslate"><span class="pre">[[start1,start2,start3],[end1,end2,end3]]</span></code><ul>
+<li><p>implicit: <code class="docutils literal notranslate"><span class="pre">cursors(A,</span> <span class="pre">B)</span></code> or <code class="docutils literal notranslate"><span class="pre">[cursors(A,</span> <span class="pre">B),</span> <span class="pre">cursors(C,</span> <span class="pre">D)]</span></code></p></li>
+<li><p>implicit: <code class="docutils literal notranslate"><span class="pre">epochs([E0,</span> <span class="pre">TP])</span></code></p></li>
+<li><p>implicit with offset calculcation: <code class="docutils literal notranslate"><span class="pre">epochs(E0)</span> <span class="pre">+</span> <span class="pre">[1,</span> <span class="pre">-1]</span></code></p></li>
+</ul>
+</p></li>
+<li><p>named epoch: <code class="docutils literal notranslate"><span class="pre">E0</span></code> or a as wildcard expression <code class="docutils literal notranslate"><span class="pre">E*</span></code> or multiple</p></li>
+</ul>
+</p>
+<p>If one dataset is returned, numRows == 1, all ranges will be used for all sweeps in the selection.</p>
+<p>When multiple datasets are returned, numRows &gt; 1, the i-th sweep will use all ranges from the i-th dataset. The number of sweeps and datasets also has to match.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>One or multiple datasets </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421SFH_GetRangeFromEpoch6string6string8variable8variable8variable8variable">
+<span id="_CPPv321SFH_GetRangeFromEpoch6string6string8variable8variable8variable8variable"></span><span id="_CPPv221SFH_GetRangeFromEpoch6string6string8variable8variable8variable8variable"></span><span id="SFH_GetRangeFromEpoch__string.string.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a8948e4126059dd4509178db254ac2bf2"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetRangeFromEpoch</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">epochName</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweep</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">chanType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channel</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mapIndex</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421SFH_GetRangeFromEpoch6string6string8variable8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns a range from a epochName. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> – name of databrowser graph </p></li>
+<li><p><strong>epochName</strong> – name epoch </p></li>
+<li><p><strong>sweep</strong> – number of sweep </p></li>
+<li><p><strong>chanType</strong> – type of channel </p></li>
+<li><p><strong>channel</strong> – number of DA channel </p></li>
+<li><p><strong>mapIndex</strong> – index in sweepMap, required if source is a SweepBrowser</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a 1D wave with two elements, [startTime, endTime] in ms, if no epoch could be resolved [NaN, NaN] is returned </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423SFH_GetSweepsForFormula6string17WaveRefWaveOrNull6string">
+<span id="_CPPv323SFH_GetSweepsForFormula6string17WaveRefWaveOrNull6string"></span><span id="_CPPv223SFH_GetSweepsForFormula6string17WaveRefWaveOrNull6string"></span><span id="SFH_GetSweepsForFormula__string.WaveRefWaveOrNull.string"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1ac2a9341aedd9516c94ff45230fc921de"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetSweepsForFormula</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">WaveRefWaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">selectDataArray</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">opShort</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423SFH_GetSweepsForFormula6string17WaveRefWaveOrNull6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427SFH_GetSweepsForFormulaImpl6string11WaveRefWave6string">
+<span id="_CPPv327SFH_GetSweepsForFormulaImpl6string11WaveRefWave6string"></span><span id="_CPPv227SFH_GetSweepsForFormulaImpl6string11WaveRefWave6string"></span><span id="SFH_GetSweepsForFormulaImpl__string.WaveRefWave.string"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a6fb1814e2550395524cf7b0378eeeca3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetSweepsForFormulaImpl</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">selectDataComp</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">opShort</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427SFH_GetSweepsForFormulaImpl6string11WaveRefWave6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a wave reference wave with the requested sweep data. The argument range can contain multiple datasets, if it is a single dataset the range(s) are extracted from each selection, if there are multiple datasets then the number of datasets must equal the number of selections, for that case range datasets and selections are indexed the same. This is usually only senseful if the same select arguments are used for e.g. data to retrieve sweeps and epochs to retrieve ranges. </p>
+<p>All wave input parameters are treated as const and are thus <em>not</em> modified.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> – name of databrowser graph </p></li>
+<li><p><strong>selectDataComp</strong> – channel/sweep selection composite, see also <a class="reference internal" href="#_m_i_e_s___sweep_formula___helpers_8ipf_1a0b931a4f9cd5bf41ac5aeeddb5b7c44f"><span class="std std-ref">SFH_GetArgumentSelect()</span></a></p></li>
+<li><p><strong>opShort</strong> – operation name (short) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424SFH_GetNumberOfArgumentsP16SF_ExecutionData">
+<span id="_CPPv324SFH_GetNumberOfArgumentsP16SF_ExecutionData"></span><span id="_CPPv224SFH_GetNumberOfArgumentsP16SF_ExecutionData"></span><span id="SFH_GetNumberOfArguments__SF_ExecutionDataP"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1ae416dc25660cef883f382535d42a2813"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetNumberOfArguments</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv416SF_ExecutionData" title="SF_ExecutionData"><span class="n"><span class="pre">SF_ExecutionData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exd</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424SFH_GetNumberOfArgumentsP16SF_ExecutionData" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416SFH_GetWorkingDF6string">
+<span id="_CPPv316SFH_GetWorkingDF6string"></span><span id="_CPPv216SFH_GetWorkingDF6string"></span><span id="SFH_GetWorkingDF__string"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1ad044123bcf561c15cf09049e9efb636b"></span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetWorkingDF</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416SFH_GetWorkingDF6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419SFH_CreateSFRefWave6string6string8variable">
+<span id="_CPPv319SFH_CreateSFRefWave6string6string8variable"></span><span id="_CPPv219SFH_CreateSFRefWave6string6string8variable"></span><span id="SFH_CreateSFRefWave__string.string.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a4f5d2b12b5ffc5c4eba48fc0ed3076be"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_CreateSFRefWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">opShort</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419SFH_CreateSFRefWave6string6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414SFH_IsVariable4wave">
+<span id="_CPPv314SFH_IsVariable4wave"></span><span id="_CPPv214SFH_IsVariable4wave"></span><span id="SFH_IsVariable__wave"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a30e79d41434ed7ca1b2fe154da312661"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_IsVariable</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataset</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414SFH_IsVariable4wave" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416SFH_CleanUpInput4wave">
+<span id="_CPPv316SFH_CleanUpInput4wave"></span><span id="_CPPv216SFH_CleanUpInput4wave"></span><span id="SFH_CleanUpInput__wave"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1aa9aa561636395560f9aa6586c3f7a5ad"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_CleanUpInput</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">input</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416SFH_CleanUpInput4wave" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418SFH_AddOpToOpStack4wave6string6string">
+<span id="_CPPv318SFH_AddOpToOpStack4wave6string6string"></span><span id="_CPPv218SFH_AddOpToOpStack4wave6string6string"></span><span id="SFH_AddOpToOpStack__wave.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a5402801161c34eaaeb953e6f084ffaf1"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_AddOpToOpStack</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">w</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">oldStack</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">opShort</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418SFH_AddOpToOpStack4wave6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422SFH_AddToArgSetupStack4wave10WaveOrNull6string8variable">
+<span id="_CPPv322SFH_AddToArgSetupStack4wave10WaveOrNull6string8variable"></span><span id="_CPPv222SFH_AddToArgSetupStack4wave10WaveOrNull6string8variable"></span><span id="SFH_AddToArgSetupStack__wave.WaveOrNull.string.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1ab7d1a90938b7314eefad55b7b6759023"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_AddToArgSetupStack</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">output</span></span>, <span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">input</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">argSetupStr</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">resetStack</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422SFH_AddToArgSetupStack4wave10WaveOrNull6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430SFH_GetOutputForExecutorSingle10WaveOrNull6string6string8variable4wave6string">
+<span id="_CPPv330SFH_GetOutputForExecutorSingle10WaveOrNull6string6string8variable4wave6string"></span><span id="_CPPv230SFH_GetOutputForExecutorSingle10WaveOrNull6string6string8variable4wave6string"></span><span id="SFH_GetOutputForExecutorSingle__WaveOrNull.string.string.variable.wave.string"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a715a47a3c9808e0895258f6489f10d24"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetOutputForExecutorSingle</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">data</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">opShort</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">discardOpStack</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">clear</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataType</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430SFH_GetOutputForExecutorSingle10WaveOrNull6string6string8variable4wave6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424SFH_GetOutputForExecutor4wave6string6string4wave">
+<span id="_CPPv324SFH_GetOutputForExecutor4wave6string6string4wave"></span><span id="_CPPv224SFH_GetOutputForExecutor4wave6string6string4wave"></span><span id="SFH_GetOutputForExecutor__wave.string.string.wave"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a5fda119efad5b412664eb07141639b76"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetOutputForExecutor</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">output</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">opShort</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">clear</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424SFH_GetOutputForExecutor4wave6string6string4wave" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv435SFH_ConvertAllReturnDataToPermanent11WaveRefWave6string6string">
+<span id="_CPPv335SFH_ConvertAllReturnDataToPermanent11WaveRefWave6string6string"></span><span id="_CPPv235SFH_ConvertAllReturnDataToPermanent11WaveRefWave6string6string"></span><span id="SFH_ConvertAllReturnDataToPermanent__WaveRefWave.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a98426cb3d30d1dfb965b4286e66b46cf"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_ConvertAllReturnDataToPermanent</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">output</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">opShort</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv435SFH_ConvertAllReturnDataToPermanent11WaveRefWave6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422SFH_CopyDataIfRequired8variable10WaveOrNull10WaveOrNull">
+<span id="_CPPv322SFH_CopyDataIfRequired8variable10WaveOrNull10WaveOrNull"></span><span id="_CPPv222SFH_CopyDataIfRequired8variable10WaveOrNull10WaveOrNull"></span><span id="SFH_CopyDataIfRequired__variable.WaveOrNull.WaveOrNull"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a7c6ef04fcaa644e5d10ba67e330dcd42"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_CopyDataIfRequired</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">copy</span></span>, <span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataset</span></span>, <span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">data</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422SFH_CopyDataIfRequired8variable10WaveOrNull10WaveOrNull" title="Link to this definition">¶</a><br /></dt>
+<dd><p>If the copy condition is met and dataset is a variable then returns a free copy of data dataset and data can refer to the same wave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv440SFH_ResolveDatasetElementFromJSONAndTypeP16SF_ExecutionData6string8variable8variable8variable">
+<span id="_CPPv340SFH_ResolveDatasetElementFromJSONAndTypeP16SF_ExecutionData6string8variable8variable8variable"></span><span id="_CPPv240SFH_ResolveDatasetElementFromJSONAndTypeP16SF_ExecutionData6string8variable8variable8variable"></span><span id="SFH_ResolveDatasetElementFromJSONAndType__SF_ExecutionDataP.string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1aab70768fd52710e6b3dcfe7a5bac4ca0"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">WAVE</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_ResolveDatasetElementFromJSONAndType</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv416SF_ExecutionData" title="SF_ExecutionData"><span class="n"><span class="pre">SF_ExecutionData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exd</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">opShort</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">argNum</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">checkExist</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">copy</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv440SFH_ResolveDatasetElementFromJSONAndTypeP16SF_ExecutionData6string8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Retrieves from an argument the datatype and the first dataset and disposes the argument. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430SFH_CheckForSingleDSAndGetData11WaveRefWave8variable6string8variable">
+<span id="_CPPv330SFH_CheckForSingleDSAndGetData11WaveRefWave8variable6string8variable"></span><span id="_CPPv230SFH_CheckForSingleDSAndGetData11WaveRefWave8variable6string8variable"></span><span id="SFH_CheckForSingleDSAndGetData__WaveRefWave.variable.string.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1ad4c17d6eaaa8ed8cdbec704d311b88e4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_CheckForSingleDSAndGetData</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">input</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">checkExist</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">opShort</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">argNum</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430SFH_CheckForSingleDSAndGetData11WaveRefWave8variable6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv433SFH_ResolveDatasetElementFromJSONP16SF_ExecutionData6string8variable8variable8variable">
+<span id="_CPPv333SFH_ResolveDatasetElementFromJSONP16SF_ExecutionData6string8variable8variable8variable"></span><span id="_CPPv233SFH_ResolveDatasetElementFromJSONP16SF_ExecutionData6string8variable8variable8variable"></span><span id="SFH_ResolveDatasetElementFromJSON__SF_ExecutionDataP.string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1abe4dfa7ea7e44961f568ec3d3ebe6e3a"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_ResolveDatasetElementFromJSON</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv416SF_ExecutionData" title="SF_ExecutionData"><span class="n"><span class="pre">SF_ExecutionData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exd</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">opShort</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">argNum</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">checkExist</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">copy</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv433SFH_ResolveDatasetElementFromJSONP16SF_ExecutionData6string8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Retrieves from an argument the first dataset and disposes the argument. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv438SFH_TransferFormulaDataWaveNoteAndMeta11WaveRefWave11WaveRefWave6string6string8WaveText8variable">
+<span id="_CPPv338SFH_TransferFormulaDataWaveNoteAndMeta11WaveRefWave11WaveRefWave6string6string8WaveText8variable"></span><span id="_CPPv238SFH_TransferFormulaDataWaveNoteAndMeta11WaveRefWave11WaveRefWave6string6string8WaveText8variable"></span><span id="SFH_TransferFormulaDataWaveNoteAndMeta__WaveRefWave.WaveRefWave.string.string.WaveText.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a41249ee867ade9ee25c9a22432758d0c"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_TransferFormulaDataWaveNoteAndMeta</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">input</span></span>, <span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">output</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">opShort</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">newDataType</span></span>, <a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">argSetup</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">keepX</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv438SFH_TransferFormulaDataWaveNoteAndMeta11WaveRefWave11WaveRefWave6string6string8WaveText8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Transfer wavenote from input data sets to output data sets set a label for a x-axis and x-value(s) for data waves. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_m_i_e_s___sweep_formula___helpers_8ipf_1a2f63889f81b2b7d82a13111fd5238ea3"><span class="std std-ref">SFH_GetNewArgSetupWave</span></a></p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input</strong> – Input wave reference wave </p></li>
+<li><p><strong>output</strong> – Output wave reference wave </p></li>
+<li><p><strong>opShort</strong> – operation short name </p></li>
+<li><p><strong>newDataType</strong> – data type of output </p></li>
+<li><p><strong>argSetup</strong> – [optional, default=$””] 2d text wave with argument setup of operation </p></li>
+<li><p><strong>keepX</strong> – [optional, default=0] When set then xvalues and xlabel of output are kept. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421SFH_GetArgumentSelectP16SF_ExecutionData8variable8variable">
+<span id="_CPPv321SFH_GetArgumentSelectP16SF_ExecutionData8variable8variable"></span><span id="_CPPv221SFH_GetArgumentSelectP16SF_ExecutionData8variable8variable"></span><span id="SFH_GetArgumentSelect__SF_ExecutionDataP.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a0b931a4f9cd5bf41ac5aeeddb5b7c44f"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetArgumentSelect</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv416SF_ExecutionData" title="SF_ExecutionData"><span class="n"><span class="pre">SF_ExecutionData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exd</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">argNum</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">doNotEnforce</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421SFH_GetArgumentSelectP16SF_ExecutionData8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>This function returns an array of select composites that are parsed from one argument that can be either a single select: select(…) or an 1d array of selects: [select(…), select(…), …] The distinction between a single select an array of selects is done through the SF_META_DATATYPE field in the JSON wavenote select composites are of type SF_DATATYPE_SELECTCOMP, whereas arrays are untyped There is also a quick path for argNum &gt;= numArgs, which is the case for e.g. data() For that case numArgs is 0 and select is expected at argNum 0. Then the result of “select()” is returned (as selectArray with a single element) If the doNotEnforce flag is set then a select type value at the arguments location is not enforced. If the argument is neither a single select or an array of selects then a null wave is returned. </p>
+<p>selectArray is wave reference wave containing select composite wave reference waves with SELECTION, RANGE each.</p>
+<p>This allows operations with selects as arguments to iterate over different selections given by the user </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425SFH_GetEpochNamesFromInfo8WaveText">
+<span id="_CPPv325SFH_GetEpochNamesFromInfo8WaveText"></span><span id="_CPPv225SFH_GetEpochNamesFromInfo8WaveText"></span><span id="SFH_GetEpochNamesFromInfo__WaveText"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a3befc3ec6588c43718c3746da0e82ce9"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetEpochNamesFromInfo</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">epochInfo</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425SFH_GetEpochNamesFromInfo8WaveText" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv437SFH_GetEpochIndicesByWildcardPatterns8WaveText8WaveText">
+<span id="_CPPv337SFH_GetEpochIndicesByWildcardPatterns8WaveText8WaveText"></span><span id="_CPPv237SFH_GetEpochIndicesByWildcardPatterns8WaveText8WaveText"></span><span id="SFH_GetEpochIndicesByWildcardPatterns__WaveText.WaveText"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1ad4bfb2475e6c5c6117bc8684d8e697f3"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetEpochIndicesByWildcardPatterns</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">epochNames</span></span>, <a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">patterns</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv437SFH_GetEpochIndicesByWildcardPatterns8WaveText8WaveText" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422SFH_ResultTypeToString8variable">
+<span id="_CPPv322SFH_ResultTypeToString8variable"></span><span id="_CPPv222SFH_ResultTypeToString8variable"></span><span id="SFH_ResultTypeToString__variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1afe0c80ab110fa297711568bd53722e27"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_ResultTypeToString</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">resultType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422SFH_ResultTypeToString8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420SFH_FormatResultsKey8variable6string">
+<span id="_CPPv320SFH_FormatResultsKey8variable6string"></span><span id="_CPPv220SFH_FormatResultsKey8variable6string"></span><span id="SFH_FormatResultsKey__variable.string"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1ac4964225fb1470250c93c821a44ed9d6"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_FormatResultsKey</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">resultType</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420SFH_FormatResultsKey8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429SFH_CreateResultsWaveWithCode6string6string4wave6string8variable">
+<span id="_CPPv329SFH_CreateResultsWaveWithCode6string6string4wave6string8variable"></span><span id="_CPPv229SFH_CreateResultsWaveWithCode6string6string4wave6string8variable"></span><span id="SFH_CreateResultsWaveWithCode__string.string.wave.string.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a1c7624afb5a868c4a4b065e2e9f5900f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_CreateResultsWaveWithCode</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">code</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">data</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">resultType</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429SFH_CreateResultsWaveWithCode6string6string4wave6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429SFH_GetBrowserForFormulaGraph6string">
+<span id="_CPPv329SFH_GetBrowserForFormulaGraph6string"></span><span id="_CPPv229SFH_GetBrowserForFormulaGraph6string"></span><span id="SFH_GetBrowserForFormulaGraph__string"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a63d279479fc09f75a11864b7aac60458"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetBrowserForFormulaGraph</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429SFH_GetBrowserForFormulaGraph6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the SweepBrowser/DataBrowser from which the given SweepFormula plot window originated from If the plotter runs in normal mode the user data is present for each output window (table/graph) If the plotter runs in subwindow mode the user data is present for the panel that contains the table/graph subwindows, thus if win is a subwindow the browser name will be retrieved from the parent panel. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430SFH_GetFormulaPanelFromBrowser6string8variable">
+<span id="_CPPv330SFH_GetFormulaPanelFromBrowser6string8variable"></span><span id="_CPPv230SFH_GetFormulaPanelFromBrowser6string8variable"></span><span id="SFH_GetFormulaPanelFromBrowser__string.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a28de25b31e6efbb9928b396eadaa1b8d"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetFormulaPanelFromBrowser</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">browser</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">displayType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430SFH_GetFormulaPanelFromBrowser6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the SweepFormula plot created by the given SweepBrowser/DataBrowser This function requires the plotter to run in subwindow display mode. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424SFH_GetFormulaPlotPanelsv">
+<span id="_CPPv324SFH_GetFormulaPlotPanelsv"></span><span id="_CPPv224SFH_GetFormulaPlotPanelsv"></span><span id="SFH_GetFormulaPlotPanels"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a8d0af7aab3250f7e9a2e30ade0f5f50b"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetFormulaPlotPanels</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424SFH_GetFormulaPlotPanelsv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a text wave with all formula graph/table panels from all open data/sweep browsers This function requires the plotter to run in subwindow display mode. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421SFH_NewSelectDataWave8variable8variable">
+<span id="_CPPv321SFH_NewSelectDataWave8variable8variable"></span><span id="_CPPv221SFH_NewSelectDataWave8variable8variable"></span><span id="SFH_NewSelectDataWave__variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1acf5866ae379390beb0d8c550258f4c35"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_NewSelectDataWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numSweeps</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numChannels</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421SFH_NewSelectDataWave8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Create a new selectData wave The row counts the selected combinations of sweep, channel type, channel number The three columns per row store the sweep number, channel type, channel number. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423SFH_ParseSweepDataRange4wave">
+<span id="_CPPv323SFH_ParseSweepDataRange4wave"></span><span id="_CPPv223SFH_ParseSweepDataRange4wave"></span><span id="SFH_ParseSweepDataRange__wave"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1abe074741d16b3089c0eede3abac0b72e"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_ParseSweepDataRange</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepData</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423SFH_ParseSweepDataRange4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Parse the range stored in the JSON wavenote from <a class="reference internal" href="#_m_i_e_s___sweep_formula___helpers_8ipf_1ac2a9341aedd9516c94ff45230fc921de"><span class="std std-ref">SFH_GetSweepsForFormula()</span></a></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv433SFH_ParseToSelectDataWaveAndRange4wave">
+<span id="_CPPv333SFH_ParseToSelectDataWaveAndRange4wave"></span><span id="_CPPv233SFH_ParseToSelectDataWaveAndRange4wave"></span><span id="SFH_ParseToSelectDataWaveAndRange__wave"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1aff58cccd44b217ac1a9954873846ed1e"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">WAVE</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">WAVE</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_ParseToSelectDataWaveAndRange</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepData</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv433SFH_ParseToSelectDataWaveAndRange4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Recreate a <strong>single</strong> select data wave and range stored in the JSON wavenote from <a class="reference internal" href="#_m_i_e_s___sweep_formula___helpers_8ipf_1ac2a9341aedd9516c94ff45230fc921de"><span class="std std-ref">SFH_GetSweepsForFormula()</span></a></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422SFH_GetNewArgSetupWave8variable">
+<span id="_CPPv322SFH_GetNewArgSetupWave8variable"></span><span id="_CPPv222SFH_GetNewArgSetupWave8variable"></span><span id="SFH_GetNewArgSetupWave__variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a2f63889f81b2b7d82a13111fd5238ea3"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetNewArgSetupWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422SFH_GetNewArgSetupWave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421SFH_SerializeArgSetup8WaveText">
+<span id="_CPPv321SFH_SerializeArgSetup8WaveText"></span><span id="_CPPv221SFH_SerializeArgSetup8WaveText"></span><span id="SFH_SerializeArgSetup__WaveText"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1af6ca677dbae5c6ea76b36838d0866669"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_SerializeArgSetup</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">argSetup</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421SFH_SerializeArgSetup8WaveText" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423SFH_DeSerializeArgSetup8variable6string">
+<span id="_CPPv323SFH_DeSerializeArgSetup8variable6string"></span><span id="_CPPv223SFH_DeSerializeArgSetup8variable6string"></span><span id="SFH_DeSerializeArgSetup__variable.string"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a045a40a76cc1c3d7fdf453c638ed5dd6"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_DeSerializeArgSetup</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423SFH_DeSerializeArgSetup8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422SFH_ResetArgSetupStack4wave6string">
+<span id="_CPPv322SFH_ResetArgSetupStack4wave6string"></span><span id="_CPPv222SFH_ResetArgSetupStack4wave6string"></span><span id="SFH_ResetArgSetupStack__wave.string"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a07083af4a25ba13cccb5d1561cb8f770"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_ResetArgSetupStack</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">output</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">opShort</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422SFH_ResetArgSetupStack4wave6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425SFH_GetArgSetupValueByKey8WaveText6string">
+<span id="_CPPv325SFH_GetArgSetupValueByKey8WaveText6string"></span><span id="_CPPv225SFH_GetArgSetupValueByKey8WaveText6string"></span><span id="SFH_GetArgSetupValueByKey__WaveText.string"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1ad425ca88e89a340777089321ac4ddde7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetArgSetupValueByKey</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">argSetup</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425SFH_GetArgSetupValueByKey8WaveText6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420SFH_GetEmptyArgSetupv">
+<span id="_CPPv320SFH_GetEmptyArgSetupv"></span><span id="_CPPv220SFH_GetEmptyArgSetupv"></span><span id="SFH_GetEmptyArgSetup"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1ace3dfde0c4f8a4218c52420f1a2a3fa2"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetEmptyArgSetup</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420SFH_GetEmptyArgSetupv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421SFH_EnrichAnnotations8WaveText8WaveText">
+<span id="_CPPv321SFH_EnrichAnnotations8WaveText8WaveText"></span><span id="_CPPv221SFH_EnrichAnnotations8WaveText8WaveText"></span><span id="SFH_EnrichAnnotations__WaveText.WaveText"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1aa09168f174f1b65ef6ce5fd03d797379"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_EnrichAnnotations</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">annotations</span></span>, <a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">formulaArgSetup</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421SFH_EnrichAnnotations8WaveText8WaveText" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Based on the argument setup modifies the annotations per formula with additional information from the different arguments. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>1 of difference was found, 0 otherwise </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428SFH_EnrichAnnotationsRelease4wave">
+<span id="_CPPv328SFH_EnrichAnnotationsRelease4wave"></span><span id="_CPPv228SFH_EnrichAnnotationsRelease4wave"></span><span id="SFH_EnrichAnnotationsRelease__wave"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1abc7500176b5a028fb89e2d3ebd76b37f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_EnrichAnnotationsRelease</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">formulaIDs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428SFH_EnrichAnnotationsRelease4wave" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430SFH_GetPlotMarkerCodeSelection8variable">
+<span id="_CPPv330SFH_GetPlotMarkerCodeSelection8variable"></span><span id="_CPPv230SFH_GetPlotMarkerCodeSelection8variable"></span><span id="SFH_GetPlotMarkerCodeSelection__variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1af76c976f239fa97f3f07b94111a9f6ce"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetPlotMarkerCodeSelection</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">count</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430SFH_GetPlotMarkerCodeSelection8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428SFH_GetPlotLineCodeSelection8variable">
+<span id="_CPPv328SFH_GetPlotLineCodeSelection8variable"></span><span id="_CPPv228SFH_GetPlotLineCodeSelection8variable"></span><span id="SFH_GetPlotLineCodeSelection__variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a7187c5fa45b37c8a8be07c2c63a9d6b2"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetPlotLineCodeSelection</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">count</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428SFH_GetPlotLineCodeSelection8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416SFH_FilterSelect10WaveOrNull8variable">
+<span id="_CPPv316SFH_FilterSelect10WaveOrNull8variable"></span><span id="_CPPv216SFH_FilterSelect10WaveOrNull8variable"></span><span id="SFH_FilterSelect__WaveOrNull.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a86f6fb13328e254553cffbf4b545563d"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_FilterSelect</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">selectData</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">keepChanType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416SFH_FilterSelect10WaveOrNull8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>filters data from select, currently supports only one option: </p>
+<p><ul class="simple">
+<li><p>specify a channel type to keep </p></li>
+</ul>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422SFH_CheckArgumentCountP16SF_ExecutionData6string8variable8variable">
+<span id="_CPPv322SFH_CheckArgumentCountP16SF_ExecutionData6string8variable8variable"></span><span id="_CPPv222SFH_CheckArgumentCountP16SF_ExecutionData6string8variable8variable"></span><span id="SFH_CheckArgumentCount__SF_ExecutionDataP.string.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1af021fff2ef1e5f92305a59fd6a582155"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_CheckArgumentCount</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv416SF_ExecutionData" title="SF_ExecutionData"><span class="n"><span class="pre">SF_ExecutionData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exd</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">opShort</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">minArgs</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">maxArgs</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422SFH_CheckArgumentCountP16SF_ExecutionData6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>checks the argument count and returns the number of arguments </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419SFH_GetStimsetRange6string4wave4wave">
+<span id="_CPPv319SFH_GetStimsetRange6string4wave4wave"></span><span id="_CPPv219SFH_GetStimsetRange6string4wave4wave"></span><span id="SFH_GetStimsetRange__string.wave.wave"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1af17b49719585537f710c5fe4e57a8a21"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetStimsetRange</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">data</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">selectData</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419SFH_GetStimsetRange6string4wave4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a SF range in ms with the stimset range. </p>
+<p>Prefers the <code class="docutils literal notranslate"><span class="pre">ST</span></code> epoch if present, otherwise it tries to deduce the equivalent from labnotebook entries. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv444SFH_GetNumericRangeFromEpochFromSingleSelect6string4wave4wave">
+<span id="_CPPv344SFH_GetNumericRangeFromEpochFromSingleSelect6string4wave4wave"></span><span id="_CPPv244SFH_GetNumericRangeFromEpochFromSingleSelect6string4wave4wave"></span><span id="SFH_GetNumericRangeFromEpochFromSingleSelect__string.wave.wave"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a43ae67cf89aa3af71c2f072ef05cfe79"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">WAVE</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetNumericRangeFromEpochFromSingleSelect</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">singleSelectData</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">range</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv444SFH_GetNumericRangeFromEpochFromSingleSelect6string4wave4wave" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428SFH_GetNumericRangeFromEpoch6string4wave4wave4wave8variable8variable8variable8variable">
+<span id="_CPPv328SFH_GetNumericRangeFromEpoch6string4wave4wave4wave8variable8variable8variable8variable"></span><span id="_CPPv228SFH_GetNumericRangeFromEpoch6string4wave4wave4wave8variable8variable8variable8variable"></span><span id="SFH_GetNumericRangeFromEpoch__string.wave.wave.wave.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a3dd33e929f9a38bbc11d75235717955a"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">WAVE</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetNumericRangeFromEpoch</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">textualValues</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">range</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">chanType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">chanNr</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mapIndex</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428SFH_GetNumericRangeFromEpoch6string4wave4wave4wave8variable8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>From a single numeric/textual range wave we return a 2xN numeric range. </p>
+<p>Supports numeric ranges, epochs, and epochs with wildcards.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_m_i_e_s___sweep_formula___helpers_8ipf_1a8b390332e7a9fac87f13b6d64d02799c"><span class="std std-ref">SFH_EvaluateRange</span></a></p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> – name of graph window </p></li>
+<li><p><strong>numericalValues</strong> – numeric labnotebok </p></li>
+<li><p><strong>textualValues</strong> – textual labnotebok </p></li>
+<li><p><strong>range</strong> – one numerical or one/multiple epoch ranges with optional wildcard, </p></li>
+<li><p><strong>sweepNo</strong> – sweep number </p></li>
+<li><p><strong>chanType</strong> – channel type </p></li>
+<li><p><strong>chanNr</strong> – channel number </p></li>
+<li><p><strong>mapIndex</strong> – index in sweepMap if graph is a SweepBrowser</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return values<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>adaptedRange</strong> – 2xN numeric wave with the start/stop ranges [ms] </p></li>
+<li><p><strong>epochRangeNames</strong> – epoch names (wildcard expanded) in case range was textual, a null wave ref otherwise </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425SFH_AttemptDatasetResolve6string8variable">
+<span id="_CPPv325SFH_AttemptDatasetResolve6string8variable"></span><span id="_CPPv225SFH_AttemptDatasetResolve6string8variable"></span><span id="SFH_AttemptDatasetResolve__string.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a4ffb226a8a04d49fa0d24b1a3af7b977"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_AttemptDatasetResolve</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ref</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">checkWithSFHAssert</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425SFH_AttemptDatasetResolve6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Attempt a resolution of a dataset based on a string input, returns null wave if not resolvable. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411SFH_IsArray4wave">
+<span id="_CPPv311SFH_IsArray4wave"></span><span id="_CPPv211SFH_IsArray4wave"></span><span id="SFH_IsArray__wave"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a55cef565c3944250888a2cac0c688448"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_IsArray</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">data</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411SFH_IsArray4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Check if data wave refers to an array Note: The check is rather weak, another option would be tagging in the wavenote by the executor? </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv433SFH_MoveDatasetHigherIfCompatible11WaveRefWave">
+<span id="_CPPv333SFH_MoveDatasetHigherIfCompatible11WaveRefWave"></span><span id="_CPPv233SFH_MoveDatasetHigherIfCompatible11WaveRefWave"></span><span id="SFH_MoveDatasetHigherIfCompatible__WaveRefWave"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a0311f6549f291b6a2ee278702b59392e"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_MoveDatasetHigherIfCompatible</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">data</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv433SFH_MoveDatasetHigherIfCompatible11WaveRefWave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Moves datasets from array elements to higher level e.g. [dataset(1, 2), dataset(3, 4)] -&gt; dataset([1, 3], [3, 4]) e.g. [dataset(1, 2, 3), dataset(4, 5, 6)] -&gt; dataset([1, 4], [2, 5], [3, 6]) e.g. [dataset(1, 2), dataset(4, 5), dataset(6, 7)] -&gt; dataset([1, 4, 6], [2, 5, 7]) Requirements that this is possible are: </p>
+<p><ul class="simple">
+<li><p>all initial array elements must resolve to datasets</p></li>
+<li><p>all dataset waves of the initial array elements must be non-null, have the same size and must be 1d</p></li>
+<li><p>all elements of these datasets must be non-null, have the same type and the same size and must be max 3d</p></li>
+<li><p>only numeric and text is supported as type, thus the datasets may not contain datasets themselves If none of the requirements are met the input data is returned. </p></li>
+</ul>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424SFH_CreateSelectDataComp6string6string4wave4wave">
+<span id="_CPPv324SFH_CreateSelectDataComp6string6string4wave4wave"></span><span id="_CPPv224SFH_CreateSelectDataComp6string6string4wave4wave"></span><span id="SFH_CreateSelectDataComp__string.string.wave.wave"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a6e6c03a540110acc05078ebb75495a27"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_CreateSelectDataComp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">opShort</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">singleSelect</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">range</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424SFH_CreateSelectDataComp6string6string4wave4wave" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419SFH_GetSingleSelect6string6string8variable8variable8variable8variable">
+<span id="_CPPv319SFH_GetSingleSelect6string6string8variable8variable8variable8variable"></span><span id="_CPPv219SFH_GetSingleSelect6string6string8variable8variable8variable8variable"></span><span id="SFH_GetSingleSelect__string.string.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a76a6a76cf3fd51a93a6ec4763fe81b0a"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetSingleSelect</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">opShort</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelNumber</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mapIndex</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419SFH_GetSingleSelect6string6string8variable8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418SFH_GetStimsetName4wave4wave8variable8variable8variable">
+<span id="_CPPv318SFH_GetStimsetName4wave4wave8variable8variable8variable"></span><span id="_CPPv218SFH_GetStimsetName4wave4wave8variable8variable8variable"></span><span id="SFH_GetStimsetName__wave.wave.variable.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a4c8e02c0a28f0a9d7692dbac2889d3d7"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetStimsetName</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">textualValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelNumber</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418SFH_GetStimsetName4wave4wave8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417SFH_IsSetQCPassed4wave4wave8variable8variable8variable">
+<span id="_CPPv317SFH_IsSetQCPassed4wave4wave8variable8variable8variable"></span><span id="_CPPv217SFH_IsSetQCPassed4wave4wave8variable8variable8variable"></span><span id="SFH_IsSetQCPassed__wave.wave.variable.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1ad8ae0bb2b57b1091fba2c863bd9dd886"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_IsSetQCPassed</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">textualValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelNumber</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417SFH_IsSetQCPassed4wave4wave8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419SFH_IsSweepQCPassed4wave4wave8variable8variable8variable">
+<span id="_CPPv319SFH_IsSweepQCPassed4wave4wave8variable8variable8variable"></span><span id="_CPPv219SFH_IsSweepQCPassed4wave4wave8variable8variable8variable"></span><span id="SFH_IsSweepQCPassed__wave.wave.variable.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a6b3ac5030844aed681e06ec57981be92"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_IsSweepQCPassed</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">textualValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelNumber</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419SFH_IsSweepQCPassed4wave4wave8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423SFH_GetIndepPSQEntrySCI4wave4wave8variable8variable8variable6string">
+<span id="_CPPv323SFH_GetIndepPSQEntrySCI4wave4wave8variable8variable8variable6string"></span><span id="_CPPv223SFH_GetIndepPSQEntrySCI4wave4wave8variable8variable8variable6string"></span><span id="SFH_GetIndepPSQEntrySCI__wave.wave.variable.variable.variable.string"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a14ffbec24658cc02faac971bb6cfa976"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetIndepPSQEntrySCI</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">textualValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelNumber</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">psqLNBEntry</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423SFH_GetIndepPSQEntrySCI4wave4wave8variable8variable8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420SFH_GetIndepPSQEntry4wave4wave8variable8variable8variable6string">
+<span id="_CPPv320SFH_GetIndepPSQEntry4wave4wave8variable8variable8variable6string"></span><span id="_CPPv220SFH_GetIndepPSQEntry4wave4wave8variable8variable8variable6string"></span><span id="SFH_GetIndepPSQEntry__wave.wave.variable.variable.variable.string"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1afb1a1943eda8d6998121d6892fbc2063"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetIndepPSQEntry</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">textualValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelNumber</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">psqLNBEntry</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420SFH_GetIndepPSQEntry4wave4wave8variable8variable8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426SFH_CreateLegendFromRanges4wave11WaveRefWave">
+<span id="_CPPv326SFH_CreateLegendFromRanges4wave11WaveRefWave"></span><span id="_CPPv226SFH_CreateLegendFromRanges4wave11WaveRefWave"></span><span id="SFH_CreateLegendFromRanges__wave.WaveRefWave"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a153cd2f2f806b074a33ee2d0fd68a024"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_CreateLegendFromRanges</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">selectData</span></span>, <span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ranges</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426SFH_CreateLegendFromRanges4wave11WaveRefWave" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv432SFH_GetLabNoteBooksAndDFForSweep6string8variable8variable">
+<span id="_CPPv332SFH_GetLabNoteBooksAndDFForSweep6string8variable8variable"></span><span id="_CPPv232SFH_GetLabNoteBooksAndDFForSweep6string8variable8variable"></span><span id="SFH_GetLabNoteBooksAndDFForSweep__string.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1ac848dfeb42df1532d676d87c47a283ad"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">WAVE</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">WAVE</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">DFREF</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetLabNoteBooksAndDFForSweep</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mapIndex</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv432SFH_GetLabNoteBooksAndDFForSweep6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Function returns the correct numerical and textual LNB and sweepDFR for a given sweepNumber. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> – name of graph window </p></li>
+<li><p><strong>sweepNo</strong> – sweep number </p></li>
+<li><p><strong>mapIndex</strong> – if graph is a SweepBrowser then a non-NaN mapIndex into sweepMap, otherwise must be NaN </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426SFH_GetLabNoteBookForSweep6string8variable8variable8variable">
+<span id="_CPPv326SFH_GetLabNoteBookForSweep6string8variable8variable8variable"></span><span id="_CPPv226SFH_GetLabNoteBookForSweep6string8variable8variable8variable"></span><span id="SFH_GetLabNoteBookForSweep__string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a8fce40417788e2672cb33a20b57ad230"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetLabNoteBookForSweep</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mapIndex</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">logbookWaveType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426SFH_GetLabNoteBookForSweep6string8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Function returns the correct numerical and textual LNB for a given sweepNumber. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> – name of graph window </p></li>
+<li><p><strong>sweepNo</strong> – sweep number </p></li>
+<li><p><strong>logbookWaveType</strong> – one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1LabnotebookWaveTypes"><span class="std std-ref">LabnotebookWaveTypes</span></a></p></li>
+<li><p><strong>mapIndex</strong> – if graph is a SweepBrowser then a non-NaN mapIndex into sweepMap, otherwise must be NaN </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425SFH_StoreAssertInfoParser8variable8variable6string">
+<span id="_CPPv325SFH_StoreAssertInfoParser8variable8variable6string"></span><span id="_CPPv225SFH_StoreAssertInfoParser8variable8variable6string"></span><span id="SFH_StoreAssertInfoParser__variable.variable.string"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a46bff65bda289c842684b90fb4fe137b"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_StoreAssertInfoParser</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">line</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">offset</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">formula</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425SFH_StoreAssertInfoParser8variable8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427SFH_StoreAssertInfoExecutor8variable8variable6string">
+<span id="_CPPv327SFH_StoreAssertInfoExecutor8variable8variable6string"></span><span id="_CPPv227SFH_StoreAssertInfoExecutor8variable8variable6string"></span><span id="SFH_StoreAssertInfoExecutor__variable.variable.string"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a6176469e0f1fb6128a699c66f0ff5e34"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_StoreAssertInfoExecutor</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">srcLocId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427SFH_StoreAssertInfoExecutor8variable8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421SFH_GetDataFromSelect6string11WaveRefWave">
+<span id="_CPPv321SFH_GetDataFromSelect6string11WaveRefWave"></span><span id="_CPPv221SFH_GetDataFromSelect6string11WaveRefWave"></span><span id="SFH_GetDataFromSelect__string.WaveRefWave"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1ac39aa800124071d1ddaa9a2313b38e32"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetDataFromSelect</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">selectData</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421SFH_GetDataFromSelect6string11WaveRefWave" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv437SFH_GetDatasetArrayAsResolvedWaverefsP16SF_ExecutionData8variable8variable">
+<span id="_CPPv337SFH_GetDatasetArrayAsResolvedWaverefsP16SF_ExecutionData8variable8variable"></span><span id="_CPPv237SFH_GetDatasetArrayAsResolvedWaverefsP16SF_ExecutionData8variable8variable"></span><span id="SFH_GetDatasetArrayAsResolvedWaverefs__SF_ExecutionDataP.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1aed7c1e548c128eada825cddff6346f84"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_GetDatasetArrayAsResolvedWaverefs</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv416SF_ExecutionData" title="SF_ExecutionData"><span class="n"><span class="pre">SF_ExecutionData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exd</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">argNum</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">resolveSelect</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv437SFH_GetDatasetArrayAsResolvedWaverefsP16SF_ExecutionData8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Function returns a wave reference wave with one wave for each element of the dataset array Each wave contains the resolved dataset (as wave references) </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exd</strong> – Execution data structure </p></li>
+<li><p><strong>argNum</strong> – Argument index </p></li>
+<li><p><strong>resolveSelect</strong> – [optional, defaults to 0] If set then argument of the select type are automatically converted to sweep data, effectively the data() operation is applied As with data, if the argument is an array of selects, each sweep result gets concatenated to a wref wave </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>wref wave with one wave for each dataset array element. Each wave contains the resolved dataset as waveref wave. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426SFH_ExecuteFormulaInternal6string6string">
+<span id="_CPPv326SFH_ExecuteFormulaInternal6string6string"></span><span id="_CPPv226SFH_ExecuteFormulaInternal6string6string"></span><span id="SFH_ExecuteFormulaInternal__string.string"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a10e1df632e789a81f68f260445437744"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_ExecuteFormulaInternal</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">formula</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426SFH_ExecuteFormulaInternal6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Executes a formula from within an operation with low overhead. </p>
+<p><ul class="simple">
+<li><p>the currently active variable storage is used</p></li>
+<li><p>the formula string is not preprocessed </p></li>
+</ul>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424SFH_AddVariableToStorage6string6string4wave">
+<span id="_CPPv324SFH_AddVariableToStorage6string6string4wave"></span><span id="_CPPv224SFH_AddVariableToStorage6string6string4wave"></span><span id="SFH_AddVariableToStorage__string.string.wave"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a8fe7a4b90d33d652ff89db77de4457ae"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_AddVariableToStorage</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">result</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424SFH_AddVariableToStorage6string6string4wave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Adds a variable to the variable storage. If the variable already exists it is overwritten. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv414SFH_WORKING_DF">
+<span id="_CPPv314SFH_WORKING_DF"></span><span id="_CPPv214SFH_WORKING_DF"></span><span id="SFH_WORKING_DF__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1a99a469c68b27697220e906937aa96bf3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_WORKING_DF</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;FormulaData&quot;</span></span><a class="headerlink" href="#_CPPv414SFH_WORKING_DF" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv426SFH_ARGSETUP_OPERATION_KEY">
+<span id="_CPPv326SFH_ARGSETUP_OPERATION_KEY"></span><span id="_CPPv226SFH_ARGSETUP_OPERATION_KEY"></span><span id="SFH_ARGSETUP_OPERATION_KEY__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1abd787d8aa8e9eeb68c49d7d2d1a37483"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_ARGSETUP_OPERATION_KEY</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Operation&quot;</span></span><a class="headerlink" href="#_CPPv426SFH_ARGSETUP_OPERATION_KEY" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv434SFH_ARGSETUP_EMPTY_OPERATION_VALUE">
+<span id="_CPPv334SFH_ARGSETUP_EMPTY_OPERATION_VALUE"></span><span id="_CPPv234SFH_ARGSETUP_EMPTY_OPERATION_VALUE"></span><span id="SFH_ARGSETUP_EMPTY_OPERATION_VALUE__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1af1912525e1084ebadf3791a6c0c0ca3b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_ARGSETUP_EMPTY_OPERATION_VALUE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;NOOP&quot;</span></span><a class="headerlink" href="#_CPPv434SFH_ARGSETUP_EMPTY_OPERATION_VALUE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv426SFH_DEFAULT_SELECT_FORMULA">
+<span id="_CPPv326SFH_DEFAULT_SELECT_FORMULA"></span><span id="_CPPv226SFH_DEFAULT_SELECT_FORMULA"></span><span id="SFH_DEFAULT_SELECT_FORMULA__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula___helpers_8ipf_1ab3711d592017bc477a8436d37c7abba5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFH_DEFAULT_SELECT_FORMULA</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;select()&quot;</span></span><a class="headerlink" href="#_CPPv426SFH_DEFAULT_SELECT_FORMULA" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_SweepFormula_Helpers.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427SFH_StringChecker_Prototype6string"><code class="docutils literal notranslate"><span class="pre">SFH_StringChecker_Prototype()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428SFH_NumericChecker_Prototype8variable"><code class="docutils literal notranslate"><span class="pre">SFH_NumericChecker_Prototype()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424SFH_GetArgumentAsNumericP16SF_ExecutionData6string8variable8variable10WaveOrNull28SFH_NumericChecker_Prototype8variable"><code class="docutils literal notranslate"><span class="pre">SFH_GetArgumentAsNumeric()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421SFH_GetArgumentAsTextP16SF_ExecutionData6string8variable6string14WaveTextOrNull27SFH_StringChecker_Prototype8variable"><code class="docutils literal notranslate"><span class="pre">SFH_GetArgumentAsText()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421SFH_GetArgumentAsWaveP16SF_ExecutionData6string8variable6string10WaveOrNull8variable8variable8variable8variableP6string8variable"><code class="docutils literal notranslate"><span class="pre">SFH_GetArgumentAsWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428SFH_GetAssertLocationMessagev"><code class="docutils literal notranslate"><span class="pre">SFH_GetAssertLocationMessage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv410SFH_ASSERT8variable6string8variable"><code class="docutils literal notranslate"><span class="pre">SFH_ASSERT()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429SFH_FormatSourceLocationError6string8variable"><code class="docutils literal notranslate"><span class="pre">SFH_FormatSourceLocationError()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415SFH_FATAL_ERROR6string8variable"><code class="docutils literal notranslate"><span class="pre">SFH_FATAL_ERROR()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417SFH_GetEmptyRangev"><code class="docutils literal notranslate"><span class="pre">SFH_GetEmptyRange()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416SFH_IsEmptyRange4wave"><code class="docutils literal notranslate"><span class="pre">SFH_IsEmptyRange()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416SFH_GetFullRangev"><code class="docutils literal notranslate"><span class="pre">SFH_GetFullRange()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415SFH_IsFullRange4wave"><code class="docutils literal notranslate"><span class="pre">SFH_IsFullRange()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413SFH_AsDataSet4wave"><code class="docutils literal notranslate"><span class="pre">SFH_AsDataSet()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426SFH_ExtendIncompleteRanges11WaveRefWave"><code class="docutils literal notranslate"><span class="pre">SFH_ExtendIncompleteRanges()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417SFH_EvaluateRangeP16SF_ExecutionData6string8variable"><code class="docutils literal notranslate"><span class="pre">SFH_EvaluateRange()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421SFH_GetRangeFromEpoch6string6string8variable8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">SFH_GetRangeFromEpoch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423SFH_GetSweepsForFormula6string17WaveRefWaveOrNull6string"><code class="docutils literal notranslate"><span class="pre">SFH_GetSweepsForFormula()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427SFH_GetSweepsForFormulaImpl6string11WaveRefWave6string"><code class="docutils literal notranslate"><span class="pre">SFH_GetSweepsForFormulaImpl()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424SFH_GetNumberOfArgumentsP16SF_ExecutionData"><code class="docutils literal notranslate"><span class="pre">SFH_GetNumberOfArguments()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416SFH_GetWorkingDF6string"><code class="docutils literal notranslate"><span class="pre">SFH_GetWorkingDF()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419SFH_CreateSFRefWave6string6string8variable"><code class="docutils literal notranslate"><span class="pre">SFH_CreateSFRefWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414SFH_IsVariable4wave"><code class="docutils literal notranslate"><span class="pre">SFH_IsVariable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416SFH_CleanUpInput4wave"><code class="docutils literal notranslate"><span class="pre">SFH_CleanUpInput()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418SFH_AddOpToOpStack4wave6string6string"><code class="docutils literal notranslate"><span class="pre">SFH_AddOpToOpStack()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422SFH_AddToArgSetupStack4wave10WaveOrNull6string8variable"><code class="docutils literal notranslate"><span class="pre">SFH_AddToArgSetupStack()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430SFH_GetOutputForExecutorSingle10WaveOrNull6string6string8variable4wave6string"><code class="docutils literal notranslate"><span class="pre">SFH_GetOutputForExecutorSingle()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424SFH_GetOutputForExecutor4wave6string6string4wave"><code class="docutils literal notranslate"><span class="pre">SFH_GetOutputForExecutor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv435SFH_ConvertAllReturnDataToPermanent11WaveRefWave6string6string"><code class="docutils literal notranslate"><span class="pre">SFH_ConvertAllReturnDataToPermanent()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422SFH_CopyDataIfRequired8variable10WaveOrNull10WaveOrNull"><code class="docutils literal notranslate"><span class="pre">SFH_CopyDataIfRequired()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv440SFH_ResolveDatasetElementFromJSONAndTypeP16SF_ExecutionData6string8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">SFH_ResolveDatasetElementFromJSONAndType()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430SFH_CheckForSingleDSAndGetData11WaveRefWave8variable6string8variable"><code class="docutils literal notranslate"><span class="pre">SFH_CheckForSingleDSAndGetData()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv433SFH_ResolveDatasetElementFromJSONP16SF_ExecutionData6string8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">SFH_ResolveDatasetElementFromJSON()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv438SFH_TransferFormulaDataWaveNoteAndMeta11WaveRefWave11WaveRefWave6string6string8WaveText8variable"><code class="docutils literal notranslate"><span class="pre">SFH_TransferFormulaDataWaveNoteAndMeta()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421SFH_GetArgumentSelectP16SF_ExecutionData8variable8variable"><code class="docutils literal notranslate"><span class="pre">SFH_GetArgumentSelect()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425SFH_GetEpochNamesFromInfo8WaveText"><code class="docutils literal notranslate"><span class="pre">SFH_GetEpochNamesFromInfo()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv437SFH_GetEpochIndicesByWildcardPatterns8WaveText8WaveText"><code class="docutils literal notranslate"><span class="pre">SFH_GetEpochIndicesByWildcardPatterns()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422SFH_ResultTypeToString8variable"><code class="docutils literal notranslate"><span class="pre">SFH_ResultTypeToString()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420SFH_FormatResultsKey8variable6string"><code class="docutils literal notranslate"><span class="pre">SFH_FormatResultsKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429SFH_CreateResultsWaveWithCode6string6string4wave6string8variable"><code class="docutils literal notranslate"><span class="pre">SFH_CreateResultsWaveWithCode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429SFH_GetBrowserForFormulaGraph6string"><code class="docutils literal notranslate"><span class="pre">SFH_GetBrowserForFormulaGraph()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430SFH_GetFormulaPanelFromBrowser6string8variable"><code class="docutils literal notranslate"><span class="pre">SFH_GetFormulaPanelFromBrowser()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424SFH_GetFormulaPlotPanelsv"><code class="docutils literal notranslate"><span class="pre">SFH_GetFormulaPlotPanels()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421SFH_NewSelectDataWave8variable8variable"><code class="docutils literal notranslate"><span class="pre">SFH_NewSelectDataWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423SFH_ParseSweepDataRange4wave"><code class="docutils literal notranslate"><span class="pre">SFH_ParseSweepDataRange()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv433SFH_ParseToSelectDataWaveAndRange4wave"><code class="docutils literal notranslate"><span class="pre">SFH_ParseToSelectDataWaveAndRange()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422SFH_GetNewArgSetupWave8variable"><code class="docutils literal notranslate"><span class="pre">SFH_GetNewArgSetupWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421SFH_SerializeArgSetup8WaveText"><code class="docutils literal notranslate"><span class="pre">SFH_SerializeArgSetup()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423SFH_DeSerializeArgSetup8variable6string"><code class="docutils literal notranslate"><span class="pre">SFH_DeSerializeArgSetup()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422SFH_ResetArgSetupStack4wave6string"><code class="docutils literal notranslate"><span class="pre">SFH_ResetArgSetupStack()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425SFH_GetArgSetupValueByKey8WaveText6string"><code class="docutils literal notranslate"><span class="pre">SFH_GetArgSetupValueByKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420SFH_GetEmptyArgSetupv"><code class="docutils literal notranslate"><span class="pre">SFH_GetEmptyArgSetup()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421SFH_EnrichAnnotations8WaveText8WaveText"><code class="docutils literal notranslate"><span class="pre">SFH_EnrichAnnotations()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428SFH_EnrichAnnotationsRelease4wave"><code class="docutils literal notranslate"><span class="pre">SFH_EnrichAnnotationsRelease()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430SFH_GetPlotMarkerCodeSelection8variable"><code class="docutils literal notranslate"><span class="pre">SFH_GetPlotMarkerCodeSelection()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428SFH_GetPlotLineCodeSelection8variable"><code class="docutils literal notranslate"><span class="pre">SFH_GetPlotLineCodeSelection()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416SFH_FilterSelect10WaveOrNull8variable"><code class="docutils literal notranslate"><span class="pre">SFH_FilterSelect()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422SFH_CheckArgumentCountP16SF_ExecutionData6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">SFH_CheckArgumentCount()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419SFH_GetStimsetRange6string4wave4wave"><code class="docutils literal notranslate"><span class="pre">SFH_GetStimsetRange()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv444SFH_GetNumericRangeFromEpochFromSingleSelect6string4wave4wave"><code class="docutils literal notranslate"><span class="pre">SFH_GetNumericRangeFromEpochFromSingleSelect()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428SFH_GetNumericRangeFromEpoch6string4wave4wave4wave8variable8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">SFH_GetNumericRangeFromEpoch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425SFH_AttemptDatasetResolve6string8variable"><code class="docutils literal notranslate"><span class="pre">SFH_AttemptDatasetResolve()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411SFH_IsArray4wave"><code class="docutils literal notranslate"><span class="pre">SFH_IsArray()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv433SFH_MoveDatasetHigherIfCompatible11WaveRefWave"><code class="docutils literal notranslate"><span class="pre">SFH_MoveDatasetHigherIfCompatible()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424SFH_CreateSelectDataComp6string6string4wave4wave"><code class="docutils literal notranslate"><span class="pre">SFH_CreateSelectDataComp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419SFH_GetSingleSelect6string6string8variable8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">SFH_GetSingleSelect()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418SFH_GetStimsetName4wave4wave8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">SFH_GetStimsetName()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417SFH_IsSetQCPassed4wave4wave8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">SFH_IsSetQCPassed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419SFH_IsSweepQCPassed4wave4wave8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">SFH_IsSweepQCPassed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423SFH_GetIndepPSQEntrySCI4wave4wave8variable8variable8variable6string"><code class="docutils literal notranslate"><span class="pre">SFH_GetIndepPSQEntrySCI()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420SFH_GetIndepPSQEntry4wave4wave8variable8variable8variable6string"><code class="docutils literal notranslate"><span class="pre">SFH_GetIndepPSQEntry()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426SFH_CreateLegendFromRanges4wave11WaveRefWave"><code class="docutils literal notranslate"><span class="pre">SFH_CreateLegendFromRanges()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv432SFH_GetLabNoteBooksAndDFForSweep6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">SFH_GetLabNoteBooksAndDFForSweep()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426SFH_GetLabNoteBookForSweep6string8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">SFH_GetLabNoteBookForSweep()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425SFH_StoreAssertInfoParser8variable8variable6string"><code class="docutils literal notranslate"><span class="pre">SFH_StoreAssertInfoParser()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427SFH_StoreAssertInfoExecutor8variable8variable6string"><code class="docutils literal notranslate"><span class="pre">SFH_StoreAssertInfoExecutor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421SFH_GetDataFromSelect6string11WaveRefWave"><code class="docutils literal notranslate"><span class="pre">SFH_GetDataFromSelect()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv437SFH_GetDatasetArrayAsResolvedWaverefsP16SF_ExecutionData8variable8variable"><code class="docutils literal notranslate"><span class="pre">SFH_GetDatasetArrayAsResolvedWaverefs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426SFH_ExecuteFormulaInternal6string6string"><code class="docutils literal notranslate"><span class="pre">SFH_ExecuteFormulaInternal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424SFH_AddVariableToStorage6string6string4wave"><code class="docutils literal notranslate"><span class="pre">SFH_AddVariableToStorage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414SFH_WORKING_DF"><code class="docutils literal notranslate"><span class="pre">SFH_WORKING_DF</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426SFH_ARGSETUP_OPERATION_KEY"><code class="docutils literal notranslate"><span class="pre">SFH_ARGSETUP_OPERATION_KEY</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv434SFH_ARGSETUP_EMPTY_OPERATION_VALUE"><code class="docutils literal notranslate"><span class="pre">SFH_ARGSETUP_EMPTY_OPERATION_VALUE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426SFH_DEFAULT_SELECT_FORMULA"><code class="docutils literal notranslate"><span class="pre">SFH_DEFAULT_SELECT_FORMULA</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___sweep_formula___executor_8ipf.html"
+                          title="previous chapter">File MIES_SweepFormula_Executor.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___sweep_formula___operations_8ipf.html"
+                          title="next chapter">File MIES_SweepFormula_Operations.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___sweep_formula___operations_8ipf.html" title="File MIES_SweepFormula_Operations.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___sweep_formula___executor_8ipf.html" title="File MIES_SweepFormula_Executor.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_SweepFormula_Helpers.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Developer &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Bug reporting" href="reportingbugs.html" />
+    <link rel="prev" title="Installation instructions" href="installation.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="reportingbugs.html" title="Bug reporting"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation instructions"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Developer</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="developer">
+<h1>Developer<a class="headerlink" href="#developer" title="Link to this heading">¶</a></h1>
+<section id="getting-mies">
+<span id="id1"></span><h2>Getting MIES<a class="headerlink" href="#getting-mies" title="Link to this heading">¶</a></h2>
+<section id="cloning-the-mies-repository">
+<h3>Cloning the MIES repository<a class="headerlink" href="#cloning-the-mies-repository" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">--recurse-submodules</span> <span class="pre">https://github.com/AllenInstitute/MIES</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">./tools/initial-repo-config.sh</span></code> (Requires a Git Bash/Terminal)</p></li>
+</ul>
+<p>If you only want to <strong>use</strong> MIES and not <strong>develop</strong> it, you can also get the source
+code via the <a class="reference external" href="https://github.com/AllenInstitute/MIES/releases">release package</a> as zip file.</p>
+</section>
+<section id="building-the-documentation">
+<h3>Building the documentation<a class="headerlink" href="#building-the-documentation" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>The script <code class="docutils literal notranslate"><span class="pre">tools/build-documentation.sh</span></code> allows to build the documentation locally</p></li>
+<li><p>This command also installs the required pip packages, so using a dedicated virtual environment is advised</p></li>
+<li><p>Linux users might directly execute the docker version in <code class="docutils literal notranslate"><span class="pre">tools/documentation/run.sh</span></code>. This script also
+works on WSL.</p></li>
+</ul>
+</section>
+<section id="updating-documentation">
+<h3>Updating documentation<a class="headerlink" href="#updating-documentation" title="Link to this heading">¶</a></h3>
+<p>Due to our excessive use of the breathe sphinx extension which feeds from
+doxygen, a full documentation build takes around 5 minutes. It is also not
+possible to use the sphinx autobuild feature, as it rebuilds all everything from
+scratch due to breathe.</p>
+<p>For fast read-write-view cycles while writing the user documentation do the following:</p>
+<ul class="simple">
+<li><p>Start with a clean <code class="docutils literal notranslate"><span class="pre">Packages/doc</span></code> folder</p></li>
+<li><p>Apply the <a class="reference download internal" download="" href="_downloads/67f59d897c12b62a94a4795fb94a9ccb/0001-WIP-fast-sphinx-rst-update-cycle.patch"><code class="xref download docutils literal notranslate"><span class="pre">patch</span></code></a>
+which temporarily removes breathe via <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">am</span> <span class="pre">0001-WIP-fast-sphinx-rst-update-cycle.patch</span></code></p></li>
+<li><p>Call <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">autobuild</span></code> which opens a local webbrowser and rebuilds after
+every change. This time incremental updates work.</p></li>
+</ul>
+</section>
+</section>
+<section id="updating-requirements-files">
+<h2>Updating requirements files<a class="headerlink" href="#updating-requirements-files" title="Link to this heading">¶</a></h2>
+<p>All python package requirements.txt files we ship must have package hashes
+included for improved security.</p>
+<p>These files are generated from requirements.in via</p>
+<blockquote>
+<div><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>pip-compile --upgrade --generate-hashes --output-file=requirements.txt --strip-extras requirements.in
+</pre></div>
+</div>
+</div></blockquote>
+<p>Therefore updates should be done directly in requirements.in and then calling pip-compile. The platform/OS
+needs to be the same when generating the requirements.txt and running them. We currently run all python code
+in debian bookworm docker containers. On Windows you can get a debian bookworm with WSL.</p>
+</section>
+<section id="linting">
+<h2>Linting<a class="headerlink" href="#linting" title="Link to this heading">¶</a></h2>
+<p>As part of our CI we do run various linters on code, files and documentation using <a class="reference external" href="https://www.pre-commit.com">pre-commit</a>.</p>
+<p>For local development this can be done via:</p>
+<p>One time setup:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">uv</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">venv</span> <span class="pre">--python</span> <span class="pre">3.13</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pre-commit</span></code></p></li>
+</ul>
+<p>And then with <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">run</span> <span class="pre">pre-commit</span></code> which runs only on changed files.
+To lint all files do <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">run</span> <span class="pre">pre-commit</span> <span class="pre">run</span> <span class="pre">--all-files</span></code>.</p>
+<p>Registering it with git so that this is automatically checked when committing can be done
+with <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">run</span> <span class="pre">pre-commit</span> <span class="pre">install</span></code> (only needed once).</p>
+</section>
+<section id="release-handling">
+<h2>Release Handling<a class="headerlink" href="#release-handling" title="Link to this heading">¶</a></h2>
+<p>If guidelines are not followed, the MIES version will be unknown, and
+data acquisition is blocked.</p>
+<section id="cutting-a-new-release">
+<h3>Cutting a new release<a class="headerlink" href="#cutting-a-new-release" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Checkout a new branch <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">-b</span> <span class="pre">feature/XXXX-release-notes</span> <span class="pre">main</span></code></p></li>
+<li><p>Paste the contents of <code class="docutils literal notranslate"><span class="pre">Packages\doc\releasenotes_template.rst</span></code> to
+the top of <code class="docutils literal notranslate"><span class="pre">Packages\doc\releasenotes.rst</span></code></p></li>
+<li><p>Call <code class="docutils literal notranslate"><span class="pre">tools\create-changelog.sh</span></code> which generate a raw changelog and
+fill <code class="docutils literal notranslate"><span class="pre">releasenotes.rst</span></code> with a cleaned up version of it.
+Work from bottom to top.</p></li>
+<li><p>Propose a pull request and get it merged</p></li>
+<li><p>Checkout the main branch</p></li>
+<li><p>Tag the current state with <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">tag</span> <span class="pre">Release_X.Y_*</span></code>, see <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">tag</span></code>
+for how the asterisk should look like</p></li>
+<li><p>Push the tag: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">origin</span> <span class="pre">$tag</span></code>. You can pass <code class="docutils literal notranslate"><span class="pre">--dry-run</span></code> for
+testing out what is getting pushed without pushing anything.</p></li>
+<li><p>Create the release branch:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">-b</span> <span class="pre">release/X.Y</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">--no-verify</span> <span class="pre">-u</span> <span class="pre">origin</span> <span class="pre">release/X.Y</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span> <span class="pre">--allow-empty</span> <span class="pre">-m</span> <span class="pre">&quot;Start</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">release</span> <span class="pre">X.Y&quot;</span></code></p></li>
+</ul>
+</li>
+<li><p>Create a new release on github and check that the Github Actions job
+correctly uploads the artifacts</p></li>
+</ul>
+</section>
+<section id="creating-a-release-package-manually">
+<h3>Creating a release package manually<a class="headerlink" href="#creating-a-release-package-manually" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Open a git bash terminal by choosing Actions-&gt;”Open in terminal” in
+SourceTree</p></li>
+<li><p>Checkout the release branch <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">release/$myVersion</span></code></p></li>
+<li><p>If none exists create one with <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">-b</span> <span class="pre">release/$myVersion</span></code></p></li>
+<li><p>Change to the <code class="docutils literal notranslate"><span class="pre">tools</span></code> directory in the worktree root folder</p></li>
+<li><p>Execute <code class="docutils literal notranslate"><span class="pre">./create-release.sh</span></code></p></li>
+<li><p>The release package including the version information is then
+available as zip file</p></li>
+</ul>
+</section>
+</section>
+<section id="continuous-integration-server">
+<h2>Continuous integration server<a class="headerlink" href="#continuous-integration-server" title="Link to this heading">¶</a></h2>
+<p>Our <a class="reference external" href="https://github.com/AllenInstitute/MIES/actions">CI server</a>, called
+Github Actions, provides the following services for MIES:</p>
+<section id="automatic-release-package-building">
+<h3>Automatic release package building<a class="headerlink" href="#automatic-release-package-building" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>If a commit is added to the <code class="docutils literal notranslate"><span class="pre">main</span></code> or any <code class="docutils literal notranslate"><span class="pre">release/*</span></code> branch a CI
+pipeline is started</p></li>
+<li><p>In this pipeline are some basic tests executed and a new installer is build.
+The installer is uploaded to the corresponging release (<code class="docutils literal notranslate"><span class="pre">latest</span></code> for
+<code class="docutils literal notranslate"><span class="pre">main</span></code>).</p></li>
+<li><p>If the commit is added to the <code class="docutils literal notranslate"><span class="pre">main</span></code> branch the CI will also create a new
+version of the documentation and deploy it to Github Pages.</p></li>
+</ul>
+</section>
+<section id="compilation-testing">
+<h3>Compilation testing<a class="headerlink" href="#compilation-testing" title="Link to this heading">¶</a></h3>
+<p>The full MIES installation with and without hardware XOPs are IGOR Pro compile
+tested using a Github Actions job. This allows to catch compile time errors
+early on.</p>
+<p>For testing compilation manually perform the following steps:</p>
+<ul class="simple">
+<li><p>Create in <code class="docutils literal notranslate"><span class="pre">User</span> <span class="pre">Procedures</span></code> a shortcut pointing to
+<code class="docutils literal notranslate"><span class="pre">Packages\MIES_Include.ipf</span></code> and <code class="docutils literal notranslate"><span class="pre">Packages\tests</span></code></p></li>
+<li><p>Remove the shortcut <code class="docutils literal notranslate"><span class="pre">Packages\MIES_Include.ipf</span></code> in
+<code class="docutils literal notranslate"><span class="pre">Igor</span> <span class="pre">Procedures</span></code></p></li>
+<li><p>Close all Igor Pro instances</p></li>
+<li><p>Execute <code class="docutils literal notranslate"><span class="pre">tools\autorun-test.sh</span></code></p></li>
+<li><p>Watch the output</p></li>
+</ul>
+</section>
+<section id="unit-and-integration-testing">
+<h3>Unit and integration testing<a class="headerlink" href="#unit-and-integration-testing" title="Link to this heading">¶</a></h3>
+<p>A couple of our Github Actions jobs are responsible for executing tests. All
+tests are written using the <a class="reference external" href="https://docs.byte-physics.de/igortest">Igor Pro Universal Testing Framework</a>.</p>
+<p>The folders in <code class="docutils literal notranslate"><span class="pre">Packages\tests</span></code> follow a common naming scheme. Each folder
+holds a separate Igor Experiment with tests. The tests in folders starting with
+<code class="docutils literal notranslate"><span class="pre">Hardware</span></code> requires present hardware, the others don’t. In each folder an Igor
+Experiment named like the folder with <code class="docutils literal notranslate"><span class="pre">.pxp</span></code>-suffix is present which allows
+to execute all the tests from that folder.</p>
+<p>For executing the tests manually perform the followings steps:</p>
+<ul class="simple">
+<li><p>Create in <code class="docutils literal notranslate"><span class="pre">User</span> <span class="pre">Procedures</span></code> a shortcut pointing to
+<code class="docutils literal notranslate"><span class="pre">Packages\MIES_Include.ipf</span></code> and <code class="docutils literal notranslate"><span class="pre">Packages\tests</span></code></p></li>
+<li><p>Remove the shortcut <code class="docutils literal notranslate"><span class="pre">Packages\MIES_Include.ipf</span></code> in <code class="docutils literal notranslate"><span class="pre">Igor</span> <span class="pre">Procedures</span></code></p></li>
+<li><p>Open one of the test experiments in <code class="docutils literal notranslate"><span class="pre">Packages\tests</span></code></p></li>
+<li><p>Call <code class="docutils literal notranslate"><span class="pre">RunWithOpts()</span></code></p></li>
+<li><p>Watch the output</p></li>
+</ul>
+<p>The environment variables <code class="docutils literal notranslate"><span class="pre">CI_INSTRUMENT_TESTS</span></code>/<code class="docutils literal notranslate"><span class="pre">CI_EXPENSIVE_CHECKS</span></code> allow
+to tweak test execution. By default we do expensive tests in CI and
+instrumentation in CI for the main branch. Accepted are all numbers but the
+values <code class="docutils literal notranslate"><span class="pre">0</span></code>/<code class="docutils literal notranslate"><span class="pre">1</span></code> are suggested.</p>
+</section>
+<section id="documentation-building">
+<h3>Documentation building<a class="headerlink" href="#documentation-building" title="Link to this heading">¶</a></h3>
+<p>The documentation for the main branch is automatically built and uploaded by
+<a class="reference external" href="https://github.com/AllenInstitute/MIES/actions/workflows/build-main.yml">this</a>
+Github Actions job.</p>
+</section>
+<section id="setting-up-a-continuous-integration-server-linux">
+<h3>Setting up a continuous integration server (Linux)<a class="headerlink" href="#setting-up-a-continuous-integration-server-linux" title="Link to this heading">¶</a></h3>
+<section id="install-required-software">
+<h4>Install required software<a class="headerlink" href="#install-required-software" title="Link to this heading">¶</a></h4>
+<ul class="simple">
+<li><p>Install <a class="reference external" href="https://docker.io">Docker</a></p></li>
+<li><p>Misc required software: <code class="docutils literal notranslate"><span class="pre">dnf</span> <span class="pre">install</span> <span class="pre">git</span></code></p></li>
+</ul>
+</section>
+<section id="setup-github-actions-runner">
+<h4>Setup Github Actions runner<a class="headerlink" href="#setup-github-actions-runner" title="Link to this heading">¶</a></h4>
+<ul class="simple">
+<li><p>Install the Github Actions runner according to the
+<a class="reference external" href="https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/adding-self-hosted-runners">instructions</a></p></li>
+<li><p>Don’t install the runner as a service but use the local user</p></li>
+<li><p>Add a fitting label to the agent in the repository settings at
+Github (see <cite>detailed description &lt;https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/using-labels-with-self-hosted-runners&gt;</cite>)</p></li>
+</ul>
+</section>
+</section>
+<section id="setting-up-a-continuous-integration-runner-windows-itc18-itc1600-and-ni">
+<h3>Setting up a continuous integration runner (Windows, <code class="docutils literal notranslate"><span class="pre">ITC18</span></code>, <code class="docutils literal notranslate"><span class="pre">ITC1600</span></code>  and <code class="docutils literal notranslate"><span class="pre">NI</span></code>)<a class="headerlink" href="#setting-up-a-continuous-integration-runner-windows-itc18-itc1600-and-ni" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Windows 11 with “Remote Desktop” and “SSH Server” enabled user</p></li>
+<li><p>Install the folllowing programs:</p>
+<ul>
+<li><p>Git (choose the installer option which will make the Unix tools
+available in cmd as well)</p></li>
+<li><p>Multiclamp Commander, unzip the executable package to allow installing it</p></li>
+<li><p>NIDAQ-mx driver package 2025 Q4 or later</p></li>
+<li><p>NIDAQ-mx XOP from WaveMetrics</p></li>
+<li><p>HEKA Hardware Drivers 2014-03 Windows.zip from <a class="reference external" href="https://github.com/AllenInstitute/ITCXOP2/issues/36">here</a></p></li>
+<li><p>Igor Pro (latest required versions), the binary folder needs to be named <code class="docutils literal notranslate"><span class="pre">IgorBinaries_x64_r$revision</span></code></p></li>
+<li><p>Github Actions runner as described above</p></li>
+<li><p>VC Redistributable package from <code class="docutils literal notranslate"><span class="pre">tools/installer/vc_redist.x64.exe</span></code></p></li>
+</ul>
+</li>
+<li><p>Start Igor Pro and open a DA_Ephys panel, lock the device. This will
+not work, so follow the posted suggestions to get it working (registry fix and ASLR fix).</p></li>
+<li><p>Add shortcuts to <code class="docutils literal notranslate"><span class="pre">MC700B.exe</span></code> and <code class="docutils literal notranslate"><span class="pre">C:\actions-runner\run.cmd</span></code> into <code class="docutils literal notranslate"><span class="pre">C:\ProgramData\Microsoft\Windows\Start</span> <span class="pre">Menu\Programs\StartUp</span></code></p></li>
+</ul>
+</section>
+<section id="setting-up-a-continuous-integration-runner-windows-igorpro">
+<h3>Setting up a continuous integration runner (Windows, <code class="docutils literal notranslate"><span class="pre">IgorPro</span></code>)<a class="headerlink" href="#setting-up-a-continuous-integration-runner-windows-igorpro" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Windows 11 with “Remote Desktop” enabled user</p></li>
+<li><p>Install the folllowing programs:</p>
+<ul>
+<li><p>Git (choose the installer option which will make the Unix tools
+available in cmd as well)</p></li>
+<li><p>Igor Pro (latest required versions), the binary folder needs to be named <code class="docutils literal notranslate"><span class="pre">IgorBinaries_x64_r$revision</span></code></p></li>
+<li><p>Multiclamp Commander (the MCC library is required to run the non-hardware tests,
+but the application itself does not have to run)</p></li>
+<li><p>Github Actions runner as described above</p></li>
+<li><p>VC Redistributable package from <code class="docutils literal notranslate"><span class="pre">tools/installer/vc_redist.x64.exe</span></code></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="setting-up-a-continuous-integration-runner-windows-certificate">
+<h3>Setting up a continuous integration runner (Windows, <code class="docutils literal notranslate"><span class="pre">Certificate</span></code>)<a class="headerlink" href="#setting-up-a-continuous-integration-runner-windows-certificate" title="Link to this heading">¶</a></h3>
+<p>Steps as above for the <code class="docutils literal notranslate"><span class="pre">NI</span></code>/<code class="docutils literal notranslate"><span class="pre">ITC18</span></code>/<code class="docutils literal notranslate"><span class="pre">ITC1600</span></code> machine plus:</p>
+<ul class="simple">
+<li><p>Install Windows SDK from <a class="reference external" href="https://developer.microsoft.com/de-de/windows/downloads/windows-sdk">https://developer.microsoft.com/de-de/windows/downloads/windows-sdk</a></p></li>
+<li><p>Install [SafeNet](<a class="reference external" href="https://support.globalsign.com/code-signing/safenet-drivers#Windows">https://support.globalsign.com/code-signing/safenet-drivers#Windows</a>) on the machine if not yet done</p></li>
+<li><p>Plugin the USB key with the EV-certificate</p></li>
+</ul>
+</section>
+<section id="available-ci-servers">
+<h3>Available CI servers<a class="headerlink" href="#available-ci-servers" title="Link to this heading">¶</a></h3>
+<p>Distributing jobs to agents in Github Actions is done via runner labels. A
+runner can have more than one label at the same time and the runner capabilities
+is described by the sum of its labels.</p>
+<p>The following labels are in use:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">self-hosted</span></code>: Always use this label to use our own runners</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Linux</span></code>: Agents run on Linux with</p>
+<ul>
+<li><p>Rocky Linux release 8.6 (Green Obsidian)</p></li>
+<li><p>No Hardware</p></li>
+<li><p>No Igor Pro</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Docker</span></code>: Agents can run docker containers</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Windows</span></code>: Agents run on Windows with</p>
+<ul>
+<li><p>Windows 11</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Certificate</span></code>: Agent can sign installer packages</p>
+<ul>
+<li><p>EV certificate on USB stick</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">IgorPro</span></code>: Can run Igor Pro</p>
+<ul>
+<li><p>Igor Pro (latest required versions)</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ITC18</span></code>: Agent can execute hardware tests with ITC18USB hardware</p>
+<ul>
+<li><p>ITC18-USB hardware, 2 AD/DA channels are looped</p></li>
+<li><p>MCC demo amplifier only</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ITC1600</span></code>: Agent can execute hardware tests with ITC1600 hardware</p>
+<ul>
+<li><p>ITC-1600 hardware with one rack, 2 AD/DA channels are looped</p></li>
+<li><p>MCC demo amplifier only</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NI</span></code>: Agent can execute hardware tests with NI hardware</p>
+<ul>
+<li><p>NI PCIe-6343, 2 AD/DA channels are looped</p></li>
+<li><p>MCC demo amplifier only</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="setting-up-renewing-ev-certificate">
+<h3>Setting up/Renewing EV certificate<a class="headerlink" href="#setting-up-renewing-ev-certificate" title="Link to this heading">¶</a></h3>
+<p>Our installer is signed with an EV (extended validation) certificate. This is done to pass through antivirus software.
+These certificates come on USB tokens which are usable for three years.</p>
+<p>The idea for the automation part is from [here](<a class="reference external" href="https://stackoverflow.com/a/54439759">https://stackoverflow.com/a/54439759</a>).
+Remember that you have only three tries with a false password!</p>
+</section>
+</section>
+<section id="renewal-process">
+<h2>Renewal process<a class="headerlink" href="#renewal-process" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Ask Tim to get a new certificate. Takes around 4 weeks due to heavy administration involvement.</p></li>
+<li><p>Exchange the old USB token with the new one</p></li>
+<li><p>Physically destroy the old USB token</p></li>
+<li><p>Install Windows SDK from <a class="reference external" href="https://developer.microsoft.com/de-de/windows/downloads/windows-sdk/">https://developer.microsoft.com/de-de/windows/downloads/windows-sdk/</a></p></li>
+<li><p>Install [SafeNet](<a class="reference external" href="https://support.globalsign.com/code-signing/safenet-drivers#Windows">https://support.globalsign.com/code-signing/safenet-drivers#Windows</a>) on the machine if not yet done</p></li>
+<li><p>As you can’t see the token when logged in via Remote Desktop (RDP) you need to workaround that:</p></li>
+<li><p>Install Anydesk</p></li>
+<li><p>Enable Unattended Access with a strong password
+- Disconnect with RDP
+- Connect with Anydesk
+- Open SafeNet
+- Change the password (the initial one came via email, it needs to be strong but at most 15 characters long)
+- Don’t try to change the admin password or unlock the token.
+- Export the public certificate from the <cite>Advanced View -&gt; Tokens -&gt; User certificates</cite> and save in tools/installer/public-key.cer
+- Get the “Container name” as well
+- Store the new password and the new container name in a secure place
+- Checkout the MIES branch with the new public key/certificate
+- <cite>./tools/create-installer.sh</cite>
+- <cite>./tools/sign-installer.sh -p ‘[]=name’</cite> (name is the “Container name”)
+- You should now get asked for the password in a GUI prompt, enter it.
+- Now this should have created a signed installer, if not check the previous steps.
+- Try with <cite>./tools/sign-installer.sh -p ‘[{{password}}]=name’</cite> this now includes also the password.
+- Now this should have created a signed installer again, but this time without password prompt.
+- If the last step worked, update the <cite>GHA_MIES_CERTIFICATE_PIN</cite> in github and make a PR.</p></li>
+<li><p>Disable <cite>Unattended Access</cite> in Anydesk again</p></li>
+<li><p>Add a calendar entry for expiration date minus 6 weeks for the certificate renewal</p></li>
+</ul>
+<section id="branch-naming-scheme">
+<h3>Branch naming scheme<a class="headerlink" href="#branch-naming-scheme" title="Link to this heading">¶</a></h3>
+<p>For making code review easier we try to follow a naming scheme for branches behind PRs.</p>
+<p>Scheme: <code class="docutils literal notranslate"><span class="pre">$prefix/$pr-$text</span></code></p>
+<p>Where <code class="docutils literal notranslate"><span class="pre">$prefix</span></code> is one of <code class="docutils literal notranslate"><span class="pre">feature</span></code>/<code class="docutils literal notranslate"><span class="pre">bugfix</span></code>, <code class="docutils literal notranslate"><span class="pre">$pr</span></code> is the number of the soon-to-be-created pull request and
+<code class="docutils literal notranslate"><span class="pre">$text</span></code> a user defined descriptive text.</p>
+<p>Contributers are encouraged to install the <code class="docutils literal notranslate"><span class="pre">pre-push</span></code> git hook from the tools
+directory. This hook handles inserting the correct PR number automatically if
+the current branch follows the naming scheme <code class="docutils literal notranslate"><span class="pre">$prefix/XXXX-$text</span></code>.</p>
+</section>
+<section id="continuous-integration-hints">
+<h3>Continuous Integration Hints<a class="headerlink" href="#continuous-integration-hints" title="Link to this heading">¶</a></h3>
+<p>As part of the continuous integration pipeline tests are run. A full test run including the hardware tests
+tales several hours. Thus, if a lot of pull requests are updated pending test runs could queue up and
+it might take rather long until results are available.</p>
+<p>Thus, for changes where the commits are in a state where no full test run by the CI makes sense it is
+possible to inhibit the automatic tests. Typically this is the case if the developer commits changes
+in progress and pushes these for the purpose of a secondary backup or further commit organization.
+Inhibiting tests for these cases frees testing resources for other pull requests.</p>
+<p>To inhibit test runs the key <code class="docutils literal notranslate"><span class="pre">[SKIP</span> <span class="pre">CI]</span></code> has to be added to the commit message.</p>
+<p>The key can be removed later easily through a rebase with rewording the commit message.
+After pushing to the repository the CI queues the tests again for this pull request.</p>
+</section>
+<section id="debugging-threadsafe-functions">
+<h3>Debugging threadsafe functions<a class="headerlink" href="#debugging-threadsafe-functions" title="Link to this heading">¶</a></h3>
+<p>The function <code class="docutils literal notranslate"><span class="pre">DisableThreadsafeSupport()</span></code> allows to turn off threadsafe support globally. This allows to use the
+debugger in threadsafe functions. Every MIES features which does not complain via <code class="docutils literal notranslate"><span class="pre">ASSERT()</span></code> or <code class="docutils literal notranslate"><span class="pre">BUG()</span></code> is supposed
+to work without threadsafe support as well.</p>
+</section>
+<section id="preventing-debugger-popup">
+<h3>Preventing Debugger Popup<a class="headerlink" href="#preventing-debugger-popup" title="Link to this heading">¶</a></h3>
+<p>There exist critical function calls that raise a runtime error. In well-defined circumstances the error condition is evaluated properly afterwards.
+When debugger is enabled and options are set to “Debug On Error”, then the Debugger will popup on the line where such functions calls take place.
+This is inconvenient for debugging because the error is intended and properly handled. To prevent the debugger to open the coding convention is:</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>AssertOnAndClearRTError()
+CriticalFunction();<span class="w"> </span>err<span class="w"> </span>=<span class="w"> </span><span class="nf">getRTError</span>(1)
+</pre></div>
+</div>
+<p>Notable the second part that clears the RTE must be in the same line and can not be moved to an own function.
+This coding convention is only valid, if the critical function is expected to raise an runtime error.</p>
+</section>
+<section id="runtime-error-abort-handling-conventions">
+<h3>Runtime Error / Abort Handling Conventions<a class="headerlink" href="#runtime-error-abort-handling-conventions" title="Link to this heading">¶</a></h3>
+<p>Here a coding convention for try / catch / endtry constructs is introduced to
+prevent common issues like silently clearing unexpected runtime error conditions
+by using these.</p>
+<p>A try / catch / endtry construct catches by specification either</p>
+<ul class="simple">
+<li><p>Runtime errors when AbortOnRTE is encountered between try / catch</p></li>
+<li><p>Aborts when encountered between try / catch</p></li>
+</ul>
+<p>The code must take into account the possibility of runtime errors generated
+by bad code. These unexpected RTEs must not be silently cleared.</p>
+<p>For the case, where an RTE is expected from CriticalFunction, the common approach is:</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>AssertOnAndClearRTError()
+<span class="k">try</span>
+<span class="w">    </span>CriticalFunction();<span class="w"> </span><span class="k">AbortOnRTE</span>
+<span class="k">catch</span>
+<span class="w">    </span>err<span class="w"> </span>=<span class="w"> </span>ClearRTError()
+    ...
+<span class="k">endtry</span>
+</pre></div>
+</div>
+<p>Here pending RTEs are handled before the try. By convention the AbortOnRTE must be
+placed in the same function as the try / catch / endtry construct.
+The code between try / catch should only include critical function calls and be
+kept minimal. The expected RTE condition should be cleared directly after catch.</p>
+<p>For the case, where an Abort is expected from CriticalFunction, the common approach is:</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="k">try</span>
+<span class="w">    </span>CriticalFunction()
+<span class="k">catch</span>
+<span class="w">    </span>...
+<span class="k">endtry</span>
+</pre></div>
+</div>
+<p>As Abort does not generate an RTE condition the try / catch / endtry construct
+leaves any possible unexpected RTE condition pending and no RTE condition is cleared.
+The programmer might consider evaluating <code class="docutils literal notranslate"><span class="pre">V_AbortCode</span></code> after catch.</p>
+<p>It is recommended to comment in the code before the try what the construct is
+intended to handle (RTE, Abort or both).</p>
+</section>
+<section id="retrieving-headstage-channel-information-from-the-lbn">
+<h3>Retrieving Headstage / Channel Information from the LBN<a class="headerlink" href="#retrieving-headstage-channel-information-from-the-lbn" title="Link to this heading">¶</a></h3>
+<p>If you would like to retrieve the settings from the last acquisition then look up function like <code class="docutils literal notranslate"><span class="pre">AFH_GetHeadstageFromDAC</span></code>.
+It retrieves the correct information under the following conditions:</p>
+<ul class="simple">
+<li><p>Data Acquisition is ongoing or</p></li>
+<li><p>Data Acquisition has finished and DAEphys panel was not changed.</p></li>
+</ul>
+<p>This function returns NaN if the active DAC had no associated headstage.
+The same applies for <code class="docutils literal notranslate"><span class="pre">AFH_GetHeadstageFromADC</span></code>.</p>
+<p>In contrast the functions AFH_GetDACFromHeadstage and AFH_GetADCFromHeadstage return DAC/ADC numbers only for active headstages.</p>
+<p>One of the most used functions to retrieve specific information from the LBN is
+<code class="docutils literal notranslate"><span class="pre">GetLastSettingChannel</span></code>. The returned wave has NUM_HEADSTAGES + 1 entries.
+The first NUM_HEADSTAGES entries refer to the headstages whereas the last entry contains
+all headstage independent data.
+This is related to the general layout of the LBN, where the headstage is an index of the wave.
+In the numerical LBN (<code class="docutils literal notranslate"><span class="pre">GetLBNumericalValues</span></code>) there are columns with DAC/ADC channel information identified by their respective dimension label.
+For associated DAC &lt;-&gt; ADC channels the number of the DAC and ADC is present in the layers. The first NUM_HEADSTAGES layers refer to the headstages.</p>
+<p>Thus, if headstage 3 uses DAC channel 5 and ADC channel 1 for a sweep then in the LBN
+at index 3 in the DAC column a 3 is present and in the ADC column a 1.
+Details of the internal data format of the LBN are not required for correct retrieval
+of that information as MIES provides functions for that:</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kt">WAVE</span>/Z<span class="w"> </span>numericalValues<span class="w"> </span>=<span class="w"> </span>BSP_GetLBNWave(graph,<span class="w"> </span>LBN_NUMERICAL_VALUES,<span class="w"> </span>sweepNumber<span class="w"> </span>=<span class="w"> </span>sweep)
+<span class="k">if</span>(!<span class="nf">WaveExists</span>(numericalValues))
+<span class="w">   </span><span class="c1">// fitting handling code</span>
+<span class="k">endif</span>
+[<span class="kt">WAVE</span>/Z<span class="w"> </span>settings,<span class="w"> </span>index]<span class="w"> </span>=<span class="w"> </span>GetLastSettingChannel(numericalValues,<span class="w"> </span>$<span class="s">&quot;&quot;</span>,<span class="w"> </span>sweep,<span class="w"> </span><span class="s">&quot;Indexing&quot;</span>,<span class="w"> </span>channelNumber,<span class="w"> </span>channelType,<span class="w"> </span>entrySourceType)
+</pre></div>
+</div>
+<p>This call specifies a sweep number, a channel type and a channel number and asks for information from the “Indexing” field.
+It returns a 1D wave settings and an index, where settings[index] is a Boolean entry telling if indexing was off or on.
+The value index itself is the headstage number. The index value can also equal NUM_HEADSTAGES when it refers to a headstage independent value.</p>
+<p>To find the <code class="docutils literal notranslate"><span class="pre">ADC</span></code> channel from a <code class="docutils literal notranslate"><span class="pre">DAC</span></code> channel, the example above can also be setup with channelType = XOP_CHANNEL_TYPE_DAC and LBN entry name “ADC”.
+This works the same for finding the <code class="docutils literal notranslate"><span class="pre">DAC</span></code> channel from a <code class="docutils literal notranslate"><span class="pre">ADC</span></code> channel.</p>
+<p>If one just wants the headstage number there is an utility function <code class="docutils literal notranslate"><span class="pre">GetHeadstageForChannel</span></code> that returns the active headstage for a channel.</p>
+<p>The LBN entry <code class="docutils literal notranslate"><span class="pre">Headstage</span> <span class="pre">Active</span></code> is a Boolean entry and marks which headstage was active in a sweep.
+The <code class="docutils literal notranslate"><span class="pre">Headstage</span> <span class="pre">Active</span></code> can only be set (1) for a headstage that has an associated <code class="docutils literal notranslate"><span class="pre">DAC</span></code> and <code class="docutils literal notranslate"><span class="pre">ADC</span></code> channel.</p>
+</section>
+<section id="creating-lbn-entries-for-tests">
+<h3>Creating LBN entries for tests<a class="headerlink" href="#creating-lbn-entries-for-tests" title="Link to this heading">¶</a></h3>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="nc">Make</span>/FREE/N=(1,<span class="w"> </span>1,<span class="w"> </span>LABNOTEBOOK_LAYER_COUNT)<span class="w"> </span>valuesHSA,<span class="w"> </span>valuesDAC,<span class="w"> </span>valuesADC
+<span class="nc">Make</span>/T/FREE/N=(1,<span class="w"> </span>1,<span class="w"> </span>1)<span class="w"> </span>keys
+
+sweepNo<span class="w"> </span>= 0
+
+<span class="c1">// HS 0: DAC 2 and ADC 6</span>
+<span class="c1">// HS 1: DAC 3 and ADC 7</span>
+<span class="c1">// HS 2+: No DAC/ADC set</span>
+valuesDAC[]<span class="w">  </span>=<span class="w"> </span><span class="nf">NaN</span>
+valuesDAC[0][0][0]<span class="w"> </span>=<span class="w"> </span>2<span class="w"> </span><span class="c1">// The layer refers to the headstage number</span>
+valuesDAC[0][0][1] = 3
+keys[]<span class="w"> </span>=<span class="w"> </span><span class="s">&quot;DAC&quot;</span>
+ED_AddEntriesToLabnotebook(valuesDAC,<span class="w"> </span>keys,<span class="w"> </span>sweepNo,<span class="w"> </span>device,<span class="w"> </span>DATA_ACQUISITION_MODE)
+
+valuesADC[]<span class="w">  </span>=<span class="w"> </span><span class="nf">NaN</span>
+valuesADC[0][0][0] = 6
+valuesADC[0][0][1] = 7
+keys[]<span class="w"> </span>=<span class="w"> </span><span class="s">&quot;ADC&quot;</span>
+ED_AddEntriesToLabnotebook(valuesADC,<span class="w"> </span>keys,<span class="w"> </span>sweepNo,<span class="w"> </span>device,<span class="w"> </span>DATA_ACQUISITION_MODE)
+
+valuesHSA[]  = 0
+valuesHSA[0][0][0]<span class="w"> </span>=<span class="w"> </span>1<span class="w"> </span><span class="c1">// the only valid option here is to set HS 0 and 1 active</span>
+valuesHSA[0][0][1]<span class="w"> </span>=<span class="w"> </span>1<span class="w"> </span><span class="c1">// because we did not set ADC/DAC channels for the other HS.</span>
+keys[]<span class="w"> </span>=<span class="w"> </span><span class="s">&quot;Headstage Active&quot;</span>
+ED_AddEntriesToLabnotebook(valuesHSA,<span class="w"> </span>keys,<span class="w"> </span>sweepNo,<span class="w"> </span>device,<span class="w"> </span>DATA_ACQUISITION_MODE)
+</pre></div>
+</div>
+<p>The key function here is <code class="docutils literal notranslate"><span class="pre">ED_AddEntriesToLabnotebook</span></code>. There are no checks applied for this
+way of creating LBN entries for tests that guarantee a consistent LBN. e.g. setting headstage 2 to active
+in the upper code would violate LBN format schema.
+Note that in contrast <code class="docutils literal notranslate"><span class="pre">ED_AddEntryToLabnotebook</span></code> is used to add specific user entries to the LBN
+and <strong>is not suited</strong> for setting up generic test LBN entries.
+More example code can be found in <code class="docutils literal notranslate"><span class="pre">PrepareLBN_IGNORE</span></code> in UTF_Labnotebook.ipf.</p>
+</section>
+<section id="adding-support-for-new-ni-hardware">
+<h3>Adding support for new NI hardware<a class="headerlink" href="#adding-support-for-new-ni-hardware" title="Link to this heading">¶</a></h3>
+<p>Newly added NI hardware must fulfill the following properties:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Allow 500kHz sampling rate for one AI/AO channel</p></li>
+<li><p>At least one port of each type: AI/AO/DIO</p></li>
+<li><p>Supported by the NIDAQmx XOP and our use of it</p></li>
+</ul>
+</div></blockquote>
+<p>To add new hardware:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Visit the <a class="reference external" href="https://ni.com">NI</a> website and check if the device fullfills our minimum requirements</p></li>
+<li><p>Ask the user to send you the output of <a class="reference internal" href="file/_m_i_e_s___d_a_c-_hardware_8ipf.html#_CPPv430HW_NI_PrintPropertiesOfDevicesv" title="HW_NI_PrintPropertiesOfDevices"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">HW_NI_PrintPropertiesOfDevices()</span></code></a></p></li>
+<li><p>Add that info to <a class="reference internal" href="file/_m_i_e_s___d_a_ephys_8ipf.html#_CPPv415NI_DAC_PATTERNS" title="NI_DAC_PATTERNS"><code class="xref cpp cpp-var docutils literal notranslate"><span class="pre">NI_DAC_PATTERNS</span></code></a></p></li>
+<li><p>Update Readme.md</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation instructions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Developer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#getting-mies">Getting MIES</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cloning-the-mies-repository">Cloning the MIES repository</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#building-the-documentation">Building the documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#updating-documentation">Updating documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#updating-requirements-files">Updating requirements files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#linting">Linting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#release-handling">Release Handling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cutting-a-new-release">Cutting a new release</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-a-release-package-manually">Creating a release package manually</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#continuous-integration-server">Continuous integration server</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#automatic-release-package-building">Automatic release package building</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#compilation-testing">Compilation testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#unit-and-integration-testing">Unit and integration testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#documentation-building">Documentation building</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setting-up-a-continuous-integration-server-linux">Setting up a continuous integration server (Linux)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#install-required-software">Install required software</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#setup-github-actions-runner">Setup Github Actions runner</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#setting-up-a-continuous-integration-runner-windows-itc18-itc1600-and-ni">Setting up a continuous integration runner (Windows, <code class="docutils literal notranslate"><span class="pre">ITC18</span></code>, <code class="docutils literal notranslate"><span class="pre">ITC1600</span></code>  and <code class="docutils literal notranslate"><span class="pre">NI</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setting-up-a-continuous-integration-runner-windows-igorpro">Setting up a continuous integration runner (Windows, <code class="docutils literal notranslate"><span class="pre">IgorPro</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setting-up-a-continuous-integration-runner-windows-certificate">Setting up a continuous integration runner (Windows, <code class="docutils literal notranslate"><span class="pre">Certificate</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#available-ci-servers">Available CI servers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setting-up-renewing-ev-certificate">Setting up/Renewing EV certificate</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#renewal-process">Renewal process</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#branch-naming-scheme">Branch naming scheme</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#continuous-integration-hints">Continuous Integration Hints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#debugging-threadsafe-functions">Debugging threadsafe functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#preventing-debugger-popup">Preventing Debugger Popup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#runtime-error-abort-handling-conventions">Runtime Error / Abort Handling Conventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#retrieving-headstage-channel-information-from-the-lbn">Retrieving Headstage / Channel Information from the LBN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-lbn-entries-for-tests">Creating LBN entries for tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-support-for-new-ni-hardware">Adding support for new NI hardware</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grouplist.html">Group list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="installation.html"
+                          title="previous chapter">Installation instructions</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="reportingbugs.html"
+                          title="next chapter">Bug reporting</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="reportingbugs.html" title="Bug reporting"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation instructions"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Developer</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

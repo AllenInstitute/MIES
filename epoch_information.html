@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Epoch Information &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Important MIES concepts for developers" href="mies-concepts.html" />
+    <link rel="prev" title="Labnotebook documentation for developers" href="labnotebook-docs.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="mies-concepts.html" title="Important MIES concepts for developers"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="labnotebook-docs.html" title="Labnotebook documentation for developers"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Epoch Information</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="epoch-information">
+<span id="epoch-information-doc"></span><h1>Epoch Information<a class="headerlink" href="#epoch-information" title="Link to this heading">¶</a></h1>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Link to this heading">¶</a></h2>
+<p>At acquisition time, sweep epoch metadata is generated.
+Epochs are contiguous time ranges in the input signal that feature certain signal shapes, such as e.g. pulse trains.
+This information is exported with each data acquisition to the lab notebook with the key “Epochs” for each DA channel.</p>
+<figure class="align-center" id="id1">
+<span id="figure-epoch-visualization"></span><img alt="_images/epoch-visualization.svg" src="_images/epoch-visualization.svg" />
+<figcaption>
+<p><span class="caption-text">Epoch visualization with level 0 (top, at -10) to 3 (bottom)</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="retrieving-epoch-information">
+<h2>Retrieving Epoch Information<a class="headerlink" href="#retrieving-epoch-information" title="Link to this heading">¶</a></h2>
+<section id="mies-labnotebook">
+<h3>MIES labnotebook<a class="headerlink" href="#mies-labnotebook" title="Link to this heading">¶</a></h3>
+<p>The epoch information can be retrieved from the lab notebook with</p>
+<blockquote>
+<div><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kt">WAVE</span>/T<span class="w"> </span>textualValues<span class="w">  </span>=<span class="w"> </span>GetLBTextualValues(device)
+<span class="kt">WAVE</span>/T<span class="w"> </span>epochLBEntries<span class="w"> </span>=<span class="w"> </span>GetLastSetting(textualValues,<span class="w"> </span>sweepNumber,<span class="w"> </span>EPOCHS_ENTRY_KEY,<span class="w"> </span>DATA_ACQUISITION_MODE)
+<span class="kt">WAVE</span>/T<span class="w"> </span>epochHeadstage<span class="w"> </span>=<span class="w"> </span>EP_EpochStrToWave(epochLBEntries[headstage])
+</pre></div>
+</div>
+</div></blockquote>
+<p>The epochHeadstage wave has four columns:</p>
+<ul class="simple">
+<li><p>Column 1: start time</p></li>
+<li><p>Column 2: end time</p></li>
+<li><p>Column 3: epoch description - a semi-colon separated list of epoch descriptors. e.g., <code class="docutils literal notranslate"><span class="pre">Epoch=1;Type=Pulse</span> <span class="pre">Train;Amplitude=1;Pulse=0;</span></code></p></li>
+<li><p>Column 4: (tree) level. e.g., wavebuilder defined EPOCH tree level = 1, a sub epoch of a wavebuilder defined EPOCH = 2 and so on</p></li>
+</ul>
+<p>Each row is an epoch entry.</p>
+</section>
+<section id="nwbv2">
+<h3>NWBv2<a class="headerlink" href="#nwbv2" title="Link to this heading">¶</a></h3>
+<p>Epoch information is also exported into NWBv2 files into <code class="docutils literal notranslate"><span class="pre">/intervals/epochs</span></code>
+when doing full exports (it is skipped for per-sweep export). Using
+<cite>pynwb.epoch.TimeIntervals &lt;https://pynwb.readthedocs.io/en/stable/pynwb.epoch.html#pynwb.epoch.TimeIntervals&gt;</cite>
+this can be read with:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">NWBHDF5IO</span><span class="p">(</span><span class="s1">&#39;file.nwb&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">load_namespaces</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">io</span><span class="p">:</span>
+    <span class="n">nwbfile</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">nwbfile</span><span class="o">.</span><span class="n">epochs</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">nwbfile</span><span class="o">.</span><span class="n">epochs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">nwbfile</span><span class="o">.</span><span class="n">epochs</span><span class="p">[:,</span> <span class="s1">&#39;start_time&#39;</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">nwbfile</span><span class="o">.</span><span class="n">epochs</span><span class="p">[:,</span> <span class="s1">&#39;stop_time&#39;</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">nwbfile</span><span class="o">.</span><span class="n">epochs</span><span class="p">[:,</span> <span class="s1">&#39;tags&#39;</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">nwbfile</span><span class="o">.</span><span class="n">epochs</span><span class="p">[:,</span> <span class="s1">&#39;treelevel&#39;</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">nwbfile</span><span class="o">.</span><span class="n">epochs</span><span class="p">[:,</span> <span class="s1">&#39;timeseries&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="format">
+<h2>Format<a class="headerlink" href="#format" title="Link to this heading">¶</a></h2>
+<p>The times are in seconds where 0 is the beginning of the signal input. The reference signal is the DA or TTL output wave.
+The epochChannel wave can contain several entries with different levels covering the same time range.
+Epochs with a level of zero name the main components of the input signal.
+Typical epochs with zero level are ‘Inserted Test Pulse’ and ‘StimSet’.</p>
+<p>A level of one designates a sub epoch of a zero level epoch and can correspond to, for example, the leading baseline a
+‘Inserted Test Pulse’, the pulse component, and the trailing baseline of the pulse. For ‘StimSet’s that are level zero, the associated
+Stimset-Epochs, like Ramp, Pulse Train, and so on are level one.</p>
+<p>Accordingly level two epochs are sub epochs of level one epochs. For example, the level two epoch of a pulse train
+contains a single pulse of the pulse train.</p>
+<p>The start time of a level n epoch equals the start time of the first level n+1 epoch within the level n epochs time interval.</p>
+<p>All epochs between 0 and end of the input signal are consecutive and without gaps (contiguous).
+All level n+1 epochs are contiguous for the associated n epoch.</p>
+<p>The following table sketches how epochs of different levels could be distributed in the range of the full output data:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head" colspan="6"><p>output data time series range   0 - 100 [s]</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td colspan="5"><p>level 0: 0 - 60</p></td>
+<td><p>level 0: 60 - 100</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 1: 0 - 20</p></td>
+<td colspan="4"><p>level 1: 20 - 60</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p>level 2:  20 - 30</p></td>
+<td><p>level 2:  30 - 45</p></td>
+<td><p>level 2:  45 - 51</p></td>
+<td><p>level 2:  51 - 60</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>The entries in the wave are sorted by increasing start times and secondary by decreasing end times.</p>
+</section>
+<section id="time-specialities">
+<span id="epoch-time-specialities"></span><h2>Time specialities<a class="headerlink" href="#time-specialities" title="Link to this heading">¶</a></h2>
+<p>The epoch start and end times are stored in seconds with sufficiently large
+precision as text. The start time of an epoch refers to the first sample point of the feature that
+contains the signal. The end time of an epoch refers to the sample point directly after epoch.
+This point is also the start point of the next epoch and the first point of the next epoch.
+For a pulse epoch following a base line epoch the sample point at the start time
+of the pulse epoch is the first point with an amplitude &gt; 0. Thus, the epoch ranges are sample point
+exact. The sample point can be calculated by <code class="docutils literal notranslate"><span class="pre">round(epochTime</span> <span class="pre">/</span> <span class="pre">samplingInterval)</span></code>.</p>
+<p>An exception from that are oodDAQ region epochs (<code class="docutils literal notranslate"><span class="pre">ODx</span></code>) that store times that are not sample point exact.
+Details are described in the following section.</p>
+</section>
+<section id="optimized-overlap-distributed-data-acquisistion-ooddaq-regions">
+<h2>optimized overlap distributed data acquisistion (oodDAQ) regions<a class="headerlink" href="#optimized-overlap-distributed-data-acquisistion-ooddaq-regions" title="Link to this heading">¶</a></h2>
+<p>oodDAQ regions are saved as level two epoch named <code class="docutils literal notranslate"><span class="pre">oodDAQRegion</span></code>. While regular epochs are generated from the
+stimset note, oodDAQ regions are generated by the oodDAQ optimizer. Thus the oodDAQRegion epochs are not bound to the
+constraints described in the previous section.
+The oodDAQ regions are added ‘as is’ to the epochs.</p>
+</section>
+<section id="naming">
+<h2>Naming<a class="headerlink" href="#naming" title="Link to this heading">¶</a></h2>
+<p>The following table describes the 1:1 relationship between epoch names and MIES feature names:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Level</p></th>
+<th class="head"><p>Level</p></th>
+<th class="head"><p>Level</p></th>
+<th class="head"><p>Level</p></th>
+<th class="head"><p>Tags</p></th>
+<th class="head"><p>Short Name</p></th>
+<th class="head"><p>Origin</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td></td>
+<td></td>
+<td></td>
+<td><p>Type=Baseline</p></td>
+<td><p>B0_OD</p></td>
+<td><p>Onset Delay</p></td>
+</tr>
+<tr class="row-odd"><td><p>0</p></td>
+<td></td>
+<td></td>
+<td></td>
+<td><p>Type=Baseline</p></td>
+<td><p>B0_TP</p></td>
+<td><p>Baseline on unassociated DA channels where associated DA channels have an inserted
+test pulse if checked</p></td>
+</tr>
+<tr class="row-even"><td><p>0</p></td>
+<td></td>
+<td></td>
+<td></td>
+<td><p>Type=Baseline</p></td>
+<td><p>B0_DD</p></td>
+<td><p>Onset delay of channel due to distributed DAQ [dDAQ]</p></td>
+</tr>
+<tr class="row-odd"><td><p>0</p></td>
+<td></td>
+<td></td>
+<td></td>
+<td><p>Type=Baseline</p></td>
+<td><p>B0_DO</p></td>
+<td><p>Onset delay of channel due to distributed DAQ optimized overlay [dDAQ OptOv]</p></td>
+</tr>
+<tr class="row-even"><td><p>0</p></td>
+<td></td>
+<td></td>
+<td></td>
+<td><p>Type=Inserted Testpulse</p></td>
+<td><p>TP</p></td>
+<td><p>Inserted TP</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>1</p></td>
+<td></td>
+<td></td>
+<td><p>Type=Inserted Testpulse;SubType=Baseline</p></td>
+<td><p>TP_B0</p></td>
+<td><p>preceding baseline of inserted TP</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p>1</p></td>
+<td></td>
+<td></td>
+<td><p>Type=Inserted Testpulse;SubType=Pulse;Amplitude=x</p></td>
+<td><p>TP_P</p></td>
+<td><p>pulse time of inserted TP</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>1</p></td>
+<td></td>
+<td></td>
+<td><p>Type=Inserted Testpulse;SubType=Baseline</p></td>
+<td><p>TP_B1</p></td>
+<td><p>subsequent baseline of inserted TP</p></td>
+</tr>
+<tr class="row-even"><td><p>0</p></td>
+<td></td>
+<td></td>
+<td></td>
+<td><p>Type=Stimset</p></td>
+<td><p>ST</p></td>
+<td><p>Stimset</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>1</p></td>
+<td></td>
+<td></td>
+<td><p>Type=Epoch;Epoch=x;EpochType=x;Amplitude=x;Details=x</p></td>
+<td><p>Ex</p></td>
+<td><p>Stimset-Epoch (Details is optional)</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td><p>2</p></td>
+<td></td>
+<td><p>+SubType=Baseline</p></td>
+<td><p>Ex_PT_Px_BT</p></td>
+<td><p>Stimset-Epoch baseline before first pulse (example pulse train)</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td><p>2</p></td>
+<td></td>
+<td><p>+Pulse=x</p></td>
+<td><p>Ex_PT_Px</p></td>
+<td><p>Stimset-Epoch component (example pulse train)</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td></td>
+<td><p>3</p></td>
+<td><p>+SubType=Pulse;Pulse=x</p></td>
+<td><p>Ex_PT_Px_P</p></td>
+<td><p>High region of pulse  (example pulse train)</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td></td>
+<td><p>3</p></td>
+<td><p>+SubType=Baseline;Pulse=x</p></td>
+<td><p>Ex_PT_Px_B</p></td>
+<td><p>Zero region of pulse  (example pulse train)</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td><p>2</p></td>
+<td></td>
+<td><p>+Cycle=x</p></td>
+<td><p>Ex_TG_Cx</p></td>
+<td><p>Trigonometric epoch, one epoch for each full sin/cos cycle</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td></td>
+<td><p>3</p></td>
+<td><p>+Cycle=x;Half Cycle=x</p></td>
+<td><p>Ex_TG_Cx_Hx</p></td>
+<td><p>Two for each cycle, one negative and one positive</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td><p>2</p></td>
+<td></td>
+<td><p>+Incomplete Cycle=x</p></td>
+<td><p>Ex_TG_Ix</p></td>
+<td><p>Everything else except full cycles</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td><p>2</p></td>
+<td></td>
+<td><p>Type=oodDAQ;oodDAQRegion=x</p></td>
+<td><p>ODx</p></td>
+<td><p>oodDAQ region</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p>1</p></td>
+<td></td>
+<td></td>
+<td><p>Type=Baseline</p></td>
+<td><p>ST_B</p></td>
+<td><p>trailing baseline due to different length stimsets</p></td>
+</tr>
+<tr class="row-odd"><td><p>0</p></td>
+<td></td>
+<td></td>
+<td></td>
+<td><p>Type=Baseline</p></td>
+<td><p>B0_TD</p></td>
+<td><p>Termination Delay</p></td>
+</tr>
+<tr class="row-even"><td><p>0</p></td>
+<td></td>
+<td></td>
+<td></td>
+<td><p>Type=Baseline</p></td>
+<td><p>B0_TR</p></td>
+<td><p>trailing baseline after stimset plus termination delay as another channel can have
+e.g. a longer stimset</p></td>
+</tr>
+<tr class="row-odd"><td><p>0</p></td>
+<td></td>
+<td></td>
+<td></td>
+<td><p>Type=Unacquired</p></td>
+<td><p>UA</p></td>
+<td><p>Planned to be acquired but skipped due to early sweep stop</p></td>
+</tr>
+</tbody>
+</table>
+<p>If the name entry begins with <code class="docutils literal notranslate"><span class="pre">+</span></code> then it is appended to the higher-level name. The <code class="docutils literal notranslate"><span class="pre">x</span></code> is a place holder where
+additional information is included in the names, such as Stimset-Epoch numbering, or amplitudes. Currently only
+<a class="reference internal" href="#user-epochs-pt"><span class="std std-ref">pulse trains</span></a> and trigonometric are supported with level two and three detail for Stimset-Epochs.
+Depending on the setup of the data acquisition, not every entry listed in the table has to appear in the epochs table.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Details</span></code> key for the Stimset-Epoch can contain a combination of <code class="docutils literal notranslate"><span class="pre">Mixed</span> <span class="pre">frequency</span></code> or <code class="docutils literal notranslate"><span class="pre">Poisson</span> <span class="pre">distribution</span></code> with
+<code class="docutils literal notranslate"><span class="pre">shuffled</span></code> as originally configured for the Stimset in the waveBuilder.</p>
+<p>When the sweep is terminated earlier as planned, the epoch <code class="docutils literal notranslate"><span class="pre">Unacquired</span></code> is added in the planned but not acquired
+timespan at the end of the sweep. All other epochs are then also either shortend or dropped so that they don’t extend
+into the unacquired epoch.</p>
+<section id="short-names">
+<h3>Short Names<a class="headerlink" href="#short-names" title="Link to this heading">¶</a></h3>
+<p>In addition to the long names that are generated as described above also unique short names are created. These short names are saved
+in the epoch description field as well as key value pair. The key is <code class="docutils literal notranslate"><span class="pre">ShortName</span></code> and the separator <code class="docutils literal notranslate"><span class="pre">=</span></code>. To retrieve a short name
+the function <code class="docutils literal notranslate"><span class="pre">EP_GetShortName(string</span> <span class="pre">name)</span></code> should be used.</p>
+<p>Short names are created in the form of blocks of one to two uppercase letters followed optionally by a signed integer number.
+Subsequent blocks are separated by an underscore. Example: <code class="docutils literal notranslate"><span class="pre">E0_PT_P48_B</span></code>.</p>
+</section>
+</section>
+<section id="pulse-trains">
+<span id="user-epochs-pt"></span><h2>Pulse Trains<a class="headerlink" href="#pulse-trains" title="Link to this heading">¶</a></h2>
+<p>Pulse Trains are a type of Stimset-Epochs which is widely used and covered in high detail in the epochs table. For pulse
+trains each pulse gets an level two epoch entry. The time interval of a pulse begins when the signal is above base line
+level and includes the trailing baseline (that precedes the next pulse) unless it is the last pulse in the pulse train.
+An epoch named ‘Baseline’ is inserted if the first pulse in the pulse train has a leading baseline. This is applies for
+flipped Stimsets containing Stimset-Epochs with type pulse train.</p>
+<figure class="align-center" id="id2">
+<span id="figure-epoch-visualization2"></span><img alt="_images/epoch-visualization2.svg" src="_images/epoch-visualization2.svg" />
+<figcaption>
+<p><span class="caption-text">Annotated visualization of epoch from flipped stimsets on two headstages. Each stimset consists of a pulse-train with
+poisson distribution and a square pulse stimset epoch. The DA output data on the second headstage is offsetted due to enabled oodDAQ.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id3">
+<span id="figure-epoch-visualization3"></span><img alt="_images/epoch-visualization3.svg" src="_images/epoch-visualization3.svg" />
+<figcaption>
+<p><span class="caption-text">Annotated visualization of epoch of a regular and a flipped stimset on two headstages. Each stimset consists of several stimset epochs with
+trigonometric functions. The stimset on the second headstage is the flipped version of the stimset on the first headstage.</span><a class="headerlink" href="#id3" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="user-epochs">
+<span id="user-epochs-doc"></span><h2>User epochs<a class="headerlink" href="#user-epochs" title="Link to this heading">¶</a></h2>
+<p>Adding custom epoch information is supported via <a class="reference internal" href="file/_m_i_e_s___epochs_8ipf.html#_CPPv415EP_AddUserEpoch8WaveText8variable8variable8variable8variable6string6string" title="EP_AddUserEpoch"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EP_AddUserEpoch()</span></code></a>. This is especially useful for analysis
+function writers, who can add their own epochs of interest, see <a class="reference internal" href="file/_m_i_e_s___analysis_functions_8ipf.html#file-mies-analysisfunctions-ipf"><span class="std std-ref">File MIES_AnalysisFunctions.ipf</span></a> for the
+supported events.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">tags</span></code> property of user epochs can be freely set. When a <code class="docutils literal notranslate"><span class="pre">shortName</span></code> is supplied, this is always prefixed with
+<code class="docutils literal notranslate"><span class="pre">U_</span></code> so that short names for user epochs don’t collide with builtin epochs. Likewise the tree level for user epochs is
+fixed to <code class="docutils literal notranslate"><span class="pre">-1</span></code>.</p>
+<p>User epochs will also be limited to the acquired sweep data like builtin epochs. This can result in shorter as expected epochs or even
+removed user epochs.</p>
+<blockquote>
+<div><div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Example</span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="kt">string</span><span class="w"> </span>device<span class="w"> </span>=<span class="w"> </span><span class="s">&quot;ITC18USB_DEV_0&quot;</span>
+<span class="w"> </span><span class="kt">variable</span><span class="w"> </span>startTime<span class="w"> </span>= 1.5
+<span class="w"> </span><span class="kt">variable</span><span class="w"> </span>endTime<span class="w">   </span>= 2.5
+<span class="w"> </span><span class="kt">variable</span><span class="w"> </span>DAC<span class="w"> </span>= 1
+<span class="w"> </span><span class="kt">string</span><span class="w"> </span>tags<span class="w"> </span>=<span class="w"> </span><span class="s">&quot;Name=Found Spikes;&quot;</span>
+<span class="w"> </span><span class="kt">string</span><span class="w"> </span>shortName<span class="w"> </span>=<span class="w"> </span><span class="s">&quot;FS&quot;</span>
+
+<span class="w"> </span>EP_AddUserEpoch(device,<span class="w"> </span>XOP_CHANNEL_TYPE_DAC,<span class="w"> </span>DAC,<span class="w"> </span>startTime,<span class="w"> </span>endTime,<span class="w"> </span>tags,<span class="w"> </span>shortName<span class="w"> </span>=<span class="w"> </span>shortName)
+</pre></div>
+</div>
+</div>
+</div></blockquote>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grouplist.html">Group list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Epoch Information</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#description">Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#retrieving-epoch-information">Retrieving Epoch Information</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mies-labnotebook">MIES labnotebook</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nwbv2">NWBv2</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#format">Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#time-specialities">Time specialities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#optimized-overlap-distributed-data-acquisistion-ooddaq-regions">optimized overlap distributed data acquisistion (oodDAQ) regions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#naming">Naming</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#short-names">Short Names</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#pulse-trains">Pulse Trains</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#user-epochs">User epochs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="labnotebook-docs.html"
+                          title="previous chapter">Labnotebook documentation for developers</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="mies-concepts.html"
+                          title="next chapter">Important MIES concepts for developers</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="mies-concepts.html" title="Important MIES concepts for developers"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="labnotebook-docs.html" title="Labnotebook documentation for developers"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Epoch Information</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

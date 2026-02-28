@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File MIES_GuiPopupMenuExt.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_GuiUtilities.ipf" href="_m_i_e_s___gui_utilities_8ipf.html" />
+    <link rel="prev" title="File MIES_GlobalStringAndVariableAccess.ipf" href="_m_i_e_s___global_string_and_variable_access_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___gui_utilities_8ipf.html" title="File MIES_GuiUtilities.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___global_string_and_variable_access_8ipf.html" title="File MIES_GlobalStringAndVariableAccess.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_GuiPopupMenuExt.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-guipopupmenuext-ipf">
+<span id="id1"></span><h1>File MIES_GuiPopupMenuExt.ipf<a class="headerlink" href="#file-mies-guipopupmenuext-ipf" title="Link to this heading">¶</a></h1>
+<p>Helper functions related to GUI controls. </p>
+<p><span class="target" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1PopupMenuExtensionShortDescription"></span> These procedures provide a way to replace popup menus with many entries with context menus. Context menus can provide submenus, that allow better organization of menu entries.</p>
+<p>Example:</p>
+<p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kr">Function</span><span class="w"> </span>SetupPopupMenuExt()
+<span class="w">    </span><span class="nc">KillWindow</span>/Z<span class="w"> </span>panel0
+<span class="w">    </span><span class="nc">NewPanel</span>/N=$<span class="s">&quot;panel0&quot;</span>/K=1
+<span class="w">    </span><span class="nc">Button</span><span class="w"> </span>popupext_menu1,<span class="w"> </span>pos={3.00,<span class="w"> </span>20.00},<span class="w"> </span>size={200,20},<span class="kr">proc</span>=PEXT_ButtonProc,title=<span class="s">&quot;DropDownMenu1 ▼&quot;</span>,<span class="w"> </span>userdata($PEXT_UDATA_POPUPPROC)=<span class="s">&quot;DemoProc&quot;</span>,<span class="w"> </span>userdata($PEXT_UDATA_ITEMGETTER)=<span class="s">&quot;GetMenuList1&quot;</span>
+<span class="w">    </span><span class="nc">Button</span><span class="w"> </span>popupext_menu2,<span class="w"> </span>pos={3.00,<span class="w"> </span>55.00},<span class="w"> </span>size={200,20},<span class="kr">proc</span>=PEXT_ButtonProc,title=<span class="s">&quot;DropDownMenu2 ▼&quot;</span>,<span class="w"> </span>userdata($PEXT_UDATA_POPUPPROC)=<span class="s">&quot;DemoProc&quot;</span>,<span class="w"> </span>userdata($PEXT_UDATA_ITEMGETTER)=<span class="s">&quot;GetMenuList2&quot;</span>
+<span class="w">    </span><span class="nc">Button</span><span class="w"> </span>popupext_menu3,<span class="w"> </span>pos={3.00,<span class="w"> </span>90.00},<span class="w"> </span>size={200,20},<span class="kr">proc</span>=PEXT_ButtonProc,title=<span class="s">&quot;DropDownMenu3 ▼&quot;</span>,<span class="w"> </span>userdata($PEXT_UDATA_POPUPPROC)=<span class="s">&quot;DemoProc&quot;</span>,<span class="w"> </span>userdata($PEXT_UDATA_ITEMGETTER)=<span class="s">&quot;GetMenuList3&quot;</span>
+<span class="kr">End</span>
+
+<span class="kr">Function</span><span class="w"> </span>DemoProc(pa)<span class="w"> </span>:<span class="w"> </span>PopupMenuControl
+<span class="w">    </span><span class="kt">STRUCT</span><span class="w"> </span>WMPopupAction<span class="w"> </span>&amp;pa
+
+<span class="w">    </span><span class="nc">print</span><span class="w"> </span><span class="s">&quot;EventCode/Win/Selected/ctrlName: &quot;</span>,<span class="w"> </span>pa.eventCode,<span class="w"> </span>pa.win,<span class="w"> </span>pa.popStr,<span class="w"> </span>pa.ctrlName
+<span class="kr">End</span>
+
+<span class="kr">Function</span>/S<span class="w"> </span>GetMenuList1()
+
+<span class="w">    </span><span class="nc">Make</span>/FREE/T/N=300<span class="w"> </span>testItems<span class="w"> </span>=<span class="w"> </span><span class="nf">num2char</span>(97<span class="w"> </span>+<span class="w"> </span><span class="nf">mod</span>(p,<span class="w"> </span>26))<span class="w"> </span>+<span class="w"> </span><span class="s">&quot;_&quot;</span><span class="w"> </span>+<span class="w"> </span><span class="nf">num2str</span>(p)
+<span class="w">    </span><span class="k">return</span><span class="w"> </span>TextWaveToList(testItems,<span class="w"> </span><span class="s">&quot;;&quot;</span>)
+<span class="kr">End</span>
+
+<span class="kr">Function</span>/<span class="kt">WAVE</span><span class="w"> </span>GetMenuList2(device)
+<span class="w">    </span><span class="kt">string</span><span class="w"> </span>device
+
+<span class="w">    </span><span class="nc">Make</span>/FREE/T/N=(2)<span class="w"> </span>menus
+<span class="w">    </span>menus[0]<span class="w"> </span>=<span class="w"> </span><span class="s">&quot;Kriemhild;Brünhild&quot;</span>
+<span class="w">    </span>menus[1]<span class="w"> </span>=<span class="w"> </span><span class="s">&quot;Siegfried;Gunther&quot;</span>
+<span class="w">    </span><span class="nc">SetDimLabel</span><span class="w"> </span>ROWS,<span class="w"> </span>0,<span class="w"> </span>$<span class="s">&quot;Women&quot;</span>,<span class="w"> </span>menus
+<span class="w">    </span><span class="nc">SetDimLabel</span><span class="w"> </span>ROWS,<span class="w"> </span>1,<span class="w"> </span>$<span class="s">&quot;Men&quot;</span>,<span class="w"> </span>menus
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span>menus
+<span class="kr">End</span>
+
+<span class="kr">Function</span>/<span class="kt">WAVE</span><span class="w"> </span>GetMenuList3(device)
+<span class="w">    </span><span class="kt">string</span><span class="w"> </span>device
+
+<span class="w">    </span><span class="nc">Make</span>/FREE/T<span class="w"> </span>menus<span class="w"> </span>=<span class="w"> </span>{<span class="s">&quot;Kriemhild&quot;</span>,<span class="w"> </span><span class="s">&quot;Brünhild&quot;</span>,<span class="w"> </span><span class="s">&quot;Siegfried&quot;</span>,<span class="w"> </span><span class="s">&quot;Gunther&quot;</span>}
+<span class="w">    </span><span class="kt">WAVE</span>/T<span class="w"> </span>splitMenu<span class="w"> </span>=<span class="w"> </span>PEXT_SplitToSubMenus(menus,<span class="w"> </span>method<span class="w"> </span>=<span class="w"> </span>PEXT_SUBSPLIT_ALPHA)
+<span class="w">    </span>PEXT_GenerateSubMenuNames(splitMenu)
+<span class="w">    </span><span class="k">return</span><span class="w"> </span>splitMenu
+<span class="kr">End</span>
+</pre></div>
+</div>
+</p>
+<p>The original popupmenu has to be replaced by a button with the PEXT_ButtonProc as procedure. The userdata of the button stores as list with key value pairs a function that returns the menu item list and a function that is the PopupMenuControl procecure of the former popupmenu. The function for the menu item list corresponds to the function given for a popupmenu as e.g. value=GetMenuList1() that returns a string with semicolon separated list of menu items. The names for the submenus are generated automatically in that case. If one wants to disable the menu, return “” as menu item list. Then a disabled “_none_” is shown that can not be selected.</p>
+<p>The constants PEXT_UDATA_ITEMGETTER and PEXT_UDATA_POPUPPROC were defined for the keys in the userdata string.</p>
+<p>When a user selects an entry in the context menu the PopupMenuControl control defined through PEXT_UDATA_POPUPPROC is called. So the proc of the previous popupmenu can be used without further adaptations.</p>
+<p>User defined sub menus:</p>
+<p>User defined submenus can be created as well. Therefore an extension was added to the function that returns the menu items. Instead of a string as described before a function can be defined that returns a 1D text wave, e.g. GetMenuList2() in the example. Each element contains a semicolon separated list of menu items. Each rows DimLabel is used as submenu name, where the elements menu items are put. The DimLabels must not be empty. The wave can have up to MAX_SUBMENUS elements. The button popupext_menu2 shows this extension in the example.</p>
+<p>Half automatic generation:</p>
+<p>Example 3 from Button popupext_menu3 shows how a menu is created by defining a wave with menu items first. Then the menu items are split to sub menus with PEXT_SplitToSubMenus using the method PEXT_SUBSPLIT_ALPHA. In the second step the sub menu named are generated with the default algorithm by calling PEXT_GenerateSubMenuNames.</p>
+<p>Method Description</p>
+<p>PEXT_SUBSPLIT_DEFAULT</p>
+<p>In each sub menu up to NUM_SUBENTRIES menu items are placed. If MAX_SUBMENUS number of sub menus are reached then the remaining menu items are placed in the last sub menu.</p>
+<p>PEXT_SUBSPLIT_ALPHA</p>
+<p>In each sub menu up to NUM_SUBENTRIES menu items are placed. If the beginning letter of the last menu item in the sub menu differs from the beginning letter of the first menu item then the menu items in the sub menu get reduced. All menu item beginning with the letter of the last menu item are moved to the next sub menu. If the beginning letters match then no menu items get moved. If MAX_SUBMENUS number of sub menus are reached then the remaining menu items are placed in the last sub menu.</p>
+<p>PEXT_SUBNAMEGEN_DEFAULT</p>
+<p>In a sub menu from the first and last menu item the number of letters from the beginning is counted until the letters do not match. This part of the menu item is used and taken as a sub menu name in a range notation: Alfons, Aluminium -&gt; Alf .. Alu This is also applied between different sub menus, so the last menu item and the first menu item of the next sub menu. If in the previous sub menu the number of letters determined for the last menu item is higher then for the first name component the higher amount is taken: e.g. Balalaika, Cembalo -&gt; B .. C -&gt; Bal .. C (because Alu were three letters) </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416PEXT_SubMenuName8variable">
+<span id="_CPPv316PEXT_SubMenuName8variable"></span><span id="_CPPv216PEXT_SubMenuName8variable"></span><span id="PEXT_SubMenuName__variable"></span><span class="target" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1a0b1a33f3467fa01223eae283d9c551a2"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PEXT_SubMenuName</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">subMenuNr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416PEXT_SubMenuName8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Menu definition templates for up to MAX_SUBMENUS sub menus. The constant MAX_SUBMENUS stores the number of these definitions and must be updated if more definitions are added. </p>
+<p>Returns sub menu names for all PEXT sub menus This is called on each menu click/compilation for all dynamic defined Menus where PEXT_SubMenuName is used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>subMenuNr</strong> – number of current sub menu </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419PEXT_PopupMenuItems8variable">
+<span id="_CPPv319PEXT_PopupMenuItems8variable"></span><span id="_CPPv219PEXT_PopupMenuItems8variable"></span><span id="PEXT_PopupMenuItems__variable"></span><span class="target" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1a5eba42328ef91411e622f39e28f0131c"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PEXT_PopupMenuItems</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">subMenuNr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419PEXT_PopupMenuItems8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns menu items for all PEXT menus This is called on each menu click/compilation for all dynamic defined Menus where PEXT_PopupMenuItems is used. </p>
+<p>Callled very often (MAX_SUBMENUS^2/2).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>subMenuNr</strong> – number of current sub menu </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413PEXT_Callback6string6string8variable">
+<span id="_CPPv313PEXT_Callback6string6string8variable"></span><span id="_CPPv213PEXT_Callback6string6string8variable"></span><span id="PEXT_Callback__string.string.variable"></span><span class="target" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1a06a3a406e7d828a44cdfc650daa46207"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PEXT_Callback</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">popupStr</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">text</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">itemNum</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413PEXT_Callback6string6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>This callback is executed when the user selected a PEXT dynamic menu item. It is not called if the user aborted the menu by clicking somewhere else. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>popupStr</strong> – popup string </p></li>
+<li><p><strong>text</strong> – selected menu item text </p></li>
+<li><p><strong>itemNum</strong> – selected item index in submenu </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426PEXT_ITEMGETTER_LIST_PROTOv">
+<span id="_CPPv326PEXT_ITEMGETTER_LIST_PROTOv"></span><span id="_CPPv226PEXT_ITEMGETTER_LIST_PROTOv"></span><span id="PEXT_ITEMGETTER_LIST_PROTO"></span><span class="target" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1a43836207a7b7bdc33b583351eaac5e0d"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PEXT_ITEMGETTER_LIST_PROTO</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426PEXT_ITEMGETTER_LIST_PROTOv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Prototype for the menu item getter that allows user defined sub menu attribution of menu items. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426PEXT_ITEMGETTER_WAVE_PROTO6string">
+<span id="_CPPv326PEXT_ITEMGETTER_WAVE_PROTO6string"></span><span id="_CPPv226PEXT_ITEMGETTER_WAVE_PROTO6string"></span><span id="PEXT_ITEMGETTER_WAVE_PROTO__string"></span><span class="target" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1a8422324fefcd2b2c3f1e8162c90adfbf"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PEXT_ITEMGETTER_WAVE_PROTO</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426PEXT_ITEMGETTER_WAVE_PROTO6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Prototype for the menu item getter that is compatible with the former popupmenu value=procedure definition. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422PEXT_POPUPACTION_PROTOP13WMPopupAction">
+<span id="_CPPv322PEXT_POPUPACTION_PROTOP13WMPopupAction"></span><span id="_CPPv222PEXT_POPUPACTION_PROTOP13WMPopupAction"></span><span id="PEXT_POPUPACTION_PROTO__WMPopupActionP"></span><span class="target" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1aaa2522e0db1d38f897c07596f1b1e730"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PEXT_POPUPACTION_PROTO</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMPopupAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">pa</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422PEXT_POPUPACTION_PROTOP13WMPopupAction" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Prototype for the former popupaction procedure, that is only called virtually now through the PopupContextualMenu callback. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pa</strong> – WMPopupAction structure </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415PEXT_ButtonProcP14WMButtonAction">
+<span id="_CPPv315PEXT_ButtonProcP14WMButtonAction"></span><span id="_CPPv215PEXT_ButtonProcP14WMButtonAction"></span><span id="PEXT_ButtonProc__WMButtonActionP"></span><span class="target" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1a1ace56af0748717b664bac3f6d390d85"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PEXT_ButtonProc</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415PEXT_ButtonProcP14WMButtonAction" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Generic procedure for button actions from popup extension controls Fills the global popupExtMenuInfo wave with current menu setup information retrieved from the function defined in the buttons userdata through PEXT_UDATA_ITEMGETTER key. This getter function can either return a string or 1D text wave. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ba</strong> – WMButtonAction structure </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425PEXT_VerifyAndSetMenuWave14WaveTextOrNull">
+<span id="_CPPv325PEXT_VerifyAndSetMenuWave14WaveTextOrNull"></span><span id="_CPPv225PEXT_VerifyAndSetMenuWave14WaveTextOrNull"></span><span id="PEXT_VerifyAndSetMenuWave__WaveTextOrNull"></span><span class="target" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1ace43325de9f33a9066b5cbe71a76ecc7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PEXT_VerifyAndSetMenuWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveTextOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">menuWave</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425PEXT_VerifyAndSetMenuWave14WaveTextOrNull" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Verifies menu data input wave and transfers it to global. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420PEXT_SetDisabledMenuv">
+<span id="_CPPv320PEXT_SetDisabledMenuv"></span><span id="_CPPv220PEXT_SetDisabledMenuv"></span><span id="PEXT_SetDisabledMenu"></span><span class="target" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1a4c4a86d5c8e2ddd816156fd0bef577a8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PEXT_SetDisabledMenu</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420PEXT_SetDisabledMenuv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Sets the menu to show a non selectable “_none_” entry. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420PEXT_SplitToSubMenus14WaveTextOrNull8variable">
+<span id="_CPPv320PEXT_SplitToSubMenus14WaveTextOrNull8variable"></span><span id="_CPPv220PEXT_SplitToSubMenus14WaveTextOrNull8variable"></span><span id="PEXT_SplitToSubMenus__WaveTextOrNull.variable"></span><span class="target" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1a144801f5e6de7d9255964bc960d8525d"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PEXT_SplitToSubMenus</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveTextOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">menuList</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">method</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420PEXT_SplitToSubMenus14WaveTextOrNull8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Automatically splits a 1D text wave with menu items to submenus This function does not name submenus. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>PEXT_SubMenuSplitting </p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>menuList</strong> – <strong>[in]</strong> 1d text wave with menu items </p></li>
+<li><p><strong>method</strong> – <strong>[in]</strong> [optional, default = PEXT_SUBSPLIT_DEFAULT] sets how the menu items are split to sub menus </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>1d text wave where each element contains a list of menu items. Each element represents a sub menu. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425PEXT_GenerateSubMenuNames14WaveTextOrNull8variable">
+<span id="_CPPv325PEXT_GenerateSubMenuNames14WaveTextOrNull8variable"></span><span id="_CPPv225PEXT_GenerateSubMenuNames14WaveTextOrNull8variable"></span><span id="PEXT_GenerateSubMenuNames__WaveTextOrNull.variable"></span><span class="target" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1a4d5a4149bec3314a6172137de96d8dce"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PEXT_GenerateSubMenuNames</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveTextOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">splitMenu</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">method</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425PEXT_GenerateSubMenuNames14WaveTextOrNull8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Automatically generates submenu names and applies them on the given wave. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>PEXT_SubMenuNameGeneration </p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>splitMenu</strong> – <strong>[in]</strong> 1d text wave with menu item lists for sub menus as returned by <a class="reference internal" href="#_m_i_e_s___gui_popup_menu_ext_8ipf_1a144801f5e6de7d9255964bc960d8525d"><span class="std std-ref">PEXT_SplitToSubMenus()</span></a></p></li>
+<li><p><strong>method</strong> – <strong>[in]</strong> [optional, default = PEXT_SUBNAMEGEN_DEFAULT] sets how the sub menu names are generated </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv412MAX_SUBMENUS">
+<span id="_CPPv312MAX_SUBMENUS"></span><span id="_CPPv212MAX_SUBMENUS"></span><span id="MAX_SUBMENUS__doubleC"></span><span class="target" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1ab4fd6779bfa52d5574187f5d4c109ff1"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MAX_SUBMENUS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">12</span></span><a class="headerlink" href="#_CPPv412MAX_SUBMENUS" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv418WAVE_NOTE_PROCNAME">
+<span id="_CPPv318WAVE_NOTE_PROCNAME"></span><span id="_CPPv218WAVE_NOTE_PROCNAME"></span><span id="WAVE_NOTE_PROCNAME__stringC"></span><span class="target" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1ab1088ab110caf2a899a060f130d316f9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WAVE_NOTE_PROCNAME</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;PROC&quot;</span></span><a class="headerlink" href="#_CPPv418WAVE_NOTE_PROCNAME" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420WAVE_NOTE_WINDOWNAME">
+<span id="_CPPv320WAVE_NOTE_WINDOWNAME"></span><span id="_CPPv220WAVE_NOTE_WINDOWNAME"></span><span id="WAVE_NOTE_WINDOWNAME__stringC"></span><span class="target" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1a3e88693a0571d2c0892862f0e8f30700"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WAVE_NOTE_WINDOWNAME</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;WINNAME&quot;</span></span><a class="headerlink" href="#_CPPv420WAVE_NOTE_WINDOWNAME" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv418WAVE_NOTE_CTRLNAME">
+<span id="_CPPv318WAVE_NOTE_CTRLNAME"></span><span id="_CPPv218WAVE_NOTE_CTRLNAME"></span><span id="WAVE_NOTE_CTRLNAME__stringC"></span><span class="target" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1a2aa44207c4186abb65b70e54a105576a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WAVE_NOTE_CTRLNAME</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;CTRLNAME&quot;</span></span><a class="headerlink" href="#_CPPv418WAVE_NOTE_CTRLNAME" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv415MENUNAME_UNUSED">
+<span id="_CPPv315MENUNAME_UNUSED"></span><span id="_CPPv215MENUNAME_UNUSED"></span><span id="MENUNAME_UNUSED__stringC"></span><span class="target" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1a3ba7ba362c6bcdd77ed6f4764c372a91"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MENUNAME_UNUSED</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;***</span> <span class="pre">bug,</span> <span class="pre">report</span> <span class="pre">to</span> <span class="pre">dev</span> <span class="pre">***&quot;</span></span><a class="headerlink" href="#_CPPv415MENUNAME_UNUSED" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420MENU_DISABLE_SPECIAL">
+<span id="_CPPv320MENU_DISABLE_SPECIAL"></span><span id="_CPPv220MENU_DISABLE_SPECIAL"></span><span id="MENU_DISABLE_SPECIAL__stringC"></span><span class="target" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1aba7adefef13fd7f57cde984334a25f48"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MENU_DISABLE_SPECIAL</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;\\M0&quot;</span></span><a class="headerlink" href="#_CPPv420MENU_DISABLE_SPECIAL" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv44LSEP">
+<span id="_CPPv34LSEP"></span><span id="_CPPv24LSEP"></span><span id="LSEP__stringC"></span><span class="target" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1a74688aafae410df7cd9de58309e5ae9f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LSEP</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;;&quot;</span></span><a class="headerlink" href="#_CPPv44LSEP" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_GuiPopupMenuExt.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416PEXT_SubMenuName8variable"><code class="docutils literal notranslate"><span class="pre">PEXT_SubMenuName()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419PEXT_PopupMenuItems8variable"><code class="docutils literal notranslate"><span class="pre">PEXT_PopupMenuItems()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413PEXT_Callback6string6string8variable"><code class="docutils literal notranslate"><span class="pre">PEXT_Callback()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426PEXT_ITEMGETTER_LIST_PROTOv"><code class="docutils literal notranslate"><span class="pre">PEXT_ITEMGETTER_LIST_PROTO()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426PEXT_ITEMGETTER_WAVE_PROTO6string"><code class="docutils literal notranslate"><span class="pre">PEXT_ITEMGETTER_WAVE_PROTO()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422PEXT_POPUPACTION_PROTOP13WMPopupAction"><code class="docutils literal notranslate"><span class="pre">PEXT_POPUPACTION_PROTO()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415PEXT_ButtonProcP14WMButtonAction"><code class="docutils literal notranslate"><span class="pre">PEXT_ButtonProc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425PEXT_VerifyAndSetMenuWave14WaveTextOrNull"><code class="docutils literal notranslate"><span class="pre">PEXT_VerifyAndSetMenuWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420PEXT_SetDisabledMenuv"><code class="docutils literal notranslate"><span class="pre">PEXT_SetDisabledMenu()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420PEXT_SplitToSubMenus14WaveTextOrNull8variable"><code class="docutils literal notranslate"><span class="pre">PEXT_SplitToSubMenus()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425PEXT_GenerateSubMenuNames14WaveTextOrNull8variable"><code class="docutils literal notranslate"><span class="pre">PEXT_GenerateSubMenuNames()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412MAX_SUBMENUS"><code class="docutils literal notranslate"><span class="pre">MAX_SUBMENUS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418WAVE_NOTE_PROCNAME"><code class="docutils literal notranslate"><span class="pre">WAVE_NOTE_PROCNAME</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420WAVE_NOTE_WINDOWNAME"><code class="docutils literal notranslate"><span class="pre">WAVE_NOTE_WINDOWNAME</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418WAVE_NOTE_CTRLNAME"><code class="docutils literal notranslate"><span class="pre">WAVE_NOTE_CTRLNAME</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415MENUNAME_UNUSED"><code class="docutils literal notranslate"><span class="pre">MENUNAME_UNUSED</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420MENU_DISABLE_SPECIAL"><code class="docutils literal notranslate"><span class="pre">MENU_DISABLE_SPECIAL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv44LSEP"><code class="docutils literal notranslate"><span class="pre">LSEP</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___global_string_and_variable_access_8ipf.html"
+                          title="previous chapter">File MIES_GlobalStringAndVariableAccess.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___gui_utilities_8ipf.html"
+                          title="next chapter">File MIES_GuiUtilities.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___gui_utilities_8ipf.html" title="File MIES_GuiUtilities.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___global_string_and_variable_access_8ipf.html" title="File MIES_GlobalStringAndVariableAccess.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_GuiPopupMenuExt.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

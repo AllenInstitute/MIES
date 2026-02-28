@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File IPNWB_HDF5Helpers.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File IPNWB_Include.ipf" href="_i_p_n_w_b___include_8ipf.html" />
+    <link rel="prev" title="File IPNWB_Debugging.ipf" href="_i_p_n_w_b___debugging_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_i_p_n_w_b___include_8ipf.html" title="File IPNWB_Include.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_i_p_n_w_b___debugging_8ipf.html" title="File IPNWB_Debugging.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File IPNWB_HDF5Helpers.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-ipnwb-hdf5helpers-ipf">
+<span id="id1"></span><h1>File IPNWB_HDF5Helpers.ipf<a class="headerlink" href="#file-ipnwb-hdf5helpers-ipf" title="Link to this heading">¶</a></h1>
+<p><strong>H5</strong> Wrapper functions for convenient use of the HDF5 operations </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-unnamed-group">Unnamed Group</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420kHDF5DataInfoVersion">
+<span id="_CPPv320kHDF5DataInfoVersion"></span><span id="_CPPv220kHDF5DataInfoVersion"></span><span id="kHDF5DataInfoVersion__doubleC"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a82b9649a70f3d48ffc974e885a962056"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">kHDF5DataInfoVersion</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1000</span></span><a class="headerlink" href="#_CPPv420kHDF5DataInfoVersion" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Taken from HDF5 Browser.ipf</p>
+<p>Included here for convenience. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv412H5S_MAX_RANK">
+<span id="_CPPv312H5S_MAX_RANK"></span><span id="_CPPv212H5S_MAX_RANK"></span><span id="H5S_MAX_RANK__doubleC"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1aa8a2285a656dac9fd16948439a936d25"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">H5S_MAX_RANK</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">32</span></span><a class="headerlink" href="#_CPPv412H5S_MAX_RANK" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416InitHDF5DataInfoP12HDF5DataInfo">
+<span id="_CPPv316InitHDF5DataInfoP12HDF5DataInfo"></span><span id="_CPPv216InitHDF5DataInfoP12HDF5DataInfo"></span><span id="InitHDF5DataInfo__HDF5DataInfoP"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ad558a103c52d406ff0e6b398d29458e6"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InitHDF5DataInfo</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv412HDF5DataInfo" title="HDF5DataInfo"><span class="n"><span class="pre">HDF5DataInfo</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">di</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416InitHDF5DataInfoP12HDF5DataInfo" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419H5_WriteTextDataset8variable6string6string14WaveTextOrNull8variable8variable8variable8variable8variable8variable">
+<span id="_CPPv319H5_WriteTextDataset8variable6string6string14WaveTextOrNull8variable8variable8variable8variable8variable8variable"></span><span id="_CPPv219H5_WriteTextDataset8variable6string6string14WaveTextOrNull8variable8variable8variable8variable8variable8variable"></span><span id="H5_WriteTextDataset__variable.string.string.WaveTextOrNull.variable.variable.variable.variable.variable.variable"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1aa64713a442a61916bcf5be73ab3a562d"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">H5_WriteTextDataset</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">WaveTextOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wvText</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">overwrite</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">compressionMode</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">skipIfExists</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">writeIgorAttr</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">appendData</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">refMode</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419H5_WriteTextDataset8variable6string6string14WaveTextOrNull8variable8variable8variable8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Write a string or text wave into a HDF5 dataset. </p>
+<p>
+Only one of <code class="docutils literal notranslate"><span class="pre">str</span></code> or <code class="docutils literal notranslate"><span class="pre">wvText</span></code> can be given. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>locationID</strong> – HDF5 identifier, can be a file or group </p></li>
+<li><p><strong>name</strong> – Name of the HDF5 dataset </p></li>
+<li><p><strong>str</strong> – Contents to write into the dataset </p></li>
+<li><p><strong>wvText</strong> – Contents to write into the dataset </p></li>
+<li><p><strong>overwrite</strong> – [optional, defaults to false] Should existing datasets be overwritten </p></li>
+<li><p><strong>compressionMode</strong> – [optional, defaults to NO_COMPRESSION] Type of compression to use, one of <a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html#_i_p_n_w_b___constants_8ipf_1CompressionMode"><span class="std std-ref">CompressionMode</span></a></p></li>
+<li><p><strong>skipIfExists</strong> – [optional, defaults to false] Do nothing if the dataset already exists </p></li>
+<li><p><strong>writeIgorAttr</strong> – [optional, defaults to false] Add Igor specific attributes to the dataset, see the <code class="docutils literal notranslate"><span class="pre">/IGOR</span></code> flag of <code class="docutils literal notranslate"><span class="pre">HDF5SaveData</span></code></p></li>
+<li><p><strong>appendData</strong> – [optional, defaults to -1] Set the dimension to append to within the given dataset (requires compression) </p></li>
+<li><p><strong>refMode</strong> – [optional, defaults to NO_REFERENCE] Set refMode, one in <a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html#_i_p_n_w_b___constants_8ipf_1ReferenceMode"><span class="std std-ref">ReferenceMode</span></a> (DisplayHelpTopic “Saving Reference Data”)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415H5_WriteDataset8variable6string8variable8variable10WaveOrNull8variable8variable8variable8variable8variable">
+<span id="_CPPv315H5_WriteDataset8variable6string8variable8variable10WaveOrNull8variable8variable8variable8variable8variable"></span><span id="_CPPv215H5_WriteDataset8variable6string8variable8variable10WaveOrNull8variable8variable8variable8variable8variable"></span><span id="H5_WriteDataset__variable.string.variable.variable.WaveOrNull.variable.variable.variable.variable.variable"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a5b57e6c41b2f4fb74bece8971780e6d8"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">H5_WriteDataset</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">varType</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">overwrite</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">compressionMode</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">skipIfExists</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">writeIgorAttr</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">appendData</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415H5_WriteDataset8variable6string8variable8variable10WaveOrNull8variable8variable8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Write a variable or text wave into a HDF5 dataset. </p>
+<p>
+Only one of <code class="docutils literal notranslate"><span class="pre">var</span></code> or <code class="docutils literal notranslate"><span class="pre">wv</span></code> can be given. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>locationID</strong> – HDF5 identifier, can be a file or group </p></li>
+<li><p><strong>name</strong> – Name of the HDF5 dataset </p></li>
+<li><p><strong>var</strong> – Contents to write into the dataset </p></li>
+<li><p><strong>varType</strong> – Type of the data, must be given if <code class="docutils literal notranslate"><span class="pre">var</span></code> is supplied. See <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1IgorTypes"><span class="std std-ref">IgorTypes</span></a></p></li>
+<li><p><strong>wv</strong> – Contents to write into the dataset </p></li>
+<li><p><strong>overwrite</strong> – [optional, defaults to false] Should existing datasets be overwritten </p></li>
+<li><p><strong>compressionMode</strong> – [optional, defaults to NO_COMPRESSION] Type of compression to use, one of <a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html#_i_p_n_w_b___constants_8ipf_1CompressionMode"><span class="std std-ref">CompressionMode</span></a></p></li>
+<li><p><strong>skipIfExists</strong> – [optional, defaults to false] Do nothing if the dataset already exists </p></li>
+<li><p><strong>writeIgorAttr</strong> – [optional, defaults to false] Add Igor specific attributes to the dataset, see the <code class="docutils literal notranslate"><span class="pre">/IGOR</span></code> flag of <code class="docutils literal notranslate"><span class="pre">HDF5SaveData</span></code></p></li>
+<li><p><strong>appendData</strong> – [optional, defaults to -1] Set the dimension to append to within the given dataset (requires compression)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416H5_GetChunkSizes4wave8variable">
+<span id="_CPPv316H5_GetChunkSizes4wave8variable"></span><span id="_CPPv216H5_GetChunkSizes4wave8variable"></span><span id="H5_GetChunkSizes__wave.variable"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a9fff22dd75c540c361415008066aad69"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">H5_GetChunkSizes</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">compressionMode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416H5_GetChunkSizes4wave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a wave for the valid chunk sizes of each dimension taking into account the compression mode. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423H5_WriteDatasetLowLevel8variable6string4wave8variable8variable8variable8variable8variable8variable">
+<span id="_CPPv323H5_WriteDatasetLowLevel8variable6string4wave8variable8variable8variable8variable8variable8variable"></span><span id="_CPPv223H5_WriteDatasetLowLevel8variable6string4wave8variable8variable8variable8variable8variable8variable"></span><span id="H5_WriteDatasetLowLevel__variable.string.wave.variable.variable.variable.variable.variable.variable"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a6c067ddbf7ca7229a3f49d73ca90ee76"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">H5_WriteDatasetLowLevel</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">overwrite</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">compressionMode</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">skipIfExists</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">writeIgorAttr</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">appendData</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">refMode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423H5_WriteDatasetLowLevel8variable6string4wave8variable8variable8variable8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_i_p_n_w_b___h_d_f5_helpers_8ipf_1aa64713a442a61916bcf5be73ab3a562d"><span class="std std-ref">H5_WriteTextDataset</span></a> or <a class="reference internal" href="#_i_p_n_w_b___h_d_f5_helpers_8ipf_1a5b57e6c41b2f4fb74bece8971780e6d8"><span class="std std-ref">H5_WriteDataset</span></a></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421H5_WriteTextAttribute8variable6string6string6string6string8variable8variable">
+<span id="_CPPv321H5_WriteTextAttribute8variable6string6string6string6string8variable8variable"></span><span id="_CPPv221H5_WriteTextAttribute8variable6string6string6string6string8variable8variable"></span><span id="H5_WriteTextAttribute__variable.string.string.string.string.variable.variable"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ac93eadc88a17471e54924435430d5d2f"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">H5_WriteTextAttribute</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">attrName</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">overwrite</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">refMode</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421H5_WriteTextAttribute8variable6string6string6string6string8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Attach a text attribute to the given location. </p>
+<p>
+Only one of <code class="docutils literal notranslate"><span class="pre">str</span> </code> or <code class="docutils literal notranslate"><span class="pre">list</span></code> can be given. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>locationID</strong> – HDF5 identifier, can be a file, group or dataset </p></li>
+<li><p><strong>attrName</strong> – Name of the attribute </p></li>
+<li><p><strong>path</strong> – Additional path on top of <code class="docutils literal notranslate"><span class="pre">locationID</span></code> which identifies the object onto which the attribute should be attached. </p></li>
+<li><p><strong>list</strong> – Contents to write into the attribute, list will be always written as 1D-array </p></li>
+<li><p><strong>str</strong> – Contents to write into the attribute </p></li>
+<li><p><strong>overwrite</strong> – [optional, defaults to false] Should existing attributes be overwritten </p></li>
+<li><p><strong>refMode</strong> – [optional, defaults to 0] Set refMode, one in <a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html#_i_p_n_w_b___constants_8ipf_1ReferenceMode"><span class="std std-ref">ReferenceMode</span></a> (DisplayHelpTopic “Saving Reference Data”)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417H5_WriteAttribute8variable6string6string8variable8variable8variable">
+<span id="_CPPv317H5_WriteAttribute8variable6string6string8variable8variable8variable"></span><span id="_CPPv217H5_WriteAttribute8variable6string6string8variable8variable8variable"></span><span id="H5_WriteAttribute__variable.string.string.variable.variable.variable"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1abf5f210ef163ad8cace9140400010b24"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">H5_WriteAttribute</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">attrName</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">varType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">overwrite</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417H5_WriteAttribute8variable6string6string8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Attach a numerical attribute to the given location. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>locationID</strong> – HDF5 identifier, can be a file, group or dataset </p></li>
+<li><p><strong>attrName</strong> – Name of the attribute </p></li>
+<li><p><strong>path</strong> – Additional path on top of <code class="docutils literal notranslate"><span class="pre">locationID</span></code> which identifies the object onto which the attribute should be attached. </p></li>
+<li><p><strong>var</strong> – Contents to write into the attribute </p></li>
+<li><p><strong>varType</strong> – Type of the attribute, see <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1IgorTypes"><span class="std std-ref">IgorTypes</span></a></p></li>
+<li><p><strong>overwrite</strong> – [optional, defaults to false] Should existing attributes be overwritten </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417H5_CreateSoftLink8variable6string6string">
+<span id="_CPPv317H5_CreateSoftLink8variable6string6string"></span><span id="_CPPv217H5_CreateSoftLink8variable6string6string"></span><span id="H5_CreateSoftLink__variable.string.string"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a696d6a1f4ac46aa537f87924260e5b09"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">H5_CreateSoftLink</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">target</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417H5_CreateSoftLink8variable6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Create a link to a group. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>locationID</strong> – HDF5 identifier, can be a file, group or dataset </p></li>
+<li><p><strong>path</strong> – Name of the link </p></li>
+<li><p><strong>target</strong> – The linked destination </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411H5_OpenFile6string8variable">
+<span id="_CPPv311H5_OpenFile6string8variable"></span><span id="_CPPv211H5_OpenFile6string8variable"></span><span id="H5_OpenFile__string.variable"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a465aab5ca555b1eb98d7fa125bd56649"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">H5_OpenFile</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">discLocation</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">write</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411H5_OpenFile6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Open HDF5 file and return ID. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>discLocation</strong> – full path to nwb file </p></li>
+<li><p><strong>write</strong> – open file for writing. default is readonly. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ID for referencing open hdf5 file </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412H5_CloseFile8variable">
+<span id="_CPPv312H5_CloseFile8variable"></span><span id="_CPPv212H5_CloseFile8variable"></span><span id="H5_CloseFile__variable"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ad21bc4c409cdef354fb9be5b3427f789"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">H5_CloseFile</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fileID</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412H5_CloseFile8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Close HDF5 file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fileID</strong> – ID of open hdf5 file </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>open state as true/false </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413H5_IsFileOpen8variable">
+<span id="_CPPv313H5_IsFileOpen8variable"></span><span id="_CPPv213H5_IsFileOpen8variable"></span><span id="H5_IsFileOpen__variable"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a0652f259c686d0d553f22917f5d02d16"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">H5_IsFileOpen</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fileID</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413H5_IsFileOpen8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return 1 if the given HDF5 file is already open, 0 otherwise. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fileID</strong> – HDF5 locationID from <code class="docutils literal notranslate"><span class="pre">HDF5OpenFile</span></code>. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416H5_DatasetExists8variable6string">
+<span id="_CPPv316H5_DatasetExists8variable6string"></span><span id="_CPPv216H5_DatasetExists8variable6string"></span><span id="H5_DatasetExists__variable.string"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a386439db8707dde83124479dd5e04484"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">H5_DatasetExists</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416H5_DatasetExists8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return 1 if the given HDF5 dataset exists, 0 otherwise. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>locationID</strong> – <strong>[in]</strong> HDF5 identifier, can be a file or group </p></li>
+<li><p><strong>name</strong> – <strong>[in]</strong> Additional path on top of <code class="docutils literal notranslate"><span class="pre">locationID</span></code> which identifies the dataset </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414H5_LoadDataset8variable6string">
+<span id="_CPPv314H5_LoadDataset8variable6string"></span><span id="_CPPv214H5_LoadDataset8variable6string"></span><span id="H5_LoadDataset__variable.string"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a5843102ecc437c89203ab579da86a778"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">H5_LoadDataset</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414H5_LoadDataset8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Load a specified dataset as wave. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>locationID</strong> – <strong>[in]</strong> HDF5 identifier, can be a file or group </p></li>
+<li><p><strong>name</strong> – <strong>[in]</strong> path on top of <code class="docutils literal notranslate"><span class="pre">locationID</span></code> which identifies the dataset</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>reference to wave containing loaded data </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417H5_GetDatasetSize8variable6string">
+<span id="_CPPv317H5_GetDatasetSize8variable6string"></span><span id="_CPPv217H5_GetDatasetSize8variable6string"></span><span id="H5_GetDatasetSize__variable.string"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1abf7905b5e5dd764af0e7631d2a03478c"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">H5_GetDatasetSize</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataset</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417H5_GetDatasetSize8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the dimension sizes of the given dataset. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>locationID</strong> – HDF5 identifier, can be a file or group </p></li>
+<li><p><strong>dataset</strong> – name of the dataset</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>wave with the dimension sizes or an invalid wave reference </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418H5_AttributeExists8variable6string6stringP8variable">
+<span id="_CPPv318H5_AttributeExists8variable6string6stringP8variable"></span><span id="_CPPv218H5_AttributeExists8variable6string6stringP8variable"></span><span id="H5_AttributeExists__variable.string.string.variableP"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a1313c9bc50b3c9aa763461f0869f9179"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">H5_AttributeExists</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">attribute</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">objectType</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418H5_AttributeExists8variable6string6stringP8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Check if a given attribute exists. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>locationID</strong> – <strong>[in]</strong> HDF5 identifier, can be a file or group </p></li>
+<li><p><strong>path</strong> – <strong>[in]</strong> Additional path on top of <code class="docutils literal notranslate"><span class="pre">locationID</span></code> which identifies the group or dataset </p></li>
+<li><p><strong>attribute</strong> – <strong>[in]</strong> Name of the attribute </p></li>
+<li><p><strong>objectType</strong> – <strong>[out]</strong> [optional] Return the type of the element to which the attribute is attached to. Can be used for subsequent HDF5LoadData calls. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416H5_LoadAttribute8variable6string6string">
+<span id="_CPPv316H5_LoadAttribute8variable6string6string"></span><span id="_CPPv216H5_LoadAttribute8variable6string6string"></span><span id="H5_LoadAttribute__variable.string.string"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ad7e05038d64fea844221b7a23a80ddb0"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">H5_LoadAttribute</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">attribute</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416H5_LoadAttribute8variable6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Load the given attribute and return its contents. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>locationID</strong> – <strong>[in]</strong> HDF5 identifier, can be a file or group </p></li>
+<li><p><strong>path</strong> – <strong>[in]</strong> Additional path on top of <code class="docutils literal notranslate"><span class="pre">locationID</span></code> which identifies the group or dataset </p></li>
+<li><p><strong>attribute</strong> – <strong>[in]</strong> Name of the attribute to load </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414H5_GroupExists8variable6string">
+<span id="_CPPv314H5_GroupExists8variable6string"></span><span id="_CPPv214H5_GroupExists8variable6string"></span><span id="H5_GroupExists__variable.string"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a1922af1e133476db8052cb445951afa2"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">H5_GroupExists</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414H5_GroupExists8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return 1 if the given HDF5 group exists, 0 otherwise. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>locationID</strong> – HDF5 identifier, can be a file or group </p></li>
+<li><p><strong>path</strong> – Additional path on top of <code class="docutils literal notranslate"><span class="pre">locationID</span></code> which identifies the group. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426H5_CreateGroupsRecursively8variable6string">
+<span id="_CPPv326H5_CreateGroupsRecursively8variable6string"></span><span id="_CPPv226H5_CreateGroupsRecursively8variable6string"></span><span id="H5_CreateGroupsRecursively__variable.string"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a4e842c8bad331078394cb269d5c56071"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">H5_CreateGroupsRecursively</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fullPath</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426H5_CreateGroupsRecursively8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Create all groups along the given path. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>locationID</strong> – HDF5 identifier, can be a file or group </p></li>
+<li><p><strong>fullPath</strong> – Additional path on top of <code class="docutils literal notranslate"><span class="pre">locationID</span></code> which identifies the group </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420H5_IsValidIdentifier6string">
+<span id="_CPPv320H5_IsValidIdentifier6string"></span><span id="_CPPv220H5_IsValidIdentifier6string"></span><span id="H5_IsValidIdentifier__string"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a72b08ce99c20dd0a6d992f39d9a9189e"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">H5_IsValidIdentifier</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420H5_IsValidIdentifier6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return true if <code class="docutils literal notranslate"><span class="pre">name</span></code> is a valid hdf5 identifier. </p>
+<p>This is more restrictive than the actual HDF5 library checks. See the BNF Grammar <a class="reference external" href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FGroups%2FHDF5_Groups.htm%23TOC_4_2_3_HDF5_Path_Namesbc-5&amp;rhtocid=4.1.0_3">here</a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419H5_ListGroupMembers8variable6string">
+<span id="_CPPv319H5_ListGroupMembers8variable6string"></span><span id="_CPPv219H5_ListGroupMembers8variable6string"></span><span id="H5_ListGroupMembers__variable.string"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a17c1365703f8f4cc83bf51d9027b8ec6"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">H5_ListGroupMembers</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419H5_ListGroupMembers8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>List all datasets at path (non-recursively) </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>locationID</strong> – <strong>[in]</strong> HDF5 identifier, can be a file or group </p></li>
+<li><p><strong>path</strong> – <strong>[in]</strong> Additional path on top of <code class="docutils literal notranslate"><span class="pre">locationID</span></code> which identifies the group </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413H5_ListGroups8variable6string">
+<span id="_CPPv313H5_ListGroups8variable6string"></span><span id="_CPPv213H5_ListGroups8variable6string"></span><span id="H5_ListGroups__variable.string"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ad9e59a7222432c57db7cd092bcd73867"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">H5_ListGroups</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fileID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413H5_ListGroups8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>List all groups inside a group (non-recursively) </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fileID</strong> – <strong>[in]</strong> HDF5 file identifier </p></li>
+<li><p><strong>path</strong> – <strong>[in]</strong> Full path to the group inside fileID </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412H5_OpenGroup8variable6string">
+<span id="_CPPv312H5_OpenGroup8variable6string"></span><span id="_CPPv212H5_OpenGroup8variable6string"></span><span id="H5_OpenGroup__variable.string"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a3b2a8fe533a81bcc98f370dde7ea242c"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">H5_OpenGroup</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">locationID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412H5_OpenGroup8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Open the group reachable via <code class="docutils literal notranslate"><span class="pre">locationID</span></code> and <code class="docutils literal notranslate"><span class="pre">path</span></code> and return its ID. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>locationID</strong> – HDF5 identifier, can be a file or group </p></li>
+<li><p><strong>path</strong> – Additional path on top of <code class="docutils literal notranslate"><span class="pre">locationID</span></code> which identifies the group </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the groupID of the opened group. Return NaN if the group did not exist. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412H5_FlushFile8variable">
+<span id="_CPPv312H5_FlushFile8variable"></span><span id="_CPPv212H5_FlushFile8variable"></span><span id="H5_FlushFile__variable"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a309130d5db14fface8efc0a6d93eb56e"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">H5_FlushFile</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fileID</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412H5_FlushFile8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Flush the file contents to disc. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fileID</strong> – HDF5 file identifier </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416H5_GetLinkTarget6string6string">
+<span id="_CPPv316H5_GetLinkTarget6string6string"></span><span id="_CPPv216H5_GetLinkTarget6string6string"></span><span id="H5_GetLinkTarget__string.string"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a4aa8a2cd844ec06a3cd5fee1d526952e"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">H5_GetLinkTarget</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">discLocation</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416H5_GetLinkTarget6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p><dl>
+<dt class="sig sig-object cpp">
+<a class="reference internal" href="../todo.html#todo_1_todo000035"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<dd><p>Needs HDF5 XOP support for reading link targets use HDF5LinkInfo </p>
+</dd></dl>
+
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420H5_GetLibraryVersionv">
+<span id="_CPPv320H5_GetLibraryVersionv"></span><span id="_CPPv220H5_GetLibraryVersionv"></span><span id="H5_GetLibraryVersion"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ada13c8501746fa1b08133df9efc40089"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">H5_GetLibraryVersion</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420H5_GetLibraryVersionv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the HDF5 Library version. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv423H5_ATTRIBUTE_SIZE_LIMIT">
+<span id="_CPPv323H5_ATTRIBUTE_SIZE_LIMIT"></span><span id="_CPPv223H5_ATTRIBUTE_SIZE_LIMIT"></span><span id="H5_ATTRIBUTE_SIZE_LIMIT__doubleC"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a17a236000af5e1324d9a914739bdc5a6"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">H5_ATTRIBUTE_SIZE_LIMIT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">60e3</span></span><a class="headerlink" href="#_CPPv423H5_ATTRIBUTE_SIZE_LIMIT" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv413H5_CHUNK_SIZE">
+<span id="_CPPv313H5_CHUNK_SIZE"></span><span id="_CPPv213H5_CHUNK_SIZE"></span><span id="H5_CHUNK_SIZE__doubleC"></span><span class="target" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a50de0ebee19b467341e9e73690f4613d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">H5_CHUNK_SIZE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">8192</span></span><a class="headerlink" href="#_CPPv413H5_CHUNK_SIZE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv412HDF5DataInfo">
+<span id="_CPPv312HDF5DataInfo"></span><span id="_CPPv212HDF5DataInfo"></span><span id="HDF5DataInfo"></span><span class="target" id="struct_h_d_f5_data_info"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HDF5DataInfo</span></span></span><a class="headerlink" href="#_CPPv412HDF5DataInfo" title="Link to this definition">¶</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12HDF5DataInfo7versionE">
+<span id="_CPPv3N12HDF5DataInfo7versionE"></span><span id="_CPPv2N12HDF5DataInfo7versionE"></span><span id="HDF5DataInfo::version__uint32"></span><span class="target" id="struct_h_d_f5_data_info_1a84db83090764268601e0ba2dd5249267"></span><span class="n"><span class="pre">uint32</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">version</span></span></span><a class="headerlink" href="#_CPPv4N12HDF5DataInfo7versionE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12HDF5DataInfo10structNameE">
+<span id="_CPPv3N12HDF5DataInfo10structNameE"></span><span id="_CPPv2N12HDF5DataInfo10structNameE"></span><span id="HDF5DataInfo::structName__cA"></span><span class="target" id="struct_h_d_f5_data_info_1adc362489ec54acbb7217b5b12ce375a7"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">structName</span></span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">16</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv4N12HDF5DataInfo10structNameE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12HDF5DataInfo14datatype_classE">
+<span id="_CPPv3N12HDF5DataInfo14datatype_classE"></span><span id="_CPPv2N12HDF5DataInfo14datatype_classE"></span><span id="HDF5DataInfo::datatype_class__double"></span><span class="target" id="struct_h_d_f5_data_info_1a623a3110c3e6c3d03c2da7069ee0871f"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">datatype_class</span></span></span><a class="headerlink" href="#_CPPv4N12HDF5DataInfo14datatype_classE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12HDF5DataInfo18datatype_class_strE">
+<span id="_CPPv3N12HDF5DataInfo18datatype_class_strE"></span><span id="_CPPv2N12HDF5DataInfo18datatype_class_strE"></span><span id="HDF5DataInfo::datatype_class_str__cA"></span><span class="target" id="struct_h_d_f5_data_info_1a97ac0f751aa795e84a056f6a80f2da09"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">datatype_class_str</span></span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">32</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv4N12HDF5DataInfo18datatype_class_strE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12HDF5DataInfo13datatype_sizeE">
+<span id="_CPPv3N12HDF5DataInfo13datatype_sizeE"></span><span id="_CPPv2N12HDF5DataInfo13datatype_sizeE"></span><span id="HDF5DataInfo::datatype_size__double"></span><span class="target" id="struct_h_d_f5_data_info_1a62743ad49c48e06a9b0048102fbf810b"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">datatype_size</span></span></span><a class="headerlink" href="#_CPPv4N12HDF5DataInfo13datatype_sizeE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12HDF5DataInfo13datatype_signE">
+<span id="_CPPv3N12HDF5DataInfo13datatype_signE"></span><span id="_CPPv2N12HDF5DataInfo13datatype_signE"></span><span id="HDF5DataInfo::datatype_sign__double"></span><span class="target" id="struct_h_d_f5_data_info_1a5cea20d75d9abed7c973c2441f7de77d"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">datatype_sign</span></span></span><a class="headerlink" href="#_CPPv4N12HDF5DataInfo13datatype_signE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12HDF5DataInfo14datatype_orderE">
+<span id="_CPPv3N12HDF5DataInfo14datatype_orderE"></span><span id="_CPPv2N12HDF5DataInfo14datatype_orderE"></span><span id="HDF5DataInfo::datatype_order__double"></span><span class="target" id="struct_h_d_f5_data_info_1a5776c1048d78e6eaa989c025c9b5ca4d"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">datatype_order</span></span></span><a class="headerlink" href="#_CPPv4N12HDF5DataInfo14datatype_orderE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12HDF5DataInfo12datatype_strE">
+<span id="_CPPv3N12HDF5DataInfo12datatype_strE"></span><span id="_CPPv2N12HDF5DataInfo12datatype_strE"></span><span id="HDF5DataInfo::datatype_str__cA"></span><span class="target" id="struct_h_d_f5_data_info_1ad80815acb148c5467454c164120aac54"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">datatype_str</span></span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">64</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv4N12HDF5DataInfo12datatype_strE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12HDF5DataInfo14dataspace_typeE">
+<span id="_CPPv3N12HDF5DataInfo14dataspace_typeE"></span><span id="_CPPv2N12HDF5DataInfo14dataspace_typeE"></span><span id="HDF5DataInfo::dataspace_type__double"></span><span class="target" id="struct_h_d_f5_data_info_1acc4ca43b15235b24ed65d1d023c128ca"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dataspace_type</span></span></span><a class="headerlink" href="#_CPPv4N12HDF5DataInfo14dataspace_typeE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12HDF5DataInfo5ndimsE">
+<span id="_CPPv3N12HDF5DataInfo5ndimsE"></span><span id="_CPPv2N12HDF5DataInfo5ndimsE"></span><span id="HDF5DataInfo::ndims__double"></span><span class="target" id="struct_h_d_f5_data_info_1a09f67f8985805bf93a2ba89cd4ce15a8"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ndims</span></span></span><a class="headerlink" href="#_CPPv4N12HDF5DataInfo5ndimsE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12HDF5DataInfo4dimsE">
+<span id="_CPPv3N12HDF5DataInfo4dimsE"></span><span id="_CPPv2N12HDF5DataInfo4dimsE"></span><span id="HDF5DataInfo::dims__doubleA"></span><span class="target" id="struct_h_d_f5_data_info_1a384fcecf7ab60e47e2a23a3020e33640"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dims</span></span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#_CPPv412H5S_MAX_RANK" title="H5S_MAX_RANK"><span class="n"><span class="pre">H5S_MAX_RANK</span></span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv4N12HDF5DataInfo4dimsE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12HDF5DataInfo7maxdimsE">
+<span id="_CPPv3N12HDF5DataInfo7maxdimsE"></span><span id="_CPPv2N12HDF5DataInfo7maxdimsE"></span><span id="HDF5DataInfo::maxdims__doubleA"></span><span class="target" id="struct_h_d_f5_data_info_1a9a32ae46a934db01e9174a2b28de191b"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">maxdims</span></span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#_CPPv412H5S_MAX_RANK" title="H5S_MAX_RANK"><span class="n"><span class="pre">H5S_MAX_RANK</span></span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv4N12HDF5DataInfo7maxdimsE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File IPNWB_HDF5Helpers.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420kHDF5DataInfoVersion"><code class="docutils literal notranslate"><span class="pre">kHDF5DataInfoVersion</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412H5S_MAX_RANK"><code class="docutils literal notranslate"><span class="pre">H5S_MAX_RANK</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416InitHDF5DataInfoP12HDF5DataInfo"><code class="docutils literal notranslate"><span class="pre">InitHDF5DataInfo()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419H5_WriteTextDataset8variable6string6string14WaveTextOrNull8variable8variable8variable8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">H5_WriteTextDataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415H5_WriteDataset8variable6string8variable8variable10WaveOrNull8variable8variable8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">H5_WriteDataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416H5_GetChunkSizes4wave8variable"><code class="docutils literal notranslate"><span class="pre">H5_GetChunkSizes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423H5_WriteDatasetLowLevel8variable6string4wave8variable8variable8variable8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">H5_WriteDatasetLowLevel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421H5_WriteTextAttribute8variable6string6string6string6string8variable8variable"><code class="docutils literal notranslate"><span class="pre">H5_WriteTextAttribute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417H5_WriteAttribute8variable6string6string8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">H5_WriteAttribute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417H5_CreateSoftLink8variable6string6string"><code class="docutils literal notranslate"><span class="pre">H5_CreateSoftLink()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411H5_OpenFile6string8variable"><code class="docutils literal notranslate"><span class="pre">H5_OpenFile()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412H5_CloseFile8variable"><code class="docutils literal notranslate"><span class="pre">H5_CloseFile()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413H5_IsFileOpen8variable"><code class="docutils literal notranslate"><span class="pre">H5_IsFileOpen()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416H5_DatasetExists8variable6string"><code class="docutils literal notranslate"><span class="pre">H5_DatasetExists()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414H5_LoadDataset8variable6string"><code class="docutils literal notranslate"><span class="pre">H5_LoadDataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417H5_GetDatasetSize8variable6string"><code class="docutils literal notranslate"><span class="pre">H5_GetDatasetSize()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418H5_AttributeExists8variable6string6stringP8variable"><code class="docutils literal notranslate"><span class="pre">H5_AttributeExists()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416H5_LoadAttribute8variable6string6string"><code class="docutils literal notranslate"><span class="pre">H5_LoadAttribute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414H5_GroupExists8variable6string"><code class="docutils literal notranslate"><span class="pre">H5_GroupExists()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426H5_CreateGroupsRecursively8variable6string"><code class="docutils literal notranslate"><span class="pre">H5_CreateGroupsRecursively()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420H5_IsValidIdentifier6string"><code class="docutils literal notranslate"><span class="pre">H5_IsValidIdentifier()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419H5_ListGroupMembers8variable6string"><code class="docutils literal notranslate"><span class="pre">H5_ListGroupMembers()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413H5_ListGroups8variable6string"><code class="docutils literal notranslate"><span class="pre">H5_ListGroups()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412H5_OpenGroup8variable6string"><code class="docutils literal notranslate"><span class="pre">H5_OpenGroup()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412H5_FlushFile8variable"><code class="docutils literal notranslate"><span class="pre">H5_FlushFile()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416H5_GetLinkTarget6string6string"><code class="docutils literal notranslate"><span class="pre">H5_GetLinkTarget()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420H5_GetLibraryVersionv"><code class="docutils literal notranslate"><span class="pre">H5_GetLibraryVersion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423H5_ATTRIBUTE_SIZE_LIMIT"><code class="docutils literal notranslate"><span class="pre">H5_ATTRIBUTE_SIZE_LIMIT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413H5_CHUNK_SIZE"><code class="docutils literal notranslate"><span class="pre">H5_CHUNK_SIZE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412HDF5DataInfo"><code class="docutils literal notranslate"><span class="pre">HDF5DataInfo</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N12HDF5DataInfo7versionE"><code class="docutils literal notranslate"><span class="pre">version</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N12HDF5DataInfo10structNameE"><code class="docutils literal notranslate"><span class="pre">structName</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N12HDF5DataInfo14datatype_classE"><code class="docutils literal notranslate"><span class="pre">datatype_class</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N12HDF5DataInfo18datatype_class_strE"><code class="docutils literal notranslate"><span class="pre">datatype_class_str</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N12HDF5DataInfo13datatype_sizeE"><code class="docutils literal notranslate"><span class="pre">datatype_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N12HDF5DataInfo13datatype_signE"><code class="docutils literal notranslate"><span class="pre">datatype_sign</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N12HDF5DataInfo14datatype_orderE"><code class="docutils literal notranslate"><span class="pre">datatype_order</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N12HDF5DataInfo12datatype_strE"><code class="docutils literal notranslate"><span class="pre">datatype_str</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N12HDF5DataInfo14dataspace_typeE"><code class="docutils literal notranslate"><span class="pre">dataspace_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N12HDF5DataInfo5ndimsE"><code class="docutils literal notranslate"><span class="pre">ndims</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N12HDF5DataInfo4dimsE"><code class="docutils literal notranslate"><span class="pre">dims</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N12HDF5DataInfo7maxdimsE"><code class="docutils literal notranslate"><span class="pre">maxdims</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_i_p_n_w_b___debugging_8ipf.html"
+                          title="previous chapter">File IPNWB_Debugging.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_i_p_n_w_b___include_8ipf.html"
+                          title="next chapter">File IPNWB_Include.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_i_p_n_w_b___include_8ipf.html" title="File IPNWB_Include.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_i_p_n_w_b___debugging_8ipf.html" title="File IPNWB_Debugging.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File IPNWB_HDF5Helpers.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

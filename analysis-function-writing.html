@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Thirty six hints for writing analysis functions &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="DAQ details" href="daq-details.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="daq-details.html" title="DAQ details"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Thirty six hints for writing analysis functions</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="thirty-six-hints-for-writing-analysis-functions">
+<span id="file-analysis-function-writing-rst"></span><h1>Thirty six hints for writing analysis functions<a class="headerlink" href="#thirty-six-hints-for-writing-analysis-functions" title="Link to this heading">¶</a></h1>
+<ol class="arabic">
+<li><p>Create an issue with the description of the new analysis function.
+Also define its name and two letter abbreviation (which must not collide with existing ones).</p></li>
+<li><p>Always track <em>any</em> open items in task lists in the issue or the PR itself.</p></li>
+<li><p>Think about what should happen at each event. As a rule of thumb we want
+to do only what is really needed in <code class="docutils literal notranslate"><span class="pre">MID_SWEEP_EVENT</span></code> (if that is used at
+all). The common QC entries are determined in the following events:</p>
+<ul class="simple">
+<li><p>Sweep QC in <code class="docutils literal notranslate"><span class="pre">POST_SWEEP_EVENT</span></code></p></li>
+<li><p>Set QC in <code class="docutils literal notranslate"><span class="pre">POST_SET_EVENT</span></code></p></li>
+<li><p>Baseline QC in <code class="docutils literal notranslate"><span class="pre">MID_SWEEP_EVENT</span></code>/<code class="docutils literal notranslate"><span class="pre">POST_SWEEP_EVENT</span></code>.</p></li>
+</ul>
+</li>
+<li><p>Create a list of used labnotebook keys. The question which labnotebook keys
+are required can be answered by thinking about how the dashboard will interpret
+the analysis function run results. Only if it can decide, by looking at
+labnotebook entries, for each possible outcome exactly why the run failed, all
+labnotebook keys were thought of.</p></li>
+<li><p>Create a list of used user epochs. User epochs are there to define
+interesting stimset x-ranges for the analysis function. This should be used
+preferrably over other similiar approaches.</p></li>
+<li><p>Create a list of analysis function parameters including required/optional
+state and for the latter also the default values.</p></li>
+<li><p>Units for labnotebook keys should be added if possible. For physical units we
+tend to prefer base units without prefix, i.e. Ω instead of GΩ.</p></li>
+<li><p>Decide if the new labnotebook entries should be headstage dependent or not.
+The existing entries don’t do a very good job in guiding you here. An
+ideal choice is that the <code class="docutils literal notranslate"><span class="pre">DEPEND</span></code>/<code class="docutils literal notranslate"><span class="pre">INDEP</span></code> type of a entry would not
+have to be changed if the analysis function would need to support more or
+fewer headstages.</p></li>
+<li><p>Make a list of additional features and/or changes in common <code class="docutils literal notranslate"><span class="pre">PSQ_</span></code>/<code class="docutils literal notranslate"><span class="pre">MSQ_</span></code> functions you
+need.</p></li>
+<li><p>Draw a preliminary flowchart, on paper is fine. This serves as a way to think the behaviour through.
+Have a look at existing flowcharts for inspiration.</p></li>
+<li><p>Create a stimulus set for testing. The test stimsets can be loaded via
+<code class="docutils literal notranslate"><span class="pre">LoadStimsets</span></code> and saved via <code class="docutils literal notranslate"><span class="pre">SaveStimsets</span></code> available in
+HardwareTests.pxp.</p></li>
+<li><p>At this point you should have a pretty good idea what needs to be done.
+Discuss what you think you need to do with your boss.</p></li>
+<li><p>Add a skeleton analysis function, see <a class="reference external" href="https://alleninstitute.github.io/MIES/file/_m_i_e_s___analysis_functions_8ipf.html">here</a>,
+and add all analysis parameters, their help messages and check code.</p></li>
+<li><p>Add documentation for labnotebook keys and user epochs to the tables at the
+top of <code class="docutils literal notranslate"><span class="pre">MIES_AnalysisFunctions_PatchSeq.ipf</span></code>/<code class="docutils literal notranslate"><span class="pre">MIES_AnalysisFunctions_MultiPatchSeq.ipf</span></code></p></li>
+<li><p>Implement the test override entries in
+<a class="reference internal" href="file/_m_i_e_s___analysis_functions___patch_seq_8ipf.html#_CPPv425PSQ_CreateOverrideResults6string8variable8variable6string" title="PSQ_CreateOverrideResults"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">PSQ_CreateOverrideResults()</span></code></a>/<a class="reference internal" href="file/_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html#_CPPv425MSQ_CreateOverrideResults6string8variable8variable" title="MSQ_CreateOverrideResults"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">MSQ_CreateOverrideResults()</span></code></a> with
+documentation.</p></li>
+<li><p>Implement the behaviour for each event. Going from easy to difficult has proven to work.</p></li>
+<li><p>Now you should have a first version. Congratulation! Pad yourself on the
+back and take a break, because now the real fun starts.</p></li>
+<li><p>Add preliminary dashboard support. We do check for every testcase that
+the dashboard works.</p></li>
+<li><p>Create a new test suite and add it to <code class="docutils literal notranslate"><span class="pre">UTF_HardwareAnalysisFunctions.ipf</span></code>. Be sure to
+base it on the test suite of the last added analysis function to avoid copying
+deprecated approaches.</p></li>
+<li><p>Add a first test case were all test override entries result in failed QC.</p></li>
+<li><p>As rule of thumb what to check in each test case; be sure to have test
+assertions for all added labnotebook entries (except standard baseline
+entries) and position checking of user epochs.</p></li>
+<li><p>Make that first test case pass, this takes a surprisingly long time. The
+function <a class="reference internal" href="file/_m_i_e_s___logbook_viewer_8ipf.html#_CPPv434LBV_PlotAllAnalysisFunctionLBNKeys6string8variable" title="LBV_PlotAllAnalysisFunctionLBNKeys"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">LBV_PlotAllAnalysisFunctionLBNKeys()</span></code></a> helps for debugging.</p></li>
+<li><p>After this first test case passes, reassess the test assertions. Are you testing enough or too much?</p></li>
+<li><p>Writeup a test matrix for determining what needs to be
+tested, first version in paper is fine. The columns are the inputs,
+usually these are test overrides and analysis parameters.</p>
+<p>See <code class="docutils literal notranslate"><span class="pre">UTF_PatchSeqSealEvaluation.ipf</span></code> for an example.</p>
+<p>We always have the following three test cases:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The first has all QC (except <code class="docutils literal notranslate"><span class="pre">Sampling</span> <span class="pre">Interval</span> <span class="pre">QC</span></code>) failing.</p></li>
+<li><p>The second has all QC passing.</p></li>
+<li><p>The last one only has <code class="docutils literal notranslate"><span class="pre">Sampling</span> <span class="pre">Interval</span> <span class="pre">QC</span></code> failing.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Implement all test cases, fixing bugs in the analysis function on the way.</p></li>
+<li><p>Run all tests for this analysis function with instrumentation.</p></li>
+<li><p>Check the coverage output to see if you still have relevant gaps in testing.</p></li>
+<li><p>Add new test cases for filling coverage gaps.</p></li>
+<li><p>Repeat the last three points until the coverage is good enough.</p></li>
+<li><p>Check if some helper code etc. can/should be fleshed out into its own pull request.</p></li>
+<li><p>Be sure to include documentation and tests if your analysis function
+publishes ZeroMQ messages. See <code class="docutils literal notranslate"><span class="pre">CheckPipetteInBathPublishing</span></code> and
+<code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">PSQ_PB_Publish()</span></code> for an example. Add it also in
+<code class="docutils literal notranslate"><span class="pre">CheckPublishedMessage</span></code>.</p></li>
+<li><p>Tell your boss to test the current state.</p></li>
+<li><p>Check and fill any gaps in the documentation:</p>
+<ul class="simple">
+<li><p>Analysis function comment with ascii art stimulus sets</p></li>
+<li><p>Labnotebook entries</p></li>
+<li><p>User epochs</p></li>
+</ul>
+</li>
+<li><p>Create digital versions of the test matrix and the flowchart. For the
+latter see <a class="reference external" href="https://github.com/AllenInstitute/MIES/tree/main/Packages/doc/dot#readme">here</a>.</p></li>
+<li><p>Cleanup commits</p></li>
+<li><p>Your done!</p></li>
+</ol>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grouplist.html">Group list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="daq-details.html">DAQ details</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="daq-details.html"
+                          title="previous chapter">DAQ details</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="daq-details.html" title="DAQ details"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Thirty six hints for writing analysis functions</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

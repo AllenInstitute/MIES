@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Labnotebook documentation for developers &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Epoch Information" href="epoch_information.html" />
+    <link rel="prev" title="Async Framework" href="asyncframework.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="epoch_information.html" title="Epoch Information"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="asyncframework.html" title="Async Framework"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Labnotebook documentation for developers</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="labnotebook-documentation-for-developers">
+<h1>Labnotebook documentation for developers<a class="headerlink" href="#labnotebook-documentation-for-developers" title="Link to this heading">¶</a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<p>In MIES, metadata of sweeps and test pulses get stored in a data structure
+called a <em>labnotebook</em>. The general structure is like a paper-based lab journal
+with columnar data entry storage. Each measurement has an associated date and
+time of the data acquisition and nothing is ever erased. After data
+acquisition, setup specific settings, and other metadata are written to the
+<em>labnotebook</em>.</p>
+<p>Our digital version consists of an array of (<cite>key</cite>,`value`) pairs. Each
+(<cite>key</cite>,`value`) pair is used to describe one metadata entry of a sweep. The
+data values get separated by their type into numerical and textual data storage
+containers.  Each storage container consists of a <cite>*Keys</cite> and a corresponding
+<cite>*Values</cite> dataset.  While <cite>*Keys</cite> contains textual, unique references to the
+data entities, <cite>*Values</cite> contains numeric or text values to the corresponding
+key.  Such separation means that four multidimensional data waves contain the
+data for this digital <em>labnotebook</em>.  The available data storage containers,
+therefore, are <cite>numericalKeys</cite>, <cite>numericalValues</cite>, <cite>textualKeys</cite>, and
+<cite>textualValues</cite>.</p>
+<p>In PXP files, the <em>analysis browser</em> stores <em>labnotebooks</em> in
+<cite>root:MIES:Analysis:$fileName:$device:labnotebook:</cite> whereas the <em>data browser</em>
+stores files in <cite>root:MIES:LabNoteBook:$hardware:$device:</cite>.  In NWB files, the
+<em>labnotebook</em> arrays reside in <cite>/general/labnotebook/$device</cite>.</p>
+<p>The <em>results</em> waves with analysis results have the same layout as the
+<em>labnotebook</em> waves. They are stored for PXP files in <cite>root:MIES:Results</cite> and
+for NWBv2 files in <cite>/general/results</cite>.</p>
+</section>
+<section id="layout">
+<h2>Layout<a class="headerlink" href="#layout" title="Link to this heading">¶</a></h2>
+<p>The <cite>key</cite> array is two dimensional and has 3 rows</p>
+<ul class="simple">
+<li><p>0: Parameter Name</p></li>
+<li><p>1: Parameter Unit</p></li>
+<li><p>2: Parameter Tolerance</p></li>
+</ul>
+<p>and an arbitrary number of columns. Each column in the <cite>key</cite> array describes
+one metadata entry in each column of the <cite>value</cite> array. The <cite>value</cite> array is
+three dimensional and has an arbitrary number of rows (one row for each added
+labnotebook entry) an arbitrary number of columns (one for each metadata entry)
+and nine layers (the first eight hold headstage dependent data, the nineth
+headstage independent data).</p>
+</section>
+<section id="encoding">
+<h2>Encoding<a class="headerlink" href="#encoding" title="Link to this heading">¶</a></h2>
+<p>The numerical arrays are IEEE-754 64bit floating point values, the textual
+arrays are UTF-8 encoded.</p>
+<section id="example-key-array">
+<h3>Example <cite>key</cite> array<a class="headerlink" href="#example-key-array" title="Link to this heading">¶</a></h3>
+<p>Rows are vertical, columns are horizontal.</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>SweepNum</p></td>
+<td><p>TimeStampSinceIgorEpochUTC</p></td>
+<td><p>EntrySourceType</p></td>
+<td><p>V-Clamp Holding Level</p></td>
+<td><p>…</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td></td>
+<td><p>mV</p></td>
+<td><p>…</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td></td>
+<td><p>0.9</p></td>
+<td><p>…</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="specification-of-the-entries">
+<h3>Specification of the entries<a class="headerlink" href="#specification-of-the-entries" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Parameter Name: Non-empty string</p></li>
+<li><p>Parameter Unit: SI/imperial unit with prefix or <cite>%</cite> or <cite>On/Off</cite> or empty</p></li>
+<li><p>Parameter Tolerance: Smallest meaningful difference or empty/<cite>-</cite> if it does not apply.</p></li>
+</ul>
+</section>
+<section id="example-value-array">
+<h3>Example <cite>value</cite> array<a class="headerlink" href="#example-value-array" title="Link to this heading">¶</a></h3>
+<p>Rows are vertical, columns are horizontal and only showing the first layer.</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>0</p></td>
+<td><p>3548850546.923</p></td>
+<td><p>0</p></td>
+<td><p>0.0004854951403103769</p></td>
+<td><p>…</p></td>
+</tr>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>3548850566.0</p></td>
+<td><p>1</p></td>
+<td><p>NaN</p></td>
+<td><p>…</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="addition-of-new-entries">
+<h3>Addition of new entries<a class="headerlink" href="#addition-of-new-entries" title="Link to this heading">¶</a></h3>
+<p>When writing a new value into the labnotebook a new row is appended/filled in
+the <cite>value</cite> array. This means we never overwrite old entries. Due to sweep
+rollback (aka deleting existing sweeps and acquiring new sweeps) it can happen
+that duplicated sweep numbers are present in the labnotebook. Each row holds
+the entry source type, which tells you about the subsystem the entry originated
+from, the possible values are</p>
+<ul class="simple">
+<li><p>0: data acquisition</p></li>
+<li><p>1: test pulse</p></li>
+<li><p>NaN: all other subsystems including user entries.</p></li>
+</ul>
+</section>
+</section>
+<section id="caveats">
+<h2>Caveats<a class="headerlink" href="#caveats" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Due to the design of the labnotebook you can <em>never</em> rely on the exact column
+number of an entry being constant or meaningful. Just because it is in the
+current version in row <cite>5</cite> does not mean it will be in the same row in the
+next version or in the next dataset.</p></li>
+<li><p>The dimensions of the arrays given above are minimum dimensions, they can
+anytime increase but will never decrease.</p></li>
+<li><p>Although we strive to not remove entries from the labnotebook, you should
+handle non-existing values gracefully or abort.</p></li>
+<li><p>Entries which are not present are either <cite>NaN</cite> or an empty string.</p></li>
+<li><p>Some entries are, for historical reasons, present in both the first layer and
+the headstage independent layer (nineth layer). New code should query the data
+from the headstage independent layer only.</p></li>
+<li><p>In case unassociated DA/AD channels were used (these are channels which are
+not connected to a headstage) during acquisition there are additional entries
+present which are formatted like <cite>$entry UNASSOC_$channelNumber</cite> (old style)
+or <cite>$entry u_(AD|DA)$channelNumber</cite> (new style) and only have entries in the
+ninth layer (as it is by definition headstage independent data).</p></li>
+<li><p>One important concept is valid entries vs placeholder entries. All non-<cite>NaN</cite>
+or non-empty string entries are valid entries. Therefore only valid entries
+override other placeholder entries. But placeholder entries never override
+valid entries.</p></li>
+<li><p>This document describes the latest version of the labnotebook only. Some
+things will be different for older versions. In case you need to read these
+and got into trouble please contact <cite>MIES&#64;alleninstitute.org</cite> for
+assistance.</p></li>
+<li><p>For internal technical reasons the <cite>value</cite> arrays will have some empty rows at the
+end.</p></li>
+</ul>
+</section>
+<section id="common-tasks">
+<h2>Common Tasks<a class="headerlink" href="#common-tasks" title="Link to this heading">¶</a></h2>
+<section id="getting-a-list-of-all-available-labnotebook-entries">
+<h3>Getting a list of all available labnotebook entries<a class="headerlink" href="#getting-a-list-of-all-available-labnotebook-entries" title="Link to this heading">¶</a></h3>
+<p>Iterate over the columns of each <cite>key</cite> array and extract the name from the
+first row.</p>
+</section>
+<section id="searching-a-labnotebook-entry-for-a-given-sweep-number">
+<h3>Searching a labnotebook entry for a given sweep number<a class="headerlink" href="#searching-a-labnotebook-entry-for-a-given-sweep-number" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Search the first row of the <cite>key</cite> arrays for the desired entry, remember the column
+index and which array holds the entry. Abort if it could not be found.</p></li>
+<li><p>Search the first row of the <cite>key</cite> array for the <cite>SweepNum</cite> entry and remember
+the column index. Abort if it could not be found.</p></li>
+<li><p>Search in the column of the sweep number in the corresponding <cite>value</cite> array
+<em>from back to front</em> for the desired sweep number. The result of that search is a
+<em>consecutive range</em> of rows.</p></li>
+<li><p>(Optional) Extract from the row range the entries with the desired entry
+source type.</p></li>
+<li><p>Search in the row range and the entry’s column <em>from back to front</em> for the latest
+value of the desired entry. If the entry is present in the nineth layer the
+setting is headstage independent, otherwise the layer index with a
+non-empty/<cite>NaN</cite> entry denotes the headstage.</p></li>
+<li><p>Get the unit of the entry from the <cite>key</cite> arrays third row.</p></li>
+</ul>
+</section>
+<section id="searching-the-last-sweep-which-has-a-given-labnotebook-entry">
+<h3>Searching the last sweep which has a given labnotebook entry<a class="headerlink" href="#searching-the-last-sweep-which-has-a-given-labnotebook-entry" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Search the first row of the <cite>key</cite> arrays for the desired entry, remember the column
+index and which array holds the entry. Abort if it could not be found.</p></li>
+<li><p>Search the first row of the <cite>key</cite> array for the <cite>SweepNum</cite> entry and remember
+the column index. Abort if it could not be found.</p></li>
+<li><p>Search the corresponding <cite>value</cite> array <em>from back to front</em> for a
+non-empty/<cite>NaN</cite> entry in the given column. If the entry is present in the
+nineth layer the setting is headstage independent, otherwise the layer index
+with a non-empty/<cite>NaN</cite> entry denotes the headstage. Depending on your needs
+you might want to filter depending on entry source type as well.</p></li>
+<li><p>Read out the sweep number for the match from the sweep number column.</p></li>
+</ul>
+</section>
+<section id="getting-all-sweeps-of-a-repeated-acquisition-cycle-rac">
+<h3>Getting all sweeps of a repeated acquisition cycle <cite>RAC</cite><a class="headerlink" href="#getting-all-sweeps-of-a-repeated-acquisition-cycle-rac" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>The entry named <cite>Repeated Acq Cycle ID</cite> is the same for sweeps which stem
+from the same repeated acquisition cycle.</p></li>
+<li><p>Search the first row of the <cite>key</cite> arrays for the <cite>Repeated Acq Cycle ID</cite>
+entry, remember the column index and which array holds the entry. Abort if it
+could not be found.</p></li>
+<li><p>Search the first row of the <cite>key</cite> array for the <cite>SweepNum</cite> entry and remember
+the column index. Abort if it could not be found.</p></li>
+<li><p>Search the corresponding <cite>value</cite> array <em>from back to front</em> for a
+non-empty/<cite>NaN</cite> entry in the given sweep number column. The result of that
+search is a <em>consecutive range</em> of rows.</p></li>
+<li><p>Search in this row range and the <cite>RAC</cite> column <em>from back to front</em> for a
+non-empty entry.</p></li>
+<li><p>Now collect all sweep numbers which have that <cite>RAC</cite> value</p></li>
+</ul>
+<p>The related entry <cite>Stimset Acq Cycle ID</cite> (<cite>SCI</cite>) is an identifier which is
+constant for a given headstage if the data stems from the same stimset, the
+same RAC and had the same stimset cycle count.</p>
+</section>
+</section>
+<section id="existing-code">
+<h2>Existing code<a class="headerlink" href="#existing-code" title="Link to this heading">¶</a></h2>
+<section id="igor-pro">
+<h3>Igor Pro<a class="headerlink" href="#igor-pro" title="Link to this heading">¶</a></h3>
+<p>See <a class="reference internal" href="group/group___labnotebook_query_functions.html#group-labnotebookqueryfunctions"><span class="std std-ref">Group LabnotebookQueryFunctions</span></a> for a list of all functions for querying the labnotebook.</p>
+</section>
+<section id="python">
+<h3>Python<a class="headerlink" href="#python" title="Link to this heading">¶</a></h3>
+<p>An example on how to query the labnotebook can be found
+<a class="reference external" href="https://github.com/AllenInstitute/neuroanalysis/blob/master/neuroanalysis/miesnwb.py">here</a>
+in the method <cite>MiesNwb.notebook</cite>.</p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grouplist.html">Group list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Labnotebook documentation for developers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#layout">Layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#encoding">Encoding</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example-key-array">Example <cite>key</cite> array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#specification-of-the-entries">Specification of the entries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-value-array">Example <cite>value</cite> array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#addition-of-new-entries">Addition of new entries</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#caveats">Caveats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#common-tasks">Common Tasks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#getting-a-list-of-all-available-labnotebook-entries">Getting a list of all available labnotebook entries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#searching-a-labnotebook-entry-for-a-given-sweep-number">Searching a labnotebook entry for a given sweep number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#searching-the-last-sweep-which-has-a-given-labnotebook-entry">Searching the last sweep which has a given labnotebook entry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#getting-all-sweeps-of-a-repeated-acquisition-cycle-rac">Getting all sweeps of a repeated acquisition cycle <cite>RAC</cite></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#existing-code">Existing code</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#igor-pro">Igor Pro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#python">Python</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="asyncframework.html"
+                          title="previous chapter">Async Framework</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="epoch_information.html"
+                          title="next chapter">Epoch Information</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="epoch_information.html" title="Epoch Information"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="asyncframework.html" title="Async Framework"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Labnotebook documentation for developers</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

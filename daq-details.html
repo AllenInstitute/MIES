@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>DAQ details &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Thirty six hints for writing analysis functions" href="analysis-function-writing.html" />
+    <link rel="prev" title="Important MIES concepts for developers" href="mies-concepts.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="analysis-function-writing.html" title="Thirty six hints for writing analysis functions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="mies-concepts.html" title="Important MIES concepts for developers"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">DAQ details</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="daq-details">
+<h1>DAQ details<a class="headerlink" href="#daq-details" title="Link to this heading">¶</a></h1>
+<figure class="align-center" id="id1">
+<span id="figure-repeated-acquisition-explained"></span><img alt="_images/acquisition-repeated-indexing-explained.svg" src="_images/acquisition-repeated-indexing-explained.svg" />
+<figcaption>
+<p><span class="caption-text">Data acquisition modes</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id2">
+<span id="figure-normal-delays"></span><img alt="_images/normal-delays.svg" src="_images/normal-delays.svg" />
+<figcaption>
+<p><span class="caption-text">Normal delays</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id3">
+<span id="figure-ddaq-delays"></span><img alt="_images/dDAQ-delay.svg" src="_images/dDAQ-delay.svg" />
+<figcaption>
+<p><span class="caption-text">Ddaq delay</span><a class="headerlink" href="#id3" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id4">
+<span id="figure-ooddaq-delays"></span><img alt="_images/oodDAQ-delays.svg" src="_images/oodDAQ-delays.svg" />
+<figcaption>
+<p><span class="caption-text">oodDAQ delays</span><a class="headerlink" href="#id4" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id5">
+<span id="figure-testpulse-visualization"></span><img alt="_images/testPulse-visualization.svg" src="_images/testPulse-visualization.svg" />
+<figcaption>
+<p><span class="caption-text">Testpulse visualization</span><a class="headerlink" href="#id5" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<section id="indexing-definition">
+<h2>Indexing definition<a class="headerlink" href="#indexing-definition" title="Link to this heading">¶</a></h2>
+<p>MIES has different modes to automate the acquisition of multiple stimulus sets.</p>
+<p>Indexing mode allows the acquisition of a range of stimulus sets across multiple channels and channel types (DA and TTL).</p>
+<p>As stimulus sets can have a different number of sweeps, the natural question
+arises when to switch to the next stimulus set when acquiring data on multiple
+channels simultaneously. Locked indexing advances to the next stimulus set when
+the stimulus set with the most sweeps (currently acquiring, not globally) on
+all active channels is complete. Unlocked indexing advances to the next
+stimulus set on an individual channel when the active set on the same channel
+is complete. In both modes, the currently active set may automatically repeat
+while acquisition on the channel with the most combined sweeps proceeds to
+completion; locked indexing repeats and then indexes, while unlocked indexing
+indexes and then repeats.</p>
+<p>Inner-Set randomization is currently broken with indexing.</p>
+<p>Set randomization with indexing is not implemented.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grouplist.html">Group list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">DAQ details</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#indexing-definition">Indexing definition</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="mies-concepts.html"
+                          title="previous chapter">Important MIES concepts for developers</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="analysis-function-writing.html"
+                          title="next chapter">Thirty six hints for writing analysis functions</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="analysis-function-writing.html" title="Thirty six hints for writing analysis functions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="mies-concepts.html" title="Important MIES concepts for developers"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">DAQ details</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>CalculateTPLikePropsFromSweep Algorithm &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Igor Pro module for reading and writing NeurodataWithoutBorder files" href="IPNWB/Readme.html" />
+    <link rel="prev" title="Deprecations" href="deprecated.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="IPNWB/Readme.html" title="Igor Pro module for reading and writing NeurodataWithoutBorder files"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="deprecated.html" title="Deprecations"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">CalculateTPLikePropsFromSweep Algorithm</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <blockquote>
+<div></div></blockquote>
+<section id="calculatetplikepropsfromsweep-algorithm">
+<span id="calculatetplikepropsfromsweep-doc"></span><h1>CalculateTPLikePropsFromSweep Algorithm<a class="headerlink" href="#calculatetplikepropsfromsweep-algorithm" title="Link to this heading">¶</a></h1>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Link to this heading">¶</a></h2>
+<p>The <a class="reference internal" href="file/_m_i_e_s___mies_utilities___algorithm_8ipf.html#_CPPv429CalculateTPLikePropsFromSweep4wave4wave4wave4wave4wave4wave" title="CalculateTPLikePropsFromSweep"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">CalculateTPLikePropsFromSweep()</span></code></a> calculates square pulse properties
+from a given sweep. It retrieves the associated setting values for the sweep and
+returns the voltage difference, current difference and resistance for each
+head stage. The function only works for current clamp mode.</p>
+<p>The function is split into several parts:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="#principle">Principle</a></p></li>
+<li><p><a class="reference internal" href="#retrieving-settings">Retrieving settings</a></p></li>
+<li><p><a class="reference internal" href="#finding-square-pulse">Finding square pulse</a></p></li>
+<li><p><a class="reference internal" href="#extraction-of-levels">Extraction of levels</a></p></li>
+<li><p><a class="reference internal" href="#calculation">Calculation</a></p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="principle">
+<h2>Principle<a class="headerlink" href="#principle" title="Link to this heading">¶</a></h2>
+<p>The goal of the algorithm is to determine the steady state resistance of a
+square pulse response. The available sweep data contains the excitation pulse as
+well as the response pulse. The excitation pulse is in units of current and the
+response is measured in voltage. The actual data consists of discrete points of
+digital to analog output (excitation) and analog to digital input (response).
+For simplicity this will be neglected in the following.</p>
+<p>The square pulse DA data is used to find the leading and trailing edge of
+the pulse. Therefore a level of 10% of the amplitude of the square pulse is defined
+to find the location of signal crossing.</p>
+<div class="math notranslate nohighlight">
+\[level = minimum + (maximum - minimum) * 0.1\]</div>
+<p>Using a edge finding algorithm the location of <strong>firstEdge</strong> and <strong>secondEdge</strong>
+is retrieved.</p>
+<p>For determination of the base line level in front of the pulse a
+range is defined to average the points of the square pulse response. The full base
+line fraction in front of a square pulse starts after the <code class="docutils literal notranslate"><span class="pre">onSetDelay</span></code> and ends
+at <code class="docutils literal notranslate"><span class="pre">firstEdge</span></code>. The length of the range is defined as 10% of this distance. The
+reference point is the end of this range and it is set close to firstEdge.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}right &amp;= firstEdge - const \\
+left &amp;= right - (firstEdge - onSetDelay) * 0.1\end{split}\]</div>
+<p>The base line level is then determined by averaging over the data points <strong>p</strong> between
+<strong>left</strong> and <strong>right</strong>.</p>
+<div class="math notranslate nohighlight">
+\[baselinelevel = \frac{1}{N} \sum^{right}_{n=left} p_n\]</div>
+<p>For determination of the elevated level at the end of the active pulse a
+range is defined to average the points of the square pulse response. The active
+pulse starts after <code class="docutils literal notranslate"><span class="pre">firstEdge</span></code> and ends with <code class="docutils literal notranslate"><span class="pre">secondEdge</span></code>. The length of the
+range is defined as 10% of this distance. The reference point is the end of this
+range and it is set close to secondEdge.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}right &amp;= secondEdge - const \\
+left &amp;= right - (secondEdge - firstEdge) * 0.1\end{split}\]</div>
+<p>The elevated level is then determined by averaging over the data points <strong>p</strong> between
+<strong>left</strong> and <strong>right</strong>.</p>
+<div class="math notranslate nohighlight">
+\[elevatedlevel = \frac{1}{N} \sum^{right}_{n=left} p_n\]</div>
+<p>The difference between elevated level and base line level is the voltage response
+for the steady state.</p>
+<div class="math notranslate nohighlight">
+\[\Delta U = elevatedlevel - baselinelevel\]</div>
+<p>To get the steady state resistance the current from the excitation amplitude of
+the square pulse is required. It is retrieved the same way from the square pulse
+excitation data as the voltage response from the square pulse response data.
+The difference from the square pulse excitation data yields:</p>
+<div class="math notranslate nohighlight">
+\[\Delta I = elevatedlevel - baselinelevel\]</div>
+<p>The steady state resistance is then:</p>
+<div class="math notranslate nohighlight">
+\[R_{SS} = \frac{\Delta U}{\Delta I}\]</div>
+</section>
+<section id="retrieving-settings">
+<h2>Retrieving settings<a class="headerlink" href="#retrieving-settings" title="Link to this heading">¶</a></h2>
+<p>The sweep number is retrieved, that allows to get the setting for this sweep.
+Also the configuration wave for the sweep is retrieved, that is required to
+extract the actual ADC and DAC data from the sweep.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">totalOnsetDelay</span></code> is independent of the head stage and the sum of the auto and
+user onset delay. The number of the ADC channel that are used per head stage
+is read to wave <code class="docutils literal notranslate"><span class="pre">ADCs</span></code>. The same is done for the number of the DAC channel to the wave <code class="docutils literal notranslate"><span class="pre">DACs</span></code>.
+The units per head stage are read from the saved settings to wave <code class="docutils literal notranslate"><span class="pre">ADunit</span></code> and
+wave <code class="docutils literal notranslate"><span class="pre">DAunit</span></code>. If a head stage was active is read to the wave wave <code class="docutils literal notranslate"><span class="pre">statusHS</span></code>.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>sweepNo<span class="w">     </span>=<span class="w"> </span>ExtractSweepNumber(<span class="nf">NameofWave</span>(sweep))
+<span class="kt">WAVE</span><span class="w"> </span>config<span class="w"> </span>=<span class="w"> </span>GetConfigWave(sweep)
+
+totalOnsetDelay<span class="w"> </span>=<span class="w"> </span>GetLastSettingIndep(numericalValues,<span class="w"> </span>sweepNo,<span class="w"> </span><span class="s">&quot;Delay onset auto&quot;</span>,<span class="w"> </span>DATA_ACQUISITION_MODE) + \
+<span class="w">          </span>GetLastSettingIndep(numericalValues,<span class="w"> </span>sweepNo,<span class="w"> </span><span class="s">&quot;Delay onset user&quot;</span>,<span class="w"> </span>DATA_ACQUISITION_MODE)
+
+<span class="kt">WAVE</span><span class="w"> </span>ADCs<span class="w"> </span>=<span class="w"> </span>GetLastSetting(numericalValues,<span class="w"> </span>sweepNo,<span class="w"> </span><span class="s">&quot;ADC&quot;</span>,<span class="w"> </span>DATA_ACQUISITION_MODE)
+<span class="kt">WAVE</span><span class="w"> </span>DACs<span class="w"> </span>=<span class="w"> </span>GetLastSetting(numericalValues,<span class="w"> </span>sweepNo,<span class="w"> </span><span class="s">&quot;DAC&quot;</span>,<span class="w"> </span>DATA_ACQUISITION_MODE)
+
+<span class="kt">WAVE</span>/T<span class="w"> </span>ADunit<span class="w"> </span>=<span class="w"> </span>GetLastSetting(textualValues,<span class="w"> </span>sweepNo,<span class="w"> </span><span class="s">&quot;AD Unit&quot;</span>,<span class="w"> </span>DATA_ACQUISITION_MODE)
+<span class="kt">WAVE</span>/T<span class="w"> </span>DAunit<span class="w"> </span>=<span class="w"> </span>GetLastSetting(textualValues,<span class="w"> </span>sweepNo,<span class="w"> </span><span class="s">&quot;DA Unit&quot;</span>,<span class="w"> </span>DATA_ACQUISITION_MODE)
+
+<span class="kt">WAVE</span><span class="w"> </span>statusHS<span class="w"> </span>=<span class="w"> </span>GetLastSetting(numericalValues,<span class="w"> </span>sweepNo,<span class="w"> </span><span class="s">&quot;Headstage Active&quot;</span>,<span class="w"> </span>DATA_ACQUISITION_MODE)
+</pre></div>
+</div>
+</section>
+<section id="finding-square-pulse">
+<h2>Finding square pulse<a class="headerlink" href="#finding-square-pulse" title="Link to this heading">¶</a></h2>
+<p>The following is <strong>done for each head stage</strong> up to <code class="docutils literal notranslate"><span class="pre">NUM_HEADSTAGES</span></code> (default = 8):</p>
+<blockquote>
+<div><p>If the head stage was not active, continue with next head stage.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="k">if</span>(!statusHS[<span class="nf">i</span>])
+<span class="w">  </span><span class="k">continue</span>
+<span class="k">endif</span>
+</pre></div>
+</div>
+<p>With the number of the DAC channel of this head stage the column in the sweep
+with the actual data read with <a class="reference internal" href="file/_m_i_e_s___analysis_function_helpers_8ipf.html#_CPPv420AFH_GetDAQDataColumn4wave8variable8variable" title="AFH_GetDAQDataColumn"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">AFH_GetDAQDataColumn()</span></code></a> to <code class="docutils literal notranslate"><span class="pre">DAcol</span></code>. The
+same is done for the column with the AD data to <code class="docutils literal notranslate"><span class="pre">ADcol</span></code>. With the columns the
+actual data is read to wave <code class="docutils literal notranslate"><span class="pre">DA</span></code> and <code class="docutils literal notranslate"><span class="pre">AD</span></code> respectively with
+<a class="reference internal" href="file/_m_i_e_s___mies_utilities___sweep_8ipf.html#_CPPv426ExtractOneDimDataFromSweep4wave4wave8variable" title="ExtractOneDimDataFromSweep"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">ExtractOneDimDataFromSweep()</span></code></a>. The coordinate in points of
+<code class="docutils literal notranslate"><span class="pre">totalOnsetDelay</span></code> on the scale of <code class="docutils literal notranslate"><span class="pre">DA</span></code> is saved to <code class="docutils literal notranslate"><span class="pre">onsetDelayPoint</span></code>.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>DAcol<span class="w"> </span>=<span class="w"> </span>AFH_GetDAQDataColumn(config,<span class="w"> </span>DACs[<span class="nf">i</span>],<span class="w"> </span>XOP_CHANNEL_TYPE_DAC)
+ADcol<span class="w"> </span>=<span class="w"> </span>AFH_GetDAQDataColumn(config,<span class="w"> </span>ADCs[<span class="nf">i</span>],<span class="w"> </span>XOP_CHANNEL_TYPE_ADC)
+
+<span class="kt">WAVE</span><span class="w"> </span>DA<span class="w"> </span>=<span class="w"> </span>ExtractOneDimDataFromSweep(config,<span class="w"> </span>sweep,<span class="w"> </span>DACol)
+<span class="kt">WAVE</span><span class="w"> </span>AD<span class="w"> </span>=<span class="w"> </span>ExtractOneDimDataFromSweep(config,<span class="w"> </span>sweep,<span class="w"> </span>ADcol)
+
+onsetDelayPoint<span class="w"> </span>=<span class="w"> </span>(totalOnsetDelay<span class="w"> </span>-<span class="w"> </span><span class="nf">DimOffset</span>(DA,<span class="w"> </span>ROWS))<span class="w"> </span>/<span class="w"> </span><span class="nf">DimDelta</span>(DA,<span class="w"> </span>ROWS)
+</pre></div>
+</div>
+<p>The scaled x coordinates of the full square pulse range including base line are
+defined from <code class="docutils literal notranslate"><span class="pre">totalOnsetDelay</span></code> to the end of the <code class="docutils literal notranslate"><span class="pre">DA</span></code> wave and saved in
+<code class="docutils literal notranslate"><span class="pre">first</span></code> and <code class="docutils literal notranslate"><span class="pre">last</span></code>.</p>
+<p>A signal level is defined for finding the edges in the sent square pulse
+(DA channel). The level is 10 % from the difference of maximum - minimum of the
+DA data above the minimum level. With <code class="docutils literal notranslate"><span class="pre">FindLevels</span></code> up to two signal crossings
+at the level are searched between <code class="docutils literal notranslate"><span class="pre">first</span></code> and <code class="docutils literal notranslate"><span class="pre">last</span></code> in wave <code class="docutils literal notranslate"><span class="pre">DA</span></code> and
+their x position in points is saved to wave <code class="docutils literal notranslate"><span class="pre">levels</span></code>. The search runs from
+lower to higher x coordinates.
+An assertion checks if two (or more) signal crossings were found.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>first<span class="w"> </span>=<span class="w"> </span>totalOnsetDelay
+last<span class="w">  </span>=<span class="w"> </span><span class="nf">IndexToScale</span>(DA,<span class="w"> </span><span class="nf">DimSize</span>(DA,<span class="w"> </span>ROWS)<span class="w"> </span>-<span class="w"> </span>1,<span class="w"> </span>ROWS)
+
+low<span class="w">  </span>=<span class="w"> </span><span class="nf">WaveMin</span>(DA,<span class="w"> </span>first,<span class="w"> </span>last)
+high<span class="w"> </span>=<span class="w"> </span><span class="nf">WaveMax</span>(DA,<span class="w"> </span>first,<span class="w"> </span>last)
+
+level<span class="w"> </span>=<span class="w"> </span>low<span class="w"> </span>+<span class="w"> </span>0.1<span class="w"> </span>*<span class="w"> </span>(high<span class="w"> </span>-<span class="w"> </span>low)
+
+<span class="nc">Make</span>/FREE/D<span class="w"> </span>levels
+<span class="nc">FindLevels</span>/Q/P/DEST=levels/R=(first,<span class="w"> </span>last)/N=2<span class="w"> </span>DA,<span class="w"> </span>level
+ASSERT(V_LevelsFound<span class="w"> </span>&gt;=<span class="w"> </span>2,<span class="w"> </span><span class="s">&quot;Could not find enough levels&quot;</span>)
+</pre></div>
+</div>
+<p>The first found location is saved to <code class="docutils literal notranslate"><span class="pre">firstEdge</span></code> and the second to
+<code class="docutils literal notranslate"><span class="pre">secondEdge</span></code>. By default <code class="docutils literal notranslate"><span class="pre">DA</span></code> contains a pulse so the linear interpolation
+between the points done by FindLevels results that firstEdge is found
+at last_baseline_point + 0.1 and secondEdge at last_pulse_point + 0.9. The values
+are truncated to integers to equal the last baseline point as well as the last
+pulse point.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>firstEdge<span class="w">   </span>=<span class="w"> </span><span class="nf">trunc</span>(levels[0])
+secondEdge<span class="w">  </span>=<span class="w"> </span><span class="nf">trunc</span>(levels[1])
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="extraction-of-levels">
+<h2>Extraction of levels<a class="headerlink" href="#extraction-of-levels" title="Link to this heading">¶</a></h2>
+<p>The following is <strong>done for each head stage</strong>:</p>
+<blockquote>
+<div><p>For determination of the base line the range is defined as 10 % of the
+<code class="docutils literal notranslate"><span class="pre">firstEdge</span></code> location to <code class="docutils literal notranslate"><span class="pre">totalOnsetDelay</span></code>. The end point of the range is
+<code class="docutils literal notranslate"><span class="pre">firstEdge</span> <span class="pre">-</span> <span class="pre">1</span></code>. The <code class="docutils literal notranslate"><span class="pre">baseline</span></code> level is then defined as the average of all
+<code class="docutils literal notranslate"><span class="pre">AD</span></code> points in this range.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>high<span class="w"> </span>=<span class="w"> </span>firstEdge<span class="w"> </span>- 1
+low<span class="w">  </span>=<span class="w"> </span>high<span class="w"> </span>-<span class="w"> </span>(firstEdge<span class="w"> </span>-<span class="w"> </span>onsetDelayPoint) * 0.1
+
+baseline<span class="w"> </span>=<span class="w"> </span><span class="nf">mean</span>(AD,<span class="w"> </span><span class="nf">IndexToScale</span>(AD,<span class="w"> </span>low,<span class="w"> </span>ROWS),<span class="w"> </span><span class="nf">IndexToScale</span>(AD,<span class="w"> </span>high,<span class="w"> </span>ROWS))
+</pre></div>
+</div>
+<p>The elevated range (steady state) is defined by 10 % of the <code class="docutils literal notranslate"><span class="pre">firstEdge</span></code>
+location to <code class="docutils literal notranslate"><span class="pre">secondEdge</span></code>. The <code class="docutils literal notranslate"><span class="pre">elevated</span></code> level is then defined as the
+average of all <code class="docutils literal notranslate"><span class="pre">AD</span></code> points in this range.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>high<span class="w"> </span>=<span class="w"> </span>secondEdge<span class="w"> </span>- 1
+low<span class="w">  </span>=<span class="w"> </span>high<span class="w"> </span>-<span class="w"> </span>(secondEdge<span class="w"> </span>-<span class="w"> </span>firstEdge) * 0.1
+
+elevated<span class="w"> </span>=<span class="w"> </span><span class="nf">mean</span>(AD,<span class="w"> </span><span class="nf">IndexToScale</span>(AD,<span class="w"> </span>low,<span class="w"> </span>ROWS),<span class="w"> </span><span class="nf">IndexToScale</span>(AD,<span class="w"> </span>high,<span class="w"> </span>ROWS))
+</pre></div>
+</div>
+<p>An assertion checks if the <code class="docutils literal notranslate"><span class="pre">ADunit</span></code> of this head stage is “mV” as this function
+only works for I-clamp mode.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>ASSERT(!<span class="nf">cmpstr</span>(ADunit[<span class="nf">i</span>],<span class="w"> </span><span class="s">&quot;mV&quot;</span>),<span class="w"> </span><span class="s">&quot;Unexpected AD Unit&quot;</span>)
+</pre></div>
+</div>
+<p>The voltage difference of <code class="docutils literal notranslate"><span class="pre">elevated</span> <span class="pre">-</span> <span class="pre">baseline</span></code> from this head stages AD
+wave is stored in wave <code class="docutils literal notranslate"><span class="pre">deltaV</span></code> and scaled by 0.001 to convert to Volts.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>deltaV[<span class="nf">i</span>]<span class="w"> </span>=<span class="w"> </span>(elevated<span class="w"> </span>-<span class="w"> </span>baseline)<span class="w"> </span>*<span class="w"> </span>1e-3
+</pre></div>
+</div>
+<p>The baseline level and the elevated level of the <code class="docutils literal notranslate"><span class="pre">DA</span></code> wave are determined
+with the identical calculation as for the <code class="docutils literal notranslate"><span class="pre">AD</span></code> wave described above.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>high<span class="w"> </span>=<span class="w"> </span>firstEdge<span class="w"> </span>- 1
+low<span class="w">  </span>=<span class="w"> </span>high<span class="w"> </span>-<span class="w"> </span>(firstEdge<span class="w"> </span>-<span class="w"> </span>onsetDelayPoint) * 0.1
+
+baseline<span class="w"> </span>=<span class="w"> </span><span class="nf">mean</span>(DA,<span class="w"> </span><span class="nf">IndexToScale</span>(DA,<span class="w"> </span>low,<span class="w"> </span>ROWS),<span class="w"> </span><span class="nf">IndexToScale</span>(DA,<span class="w"> </span>high,<span class="w"> </span>ROWS))
+
+high<span class="w"> </span>=<span class="w"> </span>secondEdge<span class="w"> </span>- 1
+low<span class="w">  </span>=<span class="w"> </span>high<span class="w"> </span>-<span class="w"> </span>(secondEdge<span class="w"> </span>-<span class="w"> </span>firstEdge) * 0.1
+
+elevated<span class="w"> </span>=<span class="w"> </span><span class="nf">mean</span>(DA,<span class="w"> </span><span class="nf">IndexToScale</span>(DA,<span class="w"> </span>low,<span class="w"> </span>ROWS),<span class="w"> </span><span class="nf">IndexToScale</span>(DA,<span class="w"> </span>high,<span class="w"> </span>ROWS))
+</pre></div>
+</div>
+<p>An assertion checks if the <code class="docutils literal notranslate"><span class="pre">DAunit</span></code> of this head stage is “pA” as this function
+only works for I-clamp mode.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>ASSERT(!<span class="nf">cmpstr</span>(DAunit[<span class="nf">i</span>],<span class="w"> </span><span class="s">&quot;pA&quot;</span>),<span class="w"> </span><span class="s">&quot;Unexpected DA Unit&quot;</span>)
+</pre></div>
+</div>
+<p>The current difference of <code class="docutils literal notranslate"><span class="pre">elevated</span> <span class="pre">-</span> <span class="pre">baseline</span></code> from this head stages <code class="docutils literal notranslate"><span class="pre">DA</span></code>
+wave is stored in wave <code class="docutils literal notranslate"><span class="pre">deltaI</span></code> and scaled by 1E-12 to convert to Ampere.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>deltaI[<span class="nf">i</span>]<span class="w"> </span>=<span class="w"> </span>(elevated<span class="w"> </span>-<span class="w"> </span>baseline)<span class="w"> </span>*<span class="w"> </span>1e-12
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="calculation">
+<h2>Calculation<a class="headerlink" href="#calculation" title="Link to this heading">¶</a></h2>
+<p>The following is <strong>done for each head stage</strong>:</p>
+<blockquote>
+<div><p>The resistance for the current head stage is calculated by the formula
+R = U / I from <code class="docutils literal notranslate"><span class="pre">deltaV</span></code> / <code class="docutils literal notranslate"><span class="pre">deltaI</span></code>.</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>resistance[<span class="nf">i</span>]<span class="w"> </span>=<span class="w"> </span>deltaV[<span class="nf">i</span>]<span class="w"> </span>/<span class="w"> </span>deltaI[<span class="nf">i</span>]
+</pre></div>
+</div>
+</div></blockquote>
+<p>Then the loop continues to the next head stage of this sweep with
+<a class="reference internal" href="#finding-square-pulse">Finding square pulse</a></p>
+<figure class="align-center" id="figure-calculate-testpulse-like-properties-from-sweep">
+<img alt="_images/CalculateTPLikePropsFromSweep.svg" src="_images/CalculateTPLikePropsFromSweep.svg" />
+</figure>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grouplist.html">Group list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated.html">Deprecations</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">CalculateTPLikePropsFromSweep Algorithm</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#description">Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#principle">Principle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#retrieving-settings">Retrieving settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#finding-square-pulse">Finding square pulse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#extraction-of-levels">Extraction of levels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#calculation">Calculation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="deprecated.html"
+                          title="previous chapter">Deprecations</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="IPNWB/Readme.html"
+                          title="next chapter">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="IPNWB/Readme.html" title="Igor Pro module for reading and writing NeurodataWithoutBorder files"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="deprecated.html" title="Deprecations"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">CalculateTPLikePropsFromSweep Algorithm</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

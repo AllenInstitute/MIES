@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File MIES_Async.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_AsynchronousData.ipf" href="_m_i_e_s___asynchronous_data_8ipf.html" />
+    <link rel="prev" title="File MIES_ArtefactRemoval.ipf" href="_m_i_e_s___artefact_removal_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___asynchronous_data_8ipf.html" title="File MIES_AsynchronousData.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___artefact_removal_8ipf.html" title="File MIES_ArtefactRemoval.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Async.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-async-ipf">
+<span id="id1"></span><h1>File MIES_Async.ipf<a class="headerlink" href="#file-mies-async-ipf" title="Link to this heading">¶</a></h1>
+<p><strong>ASYNC</strong> This file holds the asynchronous execution framework </p>
+<p>See <a class="reference internal" href="../asyncframework.html#async-framework-doc"><span class="std std-ref">Async Framework</span></a> for the full documentation.</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variable-names-for-free-data-folder-structure">Variable names for free data folder structure</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv423ASYNC_THREAD_MARKER_STR">
+<span id="_CPPv323ASYNC_THREAD_MARKER_STR"></span><span id="_CPPv223ASYNC_THREAD_MARKER_STR"></span><span id="ASYNC_THREAD_MARKER_STR__stringC"></span><span class="target" id="_m_i_e_s___async_8ipf_1afcab96212c9166d93ecd160f61da6b21"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_THREAD_MARKER_STR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;threadDFMarker&quot;</span></span><a class="headerlink" href="#_CPPv423ASYNC_THREAD_MARKER_STR" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420ASYNC_WORKERFUNC_STR">
+<span id="_CPPv320ASYNC_WORKERFUNC_STR"></span><span id="_CPPv220ASYNC_WORKERFUNC_STR"></span><span id="ASYNC_WORKERFUNC_STR__stringC"></span><span class="target" id="_m_i_e_s___async_8ipf_1a0e3776cf27e827fd212301374701f740"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_WORKERFUNC_STR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;WorkerFunc&quot;</span></span><a class="headerlink" href="#_CPPv420ASYNC_WORKERFUNC_STR" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv421ASYNC_READOUTFUNC_STR">
+<span id="_CPPv321ASYNC_READOUTFUNC_STR"></span><span id="_CPPv221ASYNC_READOUTFUNC_STR"></span><span id="ASYNC_READOUTFUNC_STR__stringC"></span><span class="target" id="_m_i_e_s___async_8ipf_1a2f5ea56ed50965735a9e52a0332e13d8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_READOUTFUNC_STR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;ReadOutFunc&quot;</span></span><a class="headerlink" href="#_CPPv421ASYNC_READOUTFUNC_STR" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv423ASYNC_WORKLOADCLASS_STR">
+<span id="_CPPv323ASYNC_WORKLOADCLASS_STR"></span><span id="_CPPv223ASYNC_WORKLOADCLASS_STR"></span><span id="ASYNC_WORKLOADCLASS_STR__stringC"></span><span class="target" id="_m_i_e_s___async_8ipf_1af8881a45d63c9511a2aa5cee16e0678a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_WORKLOADCLASS_STR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;workloadClass&quot;</span></span><a class="headerlink" href="#_CPPv423ASYNC_WORKLOADCLASS_STR" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420ASYNC_PARAMCOUNT_STR">
+<span id="_CPPv320ASYNC_PARAMCOUNT_STR"></span><span id="_CPPv220ASYNC_PARAMCOUNT_STR"></span><span id="ASYNC_PARAMCOUNT_STR__stringC"></span><span class="target" id="_m_i_e_s___async_8ipf_1a729c58570487126c118f6726a45820d5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_PARAMCOUNT_STR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;paramCount&quot;</span></span><a class="headerlink" href="#_CPPv420ASYNC_PARAMCOUNT_STR" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417ASYNC_INORDER_STR">
+<span id="_CPPv317ASYNC_INORDER_STR"></span><span id="_CPPv217ASYNC_INORDER_STR"></span><span id="ASYNC_INORDER_STR__stringC"></span><span class="target" id="_m_i_e_s___async_8ipf_1a932f9c16859c39e37dbafd34881c41a2"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_INORDER_STR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;inOrder&quot;</span></span><a class="headerlink" href="#_CPPv417ASYNC_INORDER_STR" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv419ASYNC_ABORTFLAG_STR">
+<span id="_CPPv319ASYNC_ABORTFLAG_STR"></span><span id="_CPPv219ASYNC_ABORTFLAG_STR"></span><span id="ASYNC_ABORTFLAG_STR__stringC"></span><span class="target" id="_m_i_e_s___async_8ipf_1adab2aaf9982a7f8c5e80f1f588384dfd"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_ABORTFLAG_STR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;abortFlag&quot;</span></span><a class="headerlink" href="#_CPPv419ASYNC_ABORTFLAG_STR" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417ASYNC_RTERROR_STR">
+<span id="_CPPv317ASYNC_RTERROR_STR"></span><span id="_CPPv217ASYNC_RTERROR_STR"></span><span id="ASYNC_RTERROR_STR__stringC"></span><span class="target" id="_m_i_e_s___async_8ipf_1a774ce3fed86690f20be8c5df04594b1d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_RTERROR_STR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;rtErr&quot;</span></span><a class="headerlink" href="#_CPPv417ASYNC_RTERROR_STR" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420ASYNC_RTERRORMSG_STR">
+<span id="_CPPv320ASYNC_RTERRORMSG_STR"></span><span id="_CPPv220ASYNC_RTERRORMSG_STR"></span><span id="ASYNC_RTERRORMSG_STR__stringC"></span><span class="target" id="_m_i_e_s___async_8ipf_1aa75f2a51edd7f37a7cc5c99d7b3b1bc4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_RTERRORMSG_STR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;rtErrMessage&quot;</span></span><a class="headerlink" href="#_CPPv420ASYNC_RTERRORMSG_STR" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv419ASYNC_ABORTCODE_STR">
+<span id="_CPPv319ASYNC_ABORTCODE_STR"></span><span id="_CPPv219ASYNC_ABORTCODE_STR"></span><span id="ASYNC_ABORTCODE_STR__stringC"></span><span class="target" id="_m_i_e_s___async_8ipf_1af343750958f262420bdcf17592b34118"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_ABORTCODE_STR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;abortCode&quot;</span></span><a class="headerlink" href="#_CPPv419ASYNC_ABORTCODE_STR" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv419ASYNC_WLCOUNTER_STR">
+<span id="_CPPv319ASYNC_WLCOUNTER_STR"></span><span id="_CPPv219ASYNC_WLCOUNTER_STR"></span><span id="ASYNC_WLCOUNTER_STR__stringC"></span><span class="target" id="_m_i_e_s___async_8ipf_1ab029325a1bb56bc53102abea5600f4dd"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_WLCOUNTER_STR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;workloadClassCounter&quot;</span></span><a class="headerlink" href="#_CPPv419ASYNC_WLCOUNTER_STR" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411ASYNC_Start8variable8variable">
+<span id="_CPPv311ASYNC_Start8variable8variable"></span><span id="_CPPv211ASYNC_Start8variable8variable"></span><span id="ASYNC_Start__variable.variable"></span><span class="target" id="_m_i_e_s___async_8ipf_1ae60635a9ab349dc16e89ed2f114416e0"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_Start</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numThreads</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">disableTask</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411ASYNC_Start8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Starts the Async Framework with numThreads parallel threads. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>numThreads</strong> – number of threads to setup for processing data, must be &gt;= 1 and &lt;= ASYNC_MAX_THREADS</p></li>
+<li><p><strong>disableTask</strong> – [optional, default = 0] when set to 1 the background task processing readouts is not started</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>1 if ASYNC framework was started, 0 if ASYNC framework was already running, in this case the number of threads is not changed </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412ASYNC_Worker5dfref">
+<span id="_CPPv312ASYNC_Worker5dfref"></span><span id="_CPPv212ASYNC_Worker5dfref"></span><span id="ASYNC_Worker__dfref"></span><span class="target" id="_m_i_e_s___async_8ipf_1a1a3843adf223fff23d467e32a1280c1c"></span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_Worker</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412ASYNC_Worker5dfref" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Prototype function for an async worker function. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dfr</strong> – reference to thread data folder</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>data folder reference to output data folder </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413ASYNC_ReadOutP19ASYNC_ReadOutStruct">
+<span id="_CPPv313ASYNC_ReadOutP19ASYNC_ReadOutStruct"></span><span id="_CPPv213ASYNC_ReadOutP19ASYNC_ReadOutStruct"></span><span id="ASYNC_ReadOut__ASYNC_ReadOutStructP"></span><span class="target" id="_m_i_e_s___async_8ipf_1a5863bf204cbfb1ed7ee2941b2d57337b"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_ReadOut</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv419ASYNC_ReadOutStruct" title="ASYNC_ReadOutStruct"><span class="n"><span class="pre">ASYNC_ReadOutStruct</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ar</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413ASYNC_ReadOutP19ASYNC_ReadOutStruct" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Prototype function for an async readout function. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ar</strong> – ASYNC readout structure </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412ASYNC_Threadv">
+<span id="_CPPv312ASYNC_Threadv"></span><span id="_CPPv212ASYNC_Threadv"></span><span id="ASYNC_Thread"></span><span class="target" id="_m_i_e_s___async_8ipf_1a310585f49183eaae2a26ede5acdbd214"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_Thread</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412ASYNC_Threadv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>thread function that receives data folders from the thread input queue and calls the setup custom worker function. With :cpp:func:<code class="docutils literal notranslate"><span class="pre">ASYNC_Start</span></code> numThreads :cpp:func:<code class="docutils literal notranslate"><span class="pre">ASYNC_Thread</span></code> functions will be started in their own thread. Each will run until the framework is stopped. UTF_NOINSTRUMENTATION </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416ASYNC_Run_Worker5dfref">
+<span id="_CPPv316ASYNC_Run_Worker5dfref"></span><span id="_CPPv216ASYNC_Run_Worker5dfref"></span><span id="ASYNC_Run_Worker__dfref"></span><span class="target" id="_m_i_e_s___async_8ipf_1a2a1eb41d87478bc4b6c5a7daba4d3d85"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_Run_Worker</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416ASYNC_Run_Worker5dfref" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419ASYNC_ThreadReadOutv">
+<span id="_CPPv319ASYNC_ThreadReadOutv"></span><span id="_CPPv219ASYNC_ThreadReadOutv"></span><span id="ASYNC_ThreadReadOut"></span><span class="target" id="_m_i_e_s___async_8ipf_1ab01ac3210d8b52b2f1bffbe8015ded95"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_ThreadReadOut</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419ASYNC_ThreadReadOutv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Receives data from finished workloads. Calls the user defined readout function. For in order readouts this function buffers pending result data folders until they can be processed in order. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425ASYNC_IsWorkloadClassDone6string8variable">
+<span id="_CPPv325ASYNC_IsWorkloadClassDone6string8variable"></span><span id="_CPPv225ASYNC_IsWorkloadClassDone6string8variable"></span><span id="ASYNC_IsWorkloadClassDone__string.variable"></span><span class="target" id="_m_i_e_s___async_8ipf_1a7eca8152b3a944a49757498ddf1271aa"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_IsWorkloadClassDone</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">workloadClass</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">removeClass</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425ASYNC_IsWorkloadClassDone6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Allows to check if all executed work loads of a specific work load class were read out. For that case, the work load class can optionally be removed from Async. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workloadClass</strong> – <strong>[in]</strong> work load class string </p></li>
+<li><p><strong>removeClass</strong> – <strong>[in]</strong> [optional, default = 0] when set the specified work load class is removed from Async The parameter has no effect, if the work loads of the specified class are not done. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>1 if work load class finished, 0 if work load class did not finish, NaN if work load class not known to ASYNC </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv433ASYNC_WaitForWLCToFinishAndRemove6string8variable">
+<span id="_CPPv333ASYNC_WaitForWLCToFinishAndRemove6string8variable"></span><span id="_CPPv233ASYNC_WaitForWLCToFinishAndRemove6string8variable"></span><span id="ASYNC_WaitForWLCToFinishAndRemove__string.variable"></span><span class="target" id="_m_i_e_s___async_8ipf_1a418ad58c03d057974c2e71aa04ff6a75"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_WaitForWLCToFinishAndRemove</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">workloadClass</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">timeout</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv433ASYNC_WaitForWLCToFinishAndRemove6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Wait for TP analysis from specific panel to finish and remove it. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workloadClass</strong> – <strong>[in]</strong> name of work load class </p></li>
+<li><p><strong>timeout</strong> – <strong>[in]</strong> time out in seconds </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>0 if work load class is unknown or has finished and was removed, 1 if timeout was encountered. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423ASYNC_BackgroundReadOutP18WMBackgroundStruct">
+<span id="_CPPv323ASYNC_BackgroundReadOutP18WMBackgroundStruct"></span><span id="_CPPv223ASYNC_BackgroundReadOutP18WMBackgroundStruct"></span><span id="ASYNC_BackgroundReadOut__WMBackgroundStructP"></span><span class="target" id="_m_i_e_s___async_8ipf_1a63e3e87cf2883d1f43e8afcac9dad682"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_BackgroundReadOut</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMBackgroundStruct</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423ASYNC_BackgroundReadOutP18WMBackgroundStruct" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Background function that reads data folders from the thread output queue and calls the setup custom readout function The function takes care to buffer results if they should be processed in order. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>s</strong> – default structure for Igor background tasks </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414ASYNC_AddParam5dfref4wave8variable6string8variable6string">
+<span id="_CPPv314ASYNC_AddParam5dfref4wave8variable6string8variable6string"></span><span id="_CPPv214ASYNC_AddParam5dfref4wave8variable6string8variable6string"></span><span id="ASYNC_AddParam__dfref.wave.variable.string.variable.string"></span><span class="target" id="_m_i_e_s___async_8ipf_1a4db78dbdee22abd609d1149fe9d8aef5"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_AddParam</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">w</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">move</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414ASYNC_AddParam5dfref4wave8variable6string8variable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Adds one parameter to a data folder for a threaded worker execution. </p>
+<p>The parameters are globals in the threads data folder and named param0, param1, param2… in order of adding them. Only one parameter can be added per call. move is only allowed in combination with a wave.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dfr</strong> – data folder reference to thread df, prepared by calling ASYNC_PrepareDF </p></li>
+<li><p><strong>w</strong> – [optional, default = null] wave reference of wave to be added as parameter </p></li>
+<li><p><strong>var</strong> – [optional, default = 0] variable to be added as parameter </p></li>
+<li><p><strong>str</strong> – [optional, default = 0] string to be added as parameter </p></li>
+<li><p><strong>move</strong> – [optional, default = 0] if a wave was given as parameter and move is not zero then the wave is moved to the threads data folder </p></li>
+<li><p><strong>name</strong> – [optional, default = paramXXX] name of the added parameter </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415ASYNC_FetchWave5dfref6string">
+<span id="_CPPv315ASYNC_FetchWave5dfref6string"></span><span id="_CPPv215ASYNC_FetchWave5dfref6string"></span><span id="ASYNC_FetchWave__dfref.string"></span><span class="target" id="_m_i_e_s___async_8ipf_1a595a3452d6f5457880088d9b51e6b37b"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_FetchWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415ASYNC_FetchWave5dfref6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Fetch a wave from the DFREF in the worker function. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419ASYNC_FetchVariable5dfref6string">
+<span id="_CPPv319ASYNC_FetchVariable5dfref6string"></span><span id="_CPPv219ASYNC_FetchVariable5dfref6string"></span><span id="ASYNC_FetchVariable__dfref.string"></span><span class="target" id="_m_i_e_s___async_8ipf_1a85651bc5fc822f7180c28b336a5e9520"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_FetchVariable</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419ASYNC_FetchVariable5dfref6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Fetch a variable from the DFREF in the worker function. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417ASYNC_FetchString5dfref6string">
+<span id="_CPPv317ASYNC_FetchString5dfref6string"></span><span id="_CPPv217ASYNC_FetchString5dfref6string"></span><span id="ASYNC_FetchString__dfref.string"></span><span class="target" id="_m_i_e_s___async_8ipf_1aafb64ac648892aecae5c61ed7e6f94ff"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_FetchString</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417ASYNC_FetchString5dfref6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Fetch a string from the DFREF in the worker function. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410ASYNC_Stop8variable8variable">
+<span id="_CPPv310ASYNC_Stop8variable8variable"></span><span id="_CPPv210ASYNC_Stop8variable8variable"></span><span id="ASYNC_Stop__variable.variable"></span><span class="target" id="_m_i_e_s___async_8ipf_1ac952f31d6a066caa560f361bdd21cd26"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_Stop</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">timeout</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fromAssert</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410ASYNC_Stop8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Stops the Async Framework. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>timeout</strong> – [optional, default = Inf] time in s to wait for running threads, the function waits for pending threads and pending readouts within this time. After a timeout happened the readout processing is stopped and threads are stopped. Any pending data is lost. If the threads have to be stopped forcefully, an assertion is raised. Using a finite timeout is strongly recommended.</p></li>
+<li><p><strong>fromAssert</strong> – [optional, default = 0] specified when called as cleanup function from ASSERT Suppresses further assertions such that all required cleanup routines such as ThreadGroupRelease are executed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>2 if ASYNC framework was not running, 1 if a timeout was encountered, 0 otherwise </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415ASYNC_PrepareDF6string6string6string8variable">
+<span id="_CPPv315ASYNC_PrepareDF6string6string6string8variable"></span><span id="_CPPv215ASYNC_PrepareDF6string6string6string8variable"></span><span id="ASYNC_PrepareDF__string.string.string.variable"></span><span class="target" id="_m_i_e_s___async_8ipf_1ad0763d663832657d1a935ccb23d9b6ca"></span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_PrepareDF</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">WorkerFunc</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ReadOutFunc</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">workloadClass</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">inOrder</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415ASYNC_PrepareDF6string6string6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Prepares a thread data folder for use with the AsyncFramework This function should be called first when setting up a worker with parameters. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>WorkerFunc</strong> – string naming a threadsafe worker function in the form of the ASYNC_Worker template</p></li>
+<li><p><strong>ReadOutFunc</strong> – string naming a readout function in the form of the ASYNC_ReadOut template</p></li>
+<li><p><strong>workloadClass</strong> – string naming a work load class for work load attribution like “TestPulse” The string must follow strict object naming rules.</p></li>
+<li><p><strong>inOrder</strong> – [optional, default = 1] flag that allows to disable in order readout of results</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>data folder for thread, where parameters can be put to with :cpp:func:<code class="docutils literal notranslate"><span class="pre">ASYNC_AddParam</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413ASYNC_Execute5dfref">
+<span id="_CPPv313ASYNC_Execute5dfref"></span><span id="_CPPv213ASYNC_Execute5dfref"></span><span id="ASYNC_Execute__dfref"></span><span class="target" id="_m_i_e_s___async_8ipf_1aad3777dd6bb37e4a242b4d53bf1f722a"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_Execute</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413ASYNC_Execute5dfref" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Puts a prepared thread data folder to parallel execution in another thread. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dfr</strong> – data folder that is setup for thread and is to be deployed </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416ASYNC_IsThreadDF5dfref">
+<span id="_CPPv316ASYNC_IsThreadDF5dfref"></span><span id="_CPPv216ASYNC_IsThreadDF5dfref"></span><span id="ASYNC_IsThreadDF__dfref"></span><span class="target" id="_m_i_e_s___async_8ipf_1a9ec15ba75a4d73a2c39c2d92a4a7cc28"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_IsThreadDF</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416ASYNC_IsThreadDF5dfref" title="Link to this definition">¶</a><br /></dt>
+<dd><p>test if data folder is marked for thread usage </p>
+<p>UTF_NOINSTRUMENTATION </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420ASYNC_IsASYNCRunningv">
+<span id="_CPPv320ASYNC_IsASYNCRunningv"></span><span id="_CPPv220ASYNC_IsASYNCRunningv"></span><span id="ASYNC_IsASYNCRunning"></span><span class="target" id="_m_i_e_s___async_8ipf_1a6aa559d1bd54409db4a16c037f9a1cb0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_IsASYNCRunning</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420ASYNC_IsASYNCRunningv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>returns 1 if ASYNC framework is running, 0 otherwise </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv416ASYNC_BACKGROUND">
+<span id="_CPPv316ASYNC_BACKGROUND"></span><span id="_CPPv216ASYNC_BACKGROUND"></span><span id="ASYNC_BACKGROUND__stringC"></span><span class="target" id="_m_i_e_s___async_8ipf_1a076566adbe17f2337117674ee2e2e72b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_BACKGROUND</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;AsyncFramework&quot;</span></span><a class="headerlink" href="#_CPPv416ASYNC_BACKGROUND" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv419ASYNC_THREAD_MARKER">
+<span id="_CPPv319ASYNC_THREAD_MARKER"></span><span id="_CPPv219ASYNC_THREAD_MARKER"></span><span id="ASYNC_THREAD_MARKER__doubleC"></span><span class="target" id="_m_i_e_s___async_8ipf_1ae9f387dc6515018a9b692784ff8f6c19"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_THREAD_MARKER</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">299792458</span></span><a class="headerlink" href="#_CPPv419ASYNC_THREAD_MARKER" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417ASYNC_MAX_THREADS">
+<span id="_CPPv317ASYNC_MAX_THREADS"></span><span id="_CPPv217ASYNC_MAX_THREADS"></span><span id="ASYNC_MAX_THREADS__doubleC"></span><span class="target" id="_m_i_e_s___async_8ipf_1a9bf4061c963042eec53be64a4d8752e3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_MAX_THREADS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1024</span></span><a class="headerlink" href="#_CPPv417ASYNC_MAX_THREADS" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv419ASYNC_SLEEP_ON_WAIT">
+<span id="_CPPv319ASYNC_SLEEP_ON_WAIT"></span><span id="_CPPv219ASYNC_SLEEP_ON_WAIT"></span><span id="ASYNC_SLEEP_ON_WAIT__doubleC"></span><span class="target" id="_m_i_e_s___async_8ipf_1a3c4e9548a6e19658e3e2c653e4c5ff08"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_SLEEP_ON_WAIT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.01</span></span><a class="headerlink" href="#_CPPv419ASYNC_SLEEP_ON_WAIT" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_Async.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423ASYNC_THREAD_MARKER_STR"><code class="docutils literal notranslate"><span class="pre">ASYNC_THREAD_MARKER_STR</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420ASYNC_WORKERFUNC_STR"><code class="docutils literal notranslate"><span class="pre">ASYNC_WORKERFUNC_STR</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421ASYNC_READOUTFUNC_STR"><code class="docutils literal notranslate"><span class="pre">ASYNC_READOUTFUNC_STR</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423ASYNC_WORKLOADCLASS_STR"><code class="docutils literal notranslate"><span class="pre">ASYNC_WORKLOADCLASS_STR</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420ASYNC_PARAMCOUNT_STR"><code class="docutils literal notranslate"><span class="pre">ASYNC_PARAMCOUNT_STR</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417ASYNC_INORDER_STR"><code class="docutils literal notranslate"><span class="pre">ASYNC_INORDER_STR</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419ASYNC_ABORTFLAG_STR"><code class="docutils literal notranslate"><span class="pre">ASYNC_ABORTFLAG_STR</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417ASYNC_RTERROR_STR"><code class="docutils literal notranslate"><span class="pre">ASYNC_RTERROR_STR</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420ASYNC_RTERRORMSG_STR"><code class="docutils literal notranslate"><span class="pre">ASYNC_RTERRORMSG_STR</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419ASYNC_ABORTCODE_STR"><code class="docutils literal notranslate"><span class="pre">ASYNC_ABORTCODE_STR</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419ASYNC_WLCOUNTER_STR"><code class="docutils literal notranslate"><span class="pre">ASYNC_WLCOUNTER_STR</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411ASYNC_Start8variable8variable"><code class="docutils literal notranslate"><span class="pre">ASYNC_Start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412ASYNC_Worker5dfref"><code class="docutils literal notranslate"><span class="pre">ASYNC_Worker()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413ASYNC_ReadOutP19ASYNC_ReadOutStruct"><code class="docutils literal notranslate"><span class="pre">ASYNC_ReadOut()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412ASYNC_Threadv"><code class="docutils literal notranslate"><span class="pre">ASYNC_Thread()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416ASYNC_Run_Worker5dfref"><code class="docutils literal notranslate"><span class="pre">ASYNC_Run_Worker()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419ASYNC_ThreadReadOutv"><code class="docutils literal notranslate"><span class="pre">ASYNC_ThreadReadOut()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425ASYNC_IsWorkloadClassDone6string8variable"><code class="docutils literal notranslate"><span class="pre">ASYNC_IsWorkloadClassDone()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv433ASYNC_WaitForWLCToFinishAndRemove6string8variable"><code class="docutils literal notranslate"><span class="pre">ASYNC_WaitForWLCToFinishAndRemove()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423ASYNC_BackgroundReadOutP18WMBackgroundStruct"><code class="docutils literal notranslate"><span class="pre">ASYNC_BackgroundReadOut()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414ASYNC_AddParam5dfref4wave8variable6string8variable6string"><code class="docutils literal notranslate"><span class="pre">ASYNC_AddParam()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415ASYNC_FetchWave5dfref6string"><code class="docutils literal notranslate"><span class="pre">ASYNC_FetchWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419ASYNC_FetchVariable5dfref6string"><code class="docutils literal notranslate"><span class="pre">ASYNC_FetchVariable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417ASYNC_FetchString5dfref6string"><code class="docutils literal notranslate"><span class="pre">ASYNC_FetchString()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv410ASYNC_Stop8variable8variable"><code class="docutils literal notranslate"><span class="pre">ASYNC_Stop()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415ASYNC_PrepareDF6string6string6string8variable"><code class="docutils literal notranslate"><span class="pre">ASYNC_PrepareDF()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413ASYNC_Execute5dfref"><code class="docutils literal notranslate"><span class="pre">ASYNC_Execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416ASYNC_IsThreadDF5dfref"><code class="docutils literal notranslate"><span class="pre">ASYNC_IsThreadDF()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420ASYNC_IsASYNCRunningv"><code class="docutils literal notranslate"><span class="pre">ASYNC_IsASYNCRunning()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416ASYNC_BACKGROUND"><code class="docutils literal notranslate"><span class="pre">ASYNC_BACKGROUND</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419ASYNC_THREAD_MARKER"><code class="docutils literal notranslate"><span class="pre">ASYNC_THREAD_MARKER</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417ASYNC_MAX_THREADS"><code class="docutils literal notranslate"><span class="pre">ASYNC_MAX_THREADS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419ASYNC_SLEEP_ON_WAIT"><code class="docutils literal notranslate"><span class="pre">ASYNC_SLEEP_ON_WAIT</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___artefact_removal_8ipf.html"
+                          title="previous chapter">File MIES_ArtefactRemoval.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___asynchronous_data_8ipf.html"
+                          title="next chapter">File MIES_AsynchronousData.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___asynchronous_data_8ipf.html" title="File MIES_AsynchronousData.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___artefact_removal_8ipf.html" title="File MIES_ArtefactRemoval.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Async.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

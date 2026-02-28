@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File ZeroMQ_Interop.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Struct list" href="../structlist.html" />
+    <link rel="prev" title="File MIES_WaverefBrowser_Macro.ipf" href="_m_i_e_s___waveref_browser___macro_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../structlist.html" title="Struct list"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___waveref_browser___macro_8ipf.html" title="File MIES_WaverefBrowser_Macro.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File ZeroMQ_Interop.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-zeromq-interop-ipf">
+<span id="id1"></span><h1>File ZeroMQ_Interop.ipf<a class="headerlink" href="#file-zeromq-interop-ipf" title="Link to this heading">¶</a></h1>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-flags-for-zeromq_set()">Flags for zeromq_set()</p>
+<p>** Define ZeroMQ Constants (for back-compatibility) for Igor8 case. **</p>
+<p><span class="target" id="_zero_m_q___interop_8ipf_1ZeroMQSetFlags"></span></p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv421ZMQ_SET_FLAGS_DEFAULT">
+<span id="_CPPv321ZMQ_SET_FLAGS_DEFAULT"></span><span id="_CPPv221ZMQ_SET_FLAGS_DEFAULT"></span><span id="ZMQ_SET_FLAGS_DEFAULT__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1aa34f97a068f3cf8989825f7ee0ea3ab9"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZMQ_SET_FLAGS_DEFAULT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x1</span></span><a class="headerlink" href="#_CPPv421ZMQ_SET_FLAGS_DEFAULT" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Sets the default flags (no debug, no ipv6, busy wait on receive) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv419ZMQ_SET_FLAGS_DEBUG">
+<span id="_CPPv319ZMQ_SET_FLAGS_DEBUG"></span><span id="_CPPv219ZMQ_SET_FLAGS_DEBUG"></span><span id="ZMQ_SET_FLAGS_DEBUG__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1a58747105bfab17a0f3d5e563753ade3f"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZMQ_SET_FLAGS_DEBUG</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x2</span></span><a class="headerlink" href="#_CPPv419ZMQ_SET_FLAGS_DEBUG" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Enable debug output. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv418ZMQ_SET_FLAGS_IPV6">
+<span id="_CPPv318ZMQ_SET_FLAGS_IPV6"></span><span id="_CPPv218ZMQ_SET_FLAGS_IPV6"></span><span id="ZMQ_SET_FLAGS_IPV6__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1af4457ea3ed6567e85c167fcc39eb9306"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZMQ_SET_FLAGS_IPV6</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x4</span></span><a class="headerlink" href="#_CPPv418ZMQ_SET_FLAGS_IPV6" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Enable ipv6 support. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv428ZMQ_SET_FLAGS_NOBUSYWAITRECV">
+<span id="_CPPv328ZMQ_SET_FLAGS_NOBUSYWAITRECV"></span><span id="_CPPv228ZMQ_SET_FLAGS_NOBUSYWAITRECV"></span><span id="ZMQ_SET_FLAGS_NOBUSYWAITRECV__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1a087a8784888f2a71ec3ec8e75157f862"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZMQ_SET_FLAGS_NOBUSYWAITRECV</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x8</span></span><a class="headerlink" href="#_CPPv428ZMQ_SET_FLAGS_NOBUSYWAITRECV" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Don’t do busy waiting on zeromq_server_recv() and zeromq_client_recv() instead immediately return if no messages are available. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv421ZMQ_SET_FLAGS_LOGGING">
+<span id="_CPPv321ZMQ_SET_FLAGS_LOGGING"></span><span id="_CPPv221ZMQ_SET_FLAGS_LOGGING"></span><span id="ZMQ_SET_FLAGS_LOGGING__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1ae473248658f7a522e7421adea7b76ca3"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZMQ_SET_FLAGS_LOGGING</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x10</span></span><a class="headerlink" href="#_CPPv421ZMQ_SET_FLAGS_LOGGING" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Log incoming and outgoing messages. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-error-codes">Error codes</p>
+<p><span class="target" id="_zero_m_q___interop_8ipf_1ZeroMQErrorCodes"></span></p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420ZMQ_UNKNOWN_SET_FLAG">
+<span id="_CPPv320ZMQ_UNKNOWN_SET_FLAG"></span><span id="_CPPv220ZMQ_UNKNOWN_SET_FLAG"></span><span id="ZMQ_UNKNOWN_SET_FLAG__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1a3812fe15293ba32f69a7a6837dcdcd82"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZMQ_UNKNOWN_SET_FLAG</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">10003</span></span><a class="headerlink" href="#_CPPv420ZMQ_UNKNOWN_SET_FLAG" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv418ZMQ_INTERNAL_ERROR">
+<span id="_CPPv318ZMQ_INTERNAL_ERROR"></span><span id="_CPPv218ZMQ_INTERNAL_ERROR"></span><span id="ZMQ_INTERNAL_ERROR__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1a472a14c78905126799e7382b9782d3cb"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZMQ_INTERNAL_ERROR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">10004</span></span><a class="headerlink" href="#_CPPv418ZMQ_INTERNAL_ERROR" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv415ZMQ_INVALID_ARG">
+<span id="_CPPv315ZMQ_INVALID_ARG"></span><span id="_CPPv215ZMQ_INVALID_ARG"></span><span id="ZMQ_INVALID_ARG__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1ac3395a80ee8417e973b5d6b738765c06"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZMQ_INVALID_ARG</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">10005</span></span><a class="headerlink" href="#_CPPv415ZMQ_INVALID_ARG" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv427ZMQ_HANDLER_ALREADY_RUNNING">
+<span id="_CPPv327ZMQ_HANDLER_ALREADY_RUNNING"></span><span id="_CPPv227ZMQ_HANDLER_ALREADY_RUNNING"></span><span id="ZMQ_HANDLER_ALREADY_RUNNING__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1a130fd45b90a37f9288bef003770f191f"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZMQ_HANDLER_ALREADY_RUNNING</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">10006</span></span><a class="headerlink" href="#_CPPv427ZMQ_HANDLER_ALREADY_RUNNING" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv425ZMQ_HANDLER_NO_CONNECTION">
+<span id="_CPPv325ZMQ_HANDLER_NO_CONNECTION"></span><span id="_CPPv225ZMQ_HANDLER_NO_CONNECTION"></span><span id="ZMQ_HANDLER_NO_CONNECTION__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1a9fc6714494a08db60a5d6f5cc3f26cc7"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZMQ_HANDLER_NO_CONNECTION</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">10007</span></span><a class="headerlink" href="#_CPPv425ZMQ_HANDLER_NO_CONNECTION" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv427ZMQ_MISSING_PROCEDURE_FILES">
+<span id="_CPPv327ZMQ_MISSING_PROCEDURE_FILES"></span><span id="_CPPv227ZMQ_MISSING_PROCEDURE_FILES"></span><span id="ZMQ_MISSING_PROCEDURE_FILES__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1a2abc719b861b071989ff584bc634cc73"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZMQ_MISSING_PROCEDURE_FILES</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">10008</span></span><a class="headerlink" href="#_CPPv427ZMQ_MISSING_PROCEDURE_FILES" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv426ZMQ_INVALID_MESSAGE_FORMAT">
+<span id="_CPPv326ZMQ_INVALID_MESSAGE_FORMAT"></span><span id="_CPPv226ZMQ_INVALID_MESSAGE_FORMAT"></span><span id="ZMQ_INVALID_MESSAGE_FORMAT__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1a767f770c46e80b4f0ee8c7d85c7a36cb"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZMQ_INVALID_MESSAGE_FORMAT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">10009</span></span><a class="headerlink" href="#_CPPv426ZMQ_INVALID_MESSAGE_FORMAT" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv428ZMQ_INVALID_LOGGING_TEMPLATE">
+<span id="_CPPv328ZMQ_INVALID_LOGGING_TEMPLATE"></span><span id="_CPPv228ZMQ_INVALID_LOGGING_TEMPLATE"></span><span id="ZMQ_INVALID_LOGGING_TEMPLATE__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1a3ae9a87a11c25aad82364744a1ff0d62"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZMQ_INVALID_LOGGING_TEMPLATE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">10010</span></span><a class="headerlink" href="#_CPPv428ZMQ_INVALID_LOGGING_TEMPLATE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv429ZMQ_MESSAGE_FILTER_DUPLICATED">
+<span id="_CPPv329ZMQ_MESSAGE_FILTER_DUPLICATED"></span><span id="_CPPv229ZMQ_MESSAGE_FILTER_DUPLICATED"></span><span id="ZMQ_MESSAGE_FILTER_DUPLICATED__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1a3651cf947bed7cdba4243cad1ae454cf"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZMQ_MESSAGE_FILTER_DUPLICATED</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">10011</span></span><a class="headerlink" href="#_CPPv429ZMQ_MESSAGE_FILTER_DUPLICATED" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv426ZMQ_MESSAGE_FILTER_MISSING">
+<span id="_CPPv326ZMQ_MESSAGE_FILTER_MISSING"></span><span id="_CPPv226ZMQ_MESSAGE_FILTER_MISSING"></span><span id="ZMQ_MESSAGE_FILTER_MISSING__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1a6ebae5bb7b2f23a627ff840f5e537c73"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZMQ_MESSAGE_FILTER_MISSING</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">10012</span></span><a class="headerlink" href="#_CPPv426ZMQ_MESSAGE_FILTER_MISSING" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv424ZMQ_MESSAGE_INVALID_TYPE">
+<span id="_CPPv324ZMQ_MESSAGE_INVALID_TYPE"></span><span id="_CPPv224ZMQ_MESSAGE_INVALID_TYPE"></span><span id="ZMQ_MESSAGE_INVALID_TYPE__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1a0e1dbbca9e88641d8e06898eafe52778"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZMQ_MESSAGE_INVALID_TYPE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">10013</span></span><a class="headerlink" href="#_CPPv424ZMQ_MESSAGE_INVALID_TYPE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions-which-might-be-useful-for-outside-callers">Functions which might be useful for outside callers</p>
+<p><span class="target" id="_zero_m_q___interop_8ipf_1ZeroMQInterfaceFunctions"></span></p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417ZeroMQ_WaveExists6string">
+<span id="_CPPv317ZeroMQ_WaveExists6string"></span><span id="_CPPv217ZeroMQ_WaveExists6string"></span><span id="ZeroMQ_WaveExists__string"></span><span class="target" id="_zero_m_q___interop_8ipf_1af522203097273295a6af6582df9fd7ce"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZeroMQ_WaveExists</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pathToWave</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417ZeroMQ_WaveExists6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414ZeroMQ_GetWave6string">
+<span id="_CPPv314ZeroMQ_GetWave6string"></span><span id="_CPPv214ZeroMQ_GetWave6string"></span><span id="ZeroMQ_GetWave__string"></span><span class="target" id="_zero_m_q___interop_8ipf_1a2e4e00248654f0d067f540eb9d7c053f"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZeroMQ_GetWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pathToWave</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414ZeroMQ_GetWave6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423ZeroMQ_DataFolderExists6string">
+<span id="_CPPv323ZeroMQ_DataFolderExists6string"></span><span id="_CPPv223ZeroMQ_DataFolderExists6string"></span><span id="ZeroMQ_DataFolderExists__string"></span><span class="target" id="_zero_m_q___interop_8ipf_1ac99cd8d2a74693349b3d402d651dec00"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZeroMQ_DataFolderExists</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pathToDataFolder</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423ZeroMQ_DataFolderExists6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419ZeroMQ_FunctionList6string">
+<span id="_CPPv319ZeroMQ_FunctionList6string"></span><span id="_CPPv219ZeroMQ_FunctionList6string"></span><span id="ZeroMQ_FunctionList__string"></span><span class="target" id="_zero_m_q___interop_8ipf_1ab052457ab10dd1ddeb158ab0355ad51a"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZeroMQ_FunctionList</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">matchStr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419ZeroMQ_FunctionList6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419ZeroMQ_FunctionInfo6string">
+<span id="_CPPv319ZeroMQ_FunctionInfo6string"></span><span id="_CPPv219ZeroMQ_FunctionInfo6string"></span><span id="ZeroMQ_FunctionInfo__string"></span><span class="target" id="_zero_m_q___interop_8ipf_1a0fab220b133108b3e159c1352472a15f"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZeroMQ_FunctionInfo</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">functionNameStr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419ZeroMQ_FunctionInfo6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415ZeroMQ_ShowHelp6string">
+<span id="_CPPv315ZeroMQ_ShowHelp6string"></span><span id="_CPPv215ZeroMQ_ShowHelp6string"></span><span id="ZeroMQ_ShowHelp__string"></span><span class="target" id="_zero_m_q___interop_8ipf_1a2bde843f54a90e71f726ebecdc5e99e2"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZeroMQ_ShowHelp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">topic</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415ZeroMQ_ShowHelp6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv413ZMQ_HEARTBEAT">
+<span id="_CPPv313ZMQ_HEARTBEAT"></span><span id="_CPPv213ZMQ_HEARTBEAT"></span><span id="ZMQ_HEARTBEAT__stringC"></span><span class="target" id="_zero_m_q___interop_8ipf_1a82fc02fd1e678511fd5007bbf6fc9a5c"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZMQ_HEARTBEAT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;heartbeat&quot;</span></span><a class="headerlink" href="#_CPPv413ZMQ_HEARTBEAT" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv411REQ_SUCCESS">
+<span id="_CPPv311REQ_SUCCESS"></span><span id="_CPPv211REQ_SUCCESS"></span><span id="REQ_SUCCESS__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1a61d52a7e2affce828f94dd787bcc14a2"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">REQ_SUCCESS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv411REQ_SUCCESS" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417REQ_UNKNOWN_ERROR">
+<span id="_CPPv317REQ_UNKNOWN_ERROR"></span><span id="_CPPv217REQ_UNKNOWN_ERROR"></span><span id="REQ_UNKNOWN_ERROR__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1a336f6fc9d4b0a886f0042959f8f6e75e"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">REQ_UNKNOWN_ERROR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv417REQ_UNKNOWN_ERROR" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv423REQ_INVALID_JSON_OBJECT">
+<span id="_CPPv323REQ_INVALID_JSON_OBJECT"></span><span id="_CPPv223REQ_INVALID_JSON_OBJECT"></span><span id="REQ_INVALID_JSON_OBJECT__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1a46341e289ff8166e400a78ebdc40c4e7"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">REQ_INVALID_JSON_OBJECT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">3</span></span><a class="headerlink" href="#_CPPv423REQ_INVALID_JSON_OBJECT" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv419REQ_INVALID_VERSION">
+<span id="_CPPv319REQ_INVALID_VERSION"></span><span id="_CPPv219REQ_INVALID_VERSION"></span><span id="REQ_INVALID_VERSION__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1a6ee5dad2d56a096c6a2eddb331837135"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">REQ_INVALID_VERSION</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><a class="headerlink" href="#_CPPv419REQ_INVALID_VERSION" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv421REQ_INVALID_OPERATION">
+<span id="_CPPv321REQ_INVALID_OPERATION"></span><span id="_CPPv221REQ_INVALID_OPERATION"></span><span id="REQ_INVALID_OPERATION__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1a0fb87f4d4db8250d173e932ba50e8026"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">REQ_INVALID_OPERATION</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">5</span></span><a class="headerlink" href="#_CPPv421REQ_INVALID_OPERATION" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv428REQ_INVALID_OPERATION_FORMAT">
+<span id="_CPPv328REQ_INVALID_OPERATION_FORMAT"></span><span id="_CPPv228REQ_INVALID_OPERATION_FORMAT"></span><span id="REQ_INVALID_OPERATION_FORMAT__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1aea35353f7645c4b89cc75814a358e38d"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">REQ_INVALID_OPERATION_FORMAT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">6</span></span><a class="headerlink" href="#_CPPv428REQ_INVALID_OPERATION_FORMAT" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv421REQ_INVALID_MESSAGEID">
+<span id="_CPPv321REQ_INVALID_MESSAGEID"></span><span id="_CPPv221REQ_INVALID_MESSAGEID"></span><span id="REQ_INVALID_MESSAGEID__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1a3c1cb92d3df2b095eaceea6ce50c852b"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">REQ_INVALID_MESSAGEID</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">7</span></span><a class="headerlink" href="#_CPPv421REQ_INVALID_MESSAGEID" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417REQ_OUT_OF_MEMORY">
+<span id="_CPPv317REQ_OUT_OF_MEMORY"></span><span id="_CPPv217REQ_OUT_OF_MEMORY"></span><span id="REQ_OUT_OF_MEMORY__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1a80ac9915df901dabc2bf796fa584a201"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">REQ_OUT_OF_MEMORY</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">8</span></span><a class="headerlink" href="#_CPPv417REQ_OUT_OF_MEMORY" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv421REQ_PROC_NOT_COMPILED">
+<span id="_CPPv321REQ_PROC_NOT_COMPILED"></span><span id="_CPPv221REQ_PROC_NOT_COMPILED"></span><span id="REQ_PROC_NOT_COMPILED__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1a1bb615ad5bc04dede03174656c4b4790"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">REQ_PROC_NOT_COMPILED</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">100</span></span><a class="headerlink" href="#_CPPv421REQ_PROC_NOT_COMPILED" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv425REQ_NON_EXISTING_FUNCTION">
+<span id="_CPPv325REQ_NON_EXISTING_FUNCTION"></span><span id="_CPPv225REQ_NON_EXISTING_FUNCTION"></span><span id="REQ_NON_EXISTING_FUNCTION__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1afdac8a243a8fe0ab25c68218062d4c84"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">REQ_NON_EXISTING_FUNCTION</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">101</span></span><a class="headerlink" href="#_CPPv425REQ_NON_EXISTING_FUNCTION" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv427REQ_TOO_FEW_FUNCTION_PARAMS">
+<span id="_CPPv327REQ_TOO_FEW_FUNCTION_PARAMS"></span><span id="_CPPv227REQ_TOO_FEW_FUNCTION_PARAMS"></span><span id="REQ_TOO_FEW_FUNCTION_PARAMS__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1a1647b26c5441a6df85ec85695f481459"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">REQ_TOO_FEW_FUNCTION_PARAMS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">102</span></span><a class="headerlink" href="#_CPPv427REQ_TOO_FEW_FUNCTION_PARAMS" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv428REQ_TOO_MANY_FUNCTION_PARAMS">
+<span id="_CPPv328REQ_TOO_MANY_FUNCTION_PARAMS"></span><span id="_CPPv228REQ_TOO_MANY_FUNCTION_PARAMS"></span><span id="REQ_TOO_MANY_FUNCTION_PARAMS__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1a96f7375a0b5f2da3d8b3c90974e69790"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">REQ_TOO_MANY_FUNCTION_PARAMS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">103</span></span><a class="headerlink" href="#_CPPv428REQ_TOO_MANY_FUNCTION_PARAMS" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv424REQ_UNSUPPORTED_FUNC_SIG">
+<span id="_CPPv324REQ_UNSUPPORTED_FUNC_SIG"></span><span id="_CPPv224REQ_UNSUPPORTED_FUNC_SIG"></span><span id="REQ_UNSUPPORTED_FUNC_SIG__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1a0ecc3c61405a57abff1e347fbcb511a8"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">REQ_UNSUPPORTED_FUNC_SIG</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">104</span></span><a class="headerlink" href="#_CPPv424REQ_UNSUPPORTED_FUNC_SIG" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv424REQ_UNSUPPORTED_FUNC_RET">
+<span id="_CPPv324REQ_UNSUPPORTED_FUNC_RET"></span><span id="_CPPv224REQ_UNSUPPORTED_FUNC_RET"></span><span id="REQ_UNSUPPORTED_FUNC_RET__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1a699516baa4dacc11b76d7d46330098bd"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">REQ_UNSUPPORTED_FUNC_RET</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">105</span></span><a class="headerlink" href="#_CPPv424REQ_UNSUPPORTED_FUNC_RET" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv424REQ_INVALID_PARAM_FORMAT">
+<span id="_CPPv324REQ_INVALID_PARAM_FORMAT"></span><span id="_CPPv224REQ_INVALID_PARAM_FORMAT"></span><span id="REQ_INVALID_PARAM_FORMAT__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1ace6a065340d3684708676621ae47b048"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">REQ_INVALID_PARAM_FORMAT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">106</span></span><a class="headerlink" href="#_CPPv424REQ_INVALID_PARAM_FORMAT" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420REQ_FUNCTION_ABORTED">
+<span id="_CPPv320REQ_FUNCTION_ABORTED"></span><span id="_CPPv220REQ_FUNCTION_ABORTED"></span><span id="REQ_FUNCTION_ABORTED__doubleC"></span><span class="target" id="_zero_m_q___interop_8ipf_1a874e9ba9323342979a4f0c8ac634b28d"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">REQ_FUNCTION_ABORTED</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">107</span></span><a class="headerlink" href="#_CPPv420REQ_FUNCTION_ABORTED" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File ZeroMQ_Interop.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421ZMQ_SET_FLAGS_DEFAULT"><code class="docutils literal notranslate"><span class="pre">ZMQ_SET_FLAGS_DEFAULT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419ZMQ_SET_FLAGS_DEBUG"><code class="docutils literal notranslate"><span class="pre">ZMQ_SET_FLAGS_DEBUG</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418ZMQ_SET_FLAGS_IPV6"><code class="docutils literal notranslate"><span class="pre">ZMQ_SET_FLAGS_IPV6</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428ZMQ_SET_FLAGS_NOBUSYWAITRECV"><code class="docutils literal notranslate"><span class="pre">ZMQ_SET_FLAGS_NOBUSYWAITRECV</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421ZMQ_SET_FLAGS_LOGGING"><code class="docutils literal notranslate"><span class="pre">ZMQ_SET_FLAGS_LOGGING</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420ZMQ_UNKNOWN_SET_FLAG"><code class="docutils literal notranslate"><span class="pre">ZMQ_UNKNOWN_SET_FLAG</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418ZMQ_INTERNAL_ERROR"><code class="docutils literal notranslate"><span class="pre">ZMQ_INTERNAL_ERROR</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415ZMQ_INVALID_ARG"><code class="docutils literal notranslate"><span class="pre">ZMQ_INVALID_ARG</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427ZMQ_HANDLER_ALREADY_RUNNING"><code class="docutils literal notranslate"><span class="pre">ZMQ_HANDLER_ALREADY_RUNNING</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425ZMQ_HANDLER_NO_CONNECTION"><code class="docutils literal notranslate"><span class="pre">ZMQ_HANDLER_NO_CONNECTION</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427ZMQ_MISSING_PROCEDURE_FILES"><code class="docutils literal notranslate"><span class="pre">ZMQ_MISSING_PROCEDURE_FILES</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426ZMQ_INVALID_MESSAGE_FORMAT"><code class="docutils literal notranslate"><span class="pre">ZMQ_INVALID_MESSAGE_FORMAT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428ZMQ_INVALID_LOGGING_TEMPLATE"><code class="docutils literal notranslate"><span class="pre">ZMQ_INVALID_LOGGING_TEMPLATE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429ZMQ_MESSAGE_FILTER_DUPLICATED"><code class="docutils literal notranslate"><span class="pre">ZMQ_MESSAGE_FILTER_DUPLICATED</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426ZMQ_MESSAGE_FILTER_MISSING"><code class="docutils literal notranslate"><span class="pre">ZMQ_MESSAGE_FILTER_MISSING</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424ZMQ_MESSAGE_INVALID_TYPE"><code class="docutils literal notranslate"><span class="pre">ZMQ_MESSAGE_INVALID_TYPE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417ZeroMQ_WaveExists6string"><code class="docutils literal notranslate"><span class="pre">ZeroMQ_WaveExists()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414ZeroMQ_GetWave6string"><code class="docutils literal notranslate"><span class="pre">ZeroMQ_GetWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423ZeroMQ_DataFolderExists6string"><code class="docutils literal notranslate"><span class="pre">ZeroMQ_DataFolderExists()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419ZeroMQ_FunctionList6string"><code class="docutils literal notranslate"><span class="pre">ZeroMQ_FunctionList()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419ZeroMQ_FunctionInfo6string"><code class="docutils literal notranslate"><span class="pre">ZeroMQ_FunctionInfo()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415ZeroMQ_ShowHelp6string"><code class="docutils literal notranslate"><span class="pre">ZeroMQ_ShowHelp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413ZMQ_HEARTBEAT"><code class="docutils literal notranslate"><span class="pre">ZMQ_HEARTBEAT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411REQ_SUCCESS"><code class="docutils literal notranslate"><span class="pre">REQ_SUCCESS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417REQ_UNKNOWN_ERROR"><code class="docutils literal notranslate"><span class="pre">REQ_UNKNOWN_ERROR</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423REQ_INVALID_JSON_OBJECT"><code class="docutils literal notranslate"><span class="pre">REQ_INVALID_JSON_OBJECT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419REQ_INVALID_VERSION"><code class="docutils literal notranslate"><span class="pre">REQ_INVALID_VERSION</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421REQ_INVALID_OPERATION"><code class="docutils literal notranslate"><span class="pre">REQ_INVALID_OPERATION</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428REQ_INVALID_OPERATION_FORMAT"><code class="docutils literal notranslate"><span class="pre">REQ_INVALID_OPERATION_FORMAT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421REQ_INVALID_MESSAGEID"><code class="docutils literal notranslate"><span class="pre">REQ_INVALID_MESSAGEID</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417REQ_OUT_OF_MEMORY"><code class="docutils literal notranslate"><span class="pre">REQ_OUT_OF_MEMORY</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421REQ_PROC_NOT_COMPILED"><code class="docutils literal notranslate"><span class="pre">REQ_PROC_NOT_COMPILED</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425REQ_NON_EXISTING_FUNCTION"><code class="docutils literal notranslate"><span class="pre">REQ_NON_EXISTING_FUNCTION</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427REQ_TOO_FEW_FUNCTION_PARAMS"><code class="docutils literal notranslate"><span class="pre">REQ_TOO_FEW_FUNCTION_PARAMS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428REQ_TOO_MANY_FUNCTION_PARAMS"><code class="docutils literal notranslate"><span class="pre">REQ_TOO_MANY_FUNCTION_PARAMS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424REQ_UNSUPPORTED_FUNC_SIG"><code class="docutils literal notranslate"><span class="pre">REQ_UNSUPPORTED_FUNC_SIG</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424REQ_UNSUPPORTED_FUNC_RET"><code class="docutils literal notranslate"><span class="pre">REQ_UNSUPPORTED_FUNC_RET</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424REQ_INVALID_PARAM_FORMAT"><code class="docutils literal notranslate"><span class="pre">REQ_INVALID_PARAM_FORMAT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420REQ_FUNCTION_ABORTED"><code class="docutils literal notranslate"><span class="pre">REQ_FUNCTION_ABORTED</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___waveref_browser___macro_8ipf.html"
+                          title="previous chapter">File MIES_WaverefBrowser_Macro.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="../structlist.html"
+                          title="next chapter">Struct list</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../structlist.html" title="Struct list"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___waveref_browser___macro_8ipf.html" title="File MIES_WaverefBrowser_Macro.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File ZeroMQ_Interop.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

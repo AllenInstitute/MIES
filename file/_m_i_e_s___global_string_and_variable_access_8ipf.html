@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File MIES_GlobalStringAndVariableAccess.ipf &#8212; MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=f265e7a6"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_GuiPopupMenuExt.ipf" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html" />
+    <link rel="prev" title="File MIES_ForeignFunctionInterface.ipf" href="_m_i_e_s___foreign_function_interface_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___gui_popup_menu_ext_8ipf.html" title="File MIES_GuiPopupMenuExt.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___foreign_function_interface_8ipf.html" title="File MIES_ForeignFunctionInterface.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_GlobalStringAndVariableAccess.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-globalstringandvariableaccess-ipf">
+<span id="id1"></span><h1>File MIES_GlobalStringAndVariableAccess.ipf<a class="headerlink" href="#file-mies-globalstringandvariableaccess-ipf" title="Link to this heading">¶</a></h1>
+<p>Helper functions for accessing global variables and strings. </p>
+<p>The functions <a class="reference internal" href="#_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb"><span class="std std-ref">GetNVARAsString()</span></a> and <a class="reference internal" href="#_m_i_e_s___global_string_and_variable_access_8ipf_1adda663266b20accc016fcca9afdb3a76"><span class="std std-ref">GetSVARAsString()</span></a> are static as they should not be used directly.</p>
+<p>Instead if you have a global variable named <code class="docutils literal notranslate"><span class="pre">iceCreamCounter</span></code> in <code class="docutils literal notranslate"><span class="pre">root:myfood</span></code> you would write in this file here a function like</p>
+<p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kr">Function</span>/S<span class="w"> </span>GetIceCreamCounterAsVariable()
+<span class="w">    </span><span class="k">return</span><span class="w"> </span>GetNVARAsString(createDFWithAllParents(<span class="s">&quot;root:myfood&quot;</span>),<span class="w"> </span><span class="s">&quot;iceCreamCounter&quot;</span>)
+<span class="kr">End</span>
+</pre></div>
+</div>
+</p>
+<p>and then use it in your code as</p>
+<p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kr">Function</span><span class="w"> </span>doStuff()
+<span class="w">    </span><span class="kt">NVAR</span><span class="w"> </span>iceCreamCounter<span class="w"> </span>=<span class="w"> </span>$GetIceCreamCounterAsVariable()
+
+<span class="w">    </span>iceCreamCounter<span class="w"> </span>+= 1
+<span class="kr">End</span>
+</pre></div>
+</div>
+</p>
+<p>if you want to ensure that you only get read-only access you can use <a class="reference internal" href="#_m_i_e_s___global_string_and_variable_access_8ipf_1ad51f8728c74d59d8c1338a27566c4633"><span class="std std-ref">ROVar()</span></a> as in</p>
+<p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kr">Function</span><span class="w"> </span>doStuffReadOnly()
+<span class="w">    </span><span class="kt">variable</span><span class="w"> </span>iceCreamCounter<span class="w"> </span>=<span class="w"> </span>ROVar(GetIceCreamCounterAsVariable())
+
+<span class="w">    </span>iceCreamCounter<span class="w"> </span>+= 1
+<span class="kr">End</span>
+</pre></div>
+</div>
+</p>
+<p>this avoids accidental changes. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415GetNVARAsString5dfref6string8variable">
+<span id="_CPPv315GetNVARAsString5dfref6string8variable"></span><span id="_CPPv215GetNVARAsString5dfref6string8variable"></span><span id="GetNVARAsString__dfref.string.variable"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNVARAsString</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">globalVarName</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">initialValue</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415GetNVARAsString5dfref6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the full path to a global variable. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dfr</strong> – location of the global variable, must exist </p></li>
+<li><p><strong>globalVarName</strong> – name of the global variable </p></li>
+<li><p><strong>initialValue</strong> – initial value of the variable. Will only be used if it is created. 0 by default. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415GetSVARAsString5dfref6string6string">
+<span id="_CPPv315GetSVARAsString5dfref6string6string"></span><span id="_CPPv215GetSVARAsString5dfref6string6string"></span><span id="GetSVARAsString__dfref.string.string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1adda663266b20accc016fcca9afdb3a76"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSVARAsString</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">globalStrName</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">initialValue</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415GetSVARAsString5dfref6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the full path to a global string. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dfr</strong> – location of the global string, must exist </p></li>
+<li><p><strong>globalStrName</strong> – name of the global string </p></li>
+<li><p><strong>initialValue</strong> – initial value of the string. Will only be used if it is created. null by default. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv45ROVar6string">
+<span id="_CPPv35ROVar6string"></span><span id="_CPPv25ROVar6string"></span><span id="ROVar__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1ad51f8728c74d59d8c1338a27566c4633"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ROVar</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv45ROVar6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Helper function to get read-only access to a global variable. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> – absolute path to a global variable </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv45ROStr6string">
+<span id="_CPPv35ROStr6string"></span><span id="_CPPv25ROStr6string"></span><span id="ROStr__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a4fe5a300faa2aa99469072f3be7f49bb"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ROStr</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv45ROStr6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Helper function to get read-only access to a global string. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> – absolute path to a global string </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414GetMiesVersionv">
+<span id="_CPPv314GetMiesVersionv"></span><span id="_CPPv214GetMiesVersionv"></span><span id="GetMiesVersion"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1afab118667f7010c16d1f4e2cd7e524bd"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetMiesVersion</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414GetMiesVersionv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the full path to the mies-igor version string. Creating it when necessary. </p>
+<p>Never ever write this string! </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421GetPossiblePathsToGitv">
+<span id="_CPPv321GetPossiblePathsToGitv"></span><span id="_CPPv221GetPossiblePathsToGitv"></span><span id="GetPossiblePathsToGit"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1acd7d7fba3980419773060604282ded4a"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetPossiblePathsToGit</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421GetPossiblePathsToGitv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a text wave with absolute paths to git binaries with HFS <code class="docutils literal notranslate"><span class="pre">:</span></code> separators. </p>
+<p>The paths may not exist. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417CreateMiesVersionv">
+<span id="_CPPv317CreateMiesVersionv"></span><span id="_CPPv217CreateMiesVersionv"></span><span id="CreateMiesVersion"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a692edf0e8819d31ac0f67630167ccc91"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreateMiesVersion</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417CreateMiesVersionv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424CreateMiesVersionNoCachev">
+<span id="_CPPv324CreateMiesVersionNoCachev"></span><span id="_CPPv224CreateMiesVersionNoCachev"></span><span id="CreateMiesVersionNoCache"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1aa49b66b8e575b996173f8b093f80185d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreateMiesVersionNoCache</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424CreateMiesVersionNoCachev" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the version string for the mies-igor project. </p>
+<p>The mies version looks like</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/// Release_1.4_20170929-16-g497e7aa8
+/// Date and time of last commit: 2018-05-08T14:42:50+02:00
+/// Submodule status:
+/// 160000 6c47163858d99986b27c70f6226e8fca894ed5f7 0   Packages/IPNWB
+/// 160000 ed7e824a6e065e383ae31bb304383e13d7c7ccb5 0   Packages/ITCXOP2
+/// 160000 2bd259940cb332339ed3c82b74632f06c9b68a15 0   Packages/ZeroMQ
+/// 160000 657e9e8abdc92aa299301796d710a0a717da4ef8 0   Packages/unit-testing
+///
+</pre></div>
+</div>
+<p>or <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a7ba2c4af364e94f911a59e642be6bc0c"><span class="std std-ref">UNKNOWN_MIES_VERSION</span></a> on error</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the mies version </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424ExecuteGitForMIESVersion6string6string6string6string">
+<span id="_CPPv324ExecuteGitForMIESVersion6string6string6string6string"></span><span id="_CPPv224ExecuteGitForMIESVersion6string6string6string6string"></span><span id="ExecuteGitForMIESVersion__string.string.string.string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1adda74d4a95dc121e80f33eec61ed92d9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExecuteGitForMIESVersion</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">gitPathOrName</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">gitDir</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">topDir</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fullVersionPath</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424ExecuteGitForMIESVersion6string6string6string6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Run some git commands to generate version.txt from the MIES repository. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gitPathOrName</strong> – full path to a git binary on the system or plain git for using the one in PATH </p></li>
+<li><p><strong>gitDir</strong> – full path to .git in the MIES repository </p></li>
+<li><p><strong>topDir</strong> – full path to the toplevel folder of the MIES repository </p></li>
+<li><p><strong>fullVersionPath</strong> – full path to the version.txt file in the MIES repository</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>zero on success, aborts on failure </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417GetDataAcqRunMode6string">
+<span id="_CPPv317GetDataAcqRunMode6string"></span><span id="_CPPv217GetDataAcqRunMode6string"></span><span id="GetDataAcqRunMode__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a977c0d906793ae5b83121b4b7aa998c6"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetDataAcqRunMode</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417GetDataAcqRunMode6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the absolute path to the variable <code class="docutils literal notranslate"><span class="pre">runMode</span></code></p>
+<p>The variable holds one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1DAQRunModes"><span class="std std-ref">DAQRunModes</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414GetDAQDeviceID6string">
+<span id="_CPPv314GetDAQDeviceID6string"></span><span id="_CPPv214GetDAQDeviceID6string"></span><span id="GetDAQDeviceID__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a3995463a9ceb8b57100e241758494c3d"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetDAQDeviceID</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414GetDAQDeviceID6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the absolute path to the device ID. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv48GetCount6string">
+<span id="_CPPv38GetCount6string"></span><span id="_CPPv28GetCount6string"></span><span id="GetCount__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a3140c7906937c6db68bcbe3509a493f2"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetCount</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv48GetCount6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the absolute path to the global variable <code class="docutils literal notranslate"><span class="pre">count</span></code> storing the number of data acquisition cycles performed. </p>
+<p>Count equals zero on the first sweep. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416GetLockedDevicesv">
+<span id="_CPPv316GetLockedDevicesv"></span><span id="_CPPv216GetLockedDevicesv"></span><span id="GetLockedDevices"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a289b0a1d7414d8eea85391a887528c3e"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLockedDevices</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416GetLockedDevicesv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the list of locked devices. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414GetUserComment6string">
+<span id="_CPPv314GetUserComment6string"></span><span id="_CPPv214GetUserComment6string"></span><span id="GetUserComment__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a81285fc54f95db40c79e7e3c831051c2"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetUserComment</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414GetUserComment6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the absolute path to the user comment string. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422GetStopCollectionPoint6string">
+<span id="_CPPv322GetStopCollectionPoint6string"></span><span id="_CPPv222GetStopCollectionPoint6string"></span><span id="GetStopCollectionPoint__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a3e889067d82e37a7b80fc8b35b3f32cd"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetStopCollectionPoint</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422GetStopCollectionPoint6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the stop collection point, this is a <em>length</em> in points. The StopCollectionPoint is the effective length of the DAC data. While for NI and SUTTER hardware this equals the length of the DAC output wave, for ITC the DAC output wave is longer, see <a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html#_m_i_e_s___data_configurator_8ipf_1a61af1db1272ad13b73c48650fa61c15d"><span class="std std-ref">DC_CalculateDAQDataWaveLengthImpl</span></a>. </p>
+<p>Also for SUTTER hardware the ADC input wave length is different from the DAC output wave. StopCollectionPoint CAN NOT be used to determine the length of the ADC input wave.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_m_i_e_s___global_string_and_variable_access_8ipf_1a9c4ad4ffcf65b83e3f2b6a297bb2a14e"><span class="std std-ref">GetFifoPosition()</span></a></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421GetADChannelToMonitor6string">
+<span id="_CPPv321GetADChannelToMonitor6string"></span><span id="_CPPv221GetADChannelToMonitor6string"></span><span id="GetADChannelToMonitor__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a5190903488649e2d5940a6b8808cb10d"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetADChannelToMonitor</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421GetADChannelToMonitor6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the ADC to monitor. </p>
+<p>This is the first actice AD channel in DAQDataWave and DAQConfigWave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422GetRunningSingleDevicev">
+<span id="_CPPv322GetRunningSingleDevicev"></span><span id="_CPPv222GetRunningSingleDevicev"></span><span id="GetRunningSingleDevice"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a0257840920250c017401be79ecb53e5e"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetRunningSingleDevice</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422GetRunningSingleDevicev" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return global device for background tasks. </p>
+<p><dl>
+<dt class="sig sig-object cpp">
+<a class="reference internal" href="../todo.html#todo_1_todo000013"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<dd><p>remove and use background struct members for the deviceID and GetDeviceMapping instead </p>
+</dd></dl>
+
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417GetActiveSetCount6string">
+<span id="_CPPv317GetActiveSetCount6string"></span><span id="_CPPv217GetActiveSetCount6string"></span><span id="GetActiveSetCount__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a340cd572f869c68ce9354427b0447a64"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetActiveSetCount</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417GetActiveSetCount6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the active set count. </p>
+<p>Active set count keeps track of how many steps of the largest currently selected set on all active channels still have to be done. Not counting the currently acquiring sweep. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418GetInteractiveModev">
+<span id="_CPPv318GetInteractiveModev"></span><span id="_CPPv218GetInteractiveModev"></span><span id="GetInteractiveMode"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a1dfa0b59fdb91a14432358efe1e17baf"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetInteractiveMode</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418GetInteractiveModev" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the interactive mode. </p>
+<p>By default MIES operates in interactive mode (1) in the main thread and in non-interactive mode in preemptive threads. The user can change that to non-interactive mode where all dialog/popups etc. are avoided and replaced with sensible defaults. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419GetTestpulseRunMode6string">
+<span id="_CPPv319GetTestpulseRunMode6string"></span><span id="_CPPv219GetTestpulseRunMode6string"></span><span id="GetTestpulseRunMode__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a9aea77f2eb4da81cb026140e3193e9de"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetTestpulseRunMode</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419GetTestpulseRunMode6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the absolute path to the testpulse running modes, holds one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1TestPulseRunModes"><span class="std std-ref">TestPulseRunModes</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415GetSUDeviceListv">
+<span id="_CPPv315GetSUDeviceListv"></span><span id="_CPPv215GetSUDeviceListv"></span><span id="GetSUDeviceList"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1aa05893e9e166c49be1fc4442ae74f5b9"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSUDeviceList</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415GetSUDeviceListv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns SU device list. </p>
+<p>Internal use only, prefer <a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html#_m_i_e_s___d_a_ephys_8ipf_1a903018f16c7ddc3f1a044f09380e9015"><span class="std std-ref">DAP_GetSUDeviceList()</span></a> instead.</p>
+<p>The initial value <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> is different from <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1afbb12c8f7017e87111a47119f61a21ab"><span class="std std-ref">NONE</span></a> which denotes no matches. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415GetNIDeviceListv">
+<span id="_CPPv315GetNIDeviceListv"></span><span id="_CPPv215GetNIDeviceListv"></span><span id="GetNIDeviceList"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1ab16b2a84848f3df29af5b9db1b5071d1"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNIDeviceList</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415GetNIDeviceListv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns NI device list. </p>
+<p>Internal use only, prefer <a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html#_m_i_e_s___d_a_ephys_8ipf_1acc3b5391210c9e24aa924c2d01af32f6"><span class="std std-ref">DAP_GetNIDeviceList()</span></a> instead.</p>
+<p>The initial value <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> is different from <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1afbb12c8f7017e87111a47119f61a21ab"><span class="std std-ref">NONE</span></a> which denotes no matches. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416GetITCDeviceListv">
+<span id="_CPPv316GetITCDeviceListv"></span><span id="_CPPv216GetITCDeviceListv"></span><span id="GetITCDeviceList"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a739671684c1e57c2ab2c9901343330ee"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetITCDeviceList</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416GetITCDeviceListv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns ITC device list. </p>
+<p>Internal use only, prefer <a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html#_m_i_e_s___d_a_ephys_8ipf_1ad912d8cd4f901587d1fb7ff369c857d2"><span class="std std-ref">DAP_GetITCDeviceList()</span></a> instead.</p>
+<p>The initial value <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> is different from <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1afbb12c8f7017e87111a47119f61a21ab"><span class="std std-ref">NONE</span></a> which denotes no matches. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427GetLastAcqHookCallTimeStamp6string">
+<span id="_CPPv327GetLastAcqHookCallTimeStamp6string"></span><span id="_CPPv227GetLastAcqHookCallTimeStamp6string"></span><span id="GetLastAcqHookCallTimeStamp__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a47b2127eb761a93b3173750649d51e6e"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastAcqHookCallTimeStamp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427GetLastAcqHookCallTimeStamp6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the last time stamp HW_NI_RepeatAcqHook was called. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414GetFIFOFileRef6string">
+<span id="_CPPv314GetFIFOFileRef6string"></span><span id="_CPPv214GetFIFOFileRef6string"></span><span id="GetFIFOFileRef__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1ad13aa9dde4b64f4f9206189184624678"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetFIFOFileRef</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414GetFIFOFileRef6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns FIFO file reference. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421GetNITestPulseCounter6string">
+<span id="_CPPv321GetNITestPulseCounter6string"></span><span id="_CPPv221GetNITestPulseCounter6string"></span><span id="GetNITestPulseCounter__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1af85dfbb96de6cfd70ee697292127050f"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNITestPulseCounter</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421GetNITestPulseCounter6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns TestPulse Counter for Background Task. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413GetNI_AISetup6string">
+<span id="_CPPv313GetNI_AISetup6string"></span><span id="_CPPv213GetNI_AISetup6string"></span><span id="GetNI_AISetup__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1aa0babb364f77c7e305c3834210f488fe"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNI_AISetup</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413GetNI_AISetup6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the current NI setup string for analog in through DAQmx_Scan. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415GetNI_ADCTaskID6string">
+<span id="_CPPv315GetNI_ADCTaskID6string"></span><span id="_CPPv215GetNI_ADCTaskID6string"></span><span id="GetNI_ADCTaskID__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1ae7523e49e71070b7967e852de860103a"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNI_ADCTaskID</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415GetNI_ADCTaskID6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the ADC task ID set after DAQmx_Scan in HW_NI_StartAcq. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415GetNI_DACTaskID6string">
+<span id="_CPPv315GetNI_DACTaskID6string"></span><span id="_CPPv215GetNI_DACTaskID6string"></span><span id="GetNI_DACTaskID__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1ad6eee2a2453d6b076e93a4a53b7ea838"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNI_DACTaskID</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415GetNI_DACTaskID6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the DAC task ID set after DAQmx_WaveFormGen in HW_NI_PrepareAcq. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426GetSU_IsAcquisitionRunning6string">
+<span id="_CPPv326GetSU_IsAcquisitionRunning6string"></span><span id="_CPPv226GetSU_IsAcquisitionRunning6string"></span><span id="GetSU_IsAcquisitionRunning__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1ae37d5169e4c232652d15879157d0e768"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSU_IsAcquisitionRunning</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426GetSU_IsAcquisitionRunning6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns if the Sutter hardware is acquiring. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422GetSU_AcquisitionError6string">
+<span id="_CPPv322GetSU_AcquisitionError6string"></span><span id="_CPPv222GetSU_AcquisitionError6string"></span><span id="GetSU_AcquisitionError__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a1b5df6ec038c7f4062b373eafdeba431"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSU_AcquisitionError</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422GetSU_AcquisitionError6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns if the Sutter hardware had an acquisition error. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415GetNI_TTLTaskID6string">
+<span id="_CPPv315GetNI_TTLTaskID6string"></span><span id="_CPPv215GetNI_TTLTaskID6string"></span><span id="GetNI_TTLTaskID__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a3eb742074e91bee1e14795fa74bddf79"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNI_TTLTaskID</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415GetNI_TTLTaskID6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the TTL task ID set by DAQmx_DIO_Config in HW_NI_PrepareAcq. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430GetAnalysisExpSessionStartTime6string">
+<span id="_CPPv330GetAnalysisExpSessionStartTime6string"></span><span id="_CPPv230GetAnalysisExpSessionStartTime6string"></span><span id="GetAnalysisExpSessionStartTime__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a4e4e65c474ca680975266c3a1cea2077"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetAnalysisExpSessionStartTime</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataFolder</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430GetAnalysisExpSessionStartTime6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the Analysis Browser experiment session start time (only used for NWB type experiments) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427GetLastAcquisitionStartTime6string">
+<span id="_CPPv327GetLastAcquisitionStartTime6string"></span><span id="_CPPv227GetLastAcquisitionStartTime6string"></span><span id="GetLastAcquisitionStartTime__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1ab60baa3a3b13e80ff3a9adf08dd14001"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastAcquisitionStartTime</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427GetLastAcquisitionStartTime6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the global that stores the last acquisition start time. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419GetSessionStartTimev">
+<span id="_CPPv319GetSessionStartTimev"></span><span id="_CPPv219GetSessionStartTimev"></span><span id="GetSessionStartTime"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a8e90d941a596041dcda1b1ff37256c5c"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSessionStartTime</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419GetSessionStartTimev" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the experiment session start time in NWB-speech. </p>
+<p>This is the time when the last device was locked. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418GetNWBFileIDExport6string">
+<span id="_CPPv318GetNWBFileIDExport6string"></span><span id="_CPPv218GetNWBFileIDExport6string"></span><span id="GetNWBFileIDExport__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a97d30027ac6429cc471bf75ac310003f"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNWBFileIDExport</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418GetNWBFileIDExport6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the HDF5 file identifier for the NWB export. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420GetNWBFilePathExport6string">
+<span id="_CPPv320GetNWBFilePathExport6string"></span><span id="_CPPv220GetNWBFilePathExport6string"></span><span id="GetNWBFilePathExport__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a297a97249b938731482b0201ae623820"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNWBFilePathExport</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420GetNWBFilePathExport6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the absolute path to the file for NWB export. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427GetSessionStartTimeReadBack6string">
+<span id="_CPPv327GetSessionStartTimeReadBack6string"></span><span id="_CPPv227GetSessionStartTimeReadBack6string"></span><span id="GetSessionStartTimeReadBack__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1ae9abfaa8365b2da20961652c9ae8a4af"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSessionStartTimeReadBack</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427GetSessionStartTimeReadBack6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the experiment session start time in NWB-speech as read back from the NWB file. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420GetThreadGroupIDFIFO6string">
+<span id="_CPPv320GetThreadGroupIDFIFO6string"></span><span id="_CPPv220GetThreadGroupIDFIFO6string"></span><span id="GetThreadGroupIDFIFO__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a633d413537112783083c8b428abf79fc"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetThreadGroupIDFIFO</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420GetThreadGroupIDFIFO6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the thread group ID for the FIFO monitor/resetting daemon. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418GetTemporaryStringv">
+<span id="_CPPv318GetTemporaryStringv"></span><span id="_CPPv218GetTemporaryStringv"></span><span id="GetTemporaryString"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1aaa97b3849ccf0eb5e0235501370800bb"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetTemporaryString</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418GetTemporaryStringv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the absolute path to the temporary global string. </p>
+<p>Callers should always assume that this string contains garbage. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415GetTemporaryVarv">
+<span id="_CPPv315GetTemporaryVarv"></span><span id="_CPPv215GetTemporaryVarv"></span><span id="GetTemporaryVar"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1aad0de24fd30f41b4c108c3827f9da946"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetTemporaryVar</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415GetTemporaryVarv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the absolute path to the temporary global variable. </p>
+<p>Callers should always assume that this variable contains garbage. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410GetRNGSeed6string">
+<span id="_CPPv310GetRNGSeed6string"></span><span id="_CPPv210GetRNGSeed6string"></span><span id="GetRNGSeed__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a63e1b626159a3a65c97e6749b45a97ac"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetRNGSeed</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410GetRNGSeed6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the absolute path to the RNG seed value. </p>
+<p>This seed value can be used for deriving device dependent random numbers.</p>
+<p>Typical sequence:</p>
+<p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kt">NVAR</span><span class="w"> </span>rngSeed<span class="w"> </span>=<span class="w"> </span>$GetRNGSeed(device)
+<span class="nc">SetRandomSeed</span>/BETR=1<span class="w"> </span>rngSeed
+rngSeed<span class="w"> </span>+= 1
+<span class="kt">variable</span><span class="w"> </span>val<span class="w"> </span>=<span class="w"> </span>GetReproducibleRandonNumber()
+</pre></div>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429GetRepeatedAcquisitionCycleID6string">
+<span id="_CPPv329GetRepeatedAcquisitionCycleID6string"></span><span id="_CPPv229GetRepeatedAcquisitionCycleID6string"></span><span id="GetRepeatedAcquisitionCycleID__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a6494bab164731498576646da3642fb95"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetRepeatedAcquisitionCycleID</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429GetRepeatedAcquisitionCycleID6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the absolute path to the repeated acquisition cycle ID. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422GetRepurposedSweepTime6string">
+<span id="_CPPv322GetRepurposedSweepTime6string"></span><span id="_CPPv222GetRepurposedSweepTime6string"></span><span id="GetRepurposedSweepTime__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a8ecf48164e6bf6c4806d08138c253c74"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetRepurposedSweepTime</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422GetRepurposedSweepTime6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the absolute path to the repurposed sweep time global variable. </p>
+<p>Units are seconds.</p>
+<p>This value is added on <em>top</em> of the left over sweep time. Use a negative value to have a shorter ITI than what is left over in the sweep.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html#_m_i_e_s___mies_utilities___sweep_8ipf_1ae06873284f770cf3e40c5997a9da1401"><span class="std std-ref">LeftOverSweepTime()</span></a></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430GetRepeatedAcquisitionFuncListv">
+<span id="_CPPv330GetRepeatedAcquisitionFuncListv"></span><span id="_CPPv230GetRepeatedAcquisitionFuncListv"></span><span id="GetRepeatedAcquisitionFuncList"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a5fb485e045a498749fc3c1c9f1c211e9"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetRepeatedAcquisitionFuncList</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430GetRepeatedAcquisitionFuncListv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the list of functions to be executed after ITI in repeated acquisition. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427GetRepeatedAcquisitionStartv">
+<span id="_CPPv327GetRepeatedAcquisitionStartv"></span><span id="_CPPv227GetRepeatedAcquisitionStartv"></span><span id="GetRepeatedAcquisitionStart"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a3b58ecc1fbaf6cb120d054deb321e5ec"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetRepeatedAcquisitionStart</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427GetRepeatedAcquisitionStartv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the start time, in ticks, of the ITI cycle. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430GetRepeatedAcquisitionDurationv">
+<span id="_CPPv330GetRepeatedAcquisitionDurationv"></span><span id="_CPPv230GetRepeatedAcquisitionDurationv"></span><span id="GetRepeatedAcquisitionDuration"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1aecec717a144ac72f66762779a3d93315"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetRepeatedAcquisitionDuration</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430GetRepeatedAcquisitionDurationv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the duration, in ticks, of the ITI cycle. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415GetFifoPosition6string">
+<span id="_CPPv315GetFifoPosition6string"></span><span id="_CPPv215GetFifoPosition6string"></span><span id="GetFifoPosition__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a9c4ad4ffcf65b83e3f2b6a297bb2a14e"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetFifoPosition</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415GetFifoPosition6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the current fifo position (a length) </p>
+<p>Only valid if called during DAQ with DATA_ACQUISITION_MODE. This value is relative to first row of the rawDACWave, so an possible offset is already included in it. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427GetAnalysisFuncErrorCounter6string">
+<span id="_CPPv327GetAnalysisFuncErrorCounter6string"></span><span id="_CPPv227GetAnalysisFuncErrorCounter6string"></span><span id="GetAnalysisFuncErrorCounter__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a54af820805b9efce33341e1589a1a5b6"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetAnalysisFuncErrorCounter</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427GetAnalysisFuncErrorCounter6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the error counter for the analysis function management. </p>
+<p>Mainly used during testing to ensure that no RTE was thrown. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424GetMaxIntertrialInterval6string">
+<span id="_CPPv324GetMaxIntertrialInterval6string"></span><span id="_CPPv224GetMaxIntertrialInterval6string"></span><span id="GetMaxIntertrialInterval__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a2bfb70c7d586c028ee74b562e50ec45f"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetMaxIntertrialInterval</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424GetMaxIntertrialInterval6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the maximum ITI of all active sets. </p>
+<p>Only meaningful after preparing DAQ in <a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html#_m_i_e_s___data_configurator_8ipf_1a979ecb7392a91bc75ff4f7e3e471e6b0"><span class="std std-ref">DC_Configure()</span></a></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413GetPxPVersionv">
+<span id="_CPPv313GetPxPVersionv"></span><span id="_CPPv213GetPxPVersionv"></span><span id="GetPxPVersion"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a80b492ffa4d8855cd95cba0aab5a3b0b"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetPxPVersion</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413GetPxPVersionv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the version number of the Igor experiment. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418GetPxPVersionForAB5dfref">
+<span id="_CPPv318GetPxPVersionForAB5dfref"></span><span id="_CPPv218GetPxPVersionForAB5dfref"></span><span id="GetPxPVersionForAB__dfref"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a9d1b9f36e70528c2acf2d81aa53bda0a"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetPxPVersionForAB</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418GetPxPVersionForAB5dfref" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the version number of the Igor experiment loaded into the analysis browser. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html#_m_i_e_s___wave_data_folder_getters_8ipf_1a2fa01d94d78e576fd292f64bd6a4e0e5"><span class="std std-ref">GetAnalysisExpFolder()</span></a></p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dfr</strong> – experiment folder, </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421GetSweepFormulaJSONid5dfref">
+<span id="_CPPv321GetSweepFormulaJSONid5dfref"></span><span id="_CPPv221GetSweepFormulaJSONid5dfref"></span><span id="GetSweepFormulaJSONid__dfref"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a145904e1a098dc319d86e8d3620afcda"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSweepFormulaJSONid</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421GetSweepFormulaJSONid5dfref" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the JSON ID for the sweep formula. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428GetSweepFormulaOutputMessagev">
+<span id="_CPPv328GetSweepFormulaOutputMessagev"></span><span id="_CPPv228GetSweepFormulaOutputMessagev"></span><span id="GetSweepFormulaOutputMessage"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1afd24391b22f84110b8669fe9f170b060"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSweepFormulaOutputMessage</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428GetSweepFormulaOutputMessagev" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the formula output message for the sweep formula. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429GetSweepFormulaOutputSeverityv">
+<span id="_CPPv329GetSweepFormulaOutputSeverityv"></span><span id="_CPPv229GetSweepFormulaOutputSeverityv"></span><span id="GetSweepFormulaOutputSeverity"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1ac36a762f09b86194422a344813410404"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSweepFormulaOutputSeverity</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429GetSweepFormulaOutputSeverityv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the formula error severity for the sweep formula,. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>SFOutputSeverity </p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417GetSettingsJSONidv">
+<span id="_CPPv317GetSettingsJSONidv"></span><span id="_CPPv217GetSettingsJSONidv"></span><span id="GetSettingsJSONid"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a4d53bf6535cf03bedaa49de8a2e1f480"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSettingsJSONid</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417GetSettingsJSONidv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the JSON id of the settings file. </p>
+<p>Loads the stored settings on disc if required. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419GetAcquisitionState6string">
+<span id="_CPPv319GetAcquisitionState6string"></span><span id="_CPPv219GetAcquisitionState6string"></span><span id="GetAcquisitionState__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a7fe3a81d8e6ca7489f1c584d0daf3529"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetAcquisitionState</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419GetAcquisitionState6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the path to the acquisition state. </p>
+<p>Holds one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1AcquisitionStates"><span class="std std-ref">AcquisitionStates</span></a></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411GetBugCountv">
+<span id="_CPPv311GetBugCountv"></span><span id="_CPPv211GetBugCountv"></span><span id="GetBugCount"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1ae68eae7cfaa4de156ebe4ed9db185afc"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetBugCount</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411GetBugCountv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the global bug count, incremented by Bug() </p>
+<p>Mostly used for testing. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv431GetNWBOverrideHistoryAndLogFilev">
+<span id="_CPPv331GetNWBOverrideHistoryAndLogFilev"></span><span id="_CPPv231GetNWBOverrideHistoryAndLogFilev"></span><span id="GetNWBOverrideHistoryAndLogFile"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a96404019e0c7b0aad0655cb1ba7c87df"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNWBOverrideHistoryAndLogFile</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431GetNWBOverrideHistoryAndLogFilev" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Temporary storage for IP history and logfile. </p>
+<p>Used for reexporting from NWBv1 into NWBv2, see <a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html#_m_i_e_s___analysis_browser_8ipf_1ae427e4db0337ab3df4a0d4206d6f0c8c"><span class="std std-ref">AB_ReExport()</span></a></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419GetTestpulseCycleID6string">
+<span id="_CPPv319GetTestpulseCycleID6string"></span><span id="_CPPv219GetTestpulseCycleID6string"></span><span id="GetTestpulseCycleID__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1aeb762a758c6836b507296ac71f119964"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetTestpulseCycleID</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419GetTestpulseCycleID6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the absolute path to the test pulse cycle ID. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421GetCalledOnceVariable6string">
+<span id="_CPPv321GetCalledOnceVariable6string"></span><span id="_CPPv221GetCalledOnceVariable6string"></span><span id="GetCalledOnceVariable__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1ada953e6bce4d23883bb5791ddd969f9c"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetCalledOnceVariable</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421GetCalledOnceVariable6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the path to the “called once” variable of the given name. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416GetThreadGroupIDv">
+<span id="_CPPv316GetThreadGroupIDv"></span><span id="_CPPv216GetThreadGroupIDv"></span><span id="GetThreadGroupID"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1ae26ee62d6396c4d6408543983ce2754a"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetThreadGroupID</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416GetThreadGroupIDv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns string path to the thread group id. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413GetNumThreadsv">
+<span id="_CPPv313GetNumThreadsv"></span><span id="_CPPv213GetNumThreadsv"></span><span id="GetNumThreads"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1afea0db3c691b0cb9207ae4d4598a60bd"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumThreads</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413GetNumThreadsv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns string path to the number of threads. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420GetTaskDisableStatusv">
+<span id="_CPPv320GetTaskDisableStatusv"></span><span id="_CPPv220GetTaskDisableStatusv"></span><span id="GetTaskDisableStatus"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1aec090993697ff20855cddfbd63a50805"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetTaskDisableStatus</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420GetTaskDisableStatusv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns string path to flag if background task was disabled. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423GetLastSweepFormulaCode5dfref">
+<span id="_CPPv323GetLastSweepFormulaCode5dfref"></span><span id="_CPPv223GetLastSweepFormulaCode5dfref"></span><span id="GetLastSweepFormulaCode__dfref"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a24cd726b2d286100107a652c3715f572"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLastSweepFormulaCode</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423GetLastSweepFormulaCode5dfref" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the string path to the last successfully executed SweepFormula code. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419GetDFReferenceCount5dfref">
+<span id="_CPPv319GetDFReferenceCount5dfref"></span><span id="_CPPv219GetDFReferenceCount5dfref"></span><span id="GetDFReferenceCount__dfref"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1afeee72e01e0efff87e4dd857728bbf72"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetDFReferenceCount</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419GetDFReferenceCount5dfref" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the reference count variable of the given DF. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430GetSweepFormulaJSONPathTrackerv">
+<span id="_CPPv330GetSweepFormulaJSONPathTrackerv"></span><span id="_CPPv230GetSweepFormulaJSONPathTrackerv"></span><span id="GetSweepFormulaJSONPathTracker"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1aae2ad567f99a2e7a4afcc754cc5a8c53"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSweepFormulaJSONPathTracker</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430GetSweepFormulaJSONPathTrackerv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the current JSON path in the sweep formula execution. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv434GetSweepFormulaBufferOffsetTrackerv">
+<span id="_CPPv334GetSweepFormulaBufferOffsetTrackerv"></span><span id="_CPPv234GetSweepFormulaBufferOffsetTrackerv"></span><span id="GetSweepFormulaBufferOffsetTracker"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a2da679684d045411604120d050c78bab"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSweepFormulaBufferOffsetTracker</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv434GetSweepFormulaBufferOffsetTrackerv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return the current buffer offset in the sweep formula parser. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418GetDeviceADCConfig6string">
+<span id="_CPPv318GetDeviceADCConfig6string"></span><span id="_CPPv218GetDeviceADCConfig6string"></span><span id="GetDeviceADCConfig__string"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1ab4e7597638c198adb565e0e42e488d4d"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetDeviceADCConfig</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418GetDeviceADCConfig6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Get the ADC configuration for NI devices. </p>
+<p>Combination of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1NIAnalogInputConfigs"><span class="std std-ref">NIAnalogInputConfigs</span></a> bits </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv444GetSweepFormulaLastRightClickedDisplayWindowv">
+<span id="_CPPv344GetSweepFormulaLastRightClickedDisplayWindowv"></span><span id="_CPPv244GetSweepFormulaLastRightClickedDisplayWindowv"></span><span id="GetSweepFormulaLastRightClickedDisplayWindow"></span><span class="target" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a1bcb73bb585f0e3109614434e72920d9"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSweepFormulaLastRightClickedDisplayWindow</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv444GetSweepFormulaLastRightClickedDisplayWindowv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Returns the last right clicked sweep formula display (plot/table) window. </p>
+</dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_GlobalStringAndVariableAccess.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415GetNVARAsString5dfref6string8variable"><code class="docutils literal notranslate"><span class="pre">GetNVARAsString()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415GetSVARAsString5dfref6string6string"><code class="docutils literal notranslate"><span class="pre">GetSVARAsString()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv45ROVar6string"><code class="docutils literal notranslate"><span class="pre">ROVar()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv45ROStr6string"><code class="docutils literal notranslate"><span class="pre">ROStr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414GetMiesVersionv"><code class="docutils literal notranslate"><span class="pre">GetMiesVersion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421GetPossiblePathsToGitv"><code class="docutils literal notranslate"><span class="pre">GetPossiblePathsToGit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417CreateMiesVersionv"><code class="docutils literal notranslate"><span class="pre">CreateMiesVersion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424CreateMiesVersionNoCachev"><code class="docutils literal notranslate"><span class="pre">CreateMiesVersionNoCache()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424ExecuteGitForMIESVersion6string6string6string6string"><code class="docutils literal notranslate"><span class="pre">ExecuteGitForMIESVersion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417GetDataAcqRunMode6string"><code class="docutils literal notranslate"><span class="pre">GetDataAcqRunMode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414GetDAQDeviceID6string"><code class="docutils literal notranslate"><span class="pre">GetDAQDeviceID()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv48GetCount6string"><code class="docutils literal notranslate"><span class="pre">GetCount()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416GetLockedDevicesv"><code class="docutils literal notranslate"><span class="pre">GetLockedDevices()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414GetUserComment6string"><code class="docutils literal notranslate"><span class="pre">GetUserComment()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422GetStopCollectionPoint6string"><code class="docutils literal notranslate"><span class="pre">GetStopCollectionPoint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421GetADChannelToMonitor6string"><code class="docutils literal notranslate"><span class="pre">GetADChannelToMonitor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422GetRunningSingleDevicev"><code class="docutils literal notranslate"><span class="pre">GetRunningSingleDevice()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417GetActiveSetCount6string"><code class="docutils literal notranslate"><span class="pre">GetActiveSetCount()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418GetInteractiveModev"><code class="docutils literal notranslate"><span class="pre">GetInteractiveMode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419GetTestpulseRunMode6string"><code class="docutils literal notranslate"><span class="pre">GetTestpulseRunMode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415GetSUDeviceListv"><code class="docutils literal notranslate"><span class="pre">GetSUDeviceList()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415GetNIDeviceListv"><code class="docutils literal notranslate"><span class="pre">GetNIDeviceList()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416GetITCDeviceListv"><code class="docutils literal notranslate"><span class="pre">GetITCDeviceList()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427GetLastAcqHookCallTimeStamp6string"><code class="docutils literal notranslate"><span class="pre">GetLastAcqHookCallTimeStamp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414GetFIFOFileRef6string"><code class="docutils literal notranslate"><span class="pre">GetFIFOFileRef()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421GetNITestPulseCounter6string"><code class="docutils literal notranslate"><span class="pre">GetNITestPulseCounter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413GetNI_AISetup6string"><code class="docutils literal notranslate"><span class="pre">GetNI_AISetup()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415GetNI_ADCTaskID6string"><code class="docutils literal notranslate"><span class="pre">GetNI_ADCTaskID()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415GetNI_DACTaskID6string"><code class="docutils literal notranslate"><span class="pre">GetNI_DACTaskID()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv426GetSU_IsAcquisitionRunning6string"><code class="docutils literal notranslate"><span class="pre">GetSU_IsAcquisitionRunning()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422GetSU_AcquisitionError6string"><code class="docutils literal notranslate"><span class="pre">GetSU_AcquisitionError()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415GetNI_TTLTaskID6string"><code class="docutils literal notranslate"><span class="pre">GetNI_TTLTaskID()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430GetAnalysisExpSessionStartTime6string"><code class="docutils literal notranslate"><span class="pre">GetAnalysisExpSessionStartTime()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427GetLastAcquisitionStartTime6string"><code class="docutils literal notranslate"><span class="pre">GetLastAcquisitionStartTime()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419GetSessionStartTimev"><code class="docutils literal notranslate"><span class="pre">GetSessionStartTime()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418GetNWBFileIDExport6string"><code class="docutils literal notranslate"><span class="pre">GetNWBFileIDExport()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420GetNWBFilePathExport6string"><code class="docutils literal notranslate"><span class="pre">GetNWBFilePathExport()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427GetSessionStartTimeReadBack6string"><code class="docutils literal notranslate"><span class="pre">GetSessionStartTimeReadBack()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420GetThreadGroupIDFIFO6string"><code class="docutils literal notranslate"><span class="pre">GetThreadGroupIDFIFO()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418GetTemporaryStringv"><code class="docutils literal notranslate"><span class="pre">GetTemporaryString()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415GetTemporaryVarv"><code class="docutils literal notranslate"><span class="pre">GetTemporaryVar()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv410GetRNGSeed6string"><code class="docutils literal notranslate"><span class="pre">GetRNGSeed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429GetRepeatedAcquisitionCycleID6string"><code class="docutils literal notranslate"><span class="pre">GetRepeatedAcquisitionCycleID()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422GetRepurposedSweepTime6string"><code class="docutils literal notranslate"><span class="pre">GetRepurposedSweepTime()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430GetRepeatedAcquisitionFuncListv"><code class="docutils literal notranslate"><span class="pre">GetRepeatedAcquisitionFuncList()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427GetRepeatedAcquisitionStartv"><code class="docutils literal notranslate"><span class="pre">GetRepeatedAcquisitionStart()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430GetRepeatedAcquisitionDurationv"><code class="docutils literal notranslate"><span class="pre">GetRepeatedAcquisitionDuration()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415GetFifoPosition6string"><code class="docutils literal notranslate"><span class="pre">GetFifoPosition()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv427GetAnalysisFuncErrorCounter6string"><code class="docutils literal notranslate"><span class="pre">GetAnalysisFuncErrorCounter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424GetMaxIntertrialInterval6string"><code class="docutils literal notranslate"><span class="pre">GetMaxIntertrialInterval()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413GetPxPVersionv"><code class="docutils literal notranslate"><span class="pre">GetPxPVersion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418GetPxPVersionForAB5dfref"><code class="docutils literal notranslate"><span class="pre">GetPxPVersionForAB()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421GetSweepFormulaJSONid5dfref"><code class="docutils literal notranslate"><span class="pre">GetSweepFormulaJSONid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv428GetSweepFormulaOutputMessagev"><code class="docutils literal notranslate"><span class="pre">GetSweepFormulaOutputMessage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv429GetSweepFormulaOutputSeverityv"><code class="docutils literal notranslate"><span class="pre">GetSweepFormulaOutputSeverity()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417GetSettingsJSONidv"><code class="docutils literal notranslate"><span class="pre">GetSettingsJSONid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419GetAcquisitionState6string"><code class="docutils literal notranslate"><span class="pre">GetAcquisitionState()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411GetBugCountv"><code class="docutils literal notranslate"><span class="pre">GetBugCount()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv431GetNWBOverrideHistoryAndLogFilev"><code class="docutils literal notranslate"><span class="pre">GetNWBOverrideHistoryAndLogFile()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419GetTestpulseCycleID6string"><code class="docutils literal notranslate"><span class="pre">GetTestpulseCycleID()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421GetCalledOnceVariable6string"><code class="docutils literal notranslate"><span class="pre">GetCalledOnceVariable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416GetThreadGroupIDv"><code class="docutils literal notranslate"><span class="pre">GetThreadGroupID()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413GetNumThreadsv"><code class="docutils literal notranslate"><span class="pre">GetNumThreads()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420GetTaskDisableStatusv"><code class="docutils literal notranslate"><span class="pre">GetTaskDisableStatus()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423GetLastSweepFormulaCode5dfref"><code class="docutils literal notranslate"><span class="pre">GetLastSweepFormulaCode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419GetDFReferenceCount5dfref"><code class="docutils literal notranslate"><span class="pre">GetDFReferenceCount()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv430GetSweepFormulaJSONPathTrackerv"><code class="docutils literal notranslate"><span class="pre">GetSweepFormulaJSONPathTracker()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv434GetSweepFormulaBufferOffsetTrackerv"><code class="docutils literal notranslate"><span class="pre">GetSweepFormulaBufferOffsetTracker()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418GetDeviceADCConfig6string"><code class="docutils literal notranslate"><span class="pre">GetDeviceADCConfig()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv444GetSweepFormulaLastRightClickedDisplayWindowv"><code class="docutils literal notranslate"><span class="pre">GetSweepFormulaLastRightClickedDisplayWindow()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___foreign_function_interface_8ipf.html"
+                          title="previous chapter">File MIES_ForeignFunctionInterface.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___gui_popup_menu_ext_8ipf.html"
+                          title="next chapter">File MIES_GuiPopupMenuExt.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___gui_popup_menu_ext_8ipf.html" title="File MIES_GuiPopupMenuExt.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___foreign_function_interface_8ipf.html" title="File MIES_ForeignFunctionInterface.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-727-gbe223af4b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_GlobalStringAndVariableAccess.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>
