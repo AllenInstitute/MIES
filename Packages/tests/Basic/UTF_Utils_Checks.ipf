@@ -949,3 +949,33 @@ Function LHOUE_WorksWithDifferentCase()
 End
 
 /// @}
+
+/// Test integrated fit function helpers
+/// @{
+
+Function IsIntegratedFitFunctionWorks()
+
+	CHECK(!IsIntegratedFitFunction("someName"))
+	CHECK(IsIntegratedFitFunction("gauss"))
+
+	try
+		IsIntegratedFitFunction("")
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+End
+
+Function GetIntegratedFitFunctionCoefficientNumberWorks()
+
+	try
+		GetIntegratedFitFunctionCoefficientNumber("someName")
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	CHECK_EQUAL_VAR(GetIntegratedFitFunctionCoefficientNumber("sin"), 4)
+End
+
+/// @}

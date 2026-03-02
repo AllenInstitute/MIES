@@ -42,7 +42,7 @@ static StrConstant SF_PARSER_REGEX_SIGNED_NUMBER      = "^(?i)[+-]?[0-9]+(?:\.[0
 static StrConstant SF_PARSER_REGEX_QUOTED_STRING      = "^\".*\"$"
 static StrConstant SF_PARSER_REGEX_SIGNED_PARENTHESIS = "^(?i)[+-]?\\([\s\S]*$"
 static StrConstant SF_PARSER_REGEX_SIGNED_FUNCTION    = "^(?i)[+-]?[A-Za-z]+"
-static StrConstant SF_PARSER_REGEX_OTHER_VALID_CHARS  = "[A-Za-z0-9_\.:;=!$]"
+static StrConstant SF_PARSER_REGEX_OTHER_VALID_CHARS  = "[A-Za-z0-9_\.:;=!$<>]"
 
 // The structure stores data that is required and gathered when a SF formula is parsed
 static Structure SF_ParserData

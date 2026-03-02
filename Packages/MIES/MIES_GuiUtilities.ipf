@@ -650,7 +650,7 @@ End
 /// where the color white has been removed.
 Function [STRUCT RGBColor s] GetTraceColor(variable index)
 
-	index = mod(index, 21)
+	index = mod(index, TRACECOLORMAX)
 	switch(index)
 		case 0:
 			s.red = 7967; s.green = 7710; s.blue = 7710
@@ -742,11 +742,21 @@ Function [STRUCT RGBColor s] GetTraceColor(variable index)
 	endswitch
 End
 
-/// @brief Returns the trace color used for avergae type traces
+/// @brief Returns the trace color used for average type traces
 Function [STRUCT RGBColor s] GetTraceColorForAverage()
 
 	[s] = GetTraceColor(NUM_HEADSTAGES + 1)
+End
 
+/// @brief Returns a color that is not attributed to a headstage and not the average color
+Function [STRUCT RGBColor s] GetTraceColorNonHeadstage(variable idx)
+
+	variable range
+
+	range = TRACECOLORMAX - (NUM_HEADSTAGES + 2)
+	idx   = mod(idx, range)
+
+	[s] = GetTraceColor(idx + NUM_HEADSTAGES + 2)
 End
 
 /// @brief Get colors from alternative color scheme
