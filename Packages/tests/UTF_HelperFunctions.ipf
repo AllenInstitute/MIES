@@ -77,7 +77,7 @@ End
 ///
 /// Works for both main and rig files.
 ///
-/// Returns the full path to the rewritten JSON configuration file the corresponding jsonID.
+/// Returns the full path to the rewritten JSON configuration file and the corresponding jsonID.
 Function [variable jsonID, string fullPath] FixupJSONConfig_IGNORE(string path, string device)
 
 	string data, fName, rewrittenConfigPath, basename
