@@ -206,7 +206,7 @@ Setting up a continuous integration runner (Windows, ``ITC18``, ``ITC1600``  and
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  Windows 11 with "Remote Desktop" and "SSH Server" enabled user
--  Install the folllowing programs:
+-  Install the following programs:
 
    -  Git (choose the installer option which will make the Unix tools
       available in cmd as well)
@@ -228,7 +228,7 @@ Setting up a continuous integration runner (Windows, ``IgorPro``)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  Windows 11 with "Remote Desktop" enabled user
--  Install the folllowing programs:
+-  Install the following programs:
 
    -  Git (choose the installer option which makes all Unix tools
       available in cmd as well [third option])
