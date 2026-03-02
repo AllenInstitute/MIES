@@ -111,6 +111,7 @@ jobs:
       installer_flags: "-s git"
       artifact_name: Compilation-Each-Commit-assets
       timeout_minutes: 180
+      major_igorpro_version: 9
 
   Documentation:
     name: 👷 Documentation
