@@ -67,7 +67,7 @@ static StrConstant SF_AVERAGING_NONSWEEPDATA_LBL = "NOSWEEPDATA"
 
 static Constant SF_IVSCC_APFREQUENCY_OPACITY = 13107 // 0.2 * 65535
 
-static StrConstant SF_PREPAREFIT_NOFUNC    = "none"
+static StrConstant SF_PREPAREFIT_NOFUNC = "none"
 
 static Constant SF_FIT2_MAX_ITERATIONS = 40
 
@@ -2902,7 +2902,7 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 	yAxisPercentage = SFH_GetArgumentAsNumeric(exd, opShort, 3, defValue = 100, checkFunc = BetweenZeroAndOneHoundred)
 	WAVE/WAVE prepFit = SFH_GetArgumentAsWave(exd, opShort, 4, defOp = "preparefit()")
 
-	avgMode         = SFH_GetArgumentAsText(exd, opShort, 5, defValue = SF_OP_AVG_BINS, allowedValues = {SF_OP_AVG_BINS, SF_OP_AVG_BINS2})
+	avgMode = SFH_GetArgumentAsText(exd, opShort, 5, defValue = SF_OP_AVG_BINS, allowedValues = {SF_OP_AVG_BINS, SF_OP_AVG_BINS2})
 
 	if(!CmpStr(avgMode, SF_OP_AVG_BINS))
 		WAVE/WAVE wTmp     = SFH_GetArgumentAsWave(exd, opShort, 6)
@@ -2978,7 +2978,7 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 		// SF_OP_AVG_BINS2
 		sprintf expr, "ivsccavg = avg([%s], bins2, [%s])", freqList, currentList
 		formula = SF_AddExpressionToFormula(formula, expr)
-		expr = "ivsccavg_xvalues = xvalues(merge($ivsccavg))"
+		expr    = "ivsccavg_xvalues = xvalues(merge($ivsccavg))"
 		formula = SF_AddExpressionToFormula(formula, expr)
 
 		if(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_FIRST))
@@ -3005,7 +3005,7 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 
 	WAVE/WAVE varStorage = GetSFVarStorage(exd.graph)
 	Duplicate/FREE varStorage, varBackup
-	SFE_ExecuteVariableAssignments(exd.graph, formula, allowEmptyCode=1)
+	SFE_ExecuteVariableAssignments(exd.graph, formula, allowEmptyCode = 1)
 
 	SFH_AddVariableToStorage(exd.graph, "pfit", SFH_GetOutputForExecutor(prepFit, exd.graph, opShort))
 	WAVE/WAVE fitResult = SFH_AddVariableToStorageByFormula(exd.graph, "ivscc_apfrequency_fit", "fit2($ivsccavg_norm_y, $ivsccavg_norm_x, $pfit)", opShort)
@@ -3055,7 +3055,7 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 	plotWITH[numExp][%FORMULAY] = wvY
 	SFO_OperationIVSCCApFrequencySetPlotProperties(plotWITH[numExp][%FORMULAY], xAxisPercentage, yAxisPercentage)
 
-	formula = "$ivsccavg_norm_x"
+	formula                     = "$ivsccavg_norm_x"
 	plotWITH[numExp][%FORMULAX] = SFE_ExecuteFormula(formula, exd.graph, preProcess = 0)
 
 	numExp += 1
@@ -3077,6 +3077,7 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 End
 
 Function SFO_OperationPrepareFit_PROTO(WAVE w, variable x)
+
 	FATAL_ERROR("Prototype function called")
 End
 
@@ -3105,7 +3106,7 @@ Function/WAVE SFO_OperationPrepareFit(STRUCT SF_ExecutionData &exd)
 
 	fitfuncName = SFH_GetArgumentAsText(exd, opShort, 0)
 	if(IsIntegratedFitFunction(fitFuncName))
-		WAVE/Z/WAVE coefsArray = SFH_GetArgumentAsWave(exd, opShort, 1, defWave=$"")
+		WAVE/Z/WAVE coefsArray = SFH_GetArgumentAsWave(exd, opShort, 1, defWave = $"")
 		if(WaveExists(coefsArray))
 			SFH_ASSERT(SFH_IsArray(coefsArray), "Expected array at coefs arg position")
 			WAVE coefs = coefsArray[0]
@@ -3836,8 +3837,8 @@ Function/WAVE SFO_OperationGetMeta(STRUCT SF_ExecutionData &exd)
 
 	SFH_CheckArgumentCount(exd, opShort, 0, maxArgs = 3)
 	WAVE/WAVE datasets = SFH_GetArgumentAsWave(exd, opShort, 0)
-	key = SFH_GetArgumentAsText(exd, opShort, 1, defValue="")
-	dsNum = SFH_GetArgumentAsNumeric(exd, opShort, 2, defValue=0)
+	key   = SFH_GetArgumentAsText(exd, opShort, 1, defValue = "")
+	dsNum = SFH_GetArgumentAsNumeric(exd, opShort, 2, defValue = 0)
 
 	numDatasets = DimSize(datasets, ROWS)
 	SFH_ASSERT(dsNum < numDatasets, "Dataset with given number does not exist in input data")
@@ -3853,7 +3854,7 @@ Function/WAVE SFO_OperationGetMeta(STRUCT SF_ExecutionData &exd)
 		serStr = ""
 		for(string key : keys)
 			path = SF_SERIALIZE + "/" + key
-			val = JWN_GetNumberFromWaveNote(data, path)
+			val  = JWN_GetNumberFromWaveNote(data, path)
 			if(!IsNaN(val))
 				serStr += key + ": " + num2str(val, "%f") + "\r"
 				continue
@@ -3865,13 +3866,13 @@ Function/WAVE SFO_OperationGetMeta(STRUCT SF_ExecutionData &exd)
 			endif
 			WAVE/Z wvn = JWN_GetNumericWaveFromWaveNote(data, path)
 			if(WaveExists(wvn))
-				str = NumericWaveToList(wvn, "\r")
+				str     = NumericWaveToList(wvn, "\r")
 				serStr += key + ":\r" + str
 				continue
 			endif
 			WAVE/Z/T wt = JWN_GetTextWaveFromWaveNote(data, path)
 			if(WaveExists(wt))
-				str = TextWaveToList(wt, "\r")
+				str     = TextWaveToList(wt, "\r")
 				serStr += key + ":\r" + str
 				continue
 			endif
@@ -3881,7 +3882,7 @@ Function/WAVE SFO_OperationGetMeta(STRUCT SF_ExecutionData &exd)
 		output[0] = wvt
 	else
 		path = SF_SERIALIZE + "/" + key
-		val = JWN_GetNumberFromWaveNote(data, path)
+		val  = JWN_GetNumberFromWaveNote(data, path)
 		if(!IsNaN(val))
 			Make/FREE/D wv = {val}
 			SetDimLabel ROWS, 0, $key, wv
