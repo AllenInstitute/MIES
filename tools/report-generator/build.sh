@@ -100,7 +100,7 @@ docker run --rm \
     report-generator \
         -reports:/home/ci/data/**/Cobertura_*.xml \
         -targetdir:/home/ci/report \
-        "-reporttypes:Html;HtmlChart;JsonSummary;PngChart;Badges;MarkdownDeltaSummary" \
+        "-reporttypes:Html;HtmlChart;JsonSummary;SvgChart;Badges;MarkdownDeltaSummary" \
         -historydir:/home/ci/history \
         -title:MIES \
         "-tag:$(git log -1 --pretty=reference)" \
