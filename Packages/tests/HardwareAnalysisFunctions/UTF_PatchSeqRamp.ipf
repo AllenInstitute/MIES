@@ -113,7 +113,7 @@ static Function/WAVE GetUserEpochs_IGNORE(variable sweepNo, string device)
 	WAVE numericalValues = GetLBNumericalValues(device)
 
 	WAVE/Z/T results = GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, EPOCHS_ENTRY_KEY, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
-	CHECK_WAVE(results, TEXT_WAVE)
+	REQUIRE_WAVE(results, TEXT_WAVE)
 
 	// now filter out the user epochs
 	numEntries = DimSize(results, ROWS)
