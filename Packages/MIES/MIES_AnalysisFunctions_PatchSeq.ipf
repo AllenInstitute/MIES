@@ -335,7 +335,7 @@ Function/WAVE PSQ_DeterminePulseDurationFinder(WAVE statusHS, WAVE/WAVE allSingl
 
 		WAVE singleDA = allSingleDA[i]
 
-		if(type == PSQ_CHIRP)
+		if(type == PSQ_CHIRP || type == PSQ_RAMP)
 			// search something above/below zero from front and back
 			FindLevel/Q/R=(totalOnsetDelay, Inf) singleDA, 0
 			ASSERT(!V_Flag, "Could not find an edge")
@@ -357,7 +357,7 @@ Function/WAVE PSQ_DeterminePulseDurationFinder(WAVE statusHS, WAVE/WAVE allSingl
 			last = V_LevelX
 		endif
 
-		if(level > 0 || type == PSQ_CHIRP)
+		if(level > 0 || type == PSQ_CHIRP || type == PSQ_RAMP)
 			duration = last - first - DimDelta(singleDA, ROWS)
 		else
 			duration = first - last + DimDelta(singleDA, ROWS)
