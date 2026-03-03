@@ -148,11 +148,11 @@ static Function/WAVE MSQ_DeterminePulseDuration(string device, variable sweepNo,
 		WAVE singleDA = AFH_ExtractOneDimDataFromSweep(device, sweepWave, i, XOP_CHANNEL_TYPE_DAC, config = config)
 		level = WaveMin(singleDA, totalOnsetDelay, Inf) + GetMachineEpsilon(WaveType(singleDA))
 
-		FindLevel/Q/R=(totalOnsetDelay, Inf)/EDGE=1 singleDA, level
+		FindLevel/Q/R=(totalOnsetDelay, Inf)/EDGE=(FINDLEVEL_EDGE_INCREASING) singleDA, level
 		ASSERT(!V_Flag, "Could not find a rising edge")
 		first = V_LevelX
 
-		FindLevel/Q/R=(totalOnsetDelay, Inf)/EDGE=2 singleDA, level
+		FindLevel/Q/R=(totalOnsetDelay, Inf)/EDGE=(FINDLEVEL_EDGE_DECREASING) singleDA, level
 		ASSERT(!V_Flag, "Could not find a falling edge")
 		last = V_LevelX
 
@@ -400,7 +400,7 @@ static Function/WAVE MSQ_SearchForSpikes(string device, variable type, WAVE swee
 			endif
 		elseif(numberOfSpikes > 1)
 			Make/D/FREE/N=0 crossings
-			FindLevels/Q/R=(first, last)/N=(numberOfSpikes)/DEST=crossings/EDGE=1 singleAD, level
+			FindLevels/Q/R=(first, last)/N=(numberOfSpikes)/DEST=crossings/EDGE=(FINDLEVEL_EDGE_INCREASING) singleAD, level
 			spikeDetection[headstage] = !V_flag
 
 			if(!ParamIsDefault(spikePositions))
