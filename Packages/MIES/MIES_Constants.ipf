@@ -2147,6 +2147,10 @@ StrConstant SF_META_DONOTPLOT          = "/DoNotPlot"        // number, boolean,
 StrConstant SF_META_WINDOW_HOOK        = "/WindowHook"       // string
 StrConstant SF_META_FORMULA            = "/Formula"          // string
 StrConstant SF_META_PLOT               = "/Plot"             // number, boolean, defaults to false (0)
+StrConstant SF_META_ERRORBARYPLUS      = "/ErrorYPlus"       // numeric wave
+StrConstant SF_META_ERRORBARYMINUS     = "/ErrorYMinus"      // numeric wave
+StrConstant SF_META_ERRORBARXPLUS      = "/ErrorXPlus"       // numeric wave
+StrConstant SF_META_ERRORBARXMINUS     = "/ErrorXMinus"      // numeric wave
 
 /// A color group allows to have matching colors for sweep data with the same channel type/number and sweep.
 /// It is applied before the matching headstage/average colors in #SF_GetTraceColor().
@@ -2442,11 +2446,6 @@ Constant PSX_DECONV_FILTER_DEF_ORDER = 4
 
 StrConstant PSX_JWN_COMBO_KEYS_NAME = "ComboKeys"
 
-StrConstant SF_OP_MERGE   = "merge"
-StrConstant SF_OP_FIT     = "fit"
-StrConstant SF_OP_FITLINE = "fitline"
-StrConstant SF_OP_DATASET = "dataset"
-
 StrConstant SWEEP_NOTE_KEY_ORIGCREATIONTIME_UTC = "OriginalCreationTimeInUTC"
 
 StrConstant DF_NAME_FREE = "freeroot"
@@ -2552,6 +2551,10 @@ StrConstant SF_OP_TPINST              = "tpinst"
 StrConstant SF_OP_TPBASE              = "tpbase"
 StrConstant SF_OP_TPFIT               = "tpfit"
 StrConstant SF_OP_EXTRACT             = "extract"
+StrConstant SF_OP_MERGE               = "merge"
+StrConstant SF_OP_FIT                 = "fit"
+StrConstant SF_OP_FITLINE             = "fitline"
+StrConstant SF_OP_DATASET             = "dataset"
 
 #ifdef AUTOMATED_TESTING
 StrConstant SF_OP_TESTOP = "testop"
@@ -2613,4 +2616,11 @@ StrConstant SF_WINNAME_SUFFIX_TABLE = "table"
 ///@{
 Constant SF_DISPLAYTYPE_GRAPH = 0
 Constant SF_DISPLAYTYPE_TABLE = 1
+///@}
+
+/// @name Maximum number of colors for traces defined
+///
+/// @anchor TraceColorMax
+///@{
+Constant TRACECOLORMAX = 21
 ///@}

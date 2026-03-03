@@ -395,3 +395,17 @@ static Function TestCreatePath()
 
 	JSON_Release(jsonID)
 End
+
+static Function TestGetKeys()
+
+	Make/FREE wv
+
+	JWN_SetNumberInWaveNote(wv, "a", 1)
+	JWN_SetNumberInWaveNote(wv, "b", 1)
+
+	WAVE/Z/T keys = JWN_GetKeys(wv, "")
+	CHECK_EQUAL_TEXTWAVES(keys, {"a", "b"})
+
+	WAVE/Z/T keys = JWN_GetKeys(wv, "I_DONT_EXIST")
+	CHECK_WAVE(keys, NULL_WAVE)
+End

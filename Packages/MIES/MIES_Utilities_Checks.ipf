@@ -526,3 +526,39 @@ Function ListHasOnlyOneUniqueEntry(string list, [string sep])
 
 	return 1
 End
+
+static Function [WAVE/T fitProps, variable row] GetIntegratedFitFunctionRow(string fitFuncName)
+
+	variable col
+
+	ASSERT(!IsEmpty(fitFuncName), "Expected non-empty fit func name")
+
+	WAVE/T fitProps = GetSFIgorFitProperties()
+
+	col = FindDimLabel(fitProps, COLS, "FITFUNC")
+	ASSERT(col >= 0, "Column not found")
+	FindValue/Z/TEXT=(fitFuncName)/TXOP=4/RMD=[][col] fitProps
+
+	return [fitProps, V_row]
+End
+
+/// @brief Returns 1 if the given fitFuncName is an Igor integrated fit function, 0 otherwise
+Function IsIntegratedFitFunction(string fitFuncName)
+
+	variable index
+
+	[WAVE/T fitProps, index] = GetIntegratedFitFunctionRow(fitFuncName)
+
+	return index >= 0
+End
+
+/// @brief Returns the number of coefficients required for an integrated fit function
+Function GetIntegratedFitFunctionCoefficientNumber(string fitFuncName)
+
+	variable index
+
+	[WAVE/T fitProps, index] = GetIntegratedFitFunctionRow(fitFuncName)
+	ASSERT(index >= 0, "Given fitFuncName is not an integrated Igor fit function: " + fitFuncName)
+
+	return str2num(fitProps[index][%NUMCOEFS])
+End
