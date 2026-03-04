@@ -19,8 +19,6 @@ End
 
 static Function GlobalPreAcq(string device)
 
-	variable ret
-
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = 70)
 
