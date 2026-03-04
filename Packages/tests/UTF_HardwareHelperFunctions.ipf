@@ -1421,7 +1421,9 @@ End
 /// panel is created, and before acquisition, preAcq aka before the Start DAQ/TP
 /// button is pressed. The global functions, which are still per test suite,
 /// must be called `GlobalPreAcq`/`GlobalPreInit` and the per test case ones
-/// `${testcase}_PreAcq`/`${testcase}_PreInit`. They must all be static.
+/// `${testcase}_PreAcq`/`${testcase}_PreInit`. They must all be static. The
+/// global functions are called *before* the per test case functions. This
+/// allows to override the global ones.
 Function AcquireData_NG(STRUCT DAQSettings &s, string device)
 
 	string ctrl
@@ -1437,8 +1439,8 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string device)
 	KillOrMoveToTrash(wv = GetTrackActiveSetCount())
 	KillOrMoveToTrash(wv = TrackAnalysisFunctionCalls())
 
-	s.preInitFunc(device)
 	s.globalPreInitFunc(device)
+	s.preInitFunc(device)
 
 	CreateLockedDAEphys(device)
 
@@ -1612,8 +1614,8 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string device)
 		PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = s.TBP)
 	endif
 
-	s.preAcquireFunc(device)
 	s.globalPreAcquireFunc(device)
+	s.preAcquireFunc(device)
 
 	if(s.DB)
 		OpenDatabrowser()
