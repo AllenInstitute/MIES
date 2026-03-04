@@ -19,6 +19,8 @@ End
 
 static Function GlobalPreAcq(string device)
 
+	AdjustAnalysisParamsForPSQ(device, "Ramp_DA_0")
+
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = 70)
 
@@ -27,7 +29,6 @@ End
 
 static Function GlobalPreInit(string device)
 
-	AdjustAnalysisParamsForPSQ(device, "Ramp_DA_0")
 	PrepareForPublishTest()
 End
 
