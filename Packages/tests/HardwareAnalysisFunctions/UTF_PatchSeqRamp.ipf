@@ -9,17 +9,38 @@ static Constant SPIKE_POSITION_MS = 10000
 // Maximum time we accept it
 static Constant SPIKE_POSITION_TEST_DELAY_MS = 10500
 
-static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device)
+static Function/WAVE PossibleRampStimsets()
 
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                                            + \
-	                             "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:IC:_ST:Ramp_DA_0:")
+	Make/FREE/T stimsets = {"Combined_DA_0", "Ramp_DA_0"}
+
+	SetDimensionLabelsFromWaveContents(stimsets)
+
+	return stimsets
+End
+
+static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device, string setName)
+
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                                                  + \
+	                             "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:IC:_ST:" + setName + ":")
 
 	return [s]
 End
 
+static Function/S PS_GetStimsetName(string device)
+
+	WAVE/T setNames = DAG_GetChannelTextual(device, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	REQUIRE_WAVE(setNames, TEXT_WAVE)
+
+	// DA0 from above
+	return setNames[0]
+End
+
 static Function GlobalPreAcq(string device)
 
-	AdjustAnalysisParamsForPSQ(device, "Ramp_DA_0")
+	string stimset
+
+	stimset = PS_GetStimsetName(device)
+	AdjustAnalysisParamsForPSQ(device, stimset)
 
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = 70)
@@ -180,16 +201,25 @@ End
 
 static Function PS_RA1_preAcq(string device)
 
+	string stimset
+
 	Make/FREE asyncChannels = {2, 3}
-	AFH_AddAnalysisParameter("Ramp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	stimset = PS_GetStimsetName(device)
+	AFH_AddAnalysisParameter(stimset, "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
-static Function PS_RA1([string device])
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s1:PatchSeqTestRamp#PossibleRampStimsets
+static Function PS_RA1([STRUCT IUTF_mData &m])
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(device)
+	string device, setname
+	device  = m.s0
+	setname = m.s1
+
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(device, setname)
 	AcquireData_NG(s, device)
 
 	WAVE wv = PSQ_CreateOverrideResults(device, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
@@ -199,8 +229,11 @@ static Function PS_RA1([string device])
 	wv[][][2] = 0
 End
 
-static Function PS_RA1_REENTRY([string device])
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s1:PatchSeqTestRamp#PossibleRampStimsets
+static Function PS_RA1_REENTRY([STRUCT IUTF_mData &m])
 
+	string device = m.s0
 	variable sweepNo, i, numEntries, DAScale, onsetDelay
 
 	sweepNo    = 1
@@ -261,16 +294,26 @@ End
 
 static Function PS_RA2_preAcq(string device)
 
+	string stimset
+
 	Make/FREE asyncChannels = {2, 3}
-	AFH_AddAnalysisParameter("Ramp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	stimset = PS_GetStimsetName(device)
+	AFH_AddAnalysisParameter(stimset, "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
-static Function PS_RA2([string device])
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s1:PatchSeqTestRamp#PossibleRampStimsets
+static Function PS_RA2([STRUCT IUTF_mData &m])
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(device)
+	string device, setname
+
+	device  = m.s0
+	setname = m.s1
+
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(device, setname)
 	AcquireData_NG(s, device)
 
 	WAVE wv = PSQ_CreateOverrideResults(device, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
@@ -280,7 +323,11 @@ static Function PS_RA2([string device])
 	wv[][][2]     = 1
 End
 
-static Function PS_RA2_REENTRY([string device])
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s1:PatchSeqTestRamp#PossibleRampStimsets
+static Function PS_RA2_REENTRY([STRUCT IUTF_mData &m])
+
+	string device = m.s0
 
 	variable sweepNo, i, numEntries
 
@@ -325,16 +372,25 @@ End
 
 static Function PS_RA2a_preAcq(string device)
 
+	string stimset
+
 	Make/FREE asyncChannels = {2, 3}
-	AFH_AddAnalysisParameter("Ramp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	stimset = PS_GetStimsetName(device)
+	AFH_AddAnalysisParameter(stimset, "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
-static Function PS_RA2a([string device])
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s1:PatchSeqTestRamp#PossibleRampStimsets
+static Function PS_RA2a([STRUCT IUTF_mData &m])
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(device)
+	string device, setname
+	device  = m.s0
+	setname = m.s1
+
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(device, setname)
 	AcquireData_NG(s, device)
 
 	WAVE wv = PSQ_CreateOverrideResults(device, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
@@ -350,8 +406,11 @@ static Function PS_RA2a([string device])
 	wv[][][2]  = 1
 End
 
-static Function PS_RA2a_REENTRY([string device])
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s1:PatchSeqTestRamp#PossibleRampStimsets
+static Function PS_RA2a_REENTRY([STRUCT IUTF_mData &m])
 
+	string device = m.s0
 	variable sweepNo, i, numEntries, chunkStart, chunkEnd
 
 	sweepNo = 1
@@ -414,18 +473,27 @@ End
 
 static Function PS_RA2b_preAcq(string device)
 
-	Make/FREE asyncChannels = {2, 3}
-	AFH_AddAnalysisParameter("Ramp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+	string stimset
 
-	AFH_AddAnalysisParameter("Ramp_DA_0", "NumberOfPassingSweeps", var = 1)
+	Make/FREE asyncChannels = {2, 3}
+
+	stimset = PS_GetStimsetName(device)
+
+	AFH_AddAnalysisParameter(stimset, "AsyncQCChannels", wv = asyncChannels)
+	AFH_AddAnalysisParameter(stimset, "NumberOfPassingSweeps", var = 1)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
-static Function PS_RA2b([string device])
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s1:PatchSeqTestRamp#PossibleRampStimsets
+static Function PS_RA2b([STRUCT IUTF_mData &m])
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(device)
+	string device, setname
+	device  = m.s0
+	setname = m.s1
+
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(device, setname)
 	AcquireData_NG(s, device)
 
 	WAVE wv = PSQ_CreateOverrideResults(device, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
@@ -435,8 +503,11 @@ static Function PS_RA2b([string device])
 	wv[][][2]     = 1
 End
 
-static Function PS_RA2b_REENTRY([string device])
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s1:PatchSeqTestRamp#PossibleRampStimsets
+static Function PS_RA2b_REENTRY([STRUCT IUTF_mData &m])
 
+	string device = m.s0
 	variable sweepNo, i, numEntries
 
 	sweepNo = 0
@@ -480,16 +551,26 @@ End
 
 static Function PS_RA3_preAcq(string device)
 
+	string stimset
+
 	Make/FREE asyncChannels = {2, 3}
-	AFH_AddAnalysisParameter("Ramp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	stimset = PS_GetStimsetName(device)
+
+	AFH_AddAnalysisParameter(stimset, "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
-static Function PS_RA3([string device])
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s1:PatchSeqTestRamp#PossibleRampStimsets
+static Function PS_RA3([STRUCT IUTF_mData &m])
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(device)
+	string device, setname
+	device  = m.s0
+	setname = m.s1
+
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(device, setname)
 	AcquireData_NG(s, device)
 
 	WAVE wv = PSQ_CreateOverrideResults(device, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
@@ -500,7 +581,11 @@ static Function PS_RA3([string device])
 	wv[][][2]     = 1
 End
 
-static Function PS_RA3_REENTRY([string device])
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s1:PatchSeqTestRamp#PossibleRampStimsets
+static Function PS_RA3_REENTRY([STRUCT IUTF_mData &m])
+
+	string device = m.s0
 
 	variable sweepNo, i, numEntries
 	variable chunkStart, chunkEnd
@@ -560,16 +645,26 @@ End
 
 static Function PS_RA4_preAcq(string device)
 
+	string stimset
+
 	Make/FREE asyncChannels = {2, 3}
-	AFH_AddAnalysisParameter("Ramp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	stimset = PS_GetStimsetName(device)
+
+	AFH_AddAnalysisParameter(stimset, "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
-static Function PS_RA4([string device])
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s1:PatchSeqTestRamp#PossibleRampStimsets
+static Function PS_RA4([STRUCT IUTF_mData &m])
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(device)
+	string device, setname
+	device  = m.s0
+	setname = m.s1
+
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(device, setname)
 	AcquireData_NG(s, device)
 
 	WAVE wv = PSQ_CreateOverrideResults(device, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
@@ -580,7 +675,11 @@ static Function PS_RA4([string device])
 	wv[][][2]     = 1
 End
 
-static Function PS_RA4_REENTRY([string device])
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s1:PatchSeqTestRamp#PossibleRampStimsets
+static Function PS_RA4_REENTRY([STRUCT IUTF_mData &m])
+
+	string device = m.s0
 
 	variable sweepNo, i, numEntries
 	variable chunkStart, chunkEnd
@@ -636,16 +735,26 @@ End
 
 static Function PS_RA5_preAcq(string device)
 
+	string stimset
+
 	Make/FREE asyncChannels = {2, 3}
-	AFH_AddAnalysisParameter("Ramp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	stimset = PS_GetStimsetName(device)
+
+	AFH_AddAnalysisParameter(stimset, "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
-static Function PS_RA5([string device])
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s1:PatchSeqTestRamp#PossibleRampStimsets
+static Function PS_RA5([STRUCT IUTF_mData &m])
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(device)
+	string device, setname
+	device  = m.s0
+	setname = m.s1
+
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(device, setname)
 	AcquireData_NG(s, device)
 
 	WAVE wv = PSQ_CreateOverrideResults(device, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
@@ -656,7 +765,11 @@ static Function PS_RA5([string device])
 	wv[][][2]     = 1
 End
 
-static Function PS_RA5_REENTRY([string device])
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s1:PatchSeqTestRamp#PossibleRampStimsets
+static Function PS_RA5_REENTRY([STRUCT IUTF_mData &m])
+
+	string device = m.s0
 
 	variable sweepNo, i, numEntries
 	variable chunkStart, chunkEnd
@@ -713,16 +826,26 @@ End
 
 static Function PS_RA6_preAcq(string device)
 
+	string stimset
+
 	Make/FREE asyncChannels = {2, 3}
-	AFH_AddAnalysisParameter("Ramp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	stimset = PS_GetStimsetName(device)
+
+	AFH_AddAnalysisParameter(stimset, "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
-static Function PS_RA6([string device])
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s1:PatchSeqTestRamp#PossibleRampStimsets
+static Function PS_RA6([STRUCT IUTF_mData &m])
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(device)
+	string device, setname
+	device  = m.s0
+	setname = m.s1
+
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(device, setname)
 	AcquireData_NG(s, device)
 
 	WAVE wv = PSQ_CreateOverrideResults(device, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
@@ -746,8 +869,11 @@ static Function PS_RA6([string device])
 	wv[][2, 3][2] = 1
 End
 
-static Function PS_RA6_REENTRY([string device])
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s1:PatchSeqTestRamp#PossibleRampStimsets
+static Function PS_RA6_REENTRY([STRUCT IUTF_mData &m])
 
+	string device = m.s0
 	variable sweepNo, i, numEntries
 	variable chunkStart, chunkEnd
 
@@ -808,20 +934,29 @@ End
 
 static Function PS_RA7_preAcq(string device)
 
-	AFH_AddAnalysisParameter("Ramp_DA_0", "SamplingFrequency", var = 10)
+	string stimset
 
 	Make/FREE asyncChannels = {2, 3}
-	AFH_AddAnalysisParameter("Ramp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	stimset = PS_GetStimsetName(device)
+
+	AFH_AddAnalysisParameter(stimset, "AsyncQCChannels", wv = asyncChannels)
+	AFH_AddAnalysisParameter(stimset, "SamplingFrequency", var = 10)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // Same as PS_RA2 but with failing sampling interval check
 //
-// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
-static Function PS_RA7([string device])
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s1:PatchSeqTestRamp#PossibleRampStimsets
+static Function PS_RA7([STRUCT IUTF_mData &m])
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(device)
+	string device, setname
+	device  = m.s0
+	setname = m.s1
+
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(device, setname)
 	AcquireData_NG(s, device)
 
 	WAVE wv = PSQ_CreateOverrideResults(device, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
@@ -831,7 +966,11 @@ static Function PS_RA7([string device])
 	wv[][][2]     = 1
 End
 
-static Function PS_RA7_REENTRY([string device])
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s1:PatchSeqTestRamp#PossibleRampStimsets
+static Function PS_RA7_REENTRY([STRUCT IUTF_mData &m])
+
+	string device = m.s0
 
 	variable i, sweepNo, numEntries, onsetDelay, DAScale
 
