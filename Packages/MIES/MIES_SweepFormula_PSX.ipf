@@ -2939,6 +2939,7 @@ static Function [WAVE/T keys, WAVE/T values] PSX_GetTraceSelectionWaves(string w
 	if(respectBlock && !cmpstr(traceType, PSX_TUD_TYPE_SINGLE))
 		specialEventPanel = PSX_GetSpecialPanel(win)
 		blockIndexAsStr   = GetPopupMenuString(specialEventPanel, "popup_block")
+		ASSERT(!IsEmpty(blockIndexAsStr), "Can not handle empty block index string")
 
 		numEntries = DimSize(keys, ROWS)
 		Redimension/N=(numEntries + 1) keys, values
@@ -3061,6 +3062,7 @@ static Function PSX_WriteBlockNumberAsUserData(string win, variable numBlocks)
 
 	// check to see if a now invalid block is selected
 	selectedBlock = str2num(GetPopupMenuString(specialEventPanel, "popup_block"))
+	ASSERT(IsInteger(selectedBlock) && selectedBlock >= 0, "Invalid block index")
 	WAVE availableBlocks = ListToNumericWave(PSX_GetAllEventBlockNumbers(win), ";")
 
 	lastValidBlock = WaveMax(availableBlocks)
