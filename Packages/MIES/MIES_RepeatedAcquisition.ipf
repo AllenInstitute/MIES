@@ -113,7 +113,7 @@ static Function RA_HandleITI(string device)
 			aborted = RA_WaitUntiIITIDone(device, ITI)
 
 			if(aborted)
-				RA_FinishAcquisition(device, forcedStop = 1)
+				RA_FinishAcquisition(device, stopReason = DQ_STOP_REASON_ESCAPE_KEY, forcedStop = 1)
 			else
 				ExecuteListOfFunctions(funcList)
 			endif
@@ -133,7 +133,7 @@ static Function RA_HandleITI(string device)
 		TP_Teardown(device)
 
 		if(aborted)
-			RA_FinishAcquisition(device, forcedStop = 1)
+			RA_FinishAcquisition(device, stopReason = DQ_STOP_REASON_ESCAPE_KEY, forcedStop = 1)
 		else
 			ExecuteListOfFunctions(funcList)
 		endif
@@ -226,16 +226,21 @@ Function RA_Counter(string device)
 			endif
 		catch
 			ClearRTError()
-			RA_FinishAcquisition(device, forcedStop = 1)
+			RA_FinishAcquisition(device, stopReason = DQ_STOP_REASON_CONFIG_FAILED, forcedStop = 1)
 		endtry
 	else
 		RA_FinishAcquisition(device)
 	endif
 End
 
-static Function RA_FinishAcquisition(string device, [variable forcedStop])
+static Function RA_FinishAcquisition(string device, [variable stopReason, variable forcedStop])
 
 	forcedStop = ParamIsDefault(forcedStop) ? 0 : !!forcedStop
+
+	if(ParamIsDefault(stopReason))
+		ASSERT(!forcedStop, "Need to supply a stop reason for forced stop")
+		stopReason = DQ_STOP_REASON_FINISHED
+	endif
 
 	DQ_StopDAQDeviceTimer(device)
 
@@ -243,7 +248,7 @@ static Function RA_FinishAcquisition(string device, [variable forcedStop])
 	RA_PerfFinish(device)
 #endif // PERFING_RA
 
-	DAP_OneTimeCallAfterDAQ(device, DQ_STOP_REASON_FINISHED, forcedStop = forcedStop)
+	DAP_OneTimeCallAfterDAQ(device, stopReason, forcedStop = forcedStop)
 End
 
 static Function RA_BckgTPwithCallToRACounter(string device)
@@ -314,7 +319,7 @@ Function RA_CounterMD(string device)
 		aborted = DQM_StartDAQMultiDevice(device, initialSetupReq = 0)
 
 		if(aborted)
-			RA_FinishAcquisition(device, forcedStop = 1)
+			RA_FinishAcquisition(device, stopReason = DQ_STOP_REASON_CONFIG_FAILED, forcedStop = 1)
 		endif
 	else
 		RA_FinishAcquisition(device)
