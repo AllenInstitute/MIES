@@ -2544,3 +2544,23 @@ static Function GetDataLimitsCheckWorks_REENTRY([string str])
 	DAScaleLimit = DAP_GetDAScaleMax(str, headstage, stimset, 0)
 	CHECK(IsNaN(DAScaleLimit))
 End
+
+// UTF_TD_GENERATOR v0:DataGenerators#SingleMultiDeviceDAQ
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGenerator
+static Function AnalysisFunctionNotCalledForAbortedIndexing([STRUCT IUTF_MDATA &md])
+
+	ST_SetStimsetParameter("AnaFuncIdx2_DA_0", "Amplitude", epochIndex = 0, var = 10e3)
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD" + num2str(md.v0) + "_RA1_I1_L0_BKG1"                         + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncIdx1_DA_0:_IST:AnaFuncIdx2_DA_0:" + \
+	                             "_AF:FailPostDAQ:_IAF:FailPostDAQ:")
+	AcquireData_NG(s, md.s0)
+End
+
+// UTF_TD_GENERATOR v0:DataGenerators#SingleMultiDeviceDAQ
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGenerator
+static Function AnalysisFunctionNotCalledForAbortedIndexing_REENTRY([STRUCT IUTF_MDATA &md])
+
+	CheckDAQStopReason(md.s0, DQ_STOP_REASON_CONFIG_FAILED)
+End
