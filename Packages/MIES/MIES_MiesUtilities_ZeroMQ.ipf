@@ -57,7 +57,7 @@ Function StartZeroMQSockets([variable forceRestart])
 	for(i = 0; i < ZEROMQ_NUM_BIND_TRIALS; i += 1)
 		port = ZEROMQ_BIND_REP_PORT + i
 		AssertOnAndClearRTError()
-		zeromq_server_bind("tcp://127.0.0.1:" + num2str(port)); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
+		zeromq_server_bind(ZEROMQ_PROT_AND_NETWORK + num2str(port)); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
 
 		if(!err)
 			DEBUGPRINT("Successfully listening with server on port:", var = port)
@@ -71,7 +71,7 @@ Function StartZeroMQSockets([variable forceRestart])
 	for(i = 0; i < ZEROMQ_NUM_BIND_TRIALS; i += 1)
 		port = ZEROMQ_BIND_PUB_PORT + i
 		AssertOnAndClearRTError()
-		zeromq_pub_bind("tcp://127.0.0.1:" + num2str(port)); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
+		zeromq_pub_bind(ZEROMQ_PROT_AND_NETWORK + num2str(port)); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
 
 		if(!err)
 			DEBUGPRINT("Successfully listening with publisher on port:", var = port)
