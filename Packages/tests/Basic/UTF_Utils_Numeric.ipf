@@ -148,7 +148,7 @@ static Function TestIndexAfterDecimation([STRUCT IUTF_mData &md])
 
 	target[] = source[limit(round(p * decimationFactor), 0, srcLength - 1)]
 
-	FindLevel/Q/EDGE=1 target, 0.5
+	FindLevel/Q/EDGE=(FINDLEVEL_EDGE_INCREASING) target, 0.5
 	edgeLeft = trunc(V_LevelX)
 
 	edgeLeftCalculated = IndexAfterDecimation(srcOffset, decimationFactor)

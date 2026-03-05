@@ -359,7 +359,7 @@ Function/WAVE OOD_OffsetStimSetColAndCutoff(WAVE stimSet, variable column, varia
 	Note acc, note(stimSet)
 
 	// remove empty space beyond `postFeatureTime` at the end
-	FindLevel/P/EDGE=2/Q/R=[DimSize(acc, ROWS) - 1, 0] acc, level
+	FindLevel/P/EDGE=(FINDLEVEL_EDGE_DECREASING)/Q/R=[DimSize(acc, ROWS) - 1, 0] acc, level
 
 	if(!V_flag && acc[length - 1] < level)
 		cutoff = round(V_levelX) + postFeaturePoints
