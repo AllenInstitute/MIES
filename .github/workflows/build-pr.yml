@@ -84,7 +84,7 @@ jobs:
       matrix:
         source: [ git, installer ]
         hardware: [ false, true ]
-        version: [9]
+        version: [9, 10]
         exclude:
           # the git source is always checked with hardware support
           - source: git
@@ -111,6 +111,7 @@ jobs:
       installer_flags: "-s git"
       artifact_name: Compilation-Each-Commit-assets
       timeout_minutes: 180
+      major_igorpro_version: 9
 
   Documentation:
     name: 👷 Documentation
@@ -142,7 +143,7 @@ jobs:
       - CompilationTest
     strategy:
       matrix:
-        version: [9]
+        version: [9, 10]
         name: [Basic, PAPlot, HistoricData]
         include:
           - experiment: Packages/tests/Basic/Basic.pxp
@@ -150,6 +151,11 @@ jobs:
           - experiment: Packages/tests/PAPlot/PAPlot.pxp
             name: PAPlot
           - experiment: Packages/tests/HistoricData/HistoricData.pxp
+            name: HistoricData
+        exclude:
+          - version: 10
+            name: PAPlot
+          - version: 10
             name: HistoricData
     uses: ./.github/workflows/test-igor-workflow.yml
     with:
@@ -163,13 +169,15 @@ jobs:
       major_igorpro_version: ${{ matrix.version }}
 
   TestNI:
-    name: 🧪 Test NI ${{ matrix.name }}
+    name: 🧪 Test NI ${{ matrix.name }} v${{ matrix.version }}
     needs:
       - BuildInstaller
       - CompilationTest
       - TestWithoutHardware
     strategy:
       matrix:
+        version: [10]
+        name: [HardwareBasic, HardwareAnalysisFunctions]
         include:
           - experiment: Packages/tests/HardwareBasic/HardwareBasic-NI.pxp
             name: HardwareBasic
@@ -185,15 +193,18 @@ jobs:
       expensive_checks: "1"
       instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
       timeout_minutes: 180
+      major_igorpro_version: ${{ matrix.version }}
 
   TestITC18:
-    name: 🧪 Test ITC18-USB ${{ matrix.name }}
+    name: 🧪 Test ITC18-USB ${{ matrix.name }} v${{ matrix.version }}
     needs:
       - BuildInstaller
       - CompilationTest
       - TestWithoutHardware
     strategy:
       matrix:
+        version: [9]
+        name: [HardwareBasic, HardwareAnalysisFunctions]
         include:
           - experiment: Packages/tests/HardwareBasic/HardwareBasic.pxp
             name: HardwareBasic
@@ -209,15 +220,18 @@ jobs:
       expensive_checks: "1"
       instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
       timeout_minutes: 180
+      major_igorpro_version: ${{ matrix.version }}
 
   TestITC1600:
-    name: 🧪 Test ITC1600 ${{ matrix.name }}
+    name: 🧪 Test ITC1600 ${{ matrix.name }} v${{ matrix.version }}
     needs:
       - BuildInstaller
       - CompilationTest
       - TestWithoutHardware
     strategy:
       matrix:
+        version: [9]
+        name: [HardwareBasic, HardwareAnalysisFunctions]
         include:
           - experiment: Packages/tests/HardwareBasic/HardwareBasic-ITC1600.pxp
             name: HardwareBasic
@@ -233,6 +247,7 @@ jobs:
       expensive_checks: "1"
       instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
       timeout_minutes: 180
+      major_igorpro_version: ${{ matrix.version }}
 
   ValidateNwb:
     name: 👮🏼 Validate NWBv2

@@ -49,7 +49,7 @@ MX <https://www.wavemetrics.com/products/nidaqtools/nidaqtools.htm>`__
 package from Wavemetrics.
 
 Install version 2.2.2 of the Multiclamp Commander (64bit) from `here
-<http://mdc.custhelp.com/app/answers/detail/a_id/20059>`__.
+<https://support.moleculardevices.com/s/article/Axon-MultiClamp-700B-Commander-Download-page>`__.
 
 When using ITC hardware it is necessary to disable ASLR for Igor64.exe.
 
@@ -232,7 +232,7 @@ Windows (with hardware support)
   -  Get and install the `NIDAQ Tool MX <https://www.wavemetrics.com/products/nidaqtools/nidaqtools.htm>`__
      package from Wavemetrics.
 
--  Install version 2.2.2 of the Multiclamp Commander (64bit) from `here <http://mdc.custhelp.com/app/answers/detail/a_id/20059>`__.
+-  Install version 2.2.2 of the Multiclamp Commander (64bit) from `here <https://support.moleculardevices.com/s/article/Axon-MultiClamp-700B-Commander-Download-page>`__.
 -  Start Igor Pro
 
 Windows (without hardware)

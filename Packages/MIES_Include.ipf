@@ -10,8 +10,8 @@
 /// - Update the revision numbers for IP9/10 below in the expression involving
 ///   `BUILD`, `CI_IGOR9_REVISION`, `CI_IGOR10_REVISION` in .github/workflows/test-igor-workflow.yml
 ///   and .github/workflows/test-igor-rebase-exec-workflow.yml
-/// - Upload the nightly zip packages to the FTP (Thomas' job). Don't delete the
-///   old zip packages, we still need them.
+/// - Upload the nightly zip/installer/dmg to the FTP (Thomas' job). Don't delete the
+///   old packages, we still need them.
 /// - Update the below URLs
 /// - Update Igor Pro on the CI boxes (Thomas' job).
 /// - Remove old workarounds marked with `@todo`

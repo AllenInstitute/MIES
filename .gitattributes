@@ -46,6 +46,9 @@ XOPs-MacOSX-64bit       export-ignore
 *.exe binary
 *.zip binary
 *.pdb binary
+*.dll binary
+*.lib binary
+*.bin binary
 
 *.ipf whitespace=tabwidth=4
 *.ibw binary
