@@ -281,7 +281,7 @@ End
 
 Function RA_CounterMD(string device)
 
-	variable numTotalSweeps
+	variable numTotalSweeps, aborted
 	NVAR count          = $GetCount(device)
 	NVAR activeSetCount = $GetActiveSetCount(device)
 	variable i, runMode
@@ -311,7 +311,11 @@ Function RA_CounterMD(string device)
 	numTotalSweeps = RA_GetTotalNumberOfSweeps(device)
 
 	if(count < numTotalSweeps)
-		DQM_StartDAQMultiDevice(device, initialSetupReq = 0)
+		aborted = DQM_StartDAQMultiDevice(device, initialSetupReq = 0)
+
+		if(aborted)
+			RA_FinishAcquisition(device, forcedStop = 1)
+		endif
 	else
 		RA_FinishAcquisition(device)
 	endif
