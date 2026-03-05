@@ -113,7 +113,7 @@ static Function RA_HandleITI(string device)
 			aborted = RA_WaitUntiIITIDone(device, ITI)
 
 			if(aborted)
-				RA_FinishAcquisition(device)
+				RA_FinishAcquisition(device, forcedStop = 1)
 			else
 				ExecuteListOfFunctions(funcList)
 			endif
@@ -133,7 +133,7 @@ static Function RA_HandleITI(string device)
 		TP_Teardown(device)
 
 		if(aborted)
-			RA_FinishAcquisition(device)
+			RA_FinishAcquisition(device, forcedStop = 1)
 		else
 			ExecuteListOfFunctions(funcList)
 		endif
@@ -226,14 +226,16 @@ Function RA_Counter(string device)
 			endif
 		catch
 			ClearRTError()
-			RA_FinishAcquisition(device)
+			RA_FinishAcquisition(device, forcedStop = 1)
 		endtry
 	else
 		RA_FinishAcquisition(device)
 	endif
 End
 
-static Function RA_FinishAcquisition(string device)
+static Function RA_FinishAcquisition(string device, [variable forcedStop])
+
+	forcedStop = ParamIsDefault(forcedStop) ? 0 : !!forcedStop
 
 	DQ_StopDAQDeviceTimer(device)
 
@@ -241,7 +243,7 @@ static Function RA_FinishAcquisition(string device)
 	RA_PerfFinish(device)
 #endif // PERFING_RA
 
-	DAP_OneTimeCallAfterDAQ(device, DQ_STOP_REASON_FINISHED)
+	DAP_OneTimeCallAfterDAQ(device, DQ_STOP_REASON_FINISHED, forcedStop = forcedStop)
 End
 
 static Function RA_BckgTPwithCallToRACounter(string device)
