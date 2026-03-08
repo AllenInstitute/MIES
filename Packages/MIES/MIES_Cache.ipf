@@ -111,7 +111,7 @@ Function/S CA_KeyRecreatedEpochs(WAVE numericalValues, WAVE/T textualValues, DFR
 	crc = StringCRC(crc, num2istr(sweepNo))
 	crc = StringCRC(crc, num2istr(SWEEP_EPOCH_VERSION))
 
-	return num2istr(crc) + "Version 1"
+	return "Recreated epochs:" + num2istr(crc) + ":Version 1"
 End
 
 /// @brief Cache key generator for oodDAQ offset waves
@@ -130,7 +130,7 @@ Function/S CA_DistDAQCreateCacheKey(STRUCT OOdDAQParams &params)
 	crc = StringCRC(crc, num2str(params.preFeaturePoints))
 	crc = StringCRC(crc, num2str(params.postFeaturePoints))
 
-	return num2istr(crc) + "Version 5"
+	return "oodDAQ:" + num2istr(crc) + ":Version 5"
 End
 
 /// @brief Cache key generator for @c FindLevel in PA_CalculatePulseTimes()
@@ -144,7 +144,7 @@ Function/S CA_PulseTimes(WAVE wv, string fullPath, variable channelNumber, varia
 	crc = StringCRC(crc, num2istr(channelNumber))
 	crc = StringCRC(crc, num2str(totalOnsetDelay))
 
-	return num2istr(crc) + "Version 2"
+	return "Pulse Times:" + num2istr(crc) + ":Version 2"
 End
 
 /// @brief Cache key generator for PA_SmoothDeconv()
@@ -161,7 +161,7 @@ Function/S CA_SmoothDeconv(WAVE wv, variable smoothingFactor, variable range_pnt
 	crc = StringCRC(crc, num2istr(smoothingFactor))
 	crc = StringCRC(crc, num2istr(range_pnts))
 
-	return num2istr(crc) + "Version 1"
+	return "Smooth Deconv:" + num2istr(crc) + ":Version 1"
 End
 
 /// @brief Cache key generator for PA_Deconvolution()
@@ -176,7 +176,7 @@ Function/S CA_Deconv(WAVE wv, variable tau)
 	crc = StringCRC(crc, num2str(DimDelta(wv, ROWS)))
 	crc = StringCRC(crc, num2str(tau))
 
-	return num2istr(crc) + "Version 1"
+	return "Deconv:" + num2istr(crc) + ":Version 1"
 End
 
 /// @brief Cache key generator for GetActiveChannels
@@ -191,7 +191,7 @@ threadsafe Function/S CA_GenKeyGetActiveChannels(WAVE numericalValues, WAVE text
 	crc = CA_GetWaveModCRC(textualValues, crc)
 	crc = StringCRC(crc, primitiveKey)
 
-	return num2istr(crc) + version
+	return "GetActiveChannels:" + num2istr(crc) + ":" + version
 End
 
 /// @brief Cache key generator for LBN index cache
@@ -220,7 +220,7 @@ threadsafe Function/S CA_GenKeyLogbookSortedKeys(WAVE keys)
 
 	crc = CA_GetWaveModCRC(keys, 0)
 
-	return num2istr(crc) + version
+	return "LogbookSortedKeys:" + num2istr(crc) + ":" + version
 End
 
 /// @brief Cache key generator for artefact removal ranges
@@ -231,26 +231,26 @@ Function/S CA_ArtefactRemovalRangesKey(DFREF singleSweepDFR, variable sweepNo)
 	crc = StringCRC(crc, GetDataFolder(1, singleSweepDFR))
 	crc = StringCRC(crc, num2str(sweepNo))
 
-	return num2istr(crc) + "Version 1"
+	return "ArtefactRemovalRange:" + num2istr(crc) + ":Version 1"
 End
 
 /// @brief Cache key generator for averaging
 Function/S CA_AveragingKey(WAVE/WAVE waveRefs)
 
-	return CA_WaveCRCs(waveRefs, includeWaveScalingAndUnits = 1, dims = ROWS) + "Version 6"
+	return "AveragingKey:" + CA_WaveCRCs(waveRefs, includeWaveScalingAndUnits = 1, dims = ROWS) + ":Version 6"
 End
 
 /// @brief Cache key generator for averaging info from non-free waves
 Function/S CA_AveragingWaveModKey(WAVE wv)
 
-	return num2istr(CA_RecursiveWavemodCRC(wv)) + "Version 1"
+	return "AveragingWaveModKey:" + num2istr(CA_RecursiveWavemodCRC(wv)) + ":Version 1"
 End
 
 /// @brief Cache key generator for the tau range calculation
 ///        of psx events
 Function/S CA_PSXEventGoodTauRange(WAVE wv)
 
-	return num2istr(CA_RecursiveWavemodCRC(wv)) + "Version 1"
+	return "PSXEventGoodTauRange:" + num2istr(CA_RecursiveWavemodCRC(wv)) + ":Version 1"
 End
 
 /// @brief Calculated a CRC from non wave reference waves using modification data, wave modification count and wave location.
@@ -404,7 +404,7 @@ Function/S CA_SamplingIntervalKey(WAVE lut, STRUCT ActiveChannels &s)
 	crc = StringCRC(crc, num2istr(s.numTTLRack2))
 
 	ASSERT(!IsFreeWave(lut), "lut can not be a free wave")
-	return num2istr(crc) + NameOfWave(lut) + num2istr(ModDate(lut)) + "Version 1"
+	return "SamplingIntervalKey:" + num2istr(crc) + NameOfWave(lut) + num2istr(ModDate(lut)) + ":Version 1"
 End
 
 /// @brief Generic key generator for storing throw away waves used for
@@ -417,7 +417,7 @@ threadsafe Function/S CA_TemporaryWaveKey(WAVE dims)
 
 	crc = CA_WaveSizeCRC(dims)
 
-	return num2istr(crc) + "Temporary waves Version 2"
+	return "Temporary waves:" + num2istr(crc) + ":Version 2"
 End
 
 /// @brief Key generator for FindIndizes
@@ -427,7 +427,7 @@ threadsafe Function/S CA_FindIndizesKey(WAVE dims)
 
 	crc = CA_WaveSizeCRC(dims)
 
-	return num2istr(crc) + "FindIndizes Version 1"
+	return "FindIndizes:" + num2istr(crc) + ":Version 1"
 End
 
 /// @brief Calculate the cache key for the hardware device info wave
@@ -439,7 +439,7 @@ Function/S CA_HWDeviceInfoKey(string device, variable hardwareType, variable dev
 	crc = StringCrc(crc, num2str(hardwareType))
 	crc = StringCrc(crc, num2str(deviceID))
 
-	return num2istr(crc) + "HW Device Info Version 1"
+	return "HW Device Info:" + num2istr(crc) + ":Version 1"
 End
 
 /// @brief Generate a key for the DAQDataWave in TEST_PULSE_MODE
@@ -467,7 +467,7 @@ Function/S CA_HardwareDataTPKey(STRUCT HardwareDataTPInput &s)
 	crc = StringCRC(crc, num2str(s.testPulseLength))
 	crc = StringCRC(crc, num2str(s.baselineFrac))
 
-	return num2istr(crc) + "HW Datawave Testpulse Version 2"
+	return "HW Datawave Testpulse:" + num2istr(crc) + ":Version 2"
 End
 
 Function/S CA_PSXKernelOperationKey(variable riseTau, variable decayTau, variable amp, variable numPoints, variable dt, WAVE range)
@@ -481,7 +481,7 @@ Function/S CA_PSXKernelOperationKey(variable riseTau, variable decayTau, variabl
 	crc = StringCRC(crc, num2strHighPrec(dt, precision = MAX_DOUBLE_PRECISION))
 	crc = WaveCRC(crc, range)
 
-	return num2istr(crc) + "PSX Kernel Version 2"
+	return "PSX Kernel:" + num2istr(crc) + ":Version 2"
 End
 
 static Function/S CA_PSXBaseKey(string comboKey, string psxParameters)
@@ -499,17 +499,17 @@ End
 /// @param psxParameters JSON dump of the psx/psxKernel operation parameters
 Function/S CA_PSXEventsKey(string comboKey, string psxParameters)
 
-	return CA_PSXBaseKey(comboKey, psxParameters) + " Events " + ":Version 3"
+	return "PSX Events:" + CA_PSXBaseKey(comboKey, psxParameters) + ":Version 3"
 End
 
 Function/S CA_PSXOperationKey(string comboKey, string psxParameters)
 
-	return CA_PSXBaseKey(comboKey, psxParameters) + " Operation " + ":Version 3"
+	return "PSX Operation:" + CA_PSXBaseKey(comboKey, psxParameters) + ":Version 3"
 End
 
 Function/S CA_PSXAnalyzePeaks(string comboKey, string psxParameters)
 
-	return CA_PSXBaseKey(comboKey, psxParameters) + " Analyze Peaks " + ":Version 3"
+	return "Analyze Peaks:" + CA_PSXBaseKey(comboKey, psxParameters) + ":Version 3"
 End
 
 /// @brief Return the key for the igor info entries
@@ -546,7 +546,7 @@ threadsafe Function/S CA_GetLabnotebookNamesKey(WAVE/Z/T textualValues, WAVE/Z/T
 
 	ASSERT_TS(!IsEmpty(key), "key can't be empty")
 
-	return "Version 1:" + Hash(key, HASH_SHA2_256)
+	return "Labnotebook Names:" + Hash(key, HASH_SHA2_256) + ":Version 1"
 End
 
 Function/S CA_CalculateEpochsKey(WAVE numericalvalues, WAVE textualValues, variable sweepNo, variable channelType, variable channelNumber, string shortName, variable treelevel, DFREF sweepDFR)
@@ -567,7 +567,7 @@ Function/S CA_CalculateEpochsKey(WAVE numericalvalues, WAVE textualValues, varia
 		crc = StringCRC(crc, "invalid DFREF")
 	endif
 
-	return "Version 1:" + Hash(key + num2istr(crc), HASH_SHA2_256)
+	return "Epochs:" + Hash(key + num2istr(crc), HASH_SHA2_256) + ":Version 1"
 End
 
 threadsafe Function/S CA_CalculateFetchEpochsKey(WAVE numericalvalues, WAVE textualValues, variable sweepNo, variable channelNumber, variable channelType)
@@ -580,12 +580,12 @@ threadsafe Function/S CA_CalculateFetchEpochsKey(WAVE numericalvalues, WAVE text
 	crc  = StringCRC(crc, num2str(channelType))
 	crc  = StringCRC(crc, num2str(channelNumber))
 
-	return "Version 1:" + Hash(key + num2istr(crc), HASH_SHA2_256)
+	return "Fetch Epochs:" + Hash(key + num2istr(crc), HASH_SHA2_256) + ":Version 1"
 End
 
 Function/S CA_GetGoodFFTSizesKeys()
 
-	return "GetGoodFFTSizes Version 1"
+	return "GetGoodFFTSizes:Version 1"
 End
 
 ///@}
