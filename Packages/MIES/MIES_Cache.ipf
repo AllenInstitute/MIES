@@ -821,7 +821,7 @@ Function CA_OutputCacheStatistics()
 	for(i = 0; i < index; i += 1)
 		size = stats[i][%Size] / 1024 / 1024
 		size = (size == 0) ? 0 : max(1, size)
-		printf "%6d |%6d | %6d | %s  | %6d\r", i, stats[i][%Hits], stats[i][%Misses], GetISO8601TimeStamp(secondsSinceIgorEpoch = stats[i][%ModificationTimestamp], numFracSecondsDigits = 3), size
+		printf "%6g |%6g | %6g | %s  | %6g\r", i, stats[i][%Hits], stats[i][%Misses], GetISO8601TimeStamp(secondsSinceIgorEpoch = stats[i][%ModificationTimestamp], numFracSecondsDigits = 3), size
 	endfor
 
 	printf "\r"
