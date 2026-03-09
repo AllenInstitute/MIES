@@ -221,6 +221,7 @@ End
 #include "MIES_GlobalStringAndVariableAccess"
 #include "MIES_GuiPopupMenuExt"
 #include "MIES_GuiUtilities"
+#include "MIES_Hashmap"
 #include "MIES_IgorHooks"
 #include "MIES_Indexing"
 #include "MIES_InputDialog"
