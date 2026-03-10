@@ -76,7 +76,10 @@ then
   ret=1
 fi
 
-matches=$(git grep $opts "^(Window|Macro)\b" '*/MIES_*.ipf' ':^*/MIES_*_Macro.ipf' ':^*/MIES_Include.ipf')
+matches=$(git grep $opts                                                             \
+                         -e "^(Window|Macro)\b"                                      \
+                         --and --not -e '//[[:space:]]*NOLINT$'                      \
+                         '*/MIES_*.ipf' ':^*/MIES_*_Macro.ipf' ':^*/MIES_Include.ipf')
 
 if [[ -n "$matches" ]]
 then
