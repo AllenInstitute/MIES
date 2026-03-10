@@ -130,7 +130,7 @@ Function FindPreviousPower(variable a, variable p)
 	ASSERT(a > 0, "Invalid value")
 	ASSERT(IsInteger(a), "Value has to be an integer")
 
-	return floor(log(a) / log(p))
+	return ceil(log(a) / log(p) - 1)
 End
 
 /// @brief Check if a is a power of b
