@@ -9,9 +9,6 @@ static Function CheckCacheWaves(variable idx)
 	CHECK(IsFinite(idx))
 	CHECK(IsInteger(idx))
 
-	WAVE keys = GetCacheKeyWave()
-	CHECK_EQUAL_VAR(GetNumberFromWaveNote(keys, NOTE_INDEX), idx)
-
 	WAVE values = GetCacheValueWave()
 	CHECK_EQUAL_VAR(GetNumberFromWaveNote(values, NOTE_INDEX), idx)
 
@@ -236,4 +233,46 @@ static Function StatisticsWork()
 	CA_OutputCacheStatistics()
 	hist = CaptureHistory(ref, 1)
 	CHECK_PROPER_STR(hist)
+End
+
+Function UpgradePathWithEmptyKeys()
+
+	DFREF dfr = GetCacheFolder()
+	Make/T/N=(MINIMUM_WAVE_SIZE) dfr:keys/WAVE=keys_old
+	SetNumberInWaveNote(keys_old, NOTE_INDEX, 0)
+
+	WAVE keys_new = GetCacheKeyHashMap()
+	CHECK_WAVE(keys_old, NULL_WAVE)
+
+	WAVE/Z result = MIES_HM#HM_GetFilledEntries(keys_new)
+	CHECK_WAVE(result, NULL_WAVE)
+End
+
+Function UpgradePathWithFilledKeys()
+
+	variable found
+	string   value
+
+	DFREF dfr = GetCacheFolder()
+	Make/T/N=(MINIMUM_WAVE_SIZE) dfr:keys/WAVE=keys_old
+	SetNumberInWaveNote(keys_old, NOTE_INDEX, 11)
+
+	keys_old[0] = "abcd"
+	// holes are allowed
+	keys_old[10] = "efgh"
+
+	WAVE keys_new = GetCacheKeyHashMap()
+	CHECK_WAVE(keys_old, NULL_WAVE)
+
+	WAVE/Z result = MIES_HM#HM_GetFilledEntries(keys_new)
+	CHECK_WAVE(result, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(DimSize(result, ROWS), 2)
+
+	[value, found] = HM_GetEntry(keys_new, "abcd")
+	CHECK(found)
+	CHECK_EQUAL_STR(value, "0")
+
+	[value, found] = HM_GetEntry(keys_new, "efgh")
+	CHECK(found)
+	CHECK_EQUAL_STR(value, "10")
 End
