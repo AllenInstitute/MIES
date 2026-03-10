@@ -208,3 +208,34 @@ Function TestGetInterpolatedYValue()
 	CHECK_EQUAL_VAR(GetInterpolatedYValue(wv, 0 - eps), NaN)
 	CHECK_EQUAL_VAR(GetInterpolatedYValue(wv, 0.2 + eps), NaN)
 End
+
+Function TestIsPower()
+
+	CHECK(IsPower(8, 2))
+	CHECK(!IsPower(9, 2))
+	CHECK(IsPower(9, 3))
+
+	// non-integer value
+	try
+		IsPower(1.5, 2)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// invalid power
+	try
+		IsPower(1, 1)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// negative value
+	try
+		IsPower(-1, 2)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+End

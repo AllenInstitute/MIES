@@ -133,6 +133,16 @@ Function FindPreviousPower(variable a, variable p)
 	return floor(log(a) / log(p))
 End
 
+/// @brief Check if a is a power of b
+threadsafe Function IsPower(variable a, variable p)
+
+	ASSERT_TS(p > 1, "Invalid power")
+	ASSERT_TS(a > 0, "Invalid value")
+	ASSERT_TS(IsInteger(a), "Value has to be an integer")
+
+	return IsInteger(log(a) / log(p))
+End
+
 /// @brief Return the alignment of the decimal number (usually a 32bit/64bit pointer)
 Function GetAlignment(variable val)
 
