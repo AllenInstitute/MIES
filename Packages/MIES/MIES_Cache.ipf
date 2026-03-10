@@ -597,20 +597,16 @@ threadsafe static Function CA_MakeSpaceForNewEntry()
 
 	variable index
 
-	WAVE/T    keys   = GetCacheKeyWave()
 	WAVE/WAVE values = GetCacheValueWave()
 	WAVE      stats  = GetCacheStatsWave()
 
-	index = GetNumberFromWaveNote(keys, NOTE_INDEX)
-	ASSERT_TS(index == GetNumberFromWaveNote(values, NOTE_INDEX), "Mismatched indizes in key and value waves")
+	index = GetNumberFromWaveNote(values, NOTE_INDEX)
+	ASSERT_TS(index == GetNumberFromWaveNote(stats, NOTE_INDEX), "Mismatched indizes in values and stats waves")
 
-	EnsureLargeEnoughWave(keys, dimension = ROWS, indexShouldExist = index)
 	EnsureLargeEnoughWave(values, dimension = ROWS, indexShouldExist = index)
 	EnsureLargeEnoughWave(stats, dimension = ROWS, indexShouldExist = index, initialValue = NaN)
-	ASSERT_TS(DimSize(keys, ROWS) == DimSize(values, ROWS), "Mismatched row sizes")
 	ASSERT_TS(DimSize(stats, ROWS) == DimSize(values, ROWS), "Mismatched row sizes")
 
-	SetNumberInWaveNote(keys, NOTE_INDEX, index + 1)
 	SetNumberInWaveNote(values, NOTE_INDEX, index + 1)
 	SetNumberInWaveNote(stats, NOTE_INDEX, index + 1)
 
@@ -639,7 +635,7 @@ threadsafe Function CA_StoreEntryIntoCache(string key, WAVE/Z val, [variable opt
 		storeDuplicate = !(options & CA_OPTS_NO_DUPLICATE)
 	endif
 
-	WAVE/T    keys   = GetCacheKeyWave()
+	WAVE/WAVE keys   = GetCacheKeyHashMap()
 	WAVE/WAVE values = GetCacheValueWave()
 	WAVE      stats  = GetCacheStatsWave()
 
@@ -661,8 +657,9 @@ threadsafe Function CA_StoreEntryIntoCache(string key, WAVE/Z val, [variable opt
 		WAVE/Z waveToStore = val
 	endif
 
+	HM_AddEntry(keys, key, num2istr(index))
+
 	values[index] = waveToStore
-	keys[index]   = key
 
 	stats[index][]                       = 0
 	stats[index][%Misses]               += 1
@@ -675,21 +672,20 @@ End
 /// @return non-negative number or `NaN` if it could not be found.
 ///
 /// UTF_NOINSTRUMENTATION
-threadsafe static Function CA_GetCacheIndex(WAVE keys, string key)
+threadsafe static Function CA_GetCacheIndex(WAVE/WAVE keys, string key)
 
-	variable numFilledRows
-
-	numFilledRows = GetNumberFromWaveNote(keys, NOTE_INDEX)
+	string   value
+	variable found
 
 	ASSERT_TS(!isEmpty(key), "Cache key can not be empty")
 
-	if(numFilledRows <= 0)
-		return NaN
+	[value, found] = HM_GetEntry(keys, key)
+
+	if(found)
+		return str2num(value)
 	endif
 
-	FindValue/TXOP=(1 + 4)/TEXT=key keys
-
-	return (V_Value == -1) ? NaN : V_Value
+	return NaN
 End
 
 /// @brief Try to fetch the wave stored under key from the cache
@@ -737,7 +733,7 @@ threadsafe Function [WAVE entry, variable found] CA_TryFetchingEntryFromCacheWit
 		returnDuplicate = !(options & CA_OPTS_NO_DUPLICATE)
 	endif
 
-	WAVE/T keys = GetCacheKeyWave()
+	WAVE/WAVE keys = GetCacheKeyHashMap()
 
 	index = CA_GetCacheIndex(keys, key)
 
@@ -777,7 +773,7 @@ End
 /// @return One if it could be found and deleted, zero otherwise
 Function CA_DeleteCacheEntry(string key)
 
-	WAVE/T keys = GetCacheKeyWave()
+	WAVE/WAVE keys = GetCacheKeyHashMap()
 
 	variable index = CA_GetCacheIndex(keys, key)
 
@@ -788,10 +784,10 @@ Function CA_DeleteCacheEntry(string key)
 	WAVE/WAVE values = GetCacheValueWave()
 	WAVE      stats  = GetCacheStatsWave()
 
-	ASSERT(index < DimSize(values, ROWS) && index < DimSize(keys, ROWS), "Invalid index")
+	HM_DeleteEntry(keys, key)
 
 	// does currently not reset `NOTE_INDEX`
-	keys[index]   = ""
+	ASSERT(index < DimSize(values, ROWS) && index < DimSize(stats, ROWS), "Invalid index")
 	values[index] = $""
 	stats[index]  = NaN
 
