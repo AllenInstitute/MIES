@@ -182,6 +182,11 @@ static Function TestFindNextPower()
 	CHECK_EQUAL_VAR(1, FindNextPower(0, 100))
 	CHECK_EQUAL_VAR(2, FindNextPower(3, 2))
 	CHECK_EQUAL_VAR(3, FindNextPower(25, 3))
+	CHECK_EQUAL_VAR(17, FindNextPower(2^16, 2))
+
+	// and selects a larger value if it is already a power
+	// 3->4
+	CHECK_EQUAL_VAR(4, FindNextPower(2^3, 2))
 End
 /// @}
 
