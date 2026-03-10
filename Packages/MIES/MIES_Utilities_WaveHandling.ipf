@@ -1365,19 +1365,19 @@ End
 ///                                                (wave reference waves only with matching sizes)
 ///
 /// @return new wave reference to dest wave
-Function/WAVE MoveWaveWithOverwrite(WAVE dest, WAVE src, [variable recursive])
+threadsafe Function/WAVE MoveWaveWithOverwrite(WAVE dest, WAVE src, [variable recursive])
 
 	string   path
 	variable numEntries
 
 	recursive = ParamIsDefault(recursive) ? 0 : !!recursive
 
-	ASSERT(!WaveRefsEqual(dest, src), "dest and src must be distinct waves")
-	ASSERT(!IsFreeWave(dest), "dest must be a global/permanent wave")
+	ASSERT_TS(!WaveRefsEqual(dest, src), "dest and src must be distinct waves")
+	ASSERT_TS(!IsFreeWave(dest), "dest must be a global/permanent wave")
 
 	if(IsWaveRefWave(dest) && IsWaveRefWave(src) && recursive)
 		numEntries = numpnts(dest)
-		ASSERT(numEntries == numpnts(src), "Unmatched sizes")
+		ASSERT_TS(numEntries == numpnts(src), "Unmatched sizes")
 		Make/N=(numEntries)/FREE/WAVE entries
 
 		WAVE/WAVE destWaveRef = dest
