@@ -116,7 +116,7 @@ threadsafe Function FindNextPower(variable a, variable p)
 		return 1
 	endif
 
-	return ceil(log(a) / log(p))
+	return floor(log(a) / log(p) + 1)
 End
 
 /// @brief Find an integer `x` which is smaller than `a` but the
