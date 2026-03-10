@@ -10,7 +10,6 @@
 // SetBit
 // ClearBit
 // MinMax
-// FindPreviousPower
 // GetAlignment
 // CalculateLCM
 // SymmetrizeRangeAroundZero
@@ -187,6 +186,38 @@ static Function TestFindNextPower()
 	// and selects a larger value if it is already a power
 	// 3->4
 	CHECK_EQUAL_VAR(4, FindNextPower(2^3, 2))
+End
+/// @}
+
+/// FindPreviousPower
+/// @{
+static Function TestFindPreviousPower()
+
+	// invalid a (fractional)
+	try
+		FindPreviousPower(1.5, 2)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// invalid p
+	try
+		FindPreviousPower(1, 1)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// works
+	CHECK_EQUAL_VAR(-1, FindPreviousPower(1, 100))
+	CHECK_EQUAL_VAR(1, FindPreviousPower(3, 2))
+	CHECK_EQUAL_VAR(2, FindPreviousPower(25, 3))
+	CHECK_EQUAL_VAR(15, FindPreviousPower(2^16, 2))
+
+	// and selects a smaller value if it is already a power
+	// 4->3
+	CHECK_EQUAL_VAR(3, FindPreviousPower(2^4, 2))
 End
 /// @}
 
