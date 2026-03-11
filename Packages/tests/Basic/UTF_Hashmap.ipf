@@ -272,7 +272,7 @@ static Function DeleteEntryWorks()
 	WAVE/Z results = MIES_HM#HM_GetFilledEntries(hashmap)
 	CHECK_WAVE(results, NULL_WAVE)
 
-	// add three collisons, see AddEntryWorks()
+	// add three collisions, see AddEntryWorks()
 	// dup[0] = {7314,57289,71869}
 	key   = "7314"
 	value = "efgh"

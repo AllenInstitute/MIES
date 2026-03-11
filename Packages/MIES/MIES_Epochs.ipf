@@ -1658,31 +1658,48 @@ End
 /// @brief Append epoch information from the labnotebook to the newly cleared epoch wave
 Function EP_CopyLBNEpochsToEpochsWave(string device, variable sweepNo)
 
-	variable i, j, epochCnt, epochChannelCnt, chanType
-
 	EP_ClearEpochs(device)
+
+	EP_CopyLBNEpochsToEpochsWaveImpl(device, sweepNo, XOP_CHANNEL_TYPE_DAC)
+	EP_CopyLBNEpochsToEpochsWaveImpl(device, sweepNo, XOP_CHANNEL_TYPE_TTL)
+End
+
+static Function EP_CopyLBNEpochsToEpochsWaveImpl(string device, variable sweepNo, variable chanType)
+
+	variable i, epochChannelCnt
 
 	WAVE/T epochWave = GetEpochsWave(device)
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE textualValues   = GetLBTextualValues(device)
 
-	Make/FREE/D channelTypes = {XOP_CHANNEL_TYPE_DAC, XOP_CHANNEL_TYPE_TTL}
+	switch(chanType)
+		case XOP_CHANNEL_TYPE_DAC:
+			WAVE status = DC_GetFilteredChannelState(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC)
+			break
+		case XOP_CHANNEL_TYPE_TTL:
+			WAVE status = DC_GetFilteredChannelState(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
+			break
+		default:
+			FATAL_ERROR("Invalid chanType: " + num2str(chanType))
+	endswitch
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		for(chanType : channelTypes)
-			WAVE/Z/T epochChannel = EP_FetchEpochs_TS(numericalValues, textualValues, sweepNo, i, chanType)
+		if(!status[i])
+			continue
+		endif
 
-			if(!WaveExists(epochChannel))
-				continue
-			endif
+		WAVE/Z/T epochChannel = EP_FetchEpochs_TS(numericalValues, textualValues, sweepNo, i, chanType)
 
-			epochChannelCnt = DimSize(epochChannel, ROWS)
+		if(!WaveExists(epochChannel))
+			continue
+		endif
 
-			EnsureLargeEnoughWave(epochWave, dimension = ROWS, indexShouldExist = epochChannelCnt)
+		epochChannelCnt = DimSize(epochChannel, ROWS)
 
-			epochWave[0, epochChannelCnt - 1][][i][chanType] = epochChannel[p][q]
-		endfor
+		EnsureLargeEnoughWave(epochWave, dimension = ROWS, indexShouldExist = epochChannelCnt - 1)
+
+		epochWave[0, epochChannelCnt - 1][][i][chanType] = epochChannel[p][q]
 	endfor
 End
 
