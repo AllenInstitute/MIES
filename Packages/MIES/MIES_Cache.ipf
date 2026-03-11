@@ -784,14 +784,19 @@ Function CA_DeleteCacheEntry(string key)
 	WAVE/WAVE values = GetCacheValueWave()
 	WAVE      stats  = GetCacheStatsWave()
 
+	CA_DeleteCacheEntryImpl(keys, key, index, values, stats)
+
+	return 1
+End
+
+static Function CA_DeleteCacheEntryImpl(WAVE/WAVE keys, string key, variable index, WAVE/WAVE values, WAVE stats)
+
 	HM_DeleteEntry(keys, key)
 
 	// does currently not reset `NOTE_INDEX`
 	ASSERT(index < DimSize(values, ROWS) && index < DimSize(stats, ROWS), "Invalid index")
 	values[index] = $""
 	stats[index]  = NaN
-
-	return 1
 End
 
 /// @brief Remove all entries from the wave cache
