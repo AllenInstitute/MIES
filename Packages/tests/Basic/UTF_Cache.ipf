@@ -276,3 +276,91 @@ Function UpgradePathWithFilledKeys()
 	CHECK(found)
 	CHECK_EQUAL_STR(value, "10")
 End
+
+static Function/WAVE GetModCounts(WAVE keys, WAVE values, WAVE stats)
+
+	Make/FREE/N=(3) modCounts = {WaveModCountWrapper(keys), WaveModCountWrapper(values), WaveModCountWrapper(stats)}
+
+	return modCounts
+End
+
+Function CompactificationWorks()
+
+	string key        = "someKey"
+	string hitlessKey = "anotherKey"
+	string randomKey  = "abcd"
+
+	Make/FREE val = p
+
+	// does nothing for empty cache
+	WAVE/WAVE keys   = GetCacheKeyHashMap()
+	WAVE/WAVE values = GetCacheValueWave()
+	WAVE      stats  = GetCacheStatsWave()
+
+	CheckCacheWaves(0)
+
+	WAVE modCountsBefore = GetModCounts(keys, values, stats)
+	CA_Compactify()
+	WAVE modCountsAfter = GetModCounts(keys, values, stats)
+	CHECK_EQUAL_WAVES(modCountsBefore, modCountsAfter)
+
+	WAVE modCountsBefore = GetModCounts(keys, values, stats)
+
+	CheckCacheWaves(0)
+	CA_StoreEntryIntoCache(key, val)
+	CheckCacheWaves(1)
+
+	// fetch it so that it has a hit
+	WAVE/Z result = CA_TryFetchingEntryFromCache(key)
+	CHECK_EQUAL_WAVES(val, result)
+
+	CA_Compactify()
+
+	CheckCacheWaves(1)
+
+	// refetch the waves
+	WAVE/WAVE keys   = GetCacheKeyHashMap()
+	WAVE/WAVE values = GetCacheValueWave()
+	WAVE      stats  = GetCacheStatsWave()
+
+	WAVE modCountsAfter = GetModCounts(keys, values, stats)
+
+	// hashmap did not change
+	CHECK_EQUAL_VAR(modCountsAfter[0], modCountsBefore[0])
+	CHECK_GT_VAR(modCountsAfter[1], modCountsBefore[1])
+	CHECK_GT_VAR(modCountsAfter[2], modCountsBefore[2])
+
+	// and we can still find our value
+	WAVE/Z result = CA_TryFetchingEntryFromCache(key)
+	CHECK_EQUAL_WAVES(val, result)
+
+	// entries without hits are thrown away
+	CA_StoreEntryIntoCache(hitlessKey, val)
+	CheckCacheWaves(2)
+	CA_Compactify()
+	CheckCacheWaves(1)
+
+	WAVE/Z result = CA_TryFetchingEntryFromCache(hitlessKey)
+	CHECK_WAVE(result, NULL_WAVE)
+
+	// and holes are also plugged
+	CA_StoreEntryIntoCache(randomKey, val)
+
+	WAVE/Z result = CA_TryFetchingEntryFromCache(randomKey)
+	CHECK_EQUAL_WAVES(val, result)
+	CheckCacheWaves(2)
+
+	CA_StoreEntryIntoCache(hitlessKey, val)
+	CheckCacheWaves(3)
+
+	// key
+	// randomKey
+	// hitlessKey
+
+	CA_DeleteCacheEntry(key)
+	// NOTE_INDEX was not yet touched
+	CheckCacheWaves(3)
+	CA_Compactify()
+	// but now
+	CheckCacheWaves(1)
+End

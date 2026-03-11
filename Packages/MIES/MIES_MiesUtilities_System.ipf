@@ -215,6 +215,8 @@ Function BackupCacheWaves()
 
 	InvalidateLBIndexAndRowCaches()
 
+	CA_Compactify()
+
 	DFREF dfr = GetCacheFolder()
 
 	WAVE/WAVE cacheWaves = ListToWaveRefWave(GetListOfObjects(dfr, ".*", fullPath = 1))

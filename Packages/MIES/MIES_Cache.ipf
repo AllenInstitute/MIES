@@ -829,3 +829,56 @@ Function CA_OutputCacheStatistics()
 
 	ControlWindowToFront()
 End
+
+/// @brief Remove holes and entries without hits from the cache
+Function CA_Compactify()
+
+	string key
+	variable index, numEntries, i, newIndex
+
+	DFREF dfr = GetCacheFolder()
+
+	if(IsDataFolderEmpty(dfr))
+		// nothing to do
+		return NaN
+	endif
+
+	WAVE/WAVE keys    = GetCacheKeyHashMap()
+	WAVE/Z/T  allKeys = HM_GetAllKeys(keys)
+
+	if(!WaveExists(allKeys))
+		return NaN
+	endif
+
+	WAVE      stats_old  = MakeWaveFree(GetCacheStatsWave())
+	WAVE/WAVE values_old = MakeWaveFree(GetCacheValueWave())
+
+	WAVE      stats  = GetCacheStatsWave()
+	WAVE/WAVE values = GetCacheValueWave()
+
+	numEntries = DimSize(allKeys, ROWS)
+	EnsureLargeEnoughWave(values, dimension = ROWS, indexShouldExist = numEntries - 1)
+	EnsureLargeEnoughWave(stats, dimension = ROWS, indexShouldExist = numEntries - 1, initialValue = NaN)
+
+	for(i = 0; i < numEntries; i += 1)
+		key   = allKeys[i]
+		index = CA_GetCacheIndex(keys, key)
+
+		if(stats_old[index][%Hits] == 0)
+			// remove entries with no hits
+			CA_DeleteCacheEntryImpl(keys, key, index, values_old, stats_old)
+		else
+			// and transfer all others
+			stats[newIndex][] = stats_old[index][q]
+			values[newIndex]  = values_old[index]
+			// overwrite index with newIndex in hashmap
+			HM_AddEntry(keys, key, num2istr(newIndex))
+			newIndex += 1
+		endif
+	endfor
+
+	Redimension/N=(newIndex, -1) values, stats
+
+	SetNumberInWaveNote(values, NOTE_INDEX, newIndex)
+	SetNumberInWaveNote(stats, NOTE_INDEX, newIndex)
+End
