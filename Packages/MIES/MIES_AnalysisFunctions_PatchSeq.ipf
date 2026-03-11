@@ -335,7 +335,7 @@ Function/WAVE PSQ_DeterminePulseDurationFinder(WAVE statusHS, WAVE/WAVE allSingl
 
 		WAVE singleDA = allSingleDA[i]
 
-		if(type == PSQ_CHIRP)
+		if(type == PSQ_CHIRP || type == PSQ_RAMP)
 			// search something above/below zero from front and back
 			FindLevel/Q/R=(totalOnsetDelay, Inf) singleDA, 0
 			ASSERT(!V_Flag, "Could not find an edge")
@@ -348,16 +348,16 @@ Function/WAVE PSQ_DeterminePulseDurationFinder(WAVE statusHS, WAVE/WAVE allSingl
 			level = WaveMin(singleDA, totalOnsetDelay, Inf) + GetMachineEpsilon(WaveType(singleDA))
 
 			// search a square pulse
-			FindLevel/Q/R=(totalOnsetDelay, Inf)/EDGE=1 singleDA, level
+			FindLevel/Q/R=(totalOnsetDelay, Inf)/EDGE=(FINDLEVEL_EDGE_INCREASING) singleDA, level
 			ASSERT(!V_Flag, "Could not find a rising edge")
 			first = V_LevelX
 
-			FindLevel/Q/R=(totalOnsetDelay, Inf)/EDGE=2 singleDA, level
+			FindLevel/Q/R=(totalOnsetDelay, Inf)/EDGE=(FINDLEVEL_EDGE_DECREASING) singleDA, level
 			ASSERT(!V_Flag, "Could not find a falling edge")
 			last = V_LevelX
 		endif
 
-		if(level > 0 || type == PSQ_CHIRP)
+		if(level > 0 || type == PSQ_CHIRP || type == PSQ_RAMP)
 			duration = last - first - DimDelta(singleDA, ROWS)
 		else
 			duration = first - last + DimDelta(singleDA, ROWS)
@@ -1542,7 +1542,7 @@ static Function/WAVE PSQ_SearchForSpikes(string device, variable type, WAVE swee
 				endif
 			elseif(numberOfSpikesReq > 1)
 				Make/D/FREE/N=0 crossings
-				FindLevels/Q/R=(first, last)/N=(numberOfSpikesReq)/DEST=crossings/EDGE=1/B=3 singleAD, level
+				FindLevels/Q/R=(first, last)/N=(numberOfSpikesReq)/DEST=crossings/EDGE=(FINDLEVEL_EDGE_INCREASING)/B=3 singleAD, level
 				spikeDetection[headstage] = IsFinite(numberOfSpikesReq) ? (!V_flag) : (V_LevelsFound > 0)
 
 				if(!ParamIsDefault(spikePositions))
