@@ -193,7 +193,7 @@ static Constant PSQ_DEFAULT_SAMPLING_MULTIPLIER = 4
 static Constant PSQ_RHEOBASE_DURATION = 500
 
 static Constant PSQ_DA_FALLBACK_DASCALE_RANGE_FAC            = 1.5
-static Constant PSQ_DA_FALLBACK_DASCALE_NEG_SLOPE_PERC       = 50
+static Constant PSQ_DA_FALLBACK_DASCALE_NEG_SLOPE_PERC       = 10
 static Constant PSQ_DA_FALLBACK_MINIMUM_SPIKES_FOR_MAX_SLOPE = 4
 
 static StrConstant PSQ_DA_AT_SLOPE_UNIT = "% of Hz/pA"
