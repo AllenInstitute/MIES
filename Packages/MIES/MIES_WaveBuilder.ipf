@@ -1931,7 +1931,7 @@ End
 /// @brief Update the shorthand/stimset wave for the epoch type `Combine`
 ///
 /// The rows are sorted by creationDate of the WP/stimset wave to try to keep
-/// the shorthands constants even when new stimsets are added.
+/// the shorthands constant even when new stimsets are added.
 Function WB_UpdateEpochCombineList(WAVE/T epochCombineList, variable channelType)
 
 	string list, setPath, setParamPath, entry
