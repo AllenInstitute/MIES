@@ -54,7 +54,7 @@ jobs:
       - name: Sign installer
         run: tools/sign-installer.sh -p '${{ secrets.GHA_MIES_CERTIFICATE_PIN }}'
       - name: upload artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: ${{ always() }}
         with:
           name: BuildInstaller-assets
@@ -127,7 +127,7 @@ jobs:
       - name: Build documentation
         run: tools/documentation/run.sh
       - name: upload artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: ${{ always() }}
         with:
           name: Documentation-assets
