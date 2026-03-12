@@ -466,7 +466,18 @@ threadsafe Function/WAVE MakeWaveFree(WAVE/Z wv)
 
 	DFREF dfr = NewFreeDataFolder()
 
+#if IgorVersion() < 10 || (IgorVersion() == 10 && (NumberByKey("BUILD", IgorInfo(0)) < 29915))
+	/// @todo workaround IP issue 7587
+	if(IsWaveRefWave(wv))
+		Duplicate/FREE wv, dest
+		KillOrMoveToTrash(wv = wv)
+		WAVE wv = dest
+	else
+		MoveWave wv, dfr
+	endif
+#else
 	MoveWave wv, dfr
+#endif
 
 	return wv
 End
