@@ -400,7 +400,12 @@ threadsafe Function GetNumberOfUsefulThreads(WAVE dims)
 	ASSERT_TS(numCols <= 1, "Expected a 1D wave")
 
 	pointsPerThread = 4096
-	numCores        = TSDS_ReadVar(TSDS_PROCCOUNT)
+
+	if(MU_RunningInMainThread())
+		numCores = TSDS_ReadVar(TSDS_PROCCOUNT, defValue = NUM_DEFAULT_CORES, create = 1)
+	else
+		numCores = TSDS_ReadVar(TSDS_PROCCOUNT)
+	endif
 
 	numPoints = 1
 	for(i = 0; i < numRows; i += 1)
