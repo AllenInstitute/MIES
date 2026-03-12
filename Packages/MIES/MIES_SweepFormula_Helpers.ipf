@@ -2199,3 +2199,29 @@ Function SFH_AddVariableToStorage(string graph, string name, WAVE result)
 	JWN_SetNumberInWaveNote(result, SF_VARIABLE_MARKER, 1)
 	varStorage[idx] = result
 End
+
+/// @brief Adds a variable to the variable storage from a given formula. If the variable already exists it is overwritten.
+Function/WAVE SFH_AddVariableToStorageByFormula(string graph, string name, string formula, string opShort)
+
+	WAVE/WAVE result = SFE_ExecuteFormula(formula, graph, preProcess = 0)
+	SFH_AddVariableToStorage(graph, name, SFH_GetOutputForExecutor(result, graph, opShort))
+
+	return result
+End
+
+/// @brief Copy plot meta data JSON properties from a source to a target wave
+Function SFH_CopyPlotMetaData(WAVE input, WAVE output)
+
+	WAVE/Z wv = JWN_GetNumericWaveFromWaveNote(input, SF_META_TRACECOLOR)
+	if(WaveExists(wv))
+		JWN_SetWaveInWaveNote(output, SF_META_TRACECOLOR, wv)
+	endif
+	JWN_SetNumberInWaveNote(output, SF_META_TRACETOFRONT, JWN_GetNumberFromWaveNote(input, SF_META_TRACETOFRONT))
+	JWN_SetNumberInWaveNote(output, SF_META_LINESTYLE, JWN_GetNumberFromWaveNote(input, SF_META_LINESTYLE))
+End
+
+Function SFH_SetTraceStyleForFit(WAVE fitData)
+
+	JWN_SetWaveInWaveNote(fitData, SF_META_TRACECOLOR, {0, 0, 0}) // black
+	JWN_SetNumberInWaveNote(fitData, SF_META_TRACE_MODE, TRACE_DISPLAY_MODE_LINES)
+End

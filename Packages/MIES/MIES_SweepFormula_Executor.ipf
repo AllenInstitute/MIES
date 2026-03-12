@@ -547,6 +547,18 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLoc
 		case SF_OP_TABLE:
 			WAVE out = SFO_OperationTable(exdop)
 			break
+		case SF_OP_IVSCCAPFREQUENCY:
+			WAVE out = SFO_OperationIVSCCApFrequency(exdop)
+			break
+		case SF_OP_PREPAREFIT:
+			WAVE out = SFO_OperationPrepareFit(exdop)
+			break
+		case SF_OP_FIT2:
+			WAVE out = SFO_OperationFit2(exdop)
+			break
+		case SF_OP_GETMETA:
+			WAVE out = SFO_OperationGetMeta(exdop)
+			break
 #ifdef AUTOMATED_TESTING
 		case SF_OP_TESTOP:
 			WAVE out = SFO_OperationTestop(exdop)
