@@ -77,7 +77,7 @@ jobs:
       CI_SKIP_COMPILATION_TEST_DEFINES: "1"
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: recursive
           fetch-depth: 0
@@ -105,7 +105,7 @@ jobs:
         if: always()
         run: tools/gather-logfiles-and-crashdumps.sh
       - name: upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: ${{ always() }}
         with:
           name: ${{ inputs.artifact_name }}
