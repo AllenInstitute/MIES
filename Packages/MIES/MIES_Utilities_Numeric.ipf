@@ -102,11 +102,8 @@ Function [variable minimum, variable maximum] MinMax(variable a, variable b)
 	maximum = max(a, b)
 End
 
-/// @brief Find an integer `x` which is larger than `a` but the
-/// smallest possible power of `p`.
-///
-/// @f$ x > a @f$ where @f$ x = c^p @f$ holds and @f$ x @f$ is
-/// the smallest possible value.
+/// @brief Find an integer `x` which has the property that
+///        @f$ p^x > a @f$ and `x` is the smallest possible value
 threadsafe Function FindNextPower(variable a, variable p)
 
 	ASSERT_TS(p > 1, "Invalid power")
@@ -119,11 +116,8 @@ threadsafe Function FindNextPower(variable a, variable p)
 	return floor(log(a) / log(p) + 1)
 End
 
-/// @brief Find an integer `x` which is smaller than `a` but the
-/// largest possible power of `p`.
-///
-/// @f$ x < a @f$ where @f$ x = c^p @f$ holds and @f$ x @f$ is
-/// the largest possible value.
+/// @brief Find an integer `x` which has the property that
+///        @f$ p^x < a @f$ and `x` is the largest possible value
 Function FindPreviousPower(variable a, variable p)
 
 	ASSERT(p > 1, "Invalid power")
