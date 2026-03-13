@@ -290,9 +290,6 @@ Function DecimateWithMethod(WAVE input, WAVE output, variable decimationFactor, 
 
 	ASSERT(DimSize(output, ROWS) == numRowsDecimated, "Output wave has the wrong size.")
 
-	// This wave is only used to run the multithread assignment. We don't care about the values.
-	WAVE junkWave = GetTemporaryWave({numOutputPairs, usedColumns}, IGOR_TYPE_8BIT_INT)
-
 	targetFirst = floor(firstRowInp / (decimationFactor * 2))
 	targetLast  = min(ceil(lastRowInp / (decimationFactor * 2)), numOutputPairs - 1)
 
@@ -304,6 +301,9 @@ Function DecimateWithMethod(WAVE input, WAVE output, variable decimationFactor, 
 	DEBUGPRINT(msg)
 	sprintf msg, "input[%08d][%08d], output[%08d][%08d]; rows [%08d, %08d] -> pairs [%08d, %08d]; cols [%d, %d] [%d, %d]\r", numRowsInp, numColsInp, DimSize(output, ROWS), DimSize(output, COLS), firstRowInp, lastRowInp, targetFirst, targetLast, firstColInp, lastColInp, firstColOut, lastColOut
 	DEBUGPRINT(msg)
+
+	// This wave is only used to run the multithread assignment. We don't care about the values.
+	WAVE junkWave = GetTemporaryWave({numOutputPairs, usedColumns}, IGOR_TYPE_8BIT_INT)
 
 	switch(method)
 		case DECIMATION_MINMAX:
