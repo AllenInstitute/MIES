@@ -363,24 +363,14 @@ static Constant HM_MAX_LOAD_FACTOR              = 0.7
 /// @brief Implementation of djb2 in plain Igor Pro
 ///
 /// See also https://github.com/dim13/djb2/blob/master/docs/hash.md#djb2.
-threadsafe static Function [uint64 result] HM_DJBHash(string str)
+threadsafe static Function [uint64 h] HM_DJBHash(string str)
 
-	uint64 h = 5381
 	uint64 d
-	int    c
-	variable i, len
+	h = 5381
+	WAVE/U/B wv = StringToUnsignedByteWave(str)
 
-	len = strlen(str)
-
-	for(i = 0; i < len; i += 1)
-		// workaround char2num returning signed values
-		c = char2num(str[i])
-		c = (c < 0) ? (256 + c) : c
-
-		// explicitly convert to unsigned
-		d = c
-
-		h = ((h << 5) + h) + d
+	for(d : wv)
+		h = h * 33 + d
 	endfor
 
 	return [h]

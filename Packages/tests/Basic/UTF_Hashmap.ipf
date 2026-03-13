@@ -32,6 +32,9 @@ static Function TestDJBHash()
 
 	uint64 result
 
+	[result] = MIES_HM#HM_DJBHash("")
+	CHECK_EQUAL_UINT64(result, 5381)
+
 	[result] = MIES_HM#HM_DJBHash("a")
 	CHECK_EQUAL_UINT64(result, 177670)
 
