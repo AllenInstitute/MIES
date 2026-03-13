@@ -20,6 +20,7 @@
 #include "UTF_EpochswoHardware"
 #include "UTF_ForeignFunctionInterface"
 #include "UTF_GuiUtilities"
+#include "UTF_Hashmap"
 #include "UTF_JSONWaveNotes"
 #include "UTF_Labnotebook"
 #include "UTF_Macros"

@@ -2073,3 +2073,19 @@ static Function/WAVE GetEmptyWavesOfAllTypes()
 
 	return waveRefs
 End
+
+static Function/WAVE ValidHashmapSizes()
+
+	Make/FREE sizes = {2^0, 2^1, 2^8, 2^17}
+
+	return sizes
+End
+
+static Function/WAVE PermanentOrFree()
+
+	Make/FREE wv = {1, 0}
+
+	SetDimensionLabels(wv, "Permanent;Free", ROWS)
+
+	return wv
+End

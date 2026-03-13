@@ -10,7 +10,6 @@
 // SetBit
 // ClearBit
 // MinMax
-// FindPreviousPower
 // GetAlignment
 // CalculateLCM
 // SymmetrizeRangeAroundZero
@@ -182,6 +181,43 @@ static Function TestFindNextPower()
 	CHECK_EQUAL_VAR(1, FindNextPower(0, 100))
 	CHECK_EQUAL_VAR(2, FindNextPower(3, 2))
 	CHECK_EQUAL_VAR(3, FindNextPower(25, 3))
+	CHECK_EQUAL_VAR(17, FindNextPower(2^16, 2))
+
+	// and selects a larger value if it is already a power
+	// 3->4
+	CHECK_EQUAL_VAR(4, FindNextPower(2^3, 2))
+End
+/// @}
+
+/// FindPreviousPower
+/// @{
+static Function TestFindPreviousPower()
+
+	// invalid a (fractional)
+	try
+		FindPreviousPower(1.5, 2)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// invalid p
+	try
+		FindPreviousPower(1, 1)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// works
+	CHECK_EQUAL_VAR(-1, FindPreviousPower(1, 100))
+	CHECK_EQUAL_VAR(1, FindPreviousPower(3, 2))
+	CHECK_EQUAL_VAR(2, FindPreviousPower(25, 3))
+	CHECK_EQUAL_VAR(15, FindPreviousPower(2^16, 2))
+
+	// and selects a smaller value if it is already a power
+	// 4->3
+	CHECK_EQUAL_VAR(3, FindPreviousPower(2^4, 2))
 End
 /// @}
 
@@ -207,4 +243,35 @@ Function TestGetInterpolatedYValue()
 	// outside
 	CHECK_EQUAL_VAR(GetInterpolatedYValue(wv, 0 - eps), NaN)
 	CHECK_EQUAL_VAR(GetInterpolatedYValue(wv, 0.2 + eps), NaN)
+End
+
+Function TestIsPower()
+
+	CHECK(IsPower(8, 2))
+	CHECK(!IsPower(9, 2))
+	CHECK(IsPower(9, 3))
+
+	// non-integer value
+	try
+		IsPower(1.5, 2)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// invalid power
+	try
+		IsPower(1, 1)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// negative value
+	try
+		IsPower(-1, 2)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
 End

@@ -73,6 +73,9 @@ Function SWS_SaveAcquiredData(string device, [variable forcedStop])
 
 	EP_WriteEpochInfoIntoSweepSettings(device, sweepNo, acquiredTime, plannedTime)
 	SWS_SweepSettingsEpochInfoToLBN(device, sweepNo)
+
+	WAVE/WAVE hashmap = GetCacheKeyHashMap()
+	HM_RehashIfRequired(hashmap)
 End
 
 /// @brief Determine actual acquisition times and if acquisition was stopped early, change the remaining data points in DA/TTL with NaN.

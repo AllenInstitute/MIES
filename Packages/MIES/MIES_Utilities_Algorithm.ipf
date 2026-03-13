@@ -263,7 +263,7 @@ End
 /// Assumes wv being one dimensional and does not use any tolerance for numerical values.
 threadsafe Function GetRowIndex(WAVE wv, [variable val, string str, WAVE/Z refWave, variable reverseSearch, variable textOp])
 
-	variable numEntries, i
+	variable numEntries, i, wvType
 
 	ASSERT_TS((ParamIsDefault(val) + ParamIsDefault(str) + ParamIsDefault(refWave)) == 2, "Expected exactly one argument")
 
@@ -277,8 +277,10 @@ threadsafe Function GetRowIndex(WAVE wv, [variable val, string str, WAVE/Z refWa
 		textOp = 4
 	endif
 
+	wvType = WaveType(wv, 1)
+
 	if(!ParamIsDefault(refWave))
-		ASSERT_TS(IsWaveRefWave(wv), "wv must be a wave holding wave references")
+		ASSERT_TS(wvType == IGOR_TYPE_WAVEREF_WAVE, "wv must be a wave holding wave references")
 		numEntries = DimSize(wv, ROWS)
 		WAVE/WAVE cmpWave = wv
 
@@ -298,7 +300,7 @@ threadsafe Function GetRowIndex(WAVE wv, [variable val, string str, WAVE/Z refWa
 			endfor
 		endif
 	else
-		if(IsNumericWave(wv))
+		if(wvType == IGOR_TYPE_NUMERIC_WAVE)
 			if(!ParamIsDefault(str))
 				val = str2num(str)
 			endif
@@ -346,7 +348,7 @@ threadsafe Function GetRowIndex(WAVE wv, [variable val, string str, WAVE/Z refWa
 			if(V_Value >= 0)
 				return V_Value
 			endif
-		elseif(IsTextWave(wv))
+		elseif(wvType == IGOR_TYPE_TEXT_WAVE)
 			if(!ParamIsDefault(val))
 				str = num2str(val)
 			endif
