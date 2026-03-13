@@ -410,24 +410,15 @@ End
 /// @brief Generic key generator for storing throw away waves used for
 ///        Multithread assignments
 ///
-/// Only the size is relevant, the rest is undefined.
-threadsafe Function/S CA_TemporaryWaveKey(WAVE dims)
+/// Only the size and type is relevant, the rest is undefined.
+threadsafe Function/S CA_TemporaryWaveKey(WAVE dims, variable wvType)
 
 	variable crc
 
 	crc = CA_WaveSizeCRC(dims)
+	crc = StringCRC(crc, num2istr(wvType))
 
-	return "Temporary waves:" + num2istr(crc) + ":Version 2"
-End
-
-/// @brief Key generator for FindIndizes
-threadsafe Function/S CA_FindIndizesKey(WAVE dims)
-
-	variable crc
-
-	crc = CA_WaveSizeCRC(dims)
-
-	return "FindIndizes:" + num2istr(crc) + ":Version 1"
+	return "Temporary waves:" + num2istr(crc) + ":Version 3"
 End
 
 /// @brief Calculate the cache key for the hardware device info wave

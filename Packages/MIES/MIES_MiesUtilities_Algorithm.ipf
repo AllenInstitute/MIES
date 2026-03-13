@@ -291,14 +291,7 @@ Function DecimateWithMethod(WAVE input, WAVE output, variable decimationFactor, 
 	ASSERT(DimSize(output, ROWS) == numRowsDecimated, "Output wave has the wrong size.")
 
 	// This wave is only used to run the multithread assignment. We don't care about the values.
-
-	key = CA_TemporaryWaveKey({numOutputPairs, usedColumns})
-	WAVE/Z/B junkWave = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
-
-	if(!WaveExists(junkWave))
-		Make/N=(numOutputPairs, usedColumns)/FREE/B junkWave
-		CA_StoreEntryIntoCache(key, junkWave, options = CA_OPTS_NO_DUPLICATE)
-	endif
+	WAVE junkWave = GetTemporaryWave({numOutputPairs, usedColumns}, IGOR_TYPE_8BIT_INT)
 
 	targetFirst = floor(firstRowInp / (decimationFactor * 2))
 	targetLast  = min(ceil(lastRowInp / (decimationFactor * 2)), numOutputPairs - 1)
@@ -559,13 +552,7 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 	// * This gives a 1D wave with NaN in the rows with no match, and the row index of the match otherwise
 	// * Delete all NaNs in the wave and return it
 
-	key = CA_FindIndizesKey({numRows, numLayers})
-	WAVE/Z/D matches = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
-
-	if(!WaveExists(matches))
-		Make/N=(numRows, numLayers)/FREE/D matches
-		CA_StoreEntryIntoCache(key, matches, options = CA_OPTS_NO_DUPLICATE)
-	endif
+	WAVE/D matches = GetTemporaryWave({numRows, numLayers}, IGOR_TYPE_64BIT_FLOAT)
 
 	numThreads = GetNumberOfUsefulThreads({numRowsEffective, numLayersEffective})
 

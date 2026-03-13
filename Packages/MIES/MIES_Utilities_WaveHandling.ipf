@@ -1565,3 +1565,26 @@ Function HasDimLabels(WAVE/Z wv, variable dim, [variable deep])
 
 	return 0
 End
+
+/// @brief Return a wave with the given dimension and type
+///
+/// Callers can make no assumptions about the wave contents.
+threadsafe Function/WAVE GetTemporaryWave(WAVE dims, variable wvType)
+
+	string key
+
+	key = CA_TemporaryWaveKey(dims, wvType)
+	WAVE/Z wv = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/FREE/N=(MAX_DIMENSION_COUNT) allDims
+
+	allDims[0, DimSize(dims, ROWS) - 1] = dims[p]
+	Make/N=(allDims[ROWS], allDims[COLS], allDims[LAYERS], allDims[CHUNKS])/FREE/Y=(wvType) wv
+	CA_StoreEntryIntoCache(key, wv, options = CA_OPTS_NO_DUPLICATE)
+
+	return wv
+End
