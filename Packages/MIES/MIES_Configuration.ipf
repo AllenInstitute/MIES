@@ -96,7 +96,7 @@
 ///
 /// *_rig.json configuration files store settings that are specific to a rig.
 /// When restoring a DAEphys panel the settings from the rig file are joined with the settings in the DAEphys configuration file.
-/// Having entries for the same setting in both files is invalid and an assertion will be thrown.
+/// Rig entries overwrite entries from the main file.
 ///
 /// Saving a DAEphys panel that was originally restored from a configuration file:
 /// - entries from the "Common configuration data" block are updated with the values from the previous configuration,
@@ -567,7 +567,7 @@ static Function CONF_SaveDAEphys(string fName)
 
 		saveResult = SaveTextFile(out, fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Save configuration for DA_Ephys panel", savedFileName = newFileName, showDialogOnOverwrite = 1)
 		if(!IsNaN(saveResult))
-			printf "Configuration saved in %s.\r", fName
+			printf "Configuration saved in %s.\r", GetWindowsPath(fName)
 		endif
 		if(JSON_IsValid(prevRigJsonId) && !IsEmpty(newFileName))
 			JSON_Release(prevRigJsonId)
@@ -575,7 +575,7 @@ static Function CONF_SaveDAEphys(string fName)
 			newRigFullFilePath = HFSPathToNative(newRigFullFilePath)
 			saveResult         = SaveTextFile(jsonTxt, newRigFullFilePath, fileFilter = EXPCONFIG_FILEFILTER, message = "Save Rig configuration for DA_Ephys panel", savedFileName = newFileName, showDialogOnOverwrite = 1)
 			if(!IsNaN(saveResult))
-				printf "Rig configuration saved in %s.\r", newRigFullFilePath
+				printf "Rig configuration saved in %s.\r", GetWindowsPath(newRigFullFilePath)
 			endif
 		endif
 
@@ -1999,8 +1999,8 @@ End
 /// @param[in] midExp middle of experiment - uploads MCC relevant settings from panel to MCC instead
 static Function CONF_RestoreHeadstageAssociation(string device, variable jsonID, variable midExp)
 
-	variable i, type, numRows, ampSerial, ampChannel, index, value
-	string jsonPath, jsonBasePath, jsonPathAmpBlock
+	variable i, type, numRows, ampSerial, ampChannel, index, value, ampSerialType
+	string jsonPath, jsonBasePath, jsonPathAmpBlock, msg
 	string ampSerialList = ""
 	string ampTitleList  = ""
 
@@ -2017,10 +2017,22 @@ static Function CONF_RestoreHeadstageAssociation(string device, variable jsonID,
 		endif
 
 		if(type == JSON_OBJECT)
-			jsonPath = jsonBasePath + "/" + EXPCONFIG_JSON_AMPBLOCK
-			if(JSON_GetType(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPSERIAL) == JSON_NULL)
-				continue
-			endif
+			jsonPath      = jsonBasePath + "/" + EXPCONFIG_JSON_AMPBLOCK
+			ampSerialType = JSON_GetType(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPSERIAL, ignoreErr = 1)
+			switch(ampSerialType)
+				case JSON_INVALID:
+					sprintf msg, "Missing \"%s\" entry for headstage %d in configuration.", jsonPath, i
+					FATAL_ERROR(msg)
+				case JSON_NUMERIC:
+					// associated HS
+					break
+				case JSON_NULL:
+					// unassociated
+					continue
+				default:
+					FATAL_ERROR("Invalid type: " + num2str(ampSerialType))
+			endswitch
+
 			ampSerial = JSON_GetVariable(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPSERIAL)
 
 			if(IsNaN(ampSerial))
@@ -2597,7 +2609,7 @@ static Function CONF_JoinRigFile(variable jsonID, string rigFileName)
 		return 0
 	endif
 	jsonIDRig = CONF_ParseJSON(input)
-	JSON_SyncJSON(jsonIDRig, jsonID, "", "", JSON_SYNC_ADD_TO_TARGET)
+	JSON_SyncJSON(jsonIDRig, jsonID, "", "", JSON_SYNC_OVERWRITE_IN_TARGET)
 	JSON_Release(jsonIDRig)
 End
 
