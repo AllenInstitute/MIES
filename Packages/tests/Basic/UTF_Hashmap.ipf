@@ -38,6 +38,10 @@ static Function TestDJBHash()
 	[result] = MIES_HM#HM_DJBHash("a")
 	CHECK_EQUAL_UINT64(result, 177670)
 
+	// embedded nulls, so this is different than plain a
+	[result] = MIES_HM#HM_DJBHash("a\x00")
+	CHECK_EQUAL_UINT64(result, 5863110)
+
 	// check signedness
 	[result] = MIES_HM#HM_DJBHash("ä")
 	CHECK_EQUAL_UINT64(result, 5866508)

@@ -385,6 +385,8 @@ static Constant HM_HASHMAP_ROW = 1
 
 /// @brief Implementation of djb2 in plain Igor Pro
 ///
+/// The implementation here does support embedded nulls, see DisplayHelpTopic "Embedded Nulls in Literal Strings".
+///
 /// See also https://github.com/dim13/djb2/blob/master/docs/hash.md#djb2.
 threadsafe static Function [uint64 h] HM_DJBHash(string str)
 
