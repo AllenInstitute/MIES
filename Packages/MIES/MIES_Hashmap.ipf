@@ -417,6 +417,10 @@ threadsafe static Function HM_GetKeyIndex(WAVE/T keys, string key, variable numF
 
 	variable i
 
+	if(numFilledEntries == 0)
+		return NaN
+	endif
+
 	if(numFilledEntries < HM_SMALL_WAVE_OPTIMIZATION_ROWS)
 		for(i = 0; i < numFilledEntries; i += 1)
 			if(!cmpstr(keys[i], key, 2))
