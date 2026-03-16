@@ -9,6 +9,29 @@
 static Constant HM_SMALL_WAVE_OPTIMIZATION_ROWS = 5
 static Constant HM_MAX_LOAD_FACTOR              = 0.7
 
+/// @name Indizes into HM_CreateStatsWave()
+///@{
+static Constant HM_TOTAL_ENTRIES_ROW = 0
+///@}
+
+/// @name Indizes into HM_CreateManagementWave()
+///@{
+static Constant HM_USED_ROWS_ROW = 0
+static Constant HM_STATS_ROW     = 1
+///@}
+
+/// @name Indizes into HM_CreateHashmap()
+///@{
+static Constant HM_KEYS_COLUMN   = 0
+static Constant HM_VALUES_COLUMN = 1
+///@}
+
+/// @name Indizes into HM_Create()
+///@{
+static Constant HM_MGMT_ROW    = 0
+static Constant HM_HASHMAP_ROW = 1
+///@}
+
 /// @file MIES_Hashmap.ipf
 ///
 /// Pure Igor Pro implementation of a hashmap using separate chaining.
@@ -382,7 +405,7 @@ threadsafe static Function HM_HashKey(WAVE/WAVE hashmap, string key)
 
 	[h] = HM_DJBHash(key)
 
-	size = DimSize(hashmap, ROWS) - 1
+	size = HM_GetSize(hashmap) - 1
 
 	// force integer evaluation
 	result = h & size
@@ -410,22 +433,113 @@ threadsafe static Function HM_GetKeyIndex(WAVE/T keys, string key, variable numF
 	return (i < numFilledEntries) ? i : NaN
 End
 
+threadsafe static Function/WAVE HM_FetchUsedRows(WAVE/WAVE hashmap)
+
+	return WaveRef(hashmap[HM_MGMT_ROW], row = HM_USED_ROWS_ROW)
+End
+
+threadsafe static Function/WAVE HM_FetchStats(WAVE/WAVE hashmap)
+
+	return WaveRef(hashmap[HM_MGMT_ROW], row = HM_STATS_ROW)
+End
+
+threadsafe static Function HM_GetSize(WAVE/WAVE hashmap)
+
+	return DimSize(hashmap[HM_HASHMAP_ROW], ROWS)
+End
+
+threadsafe static Function/WAVE HM_FetchKeys(WAVE/WAVE hashmap, variable idx)
+
+	return WaveRef(hashmap[HM_HASHMAP_ROW], row = idx, col = HM_KEYS_COLUMN)
+End
+
+threadsafe static Function/WAVE HM_FetchValues(WAVE/WAVE hashmap, variable idx)
+
+	return WaveRef(hashmap[HM_HASHMAP_ROW], row = idx, col = HM_VALUES_COLUMN)
+End
+
+threadsafe static Function [WAVE usedRows, WAVE/T keys, WAVE/T values] HM_FetchWaves(WAVE/WAVE hashmap, variable idx)
+
+	WAVE   usedRows = HM_FetchUsedRows(hashmap)
+	WAVE/T keys     = HM_FetchKeys(hashmap, idx)
+	WAVE/T values   = HM_FetchValues(hashmap, idx)
+
+	return [usedRows, keys, values]
+End
+
+/// @brief Statistics wave
+///
+/// Rows:
+/// - 0: Total number of filled entries
+threadsafe static Function/WAVE HM_CreateStatsWave()
+
+	Make/FREE/N=(1)/D wv
+
+	return wv
+End
+
+/// @brief List of stored key/value pairs per hash prefix
+///
+/// Rows:
+/// - Number of key/value pairs per hashmap row
+threadsafe static Function/WAVE HM_CreateUsedRows(variable size)
+
+	Make/FREE/N=(size)/U/I wv
+
+	return wv
+End
+
+/// @brief Internal management wave
+///
+/// Rows:
+/// - 0: 32-bit unsigned int wave with size rows denoting the number of key/value pairs per line
+/// - 1: wave ref wave with stats entries, see HM_GetStatsWave()
+threadsafe static Function/WAVE HM_CreateManagementWave(variable size)
+
+	Make/FREE/N=(2)/WAVE wv
+
+	wv[HM_USED_ROWS_ROW] = HM_CreateUsedRows(size)
+	wv[HM_STATS_ROW]     = HM_CreateStatsWave()
+
+	return wv
+End
+
+/// @brief Return a wave reference wave resembling a hashmap (implementation)
+///
+/// Rows:
+///  - first bits of the hash
+///
+/// Columns:
+/// - 0: 1D text wave with all keys for this hash
+/// - 1: 1D text wave with all values for this hash
+///
+/// Complexity: O(n)
+///
+/// @param size size of the hashmap, needs to be a power of two
+threadsafe static Function/WAVE HM_CreateHashmap(variable size)
+
+	variable numThreads
+
+	numThreads = GetNumberOfUsefulThreads({size})
+
+	Make/FREE/WAVE/N=(size, 2) hashmap_impl
+
+	Multithread/NT=(numThreads) hashmap_impl[][HM_KEYS_COLUMN] = NewFreeWave(IGOR_TYPE_TEXT_WREF_DFR, 2)
+	Multithread/NT=(numThreads) hashmap_impl[][HM_VALUES_COLUMN] = NewFreeWave(IGOR_TYPE_TEXT_WREF_DFR, 2)
+
+	return hashmap_impl
+End
+
 /// @brief Return a wave reference wave resembling a hashmap
 ///
 /// Rows:
-///  - `size` rows with the first bits of the hash
-///
-/// Columns:
-/// - 0: 32bit-unsigned integer wave with one point holding parts of the key's hash
-/// - 1: 1D text wave with all keys for this hash
-/// - 2: 1D text wave with all values for this hash
+///  - 0: Wave reference wave with management wave, see HM_CreateManagementWave()
+///  - 1: Wave reference wave with hashmap data, see HM_CreateHashmap()
 ///
 /// Complexity: O(n)
 ///
 /// @param size size of the hashmap, needs to be a power of two
 threadsafe Function/WAVE HM_Create([variable size])
-
-	variable numThreads
 
 	if(ParamIsDefault(size))
 		size = 2^16
@@ -433,16 +547,10 @@ threadsafe Function/WAVE HM_Create([variable size])
 		ASSERT_TS(IsPower(size, 2), "size must be a power of two")
 	endif
 
-	Make/FREE/WAVE/N=(size, 3) hashmap
+	Make/FREE/WAVE/N=(2) hashmap
 
-	numThreads = GetNumberOfUsefulThreads({size, 3})
-
-	// 32-bit unsigned integer
-	Multithread/NT=(numThreads) hashmap[][0] = NewFreeWave(IGOR_TYPE_UNSIGNED | IGOR_TYPE_32BIT_INT, 1)
-
-	// both text waves
-	Multithread/NT=(numThreads) hashmap[][1] = NewFreeWave(IGOR_TYPE_TEXT_WREF_DFR, 2)
-	Multithread/NT=(numThreads) hashmap[][2] = NewFreeWave(IGOR_TYPE_TEXT_WREF_DFR, 2)
+	hashmap[HM_MGMT_ROW]    = HM_CreateManagementWave(size)
+	hashmap[HM_HASHMAP_ROW] = HM_CreateHashmap(size)
 
 	return hashmap
 End
@@ -458,11 +566,9 @@ threadsafe Function HM_AddEntry(WAVE/WAVE hashmap, string key, string value)
 
 	idx = HM_HashKey(hashmap, key)
 
-	WAVE   usedRows = hashmap[idx][0]
-	WAVE/T keys     = hashmap[idx][1]
-	WAVE/T values   = hashmap[idx][2]
+	[WAVE usedRows, WAVE/T keys, WAVE/T values] = HM_FetchWaves(hashmap, idx)
 
-	entriesWithHash = usedRows[0]
+	entriesWithHash = usedRows[idx]
 
 	if(entriesWithHash > 0)
 		keyIndex = HM_GetKeyIndex(keys, key, entriesWithHash)
@@ -481,7 +587,10 @@ threadsafe Function HM_AddEntry(WAVE/WAVE hashmap, string key, string value)
 
 	keys[entriesWithHash]   = key
 	values[entriesWithHash] = value
-	usedRows[0]             = entriesWithHash + 1
+	usedRows[idx]           = entriesWithHash + 1
+
+	WAVE totalEntries = HM_FetchStats(hashmap)
+	totalEntries[HM_TOTAL_ENTRIES_ROW] += 1
 
 	return 1
 End
@@ -498,11 +607,9 @@ threadsafe Function [string value, variable found] HM_GetEntry(WAVE/WAVE hashmap
 
 	idx = HM_HashKey(hashmap, key)
 
-	WAVE   usedRows = hashmap[idx][0]
-	WAVE/T keys     = hashmap[idx][1]
-	WAVE/T values   = hashmap[idx][2]
+	[WAVE usedRows, WAVE/T keys, WAVE/T values] = HM_FetchWaves(hashmap, idx)
 
-	entriesWithHash = usedRows[0]
+	entriesWithHash = usedRows[idx]
 
 	keyIndex = HM_GetKeyIndex(keys, key, entriesWithHash)
 
@@ -524,11 +631,9 @@ threadsafe Function HM_DeleteEntry(WAVE/WAVE hashmap, string key)
 
 	idx = HM_HashKey(hashmap, key)
 
-	WAVE   usedRows = hashmap[idx][0]
-	WAVE/T keys     = hashmap[idx][1]
-	WAVE/T values   = hashmap[idx][2]
+	[WAVE usedRows, WAVE/T keys, WAVE/T values] = HM_FetchWaves(hashmap, idx)
 
-	entriesWithHash = usedRows[0]
+	entriesWithHash = usedRows[idx]
 
 	keyIndex = HM_GetKeyIndex(keys, key, entriesWithHash)
 
@@ -548,7 +653,10 @@ threadsafe Function HM_DeleteEntry(WAVE/WAVE hashmap, string key)
 	keys[entriesWithHash - 1]   = ""
 	values[entriesWithHash - 1] = ""
 
-	usedRows[0] = entriesWithHash - 1
+	usedRows[idx] = entriesWithHash - 1
+
+	WAVE totalEntries = HM_FetchStats(hashmap)
+	totalEntries[HM_TOTAL_ENTRIES_ROW] -= 1
 
 	return 0
 End
@@ -568,11 +676,12 @@ threadsafe Function/WAVE HM_GetAllKeys(WAVE/WAVE hashmap)
 
 	Make/FREE/WAVE/N=(DimSize(results, ROWS)) allKeysTmp
 
-	for(idx : results)
-		WAVE   usedRows = hashmap[idx][0]
-		WAVE/T keys     = hashmap[idx][1]
+	WAVE usedRows = HM_FetchUsedRows(hashmap)
 
-		entriesWithHash = usedRows[0]
+	for(idx : results)
+		WAVE/T keys = HM_FetchKeys(hashmap, idx)
+
+		entriesWithHash = usedRows[idx]
 
 		Duplicate/FREE/RMD=[0, entriesWithHash - 1]/T keys, filledKeys
 		allKeysTmp[wvIndex] = filledKeys
@@ -591,14 +700,16 @@ threadsafe static Function/WAVE HM_GetFilledEntries(WAVE/WAVE hashmap)
 
 	variable numThreads, numPossibleEntries
 
-	numPossibleEntries = DimSize(hashmap, ROWS)
+	numPossibleEntries = HM_GetSize(hashmap)
 
 	numThreads = GetNumberOfUsefulThreads({numPossibleEntries})
+
+	WAVE usedRows = HM_FetchUsedRows(hashmap)
 
 	// not using GetTemporaryWave here to avoid issues with recursion
 	Make/FREE/N=(numPossibleEntries) matches
 
-	Multithread/NT=(numThreads) matches = (WaveRef(hashmap, row = p, col = 0)[0] > 0) ? p : NaN
+	Multithread/NT=(numThreads) matches = usedRows[p] ? p : NaN
 
 	WAVE/Z result = ZapNaNs(matches)
 
@@ -607,30 +718,21 @@ End
 
 /// @brief Calculate the load factor from the hashmap and the filled entries
 ///
-/// Complexity: O(n)
+/// Complexity: O(1)
 threadsafe static Function HM_CalculateLoadFactor(WAVE/WAVE hashmap)
 
-	variable numPossibleEntries, numThreads
+	WAVE totalEntries = HM_FetchStats(hashmap)
 
-	numPossibleEntries = DimSize(hashmap, ROWS)
-
-	// not using GetTemporaryWave here to avoid issues with recursion
-	Make/FREE/N=(numPossibleEntries) counts
-
-	numThreads = GetNumberOfUsefulThreads({numPossibleEntries})
-
-	Multithread/NT=(numThreads) counts = WaveRef(hashmap, row = p, col = 0)[0]
-
-	return Sum(counts) / numPossibleEntries
+	return totalEntries[HM_TOTAL_ENTRIES_ROW] / HM_GetSize(hashmap)
 End
 
 /// @brief Rehashes if required and returns a modified hashmap pass-by-reference
 ///
 /// The load factor (number of available entries vs filled entries) is determined.
 /// And if that is above #HM_MAX_LOAD_FACTOR we create a new hashmap with the doubled size and
-/// readd all existing entries.
+/// add all existing entries to it.
 ///
-/// Complexity: O(n)
+/// Complexity: Usually amortized O(1) but in the worst case O(n)
 ///
 /// @return 0 if nothing needed to be done, 1 if the hashmap was resized and rehashed
 threadsafe Function HM_RehashIfRequired(WAVE/WAVE &hashmap)
@@ -644,23 +746,23 @@ threadsafe Function HM_RehashIfRequired(WAVE/WAVE &hashmap)
 		return 0
 	endif
 
-	srcNumEntries = DimSize(hashmap, ROWS)
+	srcNumEntries = HM_GetSize(hashmap)
 	newSize       = 2 * srcNumEntries
 	WAVE/WAVE hashmapLarger = HM_Create(size = newSize)
 
-	for(srcIdx = 0; srcIdx < srcNumEntries; srcIdx += 1)
-		WAVE usedRows = hashmap[srcIdx][0]
+	WAVE usedRows = HM_FetchUsedRows(hashmap)
 
-		entriesWithHash = usedRows[0]
+	for(srcIdx = 0; srcIdx < srcNumEntries; srcIdx += 1)
+		entriesWithHash = usedRows[srcIdx]
 
 		if(entriesWithHash == 0)
 			continue
 		endif
 
-		for(i = 0; i < entriesWithHash; i += 1)
-			WAVE/T keys   = hashmap[srcIdx][1]
-			WAVE/T values = hashmap[srcIdx][2]
+		WAVE/T keys   = HM_FetchKeys(hashmap, srcIdx)
+		WAVE/T values = HM_FetchValues(hashmap, srcIdx)
 
+		for(i = 0; i < entriesWithHash; i += 1)
 			HM_AddEntry(hashmapLarger, keys[i], values[i])
 		endfor
 	endfor

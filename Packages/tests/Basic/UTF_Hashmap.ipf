@@ -59,17 +59,27 @@ End
 
 static Function CreateHashmapWorks()
 
-	WAVE/WAVE wv = HM_Create()
-	CHECK_WAVE(wv, WAVE_WAVE)
+	WAVE/WAVE hashmap = HM_Create()
+	CHECK_WAVE(hashmap, WAVE_WAVE)
 
+	WAVE/WAVE hashmap_impl = hashmap[1]
+
+	// hashmap implementation
 	// verify sizes
-	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 2^16)
-	CHECK_EQUAL_VAR(DimSize(wv, COLS), 3)
+	CHECK_EQUAL_VAR(DimSize(hashmap_impl, ROWS), 2^16)
+	CHECK_EQUAL_VAR(DimSize(hashmap_impl, COLS), 2)
 
 	// verify contained waves
-	CHECK_WAVE(wv[0][0], NUMERIC_WAVE, minorType = INT32_WAVE | UNSIGNED_WAVE)
-	CHECK_WAVE(wv[0][1], TEXT_WAVE)
-	CHECK_WAVE(wv[0][2], TEXT_WAVE)
+	CHECK_WAVE(hashmap_impl[0][0], TEXT_WAVE)
+	CHECK_WAVE(hashmap_impl[0][1], TEXT_WAVE)
+
+	// management waves
+	WAVE/WAVE mgmt = hashmap[0]
+	CHECK_WAVE(mgmt, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(mgmt, ROWS), 2)
+
+	CHECK_WAVE(mgmt[0], NUMERIC_WAVE, minorType = IGOR_TYPE_UNSIGNED | IGOR_TYPE_32BIT_INT)
+	CHECK_WAVE(mgmt[1], NUMERIC_WAVE, minorType = IGOR_TYPE_64BIT_FLOAT)
 
 	// bails with invalid size
 	try
@@ -82,16 +92,16 @@ End
 
 static Function CheckHashmapEntry(WAVE/WAVE hashmap, variable index, variable usedEntries, WAVE/T keys, WAVE/T values)
 
+	[WAVE usedRows, WAVE/T keysRef, WAVE/T valuesRef] = MIES_HM#HM_FetchWaves(hashmap, index)
+
 	// used entries in keys/values
-	CHECK_EQUAL_VAR(WaveRef(hashmap, row = index, col = 0)[0], usedEntries)
+	CHECK_EQUAL_VAR(usedRows[index], usedEntries)
 
 	// and it is the first one in keys
-	WAVE keysRef = WaveRef(hashmap, row = index, col = 1)
 	INFO("keys: @%s", s = keysRef)
 	CHECK_EQUAL_TEXTWAVES(keysRef, keys, mode = WAVE_DATA)
 
 	// and values
-	WAVE valuesRef = WaveRef(hashmap, row = index, col = 2)
 	INFO("values: @%s", s = valuesRef)
 	CHECK_EQUAL_TEXTWAVES(valuesRef, values, mode = WAVE_DATA)
 End
@@ -397,7 +407,8 @@ static Function RehashingWorks([variable var])
 	endfor
 
 	CHECK_EQUAL_VAR(HM_RehashIfRequired(hashmap), 1)
-	CHECK_EQUAL_VAR(DimSize(hashmap, ROWS), size * 2)
+	WAVE/WAVE hashmap_impl = hashmap[1]
+	CHECK_EQUAL_VAR(DimSize(hashmap_impl, ROWS), size * 2)
 	CHECK(!WaveRefsEqual(hashmap, hashmap_old))
 
 	WAVE/Z filledEntries = MIES_HM#HM_GetFilledEntries(hashmap)
