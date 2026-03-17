@@ -735,54 +735,37 @@ End
 /// Complexity: O(n)
 threadsafe Function/WAVE HM_GetAllKeys(WAVE/WAVE hashmap)
 
-	variable idx, entriesWithHash, wvIndex
-
-	WAVE/Z results = HM_GetFilledEntries(hashmap)
-
-	if(!WaveExists(results))
-		return $""
-	endif
-
-	Make/FREE/WAVE/N=(DimSize(results, ROWS)) allKeysTmp
-
-	WAVE usedRows = HM_FetchUsedRows(hashmap)
-
-	for(idx : results)
-		WAVE/T keys = HM_FetchKeys(hashmap, idx)
-
-		entriesWithHash = usedRows[idx]
-
-		Duplicate/FREE/RMD=[0, entriesWithHash - 1]/T keys, filledKeys
-		allKeysTmp[wvIndex] = filledKeys
-		wvIndex++
-	endfor
-
-	Concatenate/NP=(ROWS)/FREE/T {allKeysTmp}, allKeys
-
-	return allKeys
-End
-
-/// @brief Return the indizes into hashmap with one or more key/value pairs
-///
-/// Complexity: O(n)
-threadsafe static Function/WAVE HM_GetFilledEntries(WAVE/WAVE hashmap)
-
 	variable numThreads, numPossibleEntries
 
 	numPossibleEntries = HM_GetSize(hashmap)
 
 	numThreads = GetNumberOfUsefulThreads({numPossibleEntries})
 
+	Make/FREE/WAVE/N=(numPossibleEntries) allKeysWR
+
 	WAVE usedRows = HM_FetchUsedRows(hashmap)
+	Multithread/NT=(numThreads) allKeysWR[] = HM_GetAllKeysPerRow(hashmap, p, usedRows[p])
 
-	// not using GetTemporaryWave here to avoid issues with recursion
-	Make/FREE/N=(numPossibleEntries) matches
+	Concatenate/NP=(ROWS)/FREE/T {allKeysWR}, allKeys
 
-	Multithread/NT=(numThreads) matches = usedRows[p] ? p : NaN
+	if(DimSize(allKeys, ROWS) == 0)
+		return $""
+	endif
 
-	WAVE/Z result = ZapNaNs(matches)
+	return allKeys
+End
 
-	return result
+threadsafe static Function/WAVE HM_GetAllKeysPerRow(WAVE/WAVE hashmap, variable index, variable entriesWithHash)
+
+	if(entriesWithHash == 0)
+		return NewFreeWave(IGOR_TYPE_TEXT_WREF_DFR, 0)
+	endif
+
+	WAVE/T keys = HM_FetchKeys(hashmap, index)
+
+	Duplicate/FREE/RMD=[0, entriesWithHash - 1]/T keys, filledKeys
+
+	return filledKeys
 End
 
 /// @brief Calculate the load factor from the hashmap and the filled entries

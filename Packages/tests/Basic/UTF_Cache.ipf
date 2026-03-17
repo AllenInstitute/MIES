@@ -244,7 +244,7 @@ Function UpgradePathWithEmptyKeys()
 	WAVE keys_new = GetCacheKeyHashMap()
 	CHECK_WAVE(keys_old, NULL_WAVE)
 
-	WAVE/Z result = MIES_HM#HM_GetFilledEntries(keys_new)
+	WAVE/Z result = HM_GetAllKeys(keys_new)
 	CHECK_WAVE(result, NULL_WAVE)
 End
 
@@ -263,8 +263,8 @@ Function UpgradePathWithFilledKeys()
 	WAVE keys_new = GetCacheKeyHashMap()
 	CHECK_WAVE(keys_old, NULL_WAVE)
 
-	WAVE/Z result = MIES_HM#HM_GetFilledEntries(keys_new)
-	CHECK_WAVE(result, NUMERIC_WAVE)
+	WAVE/Z result = HM_GetAllKeys(keys_new)
+	CHECK_WAVE(result, TEXT_WAVE)
 	CHECK_EQUAL_VAR(DimSize(result, ROWS), 2)
 
 	[value, found] = HM_GetEntryAsNumber(keys_new, "abcd")
