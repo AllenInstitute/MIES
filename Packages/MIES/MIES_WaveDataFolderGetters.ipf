@@ -6338,7 +6338,7 @@ threadsafe static Function FillHashMapFromNoteIndexVector(WAVE/WAVE hashmap, WAV
 
 	Make/N=(numEntries)/FREE indexHelper
 
-	indexHelper[] = (strlen(entries[p]) > 0) ? HM_AddEntry(hashmap, entries[p], num2str(p)) : 0
+	indexHelper[] = (strlen(entries[p]) > 0) ? HM_AddEntry(hashmap, entries[p], str = num2str(p)) : 0
 End
 
 /// @brief Return the wave reference wave holding the cache stats

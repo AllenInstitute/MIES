@@ -207,7 +207,7 @@ static Constant HM_HASHMAP_ROW = 1
 // 		for(i = 0; i < numRunsWrite; i += 1)
 // 			for(j = 0; j < size; j += 1)
 // 				name = "abcd" + num2str(indizes[i])
-// 				HM_AddEntry(indizesHM, name, num2str(j))
+// 				HM_AddEntry(indizesHM, name, str = num2str(j))
 // 			endfor
 // 		endfor
 //
@@ -217,7 +217,7 @@ static Constant HM_HASHMAP_ROW = 1
 // 		ref = stopmSTimer(-2)
 // 		for(i = 0; i < NUM_RUNS_READ; i += 1)
 // 			name            = "abcd" + num2str(indizes[i])
-// 			[output, found] = HM_GetEntry(indizesHM, name)
+// 			[output, found] = HM_GetEntryAsString(indizesHM, name)
 // 		endfor
 //
 // 		elapsed                                  = (stopmSTimer(-2) - ref) * MICRO_TO_ONE / NUM_RUNS_READ
@@ -464,11 +464,11 @@ threadsafe static Function/WAVE HM_FetchValues(WAVE/WAVE hashmap, variable idx)
 	return WaveRef(hashmap[HM_HASHMAP_ROW], row = idx, col = HM_VALUES_COLUMN)
 End
 
-threadsafe static Function [WAVE usedRows, WAVE/T keys, WAVE/T values] HM_FetchWaves(WAVE/WAVE hashmap, variable idx)
+threadsafe static Function [WAVE usedRows, WAVE/T keys, WAVE values] HM_FetchWaves(WAVE/WAVE hashmap, variable idx)
 
 	WAVE   usedRows = HM_FetchUsedRows(hashmap)
 	WAVE/T keys     = HM_FetchKeys(hashmap, idx)
-	WAVE/T values   = HM_FetchValues(hashmap, idx)
+	WAVE   values   = HM_FetchValues(hashmap, idx)
 
 	return [usedRows, keys, values]
 End
@@ -517,12 +517,13 @@ End
 ///
 /// Columns:
 /// - 0: 1D text wave with all keys for this hash
-/// - 1: 1D text wave with all values for this hash
+/// - 1: 1D wave with all values for this hash, type depends on valueType parameter
 ///
 /// Complexity: O(n)
 ///
 /// @param size size of the hashmap, needs to be a power of two
-threadsafe static Function/WAVE HM_CreateHashmap(variable size)
+/// @param valueType wave type of the values, defaults to text wave and can be one of @ref IgorTypes
+threadsafe static Function/WAVE HM_CreateHashmap(variable size, variable valueType)
 
 	variable numThreads
 
@@ -531,7 +532,7 @@ threadsafe static Function/WAVE HM_CreateHashmap(variable size)
 	Make/FREE/WAVE/N=(size, 2) hashmap_impl
 
 	Multithread/NT=(numThreads) hashmap_impl[][HM_KEYS_COLUMN] = NewFreeWave(IGOR_TYPE_TEXT_WREF_DFR, 2)
-	Multithread/NT=(numThreads) hashmap_impl[][HM_VALUES_COLUMN] = NewFreeWave(IGOR_TYPE_TEXT_WREF_DFR, 2)
+	Multithread/NT=(numThreads) hashmap_impl[][HM_VALUES_COLUMN] = NewFreeWave(valueType, 2)
 
 	return hashmap_impl
 End
@@ -545,7 +546,9 @@ End
 /// Complexity: O(n)
 ///
 /// @param size size of the hashmap, needs to be a power of two
-threadsafe Function/WAVE HM_Create([variable size])
+/// @param valueType wave type of the values, defaults to text wave and all
+///                  non-complex numeric types from @ref IgorTypes are supported
+threadsafe Function/WAVE HM_Create([variable size, variable valueType])
 
 	if(ParamIsDefault(size))
 		size = 2^16
@@ -553,12 +556,28 @@ threadsafe Function/WAVE HM_Create([variable size])
 		ASSERT_TS(IsPower(size, 2), "size must be a power of two")
 	endif
 
+	if(ParamIsDefault(valueType))
+		valueType = IGOR_TYPE_TEXT_WREF_DFR
+	endif
+
 	Make/FREE/WAVE/N=(2) hashmap
 
 	hashmap[HM_MGMT_ROW]    = HM_CreateManagementWave(size)
-	hashmap[HM_HASHMAP_ROW] = HM_CreateHashmap(size)
+	hashmap[HM_HASHMAP_ROW] = HM_CreateHashmap(size, valueType)
 
 	return hashmap
+End
+
+threadsafe static Function HM_StoreValue(WAVE values, variable idx, [string &str, variable &var])
+
+	if(IsTextWave(values))
+		ASSERT_TS(!IsNull(str), "Need a string value for a values text wave.")
+		WAVE/T valuesText = values
+		valuesText[idx] = str
+	else
+		ASSERT_TS(IsNull(str), "Can't write a string value without a values text wave.")
+		values[idx] = var
+	endif
 End
 
 /// @brief Add an entry into the hashmap
@@ -566,13 +585,15 @@ End
 /// Complexity: Amortized O(1)
 ///
 /// @return 1 when adding a new value and 0 when overwriting
-threadsafe Function HM_AddEntry(WAVE/WAVE hashmap, string key, string value)
+threadsafe Function HM_AddEntry(WAVE/WAVE hashmap, string key, [string str, variable var])
 
 	variable idx, entriesWithHash, keyIndex
 
+	ASSERT_TS((ParamIsDefault(str) + ParamIsDefault(var)) == 1, "Need exactly one of str or var")
+
 	idx = HM_HashKey(hashmap, key)
 
-	[WAVE usedRows, WAVE/T keys, WAVE/T values] = HM_FetchWaves(hashmap, idx)
+	[WAVE usedRows, WAVE/T keys, WAVE values] = HM_FetchWaves(hashmap, idx)
 
 	entriesWithHash = usedRows[idx]
 
@@ -581,7 +602,7 @@ threadsafe Function HM_AddEntry(WAVE/WAVE hashmap, string key, string value)
 
 		if(keyIndex >= 0)
 			// overwrite existing entry
-			values[keyIndex] = value
+			HM_StoreValue(values, keyIndex, str = str, var = var)
 			return 0
 		endif
 
@@ -591,9 +612,10 @@ threadsafe Function HM_AddEntry(WAVE/WAVE hashmap, string key, string value)
 		endif
 	endif
 
-	keys[entriesWithHash]   = key
-	values[entriesWithHash] = value
-	usedRows[idx]           = entriesWithHash + 1
+	keys[entriesWithHash] = key
+	HM_StoreValue(values, entriesWithHash, str = str, var = var)
+
+	usedRows[idx] = entriesWithHash + 1
 
 	WAVE totalEntries = HM_FetchStats(hashmap)
 	totalEntries[HM_TOTAL_ENTRIES_ROW] += 1
@@ -601,29 +623,57 @@ threadsafe Function HM_AddEntry(WAVE/WAVE hashmap, string key, string value)
 	return 1
 End
 
-/// @brief Get an entry from the hashmap
+/// @brief Get a string entry from the hashmap
 ///
 /// Complexity: Amortized O(1)
 ///
 /// @retval value string value found
 /// @retval found 1 if something was found, 0 if not
-threadsafe Function [string value, variable found] HM_GetEntry(WAVE/WAVE hashmap, string key)
+threadsafe Function [string value, variable found] HM_GetEntryAsString(WAVE/WAVE hashmap, string key)
 
 	variable idx, keyIndex, entriesWithHash
 
 	idx = HM_HashKey(hashmap, key)
 
-	[WAVE usedRows, WAVE/T keys, WAVE/T values] = HM_FetchWaves(hashmap, idx)
+	[WAVE usedRows, WAVE/T keys, WAVE values] = HM_FetchWaves(hashmap, idx)
 
 	entriesWithHash = usedRows[idx]
 
 	keyIndex = HM_GetKeyIndex(keys, key, entriesWithHash)
 
 	if(keyIndex >= 0)
-		return [values[keyIndex], 1]
+		ASSERT_TS(IsTextWave(values), "Wave type of the values wave must be text.")
+		return [WaveText(values, row = keyIndex), 1]
 	endif
 
 	return ["", 0]
+End
+
+/// @brief Get a numeric entry from the hashmap
+///
+/// Complexity: Amortized O(1)
+///
+/// @retval value value found
+/// @retval found 1 if something was found, 0 if not
+threadsafe Function [variable value, variable found] HM_GetEntryAsNumber(WAVE/WAVE hashmap, string key)
+
+	variable idx, keyIndex, entriesWithHash
+
+	idx = HM_HashKey(hashmap, key)
+
+	[WAVE usedRows, WAVE/T keys, WAVE values] = HM_FetchWaves(hashmap, idx)
+
+	entriesWithHash = usedRows[idx]
+
+	keyIndex = HM_GetKeyIndex(keys, key, entriesWithHash)
+
+	if(keyIndex >= 0)
+		ASSERT_TS(IsNumericWave(values), "Wave type of the values wave must be numeric.")
+		return [values[keyIndex], 1]
+	endif
+
+	// not returning NaN here as the wave type of values might not be floating point
+	return [0, 0]
 End
 
 /// @brief Delete the entry with the given key
@@ -633,11 +683,11 @@ End
 /// @return 0 on success, 1 if the key could not be found
 threadsafe Function HM_DeleteEntry(WAVE/WAVE hashmap, string key)
 
-	variable keyIndex, idx, entriesWithHash
+	variable keyIndex, idx, entriesWithHash, isStr
 
 	idx = HM_HashKey(hashmap, key)
 
-	[WAVE usedRows, WAVE/T keys, WAVE/T values] = HM_FetchWaves(hashmap, idx)
+	[WAVE usedRows, WAVE/T keys, WAVE values] = HM_FetchWaves(hashmap, idx)
 
 	entriesWithHash = usedRows[idx]
 
@@ -647,16 +697,30 @@ threadsafe Function HM_DeleteEntry(WAVE/WAVE hashmap, string key)
 		return 1
 	endif
 
+	isStr = IsTextWave(values)
+
 	if(entriesWithHash > 1 && (keyIndex + 1) != entriesWithHash)
 		// move all keys and values in the range [keyIndex + 1, entriesWithHash - 1]
 		// one element to the left
-		keys[keyIndex, entriesWithHash - 2]   = keys[p + 1]
-		values[keyIndex, entriesWithHash - 2] = values[p + 1]
+		keys[keyIndex, entriesWithHash - 2] = keys[p + 1]
+
+		if(isStr)
+			WAVE/T valuesText = values
+			valuesText[keyIndex, entriesWithHash - 2] = valuesText[p + 1]
+		else
+			values[keyIndex, entriesWithHash - 2] = values[p + 1]
+		endif
 	endif
 
 	// clear last key/value pair
-	keys[entriesWithHash - 1]   = ""
-	values[entriesWithHash - 1] = ""
+	keys[entriesWithHash - 1] = ""
+
+	if(isStr)
+		WAVE/T valuesText = values
+		valuesText[entriesWithHash - 1] = ""
+	else
+		values[entriesWithHash - 1] = 0
+	endif
 
 	usedRows[idx] = entriesWithHash - 1
 
@@ -742,7 +806,7 @@ End
 /// @return 0 if nothing needed to be done, 1 if the hashmap was resized and rehashed
 threadsafe Function HM_RehashIfRequired(WAVE/WAVE &hashmap)
 
-	variable loadFactor, newSize, srcIdx, entriesWithHash, i, srcNumEntries
+	variable loadFactor, newSize, srcIdx, entriesWithHash, i, srcNumEntries, isStr
 
 	loadFactor = HM_CalculateLoadFactor(hashmap)
 
@@ -751,9 +815,12 @@ threadsafe Function HM_RehashIfRequired(WAVE/WAVE &hashmap)
 		return 0
 	endif
 
+	WAVE values = HM_FetchValues(hashmap, 0)
+	isStr = IsTextWave(values)
+
 	srcNumEntries = HM_GetSize(hashmap)
 	newSize       = 2 * srcNumEntries
-	WAVE/WAVE hashmapLarger = HM_Create(size = newSize)
+	WAVE/WAVE hashmapLarger = HM_Create(size = newSize, valueType = WaveType(values))
 
 	WAVE usedRows = HM_FetchUsedRows(hashmap)
 
@@ -765,10 +832,14 @@ threadsafe Function HM_RehashIfRequired(WAVE/WAVE &hashmap)
 		endif
 
 		WAVE/T keys   = HM_FetchKeys(hashmap, srcIdx)
-		WAVE/T values = HM_FetchValues(hashmap, srcIdx)
+		WAVE   values = HM_FetchValues(hashmap, srcIdx)
 
 		for(i = 0; i < entriesWithHash; i += 1)
-			HM_AddEntry(hashmapLarger, keys[i], values[i])
+			if(isStr)
+				HM_AddEntry(hashmapLarger, keys[i], str = WaveText(values, row = i))
+			else
+				HM_AddEntry(hashmapLarger, keys[i], var = values[i])
+			endif
 		endfor
 	endfor
 
