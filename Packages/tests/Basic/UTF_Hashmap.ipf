@@ -96,7 +96,7 @@ End
 
 static Function CheckHashmapEntry(WAVE/WAVE hashmap, variable index, variable usedEntries, WAVE/T keys, WAVE/T values)
 
-	[WAVE usedRows, WAVE/T keysRef, WAVE/T valuesRef] = MIES_HM#HM_FetchWaves(hashmap, index)
+	[WAVE usedRows, WAVE/T keysRef, WAVE valuesRef] = MIES_HM#HM_FetchWaves(hashmap, index)
 
 	// used entries in keys/values
 	CHECK_EQUAL_VAR(usedRows[index], usedEntries)
@@ -123,7 +123,7 @@ static Function AddEntryWorks()
 	// adding first value
 	key   = "7314"
 	value = "efgh"
-	ret   = HM_AddEntry(hashmap, key, value)
+	ret   = HM_AddEntry(hashmap, key, str = value)
 	CHECK_EQUAL_VAR(ret, 1)
 
 	WAVE/Z result = MIES_HM#HM_GetFilledEntries(hashmap)
@@ -133,7 +133,7 @@ static Function AddEntryWorks()
 	CheckHashmapEntry(hashmap, result[0], 1, {key, ""}, {value, ""})
 
 	// overwrite the same value again
-	ret = HM_AddEntry(hashmap, key, value)
+	ret = HM_AddEntry(hashmap, key, str = value)
 	CHECK_EQUAL_VAR(ret, 0)
 
 	WAVE/Z result = MIES_HM#HM_GetFilledEntries(hashmap)
@@ -146,7 +146,7 @@ static Function AddEntryWorks()
 	// Found via
 	// •FindCollision_IGNORE(6100)
 	// dup[0] = {7314,57289,71869}
-	ret = HM_AddEntry(hashmap, "57289", "ijkl")
+	ret = HM_AddEntry(hashmap, "57289", str = "ijkl")
 	CHECK_EQUAL_VAR(ret, 1)
 
 	WAVE/Z result = MIES_HM#HM_GetFilledEntries(hashmap)
@@ -156,7 +156,7 @@ static Function AddEntryWorks()
 	CheckHashmapEntry(hashmap, result[0], 2, {key, "57289"}, {value, "ijkl"})
 
 	// add yet another collision, this time keys and values is resized
-	ret = HM_AddEntry(hashmap, "71869", "mnop")
+	ret = HM_AddEntry(hashmap, "71869", str = "mnop")
 	CHECK_EQUAL_VAR(ret, 1)
 
 	WAVE/Z result = MIES_HM#HM_GetFilledEntries(hashmap)
@@ -164,6 +164,13 @@ static Function AddEntryWorks()
 	CHECK_EQUAL_WAVES(result, {6100}, mode = WAVE_DATA)
 
 	CheckHashmapEntry(hashmap, result[0], 3, {key, "57289", "71869", ""}, {value, "ijkl", "mnop", ""})
+
+	try
+		HM_AddEntry(hashmap, "abcd")
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
 End
 
 Function FindCollision_IGNORE(variable value, [variable size])
@@ -210,22 +217,22 @@ End
 static Function GetEntryWorks()
 
 	string key, value, result
-	variable found
+	variable found, valueVar
 
 	WAVE hashmap = HM_Create()
 
 	// adding first value
 	key   = "7314"
 	value = "efgh"
-	HM_AddEntry(hashmap, key, value)
+	HM_AddEntry(hashmap, key, str = value)
 
-	[result, found] = HM_GetEntry(hashmap, key)
+	[result, found] = HM_GetEntryAsString(hashmap, key)
 
 	CHECK_EQUAL_VAR(found, 1)
 	CHECK_EQUAL_STR(result, value)
 
 	// unknown key
-	[result, found] = HM_GetEntry(hashmap, "I_DONT_EXIST")
+	[result, found] = HM_GetEntryAsString(hashmap, "I_DONT_EXIST")
 
 	CHECK_EQUAL_VAR(found, 0)
 	CHECK_EQUAL_STR(result, "")
@@ -233,9 +240,9 @@ static Function GetEntryWorks()
 	// can store and retrieve empty value
 	key   = ""
 	value = ""
-	HM_AddEntry(hashmap, key, value)
+	HM_AddEntry(hashmap, key, str = value)
 
-	[result, found] = HM_GetEntry(hashmap, key)
+	[result, found] = HM_GetEntryAsString(hashmap, key)
 
 	CHECK_EQUAL_VAR(found, 1)
 	CHECK_EQUAL_STR(result, "")
@@ -243,12 +250,19 @@ static Function GetEntryWorks()
 	// returned key is from a collision, see AddEntryWorks()
 	key   = "57289"
 	value = "ijkl"
-	HM_AddEntry(hashmap, key, value)
+	HM_AddEntry(hashmap, key, str = value)
 
-	[result, found] = HM_GetEntry(hashmap, key)
+	[result, found] = HM_GetEntryAsString(hashmap, key)
 
 	CHECK_EQUAL_VAR(found, 1)
 	CHECK_EQUAL_STR(result, value)
+
+	try
+		[valueVar, found] = HM_GetEntryAsNumber(hashmap, key)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
 End
 
 static Function DeleteEntryWorks()
@@ -261,7 +275,7 @@ static Function DeleteEntryWorks()
 	// adding first value
 	key   = "7314"
 	value = "efgh"
-	HM_AddEntry(hashmap, key, value)
+	HM_AddEntry(hashmap, key, str = value)
 
 	WAVE/Z results = MIES_HM#HM_GetFilledEntries(hashmap)
 	CHECK_WAVE(results, NUMERIC_WAVE)
@@ -277,7 +291,7 @@ static Function DeleteEntryWorks()
 
 	CheckHashmapEntry(hashmap, 6100, 0, {"", ""}, {"", ""})
 
-	[result, found] = HM_GetEntry(hashmap, key)
+	[result, found] = HM_GetEntryAsString(hashmap, key)
 
 	CHECK_EQUAL_VAR(found, 0)
 	CHECK_EQUAL_STR(result, "")
@@ -293,15 +307,15 @@ static Function DeleteEntryWorks()
 	// dup[0] = {7314,57289,71869}
 	key   = "7314"
 	value = "efgh"
-	HM_AddEntry(hashmap, key, value)
+	HM_AddEntry(hashmap, key, str = value)
 
 	key   = "57289"
 	value = "ijkl"
-	HM_AddEntry(hashmap, key, value)
+	HM_AddEntry(hashmap, key, str = value)
 
 	key   = "71869"
 	value = "mnop"
-	HM_AddEntry(hashmap, key, value)
+	HM_AddEntry(hashmap, key, str = value)
 
 	WAVE/Z results = MIES_HM#HM_GetFilledEntries(hashmap)
 	CHECK_WAVE(results, NUMERIC_WAVE)
@@ -326,11 +340,11 @@ static Function DeleteLastEntryWorks()
 	// add two collisions
 	key   = "7314"
 	value = "efgh"
-	HM_AddEntry(hashmap, key, value)
+	HM_AddEntry(hashmap, key, str = value)
 
 	key   = "57289"
 	value = "ijkl"
-	HM_AddEntry(hashmap, key, value)
+	HM_AddEntry(hashmap, key, str = value)
 
 	WAVE/Z results = MIES_HM#HM_GetFilledEntries(hashmap)
 	CHECK_WAVE(results, NUMERIC_WAVE)
@@ -353,10 +367,10 @@ static Function WorksWithDifferentSizes([variable var])
 	// add entry
 	key   = "7314"
 	value = "efgh"
-	HM_AddEntry(hashmap, key, value)
+	HM_AddEntry(hashmap, key, str = value)
 
 	// fetch it
-	[result, found] = HM_GetEntry(hashmap, key)
+	[result, found] = HM_GetEntryAsString(hashmap, key)
 
 	CHECK_EQUAL_VAR(found, 1)
 	CHECK_EQUAL_STR(result, value)
@@ -365,7 +379,7 @@ static Function WorksWithDifferentSizes([variable var])
 	ret = HM_DeleteEntry(hashmap, key)
 	CHECK_EQUAL_VAR(ret, 0)
 
-	[result, found] = HM_GetEntry(hashmap, key)
+	[result, found] = HM_GetEntryAsString(hashmap, key)
 
 	CHECK_EQUAL_VAR(found, 0)
 	CHECK_EQUAL_STR(result, "")
@@ -384,7 +398,7 @@ static Function CalculateLoadFactorWorks()
 	// add entry
 	key   = "7314"
 	value = "efgh"
-	HM_AddEntry(hashmap, key, value)
+	HM_AddEntry(hashmap, key, str = value)
 
 	loadFactor = MIES_HM#HM_CalculateLoadFactor(hashmap)
 	CHECK_EQUAL_VAR(loadFactor, 1 / 8)
@@ -392,7 +406,7 @@ static Function CalculateLoadFactorWorks()
 	// add a collision, see FindCollision_IGNORE()
 	key   = "7"
 	value = "mnop"
-	HM_AddEntry(hashmap, key, value)
+	HM_AddEntry(hashmap, key, str = value)
 
 	WAVE/Z filledEntries = MIES_HM#HM_GetFilledEntries(hashmap)
 	CHECK_WAVE(filledEntries, NUMERIC_WAVE)
@@ -402,7 +416,7 @@ static Function CalculateLoadFactorWorks()
 	// and add another entry
 	key   = "someKey"
 	value = "ijkl"
-	HM_AddEntry(hashmap, key, value)
+	HM_AddEntry(hashmap, key, str = value)
 
 	WAVE/Z filledEntries = MIES_HM#HM_GetFilledEntries(hashmap)
 	CHECK_WAVE(filledEntries, NUMERIC_WAVE)
@@ -433,7 +447,7 @@ static Function RehashingWorks([variable var])
 	CHECK(WaveRefsEqual(hashmap, hashmap_old))
 
 	for(i = 0; i < size; i += 1)
-		HM_AddEntry(hashmap, num2str(i), "-" + num2str(i))
+		HM_AddEntry(hashmap, num2str(i), str = "-" + num2str(i))
 	endfor
 
 	CHECK_EQUAL_VAR(HM_RehashIfRequired(hashmap), 1)
@@ -447,7 +461,7 @@ static Function RehashingWorks([variable var])
 	CHECK_EQUAL_WAVES(filledEntries, {5, 6, 7, 8, 9, 10, 11, 12}, mode = WAVE_DATA)
 
 	for(i = 0; i < size; i += 1)
-		[value, found] = HM_GetEntry(hashmap, num2str(i))
+		[value, found] = HM_GetEntryAsString(hashmap, num2str(i))
 		CHECK(found)
 		CHECK_EQUAL_STR(value, "-" + num2str(i))
 	endfor
@@ -470,7 +484,7 @@ static Function GetAllKeysWorks()
 	// adding first value
 	key   = "7314"
 	value = "efgh"
-	HM_AddEntry(hashmap, key, value)
+	HM_AddEntry(hashmap, key, str = value)
 
 	WAVE/Z allKeys = HM_GetAllKeys(hashmap)
 	CHECK_EQUAL_TEXTWAVES(allKeys, {"7314"})
@@ -478,7 +492,7 @@ static Function GetAllKeysWorks()
 	// random other entry
 	key   = "1234"
 	value = "abcdf"
-	HM_AddEntry(hashmap, key, value)
+	HM_AddEntry(hashmap, key, str = value)
 
 	WAVE/Z allKeys = HM_GetAllKeys(hashmap)
 	CHECK_EQUAL_TEXTWAVES(allKeys, {"7314", "1234"})
@@ -486,8 +500,70 @@ static Function GetAllKeysWorks()
 	// returned key is from a collision, see AddEntryWorks()
 	key   = "57289"
 	value = "ijkl"
-	HM_AddEntry(hashmap, key, value)
+	HM_AddEntry(hashmap, key, str = value)
 
 	WAVE/Z allKeys = HM_GetAllKeys(hashmap)
 	CHECK_EQUAL_TEXTWAVES(allKeys, {"7314", "57289", "1234"})
+End
+
+/// UTF_TD_GENERATOR DataGenerators#GenerateAllPossibleNumericWaveTypes
+static Function WorksWithNumericValues([variable var])
+
+	string key, valueStr
+	variable value, found, ret
+
+	if(var & IGOR_TYPE_COMPLEX)
+		// no support for complex
+		SKIP_TESTCASE()
+		return NaN
+	endif
+
+	WAVE/WAVE hashmap = HM_Create(size = 8, valueType = var)
+
+	WAVE/Z results = MIES_HM#HM_GetFilledEntries(hashmap)
+	CHECK_WAVE(results, NULL_WAVE)
+
+	key   = "1234"
+	value = 200
+	HM_AddEntry(hashmap, key, var = value)
+	WAVE/Z results = MIES_HM#HM_GetFilledEntries(hashmap)
+	CHECK_WAVE(results, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(results, {7})
+
+	// another entry
+	key   = "910111213"
+	value = 150
+	HM_AddEntry(hashmap, key, var = value)
+	WAVE/Z results = MIES_HM#HM_GetFilledEntries(hashmap)
+	CHECK_WAVE(results, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(results, {0, 7})
+
+	WAVE/Z/T keys = HM_GetAllKeys(hashmap)
+	CHECK_WAVE(keys, TEXT_WAVE)
+	CHECK_EQUAL_TEXTWAVES(keys, {"910111213", "1234"})
+
+	// collision
+	// •FindCollision_IGNORE(7, size = 8)
+	// dup[0] = {2,11,19}
+	key   = "2"
+	value = 30
+	HM_AddEntry(hashmap, key, var = value)
+
+	[value, found] = HM_GetEntryAsNumber(hashmap, key)
+	CHECK(found)
+	CHECK_EQUAL_VAR(value, 30)
+
+	ret = HM_DeleteEntry(hashmap, key)
+	CHECK_EQUAL_VAR(ret, 0)
+
+	WAVE/Z results = MIES_HM#HM_GetFilledEntries(hashmap)
+	CHECK_WAVE(results, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(results, {0, 7})
+
+	try
+		[valueStr, found] = HM_GetEntryAsString(hashmap, "1234")
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
 End

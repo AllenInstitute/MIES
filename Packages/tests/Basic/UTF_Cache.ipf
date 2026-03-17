@@ -268,11 +268,11 @@ Function UpgradePathWithFilledKeys()
 	CHECK_WAVE(result, NUMERIC_WAVE)
 	CHECK_EQUAL_VAR(DimSize(result, ROWS), 2)
 
-	[value, found] = HM_GetEntry(keys_new, "abcd")
+	[value, found] = HM_GetEntryAsString(keys_new, "abcd")
 	CHECK(found)
 	CHECK_EQUAL_STR(value, "0")
 
-	[value, found] = HM_GetEntry(keys_new, "efgh")
+	[value, found] = HM_GetEntryAsString(keys_new, "efgh")
 	CHECK(found)
 	CHECK_EQUAL_STR(value, "10")
 End

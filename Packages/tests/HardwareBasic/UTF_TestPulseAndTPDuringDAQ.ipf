@@ -1199,8 +1199,7 @@ End
 
 static Function TestPulseCachingWorks_REENTRY([string str])
 
-	variable sweepNo, index, found
-	string value
+	variable sweepNo, index, found, value
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
 
@@ -1214,11 +1213,11 @@ static Function TestPulseCachingWorks_REENTRY([string str])
 	FindValue/TEXT=("HW Datawave Testpulse") allKeys
 	CHECK_GE_VAR(V_Value, 0)
 
-	[value, found] = HM_GetEntry(keys, allKeys[V_Value])
+	[value, found] = HM_GetEntryAsNumber(keys, allKeys[V_Value])
 	CHECK(found)
 
 	WAVE stats = GetCacheStatsWave()
-	CHECK_GE_VAR(stats[str2num(value)][%Hits], 1)
+	CHECK_GE_VAR(stats[value][%Hits], 1)
 End
 
 /// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
