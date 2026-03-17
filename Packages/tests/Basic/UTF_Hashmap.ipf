@@ -94,6 +94,29 @@ static Function CreateHashmapWorks()
 	endtry
 End
 
+/// @brief Return the indizes into hashmap with one or more key/value pairs
+///
+/// Complexity: O(n)
+static Function/WAVE GetFilledEntries(WAVE/WAVE hashmap)
+
+	variable numThreads, numPossibleEntries
+
+	numPossibleEntries = MIES_HM#HM_GetSize(hashmap)
+
+	numThreads = GetNumberOfUsefulThreads({numPossibleEntries})
+
+	WAVE usedRows = MIES_HM#HM_FetchUsedRows(hashmap)
+
+	// not using GetTemporaryWave here to avoid issues with recursion
+	Make/FREE/N=(numPossibleEntries) matches
+
+	Multithread/NT=(numThreads) matches = usedRows[p] ? p : NaN
+
+	WAVE/Z result = ZapNaNs(matches)
+
+	return result
+End
+
 static Function CheckHashmapEntry(WAVE/WAVE hashmap, variable index, variable usedEntries, WAVE/T keys, WAVE/T values)
 
 	[WAVE usedRows, WAVE/T keysRef, WAVE valuesRef] = MIES_HM#HM_FetchWaves(hashmap, index)
@@ -117,7 +140,7 @@ static Function AddEntryWorks()
 
 	WAVE hashmap = HM_Create()
 
-	WAVE/Z result = MIES_HM#HM_GetFilledEntries(hashmap)
+	WAVE/Z result = GetFilledEntries(hashmap)
 	CHECK_WAVE(result, NULL_WAVE)
 
 	// adding first value
@@ -126,7 +149,7 @@ static Function AddEntryWorks()
 	ret   = HM_AddEntry(hashmap, key, str = value)
 	CHECK_EQUAL_VAR(ret, 1)
 
-	WAVE/Z result = MIES_HM#HM_GetFilledEntries(hashmap)
+	WAVE/Z result = GetFilledEntries(hashmap)
 	CHECK_WAVE(result, NUMERIC_WAVE)
 	CHECK_EQUAL_WAVES(result, {6100}, mode = WAVE_DATA)
 
@@ -136,7 +159,7 @@ static Function AddEntryWorks()
 	ret = HM_AddEntry(hashmap, key, str = value)
 	CHECK_EQUAL_VAR(ret, 0)
 
-	WAVE/Z result = MIES_HM#HM_GetFilledEntries(hashmap)
+	WAVE/Z result = GetFilledEntries(hashmap)
 	CHECK_WAVE(result, NUMERIC_WAVE)
 	CHECK_EQUAL_WAVES(result, {6100}, mode = WAVE_DATA)
 
@@ -149,7 +172,7 @@ static Function AddEntryWorks()
 	ret = HM_AddEntry(hashmap, "57289", str = "ijkl")
 	CHECK_EQUAL_VAR(ret, 1)
 
-	WAVE/Z result = MIES_HM#HM_GetFilledEntries(hashmap)
+	WAVE/Z result = GetFilledEntries(hashmap)
 	CHECK_WAVE(result, NUMERIC_WAVE)
 	CHECK_EQUAL_WAVES(result, {6100}, mode = WAVE_DATA)
 
@@ -159,7 +182,7 @@ static Function AddEntryWorks()
 	ret = HM_AddEntry(hashmap, "71869", str = "mnop")
 	CHECK_EQUAL_VAR(ret, 1)
 
-	WAVE/Z result = MIES_HM#HM_GetFilledEntries(hashmap)
+	WAVE/Z result = GetFilledEntries(hashmap)
 	CHECK_WAVE(result, NUMERIC_WAVE)
 	CHECK_EQUAL_WAVES(result, {6100}, mode = WAVE_DATA)
 
@@ -277,7 +300,7 @@ static Function DeleteEntryWorks()
 	value = "efgh"
 	HM_AddEntry(hashmap, key, str = value)
 
-	WAVE/Z results = MIES_HM#HM_GetFilledEntries(hashmap)
+	WAVE/Z results = GetFilledEntries(hashmap)
 	CHECK_WAVE(results, NUMERIC_WAVE)
 	CHECK_EQUAL_WAVES(results, {6100}, mode = WAVE_DATA)
 
@@ -286,7 +309,7 @@ static Function DeleteEntryWorks()
 	ret = HM_DeleteEntry(hashmap, key)
 	CHECK_EQUAL_VAR(ret, 0)
 
-	WAVE/Z results = MIES_HM#HM_GetFilledEntries(hashmap)
+	WAVE/Z results = GetFilledEntries(hashmap)
 	CHECK_WAVE(results, NULL_WAVE)
 
 	CheckHashmapEntry(hashmap, 6100, 0, {"", ""}, {"", ""})
@@ -300,7 +323,7 @@ static Function DeleteEntryWorks()
 	ret = HM_DeleteEntry(hashmap, key)
 	CHECK_EQUAL_VAR(ret, 1)
 
-	WAVE/Z results = MIES_HM#HM_GetFilledEntries(hashmap)
+	WAVE/Z results = GetFilledEntries(hashmap)
 	CHECK_WAVE(results, NULL_WAVE)
 
 	// add three collisions, see AddEntryWorks()
@@ -317,7 +340,7 @@ static Function DeleteEntryWorks()
 	value = "mnop"
 	HM_AddEntry(hashmap, key, str = value)
 
-	WAVE/Z results = MIES_HM#HM_GetFilledEntries(hashmap)
+	WAVE/Z results = GetFilledEntries(hashmap)
 	CHECK_WAVE(results, NUMERIC_WAVE)
 	CHECK_EQUAL_WAVES(results, {6100}, mode = WAVE_DATA)
 
@@ -346,7 +369,7 @@ static Function DeleteLastEntryWorks()
 	value = "ijkl"
 	HM_AddEntry(hashmap, key, str = value)
 
-	WAVE/Z results = MIES_HM#HM_GetFilledEntries(hashmap)
+	WAVE/Z results = GetFilledEntries(hashmap)
 	CHECK_WAVE(results, NUMERIC_WAVE)
 	CHECK_EQUAL_WAVES(results, {6100}, mode = WAVE_DATA)
 
@@ -408,7 +431,7 @@ static Function CalculateLoadFactorWorks()
 	value = "mnop"
 	HM_AddEntry(hashmap, key, str = value)
 
-	WAVE/Z filledEntries = MIES_HM#HM_GetFilledEntries(hashmap)
+	WAVE/Z filledEntries = GetFilledEntries(hashmap)
 	CHECK_WAVE(filledEntries, NUMERIC_WAVE)
 
 	CheckHashmapEntry(hashmap, filledEntries[0], 2, {"7314", "7"}, {"efgh", "mnop"})
@@ -418,7 +441,7 @@ static Function CalculateLoadFactorWorks()
 	value = "ijkl"
 	HM_AddEntry(hashmap, key, str = value)
 
-	WAVE/Z filledEntries = MIES_HM#HM_GetFilledEntries(hashmap)
+	WAVE/Z filledEntries = GetFilledEntries(hashmap)
 	CHECK_WAVE(filledEntries, NUMERIC_WAVE)
 
 	loadFactor = MIES_HM#HM_CalculateLoadFactor(hashmap)
@@ -455,7 +478,7 @@ static Function RehashingWorks([variable var])
 	CHECK_EQUAL_VAR(DimSize(hashmap_impl, ROWS), size * 2)
 	CHECK(!WaveRefsEqual(hashmap, hashmap_old))
 
-	WAVE/Z filledEntries = MIES_HM#HM_GetFilledEntries(hashmap)
+	WAVE/Z filledEntries = GetFilledEntries(hashmap)
 	CHECK_WAVE(filledEntries, NUMERIC_WAVE)
 	CHECK_EQUAL_VAR(DimSize(filledEntries, ROWS), size)
 	CHECK_EQUAL_WAVES(filledEntries, {5, 6, 7, 8, 9, 10, 11, 12}, mode = WAVE_DATA)
@@ -520,13 +543,13 @@ static Function WorksWithNumericValues([variable var])
 
 	WAVE/WAVE hashmap = HM_Create(size = 8, valueType = var)
 
-	WAVE/Z results = MIES_HM#HM_GetFilledEntries(hashmap)
+	WAVE/Z results = GetFilledEntries(hashmap)
 	CHECK_WAVE(results, NULL_WAVE)
 
 	key   = "1234"
 	value = 200
 	HM_AddEntry(hashmap, key, var = value)
-	WAVE/Z results = MIES_HM#HM_GetFilledEntries(hashmap)
+	WAVE/Z results = GetFilledEntries(hashmap)
 	CHECK_WAVE(results, NUMERIC_WAVE)
 	CHECK_EQUAL_WAVES(results, {7})
 
@@ -534,7 +557,7 @@ static Function WorksWithNumericValues([variable var])
 	key   = "910111213"
 	value = 150
 	HM_AddEntry(hashmap, key, var = value)
-	WAVE/Z results = MIES_HM#HM_GetFilledEntries(hashmap)
+	WAVE/Z results = GetFilledEntries(hashmap)
 	CHECK_WAVE(results, NUMERIC_WAVE)
 	CHECK_EQUAL_WAVES(results, {0, 7})
 
@@ -556,7 +579,7 @@ static Function WorksWithNumericValues([variable var])
 	ret = HM_DeleteEntry(hashmap, key)
 	CHECK_EQUAL_VAR(ret, 0)
 
-	WAVE/Z results = MIES_HM#HM_GetFilledEntries(hashmap)
+	WAVE/Z results = GetFilledEntries(hashmap)
 	CHECK_WAVE(results, NUMERIC_WAVE)
 	CHECK_EQUAL_WAVES(results, {0, 7})
 
