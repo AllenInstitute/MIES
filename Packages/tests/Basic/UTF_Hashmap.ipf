@@ -316,6 +316,32 @@ static Function DeleteEntryWorks()
 	CheckHashmapEntry(hashmap, results[0], 2, {"7314", "71869", "", ""}, {"efgh", "mnop", "", ""})
 End
 
+static Function DeleteLastEntryWorks()
+
+	string key, value
+	variable ret
+
+	WAVE hashmap = HM_Create()
+
+	// add two collisions
+	key   = "7314"
+	value = "efgh"
+	HM_AddEntry(hashmap, key, value)
+
+	key   = "57289"
+	value = "ijkl"
+	HM_AddEntry(hashmap, key, value)
+
+	WAVE/Z results = MIES_HM#HM_GetFilledEntries(hashmap)
+	CHECK_WAVE(results, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(results, {6100}, mode = WAVE_DATA)
+
+	// delete last one
+	ret = HM_DeleteEntry(hashmap, key)
+	CHECK_EQUAL_VAR(ret, 0)
+	CHECK_NO_RTE()
+End
+
 /// UTF_TD_GENERATOR DataGenerators#ValidHashmapSizes
 static Function WorksWithDifferentSizes([variable var])
 
