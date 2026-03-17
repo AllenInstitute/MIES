@@ -647,7 +647,7 @@ threadsafe Function HM_DeleteEntry(WAVE/WAVE hashmap, string key)
 		return 1
 	endif
 
-	if(entriesWithHash > 1)
+	if(entriesWithHash > 1 && (keyIndex + 1) != entriesWithHash)
 		// move all keys and values in the range [keyIndex + 1, entriesWithHash - 1]
 		// one element to the left
 		keys[keyIndex, entriesWithHash - 2]   = keys[p + 1]
@@ -655,7 +655,6 @@ threadsafe Function HM_DeleteEntry(WAVE/WAVE hashmap, string key)
 	endif
 
 	// clear last key/value pair
-	// keyIndex == 0 and entriesWithHash == 1
 	keys[entriesWithHash - 1]   = ""
 	values[entriesWithHash - 1] = ""
 
