@@ -648,7 +648,7 @@ threadsafe Function CA_StoreEntryIntoCache(string key, WAVE/Z val, [variable opt
 		WAVE/Z waveToStore = val
 	endif
 
-	HM_AddEntry(keys, key, str = num2istr(index))
+	HM_AddEntry(keys, key, var = index)
 
 	values[index] = waveToStore
 
@@ -665,15 +665,14 @@ End
 /// UTF_NOINSTRUMENTATION
 threadsafe static Function CA_GetCacheIndex(WAVE/WAVE keys, string key)
 
-	string   value
-	variable found
+	variable found, value
 
 	ASSERT_TS(!isEmpty(key), "Cache key can not be empty")
 
-	[value, found] = HM_GetEntryAsString(keys, key)
+	[value, found] = HM_GetEntryAsNumber(keys, key)
 
 	if(found)
-		return str2num(value)
+		return value
 	endif
 
 	return NaN
@@ -863,7 +862,7 @@ Function CA_Compactify()
 			stats[newIndex][] = stats_old[index][q]
 			values[newIndex]  = values_old[index]
 			// overwrite index with newIndex in hashmap
-			HM_AddEntry(keys, key, str = num2istr(newIndex))
+			HM_AddEntry(keys, key, var = newIndex)
 			newIndex += 1
 		endif
 	endfor

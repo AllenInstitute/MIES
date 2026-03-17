@@ -250,8 +250,7 @@ End
 
 Function UpgradePathWithFilledKeys()
 
-	variable found
-	string   value
+	variable found, value
 
 	DFREF dfr = GetCacheFolder()
 	Make/T/N=(MINIMUM_WAVE_SIZE) dfr:keys/WAVE=keys_old
@@ -268,13 +267,13 @@ Function UpgradePathWithFilledKeys()
 	CHECK_WAVE(result, NUMERIC_WAVE)
 	CHECK_EQUAL_VAR(DimSize(result, ROWS), 2)
 
-	[value, found] = HM_GetEntryAsString(keys_new, "abcd")
+	[value, found] = HM_GetEntryAsNumber(keys_new, "abcd")
 	CHECK(found)
-	CHECK_EQUAL_STR(value, "0")
+	CHECK_EQUAL_VAR(value, 0)
 
-	[value, found] = HM_GetEntryAsString(keys_new, "efgh")
+	[value, found] = HM_GetEntryAsNumber(keys_new, "efgh")
 	CHECK(found)
-	CHECK_EQUAL_STR(value, "10")
+	CHECK_EQUAL_VAR(value, 10)
 End
 
 static Function/WAVE GetModCounts(WAVE keys, WAVE values, WAVE stats)

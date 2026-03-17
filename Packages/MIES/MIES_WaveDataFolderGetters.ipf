@@ -6307,7 +6307,7 @@ threadsafe Function/WAVE GetCacheKeyHashMap()
 		return wv
 	endif
 
-	WAVE wv = HM_Create(size = 2^14)
+	WAVE wv = HM_Create(size = 2^14, valueType = IGOR_TYPE_32BIT_INT | IGOR_TYPE_UNSIGNED)
 
 	WAVE/Z/T/SDFR=dfr keys
 	if(WaveExists(keys))
@@ -6338,7 +6338,7 @@ threadsafe static Function FillHashMapFromNoteIndexVector(WAVE/WAVE hashmap, WAV
 
 	Make/N=(numEntries)/FREE indexHelper
 
-	indexHelper[] = (strlen(entries[p]) > 0) ? HM_AddEntry(hashmap, entries[p], str = num2str(p)) : 0
+	indexHelper[] = (strlen(entries[p]) > 0) ? HM_AddEntry(hashmap, entries[p], var = p) : 0
 End
 
 /// @brief Return the wave reference wave holding the cache stats
