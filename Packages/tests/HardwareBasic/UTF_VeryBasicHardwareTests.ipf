@@ -8,6 +8,19 @@ static Function CheckInstallation()
 	CHECK_EQUAL_VAR(CHI_CheckInstallation(), 0)
 End
 
+static Function MiesVersionIsValidAndNotDirty()
+
+	string version = GetMiesVersionAsString()
+
+	INFO("MIES version: %s", s0 = version)
+
+	CHECK_NEQ_STR(version, UNKNOWN_MIES_VERSION)
+
+	if(IsRunningInCI())
+		CHECK_EQUAL_VAR(strsearch(version, "dirty", 0), -1)
+	endif
+End
+
 static Function CheckTestingInstallation()
 
 	string str
