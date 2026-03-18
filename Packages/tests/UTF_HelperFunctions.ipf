@@ -233,8 +233,8 @@ Function PrepareForPublishTest()
 
 	UpdateXOPLoggingTemplate()
 
-	variable numTrials = StartZeroMQSockets(forceRestart = 1)
-	REQUIRE_EQUAL_VAR(numTrials, 0)
+	variable ret = StartZeroMQSockets(forceRestart = 1)
+	REQUIRE_EQUAL_VAR(ret, 0)
 
 	zeromq_sub_remove_filter("")
 

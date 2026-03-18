@@ -84,19 +84,19 @@ End
 static Function CHI_CheckZeroMQPorts(STRUCT CHI_InstallationState &state)
 
 	string msg, reply, receivedMessage, receivedFilter, errMsg, filter
-	variable err, numTrials, i, usesDefaultPorts, gotMessage
+	variable err, numTrials, i, ret, gotMessage
 
 	numTrials = 10
 	filter    = "testfilter"
 
-	usesDefaultPorts = (StartZeroMQSockets(forceRestart = 1) == 0)
+	ret = (StartZeroMQSockets(forceRestart = 1) == 0)
 
-	printf "ZeroMQ XOP: Could %sconnect to the standard ZeroMQ ports (%s)\r", SelectString(usesDefaultPorts, "not ", ""), SelectString(usesDefaultPorts, "Very Bad", "Nice!")
+	printf "ZeroMQ XOP: Could %sconnect to the standard ZeroMQ ports (%s)\r", SelectString(ret, "not ", ""), SelectString(ret, "Very Bad", "Nice!")
 
 	state.numTries  += 1
-	state.numErrors += !usesDefaultPorts
+	state.numErrors += !ret
 
-	if(!usesDefaultPorts)
+	if(!ret)
 		return NaN
 	endif
 
