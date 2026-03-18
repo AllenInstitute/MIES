@@ -139,6 +139,48 @@ static Function CHI_CheckXOP(WAVE/T list, string item, string name, STRUCT CHI_I
 	endswitch
 End
 
+static Function CHI_CheckShortcuts(STRUCT CHI_InstallationState &state)
+
+	string symbPath, path, folder, resultString
+	variable err
+
+	symbPath = GetUniqueSymbolicPath()
+
+	folder = "Igor Pro User Files"
+	path   = SpecialDirPath(folder, 0, 0, 0)
+	NewPath/Q/O $symbPath, path
+
+	WAVE/Z/T allFiles = GetAllFilesRecursivelyFromPath(symbPath)
+	KillPath/Z $symbPath
+
+	state.numTries += 1
+
+	if(!WaveExists(allFiles))
+		printf "Could not find any files in the \"%s\" folder. This is unexpected. (Very Bad)\r", folder
+		state.numErrors += 1
+		return NaN
+	endif
+
+	state.numTries += 1
+
+	WAVE/Z/T leftOvers = GrepTextWave(allFiles, "(?i).*(\.lnk|:About Igor Pro User Files\.txt|User Files:Python Scripts.*)$", invert = 1)
+
+#ifdef AUTOMATED_TESTING
+	if(WaveExists(leftOvers))
+		// ignore some more paths when we have an installation using the installer in CI, see tools/clean_mies_installation.sh for the paths
+		// and https://gitforwindows.org/symbolic-links.html for why we don't use mklink on Windows
+		WAVE/Z/T leftOversTesting = GrepTextWave(leftOvers, "(?i).*:(ipf:.*|Conversion:.*|tests:.*|igortest.*\.ipf|unit-testing\.ipf)$", invert = 1)
+		WAVE/Z/T leftOvers        = leftOversTesting
+	endif
+#endif // AUTOMATED_TESTING
+
+	err = WaveExists(leftOvers)
+
+	resultString = SelectString(err, " " + U+2205 + " (Nice!)", "\r - \"" + TextWaveToList(leftOvers, ", ", trailSep = 0) + "\" (Very Bad)")
+	printf "All files in the \"Igor Pro User Files\" folder should be shortcuts (ignoring well-known exceptions) and we found the following unexpected files:%s\r", resultString
+	state.numErrors += err
+End
+
 /// @return JSON id or NaN if configuration file does not exist
 static Function CHI_LoadInstallationConfiguration()
 
@@ -328,6 +370,8 @@ Function CHI_CheckInstallation()
 	endif
 
 #ifdef WINDOWS
+	CHI_CheckShortcuts(state)
+
 	if(installedWithHW)
 		CHI_CheckXOP(listOfXOPs, "itcxop2-64.xop", "ITC XOP", state)
 		CHI_CheckXOP(listOfXOPs, "AxonTelegraph64.xop", "Axon Telegraph XOP", state)
