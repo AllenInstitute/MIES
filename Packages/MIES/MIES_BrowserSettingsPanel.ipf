@@ -27,8 +27,6 @@ static StrConstant BROWSERSETTINGS_AXES_SCALING_CHECKBOXES = "check_Display_Visi
 static StrConstant SWEEPCONTROL_CONTROLS_DATABROWSER  = "check_SweepControl_AutoUpdate;setvar_SweepControl_SweepNo;"
 static StrConstant SWEEPCONTROL_CONTROLS_SWEEPBROWSER = "popup_SweepControl_Selector;"
 
-static StrConstant BSP_USER_DATA_SF_CONTENT_CRC = "SweepFormulaContentCRC"
-
 static Constant BSP_EPOCH_LEVELS = 5
 
 /// @brief return the name of the external panel depending on main window name
