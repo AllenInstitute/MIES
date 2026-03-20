@@ -219,6 +219,8 @@ End
 /// @param device      device
 /// @param initialSetupReq [optional, defaults to true] performs initialization routines
 ///                        at the very beginning of DAQ, turn off for RA
+///
+/// @return 0 on success, 1 if aborted
 Function DQM_StartDAQMultiDevice(string device, [variable initialSetupReq])
 
 	variable ADCConfig
@@ -242,11 +244,9 @@ Function DQM_StartDAQMultiDevice(string device, [variable initialSetupReq])
 	catch
 		if(initialSetupReq)
 			DAP_OneTimeCallAfterDAQ(device, DQ_STOP_REASON_CONFIG_FAILED, forcedStop = 1)
-		else // required for RA
-			DQ_StopDAQDeviceTimer(device)
 		endif
 
-		return NaN
+		return 1
 	endtry
 
 	// configure passed device
@@ -256,6 +256,8 @@ Function DQM_StartDAQMultiDevice(string device, [variable initialSetupReq])
 
 	DAP_UpdateITIAcrossSets(device, maxITI)
 	DQM_BkrdDataAcq(device)
+
+	return 0
 End
 
 /// @brief Start the background timer for the inter trial interval (ITI)

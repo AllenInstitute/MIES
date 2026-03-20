@@ -3615,7 +3615,7 @@ End
 ///
 /// @param device device
 /// @param mode       One of @ref ToggleAcquisitionButtonConstants
-Function DAP_ToggleAcquisitionButton(string device, variable mode)
+static Function DAP_ToggleAcquisitionButton(string device, variable mode)
 
 	ASSERT(mode == DATA_ACQ_BUTTON_TO_STOP || mode == DATA_ACQ_BUTTON_TO_DAQ, "Invalid mode")
 
