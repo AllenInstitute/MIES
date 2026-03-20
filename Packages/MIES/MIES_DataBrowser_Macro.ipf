@@ -28,7 +28,6 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin, userdata(BROWSERMODE)="User"
-	SetWindow kwTopWin, userdata(SweepFormulaContentCRC)="1827768143"
 	SetWindow kwTopWin, userdata(JSONSettings_WindowGroup)="databrowser"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={366,279,inf,inf}" // sizeLimit requires Igor 7 or later
 	NewPanel/HOST=#/EXT=2/W=(0, 0, 580, 70) as "Sweep Control"
@@ -73,6 +72,9 @@ Window DataBrowser() : Graph
 	CheckBox check_SweepControl_AutoUpdate, title="Display last sweep acquired"
 	CheckBox check_SweepControl_AutoUpdate, help={"Displays the last sweep acquired when data acquistion is ongoing"}
 	CheckBox check_SweepControl_AutoUpdate, value=1
+	SetWindow kwTopWin, hook(windowCoordinateSaving)=StoreWindowCoordinatesHook
+	SetWindow kwTopWin, userdata(JSONSettings_StoreCoordinates)="1"
+	SetWindow kwTopWin, userdata(JSONSettings_WindowName)="DataBrowser#SweepControl"
 	RenameWindow #, SweepControl
 	SetActiveSubwindow ##
 	NewPanel/HOST=#/EXT=1/W=(445, 0, 0, 500) as " "
@@ -1013,7 +1015,7 @@ Window DataBrowser() : Graph
 	CheckBox check_BrowserSettings_DB_Passed, userdata(ResizeControlsInfo)=A"!!,D#!!#=o!!#>^!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_BrowserSettings_DB_Passed, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_BrowserSettings_DB_Passed, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_BrowserSettings_DB_Passed, value=1
+	CheckBox check_BrowserSettings_DB_Passed, value=0
 	CheckBox check_BrowserSettings_DB_Failed, pos={37.00, 56.00}, size={47.00, 15.00}, disable=3, proc=AD_CheckProc_FailedSweeps
 	CheckBox check_BrowserSettings_DB_Failed, title="Failed"
 	CheckBox check_BrowserSettings_DB_Failed, help={"Show failed sweeps for selection"}
@@ -1221,6 +1223,7 @@ Window DataBrowser() : Graph
 	DefineGuide enableBoxTop={FT, 25}, enableBoxBottom={enableBoxTop, 50}, MainBoxBottom={FB, 3}
 	DefineGuide MainBoxTop={enableBoxBottom, 10}
 	SetWindow kwTopWin, hook(ResizeControls)=ResizeControlsSafe
+	SetWindow kwTopWin, hook(windowCoordinateSaving)=StoreWindowCoordinatesHook
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)=A"!!*'\"z!!#CCJ,ht5zzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
@@ -1234,6 +1237,8 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin, userdata(ResizeControlsInfoMainBoxBottom)="NAME:MainBoxBottom;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:500.00;GUIDE1:FB;GUIDE2:;RELPOSITION:3;"
 	SetWindow kwTopWin, userdata(ResizeControlsInfoMainBoxTop)="NAME:MainBoxTop;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:85.00;GUIDE1:enableBoxBottom;GUIDE2:;RELPOSITION:10;"
 	SetWindow kwTopWin, userdata(ResizeControlsInfoUGVM)="NAME:UGVM;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:380.00;GUIDE1:FB;GUIDE2:;RELPOSITION:-120;"
+	SetWindow kwTopWin, userdata(JSONSettings_StoreCoordinates)="1"
+	SetWindow kwTopWin, userdata(JSONSettings_WindowName)="DataBrowser#BrowserSettingsPanel"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={303,330,inf,inf}" // sizeLimit requires Igor 7 or later
 	NewNotebook/F=0/N=sweepFormula_json/W=(12, 71, 378, 358)/FG=(UGVL, UGVT, UGVR, UGVB)/HOST=#/V=0/OPTS=12
 	Notebook kwTopWin, defaultTab=10, autoSave=0, magnification=100, writeProtect=1
@@ -1251,7 +1256,7 @@ Window DataBrowser() : Graph
 	NewNotebook/F=1/N=sweepFormula_formula/W=(12, 71, 378, 402)/FG=(UGVL, UGVT, UGVR, UGVM)/HOST=#/V=0
 	Notebook kwTopWin, defaultTab=10, autoSave=1, magnification=100, showRuler=0, rulerUnits=2
 	Notebook kwTopWin, newRuler=Normal, justification=0, margins={0, 0, 285}, spacing={0, 0, 0}, tabs={}, rulerDefaults={"Arial", 11, 0, (0, 0, 0)}
-	Notebook kwTopWin, zdata="GaqDU%ejN7!Z)u.`Q5gp6juaSXS'k!L4Mn2Ld])[.hK#eE=!1@!9+Q_F;9m$LSP?L/Ich)!tpS$#QZ*qoV0::oMbuuKkLQ/L!73:=C)2ds$-S4r;SuLV(Ge\\EG>t[)3@Nd0$sYs@#Z'S&-Fb3J0N)QM0XBG3Q2ns/t+gDQ,VjaW<L6ZR[UktR&14B9he21!La?@'/`a>3j>Vp\"KTHf_ZH-$!G]Z>@pnfL0?R#5_&WS\"*?\\OO5Y,;bDO:b'fOUBeEYp,W3#6',/b^\\gc:gf/E6cc[cHf'nfFIs=Jm3O"
+	Notebook kwTopWin, zdata="GaqDU%ejN7!Z)u.`Q5gp6juaS>^UhFG6T5l,8(:bX?au2`$I\\H!/O!mdT&R/*0N(![PZJC$qN3-+9[?_du+k1dSgls'qu.Z'Jf:.@X/h.rW<0loDeh%Q*t(c`Mkj_AO&\".\\O6NjJMh2@5Rc#h!K&.8,j+3bjqMSj\\nLAZ<#1guVA9k]BPR)n@%&PN2Dlec\"DB9H9[ll>lG0E_&ZcV7$k$0,\"fNG?Ne,#\"^F2#q#BpH(FF\\%-![37(\\7$`6A!:J5aC1IOi)l3M[+qQ93AVsY_)X``3'SdU@0-FT/R2c"
 	Notebook kwTopWin, zdataEnd=1
 	SetWindow kwTopWin, hook(ResizeControls)=ResizeControlsSafe
 	SetWindow kwTopWin, userdata(tabnum)="0"
@@ -1369,6 +1374,7 @@ Window DataBrowser() : Graph
 	CheckBox check_limit_x_selected_sweeps, value=0
 	DefineGuide UGVL={FL, 125}, UGVR={FR, -200}, UGVCM={FR, -100}
 	SetWindow kwTopWin, hook(ResizeControls)=ResizeControlsSafe
+	SetWindow kwTopWin, hook(windowCoordinateSaving)=StoreWindowCoordinatesHook
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)=A"!!*'\"z!!#D!5QF/Czzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
@@ -1376,6 +1382,8 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin, userdata(ResizeControlsInfoUGVL)="NAME:UGVL;WIN:DB_Dev1#SettingsHistoryPanel;TYPE:User;HORIZONTAL:0;POSITION:125.00;GUIDE1:FL;GUIDE2:;RELPOSITION:125;"
 	SetWindow kwTopWin, userdata(ResizeControlsInfoUGVR)="NAME:UGVR;WIN:DB_Dev1#SettingsHistoryPanel;TYPE:User;HORIZONTAL:0;POSITION:381.00;GUIDE1:FR;GUIDE2:;RELPOSITION:-200;"
 	SetWindow kwTopWin, userdata(ResizeControlsInfoUGVCM)="NAME:UGVCM;WIN:DB_Dev1#SettingsHistoryPanel;TYPE:User;HORIZONTAL:0;POSITION:481.00;GUIDE1:FR;GUIDE2:;RELPOSITION:-100;"
+	SetWindow kwTopWin, userdata(JSONSettings_StoreCoordinates)="1"
+	SetWindow kwTopWin, userdata(JSONSettings_WindowName)="DataBrowser#SettingsHistoryPanel"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={441,168,inf,inf}" // sizeLimit requires Igor 7 or later
 	Display/W=(200, 187, 353, 501)/FG=(UGVL, FT, UGVR, FB)/HOST=#
 	ModifyGraph margin(right)=74, gfSize=10
@@ -1384,7 +1392,7 @@ Window DataBrowser() : Graph
 	SetActiveSubwindow ##
 	NewNotebook/F=1/N=Description/W=(145, 49, 436, 148)/FG=(FL, FT, UGVL, FB)/HOST=#/OPTS=11
 	Notebook kwTopWin, defaultTab=10, autoSave=0, magnification=1, showRuler=0, rulerUnits=0
-	Notebook kwTopWin, newRuler=Normal, justification=0, margins={0, 0, 86}, spacing={0, 0, 0}, tabs={}, rulerDefaults={"Arial", 11, 0, (0, 0, 0)}
+	Notebook kwTopWin, newRuler=Normal, justification=0, margins={0, 0, 281}, spacing={0, 0, 0}, tabs={}, rulerDefaults={"Arial", 11, 0, (0, 0, 0)}
 	SetWindow kwTopWin, userdata(Config_DontRestore)="1"
 	SetWindow kwTopWin, userdata(Config_DontSave)="1"
 	RenameWindow #, Description

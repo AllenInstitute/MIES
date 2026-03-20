@@ -19,7 +19,7 @@ Constant DAQ_CONFIG_WAVE_VERSION = 3
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
 Constant DA_EPHYS_PANEL_VERSION           = 67
-Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 54
+Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 55
 Constant WAVEBUILDER_PANEL_VERSION        = 15
 Constant ANALYSISBROWSER_PANEL_VERSION    = 11
 Constant PSX_PLOT_PANEL_VERSION           = 1
@@ -2349,6 +2349,7 @@ Constant SUBWINDOW_MOVE_CORRECTION = 5
 /// @anchor HashMethods
 ///@{
 Constant HASH_SHA2_256 = 1
+Constant HASH_XXH3_64  = 102
 ///@}
 
 // see DisplayHelpTopic "LoadWave"
@@ -2624,3 +2625,5 @@ Constant SF_DISPLAYTYPE_TABLE = 1
 ///@{
 Constant TRACECOLORMAX = 21
 ///@}
+
+StrConstant BSP_USER_DATA_SF_CONTENT_HASH = "SweepFormulaContentHash"

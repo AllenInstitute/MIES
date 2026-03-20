@@ -321,19 +321,20 @@ Function StoreCurrentPanelsResizeInfo(string panel)
 	ResizeControlsPanel#SaveControlPositions(panel, 0)
 End
 
-/// @brief Return the CRC of the contents of the plain/formatted notebook
+/// @brief Return the hash of the contents of the plain/formatted notebook
 ///
 /// Takes into account formatting but ignores selection.
-Function GetNotebookCRC(string win)
+Function/S GetNotebookHash(string win)
 
 	string content
+	string hv = ""
 
 	content = WinRecreation(win, 1)
 
 	// Filter out // lines which contain the selection
 	content = GrepList(content, "//.*", 1, "\r")
 
-	return StringCRC(0, content)
+	return HashString(hv, content)
 End
 
 ///@brief Format the 2D text wave into a string usable for a legend

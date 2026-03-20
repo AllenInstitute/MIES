@@ -107,6 +107,7 @@ Function DB_DatabrowserStartupSettings()
 	SetWindow $device, userdata(Config_FileHash)=""
 	SetWindow $device, userdata(Config_FileHash)=""
 	SetWindow $device, userdata(PulseAverageSettings)=""
+	SetWindow $device, userData($BSP_USER_DATA_SF_CONTENT_HASH)=""
 
 	PS_RemoveCoordinateSaving(device)
 
