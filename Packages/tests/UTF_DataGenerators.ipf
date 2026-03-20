@@ -2073,3 +2073,17 @@ static Function/WAVE GetEmptyWavesOfAllTypes()
 
 	return waveRefs
 End
+
+static Function/WAVE InsertRowForPostProcessingSweepIndexerText()
+
+	Make/FREE wv = {0, 1}
+
+	return wv
+End
+
+static Function/WAVE InsertRowForPostProcessingSweepIndexerNum()
+
+	Make/FREE wv = {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
+
+	return wv
+End
