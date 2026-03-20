@@ -2073,3 +2073,12 @@ static Function/WAVE GetEmptyWavesOfAllTypes()
 
 	return waveRefs
 End
+
+Function/WAVE SweepFormulaWindowModes()
+
+	Make/FREE wv = {SF_DM_NORMAL, SF_DM_SUBWINDOWS}
+
+	SetDimensionLabels(wv, "Normal;Subwindows", ROWS)
+
+	return wv
+End

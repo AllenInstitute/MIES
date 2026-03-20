@@ -1173,6 +1173,94 @@ static Function TestPlottingWithTablesNormal()
 	CHECK_GE_VAR(WhichListItem("mode(x)=3", recMacro), 0)
 End
 
+// UTF_TD_GENERATOR DataGenerators#SweepFormulaWindowModes
+static Function TestPlottingInfoRestore([variable var])
+
+	string sweepBrowser, baseName
+	string code, tracename, cursorInfo, annoInfo, axInfo, firstWin, secondWin
+	variable windowMode = var
+
+	sweepBrowser = CreateFakeSweepBrowser_IGNORE()
+	DFREF dfr = BSP_GetFolder(sweepBrowser, MIES_BSP_PANEL_FOLDER)
+	baseName = MIES_SF#SF_GetFormulaWinNameTemplate(sweepBrowser)
+
+	code = "[1, 3, 4]\r and\r [2, 3] vs [4,5]"
+
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, code, dmMode = windowMode)
+
+	if(windowMode == SF_DM_NORMAL)
+		firstWin  = baseName + "graph0"
+		secondWin = baseName + "graph1"
+	else
+		firstWin  = baseName + "graph#graph0"
+		secondWin = baseName + "graph#graph1"
+	endif
+
+	INFO(firstWin)
+	CHECK(WindowExists(firstWin))
+
+	INFO(secondWin)
+	CHECK(WindowExists(secondWin))
+
+	ShowInfo/CP=1/W=$GetMainWindow(firstWin)
+	tracename = StringFromList(0, TraceNameList(firstwin, ";", 1 + 2))
+	Cursor/W=$firstwin C, $tracename, 2
+	Cursor/W=$firstwin D, $tracename, 1
+
+	Legend/C/W=$firstwin/N=$SF_ANNOTATION_NAME/X=30/Y=60
+
+	// adapt left axis viewport
+	SetAxis/W=$firstwin left, 2.5, 3.5
+
+	ShowInfo/CP=2/W=$GetMainWindow(secondWin)
+	tracename = StringFromList(0, TraceNameList(secondWin, ";", 1 + 2))
+	Cursor/P/W=$secondWin E, $tracename, 1
+	Cursor/P/W=$secondWin F, $tracename, 0
+	Legend/C/W=$secondWin/N=$SF_ANNOTATION_NAME/X=40/Y=90
+
+	// cheat, so that the user selection is kept
+	SVAR lastCode = $GetLastSweepFormulaCode(dfr)
+	lastCode = code
+
+	// now plot it again
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, code, dmMode = windowMode)
+
+	// and check cursor and annotation positions
+
+	cursorInfo = CsrInfo(C, firstWin)
+	INFO(cursorInfo)
+	CHECK_EQUAL_VAR(NumberByKey("POINT", cursorInfo), 2)
+
+	cursorInfo = CsrInfo(D, firstWin)
+	INFO(cursorInfo)
+	CHECK_EQUAL_VAR(NumberByKey("POINT", cursorInfo), 1)
+
+	annoInfo = StringByKey("FLAGS", AnnotationInfo(firstWin, SF_ANNOTATION_NAME))
+
+	CHECK_EQUAL_VAR(NumberByKey("X", annoInfo, "=", "/"), 30)
+	CHECK_EQUAL_VAR(NumberByKey("Y", annoInfo, "=", "/"), 60)
+
+	axInfo = AxisInfo(firstWin, "left")
+	INFO(axInfo)
+	CHECK_EQUAL_STR(StringByKey("SETAXISCMD", axInfo), "SetAxis left 2.5,3.5")
+
+	cursorInfo = CsrInfo(E, secondWin)
+	INFO(cursorInfo)
+	CHECK_EQUAL_VAR(NumberByKey("POINT", cursorInfo), 1)
+
+	cursorInfo = CsrInfo(F, secondWin)
+	INFO(cursorInfo)
+	CHECK_EQUAL_VAR(NumberByKey("POINT", cursorInfo), 0)
+
+	annoInfo = StringByKey("FLAGS", AnnotationInfo(secondWin, SF_ANNOTATION_NAME))
+
+	INFO(annoInfo)
+	CHECK_EQUAL_VAR(NumberByKey("X", annoInfo, "=", "/"), 40)
+
+	INFO(annoInfo)
+	CHECK_EQUAL_VAR(NumberByKey("Y", annoInfo, "=", "/"), 90)
+End
+
 static Function TestSFPreprocessor()
 
 	string input, output

@@ -724,12 +724,24 @@ End
 static Function SF_CollectPreviousPlotProperties(string win, WAVE/WAVE prevPlotProperties, variable mode)
 
 	variable restoreCursorInfo, idx
+	string winOrSub
 
-	if(WindowExists(win))
-		Make/FREE/T name = {win}
-		WAVE/Z/T axes     = GetAxesProperties(win)
-		WAVE/Z/T cursors  = GetCursorInfos(win)
-		WAVE/Z/T annoInfo = GetAnnotationInfo(win)
+	if(!WindowExists(win))
+		return 0
+	endif
+
+	WAVE/T allWindows = ListToTextWave(GetAllWindows(GetMainWindow(win)), ";")
+
+	for(winOrSub : allWindows)
+
+		if(WinType(winOrSub) != WINTYPE_GRAPH)
+			continue
+		endif
+
+		Make/FREE/T name = {winOrSub}
+		WAVE/Z/T axes     = GetAxesProperties(winOrSub)
+		WAVE/Z/T cursors  = GetCursorInfos(winOrSub)
+		WAVE/Z/T annoInfo = GetAnnotationInfo(winOrSub)
 
 		if(WaveExists(cursors) && mode == SF_DM_SUBWINDOWS)
 			restoreCursorInfo = 1
@@ -742,7 +754,7 @@ static Function SF_CollectPreviousPlotProperties(string win, WAVE/WAVE prevPlotP
 		prevPlotProperties[idx][%CURSORS]     = cursors
 		prevPlotProperties[idx][%ANNOTATIONS] = annoInfo
 		SetNumberInWaveNote(prevPlotProperties, NOTE_INDEX, idx + 1)
-	endif
+	endfor
 
 	return restoreCursorInfo
 End
@@ -1323,9 +1335,8 @@ static Function/S SF_CreateDataDisplayWindow(string graph, WAVE/WAVE formulaResu
 		winIndex = GetNumberFromWaveNote(winGraphs, NOTE_INDEX)
 	endif
 	win = SF_GetDataDisplayWindowName(graph, displayType, mode, winIndex)
-	if(!isTableWindow)
-		restoreCursorInfo = SF_CollectPreviousPlotProperties(win, prevPlotProperties, mode)
-	endif
+
+	restoreCursorInfo = SF_CollectPreviousPlotProperties(win, prevPlotProperties, mode)
 
 	if(mode == SF_DM_NORMAL)
 		if(displayType == SF_DISPLAYTYPE_TABLE)
