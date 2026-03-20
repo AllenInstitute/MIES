@@ -2017,6 +2017,8 @@ Constant TP_GETVALUES_DEFAULT            = 0x0
 Constant TP_GETVALUES_LATEST_AUTOTPCYCLE = 0x1
 ///@}
 
+Constant NUM_DEFAULT_CORES = 8
+
 /// Possible names for TSDS_Read*/TSDS_Write
 /// @anchor ThreadsafeDataExchangeNames
 ///@{

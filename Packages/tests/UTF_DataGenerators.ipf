@@ -807,20 +807,7 @@ static Function/WAVE GenerateAllPossibleWaveTypes()
 
 	variable numberOfNumericTypes
 
-	Make/FREE types = {IGOR_TYPE_8BIT_INT,                                           \
-	                   IGOR_TYPE_16BIT_INT,                                          \
-	                   IGOR_TYPE_32BIT_INT,                                          \
-	                   IGOR_TYPE_64BIT_INT,                                          \
-	                   IGOR_TYPE_8BIT_INT | IGOR_TYPE_UNSIGNED,                      \
-	                   IGOR_TYPE_16BIT_INT | IGOR_TYPE_UNSIGNED,                     \
-	                   IGOR_TYPE_32BIT_INT | IGOR_TYPE_UNSIGNED,                     \
-	                   IGOR_TYPE_64BIT_INT | IGOR_TYPE_UNSIGNED,                     \
-	                   IGOR_TYPE_8BIT_INT | IGOR_TYPE_UNSIGNED | IGOR_TYPE_COMPLEX,  \
-	                   IGOR_TYPE_16BIT_INT | IGOR_TYPE_UNSIGNED | IGOR_TYPE_COMPLEX, \
-	                   IGOR_TYPE_32BIT_INT | IGOR_TYPE_UNSIGNED | IGOR_TYPE_COMPLEX, \
-	                   IGOR_TYPE_64BIT_INT | IGOR_TYPE_UNSIGNED | IGOR_TYPE_COMPLEX, \
-	                   IGOR_TYPE_32BIT_FLOAT,                                        \
-	                   IGOR_TYPE_64BIT_FLOAT}
+	WAVE types = GenerateAllPossibleNumericWaveTypes()
 
 	numberOfNumericTypes = DimSize(types, ROWS)
 
@@ -837,6 +824,30 @@ static Function/WAVE GenerateAllPossibleWaveTypes()
 	waves[numberOfNumericTypes + 2] = wvRefWave
 
 	return waves
+End
+
+static Function/WAVE GenerateAllPossibleNumericWaveTypes()
+
+	Make/FREE types = {IGOR_TYPE_8BIT_INT,                                           \
+	                   IGOR_TYPE_16BIT_INT,                                          \
+	                   IGOR_TYPE_32BIT_INT,                                          \
+	                   IGOR_TYPE_64BIT_INT,                                          \
+	                   IGOR_TYPE_8BIT_INT | IGOR_TYPE_UNSIGNED,                      \
+	                   IGOR_TYPE_16BIT_INT | IGOR_TYPE_UNSIGNED,                     \
+	                   IGOR_TYPE_32BIT_INT | IGOR_TYPE_UNSIGNED,                     \
+	                   IGOR_TYPE_64BIT_INT | IGOR_TYPE_UNSIGNED,                     \
+	                   IGOR_TYPE_8BIT_INT | IGOR_TYPE_UNSIGNED | IGOR_TYPE_COMPLEX,  \
+	                   IGOR_TYPE_16BIT_INT | IGOR_TYPE_UNSIGNED | IGOR_TYPE_COMPLEX, \
+	                   IGOR_TYPE_32BIT_INT | IGOR_TYPE_UNSIGNED | IGOR_TYPE_COMPLEX, \
+	                   IGOR_TYPE_64BIT_INT | IGOR_TYPE_UNSIGNED | IGOR_TYPE_COMPLEX, \
+	                   IGOR_TYPE_32BIT_FLOAT,                                        \
+	                   IGOR_TYPE_64BIT_FLOAT}
+
+	Make/FREE/T/N=(DimSize(types, ROWS)) names = WaveTypeToStringSelectorZero(types[p])
+
+	SetDimensionLabels(types, TextWaveToList(names, ";"), ROWS)
+
+	return types
 End
 
 static Function/WAVE SW_TrueValues()
@@ -2072,4 +2083,20 @@ static Function/WAVE GetEmptyWavesOfAllTypes()
 	SetDimLabel ROWS, 14, $"NT_FP32 | NT_COMPLEX", waveRefs
 
 	return waveRefs
+End
+
+static Function/WAVE ValidHashmapSizes()
+
+	Make/FREE sizes = {2^0, 2^1, 2^8, 2^17}
+
+	return sizes
+End
+
+static Function/WAVE PermanentOrFree()
+
+	Make/FREE wv = {1, 0}
+
+	SetDimensionLabels(wv, "Permanent;Free", ROWS)
+
+	return wv
 End

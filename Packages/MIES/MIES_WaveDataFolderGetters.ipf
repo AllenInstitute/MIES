@@ -6295,25 +6295,50 @@ threadsafe Function/WAVE GetCacheValueWave()
 	return wv
 End
 
-/// @brief Return the wave reference wave holding the cache keys
-///
-/// Dimension sizes and `NOTE_INDEX` value must coincide with other two cache waves.
+/// @brief Return the hashmap holding the cache keys
 /// UTF_NOINSTRUMENTATION
-threadsafe Function/WAVE GetCacheKeyWave()
+threadsafe Function/WAVE GetCacheKeyHashMap()
 
 	DFREF dfr = GetCacheFolder()
 
-	WAVE/Z/T/SDFR=dfr wv = keys
+	WAVE/Z/WAVE/SDFR=dfr wv = hashmap
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/T/N=(MINIMUM_WAVE_SIZE) dfr:keys/WAVE=wv
+	WAVE wv = HM_Create(size = 2^14, valueType = IGOR_TYPE_32BIT_INT | IGOR_TYPE_UNSIGNED)
 
-	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+	WAVE/Z/T/SDFR=dfr keys
+	if(WaveExists(keys))
+		FillHashMapFromNoteIndexVector(wv, keys)
+		HM_RehashIfRequired(wv)
+		KillOrMoveToTrash(wv = keys)
+	endif
+
+	MoveWave wv, dfr:hashmap
 
 	return wv
+End
+
+/// @brief Fill the hashmap with the wave entries as keys and their index as values
+///
+/// Ignores empty values
+threadsafe static Function FillHashMapFromNoteIndexVector(WAVE/WAVE hashmap, WAVE/T entries)
+
+	variable numEntries
+
+	numEntries = GetNumberFromWaveNote(entries, NOTE_INDEX)
+	ASSERT_TS(IsFinite(numEntries), "entries does not hold a NOTE_INDEX")
+
+	if(numEntries == 0)
+		// nothing to do
+		return NaN
+	endif
+
+	Make/N=(numEntries)/FREE indexHelper
+
+	indexHelper[] = (strlen(entries[p]) > 0) ? HM_AddEntry(hashmap, entries[p], var = p) : 0
 End
 
 /// @brief Return the wave reference wave holding the cache stats
@@ -6341,16 +6366,14 @@ threadsafe Function/WAVE GetCacheStatsWave()
 		return wv
 	endif
 
-	WAVE/T    keys   = GetCacheKeyWave()
 	WAVE/WAVE values = GetCacheValueWave()
 	numRows = DimSize(values, ROWS)
-	ASSERT_TS(DimSize(keys, ROWS) == numRows, "Mismatched row sizes")
 
 	if(WaveExists(wv))
 		// experiments prior to efebc382 (Merge pull request #490 from AllenInstitute/mh_fix_uniquedatafoldername, 2020-03-16)
 		// have the wrong value of NOTE_INDEX of the stats wave
 		if(WaveVersionIsAtLeast(wv, 1))
-			index = GetNumberFromWaveNote(keys, NOTE_INDEX)
+			index = GetNumberFromWaveNote(values, NOTE_INDEX)
 			SetNumberInWaveNote(wv, NOTE_INDEX, index)
 		endif
 
@@ -6370,7 +6393,7 @@ threadsafe Function/WAVE GetCacheStatsWave()
 
 	wv = NaN
 
-	index = GetNumberFromWaveNote(keys, NOTE_INDEX)
+	index = GetNumberFromWaveNote(values, NOTE_INDEX)
 	SetNumberInWaveNote(wv, NOTE_INDEX, index)
 	SetWaveVersion(wv, versionOfNewWave)
 

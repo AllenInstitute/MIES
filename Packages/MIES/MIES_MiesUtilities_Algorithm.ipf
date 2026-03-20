@@ -290,16 +290,6 @@ Function DecimateWithMethod(WAVE input, WAVE output, variable decimationFactor, 
 
 	ASSERT(DimSize(output, ROWS) == numRowsDecimated, "Output wave has the wrong size.")
 
-	// This wave is only used to run the multithread assignment. We don't care about the values.
-
-	key = CA_TemporaryWaveKey({numOutputPairs, usedColumns})
-	WAVE/Z/B junkWave = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
-
-	if(!WaveExists(junkWave))
-		Make/N=(numOutputPairs, usedColumns)/FREE/B junkWave
-		CA_StoreEntryIntoCache(key, junkWave, options = CA_OPTS_NO_DUPLICATE)
-	endif
-
 	targetFirst = floor(firstRowInp / (decimationFactor * 2))
 	targetLast  = min(ceil(lastRowInp / (decimationFactor * 2)), numOutputPairs - 1)
 
@@ -311,6 +301,9 @@ Function DecimateWithMethod(WAVE input, WAVE output, variable decimationFactor, 
 	DEBUGPRINT(msg)
 	sprintf msg, "input[%08d][%08d], output[%08d][%08d]; rows [%08d, %08d] -> pairs [%08d, %08d]; cols [%d, %d] [%d, %d]\r", numRowsInp, numColsInp, DimSize(output, ROWS), DimSize(output, COLS), firstRowInp, lastRowInp, targetFirst, targetLast, firstColInp, lastColInp, firstColOut, lastColOut
 	DEBUGPRINT(msg)
+
+	// This wave is only used to run the multithread assignment. We don't care about the values.
+	WAVE junkWave = GetTemporaryWave({numOutputPairs, usedColumns}, IGOR_TYPE_8BIT_INT)
 
 	switch(method)
 		case DECIMATION_MINMAX:
@@ -400,7 +393,12 @@ threadsafe Function GetNumberOfUsefulThreads(WAVE dims)
 	ASSERT_TS(numCols <= 1, "Expected a 1D wave")
 
 	pointsPerThread = 4096
-	numCores        = TSDS_ReadVar(TSDS_PROCCOUNT)
+
+	if(MU_RunningInMainThread())
+		numCores = TSDS_ReadVar(TSDS_PROCCOUNT, defValue = NUM_DEFAULT_CORES, create = 1)
+	else
+		numCores = TSDS_ReadVar(TSDS_PROCCOUNT)
+	endif
 
 	numPoints = 1
 	for(i = 0; i < numRows; i += 1)
@@ -554,13 +552,7 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 	// * This gives a 1D wave with NaN in the rows with no match, and the row index of the match otherwise
 	// * Delete all NaNs in the wave and return it
 
-	key = CA_FindIndizesKey({numRows, numLayers})
-	WAVE/Z/D matches = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
-
-	if(!WaveExists(matches))
-		Make/N=(numRows, numLayers)/FREE/D matches
-		CA_StoreEntryIntoCache(key, matches, options = CA_OPTS_NO_DUPLICATE)
-	endif
+	WAVE/D matches = GetTemporaryWave({numRows, numLayers}, IGOR_TYPE_64BIT_FLOAT)
 
 	numThreads = GetNumberOfUsefulThreads({numRowsEffective, numLayersEffective})
 
