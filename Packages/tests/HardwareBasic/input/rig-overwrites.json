@@ -1,14 +1,16 @@
 {
   "Common configuration data": {
+    "Automatic logfile upload": true,
     "Headstage Association": {
       "0": {
         "Amplifier": {
+          "Channel": 1,
           "IC": {
             "AD": 0,
-            "Autobias Current Max": 1,
+            "Autobias Current Max": 200,
             "Autobias Enable": false,
-            "Autobias Voltage": 0,
-            "Autobias Voltage Range": 0,
+            "Autobias Voltage": -70,
+            "Autobias Voltage Range": 1,
             "Bridge Balance": 0,
             "Bridge Balance Enable": false,
             "Capacitance Neutralization": 0,
@@ -18,10 +20,11 @@
             "Holding Enable": false,
             "Pipette Offset": 0
           },
+          "Title": "0,1",
           "VC": {
             "AD": 0,
             "DA": 0,
-            "Holding": 0,
+            "Holding": -70,
             "Holding Enable": false,
             "Pipette Offset": 0,
             "RS Compensation Chain": false,
@@ -37,18 +40,17 @@
           "AD": 0,
           "AD Gain": 0.5,
           "AD Unit": "psi",
-          "Constant Negative": "NaN",
-          "Constant Positive": "NaN",
           "DA": 0,
           "DA Gain": 2,
           "DA Unit": "psi",
           "Device": "- none -",
           "TTLA": 0,
-          "TTLB": "NaN"
+          "TTLB": 1
         }
       },
       "1": {
         "Amplifier": {
+          "Channel": 2,
           "IC": {
             "AD": 1,
             "Autobias Current Max": 1,
@@ -64,6 +66,7 @@
             "Holding Enable": false,
             "Pipette Offset": 0
           },
+          "Title": "0,1",
           "VC": {
             "AD": 1,
             "DA": 1,
@@ -83,14 +86,12 @@
           "AD": 1,
           "AD Gain": 0.5,
           "AD Unit": "psi",
-          "Constant Negative": "NaN",
-          "Constant Positive": "NaN",
           "DA": 1,
           "DA Gain": 2,
           "DA Unit": "psi",
           "Device": "- none -",
-          "TTLA": 0,
-          "TTLB": "NaN"
+          "TTLA": 2,
+          "TTLB": 3
         }
       },
       "2": null,
@@ -101,14 +102,14 @@
       "7": null
     },
     "Position MCCs": "- none -",
-    "Save data to": "C:MiesSave",
-    "Stim set file name": "c:Projects:mies-igor:Packages:tests:_2017_09_01_192934-compressed.nwb",
+    "Save data to": "C:/ProgramData/AllenInstitute/MIES/MIESData",
+    "Stim set file name": "E:projekte:mies-igor:Packages:tests:_2017_09_01_192934-compressed.nwb",
     "User Pressure Devices": {
-      "DAC Device": "- none -",
-      "DA": 0
+      "DA": 3,
+      "DAC Device": "- none -"
     }
   },
-  "Dev1": {
+  "ITC18USB_Dev_0": {
     "Generic ControlGroup": {
       "ADC": {
         "NumValue": 0
@@ -116,7 +117,7 @@
       "Check_AD": {
         "Values": [
           true,
-          true,
+          false,
           false,
           false,
           false,
@@ -151,7 +152,7 @@
       "Check_DA": {
         "Values": [
           true,
-          true,
+          false,
           false,
           false,
           false,
@@ -176,12 +177,12 @@
         "NumValue": true
       },
       "Check_DataAcq1_dDAQOptOv": {
-        "NumValue": true
+        "NumValue": false
       },
       "Check_DataAcqHS": {
         "Values": [
           true,
-          true,
+          false,
           false,
           false,
           false,
@@ -200,15 +201,12 @@
         "NumValue": false
       },
       "Check_DataAcq_SendToAllAmp": {
-        "NumValue": true
+        "NumValue": false
       },
       "Check_Settings_AlarmAutoRepeat": {
         "NumValue": false
       },
       "Check_Settings_AlarmPauseAcq": {
-        "NumValue": false
-      },
-      "Check_Settings_Append": {
         "NumValue": false
       },
       "Check_Settings_BackgrndDataAcq": {
@@ -218,16 +216,16 @@
         "NumValue": true
       },
       "Check_Settings_ITImanualStart": {
-        "NumValue": false
+        "NumValue": true
       },
       "Check_Settings_InsertTP": {
         "NumValue": true
       },
       "Check_Settings_NwbExport": {
-        "NumValue": false
+        "NumValue": true
       },
       "Check_Settings_SkipAnalysFuncs": {
-        "NumValue": true
+        "NumValue": false
       },
       "Check_Settings_TrigIn": {
         "NumValue": false
@@ -256,9 +254,9 @@
       "Gain_AD": {
         "Values": [
           0.0005000000237487257,
-          0.05000000074505806,
-          1,
-          1,
+          0,
+          0,
+          0,
           0,
           0,
           0,
@@ -275,7 +273,7 @@
       },
       "Gain_AsyncAD": {
         "Values": [
-          1,
+          0.01,
           1,
           0.01,
           0.01,
@@ -288,9 +286,9 @@
       "Gain_DA": {
         "Values": [
           20,
-          400,
-          1,
-          1,
+          0,
+          0,
+          0,
           0,
           0,
           0,
@@ -300,7 +298,7 @@
       "Headstage_0_VC": {
         "NumValue": true
       },
-      "Headstage_1_IC": {
+      "Headstage_1_VC": {
         "NumValue": true
       },
       "Headstage_2_VC": {
@@ -371,8 +369,8 @@
       },
       "Scale_DA": {
         "Values": [
-          70,
-          1500,
+          1,
+          1,
           1,
           1,
           1,
@@ -385,10 +383,10 @@
         "NumValue": 1
       },
       "Scale_DA_AllIClamp": {
-        "NumValue": 1500
+        "NumValue": 1
       },
       "Scale_DA_AllVClamp": {
-        "NumValue": 70
+        "NumValue": 1
       },
       "Search_DA": {
         "Values": [
@@ -430,13 +428,13 @@
         "StrValue": ""
       },
       "SetVar_DataAcq_ITI": {
-        "NumValue": 0.015
+        "NumValue": 0
       },
       "SetVar_DataAcq_ListRepeats": {
         "NumValue": 1
       },
       "SetVar_DataAcq_SetRepeats": {
-        "NumValue": 5
+        "NumValue": 1
       },
       "SetVar_DataAcq_skipAhead": {
         "NumValue": 0
@@ -468,9 +466,9 @@
       "Unit_AD": {
         "Values": [
           "pA",
-          "mV",
           "pA",
-          "pA",
+          "",
+          "",
           "",
           "",
           "",
@@ -500,9 +498,9 @@
       "Unit_DA": {
         "Values": [
           "mV",
-          "pA",
           "mV",
-          "mV",
+          "",
+          "",
           "",
           "",
           "",
@@ -511,8 +509,8 @@
       },
       "Wave_DA": {
         "Values": [
-          "PulseTrain_20Hz_DA_0",
-          "PulseTrain_20Hz_DA_0",
+          "- none -",
+          "- none -",
           "- none -",
           "- none -",
           "- none -",
@@ -525,10 +523,10 @@
         "StrValue": "- none -"
       },
       "Wave_DA_AllIClamp": {
-        "StrValue": "PulseTrain_20Hz_DA_0"
+        "StrValue": "- none -"
       },
       "Wave_DA_AllVClamp": {
-        "StrValue": "PulseTrain_20Hz_DA_0"
+        "StrValue": "- none -"
       },
       "Wave_TTL": {
         "Values": [
@@ -553,7 +551,7 @@
           false,
           false,
           false,
-          false,
+          true,
           false,
           false,
           false,
@@ -561,7 +559,7 @@
         ]
       },
       "check_DA_applyOnModeSwitch": {
-        "NumValue": false
+        "NumValue": true
       },
       "check_DatAcq_ApproachAll": {
         "NumValue": false
@@ -569,25 +567,10 @@
       "check_DatAcq_ApproachNear": {
         "NumValue": false
       },
-      "check_DatAcq_BBEnable": {
-        "NumValue": false
-      },
       "check_DatAcq_BreakInAll": {
         "NumValue": false
       },
-      "check_DatAcq_CNEnable": {
-        "NumValue": false
-      },
       "check_DatAcq_ClearEnable": {
-        "NumValue": false
-      },
-      "check_DatAcq_HoldEnable": {
-        "NumValue": false
-      },
-      "check_DatAcq_HoldEnableVC": {
-        "NumValue": false
-      },
-      "check_DatAcq_RsCompEnable": {
         "NumValue": false
       },
       "check_DatAcq_SealALl": {
@@ -596,19 +579,10 @@
       "check_DatAcq_SealAtm": {
         "NumValue": false
       },
-      "check_DatAcq_WholeCellEnable": {
-        "NumValue": false
-      },
       "check_DataACq_Pressure_AutoOFF": {
         "NumValue": false
       },
       "check_DataACq_Pressure_User": {
-        "NumValue": false
-      },
-      "check_DataAcq_Amp_Chain": {
-        "NumValue": false
-      },
-      "check_DataAcq_AutoBias": {
         "NumValue": false
       },
       "check_DataAcq_IndexRandom": {
@@ -621,7 +595,7 @@
         "NumValue": false
       },
       "check_Settings_AmpIEQZstep": {
-        "NumValue": true
+        "NumValue": false
       },
       "check_Settings_AmpMCCdefault": {
         "NumValue": false
@@ -654,7 +628,7 @@
         "NumValue": true
       },
       "check_Settings_SyncMiesToMCC": {
-        "NumValue": false
+        "NumValue": true
       },
       "check_Settings_TPAfterDAQ": {
         "NumValue": true
@@ -687,8 +661,8 @@
         "Values": [
           0,
           0,
-          34,
-          34,
+          0,
+          35,
           0,
           0,
           0,
@@ -699,8 +673,8 @@
         "Values": [
           0,
           0,
-          -1,
-          -1,
+          0,
+          33,
           0,
           0,
           0,
@@ -708,31 +682,10 @@
         ]
       },
       "popup_MoreSettings_Devices": {
-        "StrValue": "Dev1"
-      },
-      "setvar_DataAcq_AutoBiasV": {
-        "NumValue": 0
-      },
-      "setvar_DataAcq_AutoBiasVrange": {
-        "NumValue": 0
-      },
-      "setvar_DataAcq_BB": {
-        "NumValue": 0
-      },
-      "setvar_DataAcq_CN": {
-        "NumValue": 0
-      },
-      "setvar_DataAcq_Hold_IC": {
-        "NumValue": 0
-      },
-      "setvar_DataAcq_Hold_VC": {
-        "NumValue": 0
-      },
-      "setvar_DataAcq_IbiasMax": {
-        "NumValue": 0
+        "StrValue": "ITC18USB_Dev_0"
       },
       "setvar_DataAcq_OnsetDelayUser": {
-        "NumValue": 500
+        "NumValue": 0
       },
       "setvar_DataAcq_PPDuration": {
         "NumValue": 0
@@ -740,32 +693,14 @@
       "setvar_DataAcq_PPPressure": {
         "NumValue": 0
       },
-      "setvar_DataAcq_PipetteOffset_IC": {
-        "NumValue": 0
-      },
-      "setvar_DataAcq_PipetteOffset_VC": {
-        "NumValue": 0
-      },
-      "setvar_DataAcq_RsCorr": {
-        "NumValue": 0
-      },
-      "setvar_DataAcq_RsPred": {
-        "NumValue": 0
-      },
       "setvar_DataAcq_SSPressure": {
         "NumValue": 0
       },
       "setvar_DataAcq_TerminationDelay": {
-        "NumValue": 1000
-      },
-      "setvar_DataAcq_WCC": {
-        "NumValue": 0
-      },
-      "setvar_DataAcq_WCR": {
         "NumValue": 0
       },
       "setvar_DataAcq_dDAQOptOvPost": {
-        "NumValue": 150
+        "NumValue": 0
       },
       "setvar_DataAcq_dDAQOptOvPre": {
         "NumValue": 0
@@ -776,14 +711,11 @@
       "setvar_Settings_AutoBiasPerc": {
         "NumValue": 15
       },
-      "setvar_Settings_DecMethodFac": {
-        "NumValue": -1
-      },
       "setvar_Settings_InAirP": {
         "NumValue": 3.799999952316284
       },
       "setvar_Settings_InBathP": {
-        "NumValue": 0.5
+        "NumValue": 1.1
       },
       "setvar_Settings_InSliceP": {
         "NumValue": 0.20000000298023224
@@ -807,7 +739,7 @@
         "NumValue": -1.399999976158142
       },
       "setvar_Settings_SealStartP": {
-        "NumValue": -0.10000000149011612
+        "NumValue": -0.20000000298023224
       },
       "setvar_Settings_SliceSurfHeight": {
         "NumValue": 350
@@ -821,28 +753,34 @@
       "setvar_Settings_TP_RTolerance": {
         "NumValue": 1
       },
-      "slider_DataAcq_ActiveHeadstage": {
-        "NumValue": 1
-      },
-      "tab_DataAcq_Amp": {
-        "NumValue": 1
-      },
       "tab_DataAcq_Pressure": {
+        "NumValue": 0
+      },
+      "slider_DataAcq_ActiveHeadstage": {
         "NumValue": 0
       }
     },
     "Test Pulse ControlGroup": {
       "SetVar_DataAcq_TPAmplitude": {
-        "NumValue": -10
+        "NumValue": 10
       },
       "SetVar_DataAcq_TPAmplitudeIC": {
-        "NumValue": -50
+        "NumValue": 50
       },
       "SetVar_DataAcq_TPBaselinePerc": {
-        "NumValue": 30
+        "NumValue": 45
       },
       "SetVar_DataAcq_TPDuration": {
         "NumValue": 10
+      },
+      "setvar_DataAcq_targetVoltage": {
+        "NumValue": -5
+      },
+      "setvar_DataAcq_targetVoltageRange": {
+        "NumValue": 0.5
+      },
+      "setvar_DataAcq_IinjMax": {
+        "NumValue": 200
       }
     }
   },

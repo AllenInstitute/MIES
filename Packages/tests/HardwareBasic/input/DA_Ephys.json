@@ -3,6 +3,7 @@
     "Headstage Association": {
       "0": {
         "Amplifier": {
+          "Channel": 1,
           "IC": {
             "AD": 0,
             "Autobias Current Max": 1,
@@ -18,6 +19,8 @@
             "Holding Enable": false,
             "Pipette Offset": 0
           },
+          "Serial": 0,
+          "Title": "0,1",
           "VC": {
             "AD": 0,
             "DA": 0,
@@ -49,6 +52,7 @@
       },
       "1": {
         "Amplifier": {
+          "Channel": 2,
           "IC": {
             "AD": 1,
             "Autobias Current Max": 1,
@@ -64,6 +68,8 @@
             "Holding Enable": false,
             "Pipette Offset": 0
           },
+          "Serial": 0,
+          "Title": "0,1",
           "VC": {
             "AD": 1,
             "DA": 1,
@@ -102,7 +108,7 @@
     },
     "Position MCCs": "- none -",
     "Save data to": "C:MiesSave",
-    "Stim set file name": "c:Projects:mies-igor:Packages:tests:_2017_09_01_192934-compressed.nwb",
+    "Stim set file name": "",
     "User Pressure Devices": {
       "DAC Device": "- none -",
       "DA": 0

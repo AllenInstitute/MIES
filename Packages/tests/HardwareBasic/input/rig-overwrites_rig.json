@@ -1,0 +1,16 @@
+{
+  "Common configuration data": {
+    "Headstage Association": {
+      "0": {
+        "Amplifier": {
+          "Serial": 0
+        },
+        "Pressure": {
+          "Constant Negative": 0.16,
+          "Constant Positive": 0.16
+        }
+      },
+      "1": null
+    }
+  }
+}
