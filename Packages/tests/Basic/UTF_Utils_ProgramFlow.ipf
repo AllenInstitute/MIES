@@ -167,3 +167,51 @@ Function RunningInMainThread_Main()
 End
 
 /// @}
+
+/// PrependModuleNameIfStatic_TS
+/// @{
+
+Function PMNW_Helper_IGNORE()
+End
+
+static Function PMNW_Helper_static_IGNORE()
+End
+
+threadsafe static Function PMNW_Helper_static_TS_IGNORE()
+End
+
+threadsafe Function PMNW_Helper_TS_IGNORE()
+End
+
+Function PMNWorks()
+
+	string module, func, funcWithMod
+
+	module = "UTILSTEST_PROGRAMFLOW"
+
+	func        = "PMNW_Helper_IGNORE"
+	funcWithMod = func
+	CHECK_EQUAL_STR(PrependModuleNameIfStatic_TS(func, "UTF_Utils_ProgramFlow.ipf"), func)
+
+	func        = "PMNW_Helper_TS_IGNORE"
+	funcWithMod = func
+	CHECK_EQUAL_STR(PrependModuleNameIfStatic_TS(func, "UTF_Utils_ProgramFlow.ipf"), funcWithMod)
+
+	func = "PMNW_Helper_static_IGNORE"
+#if IgorVersion() >= 10
+	funcWithMod = module + "#" + func
+#else
+	funcWithMod = func
+#endif
+	CHECK_EQUAL_STR(PrependModuleNameIfStatic_TS(func, "UTF_Utils_ProgramFlow.ipf"), funcWithMod)
+
+	func = "PMNW_Helper_static_TS_IGNORE"
+#if IgorVersion() >= 10
+	funcWithMod = module + "#" + func
+#else
+	funcWithMod = func
+#endif
+	CHECK_EQUAL_STR(PrependModuleNameIfStatic_TS(func, "UTF_Utils_ProgramFlow.ipf"), funcWithMod)
+End
+
+/// @}
