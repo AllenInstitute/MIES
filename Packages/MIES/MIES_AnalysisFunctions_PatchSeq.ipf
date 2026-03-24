@@ -3229,6 +3229,7 @@ End
 /// @brief Add fillin value between the last positive f-I slope and the next negative f-I slope
 ///
 /// @retval zero if a value could be added, one if not
+/// TODO wrong name and description and return docu
 static Function PSQ_DS_AddDAScaleFillinBetweenPosAndNegSlope(string device, variable sweepNo, variable headstage, [variable fromRhSuAd])
 
 	variable emptySCI, numFitSlopes, idx
@@ -3258,8 +3259,7 @@ static Function PSQ_DS_AddDAScaleFillinBetweenPosAndNegSlope(string device, vari
 	idx = FindSequenceReverseWrapper(seq, negSlopePassedSorted)
 
 	if(idx >= 0)
-		// -1 because negSlopePassedSorted is calculated for two sweeps
-		centerDAScale = round((DAScaleSorted[idx - ((idx == 0) ? 0 : 1)] + DAScaleSorted[idx]) / 2)
+		centerDAScale = round((DAScaleSorted[idx] + DAScaleSorted[idx + 1]) / 2)
 	endif
 
 #ifdef DEBUGGING_ENABLED
