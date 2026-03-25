@@ -123,7 +123,10 @@ static Function/WAVE GetWave_IGNORE()
 	return wv
 End
 
-static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
+static Function [WAVE/WAVE wv, variable sweepNo] GetEntries_IGNORE(string device)
+
+	sweepNo = AFH_GetLastSweepAcquired(device)
+	CHECK(IsValidSweepNumber(sweepNo))
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
@@ -162,7 +165,7 @@ static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
 
 	REQUIRE_EQUAL_VAR(GetRTerror(1), 0)
 
-	return wv
+	return [wv, sweepNo]
 End
 
 Function CheckBaselineChunks(string device, WAVE chunkTimes)
@@ -225,9 +228,7 @@ static Function PS_VM1_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 2
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
@@ -330,9 +331,7 @@ static Function PS_VM2_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 0
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {1}, mode = WAVE_DATA)
@@ -441,9 +440,7 @@ static Function PS_VM3_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 2
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
@@ -546,9 +543,7 @@ static Function PS_VM4_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 2
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
@@ -656,9 +651,7 @@ static Function PS_VM5_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 2
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
@@ -772,9 +765,7 @@ static Function PS_VM5a_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 2
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 1}, mode = WAVE_DATA)
@@ -882,9 +873,7 @@ static Function PS_VM5b_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 0
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {1}, mode = WAVE_DATA)
@@ -1049,9 +1038,7 @@ static Function PS_VM7_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 0
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0}, mode = WAVE_DATA)
@@ -1160,9 +1147,7 @@ static Function PS_VM7a_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 1
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 1}, mode = WAVE_DATA)
@@ -1270,9 +1255,7 @@ static Function PS_VM7b_REENTRY([string str])
 	variable sweepNo
 	string stimset, stimsetIndexEnd, expected
 
-	sweepNo = 2
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
@@ -1381,9 +1364,7 @@ static Function PS_VM8_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 0
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0}, mode = WAVE_DATA)

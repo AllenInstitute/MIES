@@ -133,7 +133,10 @@ static Function/WAVE GetWave_IGNORE()
 	return wv
 End
 
-static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
+static Function [WAVE/WAVE wv, variable sweepNo] GetEntries_IGNORE(string device)
+
+	sweepNo = AFH_GetLastSweepAcquired(device)
+	CHECK(IsValidSweepNumber(sweepNo))
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
@@ -160,7 +163,7 @@ static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
 	wv[%resultsSSResistance]   = GetResultsSingleEntry_IGNORE("Sweep Formula store [Steady state resistance]")
 	wv[%resultsPeakResistance] = GetResultsSingleEntry_IGNORE("Sweep Formula store [Peak resistance]")
 
-	return wv
+	return [wv, sweepNo]
 End
 
 static Function CheckBaselineChunks(string device, WAVE chunkTimes, [variable sweepNo])
@@ -244,9 +247,7 @@ static Function PS_AR1_REENTRY([string str])
 	variable sweepNo
 	string stimset, expected, stimsetIndexEnd
 
-	sweepNo = 2
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
@@ -318,9 +319,7 @@ static Function PS_AR2_REENTRY([string str])
 	variable sweepNo
 	string stimset, expected, stimsetIndexEnd
 
-	sweepNo = 0
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {1}, mode = WAVE_DATA)
@@ -394,9 +393,7 @@ static Function PS_AR3_REENTRY([string str])
 	variable sweepNo
 	string stimset, expected, stimsetIndexEnd
 
-	sweepNo = 2
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
@@ -470,9 +467,7 @@ static Function PS_AR4_REENTRY([string str])
 	variable sweepNo
 	string stimset, expected, stimsetIndexEnd
 
-	sweepNo = 2
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
@@ -547,9 +542,7 @@ static Function PS_AR5_REENTRY([string str])
 	variable sweepNo
 	string stimset, expected, stimsetIndexEnd
 
-	sweepNo = 2
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
@@ -644,9 +637,7 @@ static Function PS_AR6_REENTRY([string str])
 	variable sweepNo
 	string stimset, expected, stimsetIndexEnd
 
-	sweepNo = 3
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 0, 1}, mode = WAVE_DATA)
@@ -723,9 +714,7 @@ static Function PS_AR6a_REENTRY([string str])
 	variable sweepNo
 	string stimset, expected, stimsetIndexEnd
 
-	sweepNo = 2
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
@@ -835,9 +824,7 @@ static Function PS_AR8_REENTRY([string str])
 	variable sweepNo
 	string stimset, expected, stimsetIndexEnd
 
-	sweepNo = 0
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0}, mode = WAVE_DATA)
