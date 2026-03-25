@@ -3260,11 +3260,10 @@ static Function PSQ_DS_NegativefISlopePassingCriteria(WAVE numericalValues, WAVE
 	return 0
 End
 
-/// @brief Add fillin value between the last positive f-I slope and the next negative f-I slope
+/// @brief Add fillin value immediately before the last negative f-I slope
 ///
 /// @retval zero if a value could be added, one if not
-/// TODO wrong name and description and return docu
-static Function PSQ_DS_AddDAScaleFillinBetweenPosAndNegSlope(string device, variable sweepNo, variable headstage, [variable fromRhSuAd])
+static Function PSQ_DS_AddDAScaleFillinBeforeNegSlope(string device, variable sweepNo, variable headstage, [variable fromRhSuAd])
 
 	variable emptySCI, numFitSlopes, idx
 	string type, msg
@@ -3366,7 +3365,7 @@ static Function PSQ_DS_AdaptiveIsFinished(string device, variable sweepNo, varia
 			return 1
 		endif
 
-		if(PSQ_DS_AddDAScaleFillinBetweenPosAndNegSlope(device, sweepNo, headstage, fromRhSuAd = fromRhSuAd))
+		if(PSQ_DS_AddDAScaleFillinBeforeNegSlope(device, sweepNo, headstage, fromRhSuAd = fromRhSuAd))
 			return 1
 		endif
 
