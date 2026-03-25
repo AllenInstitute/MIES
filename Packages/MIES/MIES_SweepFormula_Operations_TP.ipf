@@ -31,8 +31,7 @@ Function/WAVE SFOTP_OperationTP(STRUCT SF_ExecutionData &exd)
 	variable numArgs, outType
 	string dataType, allowedTypes
 
-	numArgs = SFH_GetNumberOfArguments(exd)
-	SFH_ASSERT(numArgs >= 1 || numArgs <= 3, "tp requires 1 to 3 arguments")
+	numArgs = SFH_CheckArgumentCount(exd, SF_OP_TP, 1, maxArgs = 3)
 
 	if(numArgs == 3)
 		WAVE ignoreTPs = SFH_ResolveDatasetElementFromJSON(exd, SF_OP_TP, 2, checkExist = 1)
@@ -459,11 +458,9 @@ End
 // tpbase()
 Function/WAVE SFOTP_OperationTPBase(STRUCT SF_ExecutionData &exd)
 
-	variable numArgs, outType
 	string opShort = SF_OP_TPBASE
 
-	numArgs = SFH_GetNumberOfArguments(exd)
-	SFH_ASSERT(numArgs == 0, "tpbase has no arguments")
+	SFH_CheckArgumentCount(exd, opShort, 0, maxArgs = 0)
 
 	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 0)
 	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_TPBASE)
@@ -474,13 +471,11 @@ End
 // tpfit()
 Function/WAVE SFOTP_OperationTPFit(STRUCT SF_ExecutionData &exd)
 
-	variable numArgs, outType
 	string func, retVal
 	variable maxTrailLength
 	string opShort = SF_OP_TPFIT
 
-	numArgs = SFH_GetNumberOfArguments(exd)
-	SFH_ASSERT(numArgs >= 2 && numArgs <= 3, "tpfit has two or three arguments")
+	SFH_CheckArgumentCount(exd, opShort, 2, maxArgs = 3)
 
 	WAVE/T wFitType = SFH_ResolveDatasetElementFromJSON(exd, SF_OP_TPFIT, 0, checkExist = 1)
 	SFH_ASSERT(IsTextWave(wFitType), "TPFit function argument must be textual.")
@@ -514,11 +509,9 @@ End
 // tpinst()
 Function/WAVE SFOTP_OperationTPInst(STRUCT SF_ExecutionData &exd)
 
-	variable numArgs, outType
 	string opShort = SF_OP_TPINST
 
-	numArgs = SFH_GetNumberOfArguments(exd)
-	SFH_ASSERT(numArgs == 0, "tpinst has no arguments")
+	SFH_CheckArgumentCount(exd, opShort, 0, maxArgs = 0)
 
 	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 0)
 	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_TPINST)
@@ -529,11 +522,9 @@ End
 // tpss()
 Function/WAVE SFOTP_OperationTPSS(STRUCT SF_ExecutionData &exd)
 
-	variable numArgs, outType
 	string opShort = SF_OP_TPSS
 
-	numArgs = SFH_GetNumberOfArguments(exd)
-	SFH_ASSERT(numArgs == 0, "tpss has no arguments")
+	SFH_CheckArgumentCount(exd, opShort, 0, maxArgs = 0)
 
 	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 0)
 	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_TPSS)
