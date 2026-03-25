@@ -1346,6 +1346,8 @@ StrConstant PSQ_DS_AD_FALLBACK_RHSUAD             = "FallbackRhSuAd"
 StrConstant PSQ_DS_AD_FALLBACK                    = "Fallback"
 StrConstant PSQ_DS_AD_FINISHED_RHSUAD             = "FinishedRhSuAd"
 StrConstant PSQ_DS_AD_FINISHED                    = "Finished"
+StrConstant PSQ_DS_AD_FAIL_SWEEP_NEG_SLOPE_RHSUAD = "FailSweepNegSlopeRhSuAd"
+StrConstant PSQ_DS_AD_FAIL_SWEEP_NEG_SLOPE        = "FailSweepNegSlope"
 ///@}
 
 StrConstant PSQ_DS_AD_TYPE_SEP = ":"
