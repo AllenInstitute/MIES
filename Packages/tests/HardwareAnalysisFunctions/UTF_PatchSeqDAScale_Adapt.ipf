@@ -207,7 +207,10 @@ static Function/WAVE GetWave_IGNORE()
 	return wv
 End
 
-static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
+static Function [WAVE/WAVE wv, variable sweepNo] GetEntries_IGNORE(string device)
+
+	sweepNo = AFH_GetLastSweepAcquired(device)
+	CHECK(IsValidSweepNumber(sweepNo))
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
@@ -255,7 +258,7 @@ static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
 	Make/FREE/N=(DimSize(wv, ROWS)) junk
 	junk[] = WaveExists(wv[p]) ? ChangeFreeWaveName(wv[p], GetDimLabel(wv, ROWS, p)) : NaN
 
-	return wv
+	return [wv, sweepNo]
 End
 
 static Function CheckSurveyPlot(string device, WAVE/WAVE entries)
@@ -476,9 +479,7 @@ static Function PS_DS_AD1_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 2
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
@@ -550,9 +551,7 @@ End
 static Function PS_DS_AD1_REENTRY_REENTRY([string str])
 
 	variable sweepNo
-	sweepNo = 5
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
@@ -625,9 +624,7 @@ static Function PS_DS_AD1a_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 2
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
@@ -704,9 +701,7 @@ static Function PS_DS_AD1a_REENTRY_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 5
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
@@ -728,9 +723,7 @@ static Function PS_DS_AD1a_REENTRY_REENTRY_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 8
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
@@ -752,9 +745,7 @@ static Function PS_DS_AD1a_REENTRY_REENTRY_REENTRY_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 9
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
@@ -822,9 +813,7 @@ static Function PS_DS_AD2_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 0
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
@@ -940,9 +929,7 @@ static Function PS_DS_AD2a_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 1
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
@@ -1062,9 +1049,7 @@ static Function PS_DS_AD2b_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 1
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
@@ -1184,9 +1169,7 @@ static Function PS_DS_AD3_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 2
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
@@ -1458,9 +1441,7 @@ static Function PS_DS_AD6_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 0
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
@@ -1572,9 +1553,7 @@ static Function PS_DS_AD7_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 2
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
@@ -1738,9 +1717,7 @@ static Function PS_DS_AD10_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 2
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
@@ -1859,9 +1836,7 @@ static Function PS_DS_AD12_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 5
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
@@ -1978,9 +1953,7 @@ static Function PS_DS_AD13_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 0
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
@@ -2095,9 +2068,7 @@ static Function PS_DS_AD14_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 2
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
@@ -2209,9 +2180,7 @@ static Function PS_DS_AD15_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 0
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
@@ -2333,9 +2302,7 @@ static Function PS_DS_AD16_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 4
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
@@ -2446,9 +2413,7 @@ static Function PS_DS_AD17_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 0
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
@@ -2558,9 +2523,7 @@ static Function PS_DS_AD18_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 0
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
@@ -2658,9 +2621,7 @@ static Function PS_DS_AD19_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 0
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
@@ -2772,9 +2733,7 @@ static Function PS_DS_AD20_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 0
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
@@ -2888,9 +2847,7 @@ static Function PS_DS_AD21_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 2
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
@@ -3006,9 +2963,7 @@ static Function PS_DS_AD22_REENTRY([string str])
 
 	variable sweepNo
 
-	sweepNo = 1
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 

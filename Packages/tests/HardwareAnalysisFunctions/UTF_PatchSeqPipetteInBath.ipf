@@ -112,7 +112,10 @@ static Function/WAVE GetWave_IGNORE()
 	return wv
 End
 
-static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
+static Function [WAVE/WAVE wv, variable sweepNo] GetEntries_IGNORE(string device)
+
+	sweepNo = AFH_GetLastSweepAcquired(device)
+	CHECK(IsValidSweepNumber(sweepNo))
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
@@ -136,7 +139,7 @@ static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
 	wv[%resultsSweep]      = ExtractSweepsFromSFPairs(GetResultsSingleEntry_IGNORE("Sweep Formula sweeps/channels"))
 	wv[%resultsResistance] = GetResultsSingleEntry_IGNORE("Sweep Formula store [Steady state resistance]")
 
-	return wv
+	return [wv, sweepNo]
 End
 
 static Function CheckTestPulseLikeEpochs(string device, [variable incomplete])
@@ -204,9 +207,7 @@ static Function PS_PB1_REENTRY([string str])
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts, stimset, expected
 
-	sweepNo = 2
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
@@ -271,9 +272,7 @@ static Function PS_PB2_REENTRY([string str])
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts, stimset, expected
 
-	sweepNo = 0
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {1}, mode = WAVE_DATA)
@@ -358,9 +357,7 @@ static Function PS_PB3_REENTRY([string str])
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts, stimset, expected
 
-	sweepNo = 3
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 0, 0}, mode = WAVE_DATA)
@@ -427,9 +424,7 @@ static Function PS_PB4_REENTRY([string str])
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts, stimset, expected
 
-	sweepNo = 1
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0}, mode = WAVE_DATA)
@@ -496,9 +491,7 @@ static Function PS_PB5_REENTRY([string str])
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts, stimset, expected
 
-	sweepNo = 2
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
@@ -567,9 +560,7 @@ static Function PS_PB6_REENTRY([string str])
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts, stimset, expected
 
-	sweepNo = 2
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
@@ -644,9 +635,7 @@ static Function PS_PB7_REENTRY([string str])
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts, stimset, expected
 
-	sweepNo = 0
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0}, mode = WAVE_DATA)
