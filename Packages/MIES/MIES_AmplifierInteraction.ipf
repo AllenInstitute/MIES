@@ -2116,6 +2116,7 @@ Function AI_QueryGainsFromMCC(string device)
 	return numConnAmplifiers
 End
 
+/// @brief Return the number of connected amplifiers
 Function AI_FindConnectedAmps([variable rescanHardware])
 
 	string key
@@ -2151,6 +2152,10 @@ Function AI_FindConnectedAmps([variable rescanHardware])
 			CA_StoreEntryIntoCache(key, cache)
 		endif
 	endif
+
+	ASSERT(DimSize(telegraphServers, ROWS) == DimSize(ampMCC, ROWS), "Non-matched number of amplifiers")
+
+	return DimSize(telegraphServers, ROWS)
 End
 
 /// @brief Create the amplifier connection waves
@@ -2173,11 +2178,6 @@ static Function [WAVE telegraphServers, WAVE ampMCC] AI_FindConnectedAmpsNoCache
 	SetDataFolder saveDFR
 
 	list = DAP_FormatTelegraphServerList(telegraphServers)
-
-	if(IsEmpty(list))
-		print "Activate Multiclamp Commander software to populate list of available amplifiers"
-		ControlWindowToFront()
-	endif
 
 	LOG_AddEntry(PACKAGE_MIES, "amplifiers", keys = {"list"}, values = {list})
 
