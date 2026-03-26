@@ -66,7 +66,7 @@ threadsafe Function EnsureLargeEnoughWave(WAVE wv, [variable indexShouldExist, v
 		return 0
 	endif
 
-	indexShouldExist = max(2^FindNextPower(indexShouldExist + 1, 2), 2 * DimSize(wv, dimension), MINIMUM_WAVE_SIZE)
+	indexShouldExist = max(2^FindNextPower(indexShouldExist, 2), 2 * DimSize(wv, dimension), MINIMUM_WAVE_SIZE)
 
 	if(checkFreeMemory)
 		if((GetWaveSize(wv) * (indexShouldExist / DimSize(wv, dimension)) / 1024 / 1024 / 1024) >= GetFreeMemory())
@@ -466,7 +466,18 @@ threadsafe Function/WAVE MakeWaveFree(WAVE/Z wv)
 
 	DFREF dfr = NewFreeDataFolder()
 
+#if IgorVersion() < 10 || (IgorVersion() == 10 && (NumberByKey("BUILD", IgorInfo(0)) < 29915))
+	/// @todo workaround IP issue 7587
+	if(IsWaveRefWave(wv))
+		Duplicate/FREE wv, dest
+		KillOrMoveToTrash(wv = wv)
+		WAVE wv = dest
+	else
+		MoveWave wv, dfr
+	endif
+#else
 	MoveWave wv, dfr
+#endif
 
 	return wv
 End
@@ -1365,19 +1376,19 @@ End
 ///                                                (wave reference waves only with matching sizes)
 ///
 /// @return new wave reference to dest wave
-Function/WAVE MoveWaveWithOverwrite(WAVE dest, WAVE src, [variable recursive])
+threadsafe Function/WAVE MoveWaveWithOverwrite(WAVE dest, WAVE src, [variable recursive])
 
 	string   path
 	variable numEntries
 
 	recursive = ParamIsDefault(recursive) ? 0 : !!recursive
 
-	ASSERT(!WaveRefsEqual(dest, src), "dest and src must be distinct waves")
-	ASSERT(!IsFreeWave(dest), "dest must be a global/permanent wave")
+	ASSERT_TS(!WaveRefsEqual(dest, src), "dest and src must be distinct waves")
+	ASSERT_TS(!IsFreeWave(dest), "dest must be a global/permanent wave")
 
 	if(IsWaveRefWave(dest) && IsWaveRefWave(src) && recursive)
 		numEntries = numpnts(dest)
-		ASSERT(numEntries == numpnts(src), "Unmatched sizes")
+		ASSERT_TS(numEntries == numpnts(src), "Unmatched sizes")
 		Make/N=(numEntries)/FREE/WAVE entries
 
 		WAVE/WAVE destWaveRef = dest
@@ -1553,4 +1564,27 @@ Function HasDimLabels(WAVE/Z wv, variable dim, [variable deep])
 	endfor
 
 	return 0
+End
+
+/// @brief Return a wave with the given dimension and type
+///
+/// Callers can make no assumptions about the wave contents.
+threadsafe Function/WAVE GetTemporaryWave(WAVE dims, variable wvType)
+
+	string key
+
+	key = CA_TemporaryWaveKey(dims, wvType)
+	WAVE/Z wv = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/FREE/N=(MAX_DIMENSION_COUNT) allDims
+
+	allDims[0, DimSize(dims, ROWS) - 1] = dims[p]
+	Make/N=(allDims[ROWS], allDims[COLS], allDims[LAYERS], allDims[CHUNKS])/FREE/Y=(wvType) wv
+	CA_StoreEntryIntoCache(key, wv, options = CA_OPTS_NO_DUPLICATE)
+
+	return wv
 End

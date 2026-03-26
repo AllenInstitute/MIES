@@ -1199,20 +1199,25 @@ End
 
 static Function TestPulseCachingWorks_REENTRY([string str])
 
-	variable sweepNo
+	variable sweepNo, index, found, value
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
 
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 2)
 
-	WAVE/T keyWave = GetCacheKeyWave()
-	// approximate search
-	FindValue/TEXT=("HW Datawave Testpulse") keyWave
+	WAVE/WAVE keys = GetCacheKeyHashMap()
+
+	WAVE/Z/T allKeys = HM_GetAllKeys(keys)
+	CHECK_WAVE(allKeys, TEXT_WAVE)
+	FindValue/TEXT=("HW Datawave Testpulse") allKeys
 	CHECK_GE_VAR(V_Value, 0)
 
+	[value, found] = HM_GetEntryAsNumber(keys, allKeys[V_Value])
+	CHECK(found)
+
 	WAVE stats = GetCacheStatsWave()
-	CHECK_GE_VAR(stats[V_Value][%Hits], 1)
+	CHECK_GE_VAR(stats[value][%Hits], 1)
 End
 
 /// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1

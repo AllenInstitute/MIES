@@ -534,6 +534,19 @@ static Function MWF_Works()
 	WAVE/Z result = MakeWaveFree(data)
 	CHECK_WAVE(result, FREE_WAVE)
 	CHECK(WaveRefsEqual(data, result))
+
+	// check that WM issue #7673 is worked around with wave reference waves
+
+	Make/WAVE dataWave
+	dataWave[0] = data
+	WAVE/Z/WAVE resultWave = MakeWaveFree(dataWave)
+	CHECK_WAVE(resultWave, FREE_WAVE | WAVE_WAVE)
+
+#if IgorVersion() < 10 || (IgorVersion() == 10 && (NumberByKey("BUILD", IgorInfo(0)) < 29915))
+	CHECK_EQUAL_WAVES(data, resultWave[0])
+#else
+	CHECK(WaveRefsEqual(data, resultWave[0]))
+#endif
 End
 
 /// @}
