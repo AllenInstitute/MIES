@@ -6307,38 +6307,38 @@ threadsafe Function/WAVE GetCacheKeyHashMap()
 		return wv
 	endif
 
-	WAVE wv = HM_Create(size = 2^14, valueType = IGOR_TYPE_32BIT_INT | IGOR_TYPE_UNSIGNED)
-
 	WAVE/Z/T/SDFR=dfr keys
-	if(WaveExists(keys))
-		FillHashMapFromNoteIndexVector(wv, keys)
-		HM_RehashIfRequired(wv)
-		KillOrMoveToTrash(wv = keys)
-	endif
+	WAVE wv = GetHashMapFromNoteIndexVector(keys, IGOR_TYPE_32BIT_INT | IGOR_TYPE_UNSIGNED)
+	KillOrMoveToTrash(wv = keys)
 
 	MoveWave wv, dfr:hashmap
 
 	return wv
 End
 
-/// @brief Fill the hashmap with the wave entries as keys and their index as values
+/// @brief Return a hashmap with the wave entries as keys and their index as values
 ///
 /// Ignores empty values
-threadsafe static Function FillHashMapFromNoteIndexVector(WAVE/WAVE hashmap, WAVE/T entries)
+threadsafe static Function/WAVE GetHashMapFromNoteIndexVector(WAVE/Z/T entries, variable valueType)
 
 	variable numEntries
+	variable size = 2^14
 
-	numEntries = GetNumberFromWaveNote(entries, NOTE_INDEX)
-	ASSERT_TS(IsFinite(numEntries), "entries does not hold a NOTE_INDEX")
+	numEntries = WaveExists(entries) ? GetNumberFromWaveNote(entries, NOTE_INDEX) : 0
+	ASSERT_TS(IsFinite(numEntries), "the wave entries exists but does not hold a NOTE_INDEX")
+
+	size = max(size, HM_CalculateOptimumSize(numEntries))
+	WAVE hashmap = HM_Create(size = size, valueType = valueType)
 
 	if(numEntries == 0)
-		// nothing to do
-		return NaN
+		return hashmap
 	endif
 
 	Make/N=(numEntries)/FREE indexHelper
 
 	indexHelper[] = (strlen(entries[p]) > 0) ? HM_AddEntry(hashmap, entries[p], var = p) : 0
+
+	return hashmap
 End
 
 /// @brief Return the wave reference wave holding the cache stats
