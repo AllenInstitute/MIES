@@ -778,10 +778,20 @@ threadsafe static Function HM_CalculateLoadFactor(WAVE/WAVE hashmap)
 	return totalEntries[HM_TOTAL_ENTRIES_ROW] / HM_GetSize(hashmap)
 End
 
+/// @brief Calculate the optimum size for the hashmap so that the load factor is below (#HM_MAX_LOAD_FACTOR / 2)
+///
+/// Complexity: O(1)
+threadsafe Function HM_CalculateOptimumSize(variable totalEntries)
+
+	totalEntries = max(1, totalEntries)
+
+	return 2^ceil(log(totalEntries / (HM_MAX_LOAD_FACTOR / 2)) / log(2))
+End
+
 /// @brief Rehashes if required and returns a modified hashmap pass-by-reference
 ///
 /// The load factor (number of available entries vs filled entries) is determined.
-/// And if that is above #HM_MAX_LOAD_FACTOR we create a new hashmap with the doubled size and
+/// And if that is above #HM_MAX_LOAD_FACTOR we create a new hashmap with a large enough size and
 /// add all existing entries to it.
 ///
 /// Complexity: Usually amortized O(1) but in the worst case O(n)
@@ -801,8 +811,11 @@ threadsafe Function HM_RehashIfRequired(WAVE/WAVE &hashmap)
 	WAVE values = HM_FetchValues(hashmap, 0)
 	isStr = IsTextWave(values)
 
+	WAVE totalEntries = HM_FetchStats(hashmap)
+
 	srcNumEntries = HM_GetSize(hashmap)
-	newSize       = 2 * srcNumEntries
+	newSize       = HM_CalculateOptimumSize(totalEntries[HM_TOTAL_ENTRIES_ROW])
+	ASSERT_TS(newSize > srcNumEntries, "Invalid size calculation")
 	WAVE/WAVE hashmapLarger = HM_Create(size = newSize, valueType = WaveType(values))
 
 	WAVE usedRows = HM_FetchUsedRows(hashmap)

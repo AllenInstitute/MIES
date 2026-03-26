@@ -451,12 +451,13 @@ End
 /// UTF_TD_GENERATOR DataGenerators#PermanentOrFree
 static Function RehashingWorks([variable var])
 
-	variable numEntries, i, size, found
+	variable numEntries, i, found, initialSize
 	string value
 
-	size = 8
+	initialSize = 1
+	numEntries  = 8
 
-	WAVE/WAVE hashmapFree = HM_Create(size = size)
+	WAVE/WAVE hashmapFree = HM_Create(size = initialSize)
 
 	if(var)
 		Duplicate/WAVE hashmapFree, hashmap
@@ -469,21 +470,21 @@ static Function RehashingWorks([variable var])
 	CHECK_EQUAL_VAR(HM_RehashIfRequired(hashmap), 0)
 	CHECK(WaveRefsEqual(hashmap, hashmap_old))
 
-	for(i = 0; i < size; i += 1)
+	for(i = 0; i < numEntries; i += 1)
 		HM_AddEntry(hashmap, num2str(i), str = "-" + num2str(i))
 	endfor
 
 	CHECK_EQUAL_VAR(HM_RehashIfRequired(hashmap), 1)
 	WAVE/WAVE hashmap_impl = hashmap[1]
-	CHECK_EQUAL_VAR(DimSize(hashmap_impl, ROWS), size * 2)
+	CHECK_EQUAL_VAR(DimSize(hashmap_impl, ROWS), numEntries * 4)
 	CHECK(!WaveRefsEqual(hashmap, hashmap_old))
 
 	WAVE/Z filledEntries = GetFilledEntries(hashmap)
 	CHECK_WAVE(filledEntries, NUMERIC_WAVE)
-	CHECK_EQUAL_VAR(DimSize(filledEntries, ROWS), size)
-	CHECK_EQUAL_WAVES(filledEntries, {5, 6, 7, 8, 9, 10, 11, 12}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DimSize(filledEntries, ROWS), numEntries)
+	CHECK_EQUAL_WAVES(filledEntries, {21, 22, 23, 24, 25, 26, 27, 28}, mode = WAVE_DATA)
 
-	for(i = 0; i < size; i += 1)
+	for(i = 0; i < numEntries; i += 1)
 		[value, found] = HM_GetEntryAsString(hashmap, num2str(i))
 		CHECK(found)
 		CHECK_EQUAL_STR(value, "-" + num2str(i))
@@ -589,4 +590,17 @@ static Function WorksWithNumericValues([variable var])
 	catch
 		CHECK_NO_RTE()
 	endtry
+End
+
+static Function CalcOptSizeWorks()
+
+	CHECK_EQUAL_VAR(HM_CalculateOptimumSize(0), 4)
+	CHECK_EQUAL_VAR(HM_CalculateOptimumSize(1), 4)
+	CHECK_EQUAL_VAR(HM_CalculateOptimumSize(2), 8)
+	CHECK_EQUAL_VAR(HM_CalculateOptimumSize(3), 16)
+	CHECK_EQUAL_VAR(HM_CalculateOptimumSize(4), 16)
+	CHECK_EQUAL_VAR(HM_CalculateOptimumSize(5), 16)
+	CHECK_EQUAL_VAR(HM_CalculateOptimumSize(6), 32)
+
+	CHECK_EQUAL_VAR(HM_CalculateOptimumSize(32), 128)
 End
