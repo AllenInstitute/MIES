@@ -41,6 +41,7 @@ static Constant HM_HASHMAP_ROW = 1
 /// - Constant time access O(1) with small load factors
 /// - Handles collisions correctly
 /// - Avoids implicit rehashing but supports explicit rehashing
+/// - The hashmaps can be used in preemptive threads, but none of them are reentrant
 
 // Benchmark code from https://www.wavemetrics.com/forum/general/brief-performance-review-key-value-store-methods-igor-pro
 // Usage:
