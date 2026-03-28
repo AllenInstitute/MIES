@@ -42,7 +42,18 @@ Function RecreateMissingSweepAndConfigWaves(string device, DFREF deviceDataDFR)
 	WAVE/Z sweepsFromText = GetSweepsWithSetting(textualValues, "SweepNum")
 
 	// consistency check
-	ASSERT(WaveExists(sweepsFromNum) && WaveExists(sweepsFromText) && EqualWaves(sweepsFromNum, sweepsFromText, EQWAVES_DATA), "Unexpected numerical/textual LBN entries")
+	ASSERT(WaveExists(sweepsFromNum) && WaveExists(sweepsFromText), "Could not find the SweepNum column in the numerical/textual labnotebook")
+
+	if(EqualWaves(sweepsFromNum, sweepsFromText, EQWAVES_DATA))
+		// do nothing
+	elseif(DimSize(sweepsFromNum, ROWS) == (DimSize(sweepsFromText, ROWS) + 1))
+		// it is okay if we have more sweeps in the numerical labnotebook than the textual one
+		// iff the additional entry is for the DAQ stop reason
+		WAVE/Z values = GetSweepsWithSetting(numericalValues, "DAQ stop reason")
+		ASSERT(WaveMax(values) == sweepsFromNum[Inf], "Additional sweeps in the numerical labnotebook need to be from \"DAQ stop reason\"")
+	else
+		FATAL_ERROR("Inconsistent sweep numbers from numerical and textual labnotebook")
+	endif
 
 	WAVE sweeps = sweepsFromNum
 
