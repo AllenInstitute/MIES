@@ -241,12 +241,9 @@ Function/WAVE SFO_OperationApFrequency(STRUCT SF_ExecutionData &exd)
 	variable i, numArgs, keepX, method, level, normValue
 	string xLabel, methodStr, timeFreq, normalize, xAxisType
 	string   opShort    = SF_OP_APFREQUENCY
-	variable numArgsMin = 1
 	variable numArgsMax = 6
 
-	numArgs = SFH_GetNumberOfArguments(exd)
-	SFH_ASSERT(numArgs <= numArgsMax, "ApFrequency has " + num2istr(numArgsMax) + " arguments at most.")
-	SFH_ASSERT(numArgs >= numArgsMin, "ApFrequency needs at least " + num2istr(numArgsMin) + " argument(s).")
+	numArgs = SFH_CheckArgumentCount(exd, opShort, 1, maxArgs = numArgsMax)
 
 	WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, 0)
 	method    = SFH_GetArgumentAsNumeric(exd, opShort, 1, defValue = SF_APFREQUENCY_FULL, allowedValues = {SF_APFREQUENCY_FULL, SF_APFREQUENCY_INSTANTANEOUS, SF_APFREQUENCY_APCOUNT, SF_APFREQUENCY_INSTANTANEOUS_PAIR})
@@ -443,11 +440,9 @@ End
 
 Function/WAVE SFO_OperationArea(STRUCT SF_ExecutionData &exd)
 
-	variable zero, numArgs
+	variable zero
 
-	numArgs = SFH_GetNumberOfArguments(exd)
-	SFH_ASSERT(numArgs >= 1, "area requires at least one argument.")
-	SFH_ASSERT(numArgs <= 2, "area requires at most two arguments.")
+	SFH_CheckArgumentCount(exd, SF_OP_AREA, 1, maxArgs = 2)
 
 	WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, 0)
 
@@ -833,8 +828,7 @@ Function/WAVE SFO_OperationEpochs(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs, epType
 
-	numArgs = SFH_GetNumberOfArguments(exd)
-	SFH_ASSERT(numArgs >= 1 && numArgs <= 3, "epochs requires at least 1 and at most 3 arguments")
+	numArgs = SFH_CheckArgumentCount(exd, SF_OP_EPOCHS, 1, maxArgs = 3)
 
 	if(numArgs == 3)
 		WAVE/T epochType = SFH_ResolveDatasetElementFromJSON(exd, SF_OP_EPOCHS, 2, checkExist = 1)
@@ -987,9 +981,7 @@ Function/WAVE SFO_OperationFindLevel(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs
 
-	numArgs = SFH_GetNumberOfArguments(exd)
-	SFH_ASSERT(numArgs <= 3, "Findlevel has 3 arguments at most.")
-	SFH_ASSERT(numArgs > 1, "Findlevel needs at least two arguments.")
+	numArgs = SFH_CheckArgumentCount(exd, SF_OP_FINDLEVEL, 2, maxArgs = 3)
 	WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, 0)
 	WAVE      level = SFH_ResolveDatasetElementFromJSON(exd, SF_OP_FINDLEVEL, 1, checkExist = 1)
 	SFH_ASSERT(DimSize(level, ROWS) == 1, "Too many input values for parameter level")
@@ -1934,8 +1926,7 @@ Function/WAVE SFO_OperationRMS(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs
 
-	numArgs = SFH_GetNumberOfArguments(exd)
-	SFH_ASSERT(numArgs > 0, "rms requires at least one argument")
+	numArgs = SFH_CheckArgumentCount(exd, SF_OP_RMS, 1)
 	if(numArgs > 1)
 		WAVE/WAVE input = SF_GetArgumentTop(exd, SF_OP_RMS)
 	else
@@ -1970,9 +1961,7 @@ Function/WAVE SFO_OperationSetScale(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs
 
-	numArgs = SFH_GetNumberOfArguments(exd)
-	SFH_ASSERT(numArgs < 6, "Maximum number of arguments exceeded.")
-	SFH_ASSERT(numArgs > 1, "At least two arguments.")
+	numArgs = SFH_CheckArgumentCount(exd, SF_OP_SETSCALE, 2, maxArgs = 5)
 	WAVE/WAVE dataRef   = SF_ResolveDatasetFromJSON(exd, 0)
 	WAVE/T    dimension = SFH_ResolveDatasetElementFromJSON(exd, SF_OP_SETSCALE, 1, checkExist = 1)
 	SFH_ASSERT(IsTextWave(dimension), "Expected d, x, y, z or t as dimension.")
@@ -2046,8 +2035,7 @@ Function/WAVE SFO_OperationStdev(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs
 
-	numArgs = SFH_GetNumberOfArguments(exd)
-	SFH_ASSERT(numArgs > 0, "stdev requires at least one argument")
+	numArgs = SFH_CheckArgumentCount(exd, SF_OP_STDEV, 1)
 	if(numArgs > 1)
 		WAVE/WAVE input = SF_GetArgumentTop(exd, SF_OP_STDEV)
 	else
@@ -2083,7 +2071,7 @@ Function/WAVE SFO_OperationStore(STRUCT SF_ExecutionData &exd)
 	string rawCode, preProcCode, name
 	variable maxEntries, numEntries
 
-	SFH_ASSERT(SFH_GetNumberOfArguments(exd) == 2, "Function accepts only two arguments")
+	SFH_CheckArgumentCount(exd, SF_OP_STORE, 2, maxArgs = 2)
 
 	name = SFH_GetArgumentAsText(exd, SF_OP_STORE, 0)
 
@@ -2103,8 +2091,7 @@ Function/WAVE SFO_OperationText(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs
 
-	numArgs = SFH_GetNumberOfArguments(exd)
-	SFH_ASSERT(numArgs > 0, "text requires at least one argument.")
+	numArgs = SFH_CheckArgumentCount(exd, SF_OP_TEXT, 1)
 	if(numArgs > 1)
 		WAVE/WAVE input = SF_GetArgumentTop(exd, SF_OP_TEXT)
 	else
@@ -2137,8 +2124,7 @@ Function/WAVE SFO_OperationVariance(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs
 
-	numArgs = SFH_GetNumberOfArguments(exd)
-	SFH_ASSERT(numArgs > 0, "variance requires at least one argument")
+	numArgs = SFH_CheckArgumentCount(exd, SF_OP_VARIANCE, 1)
 	if(numArgs > 1)
 		WAVE/WAVE input = SF_GetArgumentTop(exd, SF_OP_VARIANCE)
 	else
@@ -2181,8 +2167,7 @@ Function/WAVE SFO_OperationXValues(STRUCT SF_ExecutionData &exd)
 
 	variable numArgs
 
-	numArgs = SFH_GetNumberOfArguments(exd)
-	SFH_ASSERT(numArgs > 0, "xvalues requires at least one argument.")
+	numArgs = SFH_CheckArgumentCount(exd, SF_OP_XVALUES, 1)
 	if(numArgs > 1)
 		WAVE/WAVE input = SF_GetArgumentTop(exd, SF_OP_XVALUES)
 	else
@@ -2213,11 +2198,10 @@ End
 
 static Function/WAVE SFO_IndexOverDataSetsForPrimitiveOperation(STRUCT SF_ExecutionData &exd, string opShort)
 
-	variable numArgs, dataSetNum0, dataSetNum1
+	variable dataSetNum0, dataSetNum1
 	string errMsg, type1, type2, resultType
 
-	numArgs = SFH_GetNumberOfArguments(exd)
-	ASSERT(numArgs == 2, "Number of arguments must be 2 for " + opShort)
+	SFH_CheckArgumentCount(exd, opShort, 2, maxArgs = 2)
 
 	WAVE/WAVE arg0 = SF_ResolveDatasetFromJSON(exd, 0)
 	WAVE/WAVE arg1 = SF_ResolveDatasetFromJSON(exd, 1)
