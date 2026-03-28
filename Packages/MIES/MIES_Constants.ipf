@@ -1898,20 +1898,24 @@ Constant LBN_TEXTUAL_VALUES   = 0x8
 ///
 /// @anchor LabnotebookWaveNames
 ///@{
-StrConstant LBN_NUMERICAL_VALUES_NAME = "numericalValues"
-StrConstant LBN_NUMERICAL_KEYS_NAME   = "numericalKeys"
-StrConstant LBN_TEXTUAL_VALUES_NAME   = "textualValues"
-StrConstant LBN_TEXTUAL_KEYS_NAME     = "textualKeys"
+StrConstant LBN_NUMERICAL_VALUES_NAME       = "numericalValues"
+StrConstant LBN_NUMERICAL_KEYS_NAME         = "numericalKeys"
+StrConstant LBN_TEXTUAL_VALUES_NAME         = "textualValues"
+StrConstant LBN_TEXTUAL_KEYS_NAME           = "textualKeys"
+StrConstant LBN_NUMERICAL_KEYS_HASHMAP_NAME = "numericalKeys_hashmap"
+StrConstant LBN_TEXTUAL_KEYS_HASHMAP_NAME   = "textualKeys_hashmap"
 ///@}
 
 /// @name Labnotebook wave names
 ///
 /// @anchor ResultLogbookWaveNames
 ///@{
-StrConstant LBN_NUMERICALRESULT_VALUES_NAME = "numericalResultsValues"
-StrConstant LBN_NUMERICALRESULT_KEYS_NAME   = "numericalResultsKeys"
-StrConstant LBN_TEXTUALRESULT_VALUES_NAME   = "textualResultsValues"
-StrConstant LBN_TEXTUALRESULT_KEYS_NAME     = "textualResultsKeys"
+StrConstant LBN_NUMERICALRESULT_VALUES_NAME       = "numericalResultsValues"
+StrConstant LBN_NUMERICALRESULT_KEYS_NAME         = "numericalResultsKeys"
+StrConstant LBN_TEXTUALRESULT_VALUES_NAME         = "textualResultsValues"
+StrConstant LBN_TEXTUALRESULT_KEYS_NAME           = "textualResultsKeys"
+StrConstant LBN_NUMERICALRESULT_KEYS_HASHMAP_NAME = "numericalResultsKeys_hashmap"
+StrConstant LBN_TEXTUALRESULT_KEYS_HASHMAP_NAME   = "textualResultsKeys_hashmap"
 ///@}
 
 StrConstant LOGBOOK_WAVE_TEMP_FOLDER = "Temp"
