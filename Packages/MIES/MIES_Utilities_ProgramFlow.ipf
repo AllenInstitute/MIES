@@ -83,6 +83,41 @@ Function DoAbortNow(string msg)
 	Abort
 End
 
+#if IgorVersion() < 10
+
+/// @brief Prepend the regular module name (if available) for static functions to the function name
+///
+/// Due to this feature being IP10 only we always return just the function name.
+threadsafe Function/S PrependModuleNameIfStatic_TS(string func, string procWin)
+
+	return func
+End
+
+#else
+
+/// @brief Prepend the regular module name (if available) for static functions to the function name
+threadsafe Function/S PrependModuleNameIfStatic_TS(string func, string procWin)
+
+	string info, module
+
+	info = FunctionInfo(func, procWin)
+
+	if(!cmpstr(StringByKey("SPECIAL", info), "static"))
+		module = StringByKey("MODULE", info)
+
+		if(IsEmpty(module))
+			// not in a regular module
+			return func
+		endif
+
+		return module + "#" + func
+	endif
+
+	return func
+End
+
+#endif
+
 /// @brief Return a nicely formatted multiline stacktrace
 threadsafe Function/S GetStackTrace([string prefix])
 
@@ -110,9 +145,13 @@ threadsafe Function/S GetStackTrace([string prefix])
 
 	for(i = 0; i < (numCallers - 2); i += 1)
 		entry = StringFromList(i, stacktrace)
-		func  = StringFromList(0, entry, ",")
-		file  = StringFromList(1, entry, ",")
-		line  = StringFromList(2, entry, ",")
+
+		func = StringFromList(0, entry, ",")
+		file = StringFromList(1, entry, ",")
+		line = StringFromList(2, entry, ",")
+
+		func = PrependModuleNameIfStatic_TS(func, file)
+
 		sprintf str, "%s%s(...)#L%s [%s]\r", prefix, func, line, file
 		output += str
 	endfor

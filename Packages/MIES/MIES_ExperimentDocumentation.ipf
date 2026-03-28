@@ -573,7 +573,7 @@ End
 /// @retval rowIndex   returns the row index into values at which the new values should be written
 static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimension(WAVE/T incomingKey, WAVE incomingValues, WAVE/T key, WAVE values, variable logbookType)
 
-	variable numCols, numKeyCols, i, j, numAdditions, idx
+	variable numCols, numKeyCols, i, j, numAdditions, idx, col
 	variable lastValidIncomingKeyRow, descIndex, isUserEntry, headstageCont, headstageContDesc, isUnAssoc
 	string msg, searchStr
 
@@ -584,16 +584,16 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 
 	WAVE/ZZ/T desc
 
+	WAVE/WAVE hashmap = GetLogbookKeyHashmap(values)
+
 	numCols = DimSize(incomingKey, COLS)
 	for(i = 0; i < numCols; i += 1)
 		searchStr = incomingKey[0][i]
 
-		// we do not use GetLogbookSettingsColumn here because it would generate a new sortedKeys wave each time
-		// a new key is added
-		FindValue/TXOP=4/TEXT=(searchStr)/RMD=[0][] key
+		col = GetLogbookSettingsColumn(values, searchStr)
 
-		if(V_col >= 0)
-			indizes[i] = V_col
+		if(col >= 0)
+			indizes[i] = col
 			continue
 		endif
 
@@ -604,7 +604,10 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 		EnsureLargeEnoughWave(key, indexShouldExist = idx, dimension = COLS)
 		key[0, lastValidIncomingKeyRow][idx] = incomingKey[p][i]
 		indizes[i]                           = idx
-		numAdditions                        += 1
+
+		AddSettingsColumnToLogbook(hashmap, searchStr, idx)
+
+		numAdditions += 1
 
 		isUserEntry = (strsearch(searchStr, LABNOTEBOOK_USER_PREFIX, 0) == 0)
 

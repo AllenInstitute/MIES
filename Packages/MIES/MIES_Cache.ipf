@@ -212,17 +212,6 @@ threadsafe Function/S CA_CreateLBRowCacheKey(WAVE values)
 	return name + "_RowCache"
 End
 
-/// @brief Cache key generator for Logbook sortedKeyWave
-threadsafe Function/S CA_GenKeyLogbookSortedKeys(WAVE keys)
-
-	string version = "Version 1"
-	variable crc
-
-	crc = CA_GetWaveModCRC(keys, 0)
-
-	return "LogbookSortedKeys:" + num2istr(crc) + ":" + version
-End
-
 /// @brief Cache key generator for artefact removal ranges
 Function/S CA_ArtefactRemovalRangesKey(DFREF singleSweepDFR, variable sweepNo)
 

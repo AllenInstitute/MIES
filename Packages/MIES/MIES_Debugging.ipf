@@ -22,11 +22,16 @@ static Function FindFirstOutsideCaller(string &func, string &line, string &file)
 
 	for(i = numCallers - 2; i >= 0; i -= 1)
 		caller = StringFromList(i, stacktrace)
-		func   = StringFromList(0, caller, ",")
-		file   = StringFromList(1, caller, ",")
-		line   = StringFromList(2, caller, ",")
+
+		file = StringFromList(1, caller, ",")
 
 		if(cmpstr("MIES_DEBUGGING.ipf", file))
+
+			func = StringFromList(0, caller, ",")
+			line = StringFromList(2, caller, ",")
+
+			func = PrependModuleNameIfStatic_TS(func, file)
+
 			return NaN
 		endif
 	endfor
