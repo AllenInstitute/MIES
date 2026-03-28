@@ -131,6 +131,29 @@ threadsafe Function/WAVE GetWaveDimensions(WAVE wv)
 	return sizes
 End
 
+/// @brief Return the maximum filled dimension of a wave
+///
+/// This function returns the highest dimension that has size > 1, or ROWS if all
+/// dimensions have size <= 1.
+///
+/// @param wv wave reference
+///
+/// @return dimension constant, one of @ref WaveDimensions
+threadsafe Function GetWaveDimensionality(WAVE/Z wv)
+
+	variable i
+
+	ASSERT_TS(WaveExists(wv), "Missing wave")
+
+	for(i = MAX_DIMENSION_COUNT - 1; i >= ROWS; i -= 1)
+		if(DimSize(wv, i) > 1)
+			return i
+		endif
+	endfor
+
+	return ROWS
+End
+
 /// @brief Returns the size of the wave in bytes
 threadsafe static Function GetWaveSizeImplementation(WAVE wv)
 
