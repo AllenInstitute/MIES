@@ -262,6 +262,7 @@ Function UpgradePathWithFilledKeys()
 
 	WAVE keys_new = GetCacheKeyHashMap()
 	CHECK_WAVE(keys_old, NULL_WAVE)
+	CHECK_EQUAL_VAR(MIES_HM#HM_GetSize(keys_new), 2^14)
 
 	WAVE/Z result = HM_GetAllKeys(keys_new)
 	CHECK_WAVE(result, TEXT_WAVE)
