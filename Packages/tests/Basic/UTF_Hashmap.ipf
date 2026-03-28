@@ -604,3 +604,39 @@ static Function CalcOptSizeWorks()
 
 	CHECK_EQUAL_VAR(HM_CalculateOptimumSize(32), 128)
 End
+
+static Function HashmapFromIndizesWorks()
+
+	variable type = IGOR_TYPE_32BIT_FLOAT
+	variable found, value
+
+	WAVE hashmap = HM_GetHashmapFromEntriesAndIndizes($"", 0, type, 1)
+	CHECK_WAVE(hashmap, WAVE_WAVE)
+	CHECK_EQUAL_VAR(MIES_HM#HM_GetSize(hashmap), 4)
+
+	// numEntries larger 1 but no entries wave
+	try
+		WAVE hashmap = HM_GetHashmapFromEntriesAndIndizes($"", 1, type, 1)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// only the first two elements are added as the third is empty
+	Make/FREE/T entries = {"a", "b", "", "c"}
+	WAVE/WAVE hashmap = HM_GetHashmapFromEntriesAndIndizes(entries, 3, type, 16)
+	CHECK_WAVE(hashmap, WAVE_WAVE)
+	CHECK_EQUAL_VAR(MIES_HM#HM_GetSize(hashmap), 16)
+
+	WAVE/T allKeys = HM_GetAllKeys(hashmap)
+	Sort allKeys, allKeys
+	CHECK_EQUAL_TEXTWAVES({"a", "b"}, allKeys)
+
+	[value, found] = HM_GetEntryAsNumber(hashmap, "a")
+	CHECK_EQUAL_VAR(found, 1)
+	CHECK_EQUAL_VAR(value, 0)
+
+	[value, found] = HM_GetEntryAsNumber(hashmap, "b")
+	CHECK_EQUAL_VAR(found, 1)
+	CHECK_EQUAL_VAR(value, 1)
+End
