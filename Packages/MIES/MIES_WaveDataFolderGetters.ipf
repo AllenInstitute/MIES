@@ -6313,7 +6313,7 @@ threadsafe Function/WAVE GetCacheKeyHashMap()
 
 	numEntries = WaveExists(keys) ? GetNumberFromWaveNote(keys, NOTE_INDEX) : 0
 	ASSERT_TS(IsFinite(numEntries), "the wave entries exists but does not hold a NOTE_INDEX")
-	WAVE wv = GetHashMapFromNoteIndexVector(keys, numEntries, IGOR_TYPE_32BIT_INT | IGOR_TYPE_UNSIGNED)
+	WAVE wv = GetHashMapFromNoteIndexVector(keys, numEntries, IGOR_TYPE_32BIT_INT | IGOR_TYPE_UNSIGNED, 2^14)
 	KillOrMoveToTrash(wv = keys)
 
 	MoveWave wv, dfr:hashmap
@@ -6324,11 +6324,11 @@ End
 /// @brief Return a hashmap with the wave entries as keys and their index as values
 ///
 /// Ignores empty values
-threadsafe static Function/WAVE GetHashMapFromNoteIndexVector(WAVE/Z/T entries, variable numEntries, variable valueType)
+threadsafe static Function/WAVE GetHashMapFromNoteIndexVector(WAVE/Z/T entries, variable numEntries, variable valueType, variable minSize)
 
-	variable size = 2^14
+	variable size
 
-	size = max(size, HM_CalculateOptimumSize(numEntries))
+	size = max(minSize, HM_CalculateOptimumSize(numEntries))
 	WAVE hashmap = HM_Create(size = size, valueType = valueType)
 
 	if(numEntries == 0)
