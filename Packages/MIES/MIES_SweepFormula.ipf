@@ -985,7 +985,7 @@ static Function [variable dataCnt, variable gdIndex, string annotation, variable
 
 	WAVE/Z wvX = $""
 
-	SFH_ASSERT(!(IsTextWave(wvResultY) && WaveDims(wvResultY) > 1), "Plotter got 2d+ text wave as y data.")
+	SFH_ASSERT(!(IsTextWave(wvResultY) && GetWaveDimensionality(wvResultY) != ROWS), "Plotter got 2d+ text wave as y data.")
 
 	DFREF dfr = SF_GetBrowserDF(pg.graph)
 
@@ -1000,7 +1000,7 @@ static Function [variable dataCnt, variable gdIndex, string annotation, variable
 	endif
 
 	if(WaveExists(wvResultX))
-		SFH_ASSERT(!(IsTextWave(wvResultX) && WaveDims(wvResultX) > 1), "Plotter got 2d+ text wave as x data.")
+		SFH_ASSERT(!(IsTextWave(wvResultX) && GetWaveDimensionality(wvResultX) != ROWS), "Plotter got 2d+ text wave as x data.")
 		WAVE wvX = SF_PrepareResultWaveForPlotting(dfr, wvResultX, dataCnt, SF_SWEEPFORMULA_AXIS_X)
 		xPoints = DimSize(wvX, ROWS)
 		xMxN    = DimSize(wvX, COLS)

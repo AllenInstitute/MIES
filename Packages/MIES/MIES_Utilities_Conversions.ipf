@@ -670,7 +670,7 @@ Function/S GetCodeForWaveContents(WAVE/T wv)
 
 	string list
 
-	ASSERT(DimSize(wv, COLS) <= 1, "Does only support 1D waves")
+	ASSERT(GetWaveDimensionality(wv) == ROWS, "Does only support 1D waves")
 	ASSERT(DimSize(wv, ROWS) > 0, "Does not support empty waves")
 
 	wv[] = "\"" + wv[p] + "\""

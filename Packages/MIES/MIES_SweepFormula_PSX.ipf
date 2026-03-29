@@ -3610,7 +3610,7 @@ static Function PSX_UpdateEventWaves(string win, [variable val, variable index, 
 		start = index
 		stop  = index
 	elseif(!ParamIsDefault(indizes))
-		ASSERT(DimSize(indizes, COLS) <= 1, "Expected 1D wave")
+		ASSERT(GetWaveDimensionality(indizes) == ROWS, "Expected 1D wave")
 		start = NaN
 		stop  = NaN
 	endif
