@@ -48,7 +48,7 @@ Constant RESULTS_VERSION     = 3
 Constant PSQ_PIPETTE_BATH_VERSION    = 4
 Constant PSQ_ACC_RES_SMOKE_VERSION   = 2
 Constant PSQ_CHIRP_VERSION           = 14
-Constant PSQ_DA_SCALE_VERSION        = 15
+Constant PSQ_DA_SCALE_VERSION        = 16
 Constant PSQ_RAMP_VERSION            = 10
 Constant PSQ_RHEOBASE_VERSION        = 6
 Constant PSQ_SQUARE_PULSE_VERSION    = 5
@@ -1347,6 +1347,8 @@ StrConstant PSQ_DS_AD_FALLBACK_RHSUAD             = "FallbackRhSuAd"
 StrConstant PSQ_DS_AD_FALLBACK                    = "Fallback"
 StrConstant PSQ_DS_AD_FINISHED_RHSUAD             = "FinishedRhSuAd"
 StrConstant PSQ_DS_AD_FINISHED                    = "Finished"
+StrConstant PSQ_DS_AD_FAIL_SWEEP_NEG_SLOPE_RHSUAD = "FailSweepNegSlopeRhSuAd"
+StrConstant PSQ_DS_AD_FAIL_SWEEP_NEG_SLOPE        = "FailSweepNegSlope"
 ///@}
 
 StrConstant PSQ_DS_AD_TYPE_SEP = ":"

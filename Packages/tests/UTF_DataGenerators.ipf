@@ -1776,11 +1776,20 @@ static Function/WAVE VariousInputForHasRequiredQCOrder()
 	Make/FREE checkQCLast  = {0, 0, 1, 0}
 	Make/FREE result       = {0}
 
-	// IPT_FORMAT_ON
-
 	Make/FREE/WAVE wv9 = {firstQC, checkQCFirst, lastQC, checkQCLast, result}
 
-	Make/FREE/WAVE wv = {wv0, wv1, wv2, wv3, wv4, wv5, wv6, wv7, wv8, wv9}
+	// fails due to just one passing in both
+	Make/FREE firstQC      = {0, 1, 0, 0, 0}
+	Make/FREE checkQCFirst = {1, 0, 0, 0}
+	Make/FREE lastQC       = {0, 1, 0, 0, 0}
+	Make/FREE checkQCLast  = {1, 0, 0, 0}
+	Make/FREE result       = {0}
+
+	// IPT_FORMAT_ON
+
+	Make/FREE/WAVE wv10 = {firstQC, checkQCFirst, lastQC, checkQCLast, result}
+
+	Make/FREE/WAVE wv = {wv0, wv1, wv2, wv3, wv4, wv5, wv6, wv7, wv8, wv9, wv10}
 
 	return wv
 End
