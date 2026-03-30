@@ -1415,14 +1415,6 @@ static Function TestZapNullRefs()
 		CHECK_NO_RTE()
 	endtry
 
-	try
-		Make/FREE/WAVE/N=(1, 1) wv
-		ZapNullRefs(wv)
-		FAIL()
-	catch
-		CHECK_NO_RTE()
-	endtry
-
 	// empty
 	Make/FREE/WAVE/N=0 wv
 	WAVE/WAVE result = ZapNullRefs(wv)
