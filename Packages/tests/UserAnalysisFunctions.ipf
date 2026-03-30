@@ -1151,3 +1151,15 @@ Function LastSweepInSetWithoutSkip(string device, STRUCT AnalysisFunction_V3 &s)
 	values[INDEP_HEADSTAGE] = AFH_LastSweepInSet(device, s.sweepNo, s.headstage, s.eventType)
 	ED_AddEntryToLabnotebook(device, key, values, overrideSweepNo = s.sweepNo)
 End
+
+Function FailPostDAQ(string device, STRUCT AnalysisFunction_V3 &s)
+
+	switch(s.eventType)
+		case POST_DAQ_EVENT:
+			FAIL()
+			break
+		default:
+			break
+		// do nothing
+	endswitch
+End

@@ -113,7 +113,7 @@ static Function RA_HandleITI(string device)
 			aborted = RA_WaitUntiIITIDone(device, ITI)
 
 			if(aborted)
-				RA_FinishAcquisition(device)
+				RA_FinishAcquisition(device, stopReason = DQ_STOP_REASON_ESCAPE_KEY, forcedStop = 1)
 			else
 				ExecuteListOfFunctions(funcList)
 			endif
@@ -133,7 +133,7 @@ static Function RA_HandleITI(string device)
 		TP_Teardown(device)
 
 		if(aborted)
-			RA_FinishAcquisition(device)
+			RA_FinishAcquisition(device, stopReason = DQ_STOP_REASON_ESCAPE_KEY, forcedStop = 1)
 		else
 			ExecuteListOfFunctions(funcList)
 		endif
@@ -226,14 +226,21 @@ Function RA_Counter(string device)
 			endif
 		catch
 			ClearRTError()
-			RA_FinishAcquisition(device)
+			RA_FinishAcquisition(device, stopReason = DQ_STOP_REASON_CONFIG_FAILED, forcedStop = 1)
 		endtry
 	else
 		RA_FinishAcquisition(device)
 	endif
 End
 
-static Function RA_FinishAcquisition(string device)
+static Function RA_FinishAcquisition(string device, [variable stopReason, variable forcedStop])
+
+	forcedStop = ParamIsDefault(forcedStop) ? 0 : !!forcedStop
+
+	if(ParamIsDefault(stopReason))
+		ASSERT(!forcedStop, "Need to supply a stop reason for forced stop")
+		stopReason = DQ_STOP_REASON_FINISHED
+	endif
 
 	DQ_StopDAQDeviceTimer(device)
 
@@ -241,7 +248,7 @@ static Function RA_FinishAcquisition(string device)
 	RA_PerfFinish(device)
 #endif // PERFING_RA
 
-	DAP_OneTimeCallAfterDAQ(device, DQ_STOP_REASON_FINISHED)
+	DAP_OneTimeCallAfterDAQ(device, stopReason, forcedStop = forcedStop)
 End
 
 static Function RA_BckgTPwithCallToRACounter(string device)
@@ -279,7 +286,7 @@ End
 
 Function RA_CounterMD(string device)
 
-	variable numTotalSweeps
+	variable numTotalSweeps, aborted
 	NVAR count          = $GetCount(device)
 	NVAR activeSetCount = $GetActiveSetCount(device)
 	variable i, runMode
@@ -309,7 +316,11 @@ Function RA_CounterMD(string device)
 	numTotalSweeps = RA_GetTotalNumberOfSweeps(device)
 
 	if(count < numTotalSweeps)
-		DQM_StartDAQMultiDevice(device, initialSetupReq = 0)
+		aborted = DQM_StartDAQMultiDevice(device, initialSetupReq = 0)
+
+		if(aborted)
+			RA_FinishAcquisition(device, stopReason = DQ_STOP_REASON_CONFIG_FAILED, forcedStop = 1)
+		endif
 	else
 		RA_FinishAcquisition(device)
 	endif
