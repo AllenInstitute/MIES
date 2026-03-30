@@ -3138,6 +3138,7 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 			Duplicate/FREE negSlopesPassedRhSuAd, filterPassedRhSuAd
 
 			// we want to filter out the sweeps with passing negative slope QC, so invert it
+			// ???
 			filterPassedRhSuAd[] = !negSlopesPassedRhSuAd[p] && !IsNaN(fISlopesRhSuAd)
 
 			WAVE/Z dataRhSuAdFiltered = PSQ_DS_FilterPassingData(dataRhSuAd, filterPassedRhSuAd, pairwise = 1)
@@ -3799,7 +3800,7 @@ static Function [variable fitOffset, variable fitSlope, variable negSlopePassed,
 	numEntries = DimSize(DAScaleAll, ROWS)
 	last = numEntries - 1
 
-	// special treatmet for the case that the last sweep has failing sweep QC and passing neg f-I slope
+	// special treatment for the case that the last sweep has failing sweep QC and passing neg f-I slope
 	//
 	// we don't need to check fillin QC as that is already done in
 	// PSQ_DS_CalculateNegativeSlopePass
