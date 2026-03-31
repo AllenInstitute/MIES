@@ -1322,7 +1322,7 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 	// we only have to fill in the DA channels
 	ASSERT(sum(s.insertStart) == 0, "Unexpected insert start value")
 	ASSERT(sum(s.setColumn) == 0, "Unexpected setColumn value")
-	ASSERT(DimSize(s.testPulse, COLS) <= 1, "Expected a 1D testpulse wave")
+	ASSERT(GetWaveDimensionality(s.testPulse) == ROWS, "Expected a 1D testpulse wave")
 	ASSERT(s.numADCEntries > 0, "Number of ADCs can not be zero")
 	ASSERT(s.numDACEntries > 0, "Number of DACs can not be zero")
 
@@ -1458,7 +1458,7 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 		[minLimit, maxLimit] = HW_GetDataRange(s.hardwareType, XOP_CHANNEL_TYPE_DAC, isAssociated)
 
 		if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
-			ASSERT(DimSize(s.testPulse, COLS) <= 1, "Expected a 1D testpulse wave")
+			ASSERT(GetWaveDimensionality(s.testPulse) == ROWS, "Expected a 1D testpulse wave")
 			ASSERT(isAssociated, "DA channel must be associated for DAQ_CHANNEL_TYPE_TP")
 
 			switch(s.hardwareType)

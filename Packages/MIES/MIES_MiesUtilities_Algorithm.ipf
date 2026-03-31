@@ -382,15 +382,14 @@ End
 /// \endrst
 threadsafe Function GetNumberOfUsefulThreads(WAVE dims)
 
-	variable pointsPerThread, numCores, numPoints, numThreads, numRows, numCols, i
+	variable pointsPerThread, numCores, numPoints, numThreads, numRows, i
 
 	ASSERT_TS(WaveExists(dims) && IsNumericWave(dims), "Needs a numeric wave")
 
 	numRows = DimSize(dims, ROWS)
 	ASSERT_TS(numRows <= MAX_DIMENSION_COUNT, "Expected at most MAX_DIMENSION_COUNT rows")
 
-	numCols = DimSize(dims, COLS)
-	ASSERT_TS(numCols <= 1, "Expected a 1D wave")
+	ASSERT_TS(GetWaveDimensionality(dims) == ROWS, "Expected a 1D wave")
 
 	pointsPerThread = 4096
 

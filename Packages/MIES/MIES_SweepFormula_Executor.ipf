@@ -224,7 +224,7 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLoc
 			endif
 
 			SFH_ASSERT(numpnts(subArray), "Encountered subArray with zero size.")
-			SFH_ASSERT(WaveDims(subArray) < MAX_DIMENSION_COUNT, "Encountered 4d sub array at " + exd.jsonPath)
+			SFH_ASSERT(GetWaveDimensionality(subArray) != CHUNKS, "Encountered 4d sub array at " + exd.jsonPath)
 
 			// Promote WaveNote with meta data if topArray is 1 point.
 			// The single topArray element is object or array at this point

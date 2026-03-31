@@ -131,6 +131,29 @@ threadsafe Function/WAVE GetWaveDimensions(WAVE wv)
 	return sizes
 End
 
+/// @brief Return the maximum filled dimension of a wave
+///
+/// This function returns the highest dimension that has size > 1, or ROWS if all
+/// dimensions have size <= 1.
+///
+/// @param wv wave reference
+///
+/// @return dimension constant, one of @ref WaveDimensions
+threadsafe Function GetWaveDimensionality(WAVE/Z wv)
+
+	variable i
+
+	ASSERT_TS(WaveExists(wv), "Missing wave")
+
+	for(i = MAX_DIMENSION_COUNT - 1; i >= ROWS; i -= 1)
+		if(DimSize(wv, i) > 1)
+			return i
+		endif
+	endfor
+
+	return ROWS
+End
+
 /// @brief Returns the size of the wave in bytes
 threadsafe static Function GetWaveSizeImplementation(WAVE wv)
 
@@ -415,7 +438,7 @@ End
 /// @brief Return a new wave from the subrange of the given 1D wave
 Function/WAVE DuplicateSubRange(WAVE wv, variable first, variable last)
 
-	ASSERT(DimSize(wv, COLS) == 0, "Requires 1D wave")
+	ASSERT(GetWaveDimensionality(wv) == ROWS, "Requires 1D wave")
 
 	Duplicate/RMD=[first, last]/FREE wv, result
 
@@ -707,7 +730,7 @@ Function/WAVE MergeTwoWaves(WAVE wv1, WAVE wv2)
 	ASSERT(EqualWaves(wv1, wv2, EQWAVES_DIMSIZE), "Non matching wave dim sizes")
 	ASSERT(EqualWaves(wv1, wv2, EQWAVES_DATATYPE), "Non matching wave types")
 	ASSERT(IsFloatingPointWave(wv1), "Expected floating point wave")
-	ASSERT(DimSize(wv1, COLS) <= 1, "Expected 1D wave")
+	ASSERT(GetWaveDimensionality(wv1) == ROWS, "Expected 1D wave")
 
 	Make/FREE/Y=(WaveType(wv1)) result = NaN
 
@@ -746,7 +769,7 @@ threadsafe Function ChangeWaveLock(WAVE/WAVE wv, variable val)
 		return NaN
 	endif
 
-	ASSERT_TS(DimSize(wv, ROWS) == numpnts(wv), "Expected a 1D wave")
+	ASSERT_TS(GetWaveDimensionality(wv) == ROWS, "Expected a 1D wave")
 	numEntries = DimSize(wv, ROWS)
 
 	for(i = 0; i < numEntries; i += 1)
@@ -1081,7 +1104,7 @@ Function/WAVE ZapNullRefs(WAVE/WAVE input)
 
 	ASSERT(IsWaveRefWave(input), "input must be a wave reference wave")
 
-	ASSERT(Dimsize(input, COLS) == 0, "input must be 1D")
+	ASSERT(GetWaveDimensionality(input) == ROWS, "input must be 1D")
 	numEntries = Dimsize(input, ROWS)
 
 	if(!numEntries)
@@ -1174,7 +1197,7 @@ threadsafe Function SetDimensionLabelsFromWaveContents(WAVE wv, [string prefix, 
 	if(!DimSize(wv, ROWS))
 		return NaN
 	endif
-	ASSERT_TS(!DimSize(wv, COLS), "Wave must be 1d")
+	ASSERT_TS(GetWaveDimensionality(wv) == ROWS, "Wave must be 1d")
 
 	if(ParamIsDefault(prefix))
 		prefix = SelectString(IsTextWave(wv), "NUM_", "")
@@ -1339,7 +1362,7 @@ threadsafe Function/WAVE FindNeighbourWithPredicate(WAVE wv, FUNCREF FindNeighbo
 	variable numPoints, i, numDuplicates, idx
 
 	numPoints = DimSize(wv, ROWS)
-	ASSERT_TS(numPoints == numpnts(wv), "Wave must be 1D")
+	ASSERT_TS(GetWaveDimensionality(wv) == ROWS, "Wave must be 1D")
 
 	if(numPoints < 2)
 		return $""

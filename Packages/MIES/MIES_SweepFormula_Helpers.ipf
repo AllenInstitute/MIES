@@ -70,7 +70,7 @@ Function SFH_GetArgumentAsNumeric(STRUCT SF_ExecutionData &exd, string opShort, 
 		SFH_ASSERT(IsNumericWave(data), msg)
 
 		sprintf msg, "Argument #%d of operation %s: Too many input values", argNum, opShort
-		SFH_ASSERT(DimSize(data, ROWS) == 1 && DimSize(data, COLS) == 0, msg)
+		SFH_ASSERT(numpnts(data) == 1, msg)
 
 		result = data[0]
 	else
@@ -162,7 +162,7 @@ Function/S SFH_GetArgumentAsText(STRUCT SF_ExecutionData &exd, string opShort, v
 		SFH_ASSERT(IsTextWave(data), msg)
 
 		sprintf msg, "Argument #%d of operation %s: Too many input values", argNum, opShort
-		SFH_ASSERT(DimSize(data, ROWS) == 1 && DimSize(data, COLS) == 0, msg)
+		SFH_ASSERT(numpnts(data) == 1, msg)
 
 		result = data[0]
 	else
@@ -1747,7 +1747,7 @@ Function [WAVE adaptedRange, WAVE/T epochRangeNames] SFH_GetNumericRangeFromEpoc
 	endif
 
 	WAVE/T epochPatterns = range
-	SFH_ASSERT(IsTextWave(epochPatterns) && !DimSize(epochPatterns, COLS), "Expected 1d text wave for epoch specification")
+	SFH_ASSERT(IsTextWave(epochPatterns) && GetWaveDimensionality(epochPatterns) == ROWS, "Expected 1d text wave for epoch specification")
 
 	if(BSP_IsSweepBrowser(graph))
 		DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)

@@ -588,7 +588,7 @@ static Function/WAVE SFO_OperationAvgImplIn(WAVE/Z input)
 	endif
 
 	SFH_ASSERT(IsNumericWave(input), "avg requires numeric data as input")
-	SFH_ASSERT(WaveDims(input) <= 2, "avg accepts only upto 2d data")
+	SFH_ASSERT(GetWaveDimensionality(input) <= COLS, "avg accepts only upto 2d data")
 	SFH_ASSERT(DimSize(input, ROWS) > 0, "avg requires at least one data point")
 	MatrixOP/FREE out = averageCols(input)^t
 	CopyScales input, out
@@ -1511,7 +1511,7 @@ static Function/WAVE SFO_OperationMaxImpl(WAVE/Z input)
 	endif
 
 	SFH_ASSERT(IsNumericWave(input), "max requires numeric data as input")
-	SFH_ASSERT(WaveDims(input) <= 2, "max accepts only upto 2d data")
+	SFH_ASSERT(GetWaveDimensionality(input) <= COLS, "max accepts only upto 2d data")
 	SFH_ASSERT(DimSize(input, ROWS) > 0, "max requires at least one data point")
 	MatrixOP/FREE out = maxCols(input)^t
 	SF_FormulaWaveScaleTransfer(input, out, COLS, ROWS)
@@ -1579,7 +1579,7 @@ static Function/WAVE SFO_OperationMinImpl(WAVE/Z input)
 	endif
 
 	SFH_ASSERT(IsNumericWave(input), "min requires numeric data as input")
-	SFH_ASSERT(WaveDims(input) <= 2, "min accepts only upto 2d data")
+	SFH_ASSERT(GetWaveDimensionality(input) <= COLS, "min accepts only upto 2d data")
 	SFH_ASSERT(DimSize(input, ROWS) > 0, "min requires at least one data point")
 	MatrixOP/FREE out = minCols(input)^t
 
@@ -1948,7 +1948,7 @@ static Function/WAVE SFO_OperationRMSImpl(WAVE/Z input)
 	endif
 
 	SFH_ASSERT(IsNumericWave(input), "rms requires numeric data as input")
-	SFH_ASSERT(WaveDims(input) <= 2, "rms accepts only upto 2d data")
+	SFH_ASSERT(GetWaveDimensionality(input) <= COLS, "rms accepts only upto 2d data")
 	SFH_ASSERT(DimSize(input, ROWS) > 0, "rms requires at least one data point")
 	MatrixOP/FREE out = sqrt(averageCols(magsqr(input)))^t
 	SF_FormulaWaveScaleTransfer(input, out, COLS, ROWS)
@@ -2057,7 +2057,7 @@ static Function/WAVE SFO_OperationStdevImpl(WAVE/Z input)
 	endif
 
 	SFH_ASSERT(IsNumericWave(input), "stdev requires numeric data as input")
-	SFH_ASSERT(WaveDims(input) <= 2, "stdev accepts only upto 2d data")
+	SFH_ASSERT(GetWaveDimensionality(input) <= COLS, "stdev accepts only upto 2d data")
 	SFH_ASSERT(DimSize(input, ROWS) > 0, "stdev requires at least one data point")
 	MatrixOP/FREE out = (sqrt(sumCols(powR(input - rowRepeat(averageCols(input), numRows(input)), 2)) / (numRows(input) - 1)))^t
 	SF_FormulaWaveScaleTransfer(input, out, COLS, ROWS)
@@ -2146,7 +2146,7 @@ static Function/WAVE SFO_OperationVarianceImpl(WAVE/Z input)
 	endif
 
 	SFH_ASSERT(IsNumericWave(input), "variance requires numeric data as input")
-	SFH_ASSERT(WaveDims(input) <= 2, "variance accepts only upto 2d data")
+	SFH_ASSERT(GetWaveDimensionality(input) <= COLS, "variance accepts only upto 2d data")
 	SFH_ASSERT(DimSize(input, ROWS) > 0, "variance requires at least one data point")
 	MatrixOP/FREE out = (sumCols(magSqr(input - rowRepeat(averageCols(input), numRows(input)))) / (numRows(input) - 1))^t
 	SF_FormulaWaveScaleTransfer(input, out, COLS, ROWS)

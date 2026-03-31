@@ -1415,14 +1415,6 @@ static Function TestZapNullRefs()
 		CHECK_NO_RTE()
 	endtry
 
-	try
-		Make/FREE/WAVE/N=(1, 1) wv
-		ZapNullRefs(wv)
-		FAIL()
-	catch
-		CHECK_NO_RTE()
-	endtry
-
 	// empty
 	Make/FREE/WAVE/N=0 wv
 	WAVE/WAVE result = ZapNullRefs(wv)
@@ -3694,6 +3686,116 @@ Function GLNEE_WorksWithMultipleColumns()
 
 	CHECK_EQUAL_STR(GetLastNonEmptyEntry(wv, "colA", 2), "a2")
 	CHECK_EQUAL_STR(GetLastNonEmptyEntry(wv, "colB", 2), "b3")
+End
+
+/// @}
+
+// GetWaveDimensionality
+/// @{
+
+Function GWD_AbortsWOWave()
+
+	try
+		GetWaveDimensionality($"")
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+End
+
+Function GWD_Works1D()
+
+	Make/FREE/N=(5) wv
+	CHECK_EQUAL_VAR(GetWaveDimensionality(wv), ROWS)
+End
+
+Function GWD_Works2D()
+
+	Make/FREE/N=(3, 4) wv
+	CHECK_EQUAL_VAR(GetWaveDimensionality(wv), COLS)
+End
+
+Function GWD_Works3D()
+
+	Make/FREE/N=(2, 3, 4) wv
+	CHECK_EQUAL_VAR(GetWaveDimensionality(wv), LAYERS)
+End
+
+Function GWD_Works4D()
+
+	Make/FREE/N=(2, 3, 4, 5) wv
+	CHECK_EQUAL_VAR(GetWaveDimensionality(wv), CHUNKS)
+End
+
+Function GWD_LastDim1Returns1D()
+
+	// Wave with (5, 1) should effectively be 1D
+	Make/FREE/N=(5, 1) wv
+	CHECK_EQUAL_VAR(GetWaveDimensionality(wv), ROWS)
+End
+
+Function GWD_LastTwoDims1Returns1D()
+
+	// Wave with (5, 1, 1) should effectively be 1D
+	Make/FREE/N=(5, 1, 1) wv
+	CHECK_EQUAL_VAR(GetWaveDimensionality(wv), ROWS)
+End
+
+Function GWD_LastThreeDims1Returns1D()
+
+	// Wave with (5, 1, 1, 1) should effectively be 1D
+	Make/FREE/N=(5, 1, 1, 1) wv
+	CHECK_EQUAL_VAR(GetWaveDimensionality(wv), ROWS)
+End
+
+Function GWD_MixedDims1()
+
+	// Wave with (3, 4, 1) should be 2D (cols is the last meaningful dimension)
+	Make/FREE/N=(3, 4, 1) wv
+	CHECK_EQUAL_VAR(GetWaveDimensionality(wv), COLS)
+End
+
+Function GWD_MixedDims2()
+
+	// Wave with (2, 3, 1, 1) should be 2D
+	Make/FREE/N=(2, 3, 1, 1) wv
+	CHECK_EQUAL_VAR(GetWaveDimensionality(wv), COLS)
+End
+
+Function GWD_MixedDims3()
+
+	// Wave with (2, 3, 4, 1) should be 3D
+	Make/FREE/N=(2, 3, 4, 1) wv
+	CHECK_EQUAL_VAR(GetWaveDimensionality(wv), LAYERS)
+End
+
+Function GWD_AllDims1()
+
+	// Wave with (1, 1, 1, 1) should return ROWS
+	Make/FREE/N=(1, 1, 1, 1) wv
+	CHECK_EQUAL_VAR(GetWaveDimensionality(wv), ROWS)
+End
+
+Function GWD_SingleElement()
+
+	// Single element wave
+	Make/FREE/N=(1) wv
+	CHECK_EQUAL_VAR(GetWaveDimensionality(wv), ROWS)
+End
+
+Function GWD_EmptyWave()
+
+	// Completely empty wave (0 points)
+	Make/FREE/N=0 wv
+	CHECK_EQUAL_VAR(GetWaveDimensionality(wv), ROWS)
+End
+
+Function GWD_IsThreadsafe()
+
+	Make/FREE/N=(3, 4, 5) wv
+	Make/FREE/N=1 result
+	MultiThread result = GetWaveDimensionality(wv)
+	CHECK_EQUAL_VAR(result[0], LAYERS)
 End
 
 /// @}

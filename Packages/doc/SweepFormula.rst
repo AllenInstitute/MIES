@@ -2348,7 +2348,7 @@ Example code for a typical operation taking three arguments, the first argument 
 
      // Sanity checks on input data waves
 	  SF_ASSERT(IsNumericWave(input), "opname requires numeric data as input")
-	  SF_ASSERT(WaveDims(input) <= 2, "opname accepts only upto 2d data")
+	  SF_ASSERT(GetWaveDimensionality(input) == ROWS || GetWaveDimensionality(input) == COLS, "opname accepts only upto 2d data")
 	  SF_ASSERT(DimSize(input, ROWS) > 0, "opname requires at least one data point")
 	  // Do the actual calculation
      MatrixOP/FREE out = sqrt(averageCols(magsqr(input)))^t
