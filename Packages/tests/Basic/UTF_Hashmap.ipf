@@ -639,4 +639,13 @@ static Function HashmapFromIndizesWorks()
 	[value, found] = HM_GetEntryAsNumber(hashmap, "b")
 	CHECK_EQUAL_VAR(found, 1)
 	CHECK_EQUAL_VAR(value, 1)
+
+	// adding as case insensitive
+	Make/FREE/T entries = {"A", "b", ""}
+	WAVE/WAVE hashmap = HM_GetHashmapFromEntriesAndIndizes(entries, 3, type, 16, caseSensitive = 0)
+
+	// gives all lower keys
+	WAVE/T allKeys = HM_GetAllKeys(hashmap)
+	Sort allKeys, allKeys
+	CHECK_EQUAL_TEXTWAVES({"a", "b"}, allKeys)
 End
