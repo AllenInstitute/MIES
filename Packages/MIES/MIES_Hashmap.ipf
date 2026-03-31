@@ -854,15 +854,22 @@ End
 
 /// @brief Create a hashmap and fill it with `entries` and their indizes
 ///
-/// @param entries    wave with the entries to be added, can be a null wave iff numEntries is zero. Empty entries are ignored.
-/// @param numEntries number of values to read from entries
-/// @param valueType  type of the values in the hashmap, see #HM_Create
-/// @param minSize    minimum size of the created hashmap
+/// @param entries       wave with the entries to be added, can be a null wave iff numEntries is zero. Empty entries are ignored.
+/// @param numEntries    number of values to read from entries
+/// @param valueType     type of the values in the hashmap, see #HM_Create
+/// @param minSize       minimum size of the created hashmap
+/// @param caseSensitive [optional, defaults to true] lower case all keys if false, don't touch them if true
 ///
 /// @return hashmap with the content from entries as keys and their indizes as values
-threadsafe Function/WAVE HM_GetHashmapFromEntriesAndIndizes(WAVE/Z/T entries, variable numEntries, variable valueType, variable minSize)
+threadsafe Function/WAVE HM_GetHashmapFromEntriesAndIndizes(WAVE/Z/T entries, variable numEntries, variable valueType, variable minSize, [variable caseSensitive])
 
 	variable size
+
+	if(ParamIsDefault(caseSensitive))
+		caseSensitive = 1
+	else
+		caseSensitive = !!caseSensitive
+	endif
 
 	size = max(minSize, HM_CalculateOptimumSize(numEntries))
 	WAVE hashmap = HM_Create(size = size, valueType = valueType)
@@ -874,7 +881,7 @@ threadsafe Function/WAVE HM_GetHashmapFromEntriesAndIndizes(WAVE/Z/T entries, va
 	WAVE indexHelper = GetTemporaryWave({numEntries}, IGOR_TYPE_8BIT_INT)
 
 	ASSERT_TS(WaveExists(entries), "Missing entries wave")
-	indexHelper[] = (strlen(entries[p]) > 0) ? HM_AddEntry(hashmap, entries[p], var = p) : 0
+	indexHelper[] = (strlen(entries[p]) > 0) ? HM_AddEntry(hashmap, SelectString(caseSensitive, LowerStr(entries[p]), entries[p]), var = p) : 0
 
 	return hashmap
 End
