@@ -3,10 +3,15 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = LBNEntrySourceTypeHandling
 
-static Function TEST_CASE_END_OVERRIDE(string testname)
+static Function DeleteLabnotebookWaves_IGNORE()
 
 	KillDataFolder/Z $LOGBOOK_WAVE_TEMP_FOLDER
 	KillWaves/Z $LBN_NUMERICAL_VALUES_NAME, $LBN_NUMERICAL_KEYS_NAME, $LBN_TEXTUAL_VALUES_NAME, $LBN_TEXTUAL_KEYS_NAME
+End
+
+static Function TEST_CASE_END_OVERRIDE(string testname)
+
+	DeleteLabnotebookWaves_IGNORE()
 	TestCaseEndCommon(testname)
 End
 
