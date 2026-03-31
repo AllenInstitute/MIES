@@ -552,17 +552,37 @@ threadsafe static Function [WAVE/Z wv, variable index] GetLastSettingChannelInte
 	return [$"", NaN]
 End
 
-threadsafe static Function GetLogbookSettingsColumn(WAVE values, string key)
+/// @brief Return the column index for the given logbook setting
+///
+/// @return column index or -1 if not found
+threadsafe Function GetLogbookSettingsColumn(WAVE values, string key)
 
-	[WAVE/T sortedKeys, WAVE indices] = GetLogbookSortedKeys(values)
+	WAVE/WAVE hashmap = GetLogbookKeyHashmap(values)
 
-	return GetLogbookSettingsColumnFromSorted(sortedKeys, indices, key)
+	return GetLogbookSettingsColumnFromHashmap(hashmap, key)
 End
 
-threadsafe static Function GetLogbookSettingsColumnFromSorted(WAVE/T sortedKeys, WAVE indices, string key)
+/// @brief Return the column index for the given logbook setting
+///
+/// Fast access for callers who already have the hashmap.
+///
+/// @return column index or -1 if not found
+threadsafe Function GetLogbookSettingsColumnFromHashmap(WAVE/WAVE hashmap, string key)
 
-	variable index = BinarySearchText(sortedKeys, key)
-	return IsNaN(index) ? -2 : indices[index]
+	variable found, col
+
+	[col, found] = HM_GetEntryAsNumber(hashmap, LowerStr(key))
+
+	return (found == 1) ? col : -1
+End
+
+/// @brief Add the given key/index pair to the logbook hashmap
+threadsafe Function AddSettingsColumnToLogbook(WAVE/WAVE hashmap, string key, variable index)
+
+	variable ret
+
+	ret = HM_AddEntry(hashmap, LowerStr(key), var = index)
+	ASSERT_TS(ret, "Expected to create a new value in the hashmap")
 End
 
 /// @brief Return a numeric/textual wave with the latest value of a setting

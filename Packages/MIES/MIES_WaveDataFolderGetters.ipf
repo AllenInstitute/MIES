@@ -29,9 +29,6 @@ static Constant PULSE_WAVE_VERSION = 4
 
 static StrConstant TP_SETTINGS_LABELS = "bufferSize;resistanceTol;sendToAllHS;baselinePerc;durationMS;amplitudeVC;amplitudeIC;autoTPEnable;autoAmpMaxCurrent;autoAmpVoltage;autoAmpVoltageRange;autoTPPercentage;autoTPInterval;autoTPCycleID"
 
-static StrConstant LOGBOOK_SUFFIX_SORTEDKEYS        = "_sorted"
-static StrConstant LOGBOOK_SUFFIX_SORTEDKEYSINDICES = "_indices"
-
 static Constant SWEEP_SETTINGS_WAVE_VERSION = 42
 
 /// @brief Return a wave reference to the corresponding Logbook keys wave from an values wave input
@@ -1406,6 +1403,9 @@ Function UpgradeLabNotebook(string device)
 
 	DFREF dfr = GetDevSpecLabNBFolder(device)
 
+	// remove hashmaps as the keys might change
+	KillWaves/Z dfr:$LBN_NUMERICAL_KEYS_HASHMAP_NAME, dfr:$LBN_TEXTUAL_KEYS_HASHMAP_NAME
+
 	WAVE/Z/SDFR=dfr   numericalValues = $LBN_NUMERICAL_VALUES_NAME
 	WAVE/Z/T/SDFR=dfr textualValues   = $LBN_TEXTUAL_VALUES_NAME
 
@@ -1947,7 +1947,11 @@ static Function UpgradeResultsNotebook()
 
 	variable i, numCols
 
-	DFREF             dfr                   = GetResultsFolder()
+	DFREF dfr = GetResultsFolder()
+
+	// remove hashmaps as the keys might change
+	KillWaves/Z dfr:$LBN_NUMERICALRESULT_KEYS_HASHMAP_NAME, dfr:$LBN_TEXTUALRESULT_KEYS_HASHMAP_NAME
+
 	WAVE/Z/SDFR=dfr   numericalResultValues = $LBN_NUMERICALRESULT_VALUES_NAME
 	WAVE/Z/T/SDFR=dfr textualResultValues   = $LBN_TEXTUALRESULT_VALUES_NAME
 	if(!WaveExists(numericalResultValues))
@@ -6299,6 +6303,8 @@ End
 /// UTF_NOINSTRUMENTATION
 threadsafe Function/WAVE GetCacheKeyHashMap()
 
+	variable numEntries
+
 	DFREF dfr = GetCacheFolder()
 
 	WAVE/Z/WAVE/SDFR=dfr wv = hashmap
@@ -6308,37 +6314,15 @@ threadsafe Function/WAVE GetCacheKeyHashMap()
 	endif
 
 	WAVE/Z/T/SDFR=dfr keys
-	WAVE wv = GetHashMapFromNoteIndexVector(keys, IGOR_TYPE_32BIT_INT | IGOR_TYPE_UNSIGNED)
+
+	numEntries = WaveExists(keys) ? GetNumberFromWaveNote(keys, NOTE_INDEX) : 0
+	ASSERT_TS(IsFinite(numEntries), "the wave entries exists but does not hold a NOTE_INDEX")
+	WAVE wv = HM_GetHashmapFromEntriesAndIndizes(keys, numEntries, IGOR_TYPE_32BIT_INT | IGOR_TYPE_UNSIGNED, 2^14)
 	KillOrMoveToTrash(wv = keys)
 
 	MoveWave wv, dfr:hashmap
 
 	return wv
-End
-
-/// @brief Return a hashmap with the wave entries as keys and their index as values
-///
-/// Ignores empty values
-threadsafe static Function/WAVE GetHashMapFromNoteIndexVector(WAVE/Z/T entries, variable valueType)
-
-	variable numEntries
-	variable size = 2^14
-
-	numEntries = WaveExists(entries) ? GetNumberFromWaveNote(entries, NOTE_INDEX) : 0
-	ASSERT_TS(IsFinite(numEntries), "the wave entries exists but does not hold a NOTE_INDEX")
-
-	size = max(size, HM_CalculateOptimumSize(numEntries))
-	WAVE hashmap = HM_Create(size = size, valueType = valueType)
-
-	if(numEntries == 0)
-		return hashmap
-	endif
-
-	Make/N=(numEntries)/FREE indexHelper
-
-	indexHelper[] = (strlen(entries[p]) > 0) ? HM_AddEntry(hashmap, entries[p], var = p) : 0
-
-	return hashmap
 End
 
 /// @brief Return the wave reference wave holding the cache stats
@@ -9025,36 +9009,30 @@ Function/WAVE GetSutterADCSampleInterval()
 	return rates
 End
 
-/// @brief Gets from a Logbook values wave the wave with sortedKeys and associated indices in a separate wave
-threadsafe Function [WAVE/T sortedKeys, WAVE/D indices] GetLogbookSortedKeys(WAVE values)
+/// @brief Get from a Logbook values wave a hashmap containing the mapping between the names and their column indizes in values
+threadsafe Function/WAVE GetLogbookKeyHashmap(WAVE values)
 
-	variable numKeys
-	string keysName, sortedKeysName, sortedKeysIndicesName, cacheKey
+	string name
 
 	WAVE/Z/T keys = GetLogbookKeysFromValues(values)
 	ASSERT_TS(WaveExists(keys), "Keys wave is missing")
-	cacheKey = CA_GenKeyLogbookSortedKeys(keys)
 
-	DFREF dfrTmp = createDFWithAllParents(GetWavesDataFolder(keys, 1) + LOGBOOK_WAVE_TEMP_FOLDER)
-	keysName              = NameOfWave(keys)
-	sortedKeysName        = keysName + LOGBOOK_SUFFIX_SORTEDKEYS
-	sortedKeysIndicesName = keysName + LOGBOOK_SUFFIX_SORTEDKEYSINDICES
+	DFREF dfr = GetWavesDataFolderDFR(keys)
+	name = NameOfWave(keys) + "_hashmap"
+	WAVE/Z/WAVE hashmap = dfr:$name
 
-	WAVE/Z/T sortedKeys = dfrTmp:$sortedKeysName
-	if(WaveExists(sortedKeys) && !CmpStr(note(sortedKeys), cacheKey))
-		WAVE indices = dfrTmp:$sortedKeysIndicesName
-		return [sortedKeys, indices]
+	if(WaveExists(hashmap))
+		return hashmap
 	endif
 
-	numKeys = DimSize(keys, COLS)
-	Make/O/T/N=(numKeys) dfrTmp:$sortedKeysName/WAVE=sortedKeys
-	Make/O/D/N=(numKeys) dfrTmp:$sortedKeysIndicesName/WAVE=indices
-	MultiThread sortedKeys[] = keys[0][p]
-	MultiThread indices[] = p
-	Sort {sortedKeys}, sortedKeys, indices
-	Note/K sortedKeys, cacheKey
+	Duplicate/FREE/RMD=[FindDimLabel(keys, ROWS, "Parameter")][] keys, onlyNames
+	Redimension/N=(DimSize(onlyNames, COLS))/E=1 onlyNames
 
-	return [sortedKeys, indices]
+	WAVE hashmap = HM_GetHashmapFromEntriesAndIndizes(onlyNames, DimSize(onlyNames, ROWS), IGOR_TYPE_32BIT_INT | IGOR_TYPE_UNSIGNED, 2^10, caseSensitive = 0)
+
+	MoveWave hashmap, dfr:$name
+
+	return hashmap
 End
 
 /// @brief Return the stimset folder from the numeric channelType, #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL
