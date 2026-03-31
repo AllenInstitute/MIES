@@ -7,6 +7,7 @@ static Function DeleteLabnotebookWaves_IGNORE()
 
 	KillDataFolder/Z $LOGBOOK_WAVE_TEMP_FOLDER
 	KillWaves/Z $LBN_NUMERICAL_VALUES_NAME, $LBN_NUMERICAL_KEYS_NAME, $LBN_TEXTUAL_VALUES_NAME, $LBN_TEXTUAL_KEYS_NAME
+	KillWaves/Z $LBN_NUMERICAL_KEYS_HASHMAP_NAME, $LBN_TEXTUAL_KEYS_HASHMAP_NAME
 End
 
 static Function TEST_CASE_END_OVERRIDE(string testname)
@@ -18,6 +19,8 @@ End
 static Function/WAVE PrepareLBNNumericalValues(WAVE numericalValuesSrc)
 
 	variable numCols, nextFreeRow, numRows
+
+	DeleteLabnotebookWaves_IGNORE()
 
 	WAVE/T numericalKeysTemplate = GetLBNumericalKeys("dummyDevice")
 	numCols = DimSize(numericalValuesSrc, COLS)
