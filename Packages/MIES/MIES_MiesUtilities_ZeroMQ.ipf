@@ -20,11 +20,11 @@ End
 /// `netstat | grep $port`. The binded port only shows up *after* a
 /// successfull connection with zeromq_client_connect() is established.
 ///
-/// @return NaN if already running, otherwise it returns the number of trials
-///         it had to iterate for an unused port.
+/// @return 0 on success, 1 if already running and 2 on error
 Function StartZeroMQSockets([variable forceRestart])
 
-	variable i, port, err, numBinds, flags, numTrials
+	variable err, numBinds, flags, port
+	variable expectedBinds = 2
 
 	if(ParamIsDefault(forceRestart))
 		forceRestart = 0
@@ -38,7 +38,7 @@ Function StartZeroMQSockets([variable forceRestart])
 		zeromq_handler_start(); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
 		if(ConvertXOPErrorCode(err) == ZeroMQ_HANDLER_ALREADY_RUNNING)
 			DEBUGPRINT("Already running, nothing to do.")
-			return NaN
+			return 1
 		endif
 	endif
 
@@ -54,38 +54,34 @@ Function StartZeroMQSockets([variable forceRestart])
 	endif
 #endif
 
-	for(i = 0; i < ZEROMQ_NUM_BIND_TRIALS; i += 1)
-		port = ZEROMQ_BIND_REP_PORT + i
-		AssertOnAndClearRTError()
-		zeromq_server_bind("tcp://127.0.0.1:" + num2str(port)); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
+	AssertOnAndClearRTError()
+	port = ZEROMQ_BIND_REP_PORT
+	zeromq_server_bind(ZEROMQ_PROT_AND_NETWORK + num2str(port)); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
 
-		if(!err)
-			DEBUGPRINT("Successfully listening with server on port:", var = port)
-			numBinds += 1
-			break
-		endif
-	endfor
+	if(!err)
+		DEBUGPRINT("Successfully listening with server on port:", var = port)
+		numBinds += 1
+	endif
 
-	numTrials += i
+	port = ZEROMQ_BIND_PUB_PORT
+	AssertOnAndClearRTError()
+	zeromq_pub_bind(ZEROMQ_PROT_AND_NETWORK + num2str(port)); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
 
-	for(i = 0; i < ZEROMQ_NUM_BIND_TRIALS; i += 1)
-		port = ZEROMQ_BIND_PUB_PORT + i
-		AssertOnAndClearRTError()
-		zeromq_pub_bind("tcp://127.0.0.1:" + num2str(port)); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
+	if(!err)
+		DEBUGPRINT("Successfully listening with publisher on port:", var = port)
+		numBinds += 1
+	endif
 
-		if(!err)
-			DEBUGPRINT("Successfully listening with publisher on port:", var = port)
-			numBinds += 1
-			break
-		endif
-	endfor
+	if(numBinds == expectedBinds)
+		zeromq_handler_start()
+		return 0
+	endif
 
-	numTrials += i
+	printf "Could only establish %d ZeroMQ bind connections and not %d. Shutting down ZeroMQ subsystem.\r", numBinds, expectedBinds
+	ControlWindowToFront()
+	zeromq_stop()
 
-	ASSERT(numBinds == 2, "Could not establish ZeroMQ bind connections.")
-	zeromq_handler_start()
-
-	return numTrials
+	return 2
 End
 
 /// @brief Update the logging template used by the ZeroMQ-XOP and ITCXOP2

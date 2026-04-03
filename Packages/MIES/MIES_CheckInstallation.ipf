@@ -81,6 +81,93 @@ static Function CHI_CheckITCXOPVersion(STRUCT CHI_InstallationState &state)
 	CHI_OutputVersionCheckResult(state, "ITC2", CHI_ITC_XOP_VERSION, version)
 End
 
+static Function CHI_CheckZeroMQPorts(STRUCT CHI_InstallationState &state)
+
+	string msg, reply, receivedMessage, receivedFilter, errMsg, filter
+	variable err, numTrials, i, ret, gotMessage
+
+	numTrials = 10
+	filter    = "testfilter"
+
+	ret = (StartZeroMQSockets(forceRestart = 1) == 0)
+
+	printf "ZeroMQ XOP: Could %sconnect to the standard ZeroMQ ports (%s)\r", SelectString(ret, "not ", ""), SelectString(ret, "Very Bad", "Nice!")
+
+	state.numTries  += 1
+	state.numErrors += !ret
+
+	if(!ret)
+		return NaN
+	endif
+
+	AssertOnAndClearRTError()
+	try
+		state.numTries += 1
+
+		zeromq_client_connect(ZEROMQ_PROT_AND_NETWORK + num2str(ZEROMQ_BIND_REP_PORT)); AbortOnRTE
+
+		msg = "{\"version\" : 1, \"CallFunction\" : {\"name\" : \"ZeroMQ_DataFolderExists\", \"params\" : [\"root:\"]}}"
+		zeromq_client_send(msg); AbortOnRTE
+
+		for(i = 0; i < numTrials; i += 1)
+
+			reply = zeromq_client_recv(); AbortOnRTE
+
+			if(!IsEmpty(reply))
+				gotMessage = 1
+				break
+			endif
+
+			// message processing in the ZeroMQ XOP
+			DoXOPIdle
+			Sleep/S 0.1
+		endfor
+
+		printf "ZeroMQ XOP: Could %suse the client/server connection (%s)\r", SelectString(gotMessage, "not ", ""), SelectString(gotMessage, "Very Bad", "Nice!")
+
+		state.numTries  += 1
+		state.numErrors += !gotMessage
+
+		gotMessage = 0
+
+		zeromq_sub_connect(ZEROMQ_PROT_AND_NETWORK + num2str(ZEROMQ_BIND_PUB_PORT)); AbortOnRTE
+
+		zeromq_sub_remove_filter(""); AbortOnRTE
+		zeromq_sub_add_filter(filter); AbortOnRTE
+		Sleep/S 0.1
+
+		// publish message
+		zeromq_pub_send(filter, msg); AbortOnRTE
+
+		for(i = 0; i < numTrials; i += 1)
+
+			receivedMessage = zeromq_sub_recv(receivedFilter); AbortOnRTE
+
+			if(!cmpstr(receivedMessage, msg) && !cmpstr(receivedFilter, filter))
+				gotMessage = 1
+				break
+			endif
+
+			// no need for DoXOPIdle as the message handler is not involved
+			Sleep/S 0.1
+		endfor
+
+		printf "ZeroMQ XOP: Could %suse the pub/sub connection (%s)\r", SelectString(gotMessage, "not ", ""), SelectString(gotMessage, "Very Bad", "Nice!")
+
+		state.numTries  += 1
+		state.numErrors += !gotMessage
+	catch
+		errMsg = GetRTErrMessage()
+		err    = ClearRTError()
+		printf "ZeroMQ XOP: Connection testing failed with error(%d): %s (Very Bad)\r", err, errMsg
+		state.numErrors += 1
+	endtry
+
+	// fully restart ZeroMQ sockets to leave the subsystem in a clean state
+	// after the test
+	StartZeroMQSockets(forceRestart = 1)
+End
+
 /// @brief Search list for matches of item and print the results
 static Function CHI_CheckXOP(WAVE/T list, string item, string name, STRUCT CHI_InstallationState &state, [string expectedHash])
 
@@ -352,6 +439,7 @@ Function CHI_CheckInstallation()
 	endif
 #endif // WINDOWS
 	CHI_CheckTUFXOPVersion(state)
+	CHI_CheckZeroMQPorts(state)
 
 	printf "Results: %d checks, %d number of errors\r", state.numTries, state.numErrors
 

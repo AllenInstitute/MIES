@@ -240,13 +240,13 @@ Function PrepareForPublishTest()
 
 	UpdateXOPLoggingTemplate()
 
-	variable numTrials = StartZeroMQSockets(forceRestart = 1)
-	REQUIRE_EQUAL_VAR(numTrials, 0)
+	variable ret = StartZeroMQSockets(forceRestart = 1)
+	REQUIRE_EQUAL_VAR(ret, 0)
 
 	zeromq_sub_remove_filter("")
 
 	zeromq_sub_add_filter("")
-	zeromq_sub_connect("tcp://127.0.0.1:" + num2str(ZEROMQ_BIND_PUB_PORT))
+	zeromq_sub_connect(ZEROMQ_PROT_AND_NETWORK + num2str(ZEROMQ_BIND_PUB_PORT))
 
 	WaitForPubSubHeartbeat()
 End

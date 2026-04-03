@@ -860,8 +860,7 @@ Constant MCC_SKIP_UPDATES    = 0x4 ///< Skips all unnecessary updates. Intereset
 ///< Using that option requires to switch the clamp mode back to its original value.
 ///@}
 
-/// Number of trials to find a suitable port for binding a ZeroMQ service
-Constant ZEROMQ_NUM_BIND_TRIALS = 32
+StrConstant ZEROMQ_PROT_AND_NETWORK = "tcp://127.0.0.1:"
 
 Constant ZEROMQ_BIND_REP_PORT = 5670
 
