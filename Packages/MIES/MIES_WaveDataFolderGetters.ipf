@@ -6316,7 +6316,7 @@ threadsafe Function/WAVE GetCacheKeyHashMap()
 	WAVE/Z/T/SDFR=dfr keys
 
 	numEntries = WaveExists(keys) ? GetNumberFromWaveNote(keys, NOTE_INDEX) : 0
-	ASSERT_TS(IsFinite(numEntries), "the wave entries exists but does not hold a NOTE_INDEX")
+	ASSERT_TS(IsFinite(numEntries), "the entries wave exists but does not hold a NOTE_INDEX")
 	WAVE wv = HM_GetHashmapFromEntriesAndIndizes(keys, numEntries, IGOR_TYPE_32BIT_INT | IGOR_TYPE_UNSIGNED, 2^14)
 	KillOrMoveToTrash(wv = keys)
 
