@@ -540,7 +540,7 @@ Function/WAVE SFOS_OperationSelectSweeps(STRUCT SF_ExecutionData &exd)
 	else
 		for(i = 0; i < numArgs; i += 1)
 			WAVE data = SFH_GetArgumentAsWave(exd, SF_OP_SELECTSWEEPS, i, singleResult = 1, expectedMinorType = IGOR_TYPE_64BIT_FLOAT)
-			SFH_ASSERT(!DimSize(data, COLS), "Argument of selsweeps must be a number or a 1d numeric array")
+			SFH_ASSERT(GetWaveDimensionality(data) == ROWS, "Argument of selsweeps must be a number or a 1d numeric array")
 			Concatenate/FREE/D/NP {data}, sweeps
 		endfor
 	endif

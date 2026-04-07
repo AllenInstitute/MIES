@@ -126,7 +126,7 @@ threadsafe Function/WAVE GetUniqueEntries(WAVE wv, [variable caseSensitive, vari
 	ASSERT_TS(WaveExists(wv), "Wave must exist")
 
 	numRows = DimSize(wv, ROWS)
-	ASSERT_TS(numRows == numpnts(wv), "Wave must be 1D")
+	ASSERT_TS(GetWaveDimensionality(wv) == ROWS, "Wave must be 1D")
 
 	dontDuplicate = ParamIsDefault(dontDuplicate) ? 0 : !!dontDuplicate
 
@@ -188,7 +188,7 @@ threadsafe static Function/WAVE GetUniqueTextEntries(WAVE/T wv, [variable caseSe
 	caseSensitive = ParamIsDefault(caseSensitive) ? 1 : !!caseSensitive
 
 	numEntries = DimSize(wv, ROWS)
-	ASSERT_TS(numEntries == numpnts(wv), "Wave must be 1D.")
+	ASSERT_TS(GetWaveDimensionality(wv) == ROWS, "Wave must be 1D.")
 
 	if(numEntries <= 1)
 		if(dontDuplicate)
@@ -573,7 +573,7 @@ threadsafe Function/WAVE GetSetDifference(WAVE wave1, WAVE wave2, [variable getI
 
 	ASSERT_TS((IsFloatingPointWave(wave1) && IsFloatingPointWave(wave2)) || isText, "Non matching wave types (both float or both text).")
 	ASSERT_TS(WaveType(wave1) == WaveType(wave2), "Wave type mismatch")
-	ASSERT_TS(!DimSize(wave1, COLS), "input wave1 must be 1d")
+	ASSERT_TS(GetWaveDimensionality(wave1) == ROWS, "input wave1 must be 1d")
 
 	WAVE/Z result
 
@@ -674,7 +674,7 @@ threadsafe Function/WAVE GetSetIntersection(WAVE wave1, WAVE wave2, [variable ge
 
 	ASSERT_TS((IsNumericWave(wave1) && IsNumericWave(wave2))                  \
 	          || (IsTextWave(wave1) && IsTextWave(wave2)), "Invalid wave type")
-	ASSERT_TS(!DimSize(wave1, COLS) && !DimSize(wave2, COLS), "input waves must be 1d")
+	ASSERT_TS(GetWaveDimensionality(wave1) == ROWS && GetWaveDimensionality(wave2) == ROWS, "input waves must be 1d")
 
 	getIndices = ParamIsDefault(getIndices) ? 0 : !!getIndices
 
@@ -986,7 +986,7 @@ threadsafe Function BinarySearchText(WAVE/T theWave, string theText, [variable c
 
 	numRows = DimSize(theWave, ROWS)
 
-	ASSERT_TS(DimSize(theWave, COLS) <= 1, "Only works with 1D waves")
+	ASSERT_TS(GetWaveDimensionality(theWave) == ROWS, "Only works with 1D waves")
 	ASSERT_TS(IsTextWave(theWave), "Only works with text waves")
 
 	if(numRows == 0)

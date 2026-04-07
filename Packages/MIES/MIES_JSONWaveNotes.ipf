@@ -276,7 +276,7 @@ threadsafe Function JWN_SetWaveInWaveNote(WAVE wv, string jsonPath, WAVE noteWav
 	          "Only wave references waves, numeric and text waves are supported as JSON wave note entry.")
 
 	if(IsWaveRefWave(noteWave))
-		ASSERT_TS(DimSize(noteWave, COLS) <= 1, "Expected only a 1D wave reference wave")
+		ASSERT_TS(GetWaveDimensionality(noteWave) == ROWS, "Expected only a 1D wave reference wave")
 
 		// create an array at jsonPath with noteWave ROWS entries
 		jsonID = JWN_GetWaveNoteAsJSON(wv)

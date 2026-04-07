@@ -82,7 +82,7 @@ Function/WAVE TS_GetNewestFromThreadQueueMult(variable tgID, WAVE/T varNames, [v
 	variable numEntries, i, j, oneValidEntry, err, timeout
 	string varName
 
-	ASSERT_TS(DimSize(varNames, COLS) == 0, "Expected a 1D wave")
+	ASSERT_TS(GetWaveDimensionality(varNames) == ROWS, "Expected a 1D wave")
 	ASSERT_TS(IsTextWave(varNames), "Expected a text wave")
 
 	if(IsNaN(tgID))

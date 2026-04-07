@@ -351,7 +351,7 @@ Function ED_AddEntryToLabnotebook(string device, string key, WAVE values, [strin
 
 	ASSERT(!IsEmpty(key), "Empty key")
 	ASSERT(DimSize(values, ROWS) == LABNOTEBOOK_LAYER_COUNT, "wv has the wrong number of rows")
-	ASSERT(DimSize(values, COLS) == 0, "wv must be 1D")
+	ASSERT(GetWaveDimensionality(values) == ROWS, "wv must be 1D")
 	ASSERT(IsTextWave(values) || IsFloatingPointWave(values), "Wave must be text or floating point")
 	ASSERT(strsearch(key, LABNOTEBOOK_USER_PREFIX, 0, 2) != 0, "Don't prefix key with LABNOTEBOOK_USER_PREFIX")
 

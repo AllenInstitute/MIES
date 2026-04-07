@@ -576,7 +576,7 @@ static Function [variable result, variable tau, variable baseline] TP_AutoFitBas
 	string msg, win
 
 	ASSERT(IsFloatingPointWave(data), "Expected floating point wave")
-	ASSERT(DimSize(data, COLS) <= 1, "Invalid data dimensions")
+	ASSERT(GetWaveDimensionality(data) == ROWS, "Invalid data dimensions")
 	ASSERT(DimOffset(data, ROWS) == 0, "Invalid dimension offset")
 	ASSERT(pulseLengthMS > 0, "Expected valid pulse length")
 
