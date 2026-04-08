@@ -1791,7 +1791,10 @@ Function DAP_ButtonCtrlFindConnectedAmps(STRUCT WMButtonAction &ba) : ButtonCont
 
 	switch(ba.eventcode)
 		case 2: // mouse up
-			AI_FindConnectedAmps(rescanHardware = 1)
+			if(AI_FindConnectedAmps(rescanHardware = 1) == 0)
+				print "Activate Multiclamp Commander software to populate list of available amplifiers"
+				ControlWindowToFront()
+			endif
 			break
 		default:
 			break
