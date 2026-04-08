@@ -104,6 +104,13 @@ threadsafe Function IsInteger(variable var)
 	return IsFinite(var) && trunc(var) == var
 End
 
+/// @brief Returns one if var is an strictly positive integer and zero otherwise
+/// UTF_NOINSTRUMENTATION
+threadsafe Function IsStrictlyPositiveInteger(variable var)
+
+	return IsInteger(var) && var > 0
+End
+
 /// UTF_NOINSTRUMENTATION
 threadsafe Function IsEven(variable var)
 
