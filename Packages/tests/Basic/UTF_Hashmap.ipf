@@ -649,3 +649,38 @@ static Function HashmapFromIndizesWorks()
 	Sort allKeys, allKeys
 	CHECK_EQUAL_TEXTWAVES({"a", "b"}, allKeys)
 End
+
+static Function ClearWorks()
+
+	string key, value, result
+	variable ret, loadFactor, found
+
+	WAVE/WAVE hashmap = HM_Create(size = 1)
+
+	loadFactor = MIES_HM#HM_CalculateLoadFactor(hashmap)
+	CHECK_EQUAL_VAR(loadFactor, 0)
+
+	key   = "7314"
+	value = "efgh"
+	ret   = HM_AddEntry(hashmap, key, str = value)
+	CHECK_EQUAL_VAR(ret, 1)
+
+	WAVE/Z keys = HM_GetAllKeys(hashmap)
+	CHECK_EQUAL_TEXTWAVES(keys, {"7314"})
+
+	loadFactor = MIES_HM#HM_CalculateLoadFactor(hashmap)
+	CHECK_EQUAL_VAR(loadFactor, 1)
+
+	[result, found] = HM_GetEntryAsString(hashmap, key)
+	CHECK_EQUAL_VAR(found, 1)
+
+	HM_Clear(hashmap)
+	WAVE/Z keys = HM_GetAllKeys(hashmap)
+	CHECK_WAVE(keys, NULL_WAVE)
+
+	[result, found] = HM_GetEntryAsString(hashmap, key)
+	CHECK_EQUAL_VAR(found, 0)
+
+	loadFactor = MIES_HM#HM_CalculateLoadFactor(hashmap)
+	CHECK_EQUAL_VAR(loadFactor, 0)
+End

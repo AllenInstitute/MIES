@@ -569,6 +569,33 @@ threadsafe Function/WAVE HM_Create([variable size, variable valueType])
 	return hashmap
 End
 
+/// @brief Clear the hashmap
+threadsafe Function HM_Clear(WAVE/WAVE hashmap)
+
+	WAVE usedRows = HM_FetchUsedRows(hashmap)
+	Multithread usedRows[] = HM_ClearKeysAndValues(hashmap, p)
+
+	WAVE totalEntries = HM_FetchStats(hashmap)
+	totalEntries[HM_TOTAL_ENTRIES_ROW] = 0
+End
+
+threadsafe static Function HM_ClearKeysAndValues(WAVE/WAVE hashmap, variable idx)
+
+	WAVE/T keys = HM_FetchKeys(hashmap, idx)
+	keys[] = ""
+
+	WAVE values = HM_FetchValues(hashmap, idx)
+
+	if(IsTextWave(values))
+		WAVE/T valuesText = values
+		valuesText[] = ""
+	else
+		values[] = 0
+	endif
+
+	return 0
+End
+
 threadsafe static Function HM_StoreValue(WAVE values, variable idx, [string &str, variable &var])
 
 	if(IsTextWave(values))
