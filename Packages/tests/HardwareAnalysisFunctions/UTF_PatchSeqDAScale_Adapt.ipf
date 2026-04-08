@@ -420,8 +420,8 @@ static Function ConsecutivePassesWorks([STRUCT IUTF_mData &m])
 	WAVE/WAVE entries = m.w0
 	CHECK_EQUAL_VAR(DimSize(entries, ROWS), 5)
 
-	WAVE refQC    = entries[0]
-	WAVE checkQC  = entries[1]
+	WAVE refQC   = entries[0]
+	WAVE checkQC = entries[1]
 
 	numCheck = WaveRef(entries, row = 2)[0]
 	numRef   = WaveRef(entries, row = 3)[0]
@@ -1967,7 +1967,7 @@ static Function PS_DS_AD12a([string str])
 	wv[][2][%APFrequency] = 20   // redoing future DAScale (9), passed f-I neg slope QC (1.)
 	wv[][3][%APFrequency] = 20.1 // no slope QC passing
 	wv[][4][%APFrequency] = 14   // fillin again (6)
-	wv[][5][%APFrequency] = 9   // passed f-I neg slope (2.)
+	wv[][5][%APFrequency] = 9    // passed f-I neg slope (2.)
 
 	wv[][][%AsyncQC]     = 1
 	wv[][][%BaselineQC]  = 1
@@ -1978,25 +1978,22 @@ End
 static Function PS_DS_AD12a_REENTRY([string str])
 
 	string formula, sbBrowser, win, bsPanel
-	
+	variable sweepNo
+
 	formula = ProcedureText("", -1, "Proc0")
 
 	win = "DB_ITC18USB_Dev_0"
 	ExecuteSweepFormulaCode(win, formula)
-	
+
 	bsPanel = BSP_GetPanel(win)
-	
+
 	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = 1)
 	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DB_Failed", val = 1)
 	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DB_Passed", val = 1)
 
 	FAIL()
 
-	variable sweepNo
-
-	sweepNo = 5
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
