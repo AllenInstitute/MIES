@@ -3219,7 +3219,7 @@ End
 
 static Function PSQ_DS_NegativefISlopePassingCriteria(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, variable headstage, [variable fromRhSuAd])
 
-	variable emptySCI, numFound, consecPassed
+	variable emptySCI, numFound
 
 	if(ParamIsDefault(fromRhSuAd))
 		fromRhSuAd = 0
@@ -3244,9 +3244,7 @@ static Function PSQ_DS_NegativefISlopePassingCriteria(WAVE numericalValues, WAVE
 	sweepPassed                 = fillinPassed[p] ? 0 : sweepPassed[p]
 	sweepExceptBaselinePPPassed = fillinPassed[p] ? 0 : sweepExceptBaselinePPPassed[p]
 
-	consecPassed = PSQ_DS_ConsecutivePasses(sweepExceptBaselinePPPassed, negSlopePassed, 1, 2)
-
-	if(consecPassed)
+	if(PSQ_DS_ConsecutivePasses(sweepExceptBaselinePPPassed, negSlopePassed, 1, 2))
 		// two negative fI slopes in a row with at least one passing sweep QC
 		return 1
 	endif
