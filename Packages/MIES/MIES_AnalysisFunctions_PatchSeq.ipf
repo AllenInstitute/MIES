@@ -2481,7 +2481,7 @@ static Function/WAVE PSQ_DS_CalculateDAScale(STRUCT PSQ_DS_DAScaleParams &cdp, W
 
 	variable fitOffset, fitSlope, negSlopePassed, DAScale, apfreq, emptySCI, DAScaleNew
 	variable DAScalePrev
-	string type
+	string   type
 
 	if(ParamIsDefault(fromRhSuAd))
 		fromRhSuAd = 0
@@ -2511,8 +2511,8 @@ static Function/WAVE PSQ_DS_CalculateDAScale(STRUCT PSQ_DS_DAScaleParams &cdp, W
 			return $""
 		endif
 	elseif(alreadyDone)
-        type = SelectString(fromRhSuAd, PSQ_DS_AD_FINISHED, PSQ_DS_AD_FINISHED_RHSUAD)
-        WAVE/T DAScaleWithType = PSQ_DS_CalculateDAScaleForNegSlope(cdp, type, DAScale, apfreq)
+		type = SelectString(fromRhSuAd, PSQ_DS_AD_FINISHED, PSQ_DS_AD_FINISHED_RHSUAD)
+		WAVE/T DAScaleWithType = PSQ_DS_CalculateDAScaleForNegSlope(cdp, type, DAScale, apfreq)
 	elseif(negSlopePassed)
 		type = SelectString(fromRhSuAd, PSQ_DS_AD_REGULAR_POSNEG_SLOPE, PSQ_DS_AD_REGULAR_POSNEG_SLOPE_RHSUAD)
 		WAVE/T DAScaleWithType = PSQ_DS_CalculateDAScaleForNegSlope(cdp, type, DAScale, apfreq)
@@ -2572,7 +2572,7 @@ End
 static Function/WAVE PSQ_DS_CalculateDAScaleForFailingSweepAndNegSlope(string type, variable x, variable xp)
 
 	variable xc
-	string msg
+	string   msg
 
 	xc = round((x + xp) / 2)
 
@@ -3790,7 +3790,7 @@ static Function [variable fitOffset, variable fitSlope, variable negSlopePassed,
 	[WAVE fitOffsetAll, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_FI_OFFSET_DASCALE, fromRhSuAd = fromRhSuAd)
 
 	numEntries = DimSize(DAScaleAll, ROWS)
-	last = numEntries - 1
+	last       = numEntries - 1
 
 	// special treatment for the case that the last sweep has failing sweep QC and passing neg f-I slope
 	//
@@ -3810,8 +3810,8 @@ static Function [variable fitOffset, variable fitSlope, variable negSlopePassed,
 	endif
 
 	// get the largest value with the highest index
-	maxValue   = -Inf
-	maxLoc     = NaN
+	maxValue = -Inf
+	maxLoc   = NaN
 	for(i = numEntries - 1; i >= 0; i -= 1)
 		if(!sweepPassedAll[i])
 			continue
@@ -4867,7 +4867,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 
 							DAScalesIndex[s.headstage] += 1
 						else
-							WAVE/T/Z DAScaleWithType = PSQ_DS_CalculateDAScale(cdp, numericalValues, textualValues, s.sweepNo, s.headstage, onlyFailingNegSlope = 1)
+							WAVE/Z/T DAScaleWithType = PSQ_DS_CalculateDAScale(cdp, numericalValues, textualValues, s.sweepNo, s.headstage, onlyFailingNegSlope = 1)
 
 							if(WaveExists(DAScaleWithType))
 								Concatenate/NP=(ROWS)/T/FREE {DAScaleWithType}, futureDAScales
