@@ -3405,6 +3405,7 @@ static Function PSQ_DS_ConsecutivePasses(WAVE refQC, WAVE checkQC, variable numR
 
 	// refQC is determined between sweeps so we have always one sweep more than refQC
 	ASSERT(DimSize(refQC, ROWS) == (DimSize(checkQC, ROWS) + 1), "Unmatched refQC and checkQC waves")
+//	ASSERT(IsInteger())
 
 	numCheckEntries = DimSize(checkQC, ROWS)
 	for(i = 0; i < numCheckEntries; i += 1)
