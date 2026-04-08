@@ -412,6 +412,24 @@ static Function HasRequiredQCOrderWorks([STRUCT IUTF_mData &m])
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_DS_HasRequiredQCOrder(firstQC, checkQCFirst, lastQC, checkQCLast), ret)
 End
 
+/// UTF_TD_GENERATOR w0:DataGenerators#VariousInputForConsecutivePasses
+static Function ConsecutivePassesWorks([STRUCT IUTF_mData &m])
+
+	variable numCheck, numRef, result
+
+	WAVE/WAVE entries = m.w0
+	CHECK_EQUAL_VAR(DimSize(entries, ROWS), 5)
+
+	WAVE refQC    = entries[0]
+	WAVE checkQC  = entries[1]
+
+	numCheck = WaveRef(entries, row = 2)[0]
+	numRef   = WaveRef(entries, row = 3)[0]
+	result   = WaveRef(entries, row = 4)[0]
+
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_DS_ConsecutivePasses(refQC, checkQC, numRef, numCheck), result)
+End
+
 /// UTF_TD_GENERATOR w0:DataGenerators#VariousInputForCalculateFillinQC
 static Function CalculateFillinQCWorks([STRUCT IUTF_mData &m])
 

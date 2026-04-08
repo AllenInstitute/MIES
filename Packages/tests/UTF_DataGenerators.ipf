@@ -2118,3 +2118,22 @@ static Function/WAVE PermanentOrFree()
 
 	return wv
 End
+
+static Function/WAVE VariousInputForConsecutivePasses()
+
+	// IPT_FORMAT_OFF
+
+	Make/FREE refQC    = {0, 0, 0, 0}
+	Make/FREE checkQC  = {0, 0, 0}
+	Make/FREE numCheck = {1}
+	Make/FREE numRef   = {1}
+	Make/FREE result   = {0}
+
+	Make/FREE/WAVE wv0 = {refQC, checkQC, numCheck, numRef, result}
+
+	// IPT_FORMAT_ON
+
+	Make/FREE/WAVE wv = {wv0}
+
+	return wv
+End

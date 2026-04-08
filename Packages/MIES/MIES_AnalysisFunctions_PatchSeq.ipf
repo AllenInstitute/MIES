@@ -3219,7 +3219,7 @@ End
 
 static Function PSQ_DS_NegativefISlopePassingCriteria(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, variable headstage, [variable fromRhSuAd])
 
-	variable emptySCI, numFound
+	variable emptySCI, numFound, consecPassed
 
 	if(ParamIsDefault(fromRhSuAd))
 		fromRhSuAd = 0
@@ -3244,10 +3244,10 @@ static Function PSQ_DS_NegativefISlopePassingCriteria(WAVE numericalValues, WAVE
 	sweepPassed                 = fillinPassed[p] ? 0 : sweepPassed[p]
 	sweepExceptBaselinePPPassed = fillinPassed[p] ? 0 : sweepExceptBaselinePPPassed[p]
 
-	numFound = PSQ_DS_ConsecutivePasses(sweepExceptBaselinePPPassed, negSlopePassed)
+	consecPassed = PSQ_DS_ConsecutivePasses(sweepExceptBaselinePPPassed, negSlopePassed, 1, 2)
 
-	if(numFound >= 2)
-		// two negative fI slopes in a row with passing sweep QC
+	if(consecPassed)
+		// two negative fI slopes in a row with at least one passing sweep QC
 		return 1
 	endif
 
@@ -3392,39 +3392,33 @@ static Function PSQ_DS_AdaptiveIsFinished(string device, variable sweepNo, varia
 
 	// we want numSweepsWithSaturation sweeps with passing f-I slope QC and sweep QC
 	// and there should not be sweeps with failing f-I slope QC in between
-	numFound = PSQ_DS_ConsecutivePasses(sweepPassed, fitSlopeReached)
-
-	// numFound > numSweepsWithSaturation can happen if we have futureDAScales left to measure
-	return numFound >= numSweepsWithSaturation
+	// we can have more passing sweeps than numSweepsWithSaturation if we have futureDAScales left to measure
+	return PSQ_DS_ConsecutivePasses(sweepPassed, fitSlopeReached, numSweepsWithSaturation, numSweepsWithSaturation)
 End
 
 /// @brief Return the number of consecutive passing labnotebook entries `checkQC` which all have `refQC` passing
 ///
 /// It is assumed that `checkQC` is a value which is calculated for two neighbouring sweeps.
-static Function PSQ_DS_ConsecutivePasses(WAVE refQC, WAVE checkQC)
+static Function PSQ_DS_ConsecutivePasses(WAVE refQC, WAVE checkQC, variable numRefRequired, variable numCheckRequired)
 
-	variable i, numFound, numCheckEntries
+	variable i, numCheckFound, numRefFound, numCheckEntries
 
 	// refQC is determined between sweeps so we have always one sweep more than refQC
 	ASSERT(DimSize(refQC, ROWS) == (DimSize(checkQC, ROWS) + 1), "Unmatched refQC and checkQC waves")
 
 	numCheckEntries = DimSize(checkQC, ROWS)
 	for(i = 0; i < numCheckEntries; i += 1)
-		// checkQC[i] holds the value between sweep i and i + 1
-		if(!refQC[i + 1])
-			continue
-		endif
-
-		// from here on all sweeps pass
 		if(!checkQC[i])
-			numFound = 0
+			numCheckFound = 0
+			numRefFound   = 0
 			continue
 		endif
 
-		numFound += 1
+		numCheckFound += 1
+		numRefFound   += (refQC[i + 1] == 1)
 	endfor
 
-	return numFound
+	return numCheckFound >= numCheckRequired && numRefFound >= numRefRequired
 End
 
 /// @brief Searches for exactly one passing check of each checkQCFirst and
