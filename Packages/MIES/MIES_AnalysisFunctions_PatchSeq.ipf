@@ -3118,7 +3118,7 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 				// and if that does not exist we definitly don't have a negSlopePassed situation
 				if(!WaveExists(negSlopesPassedRhSuAdLBN))
 					WAVE/T negSlopesPassedRhSuAdLBN = LBN_GetTextWave()
-					Make/FREE/N=(DimSize(dataRhSuAd, ROWS)) negSlopesPassedRhSuAdContents = 0
+					Make/FREE/N=(DimSize(dataRhSuAd, ROWS) - 1) negSlopesPassedRhSuAdContents = 0
 					negSlopesPassedRhSuAdLBN[INDEP_HEADSTAGE] = NumericWaveToList(negSlopesPassedRhSuAdContents, ";")
 				endif
 			endif
@@ -3490,8 +3490,8 @@ static Function [WAVE/T futureDAScales, WAVE apfreq, WAVE DAScales] PSQ_DS_Gathe
 
 	WAVE/T futureDAScalesHistoric = PSQ_DS_GetFutureDAScalesFromLBN(numericalValues, textualValues, sweepNo, headstage)
 
-	[WAVE DAScales, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_DASCALE, filterPassing = 1, beforeSweepQCResult = 1, filterNegSlopeAndNaN = 1)
-	[WAVE apfreq, emptySCI]   = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_APFREQ, filterPassing = 1, beforeSweepQCResult = 1, filterNegSlopeAndNaN = 1)
+	[WAVE DAScales, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_DASCALE, filterPassing = 1, beforeSweepQCResult = 1)
+	[WAVE apfreq, emptySCI]   = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_APFREQ, filterPassing = 1, beforeSweepQCResult = 1)
 
 	if(!emptySCI)
 		WAVE/T futureDAScales = PSQ_DS_GatherDAScaleFillin(cdp, PSQ_DS_AD_FILLIN, apfreq, DAScales, futureDAScalesHistoric)

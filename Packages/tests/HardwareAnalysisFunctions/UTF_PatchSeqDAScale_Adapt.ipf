@@ -197,9 +197,7 @@ static Function/WAVE GetWave_IGNORE()
 	              "fiOffsetsFromRhSuAd;sweepPassFromRhSuAd;"                   + \
 	              "fiSlopeReachedPassFromRhSuAd;fillinPassFromRhSuAd;daScale;" + \
 	              "apFreqFromRhSuAd;dascaleFromRhSuAd;minDaScaleNorm;"         + \
-	              "maxDAScaleNorm;oorDAScale;"                                 + \
-	              "fiSlopesDAScaleFromRhSuAd;fiOffsetsDAScaleFromRhSuAd;"      + \
-	              "fiSlopeDAScale;fiOffsetDAScale;"
+	              "maxDAScaleNorm;oorDAScale;"
 
 	Make/FREE/WAVE/N=(ItemsInList(list)) wv
 	SetDimensionLabels(wv, list, ROWS)
@@ -546,13 +544,9 @@ static Function PS_DS_AD1_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-6)
 	CHECK_WAVE(entries[%fiSlope], NULL_WAVE)
 	CHECK_WAVE(entries[%fiOffset], NULL_WAVE)
-	CHECK_WAVE(entries[%fiSlopeDAScale], NULL_WAVE)
-	CHECK_WAVE(entries[%fiOffsetDAScale], NULL_WAVE)
 	CHECK_EQUAL_TEXTWAVES(entries[%futureDAScales], futureDAScalesRef, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%fiSlopesFromRhSuAd], fiSlopesFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-6)
 	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromRhSuAd], fiOffsetsFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_WAVES(entries[%fiSlopesDAScaleFromRhSuAd], fiSlopesFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-6)
-	CHECK_EQUAL_WAVES(entries[%fiOffsetsDAScaleFromRhSuAd], fiOffsetsFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%dascale], DAScalesRef, mode = WAVE_DATA, tol = 1e-24)
 
 	CHECK_EQUAL_WAVES(entries[%oorDAScale], {0, 0, NaN}, mode = WAVE_DATA)
@@ -692,13 +686,9 @@ static Function PS_DS_AD1a_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-6)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-6)
 	CHECK_EQUAL_WAVES(entries[%fiOffset], fiOffsetRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_WAVES(entries[%fiSlopeDAScale], fiSlopeRef, mode = WAVE_DATA, tol = 1e-6)
-	CHECK_EQUAL_WAVES(entries[%fiOffsetDAScale], fiOffsetRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_TEXTWAVES(entries[%futureDAScales], futureDAScalesRef, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%fiSlopesFromRhSuAd], fiSlopesFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-6)
 	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromRhSuAd], fiOffsetsFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_WAVES(entries[%fiSlopesDAScaleFromRhSuAd], fiSlopesFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-6)
-	CHECK_EQUAL_WAVES(entries[%fiOffsetsDAScaleFromRhSuAd], fiOffsetsFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%dascale], DAScalesRef, mode = WAVE_DATA, tol = 1e-24)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
@@ -879,13 +869,9 @@ static Function PS_DS_AD2_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-6)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-6)
 	CHECK_EQUAL_WAVES(entries[%fiOffset], fiOffsetRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_WAVES(entries[%fiSlopeDAScale], fiSlopeRef, mode = WAVE_DATA, tol = 1e-6)
-	CHECK_EQUAL_WAVES(entries[%fiOffsetDAScale], fiOffsetRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_TEXTWAVES(entries[%futureDAScales], futureDAScalesRef, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%fiSlopesFromRhSuAd], fiSlopesFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-6)
 	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromRhSuAd], fiOffsetsFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_WAVES(entries[%fiSlopesDAScaleFromRhSuAd], fiSlopesFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-6)
-	CHECK_EQUAL_WAVES(entries[%fiOffsetsDAScaleFromRhSuAd], fiOffsetsFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%dascale], DAScalesRef, mode = WAVE_DATA, tol = 1e-24)
 
 	CHECK_WAVE(entries[%oorDAScale], NULL_WAVE)
@@ -998,14 +984,10 @@ static Function PS_DS_AD2a_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-6)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-6)
 	CHECK_EQUAL_WAVES(entries[%fiOffset], fiOffsetRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_WAVES(entries[%fiSlopeDAScale], fiSlopeDAScaleRef, mode = WAVE_DATA, tol = 1e-6)
-	CHECK_EQUAL_WAVES(entries[%fiOffsetDAScale], fiOffsetDAScaleRef, mode = WAVE_DATA, tol = 1e-24)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%futureDAScales], futureDAScalesRef, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%fiSlopesFromRhSuAd], fiSlopesFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-6)
 	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromRhSuAd], fiOffsetsFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_WAVES(entries[%fiSlopesDAScaleFromRhSuAd], fiSlopesFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-6)
-	CHECK_EQUAL_WAVES(entries[%fiOffsetsDAScaleFromRhSuAd], fiOffsetsFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%dascale], DAScalesRef, mode = WAVE_DATA, tol = 1e-24)
 
 	CHECK_EQUAL_WAVES(entries[%oorDAScale], {0, NaN}, mode = WAVE_DATA)
@@ -1118,14 +1100,10 @@ static Function PS_DS_AD2b_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-6)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-6)
 	CHECK_EQUAL_WAVES(entries[%fiOffset], fiOffsetRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_WAVES(entries[%fiSlopeDAScale], fiSlopeDAScaleRef, mode = WAVE_DATA, tol = 1e-6)
-	CHECK_EQUAL_WAVES(entries[%fiOffsetDAScale], fiOffsetDAScaleRef, mode = WAVE_DATA, tol = 1e-24)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%futureDAScales], futureDAScalesRef, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%fiSlopesFromRhSuAd], fiSlopesFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-6)
 	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromRhSuAd], fiOffsetsFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_WAVES(entries[%fiSlopesDAScaleFromRhSuAd], fiSlopesFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-6)
-	CHECK_EQUAL_WAVES(entries[%fiOffsetsDAScaleFromRhSuAd], fiOffsetsFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%dascale], DAScalesRef, mode = WAVE_DATA, tol = 1e-24)
 
 	CHECK_EQUAL_WAVES(entries[%oorDAScale], {0, NaN}, mode = WAVE_DATA)
