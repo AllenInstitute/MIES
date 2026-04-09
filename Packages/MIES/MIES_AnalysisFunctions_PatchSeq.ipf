@@ -195,6 +195,7 @@ static Constant PSQ_RHEOBASE_DURATION = 500
 static Constant PSQ_DA_FALLBACK_DASCALE_RANGE_FAC            = 1.5
 static Constant PSQ_DA_FALLBACK_DASCALE_NEG_SLOPE_PERC       = 10
 static Constant PSQ_DA_FALLBACK_MINIMUM_SPIKES_FOR_MAX_SLOPE = 4
+static Constant PSQ_DA_FAILSWEEP_NEGSLOPE_OFFSET = 1 // pA
 
 static StrConstant PSQ_DA_AT_SLOPE_UNIT = "% of Hz/pA"
 
@@ -2501,12 +2502,13 @@ static Function/WAVE PSQ_DS_CalculateDAScale(STRUCT PSQ_DS_DAScaleParams &cdp, W
 		onlyFailingNegSlope = !!onlyFailingNegSlope
 	endif
 
+	// TODO remove DAScalePrev
 	[fitOffset, fitSlope, negSlopePassed, DAScale, apfreq, DAScalePrev] = PSQ_DS_GetValuesOfLargestDAScale(numericalValues, textualValues, sweepNo, headstage, fromRhSuAd = fromRhSuAd)
 
 	if(onlyFailingNegSlope)
 		if(IsFinite(DAScale) && IsFinite(DAScalePrev))
 			type = SelectString(fromRhSuAd, PSQ_DS_AD_FAIL_SWEEP_NEG_SLOPE, PSQ_DS_AD_FAIL_SWEEP_NEG_SLOPE_RHSUAD)
-			WAVE/T DAScaleWithType = PSQ_DS_CalculateDAScaleForFailingSweepAndNegSlope(type, DAScale, DAScalePrev)
+			WAVE/T DAScaleWithType = PSQ_DS_CalculateDAScaleForFailingSweepAndNegSlope(type, DAScale)
 		else
 			return $""
 		endif
@@ -2566,19 +2568,18 @@ End
 
 /// @brief Calculate the new DAScale value after a negative fI slope with failing sweep QC
 ///
-/// @param type one of @ref FutureDAScaleReason
+/// @param type One of @ref FutureDAScaleReason
 /// @param x    DAScale of last acquired sweep [pA]
-/// @param xp   DAScale of one sweep before [pA]
-static Function/WAVE PSQ_DS_CalculateDAScaleForFailingSweepAndNegSlope(string type, variable x, variable xp)
+static Function/WAVE PSQ_DS_CalculateDAScaleForFailingSweepAndNegSlope(string type, variable x)
 
-	variable xc
+	variable xp
 	string   msg
 
-	xc = round((x + xp) / 2)
+	xp = x + PSQ_DA_FAILSWEEP_NEGSLOPE_OFFSET
 
-	Make/T/FREE DAScaleWithType = {PSQ_DS_AD_BuildFutureDAScaleEntry(type, xc)}
+	Make/T/FREE DAScaleWithType = {PSQ_DS_AD_BuildFutureDAScaleEntry(type, xp)}
 
-	sprintf msg, "new DAScale %g: x=%g, xp=%g", xc, x, xp
+	sprintf msg, "new DAScale %g: x=%g", xp, x
 	DEBUGPRINT(msg)
 
 	return DAScaleWithType
