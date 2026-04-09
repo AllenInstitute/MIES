@@ -3143,7 +3143,7 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 
 			// we want to filter out the sweeps with passing negative slope QC, so invert it
 			// ???
-			filterPassedRhSuAd[] = !negSlopesPassedRhSuAd[p] && !IsNaN(fISlopesRhSuAd)
+			filterPassedRhSuAd[] = !negSlopesPassedRhSuAd[p] && !IsNaN(fISlopesRhSuAd[p])
 
 			WAVE/Z dataRhSuAdFiltered = PSQ_DS_FilterPassingData(dataRhSuAd, filterPassedRhSuAd, pairwise = 1)
 		else
