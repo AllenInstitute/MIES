@@ -5,7 +5,15 @@
 
 static Function CheckInstallation()
 
-	CHECK_EQUAL_VAR(CHI_CheckInstallation(), 0)
+	variable ret, ref
+	string history
+
+	ref     = CaptureHistoryStart()
+	ret     = CHI_CheckInstallation()
+	history = CaptureHistory(ref, 1)
+
+	INFO(history)
+	CHECK_EQUAL_VAR(ret, 0)
 End
 
 static Function MiesVersionIsValidAndNotDirty()
