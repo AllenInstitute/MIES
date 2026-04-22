@@ -3608,7 +3608,7 @@ static Function/WAVE PSQ_DS_GetPassingRheobaseSweeps(WAVE numericalValues, varia
 	// we don't need to check PSQ_FMT_LBN_SAMPLING_PASS here as failing that always makes the whole SCI fail
 	allQC[] = baselineQC[p] && asyncQC[p]
 
-	WAVE passingSweeps = PSQ_DS_FilterPassingData(sweeps, allQC)
+	WAVE/Z passingSweeps = PSQ_DS_FilterPassingData(sweeps, allQC)
 
 	return passingSweeps
 End
@@ -3653,8 +3653,10 @@ static Function/WAVE PSQ_DS_GetPassingRhSuAdSweepsAndStoreInLBN(string device, v
 	else
 		WAVE numericalValues = GetLBNumericalValues(device)
 
-		WAVE passingRheobaseSweeps = PSQ_DS_GetPassingRheobaseSweeps(numericalValues, passingRheobaseSweep, headstage)
-		WAVE passingSupraSweeps    = PSQ_DS_GetPassingDAScaleSweeps(numericalValues, passingSupraSweep, headstage)
+		WAVE/Z passingRheobaseSweeps = PSQ_DS_GetPassingRheobaseSweeps(numericalValues, passingRheobaseSweep, headstage)
+		ASSERT(WaveExists(passingRheobaseSweeps), "Expected passing rheobase sweeps")
+		WAVE/Z passingSupraSweeps = PSQ_DS_GetPassingDAScaleSweeps(numericalValues, passingSupraSweep, headstage)
+		ASSERT(WaveExists(passingSupraSweeps), "Expected passing supra sweeps")
 
 		Concatenate/NP=(ROWS)/FREE {passingRheobaseSweeps, passingSupraSweeps, passingAdSweepsFailSet}, sweeps
 	endif
