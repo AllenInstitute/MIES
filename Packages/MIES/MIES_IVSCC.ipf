@@ -231,12 +231,15 @@ End
 /// @brief Loads a single stimulus for the user when using the ZMQ Proxy
 Function IVS_Load_StimSet(string stim_filename)
 
+	stim_filename = GetWindowsPath(stim_filename)
 	print "Stimulus loading...." + stim_filename
+
 	NWB_LoadAllStimSets(overwrite = 1, fileName = stim_filename)
 End
 
 Function IVS_ExportAllData(string filePath)
 
+	filePath = GetWindowsPath(filePath)
 	printf "Saving experiment data in NWB format to %s\r", filePath
 
 	return NWB_ExportAllData(IVS_DEFAULT_NWBVERSION, overrideFullFilePath = filePath, overwrite = 1)
