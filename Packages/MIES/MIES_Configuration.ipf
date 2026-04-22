@@ -517,7 +517,7 @@ Function CONF_RestoreWindow(string fName, [string rigFile])
 			FATAL_ERROR(errMsg)
 		endif
 
-		printf "Configuration restore aborted at file %s.\r", fullFilePath
+		printf "Configuration restore aborted at file %s.\r", GetWindowsPath(fullFilePath)
 		Abort
 	endtry
 
