@@ -3808,9 +3808,13 @@ static Function PSQ_DS_CalculateMaxSlope(WAVE fitSlopes, WAVE apfreq, variable m
 
 	passingMinCount[] = (apfreq[p] >= minimumSpikeCountForMaxSlope)
 
-	WAVE fitSlopesFiltered = PSQ_DS_FilterPassingData(fitSlopes, passingMinCount, inbetween = 1)
+	WAVE/Z fitSlopesFiltered = PSQ_DS_FilterPassingData(fitSlopes, passingMinCount, inbetween = 1)
 
-	return WaveMax(fitSlopesFiltered)
+	if(WaveExists(fitSlopesFiltered))
+		return WaveMax(fitSlopesFiltered)
+	endif
+
+	return NaN
 End
 
 static Structure PSQ_DS_DAScaleParams
