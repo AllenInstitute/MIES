@@ -5740,13 +5740,20 @@ End
 /// to respect here.
 ///
 /// @param device device
-/// @param entry      [optional, defaults to all] Only update one of the entries TPSettings.
-///                   Accepted strings are the labels from DAP_TPControlToLabel().
-Function DAP_TPSettingsToGUI(string device, [string entry])
+/// @param entry  [optional, defaults to all] Only update one of the entries TPSettings.
+///               Accepted strings are the labels from DAP_TPControlToLabel().
+/// @param fast   [optional, defaults to #TP_FAST_NONE] One of @ref TestPulseFastModes.
+Function DAP_TPSettingsToGUI(string device, [string entry, variable fast])
 
 	variable i, numEntries, val, headstage, col, originalHSAll
 	string ctrl, lbl
 	variable TPState
+
+	if(ParamIsDefault(fast))
+		fast = TP_FAST_NONE
+	endif
+
+	ASSERT(TP_IsValidFastMode(fast), "Invalid fast value")
 
 	WAVE/T controls = ListToTextWave(DAEPHYS_TP_CONTROLS_ALL, ";")
 
