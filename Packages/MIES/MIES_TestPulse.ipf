@@ -821,12 +821,18 @@ End
 ///        triggering the full TP setting action procedure chain.
 ///
 /// Using `DAP_TPSettingsToGUI` here would invoke `PGC_SetAndActivateControl`
-/// and thus `DAP_TPGUISettingToWave`, which restarts the test pulse with
-/// `fast = 0`. That goes through `DC_Configure` and triggers amplifier
-/// (`AI_*`) interactions even though only the DAC waveform amplitude needs
-/// to be rescaled. To avoid the resulting MCC communication overhead and
-/// potential amplifier glitches we instead stop/restart the test pulse with
-/// `fast = 1` and update the GUI value directly.
+/// and thus `DAP_TPGUISettingToWave`, which restarts the test pulse via
+/// `TPS_StartTestPulseSingleDevice`/`TPM_StartTestPulseMultiDevice`. Those
+/// call `DAP_CheckSettings`, which in turn invokes `DAP_CheckHeadStage` and
+/// thereby `AI_SelectMultiClamp`/`AI_EnsureCorrectMode`/
+/// `AI_QueryGainsUnitsForClampMode` on every headstage. For an Auto TP
+/// amplitude update the settings have already been validated when TP was
+/// originally started, and only the DAC waveform amplitude needs to be
+/// rescaled. To avoid the resulting MCC communication overhead and potential
+/// amplifier glitches we stop the test pulse, update the GUI value directly,
+/// and restart TP with `skipCheckSettings = 1`. We must keep `fast = 0`
+/// (the default) so that `DC_Configure` rebuilds the DAQ data wave from the
+/// updated `TPSettings[%amplitudeIC]`.
 ///
 /// @param device DA_Ephys panel name
 static Function TP_ApplyAutoTPAmplitudeUpdate(string device)
@@ -849,7 +855,7 @@ static Function TP_ApplyAutoTPAmplitudeUpdate(string device)
 	PUB_TPSettingChange(device, headstage, "amplitudeIC", val, "mV")
 
 	if(IsFinite(TPState))
-		TP_RestartTestPulse(device, TPState, fast = 1)
+		TP_RestartTestPulse(device, TPState, skipCheckSettings = 1)
 	endif
 End
 
@@ -1496,7 +1502,7 @@ static Function TP_StopTestPulseWrapper(string device, [variable fast])
 End
 
 /// @brief Restarts a test pulse previously stopped with #TP_StopTestPulse
-Function TP_RestartTestPulse(string device, variable testPulseMode, [variable fast])
+Function TP_RestartTestPulse(string device, variable testPulseMode, [variable fast, variable skipCheckSettings])
 
 	if(ParamIsDefault(fast))
 		fast = 0
@@ -1504,14 +1510,20 @@ Function TP_RestartTestPulse(string device, variable testPulseMode, [variable fa
 		fast = !!fast
 	endif
 
+	if(ParamIsDefault(skipCheckSettings))
+		skipCheckSettings = 0
+	else
+		skipCheckSettings = !!skipCheckSettings
+	endif
+
 	switch(testPulseMode)
 		case TEST_PULSE_NOT_RUNNING:
 			break // nothing to do
 		case TEST_PULSE_BG_SINGLE_DEVICE:
-			TPS_StartTestPulseSingleDevice(device, fast = fast)
+			TPS_StartTestPulseSingleDevice(device, fast = fast, skipCheckSettings = skipCheckSettings)
 			break
 		case TEST_PULSE_BG_MULTI_DEVICE:
-			TPM_StartTestPulseMultiDevice(device, fast = fast)
+			TPM_StartTestPulseMultiDevice(device, fast = fast, skipCheckSettings = skipCheckSettings)
 			break
 		default:
 			DEBUGPRINT("Ignoring unknown value:", var = testPulseMode)

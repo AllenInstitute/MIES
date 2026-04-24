@@ -44,7 +44,14 @@ Function TPM_StartTPMultiDeviceLow(string device, [variable runModifier, variabl
 End
 
 /// @brief Start a multi device test pulse, always done in background mode
-Function TPM_StartTestPulseMultiDevice(string device, [variable fast])
+///
+/// @param device device
+/// @param fast              [optional, defaults to false] Starts TP without any checks or
+///                          setup. Can be called after stopping it with TP_StopTestPulseFast().
+/// @param skipCheckSettings [optional, defaults to false] Skip the `DAP_CheckSettings` call.
+///                          Intended for restarts where settings have already been validated
+///                          (e.g. Auto TP amplitude updates) to avoid redundant amplifier I/O.
+Function TPM_StartTestPulseMultiDevice(string device, [variable fast, variable skipCheckSettings])
 
 	if(ParamIsDefault(fast))
 		fast = 0
@@ -52,12 +59,20 @@ Function TPM_StartTestPulseMultiDevice(string device, [variable fast])
 		fast = !!fast
 	endif
 
+	if(ParamIsDefault(skipCheckSettings))
+		skipCheckSettings = 0
+	else
+		skipCheckSettings = !!skipCheckSettings
+	endif
+
 	if(fast)
 		TPM_StartTPMultiDeviceLow(device, fast = 1)
 		return NaN
 	endif
 
-	AbortOnValue DAP_CheckSettings(device, TEST_PULSE_MODE), 1
+	if(!skipCheckSettings)
+		AbortOnValue DAP_CheckSettings(device, TEST_PULSE_MODE), 1
+	endif
 
 	DQ_StopOngoingDAQ(device, DQ_STOP_REASON_TP_STARTED)
 

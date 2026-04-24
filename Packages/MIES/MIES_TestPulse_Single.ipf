@@ -73,9 +73,12 @@ End
 /// or in foreground mode depending on the settings
 ///
 /// @param device device
-/// @param fast       [optional, defaults to false] Starts TP without any checks or
-///                   setup. Can be called after stopping it with TP_StopTestPulseFast().
-Function TPS_StartTestPulseSingleDevice(string device, [variable fast])
+/// @param fast              [optional, defaults to false] Starts TP without any checks or
+///                          setup. Can be called after stopping it with TP_StopTestPulseFast().
+/// @param skipCheckSettings [optional, defaults to false] Skip the `DAP_CheckSettings` call.
+///                          Intended for restarts where settings have already been validated
+///                          (e.g. Auto TP amplitude updates) to avoid redundant amplifier I/O.
+Function TPS_StartTestPulseSingleDevice(string device, [variable fast, variable skipCheckSettings])
 
 	variable bkg
 
@@ -83,6 +86,12 @@ Function TPS_StartTestPulseSingleDevice(string device, [variable fast])
 		fast = 0
 	else
 		fast = !!fast
+	endif
+
+	if(ParamIsDefault(skipCheckSettings))
+		skipCheckSettings = 0
+	else
+		skipCheckSettings = !!skipCheckSettings
 	endif
 
 	bkg = DAG_GetNumericalValue(device, "Check_Settings_BkgTP")
@@ -100,7 +109,9 @@ Function TPS_StartTestPulseSingleDevice(string device, [variable fast])
 		return NaN
 	endif
 
-	AbortOnValue DAP_CheckSettings(device, TEST_PULSE_MODE), 1
+	if(!skipCheckSettings)
+		AbortOnValue DAP_CheckSettings(device, TEST_PULSE_MODE), 1
+	endif
 
 	DQ_StopOngoingDAQ(device, DQ_STOP_REASON_TP_STARTED)
 
