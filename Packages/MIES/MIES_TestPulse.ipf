@@ -813,7 +813,43 @@ static Function TP_AutoAmplitudeAndBaseline(string device, WAVE TPResults, varia
 	endfor
 
 	if(needsUpdate)
-		DAP_TPSettingsToGUI(device, entry = "amplitudeIC")
+		TP_ApplyAutoTPAmplitudeUpdate(device)
+	endif
+End
+
+/// @brief Apply an Auto TP-driven IC amplitude update to the GUI without
+///        triggering the full TP setting action procedure chain.
+///
+/// Using `DAP_TPSettingsToGUI` here would invoke `PGC_SetAndActivateControl`
+/// and thus `DAP_TPGUISettingToWave`, which restarts the test pulse with
+/// `fast = 0`. That goes through `DC_Configure` and triggers amplifier
+/// (`AI_*`) interactions even though only the DAC waveform amplitude needs
+/// to be rescaled. To avoid the resulting MCC communication overhead and
+/// potential amplifier glitches we instead stop/restart the test pulse with
+/// `fast = 1` and update the GUI value directly.
+///
+/// @param device DA_Ephys panel name
+static Function TP_ApplyAutoTPAmplitudeUpdate(string device)
+
+	variable TPState, headstage, val
+	string   ctrl
+
+	WAVE TPSettings = GetTPSettings(device)
+
+	headstage = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
+	val       = TPSettings[%amplitudeIC][headstage]
+	ASSERT(IsFinite(val), "Value has to be finite")
+
+	TPState = TP_StopTestPulseFast(device)
+
+	ctrl = "SetVar_DataAcq_TPAmplitudeIC"
+	SetSetVariable(device, ctrl, val)
+	DAG_Update(device, ctrl, val = val)
+
+	PUB_TPSettingChange(device, headstage, "amplitudeIC", val, "mV")
+
+	if(IsFinite(TPState))
+		TP_RestartTestPulse(device, TPState, fast = 1)
 	endif
 End
 
