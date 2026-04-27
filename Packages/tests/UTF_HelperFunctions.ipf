@@ -1991,7 +1991,7 @@ End
 // - RunWithOpts()
 // - RunWithOpts(testsuite = "UTF_Configuration.ipf")
 // - RunWithOpts(testcase = "TestFindLevel")
-Function RunWithOpts([string testcase, string testsuite, variable allowdebug, variable instru, string traceWinList, variable ITCXOP2Debug, variable keepDataFolder, variable enableJU, variable enableRegExp])
+Function RunWithOpts([string testcase, string testsuite, variable allowDebug, variable instru, string traceWinList, variable ITCXOP2Debug, variable keepDataFolder, variable enableJU, variable enableRegExp])
 
 	variable debugMode
 	string   traceOptions
@@ -2002,10 +2002,16 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	// speeds up testing to start with a fresh copy
 	KillWindow/Z HistoryCarbonCopy
 
-	if(ParamIsDefault(allowdebug))
-		debugMode = 0
+	if(ParamIsDefault(allowDebug))
+		allowDebug = 0
 	else
+		allowDebug = !!allowDebug
+	endif
+
+	if(allowDebug)
 		debugMode = IUTF_DEBUG_FAILED_ASSERTION | IUTF_DEBUG_ENABLE | IUTF_DEBUG_ON_ERROR | IUTF_DEBUG_NVAR_SVAR_WAVE
+	else
+		debugMode = 0
 	endif
 
 	if(ParamIsDefault(testcase))
