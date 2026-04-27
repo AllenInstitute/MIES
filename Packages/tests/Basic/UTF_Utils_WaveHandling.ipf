@@ -3464,6 +3464,23 @@ End
 
 /// @}
 
+/// WaveDouble
+/// @{
+
+static Function WD_Helper_IGNORE(WAVE wv)
+
+	return WaveType(wv)
+End
+
+Function WD_Works()
+
+	CHECK_WAVE(WaveDouble($""), NULL_WAVE)
+	CHECK_EQUAL_VAR(WD_Helper_IGNORE({1}), IGOR_TYPE_32BIT_FLOAT)
+	CHECK_EQUAL_VAR(WD_Helper_IGNORE(WaveDouble({1})), IGOR_TYPE_64BIT_FLOAT)
+End
+
+/// @}
+
 /// DuplicateWaveToFree
 /// @{
 
