@@ -782,24 +782,43 @@ End
 /// @brief Output cache statistics
 Function CA_OutputCacheStatistics()
 
-	variable index, i, size
+	variable numEntries, i, size, idx
+	string key, modTime, str, msg
+
+	WAVE/WAVE keys    = GetCacheKeyHashMap()
+	WAVE/Z/T  allKeys = HM_GetAllKeys(keys)
 
 	WAVE stats = GetCacheStatsWave()
-	index = GetNumberFromWaveNote(stats, NOTE_INDEX)
+	numEntries = WaveExists(allKeys) ? DimSize(allKeys, ROWS) : 0
 
-	printf "Number of entries: %d\r", index
+	msg = ""
 
-	printf "\r"
-	printf "%s  | %s  | %s | %s     | %s (MB)\r", "Index", GetDimLabel(stats, COLS, 0), GetDimLabel(stats, COLS, 1), GetDimLabel(stats, COLS, 2), GetDimLabel(stats, COLS, 3)
-	printf "----------------------------------------------------------------\r"
+	sprintf str, "Number of entries: %d\r", numEntries
+	msg += str
 
-	for(i = 0; i < index; i += 1)
-		size = stats[i][%Size] / 1024 / 1024
+	sprintf str, "\r"
+	msg += str
+
+	sprintf str, "%s  | %s                 | %s       | %s | %s    | %s (MB)\r", "Index", "Key", GetDimLabel(stats, COLS, 0), GetDimLabel(stats, COLS, 1), GetDimLabel(stats, COLS, 2), GetDimLabel(stats, COLS, 3)
+	msg += str
+
+	sprintf str, "-----------------------------------------------------------------------------------------\r"
+	msg += str
+
+	for(i = 0; i < numEntries; i += 1)
+		key  = allKeys[i]
+		idx  = CA_GetCacheIndex(keys, key)
+		size = stats[idx][%Size] / 1024 / 1024
 		size = (size == 0) ? 0 : max(1, size)
-		printf "%6g |%6g | %6g | %s  | %6g\r", i, stats[i][%Hits], stats[i][%Misses], GetISO8601TimeStamp(secondsSinceIgorEpoch = stats[i][%ModificationTimestamp], numFracSecondsDigits = 3), size
+
+		modTime = GetISO8601TimeStamp(secondsSinceIgorEpoch = stats[idx][%ModificationTimestamp], numFracSecondsDigits = 3)
+		sprintf str, "%6g |%.20s |%11g | %6g |%s  |%6.0g\r", i, key, stats[idx][%Hits], stats[idx][%Misses], modTime, size
+		msg += str
 	endfor
 
-	printf "\r"
+	msg += "\r"
+
+	printf "%s", msg
 
 	ControlWindowToFront()
 End
