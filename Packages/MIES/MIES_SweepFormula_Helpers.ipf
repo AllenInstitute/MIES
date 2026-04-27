@@ -746,7 +746,7 @@ static Function/WAVE SFH_GetSweepsForFormulaImpl(string graph, WAVE/WAVE selectD
 				JWN_SetWaveInWaveNote(rangedSweepData, SF_META_RANGE, entry)
 			else
 				// we write here on purpose the requested range
-				JWN_SetWaveInWaveNote(rangedSweepData, SF_META_RANGE, {rangeStart, rangeEnd})
+				JWN_SetWaveInWaveNote(rangedSweepData, SF_META_RANGE, WaveDouble({rangeStart, rangeEnd}))
 			endif
 
 			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_SWEEPNO, sweepNo)
