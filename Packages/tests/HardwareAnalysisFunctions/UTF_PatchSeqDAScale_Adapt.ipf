@@ -133,8 +133,8 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, s
 		case PSQ_FMT_LBN_DA_AT_MAX_SLOPE: // fallthrough
 		case PSQ_FMT_LBN_DA_AT_FI_OFFSET: // fallthrough
 		case PSQ_FMT_LBN_DA_AT_FI_SLOPE: // fallthrough
-//		case PSQ_FMT_LBN_DA_AT_FI_OFFSET_DASCALE: // fallthrough
-//		case PSQ_FMT_LBN_DA_AT_FI_SLOPE_DASCALE: // fallthrough
+		//		case PSQ_FMT_LBN_DA_AT_FI_OFFSET_DASCALE: // fallthrough
+		//		case PSQ_FMT_LBN_DA_AT_FI_SLOPE_DASCALE: // fallthrough
 		case PSQ_FMT_LBN_BL_QC_PASS: // fallthrough
 		case PSQ_FMT_LBN_DASCALE_OOR:
 			key = CreateAnaFuncLBNKey(type, name, query = 1)
@@ -153,8 +153,8 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, s
 			return GetLastSettingTextEachSCI(numericalValues, textualValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 		case PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES: // fallthrough
 		case PSQ_FMT_LBN_DA_AT_RSA_FI_OFFSETS: // fallthrough
-//		case PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES_DASCALE: // fallthrough
-//		case PSQ_FMT_LBN_DA_AT_RSA_FI_OFFSETS_DASCALE: // fallthrough
+		//		case PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES_DASCALE: // fallthrough
+		//		case PSQ_FMT_LBN_DA_AT_RSA_FI_OFFSETS_DASCALE: // fallthrough
 		case PSQ_FMT_LBN_DA_AT_RSA_FREQ: // fallthrough
 		case PSQ_FMT_LBN_DA_AT_RSA_DASCALE:
 			key = CreateAnaFuncLBNKey(type, name, query = 1)
@@ -224,20 +224,20 @@ static Function [WAVE/WAVE wv, variable sweepNo] GetEntries_IGNORE(string device
 	wv[%rmsLongPass]  = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_RMS_LONG_PASS)
 	wv[%baselinePass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
 
-	wv[%opMode]                       = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
-	wv[%apFreq]                       = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FREQ)
-	wv[%maxSlope]                     = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_MAX_SLOPE)
-	wv[%fiSlope]                      = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FI_SLOPE)
-	wv[%fiOffset]                     = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FI_OFFSET)
-//	wv[%fiSlopeDAScale]               = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FI_SLOPE_DASCALE)
-//	wv[%fiOffsetDAScale]              = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FI_OFFSET_DASCALE)
-	wv[%fiNegSlopePass]               = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FI_NEG_SLOPE_PASS)
-	wv[%futureDAScales]               = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES)
-	wv[%fillinPass]                   = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FILLIN_PASS)
-	wv[%fiSlopesFromRhSuAd]           = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES)
-	wv[%fiOffsetsFromRhSuAd]          = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_RSA_FI_OFFSETS)
-//	wv[%fiSlopesDAScaleFromRhSuAd]    = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES_DASCALE)
-//	wv[%fiOffsetsDAScaleFromRhSuAd]   = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_RSA_FI_OFFSETS_DASCALE)
+	wv[%opMode]   = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	wv[%apFreq]   = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FREQ)
+	wv[%maxSlope] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_MAX_SLOPE)
+	wv[%fiSlope]  = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FI_SLOPE)
+	wv[%fiOffset] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FI_OFFSET)
+	//	wv[%fiSlopeDAScale]               = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FI_SLOPE_DASCALE)
+	//	wv[%fiOffsetDAScale]              = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FI_OFFSET_DASCALE)
+	wv[%fiNegSlopePass]      = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FI_NEG_SLOPE_PASS)
+	wv[%futureDAScales]      = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES)
+	wv[%fillinPass]          = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FILLIN_PASS)
+	wv[%fiSlopesFromRhSuAd]  = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES)
+	wv[%fiOffsetsFromRhSuAd] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_RSA_FI_OFFSETS)
+	//	wv[%fiSlopesDAScaleFromRhSuAd]    = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES_DASCALE)
+	//	wv[%fiOffsetsDAScaleFromRhSuAd]   = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_RSA_FI_OFFSETS_DASCALE)
 	wv[%fiNegSlopesPassFromRhSuAd]    = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_RSA_FI_NEG_SLOPES_PASS)
 	wv[%sweepPassFromRhSuAd]          = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_RSA_SWEEPS)
 	wv[%fiSlopeReachedPassFromRhSuAd] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES_PASS)
