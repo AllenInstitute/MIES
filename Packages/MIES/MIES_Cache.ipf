@@ -93,25 +93,21 @@ End
 Function/S CA_KeyRecreatedEpochs(WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo)
 
 	variable crc
+	string   lbnKey
 
 	// the calculation assumes that recreated epochs are based on an old LNB
 	// thats content is treated as const (except mod time, as this check is fast)
 
-	ASSERT_TS(!IsFreeWave(numericalValues), "Numerical LNB wave must be global")
-	ASSERT_TS(!IsFreeWave(textualValues), "Textual LNB wave must be global")
 	ASSERT_TS(!IsFreeDatafolder(sweepDFR), "sweepDFR must not be free")
 
-	crc = StringCRC(0, GetWavesDataFolder(numericalValues, 2))
-	crc = StringCRC(crc, num2istr(WaveModCountWrapper(numericalValues)))
-
-	crc = StringCRC(crc, GetWavesDataFolder(textualValues, 2))
-	crc = StringCRC(crc, num2istr(WaveModCountWrapper(textualValues)))
+	lbnkey = CA_GetLabnotebookNamesKey(textualValues, numericalvalues)
+	crc    = StringCRC(crc, lbnKey)
 
 	crc = StringCRC(crc, GetDataFolder(1, sweepDFR))
 	crc = StringCRC(crc, num2istr(sweepNo))
 	crc = StringCRC(crc, num2istr(SWEEP_EPOCH_VERSION))
 
-	return "Recreated epochs:" + num2istr(crc) + ":Version 1"
+	return "Recreated epochs:" + num2istr(crc) + ":Version 2"
 End
 
 /// @brief Cache key generator for oodDAQ offset waves
@@ -182,13 +178,12 @@ End
 /// @brief Cache key generator for GetActiveChannels
 threadsafe Function/S CA_GenKeyGetActiveChannels(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, variable TTLmode)
 
-	string primitiveKey
-	string version = "Version 1"
+	string primitiveKey, lbnkey
+	string version = "Version 2"
 	variable crc
 
-	sprintf primitiveKey, "%d_%d_%d_%s", sweepNo, channelType, TTLmode, version
-	crc = CA_GetWaveModCRC(numericalValues, 0)
-	crc = CA_GetWaveModCRC(textualValues, crc)
+	lbnkey = CA_GetLabnotebookNamesKey(textualValues, numericalvalues)
+	sprintf primitiveKey, "%d_%d_%d_%s", sweepNo, channelType, TTLmode, lbnkey
 	crc = StringCRC(crc, primitiveKey)
 
 	return "GetActiveChannels:" + num2istr(crc) + ":" + version
