@@ -848,9 +848,11 @@ Function CA_Compactify()
 		return NaN
 	endif
 
+	WAVE/WAVE keys_old   = MakeWaveFree(keys)
 	WAVE      stats_old  = MakeWaveFree(GetCacheStatsWave())
 	WAVE/WAVE values_old = MakeWaveFree(GetCacheValueWave())
 
+	WAVE/WAVE keys   = GetCacheKeyHashMap()
 	WAVE      stats  = GetCacheStatsWave()
 	WAVE/WAVE values = GetCacheValueWave()
 
@@ -863,23 +865,24 @@ Function CA_Compactify()
 	Make/FREE/N=(numEntries) keepKey
 
 	// remove entries with no hits or which are from CA_COMPACTIFY_KEYS_TO_DELETE
-	Multithread keepKey[] = (stats_old[CA_GetCacheIndex(keys, allKeys[p])][%Hits] > 0) && IsNaN(GetRowIndex(keysToDrop, str = StringFromList(0, allKeys[p], ":"), textOp = 2))
+	Multithread keepKey[] = (stats_old[CA_GetCacheIndex(keys_old, allKeys[p])][%Hits] > 0) && IsNaN(GetRowIndex(keysToDrop, str = StringFromList(0, allKeys[p], ":"), textOp = 2))
 
 	for(i = 0; i < numEntries; i += 1)
-		key   = allKeys[i]
-		index = CA_GetCacheIndex(keys, key)
 
 		if(!keepKey[i])
-			CA_DeleteCacheEntryImpl(keys, key, index, values_old, stats_old)
-		else
-			// and transfer all others
-			stats[newIndex][] = stats_old[index][q]
-			values[newIndex]  = values_old[index]
-			// overwrite index with newIndex in hashmap
-			HM_AddEntry(keys, key, var = newIndex)
-			newIndex += 1
+			continue
 		endif
+
+		key               = allKeys[i]
+		index             = CA_GetCacheIndex(keys_old, key)
+		stats[newIndex][] = stats_old[index][q]
+		values[newIndex]  = values_old[index]
+
+		HM_AddEntry(keys, key, var = newIndex)
+		newIndex += 1
 	endfor
+
+	HM_RehashIfRequired(keys)
 
 	Redimension/N=(newIndex, -1) values, stats
 
