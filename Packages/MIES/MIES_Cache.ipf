@@ -6,6 +6,11 @@
 #pragma ModuleName = MIES_CA
 #endif // AUTOMATED_TESTING
 
+/// Cache entries which are dependent on the labnotebook or can be very easily recreated
+///
+/// Will be deleted in CA_Compactify()
+static StrConstant CA_COMPACTIFY_KEYS_TO_DELETE = "Epochs;Recreated Epochs;Fetch Epochs;Labnotebook Names;GetActiveChannels;Temporary waves"
+
 // #define CACHE_DEBUGGING
 
 /// @file MIES_Cache.ipf
@@ -853,12 +858,18 @@ Function CA_Compactify()
 	EnsureLargeEnoughWave(values, dimension = ROWS, indexShouldExist = numEntries - 1)
 	EnsureLargeEnoughWave(stats, dimension = ROWS, indexShouldExist = numEntries - 1, initialValue = NaN)
 
+	WAVE/T keysToDrop = ListToTextWave(CA_COMPACTIFY_KEYS_TO_DELETE, ";")
+
+	Make/FREE/N=(numEntries) keepKey
+
+	// remove entries with no hits or which are from CA_COMPACTIFY_KEYS_TO_DELETE
+	Multithread keepKey[] = (stats_old[CA_GetCacheIndex(keys, allKeys[p])][%Hits] > 0) && IsNaN(GetRowIndex(keysToDrop, str = StringFromList(0, allKeys[p], ":"), textOp = 2))
+
 	for(i = 0; i < numEntries; i += 1)
 		key   = allKeys[i]
 		index = CA_GetCacheIndex(keys, key)
 
-		if(stats_old[index][%Hits] == 0)
-			// remove entries with no hits
+		if(!keepKey[i])
 			CA_DeleteCacheEntryImpl(keys, key, index, values_old, stats_old)
 		else
 			// and transfer all others
