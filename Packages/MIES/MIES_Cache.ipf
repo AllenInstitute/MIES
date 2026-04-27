@@ -529,7 +529,7 @@ Function/S CA_CalculateEpochsKey(WAVE numericalvalues, WAVE textualValues, varia
 	string key = ""
 	variable crc
 
-	key += CA_GetLabnotebookNamesKey(numericalvalues, textualValues)
+	key += CA_GetLabnotebookNamesKey(textualValues, numericalvalues)
 	crc  = StringCRC(crc, num2str(sweepNo))
 	crc  = StringCRC(crc, num2str(channelType))
 	crc  = StringCRC(crc, num2str(channelNumber))
@@ -550,7 +550,7 @@ threadsafe Function/S CA_CalculateFetchEpochsKey(WAVE numericalvalues, WAVE text
 	string key = ""
 	variable crc
 
-	key += CA_GetLabnotebookNamesKey(numericalvalues, textualValues)
+	key += CA_GetLabnotebookNamesKey(textualValues, numericalValues)
 	crc  = StringCRC(crc, num2str(sweepNo))
 	crc  = StringCRC(crc, num2str(channelType))
 	crc  = StringCRC(crc, num2str(channelNumber))
