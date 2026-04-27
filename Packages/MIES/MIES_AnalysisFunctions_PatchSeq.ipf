@@ -2138,17 +2138,16 @@ End
 ///
 /// @param device                DAC hardware device
 /// @param sweepNo               current sweep
-/// @param apfreq                AP frequency data
-/// @param DAScales              DAScale data
 /// @param singleFit             [optional, defaults to false] if only a single fit should be done
 /// @param writeEnoughPointsLBN  [optional, defaults to false] if the labnotebook entry for enough points should be written or not
 ///
 /// @retval fitOffset offsets of all line fits
 /// @retval fitSlope  slopes of all line fits
 /// @retval errMsg    error message if both `fitOffset` and `fitSlope` are null
-static Function [WAVE/D fitOffset, WAVE/D fitSlope, string errMsg] PSQ_DS_FitFrequencyCurrentData(string device, variable sweepNo, WAVE/Z apfreq, WAVE/Z DAScales, [variable singleFit, variable writeEnoughPointsLBN])
+static Function [WAVE/D fitOffset, WAVE/D fitSlope, string errMsg] PSQ_DS_FitFrequencyCurrentData(string device, variable sweepNo, variable headstage, [variable singleFit, variable writeEnoughPointsLBN, variable fromRhSuAd])
 
-	variable i, numPoints, numFits, first, last, initialFit, idx, elem, hasEnoughPoints, DAScaleRef
+	variable i, numPoints, numFits, first, last, initialFit, idx, elem, hasEnoughPoints, DAScaleRef, beforeSweepQCResult
+	variable emptySCI
 	string line, databrowser, key, msg
 	string str = ""
 
@@ -2163,6 +2162,24 @@ static Function [WAVE/D fitOffset, WAVE/D fitSlope, string errMsg] PSQ_DS_FitFre
 	else
 		writeEnoughPointsLBN = !!writeEnoughPointsLBN
 	endif
+
+	if(ParamIsDefault(fromRhSuAd))
+		fromRhSuAd = 0
+	else
+		fromRhSuAd = !!fromRhSuAd
+	endif
+
+	if(fromRhSuAd)
+		beforeSweepQCResult = 0
+	else
+		beforeSweepQCResult = 1
+	endif
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
+
+	[WAVE DAScales, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_DASCALE, filterPassing = 1, beforeSweepQCResult = beforeSweepQCResult, filterNegSlopeAndNaN = 1, fromRhSuAd = fromRhSuAd)
+	[WAVE apfreq, emptySCI]   = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_APFREQ, filterPassing = 1, beforeSweepQCResult = beforeSweepQCResult, filterNegSlopeAndNaN = 1, fromRhSuAd = fromRhSuAd)
 
 	if(!WaveExists(apFreq) && !WaveExists(DAScales))
 		return [$"", $"", "No apfreq/DAScales data"]
@@ -2875,9 +2892,9 @@ static Function [WAVE/T futureDAScales] PSQ_DS_EvaluateAdaptiveThresholdSweep(st
 
 	PSQ_DS_GatherAndWriteFrequencyToLabnotebook(device, sweepNo, headstage)
 
-	[WAVE/T futureDAScales, WAVE apfreqs, WAVE DAScales] = PSQ_DS_GatherFutureDAScalesAndFrequency(device, sweepNo, headstage, cdp)
+	[WAVE/T futureDAScales] = PSQ_DS_GatherFutureDAScalesAndFrequency(device, sweepNo, headstage, cdp)
 
-	[WAVE fitOffsetFromFit, WAVE fitSlopeFromFit, errMsg] = PSQ_DS_FitFrequencyCurrentData(device, sweepNo, apfreqs, DAScales, singleFit = 1, writeEnoughPointsLBN = 1)
+	[WAVE fitOffsetFromFit, WAVE fitSlopeFromFit, errMsg] = PSQ_DS_FitFrequencyCurrentData(device, sweepNo, headstage, singleFit = 1, writeEnoughPointsLBN = 1)
 	[fitOffset, fitSlope]                                 = PSQ_DS_StoreFitOffsetAndSlope(device, sweepNo, headstage, fitOffsetFromFit, PSQ_FMT_LBN_DA_AT_FI_OFFSET, fitSlopeFromFit, PSQ_FMT_LBN_DA_AT_FI_SLOPE)
 
 #ifdef DEBUGGING_ENABLED
@@ -3184,7 +3201,7 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 				WAVE/Z fISlope = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 				if(!WaveExists(fISlope))
-					Make/FREE/N=(DimSize(negSlopePassed, ROWS)) fISlope = NaN
+					Make/FREE/N=(DimSize(negSlopePassed, ROWS)) fISlope = 0
 				endif
 
 				Duplicate/FREE sweepPassed, filterPassed
@@ -3481,7 +3498,7 @@ static Function/WAVE PSQ_DS_GetFutureDAScalesFromLBN(WAVE numericalValues, WAVE 
 	return futureDAScalesHistoric
 End
 
-static Function [WAVE/T futureDAScales, WAVE apfreq, WAVE DAScales] PSQ_DS_GatherFutureDAScalesAndFrequency(string device, variable sweepNo, variable headstage, STRUCT PSQ_DS_DAScaleParams &cdp)
+static Function [WAVE/T futureDAScales] PSQ_DS_GatherFutureDAScalesAndFrequency(string device, variable sweepNo, variable headstage, STRUCT PSQ_DS_DAScaleParams &cdp)
 
 	variable emptySCI
 
@@ -3502,7 +3519,7 @@ static Function [WAVE/T futureDAScales, WAVE apfreq, WAVE DAScales] PSQ_DS_Gathe
 
 	WaveClear futureDAScalesHistoric
 
-	return [futureDAScales, apfreq, DAScales]
+	return [futureDAScales]
 End
 
 static Function PSQ_DS_CalcFutureDAScalesAndStoreInLBN(string device, variable sweepNo, variable headstage, WAVE/T futureDAScales)
@@ -4507,8 +4524,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 					key                          = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_RSA_DASCALE)
 					ED_AddEntryToLabnotebook(device, key, DAScalesTextLBN, overrideSweepNo = s.sweepNo)
 
-					[WAVE fitOffsetFromRhSuAd, WAVE fitSlopeFromRhSuAd, errMsg] = PSQ_DS_FitFrequencyCurrentData(device, s.sweepNo,                                    \
-					                                                                                             apfreqRhSuAd, DAScalesRhSuAd, writeEnoughPointsLBN = 1)
+					[WAVE fitOffsetFromRhSuAd, WAVE fitSlopeFromRhSuAd, errMsg] = PSQ_DS_FitFrequencyCurrentData(device, s.sweepNo, s.headstage, writeEnoughPointsLBN = 1)
 
 					if(!WaveExists(fitOffsetFromRhSuAd) || !WaveExists(fitSlopeFromRhSuAd))
 						printf "The f-I fit of the rheobase/supra data failed due to: \"%s\"\r", errMsg
