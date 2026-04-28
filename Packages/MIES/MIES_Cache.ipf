@@ -504,7 +504,7 @@ threadsafe Function/S CA_IgorInfoKey(variable selector)
 End
 
 /// @brief Return the key for the filled labnotebook parameter names
-threadsafe Function/S CA_GetLabnotebookNamesKey(WAVE/Z/T textualValues, WAVE/Z/T numericalValues)
+threadsafe Function/S CA_GetLabnotebookNamesKey(WAVE/Z/T textualValues, WAVE/Z numericalValues)
 
 	string key = ""
 	variable crc
