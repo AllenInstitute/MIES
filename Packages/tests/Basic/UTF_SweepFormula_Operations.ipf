@@ -3731,3 +3731,32 @@ static Function TestOperationExtract()
 	WAVE data = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	CHECK_EQUAL_WAVES(data, {2}, mode = WAVE_DATA)
 End
+
+static Function TestDataRangeMetadataPrecision()
+
+	string win, device, str
+	variable sweepNo
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	sweepNo = 0
+	win     = CreateFakeSweepData(win, device, sweepNo = sweepNo)
+
+	// Use non-integer range values not exactly representable in float32.
+	// 0.1 rounds to index 0, 9.9 rounds to index 10 (sweepSize=10), both valid.
+	// Without the double-precision fix the range would be stored rounded to float32
+	// precision, e.g. 0.1 -> ~0.100000001490116 instead of the float64 value.
+	str = "data(select(selrange([0.1, 9.9]),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all)))"
+	WAVE/WAVE dataWref = SFE_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 1)
+
+	WAVE sweepData = dataWref[0]
+	CHECK_WAVE(sweepData, NUMERIC_WAVE)
+
+	WAVE/Z range = JWN_GetNumericWaveFromWaveNote(sweepData, SF_META_RANGE)
+	CHECK_WAVE(range, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+
+	// Range values must be preserved at double precision, not rounded to float32
+	Make/FREE/D refRange = {0.1, 9.9}
+	CHECK_EQUAL_WAVES(range, refRange, mode = WAVE_DATA, tol = 0)
+End

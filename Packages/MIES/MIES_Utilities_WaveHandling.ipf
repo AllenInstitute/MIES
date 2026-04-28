@@ -1005,6 +1005,30 @@ threadsafe Function/S WaveText(WAVE/Z w, [variable row, variable col, variable l
 	endif
 End
 
+/// @brief Allow waves created via `{...}` to be created as double precision float
+///
+/// Usage:
+/// \rst
+/// .. code-block:: igorpro
+///
+///     Function CallIt()
+///
+///         DoSomething(WaveDouble({0.1}))
+///     End
+///
+///     Function DoSomething(WAVE wv)
+///
+///         // wv is created as double
+///     End
+///
+/// \endrst
+///
+/// UTF_NOINSTRUMENTATION
+threadsafe Function/WAVE WaveDouble(WAVE/Z/D wv)
+
+	return wv
+End
+
 /// @brief Helper function for multithread statements where `? :` does not work with wave references
 ///
 /// The order of arguments is modelled after SelectString/SelectNumber.
