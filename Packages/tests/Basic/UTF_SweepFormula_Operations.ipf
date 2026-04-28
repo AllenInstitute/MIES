@@ -3835,3 +3835,29 @@ static Function TestDataRangeMetadataPrecision()
 	Make/FREE/D refRange = {0.1, 9.9}
 	CHECK_EQUAL_WAVES(range, refRange, mode = WAVE_DATA, tol = 0)
 End
+
+static Function TestOperationxValues()
+
+	string win, device, code
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	code = "xvalues(wave(I_DONT_EXIST))"
+	WAVE/Z data = SFE_ExecuteFormula(code, win, singleResult = 1, useVariables = 0)
+	CHECK_WAVE(data, NULL_WAVE)
+
+	code = "xvalues([1, 2, 3], [4, 5, 6])"
+	WAVE data = SFE_ExecuteFormula(code, win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, {{0, 1}, {0, 1}, {0, 1}}, mode = WAVE_DATA)
+
+	Make/O/N=(3) wv
+	SetScale/P x, 0.1, 0.2, wv
+
+	code = "xvalues(wave(wv))"
+	WAVE data = SFE_ExecuteFormula(code, win, singleResult = 1, useVariables = 0)
+	Make/FREE/D ref = {0.1, 0.1 + 0.2, 0.1 + 2 * 0.2}
+	CHECK_EQUAL_WAVES(data, ref, mode = WAVE_DATA)
+	KillWaves/Z wv
+End
