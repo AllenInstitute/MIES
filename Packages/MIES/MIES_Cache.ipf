@@ -6,6 +6,11 @@
 #pragma ModuleName = MIES_CA
 #endif // AUTOMATED_TESTING
 
+/// Cache entries which are dependent on the labnotebook or can be very easily recreated
+///
+/// Will be deleted in CA_Compactify()
+static StrConstant CA_COMPACTIFY_KEYS_TO_DELETE = "Epochs;Recreated Epochs;Fetch Epochs;Labnotebook Names;GetActiveChannels;Temporary waves"
+
 // #define CACHE_DEBUGGING
 
 /// @file MIES_Cache.ipf
@@ -93,25 +98,21 @@ End
 Function/S CA_KeyRecreatedEpochs(WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo)
 
 	variable crc
+	string   lbnKey
 
 	// the calculation assumes that recreated epochs are based on an old LNB
 	// thats content is treated as const (except mod time, as this check is fast)
 
-	ASSERT_TS(!IsFreeWave(numericalValues), "Numerical LNB wave must be global")
-	ASSERT_TS(!IsFreeWave(textualValues), "Textual LNB wave must be global")
 	ASSERT_TS(!IsFreeDatafolder(sweepDFR), "sweepDFR must not be free")
 
-	crc = StringCRC(0, GetWavesDataFolder(numericalValues, 2))
-	crc = StringCRC(crc, num2istr(WaveModCountWrapper(numericalValues)))
-
-	crc = StringCRC(crc, GetWavesDataFolder(textualValues, 2))
-	crc = StringCRC(crc, num2istr(WaveModCountWrapper(textualValues)))
+	lbnkey = CA_GetLabnotebookNamesKey(textualValues, numericalvalues)
+	crc    = StringCRC(crc, lbnKey)
 
 	crc = StringCRC(crc, GetDataFolder(1, sweepDFR))
 	crc = StringCRC(crc, num2istr(sweepNo))
 	crc = StringCRC(crc, num2istr(SWEEP_EPOCH_VERSION))
 
-	return "Recreated epochs:" + num2istr(crc) + ":Version 1"
+	return "Recreated epochs:" + num2istr(crc) + ":Version 2"
 End
 
 /// @brief Cache key generator for oodDAQ offset waves
@@ -182,13 +183,12 @@ End
 /// @brief Cache key generator for GetActiveChannels
 threadsafe Function/S CA_GenKeyGetActiveChannels(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, variable TTLmode)
 
-	string primitiveKey
-	string version = "Version 1"
+	string primitiveKey, lbnkey
+	string version = "Version 2"
 	variable crc
 
-	sprintf primitiveKey, "%d_%d_%d_%s", sweepNo, channelType, TTLmode, version
-	crc = CA_GetWaveModCRC(numericalValues, 0)
-	crc = CA_GetWaveModCRC(textualValues, crc)
+	lbnkey = CA_GetLabnotebookNamesKey(textualValues, numericalvalues)
+	sprintf primitiveKey, "%d_%d_%d_%s", sweepNo, channelType, TTLmode, lbnkey
 	crc = StringCRC(crc, primitiveKey)
 
 	return "GetActiveChannels:" + num2istr(crc) + ":" + version
@@ -509,7 +509,7 @@ threadsafe Function/S CA_IgorInfoKey(variable selector)
 End
 
 /// @brief Return the key for the filled labnotebook parameter names
-threadsafe Function/S CA_GetLabnotebookNamesKey(WAVE/Z/T textualValues, WAVE/Z/T numericalValues)
+threadsafe Function/S CA_GetLabnotebookNamesKey(WAVE/Z/T textualValues, WAVE/Z numericalValues)
 
 	string key = ""
 	variable crc
@@ -534,7 +534,7 @@ Function/S CA_CalculateEpochsKey(WAVE numericalvalues, WAVE textualValues, varia
 	string key = ""
 	variable crc
 
-	key += CA_GetLabnotebookNamesKey(numericalvalues, textualValues)
+	key += CA_GetLabnotebookNamesKey(textualValues, numericalvalues)
 	crc  = StringCRC(crc, num2str(sweepNo))
 	crc  = StringCRC(crc, num2str(channelType))
 	crc  = StringCRC(crc, num2str(channelNumber))
@@ -555,7 +555,7 @@ threadsafe Function/S CA_CalculateFetchEpochsKey(WAVE numericalvalues, WAVE text
 	string key = ""
 	variable crc
 
-	key += CA_GetLabnotebookNamesKey(numericalvalues, textualValues)
+	key += CA_GetLabnotebookNamesKey(textualValues, numericalValues)
 	crc  = StringCRC(crc, num2str(sweepNo))
 	crc  = StringCRC(crc, num2str(channelType))
 	crc  = StringCRC(crc, num2str(channelNumber))
@@ -787,24 +787,43 @@ End
 /// @brief Output cache statistics
 Function CA_OutputCacheStatistics()
 
-	variable index, i, size
+	variable numEntries, i, size, idx
+	string key, modTime, str, msg
+
+	WAVE/WAVE keys    = GetCacheKeyHashMap()
+	WAVE/Z/T  allKeys = HM_GetAllKeys(keys)
 
 	WAVE stats = GetCacheStatsWave()
-	index = GetNumberFromWaveNote(stats, NOTE_INDEX)
+	numEntries = WaveExists(allKeys) ? DimSize(allKeys, ROWS) : 0
 
-	printf "Number of entries: %d\r", index
+	msg = ""
 
-	printf "\r"
-	printf "%s  | %s  | %s | %s     | %s (MB)\r", "Index", GetDimLabel(stats, COLS, 0), GetDimLabel(stats, COLS, 1), GetDimLabel(stats, COLS, 2), GetDimLabel(stats, COLS, 3)
-	printf "----------------------------------------------------------------\r"
+	sprintf str, "Number of entries: %d\r", numEntries
+	msg += str
 
-	for(i = 0; i < index; i += 1)
-		size = stats[i][%Size] / 1024 / 1024
+	sprintf str, "\r"
+	msg += str
+
+	sprintf str, "%s  | %s                 | %s       | %s | %s    | %s (MB)\r", "Index", "Key", GetDimLabel(stats, COLS, 0), GetDimLabel(stats, COLS, 1), GetDimLabel(stats, COLS, 2), GetDimLabel(stats, COLS, 3)
+	msg += str
+
+	sprintf str, "-----------------------------------------------------------------------------------------\r"
+	msg += str
+
+	for(i = 0; i < numEntries; i += 1)
+		key  = allKeys[i]
+		idx  = CA_GetCacheIndex(keys, key)
+		size = stats[idx][%Size] / 1024 / 1024
 		size = (size == 0) ? 0 : max(1, size)
-		printf "%6g |%6g | %6g | %s  | %6g\r", i, stats[i][%Hits], stats[i][%Misses], GetISO8601TimeStamp(secondsSinceIgorEpoch = stats[i][%ModificationTimestamp], numFracSecondsDigits = 3), size
+
+		modTime = GetISO8601TimeStamp(secondsSinceIgorEpoch = stats[idx][%ModificationTimestamp], numFracSecondsDigits = 3)
+		sprintf str, "%6g |%.20s |%11g | %6g |%s  |%6.0g\r", i, key, stats[idx][%Hits], stats[idx][%Misses], modTime, size
+		msg += str
 	endfor
 
-	printf "\r"
+	msg += "\r"
+
+	printf "%s", msg
 
 	ControlWindowToFront()
 End
@@ -829,9 +848,11 @@ Function CA_Compactify()
 		return NaN
 	endif
 
+	WAVE/WAVE keys_old   = MakeWaveFree(keys)
 	WAVE      stats_old  = MakeWaveFree(GetCacheStatsWave())
 	WAVE/WAVE values_old = MakeWaveFree(GetCacheValueWave())
 
+	WAVE/WAVE keys   = GetCacheKeyHashMap()
 	WAVE      stats  = GetCacheStatsWave()
 	WAVE/WAVE values = GetCacheValueWave()
 
@@ -839,22 +860,29 @@ Function CA_Compactify()
 	EnsureLargeEnoughWave(values, dimension = ROWS, indexShouldExist = numEntries - 1)
 	EnsureLargeEnoughWave(stats, dimension = ROWS, indexShouldExist = numEntries - 1, initialValue = NaN)
 
-	for(i = 0; i < numEntries; i += 1)
-		key   = allKeys[i]
-		index = CA_GetCacheIndex(keys, key)
+	WAVE/T keysToDrop = ListToTextWave(CA_COMPACTIFY_KEYS_TO_DELETE, ";")
 
-		if(stats_old[index][%Hits] == 0)
-			// remove entries with no hits
-			CA_DeleteCacheEntryImpl(keys, key, index, values_old, stats_old)
-		else
-			// and transfer all others
-			stats[newIndex][] = stats_old[index][q]
-			values[newIndex]  = values_old[index]
-			// overwrite index with newIndex in hashmap
-			HM_AddEntry(keys, key, var = newIndex)
-			newIndex += 1
+	Make/FREE/N=(numEntries) keepKey
+
+	// remove entries with no hits or which are from CA_COMPACTIFY_KEYS_TO_DELETE
+	Multithread keepKey[] = (stats_old[CA_GetCacheIndex(keys_old, allKeys[p])][%Hits] > 0) && IsNaN(GetRowIndex(keysToDrop, str = StringFromList(0, allKeys[p], ":"), textOp = 2))
+
+	for(i = 0; i < numEntries; i += 1)
+
+		if(!keepKey[i])
+			continue
 		endif
+
+		key               = allKeys[i]
+		index             = CA_GetCacheIndex(keys_old, key)
+		stats[newIndex][] = stats_old[index][q]
+		values[newIndex]  = values_old[index]
+
+		HM_AddEntry(keys, key, var = newIndex)
+		newIndex += 1
 	endfor
+
+	HM_RehashIfRequired(keys)
 
 	Redimension/N=(newIndex, -1) values, stats
 

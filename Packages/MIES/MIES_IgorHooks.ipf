@@ -126,6 +126,7 @@ static Function BeforeExperimentSaveHook(variable rN, string fileName, string pa
 	IH_SerializeSettings()
 
 	IH_KillTemporaries()
+	CA_Compactify()
 
 	WAVE/T devicesWithContent = ListToTextWave(GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL), ";")
 	for(device : devicesWithContent)

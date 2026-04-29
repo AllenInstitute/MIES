@@ -287,6 +287,7 @@ End
 Function CompactificationWorks()
 
 	string key        = "someKey"
+	string keyFlood   = "Temporary Waves"
 	string hitlessKey = "anotherKey"
 	string randomKey  = "abcd"
 
@@ -336,6 +337,17 @@ Function CompactificationWorks()
 
 	// entries without hits are thrown away
 	CA_StoreEntryIntoCache(hitlessKey, val)
+	CheckCacheWaves(2)
+	CA_Compactify()
+	CheckCacheWaves(1)
+
+	// so are the ones from CA_COMPACTIFY_KEYS_TO_DELETE
+	// even with a hit
+	CA_StoreEntryIntoCache(keyFlood, val)
+
+	WAVE/Z result = CA_TryFetchingEntryFromCache(keyFlood)
+	CHECK_EQUAL_WAVES(val, result)
+
 	CheckCacheWaves(2)
 	CA_Compactify()
 	CheckCacheWaves(1)
