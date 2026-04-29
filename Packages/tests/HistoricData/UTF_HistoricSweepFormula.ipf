@@ -14,7 +14,10 @@ Function TestIVSCCAPFrequency()
 	[abWin, sweepBrowsers] = OpenAnalysisBrowser(files, loadSweeps = 1)
 	sweepBrowser           = StringFromList(0, sweepBrowsers)
 
-	code = "ivscc_apfrequency(none, none, 100, 100, prepareFit(), bins2)"
+	code  = ""
+	code += "ivscc_apfrequency(none, none, 100, 100, prepareFit(), bins2)\r"
+	code += "and\r"
+	code += "ivscc_apfrequency(none, none, 100, 100, prepareFit(log), bins2)\r"
 
 	ExecuteSweepFormulaCode(sweepBrowser, code)
 End

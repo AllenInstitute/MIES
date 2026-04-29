@@ -2878,11 +2878,22 @@ static Function SFO_OperationIVSCCApFrequencySetPlotProperties(WAVE wvY, variabl
 	JWN_SetNumberInWaveNote(wvY, SF_META_YAXISPERCENT, yAxisPercentage)
 End
 
+// Arguments:
+//
+// xaxisOffset: first, min, max, none [default: min]
+// yaxisOffset: first, min, max, none [default: min]
+// xAxisPercentage: [0, 100]
+// yAxisPercentage: [0, 100]
+// prepareFit: See prepareFit([...]) operation, use prepareFit() to not make any fitting
+// avgMode: bins, bins2
+//
+// method, level, timeFreq, normalize, xAxisType are from apfrequency()
+//
 // for avgMode: bins
-// ivscc_apfrequency([xaxisOffset, yaxisOffset, xAxisPercentage, yAxisPercentage, prepFit, avgMode, binRange, binWidth, method, level, timeFreq, normalize, xAxisType])
+// ivscc_apfrequency([xaxisOffset, yaxisOffset, xAxisPercentage, yAxisPercentage, prepareFit([...]), avgMode, binRange, binWidth, method, level, timeFreq, normalize, xAxisType])
 //
 // for avgMode: bins2
-// ivscc_apfrequency([xaxisOffset, yaxisOffset, xAxisPercentage, yAxisPercentage, prepFit, avgMode, method, level, timeFreq, normalize, xAxisType])
+// ivscc_apfrequency([xaxisOffset, yaxisOffset, xAxisPercentage, yAxisPercentage, prepareFit([...]), avgMode, method, level, timeFreq, normalize, xAxisType])
 Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 
 	string opShort = SF_OP_IVSCCAPFREQUENCY
@@ -3083,13 +3094,15 @@ Function SFO_OperationPrepareFit_PROTO(WAVE w, variable x)
 End
 
 /// preparefit([fitFuncName, coefs, holdStr, range, constraints])
+///
+/// returns a wave reference wave with four entries, see GetSFPrepareFitWave()
 Function/WAVE SFO_OperationPrepareFit(STRUCT SF_ExecutionData &exd)
 
 	string opShort = SF_OP_PREPAREFIT
 	variable numArgs, numCoefs
 	string fitfuncName, holdStr, checkStr
 
-	SFH_CheckArgumentCount(exd, opShort, 0, maxArgs = 4)
+	numArgs = SFH_CheckArgumentCount(exd, opShort, 0, maxArgs = 4)
 
 	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 1)
 	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_PREPAREFIT)
@@ -3099,7 +3112,6 @@ Function/WAVE SFO_OperationPrepareFit(STRUCT SF_ExecutionData &exd)
 
 	WAVE/T fitArgs = prepFit[%FITARGS]
 
-	numArgs = SFH_GetNumberOfArguments(exd)
 	if(numArgs == 0)
 		fitArgs[%FITFUNCNAME] = SF_PREPAREFIT_NOFUNC
 		return SFH_GetOutputForExecutor(output, exd.graph, opShort)
