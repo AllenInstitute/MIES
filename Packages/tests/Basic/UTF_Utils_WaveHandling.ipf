@@ -1630,6 +1630,23 @@ static Function TestSetDimensionLabelsFromWaveContents()
 	catch
 		CHECK_NO_RTE()
 	endtry
+
+	try
+		SetDimensionLabelsFromWaveContents(input, strict = 1, cleanup = 1)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	Make/FREE/T inputt = {"A", "B", " "}
+	SetDimensionLabelsFromWaveContents(inputt, prefix = ".", suffix = ":", cleanup = 1)
+	CHECK_EQUAL_STR(GetDimLabel(inputt, ROWS, 0), "X_A_")
+	CHECK_EQUAL_STR(GetDimLabel(inputt, ROWS, 1), "X_B_")
+	CHECK_EQUAL_STR(GetDimLabel(inputt, ROWS, 2), "X___")
+
+	Make/FREE/T inputt = {""}
+	SetDimensionLabelsFromWaveContents(inputt, cleanup = 1)
+	CHECK_EQUAL_STR(GetDimLabel(inputt, ROWS, 0), "X")
 End
 
 /// @}
