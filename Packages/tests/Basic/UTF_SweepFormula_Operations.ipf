@@ -1189,6 +1189,14 @@ static Function TestOperationAverage()
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
 	CHECK_EQUAL_VAR(data[0], 2)
 
+	str = "avg(1, in, stuff)"
+	try
+		WAVE/Z data = SFE_ExecuteFormula(str, win, singleResult = 1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
 	str = "avg([1, 2, 3], in)"
 	WAVE/Z data = SFE_ExecuteFormula(str, win, singleResult = 1, checkExist = 1)
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
@@ -1254,6 +1262,41 @@ static Function TestOperationAverage()
 	catch
 		PASS()
 	endtry
+
+	str  = ""
+	str += "ds0 = dataset(1, 2, 3)\r"
+	str += "ds1 = dataset(10, 20, 30)\r"
+	str += "bin0 = dataset(1, 1, 5)\r"
+	str += "bin1 = dataset(0, 3, 3)\r"
+	str += "binrange = [0, 4]\r"
+	str += "binwidth = 1\r"
+	str += "avg([$ds0, $ds0, $ds1], bins, $binrange, $binwidth, [$bin0, $bin0, $bin1])"
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win)
+	CHECK_WAVE(dataRef, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 4)
+	CHECK_EQUAL_WAVES(dataRef[0], {10}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(dataRef[1], {1.5}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(dataRef[2], {NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(dataRef[3], {25}, mode = WAVE_DATA)
+
+	str  = ""
+	str += "ds0 = dataset(1, 2, 3)\r"
+	str += "ds1 = dataset(10, 20, 30)\r"
+	str += "bin0 = dataset(1, 1, 5)\r"
+	str += "bin1 = dataset(0, 3, 3)\r"
+	str += "avg([$ds0, $ds0, $ds1], bins2, [$bin0, $bin0, $bin1])"
+	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win)
+	CHECK_WAVE(dataRef, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 3)
+
+	Make/D/FREE ref = {4.666666666666667}
+	CHECK_EQUAL_WAVES(dataRef[0], ref, mode = WAVE_DATA)
+
+	Make/D/FREE ref = {10.66666666666667}
+	CHECK_EQUAL_WAVES(dataRef[1], ref, mode = WAVE_DATA, tol = 1e-12)
+
+	Make/D/FREE ref = {8.666666666666666}
+	CHECK_EQUAL_WAVES(dataRef[2], ref, mode = WAVE_DATA)
 End
 
 static Function TestOperationAverage2()
@@ -1270,9 +1313,9 @@ static Function TestOperationAverage2()
 	win = CreateFakeSweepData(win, device, sweepNo = sweepNo + 1)
 
 	// Meta Data Transfer from first group
-	str = "ds0 = data(select(selsweeps(0), selvis(all)))\rds1 = data(select(selsweeps(1), selvis(all)))\r\ravg([$ds0, $ds1], group)"
+	str = "ds0 = data(select(selsweeps(0), selvis(all)))\rds1 = data(select(selsweeps(0, 1), selvis(all)))\r\ravg([$ds0, $ds1], group)"
 	WAVE/WAVE dataRef = SFE_ExecuteFormula(str, win)
-	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 4)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 8)
 	WAVE wv0 = dataRef[0]
 	sweepNo = JWN_GetNumberFromWaveNote(wv0, SF_META_SWEEPNO)
 	CHECK_EQUAL_VAR(sweepNo, 0)
@@ -3283,6 +3326,23 @@ static Function TestOperationSelect()
 	CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, wvList)
 End
 
+Function/WAVE TestHelperOP(STRUCT SF_ExecutionData &exd)
+
+	string opShort = SF_OP_TESTOP
+
+	Make/FREE/N=1 val = 4711
+	JWN_SetNumberInWaveNote(val, SF_META_MOD_MARKER, 3)
+	JWN_SetWaveInWaveNote(val, SF_META_TRACECOLOR, {0, 1, 2, 3})
+	JWN_SetNumberInWaveNote(val, SF_META_TRACE_MODE, TRACE_DISPLAY_MODE_LINES)
+	JWN_SetNumberInWaveNote(val, SF_META_TRACETOFRONT, 1)
+	JWN_SetNumberInWaveNote(val, SF_META_LINESTYLE, 4)
+
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 1)
+	output[0] = val
+
+	return SFH_GetOutputForExecutor(output, exd.graph, opShort)
+End
+
 static Function TestOperationMerge()
 
 	string win, device, code
@@ -3322,13 +3382,13 @@ static Function TestOperationMerge()
 	WAVE wv = SFE_ExecuteFormula(code, win, useVariables = 0, singleResult = 1)
 	CHECK_WAVE(wv, FREE_WAVE, minorType = DOUBLE_WAVE)
 	Make/FREE/D refWv = {1, 2}
-	CHECK_EQUAL_WAVES(wv, refWv)
+	CHECK_EQUAL_WAVES(wv, refWv, mode = WAVE_DATA)
 
 	code = "merge(dataset([\"a\"], [\"b\"]))"
 	WAVE wv = SFE_ExecuteFormula(code, win, useVariables = 0, singleResult = 1)
 	CHECK_WAVE(wv, TEXT_WAVE)
 	Make/FREE/T refWvTxt = {"a", "b"}
-	CHECK_EQUAL_WAVES(wv, refWvTxt)
+	CHECK_EQUAL_WAVES(wv, refWvTxt, mode = WAVE_DATA)
 
 	code = "merge(dataset())"
 	WAVE/Z/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
@@ -3339,6 +3399,54 @@ static Function TestOperationMerge()
 	WAVE/Z/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 0)
+
+	SVAR funcName = $GetSFTestopName(win)
+	funcName = "TestHelperOP"
+
+	code = "merge(testop())"
+	WAVE/Z/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1)
+	WAVE wv = output[0]
+
+	CHECK_EQUAL_VAR(JWN_GetNumberFromWaveNote(wv, SF_META_MOD_MARKER), 3)
+	CHECK_EQUAL_WAVES(JWN_GetNumericWaveFromWaveNote(wv, SF_META_TRACECOLOR), {0, 1, 2, 3}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(JWN_GetNumberFromWaveNote(wv, SF_META_TRACE_MODE), TRACE_DISPLAY_MODE_LINES)
+	CHECK_EQUAL_VAR(JWN_GetNumberFromWaveNote(wv, SF_META_TRACETOFRONT), 1)
+	CHECK_EQUAL_VAR(JWN_GetNumberFromWaveNote(wv, SF_META_LINESTYLE), 4)
+
+	// test meta data merging
+	Make/O/N=(1) wv0 = {3}, wv1 = {4}
+	JWN_SetWaveInWaveNote(wv0, SF_META_XVALUES, {1})
+	JWN_SetWaveInWaveNote(wv1, SF_META_XVALUES, {2})
+	JWN_SetWaveInWaveNote(wv0, SF_META_ERRORBARXPLUS, {5})
+	JWN_SetWaveInWaveNote(wv1, SF_META_ERRORBARXPLUS, {6})
+	JWN_SetWaveInWaveNote(wv0, SF_META_ERRORBARXMINUS, {7})
+	JWN_SetWaveInWaveNote(wv1, SF_META_ERRORBARXMINUS, {8})
+	JWN_SetWaveInWaveNote(wv0, SF_META_ERRORBARYPLUS, {9})
+	JWN_SetWaveInWaveNote(wv1, SF_META_ERRORBARYPLUS, {10})
+	JWN_SetWaveInWaveNote(wv0, SF_META_ERRORBARYMINUS, {11})
+	JWN_SetWaveInWaveNote(wv1, SF_META_ERRORBARYMINUS, {12})
+
+	code = "merge(dataset(wave(wv0), wave(wv1)))"
+	WAVE data = SFE_ExecuteFormula(code, win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, {3, 4}, mode = WAVE_DATA)
+	WAVE/Z xvalues = JWN_GetNumericWaveFromWaveNote(data, SF_META_XVALUES)
+	CHECK_EQUAL_WAVES(xvalues, {1, 2}, mode = WAVE_DATA)
+
+	WAVE/Z errorbar = JWN_GetNumericWaveFromWaveNote(data, SF_META_ERRORBARXPLUS)
+	CHECK_EQUAL_WAVES(errorbar, {5, 6}, mode = WAVE_DATA)
+
+	WAVE/Z errorbar = JWN_GetNumericWaveFromWaveNote(data, SF_META_ERRORBARXMINUS)
+	CHECK_EQUAL_WAVES(errorbar, {7, 8}, mode = WAVE_DATA)
+
+	WAVE/Z errorbar = JWN_GetNumericWaveFromWaveNote(data, SF_META_ERRORBARYPLUS)
+	CHECK_EQUAL_WAVES(errorbar, {9, 10}, mode = WAVE_DATA)
+
+	WAVE/Z errorbar = JWN_GetNumericWaveFromWaveNote(data, SF_META_ERRORBARYMINUS)
+	CHECK_EQUAL_WAVES(errorbar, {11, 12}, mode = WAVE_DATA)
+
+	KillWaves/Z wv0, wv1
 End
 
 static Function TestOperationFitLine()
@@ -3759,4 +3867,43 @@ static Function TestDataRangeMetadataPrecision()
 	// Range values must be preserved at double precision, not rounded to float32
 	Make/FREE/D refRange = {0.1, 9.9}
 	CHECK_EQUAL_WAVES(range, refRange, mode = WAVE_DATA, tol = 0)
+End
+
+static Function TestOperationxValues()
+
+	string win, device, code
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	code = "xvalues(wave(I_DONT_EXIST))"
+	WAVE/Z data = SFE_ExecuteFormula(code, win, singleResult = 1, useVariables = 0)
+	CHECK_WAVE(data, NULL_WAVE)
+
+	code = "xvalues([1, 2, 3], [4, 5, 6])"
+	WAVE data = SFE_ExecuteFormula(code, win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, {{0, 1}, {0, 1}, {0, 1}}, mode = WAVE_DATA)
+
+	Make/O/N=(3) wv
+	SetScale/P x, 0.1, 0.2, wv
+
+	code = "xvalues(wave(wv))"
+	WAVE data = SFE_ExecuteFormula(code, win, singleResult = 1, useVariables = 0)
+	Make/FREE/D ref = {0.1, 0.1 + 0.2, 0.1 + 2 * 0.2}
+	CHECK_EQUAL_WAVES(data, ref, mode = WAVE_DATA)
+
+	Make/FREE/D refNum = {7, 8, 9}
+	JWN_SetWaveInWaveNote(wv, SF_META_XVALUES, refNum)
+	code = "xvalues(wave(wv))"
+	WAVE data = SFE_ExecuteFormula(code, win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, refNum, mode = WAVE_DATA)
+
+	Make/FREE/T refTxt = {"a", "b", "c"}
+	JWN_SetWaveInWaveNote(wv, SF_META_XVALUES, refTxt)
+	code = "xvalues(wave(wv))"
+	WAVE data = SFE_ExecuteFormula(code, win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_TEXTWAVES(data, refTxt, mode = WAVE_DATA)
+
+	KillWaves/Z wv
 End

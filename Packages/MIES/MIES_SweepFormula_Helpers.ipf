@@ -2199,3 +2199,23 @@ Function SFH_AddVariableToStorage(string graph, string name, WAVE result)
 	JWN_SetNumberInWaveNote(result, SF_VARIABLE_MARKER, 1)
 	varStorage[idx] = result
 End
+
+/// @brief Copy plot meta data JSON properties from a source to a target wave
+Function SFH_CopyPlotMetaData(WAVE dest, WAVE src)
+
+	WAVE/Z wv = JWN_GetNumericWaveFromWaveNote(src, SF_META_MOD_MARKER)
+	if(WaveExists(wv))
+		JWN_SetWaveInWaveNote(dest, SF_META_MOD_MARKER, wv)
+	else
+		JWN_SetNumberInWaveNote(dest, SF_META_MOD_MARKER, JWN_GetNumberFromWaveNote(src, SF_META_MOD_MARKER))
+	endif
+
+	WAVE/Z wv = JWN_GetNumericWaveFromWaveNote(src, SF_META_TRACECOLOR)
+	if(WaveExists(wv))
+		JWN_SetWaveInWaveNote(dest, SF_META_TRACECOLOR, wv)
+	endif
+
+	JWN_SetNumberInWaveNote(dest, SF_META_TRACE_MODE, JWN_GetNumberFromWaveNote(src, SF_META_TRACE_MODE))
+	JWN_SetNumberInWaveNote(dest, SF_META_TRACETOFRONT, JWN_GetNumberFromWaveNote(src, SF_META_TRACETOFRONT))
+	JWN_SetNumberInWaveNote(dest, SF_META_LINESTYLE, JWN_GetNumberFromWaveNote(src, SF_META_LINESTYLE))
+End

@@ -2138,24 +2138,29 @@ StrConstant SF_META_YTICKPOSITIONS     = "/YTickPositions"   // numeric wave
 StrConstant SF_META_XAXISLABEL         = "/XAxisLabel"       // string
 StrConstant SF_META_YAXISLABEL         = "/YAxisLabel"       // string
 StrConstant SF_META_LEGEND_LINE_PREFIX = "/LegendLinePrefix" // string
-StrConstant SF_META_TAG_TEXT           = "/TagText"          // string
-StrConstant SF_META_OPSTACK            = "/OperationStack"   // string
-StrConstant SF_META_MOD_MARKER         = "/Marker"           // numeric wave (per point) or number (all points)
 StrConstant SF_META_SHOW_LEGEND        = "/ShowLegend"       // numeric, boolean, defaults to true (1)
 StrConstant SF_META_CUSTOM_LEGEND      = "/CustomLegend"     // string with custom legend text, honours /ShowLegend
+StrConstant SF_META_TAG_TEXT           = "/TagText"          // string
+StrConstant SF_META_OPSTACK            = "/OperationStack"   // string
 StrConstant SF_META_ARGSETUPSTACK      = "/ArgSetupStack"    // string
-StrConstant SF_META_TRACECOLOR         = "/TraceColor"       // numeric wave, applies to markers and lines
-StrConstant SF_META_LINESTYLE          = "/LineStyle"        // number
-StrConstant SF_META_TRACE_MODE         = "/TraceMode"        // number, one of @ref TraceDisplayTypes
-StrConstant SF_META_TRACETOFRONT       = "/TraceToFront"     // number, boolean, defaults to false (0)
-StrConstant SF_META_DONOTPLOT          = "/DoNotPlot"        // number, boolean, defaults to false (0)
-StrConstant SF_META_WINDOW_HOOK        = "/WindowHook"       // string
-StrConstant SF_META_FORMULA            = "/Formula"          // string
-StrConstant SF_META_PLOT               = "/Plot"             // number, boolean, defaults to false (0)
-StrConstant SF_META_ERRORBARYPLUS      = "/ErrorYPlus"       // numeric wave
-StrConstant SF_META_ERRORBARYMINUS     = "/ErrorYMinus"      // numeric wave
-StrConstant SF_META_ERRORBARXPLUS      = "/ErrorXPlus"       // numeric wave
-StrConstant SF_META_ERRORBARXMINUS     = "/ErrorXMinus"      // numeric wave
+
+/// Transferred by SFH_CopyPlotMetaData()
+/// @{
+StrConstant SF_META_MOD_MARKER   = "/Marker"       // numeric wave (per point) or number (all points), valid values: 0 - 62
+StrConstant SF_META_TRACECOLOR   = "/TraceColor"   // numeric wave, applies to markers and lines
+StrConstant SF_META_LINESTYLE    = "/LineStyle"    // number, valid values: 0-17
+StrConstant SF_META_TRACE_MODE   = "/TraceMode"    // number, one of @ref TraceDisplayTypes
+StrConstant SF_META_TRACETOFRONT = "/TraceToFront" // number, boolean, defaults to false (0)
+/// @}
+
+StrConstant SF_META_DONOTPLOT      = "/DoNotPlot"   // number, boolean, defaults to false (0)
+StrConstant SF_META_WINDOW_HOOK    = "/WindowHook"  // string
+StrConstant SF_META_FORMULA        = "/Formula"     // string
+StrConstant SF_META_PLOT           = "/Plot"        // number, boolean, defaults to false (0)
+StrConstant SF_META_ERRORBARYPLUS  = "/ErrorYPlus"  // numeric wave
+StrConstant SF_META_ERRORBARYMINUS = "/ErrorYMinus" // numeric wave
+StrConstant SF_META_ERRORBARXPLUS  = "/ErrorXPlus"  // numeric wave
+StrConstant SF_META_ERRORBARXMINUS = "/ErrorXMinus" // numeric wave
 
 /// A color group allows to have matching colors for sweep data with the same channel type/number and sweep.
 /// It is applied before the matching headstage/average colors in #SF_GetTraceColor().

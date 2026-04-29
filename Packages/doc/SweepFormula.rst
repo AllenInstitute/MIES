@@ -334,10 +334,59 @@ They calculate the arithmetic average :math:`\frac{1}{n}\sum_i{x_i}`.
 
 data: input data wave(s) or array of datasets
 
-mode: optional parameter that defines in which direction the average is applied.
-      - `in` default, applies the average over each input data wave. In this mode the operation returns the same number of waves as input waves were specified. Each output wave contains a single data point. If input data type is `SF_DATATYPE_SWEEP` from the data operation the sweep meta data is transferred to the returned data waves. The default suggested x-axis values for the formula plotter are sweep numbers.
-      - `over` averages over all input data waves. In this mode the operation returns a single wave. `NaN` values in input waves are ignored in the average calculation. A trace generated from the returned wave will be shown as topmost trace in the default color for averaged data.
-      - `group` accepts an array of datasets as the first argument. The datasets can have different numbers of elements. The average calculation is performed over the n-th elements of each dataset where they exist; for each index, only datasets that have an element at that position are included in the average. For example, if you have three datasets of sweep data: 1, 2, 3; 4, 5, 6; and 7, 8, 9, each prepared in their own variable (`sweepset0`, `sweepset1`, `sweepset2`), then `avg([$sweepset0, $sweepset1, $sweepset2], group)` averages sweep 1, 4, 7 for the first element, 2, 5, 8 for the second, and 3, 6, 9 for the third. If the datasets have different lengths, the result will have the same length as the longest input dataset, and for each position, only the available elements are averaged. The input datasets can be of any type and do not need to be sweep data. The first argument must contain at least two datasets. Meta data transfer: If the first element dataset in the array contains meta data, that meta data is transferred to the result. If the first element has no meta data, then no meta data is transferred. The structure and content of the meta data depend on the type of the first dataset; for example, sweep datasets may have sweep-specific meta data, while other types may have none or different structures. If the meta data is incompatible with the result, only the compatible parts are transferred.
+mode: optional parameter that defines in which direction the average is applied
+
+   - `in` default, applies the average over each input data wave. In this
+     mode the operation returns the same number of waves as input waves were
+     specified. Each output wave contains a single data point. If input data
+     type is `SF_DATATYPE_SWEEP` from the data operation the sweep meta data
+     is transferred to the returned data waves. The default suggested x-axis
+     values for the formula plotter are sweep numbers.
+
+   - `over` averages over all input data waves. In this mode the operation
+     returns a single wave. `NaN` values in input waves are ignored in the
+     average calculation. A trace generated from the returned wave will be
+     shown as topmost trace in the default color for averaged data.
+
+   - `group` accepts an array of at least two datasets as the first
+     argument. The datasets can have different numbers of elements. The
+     average calculation is performed over the n-th elements of each dataset
+     where they exist; for each index, only datasets that have an element at
+     that position are included in the average. For example, if you have
+     three datasets of sweep data: 1, 2, 3; 4, 5, 6; and 7, 8, 9, each
+     prepared in their own variable (`sweepset0`, `sweepset1`,
+     `sweepset2`), then `avg([$sweepset0, $sweepset1, $sweepset2], group)`
+     averages sweep 1, 4, 7 for the first element, 2, 5, 8 for the second,
+     and 3, 6, 9 for the third. If the datasets have different lengths, the
+     result will have the same length as the longest input dataset, and for
+     each position, only the available elements are averaged. The input
+     datasets can be of any type and do not need to be sweep data. Meta data
+     and wave note transfer is done from the greatest input group.
+
+   - `bins` uses fixed-width bins to average data. The full signature for
+     this mode is ``avg(data, bins, binRange, binWidth, binData)``.
+     ``binRange`` is a two-element numeric wave ``[start, end]`` defining the
+     bin range. ``binWidth`` is a strictly positive number giving the width of
+     each bin. ``binData`` is an array of groups with the same structure as
+     ``data``; each dataset in ``binData`` must contain exactly one numeric
+     value that acts as the bin key for the corresponding dataset in ``data``.
+     Datasets whose bin key falls outside ``[start, end)`` are ignored. The
+     number of output results equals ``ceil((end - start) / binWidth)``, one
+     per bin; bins without any data yield ``NaN``. Within each bin, datasets
+     from all groups are averaged together. Generated traces are displayed in
+     the default average color at the front of the plot.
+
+   - `bins2` averages data using the bin keys directly as x-positions. The
+     full signature for this mode is ``avg(data, bins2, binData)``. ``binData``
+     is an array of groups with the same structure as ``data``; each dataset in
+     ``binData`` must contain exactly one numeric value that acts as the bin
+     key. Within each group, datasets are sorted by their bin key. Datasets at
+     the same sorted position across groups are averaged together. Only
+     positions with at least two datasets contribute to the output. The x-value
+     of each output point is the mean of the bin keys at that position, and the
+     standard deviations of the bin keys and of the y-values are stored as
+     x-error and y-error bar metadata respectively. Generated traces are
+     displayed in the default average color at the front of the plot.
 
 When an argument is of the select type then automatically data is applied to implicitly convert to sweep data.
 This conversion is also applied in the `group` mode for array elements that are of the select type.
