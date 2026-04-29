@@ -1207,7 +1207,7 @@ End
 ///        For textual waves the elements must translate to a valid DimLabel unless `cleanup = 1` is passed.
 ///
 /// @param wv input wave
-/// @param prefix  [optional: default "" for numerical waves and NUM_ for textual waves] prefix of the dimlabel
+/// @param prefix  [optional: default "" for textual waves and NUM_ for numerical waves] prefix of the dimlabel
 ///                For numerical waves it is recommended to provide an own prefix.
 /// @param suffix  [optional: default ""] suffix of the dimlabel
 /// @param strict  [optional: default 0] When this flag is set then each constructed DimLabels for text wave elements are checked
