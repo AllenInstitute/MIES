@@ -2475,6 +2475,10 @@ Function TestHasDimlabels()
 
 	CHECK_EQUAL_VAR(HasDimLabels(wv, CHUNKS, deep = 20), 1)
 
+	Make/FREE/N=1 wv
+	SetDimLabel ROWS, -1, LABEL, wv
+	CHECK_EQUAL_VAR(HasDimLabels(wv, ROWS), 1)
+
 	try
 		HasDimLabels(wv, -1)
 	catch

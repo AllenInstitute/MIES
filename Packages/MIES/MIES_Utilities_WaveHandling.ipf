@@ -1624,7 +1624,7 @@ Function HasDimLabels(WAVE/Z wv, variable dim, [variable deep])
 	ASSERT(IsInteger(deep) && deep > 0, "deep must be integer and greater than zero")
 	ASSERT(IsInteger(dim) && dim >= ROWS && dim < MAX_DIMENSION_COUNT, "dim must be a valid dimension")
 
-	for(i = 0; i < deep; i += 1)
+	for(i = -1; i < deep; i += 1)
 		if(!IsEmpty(GetDimLabel(wv, dim, i)))
 			return 1
 		endif
