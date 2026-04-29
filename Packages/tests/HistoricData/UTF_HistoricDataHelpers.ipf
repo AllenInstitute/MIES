@@ -99,14 +99,6 @@ Function DownloadFilesIfRequired(WAVE/T files)
 	endfor
 End
 
-static Function SetLabelsForDGWave(WAVE/T files)
-
-	Duplicate/FREE/T files, labels
-	labels[] = CleanUpName(labels[p], 0)
-
-	SetDimensionLabels(files, TextWaveToList(labels, ";"), ROWS)
-End
-
 static Function/WAVE GetHistoricDataFiles()
 
 	WAVE/T pxpFiles = GetHistoricDataFilesPXP()
@@ -115,7 +107,7 @@ static Function/WAVE GetHistoricDataFiles()
 	Concatenate/FREE/NP/T {pxpFiles, nwbFiles}, files
 
 	DownloadFilesIfRequired(files)
-	SetLabelsForDGWave(files)
+	SetDimensionLabelsFromWaveContents(files, cleanup = 1)
 
 	return files
 End
@@ -132,7 +124,7 @@ static Function/WAVE GetHistoricDataFilesPXP()
 	                     "epoch_clipping_2022_03_08_140256.pxp"}
 
 	DownloadFilesIfRequired(files)
-	SetLabelsForDGWave(files)
+	SetDimensionLabelsFromWaveContents(files, cleanup = 1)
 
 	return files
 End
@@ -142,7 +134,7 @@ static Function/WAVE GetHistoricDataFilesWithTTLData()
 	Make/FREE/T files = {"C57BL6J-684963.02.04.01_pislocin_puff_2023_07_19_141829-compressed.nwb", \
 	                     "HardwareBasic-ITC1600_18-V2-multiple-TTL-hardware-channels.nwb"}
 	DownloadFilesIfRequired(files)
-	SetLabelsForDGWave(files)
+	SetDimensionLabelsFromWaveContents(files, cleanup = 1)
 
 	return files
 End
@@ -156,7 +148,7 @@ static Function/WAVE GetHistoricDataFilesNWB()
 	                     "H22.03.311.11.08.01.06.nwb"}
 
 	DownloadFilesIfRequired(files)
-	SetLabelsForDGWave(files)
+	SetDimensionLabelsFromWaveContents(files, cleanup = 1)
 
 	return files
 End
@@ -166,7 +158,7 @@ static Function/WAVE GetHistoricDataFilesSweepUpgrade()
 	Make/FREE/T files = {"single_numeric_sweep.pxp"}
 
 	DownloadFilesIfRequired(files)
-	SetLabelsForDGWave(files)
+	SetDimensionLabelsFromWaveContents(files, cleanup = 1)
 
 	return files
 End
@@ -176,7 +168,7 @@ static Function/WAVE GetHistoricDataNoData()
 	Make/FREE/T files = {"Labnotebook-has-sweep-but-no-data.pxp"}
 
 	DownloadFilesIfRequired(files)
-	SetLabelsForDGWave(files)
+	SetDimensionLabelsFromWaveContents(files, cleanup = 1)
 
 	return files
 End
@@ -187,7 +179,7 @@ static Function/WAVE GetHistoricDataLoadResults()
 	Make/FREE/T files = {"AB_LoadSweepsFromIgorData.pxp", "Gad2-IRES-Cre;Ai14-709273.06.02.02.nwb"}
 
 	DownloadFilesIfRequired(files)
-	SetLabelsForDGWave(files)
+	SetDimensionLabelsFromWaveContents(files, cleanup = 1)
 
 	return files
 End
@@ -198,7 +190,7 @@ static Function/WAVE GetHistoricDataLoadUserComment()
 	Make/FREE/T files = {"Pvalb-IRES-Cre;Ai14-646904.13.03.02.pxp", "nwb2_H17.03.016.11.09.01.nwb"}
 
 	DownloadFilesIfRequired(files)
-	SetLabelsForDGWave(files)
+	SetDimensionLabelsFromWaveContents(files, cleanup = 1)
 
 	return files
 End
