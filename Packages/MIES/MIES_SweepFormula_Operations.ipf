@@ -2885,9 +2885,7 @@ End
 // ivscc_apfrequency([xaxisOffset, yaxisOffset, xAxisPercentage, yAxisPercentage, prepFit, avgMode, method, level, timeFreq, normalize, xAxisType])
 Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 
-	string   opShort    = SF_OP_IVSCCAPFREQUENCY
-	variable numArgsMin = 0
-	variable numArgsMax = 13
+	string opShort = SF_OP_IVSCCAPFREQUENCY
 	string formula, expr
 	variable i, numArgs, col, size, numExp
 	variable xAxisPercentage, yAxisPercentage
@@ -2898,9 +2896,7 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 
 	SFH_ASSERT(BSP_IsSweepBrowser(exd.graph), "ivscc_apfrequency only works with sweepbrowser")
 
-	numArgs = SFH_GetNumberOfArguments(exd)
-	SFH_ASSERT(numArgs <= numArgsMax, "ivscc_apfrequency has " + num2istr(numArgsMax) + " arguments at most.")
-	SFH_ASSERT(numArgs >= numArgsMin, "ivscc_apfrequency needs at least " + num2istr(numArgsMin) + " argument(s).")
+	SFH_CheckArgumentCount(exd, opShort, 0, maxArgs = 13)
 
 	xaxisOffset     = SFH_GetArgumentAsText(exd, opShort, 0, defValue = SF_OP_IVSCCAPFREQUENCY_MIN, allowedValues = {SF_OP_IVSCCAPFREQUENCY_FIRST, SF_OP_IVSCCAPFREQUENCY_MIN, SF_OP_IVSCCAPFREQUENCY_MAX, SF_OP_IVSCCAPFREQUENCY_NONE})
 	yaxisOffset     = SFH_GetArgumentAsText(exd, opShort, 1, defValue = SF_OP_IVSCCAPFREQUENCY_MIN, allowedValues = {SF_OP_IVSCCAPFREQUENCY_FIRST, SF_OP_IVSCCAPFREQUENCY_MIN, SF_OP_IVSCCAPFREQUENCY_MAX, SF_OP_IVSCCAPFREQUENCY_NONE})
@@ -2911,8 +2907,7 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 	avgMode = SFH_GetArgumentAsText(exd, opShort, 5, defValue = SF_OP_AVG_BINS, allowedValues = {SF_OP_AVG_BINS, SF_OP_AVG_BINS2})
 
 	if(!CmpStr(avgMode, SF_OP_AVG_BINS))
-		WAVE/WAVE wTmp     = SFH_GetArgumentAsWave(exd, opShort, 6)
-		WAVE      binRange = wTmp[0]
+		WAVE binRange = SFH_GetArgumentAsWave(exd, opShort, 6, singleResult = 1)
 		binWidth                                        = SFH_GetArgumentAsNumeric(exd, opShort, 7, checkFunc = IsStrictlyPositiveAndFinite)
 		[method, level, timeFreq, normalize, xAxisType] = SFO_GetApFrequencyArguments(exd, opShort, 8)
 	else
@@ -3068,7 +3063,7 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 	// fit trace
 	formula = "$ivscc_apfrequency_fit"
 	WAVE/WAVE wvY = SFE_ExecuteFormula(formula, exd.graph, preProcess = 0)
-	if(DimSize(wvY, ROWS) > 0)
+	if(DimSize(wvY, ROWS) > 0 && WaveExists(wvY[0]))
 		JWN_SetStringInWaveNote(wvY[0], SF_META_LEGEND_LINE_PREFIX, "ivscc_apfrequency fit")
 	endif
 	plotWITH[numExp][%FORMULAY] = wvY
