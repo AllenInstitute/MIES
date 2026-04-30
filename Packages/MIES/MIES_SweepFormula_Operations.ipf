@@ -2994,6 +2994,7 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 		formula = SF_AddExpressionToFormula(formula, expr)
 
 		if(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_FIRST))
+			// TODO what should we do here, the obvious thing below does not make sense
 			//	expr = "ivsccavg_norm_x = merge($ivscccurrentavg - extract($ivscccurrentavg, 0, 0))"
 		elseif(!CmpStr(xaxisOffset, SF_OP_IVSCCAPFREQUENCY_MIN))
 			expr = "ivsccavg_norm_x = $ivsccavg_xvalues - min($ivsccavg_xvalues)"
@@ -3078,6 +3079,7 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 		JWN_SetStringInWaveNote(wvY[0], SF_META_LEGEND_LINE_PREFIX, "ivscc_apfrequency fit")
 	endif
 	plotWITH[numExp][%FORMULAY] = wvY
+	SFO_OperationIVSCCApFrequencySetPlotProperties(plotWITH[numExp][%FORMULAY], xAxisPercentage, yAxisPercentage)
 
 	Duplicate/O varBackup, varStorage
 	SFH_AddVariableToStorage(exd.graph, "ivscc_apfrequency_explist", wvResult)
@@ -3876,16 +3878,17 @@ static Function/WAVE SFO_OperationGetMetaImpl(WAVE data, string key)
 	SFH_FATAL_ERROR("Unhandled data type found at: " + path)
 End
 
-/// getmeta(data, [keyStr, datasetNumber]
+/// getmeta([keys], data [, datasetNumber])
 Function/WAVE SFO_OperationGetMeta(STRUCT SF_ExecutionData &exd)
 
 	string opShort = SF_OP_GETMETA
 	string key
 	variable dsNum, numDatasets, i, numKeys
 
-	SFH_CheckArgumentCount(exd, opShort, 1, maxArgs = 3)
-	WAVE/WAVE datasets = SFH_GetArgumentAsWave(exd, opShort, 0)
-	key   = SFH_GetArgumentAsText(exd, opShort, 1, defValue = "*")
+	SFH_CheckArgumentCount(exd, opShort, 2, maxArgs = 3)
+
+	WAVE/T    keys     = SFH_GetArgumentAsWave(exd, opShort, 0, expectedMajorType = IGOR_TYPE_TEXT_WAVE, singleResult = 1)
+	WAVE/WAVE datasets = SFH_GetArgumentAsWave(exd, opShort, 1)
 	dsNum = SFH_GetArgumentAsNumeric(exd, opShort, 2, defValue = 0)
 
 	numDatasets = DimSize(datasets, ROWS)
