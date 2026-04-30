@@ -3788,8 +3788,9 @@ static Function/WAVE SFO_OperationFit2Impl(WAVE wvY, WAVE/Z wvX, WAVE/WAVE prepF
 		WAVE/Z wFitConstraints = W_FitConstraint
 	endif
 
-	WAVE/Z wSigma = W_Sigma
-	WAVE/Z mCovar = M_Covar
+	WAVE/Z fitConstants = W_fitConstants
+	WAVE/Z wSigma       = W_Sigma
+	WAVE/Z mCovar       = M_Covar
 
 	SetDataFolder dfrSave
 
@@ -3834,6 +3835,9 @@ static Function/WAVE SFO_OperationFit2Impl(WAVE wvY, WAVE/Z wvX, WAVE/WAVE prepF
 	endif
 	if(WaveExists(wFitConstraints))
 		JWN_SetWaveInWaveNote(fitOutput, SF_SERIALIZE + SF_META_FITWFITCONSTRAINT, wFitConstraints)
+	endif
+	if(WaveExists(fitConstants))
+		JWN_SetWaveInWaveNote(fitOutput, SF_SERIALIZE + SF_META_FITCONSTANT, fitConstants)
 	endif
 
 	SFH_SetTraceStyleForFit(fitOutput)

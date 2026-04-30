@@ -2174,6 +2174,7 @@ StrConstant SF_META_FITWSIGMA         = "/FitWSigma"         // numeric wave
 StrConstant SF_META_FITMCOVAR         = "/FitMCovar"         // numeric wave
 StrConstant SF_META_FITMFITCONSTRAINT = "/FitMFitConstraint" // numeric wave
 StrConstant SF_META_FITWFITCONSTRAINT = "/FitWFitConstraint" // numeric wave
+StrConstant SF_META_FITCONSTANT       = "/FitConstant"       // numeric wave
 StrConstant SF_META_FITCHISQUARE      = "/FitChiSquare"      // number
 StrConstant SF_META_FITFUNC           = "/FitFunc"           // string
 
