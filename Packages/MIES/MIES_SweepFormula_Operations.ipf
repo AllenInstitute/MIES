@@ -203,31 +203,22 @@ End
 /// @return expanded analysis function parameter names (i.e. without wildcards) which match at least in one selectData entry
 static Function/WAVE SFO_OperationAnaFuncParamImplAllNames(WAVE/T names, WAVE/WAVE lbnParams)
 
-	variable i, numAvailableParams, j, numRequestedParams
-	string params, reqName, namesPerLBNEntry, gatheredNames
+	variable i, numAvailableParams
+	string params
 
 	numAvailableParams = DimSize(lbnParams, ROWS)
-	numRequestedParams = DimSize(names, ROWS)
 
 	for(i = 0; i < numAvailableParams; i += 1)
 		WAVE/T paramsSingle = lbnParams[i]
 		params = JWN_GetStringFromWaveNote(paramsSingle, SF_META_TAG_TEXT)
 
-		gatheredNames = AFH_GetListOfAnalysisParamNames(params)
+		WAVE/T gatheredNames = ListToTextWave(AFH_GetListOfAnalysisParamNames(params), ";")
 
-		for(j = 0; j < numRequestedParams; j += 1)
-			reqName = names[j]
+		WAVE/Z wv = ExpandWildcards(names, gatheredNames)
 
-			namesPerLBNEntry = ListMatch(gatheredNames, reqName)
-
-			if(IsEmpty(namesPerLBNEntry))
-				continue
-			endif
-
-			WAVE wv = ListToTextWave(namesPerLBNEntry, ";")
-
+		if(WaveExists(wv))
 			Concatenate/NP=(ROWS)/FREE {wv}, allNames
-		endfor
+		endif
 	endfor
 
 	if(!WaveExists(allNames))

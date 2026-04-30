@@ -1655,3 +1655,41 @@ threadsafe Function/WAVE GetTemporaryWave(WAVE dims, variable wvType)
 
 	return wv
 End
+
+threadsafe static Function ExpandWildcardsImpl(string str, WAVE/T data, WAVE/T results)
+
+	WAVE/Z indizes = FindIndizes(data, str = str, prop = PROP_WILDCARD)
+
+	if(!WaveExists(indizes))
+		return NaN
+	endif
+
+	Make/FREE/T/N=(DimSize(indizes, ROWS)) matches = data[indizes[p]]
+
+	Concatenate/FREE/NP=(ROWS)/T {matches}, results
+End
+
+/// @brief Expand the wildcards given in `search` from `data` and return the result
+///
+/// Ignores case and does not return duplicates.
+threadsafe Function/WAVE ExpandWildcards(WAVE/T search, WAVE/T data)
+
+	variable numSearch
+
+	numSearch = DimSize(search, ROWS)
+
+	if(numSearch == 0)
+		return $""
+	endif
+
+	WAVE indexHelper = GetTemporaryWave({numSearch}, IGOR_TYPE_8BIT_INT)
+
+	Make/FREE/T/N=(0) results
+	indexHelper[] = ExpandWildcardsImpl(search[p], data, results)
+
+	if(DimSize(results, ROWS) == 0)
+		return $""
+	endif
+
+	return GetUniqueEntries(results)
+End

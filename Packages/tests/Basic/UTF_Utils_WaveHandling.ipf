@@ -3837,3 +3837,28 @@ Function GWD_IsThreadsafe()
 End
 
 /// @}
+
+// ExpandWildcards
+/// @{
+
+Function EWC_Works()
+
+	Make/T/FREE/N=(0) empty
+	WAVE/Z result = ExpandWildcards(empty, empty)
+	print result
+	CHECK_WAVE(result, NULL_WAVE)
+
+	// no wildcard, matches case insensitive, drops duplicates
+	WAVE/Z result = ExpandWildcards({"a"}, {"a", "b", "c", "A", "a"})
+	CHECK_EQUAL_TEXTWAVES(result, {"a", "A"})
+
+	// two wildcards
+	WAVE/Z result = ExpandWildcards({"a*", "*a"}, {"ab", "ba", "c"})
+	CHECK_EQUAL_TEXTWAVES(result, {"ab", "ba"})
+
+	// no match
+	WAVE/Z result = ExpandWildcards({"ab*"}, {"a", "b", "c"})
+	CHECK_WAVE(result, NULL_WAVE)
+End
+
+/// @}
