@@ -817,24 +817,12 @@ static Function TP_AutoAmplitudeAndBaseline(string device, WAVE TPResults, varia
 	endif
 End
 
-/// @brief Apply an Auto TP-driven IC amplitude update to the GUI without
-///        triggering the full TP setting action procedure chain.
+/// @brief Apply an Auto TP-driven IC amplitude update without going through
+///        the generic TP setting action procedure chain.
 ///
-/// Using `DAP_TPSettingsToGUI` here would invoke `PGC_SetAndActivateControl`
-/// and thus `DAP_TPGUISettingToWave`, which restarts the test pulse via
-/// `TPS_StartTestPulseSingleDevice`/`TPM_StartTestPulseMultiDevice`. Those
-/// call `DAP_CheckSettings`, which in turn invokes `DAP_CheckHeadStage` and
-/// thereby `AI_SelectMultiClamp`/`AI_EnsureCorrectMode`/
-/// `AI_QueryGainsUnitsForClampMode` on every headstage. For an Auto TP
-/// amplitude update the settings have already been validated when TP was
-/// originally started, and only the DAC waveform amplitude needs to be
-/// rescaled. To avoid the resulting MCC communication overhead and potential
-/// amplifier glitches we stop the test pulse, update the GUI value directly,
-/// and restart TP with `skipCheckSettings = 1`. We must keep `fast = 0`
-/// (the default) so that `DC_Configure` rebuilds the DAQ data wave from the
-/// updated `TPSettings[%amplitudeIC]`.
-///
-/// @param device DA_Ephys panel name
+/// Restarts TP with #TP_FAST_CONFIG so that `DC_Configure` rebuilds the DAQ
+/// wave from the updated `TPSettings[%amplitudeIC]` while skipping
+/// `DAP_CheckSettings` (and the resulting amplifier I/O).
 static Function TP_ApplyAutoTPAmplitudeUpdate(string device)
 
 	variable TPState, headstage, val
@@ -855,7 +843,7 @@ static Function TP_ApplyAutoTPAmplitudeUpdate(string device)
 	PUB_TPSettingChange(device, headstage, "amplitudeIC", val, "mV")
 
 	if(IsFinite(TPState))
-		TP_RestartTestPulse(device, TPState, skipCheckSettings = 1)
+		TP_RestartTestPulse(device, TPState, fast = TP_FAST_CONFIG)
 	endif
 End
 
@@ -1502,28 +1490,31 @@ static Function TP_StopTestPulseWrapper(string device, [variable fast])
 End
 
 /// @brief Restarts a test pulse previously stopped with #TP_StopTestPulse
-Function TP_RestartTestPulse(string device, variable testPulseMode, [variable fast, variable skipCheckSettings])
+///
+/// @param device        device
+/// @param testPulseMode One of @ref TestPulseRunModes (the value previously
+///                      returned by #TP_StopTestPulse / #TP_StopTestPulseFast)
+/// @param fast          [optional, defaults to #TP_FAST_NONE] One of
+///                      @ref TestPulseFastModes. Use #TP_FAST_CONFIG to restart
+///                      after #TP_StopTestPulseFast while still rebuilding the
+///                      DAQ data wave (e.g. when only the TP DAC amplitude
+///                      changed).
+Function TP_RestartTestPulse(string device, variable testPulseMode, [variable fast])
 
 	if(ParamIsDefault(fast))
-		fast = 0
-	else
-		fast = !!fast
+		fast = TP_FAST_NONE
 	endif
 
-	if(ParamIsDefault(skipCheckSettings))
-		skipCheckSettings = 0
-	else
-		skipCheckSettings = !!skipCheckSettings
-	endif
+	ASSERT(fast == TP_FAST_NONE || fast == TP_FAST_NO_CONFIG || fast == TP_FAST_CONFIG, "Invalid fast value")
 
 	switch(testPulseMode)
 		case TEST_PULSE_NOT_RUNNING:
 			break // nothing to do
 		case TEST_PULSE_BG_SINGLE_DEVICE:
-			TPS_StartTestPulseSingleDevice(device, fast = fast, skipCheckSettings = skipCheckSettings)
+			TPS_StartTestPulseSingleDevice(device, fast = fast)
 			break
 		case TEST_PULSE_BG_MULTI_DEVICE:
-			TPM_StartTestPulseMultiDevice(device, fast = fast, skipCheckSettings = skipCheckSettings)
+			TPM_StartTestPulseMultiDevice(device, fast = fast)
 			break
 		default:
 			DEBUGPRINT("Ignoring unknown value:", var = testPulseMode)
@@ -1534,18 +1525,26 @@ End
 /// @brief Prepare device for TestPulse
 /// @param device  device
 /// @param runMode     Testpulse running mode, one of @ref TestPulseRunModes
-/// @param fast        [optional, defaults to false] Performs only the totally necessary steps for setup
+/// @param fast        [optional, defaults to #TP_FAST_NONE] One of @ref TestPulseFastModes.
+///                    With #TP_FAST_NO_CONFIG the totally necessary steps for setup are
+///                    performed (skipping `DC_Configure` and the UI/state-change work);
+///                    with #TP_FAST_CONFIG `DC_Configure` is additionally executed so
+///                    that the DAQ data wave is rebuilt from the current `TPSettings`.
 Function TP_Setup(string device, variable runMode, [variable fast])
 
 	variable ADCConfig
 
 	if(ParamIsDefault(fast))
-		fast = 0
-	else
-		fast = !!fast
+		fast = TP_FAST_NONE
 	endif
 
+	ASSERT(fast == TP_FAST_NONE || fast == TP_FAST_NO_CONFIG || fast == TP_FAST_CONFIG, "Invalid fast value")
+
 	if(fast)
+		if(fast == TP_FAST_CONFIG)
+			DC_Configure(device, TEST_PULSE_MODE, multiDevice = (runMode & TEST_PULSE_BG_MULTI_DEVICE))
+		endif
+
 		NVAR runModeGlobal = $GetTestpulseRunMode(device)
 		runModeGlobal = runMode
 

@@ -177,7 +177,7 @@ DA\_Ephys
 - Use valid initial values for some more amplifier controls
 - Rework amplififer getting and setting
 - Auto TP: Skip unnecessary amplifier (``AI_*``) calls when updating only the IC
-  amplitude by bypassing ``DAP_CheckSettings`` on the TP restart
+  amplitude by using a fast TP restart that rebuilds only the DAQ data wave
 
 JSON Configuration
 ------------------

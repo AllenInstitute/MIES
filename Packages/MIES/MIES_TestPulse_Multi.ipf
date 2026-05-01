@@ -18,13 +18,18 @@ static Constant TPM_NI_FIFO_THRESHOLD_SIZE = 1073741824
 /// @brief __TPM__ Multi device background test pulse functionality
 
 /// @brief Start the test pulse when MD support is activated.
+///
+/// @param device      device
+/// @param runModifier [optional] Or'ed into the run mode (e.g. #TEST_PULSE_DURING_RA_MOD)
+/// @param fast        [optional, defaults to #TP_FAST_NONE] One of @ref TestPulseFastModes,
+///                    forwarded to `TP_Setup`.
 Function TPM_StartTPMultiDeviceLow(string device, [variable runModifier, variable fast])
 
 	if(ParamIsDefault(fast))
-		fast = 0
-	else
-		fast = !!fast
+		fast = TP_FAST_NONE
 	endif
+
+	ASSERT(fast == TP_FAST_NONE || fast == TP_FAST_NO_CONFIG || fast == TP_FAST_CONFIG, "Invalid fast value")
 
 	variable runMode
 
@@ -46,33 +51,24 @@ End
 /// @brief Start a multi device test pulse, always done in background mode
 ///
 /// @param device device
-/// @param fast              [optional, defaults to false] Starts TP without any checks or
-///                          setup. Can be called after stopping it with TP_StopTestPulseFast().
-/// @param skipCheckSettings [optional, defaults to false] Skip the `DAP_CheckSettings` call.
-///                          Intended for restarts where settings have already been validated
-///                          (e.g. Auto TP amplitude updates) to avoid redundant amplifier I/O.
-Function TPM_StartTestPulseMultiDevice(string device, [variable fast, variable skipCheckSettings])
+/// @param fast   [optional, defaults to #TP_FAST_NONE] One of @ref TestPulseFastModes.
+///               When non-zero, starts TP without any checks; intended to be
+///               called after #TP_StopTestPulseFast. Use #TP_FAST_CONFIG to
+///               additionally rebuild the DAQ data wave via `DC_Configure`.
+Function TPM_StartTestPulseMultiDevice(string device, [variable fast])
 
 	if(ParamIsDefault(fast))
-		fast = 0
-	else
-		fast = !!fast
+		fast = TP_FAST_NONE
 	endif
 
-	if(ParamIsDefault(skipCheckSettings))
-		skipCheckSettings = 0
-	else
-		skipCheckSettings = !!skipCheckSettings
-	endif
+	ASSERT(fast == TP_FAST_NONE || fast == TP_FAST_NO_CONFIG || fast == TP_FAST_CONFIG, "Invalid fast value")
 
 	if(fast)
-		TPM_StartTPMultiDeviceLow(device, fast = 1)
+		TPM_StartTPMultiDeviceLow(device, fast = fast)
 		return NaN
 	endif
 
-	if(!skipCheckSettings)
-		AbortOnValue DAP_CheckSettings(device, TEST_PULSE_MODE), 1
-	endif
+	AbortOnValue DAP_CheckSettings(device, TEST_PULSE_MODE), 1
 
 	DQ_StopOngoingDAQ(device, DQ_STOP_REASON_TP_STARTED)
 

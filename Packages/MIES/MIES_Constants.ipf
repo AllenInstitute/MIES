@@ -565,6 +565,18 @@ Constant TEST_PULSE_DURING_RA_MOD    = 0x100 ///< Or'ed with the testpulse mode.
 // foreground multi device does not exist
 ///@}
 
+/// @name Test pulse fast restart modes
+/// @anchor TestPulseFastModes
+///
+/// Selector for the optional `fast` parameter on `TP_Setup`,
+/// `TPS_StartTestPulseSingleDevice`, `TPM_StartTestPulseMultiDevice`,
+/// `TPM_StartTPMultiDeviceLow`, and `TP_RestartTestPulse`.
+///@{
+Constant TP_FAST_NONE      = 0 ///< Full setup, including `DAP_CheckSettings` and `DC_Configure`
+Constant TP_FAST_NO_CONFIG = 1 ///< Skip `DAP_CheckSettings`, UI work, and `DC_Configure`
+Constant TP_FAST_CONFIG    = 2 ///< Skip `DAP_CheckSettings` and UI work but still run `DC_Configure`
+///@}
+
 /// @name Data acquisition modes
 /// @anchor DAQRunModes
 ///@{
