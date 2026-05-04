@@ -813,37 +813,7 @@ static Function TP_AutoAmplitudeAndBaseline(string device, WAVE TPResults, varia
 	endfor
 
 	if(needsUpdate)
-		TP_ApplyAutoTPAmplitudeUpdate(device)
-	endif
-End
-
-/// @brief Apply an Auto TP-driven IC amplitude update without going through
-///        the generic TP setting action procedure chain.
-///
-/// Restarts TP with #TP_FAST_CONFIG so that `DC_Configure` rebuilds the DAQ
-/// wave from the updated `TPSettings[%amplitudeIC]` while skipping
-/// `DAP_CheckSettings` (and the resulting amplifier I/O).
-static Function TP_ApplyAutoTPAmplitudeUpdate(string device)
-
-	variable TPState, headstage, val
-	string   ctrl
-
-	WAVE TPSettings = GetTPSettings(device)
-
-	headstage = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
-	val       = TPSettings[%amplitudeIC][headstage]
-	ASSERT(IsFinite(val), "Value has to be finite")
-
-	TPState = TP_StopTestPulseFast(device)
-
-	ctrl = "SetVar_DataAcq_TPAmplitudeIC"
-	SetSetVariable(device, ctrl, val)
-	DAG_Update(device, ctrl, val = val)
-
-	PUB_TPSettingChange(device, headstage, "amplitudeIC", val, "mV")
-
-	if(IsFinite(TPState))
-		TP_RestartTestPulse(device, TPState, fast = TP_FAST_CONFIG)
+		DAP_TPSettingsToGUI(device, entry = "amplitudeIC", fast = TP_FAST_CONFIG)
 	endif
 End
 

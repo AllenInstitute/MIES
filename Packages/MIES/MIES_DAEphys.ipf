@@ -5663,21 +5663,17 @@ static Function/S DAP_TPControlToUnit(string ctrl)
 	endswitch
 End
 
-/// @brief Write a new TP setting value to the wave
-static Function DAP_TPGUISettingToWave(string device, string ctrl, variable val)
+/// @brief Apply a single TP setting value to `TPSettings`, publish the change,
+///        and run any control-specific follow-up updates.
+///
+/// Does **not** stop or restart the test pulse — the caller is responsible for that.
+/// Also does **not** synchronize the SetVariable control or the DAG cache; the
+/// action-proc caller already has the new value in both, and `DAP_TPSettingsToGUI`
+/// updates them itself before invoking this helper.
+static Function DAP_ApplyTPSetting(string device, string ctrl, variable val)
 
-	string lbl, entry, unit
-	variable first, last, TPState, needsTPRestart, headstage, i
-
-	needsTPRestart = WhichListItem(ctrl, DAEPHYS_TP_CONTROLS_NO_RESTART) == -1
-
-	// we only want to restart the testpulse if DAQ is not running
-	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
-	if(dataAcqRunMode == DAQ_NOT_RUNNING && needsTPRestart)
-		TPState = TP_StopTestPulse(device)
-	else
-		TPState = TEST_PULSE_NOT_RUNNING
-	endif
+	string lbl, unit
+	variable first, last, headstage, i
 
 	WAVE TPSettings = GetTPSettings(device)
 
@@ -5710,6 +5706,24 @@ static Function DAP_TPGUISettingToWave(string device, string ctrl, variable val)
 	if(!cmpstr(ctrl, "SetVar_DataAcq_TPDuration") || !cmpstr(ctrl, "SetVar_DataAcq_TPBaselinePerc"))
 		DAP_UpdateOnsetDelay(device)
 	endif
+End
+
+/// @brief Write a new TP setting value to the wave
+static Function DAP_TPGUISettingToWave(string device, string ctrl, variable val)
+
+	variable TPState, needsTPRestart
+
+	needsTPRestart = WhichListItem(ctrl, DAEPHYS_TP_CONTROLS_NO_RESTART) == -1
+
+	// we only want to restart the testpulse if DAQ is not running
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
+	if(dataAcqRunMode == DAQ_NOT_RUNNING && needsTPRestart)
+		TPState = TP_StopTestPulse(device)
+	else
+		TPState = TEST_PULSE_NOT_RUNNING
+	endif
+
+	DAP_ApplyTPSetting(device, ctrl, val)
 
 	TP_RestartTestPulse(device, TPState)
 End
@@ -5723,11 +5737,22 @@ End
 /// @param device device
 /// @param entry      [optional, defaults to all] Only update one of the entries TPSettings.
 ///                   Accepted strings are the labels from DAP_TPControlToLabel().
-Function DAP_TPSettingsToGUI(string device, [string entry])
+/// @param fast       [optional, defaults to #TP_FAST_NONE] One of @ref TestPulseFastModes.
+///                   Forwarded to the single TP stop/restart performed around the
+///                   GUI sync. Use #TP_FAST_CONFIG to skip the amplifier I/O in
+///                   `DAP_CheckSettings`/`DAP_CheckHeadStage` while still
+///                   rebuilding the DAQ data wave via `DC_Configure`.
+Function DAP_TPSettingsToGUI(string device, [string entry, variable fast])
 
 	variable i, numEntries, val, headstage, col, originalHSAll
 	string ctrl, lbl
 	variable TPState
+
+	if(ParamIsDefault(fast))
+		fast = TP_FAST_NONE
+	endif
+
+	ASSERT(fast == TP_FAST_NONE || fast == TP_FAST_NO_CONFIG || fast == TP_FAST_CONFIG, "Invalid fast value")
 
 	WAVE/T controls = ListToTextWave(DAEPHYS_TP_CONTROLS_ALL, ";")
 
@@ -5740,7 +5765,11 @@ Function DAP_TPSettingsToGUI(string device, [string entry])
 	originalHSAll                             = TPSettings[%sendToAllHS][INDEP_HEADSTAGE]
 	TPSettings[%sendToAllHS][INDEP_HEADSTAGE] = 0
 
-	TPState = TP_StopTestPulse(device)
+	if(fast == TP_FAST_NONE)
+		TPState = TP_StopTestPulse(device)
+	else
+		TPState = TP_StopTestPulseFast(device)
+	endif
 
 	numEntries = DimSize(controls, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -5764,13 +5793,15 @@ Function DAP_TPSettingsToGUI(string device, [string entry])
 		val = TPSettings[%$lbl][col]
 		ASSERT(IsFinite(val), "Value has to be finite")
 
-		PGC_SetAndActivateControl(device, ctrl, val = val)
+		SetSetVariable(device, ctrl, val)
+		DAG_Update(device, ctrl, val = val)
+		DAP_ApplyTPSetting(device, ctrl, val)
 	endfor
 
 	TPSettings[%sendToAllHS][INDEP_HEADSTAGE] = originalHSAll
 
 	if(IsFinite(TPState))
-		TP_RestartTestPulse(device, TPState)
+		TP_RestartTestPulse(device, TPState, fast = fast)
 	endif
 End
 
