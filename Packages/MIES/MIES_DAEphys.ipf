@@ -5793,7 +5793,17 @@ Function DAP_TPSettingsToGUI(string device, [string entry, variable fast])
 		val = TPSettings[%$lbl][col]
 		ASSERT(IsFinite(val), "Value has to be finite")
 
-		SetSetVariable(device, ctrl, val)
+		switch(GetControlType(device, ctrl))
+			case CONTROL_TYPE_SETVARIABLE:
+				SetSetVariable(device, ctrl, val)
+				break
+			case CONTROL_TYPE_CHECKBOX:
+				SetCheckBoxState(device, ctrl, val)
+				break
+			default:
+				FATAL_ERROR("Unsupported control type for " + ctrl)
+				break
+		endswitch
 		DAG_Update(device, ctrl, val = val)
 		DAP_ApplyTPSetting(device, ctrl, val)
 	endfor
