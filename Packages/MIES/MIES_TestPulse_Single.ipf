@@ -74,9 +74,10 @@ End
 ///
 /// @param device device
 /// @param fast   [optional, defaults to #TP_FAST_NONE] One of @ref TestPulseFastModes.
-///               When non-zero, starts TP without any checks; intended to be
-///               called after #TP_StopTestPulseFast. Use #TP_FAST_CONFIG to
-///               additionally rebuild the DAQ data wave via `DC_Configure`.
+///               With #TP_FAST_NO_CONFIG or #TP_FAST_CONFIG, starts TP without
+///               any checks; intended to be called after #TP_StopTestPulseFast.
+///               Use #TP_FAST_CONFIG to additionally rebuild the DAQ data wave
+///               via `DC_Configure`.
 Function TPS_StartTestPulseSingleDevice(string device, [variable fast])
 
 	variable bkg
@@ -89,7 +90,7 @@ Function TPS_StartTestPulseSingleDevice(string device, [variable fast])
 
 	bkg = DAG_GetNumericalValue(device, "Check_Settings_BkgTP")
 
-	if(fast)
+	if(fast == TP_FAST_NO_CONFIG || fast == TP_FAST_CONFIG)
 		// with fast we don't do try/catch for TP_Setup
 		if(bkg)
 			TP_Setup(device, TEST_PULSE_BG_SINGLE_DEVICE, fast = fast)

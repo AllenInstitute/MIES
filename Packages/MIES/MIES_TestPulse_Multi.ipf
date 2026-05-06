@@ -52,9 +52,10 @@ End
 ///
 /// @param device device
 /// @param fast   [optional, defaults to #TP_FAST_NONE] One of @ref TestPulseFastModes.
-///               When non-zero, starts TP without any checks; intended to be
-///               called after #TP_StopTestPulseFast. Use #TP_FAST_CONFIG to
-///               additionally rebuild the DAQ data wave via `DC_Configure`.
+///               With #TP_FAST_NO_CONFIG or #TP_FAST_CONFIG, starts TP without
+///               any checks; intended to be called after #TP_StopTestPulseFast.
+///               Use #TP_FAST_CONFIG to additionally rebuild the DAQ data wave
+///               via `DC_Configure`.
 Function TPM_StartTestPulseMultiDevice(string device, [variable fast])
 
 	if(ParamIsDefault(fast))
@@ -63,7 +64,7 @@ Function TPM_StartTestPulseMultiDevice(string device, [variable fast])
 
 	ASSERT(fast == TP_FAST_NONE || fast == TP_FAST_NO_CONFIG || fast == TP_FAST_CONFIG, "Invalid fast value")
 
-	if(fast)
+	if(fast == TP_FAST_NO_CONFIG || fast == TP_FAST_CONFIG)
 		TPM_StartTPMultiDeviceLow(device, fast = fast)
 		return NaN
 	endif

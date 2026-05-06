@@ -1510,7 +1510,7 @@ Function TP_Setup(string device, variable runMode, [variable fast])
 
 	ASSERT(fast == TP_FAST_NONE || fast == TP_FAST_NO_CONFIG || fast == TP_FAST_CONFIG, "Invalid fast value")
 
-	if(fast)
+	if(fast == TP_FAST_NO_CONFIG || fast == TP_FAST_CONFIG)
 		if(fast == TP_FAST_CONFIG)
 			DC_Configure(device, TEST_PULSE_MODE, multiDevice = (runMode & TEST_PULSE_BG_MULTI_DEVICE))
 		endif
