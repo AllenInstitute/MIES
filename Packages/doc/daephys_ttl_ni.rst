@@ -59,11 +59,10 @@ NI devices also provide PFI (Programmable Function Interface) pins such as
 data channels exposed by MIES on Port 0.
 
 MIES utilizes PFI pins internally to manage timing and triggering tasks.
-
-MIES also uses PFI pins to synchronize data acquisition across multiple NI
-boards. For example, two NI PCIe-6343 boards can be combined to obtain 8
-analog output channels by sharing start triggers and the sample clock over
-PFI lines.
+Specifically, MIES uses PFI pins to synchronize data acquisition across
+multiple NI boards. For example, two NI PCIe-6343 boards can be combined to
+obtain 8 analog output channels by sharing start triggers and the sample
+clock over PFI lines.
 
 The ``P0.x`` pins listed above are the MIES TTL output channels and are
 controlled from the DA_Ephys TTL tab.
