@@ -594,8 +594,6 @@ static Function AI_UpdateAmpView(string device, variable headStage, [variable fu
 		elseif(StringMatch(ctrl, "check_*"))
 			SetCheckBoxState(device, ctrl, value)
 			DAG_Update(device, ctrl, val = value)
-		elseif(!cmpstr(ctrl, "button_DataAcq_WCAuto"))
-			// do nothing
 		else
 			FATAL_ERROR("Unhandled control: " + ctrl)
 		endif
@@ -1249,9 +1247,7 @@ static Function/S AI_AmpStorageControlToRowLabel(string ctrl)
 		case "check_DataAcq_Amp_Chain":
 			return "RSCompChaining"
 			break
-		case "button_DataAcq_WCAuto":
-			return "WholeCellCap"
-			break
+		case "button_DataAcq_WCAuto": // fallthrough
 		case "button_DataAcq_FastComp_VC": // fallthrough
 		case "button_DataAcq_SlowComp_VC": // fallthrough
 		case "button_DataAcq_AutoPipOffset_VC":
