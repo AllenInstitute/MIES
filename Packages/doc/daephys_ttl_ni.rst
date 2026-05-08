@@ -58,10 +58,10 @@ NI devices also provide PFI (Programmable Function Interface) pins such as
 ``PFI0`` and ``PFI1``. These pins are digital lines, but they are not the TTL
 data channels exposed by MIES on Port 0.
 
-MIES uses PFI pins internally for timing and triggering tasks. PFI pins are
-also the lines used to drive solenoid valves for pipette pressure regulation,
-switching the pipette tip between the user-applied pressure, the pressure
-regulator, and atmosphere.
+MIES utilizes PFI pins internally to manage timing and triggering tasks.
+These pins serve as control lines for actuating solenoid valves that regulate
+pipette pressure, enabling switching of the pipette tip between user-applied
+pressure, the pressure regulator, and atmospheric pressure.
 
 The ``P0.x`` pins listed above are the MIES TTL output channels and are
 controlled from the DA_Ephys TTL tab.
