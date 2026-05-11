@@ -57,3 +57,5 @@ enabled or disabled during data acquisition.
 
 .. figure:: svg/oodDAQ-delays.svg
    :align: left
+
+.. include:: daephys_ttl_ni.rst
