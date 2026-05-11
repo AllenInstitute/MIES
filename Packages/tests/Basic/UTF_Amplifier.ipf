@@ -89,3 +89,35 @@ static Function TestAmplifierUnits([variable clampMode])
 		endswitch
 	endfor
 End
+
+static Function TestAmplifierStorageLabels()
+
+	variable clampMode, numFuncs
+
+	WAVE clampModes = DataGenerators#GetClampModesWithoutIZero()
+
+	for(clampMode : clampModes)
+		WAVE aiFuncs = AI_GetFunctionConstantForClampMode(clampMode)
+		numFuncs = DimSize(aiFuncs, ROWS)
+		Make/FREE/T/N=(numFuncs) ctrlNames, ampLabels
+
+		ctrlNames[] = AI_MapFunctionConstantToControl(aiFuncs[p], clampMode)
+		ampLabels[] = MIES_AI#AI_AmpStorageControlToRowLabel(ctrlNames[p])
+
+		Concatenate/FREE/NP=(ROWS)/T {ampLabels}, allAmpLabels
+	endfor
+
+	FindDuplicates/FREE/Z/DT=dupAmpLabels allAmpLabels
+
+	WAVE/Z/T dupAmpLabelsUnique = GetUniqueEntries(dupAmpLabels)
+
+	// all duplicated entries are empty
+	CHECK_EQUAL_TEXTWAVES(dupAmpLabelsUnique, {""})
+
+	WAVE ampStorageWave = GetAmplifierParamStorageWave("RandomDeviceName")
+
+	WAVE/T allAmpLabelsNoEmpty = GetSetDifference(allAmpLabels, dupAmpLabels)
+	Make/FREE/N=(DimSize(allAmpLabelsNoEmpty, ROWS)) rows = FindDimLabel(ampStorageWave, ROWS, allAmpLabelsNoEmpty[p])
+
+	CHECK_GE_VAR(WaveMin(rows), 0)
+End
