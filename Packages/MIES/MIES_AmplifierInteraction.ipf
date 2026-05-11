@@ -594,8 +594,6 @@ static Function AI_UpdateAmpView(string device, variable headStage, [variable fu
 		elseif(StringMatch(ctrl, "check_*"))
 			SetCheckBoxState(device, ctrl, value)
 			DAG_Update(device, ctrl, val = value)
-		elseif(!cmpstr(ctrl, "button_DataAcq_WCAuto"))
-			// do nothing
 		else
 			FATAL_ERROR("Unhandled control: " + ctrl)
 		endif
@@ -1246,6 +1244,16 @@ static Function/S AI_AmpStorageControlToRowLabel(string ctrl)
 		case "setvar_DataAcq_PipetteOffset_VC":
 			return "PipetteOffsetVC"
 			break
+		case "check_DataAcq_Amp_Chain":
+			return "RSCompChaining"
+			break
+		case "button_DataAcq_WCAuto": // fallthrough
+		case "button_DataAcq_FastComp_VC": // fallthrough
+		case "button_DataAcq_SlowComp_VC": // fallthrough
+		case "button_DataAcq_AutoPipOffset_VC":
+			// no row exists
+			return ""
+			break
 		// I-Clamp controls
 		case "setvar_DataAcq_Hold_IC":
 			return "BiasCurrent"
@@ -1280,17 +1288,8 @@ static Function/S AI_AmpStorageControlToRowLabel(string ctrl)
 		case "setvar_DataAcq_PipetteOffset_IC":
 			return "PipetteOffsetIC"
 			break
-		case "check_DataAcq_Amp_Chain":
-			return "RSCompChaining"
-			break
-		case "button_DataAcq_WCAuto":
-			return "WholeCellCap"
-			break
 		case "button_DataAcq_AutoBridgeBal_IC": // fallthrough
 		case "button_DataAcq_AutoPipOffset_IC": // fallthrough
-		case "button_DataAcq_FastComp_VC": // fallthrough
-		case "button_DataAcq_SlowComp_VC": // fallthrough
-		case "button_DataAcq_AutoPipOffset_VC":
 			// no row exists
 			return ""
 			break
