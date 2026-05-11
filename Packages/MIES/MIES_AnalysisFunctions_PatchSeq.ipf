@@ -3202,6 +3202,10 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 
 				if(!WaveExists(negSlopePassed))
 					Make/FREE/N=(DimSize(sweepPassed, ROWS)) negSlopePassed = 0
+				elseif(beforeSweepQCResult)
+					// we have not yet any result for the neg slope QC value for the current sweep
+					// so neg slope QC failed
+					negSlopePassed[inf] = 0
 				endif
 
 				key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FI_SLOPE, query = 1)
@@ -3209,6 +3213,9 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 
 				if(!WaveExists(fISlope))
 					Make/FREE/N=(DimSize(negSlopePassed, ROWS)) fISlope = 0
+				elseif(beforeSweepQCResult)
+					// see comment above
+					fiSlope[inf] = 0
 				endif
 
 				Duplicate/FREE sweepPassed, filterPassed
