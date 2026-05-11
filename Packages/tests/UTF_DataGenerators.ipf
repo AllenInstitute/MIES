@@ -1776,11 +1776,20 @@ static Function/WAVE VariousInputForHasRequiredQCOrder()
 	Make/FREE checkQCLast  = {0, 0, 1, 0}
 	Make/FREE result       = {0}
 
-	// IPT_FORMAT_ON
-
 	Make/FREE/WAVE wv9 = {firstQC, checkQCFirst, lastQC, checkQCLast, result}
 
-	Make/FREE/WAVE wv = {wv0, wv1, wv2, wv3, wv4, wv5, wv6, wv7, wv8, wv9}
+	// fails due to just one passing in both
+	Make/FREE firstQC      = {0, 1, 0, 0, 0}
+	Make/FREE checkQCFirst = {1, 0, 0, 0}
+	Make/FREE lastQC       = {0, 1, 0, 0, 0}
+	Make/FREE checkQCLast  = {1, 0, 0, 0}
+	Make/FREE result       = {0}
+
+	// IPT_FORMAT_ON
+
+	Make/FREE/WAVE wv10 = {firstQC, checkQCFirst, lastQC, checkQCLast, result}
+
+	Make/FREE/WAVE wv = {wv0, wv1, wv2, wv3, wv4, wv5, wv6, wv7, wv8, wv9, wv10}
 
 	return wv
 End
@@ -2106,6 +2115,81 @@ static Function/WAVE PermanentOrFree()
 	Make/FREE wv = {1, 0}
 
 	SetDimensionLabels(wv, "Permanent;Free", ROWS)
+
+	return wv
+End
+
+static Function/WAVE VariousInputForConsecutivePasses()
+
+	// IPT_FORMAT_OFF
+
+	Make/FREE refQC    = {0, 0, 0, 0}
+	Make/FREE checkQC  = {0, 0, 0}
+	Make/FREE numCheck = {1}
+	Make/FREE numRef   = {1}
+	Make/FREE result   = {0}
+
+	Make/FREE/WAVE wv0 = {refQC, checkQC, numCheck, numRef, result}
+
+	Make/FREE refQC    = {0, 0, 0, 0}
+	Make/FREE checkQC  = {1, 1, 1}
+	Make/FREE numCheck = {3}
+	Make/FREE numRef   = {1}
+	Make/FREE result   = {0}
+
+	Make/FREE/WAVE wv1 = {refQC, checkQC, numCheck, numRef, result}
+
+	Make/FREE refQC    = {0, 0, 1, 0}
+	Make/FREE checkQC  = {1, 1, 1}
+	Make/FREE numCheck = {3}
+	Make/FREE numRef   = {1}
+	Make/FREE result   = {1}
+
+	Make/FREE/WAVE wv2 = {refQC, checkQC, numCheck, numRef, result}
+
+	Make/FREE refQC    = {0, 0, 1, 0, 0}
+	Make/FREE checkQC  = {1, 1, 0, 1}
+	Make/FREE numCheck = {3}
+	Make/FREE numRef   = {1}
+	Make/FREE result   = {0}
+
+	Make/FREE/WAVE wv3 = {refQC, checkQC, numCheck, numRef, result}
+
+	Make/FREE refQC    = {0, 1, 0, 0, 0}
+	Make/FREE checkQC  = {1, 0, 1, 1}
+	Make/FREE numCheck = {2}
+	Make/FREE numRef   = {1}
+	Make/FREE result   = {0}
+
+	Make/FREE/WAVE wv4 = {refQC, checkQC, numCheck, numRef, result}
+
+	Make/FREE refQC    = {0, 1, 0, 1, 0}
+	Make/FREE checkQC  = {1, 1, 1, 1}
+	Make/FREE numCheck = {4}
+	Make/FREE numRef   = {1}
+	Make/FREE result   = {1}
+
+	Make/FREE/WAVE wv5 = {refQC, checkQC, numCheck, numRef, result}
+
+	Make/FREE refQC    = {0, 1, 0, 0, 1}
+	Make/FREE checkQC  = {1, 0, 1, 1}
+	Make/FREE numCheck = {2}
+	Make/FREE numRef   = {1}
+	Make/FREE result   = {1}
+
+	Make/FREE/WAVE wv6 = {refQC, checkQC, numCheck, numRef, result}
+
+	Make/FREE refQC    = {0, 1, 0, 1, 1}
+	Make/FREE checkQC  = {1, 0, 1, 1}
+	Make/FREE numCheck = {2}
+	Make/FREE numRef   = {2}
+	Make/FREE result   = {1}
+
+	Make/FREE/WAVE wv7 = {refQC, checkQC, numCheck, numRef, result}
+
+	// IPT_FORMAT_ON
+
+	Make/FREE/WAVE wv = {wv0, wv1, wv2, wv3, wv4, wv5, wv6, wv7}
 
 	return wv
 End
