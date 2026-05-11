@@ -5723,11 +5723,22 @@ End
 /// @param device device
 /// @param entry      [optional, defaults to all] Only update one of the entries TPSettings.
 ///                   Accepted strings are the labels from DAP_TPControlToLabel().
-Function DAP_TPSettingsToGUI(string device, [string entry])
+/// @param fast       [optional, defaults to #TP_FAST_NONE] One of @ref TestPulseFastModes.
+///                   Forwarded to the surrounding TP stop/restart. Use
+///                   #TP_FAST_CONFIG to skip the amplifier I/O in
+///                   `DAP_CheckSettings`/`DAP_CheckHeadStage` while still
+///                   rebuilding the DAQ data wave via `DC_Configure`.
+Function DAP_TPSettingsToGUI(string device, [string entry, variable fast])
 
 	variable i, numEntries, val, headstage, col, originalHSAll
 	string ctrl, lbl
 	variable TPState
+
+	if(ParamIsDefault(fast))
+		fast = TP_FAST_NONE
+	endif
+
+	ASSERT(fast == TP_FAST_NONE || fast == TP_FAST_NO_CONFIG || fast == TP_FAST_CONFIG, "Invalid fast value")
 
 	WAVE/T controls = ListToTextWave(DAEPHYS_TP_CONTROLS_ALL, ";")
 
@@ -5740,7 +5751,11 @@ Function DAP_TPSettingsToGUI(string device, [string entry])
 	originalHSAll                             = TPSettings[%sendToAllHS][INDEP_HEADSTAGE]
 	TPSettings[%sendToAllHS][INDEP_HEADSTAGE] = 0
 
-	TPState = TP_StopTestPulse(device)
+	if(fast == TP_FAST_NONE)
+		TPState = TP_StopTestPulse(device)
+	else
+		TPState = TP_StopTestPulseFast(device)
+	endif
 
 	numEntries = DimSize(controls, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -5770,7 +5785,7 @@ Function DAP_TPSettingsToGUI(string device, [string entry])
 	TPSettings[%sendToAllHS][INDEP_HEADSTAGE] = originalHSAll
 
 	if(IsFinite(TPState))
-		TP_RestartTestPulse(device, TPState)
+		TP_RestartTestPulse(device, TPState, fast = fast)
 	endif
 End
 
