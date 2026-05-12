@@ -288,7 +288,7 @@ threadsafe Function GetWaveVersion(WAVE/Z wv)
 End
 
 /// @brief Set the wave layout version of wave
-threadsafe static Function SetWaveVersion(WAVE wv, variable val)
+threadsafe Function SetWaveVersion(WAVE wv, variable val)
 
 	ASSERT_TS(IsValidWaveVersion(val), "val must be a positive and non-zero integer")
 	SetNumberInWaveNote(wv, WAVE_NOTE_LAYOUT_KEY, val)
