@@ -1630,6 +1630,23 @@ static Function TestSetDimensionLabelsFromWaveContents()
 	catch
 		CHECK_NO_RTE()
 	endtry
+
+	try
+		SetDimensionLabelsFromWaveContents(input, strict = 1, cleanup = 1)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	Make/FREE/T inputt = {"A", "B", " "}
+	SetDimensionLabelsFromWaveContents(inputt, prefix = ".", suffix = ":", cleanup = 1)
+	CHECK_EQUAL_STR(GetDimLabel(inputt, ROWS, 0), "X_A_")
+	CHECK_EQUAL_STR(GetDimLabel(inputt, ROWS, 1), "X_B_")
+	CHECK_EQUAL_STR(GetDimLabel(inputt, ROWS, 2), "X___")
+
+	Make/FREE/T inputt = {""}
+	SetDimensionLabelsFromWaveContents(inputt, cleanup = 1)
+	CHECK_EQUAL_STR(GetDimLabel(inputt, ROWS, 0), "X")
 End
 
 /// @}
@@ -2457,6 +2474,10 @@ Function TestHasDimlabels()
 	CHECK_EQUAL_VAR(HasDimLabels(wv, CHUNKS, deep = 5), 1)
 
 	CHECK_EQUAL_VAR(HasDimLabels(wv, CHUNKS, deep = 20), 1)
+
+	Make/FREE/N=1 wv
+	SetDimLabel ROWS, -1, LABEL, wv
+	CHECK_EQUAL_VAR(HasDimLabels(wv, ROWS), 1)
 
 	try
 		HasDimLabels(wv, -1)
@@ -3813,6 +3834,31 @@ Function GWD_IsThreadsafe()
 	Make/FREE/N=1 result
 	MultiThread result = GetWaveDimensionality(wv)
 	CHECK_EQUAL_VAR(result[0], LAYERS)
+End
+
+/// @}
+
+// ExpandWildcards
+/// @{
+
+Function EWC_Works()
+
+	Make/T/FREE/N=(0) empty
+	WAVE/Z result = ExpandWildcards(empty, empty)
+	print result
+	CHECK_WAVE(result, NULL_WAVE)
+
+	// no wildcard, matches case insensitive, drops duplicates
+	WAVE/Z result = ExpandWildcards({"a"}, {"a", "b", "c", "A", "a"})
+	CHECK_EQUAL_TEXTWAVES(result, {"a", "A"})
+
+	// two wildcards
+	WAVE/Z result = ExpandWildcards({"a*", "*a"}, {"ab", "ba", "c"})
+	CHECK_EQUAL_TEXTWAVES(result, {"ab", "ba"})
+
+	// no match
+	WAVE/Z result = ExpandWildcards({"ab*"}, {"a", "b", "c"})
+	CHECK_WAVE(result, NULL_WAVE)
 End
 
 /// @}

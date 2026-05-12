@@ -1204,15 +1204,16 @@ End
 
 /// @brief Sets the DimLabels for elements of a 1d numerical or text wave based on the content of the wave
 ///        For numerical waves the wave element is treated as integer
-///        For textual waves the elements must translate to a valid DimLabel.
+///        For textual waves the elements must translate to a valid DimLabel unless `cleanup = 1` is passed.
 ///
 /// @param wv input wave
-/// @param prefix [optional: default "" for numerical waves and NUM_ for textual waves] prefix of the dimlabel
-///               For numerical waves it is recommended to provide an own prefix.
-/// @param suffix [optional: default ""] suffix of the dimlabel
-/// @param strict [optional: default 0] When this flag is set then each constructed DimLabels for text wave elements are checked
-///               if it results in a valid DimLabel, it is also checked if duplicate Dimlabels would be created.
-threadsafe Function SetDimensionLabelsFromWaveContents(WAVE wv, [string prefix, string suffix, variable strict])
+/// @param prefix  [optional: default "" for textual waves and NUM_ for numerical waves] prefix of the dimlabel
+///                For numerical waves it is recommended to provide an own prefix.
+/// @param suffix  [optional: default ""] suffix of the dimlabel
+/// @param strict  [optional: default 0] When this flag is set then each constructed DimLabels for text wave elements are checked
+///                if it results in a valid DimLabel, it is also checked if duplicate Dimlabels would be created.
+/// @param cleanup [optional: default 0] Cleanup invalid dimension labels to make them valid igor object names
+threadsafe Function SetDimensionLabelsFromWaveContents(WAVE wv, [string prefix, string suffix, variable strict, variable cleanup])
 
 	variable idx, num
 	string str
@@ -1223,18 +1224,27 @@ threadsafe Function SetDimensionLabelsFromWaveContents(WAVE wv, [string prefix, 
 	endif
 	ASSERT_TS(GetWaveDimensionality(wv) == ROWS, "Wave must be 1d")
 
+	strict  = ParamIsDefault(strict) ? 0 : !!strict
+	cleanup = ParamIsDefault(cleanup) ? 0 : !!cleanup
+
+	ASSERT_TS((strict + cleanup) < 2, "Can not set both cleanup and strict")
+
 	if(ParamIsDefault(prefix))
 		prefix = SelectString(IsTextWave(wv), "NUM_", "")
 	else
-		ASSERT_TS(IsValidObjectName(prefix), "Prefix " + prefix + " must be a valid object name")
+		if(!cleanup)
+			ASSERT_TS(IsValidObjectName(prefix), "Prefix " + prefix + " must be a valid object name")
+		endif
 	endif
-	str = SelectString(IsTextWave(wv), "0", "A")
+
 	if(ParamIsDefault(suffix))
 		suffix = ""
 	endif
-	ASSERT_TS(IsValidObjectName(prefix + str + suffix), "The combination of Prefix " + prefix + " and Suffix " + suffix + " must be a valid object name")
 
-	strict = ParamIsDefault(strict) ? 0 : !!strict
+	if(!cleanup)
+		str = SelectString(IsTextWave(wv), "0", "A")
+		ASSERT_TS(IsValidObjectName(prefix + str + suffix), "The combination of Prefix " + prefix + " and Suffix " + suffix + " must be a valid object name")
+	endif
 
 	if(IsTextWave(wv))
 		WAVE/T wt = wv
@@ -1249,6 +1259,11 @@ threadsafe Function SetDimensionLabelsFromWaveContents(WAVE wv, [string prefix, 
 		else
 			for(str : wt)
 				str = prefix + str + suffix
+
+				if(cleanup)
+					str = CleanupName(str, 0)
+				endif
+
 				SetDimLabel ROWS, idx++, $str, wv
 			endfor
 		endif
@@ -1269,6 +1284,11 @@ threadsafe Function SetDimensionLabelsFromWaveContents(WAVE wv, [string prefix, 
 
 	for(num : wv)
 		sprintf str, "%s%d%s", prefix, num, suffix
+
+		if(cleanup)
+			str = CleanupName(str, 0)
+		endif
+
 		SetDimLabel ROWS, idx++, $str, wv
 	endfor
 End
@@ -1604,7 +1624,7 @@ Function HasDimLabels(WAVE/Z wv, variable dim, [variable deep])
 	ASSERT(IsInteger(deep) && deep > 0, "deep must be integer and greater than zero")
 	ASSERT(IsInteger(dim) && dim >= ROWS && dim < MAX_DIMENSION_COUNT, "dim must be a valid dimension")
 
-	for(i = 0; i < deep; i += 1)
+	for(i = -1; i < deep; i += 1)
 		if(!IsEmpty(GetDimLabel(wv, dim, i)))
 			return 1
 		endif
@@ -1634,4 +1654,42 @@ threadsafe Function/WAVE GetTemporaryWave(WAVE dims, variable wvType)
 	CA_StoreEntryIntoCache(key, wv, options = CA_OPTS_NO_DUPLICATE)
 
 	return wv
+End
+
+threadsafe static Function ExpandWildcardsImpl(string str, WAVE/T data, WAVE/T results)
+
+	WAVE/Z indizes = FindIndizes(data, str = str, prop = PROP_WILDCARD)
+
+	if(!WaveExists(indizes))
+		return NaN
+	endif
+
+	Make/FREE/T/N=(DimSize(indizes, ROWS)) matches = data[indizes[p]]
+
+	Concatenate/FREE/NP=(ROWS)/T {matches}, results
+End
+
+/// @brief Expand the wildcards given in `search` from `data` and return the result
+///
+/// Ignores case and does not return duplicates.
+threadsafe Function/WAVE ExpandWildcards(WAVE/T search, WAVE/T data)
+
+	variable numSearch
+
+	numSearch = DimSize(search, ROWS)
+
+	if(numSearch == 0)
+		return $""
+	endif
+
+	WAVE indexHelper = GetTemporaryWave({numSearch}, IGOR_TYPE_8BIT_INT)
+
+	Make/FREE/T/N=(0) results
+	indexHelper[] = ExpandWildcardsImpl(search[p], data, results)
+
+	if(DimSize(results, ROWS) == 0)
+		return $""
+	endif
+
+	return GetUniqueEntries(results)
 End
