@@ -70,12 +70,17 @@ static Function CreateHashmapWorks()
 
 	// hashmap implementation
 	// verify sizes
-	CHECK_EQUAL_VAR(DimSize(hashmap_impl, ROWS), 2^16)
-	CHECK_EQUAL_VAR(DimSize(hashmap_impl, COLS), 2)
+	CHECK_EQUAL_VAR(DimSize(hashmap_impl, ROWS), 2)
+	CHECK_EQUAL_VAR(DimSize(hashmap_impl, COLS), 0)
 
 	// verify contained waves
-	CHECK_WAVE(hashmap_impl[0][0], TEXT_WAVE)
-	CHECK_WAVE(hashmap_impl[0][1], TEXT_WAVE)
+	WAVE keys = hashmap_impl[0]
+	CHECK_WAVE(keys, TEXT_WAVE)
+	CHECK_EQUAL_VAR(DimSize(keys, ROWS), 2^16)
+
+	WAVE values = hashmap_impl[1]
+	CHECK_WAVE(values, TEXT_WAVE)
+	CHECK_EQUAL_VAR(DimSize(values, ROWS), 2^16)
 
 	// management waves
 	WAVE/WAVE mgmt = hashmap[0]
@@ -105,24 +110,31 @@ static Function/WAVE GetFilledEntries(WAVE/WAVE hashmap)
 
 	numThreads = GetNumberOfUsefulThreads({numPossibleEntries})
 
-	WAVE usedRows = MIES_HM#HM_FetchUsedRows(hashmap)
+	WAVE usedCols = MIES_HM#HM_FetchUsedCols(hashmap)
 
 	// not using GetTemporaryWave here to avoid issues with recursion
 	Make/FREE/N=(numPossibleEntries) matches
 
-	Multithread/NT=(numThreads) matches = usedRows[p] ? p : NaN
+	Multithread/NT=(numThreads) matches = usedCols[p] ? p : NaN
 
 	WAVE/Z result = ZapNaNs(matches)
 
 	return result
 End
 
-static Function CheckHashmapEntry(WAVE/WAVE hashmap, variable index, variable usedEntries, WAVE/T keys, WAVE/T values)
+static Function CheckHashmapEntry(WAVE/WAVE hashmap, variable bucketIndex, variable usedEntries, WAVE/T keys, WAVE/T values)
 
-	[WAVE usedRows, WAVE/T keysRef, WAVE valuesRef] = MIES_HM#HM_FetchWaves(hashmap, index)
+	[WAVE usedRows, WAVE/T keysAllRef, WAVE valuesAllRef] = MIES_HM#HM_FetchWaves(hashmap)
+
+	// slice out the bucketIndex row
+	Duplicate/FREE/RMD=[bucketIndex][] keysAllRef, keysRef
+	Redimension/E=1/N=(numpnts(keysRef)) keysRef
+
+	Duplicate/FREE/RMD=[bucketIndex][] valuesAllRef, valuesRef
+	Redimension/E=1/N=(numpnts(valuesRef)) valuesRef
 
 	// used entries in keys/values
-	CHECK_EQUAL_VAR(usedRows[index], usedEntries)
+	CHECK_EQUAL_VAR(usedRows[bucketIndex], usedEntries)
 
 	// and it is the first one in keys
 	INFO("keys: @%s", s = keysRef)
@@ -212,30 +224,6 @@ Function FindCollision_IGNORE(variable value, [variable size])
 
 	print result
 End
-
-#if IgorVersion() >= 10
-
-static Function GetKeyIndexWorks()
-
-	// check both code paths in HM_GetKeyIndex
-	variable numEntries = MIES_HM#HM_SMALL_WAVE_OPTIMIZATION_ROWS * 10 // NOLINT
-
-	Make/FREE/T/N=(numEntries) keys = num2str(p)
-
-	Make/FREE/N=(numEntries) values = p
-	Make/FREE/N=(numEntries) result
-
-	result[] = MIES_HM#HM_GetKeyIndex(keys, keys[p], p + 1)
-
-	CHECK_EQUAL_WAVES(result, values)
-
-	// check that we are not looking beyond the filled entries
-	keys[Inf] = ""
-	CHECK_EQUAL_VAR(MIES_HM#HM_GetKeyIndex(keys, "", numEntries - 1), NaN)
-	CHECK_EQUAL_VAR(MIES_HM#HM_GetKeyIndex(keys, "", numEntries), numEntries - 1)
-End
-
-#endif
 
 static Function GetEntryWorks()
 
@@ -476,7 +464,7 @@ static Function RehashingWorks([variable var])
 
 	CHECK_EQUAL_VAR(HM_RehashIfRequired(hashmap), 1)
 	WAVE/WAVE hashmap_impl = hashmap[1]
-	CHECK_EQUAL_VAR(DimSize(hashmap_impl, ROWS), numEntries * 4)
+	CHECK_EQUAL_VAR(DimSize(hashmap_impl[0], ROWS), numEntries * 4)
 	CHECK(!WaveRefsEqual(hashmap, hashmap_old))
 
 	WAVE/Z filledEntries = GetFilledEntries(hashmap)
@@ -683,4 +671,113 @@ static Function ClearWorks()
 
 	loadFactor = MIES_HM#HM_CalculateLoadFactor(hashmap)
 	CHECK_EQUAL_VAR(loadFactor, 0)
+End
+
+static Function/WAVE CreateHashmapVersionZero(variable size, variable valueType)
+
+	variable numThreads
+
+	numThreads = GetNumberOfUsefulThreads({size})
+
+	Make/FREE/WAVE/N=(size, 2) hashmap_impl
+
+	Multithread/NT=(numThreads) hashmap_impl[][0] = NewFreeWave(IGOR_TYPE_TEXT_WREF_DFR, 2)
+	Multithread/NT=(numThreads) hashmap_impl[][1] = NewFreeWave(valueType, 2)
+
+	return hashmap_impl
+End
+
+static Function/WAVE CreateVersionZero()
+
+	string wvNote
+
+	WAVE/WAVE hashmap = HM_Create()
+
+	hashmap[1] = CreateHashmapVersionZero(2^16, IGOR_TYPE_TEXT_WREF_DFR)
+
+	Note/K hashmap
+
+	wvNote = note(hashmap)
+	CHECK_EMPTY_STR(wvNote)
+
+	return hashmap
+End
+
+static Function UpgradeWorksEmpty()
+
+	variable loadFactor
+	string   wvNote
+
+	// upgrade an empty wave
+	WAVE hashmap_version0 = CreateVersionZero()
+
+	WAVE hashmap = HM_Upgrade(hashmap_version0)
+
+	wvNote = note(hashmap)
+	CHECK_EQUAL_STR(wvNote, "WAVE_LAYOUT_VERSION:1;")
+
+	WAVE/Z/T keys = HM_GetAllKeys(hashmap)
+	CHECK_WAVE(keys, NULL_WAVE)
+
+	loadFactor = MIES_HM#HM_CalculateLoadFactor(hashmap)
+	CHECK_EQUAL_VAR(loadFactor, 0)
+
+	// idempotent
+	WAVE hashmap_ret = HM_Upgrade(hashmap)
+	CHECK(WaveRefsEqual(hashmap_ret, hashmap))
+End
+
+// old hashmaps created with c091e964b5 (Merge pull request #2706 from AllenInstitute/feature/2706-ivscc-prep-3-of-x, 2026-05-12)
+static Function UpgradeWorksNumerical()
+
+	variable value, found, modCount
+
+	WAVE/SDFR=root:Hashmap hashmap_numeric_version0
+
+	modCount = WaveModCount(hashmap_numeric_version0)
+	WAVE hashmap = HM_Upgrade(hashmap_numeric_version0)
+	CHECK_EQUAL_VAR(modCount, WaveModCount(hashmap_numeric_version0))
+
+	WAVE/Z/T keys = HM_GetAllKeys(hashmap)
+	CHECK_EQUAL_TEXTWAVES(keys, {"910111213", "1234", "2"})
+
+	[value, found] = HM_GetEntryAsNumber(hashmap, "910111213")
+	CHECK_EQUAL_VAR(found, 1)
+	CHECK_EQUAL_VAR(value, 150)
+
+	[value, found] = HM_GetEntryAsNumber(hashmap, "1234")
+	CHECK_EQUAL_VAR(found, 1)
+	CHECK_EQUAL_VAR(value, 200)
+
+	[value, found] = HM_GetEntryAsNumber(hashmap, "2")
+	CHECK_EQUAL_VAR(found, 1)
+	CHECK_EQUAL_VAR(value, 30)
+End
+
+// see UpgradeWorksNumerical
+static Function UpgradeWorksText()
+
+	variable found, modCount
+	string value
+
+	WAVE/SDFR=root:Hashmap hashmap_text_version0
+
+	modCount = WaveModCount(hashmap_text_version0)
+	WAVE hashmap = HM_Upgrade(hashmap_text_version0)
+	CHECK_EQUAL_VAR(modCount, WaveModCount(hashmap_text_version0))
+
+	WAVE/Z/T keys = HM_GetAllKeys(hashmap)
+	CHECK_EQUAL_TEXTWAVES(keys, {"7314", "57289", "71869"})
+
+	[value, found] = HM_GetEntryAsString(hashmap, "7314")
+	CHECK_EQUAL_VAR(found, 1)
+	CHECK_EQUAL_STR(value, "efgh")
+
+	[value, found] = HM_GetEntryAsString(hashmap, "57289")
+	CHECK_EQUAL_VAR(found, 1)
+	CHECK_EQUAL_STR(value, "ijkl")
+
+	[value, found] = HM_GetEntryAsString(hashmap, "71869")
+	CHECK_EQUAL_VAR(found, 1)
+	CHECK_EQUAL_STR(value, "mnop")
 End

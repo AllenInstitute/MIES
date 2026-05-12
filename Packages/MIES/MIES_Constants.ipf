@@ -2637,3 +2637,5 @@ Constant TRACECOLORMAX = 21
 ///@}
 
 StrConstant BSP_USER_DATA_SF_CONTENT_HASH = "SweepFormulaContentHash"
+
+Constant HM_HASHMAP_WAVE_VERSION = 1
