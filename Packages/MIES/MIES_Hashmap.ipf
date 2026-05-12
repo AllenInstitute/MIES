@@ -455,6 +455,11 @@ threadsafe static Function HM_GetSize(WAVE/WAVE hashmap)
 	return DimSize(hashmap[HM_HASHMAP_ROW], ROWS)
 End
 
+threadsafe static Function HM_GetValueType(WAVE/WAVE hashmap)
+
+	return WaveType(HM_FetchValues(hashmap, 0))
+End
+
 threadsafe static Function/WAVE HM_FetchKeys(WAVE/WAVE hashmap, variable bucketIndex)
 
 	return WaveRef(hashmap[HM_HASHMAP_ROW], row = bucketIndex, col = HM_KEYS_COLUMN)
@@ -844,7 +849,7 @@ threadsafe Function HM_RehashIfRequired(WAVE/WAVE &hashmap)
 	srcNumEntries = HM_GetSize(hashmap)
 	newSize       = HM_CalculateOptimumSize(totalEntries[HM_TOTAL_ENTRIES_ROW])
 	ASSERT_TS(newSize > srcNumEntries, "Invalid size calculation")
-	WAVE/WAVE hashmapLarger = HM_Create(size = newSize, valueType = WaveType(values))
+	WAVE/WAVE hashmapLarger = HM_Create(size = newSize, valueType = HM_GetValueType(hashmap))
 
 	WAVE usedRows = HM_FetchUsedRows(hashmap)
 
