@@ -455,21 +455,21 @@ threadsafe static Function HM_GetSize(WAVE/WAVE hashmap)
 	return DimSize(hashmap[HM_HASHMAP_ROW], ROWS)
 End
 
-threadsafe static Function/WAVE HM_FetchKeys(WAVE/WAVE hashmap, variable idx)
+threadsafe static Function/WAVE HM_FetchKeys(WAVE/WAVE hashmap, variable bucketIndex)
 
-	return WaveRef(hashmap[HM_HASHMAP_ROW], row = idx, col = HM_KEYS_COLUMN)
+	return WaveRef(hashmap[HM_HASHMAP_ROW], row = bucketIndex, col = HM_KEYS_COLUMN)
 End
 
-threadsafe static Function/WAVE HM_FetchValues(WAVE/WAVE hashmap, variable idx)
+threadsafe static Function/WAVE HM_FetchValues(WAVE/WAVE hashmap, variable bucketIndex)
 
-	return WaveRef(hashmap[HM_HASHMAP_ROW], row = idx, col = HM_VALUES_COLUMN)
+	return WaveRef(hashmap[HM_HASHMAP_ROW], row = bucketIndex, col = HM_VALUES_COLUMN)
 End
 
-threadsafe static Function [WAVE usedRows, WAVE/T keys, WAVE values] HM_FetchWaves(WAVE/WAVE hashmap, variable idx)
+threadsafe static Function [WAVE usedRows, WAVE/T keys, WAVE values] HM_FetchWaves(WAVE/WAVE hashmap, variable bucketIndex)
 
 	WAVE   usedRows = HM_FetchUsedRows(hashmap)
-	WAVE/T keys     = HM_FetchKeys(hashmap, idx)
-	WAVE   values   = HM_FetchValues(hashmap, idx)
+	WAVE/T keys     = HM_FetchKeys(hashmap, bucketIndex)
+	WAVE   values   = HM_FetchValues(hashmap, bucketIndex)
 
 	return [usedRows, keys, values]
 End
@@ -579,12 +579,12 @@ threadsafe Function HM_Clear(WAVE/WAVE hashmap)
 	totalEntries[HM_TOTAL_ENTRIES_ROW] = 0
 End
 
-threadsafe static Function HM_ClearKeysAndValues(WAVE/WAVE hashmap, variable idx)
+threadsafe static Function HM_ClearKeysAndValues(WAVE/WAVE hashmap, variable bucketIndex)
 
-	WAVE/T keys = HM_FetchKeys(hashmap, idx)
+	WAVE/T keys = HM_FetchKeys(hashmap, bucketIndex)
 	keys[] = ""
 
-	WAVE values = HM_FetchValues(hashmap, idx)
+	WAVE values = HM_FetchValues(hashmap, bucketIndex)
 
 	if(IsTextWave(values))
 		WAVE/T valuesText = values
@@ -596,15 +596,15 @@ threadsafe static Function HM_ClearKeysAndValues(WAVE/WAVE hashmap, variable idx
 	return 0
 End
 
-threadsafe static Function HM_StoreValue(WAVE values, variable idx, [string &str, variable &var])
+threadsafe static Function HM_StoreValue(WAVE values, variable bucketIndex, [string &str, variable &var])
 
 	if(IsTextWave(values))
 		ASSERT_TS(!IsNull(str), "Need a string value for a values text wave.")
 		WAVE/T valuesText = values
-		valuesText[idx] = str
+		valuesText[bucketIndex] = str
 	else
 		ASSERT_TS(IsNull(str), "Can't write a string value without a values text wave.")
-		values[idx] = var
+		values[bucketIndex] = var
 	endif
 End
 
@@ -615,15 +615,15 @@ End
 /// @return 1 when adding a new value and 0 when overwriting
 threadsafe Function HM_AddEntry(WAVE/WAVE hashmap, string key, [string str, variable var])
 
-	variable idx, entriesWithHash, keyIndex
+	variable bucketIndex, entriesWithHash, keyIndex
 
 	ASSERT_TS((ParamIsDefault(str) + ParamIsDefault(var)) == 1, "Need exactly one of str or var")
 
-	idx = HM_HashKey(hashmap, key)
+	bucketIndex = HM_HashKey(hashmap, key)
 
-	[WAVE usedRows, WAVE/T keys, WAVE values] = HM_FetchWaves(hashmap, idx)
+	[WAVE usedRows, WAVE/T keys, WAVE values] = HM_FetchWaves(hashmap, bucketIndex)
 
-	entriesWithHash = usedRows[idx]
+	entriesWithHash = usedRows[bucketIndex]
 
 	if(entriesWithHash > 0)
 		keyIndex = HM_GetKeyIndex(keys, key, entriesWithHash)
@@ -643,7 +643,7 @@ threadsafe Function HM_AddEntry(WAVE/WAVE hashmap, string key, [string str, vari
 	keys[entriesWithHash] = key
 	HM_StoreValue(values, entriesWithHash, str = str, var = var)
 
-	usedRows[idx] = entriesWithHash + 1
+	usedRows[bucketIndex] = entriesWithHash + 1
 
 	WAVE totalEntries = HM_FetchStats(hashmap)
 	totalEntries[HM_TOTAL_ENTRIES_ROW] += 1
@@ -659,13 +659,13 @@ End
 /// @retval found 1 if something was found, 0 if not
 threadsafe Function [string value, variable found] HM_GetEntryAsString(WAVE/WAVE hashmap, string key)
 
-	variable idx, keyIndex, entriesWithHash
+	variable bucketIndex, keyIndex, entriesWithHash
 
-	idx = HM_HashKey(hashmap, key)
+	bucketIndex = HM_HashKey(hashmap, key)
 
-	[WAVE usedRows, WAVE/T keys, WAVE values] = HM_FetchWaves(hashmap, idx)
+	[WAVE usedRows, WAVE/T keys, WAVE values] = HM_FetchWaves(hashmap, bucketIndex)
 
-	entriesWithHash = usedRows[idx]
+	entriesWithHash = usedRows[bucketIndex]
 
 	keyIndex = HM_GetKeyIndex(keys, key, entriesWithHash)
 
@@ -685,13 +685,13 @@ End
 /// @retval found 1 if something was found, 0 if not
 threadsafe Function [variable value, variable found] HM_GetEntryAsNumber(WAVE/WAVE hashmap, string key)
 
-	variable idx, keyIndex, entriesWithHash
+	variable bucketIndex, keyIndex, entriesWithHash
 
-	idx = HM_HashKey(hashmap, key)
+	bucketIndex = HM_HashKey(hashmap, key)
 
-	[WAVE usedRows, WAVE/T keys, WAVE values] = HM_FetchWaves(hashmap, idx)
+	[WAVE usedRows, WAVE/T keys, WAVE values] = HM_FetchWaves(hashmap, bucketIndex)
 
-	entriesWithHash = usedRows[idx]
+	entriesWithHash = usedRows[bucketIndex]
 
 	keyIndex = HM_GetKeyIndex(keys, key, entriesWithHash)
 
@@ -711,13 +711,13 @@ End
 /// @return 0 on success, 1 if the key could not be found
 threadsafe Function HM_DeleteEntry(WAVE/WAVE hashmap, string key)
 
-	variable keyIndex, idx, entriesWithHash, isStr
+	variable keyIndex, bucketIndex, entriesWithHash, isStr
 
-	idx = HM_HashKey(hashmap, key)
+	bucketIndex = HM_HashKey(hashmap, key)
 
-	[WAVE usedRows, WAVE/T keys, WAVE values] = HM_FetchWaves(hashmap, idx)
+	[WAVE usedRows, WAVE/T keys, WAVE values] = HM_FetchWaves(hashmap, bucketIndex)
 
-	entriesWithHash = usedRows[idx]
+	entriesWithHash = usedRows[bucketIndex]
 
 	keyIndex = HM_GetKeyIndex(keys, key, entriesWithHash)
 
@@ -750,7 +750,7 @@ threadsafe Function HM_DeleteEntry(WAVE/WAVE hashmap, string key)
 		values[entriesWithHash - 1] = 0
 	endif
 
-	usedRows[idx] = entriesWithHash - 1
+	usedRows[bucketIndex] = entriesWithHash - 1
 
 	WAVE totalEntries = HM_FetchStats(hashmap)
 	totalEntries[HM_TOTAL_ENTRIES_ROW] -= 1
