@@ -274,6 +274,9 @@ static Function GetEntryWorks()
 	catch
 		CHECK_NO_RTE()
 	endtry
+
+	[valueVar, found] = HM_GetEntryAsNumber(hashmap, "I_DONT_EXIST")
+	CHECK_EQUAL_VAR(found, 0)
 End
 
 static Function DeleteEntryWorks()
@@ -365,6 +368,31 @@ static Function DeleteLastEntryWorks()
 	ret = HM_DeleteEntry(hashmap, key)
 	CHECK_EQUAL_VAR(ret, 0)
 	CHECK_NO_RTE()
+End
+
+static Function DeleteEntryNumericWorks()
+
+	string key
+	variable ret, value
+
+	WAVE hashmap = HM_Create(valueType = IGOR_TYPE_64BIT_FLOAT)
+
+	// add two collisions
+	key   = "7314"
+	value = 150
+	HM_AddEntry(hashmap, key, var = value)
+
+	key   = "57289"
+	value = 200
+	HM_AddEntry(hashmap, key, var = value)
+
+	WAVE/Z results = GetFilledEntries(hashmap)
+	CHECK_WAVE(results, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(results, {6100}, mode = WAVE_DATA)
+
+	// delete the first one
+	ret = HM_DeleteEntry(hashmap, "7314")
+	CHECK_EQUAL_VAR(ret, 0)
 End
 
 /// UTF_TD_GENERATOR DataGenerators#ValidHashmapSizes
@@ -667,6 +695,41 @@ static Function ClearWorks()
 	CHECK_WAVE(keys, NULL_WAVE)
 
 	[result, found] = HM_GetEntryAsString(hashmap, key)
+	CHECK_EQUAL_VAR(found, 0)
+
+	loadFactor = MIES_HM#HM_CalculateLoadFactor(hashmap)
+	CHECK_EQUAL_VAR(loadFactor, 0)
+End
+
+static Function ClearWithNumericWorks()
+
+	string key
+	variable ret, loadFactor, found, value, result
+
+	WAVE/WAVE hashmap = HM_Create(size = 1, valueType = IGOR_TYPE_64BIT_FLOAT)
+
+	loadFactor = MIES_HM#HM_CalculateLoadFactor(hashmap)
+	CHECK_EQUAL_VAR(loadFactor, 0)
+
+	key   = "7314"
+	value = 150
+	ret   = HM_AddEntry(hashmap, key, var = value)
+	CHECK_EQUAL_VAR(ret, 1)
+
+	WAVE/Z keys = HM_GetAllKeys(hashmap)
+	CHECK_EQUAL_TEXTWAVES(keys, {"7314"})
+
+	loadFactor = MIES_HM#HM_CalculateLoadFactor(hashmap)
+	CHECK_EQUAL_VAR(loadFactor, 1)
+
+	[result, found] = HM_GetEntryAsNumber(hashmap, key)
+	CHECK_EQUAL_VAR(found, 1)
+
+	HM_Clear(hashmap)
+	WAVE/Z keys = HM_GetAllKeys(hashmap)
+	CHECK_WAVE(keys, NULL_WAVE)
+
+	[result, found] = HM_GetEntryAsNumber(hashmap, key)
 	CHECK_EQUAL_VAR(found, 0)
 
 	loadFactor = MIES_HM#HM_CalculateLoadFactor(hashmap)
