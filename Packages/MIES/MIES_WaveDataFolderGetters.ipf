@@ -6309,8 +6309,12 @@ threadsafe Function/WAVE GetCacheKeyHashMap()
 
 	WAVE/Z/WAVE/SDFR=dfr wv = hashmap
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, HM_HASHMAP_WAVE_VERSION))
 		return wv
+	elseif(WaveExists(wv))
+		WAVE wv_new = HM_Upgrade(wv)
+
+		return MoveWaveWithOverwrite(wv, wv_new)
 	endif
 
 	WAVE/Z/T/SDFR=dfr keys
@@ -9021,8 +9025,12 @@ threadsafe Function/WAVE GetLogbookKeyHashmap(WAVE values)
 	name = NameOfWave(keys) + "_hashmap"
 	WAVE/Z/WAVE hashmap = dfr:$name
 
-	if(WaveExists(hashmap))
+	if(ExistsWithCorrectLayoutVersion(hashmap, HM_HASHMAP_WAVE_VERSION))
 		return hashmap
+	elseif(WaveExists(hashmap))
+		WAVE hashmap_new = HM_Upgrade(hashmap)
+
+		return MoveWaveWithOverwrite(hashmap, hashmap_new)
 	endif
 
 	Duplicate/FREE/RMD=[FindDimLabel(keys, ROWS, "Parameter")][] keys, onlyNames
