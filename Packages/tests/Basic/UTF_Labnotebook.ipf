@@ -446,7 +446,7 @@ Function GetLastSWSWorksWithIndep()
 	WAVE numericalValues = PrepareLBNNumericalValues(numericalValues_large)
 
 	WAVE/Z settings = GetLastSweepWithSetting(numericalValues, "TP Pulse Duration", sweepNo)
-	CHECK_WAVE(settings, NUMERIC_WAVE)
+	CHECK_WAVE(settings, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
 	CHECK(IsValidSweepNumber(sweepNo))
 	CHECK_EQUAL_VAR(settings[INDEP_HEADSTAGE], 104)
 End

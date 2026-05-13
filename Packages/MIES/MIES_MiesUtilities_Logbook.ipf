@@ -1547,7 +1547,7 @@ threadsafe Function/WAVE GetLastSweepWithSetting(WAVE numericalValues, string se
 	endif
 
 	idx = indizes[DimSize(indizes, ROWS) - 1]
-	Make/FREE/N=(DimSize(numericalValues, LAYERS)) data = numericalValues[idx][settingsCol][p]
+	Make/D/FREE/N=(DimSize(numericalValues, LAYERS)) data = numericalValues[idx][settingsCol][p]
 	sweepNo = numericalValues[idx][GetSweepColumn(numericalValues)][0]
 
 	return data
