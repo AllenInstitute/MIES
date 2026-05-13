@@ -2588,7 +2588,7 @@ static Function/WAVE PSQ_DS_CalculateDAScaleForFailingSweepAndNegSlope(string ty
 	variable xp
 	string   msg
 
-	xp = x + PSQ_DA_FAILSWEEP_NEGSLOPE_OFFSET
+	xp = round(x + PSQ_DA_FAILSWEEP_NEGSLOPE_OFFSET)
 
 	Make/T/FREE DAScaleWithType = {PSQ_DS_AD_BuildFutureDAScaleEntry(type, xp)}
 
@@ -3054,7 +3054,7 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 		key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, keyRhSuAd, query = 1)
 		WAVE/Z/T dataRhSuAdLBN = GetLastSetting(textualValues, sweepNo, key, UNKNOWN_MODE)
 
-		Make/FREE/N=0 dataCurrentSCI
+		Make/FREE/N=0/D dataCurrentSCI
 	else
 		key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, keyRhSuAd, query = 1)
 		WAVE/Z/T dataRhSuAdLBN = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
@@ -3088,7 +3088,7 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 			WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
 
 			numEntries = WaveExists(sweeps) ? DimSize(sweeps, ROWS) : 0
-			Make/FREE/N=(numEntries) dataCurrentSCI = NaN
+			Make/D/FREE/N=(numEntries) dataCurrentSCI = NaN
 		endif
 	endif
 
@@ -3135,7 +3135,7 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 				// and if that does not exist we definitly don't have a negSlopePassed situation
 				if(!WaveExists(negSlopesPassedRhSuAdLBN))
 					WAVE/T negSlopesPassedRhSuAdLBN = LBN_GetTextWave()
-					Make/FREE/N=(DimSize(dataRhSuAd, ROWS) - 1) negSlopesPassedRhSuAdContents = 0
+					Make/D/FREE/N=(DimSize(dataRhSuAd, ROWS) - 1) negSlopesPassedRhSuAdContents = 0
 					negSlopesPassedRhSuAdLBN[INDEP_HEADSTAGE] = NumericWaveToList(negSlopesPassedRhSuAdContents, ";")
 				endif
 			endif
@@ -3154,7 +3154,7 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 				// and if that does not exist we definitly don't have NaN fiSlopes
 				if(!WaveExists(fISlopesRhSuAdLBN))
 					WAVE/T fISlopesRhSuAdLBN = LBN_GetTextWave()
-					Make/FREE/N=(DimSize(dataRhSuAd, ROWS) - 1) fISlopesRhSuAdLBNContents = 0
+					Make/D/FREE/N=(DimSize(dataRhSuAd, ROWS) - 1) fISlopesRhSuAdLBNContents = 0
 					fISlopesRhSuAdLBN[headstage] = NumericWaveToList(fISlopesRhSuAdLBNContents, ";")
 				endif
 			endif
@@ -3176,15 +3176,15 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 		endif
 
 		if(fromRhSuAd)
-			WAVE dataCurrentSCIFiltered = dataCurrentSCI
+			WAVE/D dataCurrentSCIFiltered = dataCurrentSCI
 		else
 			key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
-			WAVE/Z sweepPassed = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+			WAVE/Z/D sweepPassed = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 			if(beforeSweepQCResult)
 				if(!WaveExists(sweepPassed))
 					// first sweep of SCI
-					Make/FREE/N=1 sweepPassed
+					Make/D/FREE/N=1 sweepPassed
 				endif
 
 				key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
@@ -3198,24 +3198,24 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 
 			if(filterNegSlopeAndNaN)
 				key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FI_NEG_SLOPE_PASS, query = 1)
-				WAVE/Z negSlopePassed = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+				WAVE/Z/D negSlopePassed = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 				if(!WaveExists(negSlopePassed))
-					Make/FREE/N=(DimSize(sweepPassed, ROWS)) negSlopePassed = 0
+					Make/D/FREE/N=(DimSize(sweepPassed, ROWS)) negSlopePassed = 0
 				elseif(beforeSweepQCResult)
 					// we have not yet any result for the neg slope QC value for the current sweep
 					// so neg slope QC failed
-					negSlopePassed[inf] = 0
+					negSlopePassed[Inf] = 0
 				endif
 
 				key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FI_SLOPE, query = 1)
-				WAVE/Z fISlope = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+				WAVE/Z/D fISlope = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 				if(!WaveExists(fISlope))
-					Make/FREE/N=(DimSize(negSlopePassed, ROWS)) fISlope = 0
+					Make/D/FREE/N=(DimSize(negSlopePassed, ROWS)) fISlope = 0
 				elseif(beforeSweepQCResult)
 					// see comment above
-					fiSlope[inf] = 0
+					fiSlope[Inf] = 0
 				endif
 
 				Duplicate/FREE sweepPassed, filterPassed
@@ -3226,10 +3226,10 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 			endif
 
 			// we don't do inbetween filtering here as we will matching elements as we steal one from RhSuAd
-			WAVE/Z dataCurrentSCIFiltered = PSQ_DS_FilterPassingData(dataCurrentSCI, filterPassed)
+			WAVE/Z/D dataCurrentSCIFiltered = PSQ_DS_FilterPassingData(dataCurrentSCI, filterPassed)
 
 			if(!WaveExists(dataCurrentSCIFiltered))
-				Make/FREE/N=0 dataCurrentSCIFiltered
+				Make/D/FREE/N=0 dataCurrentSCIFiltered
 			endif
 		endif
 	else
