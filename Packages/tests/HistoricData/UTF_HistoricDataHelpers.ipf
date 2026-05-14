@@ -153,6 +153,20 @@ static Function/WAVE GetHistoricDataFilesNWB()
 	return files
 End
 
+static Function/WAVE GetHistoricDataFilesSweepFormulaIVSCCAPFreq()
+
+	Make/FREE/T files = {                                      \
+	                     "Scn1a-R613X_B6-825669.02.09.02.nwb", \
+	                     "Scn1a-R613X_B6-825669.02.09.04.nwb"  \
+	                    }
+
+	DownloadFilesIfRequired(files)
+	SetLabelsForDGWave(files)
+
+	return files
+
+End
+
 static Function/WAVE GetHistoricDataFilesSweepUpgrade()
 
 	Make/FREE/T files = {"single_numeric_sweep.pxp"}

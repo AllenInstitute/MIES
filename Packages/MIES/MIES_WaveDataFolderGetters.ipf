@@ -9403,8 +9403,8 @@ End
 /// @brief Wave storing sf plot meta information per formularesult, filled in SF_GatherFormulaResults
 Function/WAVE GetSFPlotMetaData()
 
-	Make/FREE/T/N=(5) wv
-	SetDimensionLabels(wv, "DATATYPE;OPSTACK;ARGSETUPSTACK;XAXISLABEL;YAXISLABEL;", ROWS)
+	Make/FREE/T/N=(9) wv
+	SetDimensionLabels(wv, "DATATYPE;OPSTACK;ARGSETUPSTACK;XAXISLABEL;YAXISLABEL;XAXISOFFSET;YAXISOFFSET;XAXISPERCENT;YAXISPERCENT;", ROWS)
 
 	return wv
 End
@@ -9479,6 +9479,22 @@ Function/WAVE GetSFIgorFitProperties()
 
 	SetDimLabel COLS, 0, FITFUNC, wv
 	SetDimLabel COLS, 1, NUMCOEFS, wv
+
+	return wv
+End
+
+/// @brief The returned wave reference wave encapsulates the information gathered by the SF operation PrepareFit
+Function/WAVE GetSFPrepareFitWave()
+
+	Make/FREE/T/N=2 txtInfo
+	SetDimLabel ROWS, 0, FITFUNCNAME, txtInfo
+	SetDimLabel ROWS, 1, HOLDSTR, txtInfo
+
+	Make/FREE/WAVE wv = {txtInfo, $"", $"", $""}
+	SetDimLabel ROWS, 0, FITARGS, wv
+	SetDimLabel ROWS, 1, COEFS, wv
+	SetDimLabel ROWS, 2, RANGE, wv
+	SetDimLabel ROWS, 3, CONSTRAINTS, wv
 
 	return wv
 End

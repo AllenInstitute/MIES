@@ -13,4 +13,5 @@
 #include "UTF_HistoricDataHelpers"
 #include "UTF_HistoricEpochClipping"
 #include "UTF_HistoricSweepBrowser"
+#include "UTF_HistoricSweepFormula"
 #include "UTF_HistoricSweepUpgrade"
