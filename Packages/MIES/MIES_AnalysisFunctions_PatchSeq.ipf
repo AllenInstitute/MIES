@@ -2181,7 +2181,7 @@ static Function [WAVE/D fitOffset, WAVE/D fitSlope, string errMsg] PSQ_DS_FitFre
 	[WAVE DAScales, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_DASCALE, filterPassing = 1, beforeSweepQCResult = beforeSweepQCResult, filterNegSlopeAndNaN = 1, fromRhSuAd = fromRhSuAd)
 	[WAVE apfreq, emptySCI]   = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_APFREQ, filterPassing = 1, beforeSweepQCResult = beforeSweepQCResult, filterNegSlopeAndNaN = 1, fromRhSuAd = fromRhSuAd)
 
-	if(!WaveExists(apFreq) && !WaveExists(DAScales))
+	if(!WaveExists(apFreq) && !WaveExists(DAScales) || (emptySCI && !fromRhSuAd))
 		return [$"", $"", "No apfreq/DAScales data"]
 	endif
 
