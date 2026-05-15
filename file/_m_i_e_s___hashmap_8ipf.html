@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File MIES_Hashmap.ipf &#8212; MIES Igor (main) Release_2.9_20250502-907-g1f5acffc9 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="../_static/documentation_options.js?v=0e57ecd1"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_IVSCC.ipf" href="_m_i_e_s___i_v_s_c_c_8ipf.html" />
+    <link rel="prev" title="File MIES_HDF5Ops.ipf" href="_m_i_e_s___h_d_f5_ops_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___i_v_s_c_c_8ipf.html" title="File MIES_IVSCC.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___h_d_f5_ops_8ipf.html" title="File MIES_HDF5Ops.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-907-g1f5acffc9 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Hashmap.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-hashmap-ipf">
+<span id="id1"></span><h1>File MIES_Hashmap.ipf<a class="headerlink" href="#file-mies-hashmap-ipf" title="Link to this heading">¶</a></h1>
+<p>Pure Igor Pro implementation of a hashmap using separate chaining.</p>
+<p>Features:<ul class="simple">
+<li><p>Supports all sizes which are a power of two</p></li>
+<li><p>Constant time access O(1) with small load factors</p></li>
+<li><p>Handles collisions correctly</p></li>
+<li><p>Avoids implicit rehashing but supports explicit rehashing</p></li>
+<li><p>The hashmaps can be used in preemptive threads, but none of them are reentrant </p></li>
+</ul>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-indizes-into-hm_createstatswave()">Indizes into HM_CreateStatsWave()</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420HM_TOTAL_ENTRIES_ROW">
+<span id="_CPPv320HM_TOTAL_ENTRIES_ROW"></span><span id="_CPPv220HM_TOTAL_ENTRIES_ROW"></span><span id="HM_TOTAL_ENTRIES_ROW__doubleC"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1a69ef3d870dd95b92c9cca88144abe41c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_TOTAL_ENTRIES_ROW</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv420HM_TOTAL_ENTRIES_ROW" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-indizes-into-hm_createmanagementwave()">Indizes into HM_CreateManagementWave()</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv416HM_USED_ROWS_ROW">
+<span id="_CPPv316HM_USED_ROWS_ROW"></span><span id="_CPPv216HM_USED_ROWS_ROW"></span><span id="HM_USED_ROWS_ROW__doubleC"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1a5cc0b0240af3bba4a86ddd8f1cb18524"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_USED_ROWS_ROW</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv416HM_USED_ROWS_ROW" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv412HM_STATS_ROW">
+<span id="_CPPv312HM_STATS_ROW"></span><span id="_CPPv212HM_STATS_ROW"></span><span id="HM_STATS_ROW__doubleC"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1acd48508f95cca96a01edb2598a320632"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_STATS_ROW</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv412HM_STATS_ROW" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-indizes-into-hm_createhashmap()">Indizes into HM_CreateHashmap()</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv414HM_KEYS_COLUMN">
+<span id="_CPPv314HM_KEYS_COLUMN"></span><span id="_CPPv214HM_KEYS_COLUMN"></span><span id="HM_KEYS_COLUMN__doubleC"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1a1db160ebd68bf3bceee660ffe42bfd5e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_KEYS_COLUMN</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv414HM_KEYS_COLUMN" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv416HM_VALUES_COLUMN">
+<span id="_CPPv316HM_VALUES_COLUMN"></span><span id="_CPPv216HM_VALUES_COLUMN"></span><span id="HM_VALUES_COLUMN__doubleC"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1a8c89158991eb85e09f16d0be1f182ee1"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_VALUES_COLUMN</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv416HM_VALUES_COLUMN" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-indizes-into-hm_create()">Indizes into HM_Create()</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv411HM_MGMT_ROW">
+<span id="_CPPv311HM_MGMT_ROW"></span><span id="_CPPv211HM_MGMT_ROW"></span><span id="HM_MGMT_ROW__doubleC"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1add6eae7b24b5b6c63e1c397171deb91c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_MGMT_ROW</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv411HM_MGMT_ROW" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv414HM_HASHMAP_ROW">
+<span id="_CPPv314HM_HASHMAP_ROW"></span><span id="_CPPv214HM_HASHMAP_ROW"></span><span id="HM_HASHMAP_ROW__doubleC"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1adef530467432dc2883461da638bdda78"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_HASHMAP_ROW</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv414HM_HASHMAP_ROW" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410HM_DJBHash6string">
+<span id="_CPPv310HM_DJBHash6string"></span><span id="_CPPv210HM_DJBHash6string"></span><span id="HM_DJBHash__string"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1ac888b06a81064669ffa4b2e855e877aa"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_DJBHash</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410HM_DJBHash6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Implementation of djb2 in plain Igor Pro. </p>
+<p>The implementation here does support embedded nulls, see DisplayHelpTopic “Embedded Nulls in Literal Strings”.</p>
+<p>See also <a class="reference external" href="https://github.com/dim13/djb2/blob/master/docs/hash.md#djb2">https://github.com/dim13/djb2/blob/master/docs/hash.md#djb2</a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410HM_HashKey11WaveRefWave6string">
+<span id="_CPPv310HM_HashKey11WaveRefWave6string"></span><span id="_CPPv210HM_HashKey11WaveRefWave6string"></span><span id="HM_HashKey__WaveRefWave.string"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1a4aab4ce7287b4675fd8cd2218964d922"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_HashKey</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hashmap</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410HM_HashKey11WaveRefWave6string" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414HM_GetKeyIndex8WaveText6string8variable">
+<span id="_CPPv314HM_GetKeyIndex8WaveText6string8variable"></span><span id="_CPPv214HM_GetKeyIndex8WaveText6string8variable"></span><span id="HM_GetKeyIndex__WaveText.string.variable"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1a9a5e8ba0feccdb9f8f9f0f6d8b439c83"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_GetKeyIndex</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">keys</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numFilledEntries</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414HM_GetKeyIndex8WaveText6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416HM_FetchUsedRows11WaveRefWave">
+<span id="_CPPv316HM_FetchUsedRows11WaveRefWave"></span><span id="_CPPv216HM_FetchUsedRows11WaveRefWave"></span><span id="HM_FetchUsedRows__WaveRefWave"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1a688816302adb91bbd83b4dbd8f8a9c9a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_FetchUsedRows</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hashmap</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416HM_FetchUsedRows11WaveRefWave" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413HM_FetchStats11WaveRefWave">
+<span id="_CPPv313HM_FetchStats11WaveRefWave"></span><span id="_CPPv213HM_FetchStats11WaveRefWave"></span><span id="HM_FetchStats__WaveRefWave"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1a90777af9a8747ca85030907deab05656"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_FetchStats</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hashmap</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413HM_FetchStats11WaveRefWave" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410HM_GetSize11WaveRefWave">
+<span id="_CPPv310HM_GetSize11WaveRefWave"></span><span id="_CPPv210HM_GetSize11WaveRefWave"></span><span id="HM_GetSize__WaveRefWave"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1a2ef9f71b5245e23a39f0c27b16ccffba"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_GetSize</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hashmap</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410HM_GetSize11WaveRefWave" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412HM_FetchKeys11WaveRefWave8variable">
+<span id="_CPPv312HM_FetchKeys11WaveRefWave8variable"></span><span id="_CPPv212HM_FetchKeys11WaveRefWave8variable"></span><span id="HM_FetchKeys__WaveRefWave.variable"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1ac4347ae8ab1b58b3f61463a7bfb6a680"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_FetchKeys</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hashmap</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">idx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412HM_FetchKeys11WaveRefWave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414HM_FetchValues11WaveRefWave8variable">
+<span id="_CPPv314HM_FetchValues11WaveRefWave8variable"></span><span id="_CPPv214HM_FetchValues11WaveRefWave8variable"></span><span id="HM_FetchValues__WaveRefWave.variable"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1abd9bbc9922f6009019503f232d7881fc"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_FetchValues</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hashmap</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">idx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414HM_FetchValues11WaveRefWave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413HM_FetchWaves11WaveRefWave8variable">
+<span id="_CPPv313HM_FetchWaves11WaveRefWave8variable"></span><span id="_CPPv213HM_FetchWaves11WaveRefWave8variable"></span><span id="HM_FetchWaves__WaveRefWave.variable"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1aad3e371c1bac62f6f36f185da0d03199"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">WAVE</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html#_CPPv48WaveText10WaveOrNull8variable8variable8variable8variable" title="WaveText"><span class="n"><span class="pre">WaveText</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">WAVE</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_FetchWaves</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hashmap</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">idx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413HM_FetchWaves11WaveRefWave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418HM_CreateStatsWavev">
+<span id="_CPPv318HM_CreateStatsWavev"></span><span id="_CPPv218HM_CreateStatsWavev"></span><span id="HM_CreateStatsWave"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1aa09ee9feb7563808a33fa76c543d911c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_CreateStatsWave</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418HM_CreateStatsWavev" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Statistics wave. </p>
+<p>Rows:<ul class="simple">
+<li><p>0: Total number of filled entries </p></li>
+</ul>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417HM_CreateUsedRows8variable">
+<span id="_CPPv317HM_CreateUsedRows8variable"></span><span id="_CPPv217HM_CreateUsedRows8variable"></span><span id="HM_CreateUsedRows__variable"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1a2250b9ec06f007927cba6cd199e1a5d4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_CreateUsedRows</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417HM_CreateUsedRows8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>List of stored key/value pairs per hash prefix. </p>
+<p>Rows:<ul class="simple">
+<li><p>Number of key/value pairs per hashmap row </p></li>
+</ul>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423HM_CreateManagementWave8variable">
+<span id="_CPPv323HM_CreateManagementWave8variable"></span><span id="_CPPv223HM_CreateManagementWave8variable"></span><span id="HM_CreateManagementWave__variable"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1aac325b06cef69d16f252094e26261eca"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_CreateManagementWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423HM_CreateManagementWave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Internal management wave. </p>
+<p>Rows:<ul class="simple">
+<li><p>0: 32-bit unsigned int wave with size rows denoting the number of key/value pairs per line</p></li>
+<li><p>1: wave ref wave with stats entries, see HM_GetStatsWave() </p></li>
+</ul>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416HM_CreateHashmap8variable8variable">
+<span id="_CPPv316HM_CreateHashmap8variable8variable"></span><span id="_CPPv216HM_CreateHashmap8variable8variable"></span><span id="HM_CreateHashmap__variable.variable"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1ab313ee9f8bc187cc4991001cea04d355"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_CreateHashmap</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">valueType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416HM_CreateHashmap8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a wave reference wave resembling a hashmap (implementation) </p>
+<p>Rows:<ul class="simple">
+<li><p>first bits of the hash</p></li>
+</ul>
+</p>
+<p>Columns:<ul class="simple">
+<li><p>0: 1D text wave with all keys for this hash</p></li>
+<li><p>1: 1D wave with all values for this hash, type depends on valueType parameter</p></li>
+</ul>
+</p>
+<p>Complexity: O(n)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>size</strong> – size of the hashmap, needs to be a power of two </p></li>
+<li><p><strong>valueType</strong> – wave type of the values, defaults to text wave and can be one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1IgorTypes"><span class="std std-ref">IgorTypes</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv49HM_Create8variable8variable">
+<span id="_CPPv39HM_Create8variable8variable"></span><span id="_CPPv29HM_Create8variable8variable"></span><span id="HM_Create__variable.variable"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1ae9a737ac748be6a3d924682a46a7f12e"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_Create</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">valueType</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49HM_Create8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return a wave reference wave resembling a hashmap. </p>
+<p>Rows:<ul class="simple">
+<li><p>0: Wave reference wave with management wave, see <a class="reference internal" href="#_m_i_e_s___hashmap_8ipf_1aac325b06cef69d16f252094e26261eca"><span class="std std-ref">HM_CreateManagementWave()</span></a></p></li>
+<li><p>1: Wave reference wave with hashmap data, see <a class="reference internal" href="#_m_i_e_s___hashmap_8ipf_1ab313ee9f8bc187cc4991001cea04d355"><span class="std std-ref">HM_CreateHashmap()</span></a></p></li>
+</ul>
+</p>
+<p>Complexity: O(n)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>size</strong> – size of the hashmap, needs to be a power of two </p></li>
+<li><p><strong>valueType</strong> – wave type of the values, defaults to text wave and all non-complex numeric types from <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1IgorTypes"><span class="std std-ref">IgorTypes</span></a> are supported </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv48HM_Clear11WaveRefWave">
+<span id="_CPPv38HM_Clear11WaveRefWave"></span><span id="_CPPv28HM_Clear11WaveRefWave"></span><span id="HM_Clear__WaveRefWave"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1add60f250e29bde7ca9daa459cb1ceb31"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_Clear</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hashmap</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv48HM_Clear11WaveRefWave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Clear the hashmap. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421HM_ClearKeysAndValues11WaveRefWave8variable">
+<span id="_CPPv321HM_ClearKeysAndValues11WaveRefWave8variable"></span><span id="_CPPv221HM_ClearKeysAndValues11WaveRefWave8variable"></span><span id="HM_ClearKeysAndValues__WaveRefWave.variable"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1a31431c18fe1742cb652debfd95f788f6"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_ClearKeysAndValues</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hashmap</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">idx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421HM_ClearKeysAndValues11WaveRefWave8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413HM_StoreValue4wave8variableP6stringP8variable">
+<span id="_CPPv313HM_StoreValue4wave8variableP6stringP8variable"></span><span id="_CPPv213HM_StoreValue4wave8variableP6stringP8variable"></span><span id="HM_StoreValue__wave.variable.stringP.variableP"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1a49e95f75f895d931d7d5fbb27eff46c8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_StoreValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">values</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">idx</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">str</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">var</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413HM_StoreValue4wave8variableP6stringP8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411HM_AddEntry11WaveRefWave6string6string8variable">
+<span id="_CPPv311HM_AddEntry11WaveRefWave6string6string8variable"></span><span id="_CPPv211HM_AddEntry11WaveRefWave6string6string8variable"></span><span id="HM_AddEntry__WaveRefWave.string.string.variable"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1afac58822a627caaf20cc96136ee4f817"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_AddEntry</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hashmap</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411HM_AddEntry11WaveRefWave6string6string8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Add an entry into the hashmap. </p>
+<p>Complexity: Amortized O(1)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>1 when adding a new value and 0 when overwriting </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419HM_GetEntryAsString11WaveRefWave6string">
+<span id="_CPPv319HM_GetEntryAsString11WaveRefWave6string"></span><span id="_CPPv219HM_GetEntryAsString11WaveRefWave6string"></span><span id="HM_GetEntryAsString__WaveRefWave.string"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1a70b1ecc3d5a58a7ebff7d4dc94d8e630"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_GetEntryAsString</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hashmap</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419HM_GetEntryAsString11WaveRefWave6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Get a string entry from the hashmap. </p>
+<p>Complexity: Amortized O(1)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return values<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – string value found </p></li>
+<li><p><strong>found</strong> – 1 if something was found, 0 if not </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419HM_GetEntryAsNumber11WaveRefWave6string">
+<span id="_CPPv319HM_GetEntryAsNumber11WaveRefWave6string"></span><span id="_CPPv219HM_GetEntryAsNumber11WaveRefWave6string"></span><span id="HM_GetEntryAsNumber__WaveRefWave.string"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1a058b6ef46c5a0295ae4cab6702586297"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_GetEntryAsNumber</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hashmap</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419HM_GetEntryAsNumber11WaveRefWave6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Get a numeric entry from the hashmap. </p>
+<p>Complexity: Amortized O(1)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return values<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – value found </p></li>
+<li><p><strong>found</strong> – 1 if something was found, 0 if not </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414HM_DeleteEntry11WaveRefWave6string">
+<span id="_CPPv314HM_DeleteEntry11WaveRefWave6string"></span><span id="_CPPv214HM_DeleteEntry11WaveRefWave6string"></span><span id="HM_DeleteEntry__WaveRefWave.string"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1adae452f9e6464c2b570b8d569858da4d"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_DeleteEntry</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hashmap</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414HM_DeleteEntry11WaveRefWave6string" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Delete the entry with the given key. </p>
+<p>Complexity: Amortized O(1)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0 on success, 1 if the key could not be found </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413HM_GetAllKeys11WaveRefWave">
+<span id="_CPPv313HM_GetAllKeys11WaveRefWave"></span><span id="_CPPv213HM_GetAllKeys11WaveRefWave"></span><span id="HM_GetAllKeys__WaveRefWave"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1a9340134ac15b461aaa8aa21e3d562a9e"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_GetAllKeys</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hashmap</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413HM_GetAllKeys11WaveRefWave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Return all keys in the hashmap. </p>
+<p>Complexity: O(n) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419HM_GetAllKeysPerRow11WaveRefWave8variable8variable">
+<span id="_CPPv319HM_GetAllKeysPerRow11WaveRefWave8variable8variable"></span><span id="_CPPv219HM_GetAllKeysPerRow11WaveRefWave8variable8variable"></span><span id="HM_GetAllKeysPerRow__WaveRefWave.variable.variable"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1a484a9a302594bf95bd765bcec303c90e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_GetAllKeysPerRow</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hashmap</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entriesWithHash</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419HM_GetAllKeysPerRow11WaveRefWave8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422HM_CalculateLoadFactor11WaveRefWave">
+<span id="_CPPv322HM_CalculateLoadFactor11WaveRefWave"></span><span id="_CPPv222HM_CalculateLoadFactor11WaveRefWave"></span><span id="HM_CalculateLoadFactor__WaveRefWave"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1a27c117bf06bd2f84103bf7ed9ca3e7af"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_CalculateLoadFactor</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hashmap</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422HM_CalculateLoadFactor11WaveRefWave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Calculate the load factor from the hashmap and the filled entries. </p>
+<p>Complexity: O(1) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423HM_CalculateOptimumSize8variable">
+<span id="_CPPv323HM_CalculateOptimumSize8variable"></span><span id="_CPPv223HM_CalculateOptimumSize8variable"></span><span id="HM_CalculateOptimumSize__variable"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1aa396b2ec783b6363be68909e3fa7c2b2"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_CalculateOptimumSize</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">totalEntries</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423HM_CalculateOptimumSize8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Calculate the optimum size for the hashmap so that the load factor is below (<a class="reference internal" href="#_m_i_e_s___hashmap_8ipf_1adf7e7b64ff4e9aa99891642286f9fcfc"><span class="std std-ref">HM_MAX_LOAD_FACTOR</span></a> / 2) </p>
+<p>Complexity: O(1) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419HM_RehashIfRequiredP11WaveRefWave">
+<span id="_CPPv319HM_RehashIfRequiredP11WaveRefWave"></span><span id="_CPPv219HM_RehashIfRequiredP11WaveRefWave"></span><span id="HM_RehashIfRequired__WaveRefWaveP"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1a6eca9fc34540a769a433640b67db9f21"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_RehashIfRequired</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">hashmap</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419HM_RehashIfRequiredP11WaveRefWave" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Rehashes if required and returns a modified hashmap pass-by-reference. </p>
+<p>The load factor (number of available entries vs filled entries) is determined. And if that is above <a class="reference internal" href="#_m_i_e_s___hashmap_8ipf_1adf7e7b64ff4e9aa99891642286f9fcfc"><span class="std std-ref">HM_MAX_LOAD_FACTOR</span></a> we create a new hashmap with a large enough size and add all existing entries to it.</p>
+<p>Complexity: Usually amortized O(1) but in the worst case O(n)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0 if nothing needed to be done, 1 if the hashmap was resized and rehashed </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv434HM_GetHashmapFromEntriesAndIndizes14WaveTextOrNull8variable8variable8variable8variable">
+<span id="_CPPv334HM_GetHashmapFromEntriesAndIndizes14WaveTextOrNull8variable8variable8variable8variable"></span><span id="_CPPv234HM_GetHashmapFromEntriesAndIndizes14WaveTextOrNull8variable8variable8variable8variable"></span><span id="HM_GetHashmapFromEntriesAndIndizes__WaveTextOrNull.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1a04eb2007134a6f5417c0346fd1fa219f"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_GetHashmapFromEntriesAndIndizes</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveTextOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entries</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numEntries</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">valueType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">minSize</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">caseSensitive</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv434HM_GetHashmapFromEntriesAndIndizes14WaveTextOrNull8variable8variable8variable8variable" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Create a hashmap and fill it with <code class="docutils literal notranslate"><span class="pre">entries</span></code> and their indizes. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>entries</strong> – wave with the entries to be added, can be a null wave iff numEntries is zero. Empty entries are ignored. </p></li>
+<li><p><strong>numEntries</strong> – number of values to read from entries </p></li>
+<li><p><strong>valueType</strong> – type of the values in the hashmap, see <a class="reference internal" href="#_m_i_e_s___hashmap_8ipf_1ae9a737ac748be6a3d924682a46a7f12e"><span class="std std-ref">HM_Create</span></a></p></li>
+<li><p><strong>minSize</strong> – minimum size of the created hashmap, required to be a power of two </p></li>
+<li><p><strong>caseSensitive</strong> – [optional, defaults to true] lower case all keys if false, don’t touch them if true</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>hashmap with the content from entries as keys and their indizes as values </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv431HM_SMALL_WAVE_OPTIMIZATION_ROWS">
+<span id="_CPPv331HM_SMALL_WAVE_OPTIMIZATION_ROWS"></span><span id="_CPPv231HM_SMALL_WAVE_OPTIMIZATION_ROWS"></span><span id="HM_SMALL_WAVE_OPTIMIZATION_ROWS__doubleC"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1abab4eb662a76782d91df160bbd1714c8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_SMALL_WAVE_OPTIMIZATION_ROWS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">5</span></span><a class="headerlink" href="#_CPPv431HM_SMALL_WAVE_OPTIMIZATION_ROWS" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv418HM_MAX_LOAD_FACTOR">
+<span id="_CPPv318HM_MAX_LOAD_FACTOR"></span><span id="_CPPv218HM_MAX_LOAD_FACTOR"></span><span id="HM_MAX_LOAD_FACTOR__doubleC"></span><span class="target" id="_m_i_e_s___hashmap_8ipf_1adf7e7b64ff4e9aa99891642286f9fcfc"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HM_MAX_LOAD_FACTOR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.7</span></span><a class="headerlink" href="#_CPPv418HM_MAX_LOAD_FACTOR" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___n_w_b_utils_8ipf.html">File IPNWB_NWBUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___accelerated_modify_graph_8ipf.html">File MIES_AcceleratedModifyGraph.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___acquisition_state_handling_8ipf.html">File MIES_AcquisitionStateHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___macro_8ipf.html">File MIES_AnalysisBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export___macro_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser___plotter_8ipf.html">File MIES_Browser_Plotter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___conversion_constants_8ipf.html">File MIES_ConversionConstants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_n_d_i_8ipf.html">File MIES_DANDI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configuraton_recreation_8ipf.html">File MIES_DataConfiguratonRecreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel___macro_8ipf.html">File MIES_DebugPanel_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___epochs_8ipf.html">File MIES_Epochs.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_Hashmap.ipf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420HM_TOTAL_ENTRIES_ROW"><code class="docutils literal notranslate"><span class="pre">HM_TOTAL_ENTRIES_ROW</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416HM_USED_ROWS_ROW"><code class="docutils literal notranslate"><span class="pre">HM_USED_ROWS_ROW</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412HM_STATS_ROW"><code class="docutils literal notranslate"><span class="pre">HM_STATS_ROW</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414HM_KEYS_COLUMN"><code class="docutils literal notranslate"><span class="pre">HM_KEYS_COLUMN</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416HM_VALUES_COLUMN"><code class="docutils literal notranslate"><span class="pre">HM_VALUES_COLUMN</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411HM_MGMT_ROW"><code class="docutils literal notranslate"><span class="pre">HM_MGMT_ROW</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414HM_HASHMAP_ROW"><code class="docutils literal notranslate"><span class="pre">HM_HASHMAP_ROW</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv410HM_DJBHash6string"><code class="docutils literal notranslate"><span class="pre">HM_DJBHash()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv410HM_HashKey11WaveRefWave6string"><code class="docutils literal notranslate"><span class="pre">HM_HashKey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414HM_GetKeyIndex8WaveText6string8variable"><code class="docutils literal notranslate"><span class="pre">HM_GetKeyIndex()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416HM_FetchUsedRows11WaveRefWave"><code class="docutils literal notranslate"><span class="pre">HM_FetchUsedRows()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413HM_FetchStats11WaveRefWave"><code class="docutils literal notranslate"><span class="pre">HM_FetchStats()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv410HM_GetSize11WaveRefWave"><code class="docutils literal notranslate"><span class="pre">HM_GetSize()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412HM_FetchKeys11WaveRefWave8variable"><code class="docutils literal notranslate"><span class="pre">HM_FetchKeys()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414HM_FetchValues11WaveRefWave8variable"><code class="docutils literal notranslate"><span class="pre">HM_FetchValues()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413HM_FetchWaves11WaveRefWave8variable"><code class="docutils literal notranslate"><span class="pre">HM_FetchWaves()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418HM_CreateStatsWavev"><code class="docutils literal notranslate"><span class="pre">HM_CreateStatsWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417HM_CreateUsedRows8variable"><code class="docutils literal notranslate"><span class="pre">HM_CreateUsedRows()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423HM_CreateManagementWave8variable"><code class="docutils literal notranslate"><span class="pre">HM_CreateManagementWave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416HM_CreateHashmap8variable8variable"><code class="docutils literal notranslate"><span class="pre">HM_CreateHashmap()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv49HM_Create8variable8variable"><code class="docutils literal notranslate"><span class="pre">HM_Create()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv48HM_Clear11WaveRefWave"><code class="docutils literal notranslate"><span class="pre">HM_Clear()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421HM_ClearKeysAndValues11WaveRefWave8variable"><code class="docutils literal notranslate"><span class="pre">HM_ClearKeysAndValues()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413HM_StoreValue4wave8variableP6stringP8variable"><code class="docutils literal notranslate"><span class="pre">HM_StoreValue()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv411HM_AddEntry11WaveRefWave6string6string8variable"><code class="docutils literal notranslate"><span class="pre">HM_AddEntry()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419HM_GetEntryAsString11WaveRefWave6string"><code class="docutils literal notranslate"><span class="pre">HM_GetEntryAsString()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419HM_GetEntryAsNumber11WaveRefWave6string"><code class="docutils literal notranslate"><span class="pre">HM_GetEntryAsNumber()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414HM_DeleteEntry11WaveRefWave6string"><code class="docutils literal notranslate"><span class="pre">HM_DeleteEntry()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413HM_GetAllKeys11WaveRefWave"><code class="docutils literal notranslate"><span class="pre">HM_GetAllKeys()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419HM_GetAllKeysPerRow11WaveRefWave8variable8variable"><code class="docutils literal notranslate"><span class="pre">HM_GetAllKeysPerRow()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv422HM_CalculateLoadFactor11WaveRefWave"><code class="docutils literal notranslate"><span class="pre">HM_CalculateLoadFactor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv423HM_CalculateOptimumSize8variable"><code class="docutils literal notranslate"><span class="pre">HM_CalculateOptimumSize()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv419HM_RehashIfRequiredP11WaveRefWave"><code class="docutils literal notranslate"><span class="pre">HM_RehashIfRequired()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv434HM_GetHashmapFromEntriesAndIndizes14WaveTextOrNull8variable8variable8variable8variable"><code class="docutils literal notranslate"><span class="pre">HM_GetHashmapFromEntriesAndIndizes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv431HM_SMALL_WAVE_OPTIMIZATION_ROWS"><code class="docutils literal notranslate"><span class="pre">HM_SMALL_WAVE_OPTIMIZATION_ROWS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418HM_MAX_LOAD_FACTOR"><code class="docutils literal notranslate"><span class="pre">HM_MAX_LOAD_FACTOR</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c___macro_8ipf.html">File MIES_IVSCC_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog___macro_8ipf.html">File MIES_InputDialog_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___j_s_o_n_wave_notes_8ipf.html">File MIES_JSONWaveNotes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logbook_viewer_8ipf.html">File MIES_LogbookViewer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___logging_8ipf.html">File MIES_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___algorithm_8ipf.html">File MIES_MiesUtilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___backup_waves_8ipf.html">File MIES_MiesUtilities_BackupWaves.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___channels_8ipf.html">File MIES_MiesUtilities_Channels.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___checks_8ipf.html">File MIES_MiesUtilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___config_8ipf.html">File MIES_MiesUtilities_Config.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___conversion_8ipf.html">File MIES_MiesUtilities_Conversion.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___data_management_8ipf.html">File MIES_MiesUtilities_DataManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___device_8ipf.html">File MIES_MiesUtilities_Device.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___g_u_i_8ipf.html">File MIES_MiesUtilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___getter_8ipf.html">File MIES_MiesUtilities_Getter.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logbook_8ipf.html">File MIES_MiesUtilities_Logbook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___logging_8ipf.html">File MIES_MiesUtilities_Logging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___recreation_8ipf.html">File MIES_MiesUtilities_Recreation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___settings_8ipf.html">File MIES_MiesUtilities_Settings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___sweep_8ipf.html">File MIES_MiesUtilities_Sweep.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___system_8ipf.html">File MIES_MiesUtilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___uploads_8ipf.html">File MIES_MiesUtilities_Uploads.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities___zero_m_q_8ipf.html">File MIES_MiesUtilities_ZeroMQ.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___publish_8ipf.html">File MIES_Publish.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___stimset_a_p_i_8ipf.html">File MIES_StimsetAPI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___executor_8ipf.html">File MIES_SweepFormula_Executor.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___helpers_8ipf.html">File MIES_SweepFormula_Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations_8ipf.html">File MIES_SweepFormula_Operations.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___select_8ipf.html">File MIES_SweepFormula_Operations_Select.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___operations___t_p_8ipf.html">File MIES_SweepFormula_Operations_TP.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x_8ipf.html">File MIES_SweepFormula_PSX.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___p_s_x___macro_8ipf.html">File MIES_SweepFormula_PSX_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula___parser_8ipf.html">File MIES_SweepFormula_Parser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_data_sharing_8ipf.html">File MIES_ThreadsafeDataSharing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___algorithm_8ipf.html">File MIES_Utilities_Algorithm.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___checks_8ipf.html">File MIES_Utilities_Checks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___conversions_8ipf.html">File MIES_Utilities_Conversions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___data_folder_8ipf.html">File MIES_Utilities_DataFolder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___debugger_8ipf.html">File MIES_Utilities_Debugger.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___file_8ipf.html">File MIES_Utilities_File.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___g_u_i_8ipf.html">File MIES_Utilities_GUI.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___generators_8ipf.html">File MIES_Utilities_Generators.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___j_s_o_n_8ipf.html">File MIES_Utilities_JSON.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___list_8ipf.html">File MIES_Utilities_List.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___numeric_8ipf.html">File MIES_Utilities_Numeric.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___program_flow_8ipf.html">File MIES_Utilities_ProgramFlow.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___s_f_h_checkers_8ipf.html">File MIES_Utilities_SFHCheckers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___strings_8ipf.html">File MIES_Utilities_Strings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___system_8ipf.html">File MIES_Utilities_System.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___time_8ipf.html">File MIES_Utilities_Time.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities___wave_handling_8ipf.html">File MIES_Utilities_WaveHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser_8ipf.html">File MIES_WaverefBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___waveref_browser___macro_8ipf.html">File MIES_WaverefBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___h_d_f5_ops_8ipf.html"
+                          title="previous chapter">File MIES_HDF5Ops.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___i_v_s_c_c_8ipf.html"
+                          title="next chapter">File MIES_IVSCC.ipf</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___i_v_s_c_c_8ipf.html" title="File MIES_IVSCC.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___h_d_f5_ops_8ipf.html" title="File MIES_HDF5Ops.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.9_20250502-907-g1f5acffc9 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Hashmap.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>
