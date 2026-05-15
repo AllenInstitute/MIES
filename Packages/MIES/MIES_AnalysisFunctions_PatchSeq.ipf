@@ -2178,15 +2178,21 @@ static Function [WAVE/D fitOffset, WAVE/D fitSlope, string errMsg] PSQ_DS_FitFre
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE textualValues   = GetLBTextualValues(device)
 
+	[WAVE sweeps, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_SWEEP, filterPassing = 1, beforeSweepQCResult = beforeSweepQCResult, filterNegSlopeAndNaN = 1, fromRhSuAd = fromRhSuAd)
 	[WAVE DAScales, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_DASCALE, filterPassing = 1, beforeSweepQCResult = beforeSweepQCResult, filterNegSlopeAndNaN = 1, fromRhSuAd = fromRhSuAd)
 	[WAVE apfreq, emptySCI]   = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_APFREQ, filterPassing = 1, beforeSweepQCResult = beforeSweepQCResult, filterNegSlopeAndNaN = 1, fromRhSuAd = fromRhSuAd)
 
 	if(!WaveExists(apFreq) && !WaveExists(DAScales))
 		return [$"", $"", "No apfreq/DAScales data"]
 	endif
+	
+	print sweeps
+	print DAScales
+	print apfreq
 
 	// sort in ascending DAScale order while keeping track where we are
-	DAScaleRef = DAScales[Inf]
+	WAVE DAScalesCurrentSweep = GetLastSetting(numericalValues, sweepNo, "Stim Scale Factor", DATA_ACQUISITION_MODE)
+	DAScaleRef = DAScalesCurrentSweep[headstage]
 
 	[WAVE DAScalesSorted, WAVE apfreqSorted] = SortKeyAndData(DAScales, apfreq)
 	WaveClear DAScales, apfreq
@@ -2224,6 +2230,9 @@ static Function [WAVE/D fitOffset, WAVE/D fitSlope, string errMsg] PSQ_DS_FitFre
 		WAVE DAScalesFinal = DAScalesSorted
 	endif
 	WAVEClear DAScalesSorted, apfreqSorted
+
+	print DAScalesFinal
+	print apfreqFinal
 
 	numFits = (numPoints - PSQ_DA_NUM_POINTS_LINE_FIT) + 1
 
@@ -2872,6 +2881,36 @@ static Function [variable fitOffset, variable fitSlope] PSQ_DS_StoreFitOffsetAnd
 	ED_AddEntryToLabnotebook(device, key, fitSlopeLBN, overrideSweepNo = sweepNo, unit = PSQ_DA_AT_SLOPE_UNIT)
 
 	return [fitOffset, fitSlope]
+End
+
+Function testme(variable sweepNo)
+
+	string device = "ITC18USB_DEV_0"
+	variable headstage = 0
+	variable emptySCI
+	string errMsg
+	
+	printf "sweepNo=%d\r", sweepNo
+
+//	CA_FlushCache()
+
+	[WAVE fitOffsetFromFit, WAVE fitSlopeFromFit, errMsg] = PSQ_DS_FitFrequencyCurrentData(device, sweepNo, headstage, singleFit = 1, writeEnoughPointsLBN = 0)
+
+//	WAVE numericalValues = GetLBNumericalValues(device)
+//	WAVE textualValues   = GetLBTextualValues(device)
+//
+//	[WAVE DAScales, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_DASCALE, filterPassing = 1, beforeSweepQCResult = 1)
+//	[WAVE apfreq, emptySCI]   = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_APFREQ, filterPassing = 1, beforeSweepQCResult = 1)
+//
+//
+//	print DAScales
+//	print apfreq
+
+//	string key = "Stim Scale Factor"
+//
+//	WAVE numericalValues = GetLBNumericalValues(device)
+//	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+//	print settings
 End
 
 /// @brief Evaluate the complete adaptive supra threshold sweep
