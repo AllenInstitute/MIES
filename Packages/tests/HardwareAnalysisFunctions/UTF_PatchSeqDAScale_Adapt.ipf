@@ -375,13 +375,7 @@ static Function PrintSomeValues(WAVE/WAVE entries)
 	WAVE wv = entries[%fiSlope]
 	print/D wv
 
-	WAVE/Z wv = entries[%fiSlopeDAScale]
-	print/D wv
-
 	WAVE wv = entries[%fiOffset]
-	print/D wv
-
-	WAVE/Z wv = entries[%fiOffsetDAScale]
 	print/D wv
 
 	WAVE wv = entries[%futureDAScales]
@@ -1879,18 +1873,18 @@ static Function PS_DS_AD12_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%sweepPassFromRhSuAd], sweepPassedFRomRhSuAd, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {314.2857142857143, 314.2857142857143, 314.2857142857143, 314.2857142857143, 314.2857142857143, 314.2857142857143}
-	Make/FREE/D fiSlopeRef = {314.2857142857143, 314.2857142857143, -200, 284, -120, -1500}
-	Make/FREE/D fiOffsetRef = {3, 3, 39, 4.060000000000002, 31.8, 130}
+	Make/FREE/D fiSlopeRef = {314.2857142857143, 314.2857142857143, -200, 284, -333.3333333333334, -1500}
+	Make/FREE/D fiOffsetRef = {3, 3, 39, 4.060000000000002, 48.33333333333334, 130}
 	Make/FREE/T futureDAScalesRef = {"RegRhSuAd:7;Reg:9;",                                                \
 	                                 "RegRhSuAd:7;Reg:9;",                                                \
 	                                 "RegRhSuAd:7;Reg:9;Fillin:6;",                                       \
-	                                 "RegRhSuAd:7;Reg:9;Fillin:6;RegPosNegSlope:14;",                     \
-	                                 "RegRhSuAd:7;Reg:9;Fillin:6;RegPosNegSlope:14;FillinPosNegSlope:8;", \
-	                                 "RegRhSuAd:7;Reg:9;Fillin:6;RegPosNegSlope:14;FillinPosNegSlope:8;"}
+	                                 "RegRhSuAd:7;Reg:9;Fillin:6;RegPosNegSlope:10;",                     \
+	                                 "RegRhSuAd:7;Reg:9;Fillin:6;RegPosNegSlope:10;FillinPosNegSlope:8;", \
+	                                 "RegRhSuAd:7;Reg:9;Fillin:6;RegPosNegSlope:10;FillinPosNegSlope:8;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {200, 200, 100}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {8, 8, 10.5}
-	Make/FREE/D DAScalesRef = {7, 9, 9, 6, 14, 8}
+	Make/FREE/D DAScalesRef = {7, 9, 9, 6, 10, 8}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-6)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-6)
