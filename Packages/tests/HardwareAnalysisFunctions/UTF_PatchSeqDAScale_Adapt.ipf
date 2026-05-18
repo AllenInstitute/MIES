@@ -1959,23 +1959,11 @@ End
 
 static Function PS_DS_AD12a_REENTRY([string str])
 
-	string formula, sbBrowser, win, bsPanel
 	variable sweepNo
 
-	formula = ProcedureText("", -1, "Proc0")
-
-	win = "DB_ITC18USB_Dev_0"
-	ExecuteSweepFormulaCode(win, formula)
-
-	bsPanel = BSP_GetPanel(win)
-
-	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = 1)
-	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DB_Failed", val = 1)
-	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DB_Passed", val = 1)
-
-	FAIL()
-
 	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
+	
+	PrintSomeValues(entries)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
