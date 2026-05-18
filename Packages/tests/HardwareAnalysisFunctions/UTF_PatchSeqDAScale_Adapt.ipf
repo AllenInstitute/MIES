@@ -1606,6 +1606,9 @@ static Function PS_DS_AD7_REENTRY([string str])
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {2, -2, NaN}
 	Make/FREE/D DAScalesRef = {15, 25, 34}
 
+	WAVE wv = entries[%futureDAScales]
+	print wv
+
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-6)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-6)
 	CHECK_EQUAL_WAVES(entries[%fiOffset], fiOffsetRef, mode = WAVE_DATA, tol = 1e-24)
