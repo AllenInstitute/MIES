@@ -3142,7 +3142,8 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 
 			WAVE negSlopesPassedRhSuAd = ListToNumericWave(negSlopesPassedRhSuAdLBN[INDEP_HEADSTAGE], ";")
 			WaveClear negSlopesPassedRhSuAdLBN
-			ASSERT(DimSize(negSlopesPassedRhSuAd, ROWS) > 0, "negSlopesPassedRhSuAd must not be empty")
+// can be empty if dataRhSuAd has only one element			
+//			ASSERT(DimSize(negSlopesPassedRhSuAd, ROWS) > 0, "negSlopesPassedRhSuAd must not be empty")
 
 			key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES, query = 1)
 			WAVE/Z/T fISlopesRhSuAdLBN = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
@@ -3161,7 +3162,8 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 
 			WAVE fISlopesRhSuAd = ListToNumericWave(fISlopesRhSuAdLBN[headstage], ";")
 			WaveClear fISlopesRhSuAdLBN
-			ASSERT(DimSize(fISlopesRhSuAd, ROWS) > 0, "fISlopesRhSuAd must not be empty")
+// dito			
+//			ASSERT(DimSize(fISlopesRhSuAd, ROWS) > 0, "fISlopesRhSuAd must not be empty")
 
 			Duplicate/FREE negSlopesPassedRhSuAd, filterPassedRhSuAd
 
