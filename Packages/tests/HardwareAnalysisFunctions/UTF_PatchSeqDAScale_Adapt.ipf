@@ -2009,6 +2009,9 @@ static Function PS_DS_AD12a_REENTRY([string str])
 	                                 "RegRhSuAd:7;Reg:9;Fillin:6;RegPosNegSlope:14;FillinPosNegSlope:8;", \
 	                                 "RegRhSuAd:7;Reg:9;Fillin:6;RegPosNegSlope:14;FillinPosNegSlope:8;"}
 
+//  futureDAScales[0] = {"RegRhSuAd:7;Reg:9;","RegRhSuAd:7;Reg:9;","RegRhSuAd:7;Reg:9;Fillin:6;","RegRhSuAd:7;Reg:9;Fillin:6;","RegRhSuAd:7;Reg:9;Fillin:6;RegPosNegSlope:10;"}
+//  futureDAScales[5] = {"RegRhSuAd:7;Reg:9;Fillin:6;RegPosNegSlope:10;FillinPosNegSlope:8;","RegRhSuAd:7;Reg:9;Fillin:6;RegPosNegSlope:10;FillinPosNegSlope:8;"}
+
 	Make/FREE/D fiSlopesFromRhSuAdRef = {200, 200, 100}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {8, 8, 10.5}
 	Make/FREE/D DAScalesRef = {7, 9, 9, 6, 14, 8}
