@@ -1596,18 +1596,16 @@ static Function PS_DS_AD7_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%fillinPassFromRhSuAd], {0, 0, 0, 0}, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {50, 50, 50}
-	Make/FREE/D fiSlopeRef = {30, -25, -204.1666666666667}
-	Make/FREE/D fiOffsetRef = {2, 13, 76.25000000000001}
-	Make/FREE/T futureDAScalesRef = {"FillinRhSuAd:15;FillinRhSuAd:25;RegRhSuAd:34;", \
-	                                 "FillinRhSuAd:15;FillinRhSuAd:25;RegRhSuAd:34;", \
-	                                 "FillinRhSuAd:15;FillinRhSuAd:25;RegRhSuAd:34;"}
+	Make/FREE/D fiSlopeRef = {30, -25, -205.5555555555555}
+	Make/FREE/D fiOffsetRef = {2, 13, 74.66666666666667}
+	// the last sweep used to be RegRhSuAd but that was wrong
+	Make/FREE/T futureDAScalesRef = {"FillinRhSuAd:15;FillinRhSuAd:25;FallbackRhSuAd:33;", \
+	                                 "FillinRhSuAd:15;FillinRhSuAd:25;FallbackRhSuAd:33;", \
+	                                 "FillinRhSuAd:15;FillinRhSuAd:25;FallbackRhSuAd:33;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {30, 50, NaN}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {2, -2, NaN}
-	Make/FREE/D DAScalesRef = {15, 25, 34}
-
-	WAVE wv = entries[%futureDAScales]
-	print wv
+	Make/FREE/D DAScalesRef = {15, 25, 33}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-6)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-6)
