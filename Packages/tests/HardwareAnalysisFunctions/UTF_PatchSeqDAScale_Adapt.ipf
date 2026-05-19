@@ -2323,7 +2323,7 @@ static Function PS_DS_AD15_REENTRY([string str])
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPassExceptBL], {1}, mode = WAVE_DATA)
 
@@ -2334,7 +2334,7 @@ static Function PS_DS_AD15_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%fillinPass], {0}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(entries[%futureDAScalesPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%futureDAScalesPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%fiNegSlopePass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%enoughFIPointsPass], {1}, mode = WAVE_DATA)
@@ -2360,7 +2360,7 @@ static Function PS_DS_AD15_REENTRY([string str])
 	Make/FREE/D maxSlopeRef = {80}
 	Make/FREE/D fiSlopeRef = {80}
 	Make/FREE/D fiOffsetRef = {0.1999999999999997}
-	Make/FREE/T futureDAScalesRef = {"FinishedRhSuAd:6;Reg:36;"}
+	Make/FREE/T futureDAScalesRef = {"FinishedRhSuAd:6;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {0, 0, 0}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {1, 1, 1}
