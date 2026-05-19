@@ -392,6 +392,12 @@ static Function PrintSomeValues(WAVE/WAVE entries)
 
 	WAVE wv = entries[%apfreq]
 	print/D wv
+
+	WAVE wv = entries[%fiSlopeReachedPassFromRhSuAd]
+	print/D wv
+
+	WAVE wv = entries[%fiSlopeReachedPass]
+	print/D wv
 End
 
 /// UTF_TD_GENERATOR w0:DataGenerators#VariousInputForHasRequiredQCOrder
@@ -2303,7 +2309,6 @@ static Function PS_DS_AD15([string str])
 	wv[][][%BaselineQC]  = 1
 End
 
-// TODO
 static Function PS_DS_AD15_REENTRY([string str])
 
 	variable sweepNo
@@ -2431,6 +2436,8 @@ static Function PS_DS_AD16_REENTRY([string str])
 	variable sweepNo
 
 	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
+
+	PrintSomeValues(entries)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
