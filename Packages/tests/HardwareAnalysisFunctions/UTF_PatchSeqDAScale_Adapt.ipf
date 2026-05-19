@@ -1844,6 +1844,7 @@ static Function PS_DS_AD12([string str])
 	wv[][1][%BaselineQC] = 0
 End
 
+// TODO
 static Function PS_DS_AD12_REENTRY([string str])
 
 	variable sweepNo
@@ -1948,6 +1949,7 @@ static Function PS_DS_AD12a_preAcq(string device)
 	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
+// TODO
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_AD12a([string str])
 

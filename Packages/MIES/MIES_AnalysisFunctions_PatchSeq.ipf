@@ -3330,8 +3330,8 @@ static Function PSQ_DS_AddDAScaleFillinBeforeNegSlope(string device, variable sw
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE textualValues   = GetLBTextualValues(device)
 
-	[WAVE negSlopePassed, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_FI_NEG_SLOPE_PASS, filterPassing = 1, fromRhSuAd = fromRhSuAd)
-	[WAVE DAScale, emptySCI]        = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_DASCALE, filterPassing = 1, fromRhSuAd = fromRhSuAd)
+	[WAVE negSlopePassed, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_FI_NEG_SLOPE_PASS, fromRhSuAd = fromRhSuAd)
+	[WAVE DAScale, emptySCI]        = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_DASCALE, fromRhSuAd = fromRhSuAd)
 
 	InsertPoints/V=(NaN) 0, 1, negSlopePassed
 
