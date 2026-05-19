@@ -2346,14 +2346,14 @@ static Function PS_DS_AD15_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%dascaleFromRhSuAd], DAScalesFromRhSuAd, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPassFromRhSuAd], sweepPassedFRomRhSuAd, mode = WAVE_DATA)
 
-	Make/FREE/D maxSlopeRef = {44.44444444444444}
-	Make/FREE/D fiSlopeRef = {44.44444444444444}
-	Make/FREE/D fiOffsetRef = {-0.7777777777777777}
-	Make/FREE/T futureDAScalesRef = {"FinishedRhSuAd:13;Reg:43;"}
+	Make/FREE/D maxSlopeRef = {80}
+	Make/FREE/D fiSlopeRef = {80}
+	Make/FREE/D fiOffsetRef = {0.1999999999999997}
+	Make/FREE/T futureDAScalesRef = {"FinishedRhSuAd:6;Reg:36;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {0, 0, 0}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {1, 1, 1}
-	Make/FREE/D DAScalesRef = {13}
+	Make/FREE/D DAScalesRef = {6}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-6)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-6)

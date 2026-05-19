@@ -3112,6 +3112,7 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 
 	switch(type)
 		case PSQ_DS_SWEEP_PASS:
+		case PSQ_DS_SWEEP_EXCEPT_BL_PP_PASS:
 			// we store the sweep number of the passing sweeps for RhSuAd
 			// but actually only need if passing or not
 			dataRhSuAd[] = !!dataRhSuAd[p]
