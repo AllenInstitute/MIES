@@ -398,6 +398,12 @@ static Function PrintSomeValues(WAVE/WAVE entries)
 
 	WAVE wv = entries[%fiSlopeReachedPass]
 	print/D wv
+	
+	WAVE wv = entries[%fiNegSlopePass]
+	print/D wv
+	
+	WAVE wv = entries[%fiNegSlopesPassFromRhSuAd]
+	print/D wv
 End
 
 /// UTF_TD_GENERATOR w0:DataGenerators#VariousInputForHasRequiredQCOrder
@@ -2901,14 +2907,14 @@ static Function PS_DS_AD20_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%dascaleFromRhSuAd], DAScalesFromRhSuAd, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPassFromRhSuAd], sweepPassedFRomRhSuAd, mode = WAVE_DATA)
 
-	Make/FREE/D maxSlopeRef = {-33.3333333333333}
-	Make/FREE/D fiSlopeRef = {-33.3333333333333}
-	Make/FREE/D fiOffsetRef = {9.666666666666666}
-	Make/FREE/T futureDAScalesRef = {"RegPosNegSlopeRhSuAd:5;"}
+	Make/FREE/D maxSlopeRef = {-100}
+	Make/FREE/D fiSlopeRef = {-100}
+	Make/FREE/D fiOffsetRef = {11}
+	Make/FREE/T futureDAScalesRef = {"RegPosNegSlopeRhSuAd:3;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {-100}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {11}
-	Make/FREE/D DAScalesRef = {5}
+	Make/FREE/D DAScalesRef = {3}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-6)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-6)
@@ -2995,9 +3001,9 @@ static Function PS_DS_AD21_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%fillinPass], {0, 0, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%futureDAScalesPass], {0, 0, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPass], {1, 1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%fiNegSlopePass], {1, 1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%enoughFIPointsPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPass], {1, 1, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%fiNegSlopePass], {1, 1, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%enoughFIPointsPass], {1, 1, NaN}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPassFromRhSuAd], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%fiNegSlopesPassFromRhSuAd], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%fillinPassFromRhSuAd], {0, 0}, mode = WAVE_DATA)
@@ -3015,16 +3021,16 @@ static Function PS_DS_AD21_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%dascaleFromRhSuAd], DAScalesFromRhSuAd, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPassFromRhSuAd], sweepPassedFRomRhSuAd, mode = WAVE_DATA)
 
-	Make/FREE/D maxSlopeRef = {10, 10, 10}
-	Make/FREE/D fiSlopeRef = {-2.127659574468085, -23.28767123287671, -23.28767123287671}
-	Make/FREE/D fiOffsetRef = {41.42553191489362, 65.54794520547945, 65.54794520547945}
-	Make/FREE/T futureDAScalesRef = {"RegRhSuAd:114;RegPosNegSlope:260;",                      \
-	                                 "RegRhSuAd:114;RegPosNegSlope:260;FillinPosNegSlope:15;", \
-	                                 "RegRhSuAd:114;RegPosNegSlope:260;FillinPosNegSlope:15;"}
+	Make/FREE/D maxSlopeRef = {10, 10, NaN}
+	Make/FREE/D fiSlopeRef = {-2.127659574468085, -29.26829268292683, NaN}
+	Make/FREE/D fiOffsetRef = {41.42553191489362, 46.85365853658536, NaN}
+	Make/FREE/T futureDAScalesRef = {"RegRhSuAd:114;RegPosNegSlope:143;",                      \
+	                                 "RegRhSuAd:114;RegPosNegSlope:143;FillinPosNegSlope:67;", \
+	                                 "RegRhSuAd:114;RegPosNegSlope:143;FillinPosNegSlope:67;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {10}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {39}
-	Make/FREE/D DAScalesRef = {114, 260, 15}
+	Make/FREE/D DAScalesRef = {114, 143, 67}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-6)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-6)
