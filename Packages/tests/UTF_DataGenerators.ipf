@@ -2195,9 +2195,17 @@ static Function/WAVE VariousInputForConsecutivePasses()
 
 	Make/FREE/WAVE wv8 = {refQC, checkQC, numCheck, numRef, result}
 
+	Make/FREE refQC    = {1, 1, 1, 1, 1, 0}
+	Make/FREE checkQC  = {0, 0, 1, 1, 0}
+	Make/FREE numCheck = {2}
+	Make/FREE numRef   = {2}
+	Make/FREE result   = {1}
+
+	Make/FREE/WAVE wv9 = {refQC, checkQC, numCheck, numRef, result}
+
 	// IPT_FORMAT_ON
 
-	Make/FREE/WAVE wv = {wv0, wv1, wv2, wv3, wv4, wv5, wv6, wv7, wv8}
+	Make/FREE/WAVE wv = {wv0, wv1, wv2, wv3, wv4, wv5, wv6, wv7, wv8, wv9}
 
 	return wv
 End

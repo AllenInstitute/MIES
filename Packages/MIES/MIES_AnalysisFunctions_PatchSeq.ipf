@@ -3458,9 +3458,13 @@ static Function PSQ_DS_ConsecutivePasses(WAVE refQC, WAVE checkQC, variable numR
 
 		numCheckFound += 1
 		numRefFound   += (refQC[i + 1] == 1)
+		
+		if(numCheckFound >= numCheckRequired && numRefFound >= numRefRequired)
+			return 1
+		endif
 	endfor
 
-	return numCheckFound >= numCheckRequired && numRefFound >= numRefRequired
+	return 0
 End
 
 /// @brief Searches for exactly one passing check of each checkQCFirst and
