@@ -1844,7 +1844,6 @@ static Function PS_DS_AD12([string str])
 	wv[][1][%BaselineQC] = 0
 End
 
-// TODO
 static Function PS_DS_AD12_REENTRY([string str])
 
 	variable sweepNo

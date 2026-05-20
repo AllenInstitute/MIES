@@ -2177,7 +2177,7 @@ static Function [WAVE/D fitOffset, WAVE/D fitSlope, string errMsg] PSQ_DS_FitFre
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE textualValues   = GetLBTextualValues(device)
-	
+
 //	if(sweepNo == 2)
 //		debugger
 //	endif
@@ -2342,14 +2342,14 @@ static Function PSQ_DS_CreateSurveyPlotForUser(string device, variable sweepNo, 
 	str += line
 
 	DeletePoints/M=(ROWS) 0, 1, DAScale
-	
+
 	if(DimSize(DAScale, ROWS) == 0)
 		// @todo workaround SF not accepting an empty array, see https://github.com/AllenInstitute/MIES/issues/1863
 		sprintf line, "daScaleWithoutFirst = [1/0]\r"
 	else
 		sprintf line, "daScaleWithoutFirst = [%s]\r", NumericWaveToList(DAScale, ",", format = PERCENT_F_MAX_PREC, trailSep = 0)
 	endif
-	
+
 	str += line
 
 	[WAVE fitSlopes, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_FI_SLOPE, filterPassing = 1, fromRhSuAd = fromRhSuAd)
@@ -3154,7 +3154,7 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 
 			WAVE negSlopesPassedRhSuAd = ListToNumericWave(negSlopesPassedRhSuAdLBN[INDEP_HEADSTAGE], ";")
 			WaveClear negSlopesPassedRhSuAdLBN
-// can be empty if dataRhSuAd has only one element			
+// can be empty if dataRhSuAd has only one element
 //			ASSERT(DimSize(negSlopesPassedRhSuAd, ROWS) > 0, "negSlopesPassedRhSuAd must not be empty")
 
 			key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES, query = 1)
@@ -3174,7 +3174,7 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 
 			WAVE fISlopesRhSuAd = ListToNumericWave(fISlopesRhSuAdLBN[headstage], ";")
 			WaveClear fISlopesRhSuAdLBN
-// dito			
+// dito
 //			ASSERT(DimSize(fISlopesRhSuAd, ROWS) > 0, "fISlopesRhSuAd must not be empty")
 
 			Duplicate/FREE negSlopesPassedRhSuAd, filterPassedRhSuAd
@@ -3337,18 +3337,17 @@ static Function PSQ_DS_AddDAScaleFillinBeforeNegSlope(string device, variable sw
 
 	ASSERT(DimSize(DAScale, ROWS) == DimSize(negSlopePassed, ROWS), "Non-matching negSlopePassed and DAScale waves")
 
-	[WAVE DAScaleSorted, WAVE negSlopePassedSorted] = SortKeyAndData(DAScale, negSlopePassed)
-	WaveClear DAScale, negSlopePassed
+	// not using sorted DAScale data so that we do the same approach as in PSQ_DS_NegativefISlopePassingCriteria
 
 	Make/FREE seq = {0, 1}
-	idx = FindSequenceReverseWrapper(seq, negSlopePassedSorted)
+	idx = FindSequenceReverseWrapper(seq, negSlopePassed)
 
 	if(idx >= 0)
-		centerDAScale = round((DAScaleSorted[idx] + DAScaleSorted[idx + 1]) / 2)
+		centerDAScale = round((DAScale[idx] + DAScale[idx + 1]) / 2)
 	endif
 
 #ifdef DEBUGGING_ENABLED
-	sprintf msg, "centerDAScale %g: idx=%g; DAScales=%s; negSlopePassed=%s", centerDAScale, idx, NumericWaveToList(DAScaleSorted, ", ", trailSep = 0), NumericWaveToList(negSlopePassedSorted, ", ", trailSep = 0)
+	sprintf msg, "centerDAScale %g: idx=%g; DAScales=%s; negSlopePassed=%s", centerDAScale, idx, NumericWaveToList(DAScale, ", ", trailSep = 0), NumericWaveToList(negSlopePassed, ", ", trailSep = 0)
 	DEBUGPRINT(msg)
 #endif // DEBUGGING_ENABLED
 
@@ -3358,7 +3357,7 @@ static Function PSQ_DS_AddDAScaleFillinBeforeNegSlope(string device, variable sw
 		return 1
 	endif
 
-	if(IsFinite(GetRowIndex(DAScaleSorted, val = centerDAScale)))
+	if(IsFinite(GetRowIndex(DAScale, val = centerDAScale)))
 		// already measured, do nothing
 		return 1
 	endif
@@ -3469,7 +3468,7 @@ static Function PSQ_DS_ConsecutivePasses(WAVE refQC, WAVE checkQC, variable numR
 
 		numCheckFound += 1
 		numRefFound   += (refQC[i + 1] == 1)
-		
+
 		if(numCheckFound >= numCheckRequired && numRefFound >= numRefRequired)
 			return 1
 		endif
