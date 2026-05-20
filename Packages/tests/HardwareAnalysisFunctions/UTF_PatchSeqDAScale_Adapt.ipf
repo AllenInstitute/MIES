@@ -262,7 +262,7 @@ End
 static Function CheckSurveyPlot(string device, WAVE/WAVE entries)
 
 	PASS()
-	
+
 	return NaN
 
 	string databrowser, sfgraph, allGraphs, traceList, graph
@@ -291,9 +291,9 @@ static Function CheckSurveyPlot(string device, WAVE/WAVE entries)
 	else
 		WAVE fISlopeFiltered = entries[%fiSlopesFromRhSuAd]
 	endif
-	
+
 	Duplicate/FREE sweepPass, sweepPassAndFINegSlopePass
-	
+
 	// TODO
 	sweepPassAndFINegSlopePass[] = sweepPass[p] && !fiNegSlopePass[p] && !IsNaN(fiSlopeFiltered[p])
 
@@ -398,10 +398,10 @@ static Function PrintSomeValues(WAVE/WAVE entries)
 
 	WAVE wv = entries[%fiSlopeReachedPass]
 	print/D wv
-	
+
 	WAVE wv = entries[%fiNegSlopePass]
 	print/D wv
-	
+
 	WAVE wv = entries[%fiNegSlopesPassFromRhSuAd]
 	print/D wv
 End
@@ -1976,7 +1976,7 @@ static Function PS_DS_AD12a_REENTRY([string str])
 	variable sweepNo
 
 	[WAVE/WAVE entries, sweepNo] = GetEntries_IGNORE(str)
-	
+
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {1}, mode = WAVE_DATA)
@@ -1990,7 +1990,7 @@ static Function PS_DS_AD12a_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%fillinPass], {0, 0, 0, 1, 1, 0, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(entries[%futureDAScalesPass], {0, 1, 0, 1, 0,0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%futureDAScalesPass], {0, 1, 0, 1, 0, 0, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPass], {0, 0, 1, 0, 0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%fiNegSlopePass], {0, 0, 1, 0, 0, 1, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%enoughFIPointsPass], {1, 1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
@@ -2012,8 +2012,8 @@ static Function PS_DS_AD12a_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%sweepPassFromRhSuAd], sweepPassedFRomRhSuAd, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {457.1428571428571, 457.1428571428571, 457.1428571428571, 457.1428571428571, 457.1428571428571, 457.1428571428571, 457.1428571428571}
-	Make/FREE/D fiSlopeRef = {457.1428571428571,457.1428571428571,-500,457.1428571428571,244,-533.3333333333333,-2100}
-	Make/FREE/D fiOffsetRef = {-2,-2,65,-2,5.460000000000001,67.33333333333333,177}
+	Make/FREE/D fiSlopeRef = {457.1428571428571, 457.1428571428571, -500, 457.1428571428571, 244, -533.3333333333333, -2100}
+	Make/FREE/D fiOffsetRef = {-2, -2, 65, -2, 5.460000000000001, 67.33333333333333, 177}
 	Make/FREE/T futureDAScalesRef = {"RegRhSuAd:7;Reg:9;",                                                \
 	                                 "RegRhSuAd:7;Reg:9;",                                                \
 	                                 "RegRhSuAd:7;Reg:9;Fillin:6;",                                       \

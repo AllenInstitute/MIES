@@ -2178,14 +2178,14 @@ static Function [WAVE/D fitOffset, WAVE/D fitSlope, string errMsg] PSQ_DS_FitFre
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE textualValues   = GetLBTextualValues(device)
 
-//	if(sweepNo == 2)
-//		debugger
-//	endif
+	//	if(sweepNo == 2)
+	//		debugger
+	//	endif
 
 	[WAVE DAScales, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_DASCALE, filterPassing = 1, beforeSweepQCResult = beforeSweepQCResult, filterNegSlopeAndNaN = 1, fromRhSuAd = fromRhSuAd)
 	[WAVE apfreq, emptySCI]   = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_APFREQ, filterPassing = 1, beforeSweepQCResult = beforeSweepQCResult, filterNegSlopeAndNaN = 1, fromRhSuAd = fromRhSuAd)
 
-	if(!WaveExists(apFreq) && !WaveExists(DAScales) || (emptySCI && !fromRhSuAd))
+	if((!WaveExists(apFreq) && !WaveExists(DAScales)) || (emptySCI && !fromRhSuAd))
 		return [$"", $"", "No apfreq/DAScales data"]
 	endif
 
@@ -3122,7 +3122,7 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 	WaveClear dataRhSuAdLBN
 
 	switch(type)
-		case PSQ_DS_SWEEP_PASS:
+		case PSQ_DS_SWEEP_PASS: // FIXME(CodeStyleFallthroughCaseRequireComment)
 		case PSQ_DS_SWEEP_EXCEPT_BL_PP_PASS:
 			// we store the sweep number of the passing sweeps for RhSuAd
 			// but actually only need if passing or not
@@ -3154,8 +3154,8 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 
 			WAVE negSlopesPassedRhSuAd = ListToNumericWave(negSlopesPassedRhSuAdLBN[INDEP_HEADSTAGE], ";")
 			WaveClear negSlopesPassedRhSuAdLBN
-// can be empty if dataRhSuAd has only one element
-//			ASSERT(DimSize(negSlopesPassedRhSuAd, ROWS) > 0, "negSlopesPassedRhSuAd must not be empty")
+			// can be empty if dataRhSuAd has only one element
+			//			ASSERT(DimSize(negSlopesPassedRhSuAd, ROWS) > 0, "negSlopesPassedRhSuAd must not be empty")
 
 			key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES, query = 1)
 			WAVE/Z/T fISlopesRhSuAdLBN = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
@@ -3174,8 +3174,8 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 
 			WAVE fISlopesRhSuAd = ListToNumericWave(fISlopesRhSuAdLBN[headstage], ";")
 			WaveClear fISlopesRhSuAdLBN
-// dito
-//			ASSERT(DimSize(fISlopesRhSuAd, ROWS) > 0, "fISlopesRhSuAd must not be empty")
+			// dito
+			//			ASSERT(DimSize(fISlopesRhSuAd, ROWS) > 0, "fISlopesRhSuAd must not be empty")
 
 			Duplicate/FREE negSlopesPassedRhSuAd, filterPassedRhSuAd
 
