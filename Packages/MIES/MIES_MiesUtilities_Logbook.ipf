@@ -687,9 +687,7 @@ End
 ///
 /// @return a free wave with #LABNOTEBOOK_LAYER_COUNT rows. In case
 /// the setting could not be found an invalid wave reference is returned.
-///
-/// @ingroup LabnotebookQueryFunctions
-threadsafe Function/WAVE GetLastSettingNoCache(WAVE values, variable sweepNo, string setting, variable entrySourceType, [variable &first, variable &last, variable &rowIndex, variable settingCol])
+threadsafe static Function/WAVE GetLastSettingNoCache(WAVE values, variable sweepNo, string setting, variable entrySourceType, [variable &first, variable &last, variable &rowIndex, variable settingCol])
 
 	variable numLayers, i, sweepCol, numEntries
 	variable firstValue, lastValue, sourceTypeCol, peakResistanceCol, pulseDurationCol
