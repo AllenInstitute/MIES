@@ -742,7 +742,6 @@ threadsafe Function/WAVE GetLastSettingNoCache(WAVE values, variable sweepNo, st
 	if(IsTextWave(values))
 		WAVE/T textualValues = values
 		Make/FREE/N=(numLayers)/T statusText
-		Make/FREE/N=(numLayers) lengths
 
 		for(i = lastValue; i >= firstValue; i -= 1)
 
@@ -772,10 +771,7 @@ threadsafe Function/WAVE GetLastSettingNoCache(WAVE values, variable sweepNo, st
 			AssertOnAndClearRTError()
 			statusText[] = textualValues[i][settingCol][p]; AbortOnRTE
 
-			lengths[] = strlen(statusTexT[p])
-
-			// return if we have at least one non-empty entry
-			if(Sum(lengths) > 0)
+			if(HasOneValidEntry(statusText))
 				if(!ParamIsDefault(rowIndex))
 					rowIndex = i
 				endif
