@@ -250,7 +250,9 @@ threadsafe Function IsFreeWave(WAVE wv)
 	return WaveType(wv, 2) == 2
 End
 
-/// @brief Return true if not all wave entries are NaN, false otherwise.
+/// @brief Return one if at least one entry is non-NaN (numeric) or non-empty (text), zero otherwise
+///
+/// @param wv wave with at least one point
 ///
 /// UTF_NOINSTRUMENTATION
 threadsafe Function HasOneValidEntry(WAVE wv)
