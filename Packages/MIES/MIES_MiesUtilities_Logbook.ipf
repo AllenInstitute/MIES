@@ -988,8 +988,7 @@ threadsafe Function/WAVE GetLastSettingTextIndepEachRAC(WAVE numericalValues, WA
 	numSweeps = DimSize(sweeps, ROWS)
 	Make/FREE/T/N=(numSweeps) result = GetLastSettingTextIndep(textualValues, sweeps[p], setting, entrySourceType, defValue = defValue)
 
-	Make/N=(numSweeps)/FREE lengths = strlen(result[p])
-	if(Sum(lengths) == 0)
+	if(!HasOneValidEntry(result))
 		return $""
 	endif
 
@@ -1063,8 +1062,7 @@ threadsafe Function/WAVE GetLastSettingTextEachRAC(WAVE numericalValues, WAVE/T 
 		endif
 	endfor
 
-	Make/N=(numSweeps)/FREE lengths = strlen(result[p])
-	if(Sum(lengths) == 0)
+	if(!HasOneValidEntry(result))
 		return $""
 	endif
 
@@ -1177,8 +1175,7 @@ threadsafe Function/WAVE GetLastSettingTextIndepEachSCI(WAVE numericalValues, WA
 	numSweeps = DimSize(sweeps, ROWS)
 	Make/FREE/T/N=(numSweeps) result = GetLastSettingTextIndep(textualValues, sweeps[p], setting, entrySourceType, defValue = defValue)
 
-	Make/N=(numSweeps)/FREE lengths = strlen(result[p])
-	if(Sum(lengths) == 0)
+	if(!HasOneValidEntry(result))
 		return $""
 	endif
 
@@ -1252,8 +1249,7 @@ threadsafe Function/WAVE GetLastSettingTextEachSCI(WAVE numericalValues, WAVE/T 
 		endif
 	endfor
 
-	Make/N=(numSweeps)/FREE lengths = strlen(result[p])
-	if(Sum(lengths) == 0)
+	if(!HasOneValidEntry(result))
 		return $""
 	endif
 
