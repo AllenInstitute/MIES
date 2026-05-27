@@ -592,7 +592,7 @@ End
 /// Complexity: O(n)
 ///
 /// @param size size of the hashmap, needs to be a power of two
-/// @param valueType wave type of the values, defaults to text wave and can be one of @ref IgorTypes
+/// @param valueType wave type of the values, defaults to text wave and can be one of @ref IgorTypes except for WAVEREF and DFREF types
 threadsafe static Function/WAVE HM_CreateHashmap(variable size, variable valueType)
 
 	Make/FREE/WAVE/N=(2) hashmap_impl
