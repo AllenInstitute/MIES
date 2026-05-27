@@ -542,7 +542,7 @@ threadsafe Function SetDimensionLabels(WAVE wv, string list, variable dim, [vari
 
 	ASSERT_TS(startPos >= 0, "Illegal negative startPos")
 	ASSERT_TS(dimlabelCount <= (DimSize(wv, dim) + startPos), "Dimension label count exceeds dimension size")
-	for(i = 0; i < dimlabelCount; i += 1)
+	for(i = dimlabelCount - 1; i >= 0; i -= 1)
 		labelName = StringFromList(i, list)
 		SetDimLabel dim, i + startPos, $labelName, Wv
 	endfor
