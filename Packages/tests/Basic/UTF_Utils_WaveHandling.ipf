@@ -3057,6 +3057,13 @@ Function SDL_WorksWithPartialLabels()
 	CHECK_EQUAL_STR(GetDimLabel(wv, ROWS, 2), "")
 End
 
+Function SDL_WorksWithEmptyList()
+
+	Make/FREE/N=0 wv
+	SetDimensionLabels(wv, "", ROWS)
+	CHECK_EQUAL_STR(GetDimLabel(wv, ROWS, 0), "")
+End
+
 /// @}
 
 /// RemoveAllDimLabels
