@@ -783,7 +783,7 @@ threadsafe Function HM_DeleteEntry(WAVE/WAVE hashmap, string key)
 
 	keyIndex = HM_GetKeyIndex(keys, bucketIndex, key, entriesWithHash)
 
-	if(!(keyIndex >= 0))
+	if(IsNaN(keyIndex))
 		return 1
 	endif
 
