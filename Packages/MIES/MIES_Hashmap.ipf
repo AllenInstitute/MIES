@@ -944,7 +944,7 @@ End
 /// @brief Create a hashmap and fill it with `entries` and their indizes
 ///
 /// @param entries       wave with the entries to be added, can be a null wave iff numEntries is zero. Empty entries are ignored.
-/// @param numEntries    number of values to read from entries
+/// @param numEntries    number of values to read from entries, useful for #NOTE_INDEX managed waves
 /// @param valueType     type of the values in the hashmap, see #HM_Create
 /// @param minSize       minimum size of the created hashmap, required to be a power of two
 /// @param caseSensitive [optional, defaults to true] lower case all keys if false, don't touch them if true
