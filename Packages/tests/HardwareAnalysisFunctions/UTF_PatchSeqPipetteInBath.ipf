@@ -3,10 +3,10 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = PatchSeqPipetteInBath
 
-static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device)
+static Function [STRUCT ACD_DAQSettings s] PS_GetDAQSettings(string device)
 
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                                                       + \
-	                             "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:VC:_ST:PSQ_QC_stimsets_DA_0:")
+	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                                                       + \
+	                                 "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:VC:_ST:PSQ_QC_stimsets_DA_0:")
 
 	return [s]
 End
@@ -191,8 +191,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_PB1([string str])
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_PIPETTE_BATH)
 
@@ -256,8 +256,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_PB2([string str])
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_PIPETTE_BATH)
 
@@ -322,8 +322,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_PB3([string str])
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_PIPETTE_BATH)
 
@@ -408,8 +408,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_PB4([string str])
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_PIPETTE_BATH)
 
@@ -473,8 +473,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_PB5([string str])
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_PIPETTE_BATH)
 
@@ -542,8 +542,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_PB6([string str])
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_PIPETTE_BATH)
 
@@ -619,8 +619,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_PB7([string str])
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_PIPETTE_BATH)
 

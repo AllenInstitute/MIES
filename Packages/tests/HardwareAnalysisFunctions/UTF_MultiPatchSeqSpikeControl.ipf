@@ -9,11 +9,11 @@ static Constant INDEP            = 0x04
 static Constant SINGLE_SCI       = 0x08
 static Constant INDEP_SINGLE_SCI = 0x10
 
-static Function [STRUCT DAQSettings s] MSQ_GetDAQSettings(string device)
+static Function [STRUCT ACD_DAQSettings s] MSQ_GetDAQSettings(string device)
 
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                        + \
-	                             "__HS0_DA0_AD0_CM:IC:_ST:SC_SpikeControl_DA_0:" + \
-	                             "__HS1_DA1_AD1_CM:IC:_ST:SC_SpikeControl_DA_0:")
+	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                        + \
+	                                 "__HS0_DA0_AD0_CM:IC:_ST:SC_SpikeControl_DA_0:" + \
+	                                 "__HS1_DA1_AD1_CM:IC:_ST:SC_SpikeControl_DA_0:")
 
 	return [s]
 End
@@ -166,8 +166,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_Test1([string str])
 
-	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 
@@ -251,8 +251,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_Test2([string str])
 
-	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 
@@ -340,8 +340,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_Test3([string str])
 
-	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 
@@ -438,8 +438,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_Test4([string str])
 
-	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 
@@ -536,8 +536,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_Test5([string str])
 
-	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 
@@ -635,8 +635,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_Test6([string str])
 
-	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 
@@ -724,8 +724,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_Test7([string str])
 
-	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 
@@ -846,8 +846,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_Test8([string str])
 
-	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 
@@ -992,8 +992,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_Test9([string str])
 
-	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 
@@ -1084,8 +1084,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_Test10([string str])
 
-	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 

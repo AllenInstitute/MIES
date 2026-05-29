@@ -8,11 +8,11 @@ static Constant EACH_SCI       = 0x02
 static Constant INDEP          = 0x04
 static Constant SINGLE_SCI     = 0x08
 
-static Function [STRUCT DAQSettings s] MSQ_GetDAQSettings(string device)
+static Function [STRUCT ACD_DAQSettings s] MSQ_GetDAQSettings(string device)
 
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1_SIM4"                   + \
-	                             "__HS0_DA0_AD0_CM:IC:_ST:MSQ_FastRheoEst_DA_0:" + \
-	                             "__HS1_DA1_AD1_CM:IC:_ST:MSQ_FastRheoEst_DA_0:")
+	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1_SIM4"                   + \
+	                                 "__HS0_DA0_AD0_CM:IC:_ST:MSQ_FastRheoEst_DA_0:" + \
+	                                 "__HS1_DA1_AD1_CM:IC:_ST:MSQ_FastRheoEst_DA_0:")
 
 	return [s]
 End
@@ -57,8 +57,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MSQ_FRE1([string str])
 
-	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = MSQ_CreateOverrideResults(str, 0, MSQ_FAST_RHEO_EST)
 	// all tests fail
@@ -149,8 +149,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MSQ_FRE2([string str])
 
-	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = MSQ_CreateOverrideResults(str, 0, MSQ_FAST_RHEO_EST)
 	// all tests fail
@@ -244,8 +244,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MSQ_FRE3([string str])
 
-	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = MSQ_CreateOverrideResults(str, 0, MSQ_FAST_RHEO_EST)
 	// spike detected on second sweep, but never again
@@ -337,8 +337,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MSQ_FRE4([string str])
 
-	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = MSQ_CreateOverrideResults(str, 0, MSQ_FAST_RHEO_EST)
 	// HS0: no spikes
@@ -435,8 +435,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MSQ_FRE5([string str])
 
-	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = MSQ_CreateOverrideResults(str, 0, MSQ_FAST_RHEO_EST)
 
@@ -546,8 +546,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MSQ_FRE6([string str])
 
-	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = MSQ_CreateOverrideResults(str, 0, MSQ_FAST_RHEO_EST)
 
@@ -650,8 +650,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MSQ_FRE7([string str])
 
-	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = MSQ_CreateOverrideResults(str, 0, MSQ_FAST_RHEO_EST)
 
@@ -761,8 +761,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MSQ_FRE8([string str])
 
-	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = MSQ_CreateOverrideResults(str, 0, MSQ_FAST_RHEO_EST)
 
@@ -868,8 +868,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MSQ_FRE9([string str])
 
-	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = MSQ_CreateOverrideResults(str, 0, MSQ_FAST_RHEO_EST)
 
@@ -972,8 +972,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MSQ_FRE10([string str])
 
-	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = MSQ_CreateOverrideResults(str, 0, MSQ_FAST_RHEO_EST)
 
@@ -1078,8 +1078,8 @@ static Function MSQ_FRE11([string str])
 
 	ST_SetStimsetParameter("MSQ_FastRheoEst_DA_0", "Total number of steps", var = 50)
 
-	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = MSQ_CreateOverrideResults(str, 0, MSQ_FAST_RHEO_EST)
 	// all tests fail

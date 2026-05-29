@@ -167,6 +167,7 @@ End
 
 // our includes
 #include "MIES_AcceleratedModifyGraph"
+#include "MIES_AcquireData"
 #include "MIES_AcquisitionStateHandling"
 #include "MIES_AmplifierInteraction"
 #include "MIES_AnalysisBrowser"
