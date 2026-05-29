@@ -38,5 +38,13 @@ Function ASD_ReadChannel(string device, variable channel)
 	ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
 	gain = DAG_GetNumericalValue(device, ctrl, index = channel)
 
+#ifdef REPLAY_DATA
+	if(ROvar(GetReplayDataEnable()))
+		WAVE/Z replaySettings = RD_GetReplaySettings(device, RD_MODE_ALWAYS, RD_SWEEP_SELECTOR_CURRENT)
+
+		return replaySettings[%$("AsyncAD" + num2str(channel))]
+	endif
+#endif // REPLAY_DATA
+
 	return rawChannelValue / gain
 End

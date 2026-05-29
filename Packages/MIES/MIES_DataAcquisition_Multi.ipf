@@ -241,6 +241,12 @@ Function DQM_StartDAQMultiDevice(string device, [variable initialSetupReq])
 
 		DC_Configure(device, DATA_ACQUISITION_MODE)
 		NVAR maxITI = $GetMaxIntertrialInterval(device)
+
+#ifdef REPLAY_DATA
+		if(ROvar(GetReplayDataEnable()))
+			maxITI = 0.5
+		endif
+#endif // REPLAY_DATA
 	catch
 		if(initialSetupReq)
 			DAP_OneTimeCallAfterDAQ(device, DQ_STOP_REASON_CONFIG_FAILED, forcedStop = 1)
