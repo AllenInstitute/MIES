@@ -46,19 +46,9 @@ Function HardwareTestBeginCommon(string name)
 	TestBeginCommon()
 End
 
-Function HardwareTestCaseBeginCommon(string name)
+Function RestoreCachedInfo()
 
-	variable numWindows, i
-	string list, reentryFuncName, win, experimentName
-
-	// cut off multi data suffix
-	name = StringFromList(0, name, ":")
-
-	RegisterReentryFunction(name)
-
-	TestCaseBeginCommon(name)
-
-	MoveStimsetsIntoPlace()
+	DFREF dfr = GetMiesPath()
 
 	SVAR     miesVersion                           = root:miesVersion
 	string/G $(GetMiesPathAsString() + ":version") = miesVersion
@@ -78,6 +68,23 @@ Function HardwareTestCaseBeginCommon(string name)
 	DFREF source = root:DeviceInfo
 	DuplicateDataFolder/O=1/Z source, dest
 	CHECK_EQUAL_VAR(V_flag, 0)
+End
+
+Function HardwareTestCaseBeginCommon(string name)
+
+	variable numWindows, i
+	string list, reentryFuncName, win, experimentName
+
+	// cut off multi data suffix
+	name = StringFromList(0, name, ":")
+
+	RegisterReentryFunction(name)
+
+	TestCaseBeginCommon(name)
+
+	MoveStimsetsIntoPlace()
+
+	RestoreCachedInfo()
 
 	// remove NWB file which will be used for sweep-by-sweep export
 	NWB_CloseAllNwBFiles()
