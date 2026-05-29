@@ -2027,7 +2027,7 @@ Function InvalidateLBIndexAndRowCachesForDevice(string device)
 	InvalidateLBIndexAndRowCaches_Impl(valuesWave)
 End
 
-static Function InvalidateLBIndexAndRowCaches_Impl(WAVE valuesWave)
+static Function InvalidateLBIndexAndRowCaches_Impl(WAVE/WAVE valuesWave)
 
 	string key
 
