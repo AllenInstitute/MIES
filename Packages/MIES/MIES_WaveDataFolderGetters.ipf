@@ -4799,12 +4799,13 @@ End
 /// - 2: Tolerance Factor
 ///
 /// Columns:
-/// - 0: Async AD $Channel OnOff
-/// - 1: Async AD $Channel Gain
-/// - 2: Async Alarm $Channel OnOff
+/// - 0: Async $Channel On/Off
+/// - 1: Async $Channel Gain
+/// - 2: Async Alarm $Channel On/Off
 /// - 3: Async Alarm $Channel Min
 /// - 4: Async Alarm  $Channel Max
 /// - 5: Async AD $Channel [$Title]
+/// - 6: Async Alarm $Channel State
 Function/WAVE GetAsyncSettingsKeyWave(WAVE settingsWave, variable channel, string title, string unit)
 
 	string prefix
@@ -4892,8 +4893,8 @@ End
 /// - Just one
 ///
 /// Columns:
-/// - 0: Async $Channel Title
-/// - 1: Async $Channel Unit
+/// - 0: Async AD$Channel Title
+/// - 1: Async AD$Channel Unit
 Function/WAVE GetAsyncSettingsTextKeyWave(WAVE/T settingsWave, variable channel)
 
 	string prefix
