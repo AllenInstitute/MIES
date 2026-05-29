@@ -48,7 +48,11 @@ html_static_path = ["_static"]
 html_copy_source = False
 html_show_sourcelink = False
 
-exclude_patterns = ["releasenotes_template.rst", "IPNWB/specifications"]
+exclude_patterns = [
+    "releasenotes_template.rst",
+    "IPNWB/specifications",
+    "daephys_ttl_ni.rst",
+]
 
 cpp_id_attributes = ["threadsafe"]
 
