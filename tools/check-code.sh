@@ -92,7 +92,7 @@ matches=$(git grep $opts "\bbutton_SettingsPlus_LockDevice\b" '*/UTF_*.ipf' ':^*
 
 if [[ -n "$matches" ]]
 then
-  echo "The hardware tests should never manually lock a device. Prefer AcquireData_NG(...) or CreateLockedDAEphys(...)."
+  echo "The hardware tests should never manually lock a device. Prefer ACD_AcquireData_NG(...) or ACD_CreateLockedDAEphys(...)."
   echo "$matches"
   ret=1
 fi

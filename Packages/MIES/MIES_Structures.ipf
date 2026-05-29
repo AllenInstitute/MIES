@@ -672,13 +672,13 @@ Structure SF_ExecutionData
 	string jsonPath // current path for execution of the parsed formula
 EndStructure
 
-Structure DAQSettings
+Structure ACD_DAQSettings
 	variable MD, RA, IDX, LIDX, BKG_DAQ, RES, DB, AMP, ITP, FAR
 	variable oodDAQ, dDAQ, OD, TD, TP, ITI, GSI, TPI, DAQ, DDL, SIM, STP, TBP, TPD
 	string FFR
 
 	WAVE hs, da, ad, cm, ttl, aso
 	WAVE/T st, ist, af, st_ttl, iaf
-	FUNCREF CALLABLE_PROTO preAcquireFunc, preInitFunc
-	FUNCREF CALLABLE_PROTO globalPreAcquireFunc, globalPreInitFunc
+	FUNCREF ACD_CALLABLE_PROTO preAcquireFunc, preInitFunc
+	FUNCREF ACD_CALLABLE_PROTO globalPreAcquireFunc, globalPreInitFunc
 EndStructure

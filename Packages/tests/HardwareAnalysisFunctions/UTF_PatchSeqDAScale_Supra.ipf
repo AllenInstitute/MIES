@@ -3,10 +3,10 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = PatchSeqTestDAScaleSupra
 
-static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device, string stimset)
+static Function [STRUCT ACD_DAQSettings s] PS_GetDAQSettings(string device, string stimset)
 
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                                                  + \
-	                             "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:IC:_ST:" + stimset + ":")
+	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                                                  + \
+	                                 "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:IC:_ST:" + stimset + ":")
 
 	AdjustAnalysisParamsForPSQ(device, stimset)
 
@@ -104,8 +104,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_Supra1([string str])
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Supr_DA_0")
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Supr_DA_0")
+	ACD_AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUPRA)
 	// pre pulse chunk pass
@@ -194,8 +194,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_Supra2([string str])
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Supr_DA_0")
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Supr_DA_0")
+	ACD_AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUPRA)
 	// pre pulse chunk pass
@@ -284,8 +284,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_Supra3([string str])
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DS_SupraLong_DA_0")
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DS_SupraLong_DA_0")
+	ACD_AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUPRA)
 	// pre pulse chunk pass
@@ -374,8 +374,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_Supra4([string str])
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DS_SupraLong_DA_0")
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DS_SupraLong_DA_0")
+	ACD_AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUPRA)
 	// pre pulse chunk pass
@@ -468,8 +468,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_Supra5([string str])
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DS_SupraLong_DA_0")
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DS_SupraLong_DA_0")
+	ACD_AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUPRA)
 	// pre pulse chunk pass
@@ -573,8 +573,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_Supra6([string str])
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DS_SupraLong_DA_0")
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DS_SupraLong_DA_0")
+	ACD_AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUPRA)
 	// pre pulse chunk pass
@@ -659,8 +659,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function PS_DS_Supra7([string str])
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Supr_DA_0")
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Supr_DA_0")
+	ACD_AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUPRA)
 	// pre pulse chunk pass

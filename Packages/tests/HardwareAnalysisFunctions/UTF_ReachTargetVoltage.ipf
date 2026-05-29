@@ -3,10 +3,10 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = ReachTargetVoltageTesting
 
-static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device)
+static Function [STRUCT ACD_DAQSettings s] PS_GetDAQSettings(string device)
 
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB0"                        + \
-	                             "__HS1_DA1_AD1_CM:IC:_ST:ReachTargetVoltage_DA_0:")
+	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB0"                        + \
+	                                 "__HS1_DA1_AD1_CM:IC:_ST:ReachTargetVoltage_DA_0:")
 
 	return [s]
 End
@@ -44,8 +44,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RTV_Works([string str])
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function RTV_Works_REENTRY([string str])
@@ -76,8 +76,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RTV_WorksWithIndexing([string str])
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function RTV_WorksWithIndexing_REENTRY([string str])
@@ -120,13 +120,13 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RTV_WorksWithMultipleHeadstages([string str])
 
-	STRUCT DAQSettings s
+	STRUCT ACD_DAQSettings s
 
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB0"                           + \
-	                             "__HS2_DA0_AD0_CM:IC:_ST:ReachTargetVoltage_DA_0:" + \
-	                             "__HS1_DA1_AD1_CM:IC:_ST:ReachTargetVoltage_DA_0:")
+	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB0"                           + \
+	                                 "__HS2_DA0_AD0_CM:IC:_ST:ReachTargetVoltage_DA_0:" + \
+	                                 "__HS1_DA1_AD1_CM:IC:_ST:ReachTargetVoltage_DA_0:")
 
-	AcquireData_NG(s, str)
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function RTV_WorksWithMultipleHeadstages_REENTRY([string str])
@@ -167,8 +167,8 @@ static Function RTV_ReportsDAScaleOutOfRange([string str])
 
 	overrideResults[1] = 3e-6 // MOhm
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function RTV_ReportsDAScaleOutOfRange_REENTRY([string str])

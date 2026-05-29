@@ -3,7 +3,7 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = SetControlsTesting
 
-static Function [STRUCT DAQSettings s] SC_GetDAQSettings(string device, [variable far])
+static Function [STRUCT ACD_DAQSettings s] SC_GetDAQSettings(string device, [variable far])
 
 	if(ParamisDefault(far))
 		far = 1
@@ -11,8 +11,8 @@ static Function [STRUCT DAQSettings s] SC_GetDAQSettings(string device, [variabl
 		far = !!far
 	endif
 
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB0_FAR" + num2str(far) + \
-	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncSetCtrl_DA_0:")
+	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB0_FAR" + num2str(far) + \
+	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncSetCtrl_DA_0:")
 
 	return [s]
 End
@@ -40,8 +40,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_SetControls1([string str])
 
-	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = SC_GetDAQSettings(str)
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function SC_SetControls1_REENTRY([string str])
@@ -69,10 +69,10 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_SetControls2([string str])
 
-	[STRUCT DAQSettings s] = SC_GetDAQSettings(str, far = 0)
+	[STRUCT ACD_DAQSettings s] = SC_GetDAQSettings(str, far = 0)
 
 	try
-		AcquireData_NG(s, str)
+		ACD_AcquireData_NG(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -98,10 +98,10 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_SetControls2a([string str])
 
-	[STRUCT DAQSettings s] = SC_GetDAQSettings(str, far = 0)
+	[STRUCT ACD_DAQSettings s] = SC_GetDAQSettings(str, far = 0)
 
 	try
-		AcquireData_NG(s, str)
+		ACD_AcquireData_NG(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -128,10 +128,10 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_SetControls2b([string str])
 
-	[STRUCT DAQSettings s] = SC_GetDAQSettings(str, far = 0)
+	[STRUCT ACD_DAQSettings s] = SC_GetDAQSettings(str, far = 0)
 
 	try
-		AcquireData_NG(s, str)
+		ACD_AcquireData_NG(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -158,10 +158,10 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_SetControls3([string str])
 
-	[STRUCT DAQSettings s] = SC_GetDAQSettings(str, far = 0)
+	[STRUCT ACD_DAQSettings s] = SC_GetDAQSettings(str, far = 0)
 
 	try
-		AcquireData_NG(s, str)
+		ACD_AcquireData_NG(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -188,10 +188,10 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_SetControls3a([string str])
 
-	[STRUCT DAQSettings s] = SC_GetDAQSettings(str, far = 0)
+	[STRUCT ACD_DAQSettings s] = SC_GetDAQSettings(str, far = 0)
 
 	try
-		AcquireData_NG(s, str)
+		ACD_AcquireData_NG(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -218,10 +218,10 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_SetControls3b([string str])
 
-	[STRUCT DAQSettings s] = SC_GetDAQSettings(str, far = 0)
+	[STRUCT ACD_DAQSettings s] = SC_GetDAQSettings(str, far = 0)
 
 	try
-		AcquireData_NG(s, str)
+		ACD_AcquireData_NG(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -248,10 +248,10 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_SetControls3c([string str])
 
-	[STRUCT DAQSettings s] = SC_GetDAQSettings(str, far = 0)
+	[STRUCT ACD_DAQSettings s] = SC_GetDAQSettings(str, far = 0)
 
 	try
-		AcquireData_NG(s, str)
+		ACD_AcquireData_NG(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -278,10 +278,10 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_SetControls4([string str])
 
-	[STRUCT DAQSettings s] = SC_GetDAQSettings(str, far = 0)
+	[STRUCT ACD_DAQSettings s] = SC_GetDAQSettings(str, far = 0)
 
 	try
-		AcquireData_NG(s, str)
+		ACD_AcquireData_NG(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -308,8 +308,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_SetControls5([string str])
 
-	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = SC_GetDAQSettings(str)
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function SC_SetControls5_REENTRY([string str])
@@ -355,8 +355,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_SetControls6([string str])
 
-	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = SC_GetDAQSettings(str)
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function SC_SetControls6_REENTRY([string str])
@@ -397,8 +397,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_SetControls7([string str])
 
-	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = SC_GetDAQSettings(str)
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function SC_SetControls7_REENTRY([string str])
@@ -428,16 +428,16 @@ static Function SC_SetControls8_preAcq(string device)
 	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "sweepFormula_formula", wv = wv)
 
 	// create two databrowser locked to this device
-	CreateLockedDatabrowser(device)
-	CreateLockedDatabrowser(device)
+	ACD_CreateLockedDatabrowser(device)
+	ACD_CreateLockedDatabrowser(device)
 End
 
 // works with event/data tuples setting notebook text
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_SetControls8([string str])
 
-	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = SC_GetDAQSettings(str)
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function SC_SetControls8_REENTRY([string str])
@@ -482,8 +482,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SC_SetControls9([string str])
 
-	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = SC_GetDAQSettings(str)
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function SC_SetControls9_REENTRY([string str])

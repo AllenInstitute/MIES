@@ -3,11 +3,11 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = SweepSkipping
 
-static Function [STRUCT DAQSettings s] GetDAQSettings(string mandConfig)
+static Function [STRUCT ACD_DAQSettings s] ACD_GetDAQSettings(string mandConfig)
 
-	InitDAQSettingsFromString(s, mandConfig                                                          + \
-	                             "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:_IST:StimulusSetB_DA_0:" + \
-	                             "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:_IST:StimulusSetD_DA_0:")
+	ACD_InitDAQSettingsFromString(s, mandConfig                                                          + \
+	                                 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:_IST:StimulusSetB_DA_0:" + \
+	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:_IST:StimulusSetD_DA_0:")
 End
 
 static Function GlobalPreInit(string device)
@@ -32,8 +32,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SkipAhead([string str])
 
-	[STRUCT DAQSettings s] = GetDAQSettings("MD1_RA1_I0_L0_BKG1")
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings("MD1_RA1_I0_L0_BKG1")
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function SkipAhead_REENTRY([string str])
@@ -69,8 +69,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SweepSkipping([string str])
 
-	[STRUCT DAQSettings s] = GetDAQSettings("MD1_RA1_I1_L0_BKG1")
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings("MD1_RA1_I1_L0_BKG1")
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function SweepSkipping_REENTRY([string str])
@@ -114,8 +114,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SweepSkippingAdvanced([string str])
 
-	[STRUCT DAQSettings s] = GetDAQSettings("MD1_RA1_I0_L0_BKG1")
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings("MD1_RA1_I0_L0_BKG1")
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function SweepSkippingAdvanced_REENTRY([string str])
@@ -161,8 +161,8 @@ End
 // UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGenerator
 static Function SkipSweepsDuringITI([STRUCT IUTF_MDATA &md])
 
-	[STRUCT DAQSettings s] = GetDAQSettings("MD" + num2str(md.v0) + "_RA1_I0_L0_BKG1_RES5_GSI0_ITI5")
-	AcquireData_NG(s, md.s0)
+	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings("MD" + num2str(md.v0) + "_RA1_I0_L0_BKG1_RES5_GSI0_ITI5")
+	ACD_AcquireData_NG(s, md.s0)
 
 	CtrlNamedBackGround ExecuteDuringITI, start, period=30, proc=SkipToEndDuringITI_IGNORE
 End
@@ -196,8 +196,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SkipSweepsBackDuringITI([string str])
 
-	[STRUCT DAQSettings s] = GetDAQSettings("MD1_RA1_I0_L0_BKG1_RES0_GSI0_ITI5")
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings("MD1_RA1_I0_L0_BKG1_RES0_GSI0_ITI5")
+	ACD_AcquireData_NG(s, str)
 
 	CtrlNamedBackGround ExecuteDuringITI, start, period=30, proc=SkipSweepBackDuringITI_IGNORE
 End

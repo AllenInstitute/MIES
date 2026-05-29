@@ -20,7 +20,7 @@ Function CheckIfAllControlsReferStateWv([string str])
 	variable i, numEntries, val, channelIndex, channelType, controlType, index, oldVal
 	variable err, inputModified, mode
 
-	CreateLockedDAEphys(str)
+	ACD_CreateLockedDAEphys(str)
 
 	list = ControlNameList(str, ";")
 
@@ -180,7 +180,7 @@ Function CheckStartupSettings([string str])
 
 	unlockedDevice = DAP_CreateDAEphysPanel()
 
-	CreateLockedDAEphys(str, unlockedDevice = unlockedDevice)
+	ACD_CreateLockedDAEphys(str, unlockedDevice = unlockedDevice)
 
 	Duplicate/FREE GetDA_EphysGuiStateNum(str), guiStateNumRef
 	Duplicate/FREE GetDA_EphysGuiStateTxT(str), guiStateTxTRef
@@ -237,7 +237,7 @@ Function CheckStartupSettings([string str])
 	SCOPE_OpenScopeWindow(unlockedDevice)
 	AddVersionToPanel(unlockedDevice, DA_EPHYS_PANEL_VERSION)
 
-	CreateLockedDAEphys(str, unlockedDevice = unlockedDevice)
+	ACD_CreateLockedDAEphys(str, unlockedDevice = unlockedDevice)
 
 	Duplicate/FREE GetDA_EphysGuiStateNum(str), guiStateNumNew
 	Duplicate/FREE GetDA_EphysGuiStateTxT(str), guiStateTxTNew
@@ -252,7 +252,7 @@ Function CheckStimsetPopupMetadata([string str])
 	string controls, stimsetlist, ctrl, menuExp
 	variable i, numControls, channelIndex, channelType, controlType
 
-	CreateLockedDAEphys(str)
+	ACD_CreateLockedDAEphys(str)
 
 	controls    = ControlNameList(str)
 	numControls = ItemsInList(controls)
@@ -284,7 +284,7 @@ Function AllChannelControlsWork([string str])
 	string   ctrl
 	variable channelType
 
-	CreateLockedDAEphys(str)
+	ACD_CreateLockedDAEphys(str)
 
 	Make/FREE channelTypes = {CHANNEL_TYPE_ADC, CHANNEL_TYPE_DAC, CHANNEL_TYPE_TTL}
 
@@ -305,12 +305,12 @@ Function CheckIfConfigurationRestoresMCCFilterGain([string str])
 
 	fName = PrependExperimentFolder_IGNORE("CheckIfConfigurationRestoresMCCFilterGain.json")
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DAQ0_TP0"                + \
-	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
-	                             "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetB_DA_0:")
+	STRUCT ACD_DAQSettings s
+	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DAQ0_TP0"                + \
+	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                                 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetB_DA_0:")
 
-	AcquireData_NG(s, str)
+	ACD_AcquireData_NG(s, str)
 
 	gain       = 5
 	filterFreq = 6
@@ -372,12 +372,12 @@ static Function ComplainsAboutVanishingEpoch([STRUCT IUTF_MDATA &md])
 	variable refNum
 	string   history
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_SIM8"                 + \
-	                             "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
+	STRUCT ACD_DAQSettings s
+	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_SIM8"                 + \
+	                                 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
 
 	refNum = CaptureHistoryStart()
-	AcquireData_NG(s, md.s0)
+	ACD_AcquireData_NG(s, md.s0)
 	history = CaptureHistory(refNum, 1)
 
 	CHECK_PROPER_STR(history)
@@ -425,10 +425,10 @@ static Function SyncMIESMccWorksOutoftheBox([STRUCT IUTF_MDATA &md])
 
 	device = md.s0
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP0_DAQ0"             + \
-	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:")
-	AcquireData_NG(s, device)
+	STRUCT ACD_DAQSettings s
+	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP0_DAQ0"             + \
+	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:")
+	ACD_AcquireData_NG(s, device)
 
 	WAVE ampStorageWave = GetAmplifierParamStorageWave(device)
 
@@ -471,10 +471,10 @@ Function CheckAmplifierReadAndWrite([STRUCT IUTF_MDATA &md])
 	device    = md.s0
 	headstage = 0
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP0_DAQ0"                                                        + \
-	                             "__HS" + num2str(headstage) + "_DA0_AD0_CM:" + clampModeStr + ":_ST:StimulusSetA_DA_0:")
-	AcquireData_NG(s, device)
+	STRUCT ACD_DAQSettings s
+	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP0_DAQ0"                                                        + \
+	                                 "__HS" + num2str(headstage) + "_DA0_AD0_CM:" + clampModeStr + ":_ST:StimulusSetA_DA_0:")
+	ACD_AcquireData_NG(s, device)
 
 	clampMode = DAG_GetHeadstageMode(device, headstage)
 

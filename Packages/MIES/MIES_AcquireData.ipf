@@ -1,9 +1,15 @@
 #pragma TextEncoding     = "UTF-8"
 #pragma rtGlobals        = 3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors = 1
-#pragma ModuleName       = AcquireData
 
-static Function EnsureMCCIsOpen()
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName = MIES_ACD
+#endif // AUTOMATED_TESTING
+
+/// @file MIES_AcquireData.ipf
+/// @brief __ACD__ Helpers for data acquisition used for testing and replay feature
+
+static Function ACD_EnsureMCCIsOpen()
 
 	AI_FindConnectedAmps()
 
@@ -14,27 +20,27 @@ static Function EnsureMCCIsOpen()
 	ASSERT(DimSize(ampTel, ROWS) == 2, "Could not find exactly two connected amplifiers")
 End
 
-Function CALLABLE_PROTO(string device)
+Function ACD_CALLABLE_PROTO(string device)
 
 	FATAL_ERROR("Can not call prototype function")
 End
 
-static Function/S AcquireDataSelectFunction(string module, string funcName)
+static Function/S ACD_AcquireDataSelectFunction(string module, string funcName)
 
 	string funcWithModule
 
 	funcWithModule = module + "#" + funcName
 
-	FUNCREF CALLABLE_PROTO func = $funcWithModule
+	FUNCREF ACD_CALLABLE_PROTO func = $funcWithModule
 
 	if(FuncRefIsAssigned(FuncRefInfo(func)))
 		return funcWithModule
 	endif
 
-	return "AcquireDataDoNothing"
+	return "ACD_AcquireDataDoNothing"
 End
 
-Function AcquireDataDoNothing(string device)
+Function ACD_AcquireDataDoNothing(string device)
 
 #ifdef AUTOMATED_TESTING
 	PASS()
@@ -44,7 +50,7 @@ End
 /// @brief Open a DAEphys panel and lock it to the given device
 ///
 /// In case unlockedDevice is given, no new panel is created.
-Function CreateLockedDAEphys(string device, [string unlockedDevice])
+Function ACD_CreateLockedDAEphys(string device, [string unlockedDevice])
 
 	if(ParamIsDefault(unlockedDevice))
 		unlockedDevice = DAP_CreateDAEphysPanel()
@@ -55,7 +61,7 @@ Function CreateLockedDAEphys(string device, [string unlockedDevice])
 	ASSERT(WindowExists(device), "Missing locked DAephys panel")
 End
 
-Function CreateLockedDatabrowser(string device)
+Function ACD_CreateLockedDatabrowser(string device)
 
 	string win, bsPanel
 
@@ -64,7 +70,7 @@ Function CreateLockedDatabrowser(string device)
 	PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", str = device)
 End
 
-static Function OpenDatabrowser()
+static Function ACD_OpenDatabrowser()
 
 	string win, bsPanel
 
@@ -74,7 +80,7 @@ static Function OpenDatabrowser()
 End
 
 // assumes that the caller of the caller is an UTF test case
-static Function FetchCustomizationFunctions(STRUCT DAQSettings &s)
+static Function ACD_FetchCustomizationFunctions(STRUCT ACD_DAQSettings &s)
 
 	string funcName, stacktrace, module, testcaseInfo, preInitFunc, preAcquireFunc
 
@@ -87,14 +93,14 @@ static Function FetchCustomizationFunctions(STRUCT DAQSettings &s)
 	module = StringByKey("MODULE", FunctionInfo(funcName, StringFromList(1, testcaseInfo, ",")))
 	ASSERT(!IsEmpty(module), "Could not get calling function's module name.")
 
-	FUNCREF CALLABLE_PROTO s.globalPreAcquireFunc = $AcquireDataSelectFunction(module, "GlobalPreAcq")
-	FUNCREF CALLABLE_PROTO s.globalPreInitFunc    = $AcquireDataSelectFunction(module, "GlobalPreInit")
+	FUNCREF ACD_CALLABLE_PROTO s.globalPreAcquireFunc = $ACD_AcquireDataSelectFunction(module, "GlobalPreAcq")
+	FUNCREF ACD_CALLABLE_PROTO s.globalPreInitFunc    = $ACD_AcquireDataSelectFunction(module, "GlobalPreInit")
 
-	FUNCREF CALLABLE_PROTO s.preAcquireFunc = $AcquireDataSelectFunction(module, funcName + "_PreAcq")
-	FUNCREF CALLABLE_PROTO s.preInitFunc    = $AcquireDataSelectFunction(module, funcName + "_PreInit")
+	FUNCREF ACD_CALLABLE_PROTO s.preAcquireFunc = $ACD_AcquireDataSelectFunction(module, funcName + "_PreAcq")
+	FUNCREF ACD_CALLABLE_PROTO s.preInitFunc    = $ACD_AcquireDataSelectFunction(module, funcName + "_PreInit")
 End
 
-static Function ParseNumber(string str, string name, [variable defValue])
+static Function ACD_ParseNumber(string str, string name, [variable defValue])
 
 	string   output
 	variable var
@@ -114,7 +120,7 @@ static Function ParseNumber(string str, string name, [variable defValue])
 	return defValue
 End
 
-static Function/S ParseString(string str, string name, [string defValue])
+static Function/S ACD_ParseString(string str, string name, [string defValue])
 
 	string output, trailingSep
 
@@ -133,8 +139,8 @@ static Function/S ParseString(string str, string name, [string defValue])
 	return defValue
 End
 
-/// @brief Fill the #DAQSetttings structure from a specially crafted string
-Function InitDAQSettingsFromString(STRUCT DAQSettings &s, string str)
+/// @brief Fill the #ACD_DAQSettings structure from a specially crafted string
+Function ACD_InitDAQSettingsFromString(STRUCT ACD_DAQSettings &s, string str)
 
 	variable md, ra, idx, lidx, bkg_daq, res, headstage, clampMode, ttl
 	string elem, output
@@ -148,27 +154,27 @@ Function InitDAQSettingsFromString(STRUCT DAQSettings &s, string str)
 	s.lidx    = lidx
 	s.bkg_daq = bkg_daq
 
-	s.res = ParseNumber(str, "_RES", defValue = 0)
+	s.res = ACD_ParseNumber(str, "_RES", defValue = 0)
 
-	s.db = ParseNumber(str, "_DB", defValue = 0)
+	s.db = ACD_ParseNumber(str, "_DB", defValue = 0)
 
-	s.dDAQ = ParseNumber(str, "_dDAQ", defValue = 0)
+	s.dDAQ = ACD_ParseNumber(str, "_dDAQ", defValue = 0)
 
-	s.oodDAQ = ParseNumber(str, "_oodDAQ", defValue = 0)
+	s.oodDAQ = ACD_ParseNumber(str, "_oodDAQ", defValue = 0)
 
-	s.DDL = ParseNumber(str, "_DDL", defValue = 0)
+	s.DDL = ACD_ParseNumber(str, "_DDL", defValue = 0)
 
-	s.od = ParseNumber(str, "_OD", defValue = 0)
+	s.od = ACD_ParseNumber(str, "_OD", defValue = 0)
 
-	s.td = ParseNumber(str, "_TD", defValue = 0)
+	s.td = ACD_ParseNumber(str, "_TD", defValue = 0)
 
-	s.daq = ParseNumber(str, "_DAQ", defValue = NaN)
+	s.daq = ACD_ParseNumber(str, "_DAQ", defValue = NaN)
 
-	s.tp = ParseNumber(str, "_TP", defValue = NaN)
+	s.tp = ACD_ParseNumber(str, "_TP", defValue = NaN)
 
-	s.stp = ParseNumber(str, "_STP", defValue = 0)
+	s.stp = ACD_ParseNumber(str, "_STP", defValue = 0)
 
-	s.tbp = ParseNumber(str, "_TBP", defValue = NaN)
+	s.tbp = ACD_ParseNumber(str, "_TBP", defValue = NaN)
 
 	// default to DAQ if nothing is choosen
 	if(IsNaN(s.daq) && IsNaN(s.tp))
@@ -180,23 +186,23 @@ Function InitDAQSettingsFromString(STRUCT DAQSettings &s, string str)
 		s.tp = 0
 	endif
 
-	s.amp = ParseNumber(str, "_AMP", defValue = 1)
+	s.amp = ACD_ParseNumber(str, "_AMP", defValue = 1)
 
-	s.iti = ParseNumber(str, "_ITI", defValue = NaN)
+	s.iti = ACD_ParseNumber(str, "_ITI", defValue = NaN)
 
-	s.gsi = ParseNumber(str, "_GSI", defValue = 1)
+	s.gsi = ACD_ParseNumber(str, "_GSI", defValue = 1)
 
-	s.tpi = ParseNumber(str, "_TPI", defValue = 1)
+	s.tpi = ACD_ParseNumber(str, "_TPI", defValue = 1)
 
-	s.itp = ParseNumber(str, "_ITP", defValue = 1)
+	s.itp = ACD_ParseNumber(str, "_ITP", defValue = 1)
 
-	s.far = ParseNumber(str, "_FAR", defValue = 1)
+	s.far = ACD_ParseNumber(str, "_FAR", defValue = 1)
 
-	s.sim = ParseNumber(str, "_SIM", defValue = 1)
+	s.sim = ACD_ParseNumber(str, "_SIM", defValue = 1)
 
-	s.ffr = ParseString(str, "_FFR", defValue = NONE)
+	s.ffr = ACD_ParseString(str, "_FFR", defValue = NONE)
 
-	s.tpd = ParseNumber(str, "_TPD", defValue = NaN)
+	s.tpd = ACD_ParseNumber(str, "_TPD", defValue = NaN)
 
 	WAVE/Z/T hsConfig = ListToTextWave(str, "__")
 
@@ -216,23 +222,23 @@ Function InitDAQSettingsFromString(STRUCT DAQSettings &s, string str)
 			// no __ prefix as we have splitted it above at two __
 
 			if(GrepString(elem, "^TTL"))
-				ttl        = ParseNumber(elem, "TTL")
+				ttl        = ACD_ParseNumber(elem, "TTL")
 				s.ttl[ttl] = 1
 
-				s.st_ttl[ttl] = ParseString(elem, "_ST", defValue = "")
+				s.st_ttl[ttl] = ACD_ParseString(elem, "_ST", defValue = "")
 				continue
 			endif
 
-			headstage = ParseNumber(elem, "HS")
+			headstage = ACD_ParseNumber(elem, "HS")
 			ASSERT(IsValidHeadstage(headstage), "Invalid headstage")
 
 			s.hs[headstage] = 1
 
-			s.da[headstage] = ParseNumber(elem, "_DA")
+			s.da[headstage] = ACD_ParseNumber(elem, "_DA")
 
-			s.ad[headstage] = ParseNumber(elem, "_AD")
+			s.ad[headstage] = ACD_ParseNumber(elem, "_AD")
 
-			output = ParseString(elem, "_CM")
+			output = ACD_ParseString(elem, "_CM")
 
 			strswitch(output)
 				case "IC":
@@ -250,12 +256,12 @@ Function InitDAQSettingsFromString(STRUCT DAQSettings &s, string str)
 
 			s.cm[headstage] = clampMode
 
-			s.st[headstage]  = ParseString(elem, "_ST", defValue = "")
-			s.ist[headstage] = ParseString(elem, "_IST", defValue = "")
-			s.af[headstage]  = ParseString(elem, "_AF", defValue = "")
-			s.iaf[headstage] = ParseString(elem, "_IAF", defValue = "")
+			s.st[headstage]  = ACD_ParseString(elem, "_ST", defValue = "")
+			s.ist[headstage] = ACD_ParseString(elem, "_IST", defValue = "")
+			s.af[headstage]  = ACD_ParseString(elem, "_AF", defValue = "")
+			s.iaf[headstage] = ACD_ParseString(elem, "_IAF", defValue = "")
 
-			s.aso[headstage] = ParseNumber(elem, "_ASO", defValue = 1)
+			s.aso[headstage] = ACD_ParseNumber(elem, "_ASO", defValue = 1)
 		endfor
 	endif
 End
@@ -272,11 +278,11 @@ End
 ///		/// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 /// 	static Function MyTest([string str])
 ///
-///			struct DAQSettings s
-///			InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"             + \
+///			struct ACD_DAQSettings s
+///			ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"             + \
 /// 	                                 "__HS0_DA0_AD0_CM:IC:_ST:ABCD:")
 ///
-///			AcquireData_NG(s, md.s0)
+///			ACD_AcquireData_NG(s, md.s0)
 /// 	End
 ///
 /// 	static Function MyTest_REENTRY([string str])
@@ -349,21 +355,21 @@ End
 /// `${testcase}_PreAcq`/`${testcase}_PreInit`. They must all be static. The
 /// global functions are called *before* the per test case functions. This
 /// allows to override the global ones.
-Function AcquireData_NG(STRUCT DAQSettings &s, string device)
+Function ACD_AcquireData_NG(STRUCT ACD_DAQSettings &s, string device)
 
 	string ctrl
 	variable i, activeHS
 
 	if(s.amp)
-		EnsureMCCIsOpen()
+		ACD_EnsureMCCIsOpen()
 	endif
 
-	FetchCustomizationFunctions(s)
+	ACD_FetchCustomizationFunctions(s)
 
 	s.globalPreInitFunc(device)
 	s.preInitFunc(device)
 
-	CreateLockedDAEphys(device)
+	ACD_CreateLockedDAEphys(device)
 
 #ifdef TESTS_WITH_SUTTER_HARDWARE
 	Duplicate/FREE s.hs, sutterRequirementCheck
@@ -537,7 +543,7 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string device)
 	s.preAcquireFunc(device)
 
 	if(s.DB)
-		OpenDatabrowser()
+		ACD_OpenDatabrowser()
 	endif
 
 	AssertOnAndClearRTError()

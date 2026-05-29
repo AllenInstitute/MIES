@@ -9,13 +9,13 @@ Function CanFindAllDataBrowsers([string str])
 	string win, bsPanel
 
 	// locked device
-	CreateLockedDAEphys(str)
+	ACD_CreateLockedDAEphys(str)
 
 	// first db
-	CreateLockedDatabrowser(str)
+	ACD_CreateLockedDatabrowser(str)
 
 	// second db
-	CreateLockedDatabrowser(str)
+	ACD_CreateLockedDatabrowser(str)
 
 	WAVE/Z/T matches = DB_FindAllDataBrowser(str)
 	CHECK_WAVE(matches, TEXT_WAVE)
@@ -44,7 +44,7 @@ Function CheckWindowTitles([string str])
 
 	string win
 
-	CreateLockedDAEphys(str)
+	ACD_CreateLockedDAEphys(str)
 
 	// check window titles
 
@@ -111,7 +111,7 @@ Function NextPreviousNoData([string str])
 
 	string win, scPanel
 
-	CreateLockedDAEphys(str)
+	ACD_CreateLockedDAEphys(str)
 
 	win     = DB_OpenDatabrowser()
 	scPanel = BSP_GetSweepControlsPanel(win)

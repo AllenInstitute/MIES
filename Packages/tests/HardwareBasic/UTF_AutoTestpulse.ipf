@@ -3,11 +3,11 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = AutoTP
 
-static Function [STRUCT DAQSettings s] AutoTP_GetDAQSettings(string device)
+static Function [STRUCT ACD_DAQSettings s] AutoTP_GetDAQSettings(string device)
 
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB0_TP1" + \
-	                             "__HS0_DA0_AD0_CM:IC:"       + \
-	                             "__HS1_DA1_AD1_CM:IC:")
+	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB0_TP1" + \
+	                                 "__HS0_DA0_AD0_CM:IC:"       + \
+	                                 "__HS1_DA1_AD1_CM:IC:")
 
 	return [s]
 End
@@ -87,8 +87,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AutoTP_OptimumValues([string str])
 
-	[STRUCT DAQSettings s] = AutoTP_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = AutoTP_GetDAQSettings(str)
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function AutoTP_OptimumValues_REENTRY([string str])
@@ -141,8 +141,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AutoTP_BadValues([string str])
 
-	[STRUCT DAQSettings s] = AutoTP_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = AutoTP_GetDAQSettings(str)
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function AutoTP_BadValues_REENTRY([string str])
@@ -197,8 +197,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AutoTP_MixedOptimumBadValues([string str])
 
-	[STRUCT DAQSettings s] = AutoTP_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = AutoTP_GetDAQSettings(str)
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function AutoTP_MixedOptimumBadValues_REENTRY([string str])
@@ -254,8 +254,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AutoTP_SpecialCases([string str])
 
-	[STRUCT DAQSettings s] = AutoTP_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = AutoTP_GetDAQSettings(str)
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function AutoTP_SpecialCases_REENTRY([string str])
@@ -312,8 +312,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AutoTP_ClampModeChange([string str])
 
-	[STRUCT DAQSettings s] = AutoTP_GetDAQSettings(str)
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = AutoTP_GetDAQSettings(str)
+	ACD_AcquireData_NG(s, str)
 
 	CtrlNamedBackGround ChangeClampModeToVC, start=(ticks + 60), period=60, proc=ClampModeDuringTP_IGNORE
 	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 120), period=60, proc=StopTP_IGNORE

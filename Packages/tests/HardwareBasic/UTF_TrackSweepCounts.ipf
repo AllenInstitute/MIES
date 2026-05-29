@@ -3,16 +3,16 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = TrackSweepCounts
 
-static Function [STRUCT DAQSettings s] GetDAQSettings([string overrideConfig])
+static Function [STRUCT ACD_DAQSettings s] ACD_GetDAQSettings([string overrideConfig])
 
 	if(ParamIsDefault(overrideConfig))
-		// get name of caller which are the required DAQSettings in string form
+		// get name of caller which are the required ACD_DAQSettings in string form
 		overrideConfig = GetRTStackInfo(2)
 	endif
 
-	InitDAQSettingsFromString(s, overrideConfig                                                      + \
-	                             "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:_IST:StimulusSetB_DA_0:" + \
-	                             "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:_IST:StimulusSetD_DA_0:")
+	ACD_InitDAQSettingsFromString(s, overrideConfig                                                      + \
+	                                 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:_IST:StimulusSetB_DA_0:" + \
+	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:_IST:StimulusSetD_DA_0:")
 End
 
 static Function GlobalPreInit(string device)
@@ -237,9 +237,9 @@ static Function MD0_RA0_I0_L0_BKG0([string str])
 
 	PrepareForPublishTest()
 
-	[STRUCT DAQSettings s] = GetDAQSettings()
+	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings()
 
-	AcquireData_NG(s, str)
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function MD0_RA0_I0_L0_BKG0_REENTRY([string str])
@@ -276,8 +276,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MD1_RA0_I0_L0_BKG1([string str])
 
-	[STRUCT DAQSettings s] = GetDAQSettings()
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings()
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function MD1_RA0_I0_L0_BKG1_REENTRY([string str])
@@ -334,8 +334,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD0
 static Function MD0_RA1_I0_L0_BKG0([string str])
 
-	[STRUCT DAQSettings s] = GetDAQSettings()
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings()
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function MD0_RA1_I0_L0_BKG0_REENTRY([string str])
@@ -369,8 +369,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MD1_RA1_I0_L0_BKG1([string str])
 
-	[STRUCT DAQSettings s] = GetDAQSettings()
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings()
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function MD1_RA1_I0_L0_BKG1_REENTRY([string str])
@@ -441,8 +441,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MD1_RA1_I1_L0_BKG1([string str])
 
-	[STRUCT DAQSettings s] = GetDAQSettings()
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings()
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function MD1_RA1_I1_L0_BKG1_REENTRY([string str])
@@ -479,8 +479,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD0
 static Function MD0_RA1_I1_L0_BKG0([string str])
 
-	[STRUCT DAQSettings s] = GetDAQSettings()
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings()
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function MD0_RA1_I1_L0_BKG0_REENTRY([string str])
@@ -561,8 +561,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MD1_RA1_I1_L1_BKG1([string str])
 
-	[STRUCT DAQSettings s] = GetDAQSettings()
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings()
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function MD1_RA1_I1_L1_BKG1_REENTRY([string str])
@@ -598,8 +598,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD0
 static Function MD0_RA1_I1_L1_BKG0([string str])
 
-	[STRUCT DAQSettings s] = GetDAQSettings()
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings()
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function MD0_RA1_I1_L1_BKG0_REENTRY([string str])
@@ -679,8 +679,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RepeatSets_1([string str])
 
-	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA1_I0_L0_BKG1_RES2")
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings(overrideConfig = "MD1_RA1_I0_L0_BKG1_RES2")
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function RepeatSets_1_REENTRY([string str])
@@ -786,8 +786,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RepeatSets_2([string str])
 
-	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA1_I1_L0_BKG1_RES2")
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings(overrideConfig = "MD1_RA1_I1_L0_BKG1_RES2")
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function RepeatSets_2_REENTRY([string str])
@@ -914,8 +914,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RepeatSets_3([string str])
 
-	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA1_I1_L1_BKG1_RES2")
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings(overrideConfig = "MD1_RA1_I1_L1_BKG1_RES2")
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function RepeatSets_3_REENTRY([string str])
@@ -1050,8 +1050,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RepeatSets_4([string str])
 
-	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA1_I1_L1_BKG1_RES2")
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings(overrideConfig = "MD1_RA1_I1_L1_BKG1_RES2")
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function RepeatSets_4_REENTRY([string str])
@@ -1164,8 +1164,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RepeatSets_5([string str])
 
-	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA1_I1_L0_BKG1_RES2")
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings(overrideConfig = "MD1_RA1_I1_L0_BKG1_RES2")
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function RepeatSets_5_REENTRY([string str])
@@ -1217,8 +1217,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RepeatSets_6([string str])
 
-	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA1_I1_L1_BKG1_RES1")
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings(overrideConfig = "MD1_RA1_I1_L1_BKG1_RES1")
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function RepeatSets_6_REENTRY([string str])
@@ -1253,8 +1253,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckIZeroClampMode([string str])
 
-	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA0_I0_L0_BKG1_RES1")
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings(overrideConfig = "MD1_RA0_I0_L0_BKG1_RES1")
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function CheckIZeroClampMode_REENTRY([string str])
@@ -1317,8 +1317,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RepeatSets_7([string str])
 
-	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA1_I0_L0_BKG1_RES1_ITI3_TPI1")
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings(overrideConfig = "MD1_RA1_I0_L0_BKG1_RES1_ITI3_TPI1")
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function RepeatSets_7_REENTRY([string str])
@@ -1358,8 +1358,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RepeatSets_8([string str])
 
-	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA1_I1_L1_BKG1_RES1")
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings(overrideConfig = "MD1_RA1_I1_L1_BKG1_RES1")
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function RepeatSets_8_REENTRY([string str])
@@ -1402,8 +1402,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RepeatSets_9([string str])
 
-	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA1_I1_L0_BKG1_RES1")
-	AcquireData_NG(s, str)
+	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings(overrideConfig = "MD1_RA1_I1_L0_BKG1_RES1")
+	ACD_AcquireData_NG(s, str)
 End
 
 static Function RepeatSets_9_REENTRY([string str])

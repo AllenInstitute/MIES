@@ -45,7 +45,7 @@ static Function TestLocking([string str])
 	KillOrMoveToTrash(dfr = GetDeviceInfoPath())
 
 	try
-		CreateLockedDAEphys(str)
+		ACD_CreateLockedDAEphys(str)
 		PASS()
 	catch
 		FAIL()

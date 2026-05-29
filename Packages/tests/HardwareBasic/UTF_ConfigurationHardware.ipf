@@ -107,12 +107,12 @@ static Function CheckIfConfigurationRestoresMCCFilterGain([string str])
 
 	fName = PrependExperimentFolder_IGNORE("CheckIfConfigurationRestoresMCCFilterGain.json")
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DAQ0_TP0"                + \
-	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
-	                             "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetB_DA_0:")
+	STRUCT ACD_DAQSettings s
+	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DAQ0_TP0"                + \
+	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                                 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetB_DA_0:")
 
-	AcquireData_NG(s, str)
+	ACD_AcquireData_NG(s, str)
 
 	// throw away existing message from auto gain setting
 	PrepareForPublishTest()
@@ -186,7 +186,7 @@ static Function TCONF_CheckTypedPanelRestore([STRUCT IUTF_mData &md])
 		// special handling for DAEphys
 		KillWindow $win
 		device = md.s1
-		CreateLockedDAEphys(md.s1)
+		ACD_CreateLockedDAEphys(md.s1)
 		win = WinName(0, -1)
 		PGC_SetAndActivateControl(win, "check_Settings_RequireAmpConn", val = 0)
 		PGC_SetAndActivateControl(win, "Check_DataAcqHS_00", val = 1)
@@ -219,17 +219,17 @@ static Function CheckIfConfigurationRestoresDAEphysWithUnassocDA([string str])
 
 	fName = PrependExperimentFolder_IGNORE("CheckIfConfigurationRestoresDAEphysWithUnassocDA.json")
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                              + \
-	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"      + \
-	                             "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:_ASO0" + \
-	                             "__HS2_DA2_AD2_CM:VC:_ST:StimulusSetA_DA_0:_ASO0" + \
-	                             "__TTL1_ST:StimulusSetA_TTL_0:"                   + \
-	                             "__TTL3_ST:StimulusSetB_TTL_0:"                   + \
-	                             "__TTL5_ST:StimulusSetA_TTL_0:"                   + \
-	                             "__TTL7_ST:StimulusSetB_TTL_0:")
+	STRUCT ACD_DAQSettings s
+	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                              + \
+	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"      + \
+	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:_ASO0" + \
+	                                 "__HS2_DA2_AD2_CM:VC:_ST:StimulusSetA_DA_0:_ASO0" + \
+	                                 "__TTL1_ST:StimulusSetA_TTL_0:"                   + \
+	                                 "__TTL3_ST:StimulusSetB_TTL_0:"                   + \
+	                                 "__TTL5_ST:StimulusSetA_TTL_0:"                   + \
+	                                 "__TTL7_ST:StimulusSetB_TTL_0:")
 
-	AcquireData_NG(s, str)
+	ACD_AcquireData_NG(s, str)
 
 	CONF_SaveWindow(fName)
 
@@ -313,13 +313,13 @@ static Function CheckIfConfigurationRestoresDAEphysWithoutAmp([string str])
 
 	fName = PrependExperimentFolder_IGNORE("CheckIfConfigurationRestoresDAEphysWithoutAmp.json")
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                           + \
-	                             "__HS0_DA3_AD2_CM:VC:_ST:StimulusSetA_DA_0:"   + \
-	                             "__HS1_DA1_AD0_CM:VC:_ST:StimulusSetC_DA_0:"   + \
-	                             "__HS2_DA2_AD1_CM:VC:_ST:StimulusSetA_DA_0:_ASO0")
+	STRUCT ACD_DAQSettings s
+	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                           + \
+	                                 "__HS0_DA3_AD2_CM:VC:_ST:StimulusSetA_DA_0:"   + \
+	                                 "__HS1_DA1_AD0_CM:VC:_ST:StimulusSetC_DA_0:"   + \
+	                                 "__HS2_DA2_AD1_CM:VC:_ST:StimulusSetA_DA_0:_ASO0")
 
-	AcquireData_NG(s, str)
+	ACD_AcquireData_NG(s, str)
 
 	CONF_SaveWindow(fName)
 
@@ -411,16 +411,16 @@ static Function CheckIfConfigurationSavesAndRestores([string str])
 
 	fName = PrependExperimentFolder_IGNORE("CheckIfConfigurationSavesAndRestores.json")
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DAQ0_TP0"                     + \
-	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"      + \
-	                             "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetB_DA_0:_ASO0" + \
-	                             "__TTL1_ST:StimulusSetA_TTL_0:"                   + \
-	                             "__TTL3_ST:StimulusSetB_TTL_0:"                   + \
-	                             "__TTL5_ST:StimulusSetC_TTL_0:"                   + \
-	                             "__TTL6_ST:StimulusSetD_TTL_0:")
+	STRUCT ACD_DAQSettings s
+	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DAQ0_TP0"                     + \
+	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"      + \
+	                                 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetB_DA_0:_ASO0" + \
+	                                 "__TTL1_ST:StimulusSetA_TTL_0:"                   + \
+	                                 "__TTL3_ST:StimulusSetB_TTL_0:"                   + \
+	                                 "__TTL5_ST:StimulusSetC_TTL_0:"                   + \
+	                                 "__TTL6_ST:StimulusSetD_TTL_0:")
 
-	AcquireData_NG(s, str)
+	ACD_AcquireData_NG(s, str)
 
 	CONF_SaveWindow(fName)
 
