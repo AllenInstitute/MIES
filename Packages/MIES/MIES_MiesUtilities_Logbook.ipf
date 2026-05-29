@@ -2013,12 +2013,17 @@ Function InvalidateLBIndexAndRowCaches()
 
 	// labnotebook (numerical and textual) of all devices
 	for(device : devices)
-		Make/FREE/WAVE valuesWave = {GetLBNumericalValues(device), GetLBTextualValues(device)}
-
-		InvalidateLBIndexAndRowCaches_Impl(valuesWave)
+		InvalidateLBIndexAndRowCachesForDevice(device)
 	endfor
 
 	Make/FREE/WAVE valuesWave = {GetNumericalResultsValues(), GetTextualResultsValues()}
+	InvalidateLBIndexAndRowCaches_Impl(valuesWave)
+End
+
+Function InvalidateLBIndexAndRowCachesForDevice(string device)
+
+	Make/FREE/WAVE valuesWave = {GetLBNumericalValues(device), GetLBTextualValues(device)}
+
 	InvalidateLBIndexAndRowCaches_Impl(valuesWave)
 End
 
