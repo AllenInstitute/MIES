@@ -9253,6 +9253,33 @@ Function/WAVE GetWaverefBRowserReferenceWave()
 		Make/WAVE/N=(0) dfr:$name/WAVE=wv
 	endif
 
+	SetWaveVersion(wv, version)
+
+	return wv
+End
+
+Function/WAVE GetWaverefBrowserLastTooltipLocation()
+
+	variable version = 1
+	string   name    = "toolTipLocation"
+
+	DFREF dfr = GetWaverefBRowserHomeDF()
+
+	WAVE/Z/D/SDFR=dfr wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, version))
+		return wv
+	endif
+
+	if(WaveExists(wv))
+		// upgrade here
+	else
+		Make/D/N=(4) dfr:$name/WAVE=wv
+		FastOp wv = (NaN)
+	endif
+
+	SetWaveVersion(wv, version)
+
 	return wv
 End
 
