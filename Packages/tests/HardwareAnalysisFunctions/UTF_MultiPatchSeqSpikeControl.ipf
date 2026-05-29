@@ -167,7 +167,7 @@ End
 static Function SC_Test1([string str])
 
 	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 
@@ -252,7 +252,7 @@ End
 static Function SC_Test2([string str])
 
 	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 
@@ -341,7 +341,7 @@ End
 static Function SC_Test3([string str])
 
 	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 
@@ -439,7 +439,7 @@ End
 static Function SC_Test4([string str])
 
 	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 
@@ -537,7 +537,7 @@ End
 static Function SC_Test5([string str])
 
 	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 
@@ -636,7 +636,7 @@ End
 static Function SC_Test6([string str])
 
 	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 
@@ -725,7 +725,7 @@ End
 static Function SC_Test7([string str])
 
 	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 
@@ -847,7 +847,7 @@ End
 static Function SC_Test8([string str])
 
 	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 
@@ -993,7 +993,7 @@ End
 static Function SC_Test9([string str])
 
 	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 
@@ -1085,7 +1085,7 @@ End
 static Function SC_Test10([string str])
 
 	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 

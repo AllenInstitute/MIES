@@ -17,7 +17,7 @@ static Function DAB_Indexing([string str])
 	                                 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:_AF:DashboardAnaFunc:" + \
 	                                 "_IST:StimulusSetB_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function DAB_Indexing_REENTRY([string str])
@@ -92,7 +92,7 @@ static Function DAB_Skipping([string str])
 	                                 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:_AF:JustFail:" + \
 	                                 "_IST:StimulusSetB_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function DAB_Skipping_REENTRY([string str])

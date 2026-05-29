@@ -41,7 +41,7 @@ End
 static Function SC_SetControls1([string str])
 
 	[STRUCT ACD_DAQSettings s] = SC_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function SC_SetControls1_REENTRY([string str])
@@ -72,7 +72,7 @@ static Function SC_SetControls2([string str])
 	[STRUCT ACD_DAQSettings s] = SC_GetDAQSettings(str, far = 0)
 
 	try
-		ACD_AcquireData_NG(s, str)
+		ACD_AcquireData(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -101,7 +101,7 @@ static Function SC_SetControls2a([string str])
 	[STRUCT ACD_DAQSettings s] = SC_GetDAQSettings(str, far = 0)
 
 	try
-		ACD_AcquireData_NG(s, str)
+		ACD_AcquireData(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -131,7 +131,7 @@ static Function SC_SetControls2b([string str])
 	[STRUCT ACD_DAQSettings s] = SC_GetDAQSettings(str, far = 0)
 
 	try
-		ACD_AcquireData_NG(s, str)
+		ACD_AcquireData(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -161,7 +161,7 @@ static Function SC_SetControls3([string str])
 	[STRUCT ACD_DAQSettings s] = SC_GetDAQSettings(str, far = 0)
 
 	try
-		ACD_AcquireData_NG(s, str)
+		ACD_AcquireData(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -191,7 +191,7 @@ static Function SC_SetControls3a([string str])
 	[STRUCT ACD_DAQSettings s] = SC_GetDAQSettings(str, far = 0)
 
 	try
-		ACD_AcquireData_NG(s, str)
+		ACD_AcquireData(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -221,7 +221,7 @@ static Function SC_SetControls3b([string str])
 	[STRUCT ACD_DAQSettings s] = SC_GetDAQSettings(str, far = 0)
 
 	try
-		ACD_AcquireData_NG(s, str)
+		ACD_AcquireData(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -251,7 +251,7 @@ static Function SC_SetControls3c([string str])
 	[STRUCT ACD_DAQSettings s] = SC_GetDAQSettings(str, far = 0)
 
 	try
-		ACD_AcquireData_NG(s, str)
+		ACD_AcquireData(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -281,7 +281,7 @@ static Function SC_SetControls4([string str])
 	[STRUCT ACD_DAQSettings s] = SC_GetDAQSettings(str, far = 0)
 
 	try
-		ACD_AcquireData_NG(s, str)
+		ACD_AcquireData(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -309,7 +309,7 @@ End
 static Function SC_SetControls5([string str])
 
 	[STRUCT ACD_DAQSettings s] = SC_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function SC_SetControls5_REENTRY([string str])
@@ -356,7 +356,7 @@ End
 static Function SC_SetControls6([string str])
 
 	[STRUCT ACD_DAQSettings s] = SC_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function SC_SetControls6_REENTRY([string str])
@@ -398,7 +398,7 @@ End
 static Function SC_SetControls7([string str])
 
 	[STRUCT ACD_DAQSettings s] = SC_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function SC_SetControls7_REENTRY([string str])
@@ -437,7 +437,7 @@ End
 static Function SC_SetControls8([string str])
 
 	[STRUCT ACD_DAQSettings s] = SC_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function SC_SetControls8_REENTRY([string str])
@@ -483,7 +483,7 @@ End
 static Function SC_SetControls9([string str])
 
 	[STRUCT ACD_DAQSettings s] = SC_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function SC_SetControls9_REENTRY([string str])

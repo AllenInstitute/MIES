@@ -220,7 +220,7 @@ static Function PS_RA1([STRUCT IUTF_mData &m])
 	setname = m.s1
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(device, setname)
-	ACD_AcquireData_NG(s, device)
+	ACD_AcquireData(s, device)
 
 	WAVE wv = PSQ_CreateOverrideResults(device, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
 	// all tests fail, baseline QC fails, spike search inconclusive, async QC passes
@@ -314,7 +314,7 @@ static Function PS_RA2([STRUCT IUTF_mData &m])
 	setname = m.s1
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(device, setname)
-	ACD_AcquireData_NG(s, device)
+	ACD_AcquireData(s, device)
 
 	WAVE wv = PSQ_CreateOverrideResults(device, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
 	// baseline QC passes, no spikes at all, async QC passes
@@ -391,7 +391,7 @@ static Function PS_RA2a([STRUCT IUTF_mData &m])
 	setname = m.s1
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(device, setname)
-	ACD_AcquireData_NG(s, device)
+	ACD_AcquireData(s, device)
 
 	WAVE wv = PSQ_CreateOverrideResults(device, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
 	// the duration will change midsweep, so we will have more chunks in the end
@@ -494,7 +494,7 @@ static Function PS_RA2b([STRUCT IUTF_mData &m])
 	setname = m.s1
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(device, setname)
-	ACD_AcquireData_NG(s, device)
+	ACD_AcquireData(s, device)
 
 	WAVE wv = PSQ_CreateOverrideResults(device, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
 	// baseline QC passes, no spikes at all, async QC passes
@@ -571,7 +571,7 @@ static Function PS_RA3([STRUCT IUTF_mData &m])
 	setname = m.s1
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(device, setname)
-	ACD_AcquireData_NG(s, device)
+	ACD_AcquireData(s, device)
 
 	WAVE wv = PSQ_CreateOverrideResults(device, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
 	// baseline QC passes, always spikes, async QC passes
@@ -665,7 +665,7 @@ static Function PS_RA4([STRUCT IUTF_mData &m])
 	setname = m.s1
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(device, setname)
-	ACD_AcquireData_NG(s, device)
+	ACD_AcquireData(s, device)
 
 	WAVE wv = PSQ_CreateOverrideResults(device, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
 	// baseline QC passes and first spikes, second and third not, async QC passes
@@ -755,7 +755,7 @@ static Function PS_RA5([STRUCT IUTF_mData &m])
 	setname = m.s1
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(device, setname)
-	ACD_AcquireData_NG(s, device)
+	ACD_AcquireData(s, device)
 
 	WAVE wv = PSQ_CreateOverrideResults(device, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
 	// baseline QC passes and first spikes not, second and third does, async QC passes
@@ -846,7 +846,7 @@ static Function PS_RA6([STRUCT IUTF_mData &m])
 	setname = m.s1
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(device, setname)
-	ACD_AcquireData_NG(s, device)
+	ACD_AcquireData(s, device)
 
 	WAVE wv = PSQ_CreateOverrideResults(device, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
 	// baseline QC passes
@@ -957,7 +957,7 @@ static Function PS_RA7([STRUCT IUTF_mData &m])
 	setname = m.s1
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(device, setname)
-	ACD_AcquireData_NG(s, device)
+	ACD_AcquireData(s, device)
 
 	WAVE wv = PSQ_CreateOverrideResults(device, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
 	// baseline QC passes, no spikes at all, async QC passes

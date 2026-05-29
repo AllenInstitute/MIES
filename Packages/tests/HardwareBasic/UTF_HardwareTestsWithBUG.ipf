@@ -24,7 +24,7 @@ Function CheckSweepSavingCompatible([string str])
 	STRUCT ACD_DAQSettings s
 	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 Function CheckSweepSavingCompatible_REENTRY([string str])
@@ -43,7 +43,7 @@ Function ExtendedDebugLoggingOnErrorWithITC([string str])
 	STRUCT ACD_DAQSettings s
 	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:_TP0_DAQ0")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 Function ExtendedDebugLoggingOnErrorWithITC_REENTRY([string str])

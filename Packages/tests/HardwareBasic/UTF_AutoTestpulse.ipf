@@ -88,7 +88,7 @@ End
 static Function AutoTP_OptimumValues([string str])
 
 	[STRUCT ACD_DAQSettings s] = AutoTP_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function AutoTP_OptimumValues_REENTRY([string str])
@@ -142,7 +142,7 @@ End
 static Function AutoTP_BadValues([string str])
 
 	[STRUCT ACD_DAQSettings s] = AutoTP_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function AutoTP_BadValues_REENTRY([string str])
@@ -198,7 +198,7 @@ End
 static Function AutoTP_MixedOptimumBadValues([string str])
 
 	[STRUCT ACD_DAQSettings s] = AutoTP_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function AutoTP_MixedOptimumBadValues_REENTRY([string str])
@@ -255,7 +255,7 @@ End
 static Function AutoTP_SpecialCases([string str])
 
 	[STRUCT ACD_DAQSettings s] = AutoTP_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function AutoTP_SpecialCases_REENTRY([string str])
@@ -313,7 +313,7 @@ End
 static Function AutoTP_ClampModeChange([string str])
 
 	[STRUCT ACD_DAQSettings s] = AutoTP_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	CtrlNamedBackGround ChangeClampModeToVC, start=(ticks + 60), period=60, proc=ClampModeDuringTP_IGNORE
 	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 120), period=60, proc=StopTP_IGNORE

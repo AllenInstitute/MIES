@@ -232,7 +232,7 @@ End
 static Function PS_AR1([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_ACC_RES_SMOKE)
 
@@ -303,7 +303,7 @@ End
 static Function PS_AR2([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_ACC_RES_SMOKE)
 
@@ -377,7 +377,7 @@ End
 static Function PS_AR3([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_ACC_RES_SMOKE)
 
@@ -451,7 +451,7 @@ End
 static Function PS_AR4([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_ACC_RES_SMOKE)
 
@@ -525,7 +525,7 @@ End
 static Function PS_AR5([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_ACC_RES_SMOKE)
 
@@ -598,7 +598,7 @@ End
 static Function PS_AR6([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_ACC_RES_SMOKE)
 
@@ -698,7 +698,7 @@ End
 static Function PS_AR6a([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_ACC_RES_SMOKE)
 
@@ -772,7 +772,7 @@ End
 static Function PS_AR7([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_ACC_RES_SMOKE)
 
@@ -808,7 +808,7 @@ End
 static Function PS_AR8([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_ACC_RES_SMOKE)
 

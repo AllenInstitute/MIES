@@ -90,7 +90,7 @@ End
 static Function PS_SP1([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SQUARE_PULSE)
 	// all tests fail
@@ -156,7 +156,7 @@ End
 static Function PS_SP2([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SQUARE_PULSE)
 	// spike before pulse, does not count
@@ -223,7 +223,7 @@ End
 static Function PS_SP3([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SQUARE_PULSE)
 	// spike detected on second sweep, but never again
@@ -291,7 +291,7 @@ End
 static Function PS_SP4([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SQUARE_PULSE)
 	// spike detected on second and third sweep, but never again
@@ -359,7 +359,7 @@ End
 static Function PS_SP5([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SQUARE_PULSE)
 	// spike detected on first and third sweep -> success
@@ -428,7 +428,7 @@ End
 static Function PS_SP6([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SQUARE_PULSE)
 	// spike detected so that we get a DAScale zero with spike LBN entry and success
@@ -498,7 +498,7 @@ End
 static Function PS_SP7([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SQUARE_PULSE)
 	// always spikes -> failure due to DAScaleZero handling
@@ -570,7 +570,7 @@ End
 static Function PS_SP8([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SQUARE_PULSE)
 	// all tests fail
@@ -639,7 +639,7 @@ End
 static Function PS_SP9([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SQUARE_PULSE)
 	// all tests fail
@@ -708,7 +708,7 @@ End
 static Function PS_SP10([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SQUARE_PULSE)
 	// no spikes

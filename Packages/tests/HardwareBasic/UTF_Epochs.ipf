@@ -592,7 +592,7 @@ static Function EP_EpochTest1([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest0_DA_0:" + \
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest0_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function EP_EpochTest1_REENTRY([string str])
@@ -608,7 +608,7 @@ static Function EP_EpochTest2([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest1_DA_0:" + \
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest1_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function EP_EpochTest2_REENTRY([string str])
@@ -624,7 +624,7 @@ static Function EP_EpochTest3([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest2_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function EP_EpochTest3_REENTRY([string str])
@@ -640,7 +640,7 @@ static Function EP_EpochTest4([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest2_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function EP_EpochTest4_REENTRY([string str])
@@ -656,7 +656,7 @@ static Function EP_EpochTest4a([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest2_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function EP_EpochTest4a_REENTRY([string str])
@@ -672,7 +672,7 @@ static Function EP_EpochTest5([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest2_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function EP_EpochTest5_REENTRY([string str])
@@ -688,7 +688,7 @@ static Function EP_EpochTest6([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest3_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function EP_EpochTest6_REENTRY([string str])
@@ -704,7 +704,7 @@ static Function EP_EpochTest7([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest4_DA_0:" + \
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest4_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function EP_EpochTest7_REENTRY([string str])
@@ -720,7 +720,7 @@ static Function EP_EpochTest8([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest5_DA_0:" + \
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest5_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function EP_EpochTest8_REENTRY([string str])
@@ -736,7 +736,7 @@ static Function EP_EpochTest9([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest6_DA_0:" + \
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest6_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function EP_EpochTest9_REENTRY([string str])
@@ -752,7 +752,7 @@ static Function EP_EpochTest10([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:TestPulse:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function EP_EpochTest10_REENTRY([string str])
@@ -773,7 +773,7 @@ static Function EP_EpochTest11([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetB_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function EP_EpochTest11_REENTRY([string str])
@@ -789,7 +789,7 @@ static Function EP_EpochTest12([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:_AF:StopMidSweep_V3:" + \
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:_AF:StopMidSweep_V3:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function EP_EpochTest12_REENTRY([string str])
@@ -805,7 +805,7 @@ static Function EP_EpochTest13([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:_AF:AddTooLargeUserEpoch_V3:" + \
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:_AF:AddTooLargeUserEpoch_V3:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function EP_EpochTest13_REENTRY([string str])
@@ -821,7 +821,7 @@ static Function EP_TestUserEpochs([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:_AF:AddUserEpoch_V3:" + \
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:_AF:AddUserEpoch_V3:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function EP_TestUserEpochs_REENTRY([string str])
@@ -883,7 +883,7 @@ static Function EP_EpochTest14([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest_Trig_DA_0:" + \
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest_TrigFl_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function EP_EpochTest14_REENTRY([string str])
@@ -898,7 +898,7 @@ static Function EP_EpochTest15([string str])
 	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TBP43.59_TPD10"     + \
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest0_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function EP_EpochTest15_REENTRY([string str])
@@ -926,7 +926,7 @@ static Function EP_EpochTest16([string str])
 	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TBP43.59_TPD10_FFR:10:" + \
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest0_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function EP_EpochTest16_REENTRY([string str])
@@ -951,7 +951,7 @@ static Function EP_EpochTest17([string str])
 	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                     + \
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest17_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function EP_EpochTest17_REENTRY([string str])
@@ -973,7 +973,7 @@ static Function EP_EpochTestSamplingFrequency([STRUCT IUTF_mData &mData])
 	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup + \
 	                                 "__HS0_DA0_AD0_CM:VC:" + stimSetup)
 
-	ACD_AcquireData_NG(s, mData.s0)
+	ACD_AcquireData(s, mData.s0)
 End
 
 static Function EP_EpochTestSamplingFrequency_REENTRY([STRUCT IUTF_mData &mData])
@@ -995,7 +995,7 @@ static Function EP_EpochTestSamplingMultiplier([STRUCT IUTF_mData &mData])
 	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup + \
 	                                 "__HS0_DA0_AD0_CM:VC:" + stimSetup)
 
-	ACD_AcquireData_NG(s, mData.s0)
+	ACD_AcquireData(s, mData.s0)
 End
 
 static Function EP_EpochTestSamplingMultiplier_REENTRY([STRUCT IUTF_mData &mData])
@@ -1016,7 +1016,7 @@ static Function EP_EpochTestUnassocDA([string str])
 	                                 "__TTL5_ST:StimulusSetA_TTL_0:"                   + \
 	                                 "__TTL7_ST:StimulusSetB_TTL_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function EP_EpochTestUnassocDA_REENTRY([string str])
@@ -1065,7 +1065,7 @@ static Function EP_EpochTestTTL([STRUCT IUTF_mData &mData])
 	                                 "__TTL5_ST:StimulusSetA_TTL_0:"              + \
 	                                 "__TTL7_ST:StimulusSetB_TTL_0:")
 
-	ACD_AcquireData_NG(s, mData.s0)
+	ACD_AcquireData(s, mData.s0)
 End
 
 static Function EP_EpochTestTTL_REENTRY([STRUCT IUTF_mData &mData])
@@ -1129,7 +1129,7 @@ static Function EP_EpochTestTTLSamplingFrequency([STRUCT IUTF_mData &mData])
 	                                 "__TTL1_ST:StimulusSetA_TTL_0:"              + \
 	                                 "__TTL3" + stimSetup)
 
-	ACD_AcquireData_NG(s, mData.s0)
+	ACD_AcquireData(s, mData.s0)
 End
 
 static Function EP_EpochTestTTLSamplingFrequency_REENTRY([STRUCT IUTF_mData &mData])
@@ -1153,7 +1153,7 @@ static Function EP_EpochTestTTLSamplingMultiplier([STRUCT IUTF_mData &mData])
 	                                 "__TTL1_ST:StimulusSetA_TTL_0:"              + \
 	                                 "__TTL3" + stimSetup)
 
-	ACD_AcquireData_NG(s, mData.s0)
+	ACD_AcquireData(s, mData.s0)
 End
 
 static Function EP_EpochTestTTLSamplingMultiplier_REENTRY([STRUCT IUTF_mData &mData])
@@ -1175,7 +1175,7 @@ static Function EP_EpochTest18([STRUCT IUTF_mData &mData])
 	                                 "__TTL1_ST:EpochTest18long_TTL_0:"           + \
 	                                 "__TTL3_ST:EpochTest18short_TTL_0:")
 
-	ACD_AcquireData_NG(s, mData.s0)
+	ACD_AcquireData(s, mData.s0)
 End
 
 static Function EP_EpochTest18_REENTRY([STRUCT IUTF_mData &mData])
@@ -1191,7 +1191,7 @@ static Function EP_EpochTest19([STRUCT IUTF_mData &mData])
 	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                       + \
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochSineTest_DA_0:")
 
-	ACD_AcquireData_NG(s, mData.s0)
+	ACD_AcquireData(s, mData.s0)
 End
 
 static Function EP_EpochTest19_REENTRY([STRUCT IUTF_mData &mData])

@@ -45,7 +45,7 @@ End
 static Function RTV_Works([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function RTV_Works_REENTRY([string str])
@@ -77,7 +77,7 @@ End
 static Function RTV_WorksWithIndexing([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function RTV_WorksWithIndexing_REENTRY([string str])
@@ -126,7 +126,7 @@ static Function RTV_WorksWithMultipleHeadstages([string str])
 	                                 "__HS2_DA0_AD0_CM:IC:_ST:ReachTargetVoltage_DA_0:" + \
 	                                 "__HS1_DA1_AD1_CM:IC:_ST:ReachTargetVoltage_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function RTV_WorksWithMultipleHeadstages_REENTRY([string str])
@@ -168,7 +168,7 @@ static Function RTV_ReportsDAScaleOutOfRange([string str])
 	overrideResults[1] = 3e-6 // MOhm
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function RTV_ReportsDAScaleOutOfRange_REENTRY([string str])

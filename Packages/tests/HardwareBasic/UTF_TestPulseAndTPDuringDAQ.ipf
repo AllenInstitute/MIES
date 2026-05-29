@@ -21,7 +21,7 @@ static Function CheckCalculatedTPEntries([string str])
 	                                 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:" + \
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function CheckCalculatedTPEntries_REENTRY([string str])
@@ -87,7 +87,7 @@ static Function CheckTPBaseline([STRUCT IUTF_MDATA &md])
 	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1_STP1_TBP" + num2str(TPBaseline) + \
 	                                 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
 
-	ACD_AcquireData_NG(s, device)
+	ACD_AcquireData(s, device)
 End
 
 static Function CheckTPBaseline_REENTRY([STRUCT IUTF_MDATA &md])
@@ -182,7 +182,7 @@ static Function CheckTPEntriesFromLBN([string str])
 	                                 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:" + \
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function/WAVE GetTPLBNEntriesWave_IGNORE()
@@ -347,7 +347,7 @@ static Function TPCachingWorks([string str])
 	                                 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:" + \
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	CtrlNamedBackGround StartDAQDuringTP, start=(ticks + 600), period=100, proc=StartAcq_IGNORE
 End
@@ -521,7 +521,7 @@ static Function CheckTPStorage1([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
 	                                 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function CheckTPStorage1_REENTRY([string str])
@@ -550,7 +550,7 @@ static Function CheckTPStorage2([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
 	                                 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function CheckTPStorage2_REENTRY([string str])
@@ -579,7 +579,7 @@ static Function CheckTPStorage3([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
 	                                 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function CheckTPStorage3_REENTRY([string str])
@@ -594,7 +594,7 @@ static Function TPDuringDAQOnlyTP([string str])
 	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"              + \
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function TPDuringDAQOnlyTP_REENTRY([string str])
@@ -653,7 +653,7 @@ static Function TPDuringDAQOnlyTPAndIndexing([STRUCT IUTF_MDATA &md])
 	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I1_L" + num2str(md.v0) + "_BKG1_RES3" + \
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:")
 
-	ACD_AcquireData_NG(s, md.s0)
+	ACD_AcquireData(s, md.s0)
 End
 
 static Function TPDuringDAQOnlyTPAndIndexing_REENTRY([STRUCT IUTF_MDATA &md])
@@ -676,7 +676,7 @@ static Function TPDuringDAQTPAndUnAssoc([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"           + \
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:_ASO0")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function TPDuringDAQTPAndUnAssoc_REENTRY([string str])
@@ -758,7 +758,7 @@ static Function TPDuringDAQ([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"      + \
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function TPDuringDAQ_REENTRY([string str])
@@ -832,7 +832,7 @@ static Function TPDuringDAQWithoodDAQ([string str])
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:" + \
 	                                 "__HS2_DA2_AD2_CM:VC:_ST:StimulusSetC_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function TPDuringDAQWithoodDAQ_REENTRY([string str])
@@ -897,7 +897,7 @@ static Function TPDuringDAQOnlyWithoodDAQ([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:" + \
 	                                 "__HS1_DA1_AD1_CM:IC:_ST:TestPulse:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function TPDuringDAQOnlyWithoodDAQ_REENTRY([string str])
@@ -961,7 +961,7 @@ static Function TPDuringDAQTPStoreCheck([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"            + \
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:PulseTrain_10Hz_DA_0:" + \
 	                                 "__HS2_DA2_AD2_CM:VC:_ST:TestPulse:")
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function TPDuringDAQTPStoreCheck_REENTRY([string str])
@@ -1025,7 +1025,7 @@ static Function CheckThatTPsCanBeFound([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
 	                                 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTP_IGNORE
 End
@@ -1091,7 +1091,7 @@ static Function TPDuringDAQWithTTL([string str])
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:" + \
 	                                 "__TTL0_ST:StimulusSetA_TTL_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function TPDuringDAQWithTTL_REENTRY([string str])
@@ -1158,7 +1158,7 @@ static Function RunPowerSpectrum([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:"   + \
 	                                 "__HS1_DA1_AD1_CM:IC:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTP_IGNORE
 End
@@ -1194,7 +1194,7 @@ static Function TestPulseCachingWorks([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
 	                                 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function TestPulseCachingWorks_REENTRY([string str])
@@ -1228,7 +1228,7 @@ static Function ExportIntoNWB([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
 	                                 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTP_IGNORE
 End
@@ -1273,7 +1273,7 @@ static Function GetStoredTPTest([string str])
 	                                 "__HS0_DA0_AD0_CM:IC:_ST:TestPulse:" + \
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:TestPulse:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTP_IGNORE
 End
@@ -1381,7 +1381,7 @@ static Function TPDuringDAQwithPS([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"      + \
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 // The general checks are done in test case TPDuringDAQ, this test case only checks the difference when power spectrum is enabled
@@ -1412,7 +1412,7 @@ static Function TPZerosDAC([STRUCT IUTF_MDATA &md])
 	ACD_InitDAQSettingsFromString(s, "MD" + num2str(md.v0) + "_RA1_I0_L0_BKG1_TP1" + \
 	                                 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
 
-	ACD_AcquireData_NG(s, md.s0)
+	ACD_AcquireData(s, md.s0)
 
 	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTP_IGNORE
 End
@@ -1465,7 +1465,7 @@ static Function TestTPPublishing([string str])
 	                                 "__HS0_DA0_AD0_CM:IC:_ST:TestPulse:" + \
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:TestPulse:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	PrepareForPublishTest()
 
@@ -1661,7 +1661,7 @@ static Function TestTPPublishingIEqualZero([string str])
 	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1" + \
 	                                 "__HS0_DA0_AD0_CM:I=0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	PrepareForPublishTest()
 

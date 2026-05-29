@@ -33,7 +33,7 @@ End
 static Function SkipAhead([string str])
 
 	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings("MD1_RA1_I0_L0_BKG1")
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function SkipAhead_REENTRY([string str])
@@ -70,7 +70,7 @@ End
 static Function SweepSkipping([string str])
 
 	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings("MD1_RA1_I1_L0_BKG1")
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function SweepSkipping_REENTRY([string str])
@@ -115,7 +115,7 @@ End
 static Function SweepSkippingAdvanced([string str])
 
 	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings("MD1_RA1_I0_L0_BKG1")
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function SweepSkippingAdvanced_REENTRY([string str])
@@ -162,7 +162,7 @@ End
 static Function SkipSweepsDuringITI([STRUCT IUTF_MDATA &md])
 
 	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings("MD" + num2str(md.v0) + "_RA1_I0_L0_BKG1_RES5_GSI0_ITI5")
-	ACD_AcquireData_NG(s, md.s0)
+	ACD_AcquireData(s, md.s0)
 
 	CtrlNamedBackGround ExecuteDuringITI, start, period=30, proc=SkipToEndDuringITI_IGNORE
 End
@@ -197,7 +197,7 @@ End
 static Function SkipSweepsBackDuringITI([string str])
 
 	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings("MD1_RA1_I0_L0_BKG1_RES0_GSI0_ITI5")
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	CtrlNamedBackGround ExecuteDuringITI, start, period=30, proc=SkipSweepBackDuringITI_IGNORE
 End

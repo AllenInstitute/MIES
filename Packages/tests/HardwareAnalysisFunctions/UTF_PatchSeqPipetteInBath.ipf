@@ -192,7 +192,7 @@ End
 static Function PS_PB1([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_PIPETTE_BATH)
 
@@ -257,7 +257,7 @@ End
 static Function PS_PB2([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_PIPETTE_BATH)
 
@@ -323,7 +323,7 @@ End
 static Function PS_PB3([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_PIPETTE_BATH)
 
@@ -409,7 +409,7 @@ End
 static Function PS_PB4([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_PIPETTE_BATH)
 
@@ -474,7 +474,7 @@ End
 static Function PS_PB5([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_PIPETTE_BATH)
 
@@ -543,7 +543,7 @@ End
 static Function PS_PB6([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_PIPETTE_BATH)
 
@@ -620,7 +620,7 @@ End
 static Function PS_PB7([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_PIPETTE_BATH)
 

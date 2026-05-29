@@ -10,7 +10,7 @@ static Function HardwareSelectionWorks([STRUCT IUTF_MDATA &md])
 	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP0_DAQ0"             + \
 	                                 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
 
-	ACD_AcquireData_NG(s, md.s0)
+	ACD_AcquireData(s, md.s0)
 End
 
 static Function HardwareSelectionWorks_REENTRY([STRUCT IUTF_MDATA &md])
@@ -32,7 +32,7 @@ static Function StartingStoppingTestPulseWorks([STRUCT IUTF_MDATA &md])
 	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP0_DAQ0"             + \
 	                                 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
 
-	ACD_AcquireData_NG(s, md.s0)
+	ACD_AcquireData(s, md.s0)
 End
 
 static Function StartingStoppingTestPulseWorks_REENTRY([STRUCT IUTF_MDATA &md])

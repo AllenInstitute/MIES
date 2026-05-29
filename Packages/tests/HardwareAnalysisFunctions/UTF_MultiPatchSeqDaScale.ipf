@@ -62,7 +62,7 @@ End
 static Function MSQ_DS1([string str])
 
 	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function MSQ_DS1_REENTRY([string str])
@@ -98,7 +98,7 @@ static Function MSQ_DS2([string str])
 	AFH_AddAnalysisParameter("MSQ_DAScale_DA_0", "DAScales", wv = {1000, 1500, 2000, 3000, 5000})
 
 	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function MSQ_DS2_REENTRY([string str])

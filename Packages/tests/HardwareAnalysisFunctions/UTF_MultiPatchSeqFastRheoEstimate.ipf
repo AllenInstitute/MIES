@@ -58,7 +58,7 @@ End
 static Function MSQ_FRE1([string str])
 
 	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = MSQ_CreateOverrideResults(str, 0, MSQ_FAST_RHEO_EST)
 	// all tests fail
@@ -150,7 +150,7 @@ End
 static Function MSQ_FRE2([string str])
 
 	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = MSQ_CreateOverrideResults(str, 0, MSQ_FAST_RHEO_EST)
 	// all tests fail
@@ -245,7 +245,7 @@ End
 static Function MSQ_FRE3([string str])
 
 	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = MSQ_CreateOverrideResults(str, 0, MSQ_FAST_RHEO_EST)
 	// spike detected on second sweep, but never again
@@ -338,7 +338,7 @@ End
 static Function MSQ_FRE4([string str])
 
 	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = MSQ_CreateOverrideResults(str, 0, MSQ_FAST_RHEO_EST)
 	// HS0: no spikes
@@ -436,7 +436,7 @@ End
 static Function MSQ_FRE5([string str])
 
 	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = MSQ_CreateOverrideResults(str, 0, MSQ_FAST_RHEO_EST)
 
@@ -547,7 +547,7 @@ End
 static Function MSQ_FRE6([string str])
 
 	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = MSQ_CreateOverrideResults(str, 0, MSQ_FAST_RHEO_EST)
 
@@ -651,7 +651,7 @@ End
 static Function MSQ_FRE7([string str])
 
 	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = MSQ_CreateOverrideResults(str, 0, MSQ_FAST_RHEO_EST)
 
@@ -762,7 +762,7 @@ End
 static Function MSQ_FRE8([string str])
 
 	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = MSQ_CreateOverrideResults(str, 0, MSQ_FAST_RHEO_EST)
 
@@ -869,7 +869,7 @@ End
 static Function MSQ_FRE9([string str])
 
 	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = MSQ_CreateOverrideResults(str, 0, MSQ_FAST_RHEO_EST)
 
@@ -973,7 +973,7 @@ End
 static Function MSQ_FRE10([string str])
 
 	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = MSQ_CreateOverrideResults(str, 0, MSQ_FAST_RHEO_EST)
 
@@ -1079,7 +1079,7 @@ static Function MSQ_FRE11([string str])
 	ST_SetStimsetParameter("MSQ_FastRheoEst_DA_0", "Total number of steps", var = 50)
 
 	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = MSQ_CreateOverrideResults(str, 0, MSQ_FAST_RHEO_EST)
 	// all tests fail

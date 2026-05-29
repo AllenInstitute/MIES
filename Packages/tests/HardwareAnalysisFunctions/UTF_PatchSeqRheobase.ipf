@@ -140,7 +140,7 @@ End
 static Function PS_RB1([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// all tests fail, baseline QC, async QC and alternating spike finding
@@ -234,7 +234,7 @@ End
 static Function PS_RB2([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes, async QC passes and no spikes at all
@@ -314,7 +314,7 @@ End
 static Function PS_RB3([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes, async QC passes and always spikes
@@ -394,7 +394,7 @@ End
 static Function PS_RB4([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes, async QC passes and first spikes, second not
@@ -487,7 +487,7 @@ End
 static Function PS_RB5([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes, async QC passes and first spikes not, second does
@@ -567,7 +567,7 @@ End
 static Function PS_RB6([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes, async QC passes (except first) and first two spike not, third does
@@ -649,7 +649,7 @@ End
 static Function PS_RB7([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// frist two sweeps: baseline QC fails
@@ -736,7 +736,7 @@ End
 static Function PS_RB8([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes, async QC passes
@@ -827,7 +827,7 @@ End
 static Function PS_RB9([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes, async QC passes and first spikes, second not, third spikes
@@ -914,7 +914,7 @@ End
 static Function PS_RB10([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes, async QC passes and first spikes not, rest spikes
@@ -1002,7 +1002,7 @@ End
 static Function PS_RB11([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// all tests fail, baseline QC and alternating spike finding
@@ -1097,7 +1097,7 @@ End
 static Function PS_RB12([string str])
 
 	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes, async QC passes and no spikes at all

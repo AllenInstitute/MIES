@@ -310,7 +310,7 @@ Function CheckIfConfigurationRestoresMCCFilterGain([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
 	                                 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetB_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	gain       = 5
 	filterFreq = 6
@@ -377,7 +377,7 @@ static Function ComplainsAboutVanishingEpoch([STRUCT IUTF_MDATA &md])
 	                                 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
 
 	refNum = CaptureHistoryStart()
-	ACD_AcquireData_NG(s, md.s0)
+	ACD_AcquireData(s, md.s0)
 	history = CaptureHistory(refNum, 1)
 
 	CHECK_PROPER_STR(history)
@@ -428,7 +428,7 @@ static Function SyncMIESMccWorksOutoftheBox([STRUCT IUTF_MDATA &md])
 	STRUCT ACD_DAQSettings s
 	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP0_DAQ0"             + \
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:")
-	ACD_AcquireData_NG(s, device)
+	ACD_AcquireData(s, device)
 
 	WAVE ampStorageWave = GetAmplifierParamStorageWave(device)
 
@@ -474,7 +474,7 @@ Function CheckAmplifierReadAndWrite([STRUCT IUTF_MDATA &md])
 	STRUCT ACD_DAQSettings s
 	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP0_DAQ0"                                                        + \
 	                                 "__HS" + num2str(headstage) + "_DA0_AD0_CM:" + clampModeStr + ":_ST:StimulusSetA_DA_0:")
-	ACD_AcquireData_NG(s, device)
+	ACD_AcquireData(s, device)
 
 	clampMode = DAG_GetHeadstageMode(device, headstage)
 

@@ -282,7 +282,7 @@ End
 ///			ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"             + \
 /// 	                                 "__HS0_DA0_AD0_CM:IC:_ST:ABCD:")
 ///
-///			ACD_AcquireData_NG(s, md.s0)
+///			ACD_AcquireData(s, md.s0)
 /// 	End
 ///
 /// 	static Function MyTest_REENTRY([string str])
@@ -355,7 +355,7 @@ End
 /// `${testcase}_PreAcq`/`${testcase}_PreInit`. They must all be static. The
 /// global functions are called *before* the per test case functions. This
 /// allows to override the global ones.
-Function ACD_AcquireData_NG(STRUCT ACD_DAQSettings &s, string device)
+Function ACD_AcquireData(STRUCT ACD_DAQSettings &s, string device)
 
 	string ctrl
 	variable i, activeHS

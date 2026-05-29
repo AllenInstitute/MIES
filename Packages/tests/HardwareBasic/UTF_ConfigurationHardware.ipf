@@ -112,7 +112,7 @@ static Function CheckIfConfigurationRestoresMCCFilterGain([string str])
 	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
 	                                 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetB_DA_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	// throw away existing message from auto gain setting
 	PrepareForPublishTest()
@@ -229,7 +229,7 @@ static Function CheckIfConfigurationRestoresDAEphysWithUnassocDA([string str])
 	                                 "__TTL5_ST:StimulusSetA_TTL_0:"                   + \
 	                                 "__TTL7_ST:StimulusSetB_TTL_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	CONF_SaveWindow(fName)
 
@@ -319,7 +319,7 @@ static Function CheckIfConfigurationRestoresDAEphysWithoutAmp([string str])
 	                                 "__HS1_DA1_AD0_CM:VC:_ST:StimulusSetC_DA_0:"   + \
 	                                 "__HS2_DA2_AD1_CM:VC:_ST:StimulusSetA_DA_0:_ASO0")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	CONF_SaveWindow(fName)
 
@@ -420,7 +420,7 @@ static Function CheckIfConfigurationSavesAndRestores([string str])
 	                                 "__TTL5_ST:StimulusSetC_TTL_0:"                   + \
 	                                 "__TTL6_ST:StimulusSetD_TTL_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 
 	CONF_SaveWindow(fName)
 

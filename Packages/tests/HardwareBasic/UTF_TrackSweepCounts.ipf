@@ -239,7 +239,7 @@ static Function MD0_RA0_I0_L0_BKG0([string str])
 
 	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings()
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function MD0_RA0_I0_L0_BKG0_REENTRY([string str])
@@ -277,7 +277,7 @@ End
 static Function MD1_RA0_I0_L0_BKG1([string str])
 
 	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings()
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function MD1_RA0_I0_L0_BKG1_REENTRY([string str])
@@ -335,7 +335,7 @@ End
 static Function MD0_RA1_I0_L0_BKG0([string str])
 
 	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings()
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function MD0_RA1_I0_L0_BKG0_REENTRY([string str])
@@ -370,7 +370,7 @@ End
 static Function MD1_RA1_I0_L0_BKG1([string str])
 
 	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings()
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function MD1_RA1_I0_L0_BKG1_REENTRY([string str])
@@ -442,7 +442,7 @@ End
 static Function MD1_RA1_I1_L0_BKG1([string str])
 
 	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings()
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function MD1_RA1_I1_L0_BKG1_REENTRY([string str])
@@ -480,7 +480,7 @@ End
 static Function MD0_RA1_I1_L0_BKG0([string str])
 
 	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings()
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function MD0_RA1_I1_L0_BKG0_REENTRY([string str])
@@ -562,7 +562,7 @@ End
 static Function MD1_RA1_I1_L1_BKG1([string str])
 
 	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings()
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function MD1_RA1_I1_L1_BKG1_REENTRY([string str])
@@ -599,7 +599,7 @@ End
 static Function MD0_RA1_I1_L1_BKG0([string str])
 
 	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings()
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function MD0_RA1_I1_L1_BKG0_REENTRY([string str])
@@ -680,7 +680,7 @@ End
 static Function RepeatSets_1([string str])
 
 	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings(overrideConfig = "MD1_RA1_I0_L0_BKG1_RES2")
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function RepeatSets_1_REENTRY([string str])
@@ -787,7 +787,7 @@ End
 static Function RepeatSets_2([string str])
 
 	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings(overrideConfig = "MD1_RA1_I1_L0_BKG1_RES2")
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function RepeatSets_2_REENTRY([string str])
@@ -915,7 +915,7 @@ End
 static Function RepeatSets_3([string str])
 
 	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings(overrideConfig = "MD1_RA1_I1_L1_BKG1_RES2")
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function RepeatSets_3_REENTRY([string str])
@@ -1051,7 +1051,7 @@ End
 static Function RepeatSets_4([string str])
 
 	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings(overrideConfig = "MD1_RA1_I1_L1_BKG1_RES2")
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function RepeatSets_4_REENTRY([string str])
@@ -1165,7 +1165,7 @@ End
 static Function RepeatSets_5([string str])
 
 	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings(overrideConfig = "MD1_RA1_I1_L0_BKG1_RES2")
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function RepeatSets_5_REENTRY([string str])
@@ -1218,7 +1218,7 @@ End
 static Function RepeatSets_6([string str])
 
 	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings(overrideConfig = "MD1_RA1_I1_L1_BKG1_RES1")
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function RepeatSets_6_REENTRY([string str])
@@ -1254,7 +1254,7 @@ End
 static Function CheckIZeroClampMode([string str])
 
 	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings(overrideConfig = "MD1_RA0_I0_L0_BKG1_RES1")
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function CheckIZeroClampMode_REENTRY([string str])
@@ -1318,7 +1318,7 @@ End
 static Function RepeatSets_7([string str])
 
 	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings(overrideConfig = "MD1_RA1_I0_L0_BKG1_RES1_ITI3_TPI1")
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function RepeatSets_7_REENTRY([string str])
@@ -1359,7 +1359,7 @@ End
 static Function RepeatSets_8([string str])
 
 	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings(overrideConfig = "MD1_RA1_I1_L1_BKG1_RES1")
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function RepeatSets_8_REENTRY([string str])
@@ -1403,7 +1403,7 @@ End
 static Function RepeatSets_9([string str])
 
 	[STRUCT ACD_DAQSettings s] = ACD_GetDAQSettings(overrideConfig = "MD1_RA1_I1_L0_BKG1_RES1")
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function RepeatSets_9_REENTRY([string str])

@@ -466,7 +466,7 @@ static Function SF_TPTest2([string str])
 	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES0"                    + \
 	                                 "__HS0_DA0_AD0_CM:IC:_ST:EpochTest0_DA_0:"   + \
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:PSQ_QC_stimsets_DA_0:")
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function SF_TPTest2_REENTRY([string str])
@@ -571,7 +571,7 @@ static Function SF_TPTest([string str])
 	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES3"                  + \
 	                                 "__HS2_DA0_AD1_CM:IC:_ST:EpochTest0_DA_0:" + \
 	                                 "__HS3_DA1_AD2_CM:VC:_ST:EpochTest0_DA_0:")
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function SF_TPTest_REENTRY([string str])
@@ -592,7 +592,7 @@ static Function SF_ButtonTest([string str])
 	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES3"                  + \
 	                                 "__HS2_DA0_AD1_CM:IC:_ST:EpochTest0_DA_0:" + \
 	                                 "__HS3_DA1_AD2_CM:VC:_ST:EpochTest0_DA_0:")
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function SF_ButtonTest_REENTRY([string str])
@@ -606,7 +606,7 @@ static Function TestSweepFormulaCodeResults([string str])
 	STRUCT ACD_DAQSettings s
 	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                                          + \
 	                                 "__HS2_DA0_AD1_CM:IC:_ST:StimulusSetA_DA_0:_AF:SetSweepFormula:")
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function TestSweepFormulaCodeResults_REENTRY([string str])
@@ -700,7 +700,7 @@ static Function SF_InsertedTPVersusTP([string str])
 	                                 "__HS0_DA0_AD0_CM:IC:_ST:PSQ_QC_Stimsets_DA_0:_AF:AddUserEpochsForTPLike:" + \
 	                                 "__HS1_DA1_AD1_CM:VC:_ST:PSQ_QC_Stimsets_DA_0:_AF:AddUserEpochsForTPLike:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function SF_InsertedTPVersusTP_REENTRY([string str])
@@ -795,7 +795,7 @@ static Function SF_UnassociatedDATTL_Epochs([string str])
 	                                 "__TTL5_ST:StimulusSetA_TTL_0:"                   + \
 	                                 "__TTL7_ST:StimulusSetB_TTL_0:")
 
-	ACD_AcquireData_NG(s, str)
+	ACD_AcquireData(s, str)
 End
 
 static Function SF_UnassociatedDATTL_Epochs_REENTRY([string str])
