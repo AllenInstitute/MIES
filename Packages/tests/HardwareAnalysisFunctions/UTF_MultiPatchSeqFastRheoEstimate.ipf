@@ -10,9 +10,9 @@ static Constant SINGLE_SCI     = 0x08
 
 static Function [STRUCT ACD_DAQSettings s] MSQ_GetDAQSettings(string device)
 
-	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1_SIM4"                   + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:MSQ_FastRheoEst_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:IC:_ST:MSQ_FastRheoEst_DA_0:")
+	[s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1_DB1_SIM4"                   + \
+	                                    "__HS0_DA0_AD0_CM:IC:_ST:MSQ_FastRheoEst_DA_0:" + \
+	                                    "__HS1_DA1_AD1_CM:IC:_ST:MSQ_FastRheoEst_DA_0:")
 
 	return [s]
 End

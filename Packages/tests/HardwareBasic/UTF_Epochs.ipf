@@ -587,10 +587,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest1([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                       + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest0_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest0_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                       + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:EpochTest0_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:EpochTest0_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -603,10 +602,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest2([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                       + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest1_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest1_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                       + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:EpochTest1_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:EpochTest1_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -619,10 +617,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest3([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                       + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest2_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                       + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:EpochTest2_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -635,10 +632,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest4([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_dDAQ1"                 + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest2_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_dDAQ1"                 + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:EpochTest2_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -651,10 +647,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest4a([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_dDAQ1_DDL10"           + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest2_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_dDAQ1_DDL10"           + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:EpochTest2_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -667,10 +662,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest5([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1"               + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest2_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_oodDAQ1"               + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:EpochTest2_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -683,10 +677,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest6([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1"               + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest3_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_oodDAQ1"               + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:EpochTest3_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -699,10 +692,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest7([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1"               + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest4_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest4_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_oodDAQ1"               + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:EpochTest4_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:EpochTest4_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -715,10 +707,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest8([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_OD50_TD100"            + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest5_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest5_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_OD50_TD100"            + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:EpochTest5_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:EpochTest5_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -731,10 +722,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest9([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_OD50_TD100"            + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest6_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest6_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_OD50_TD100"            + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:EpochTest6_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:EpochTest6_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -747,10 +737,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest10([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L1_BKG1"                         + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:TestPulse:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L1_BKG1"                         + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:TestPulse:")
 
 	ACD_AcquireData(s, str)
 End
@@ -768,10 +757,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest11([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L1_BKG1"                         + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetB_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L1_BKG1"                         + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetB_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -784,10 +772,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest12([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                                             + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:_AF:StopMidSweep_V3:" + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:_AF:StopMidSweep_V3:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                                             + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:_AF:StopMidSweep_V3:" + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:_AF:StopMidSweep_V3:")
 
 	ACD_AcquireData(s, str)
 End
@@ -800,10 +787,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest13([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                                                     + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:_AF:AddTooLargeUserEpoch_V3:" + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:_AF:AddTooLargeUserEpoch_V3:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                                                     + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:_AF:AddTooLargeUserEpoch_V3:" + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:_AF:AddTooLargeUserEpoch_V3:")
 
 	ACD_AcquireData(s, str)
 End
@@ -816,10 +802,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_TestUserEpochs([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                                             + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:_AF:AddUserEpoch_V3:" + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:_AF:AddUserEpoch_V3:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1"                                             + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:_AF:AddUserEpoch_V3:" + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:_AF:AddUserEpoch_V3:")
 
 	ACD_AcquireData(s, str)
 End
@@ -878,10 +863,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest14([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                           + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest_Trig_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest_TrigFl_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                           + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:EpochTest_Trig_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:EpochTest_TrigFl_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -894,9 +878,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest15([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TBP43.59_TPD10"     + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest0_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TBP43.59_TPD10"     + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:EpochTest0_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -922,9 +905,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest16([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TBP43.59_TPD10_FFR:10:" + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest0_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TBP43.59_TPD10_FFR:10:" + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:EpochTest0_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -947,9 +929,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest17([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                     + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest17_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                     + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:EpochTest17_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -964,14 +945,13 @@ End
 // IUTF_TD_GENERATOR s1:DataGenerators#EpochTest_Stimsets_Gen
 static Function EP_EpochTestSamplingFrequency([STRUCT IUTF_mData &mData])
 
-	STRUCT ACD_DAQSettings s
 	string dynSetup, stimSetup
 
 	sprintf dynSetup, "_FFR:%d:", mData.v0
 	sprintf stimSetup, "_ST:%s:", mData.s1
 
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup + \
-	                                 "__HS0_DA0_AD0_CM:VC:" + stimSetup)
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1" + dynSetup + \
+	                                                           "__HS0_DA0_AD0_CM:VC:" + stimSetup)
 
 	ACD_AcquireData(s, mData.s0)
 End
@@ -986,14 +966,13 @@ End
 // IUTF_TD_GENERATOR s1:DataGenerators#EpochTest_Stimsets_Gen
 static Function EP_EpochTestSamplingMultiplier([STRUCT IUTF_mData &mData])
 
-	STRUCT ACD_DAQSettings s
 	string dynSetup, stimSetup
 
 	sprintf dynSetup, "_SIM%d", mData.v0
 	sprintf stimSetup, "_ST:%s:", mData.s1
 
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup + \
-	                                 "__HS0_DA0_AD0_CM:VC:" + stimSetup)
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1" + dynSetup + \
+	                                                           "__HS0_DA0_AD0_CM:VC:" + stimSetup)
 
 	ACD_AcquireData(s, mData.s0)
 End
@@ -1006,15 +985,14 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTestUnassocDA([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                              + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"      + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:"      + \
-	                                 "__HS2_DA2_AD2_CM:VC:_ST:StimulusSetA_DA_0:_ASO0" + \
-	                                 "__TTL1_ST:StimulusSetA_TTL_0:"                   + \
-	                                 "__TTL3_ST:StimulusSetB_TTL_0:"                   + \
-	                                 "__TTL5_ST:StimulusSetA_TTL_0:"                   + \
-	                                 "__TTL7_ST:StimulusSetB_TTL_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                              + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"      + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:"      + \
+	                                                           "__HS2_DA2_AD2_CM:VC:_ST:StimulusSetA_DA_0:_ASO0" + \
+	                                                           "__TTL1_ST:StimulusSetA_TTL_0:"                   + \
+	                                                           "__TTL3_ST:StimulusSetB_TTL_0:"                   + \
+	                                                           "__TTL5_ST:StimulusSetA_TTL_0:"                   + \
+	                                                           "__TTL7_ST:StimulusSetB_TTL_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -1053,17 +1031,16 @@ End
 // IUTF_TD_GENERATOR v2:DataGenerators#EpochTestTTL_OD_Gen
 static Function EP_EpochTestTTL([STRUCT IUTF_mData &mData])
 
-	STRUCT ACD_DAQSettings s
-	string                 dynSetup
+	string dynSetup
 
 	sprintf dynSetup, "_ITP%d_TD%d_OD%d", mData.v0, mData.v1, mData.v2
 
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup              + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
-	                                 "__TTL1_ST:StimulusSetA_TTL_0:"              + \
-	                                 "__TTL3_ST:StimulusSetB_TTL_0:"              + \
-	                                 "__TTL5_ST:StimulusSetA_TTL_0:"              + \
-	                                 "__TTL7_ST:StimulusSetB_TTL_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1" + dynSetup              + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                                                           "__TTL1_ST:StimulusSetA_TTL_0:"              + \
+	                                                           "__TTL3_ST:StimulusSetB_TTL_0:"              + \
+	                                                           "__TTL5_ST:StimulusSetA_TTL_0:"              + \
+	                                                           "__TTL7_ST:StimulusSetB_TTL_0:")
 
 	ACD_AcquireData(s, mData.s0)
 End
@@ -1118,16 +1095,15 @@ End
 // IUTF_TD_GENERATOR s1:DataGenerators#EpochTest_StimsetsTTL_Gen
 static Function EP_EpochTestTTLSamplingFrequency([STRUCT IUTF_mData &mData])
 
-	STRUCT ACD_DAQSettings s
 	string dynSetup, stimSetup
 
 	sprintf dynSetup, "_FFR:%d:", mData.v0
 	sprintf stimSetup, "_ST:%s:", mData.s1
 
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup              + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
-	                                 "__TTL1_ST:StimulusSetA_TTL_0:"              + \
-	                                 "__TTL3" + stimSetup)
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1" + dynSetup              + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                                                           "__TTL1_ST:StimulusSetA_TTL_0:"              + \
+	                                                           "__TTL3" + stimSetup)
 
 	ACD_AcquireData(s, mData.s0)
 End
@@ -1142,16 +1118,15 @@ End
 // IUTF_TD_GENERATOR s1:DataGenerators#EpochTest_StimsetsTTL_Gen
 static Function EP_EpochTestTTLSamplingMultiplier([STRUCT IUTF_mData &mData])
 
-	STRUCT ACD_DAQSettings s
 	string dynSetup, stimSetup
 
 	sprintf dynSetup, "_SIM%d", mData.v0
 	sprintf stimSetup, "_ST:%s:", mData.s1
 
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup              + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
-	                                 "__TTL1_ST:StimulusSetA_TTL_0:"              + \
-	                                 "__TTL3" + stimSetup)
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1" + dynSetup              + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                                                           "__TTL1_ST:StimulusSetA_TTL_0:"              + \
+	                                                           "__TTL3" + stimSetup)
 
 	ACD_AcquireData(s, mData.s0)
 End
@@ -1165,15 +1140,14 @@ End
 // IUTF_TD_GENERATOR v0:DataGenerators#EpochTestSamplingFrequencyTTL_Gen
 static Function EP_EpochTest18([STRUCT IUTF_mData &mData])
 
-	STRUCT ACD_DAQSettings s
-	string                 dynSetup
+	string dynSetup
 
 	sprintf dynSetup, "_FFR:%d:", mData.v0
 
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup              + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
-	                                 "__TTL1_ST:EpochTest18long_TTL_0:"           + \
-	                                 "__TTL3_ST:EpochTest18short_TTL_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1" + dynSetup              + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                                                           "__TTL1_ST:EpochTest18long_TTL_0:"           + \
+	                                                           "__TTL3_ST:EpochTest18short_TTL_0:")
 
 	ACD_AcquireData(s, mData.s0)
 End
@@ -1186,10 +1160,8 @@ End
 // IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
 static Function EP_EpochTest19([STRUCT IUTF_mData &mData])
 
-	STRUCT ACD_DAQSettings s
-
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                       + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:EpochSineTest_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                       + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:EpochSineTest_DA_0:")
 
 	ACD_AcquireData(s, mData.s0)
 End

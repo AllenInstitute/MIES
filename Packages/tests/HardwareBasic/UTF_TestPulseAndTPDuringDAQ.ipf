@@ -16,10 +16,9 @@ End
 /// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckCalculatedTPEntries([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_SIM2_TBP25"              + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_SIM2_TBP25"              + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -83,9 +82,8 @@ static Function CheckTPBaseline([STRUCT IUTF_MDATA &md])
 	device     = md.s0
 	TPbaseline = md.v0
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1_STP1_TBP" + num2str(TPBaseline) + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP1_STP1_TBP" + num2str(TPBaseline) + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
 
 	ACD_AcquireData(s, device)
 End
@@ -177,10 +175,9 @@ End
 /// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckTPEntriesFromLBN([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_GSI0_ITI5_TBP30_TPD15"   + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1_GSI0_ITI5_TBP30_TPD15"   + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -342,10 +339,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function TPCachingWorks([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_TP1_SIM4_STP1"           + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1_TP1_SIM4_STP1"           + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 
 	ACD_AcquireData(s, str)
 
@@ -516,10 +512,9 @@ End
 /// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckTPStorage1([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1"                     + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP1"                     + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -545,10 +540,9 @@ End
 /// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckTPStorage2([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1"                     + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP1"                     + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -574,10 +568,9 @@ End
 /// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckTPStorage3([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1"                     + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP1"                     + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -590,9 +583,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function TPDuringDAQOnlyTP([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"              + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"              + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:")
 
 	ACD_AcquireData(s, str)
 End
@@ -649,9 +641,8 @@ End
 // UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
 static Function TPDuringDAQOnlyTPAndIndexing([STRUCT IUTF_MDATA &md])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I1_L" + num2str(md.v0) + "_BKG1_RES3" + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA1_I1_L" + num2str(md.v0) + "_BKG1_RES3" + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:")
 
 	ACD_AcquireData(s, md.s0)
 End
@@ -671,10 +662,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function TPDuringDAQTPAndUnAssoc([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1"                      + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"           + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:_ASO0")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_RES1"                      + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"           + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:_ASO0")
 
 	ACD_AcquireData(s, str)
 End
@@ -753,10 +743,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function TPDuringDAQ([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                      + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"      + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                      + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"      + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -826,11 +815,10 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function TPDuringDAQWithoodDAQ([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1"                 + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"         + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:" + \
-	                                 "__HS2_DA2_AD2_CM:VC:_ST:StimulusSetC_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_oodDAQ1"                 + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"         + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:" + \
+	                                                           "__HS2_DA2_AD2_CM:VC:_ST:StimulusSetC_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -892,10 +880,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function TPDuringDAQOnlyWithoodDAQ([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1"         + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:" + \
-	                                 "__HS1_DA1_AD1_CM:IC:_ST:TestPulse:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_oodDAQ1"         + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:" + \
+	                                                           "__HS1_DA1_AD1_CM:IC:_ST:TestPulse:")
 
 	ACD_AcquireData(s, str)
 End
@@ -956,11 +943,10 @@ static Constant TP_WAIT_TIMEOUT = 5
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function TPDuringDAQTPStoreCheck([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1_STP1"               + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"            + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:PulseTrain_10Hz_DA_0:" + \
-	                                 "__HS2_DA2_AD2_CM:VC:_ST:TestPulse:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_oodDAQ1_STP1"               + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"            + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:PulseTrain_10Hz_DA_0:" + \
+	                                                           "__HS2_DA2_AD2_CM:VC:_ST:TestPulse:")
 	ACD_AcquireData(s, str)
 End
 
@@ -1020,10 +1006,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckThatTPsCanBeFound([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1_STP1"                + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP1_STP1"                + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
 
 	ACD_AcquireData(s, str)
 
@@ -1085,11 +1070,10 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function TPDuringDAQWithTTL([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TBP25"                   + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"         + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:" + \
-	                                 "__TTL0_ST:StimulusSetA_TTL_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TBP25"                   + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"         + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:" + \
+	                                                           "__TTL0_ST:StimulusSetA_TTL_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -1153,10 +1137,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RunPowerSpectrum([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1" + \
-	                                 "__HS0_DA0_AD0_CM:VC:"   + \
-	                                 "__HS1_DA1_AD1_CM:IC:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP1" + \
+	                                                           "__HS0_DA0_AD0_CM:VC:"   + \
+	                                                           "__HS1_DA1_AD1_CM:IC:")
 
 	ACD_AcquireData(s, str)
 
@@ -1189,10 +1172,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function TestPulseCachingWorks([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_GSI0_ITI3"               + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1_GSI0_ITI3"               + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -1223,10 +1205,9 @@ End
 /// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function ExportIntoNWB([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1"                     + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP1"                     + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
 
 	ACD_AcquireData(s, str)
 
@@ -1268,10 +1249,9 @@ End
 /// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function GetStoredTPTest([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_STP1_TP1"        + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:TestPulse:" + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:TestPulse:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_STP1_TP1"        + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:TestPulse:" + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:TestPulse:")
 
 	ACD_AcquireData(s, str)
 
@@ -1376,10 +1356,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function TPDuringDAQwithPS([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                      + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"      + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                      + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"      + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -1408,9 +1387,8 @@ End
 // UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGenerator
 static Function TPZerosDAC([STRUCT IUTF_MDATA &md])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD" + num2str(md.v0) + "_RA1_I0_L0_BKG1_TP1" + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD" + num2str(md.v0) + "_RA1_I0_L0_BKG1_TP1" + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
 
 	ACD_AcquireData(s, md.s0)
 
@@ -1460,10 +1438,9 @@ static Function TestTPPublishing([string str])
 	TUFXOP_Clear/Z/N=(ZMQ_FILTER_TPRESULT_5S)
 	TUFXOP_Clear/Z/N=(ZMQ_FILTER_TPRESULT_10S)
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_STP1_TP1"        + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:TestPulse:" + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:TestPulse:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_STP1_TP1"        + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:TestPulse:" + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:TestPulse:")
 
 	ACD_AcquireData(s, str)
 
@@ -1657,9 +1634,8 @@ static Function TestTPPublishingIEqualZero([string str])
 	TUFXOP_Clear/Z/N=(ZMQ_FILTER_TPRESULT_5S)
 	TUFXOP_Clear/Z/N=(ZMQ_FILTER_TPRESULT_10S)
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1" + \
-	                                 "__HS0_DA0_AD0_CM:I=0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP1" + \
+	                                                           "__HS0_DA0_AD0_CM:I=0:")
 
 	ACD_AcquireData(s, str)
 

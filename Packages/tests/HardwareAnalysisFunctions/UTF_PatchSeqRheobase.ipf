@@ -9,8 +9,8 @@ static Constant PSQ_RB_FINALSCALE_FAKE_LOW  = 40e-12
 
 static Function [STRUCT ACD_DAQSettings s] PS_GetDAQSettings(string device)
 
-	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                                                + \
-	                                 "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:IC:_ST:Rheobase_DA_0:")
+	[s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1_DB1"                                                + \
+	                                    "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:IC:_ST:Rheobase_DA_0:")
 
 	return [s]
 End

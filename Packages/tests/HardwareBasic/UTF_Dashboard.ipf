@@ -12,10 +12,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function DAB_Indexing([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG1_DB1"                                          + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:_AF:DashboardAnaFunc:" + \
-	                                 "_IST:StimulusSetB_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA1_I1_L0_BKG1_DB1"                                          + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:_AF:DashboardAnaFunc:" + \
+	                                                           "_IST:StimulusSetB_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -87,10 +86,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function DAB_Skipping([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_DB1"                                  + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:_AF:JustFail:" + \
-	                                 "_IST:StimulusSetB_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_DB1"                                  + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:_AF:JustFail:" + \
+	                                                           "_IST:StimulusSetB_DA_0:")
 
 	ACD_AcquireData(s, str)
 End

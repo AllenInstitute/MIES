@@ -11,8 +11,8 @@ static Function [STRUCT ACD_DAQSettings s] SC_GetDAQSettings(string device, [var
 		far = !!far
 	endif
 
-	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB0_FAR" + num2str(far) + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncSetCtrl_DA_0:")
+	[s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1_DB0_FAR" + num2str(far) + \
+	                                    "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncSetCtrl_DA_0:")
 
 	return [s]
 End

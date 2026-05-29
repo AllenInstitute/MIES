@@ -21,8 +21,7 @@ End
 /// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 Function CheckSweepSavingCompatible([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -40,8 +39,7 @@ End
 /// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD0
 Function ExtendedDebugLoggingOnErrorWithITC([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:_TP0_DAQ0")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:_TP0_DAQ0")
 
 	ACD_AcquireData(s, str)
 End

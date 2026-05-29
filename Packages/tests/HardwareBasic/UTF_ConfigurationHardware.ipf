@@ -107,10 +107,9 @@ static Function CheckIfConfigurationRestoresMCCFilterGain([string str])
 
 	fName = PrependExperimentFolder_IGNORE("CheckIfConfigurationRestoresMCCFilterGain.json")
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DAQ0_TP0"                + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetB_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1_DAQ0_TP0"                + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetB_DA_0:")
 
 	ACD_AcquireData(s, str)
 
@@ -219,15 +218,14 @@ static Function CheckIfConfigurationRestoresDAEphysWithUnassocDA([string str])
 
 	fName = PrependExperimentFolder_IGNORE("CheckIfConfigurationRestoresDAEphysWithUnassocDA.json")
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                              + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"      + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:_ASO0" + \
-	                                 "__HS2_DA2_AD2_CM:VC:_ST:StimulusSetA_DA_0:_ASO0" + \
-	                                 "__TTL1_ST:StimulusSetA_TTL_0:"                   + \
-	                                 "__TTL3_ST:StimulusSetB_TTL_0:"                   + \
-	                                 "__TTL5_ST:StimulusSetA_TTL_0:"                   + \
-	                                 "__TTL7_ST:StimulusSetB_TTL_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                              + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"      + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:_ASO0" + \
+	                                                           "__HS2_DA2_AD2_CM:VC:_ST:StimulusSetA_DA_0:_ASO0" + \
+	                                                           "__TTL1_ST:StimulusSetA_TTL_0:"                   + \
+	                                                           "__TTL3_ST:StimulusSetB_TTL_0:"                   + \
+	                                                           "__TTL5_ST:StimulusSetA_TTL_0:"                   + \
+	                                                           "__TTL7_ST:StimulusSetB_TTL_0:")
 
 	ACD_AcquireData(s, str)
 
@@ -313,11 +311,10 @@ static Function CheckIfConfigurationRestoresDAEphysWithoutAmp([string str])
 
 	fName = PrependExperimentFolder_IGNORE("CheckIfConfigurationRestoresDAEphysWithoutAmp.json")
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                           + \
-	                                 "__HS0_DA3_AD2_CM:VC:_ST:StimulusSetA_DA_0:"   + \
-	                                 "__HS1_DA1_AD0_CM:VC:_ST:StimulusSetC_DA_0:"   + \
-	                                 "__HS2_DA2_AD1_CM:VC:_ST:StimulusSetA_DA_0:_ASO0")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                           + \
+	                                                           "__HS0_DA3_AD2_CM:VC:_ST:StimulusSetA_DA_0:"   + \
+	                                                           "__HS1_DA1_AD0_CM:VC:_ST:StimulusSetC_DA_0:"   + \
+	                                                           "__HS2_DA2_AD1_CM:VC:_ST:StimulusSetA_DA_0:_ASO0")
 
 	ACD_AcquireData(s, str)
 
@@ -411,14 +408,13 @@ static Function CheckIfConfigurationSavesAndRestores([string str])
 
 	fName = PrependExperimentFolder_IGNORE("CheckIfConfigurationSavesAndRestores.json")
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DAQ0_TP0"                     + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"      + \
-	                                 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetB_DA_0:_ASO0" + \
-	                                 "__TTL1_ST:StimulusSetA_TTL_0:"                   + \
-	                                 "__TTL3_ST:StimulusSetB_TTL_0:"                   + \
-	                                 "__TTL5_ST:StimulusSetC_TTL_0:"                   + \
-	                                 "__TTL6_ST:StimulusSetD_TTL_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1_DAQ0_TP0"                     + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"      + \
+	                                                           "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetB_DA_0:_ASO0" + \
+	                                                           "__TTL1_ST:StimulusSetA_TTL_0:"                   + \
+	                                                           "__TTL3_ST:StimulusSetB_TTL_0:"                   + \
+	                                                           "__TTL5_ST:StimulusSetC_TTL_0:"                   + \
+	                                                           "__TTL6_ST:StimulusSetD_TTL_0:")
 
 	ACD_AcquireData(s, str)
 
