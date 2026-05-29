@@ -61,6 +61,7 @@ Menu "Mies Panels"
 		"Upload crash dumps", /Q, UploadCrashDumps()
 		"Clear package settings", /Q, MEN_ClearPackageSettings()
 		"Upload log files", /Q, UploadLogFiles()
+		MEN_GetReplayDataString(), /Q, MEN_ToggleReplayData()
 		SubMenu "Panels"
 			"Reset and store AnalysisBrowser", /Q, AB_BrowserStartupSettings()
 			"Reset and store DA_EPHYS", /Q, DAP_EphysPanelStartUpSettings()
@@ -290,4 +291,18 @@ Function MEN_DownloadStimsets()
 	path = DND_FetchAssetFromSet(DND_STIMSET_DANDI_SET)
 
 	NWB_LoadAllStimsets(filename = path, overwrite = 0)
+End
+
+Function/S MEN_GetReplayDataString()
+
+	return "Replay Data" + SelectString(RD_IsCompilationEnabled(), "", "!")
+End
+
+Function MEN_ToggleReplayData()
+
+	if(RD_IsCompilationEnabled())
+		DisableReplayData()
+	else
+		EnableReplayData()
+	endif
 End

@@ -792,6 +792,13 @@ static Function SCOPE_NI_UpdateOscilloscope(string device, variable dataAcqOrTP,
 		// it is in this moment the previous fifo position, so the new data goes from here to fifoPos-1
 		NVAR fifoPosGlobal = $GetFifoPosition(device)
 
+#ifdef REPLAY_DATA
+		if(RD_IsEnabled())
+			WAVE allGain = SWS_GETChannelGains(device, timing = GAIN_AFTER_DAQ)
+			RD_UpdateData(device, allGain, NIDataWave, fifoPosGlobal, fifoPos)
+		endif
+#endif // REPLAY_DATA
+
 		numCols = DimSize(scaledDataWave, COLS)
 		for(i = 0; i < numFifoChannels; i += 1)
 			channel = NumberByKey("NAME" + num2istr(i), fifoInfo)
@@ -883,6 +890,12 @@ static Function SCOPE_ITC_UpdateOscilloscope(string device, variable dataAcqOrTP
 		if(fifoPosGlobal == fifoPos)
 			return NaN
 		endif
+
+#ifdef REPLAY_DATA
+		if(RD_IsEnabled())
+			RD_UpdateData(device, allGain, DAQDataWave, fifoPosGlobal, fifoPos)
+		endif
+#endif // REPLAY_DATA
 
 		AssertOnAndClearRTError()
 		try

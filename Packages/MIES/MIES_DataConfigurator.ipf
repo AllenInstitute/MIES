@@ -1662,6 +1662,17 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 			[ret, setCycleCountLocal] = DC_CalculateChannelColumnNo(device, s.setName[i], channel, CHANNEL_TYPE_DAC)
 			s.setColumn[i]            = ret
 			s.setCycleCount[i]        = setCycleCountLocal
+
+#ifdef REPLAY_DATA
+			if(RD_IsEnabled())
+				WAVE/Z replaySettings = RD_GetReplaySettings(device, RD_MODE_ONCE, RD_SWEEP_SELECTOR_NEXT)
+
+				if(WaveExists(replaySettings))
+					s.setColumn[i]     = replaySettings[%SetColumn]
+					s.setCycleCount[i] = replaySettings[%SetCycleCount]
+				endif
+			endif
+#endif // REPLAY_DATA
 		endif
 
 		if(IsAssociatedChannel(headstage))
@@ -1879,6 +1890,14 @@ static Function DC_GetStimsetAcqCycleID(string device, variable fingerprint, var
 
 	stimsetAcqIDHelper[DAC][%fingerprint] = fingerprint
 	stimsetAcqIDHelper[DAC][%id]          = GetNextRandomNumberForDevice(device)
+
+#ifdef REPLAY_DATA
+	if(RD_IsEnabled())
+		WAVE replaySettings = RD_GetReplaySettings(device, RD_MODE_ALWAYS, RD_SWEEP_SELECTOR_NEXT)
+
+		stimsetAcqIDHelper[][%id] = replaySettings[%SCI]
+	endif
+#endif // REPLAY_DATA
 
 	return stimsetAcqIDHelper[DAC][%id]
 End

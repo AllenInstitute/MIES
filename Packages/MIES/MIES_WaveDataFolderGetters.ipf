@@ -9591,3 +9591,37 @@ Function/WAVE CreateSFPrepareFitWave(string graph, string opShort)
 
 	return output
 End
+
+#ifdef REPLAY_DATA
+
+/// @brief Return various labnotebook settings of the replayed data, see RD_GetReplaySettings()
+Function/WAVE GetReplaySettings()
+
+	Make/FREE/N=(13)/D settings = NaN
+
+	SetDimensionLabels(settings, "RAC;SCI;SetColumn;SetCycleCount;StimScaleFactor;AsyncAD0;AsyncAD1;AsyncAD2;AsyncAD3;AsyncAD4;AsyncAD5;AsyncAD6;AsyncAD7;", ROWS)
+
+	return settings
+End
+
+Function/DF GetReplay()
+
+	return createDFWithAllParents(GetReplayAsString())
+End
+
+Function/S GetReplayAsString()
+
+	return "root:MIES:Replay"
+End
+
+Function/DF GetReplayStorage()
+
+	return createDFWithAllParents(GetReplayStorageAsString())
+End
+
+Function/S GetReplayStorageAsString()
+
+	return "root:MIES_replay"
+End
+
+#endif // REPLAY_DATA

@@ -913,9 +913,9 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 				repurposedTime = 10
 			endif
 
-#ifdef AUTOMATED_TESTING
+#if defined(AUTOMATED_TESTING) || defined(REPLAY_DATA)
 			repurposedTime = 0.5
-#endif // AUTOMATED_TESTING
+#endif // AUTOMATED_TESTING || REPLAY_DATA
 			return ANALYSIS_FUNC_RET_REPURP_TIME
 		elseif(!leakCurPassedAll)
 			return ANALYSIS_FUNC_RET_EARLY_STOP
@@ -3471,8 +3471,8 @@ End
 
 static Function PSQ_DS_CalcFutureDAScalesAndStoreInLBN(string device, variable sweepNo, variable headstage, WAVE/T futureDAScales)
 
-	variable measuredAllFutureDAScales, index
-	string key, msg
+	variable measuredAllFutureDAScales, index, DAScale
+	string key, msg, type
 
 	WAVE/T futureDAScalesLBN = LBN_GetTextWave()
 	futureDAScalesLBN[headstage] = TextWaveToList(futureDAScales, ";")
@@ -3486,6 +3486,20 @@ static Function PSQ_DS_CalcFutureDAScalesAndStoreInLBN(string device, variable s
 	DEBUGPRINT(msg)
 
 	measuredAllFutureDAScales = (DimSize(futureDAScales, ROWS) == 0) || (DimSize(futureDAScales, ROWS) == (index + 1))
+
+#ifdef REPLAY_DATA
+	if(RD_IsEnabled())
+		// only override if we have some future DAScale values as otherwise it is correct
+		if(DimSize(futureDAScales, ROWS) > 0)
+			[type, DAScale] = PSQ_DS_AD_ParseFutureDAScaleEntry(futureDAScales[Inf])
+
+			WAVE numericalValues = GetLBNumericalValues(device)
+
+			WAVE/Z DAScales = GetLastSetting(numericalValues, sweepNo, "Stim Scale Factor", DATA_ACQUISITION_MODE)
+			measuredAllFutureDAScales = WaveExists(DAScales) && CheckIfClose(DAScales[headstage], DAScale)
+		endif
+	endif
+#endif // REPLAY_DATA
 
 	WAVE measuredAllFutureDAScalesLBN = LBN_GetNumericWave()
 	measuredAllFutureDAScalesLBN[INDEP_HEADSTAGE] = measuredAllFutureDAScales
@@ -4904,6 +4918,12 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 
 			index = DAScalesIndex[i]
 
+#ifdef REPLAY_DATA
+			if(RD_IsEnabled())
+				index = 0
+			endif
+#endif // REPLAY_DATA
+
 			// index equals the number of sweeps in the stimset on the last call (*post* sweep event)
 			if(index > DimSize(DAScales, ROWS))
 				printf "(%s): The stimset has too many sweeps, increase the size of DAScales.\r", GetRTStackInfo(1)
@@ -4938,6 +4958,16 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 						FATAL_ERROR("Invalid case")
 						break
 				endswitch
+
+#ifdef REPLAY_DATA
+				if(RD_IsEnabled())
+					WAVE/Z replaySettings = RD_GetReplaySettings(device, RD_MODE_ALWAYS, RD_SWEEP_SELECTOR_NEXT)
+
+					if(IsFinite(replaySettings[%StimScaleFactor]))
+						DAScale = replaySettings[%StimScaleFactor]
+					endif
+				endif
+#endif // REPLAY_DATA
 
 				limitCheck    = (s.eventType == POST_SWEEP_EVENT) && !AFH_LastSweepInSet(device, s.sweepNo, i, s.eventType)
 				oorDAScale[i] = SetDAScale(device, s.sweepNo, i, absolute = DAScale * PICO_TO_ONE, limitCheck = limitCheck)

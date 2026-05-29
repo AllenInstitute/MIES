@@ -2745,3 +2745,23 @@ Constant FIT_QUITREASON_ITERATIONLIMITREACHED = 1
 Constant FIT_QUITREASON_STOPPEDBYUSER         = 2
 Constant FIT_QUITREASON_NOCHISQUAREDECREASE   = 3
 ///@}
+
+#ifdef REPLAY_DATA
+
+/// @name Replay settings mode
+///
+/// @anchor ReplaySettingsMode
+///@{
+Constant RD_MODE_ONCE   = 0x1
+Constant RD_MODE_ALWAYS = 0x2
+///@}
+
+/// @name Replay settings selector
+///
+/// @anchor ReplaySettingsSelector
+///@{
+Constant RD_SWEEP_SELECTOR_CURRENT = 0x1
+Constant RD_SWEEP_SELECTOR_NEXT    = 0x2
+///@}
+
+#endif // REPLAY_DATA

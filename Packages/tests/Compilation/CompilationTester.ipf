@@ -62,6 +62,7 @@ static Function/WAVE GetDefines()
 	                       "BACKGROUND_TASK_DEBUGGING",    \
 	                       "DEBUGGING_ENABLED",            \
 	                       "EVIL_KITTEN_EATING_MODE",      \
+	                       "REPLAY_DATA",                  \
 	                       "SWEEPFORMULA_DEBUG",           \
 	                       "TESTS_WITH_ITC1600_HARDWARE",  \
 	                       "TESTS_WITH_ITC18USB_HARDWARE", \
