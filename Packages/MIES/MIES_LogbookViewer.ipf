@@ -590,6 +590,8 @@ static Function LBV_AddTraceToLBGraph(string graph, WAVE keys, WAVE values, stri
 	LBV_SetLabNotebookBottomLabel(graph, isTimeAxis)
 	EquallySpaceAxis(graph, axisRegExp = ".*" + VERT_AXIS_BASE_NAME + ".*", sortOrder = 16)
 	LBV_UpdateLBGraphLegend(graph, traceList = traceList)
+
+	LBV_Update(graph)
 End
 
 Function LBV_Update(string win)
