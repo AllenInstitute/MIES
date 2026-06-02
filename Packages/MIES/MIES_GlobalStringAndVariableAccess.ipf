@@ -307,6 +307,16 @@ static Function ExecuteGitForMIESVersion(string gitPathOrName, string topDir, st
 	ExecuteScriptText/B/Z cmd
 	ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
 
+	sprintf cmd, "%s /C \"echo | set /p=\"Branch: \" >> \"%s\" 2>&1\"", shellPath, fullVersionPath
+	DEBUGPRINT("Cmd to execute: ", str = cmd)
+	ExecuteScriptText/B/Z cmd
+	ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+
+	sprintf cmd, "%s /C \"\"%s\" -C \"%s\" rev-parse --abbrev-ref HEAD >> \"%s\" 2>&1\"", shellPath, gitPathOrName, topDir, fullVersionPath
+	DEBUGPRINT("Cmd to execute: ", str = cmd)
+	ExecuteScriptText/B/Z cmd
+	ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+
 	sprintf cmd, "%s /C \"echo Submodule status: >> \"%s\" 2>&1\"", shellPath, fullVersionPath
 	DEBUGPRINT("Cmd to execute: ", str = cmd)
 	ExecuteScriptText/B/Z cmd
@@ -340,6 +350,16 @@ static Function ExecuteGitForMIESVersion(string gitPathOrName, string topDir, st
 	ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
 
 	sprintf cmd, "do shell script \"%s -C '%s' log -1 --pretty=format:%%cI%%n >> '%s' 2>&1\"", gitPathOrName, topDir, fullVersionPath
+	DEBUGPRINT("Cmd to execute: ", str = cmd)
+	ExecuteScriptText/UNQ/Z cmd
+	ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+
+	sprintf cmd, "do shell script \"printf 'Branch: ' >> '%s' 2>&1\"", fullVersionPath
+	DEBUGPRINT("Cmd to execute: ", str = cmd)
+	ExecuteScriptText/UNQ/Z cmd
+	ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+
+	sprintf cmd, "do shell script \"%s -C '%s' rev-parse --abbrev-ref HEAD >> '%s' 2>&1\"", gitPathOrName, topDir, fullVersionPath
 	DEBUGPRINT("Cmd to execute: ", str = cmd)
 	ExecuteScriptText/UNQ/Z cmd
 	ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
