@@ -5764,7 +5764,19 @@ Function DAP_TPSettingsToGUI(string device, [string entry])
 		val = TPSettings[%$lbl][col]
 		ASSERT(IsFinite(val), "Value has to be finite")
 
-		PGC_SetAndActivateControl(device, ctrl, val = val)
+		// Special case: avoid PGC_SetAndActivateControl for the IC test pulse
+		// amplitude control. Going through the action proc would re-enter
+		// DAP_TPGUISettingToWave and trigger another stop/restart of the test
+		// pulse, which causes unwanted amplifier (AI_*) calls. The outer
+		// stop/restart in this function is sufficient; we only need to keep
+		// the GUI control, the GUI state cache, and subscribers in sync.
+		if(!cmpstr(ctrl, "SetVar_DataAcq_TPAmplitudeIC"))
+			SetSetVariable(device, ctrl, val)
+			DAG_Update(device, ctrl, val = val)
+			PUB_TPSettingChange(device, headstage, lbl, val, DAP_TPControlToUnit(ctrl))
+		else
+			PGC_SetAndActivateControl(device, ctrl, val = val)
+		endif
 	endfor
 
 	TPSettings[%sendToAllHS][INDEP_HEADSTAGE] = originalHSAll
