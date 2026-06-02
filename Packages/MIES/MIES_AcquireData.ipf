@@ -108,9 +108,9 @@ static Function ACD_ParseNumber(string str, string name, [variable defValue])
 	string   output
 	variable var
 
-	SplitString/E=(name + "([[:digit:]]+(\.[[:digit:]]+)?)(?=_|$)") str, output
+	SplitString/E=(name + "([\+-]?[[:digit:]]+(\.[[:digit:]]+)?)(?=_|$)") str, output
 
-	if(V_Flag == 1)
+	if(V_Flag == 1 || V_flag == 2)
 		var = str2num(output)
 		AssertOnAndClearRTError()
 		return var
