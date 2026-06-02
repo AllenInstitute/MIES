@@ -29,7 +29,11 @@ static Function/S ACD_AcquireDataSelectFunction(string module, string funcName)
 
 	string funcWithModule
 
-	funcWithModule = module + "#" + funcName
+	if(IsEmpty(module))
+		funcWithModule = funcName
+	else
+		funcWithModule = module + "#" + funcName
+	endif
 
 	FUNCREF ACD_CALLABLE_PROTO func = $funcWithModule
 
@@ -91,7 +95,6 @@ static Function ACD_FetchCustomizationFunctions(STRUCT ACD_DAQSettings &s)
 	ASSERT(!IsEmpty(funcName), "Could not get calling function's name.")
 
 	module = StringByKey("MODULE", FunctionInfo(funcName, StringFromList(1, testcaseInfo, ",")))
-	ASSERT(!IsEmpty(module), "Could not get calling function's module name.")
 
 	FUNCREF ACD_CALLABLE_PROTO s.globalPreAcquireFunc = $ACD_AcquireDataSelectFunction(module, "GlobalPreAcq")
 	FUNCREF ACD_CALLABLE_PROTO s.globalPreInitFunc    = $ACD_AcquireDataSelectFunction(module, "GlobalPreInit")
