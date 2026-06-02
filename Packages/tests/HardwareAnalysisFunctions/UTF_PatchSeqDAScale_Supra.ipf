@@ -5,8 +5,8 @@
 
 static Function [STRUCT ACD_DAQSettings s] PS_GetDAQSettings(string device, string stimset)
 
-	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                                                  + \
-	                                 "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:IC:_ST:" + stimset + ":")
+	[s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1_DB1"                                                  + \
+	                                    "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:IC:_ST:" + stimset + ":")
 
 	AdjustAnalysisParamsForPSQ(device, stimset)
 

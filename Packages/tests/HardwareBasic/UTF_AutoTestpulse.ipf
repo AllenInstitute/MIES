@@ -5,9 +5,9 @@
 
 static Function [STRUCT ACD_DAQSettings s] AutoTP_GetDAQSettings(string device)
 
-	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB0_TP1" + \
-	                                 "__HS0_DA0_AD0_CM:IC:"       + \
-	                                 "__HS1_DA1_AD1_CM:IC:")
+	[s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1_DB0_TP1" + \
+	                                    "__HS0_DA0_AD0_CM:IC:"       + \
+	                                    "__HS1_DA1_AD1_CM:IC:")
 
 	return [s]
 End

@@ -305,10 +305,9 @@ Function CheckIfConfigurationRestoresMCCFilterGain([string str])
 
 	fName = PrependExperimentFolder_IGNORE("CheckIfConfigurationRestoresMCCFilterGain.json")
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DAQ0_TP0"                + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetB_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1_DAQ0_TP0"                + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetB_DA_0:")
 
 	ACD_AcquireData(s, str)
 
@@ -372,9 +371,8 @@ static Function ComplainsAboutVanishingEpoch([STRUCT IUTF_MDATA &md])
 	variable refNum
 	string   history
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_SIM8"                 + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_SIM8"                 + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
 
 	refNum = CaptureHistoryStart()
 	ACD_AcquireData(s, md.s0)
@@ -425,9 +423,8 @@ static Function SyncMIESMccWorksOutoftheBox([STRUCT IUTF_MDATA &md])
 
 	device = md.s0
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP0_DAQ0"             + \
-	                                 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP0_DAQ0"             + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:")
 	ACD_AcquireData(s, device)
 
 	WAVE ampStorageWave = GetAmplifierParamStorageWave(device)
@@ -471,9 +468,8 @@ Function CheckAmplifierReadAndWrite([STRUCT IUTF_MDATA &md])
 	device    = md.s0
 	headstage = 0
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP0_DAQ0"                                                        + \
-	                                 "__HS" + num2str(headstage) + "_DA0_AD0_CM:" + clampModeStr + ":_ST:StimulusSetA_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP0_DAQ0"                                                        + \
+	                                                           "__HS" + num2str(headstage) + "_DA0_AD0_CM:" + clampModeStr + ":_ST:StimulusSetA_DA_0:")
 	ACD_AcquireData(s, device)
 
 	clampMode = DAG_GetHeadstageMode(device, headstage)

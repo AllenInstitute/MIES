@@ -130,9 +130,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT1([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                    + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncInvalid1_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_FAR0"                    + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncInvalid1_DA_0:")
 
 	try
 		ACD_AcquireData(s, str)
@@ -192,9 +191,8 @@ static Function AFT2([string str])
 
 	variable sweepNo
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                    + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncInvalid2_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_FAR0"                    + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncInvalid2_DA_0:")
 
 	try
 		ACD_AcquireData(s, str)
@@ -252,9 +250,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT3([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                       + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid1_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                       + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid1_DA_0:")
 	ACD_AcquireData(s, str)
 End
 
@@ -323,9 +320,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT4([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                       + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid1_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1"                       + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid1_DA_0:")
 	ACD_AcquireData(s, str)
 End
 
@@ -394,9 +390,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT5([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                       + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid2_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                       + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid2_DA_0:")
 	ACD_AcquireData(s, str)
 End
 
@@ -456,9 +451,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT6([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                       + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid2_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1"                       + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid2_DA_0:")
 	ACD_AcquireData(s, str)
 End
 
@@ -527,9 +521,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT6a([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                       + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid3_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1"                       + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid3_DA_0:")
 	ACD_AcquireData(s, str)
 End
 
@@ -594,9 +587,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT6b([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                        + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncGeneric_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1"                        + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncGeneric_DA_0:")
 	ACD_AcquireData(s, str)
 End
 
@@ -666,10 +658,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT7([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                             + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValidMult_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:IC:_ST:AnaFuncValidMult_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1"                             + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValidMult_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:IC:_ST:AnaFuncValidMult_DA_0:")
 	ACD_AcquireData(s, str)
 End
 
@@ -748,10 +739,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT8([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                         + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:" + \
-	                                 "__TTL0_ST:AnaFuncTTLNot_TTL_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1"                         + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:" + \
+	                                                           "__TTL0_ST:AnaFuncTTLNot_TTL_0:")
 	ACD_AcquireData(s, str)
 End
 
@@ -803,9 +793,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT9([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                          + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid3Lon_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1"                          + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid3Lon_DA_0:")
 	ACD_AcquireData(s, str)
 	CtrlNamedBackGround Abort_ITI_PressAcq, start=(ticks + 3), period=30, proc=StopAcq_IGNORE
 End
@@ -842,9 +831,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT10([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncMissing_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                        + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncMissing_DA_0:")
 	ACD_AcquireData(s, str)
 End
 
@@ -896,9 +884,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT11([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                     + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncDiff_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1"                     + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncDiff_DA_0:")
 	ACD_AcquireData(s, str)
 End
 
@@ -969,10 +956,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT12([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_FAR0"                       + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncAbortPre_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:IC:_ST:AnaFuncAbortPre_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1_FAR0"                       + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncAbortPre_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:IC:_ST:AnaFuncAbortPre_DA_0:")
 
 	try
 		ACD_AcquireData(s, str)
@@ -1043,10 +1029,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT13([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                           + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncStopMid_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:IC:_ST:AnaFuncStopMid_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                           + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncStopMid_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:IC:_ST:AnaFuncStopMid_DA_0:")
 	ACD_AcquireData(s, str)
 End
 
@@ -1059,10 +1044,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT13a([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                           + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncWaitMid_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:IC:_ST:AnaFuncWaitMid_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                           + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncWaitMid_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:IC:_ST:AnaFuncWaitMid_DA_0:")
 	ACD_AcquireData(s, str)
 End
 
@@ -1145,9 +1129,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT14([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams1_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                        + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams1_DA_0:")
 	ACD_AcquireData(s, str)
 End
 
@@ -1223,9 +1206,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT14a([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams2_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                        + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams2_DA_0:")
 	ACD_AcquireData(s, str)
 End
 
@@ -1261,9 +1243,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT14b([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                   + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams3_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_FAR0"                   + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams3_DA_0:")
 
 	try
 		ACD_AcquireData(s, str)
@@ -1305,9 +1286,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT14c([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                   + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams4_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_FAR0"                   + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams4_DA_0:")
 
 	try
 		ACD_AcquireData(s, str)
@@ -1351,9 +1331,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT14d([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                   + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams5_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_FAR0"                   + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams5_DA_0:")
 
 	try
 		ACD_AcquireData(s, str)
@@ -1399,9 +1378,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT14e([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                   + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams5_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_FAR0"                   + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams5_DA_0:")
 
 	try
 		ACD_AcquireData(s, str)
@@ -1445,9 +1423,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT14f([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams5_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                        + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams5_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -1486,9 +1463,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT14g([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams5_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                        + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams5_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -1525,9 +1501,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT14h([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams6_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                        + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams6_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -1564,9 +1539,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT14i([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                   + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams7_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_FAR0"                   + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams7_DA_0:")
 
 	try
 		ACD_AcquireData(s, str)
@@ -1592,9 +1566,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT14j([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                   + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams1_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_FAR0"                   + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams1_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -1608,9 +1581,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT15([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_ITP0"                     + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncVeryShort_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_ITP0"                     + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncVeryShort_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -1641,9 +1613,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD0
 static Function AFT16([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD0_RA0_I0_L0_BKG1_ITP0"                     + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncVeryShort_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD0_RA0_I0_L0_BKG1_ITP0"                     + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncVeryShort_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -1674,9 +1645,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT17([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD0_RA0_I0_L0_BKG1_FAR0"                     + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncPreDAQHar_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD0_RA0_I0_L0_BKG1_FAR0"                     + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncPreDAQHar_DA_0:")
 
 	try
 		ACD_AcquireData(s, str)
@@ -1717,9 +1687,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT18([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG1_RES2"                                      + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncIdx1_DA_0:_IST:AnaFuncIdx2_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA1_I1_L0_BKG1_RES2"                                      + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncIdx1_DA_0:_IST:AnaFuncIdx2_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -1760,9 +1729,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT19([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                          + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncPreSetHar_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                          + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncPreSetHar_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -1793,9 +1761,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT19a([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncPreSwCfg_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                         + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncPreSwCfg_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -1826,9 +1793,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT20([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                      + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncOrder_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                      + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncOrder_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -1857,9 +1823,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT21([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncPostDAQ_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                        + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncPostDAQ_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -1889,9 +1854,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AFT22([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                          + \
-	                                 "__HS1_DA1_AD1_CM:IC:_ST:AnaFuncValidMult_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1"                          + \
+	                                                           "__HS1_DA1_AD1_CM:IC:_ST:AnaFuncValidMult_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -1961,9 +1925,8 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CanModifyStimsetInPreSweepConfig([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                        + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncModStim_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1"                        + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncModStim_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
@@ -2020,10 +1983,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckLastSweepInSetWithoutSkipping([string str])
 
-	STRUCT ACD_DAQSettings s
-	ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                                                       + \
-	                                 "__HS1_DA2_AD3_CM:IC:_ST:StimulusSetA_DA_0:_AF:LastSweepInSetWithoutSkip:" + \
-	                                 "__HS2_DA1_AD0_CM:IC:_ST:StimulusSetB_DA_0:_AF:LastSweepInSetWithoutSkip:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1"                                                       + \
+	                                                           "__HS1_DA2_AD3_CM:IC:_ST:StimulusSetA_DA_0:_AF:LastSweepInSetWithoutSkip:" + \
+	                                                           "__HS2_DA1_AD0_CM:IC:_ST:StimulusSetB_DA_0:_AF:LastSweepInSetWithoutSkip:")
 
 	ACD_AcquireData(s, str)
 End

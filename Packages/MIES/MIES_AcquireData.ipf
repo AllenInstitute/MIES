@@ -140,7 +140,7 @@ static Function/S ACD_ParseString(string str, string name, [string defValue])
 End
 
 /// @brief Fill the #ACD_DAQSettings structure from a specially crafted string
-Function ACD_InitDAQSettingsFromString(STRUCT ACD_DAQSettings &s, string str)
+Function [STRUCT ACD_DAQSettings s] ACD_InitDAQSettingsFromString(string str)
 
 	variable md, ra, idx, lidx, bkg_daq, res, headstage, clampMode, ttl
 	string elem, output
@@ -278,9 +278,8 @@ End
 ///		/// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 /// 	static Function MyTest([string str])
 ///
-///			struct ACD_DAQSettings s
-///			ACD_InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"             + \
-/// 	                                 "__HS0_DA0_AD0_CM:IC:_ST:ABCD:")
+///			[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1"           + \
+/// 	                                                               "__HS0_DA0_AD0_CM:IC:_ST:ABCD:")
 ///
 ///			ACD_AcquireData(s, md.s0)
 /// 	End

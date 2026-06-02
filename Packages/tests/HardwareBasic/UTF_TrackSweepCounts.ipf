@@ -10,9 +10,9 @@ static Function [STRUCT ACD_DAQSettings s] ACD_GetDAQSettings([string overrideCo
 		overrideConfig = GetRTStackInfo(2)
 	endif
 
-	ACD_InitDAQSettingsFromString(s, overrideConfig                                                      + \
-	                                 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:_IST:StimulusSetB_DA_0:" + \
-	                                 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:_IST:StimulusSetD_DA_0:")
+	[s] = ACD_InitDAQSettingsFromString(overrideConfig                                                      + \
+	                                    "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:_IST:StimulusSetB_DA_0:" + \
+	                                    "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:_IST:StimulusSetD_DA_0:")
 End
 
 static Function GlobalPreInit(string device)
