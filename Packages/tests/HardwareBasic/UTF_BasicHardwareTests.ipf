@@ -114,14 +114,12 @@ End
 // UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGenerator
 static Function Abort_ITI_TP_A_TP([STRUCT IUTF_MDATA &md])
 
-	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD" + num2str(md.v0) + "_RA1_I1_L0_BKG1_GSI0_ITI5_RES5"         + \
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD" + num2str(md.v0) + "_RA1_I1_L0_BKG1_GSI0_ITI5_RES5_TAD1"    + \
 	                                                           "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetC_DA_0:_IST:StimulusSetD_DA_0:")
 	ACD_AcquireData(s, md.s0)
 
 	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
 	CtrlNamedBackGround Abort_ITI_TP, start, period=30, proc=StartTPDuringITI_IGNORE
-
-	PGC_SetAndActivateControl(md.s0, "check_Settings_TPAfterDAQ", val = 1)
 End
 
 static Function Abort_ITI_TP_A_TP_REENTRY([STRUCT IUTF_MDATA &md])
@@ -241,14 +239,12 @@ End
 // UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGenerator
 static Function Abort_ITI_TP_A_PressAcq([STRUCT IUTF_MDATA &md])
 
-	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD" + num2str(md.v0) + "_RA1_I0_L0_BKG1_RES5_GSI0_ITI5" + \
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD" + num2str(md.v0) + "_RA1_I0_L0_BKG1_RES5_GSI0_ITI5_TAD1" + \
 	                                                           "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
 	ACD_AcquireData(s, md.s0)
 
 	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
 	CtrlNamedBackGround Abort_ITI_PressAcq, start, period=30, proc=StopAcqDuringITI_IGNORE
-
-	PGC_SetAndActivateControl(md.s0, "check_Settings_TPAfterDAQ", val = 1)
 End
 
 static Function Abort_ITI_TP_A_PressAcq_REENTRY([STRUCT IUTF_MDATA &md])
@@ -276,7 +272,7 @@ End
 // UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD0
 static Function ChangeToOtherDeviceDAQ([STRUCT IUTF_MDATA &md])
 
-	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD" + num2str(md.v0) + "_RA0_I0_L0_BKG1" + \
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD" + num2str(md.v0) + "_RA0_I0_L0_BKG1_TAD1" + \
 	                                                           "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
 	ACD_AcquireData(s, md.s0)
 End
@@ -300,8 +296,6 @@ End
 
 static Function ChangeStimSetDuringDAQ_PreAcq(string device)
 
-	PGC_SetAndActivateControl(device, "check_Settings_TPAfterDAQ", val = 1)
-
 	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 600), period=60, proc=StopTP_IGNORE
 	CtrlNamedBackGround ChangeStimsetDuringDAQ, start, period=30, proc=ChangeStimSet_IGNORE
 End
@@ -309,7 +303,7 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function ChangeStimSetDuringDAQ([string str])
 
-	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1_RES1"                    + \
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1_RES1_TAD1"               + \
 	                                                           "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:" + \
 	                                                           "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 	ACD_AcquireData(s, str)
@@ -1485,43 +1479,17 @@ static Function TestAcquiringNewDataOnOldData_REENTRY_REENTRY([string str])
 	CHECK_EQUAL_VAR(sweepNo, 5)
 End
 
-static Function AsyncAcquisitionLBN_PreAcq(string device)
-
-	string ctrl
-	variable channel = 2
-
-	ctrl = GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK)
-	PGC_SetAndActivateControl(device, ctrl, val = CHECKBOX_SELECTED)
-
-	ctrl = GetPanelControl(channel, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
-	PGC_SetAndActivateControl(device, ctrl, val = CHECKBOX_SELECTED)
-
-	ctrl = GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
-	PGC_SetAndActivateControl(device, ctrl, val = 5)
-
-	ctrl = GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
-	PGC_SetAndActivateControl(device, ctrl, val = 0.1)
-
-	ctrl = GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
-	PGC_SetAndActivateControl(device, ctrl, val = 0.5)
-
-	ctrl = GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE)
-	PGC_SetAndActivateControl(device, ctrl, str = "myTitle")
-
-	ctrl = GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT)
-	PGC_SetAndActivateControl(device, ctrl, str = "myUnit")
-End
-
 /// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function AsyncAcquisitionLBN([string str])
 
-	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_DAQ1_TP0"                     + \
-	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"      + \
-	                                                           "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:_ASO0" + \
-	                                                           "__TTL1_ST:StimulusSetA_TTL_0:"                   + \
-	                                                           "__TTL3_ST:StimulusSetB_TTL_0:"                   + \
-	                                                           "__TTL5_ST:StimulusSetC_TTL_0:"                   + \
-	                                                           "__TTL6_ST:StimulusSetD_TTL_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_DAQ1_TP0"                          + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"           + \
+	                                                           "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:_ASO0"      + \
+	                                                           "__TTL1_ST:StimulusSetA_TTL_0:"                        + \
+	                                                           "__TTL3_ST:StimulusSetB_TTL_0:"                        + \
+	                                                           "__TTL5_ST:StimulusSetC_TTL_0:"                        + \
+	                                                           "__TTL6_ST:StimulusSetD_TTL_0:"                        + \
+	                                                           "__ASYNC2_ALM1_GA5_AMI0.1_AMA0.5_TTE:myTitle:_UN:myUnit:")
 
 	ACD_AcquireData(s, str)
 End
@@ -1728,19 +1696,11 @@ static Function CheckLBNEntries_IGNORE(string device, variable sweepNo, variable
 	endfor
 End
 
-static Function ConfigureFails_PreAcq(string device)
-
-	string ctrl
-
-	ctrl = GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
-	PGC_SetAndActivateControl(device, ctrl, val = 10000)
-End
-
 /// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function ConfigureFails([string str])
 
-	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                         + \
-	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                                  + \
+	                                                           "__HS0_DA0_AD0_DSC10000_CM:VC:_ST:StimulusSetA_DA_0:" + \
 	                                                           "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 
 	ACD_AcquireData(s, str)

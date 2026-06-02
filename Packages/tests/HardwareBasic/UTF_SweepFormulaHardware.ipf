@@ -679,9 +679,6 @@ End
 
 Function SF_InsertedTPVersusTP_preAcq(string device)
 
-	// make IC less noisy
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPAmplitudeIC", val = -150)
-
 	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StartAcq_IGNORE
 
 	AI_WriteToAmplifier(device, 0, I_CLAMP_MODE, MCC_PRIMARYSIGNALGAIN_FUNC, 5)
@@ -691,9 +688,9 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function SF_InsertedTPVersusTP([string str])
 
-	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_GSI0_ITI10_TP1"                                        + \
-	                                                           "__HS0_DA0_AD0_CM:IC:_ST:PSQ_QC_Stimsets_DA_0:_AF:AddUserEpochsForTPLike:" + \
-	                                                           "__HS1_DA1_AD1_CM:VC:_ST:PSQ_QC_Stimsets_DA_0:_AF:AddUserEpochsForTPLike:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_GSI0_ITI10_TP1"                                                + \
+	                                                           "__HS0_DA0_AD0_TAI-150_CM:IC:_ST:PSQ_QC_Stimsets_DA_0:_AF:AddUserEpochsForTPLike:" + \
+	                                                           "__HS1_DA1_AD1_TAI-150_CM:VC:_ST:PSQ_QC_Stimsets_DA_0:_AF:AddUserEpochsForTPLike:")
 
 	ACD_AcquireData(s, str)
 End

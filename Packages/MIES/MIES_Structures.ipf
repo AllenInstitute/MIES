@@ -674,11 +674,17 @@ EndStructure
 
 Structure ACD_DAQSettings
 	variable MD, RA, IDX, LIDX, BKG_DAQ, RES, DB, AMP, ITP, FAR
-	variable oodDAQ, dDAQ, OD, TD, TP, ITI, GSI, TPI, DAQ, DDL, SIM, STP, TBP, TPD
+	variable oodDAQ, dDAQ, OD, TD, TP, ITI, GSI, TPI, DAQ, DDL, SIM, STP, TBP, TPD, TAD
 	string FFR
 
 	WAVE hs, da, ad, cm, ttl, aso
+	WAVE/D dsc, tai, tav
 	WAVE/T st, ist, af, st_ttl, iaf
 	FUNCREF ACD_CALLABLE_PROTO preAcquireFunc, preInitFunc
 	FUNCREF ACD_CALLABLE_PROTO globalPreAcquireFunc, globalPreInitFunc
+	WAVE ab
+	WAVE/D abv, abr
+	WAVE asyncAD, asyncALM
+	WAVE/D asyncAMI, asyncAMA, asyncGA
+	WAVE/T asyncTTE, asyncUN
 EndStructure

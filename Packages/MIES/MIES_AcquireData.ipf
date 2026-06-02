@@ -145,7 +145,7 @@ End
 /// @brief Fill the #ACD_DAQSettings structure from a specially crafted string
 Function [STRUCT ACD_DAQSettings s] ACD_InitDAQSettingsFromString(string str)
 
-	variable md, ra, idx, lidx, bkg_daq, res, headstage, clampMode, ttl
+	variable md, ra, idx, lidx, bkg_daq, res, headstage, clampMode, ttl, async
 	string elem, output
 
 	sscanf str, "MD%d_RA%d_I%d_L%d_BKG%d", md, ra, idx, lidx, bkg_daq
@@ -178,6 +178,8 @@ Function [STRUCT ACD_DAQSettings s] ACD_InitDAQSettingsFromString(string str)
 	s.stp = ACD_ParseNumber(str, "_STP", defValue = 0)
 
 	s.tbp = ACD_ParseNumber(str, "_TBP", defValue = NaN)
+
+	s.tad = ACD_ParseNumber(str, "_TAD", defValue = 0)
 
 	// default to DAQ if nothing is choosen
 	if(IsNaN(s.daq) && IsNaN(s.tp))
@@ -219,7 +221,21 @@ Function [STRUCT ACD_DAQSettings s] ACD_InitDAQSettingsFromString(string str)
 		Make/FREE/N=(NUM_HEADSTAGES) s.da = NaN
 		Make/FREE/N=(NUM_HEADSTAGES) s.cm = NaN
 		Make/FREE/N=(NUM_HEADSTAGES) s.aso = NaN
+		Make/FREE/N=(NUM_HEADSTAGES) s.ab = NaN
+		Make/FREE/N=(NUM_HEADSTAGES)/D s.abv = NaN
+		Make/FREE/N=(NUM_HEADSTAGES)/D s.abr = NaN
+		Make/FREE/N=(NUM_HEADSTAGES)/D s.dsc = NaN
+		Make/FREE/N=(NUM_HEADSTAGES)/D s.tai = NaN
+		Make/FREE/N=(NUM_HEADSTAGES)/D s.tav = NaN
+
 		Make/FREE/T/N=(NUM_HEADSTAGES) s.st, s.ist, s.af, s.st_ttl, s.iaf
+
+		Make/FREE/N=(NUM_ASYNC_CHANNELS) s.asyncAD = NaN
+		Make/FREE/N=(NUM_ASYNC_CHANNELS) s.asyncALM = NaN
+		Make/FREE/N=(NUM_ASYNC_CHANNELS)/D s.asyncAMI = NaN
+		Make/FREE/N=(NUM_ASYNC_CHANNELS)/D s.asyncAMA = NaN
+		Make/FREE/N=(NUM_ASYNC_CHANNELS)/D s.asyncGA = NaN
+		Make/FREE/T/N=(NUM_ASYNC_CHANNELS) s.asyncTTE, s.asyncUN
 
 		for(elem : hsConfig)
 			// no __ prefix as we have splitted it above at two __
@@ -229,6 +245,22 @@ Function [STRUCT ACD_DAQSettings s] ACD_InitDAQSettingsFromString(string str)
 				s.ttl[ttl] = 1
 
 				s.st_ttl[ttl] = ACD_ParseString(elem, "_ST", defValue = "")
+				continue
+			elseif(GrepString(elem, "^ASYNC"))
+				async            = ACD_ParseNumber(elem, "ASYNC")
+				s.asyncAD[async] = 1
+
+				s.asyncALM[async] = ACD_ParseNumber(elem, "_ALM", defValue = 0)
+
+				s.asyncGA[async] = ACD_ParseNumber(elem, "_GA", defValue = NaN)
+
+				s.asyncAMI[async] = ACD_ParseNumber(elem, "_AMI", defValue = NaN)
+
+				s.asyncAMA[async] = ACD_ParseNumber(elem, "_AMA", defValue = NaN)
+
+				s.asyncTTE[async] = ACD_ParseString(elem, "_TTE", defValue = "")
+
+				s.asyncUN[async] = ACD_ParseString(elem, "_UN", defValue = "")
 				continue
 			endif
 
@@ -265,6 +297,14 @@ Function [STRUCT ACD_DAQSettings s] ACD_InitDAQSettingsFromString(string str)
 			s.iaf[headstage] = ACD_ParseString(elem, "_IAF", defValue = "")
 
 			s.aso[headstage] = ACD_ParseNumber(elem, "_ASO", defValue = 1)
+
+			s.ab[headstage]  = ACD_ParseNumber(elem, "_AB", defValue = 0)
+			s.abv[headstage] = ACD_ParseNumber(elem, "_ABV", defValue = NaN)
+			s.abr[headstage] = ACD_ParseNumber(elem, "_ABR", defValue = NaN)
+
+			s.dsc[headstage] = ACD_ParseNumber(elem, "_DSC", defValue = NaN)
+			s.tai[headstage] = ACD_ParseNumber(elem, "_TAI", defValue = NaN)
+			s.tav[headstage] = ACD_ParseNumber(elem, "_TAV", defValue = NaN)
 		endfor
 	endif
 End
@@ -326,21 +366,30 @@ End
 /// - TP Baseline Percentage: (TBP: [25, 49])
 /// - Fixed frequency acquisition: (FFR: see @ref DAP_GetSamplingFrequencies() for available values)
 /// - TP Duration: (TPD: [5, inf[)
+/// - TP Amplitude IC: (TAI)
+/// - TP Amplitude VC: (TAV)
+/// - TP After DAQ: (TAD: 1/0)
 ///
 /// HeadstageConfig:
-/// - Full specification: __HSXX_ADXX_DAXX_CM:XX:_ST:XX:_IST:XX:_AF:XX:_IAF:XX:_ASOXX
+/// - Full specification: __HSXX_ADXX_DAXX_CM:XX:_DSCXX_TAVXX_TAIXX_ABXX_ABVXX_ABRXX_ST:XX:_IST:XX:_AF:XX:_IAF:XX:_ASOXX
 ///   Required:
 ///      - HS
 ///      - AD
 ///      - DA
 ///      - CM (VC/IC/IZ): clamp mode
 ///   Optional:
+///      - TAV: Testpulse Amplitude VC
+///      - TAI: Testpulse Amplitude IC
 ///      - ST: stimulus set
 ///      - IST: indexing stimulus set
 ///      - AF: analysis function for stimulus set
 ///      - IAF: analysis function for indexing stimulus set
 ///      - ASO (1/0): severes the amplifier connection and disables the headstage again after configuration, thus making the
 ///                   DA and AD channels unassociated
+///      - DSC: Stim Scale Factor
+///      - AB (1/0): Auto Bias
+///      - ABV: Auto Bias voltage
+///      - ABR: Auto Bias voltage range
 ///
 /// TTLConfig:
 /// - Full specification: __TTLXX_ST:XX:
@@ -348,6 +397,18 @@ End
 ///      - TTL
 ///   Optional:
 ///      - ST: TTL stimulus set
+///
+/// AsyncConfig:
+/// - Full specification: __ASYNCXX_ALMXX_GAXX_AMIXX_AMAXX_TTE:XX:_UN:XX:
+///   Required:
+///      - ASYNC: Asynchronous channel
+///   Optional:
+///      - ALM (1/0): Alarm
+///      - TTE: Title string
+///      - GA: Gain
+///      - AMI: Alarm minimum value
+///      - AMA: Alarm maximum value
+///      - UN: Unit string
 ///
 /// For tweaking data acquisition with full flexibility we also support
 /// customization functions before initialization, preInit aka before the DAEphys
@@ -360,7 +421,7 @@ End
 Function ACD_AcquireData(STRUCT ACD_DAQSettings &s, string device)
 
 	string ctrl
-	variable i, activeHS
+	variable i, activeHS, sendToAllPrevious
 
 	if(s.amp)
 		ACD_EnsureMCCIsOpen()
@@ -383,6 +444,9 @@ Function ACD_AcquireData(STRUCT ACD_DAQSettings &s, string device)
 
 	WAVE deviceInfo = GetDeviceInfoWave(device)
 #endif // TESTS_WITH_SUTTER_HARDWARE
+
+	sendToAllPrevious = GetCheckBoxState(device, "Check_TP_SendToAllHS")
+	PGC_SetAndActivateControl(device, "Check_TP_SendToAllHS", val = CHECKBOX_UNSELECTED)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -469,8 +533,35 @@ Function ACD_AcquireData(STRUCT ACD_DAQSettings &s, string device)
 		PGC_SetAndActivateControl(device, ctrl, val = 1)
 		DoUpdate/W=$device
 
+		if(s.cm[i] == I_CLAMP_MODE)
+			PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = s.ab[i])
+
+			if(IsFinite(s.abv[i]))
+				PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = s.abv[i])
+			endif
+
+			if(IsFinite(s.abr[i]))
+				PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasVrange", val = s.abr[i])
+			endif
+		endif
+
+		if(IsFinite(s.dsc[i]))
+			ctrl = GetPanelControl(s.da[i], CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+			PGC_SetAndActivateControl(device, ctrl, val = s.dsc[i])
+		endif
+
+		if(IsFinite(s.tai[i]))
+			PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPAmplitudeIC", val = s.tai[i])
+		endif
+
+		if(IsFinite(s.tav[i]))
+			PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPAmplitude", val = s.tav[i])
+		endif
+
 		activeHS += 1
 	endfor
+
+	PGC_SetAndActivateControl(device, "Check_TP_SendToAllHS", val = sendToAllPrevious)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 
@@ -494,6 +585,44 @@ Function ACD_AcquireData(STRUCT ACD_DAQSettings &s, string device)
 		endif
 	endfor
 
+	for(i = 0; i < NUM_ASYNC_CHANNELS; i += 1)
+
+		if(s.asyncAD[i] != 1)
+			continue
+		endif
+
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK)
+		PGC_SetAndActivateControl(device, ctrl, val = s.asyncAD[i])
+
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
+		PGC_SetAndActivateControl(device, ctrl, val = s.asyncALM[i])
+
+		if(IsFinite(s.asyncGA[i]))
+			ctrl = GetPanelControl(i, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
+			PGC_SetAndActivateControl(device, ctrl, val = s.asyncGA[i])
+		endif
+
+		if(IsFinite(s.asyncAMI[i]))
+			ctrl = GetPanelControl(i, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
+			PGC_SetAndActivateControl(device, ctrl, val = s.asyncAMI[i])
+		endif
+
+		if(IsFinite(s.asyncAMA[i]))
+			ctrl = GetPanelControl(i, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
+			PGC_SetAndActivateControl(device, ctrl, val = s.asyncAMA[i])
+		endif
+
+		if(!IsEmpty(s.asyncTTE[i]))
+			ctrl = GetPanelControl(i, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE)
+			PGC_SetAndActivateControl(device, ctrl, str = s.asyncTTE[i])
+		endif
+
+		if(!IsEmpty(s.asyncUN[i]))
+			ctrl = GetPanelControl(i, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT)
+			PGC_SetAndActivateControl(device, ctrl, str = s.asyncUN[i])
+		endif
+	endfor
+
 	PGC_SetAndActivateControl(device, "check_Settings_RequireAmpConn", val = (s.amp ? CHECKBOX_SELECTED : CHECKBOX_UNSELECTED))
 	PGC_SetAndActivateControl(device, "check_Settings_MD", val = s.MD)
 	PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = s.RA)
@@ -506,6 +635,8 @@ Function ACD_AcquireData(STRUCT ACD_DAQSettings &s, string device)
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_OnsetDelayUser", val = s.od)
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_TerminationDelay", val = s.td)
 	PGC_SetAndActivateControl(device, "Setvar_DataAcq_dDAQDelay", val = s.ddl)
+
+	PGC_SetAndActivateControl(device, "check_Settings_TPAfterDAQ", val = s.tad)
 
 	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = s.gsi)
 

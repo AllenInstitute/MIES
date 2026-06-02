@@ -500,9 +500,6 @@ End
 
 static Function CheckTPStorage1_PreAcq(string device)
 
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPAmplitude", val = 15)
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPAmplitudeIC", val = -75)
-
 	EnsureUnityGain(device, 0)
 	EnsureUnityGain(device, 1)
 
@@ -512,9 +509,9 @@ End
 /// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function CheckTPStorage1([string str])
 
-	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP1"                     + \
-	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
-	                                                           "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP1"                           + \
+	                                                           "__HS0_DA0_AD0_TAV15_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_TAI-75_CM:IC:_ST:StimulusSetC_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
