@@ -5,18 +5,15 @@
 
 static Function [STRUCT ACD_DAQSettings s] PS_GetDAQSettings(string device)
 
-	[s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1_DB0"                        + \
-	                                    "__HS1_DA1_AD1_CM:IC:_ST:ReachTargetVoltage_DA_0:")
+	[s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1_DB0"                                   + \
+	                                    "__HS1_DA1_AD1_CM:IC:_AB1_ABV-70_ST:ReachTargetVoltage_DA_0:")
 
 	return [s]
 End
 
 static Function GlobalPreAcq(string device)
 
-	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = 1)
-
-	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
-	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = -70)
+	PASS()
 End
 
 static Function GlobalPreInit(string device)
@@ -105,24 +102,14 @@ End
 static Function RTV_WorksWithMultipleHeadstages_preAcq(string device)
 
 	AFH_AddAnalysisParameter("ReachTargetVoltage_DA_0", "EnableIndexing", var = 0)
-
-	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = 1)
-
-	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
-	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = -70)
-
-	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = 2)
-
-	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
-	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = -70)
 End
 
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function RTV_WorksWithMultipleHeadstages([string str])
 
-	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1_DB0"                           + \
-	                                                           "__HS2_DA0_AD0_CM:IC:_ST:ReachTargetVoltage_DA_0:" + \
-	                                                           "__HS1_DA1_AD1_CM:IC:_ST:ReachTargetVoltage_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA1_I0_L0_BKG1_DB0"                                      + \
+	                                                           "__HS2_DA0_AD0_CM:IC:_AB1_ABV-70_ST:ReachTargetVoltage_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:IC:_AB1_ABV-70_ST:ReachTargetVoltage_DA_0:")
 
 	ACD_AcquireData(s, str)
 End
