@@ -285,6 +285,8 @@ static Function ExecuteGitForMIESVersion(string gitPathOrName, string topDir, st
 
 	// delete the old version.txt so that we can be sure to get the correct one afterwards
 	DeleteFile/Z fullVersionPath
+	ASSERT(V_flag == 0 || V_flag == -43, "Could not delete previous version.txt, maybe the current user can't read/write the file? Path: " + fullVersionPath)
+
 	DEBUGPRINT("Folder is a git repository: ", str = topDir)
 
 #if defined(WINDOWS)
