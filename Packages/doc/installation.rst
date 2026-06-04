@@ -220,10 +220,10 @@ Windows (with hardware support)
          suggests needs an Igor Pro instance started as Administrator.
 
    -  Install the ITC drivers from Heka
-   -  Execute their ``ITCDemoG64.exe`` program as administrator. You should see some cute sinuses.
    -  Open regedit, go to ``HKEY_LOCAL_MACHINE\SOFTWARE\Instrutech``, select ``Permissions...`` from the
       context menu. In the opened window select ``Full Control`` in the ``Allow`` column for ``ALL APPLICATION
       PACKAGES`` for this key and close with ``OK``.
+   -  Execute their ``ITCDemoG64.exe`` program as administrator. You should see some cute sinuses.
 
 -  NI hardware:
 
