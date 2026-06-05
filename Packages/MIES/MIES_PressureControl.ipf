@@ -2227,23 +2227,27 @@ End
 /// @brief Update DAC list button.
 Function ButtonProc_Hrdwr_P_UpdtDAClist(STRUCT WMButtonAction &ba) : ButtonControl
 
+	string filteredList, lockedList, emptyDevList, dev
+
 	switch(ba.eventCode)
 		case 2: // mouse up
-			string filteredList = ""
-			string DeviceList   = NONE + ";" + DAP_GetITCDeviceList() + HW_NI_ListDevices()
-			string lockedList   = GetListOfLockedDevices()
-			string dev
-			variable nrDevs = ItemsInList(DeviceList)
-			variable i
-			for(i = 0; i < nrDevs; i += 1)
-				dev = StringFromList(i, DeviceList)
+			emptyDevList = DAP_GetEmptyDeviceList()
+			lockedList   = GetListOfLockedDevices()
+			filteredList = emptyDevList
+			WAVE/T devices = ListToTextWave(emptyDevList + DAP_GetITCDeviceList() + HW_NI_ListDevices(), ";")
+			for(dev : devices)
+				if(!CmpStr(dev, NONE))
+					continue
+				endif
 				if(WhichListItem(dev, lockedList) == -1)
 					filteredList = AddListItem(dev, filteredList, ";", Inf)
 				endif
 			endfor
 
 			SetPopupMenuVal(ba.win, "popup_Settings_Pressure_dev", list = filteredList)
+			SetPopupMenuIndex(ba.win, "popup_Settings_Pressure_dev", 0)
 			SetPopupMenuVal(ba.win, "popup_Settings_UserPressure", list = filteredList)
+			SetPopupMenuIndex(ba.win, "popup_Settings_UserPressure", 0)
 			break
 		default:
 			break
