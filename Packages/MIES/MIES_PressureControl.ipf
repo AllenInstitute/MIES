@@ -2098,7 +2098,7 @@ Function P_SetPressureMode(string device, variable headStage, variable pressureM
 	variable UserSelectedHS     = PressureDataWv[headStage][%UserSelectedHeadStage]
 
 	if(!paramIsDefault(pressure) && pressureMode == PRESSURE_METHOD_MANUAL)
-		ASSERT(pressure > MIN_REGULATOR_PRESSURE && pressure < MAX_REGULATOR_PRESSURE, "Use pressure value greater than -10 psi and less than 10 psi")
+		ASSERT(pressure > MIN_REGULATOR_PRESSURE && pressure < MAX_REGULATOR_PRESSURE, "Use pressure value greater than " + num2str(MIN_REGULATOR_PRESSURE) + " psi and less than " + num2str(MAX_REGULATOR_PRESSURE) + " psi")
 		if(UserSelectedHS == headStage)
 			PGC_SetAndActivateControl(device, "setvar_DataAcq_SSPressure", val = pressure)
 		endif
