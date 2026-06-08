@@ -73,27 +73,30 @@ End
 /// or in foreground mode depending on the settings
 ///
 /// @param device device
-/// @param fast       [optional, defaults to false] Starts TP without any checks or
-///                   setup. Can be called after stopping it with TP_StopTestPulseFast().
+/// @param fast   [optional, defaults to #TP_FAST_NONE] One of @ref TestPulseFastModes.
+///               With #TP_FAST_NO_CONFIG or #TP_FAST_CONFIG, starts TP without
+///               any checks; intended to be called after #TP_StopTestPulseFast.
+///               Use #TP_FAST_CONFIG to additionally rebuild the DAQ data wave
+///               via `DC_Configure`.
 Function TPS_StartTestPulseSingleDevice(string device, [variable fast])
 
 	variable bkg
 
 	if(ParamIsDefault(fast))
-		fast = 0
-	else
-		fast = !!fast
+		fast = TP_FAST_NONE
 	endif
+
+	ASSERT(fast == TP_FAST_NONE || fast == TP_FAST_NO_CONFIG || fast == TP_FAST_CONFIG, "Invalid fast value")
 
 	bkg = DAG_GetNumericalValue(device, "Check_Settings_BkgTP")
 
-	if(fast)
+	if(fast == TP_FAST_NO_CONFIG || fast == TP_FAST_CONFIG)
 		// with fast we don't do try/catch for TP_Setup
 		if(bkg)
-			TP_Setup(device, TEST_PULSE_BG_SINGLE_DEVICE, fast = 1)
+			TP_Setup(device, TEST_PULSE_BG_SINGLE_DEVICE, fast = fast)
 			TPS_StartBackgroundTestPulse(device)
 		else
-			TP_Setup(device, TEST_PULSE_FG_SINGLE_DEVICE, fast = 1)
+			TP_Setup(device, TEST_PULSE_FG_SINGLE_DEVICE, fast = fast)
 			TPS_StartTestPulseForeground(device)
 			TP_Teardown(device, fast = 1)
 		endif

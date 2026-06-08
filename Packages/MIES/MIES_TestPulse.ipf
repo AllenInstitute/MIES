@@ -813,7 +813,7 @@ static Function TP_AutoAmplitudeAndBaseline(string device, WAVE TPResults, varia
 	endfor
 
 	if(needsUpdate)
-		DAP_TPSettingsToGUI(device, entry = "amplitudeIC")
+		DAP_TPSettingsToGUI(device, entry = "amplitudeIC", fast = TP_FAST_CONFIG)
 	endif
 End
 
@@ -1460,13 +1460,22 @@ static Function TP_StopTestPulseWrapper(string device, [variable fast])
 End
 
 /// @brief Restarts a test pulse previously stopped with #TP_StopTestPulse
+///
+/// @param device        device
+/// @param testPulseMode One of @ref TestPulseRunModes (the value previously
+///                      returned by #TP_StopTestPulse / #TP_StopTestPulseFast)
+/// @param fast          [optional, defaults to #TP_FAST_NONE] One of
+///                      @ref TestPulseFastModes. Use #TP_FAST_CONFIG to restart
+///                      after #TP_StopTestPulseFast while still rebuilding the
+///                      DAQ data wave (e.g. when only the TP DAC amplitude
+///                      changed).
 Function TP_RestartTestPulse(string device, variable testPulseMode, [variable fast])
 
 	if(ParamIsDefault(fast))
-		fast = 0
-	else
-		fast = !!fast
+		fast = TP_FAST_NONE
 	endif
+
+	ASSERT(fast == TP_FAST_NONE || fast == TP_FAST_NO_CONFIG || fast == TP_FAST_CONFIG, "Invalid fast value")
 
 	switch(testPulseMode)
 		case TEST_PULSE_NOT_RUNNING:
@@ -1486,18 +1495,26 @@ End
 /// @brief Prepare device for TestPulse
 /// @param device  device
 /// @param runMode     Testpulse running mode, one of @ref TestPulseRunModes
-/// @param fast        [optional, defaults to false] Performs only the totally necessary steps for setup
+/// @param fast        [optional, defaults to #TP_FAST_NONE] One of @ref TestPulseFastModes.
+///                    With #TP_FAST_NO_CONFIG the totally necessary steps for setup are
+///                    performed (skipping `DC_Configure` and the UI/state-change work);
+///                    with #TP_FAST_CONFIG `DC_Configure` is additionally executed so
+///                    that the DAQ data wave is rebuilt from the current `TPSettings`.
 Function TP_Setup(string device, variable runMode, [variable fast])
 
 	variable ADCConfig
 
 	if(ParamIsDefault(fast))
-		fast = 0
-	else
-		fast = !!fast
+		fast = TP_FAST_NONE
 	endif
 
-	if(fast)
+	ASSERT(fast == TP_FAST_NONE || fast == TP_FAST_NO_CONFIG || fast == TP_FAST_CONFIG, "Invalid fast value")
+
+	if(fast == TP_FAST_NO_CONFIG || fast == TP_FAST_CONFIG)
+		if(fast == TP_FAST_CONFIG)
+			DC_Configure(device, TEST_PULSE_MODE, multiDevice = (runMode & TEST_PULSE_BG_MULTI_DEVICE))
+		endif
+
 		NVAR runModeGlobal = $GetTestpulseRunMode(device)
 		runModeGlobal = runMode
 
