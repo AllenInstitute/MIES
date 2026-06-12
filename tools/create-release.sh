@@ -44,10 +44,12 @@ git_dir=$(git rev-parse --git-dir)
 superproject_version=$(git --git-dir=$git_dir describe --tags --always --match "Release_*")
 submodule_status=$(git --git-dir=$git_dir submodule status)
 date_of_version=$(git --git-dir=$git_dir log -1 --pretty=format:%cI)
+branch_of_version=$(git --git-dir=$git_dir rev-parse --abbrev-ref HEAD)
 output_file=${superproject_version}.zip
 
 full_version="${superproject_version}
 Date and time of last commit: ${date_of_version}
+Branch: ${branch_of_version}
 Submodule status:
 ${submodule_status}"
 
