@@ -438,11 +438,12 @@ static Function RD_ApplySettingsFromPreviousSweep(string device, variable sweepN
 	WAVE/Z s.abr = GetLastSetting(numericalValues, sweepNo, "Autobias Vcom variance", DATA_ACQUISITION_MODE)
 
 	Make/FREE/N=(NUM_ASYNC_CHANNELS) s.asyncAD, s.asyncALM
-	Make/FREE/N=(NUM_ASYNC_CHANNELS)/D s.asyncAMI, s.asyncAMA
+	Make/FREE/N=(NUM_ASYNC_CHANNELS)/D s.asyncAMI, s.asyncAMA, s.asyncGA
 
 	Make/FREE/N=(NUM_ASYNC_CHANNELS)/T s.asyncTTE = "", s.asyncUN = ""
 
 	s.asyncAD[]  = GetLastSettingIndep(numericalValues, sweepNo, "Async " + num2str(p) + " On/Off", DATA_ACQUISITION_MODE)
+	s.asyncGA[]  = GetLastSettingIndep(numericalValues, sweepNo, "Async " + num2str(p) + " Gain", DATA_ACQUISITION_MODE)
 	s.asyncALM[] = GetLastSettingIndep(numericalValues, sweepNo, "Async Alarm " + num2str(p) + " On/Off", DATA_ACQUISITION_MODE)
 	s.asyncAMI[] = GetLastSettingIndep(numericalValues, sweepNo, "Async Alarm " + num2str(p) + " Min", DATA_ACQUISITION_MODE)
 	s.asyncAMA[] = GetLastSettingIndep(numericalValues, sweepNo, "Async Alarm  " + num2str(p) + " Max", DATA_ACQUISITION_MODE)
