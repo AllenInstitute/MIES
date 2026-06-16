@@ -2444,15 +2444,16 @@ static Function/WAVE PSQ_DS_GatherDAScaleFillin(STRUCT PSQ_DS_DAScaleParams &cdp
 	Make/FREE/T/N=(MINIMUM_WAVE_SIZE) results
 
 	// ensure increasing values
-	Sort apfreq, apfreq, DAScales
+	[WAVE apfreqSorted, WAVE DAScalesSorted] = SortKeyAndData(apfreq, DAScales)
+	WaveClear apfreq, DAScales
 
 	ASSERT(numEntries > 1, "Expected at least two entries")
 	numIterations = numEntries - 1
 	for(i = 0; i < numIterations; i += 1)
-		y  = apfreq[i]
-		yp = apfreq[i + 1]
-		x  = DAScales[i]
-		xp = DAScales[i + 1]
+		y  = apfreqSorted[i]
+		yp = apfreqSorted[i + 1]
+		x  = DAScalesSorted[i]
+		xp = DAScalesSorted[i + 1]
 		xs = (xp - x) / 2
 		xm = round(x + xs)
 
@@ -2476,7 +2477,7 @@ static Function/WAVE PSQ_DS_GatherDAScaleFillin(STRUCT PSQ_DS_DAScaleParams &cdp
 				WAVE/ZZ foundEntries
 			endif
 
-			alreadyMeasured = WaveExists(foundEntries) || GetRowIndex(DAScales, val = xm) >= 0
+			alreadyMeasured = WaveExists(foundEntries) || GetRowIndex(DAScalesSorted, val = xm) >= 0
 
 			if(!alreadyMeasured)
 				EnsureLargeEnoughWave(results, indexShouldExist = idx)
