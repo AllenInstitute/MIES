@@ -34,8 +34,7 @@ Function SWS_SaveAcquiredData(string device, [variable forcedStop])
 
 #ifdef REPLAY_DATA
 	if(RoVar(GetReplayDataEnable()))
-		WAVE DAQDataWave = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
-		WAVE allGain     = SWS_GetChannelGains(device, timing = GAIN_AFTER_DAQ)
+		WAVE allGain = SWS_GetChannelGains(device, timing = GAIN_AFTER_DAQ)
 		allGain[] = 1
 		RD_UpdateData(device, allGain, scaledDataWave, 0, Inf)
 	endif
