@@ -2857,6 +2857,11 @@ static Function PSQ_DS_IsValidFitSlopePosition(WAVE fitSlopes, WAVE DAScales, va
 	idxSlope = GetRowIndex(fitSlopes, val = fitSlope, reverseSearch = 1)
 	ASSERT(IsFinite(idxSlope), "Could not find fitSlope in fitSlopes")
 
+	// correct for the fact that fI-slopes are calculated for two DAScale values
+	// and are attached to the second one
+	idxSlope += 1
+	idxMax   += 1
+
 	return DAScales[idxSlope] > DAScales[idxMax]
 End
 
