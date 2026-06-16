@@ -2696,11 +2696,17 @@ End
 /// - slope must be acquired with a larger DAScale value than maximum slope
 static Function PSQ_DS_CalculateReachedFinalSlope(WAVE fitSlopes, WAVE DAScales, WAVE fillinPassed, variable fitSlope, variable maxSlope, variable slopePercentage)
 
-	return IsFinite(fitSlope)                                                         \
-	       && IsFinite(maxSlope)                                                      \
-	       && (fitSlope < (maxSlope * (1 - (slopePercentage * PERCENT_TO_ONE))))      \
-	       && PSQ_DS_IsValidFitSlopePosition(fitSlopes, DAScales, fitSlope, maxSlope) \
-	       && !PSQ_DS_IsFillin(fitSlopes, fillinPassed, fitSlope)
+	variable isBelowMaxSlopeByPercentage, isValidFitSlopePosition, isNotFillin
+
+	if(!IsFinite(fitSlope) || !IsFinite(maxSlope))
+		return 0
+	endif
+
+	isBelowMaxSlopeByPercentage = (fitSlope < (maxSlope * (1 - (slopePercentage * PERCENT_TO_ONE))))
+	isValidFitSlopePosition     = PSQ_DS_IsValidFitSlopePosition(fitSlopes, DAScales, fitSlope, maxSlope)
+	isNotFillin                 = !PSQ_DS_IsFillin(fitSlopes, fillinPassed, fitSlope)
+
+	return isBelowMaxSlopeByPercentage && isValidFitSlopePosition && isNotFillin
 End
 
 static Function PSQ_DS_CalculateNegativeSlopePass(WAVE fitSlopes, WAVE fillinPassed, variable fitSlope)
