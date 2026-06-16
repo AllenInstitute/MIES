@@ -683,7 +683,7 @@ Structure ACD_DAQSettings
 	FUNCREF ACD_CALLABLE_PROTO preAcquireFunc, preInitFunc
 	FUNCREF ACD_CALLABLE_PROTO globalPreAcquireFunc, globalPreInitFunc
 	WAVE ab
-	WAVE/D abv, abr
+	WAVE/D abv, abr, abm
 	WAVE asyncAD, asyncALM
 	WAVE/D asyncAMI, asyncAMA, asyncGA
 	WAVE/T asyncTTE, asyncUN

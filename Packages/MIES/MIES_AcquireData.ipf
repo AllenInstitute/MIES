@@ -224,6 +224,7 @@ Function [STRUCT ACD_DAQSettings s] ACD_InitDAQSettingsFromString(string str)
 		Make/FREE/N=(NUM_HEADSTAGES) s.ab = NaN
 		Make/FREE/N=(NUM_HEADSTAGES)/D s.abv = NaN
 		Make/FREE/N=(NUM_HEADSTAGES)/D s.abr = NaN
+		Make/FREE/N=(NUM_HEADSTAGES)/D s.abm = NaN
 		Make/FREE/N=(NUM_HEADSTAGES)/D s.dsc = NaN
 		Make/FREE/N=(NUM_HEADSTAGES)/D s.tai = NaN
 		Make/FREE/N=(NUM_HEADSTAGES)/D s.tav = NaN
@@ -301,6 +302,7 @@ Function [STRUCT ACD_DAQSettings s] ACD_InitDAQSettingsFromString(string str)
 			s.ab[headstage]  = ACD_ParseNumber(elem, "_AB", defValue = 0)
 			s.abv[headstage] = ACD_ParseNumber(elem, "_ABV", defValue = NaN)
 			s.abr[headstage] = ACD_ParseNumber(elem, "_ABR", defValue = NaN)
+			s.abm[headstage] = ACD_ParseNumber(elem, "_ABM", defValue = NaN)
 
 			s.dsc[headstage] = ACD_ParseNumber(elem, "_DSC", defValue = NaN)
 			s.tai[headstage] = ACD_ParseNumber(elem, "_TAI", defValue = NaN)
@@ -390,6 +392,7 @@ End
 ///      - AB (1/0): Auto Bias
 ///      - ABV: Auto Bias voltage
 ///      - ABR: Auto Bias voltage range
+///      - ABM: Auto Bias I max
 ///
 /// TTLConfig:
 /// - Full specification: __TTLXX_ST:XX:
@@ -542,6 +545,10 @@ Function ACD_AcquireData(STRUCT ACD_DAQSettings &s, string device)
 
 			if(IsFinite(s.abr[i]))
 				PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasVrange", val = s.abr[i])
+			endif
+
+			if(IsFinite(s.abm[i]))
+				PGC_SetAndActivateControl(device, "setvar_DataAcq_IbiasMax", val = s.abm[i])
 			endif
 		endif
 
