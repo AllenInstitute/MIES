@@ -73,7 +73,7 @@ Function/S DAP_GetNIDeviceList()
 	if(!IsEmpty(devList))
 		globalNIDevList = devList
 	else
-		globalNIDevList = NONE
+		globalNIDevList = DAP_GetEmptyDeviceList()
 	endif
 
 	return globalNIDevList
@@ -145,7 +145,7 @@ Function/S DAP_GetITCDeviceList()
 	if(!IsEmpty(devList))
 		globalITCDevList = devList
 	else
-		globalITCDevList = NONE
+		globalITCDevList = DAP_GetEmptyDeviceList()
 	endif
 
 	return globalITCDevList
@@ -164,11 +164,12 @@ End
 Function/S DAP_GetSUDeviceList()
 
 	string devList
+	string emptyDevList = DAP_GetEmptyDeviceList()
 
 	SVAR globalSUDevList = $GetSUDeviceList()
 	devList = globalSUDevList
 
-	if(!isEmpty(devList) && CmpStr(devList, NONE))
+	if(!isEmpty(devList) && CmpStr(devList, emptyDevList))
 		return devList
 	endif
 
@@ -178,7 +179,7 @@ Function/S DAP_GetSUDeviceList()
 	if(!IsEmpty(devList))
 		globalSUDevList = devList
 	else
-		globalSUDevList = NONE
+		globalSUDevList = emptyDevList
 	endif
 
 	return globalSUDevList
@@ -189,28 +190,27 @@ End
 /// @return list of DAC devices
 Function/S DAP_GetDACDeviceList()
 
-	string list = NONE
-	string devices
+	string emptyDevList = DAP_GetEmptyDeviceList()
+	string list, devices
+
+	list = emptyDevList
 
 	devices = DAP_GetITCDeviceList()
-
-	if(CmpStr(devices, NONE))
-		list = AddListItem(devices, list, ";", Inf)
+	if(CmpStr(devices, emptyDevList))
+		list += devices
 	endif
 
 	devices = DAP_GetNIDeviceList()
-
-	if(CmpStr(devices, NONE))
-		list = AddListItem(devices, list, ";", Inf)
+	if(CmpStr(devices, emptyDevList))
+		list += devices
 	endif
 
 	devices = DAP_GetSUDeviceList()
-
-	if(CmpStr(devices, NONE))
-		list = AddListItem(devices, list, ";", Inf)
+	if(CmpStr(devices, emptyDevList))
+		list += devices
 	endif
 
-	if(!cmpstr(list, NONE))
+	if(!CmpStr(list, emptyDevList))
 		DAP_SuggestIssueForAdditionalNIHardware()
 	endif
 
@@ -5841,4 +5841,10 @@ Function DAP_GetDAScaleMax(string device, variable headstage, string stimsetName
 	DEBUGPRINT(msg)
 
 	return result
+End
+
+/// @brief Returns the default entry for an empty device list, that is used e.g. in a popupmenu
+Function/S DAP_GetEmptyDeviceList()
+
+	return AddListItem(NONE, "", ";", Inf)
 End

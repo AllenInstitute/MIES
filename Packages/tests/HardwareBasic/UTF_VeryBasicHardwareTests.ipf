@@ -104,7 +104,7 @@ static Function CheckDeviceLists()
 	NIDevices  = DAP_GetNIDeviceList()
 	SUDevices  = DAP_GetSUDeviceList()
 
-	ref = NONE
+	ref = DAP_GetEmptyDeviceList()
 
 #if defined(TESTS_WITH_NI_HARDWARE)
 	CHECK_NEQ_STR(NIDevices, ref)

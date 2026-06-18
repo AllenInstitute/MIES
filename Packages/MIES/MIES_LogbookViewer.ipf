@@ -339,22 +339,23 @@ Function/S LBV_GetAllDevicesForExperiment(string win)
 
 	string dataFolder, shPanel, device
 	variable index
+	string emptyDevList = DAP_GetEmptyDeviceList()
 
 	if(BSP_IsDataBrowser(win))
 		device = BSP_GetDevice(win)
 
 		if(BSP_IsBoundDevice(win, device))
-			return NONE + ";" + device
+			return emptyDevList + AddListItem(device, "", ";", Inf)
 		endif
 
-		return NONE
+		return emptyDevList
 	endif
 
 	shPanel    = LBV_GetSettingsHistoryPanel(win)
 	dataFolder = GetPopupMenuString(shPanel, "popup_experiment")
 
 	if(!cmpstr(dataFolder, NONE))
-		return NONE
+		return emptyDevList
 	endif
 
 	WAVE devices = GetAnalysisDeviceWave(dataFolder)
@@ -362,12 +363,12 @@ Function/S LBV_GetAllDevicesForExperiment(string win)
 	index = GetNumberFromWaveNote(devices, NOTE_INDEX)
 
 	if(index == 0)
-		return NONE
+		return emptyDevList
 	endif
 
 	Duplicate/FREE/RMD=[0, index - 1] devices, devicesClean
 
-	return NONE + ";" + TextWaveToList(devicesClean, ";")
+	return emptyDevList + TextWaveToList(devicesClean, ";")
 End
 
 Function LBV_ClearGraph(string win)

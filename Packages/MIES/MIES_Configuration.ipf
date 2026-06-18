@@ -592,6 +592,7 @@ End
 Function CONF_PrimeDeviceLists(string device)
 
 	variable hardwareType
+	string emptyDevList = DAP_GetEmptyDeviceList()
 
 	SVAR globalITCDeviceList = $GetITCDeviceList()
 	SVAR globalNIDeviceList  = $GetNIDeviceList()
@@ -601,23 +602,23 @@ Function CONF_PrimeDeviceLists(string device)
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
 			if(IsEmpty(globalITCDeviceList))
-				globalITCDeviceList = device + ";"
-				globalNIDeviceList  = NONE
-				globalSUDeviceList  = NONE
+				globalITCDeviceList = AddListItem(device, "", ";", Inf)
+				globalNIDeviceList  = emptyDevList
+				globalSUDeviceList  = emptyDevList
 			endif
 			break
 		case HARDWARE_NI_DAC:
 			if(IsEmpty(globalNIDeviceList))
-				globalITCDeviceList = NONE
-				globalNIDeviceList  = device + ";"
-				globalSUDeviceList  = NONE
+				globalITCDeviceList = emptyDevList
+				globalNIDeviceList  = AddListItem(device, "", ";", Inf)
+				globalSUDeviceList  = emptyDevList
 			endif
 			break
 		case HARDWARE_SUTTER_DAC:
 			if(IsEmpty(globalSUDeviceList))
-				globalITCDeviceList = NONE
-				globalNIDeviceList  = NONE
-				globalSUDeviceList  = device + ";"
+				globalITCDeviceList = emptyDevList
+				globalNIDeviceList  = emptyDevList
+				globalSUDeviceList  = AddListItem(device, "", ";", Inf)
 			endif
 			break
 		default:
