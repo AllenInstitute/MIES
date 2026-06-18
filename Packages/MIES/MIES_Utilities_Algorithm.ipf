@@ -1462,3 +1462,56 @@ threadsafe Function/S HashNumber(string previousHash, variable num)
 
 	return HashString(previousHash, str)
 End
+
+/// @brief For pairs of x- and y-points this function averages all y-points with the same x-value.
+///        The x-wave must be sorted.
+///        Both waves must be 1D.
+threadsafe Function [WAVE xWave, WAVE yWave] AvgYforXDuplicates(WAVE xW, WAVE yW)
+
+	variable i, size, value, prevValue, avgSum, avgCnt, cnt
+
+	ASSERT_TS(IsNumericWave(xw) && IsNumericWave(yw), "x and y-wave must be numeric")
+	ASSERT_TS(DimSize(xw, ROWS) == DimSize(yw, ROWS), "x and y-wave must have the same number of ROWS")
+	ASSERT_TS(GetWaveDimensionality(xw) == ROWS && GetWaveDimensionality(yw) == ROWS, "x and y-wave must be 1D")
+
+	Duplicate/FREE xw, xwave
+	Duplicate/FREE yw, ywave
+
+	size = DimSize(xWave, ROWS)
+	if(size < 2)
+		return [xWave, yWave]
+	endif
+
+	FindDuplicates/FREE/DN=dups xWave
+	if(DimSize(dups, ROWS) == 0)
+		return [xWave, yWave]
+	endif
+
+	prevValue = xWave[0]
+	avgSum    = yWave[0]
+	avgCnt    = 1
+
+	for(i = 1; i < size; i += 1)
+		value = xWave[i]
+
+		if(value != prevValue)
+			xWave[cnt] = prevValue
+			yWave[cnt] = avgSum / avgCnt
+			cnt       += 1
+
+			prevValue = value
+			avgSum    = yWave[i]
+			avgCnt    = 1
+		else
+			avgSum += yWave[i]
+			avgCnt += 1
+		endif
+	endfor
+
+	xWave[cnt] = prevValue
+	yWave[cnt] = avgSum / avgCnt
+	cnt       += 1
+	Redimension/N=(cnt, -1, -1, -1) xWave, yWave
+
+	return [xWave, yWave]
+End
