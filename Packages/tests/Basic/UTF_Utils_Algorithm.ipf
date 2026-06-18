@@ -1619,3 +1619,93 @@ static Function TestHashWave()
 #endif
 
 End
+
+static Function TestAvgYforXDuplicates()
+
+	Make/FREE/D/N=0 wvx, wvy
+	[WAVE wvxR, WAVE wvyR] = AvgYforXDuplicates(wvx, wvy)
+	CHECK_EQUAL_WAVES(wvx, wvxR)
+	CHECK_EQUAL_WAVES(wvy, wvyR)
+
+	Make/FREE/D wvx = {1}
+	Make/FREE/D wvy = {1}
+	[WAVE wvxR, WAVE wvyR] = AvgYforXDuplicates(wvx, wvy)
+	CHECK_EQUAL_WAVES(wvx, wvxR)
+	CHECK_EQUAL_WAVES(wvy, wvyR)
+
+	Make/FREE/D wvx = {1, 2}
+	Make/FREE/D wvy = {1, 2}
+	[WAVE wvxR, WAVE wvyR] = AvgYforXDuplicates(wvx, wvy)
+	CHECK_EQUAL_WAVES(wvx, wvxR)
+	CHECK_EQUAL_WAVES(wvy, wvyR)
+
+	Make/FREE/D wvx = {1, 1}
+	Make/FREE/D wvy = {1, 2}
+	Make/FREE/D wvxResult = {1}
+	Make/FREE/D wvyResult = {1.5}
+	[WAVE wvxR, WAVE wvyR] = AvgYforXDuplicates(wvx, wvy)
+	CHECK_EQUAL_WAVES(wvxResult, wvxR)
+	CHECK_EQUAL_WAVES(wvyResult, wvyR)
+
+	Make/FREE/D wvx = {1, 1, 2, 2}
+	Make/FREE/D wvy = {1, 2, 3, 4}
+	Make/FREE/D wvxResult = {1, 2}
+	Make/FREE/D wvyResult = {1.5, 3.5}
+	[WAVE wvxR, WAVE wvyR] = AvgYforXDuplicates(wvx, wvy)
+	CHECK_EQUAL_WAVES(wvxResult, wvxR)
+	CHECK_EQUAL_WAVES(wvyResult, wvyR)
+
+	Make/FREE/D wvx = {0, 1, 1, 2, 2, 3}
+	Make/FREE/D wvy = {0, 1, 2, 3, 4, 5}
+	Make/FREE/D wvxResult = {0, 1, 2, 3}
+	Make/FREE/D wvyResult = {0, 1.5, 3.5, 5}
+	[WAVE wvxR, WAVE wvyR] = AvgYforXDuplicates(wvx, wvy)
+	CHECK_EQUAL_WAVES(wvxResult, wvxR)
+	CHECK_EQUAL_WAVES(wvyResult, wvyR)
+
+	// NaN != NaN, so no avg is done
+	Make/FREE/D wvx = {NaN, NaN, 2, 2}
+	Make/FREE/D wvy = {1, 2, 3, 4}
+	Make/FREE/D wvxResult = {NaN, NaN, 2}
+	Make/FREE/D wvyResult = {1, 2, 3.5}
+	[WAVE wvxR, WAVE wvyR] = AvgYforXDuplicates(wvx, wvy)
+	CHECK_EQUAL_WAVES(wvxResult, wvxR)
+	CHECK_EQUAL_WAVES(wvyResult, wvyR)
+
+	Make/FREE/D wvx = {1, 1, NaN, NaN}
+	Make/FREE/D wvy = {1, 2, 3, 4}
+	Make/FREE/D wvxResult = {1, NaN, NaN}
+	Make/FREE/D wvyResult = {1.5, 3, 4}
+	[WAVE wvxR, WAVE wvyR] = AvgYforXDuplicates(wvx, wvy)
+	CHECK_EQUAL_WAVES(wvxResult, wvxR)
+	CHECK_EQUAL_WAVES(wvyResult, wvyR)
+
+	Make/FREE/D wvx = {1}
+	Make/FREE/D wvy = {1, 2}
+	try
+		[WAVE wvxR, WAVE wvyR] = AvgYforXDuplicates(wvx, wvy)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE/D/N=(1, 2) wvx
+	Make/FREE/D wvy = {1, 1}
+	try
+		[WAVE wvxR, WAVE wvyR] = AvgYforXDuplicates(wvx, wvy)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE/T wvxT
+	Make/FREE/T wvyT
+	WAVE wvx = wvxT
+	WAVE wvy = wvyT
+	try
+		[WAVE wvxR, WAVE wvyR] = AvgYforXDuplicates(wvx, wvy)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
