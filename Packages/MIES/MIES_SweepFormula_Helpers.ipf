@@ -2220,6 +2220,15 @@ Function SFH_CopyPlotMetaData(WAVE dest, WAVE src)
 	JWN_SetNumberInWaveNote(dest, SF_META_LINESTYLE, JWN_GetNumberFromWaveNote(src, SF_META_LINESTYLE))
 End
 
+/// @brief Adds a variable to the variable storage from a given formula. If the variable already exists it is overwritten.
+Function/WAVE SFH_AddVariableToStorageByFormula(string graph, string name, string formula, string opShort)
+
+	WAVE/WAVE result = SFE_ExecuteFormula(formula, graph, preProcess = 0)
+	SFH_AddVariableToStorage(graph, name, SFH_GetOutputForExecutor(result, graph, opShort))
+
+	return result
+End
+
 Function SFH_SetTraceStyleForFit(WAVE fitData, string errorbarStyle)
 
 	JWN_SetWaveInWaveNote(fitData, SF_META_TRACECOLOR, {0, 0, 0}) // black
