@@ -2224,6 +2224,7 @@ StrConstant SF_DATATYPE_SELECTSETSWEEPCOUNT = "SelectSetSweepCount"
 StrConstant SF_DATATYPE_SELECTSCIINDEX      = "SelectSCIIndex"
 StrConstant SF_DATATYPE_SELECTRACINDEX      = "SelectRACIndex"
 StrConstant SF_DATATYPE_ANAFUNCPARAM        = "AnaFunc"
+StrConstant SF_DATATYPE_PREPAREFIT          = "PrepareFit"
 
 StrConstant SF_WREF_MARKER     = "\"WREF@\":"
 StrConstant SF_VARIABLE_MARKER = "/SF_IsVariable" // numeric
@@ -2572,6 +2573,7 @@ StrConstant SF_OP_MERGE               = "merge"
 StrConstant SF_OP_FIT                 = "fit"
 StrConstant SF_OP_FITLINE             = "fitline"
 StrConstant SF_OP_DATASET             = "dataset"
+StrConstant SF_OP_PREPAREFIT          = "preparefit"
 StrConstant SF_OP_GETMETA             = "getmeta"
 
 #ifdef AUTOMATED_TESTING
@@ -2656,3 +2658,49 @@ Constant TRACECOLORMAX = 21
 StrConstant BSP_USER_DATA_SF_CONTENT_HASH = "SweepFormulaContentHash"
 
 Constant HM_HASHMAP_WAVE_VERSION = 1
+
+/// @name Characters allowed in the SF PrepareFit operation to hold a coefficient
+///
+/// @anchor SFPrepareFitHoldStringCharacters
+///@{
+StrConstant SF_PREPAREFIT_HOLDCHAR_HOLD = "X"
+StrConstant SF_PREPAREFIT_HOLDCHAR_FREE = "O"
+///@}
+
+/// @name Reserved fit function name for SF PrepareFit for no-fitting mode
+///
+/// @anchor SFPrepareFitNoFit
+///@{
+StrConstant SF_PREPAREFIT_NOFUNC = "none"
+///@}
+
+/// @name Errorbar Styles supported by SF PrepareFit
+///
+/// @anchor SFPrepareFitErrorbarStyle
+///@{
+StrConstant SF_PREPAREFIT_ERRORBARSTYLE_NORMAL = "normal"
+StrConstant SF_PREPAREFIT_ERRORBARSTYLE_SHADED = "shaded"
+///@}
+
+/// @name Default number of points in fit output SF PrepareFit
+///
+/// @anchor SFPrepareFitLength
+///@{
+Constant SF_PREPAREFIT_LENGTH_DEFAULT = 200
+///@}
+
+/// @name Default Confidence Level for SF PrepareFit, see also Igor Pro CurveFit /F argument.
+///
+/// @anchor SFPrepareFitConfigenceLevel
+///@{
+Constant SF_PREPAREFIT_CONFIDENCELEVEL_DEFAULT = 85
+///@}
+
+/// @name Errorbar Types supported by SF PrepareFit
+///
+/// @anchor SFPrepareFitErrorbarTypes
+///@{
+StrConstant SF_PREPAREFIT_ERRORBARTYPE_STANDARD   = "standard"
+StrConstant SF_PREPAREFIT_ERRORBARTYPE_CONFIDENCE = "conf"
+StrConstant SF_PREPAREFIT_ERRORBARTYPE_PREDICTION = "pred"
+///@}
