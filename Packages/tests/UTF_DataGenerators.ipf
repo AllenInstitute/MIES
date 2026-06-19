@@ -2122,3 +2122,12 @@ static Function/WAVE PermanentOrFree()
 
 	return wv
 End
+
+static Function/WAVE IVSCCAPFrequencyOffsets()
+
+	Make/FREE/T wv = {"first", "min", "max", "none"}
+
+	SetDimensionLabelsFromWaveContents(wv)
+
+	return wv
+End
