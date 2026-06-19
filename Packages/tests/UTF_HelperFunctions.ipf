@@ -1936,6 +1936,7 @@ static Function/S GetDefaultTestSuitesForExperiment()
 			list = AddListItem("UTF_HistoricDashboard.ipf", list, ";", Inf)
 			list = AddListItem("UTF_HistoricEpochClipping.ipf", list, ";", Inf)
 			list = AddListItem("UTF_HistoricSweepBrowser.ipf", list, ";", Inf)
+			list = AddListItem("UTF_HistoricSweepFormula.ipf", list, ";", Inf)
 			list = AddListItem("UTF_HistoricSweepUpgrade.ipf", list, ";", Inf)
 			break
 		case "UTF_HardwareAnalysisFunctions.ipf":
