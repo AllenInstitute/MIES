@@ -2975,3 +2975,9 @@ Function SF_TableWindowHook(STRUCT WMWinHookStruct &s)
 
 	return 0
 End
+
+/// @brief Adds an expression to a formula string with the proper termination character
+Function/S SF_AddExpressionToFormula(string formula, string expr)
+
+	return formula + expr + SF_CHAR_CR
+End
