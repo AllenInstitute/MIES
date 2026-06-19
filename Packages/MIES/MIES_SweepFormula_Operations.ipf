@@ -1661,8 +1661,7 @@ End
 
 static Function/WAVE SFO_OperationLabnotebookExpandKeys(string graph, WAVE/T LBNKeys, WAVE selectData, variable mode)
 
-	variable i, j, numSelected, numKeys, sweepNo
-	string key
+	variable i, numSelected, numKeys, sweepNo
 
 	numKeys = DimSize(LBNKeys, ROWS)
 
@@ -1685,15 +1684,11 @@ static Function/WAVE SFO_OperationLabnotebookExpandKeys(string graph, WAVE/T LBN
 			continue
 		endif
 
-		for(j = 0; j < numKeys; j += 1)
-			key = LBNKeys[j]
-			WAVE/Z indizes = FindIndizes(entries, str = key, prop = PROP_WILDCARD)
-
-			if(WaveExists(indizes))
-				Make/FREE/N=(DimSize(indizes, ROWS))/T matches = entries[indizes[p]]
-				Concatenate/NP=(ROWS)/T/FREE {matches}, allLBNKeys
-			endif
-		endfor
+		WAVE/Z/T matches = ExpandWildcards(LBNKeys, entries)
+		if(!WaveExists(matches))
+			continue
+		endif
+		Concatenate/NP=(ROWS)/T/FREE {matches}, allLBNKeys
 	endfor
 
 	if(!WaveExists(allLBNKeys))
