@@ -68,6 +68,16 @@ static Function TestIsStrictlyPositiveAndFiniteInfinite([variable var])
 	CHECK(!IsStrictlyPositiveAndFinite(var))
 End
 
+static Function TestIsNullOrPositiveAndInteger()
+
+	CHECK(IsNullOrPositiveAndInteger(0))
+	CHECK(IsNullOrPositiveAndInteger(2))
+	CHECK(!IsNullOrPositiveAndInteger(-2))
+	CHECK(!IsNullOrPositiveAndInteger(Inf))
+	CHECK(!IsNullOrPositiveAndInteger(-Inf))
+	CHECK(!IsNullOrPositiveAndInteger(NaN))
+End
+
 static Function TestIsNullOrPositiveAndFinite()
 
 	CHECK(IsNullOrPositiveAndFinite(1))

@@ -2834,6 +2834,82 @@ Function/WAVE SFO_OperationTable(STRUCT SF_ExecutionData &exd)
 	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_TABLE)
 End
 
+static Function/WAVE SFO_OperationGetMetaImpl(WAVE data, string key)
+
+	string path, str
+	variable val
+
+	path = SF_SERIALIZE + "/" + key
+	val  = JWN_GetNumberFromWaveNote(data, path)
+	if(!IsNaN(val))
+		Make/D/FREE wvD = {val}
+		return wvD
+	endif
+
+	str = JWN_GetStringFromWaveNote(data, path)
+	if(!IsEmpty(str))
+		Make/T/FREE wvT = {str}
+		return wvT
+	endif
+
+	WAVE/Z wv = JWN_GetNumericWaveFromWaveNote(data, path)
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	WAVE/Z wv = JWN_GetTextWaveFromWaveNote(data, path)
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	SFH_FATAL_ERROR("Unhandled data type found at: " + path)
+End
+
+/// getmeta(keys, data, [datasetNumber])
+///
+/// GetMeta uses the JSON wave note functionality and reads back for strings with JWN_GetStringFromWaveNote,
+/// thus it can not distinguish between an empty string entry and no string entry.
+/// For numbers it uses JWN_GetNumberFromWaveNote and thus, can not distinguish between a NaN entry and no numeric entry.
+/// Both are known limitations.
+Function/WAVE SFO_OperationGetMeta(STRUCT SF_ExecutionData &exd)
+
+	string opShort = SF_OP_GETMETA
+	string key
+	variable dsNum, numDatasets, i
+
+	SFH_CheckArgumentCount(exd, opShort, 2, maxArgs = 3)
+
+	WAVE/T    keys     = SFH_GetArgumentAsWave(exd, opShort, 0, expectedMajorType = IGOR_TYPE_TEXT_WAVE, singleResult = 1)
+	WAVE/WAVE datasets = SFH_GetArgumentAsWave(exd, opShort, 1)
+	dsNum = SFH_GetArgumentAsNumeric(exd, opShort, 2, defValue = 0, checkFunc = IsNullOrPositiveAndInteger)
+
+	numDatasets = DimSize(datasets, ROWS)
+	SFH_ASSERT(dsNum < numDatasets, "Dataset with given number does not exist in input data")
+	WAVE/Z data = datasets[dsNum]
+
+	if(!WaveExists(data))
+		WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 1)
+		return SFH_GetOutputForExecutor(output, exd.graph, opShort)
+	endif
+
+	WAVE/Z/T existingKeys = JWN_GetKeys(data, SF_SERIALIZE)
+	SFH_ASSERT(WaveExists(existingKeys), "Source has no meta data")
+
+	WAVE/Z/T foundKeys = ExpandWildcards(keys, existingKeys)
+	SFH_ASSERT(WaveExists(foundKeys), "No matches for meta data keys found")
+
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, DimSize(foundKeys, ROWS))
+
+	for(key : foundKeys)
+		WAVE meta = SFO_OperationGetMetaImpl(data, key)
+		SetDimLabel ROWS, -1, $CleanupName(key, 0), meta
+		output[i] = meta
+		i        += 1
+	endfor
+
+	return SFH_GetOutputForExecutor(output, exd.graph, opShort)
+End
+
 #ifdef AUTOMATED_TESTING
 Function/WAVE SFO_OperationTestop_PROTO(STRUCT SF_ExecutionData &exd)
 
