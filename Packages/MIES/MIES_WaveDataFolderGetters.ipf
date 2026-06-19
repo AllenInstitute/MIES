@@ -9566,3 +9566,28 @@ Function/WAVE GetSFIgorFitProperties()
 
 	return wv
 End
+
+/// @brief The returned wave reference wave encapsulates the information gathered by the SF operation PrepareFit
+///        It is a SweepFormula WavReference wave where the components are each a dataset
+Function/WAVE CreateSFPrepareFitWave(string graph, string opShort)
+
+	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, 6)
+	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_PREPAREFIT)
+
+	Make/FREE/T/N=4 txtInfo
+	SetDimLabel ROWS, 0, FITFUNCNAME, txtInfo
+	SetDimLabel ROWS, 1, HOLDSTR, txtInfo
+	SetDimLabel ROWS, 2, ERRORBARTYPE, txtInfo
+	SetDimLabel ROWS, 3, ERRORBARSTYLE, txtInfo
+
+	SetDimLabel ROWS, 0, FITARGS, output
+	SetDimLabel ROWS, 1, LENGTH, output
+	SetDimLabel ROWS, 2, CONFLEVEL, output
+	SetDimLabel ROWS, 3, COEFS, output
+	SetDimLabel ROWS, 4, RANGE, output
+	SetDimLabel ROWS, 5, CONSTRAINTS, output
+
+	output[%FITARGS] = txtInfo
+
+	return output
+End

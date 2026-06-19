@@ -84,3 +84,31 @@ threadsafe Function BetweenZeroAndOneHoundred(variable val)
 
 	return val >= 0.0 && val <= 100.0
 End
+
+/// @brief Return the truth if `holdStr` contains only SF_PREPAREFIT_HOLDCHAR_HOLD or SF_PREPAREFIT_HOLDCHAR_FREE or is empty.
+///        The function DOES NOT check if the length is correct
+///
+/// UTF_NOINSTRUMENTATION
+threadsafe Function IsSFPrepareFitHoldString(string holdStr)
+
+	holdStr = ReplaceString(SF_PREPAREFIT_HOLDCHAR_HOLD, holdStr, "")
+	holdStr = ReplaceString(SF_PREPAREFIT_HOLDCHAR_FREE, holdStr, "")
+
+	return IsEmpty(holdStr)
+End
+
+/// @brief Return the truth if `val` is in the range `0 or [2, n]` and Integer
+///
+/// UTF_NOINSTRUMENTATION
+threadsafe Function IsNullOrTwoAndHigherButFinite(variable val)
+
+	if(!IsFinite(val))
+		return 0
+	endif
+
+	if(!IsInteger(val))
+		return 0
+	endif
+
+	return val == 0 || val >= 2
+End
