@@ -60,6 +60,13 @@ static Constant    SF_POWERSPECTRUM_RATIO_GAUSS_NUMCOEFS   = 4
 
 static StrConstant SF_AVERAGING_NONSWEEPDATA_LBL = "NOSWEEPDATA"
 
+static Constant SF_FIT2_MAX_ITERATIONS = 40
+
+// Bit Mask
+static Constant FIT_CONFIDENCE_TYPE_CONFIDENCEBANDS     = 0x01
+static Constant FIT_CONFIDENCE_TYPE_PREDICTIONBANDS     = 0x02
+static Constant FIT_CONFIDENCE_TYPE_CONFIDENCEINTERVALS = 0x04
+
 Function/WAVE SFO_OperationAnaFuncParam(STRUCT SF_ExecutionData &exd)
 
 	SFH_CheckArgumentCount(exd, SF_OP_ANAFUNCPARAM, 0, maxArgs = 2)
@@ -2931,3 +2938,103 @@ Function/WAVE SFO_OperationTestop(STRUCT SF_ExecutionData &exd)
 	return wv
 End
 #endif // AUTOMATED_TESTING
+
+Function SFO_OperationPrepareFit_PROTO(WAVE w, variable x)
+
+	FATAL_ERROR("Prototype function called")
+End
+
+/// preparefit([fitFuncName, length, errorbarType, errorbarStyle, confLevel, coefs, holdStr, range, constraints])
+///
+/// returns a wave reference wave, see CreateSFPrepareFitWave()
+Function/WAVE SFO_OperationPrepareFit(STRUCT SF_ExecutionData &exd)
+
+	string opShort = SF_OP_PREPAREFIT
+	variable numArgs, numCoefs, isIntegrated, defaultNumCoefs, length, confLevel
+	string fitfuncName, holdStr, checkStr, errorbarType
+
+	numArgs = SFH_CheckArgumentCount(exd, opShort, 0, maxArgs = 9)
+
+	WAVE/WAVE prepFit = CreateSFPrepareFitWave(exd.graph, opShort)
+	WAVE/T    fitArgs = prepFit[%FITARGS]
+
+	fitfuncName = SFH_GetArgumentAsText(exd, opShort, 0, defValue = SF_PREPAREFIT_NOFUNC)
+	if(CmpStr(fitfuncName, SF_PREPAREFIT_NOFUNC))
+		isIntegrated = IsIntegratedFitFunction(fitFuncName)
+		if(isIntegrated)
+			WAVE/Z/WAVE coefsArray = SFH_GetArgumentAsWave(exd, opShort, 5, defWave = $"")
+			if(WaveExists(coefsArray))
+				SFH_ASSERT(SFH_IsArray(coefsArray), "Expected array at coefs arg position")
+				WAVE coefs = coefsArray[0]
+			else
+				WAVE/Z coefs = $""
+				numCoefs = GetIntegratedFitFunctionCoefficientNumber(fitFuncName)
+			endif
+		else
+			FUNCREF SFO_OperationPrepareFit_PROTO func = $fitfuncName
+			SFH_ASSERT(FuncRefIsAssigned(FuncRefInfo(func)), "The specified user fit function does not exist: " + fitfuncName)
+			WAVE/WAVE coefsArray = SFH_GetArgumentAsWave(exd, opShort, 5)
+			SFH_ASSERT(SFH_IsArray(coefsArray), "Expected array at coefs arg position")
+			WAVE coefs = coefsArray[0]
+		endif
+	endif
+	fitArgs[%FITFUNCNAME] = fitfuncName
+
+	if(WaveExists(coefs))
+		SFH_ASSERT(IsNumericWave(coefs), "Expected numeric wave for coefs argument")
+		numCoefs = DimSize(coefs, ROWS)
+		if(isIntegrated)
+			defaultNumCoefs = GetIntegratedFitFunctionCoefficientNumber(fitFuncName)
+			SFH_ASSERT(numCoefs == defaultNumCoefs, "Integrated fit function " + fitFuncName + " needs " + num2istr(defaultNumCoefs) + " coefficients.")
+		endif
+	endif
+	prepFit[%COEFS] = coefs
+
+	length = SFH_GetArgumentAsNumeric(exd, opShort, 1, defValue = SF_PREPAREFIT_LENGTH_DEFAULT, checkFunc = IsNullOrTwoAndHigherButFinite)
+	if(length == 0)
+		length = NaN
+	endif
+	Make/FREE/D wv = {length}
+	prepFit[%LENGTH] = wv
+
+	fitArgs[%ERRORBARTYPE] = SFH_GetArgumentAsText(exd, opShort, 2, defValue = SF_PREPAREFIT_ERRORBARTYPE_CONFIDENCE, allowedValues = {SF_PREPAREFIT_ERRORBARTYPE_STANDARD, SF_PREPAREFIT_ERRORBARTYPE_CONFIDENCE, SF_PREPAREFIT_ERRORBARTYPE_PREDICTION})
+	if(!CmpStr(fitArgs[%ERRORBARTYPE], SF_PREPAREFIT_ERRORBARTYPE_STANDARD))
+		SFH_ASSERT(IsNaN(length), "Errorbar type standard for Normalized Standard Error is only valid in combination with length = 0.")
+	elseif(!CmpStr(fitArgs[%ERRORBARTYPE], SF_PREPAREFIT_ERRORBARTYPE_CONFIDENCE) || !CmpStr(fitArgs[%ERRORBARTYPE], SF_PREPAREFIT_ERRORBARTYPE_PREDICTION))
+		SFH_ASSERT(!IsNaN(length), "Errorbar type conf and pred are only valid in combination with finite length.")
+	endif
+	fitArgs[%ERRORBARSTYLE] = SFH_GetArgumentAsText(exd, opShort, 3, defValue = SF_PREPAREFIT_ERRORBARSTYLE_SHADED, allowedValues = {SF_PREPAREFIT_ERRORBARSTYLE_NORMAL, SF_PREPAREFIT_ERRORBARSTYLE_SHADED})
+
+	confLevel = SFH_GetArgumentAsNumeric(exd, opShort, 4, defValue = SF_PREPAREFIT_CONFIDENCELEVEL_DEFAULT, checkFunc = BetweenZeroAndOneHoundred)
+	Make/FREE/D wv = {confLevel * PERCENT_TO_ONE}
+	prepFit[%CONFLEVEL] = wv
+
+	holdStr = PadString("", numCoefs, char2num("O"))
+	holdStr = SFH_GetArgumentAsText(exd, opShort, 6, defValue = holdStr, checkFunc = IsSFPrepareFitHoldString)
+	SFH_ASSERT(strlen(holdStr) == numCoefs, "Number of coefficients does not match number of characters in hold string.")
+	holdStr           = ReplaceString(SF_PREPAREFIT_HOLDCHAR_HOLD, holdStr, "1")
+	holdStr           = ReplaceString(SF_PREPAREFIT_HOLDCHAR_FREE, holdStr, "0")
+	fitArgs[%HOLDSTR] = holdStr
+
+	WAVE/Z/WAVE rangeArray = SFH_GetArgumentAsWave(exd, opShort, 7, defWave = $"")
+	if(WaveExists(rangeArray))
+		SFH_ASSERT(SFH_IsArray(rangeArray), "Expected array at range arg position")
+		WAVE range = rangeArray[0]
+		SFH_ASSERT(IsNumericWave(range), "Expected numeric wave for range argument")
+		SFH_ASSERT(DimSize(range, ROWS) == 2, "Expected range wave to have two entries")
+		SFH_ASSERT(!IsNaN(range[0]), "First range element must not be NaN")
+		SFH_ASSERT(!IsNaN(range[1]), "Second range element must not be NaN")
+		SFH_ASSERT(range[0] < range[1], "Begin of range must be smaller than end of range")
+		prepFit[%RANGE] = range
+	endif
+
+	WAVE/Z/WAVE constraintsArray = SFH_GetArgumentAsWave(exd, opShort, 8, defWave = $"")
+	if(WaveExists(constraintsArray))
+		SFH_ASSERT(SFH_IsArray(constraintsArray), "Expected array at constraints arg position")
+		WAVE/T constraints = constraintsArray[0]
+		SFH_ASSERT(IsTextWave(constraints), "Expected text wave for constraints argument")
+		prepFit[%CONSTRAINTS] = constraints
+	endif
+
+	return SFH_GetOutputForExecutor(prepFit, exd.graph, opShort)
+End
