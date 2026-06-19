@@ -2153,14 +2153,19 @@ StrConstant SF_META_TRACE_MODE   = "/TraceMode"    // number, one of @ref TraceD
 StrConstant SF_META_TRACETOFRONT = "/TraceToFront" // number, boolean, defaults to false (0)
 /// @}
 
-StrConstant SF_META_DONOTPLOT      = "/DoNotPlot"   // number, boolean, defaults to false (0)
-StrConstant SF_META_WINDOW_HOOK    = "/WindowHook"  // string
-StrConstant SF_META_FORMULA        = "/Formula"     // string
-StrConstant SF_META_PLOT           = "/Plot"        // number, boolean, defaults to false (0)
-StrConstant SF_META_ERRORBARYPLUS  = "/ErrorYPlus"  // numeric wave
-StrConstant SF_META_ERRORBARYMINUS = "/ErrorYMinus" // numeric wave
-StrConstant SF_META_ERRORBARXPLUS  = "/ErrorXPlus"  // numeric wave
-StrConstant SF_META_ERRORBARXMINUS = "/ErrorXMinus" // numeric wave
+StrConstant SF_META_DONOTPLOT      = "/DoNotPlot"     // number, boolean, defaults to false (0)
+StrConstant SF_META_WINDOW_HOOK    = "/WindowHook"    // string
+StrConstant SF_META_FORMULA        = "/Formula"       // string
+StrConstant SF_META_PLOT           = "/Plot"          // number, boolean, defaults to false (0)
+StrConstant SF_META_ERRORBARYPLUS  = "/ErrorYPlus"    // numeric wave
+StrConstant SF_META_ERRORBARYMINUS = "/ErrorYMinus"   // numeric wave
+StrConstant SF_META_ERRORBARXPLUS  = "/ErrorXPlus"    // numeric wave
+StrConstant SF_META_ERRORBARXMINUS = "/ErrorXMinus"   // numeric wave
+StrConstant SF_META_ERRORBARSTYLE  = "/ErrorbarStyle" // numeric wave
+StrConstant SF_META_XAXISOFFSET    = "/XAxisOffset"   // number
+StrConstant SF_META_YAXISOFFSET    = "/YAxisOffset"   // number
+StrConstant SF_META_XAXISPERCENT   = "/XAxisPercent"  // number
+StrConstant SF_META_YAXISPERCENT   = "/YAxisPercent"  // number
 
 /// A color group allows to have matching colors for sweep data with the same channel type/number and sweep.
 /// It is applied before the matching headstage/average colors in #SF_GetTraceColor().
@@ -2225,6 +2230,7 @@ StrConstant SF_VARIABLE_MARKER = "/SF_IsVariable" // numeric
 
 StrConstant SF_ANNOTATION_NAME = "metadata"
 StrConstant SF_VARNAME_REGEXP  = "[A-Z]{1}[A-Z0-9_]*"
+StrConstant SF_SERIALIZE       = "/serial" // path prefix
 ///@}
 
 /// @name Constants for SweepFormula Clampmode codes returned by operation selcm()
@@ -2627,6 +2633,16 @@ StrConstant SF_WINNAME_SUFFIX_TABLE = "table"
 ///@{
 Constant SF_DISPLAYTYPE_GRAPH = 0
 Constant SF_DISPLAYTYPE_TABLE = 1
+///@}
+
+/// @name Errorbar Styles supported by SF Plotter
+///
+/// @anchor SFPlotterErrorbarStyle
+///@{
+Constant SF_ERRORBARSTYLE_NORMAL  = 0
+Constant SF_ERRORBARSTYLE_SHADED  = 1
+Constant SF_ERRORBARSTYLE_BOX     = 2
+Constant SF_ERRORBARSTYLE_ELLIPSE = 3
 ///@}
 
 /// @name Maximum number of colors for traces defined

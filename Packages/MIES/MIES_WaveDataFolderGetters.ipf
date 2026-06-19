@@ -9439,8 +9439,8 @@ End
 /// @brief Wave storing sf plot meta information per formularesult, filled in SF_GatherFormulaResults
 Function/WAVE GetSFPlotMetaData()
 
-	Make/FREE/T/N=(5) wv
-	SetDimensionLabels(wv, "DATATYPE;OPSTACK;ARGSETUPSTACK;XAXISLABEL;YAXISLABEL;", ROWS)
+	Make/FREE/T/N=(9) wv
+	SetDimensionLabels(wv, "DATATYPE;OPSTACK;ARGSETUPSTACK;XAXISLABEL;YAXISLABEL;XAXISOFFSET;YAXISOFFSET;XAXISPERCENT;YAXISPERCENT;", ROWS)
 
 	return wv
 End
@@ -9476,6 +9476,36 @@ Function/WAVE GetFullPlottingWITH(variable size)
 	SetDimlabel COLS, 1, FORMULAY, plotWITH
 
 	return plotWITH
+End
+
+/// @brief ErrorbarStyle definition for Sweepformula Plotter meta data
+///        @sa SF_META_ERRORBARSTYLE
+Function/WAVE CreateSFErrorbarStyleWave()
+
+	Make/FREE/D/N=21 style
+	SetDimLabel ROWS, 0, TYPE, style
+	SetDimLabel ROWS, 1, FILLMODE, style
+	SetDimLabel ROWS, 2, FGCOLOR_R, style
+	SetDimLabel ROWS, 3, FGCOLOR_G, style
+	SetDimLabel ROWS, 4, FGCOLOR_B, style
+	SetDimLabel ROWS, 5, BGCOLOR_R, style
+	SetDimLabel ROWS, 6, BGCOLOR_G, style
+	SetDimLabel ROWS, 7, BGCOLOR_B, style
+	SetDimLabel ROWS, 8, NEGFILLMODE, style
+	SetDimLabel ROWS, 9, NEGFGCOLOR_R, style
+	SetDimLabel ROWS, 10, NEGFGCOLOR_G, style
+	SetDimLabel ROWS, 11, NEGFGCOLOR_B, style
+	SetDimLabel ROWS, 12, NEGBGCOLOR_R, style
+	SetDimLabel ROWS, 13, NEGBGCOLOR_G, style
+	SetDimLabel ROWS, 14, NEGBGCOLOR_B, style
+	SetDimLabel ROWS, 15, BOXCOLOR_R, style
+	SetDimLabel ROWS, 16, BOXCOLOR_G, style
+	SetDimLabel ROWS, 17, BOXCOLOR_B, style
+	SetDimLabel ROWS, 18, ELLMODE, style
+	SetDimLabel ROWS, 19, ELLP, style
+	SetDimLabel ROWS, 20, ELLALPHA, style
+
+	return style
 End
 
 /// @brief Returns a wave with all Igor integrated fit functions and their respective number of coefficients
