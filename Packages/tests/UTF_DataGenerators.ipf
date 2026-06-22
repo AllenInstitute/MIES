@@ -2101,6 +2101,19 @@ static Function/WAVE ValidHashmapSizes()
 	return sizes
 End
 
+static Function/WAVE IgorIntegratedFitFuncs()
+
+	variable col
+
+	WAVE/T props = GetSFIgorFitProperties()
+	col = FindDimLabel(props, COLS, "FITFUNC")
+	Duplicate/FREE/RMD=[][col] props, fitFuncs
+	Redimension/N=(-1) fitFuncs
+	SetDimensionLabelsFromWaveContents(fitFuncs, cleanup = 1)
+
+	return fitFuncs
+End
+
 static Function/WAVE PermanentOrFree()
 
 	Make/FREE wv = {1, 0}
