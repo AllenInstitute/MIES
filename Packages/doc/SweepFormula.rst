@@ -2410,6 +2410,141 @@ Shows the last sweep data in a table
 
 Shows 1 and 2 in the first table, 4 in the second table and 3 in the plot window.
 
+ivscc_apfrequency
+"""""""""""""""""
+
+The operation `ivscc_apfrequency` analyses a bulk of loaded experiment data from the sweepformula browser regarding
+its apfrequency behavior relative to the excitation current applied. The applied apfrequency can be configured as well as the averaging mode.
+The averaged analysis data can be fitted with user specified settings.
+The operation creates several traces that shows the result of the analysis. The call syntax depends on the chosen averaging mode.
+
+.. code-block:: bash
+
+   # averaging mode: bins
+   ivscc_apfrequency([xaxisOffset, yaxisOffset, xAxisPercentage, yAxisPercentage, prepareFitSpec, avgMode, binRange, binWidth, method, level, timeFreq, normalize, xAxisType])
+   # averaging mode: bins2
+   ivscc_apfrequency([xaxisOffset, yaxisOffset, xAxisPercentage, yAxisPercentage, prepareFitSpec, avgMode, method, level, timeFreq, normalize, xAxisType])
+
+The argument `xaxisOffset` sets an offset for the x-values (current) from the apfrequency analysis that is applied to
+the result from each selected experiment as well as to the averaged data. Default is `min`.
+
++-------------------+--------------------------------------------------------+
+| xaxisOffset       | description                                            |
++===================+========================================================+
+| `first`           | The subtracted offset is the first x-value (current)   |
++-------------------+--------------------------------------------------------+
+| `min`             | The subtracted offset is the minimum x-value (current) |
++-------------------+--------------------------------------------------------+
+| `max`             | The subtracted offset is the maximum x-value (current) |
++-------------------+--------------------------------------------------------+
+| `none`            | The x-values (current) are kept as is                  |
++-------------------+--------------------------------------------------------+
+
+The argument `yaxisOffset` sets an offset for the y-values (apfrequency result) from the apfrequency analysis that is applied to
+the result from each selected experiment as well as to the averaged data. Default is `min`.
+
++-------------------+-------------------------------------------------------------------+
+| yaxisOffset       | description                                                       |
++===================+===================================================================+
+| `first`           | The subtracted offset is the first y-value (apfrequency result)   |
++-------------------+-------------------------------------------------------------------+
+| `min`             | The subtracted offset is the minimum y-value (apfrequency result) |
++-------------------+-------------------------------------------------------------------+
+| `max`             | The subtracted offset is the maximum y-value (apfrequency result) |
++-------------------+-------------------------------------------------------------------+
+| `none`            | The y-values (apfrequency result) are kept as is                  |
++-------------------+-------------------------------------------------------------------+
+
+The argument `xAxisPercentage` sets which percentage in x-direction of the full plot area is used by the plot. Default is `100`.
+
+The argument `yAxisPercentage` sets which percentage in y-direction of the full plot area is used by the plot. Default is `100`.
+
+The argument `prepareFitSpec` is a fitting specification that has to be created through the `preparefit` operation. It defines how the
+results from the averaging are fitted. The default is `preparefit()`, that disables the fit.
+
+The argument `avgMode` specifies the averaging mode that is applied to average the apfrequency results from the sweeps of the input experiments.
+The modes `bins` and `bins2` are allowed. Default is `bins`. See documentation for the operation `avg` for the specifics of these modes.
+
+When `avgMode` is `bins` the following two arguments set the bin range with the `binRange` argument and the bin width with the `binWidth` argument.
+These two arguments are not optional. The argument `binRange` must be a two element array in the form `[start, end]`. The number of bins results
+automatically from the given range and width of the bins.
+
+The following arguments specify the settings for the apfrequency analysis and are the same as for the operation `apfrequency`.
+The arguments are `method`, `level`, `timeFreq`, `normalize` and `xAxisType`. The defaults are the same as for the `apfrequency` operation.
+
+Details of the `ivscc_apfrequency` analysis:
+First the user has to have one or more experiments with data loaded in the sweep browser.
+For each experiment the sweeps with the following properties are selected:
+
+* the stimset name contains `LP_Rheo` or `supra`
+* the sweep passed the sweepqc check
+
+For each experiment apfrequency analysis is run on all selected sweeps on epoch `E1` with the apfrequency settings specified.
+The result is paired with an x-value that is the maximum current (pA) output in the same epoch (`E1`).
+Per experiment the apfrequency and current results yield multiple datasets depending on the number of sweeps in the selection.
+
+All x-values (current) are offsetted by the specified `xaxisOffset`.
+
+In average mode `bins`:
+The apfrequency results are averaged over each experiment with the given `binRange` and `binWidth` setting. The offsetted current is used for the binning.
+The currents are averaged over each experiment with the given `binRange` and `binWidth` setting. The offsetted current is used for the binning.
+This results in multiple datasets (one for each experiment) with a single result value each.
+The averaged currents are offsetted by the `xaxisOffset` specification and merged into a single dataset with number of points equal to the number of bins.
+
+In average mode `bins2`:
+The apfrequency results are averaged over each experiment. The offsetted current is used for the binning.
+The attached x-values (current) are extracted and merged to an own dataset with number of points equal to the number of bins.
+The averaged currents are offsetted by the `xaxisOffset` specification.
+
+The averaged apfrequency results are offsetted by the `yaxisOffset` specification and merged to a single dataset with points equal to the number of bins.
+
+For each experiment the merged and offsetted currents and frequencies value pairs are sorted by current.
+If an experiment has multiple results where frequencies were calculated from the same current (e.g. from different sweeps) the frequencies are averaged.
+Then the current is determined where the slope changes from positive to negative for the first time. If no such inflection point exists then NaN is returned for that experiment.
+This results in current/frequency pairs from each experiment where the slope changed.
+Additionally these get averaged for a global current/frequency pair from all experiments.
+
+The following traces are output:
+For each experiment the apfrequency result offsetted by `yaxisOffset` specification vs. the current offsetted by the `xaxisOffset` specification.
+These traces are colored according to the headstage at 20% opacity and use lines and filled circles as markers.
+
+The current/frequency pairs where the slope of the frequency changes from positive to negative are plotted as red markers with diagonal cross.
+
+The over all experiments averages current/frequency pair where the slope of the frequency changes from positive to negative are plotted as red filled caro.
+
+The offsetted averaged apfrequency results are plotted vs. the offsetted averaged currents.
+
+When a valid fitting specification was given through `prepareFitSpec` then the offsetted averaged apfrequency results are fitted (with the offsetted averaged currents as x-values).
+The x- and y-errors from the averaging (standard deviation) are used in the fit as weights.
+Thus, with x-errors orthogonal distance regression is applied in the fit. The fit result is plotted as trace.
+
+Implicitly created variables:
+The operation `ivscc_apfrequency` creates variables in the sweepformula variable storage. These variables are available after the `ivscc_apfrequency` call.
+If a variable with that name existed previously it is overwritten.
+
++----------------------------------------+------------------------------------------------------------------------------------------------------------------------+
+| variable                               | description                                                                                                            |
++========================================+========================================================================================================================+
+| `ivscc_apfrequency_explist`            | A string array containing the experiment list `ivscc_apfrequency` worked on                                            |
++----------------------------------------+------------------------------------------------------------------------------------------------------------------------+
+| `ivscc_apfrequency_fit`                | The result of the fit. The result can be used e.g. with `getmeta` to retrieve more information from the fit.           |
+|                                        | See also operation `fit2`. Note: Even if no fit is displayed as trace that can happen if the fit resulted in an error, |
+|                                        | meta information can still be retrieved.                                                                               |
++----------------------------------------+------------------------------------------------------------------------------------------------------------------------+
+| `ivscc_apfrequency_inflection_current` | Current from each experiment in pA, where the slope of the frequency changes from positive to negative                 |
++----------------------------------------+------------------------------------------------------------------------------------------------------------------------+
+| `ivscc_apfrequency_inflection_freq`    | Frequency from each experiment, where the slope of the frequency changes from positive to negative                     |
++----------------------------------------+------------------------------------------------------------------------------------------------------------------------+
+
+.. code-block:: bash
+
+   # averaging mode: bins, 6 bins with 100 pA each, default apfrequency settings, fit with natural logarithm
+   ivscc_apfrequency(none, none, 100, 100, preparefit(lognormal), bins, [0, 600], 100)
+   # averaging mode: bins2, number of bins is determined by the averaging operation, default apfrequency settings, fit with logarithm base 10
+   ivscc_apfrequency(none, none, 100, 100, preparefit(log), bins2)
+   # apfrequency and current results are offsetted to zero (min is subtracted), averaging mode: bins2, number of bins is determined by the averaging operation, default apfrequency settings, fit with exponential
+   ivscc_apfrequency(min, min, 100, 100, preparefit(exp), bins2)
+
 Plotting
 ^^^^^^^^
 
