@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Da_Ephys &#8212; MIES Igor (main) Release_2.9_20250502-964-gccab7720e documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="_static/documentation_options.js?v=89ed9e91"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="TPStorage" href="testpulse.html" />
+    <link rel="prev" title="WaveBuilder" href="wavebuilder.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="testpulse.html" title="TPStorage"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="wavebuilder.html" title="WaveBuilder"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-964-gccab7720e documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="user.html" accesskey="U">User documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Da_Ephys</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="da-ephys">
+<span id="daephys"></span><h1>Da_Ephys<a class="headerlink" href="#da-ephys" title="Link to this heading">¶</a></h1>
+<p>The DA_Epys panel centralizes control of data acquisition, including multiple
+hardware components necessary for performing electrophysiology experiments,
+such as the DAC, amplifier, and pressure regulators.</p>
+<figure class="align-center" id="id1">
+<span id="figure-da-ephys-panel"></span><img alt="_images/DAEphys-Data_Acquisition.png" src="_images/DAEphys-Data_Acquisition.png" />
+<figcaption>
+<p><span class="caption-text">Main data acquisition panel</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>The main data acquisition panel centralizes and simplifies manual control of
+the amplifier, pressure control, test-pulse, and data acquisition for up to 8
+headstages. For headstage dependent controls, the slider determines which
+headstage to apply user input.</p>
+<section id="distributed-daq-ddaq">
+<span id="daephys-ddaq"></span><h2>Distributed DAQ (dDAQ)<a class="headerlink" href="#distributed-daq-ddaq" title="Link to this heading">¶</a></h2>
+<p>dDAQ simplifies the acquisition of synaptic responses during paired recordings.
+In paired recordings, each cell can be pre- and postsynaptic. dDAQ distributes
+the stimulus set sweep in time across headstages. Temporal distribution the
+stimulus set sweep ensures that the postsynaptic cell isn’t being stimulated
+simultaneously with the presynaptic cell, which would obscure any synaptic
+response(e.g., PSP, PSC). dDAQ delay inserts an acquisition time delay between
+the stimulus set sweeps on each headstage. dDAQ automatically adapts as
+headstages are enabled or disabled during data acquisition.</p>
+<figure class="align-left">
+<img alt="_images/dDAQ-delay.svg" src="_images/dDAQ-delay.svg" />
+</figure>
+</section>
+<section id="optimized-overlap-distributed-daq-ooddaq">
+<span id="daephys-ooddaq"></span><h2>Optimized overlap distributed DAQ (oodDAQ)<a class="headerlink" href="#optimized-overlap-distributed-daq-ooddaq" title="Link to this heading">¶</a></h2>
+<p>oodDAQ simplifies and speeds the acquisition of synaptic responses during
+paired recordings. In paired recordings, each cell can be pre- and
+postsynaptic. oodDAQ distributes the non-zero epochs of the stimulus set sweep
+in time across headstages. Temporal distribution of non-zero regions of the
+stimulus set sweep ensures that the postsynaptic cell isn’t being stimulated
+simultaneously with the presynaptic cell, which would obscure any synaptic
+response(e.g., PSP, PSC). oodDAQ pre- and post-delay extend the region of
+non-overlap to include zero regions around the non-zero region. These delays
+ensure the synaptic response can complete before the cell is stimulated to
+elicit a (presynaptic) action potential. Pre- and post-delay are highly
+recommended when the stimulus set sweep contains pulse trains. To maintain
+optimal stimulus distribution, oodDAQ automatically adapts if headstages are
+enabled or disabled during data acquisition.</p>
+<figure class="align-left">
+<img alt="_images/oodDAQ-delays.svg" src="_images/oodDAQ-delays.svg" />
+</figure>
+</section>
+<section id="ttl-channels-on-ni-dac-devices">
+<span id="daephys-ttl-ni"></span><h2>TTL channels on NI DAC devices<a class="headerlink" href="#ttl-channels-on-ni-dac-devices" title="Link to this heading">¶</a></h2>
+<p>MIES supports up to 8 TTL output channels on NI DAC devices. On NI hardware
+these TTL channels are delivered through Digital I/O (DIO) Port 0.</p>
+<section id="physical-connections">
+<h3>Physical connections<a class="headerlink" href="#physical-connections" title="Link to this heading">¶</a></h3>
+<p>The mapping between MIES TTL channel numbers, NI DAQmx channel names, and the
+connector labels used on NI hardware is:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>MIES TTL channel</p></th>
+<th class="head"><p>NI DAQmx channel name</p></th>
+<th class="head"><p>Physical connector label</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>TTL0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/{DeviceName}/port0/line0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">P0.0</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>TTL1</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/{DeviceName}/port0/line1</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">P0.1</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>TTL2</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/{DeviceName}/port0/line2</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">P0.2</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>TTL3</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/{DeviceName}/port0/line3</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">P0.3</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>TTL4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/{DeviceName}/port0/line4</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">P0.4</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>TTL5</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/{DeviceName}/port0/line5</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">P0.5</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>TTL6</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/{DeviceName}/port0/line6</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">P0.6</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>TTL7</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/{DeviceName}/port0/line7</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">P0.7</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">{DeviceName}</span></code> is the NI-assigned device name shown in NI MAX, for example
+<code class="docutils literal notranslate"><span class="pre">Dev1</span></code>.</p></li>
+<li><p>The exact physical pin number for each <code class="docutils literal notranslate"><span class="pre">P0.x</span></code> label depends on the device
+model and the terminal block accessory in use. Consult the NI device pinout
+diagram and the documentation for the connected terminal block.</p></li>
+<li><p>MIES always uses Port 0 (<code class="docutils literal notranslate"><span class="pre">HARDWARE_NI_TTL_PORT</span> <span class="pre">=</span> <span class="pre">0</span></code>). This is fixed in the
+source code and cannot be changed from the GUI.</p></li>
+</ul>
+</section>
+<section id="pfi-pins">
+<h3>PFI pins<a class="headerlink" href="#pfi-pins" title="Link to this heading">¶</a></h3>
+<p>NI devices also provide PFI (Programmable Function Interface) pins such as
+<code class="docutils literal notranslate"><span class="pre">PFI0</span></code> and <code class="docutils literal notranslate"><span class="pre">PFI1</span></code>. These pins are digital lines, but they are not the TTL
+data channels exposed by MIES on Port 0.</p>
+<p>MIES utilizes PFI pins internally to manage timing and triggering tasks.
+Specifically, MIES uses PFI pins to synchronize data acquisition across
+multiple NI boards. For example, two NI PCIe-6343 boards can be combined to
+obtain 8 analog output channels by sharing start triggers and the sample
+clock over PFI lines.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">P0.x</span></code> pins listed above are the MIES TTL output channels and are
+controlled from the DA_Ephys TTL tab.</p>
+</section>
+<section id="pipette-pressure-control">
+<h3>Pipette pressure control<a class="headerlink" href="#pipette-pressure-control" title="Link to this heading">¶</a></h3>
+<p>The MIES TTL output channels on Port 0 serve as control lines for actuating
+solenoid valves that regulate pipette pressure, enabling switching of the
+pipette tip between user-applied pressure, the pressure regulator, and
+atmospheric pressure.</p>
+</section>
+<section id="enabling-ttl-channels-in-mies">
+<h3>Enabling TTL channels in MIES<a class="headerlink" href="#enabling-ttl-channels-in-mies" title="Link to this heading">¶</a></h3>
+<p>To enable TTL output channels in MIES:</p>
+<ol class="arabic simple">
+<li><p>Open the DA_Ephys panel.</p></li>
+<li><p>Go to the TTL tab.</p></li>
+<li><p>Check the TTL channel that you want to enable.</p></li>
+<li><p>Select a stimulus set for that channel from the drop-down menu.</p></li>
+</ol>
+</section>
+<section id="hardware-notes">
+<h3>Hardware notes<a class="headerlink" href="#hardware-notes" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>MIES uses Port 0 exclusively on all supported NI devices.</p></li>
+<li><p>The NI USB-6356 provides 8 DIO lines on Port 0 (<code class="docutils literal notranslate"><span class="pre">P0.0</span></code> to <code class="docutils literal notranslate"><span class="pre">P0.7</span></code>),
+supporting all 8 MIES TTL channels.</p></li>
+<li><p>TTL channels are output-only during data acquisition. Do not drive these pins
+externally while MIES is running.</p></li>
+<li><p>Each TTL channel is independent and can carry a different stimulus waveform.</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="user.html">User documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="analysisbrowser.html">AnalysisBrowser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="databrowser.html">DataBrowser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wavebuilder.html">WaveBuilder</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Da_Ephys</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#distributed-daq-ddaq">Distributed DAQ (dDAQ)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#optimized-overlap-distributed-daq-ooddaq">Optimized overlap distributed DAQ (oodDAQ)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ttl-channels-on-ni-dac-devices">TTL channels on NI DAC devices</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#physical-connections">Physical connections</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pfi-pins">PFI pins</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pipette-pressure-control">Pipette pressure control</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#enabling-ttl-channels-in-mies">Enabling TTL channels in MIES</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#hardware-notes">Hardware notes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="testpulse.html">TPStorage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="auto_testpulse_tuning.html">Automatic test pulse tuning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SweepFormula.html">The Sweep Formula Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labnotebook-descriptions.html">Labnotebook descriptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis-function-parameters.html">Analysis function parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SweepFormula_PSX.html">SweepFormula PSC/PSP classification</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grouplist.html">Group list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="wavebuilder.html"
+                          title="previous chapter">WaveBuilder</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="testpulse.html"
+                          title="next chapter">TPStorage</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="testpulse.html" title="TPStorage"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="wavebuilder.html" title="WaveBuilder"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.9_20250502-964-gccab7720e documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="user.html" >User documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Da_Ephys</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>
