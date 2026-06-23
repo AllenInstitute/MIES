@@ -3148,3 +3148,95 @@ static Function TestErrorBarsStyle([WAVE/T input])
 	errorBarsInfo = StringByKey("ERRORBARS", info)
 	CHECK_EQUAL_STR(errorBarsInfo, input[1])
 End
+
+Function/WAVE SetAxisOffsetOp(STRUCT SF_ExecutionData &exd)
+
+	string opShort = SF_OP_TESTOP
+	WAVE   data    = CreateDataWithErrorBars()
+
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 1)
+	output[0] = data
+	JWN_SetNumberInWaveNote(output, SF_META_XAXISOFFSET, 10)
+	JWN_SetNumberInWaveNote(output, SF_META_YAXISOFFSET, 12)
+
+	return SFH_GetOutputForExecutor(output, exd.graph, opShort)
+End
+
+static Function TestAxisOffset()
+
+	string win, rec, info, key
+	string graph, winResultBase
+	variable pos, offset
+
+	graph = CreateFakeSweepBrowser_IGNORE()
+	DFREF dfr = BSP_GetFolder(graph, MIES_BSP_PANEL_FOLDER)
+	winResultBase = BSP_GetFormulaGraph(graph)
+
+	SVAR funcName = $GetSFTestopName(graph)
+	funcName = "SetAxisOffsetOp"
+
+	MIES_SF#SF_FormulaPlotter(graph, "testop()")
+	win = winResultBase + "_" + SF_WINNAME_SUFFIX_GRAPH + "#" + SF_WINNAME_SUFFIX_GRAPH + "0"
+
+	key = ";RECREATION:"
+
+	info = AxisInfo(win, "bottom")
+	CHECK_PROPER_STR(info)
+	pos    = strsearch(info, key, 0)
+	rec    = info[pos + strlen(key), Inf]
+	offset = GetNumFromModifyStr(rec, "axOffset", "", 0)
+	CHECK_EQUAL_VAR(offset, 10)
+
+	info = AxisInfo(win, "left")
+	CHECK_PROPER_STR(info)
+	pos    = strsearch(info, key, 0)
+	rec    = info[pos + strlen(key), Inf]
+	offset = GetNumFromModifyStr(rec, "axOffset", "", 0)
+	CHECK_EQUAL_VAR(offset, 12)
+End
+
+Function/WAVE SetAxisPercentageOp(STRUCT SF_ExecutionData &exd)
+
+	string opShort = SF_OP_TESTOP
+	WAVE   data    = CreateDataWithErrorBars()
+
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 1)
+	output[0] = data
+	JWN_SetNumberInWaveNote(output, SF_META_XAXISPERCENT, 85)
+	JWN_SetNumberInWaveNote(output, SF_META_YAXISPERCENT, 95)
+
+	return SFH_GetOutputForExecutor(output, exd.graph, opShort)
+End
+
+static Function TestAxisPercentage()
+
+	string win, rec, info, key
+	string graph, winResultBase
+	variable pos, offset
+
+	graph = CreateFakeSweepBrowser_IGNORE()
+	DFREF dfr = BSP_GetFolder(graph, MIES_BSP_PANEL_FOLDER)
+	winResultBase = BSP_GetFormulaGraph(graph)
+
+	SVAR funcName = $GetSFTestopName(graph)
+	funcName = "SetAxisPercentageOp"
+
+	MIES_SF#SF_FormulaPlotter(graph, "testop()")
+	win = winResultBase + "_" + SF_WINNAME_SUFFIX_GRAPH + "#" + SF_WINNAME_SUFFIX_GRAPH + "0"
+
+	key = ";RECREATION:"
+
+	info = AxisInfo(win, "bottom")
+	CHECK_PROPER_STR(info)
+	pos    = strsearch(info, key, 0)
+	rec    = info[pos + strlen(key), Inf]
+	offset = GetNumFromModifyStr(rec, "axisEnab", "{", 1)
+	CHECK_EQUAL_VAR(offset, 0.85)
+
+	info = AxisInfo(win, "left")
+	CHECK_PROPER_STR(info)
+	pos    = strsearch(info, key, 0)
+	rec    = info[pos + strlen(key), Inf]
+	offset = GetNumFromModifyStr(rec, "axisEnab", "{", 1)
+	CHECK_EQUAL_VAR(offset, 0.95)
+End
