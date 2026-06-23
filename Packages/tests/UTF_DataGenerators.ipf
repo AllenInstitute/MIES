@@ -2109,3 +2109,19 @@ static Function/WAVE PermanentOrFree()
 
 	return wv
 End
+
+static Function/WAVE SF_ErrorBarStyles()
+
+	Make/FREE/WAVE/N=3 wv
+
+	SetDimensionLabels(wv, "NORMAL;SHADED;ELLIPSE;", ROWS)
+	// TestOp name, expected result
+	Make/FREE/T wvt = {"TestErrorBarsStyleNormalOp", "ErrorBars T000000d0_X XY,wave=(::MIES:trash:sf_errorbar_T000000d0_X_xplus,::MIES:trash:sf_errorbar_T000000d0_X_xminus),wave=(::MIES:trash:sf_errorbar_T000000d0_X_yplus,::MIES:trash:sf_errorbar_T000000d0_X_yminus)"}
+	wv[%NORMAL] = wvt
+	Make/FREE/T wvt = {"TestErrorBarsStyleShadedOp", "ErrorBars T000000d0_X SHADE= {0,5,(11,12,13),(14,15,16),5,(17,18,19),(20,21,22)},wave=(::MIES:trash:sf_errorbar_T000000d0_X_yplus,::MIES:trash:sf_errorbar_T000000d0_X_yminus)"}
+	wv[%SHADED] = wvt
+	Make/FREE/T wvt = {"TestErrorBarsStyleEllipseOp", "ErrorBars T000000d0_X ELLIPSE={0,0.6837,32000},ewave=::MIES:trash:sf_errorbar_T000000d0_X_ellipse"}
+	wv[%ELLIPSE] = wvt
+
+	return wv
+End
