@@ -884,6 +884,12 @@ static Function SCOPE_ITC_UpdateOscilloscope(string device, variable dataAcqOrTP
 			return NaN
 		endif
 
+#ifdef REPLAY_DATA
+		if(RoVar(GetReplayDataEnable()))
+			RD_UpdateData(device, allGain, DAQDataWave, fifoPosGlobal, fifoPos)
+		endif
+#endif // REPLAY_DATA
+
 		AssertOnAndClearRTError()
 		try
 			for(i = startOfADColumns; i < endOfADColumns; i += 1)

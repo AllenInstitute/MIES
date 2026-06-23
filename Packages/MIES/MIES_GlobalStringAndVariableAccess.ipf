@@ -856,3 +856,37 @@ Function/S GetSFTestopName(string graph)
 	return GetSVARAsString(dfr, "TestopFunctionName", initialValue = "")
 End
 #endif // AUTOMATED_TESTING
+
+#ifdef REPLAY_DATA
+
+Function/DF GetReplay()
+
+	return createDFWithAllParents(GetReplayAsString())
+End
+
+Function/S GetReplayAsString()
+
+	return "root:MIES:Replay"
+End
+
+Function/DF GetReplayStorage()
+
+	return createDFWithAllParents(GetReplayStorageAsString())
+End
+
+Function/S GetReplayStorageAsString()
+
+	return "root:MIES_replay"
+End
+
+Function/S GetReplayDataEnable()
+
+	return GetNVARAsString(GetReplay(), "enable", initialValue = 0)
+End
+
+Function/S GetReplayRefSweep()
+
+	return GetNVARAsString(GetReplay(), "refSweep", initialValue = 0)
+End
+
+#endif // REPLAY_DATA

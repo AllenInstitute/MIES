@@ -32,6 +32,14 @@ Function SWS_SaveAcquiredData(string device, [variable forcedStop])
 		return 0
 	endif
 
+#ifdef REPLAY_DATA
+	if(RoVar(GetReplayDataEnable()))
+		WAVE allGain = SWS_GetChannelGains(device, timing = GAIN_AFTER_DAQ)
+		allGain[] = 1
+		RD_UpdateData(device, allGain, scaledDataWave, 0, Inf)
+	endif
+#endif // REPLAY_DATA
+
 	DFREF dfr = GetDeviceDataPath(device)
 
 	configName = GetConfigWaveName(sweepNo)
@@ -139,6 +147,13 @@ Function [variable plannedTime, variable acquiredTime] SWS_DeterminePlannedAndAc
 	if(IsNaN(firstUnAcquiredADIndex))
 		firstUnAcquiredADIndex = adSize
 	endif
+
+#ifdef REPLAY_DATA
+	if(RoVar(GetReplayDataEnable()))
+		lastFifoPos = firstUnAcquiredADIndex
+	endif
+#endif // REPLAY_DATA
+
 	ASSERT(firstUnAcquiredADIndex == lastFifoPos, "Mismatch of NaN boundary in ADC channel to last fifo position")
 
 	plannedTime = IndexToScale(channelDA, DimSize(channelDA, ROWS), ROWS) * MILLI_TO_ONE
