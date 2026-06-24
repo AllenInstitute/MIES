@@ -56,6 +56,12 @@ For files used in automated testing, also include:
 - Unix-style line endings (LF)
 - Trim trailing whitespace
 - Insert final newline
+- The code style must follow the Igor Pro Coding Conventions defined in https://github.com/byte-physics/igor-pro-coding-conventions
+specifically from https://github.com/byte-physics/igor-pro-coding-conventions/blob/main/coding_conventions.rst and
+https://github.com/byte-physics/igor-pro-coding-conventions/blob/main/coding_bestpractices.rst
+- Global constants must be defined in MIES_Constants.ipf
+- Global structures must be defined in MIES_Structures.ipf
+- Functions that are called from the same procedure file only must be static.
 
 ### Structure Patterns
 
@@ -76,6 +82,8 @@ End
 ### Error Handling
 
 - Use `ASSERT()` for internal consistency checks
+- Use `ASSERT_TS()` for internal consistency checks in threadsafe functions
+- Use `FATAL_ERROR()` for code paths that unconditionally create an error
 - Use `SFH_ASSERT()` in SweepFormula operations for user-facing errors
 - Use `DEBUGPRINT()` for debug output (only active when `DEBUGGING_ENABLED` is defined)
 
@@ -85,7 +93,7 @@ End
 
 The repository uses pre-commit hooks configured in `.pre-commit-config.yaml`:
 
-- Run `./tools/run-ipt.sh lint -i --noreturn-func=FATAL_ERROR|SFH_FATAL_ERROR|FAIL` for IPF formatting
+- Run `./tools/run-ipt.sh lint -i --noreturn-func='FATAL_ERROR|SFH_FATAL_ERROR|FAIL'` for IPF formatting
 - Custom code checks via `./tools/check-code.sh`
 
 ### Running Tests
@@ -105,10 +113,23 @@ Test categories:
 - `HardwareAnalysisFunctions` - Hardware-dependent analysis function tests
 - `Compilation` - Compilation verification tests
 
+### Writing Tests
+
+- The test framework used for MIES is [IgorTest](https://github.com/byte-physics/igortest) with documentation in the files at: .claude/skills/igortest/*.rst
+- Procedures containing tests are located in Packages/tests with sub folders for specific test categories
+- Tests must be part of one of the test categories
+- Test case functions must be declared static
+- Test cases must not have any wave leaks
+- Test cases must not leave any new permanent objects in their data folder hierarchy
+- If the same test is applied for different input data then a single test case has to be created and the input data provided through a data generator function
+- Data generator functions must be in Packages/tests/UTF_DataGenerators.ipf and declared as static
+- Any new utility function that is created for a generic task in either MIES_Utilities*.ipf or MIES_MiesUtilities*.ipf must have its own test cases
+- Test cases may call static MIES functions by prefixing the ModuleName defined in the MIES procedure files when AUTOMATED_TESTING is defined
+
 ### Building Documentation
 
 ```bash
-tools/documentation/run.sh
+tools/build-documentation.sh
 ```
 
 ### Creating Installer
@@ -121,9 +142,9 @@ tools/create-installer.sh unelevated
 
 The repository uses GitHub Actions with these main workflows:
 
-- `build-pr.yml` - PR validation (compilation, tests, documentation)
-- `build-release.yml` - Release builds (deploys documentation, installer, reports)
-- `test-igor-workflow.yml` - Reusable test workflow for Igor Pro
+- [PR validation](workflows/build-pr.yml) (compilation, tests, documentation)
+- [Release builds](workflows/build-release.yml) -  (deploys documentation, installer, reports)
+- [Test Workflow](workflows/test-igor-workflow.yml) - Reusable test workflow for Igor Pro
 
 CI runs tests on multiple Igor Pro versions (9 and 10) and hardware configurations (ITC18, ITC1600, NI).
 
@@ -134,6 +155,47 @@ CI runs tests on multiple Igor Pro versions (9 and 10) and hardware configuratio
 - **Configuration** (`MIES_Configuration.ipf`) - JSON-based configuration management
 - **Cache** (`MIES_Cache.ipf`) - Wave caching with hashmap-based key storage
 - **Labnotebook** (`MIES_Labnotebook.ipf`) - Experiment metadata storage
+- **AnalysisBrowser** (`MIES_AnalysisBrowser*.ipf`) - GUI that allows loading of saved sweep and stimset data from *.pxp and *.nwb files
+- **DAEphys** (`MIES_DAEphys*.ipf`) - GUI to setup and control data acquisition
+- **DataBrowser** (`MIES_DataBrowser*.ipf`) - GUI to display and analyze data from current acquisition
+- **Epochs** (`MIES_Epochs.ipf`) - Logic to create and read epoch information for sweep data
+- **WaveBuilder** (`MIES_WaveBuilder*.ipf`) - GUI that allows the creation of user-defined stimsets
+
+## Igor Pro
+
+The language, commands and the environment within Igor Pro is described at https://docs.wavemetrics.com/
+
+Some aspects of the Igor Pro programming language are different to other common programming languages:
+- variables, strings, wave references, datafolder references, function references, constants, structure names and dimension labels are case-insensitive
+- Object references can be redefined within the same function with a different name.
+If the object is a WAVE and the wave type (e.g. /T) is explicitly set at the first declaration then all following redeclarations must have the same type.
+
+```igorpro
+Function test()
+    WAVE wv = WaveGetterFunctionOne()
+    WAVE wv = WaveGetterFunctionTwo()
+    WAVE/T wvt = WaveGetterFunctionThree()
+    WAVE/T wvt = WaveGetterFunctionFour()
+End
+```
+
+- Functions defined in Igor Pro procedure code can use also Multiple-Return-Syntax (MRS) that is documented at https://docs.wavemetrics.com/igorpro/programming/programming#multiple-return-syntax
+- Igor Pro initializes variables in functions with zero
+- Igor Pro initializes strings in function with null-strings
+- Igor Pro initializes new numeric waves with zero when created
+- Igor Pro initializes new text waves with empty strings
+- Igor Pro initializes new wave-reference waves with null references
+- Igor Pro initializes new data-folder-reference waves with null references
+- Documentation for JSONXOP_* operations are at https://docs.byte-physics.de/json-xop/
+- Documentation for TUFXOP_* operations are at https://docs.byte-physics.de/tuf-xop/
+- Always use inline syntax in Function declaration
+- At the end of a Function with multiple return syntax always put a `return [...]` statement.
+
+- include all instructions for [Igor Pro 10](.claude/skills/igor-10/SKILL.md)
+- include all instructions for [Igor Pro commands](.claude/skills/igor-commands/SKILL.md)
+- include all instructions for [Igor Pro - Python interface](.claude/skills/igor-python/SKILL.md)
+- include all instructions for [Igor Pro Wave and Datafolder reference handling](.claude/skills/igor-wave-dfref/SKILL.md)
+- include all instructions for [Documentation](.claude/skills/docu/SKILL.md)
 
 ## Important Notes
 
