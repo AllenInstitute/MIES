@@ -15,11 +15,11 @@
 ///   The latter ones are only useful if you need to know if the folder exists.
 /// - Modifying wave getter functions might require to introduce wave versioning, see @ref WaveVersioningSupport
 
-static Constant    ANALYSIS_BROWSER_LISTBOX_WAVE_VERSION           = 2
+static Constant    ANALYSIS_BROWSER_LISTBOX_WAVE_VERSION           = 3
 static Constant    ANALYSIS_BROWSER_FOLDER_LISTBOX_WAVE_VERSION    = 1
 static Constant    ANALYSIS_BROWSER_FOLDERCOL_LISTBOX_WAVE_VERSION = 1
 static Constant    ANALYSIS_BROWSER_FOLDERSEL_LISTBOX_WAVE_VERSION = 1
-static Constant    NUM_COLUMNS_LIST_WAVE                           = 14
+static Constant    NUM_COLUMNS_LIST_WAVE                           = 15
 static StrConstant WAVE_NOTE_LAYOUT_KEY                            = "WAVE_LAYOUT_VERSION"
 
 static Constant WAVE_TYPE_NUMERICAL = 0x1
@@ -5810,9 +5810,10 @@ Function/WAVE GetExperimentBrowserGUIList()
 	SetDimLabel COLS, 10, '#DAC', wv
 	SetDimLabel COLS, 11, '#ADC', wv
 	SetDimLabel COLS, 12, 'start time', wv
+	SetDimLabel COLS, 13, tags, wv
 	// the last columns is a dummy column that reserves space
 	// where the scrollbar appears in the listbox. Otherwise the scrollbar covers data.
-	SetDimLabel COLS, 13, $"", wv
+	SetDimLabel COLS, 14, $"", wv
 
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 	SetWaveVersion(wv, versionOfWave)
