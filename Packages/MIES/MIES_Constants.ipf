@@ -21,7 +21,7 @@ Constant DAQ_CONFIG_WAVE_VERSION = 3
 Constant DA_EPHYS_PANEL_VERSION           = 67
 Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 55
 Constant WAVEBUILDER_PANEL_VERSION        = 15
-Constant ANALYSISBROWSER_PANEL_VERSION    = 11
+Constant ANALYSISBROWSER_PANEL_VERSION    = 12
 Constant PSX_PLOT_PANEL_VERSION           = 1
 
 /// Version of the stimset wave note
@@ -244,6 +244,14 @@ Constant EVENT_WINDOW_HOOK_SPINUPDATE          = 23
 Constant EVENT_WINDOW_HOOK_TABLEENTRYACCEPTED  = 24
 Constant EVENT_WINDOW_HOOK_TABLEENTRYCANCELLED = 25
 Constant EVENT_WINDOW_HOOK_EARLYKEYBOARD       = 26
+///@}
+
+/// @name Window Hook return code constants
+/// @anchor WinHookReturnCodes
+///@{
+Constant WINDOW_HOOK_RETURN_NEXT_HANDLER         = 0
+Constant WINDOW_HOOK_RETURN_HANDLED              = 1
+Constant WINDOW_HOOK_RETURN_KILLVOTE_PREVENTKILL = 2
 ///@}
 
 /// @name Trace Display Types
@@ -2368,7 +2376,10 @@ StrConstant SETTINGS_AB_FOLDER             = "/analysisbrowser/directory"
 StrConstant SETTINGS_AB_FOLDER_OLD_DEFAULT = "C:"
 ///@}
 
-StrConstant ANALYSIS_BROWSER_NAME = "AnalysisBrowser"
+StrConstant ANALYSIS_BROWSER_NAME            = "AnalysisBrowser"
+StrConstant ANALYSIS_BROWSER_TAGCONTROL_NAME = "TagControl"
+
+StrConstant AB_TAG_SEPARATOR = ","
 
 StrConstant MEMORY_REFCOUNTER_DF = "MemoryReferenceCounterDF"
 
