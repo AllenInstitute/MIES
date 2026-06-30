@@ -788,6 +788,11 @@ Constant COMMON_CONTROL_GROUP_COUNT_TXT = 10
 /// Equals 2^5 from `GetKeyState`
 Constant ESCAPE_KEY = 32
 
+/// ListboxProc handler key constants
+///@{
+Constant LBP_A_KEY = 65
+///@}
+
 /// Window hook key constants
 ///@{
 Constant LEFT_KEY  = 28

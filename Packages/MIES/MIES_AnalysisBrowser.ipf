@@ -3552,20 +3552,20 @@ Function AB_ListBoxProc_ExpBrowser(STRUCT WMListboxAction &lba) : ListBoxControl
 	variable mask, numRows, row, col
 
 	switch(lba.eventCode)
-		case 2:
+		case EVENT_LISTBOXACTION_MOUSE_UP:
 			if(!(lba.eventMod & WINDOW_HOOK_EMOD_RIGHTCLICK))
 				return 0
 			endif
 			AB_ShowFileContextMenu(AB_GetFilePathFromExpBrowserListboxRow(lba.row))
 			break
-		case 5: // fallthrough, cell selection + shift key
-		case 4: // cell selection
+		case EVENT_LISTBOXACTION_CELL_SELECTION_SHIFT:
+		case EVENT_LISTBOXACTION_CELL_SELECTION:
 			AB_CheckPanelVersion(lba.win)
 			AB_UpdateColors()
 			AB_UpdateTagList()
 			break
 
-		case 13: // sel wave update
+		case EVENT_LISTBOXACTION_CHECKBOX_CLICKED:
 			AB_CheckPanelVersion(lba.win)
 
 			row = lba.row
@@ -3589,6 +3589,17 @@ Function AB_ListBoxProc_ExpBrowser(STRUCT WMListboxAction &lba) : ListBoxControl
 			endif
 			AB_UpdateColors()
 			AB_UpdateTagList()
+			break
+		case EVENT_LISTBOXACTION_KEYSTROKE:
+			if(lba.eventMod & WINDOW_HOOK_EMOD_CTRLKEYDOWN)
+				switch(lba.row)
+					case LBP_A_KEY: // a
+						AB_ExperimentListSelectAllRows()
+						break
+					default:
+						break
+				endswitch
+			endif
 			break
 		default:
 			break
@@ -4446,4 +4457,13 @@ static Function AB_SelectExperimentByTag(variable mode)
 			expBrowserSel[i][0] = expBrowserSel[i][0] | LISTBOX_SELECT_OR_SHIFT_SELECTION
 		endif
 	endfor
+End
+
+/// @brief Selects all rows of the experiment list and updates the tag list
+static Function AB_ExperimentListSelectAllRows()
+
+	WAVE expBrowserSel = GetExperimentBrowserGUISel()
+	expBrowserSel[][0] = expBrowserSel[p][0] | LISTBOX_SELECT_OR_SHIFT_SELECTION
+
+	AB_UpdateTagList()
 End
