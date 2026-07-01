@@ -2898,6 +2898,10 @@ For the wave ref wave:
 - SF_META_XAXISLABEL: string, suggested label for the x-axis for the plotter, typically combined with x-value meta data in the data wave(s)
 - SF_META_YAXISLABEL: string, suggested label for the y-axis for the plotter
 - SF_META_OPSTACK: string, tracks the operation stack
+- SF_META_XAXISOFFSET: number, offset of the x-axis, applied to the plot via `ModifyGraph axOffset(bottom)`
+- SF_META_YAXISOFFSET: number, offset of the y-axis, applied to the plot via `ModifyGraph axOffset(left)`
+- SF_META_XAXISPERCENT: number, percentage (0-100) of the window width the x-axis spans, applied via `ModifyGraph axisEnab(bottom)`
+- SF_META_YAXISPERCENT: number, percentage (0-100) of the window height the y-axis spans, applied via `ModifyGraph axisEnab(left)`
 
 For the data wave(s):
 
@@ -2906,6 +2910,7 @@ For the data wave(s):
 - SF_META_CHANNELNUMBER: number, channel number from the sweep that provided the source data
 - SF_META_SWEEPMAPINDEX: number, index into sweepbrowser map (NaN inside the databrowser)
 - SF_META_XVALUES: wave, suggested x-wave for the plotter to display this data wave
+- SF_META_ERRORBARSTYLE: wave, per-trace error bar rendering style, see `CreateSFErrorbarStyleWave` for the row layout (``TYPE``, ``FILLMODE``, ``FGCOLOR_R/G/B``, ``BGCOLOR_R/G/B``, ``NEGFILLMODE``, ``NEGFGCOLOR_R/G/B``, ``NEGBGCOLOR_R/G/B``, ``ELLMODE``, ``ELLP``, ``ELLALPHA``). ``TYPE`` selects the rendering mode (see `SFPlotterErrorbarStyle`): ``SF_ERRORBARSTYLE_NORMAL`` (Igor's default distance-line style), ``SF_ERRORBARSTYLE_SHADED`` (transparent shaded area, using the fill/color fields), or ``SF_ERRORBARSTYLE_ELLIPSE`` (confidence ellipse, using ``ELLMODE``/``ELLP``/``ELLALPHA``, requires Y+ and X+ error data to be set).
 
 See also `SF_OperationLabnotebookImpl`, where such meta data is set.
 
