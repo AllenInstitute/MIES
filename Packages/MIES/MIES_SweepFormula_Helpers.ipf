@@ -1815,7 +1815,7 @@ Function SFH_IsArray(WAVE data)
 	if(!IsWaveRefWave(data))
 		return 0
 	endif
-	if(!DimSize(data, ROWS) == 1)
+	if(!(DimSize(data, ROWS) == 1))
 		return 0
 	endif
 

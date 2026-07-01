@@ -3240,3 +3240,18 @@ static Function TestAxisPercentage()
 	offset = GetNumFromModifyStr(rec, "axisEnab", "{", 1)
 	CHECK_EQUAL_VAR(offset, 0.95)
 End
+
+static Function TestSFHIsArray()
+
+	Make/FREE numData
+	CHECK_EQUAL_VAR(SFH_IsArray(numData), 0)
+
+	Make/FREE/N=1 numData
+	CHECK_EQUAL_VAR(SFH_IsArray(numData), 0)
+
+	Make/FREE/WAVE datasets
+	CHECK_EQUAL_VAR(SFH_IsArray(datasets), 0)
+
+	Make/FREE/WAVE/N=1 anArray
+	CHECK_EQUAL_VAR(SFH_IsArray(anArray), 1)
+End
