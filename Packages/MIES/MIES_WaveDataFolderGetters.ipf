@@ -15,11 +15,12 @@
 ///   The latter ones are only useful if you need to know if the folder exists.
 /// - Modifying wave getter functions might require to introduce wave versioning, see @ref WaveVersioningSupport
 
-static Constant    ANALYSIS_BROWSER_LISTBOX_WAVE_VERSION           = 2
+static Constant    ANALYSIS_BROWSER_LISTBOX_WAVE_VERSION           = 3
 static Constant    ANALYSIS_BROWSER_FOLDER_LISTBOX_WAVE_VERSION    = 1
 static Constant    ANALYSIS_BROWSER_FOLDERCOL_LISTBOX_WAVE_VERSION = 1
 static Constant    ANALYSIS_BROWSER_FOLDERSEL_LISTBOX_WAVE_VERSION = 1
-static Constant    NUM_COLUMNS_LIST_WAVE                           = 14
+static Constant    ANALYSIS_BROWSER_TAGLIST_WAVE_VERSION           = 1
+static Constant    NUM_COLUMNS_LIST_WAVE                           = 15
 static StrConstant WAVE_NOTE_LAYOUT_KEY                            = "WAVE_LAYOUT_VERSION"
 
 static Constant WAVE_TYPE_NUMERICAL = 0x1
@@ -5647,10 +5648,11 @@ End
 /// - 1: %FileName:      Name of File in experiment column in ExperimentBrowser
 /// - 2: %DataFolder     Data folder inside current Igor experiment
 /// - 3: %FileType       File Type identifier for routing to loader functions, one of @ref AnalysisBrowserFileTypes
+/// - 4: %Tags           Tags of the experiment
 Function/WAVE GetAnalysisBrowserMap()
 
 	DFREF    dfr           = GetAnalysisFolder()
-	variable versionOfWave = 3
+	variable versionOfWave = 4
 
 	STRUCT WaveLocationMod p
 	p.dfr     = dfr
@@ -5670,10 +5672,10 @@ Function/WAVE GetAnalysisBrowserMap()
 		// clear file type as this now holds nwb version as well
 		wv[][%FileType] = ""
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 4) wv
+		Redimension/N=(-1, 5) wv
 		wv[][3] = ANALYSISBROWSER_FILE_TYPE_IGOR
 	else
-		Make/N=(MINIMUM_WAVE_SIZE, 4)/T dfr:analysisBrowserMap/WAVE=wv
+		Make/N=(MINIMUM_WAVE_SIZE, 5)/T dfr:analysisBrowserMap/WAVE=wv
 		SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 	endif
 
@@ -5681,6 +5683,98 @@ Function/WAVE GetAnalysisBrowserMap()
 	SetDimLabel COLS, 1, FileName, wv
 	SetDimLabel COLS, 2, DataFolder, wv
 	SetDimLabel COLS, 3, FileType, wv
+	SetDimLabel COLS, 4, Tags, wv
+
+	SetWaveVersion(wv, versionOfWave)
+
+	return wv
+End
+
+/// @brief Return the text wave used in the tags listbox of the analysis browser tags control subwindow
+Function/WAVE GetAnalysisBrowserTagsList()
+
+	string   name          = "AnaBrowserTagsList"
+	DFREF    dfr           = GetAnalysisFolder()
+	variable versionOfWave = ANALYSIS_BROWSER_TAGLIST_WAVE_VERSION
+
+	WAVE/Z/T/SDFR=dfr wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
+		return wv
+	endif
+
+	if(WaveExists(wv))
+		// Upgrade here
+	else
+		Make/N=(MINIMUM_WAVE_SIZE, 1, 2)/T dfr:$name/WAVE=wv
+	endif
+
+	SetDimLabel COLS, 0, tags, wv
+
+	SetWaveVersion(wv, versionOfWave)
+
+	return wv
+End
+
+/// @brief Return the selection wave used in the tags listbox of the analysis browser tags control subwindow
+Function/WAVE GetAnalysisBrowserTagsSelection()
+
+	string   name          = "AnaBrowserTagsSelection"
+	DFREF    dfr           = GetAnalysisFolder()
+	variable versionOfWave = ANALYSIS_BROWSER_TAGLIST_WAVE_VERSION
+
+	WAVE/Z/SDFR=dfr wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
+		return wv
+	endif
+
+	if(WaveExists(wv))
+		// Upgrade here
+	else
+		Make/N=(MINIMUM_WAVE_SIZE, 1, 3) dfr:$name/WAVE=wv
+	endif
+
+	SetDimLabel LAYERS, 1, $LISTBOX_LAYER_FOREGROUND, wv
+	SetDimLabel LAYERS, 2, $LISTBOX_LAYER_BACKGROUND, wv
+	SetWaveVersion(wv, versionOfWave)
+
+	return wv
+End
+
+/// @brief Return the color wave used in the tags listbox of the analysis browser tags control subwindow
+Function/WAVE GetAnalysisBrowserTagsColors()
+
+	string   name          = "AnaBrowserTagsColors"
+	DFREF    dfr           = GetAnalysisFolder()
+	variable versionOfWave = ANALYSIS_BROWSER_TAGLIST_WAVE_VERSION
+
+	WAVE/Z/U/W/SDFR=dfr wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
+		return wv
+	endif
+
+	if(WaveExists(wv))
+		// Upgrade here
+	else
+		Make/W/U/N=(3, 3) dfr:$name/WAVE=wv
+	endif
+
+	SetDimLabel COLS, 0, R, wv
+	SetDimLabel COLS, 1, G, wv
+	SetDimLabel COLS, 2, B, wv
+
+	// keep row 0 at {0, 0, 0} for default color
+	wv[1][%R] = 255
+	wv[1][%G] = 229
+	wv[1][%B] = 229
+
+	wv[2][%R] = 229
+	wv[2][%G] = 255
+	wv[2][%B] = 229
+
+	wv = wv << 8
 
 	SetWaveVersion(wv, versionOfWave)
 
@@ -5810,9 +5904,10 @@ Function/WAVE GetExperimentBrowserGUIList()
 	SetDimLabel COLS, 10, '#DAC', wv
 	SetDimLabel COLS, 11, '#ADC', wv
 	SetDimLabel COLS, 12, 'start time', wv
+	SetDimLabel COLS, 13, tags, wv
 	// the last columns is a dummy column that reserves space
 	// where the scrollbar appears in the listbox. Otherwise the scrollbar covers data.
-	SetDimLabel COLS, 13, $"", wv
+	SetDimLabel COLS, 14, $"", wv
 
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 	SetWaveVersion(wv, versionOfWave)
@@ -9439,8 +9534,8 @@ End
 /// @brief Wave storing sf plot meta information per formularesult, filled in SF_GatherFormulaResults
 Function/WAVE GetSFPlotMetaData()
 
-	Make/FREE/T/N=(5) wv
-	SetDimensionLabels(wv, "DATATYPE;OPSTACK;ARGSETUPSTACK;XAXISLABEL;YAXISLABEL;", ROWS)
+	Make/FREE/T/N=(9) wv
+	SetDimensionLabels(wv, "DATATYPE;OPSTACK;ARGSETUPSTACK;XAXISLABEL;YAXISLABEL;XAXISOFFSET;YAXISOFFSET;XAXISPERCENT;YAXISPERCENT;", ROWS)
 
 	return wv
 End
@@ -9476,6 +9571,36 @@ Function/WAVE GetFullPlottingWITH(variable size)
 	SetDimlabel COLS, 1, FORMULAY, plotWITH
 
 	return plotWITH
+End
+
+/// @brief ErrorbarStyle definition for Sweepformula Plotter meta data
+///        @sa SF_META_ERRORBARSTYLE
+Function/WAVE CreateSFErrorbarStyleWave()
+
+	Make/FREE/D/N=21 style
+	SetDimLabel ROWS, 0, TYPE, style
+	SetDimLabel ROWS, 1, FILLMODE, style
+	SetDimLabel ROWS, 2, FGCOLOR_R, style
+	SetDimLabel ROWS, 3, FGCOLOR_G, style
+	SetDimLabel ROWS, 4, FGCOLOR_B, style
+	SetDimLabel ROWS, 5, BGCOLOR_R, style
+	SetDimLabel ROWS, 6, BGCOLOR_G, style
+	SetDimLabel ROWS, 7, BGCOLOR_B, style
+	SetDimLabel ROWS, 8, NEGFILLMODE, style
+	SetDimLabel ROWS, 9, NEGFGCOLOR_R, style
+	SetDimLabel ROWS, 10, NEGFGCOLOR_G, style
+	SetDimLabel ROWS, 11, NEGFGCOLOR_B, style
+	SetDimLabel ROWS, 12, NEGBGCOLOR_R, style
+	SetDimLabel ROWS, 13, NEGBGCOLOR_G, style
+	SetDimLabel ROWS, 14, NEGBGCOLOR_B, style
+	SetDimLabel ROWS, 15, BOXCOLOR_R, style
+	SetDimLabel ROWS, 16, BOXCOLOR_G, style
+	SetDimLabel ROWS, 17, BOXCOLOR_B, style
+	SetDimLabel ROWS, 18, ELLMODE, style
+	SetDimLabel ROWS, 19, ELLP, style
+	SetDimLabel ROWS, 20, ELLALPHA, style
+
+	return style
 End
 
 /// @brief Returns a wave with all Igor integrated fit functions and their respective number of coefficients
@@ -9517,4 +9642,29 @@ Function/WAVE GetSFIgorFitProperties()
 	SetDimLabel COLS, 1, NUMCOEFS, wv
 
 	return wv
+End
+
+/// @brief The returned wave reference wave encapsulates the information gathered by the SF operation PrepareFit
+///        It is a SweepFormula WavReference wave where the components are each a dataset
+Function/WAVE CreateSFPrepareFitWave(string graph, string opShort)
+
+	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, 6)
+	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_PREPAREFIT)
+
+	Make/FREE/T/N=4 txtInfo
+	SetDimLabel ROWS, 0, FITFUNCNAME, txtInfo
+	SetDimLabel ROWS, 1, HOLDSTR, txtInfo
+	SetDimLabel ROWS, 2, ERRORBARTYPE, txtInfo
+	SetDimLabel ROWS, 3, ERRORBARSTYLE, txtInfo
+
+	SetDimLabel ROWS, 0, FITARGS, output
+	SetDimLabel ROWS, 1, LENGTH, output
+	SetDimLabel ROWS, 2, CONFLEVEL, output
+	SetDimLabel ROWS, 3, COEFS, output
+	SetDimLabel ROWS, 4, RANGE, output
+	SetDimLabel ROWS, 5, CONSTRAINTS, output
+
+	output[%FITARGS] = txtInfo
+
+	return output
 End

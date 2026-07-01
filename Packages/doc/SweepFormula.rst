@@ -2133,6 +2133,243 @@ Useful for testing SweepFormula itself mainly.
 
    dataset(1, [2, 3], "abcd") == [1], [2, 3], ["abcd]
 
+getmeta
+"""""""
+
+Some sweepformula operation return additional meta data that can be retrieved with
+the `getmeta` operation.
+
+.. code-block:: bash
+
+   getmeta(array keys, data, [datasetNumber])
+
+The meta data can be referenced by keys that are strings. It is possible to specify an array of key strings, and keys may include wildcards.
+If one of the keys is `"*"` then `getmeta` returns meta information from all keys that data has.
+If none of the provided keys match any available meta data key then `getmeta` reports this as an error.
+The argument `data` can be any output from another operation. The operation retrieves meta information only from one dataset, by default dataset 0.
+The optional argument `datasetNumber` allows to select a different dataset from data. If the dataset does not exist, `getmeta` returns an error.
+
+Available meta keys are documented at the specific operation returning meta information.
+
+.. code-block:: bash
+
+   getmeta([key1, key2], data, 0)
+
+Results from multiple keys are returned in separate datasets. When displayed as `table` each result is shown in its own columns.
+
+.. code-block:: bash
+
+   table(getmeta([key1, key2], data))
+
+preparefit
+""""""""""
+
+The operation `preparefit` creates a configuration for a later call of the `fit2` operation.
+
+.. code-block:: bash
+
+   preparefit([string fitfuncName, length, errorbarType, errorbarStyle, confLevel, array coefs, string holdStr, array range, array constraints])
+
+All arguments of `preparefit` are optional. When called without arguments the fit configuration is set to `disabled`.
+This means that `fit2` returns an empty result with this configuration.
+
+The argument `fitfuncName` names an Igor Pro integrated fit function or a user defined fit function that is called for the fit.
+The following table lists the names of the supported Igor Pro integrated fit functions and the number of coefficient.
+
++-------------------+------------------------+
+| Fit Function Name | Number of Coefficients |
++===================+========================+
+| gauss             | 4                      |
++-------------------+------------------------+
+| lor               | 4                      |
++-------------------+------------------------+
+| Voigt             | 5                      |
++-------------------+------------------------+
+| exp               | 3                      |
++-------------------+------------------------+
+| dblexp            | 5                      |
++-------------------+------------------------+
+| exp_XOffset       | 3                      |
++-------------------+------------------------+
+| dblexp_XOffset    | 5                      |
++-------------------+------------------------+
+| dblexp_peak       | 5                      |
++-------------------+------------------------+
+| sin               | 4                      |
++-------------------+------------------------+
+| line              | 2                      |
++-------------------+------------------------+
+| poly 1            | 1                      |
++-------------------+------------------------+
+| poly 2            | 2                      |
++-------------------+------------------------+
+| poly 3            | 3                      |
++-------------------+------------------------+
+| poly 4            | 4                      |
++-------------------+------------------------+
+| poly_XOffset 1    | 1                      |
++-------------------+------------------------+
+| poly_XOffset 2    | 2                      |
++-------------------+------------------------+
+| poly_XOffset 3    | 3                      |
++-------------------+------------------------+
+| poly_XOffset 4    | 4                      |
++-------------------+------------------------+
+| hillequation      | 4                      |
++-------------------+------------------------+
+| sigmoid           | 4                      |
++-------------------+------------------------+
+| power             | 3                      |
++-------------------+------------------------+
+| lognormal         | 4                      |
++-------------------+------------------------+
+| log               | 2                      |
++-------------------+------------------------+
+| gauss2D           | 7                      |
++-------------------+------------------------+
+| poly2D 1          | 3                      |
++-------------------+------------------------+
+| poly2D 2          | 6                      |
++-------------------+------------------------+
+| poly2D 3          | 10                     |
++-------------------+------------------------+
+| poly2D 4          | 15                     |
++-------------------+------------------------+
+
+Any other fit function name is treated as user defined fit function name. A user defined fit function must be implemented by the user.
+The function must have the same syntax as an Igor Pro user fit function:
+
+.. code-block:: igorpro
+
+   Function MyOwnFitFunction(WAVE w, variable x)
+
+      // Calculate fit
+      // result = myFitModelFormula
+
+      return result
+   End
+
+If the given user fit function does not exist, `preparefit` returns an error.
+
+The argument `length` sets the number of points in the fit output. The default length is 200. The `length` can be set to 0 or 2+.
+When set to 2 or more then the output will have the given number of points. A special case is `length` zero. When set to zero the output
+has the same number of points as the y-wave input.
+
+The argument `errorbarType` sets which fit output is used for the error bars of the fit output wave.
+Possible options are `standard`, `conf` and `pred`.
+The option `standard` calculates the Standard Normalized Error and works only in combination with `length` zero,
+such that the fit output has the same number of points as the fit input.
+The option `conf` calculates the confidence interval and `pred` the prediction interval. `conf` and `pred` work only in combination with
+not zero `length`. For details see `DisplayHelpTopic "Confidence Bands and Coefficient Confidence Intervals"`.
+
+The argument `errorbarStyle` sets a hint in which style the errorbars should be displayed.
+Possible options are `normal` and `shaded`. With `normal` Igor Pros default style for error bars is used (distance lines).
+With `shaded` the error distance is displayed as transparent shaded area with a different colors for positive and negative errors.
+
+The argument `confLevel` sets the confidence level in percent. The value must be between 0 and 100. The default value is 85.
+The value is unused for the Standard Normalized Error calculation.
+For details see `DisplayHelpTopic "Confidence Bands and Coefficient Confidence Intervals"`.
+
+The argument `coefs` is a numeric array that allows to set initial fit coefficients. It must have the correct size.
+For internal fit functions the required size is shown in the above table. The default coefficient values are zero.
+For user defined fit functions `coefs` must be provided explicitly, as the number of required coefficients can not be inferred.
+
+The argument `holdStr` is a string that allows to hold certain coefficients.
+The string must have the correct length that equals the number of coefficients.
+The character `X` holds a coefficient and the character `O` leaves the coefficient free.
+e.g. for three coefficient where the last one is held the string would be `OOX`.
+
+The argument `range` is a two element numeric array in the form `[x-start, x-end]` that allows to limit the fit range. This array uses x-axis values.
+Points outside the given range are masked out. The start must be smaller than the end. By default all points are included in the fit.
+
+The argument `constraints` is a string array that allows to set fit constraints. Constraints are set by simple rules like `"K1 > 0"`.
+Note that dependencies between coefficients must be linear. See also `DisplayHelpTopic "Fitting with Constraints"`.
+
+.. code-block:: bash
+
+   preparefit(exp, 500, pred, shaded, 10, [2, 5, 2], OXO, [5, 15], ["K0 > 0", "K1 > 0"])
+
+fit2
+""""
+
+The operation `fit2` fits the input datasets with the given fit configuration created with `preparefit`.
+The operation can be called in two variants, either with or without `xWave` specification.
+
+.. code-block:: bash
+
+   # Variant 1
+   fit2(yWave, fitConfiguration)
+
+   # Variant 2
+   fit2(yWave, xWave, fitConfiguration)
+
+When an `xWave` argument is specified then it must have the same number of datasets as the `yWave` argument. Also for each dataset the
+number of points in the x-wave and y-wave must be the same. Errorbar information (ErrorY± and ErrorX±) is read from the y-wave's wave note and
+interpreted as standard deviation and used for weighting the input points of the fit.
+When x-errorbar information is present then as fitting method Trust-region Levenberg-Marquardt least orthogonal distance is used.
+This method is appropriate for fitting when there are measurement errors in the independent variables, sometimes called "errors in variables fitting", "random regressor models," or "measurement error models".
+
+After the fit the following keys are created as meta data in the output. This information can be retrieved with the `getmeta` operation.
+
++---------------------------+--------------+-----------------------------------------------------------------------------------------------------------------+
+| key                       | type         | description                                                                                                     |
++===========================+==============+=================================================================================================================+
+| FitError                  | number       | Fit Error code, zero is no error                                                                                |
++---------------------------+--------------+-----------------------------------------------------------------------------------------------------------------+
+| FitStatusMessage          | string       | Fit status as text message                                                                                      |
++---------------------------+--------------+-----------------------------------------------------------------------------------------------------------------+
+| FitQuitReason             | number       | Fit Quit Reason code                                                                                            |
++---------------------------+--------------+-----------------------------------------------------------------------------------------------------------------+
+| FitNumIters               | number       | Number of iterations run                                                                                        |
++---------------------------+--------------+-----------------------------------------------------------------------------------------------------------------+
+| FitFunc                   | string       | Fit function name                                                                                               |
++---------------------------+--------------+-----------------------------------------------------------------------------------------------------------------+
+| FitCoefs                  | numeric wave | Fit coefficients                                                                                                |
++---------------------------+--------------+-----------------------------------------------------------------------------------------------------------------+
+| FitWSigma                 | numeric wave | estimates of error for the coefficients                                                                         |
++---------------------------+--------------+-----------------------------------------------------------------------------------------------------------------+
+| FitMCovar                 | numeric wave | Covariance Matrix See also DisplayHelpTopic "Covariance Matrix"                                                 |
++---------------------------+--------------+-----------------------------------------------------------------------------------------------------------------+
+| FitMFitConstraint         | numeric wave | Constraint Matrix (only when fitting with constraints) See also DisplayHelpTopic "Constraint Matrix and Vector" |
++---------------------------+--------------+-----------------------------------------------------------------------------------------------------------------+
+| FitWFitConstraint         | numeric wave | Constraint Vector (only when fitting with constraints) See also DisplayHelpTopic "Constraint Matrix and Vector" |
++---------------------------+--------------+-----------------------------------------------------------------------------------------------------------------+
+| FitConstant               | numeric wave | Fit Constant, e.g. from the “*XOffset*” fit functions See also DisplayHelpTopic "Fits with Constants"           |
++---------------------------+--------------+-----------------------------------------------------------------------------------------------------------------+
+| FitChiSquare              | number       | Chi Square                                                                                                      |
++---------------------------+--------------+-----------------------------------------------------------------------------------------------------------------+
+| FitXResiduals             | numeric wave | X-residuals (only after ODR / Trust-region Levenberg-Marquardt method fit)                                      |
++---------------------------+--------------+-----------------------------------------------------------------------------------------------------------------+
+| FitYResiduals             | numeric wave | Y-residuals                                                                                                     |
++---------------------------+--------------+-----------------------------------------------------------------------------------------------------------------+
+| FitUConfidence            | numeric wave | Upper confidence band                                                                                           |
++---------------------------+--------------+-----------------------------------------------------------------------------------------------------------------+
+| FitLConfidence            | numeric wave | Lower confidence band                                                                                           |
++---------------------------+--------------+-----------------------------------------------------------------------------------------------------------------+
+| FitUPrediction            | numeric wave | Upper prediction band                                                                                           |
++---------------------------+--------------+-----------------------------------------------------------------------------------------------------------------+
+| FitLPrediction            | numeric wave | Lower prediction band                                                                                           |
++---------------------------+--------------+-----------------------------------------------------------------------------------------------------------------+
+| FitCoefConfidenceInterval | numeric wave | Fit coefficient confidence interval See DisplayHelpTopic "Errors in Variables: Orthogonal Distance Regression"  |
++---------------------------+--------------+-----------------------------------------------------------------------------------------------------------------+
+
+Note that depending on the fit configuration and the resulting fit type not every meta information results may be available.
+
+If `length` is zero in the fit configuration then a separate x-wave is stored in the fit output.
+Otherwise the row dimension of the fit output wave is scaled.
+
+If the fit results in a fit error, `FitError` is not zero. The fit output wave has zero size and only the following meta information is set:
+`FitError`, `FitStatusMessage`, `FitFunc`, `FitQuitReason` and `FitNumIters`.
+
+The trace style of the fit is set to be a black line. The error bar style is set depending on the fit configuration.
+The `shaded` style is 75% transparent with red for positive errors and blue for negative errors.
+
+.. code-block:: bash
+
+   fit2([1, 2, 4], preparefit(line))
+   and
+   fit2([1, 2, 4], [0, 3, 7], preparefit(log, 500, pred, shaded, 1.5, [0.1, 0.2], OO, [-1, 8], [""]))
+
 table
 """""
 
@@ -2172,6 +2409,141 @@ Shows the last sweep data in a table
    table(4)
 
 Shows 1 and 2 in the first table, 4 in the second table and 3 in the plot window.
+
+ivscc_apfrequency
+"""""""""""""""""
+
+The operation `ivscc_apfrequency` analyses a bulk of loaded experiment data from the sweepformula browser regarding
+its apfrequency behavior relative to the excitation current applied. The applied apfrequency can be configured as well as the averaging mode.
+The averaged analysis data can be fitted with user specified settings.
+The operation creates several traces that shows the result of the analysis. The call syntax depends on the chosen averaging mode.
+
+.. code-block:: bash
+
+   # averaging mode: bins
+   ivscc_apfrequency([xaxisOffset, yaxisOffset, xAxisPercentage, yAxisPercentage, prepareFitSpec, avgMode, binRange, binWidth, method, level, timeFreq, normalize, xAxisType])
+   # averaging mode: bins2
+   ivscc_apfrequency([xaxisOffset, yaxisOffset, xAxisPercentage, yAxisPercentage, prepareFitSpec, avgMode, method, level, timeFreq, normalize, xAxisType])
+
+The argument `xaxisOffset` sets an offset for the x-values (current) from the apfrequency analysis that is applied to
+the result from each selected experiment as well as to the averaged data. Default is `min`.
+
++-------------------+--------------------------------------------------------+
+| xaxisOffset       | description                                            |
++===================+========================================================+
+| `first`           | The subtracted offset is the first x-value (current)   |
++-------------------+--------------------------------------------------------+
+| `min`             | The subtracted offset is the minimum x-value (current) |
++-------------------+--------------------------------------------------------+
+| `max`             | The subtracted offset is the maximum x-value (current) |
++-------------------+--------------------------------------------------------+
+| `none`            | The x-values (current) are kept as is                  |
++-------------------+--------------------------------------------------------+
+
+The argument `yaxisOffset` sets an offset for the y-values (apfrequency result) from the apfrequency analysis that is applied to
+the result from each selected experiment as well as to the averaged data. Default is `min`.
+
++-------------------+-------------------------------------------------------------------+
+| yaxisOffset       | description                                                       |
++===================+===================================================================+
+| `first`           | The subtracted offset is the first y-value (apfrequency result)   |
++-------------------+-------------------------------------------------------------------+
+| `min`             | The subtracted offset is the minimum y-value (apfrequency result) |
++-------------------+-------------------------------------------------------------------+
+| `max`             | The subtracted offset is the maximum y-value (apfrequency result) |
++-------------------+-------------------------------------------------------------------+
+| `none`            | The y-values (apfrequency result) are kept as is                  |
++-------------------+-------------------------------------------------------------------+
+
+The argument `xAxisPercentage` sets which percentage in x-direction of the full plot area is used by the plot. Default is `100`.
+
+The argument `yAxisPercentage` sets which percentage in y-direction of the full plot area is used by the plot. Default is `100`.
+
+The argument `prepareFitSpec` is a fitting specification that has to be created through the `preparefit` operation. It defines how the
+results from the averaging are fitted. The default is `preparefit()`, that disables the fit.
+
+The argument `avgMode` specifies the averaging mode that is applied to average the apfrequency results from the sweeps of the input experiments.
+The modes `bins` and `bins2` are allowed. Default is `bins`. See documentation for the operation `avg` for the specifics of these modes.
+
+When `avgMode` is `bins` the following two arguments set the bin range with the `binRange` argument and the bin width with the `binWidth` argument.
+These two arguments are not optional. The argument `binRange` must be a two element array in the form `[start, end]`. The number of bins results
+automatically from the given range and width of the bins.
+
+The following arguments specify the settings for the apfrequency analysis and are the same as for the operation `apfrequency`.
+The arguments are `method`, `level`, `timeFreq`, `normalize` and `xAxisType`. The defaults are the same as for the `apfrequency` operation.
+
+Details of the `ivscc_apfrequency` analysis:
+First the user has to have one or more experiments with data loaded in the sweep browser.
+For each experiment the sweeps with the following properties are selected:
+
+* the stimset name contains `LP_Rheo` or `supra`
+* the sweep passed the sweepqc check
+
+For each experiment apfrequency analysis is run on all selected sweeps on epoch `E1` with the apfrequency settings specified.
+The result is paired with an x-value that is the maximum current (pA) output in the same epoch (`E1`).
+Per experiment the apfrequency and current results yield multiple datasets depending on the number of sweeps in the selection.
+
+All x-values (current) are offsetted by the specified `xaxisOffset`.
+
+In average mode `bins`:
+The apfrequency results are averaged over each experiment with the given `binRange` and `binWidth` setting. The offsetted current is used for the binning.
+The currents are averaged over each experiment with the given `binRange` and `binWidth` setting. The offsetted current is used for the binning.
+This results in multiple datasets (one for each experiment) with a single result value each.
+The averaged currents are offsetted by the `xaxisOffset` specification and merged into a single dataset with number of points equal to the number of bins.
+
+In average mode `bins2`:
+The apfrequency results are averaged over each experiment. The offsetted current is used for the binning.
+The attached x-values (current) are extracted and merged to an own dataset with number of points equal to the number of bins.
+The averaged currents are offsetted by the `xaxisOffset` specification.
+
+The averaged apfrequency results are offsetted by the `yaxisOffset` specification and merged to a single dataset with points equal to the number of bins.
+
+For each experiment the merged and offsetted currents and frequencies value pairs are sorted by current.
+If an experiment has multiple results where frequencies were calculated from the same current (e.g. from different sweeps) the frequencies are averaged.
+Then the current is determined where the slope changes from positive to negative for the first time. If no such inflection point exists then NaN is returned for that experiment.
+This results in current/frequency pairs from each experiment where the slope changed.
+Additionally these get averaged for a global current/frequency pair from all experiments.
+
+The following traces are output:
+For each experiment the apfrequency result offsetted by `yaxisOffset` specification vs. the current offsetted by the `xaxisOffset` specification.
+These traces are colored according to the headstage at 20% opacity and use lines and filled circles as markers.
+
+The current/frequency pairs where the slope of the frequency changes from positive to negative are plotted as red markers with diagonal cross.
+
+The over all experiments averages current/frequency pair where the slope of the frequency changes from positive to negative are plotted as red filled caro.
+
+The offsetted averaged apfrequency results are plotted vs. the offsetted averaged currents.
+
+When a valid fitting specification was given through `prepareFitSpec` then the offsetted averaged apfrequency results are fitted (with the offsetted averaged currents as x-values).
+The x- and y-errors from the averaging (standard deviation) are used in the fit as weights.
+Thus, with x-errors orthogonal distance regression is applied in the fit. The fit result is plotted as trace.
+
+Implicitly created variables:
+The operation `ivscc_apfrequency` creates variables in the sweepformula variable storage. These variables are available after the `ivscc_apfrequency` call.
+If a variable with that name existed previously it is overwritten.
+
++----------------------------------------+------------------------------------------------------------------------------------------------------------------------+
+| variable                               | description                                                                                                            |
++========================================+========================================================================================================================+
+| `ivscc_apfrequency_explist`            | A string array containing the experiment list `ivscc_apfrequency` worked on                                            |
++----------------------------------------+------------------------------------------------------------------------------------------------------------------------+
+| `ivscc_apfrequency_fit`                | The result of the fit. The result can be used e.g. with `getmeta` to retrieve more information from the fit.           |
+|                                        | See also operation `fit2`. Note: Even if no fit is displayed as trace that can happen if the fit resulted in an error, |
+|                                        | meta information can still be retrieved.                                                                               |
++----------------------------------------+------------------------------------------------------------------------------------------------------------------------+
+| `ivscc_apfrequency_inflection_current` | Current from each experiment in pA, where the slope of the frequency changes from positive to negative                 |
++----------------------------------------+------------------------------------------------------------------------------------------------------------------------+
+| `ivscc_apfrequency_inflection_freq`    | Frequency from each experiment, where the slope of the frequency changes from positive to negative                     |
++----------------------------------------+------------------------------------------------------------------------------------------------------------------------+
+
+.. code-block:: bash
+
+   # averaging mode: bins, 6 bins with 100 pA each, default apfrequency settings, fit with natural logarithm
+   ivscc_apfrequency(none, none, 100, 100, preparefit(lognormal), bins, [0, 600], 100)
+   # averaging mode: bins2, number of bins is determined by the averaging operation, default apfrequency settings, fit with logarithm base 10
+   ivscc_apfrequency(none, none, 100, 100, preparefit(log), bins2)
+   # apfrequency and current results are offsetted to zero (min is subtracted), averaging mode: bins2, number of bins is determined by the averaging operation, default apfrequency settings, fit with exponential
+   ivscc_apfrequency(min, min, 100, 100, preparefit(exp), bins2)
 
 Plotting
 ^^^^^^^^

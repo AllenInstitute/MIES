@@ -21,7 +21,7 @@ Constant DAQ_CONFIG_WAVE_VERSION = 3
 Constant DA_EPHYS_PANEL_VERSION           = 67
 Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 55
 Constant WAVEBUILDER_PANEL_VERSION        = 15
-Constant ANALYSISBROWSER_PANEL_VERSION    = 11
+Constant ANALYSISBROWSER_PANEL_VERSION    = 12
 Constant PSX_PLOT_PANEL_VERSION           = 1
 
 /// Version of the stimset wave note
@@ -244,6 +244,35 @@ Constant EVENT_WINDOW_HOOK_SPINUPDATE          = 23
 Constant EVENT_WINDOW_HOOK_TABLEENTRYACCEPTED  = 24
 Constant EVENT_WINDOW_HOOK_TABLEENTRYCANCELLED = 25
 Constant EVENT_WINDOW_HOOK_EARLYKEYBOARD       = 26
+///@}
+
+/// @name Window Hook return code constants
+/// @anchor WinHookReturnCodes
+///@{
+Constant WINDOW_HOOK_RETURN_NEXT_HANDLER         = 0
+Constant WINDOW_HOOK_RETURN_HANDLED              = 1
+Constant WINDOW_HOOK_RETURN_KILLVOTE_PREVENTKILL = 2
+///@}
+
+/// @name WMListboxAction eventCode field constants
+/// @anchor ListBoxActionEventCodes
+///@{
+Constant EVENT_LISTBOXACTION_GOT_KEYBOARD_FOCUS   = -3
+Constant EVENT_LISTBOXACTION_LOST_KEYBOARD_FOCUS  = -2
+Constant EVENT_LISTBOXACTION_BEING_KILLED         = -1
+Constant EVENT_LISTBOXACTION_MOUSE_DOWN           = 1
+Constant EVENT_LISTBOXACTION_MOUSE_UP             = 2
+Constant EVENT_LISTBOXACTION_DOUBLECLICK          = 3
+Constant EVENT_LISTBOXACTION_CELL_SELECTION       = 4
+Constant EVENT_LISTBOXACTION_CELL_SELECTION_SHIFT = 5
+Constant EVENT_LISTBOXACTION_BEGIN_EDIT           = 6
+Constant EVENT_LISTBOXACTION_END_EDIT             = 7
+Constant EVENT_LISTBOXACTION_VERTICAL_SCROLL      = 8
+Constant EVENT_LISTBOXACTION_HORIZONTAL_SCROLL    = 9
+Constant EVENT_LISTBOXACTION_TOP_ROW_COL_SET      = 10
+Constant EVENT_LISTBOXACTION_COLDIVIDER_RESIZED   = 11
+Constant EVENT_LISTBOXACTION_KEYSTROKE            = 12
+Constant EVENT_LISTBOXACTION_CHECKBOX_CLICKED     = 13
 ///@}
 
 /// @name Trace Display Types
@@ -2153,14 +2182,38 @@ StrConstant SF_META_TRACE_MODE   = "/TraceMode"    // number, one of @ref TraceD
 StrConstant SF_META_TRACETOFRONT = "/TraceToFront" // number, boolean, defaults to false (0)
 /// @}
 
-StrConstant SF_META_DONOTPLOT      = "/DoNotPlot"   // number, boolean, defaults to false (0)
-StrConstant SF_META_WINDOW_HOOK    = "/WindowHook"  // string
-StrConstant SF_META_FORMULA        = "/Formula"     // string
-StrConstant SF_META_PLOT           = "/Plot"        // number, boolean, defaults to false (0)
-StrConstant SF_META_ERRORBARYPLUS  = "/ErrorYPlus"  // numeric wave
-StrConstant SF_META_ERRORBARYMINUS = "/ErrorYMinus" // numeric wave
-StrConstant SF_META_ERRORBARXPLUS  = "/ErrorXPlus"  // numeric wave
-StrConstant SF_META_ERRORBARXMINUS = "/ErrorXMinus" // numeric wave
+StrConstant SF_META_DONOTPLOT         = "/DoNotPlot"                 // number, boolean, defaults to false (0)
+StrConstant SF_META_WINDOW_HOOK       = "/WindowHook"                // string
+StrConstant SF_META_FORMULA           = "/Formula"                   // string
+StrConstant SF_META_PLOT              = "/Plot"                      // number, boolean, defaults to false (0)
+StrConstant SF_META_ERRORBARYPLUS     = "/ErrorYPlus"                // numeric wave
+StrConstant SF_META_ERRORBARYMINUS    = "/ErrorYMinus"               // numeric wave
+StrConstant SF_META_ERRORBARXPLUS     = "/ErrorXPlus"                // numeric wave
+StrConstant SF_META_ERRORBARXMINUS    = "/ErrorXMinus"               // numeric wave
+StrConstant SF_META_ERRORBARSTYLE     = "/ErrorbarStyle"             // numeric wave
+StrConstant SF_META_XAXISOFFSET       = "/XAxisOffset"               // number
+StrConstant SF_META_YAXISOFFSET       = "/YAxisOffset"               // number
+StrConstant SF_META_XAXISPERCENT      = "/XAxisPercent"              // number
+StrConstant SF_META_YAXISPERCENT      = "/YAxisPercent"              // number
+StrConstant SF_META_FITCOEFS          = "/FitCoefs"                  // numeric wave
+StrConstant SF_META_FITERROR          = "/FitError"                  // number
+StrConstant SF_META_FITQUITREASON     = "/FitQuitReason"             // number
+StrConstant SF_META_FITNUMITERS       = "/FitNumIters"               // number
+StrConstant SF_META_FITSTATUSMESSAGE  = "/FitStatusMessage"          // string
+StrConstant SF_META_FITWSIGMA         = "/FitWSigma"                 // numeric wave
+StrConstant SF_META_FITMCOVAR         = "/FitMCovar"                 // numeric wave
+StrConstant SF_META_FITMFITCONSTRAINT = "/FitMFitConstraint"         // numeric wave
+StrConstant SF_META_FITWFITCONSTRAINT = "/FitWFitConstraint"         // numeric wave
+StrConstant SF_META_FITCONSTANT       = "/FitConstant"               // numeric wave
+StrConstant SF_META_FITCHISQUARE      = "/FitChiSquare"              // number
+StrConstant SF_META_FITFUNC           = "/FitFunc"                   // string
+StrConstant SF_META_FITXRESIDUALS     = "/FitXResiduals"             // numeric wave
+StrConstant SF_META_FITYRESIDUALS     = "/FitYResiduals"             // numeric wave
+StrConstant SF_META_FITUCONFIDENCE    = "/FitUConfidence"            // numeric wave
+StrConstant SF_META_FITLCONFIDENCE    = "/FitLConfidence"            // numeric wave
+StrConstant SF_META_FITUPREDICTION    = "/FitUPrediction"            // numeric wave
+StrConstant SF_META_FITLPREDICTION    = "/FitLPrediction"            // numeric wave
+StrConstant SF_META_FITCOEFCONFINT    = "/FitCoefConfidenceInterval" // numeric wave
 
 /// A color group allows to have matching colors for sweep data with the same channel type/number and sweep.
 /// It is applied before the matching headstage/average colors in #SF_GetTraceColor().
@@ -2219,12 +2272,14 @@ StrConstant SF_DATATYPE_SELECTSETSWEEPCOUNT = "SelectSetSweepCount"
 StrConstant SF_DATATYPE_SELECTSCIINDEX      = "SelectSCIIndex"
 StrConstant SF_DATATYPE_SELECTRACINDEX      = "SelectRACIndex"
 StrConstant SF_DATATYPE_ANAFUNCPARAM        = "AnaFunc"
+StrConstant SF_DATATYPE_PREPAREFIT          = "PrepareFit"
 
 StrConstant SF_WREF_MARKER     = "\"WREF@\":"
 StrConstant SF_VARIABLE_MARKER = "/SF_IsVariable" // numeric
 
 StrConstant SF_ANNOTATION_NAME = "metadata"
 StrConstant SF_VARNAME_REGEXP  = "[A-Z]{1}[A-Z0-9_]*"
+StrConstant SF_SERIALIZE       = "/serial" // path prefix
 ///@}
 
 /// @name Constants for SweepFormula Clampmode codes returned by operation selcm()
@@ -2344,7 +2399,8 @@ StrConstant SETTINGS_AB_FOLDER             = "/analysisbrowser/directory"
 StrConstant SETTINGS_AB_FOLDER_OLD_DEFAULT = "C:"
 ///@}
 
-StrConstant ANALYSIS_BROWSER_NAME = "AnalysisBrowser"
+StrConstant ANALYSIS_BROWSER_NAME            = "AnalysisBrowser"
+StrConstant ANALYSIS_BROWSER_TAGCONTROL_NAME = "TagControl"
 
 StrConstant MEMORY_REFCOUNTER_DF = "MemoryReferenceCounterDF"
 
@@ -2566,6 +2622,10 @@ StrConstant SF_OP_MERGE               = "merge"
 StrConstant SF_OP_FIT                 = "fit"
 StrConstant SF_OP_FITLINE             = "fitline"
 StrConstant SF_OP_DATASET             = "dataset"
+StrConstant SF_OP_IVSCCAPFREQUENCY    = "ivscc_apfrequency"
+StrConstant SF_OP_PREPAREFIT          = "preparefit"
+StrConstant SF_OP_FIT2                = "fit2"
+StrConstant SF_OP_GETMETA             = "getmeta"
 
 #ifdef AUTOMATED_TESTING
 StrConstant SF_OP_TESTOP = "testop"
@@ -2629,6 +2689,16 @@ Constant SF_DISPLAYTYPE_GRAPH = 0
 Constant SF_DISPLAYTYPE_TABLE = 1
 ///@}
 
+/// @name Errorbar Styles supported by SF Plotter
+///
+/// @anchor SFPlotterErrorbarStyle
+///@{
+Constant SF_ERRORBARSTYLE_NORMAL  = 0
+Constant SF_ERRORBARSTYLE_SHADED  = 1
+Constant SF_ERRORBARSTYLE_BOX     = 2
+Constant SF_ERRORBARSTYLE_ELLIPSE = 3
+///@}
+
 /// @name Maximum number of colors for traces defined
 ///
 /// @anchor TraceColorMax
@@ -2639,3 +2709,69 @@ Constant TRACECOLORMAX = 21
 StrConstant BSP_USER_DATA_SF_CONTENT_HASH = "SweepFormulaContentHash"
 
 Constant HM_HASHMAP_WAVE_VERSION = 1
+
+/// @name Characters allowed in the SF PrepareFit operation to hold a coefficient
+///
+/// @anchor SFPrepareFitHoldStringCharacters
+///@{
+StrConstant SF_PREPAREFIT_HOLDCHAR_HOLD = "X"
+StrConstant SF_PREPAREFIT_HOLDCHAR_FREE = "O"
+///@}
+
+/// @name Reserved fit function name for SF PrepareFit for no-fitting mode
+///
+/// @anchor SFPrepareFitNoFit
+///@{
+StrConstant SF_PREPAREFIT_NOFUNC = "none"
+///@}
+
+/// @name Errorbar Styles supported by SF PrepareFit
+///
+/// @anchor SFPrepareFitErrorbarStyle
+///@{
+StrConstant SF_PREPAREFIT_ERRORBARSTYLE_NORMAL = "normal"
+StrConstant SF_PREPAREFIT_ERRORBARSTYLE_SHADED = "shaded"
+///@}
+
+/// @name Default number of points in fit output SF PrepareFit
+///
+/// @anchor SFPrepareFitLength
+///@{
+Constant SF_PREPAREFIT_LENGTH_DEFAULT = 200
+///@}
+
+/// @name Default Confidence Level for SF PrepareFit, see also Igor Pro CurveFit /F argument.
+///
+/// @anchor SFPrepareFitConfigenceLevel
+///@{
+Constant SF_PREPAREFIT_CONFIDENCELEVEL_DEFAULT = 85
+///@}
+
+/// @name Errorbar Types supported by SF PrepareFit
+///
+/// @anchor SFPrepareFitErrorbarTypes
+///@{
+StrConstant SF_PREPAREFIT_ERRORBARTYPE_STANDARD   = "standard"
+StrConstant SF_PREPAREFIT_ERRORBARTYPE_CONFIDENCE = "conf"
+StrConstant SF_PREPAREFIT_ERRORBARTYPE_PREDICTION = "pred"
+///@}
+
+/// @name Bits for Fit Errors
+/// @anchor FitErrors
+///@{
+Constant FIT_ERROR_ANY               = 1
+Constant FIT_ERROR_SINGULARMATRIX    = 2
+Constant FIT_ERROR_OUTOFMEMORY       = 4
+Constant FIT_ERROR_RETURNEDNANORINF  = 8
+Constant FIT_ERROR_FUNCREQUESTEDSTOP = 16
+Constant FIT_ERROR_REENTRANT_FIT     = 32
+///@}
+
+/// @name Codes for Fit Quit Reasons
+/// @anchor FitQuitReason
+///@{
+Constant FIT_QUITREASON_OK                    = 0
+Constant FIT_QUITREASON_ITERATIONLIMITREACHED = 1
+Constant FIT_QUITREASON_STOPPEDBYUSER         = 2
+Constant FIT_QUITREASON_NOCHISQUAREDECREASE   = 3
+///@}

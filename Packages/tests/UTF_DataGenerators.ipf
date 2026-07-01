@@ -2101,11 +2101,33 @@ static Function/WAVE ValidHashmapSizes()
 	return sizes
 End
 
+static Function/WAVE IgorIntegratedFitFuncs()
+
+	variable col
+
+	WAVE/T props = GetSFIgorFitProperties()
+	col = FindDimLabel(props, COLS, "FITFUNC")
+	Duplicate/FREE/RMD=[][col] props, fitFuncs
+	Redimension/N=(-1) fitFuncs
+	SetDimensionLabelsFromWaveContents(fitFuncs)
+
+	return fitFuncs
+End
+
 static Function/WAVE PermanentOrFree()
 
 	Make/FREE wv = {1, 0}
 
 	SetDimensionLabels(wv, "Permanent;Free", ROWS)
+
+	return wv
+End
+
+static Function/WAVE IVSCCAPFrequencyOffsets()
+
+	Make/FREE/T wv = {"first", "min", "max", "none"}
+
+	SetDimensionLabelsFromWaveContents(wv)
 
 	return wv
 End

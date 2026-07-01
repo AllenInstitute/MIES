@@ -3,6 +3,8 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = UTF_SWEEPFORMULA_OPERATIONS
 
+static Constant IGOR_CURVEFIT_DEFAULT_LENGTH = 200
+
 // IUTF_TD_GENERATOR DataGenerators#TestOperationAPFrequency2Gen
 static Function TestOperationAPFrequency2([WAVE wv])
 
@@ -3869,6 +3871,104 @@ static Function TestDataRangeMetadataPrecision()
 	CHECK_EQUAL_WAVES(range, refRange, mode = WAVE_DATA, tol = 0)
 End
 
+static Function/WAVE GetMetaHelperOP(STRUCT SF_ExecutionData &exd)
+
+	string opShort = SF_OP_TESTOP
+	string path
+
+	Make/FREE/N=1 wv
+
+	JWN_CreatePath(wv, SF_SERIALIZE)
+
+	path = SF_SERIALIZE + "/num"
+	JWN_SetNumberInWaveNote(wv, path, 123)
+
+	path = SF_SERIALIZE + "/txt"
+	JWN_SetStringInWaveNote(wv, path, "abcd")
+
+	path = SF_SERIALIZE + "/wvnum"
+	Make/FREE wvnum = {1, 2, 3}
+	JWN_SetWaveInWaveNote(wv, path, wvnum)
+
+	path = SF_SERIALIZE + "/wvtxt"
+	Make/FREE/T wvtxt = {"a", "b", "c"}
+	JWN_SetWaveInWaveNote(wv, path, wvtxt)
+
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 1)
+	output[0] = wv
+
+	return SFH_GetOutputForExecutor(output, exd.graph, opShort)
+End
+
+static Function TestOperationGetMeta()
+
+	string win, device, code
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	// too few arguments
+	code = "getmeta()"
+	ExecuteSweepFormulaCode(win, code, expectFailure = 1)
+
+	// dataset out of range
+	code = "getmeta(\"\", [1], 1)"
+	ExecuteSweepFormulaCode(win, code, expectFailure = 1)
+
+	// no serialization data
+	code = "getmeta([1])"
+	ExecuteSweepFormulaCode(win, code, expectFailure = 1)
+
+	SVAR funcName = $GetSFTestopName(win)
+	funcName = "UTF_SWEEPFORMULA_OPERATIONS#GetMetaHelperOP"
+
+	code = "getmeta(\"*\", testop())"
+	WAVE/Z/WAVE wvRef = SFE_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(wvRef, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(wvRef, ROWS), 4)
+
+	WAVE wv = wvRef[0]
+	CHECK_EQUAL_WAVES(wv, {123}, mode = WAVE_DATA)
+	CHECK_EQUAL_STR(GetDimLabel(wv, ROWS, -1), "num")
+
+	WAVE wv = wvRef[1]
+	CHECK_EQUAL_TEXTWAVES(wv, {"abcd"}, mode = WAVE_DATA)
+	CHECK_EQUAL_STR(GetDimLabel(wv, ROWS, -1), "txt")
+
+	WAVE wv = wvRef[2]
+	CHECK_EQUAL_WAVES(wv, {1, 2, 3}, mode = WAVE_DATA)
+	CHECK_EQUAL_STR(GetDimLabel(wv, ROWS, -1), "wvnum")
+
+	WAVE wv = wvRef[3]
+	CHECK_EQUAL_TEXTWAVES(wv, {"a", "b", "c"}, mode = WAVE_DATA)
+	CHECK_EQUAL_STR(GetDimLabel(wv, ROWS, -1), "wvtxt")
+
+	code = "getmeta(\"tx*\", testop())"
+	WAVE/Z/WAVE wvRef = SFE_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(wvRef, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(wvRef, ROWS), 1)
+
+	WAVE wv = wvRef[0]
+	CHECK_EQUAL_TEXTWAVES(wv, {"abcd"}, mode = WAVE_DATA)
+	CHECK_EQUAL_STR(GetDimLabel(wv, ROWS, -1), "txt")
+
+	code = "getmeta(I_DONT_EXIST, testop())"
+	ExecuteSweepFormulaCode(win, code, expectFailure = 1)
+
+	// dataset indexing works
+	code = "getmeta(\"*\", dataset([1], testop()), 1)"
+	WAVE/Z/WAVE wvRef = SFE_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(wvRef, WAVE_WAVE)
+
+	// no data in indexed dataset
+	code = "getmeta(\"*\", wave(I_DONT_EXIST))"
+	WAVE/Z/WAVE wvRef = SFE_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(wvRef, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(wvRef, ROWS), 1)
+	CHECK_WAVE(wvRef[0], NULL_WAVE)
+End
+
 static Function TestOperationxValues()
 
 	string win, device, code
@@ -3906,4 +4006,364 @@ static Function TestOperationxValues()
 	CHECK_EQUAL_TEXTWAVES(data, refTxt, mode = WAVE_DATA)
 
 	KillWaves/Z wv
+End
+
+static Function TestOperationPreparefit()
+
+	string str
+	string win, type
+
+	win = GetDataBrowserWithData()
+
+	str = "preparefit()"
+	WAVE/WAVE output = SFE_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 6)
+	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
+	CHECK_EQUAL_STR(type, SF_DATATYPE_PREPAREFIT)
+
+	WAVE/T fitArgs = output[%FITARGS]
+	CHECK_EQUAL_VAR(IsTextWave(fitArgs), 1)
+	CHECK_EQUAL_VAR(DimSize(fitArgs, ROWS), 4)
+	CHECK_EQUAL_STR(fitArgs[%HOLDSTR], "")
+	CHECK_EQUAL_STR(fitArgs[%FITFUNCNAME], SF_PREPAREFIT_NOFUNC)
+	CHECK_EQUAL_STR(fitArgs[%ERRORBARTYPE], SF_PREPAREFIT_ERRORBARTYPE_CONFIDENCE)
+	CHECK_EQUAL_STR(fitArgs[%ERRORBARSTYLE], SF_PREPAREFIT_ERRORBARSTYLE_SHADED)
+
+	CHECK_EQUAL_WAVES(output[%LENGTH], {SF_PREPAREFIT_LENGTH_DEFAULT}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(output[%CONFLEVEL], {SF_PREPAREFIT_CONFIDENCELEVEL_DEFAULT * PERCENT_TO_ONE}, mode = WAVE_DATA, tol = 1E-15)
+	CHECK_WAVE(output[%COEFS], NULL_WAVE)
+	CHECK_WAVE(output[%RANGE], NULL_WAVE)
+	CHECK_WAVE(output[%CONSTRAINTS], NULL_WAVE)
+
+	str = "preparefit(exp)"
+	WAVE/WAVE output  = SFE_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/T    fitArgs = output[%FITARGS]
+	CHECK_EQUAL_STR(fitArgs[%FITFUNCNAME], "exp")
+
+	str = "preparefit(exp, 500)"
+	WAVE/WAVE output  = SFE_ExecuteFormula(str, win, useVariables = 0)
+	WAVE      wLength = output[%LENGTH]
+	CHECK_EQUAL_WAVES(wLength, {500}, mode = WAVE_DATA)
+
+	str = "preparefit(exp, 0, standard)"
+	WAVE/WAVE output  = SFE_ExecuteFormula(str, win, useVariables = 0)
+	WAVE      wLength = output[%LENGTH]
+	CHECK_EQUAL_WAVES(wLength, {NaN}, mode = WAVE_DATA)
+	WAVE/T fitArgs = output[%FITARGS]
+	CHECK_EQUAL_STR(fitArgs[%ERRORBARTYPE], SF_PREPAREFIT_ERRORBARTYPE_STANDARD)
+
+	str = "preparefit(exp, 500, conf)"
+	WAVE/WAVE output  = SFE_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/T    fitArgs = output[%FITARGS]
+	CHECK_EQUAL_STR(fitArgs[%ERRORBARTYPE], SF_PREPAREFIT_ERRORBARTYPE_CONFIDENCE)
+	str = "preparefit(exp, 500, pred)"
+	WAVE/WAVE output  = SFE_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/T    fitArgs = output[%FITARGS]
+	CHECK_EQUAL_STR(fitArgs[%ERRORBARTYPE], SF_PREPAREFIT_ERRORBARTYPE_PREDICTION)
+
+	str = "preparefit(exp, 500, pred, normal)"
+	WAVE/WAVE output  = SFE_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/T    fitArgs = output[%FITARGS]
+	CHECK_EQUAL_STR(fitArgs[%ERRORBARSTYLE], SF_PREPAREFIT_ERRORBARSTYLE_NORMAL)
+	str = "preparefit(exp, 500, pred, shaded)"
+	WAVE/WAVE output  = SFE_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/T    fitArgs = output[%FITARGS]
+	CHECK_EQUAL_STR(fitArgs[%ERRORBARSTYLE], SF_PREPAREFIT_ERRORBARSTYLE_SHADED)
+
+	str = "preparefit(exp, 500, pred, shaded, 3)"
+	WAVE/WAVE output     = SFE_ExecuteFormula(str, win, useVariables = 0)
+	WAVE      wConfLevel = output[%CONFLEVEL]
+	Make/FREE/D wConfLevelRef = {3 * PERCENT_TO_ONE}
+	CHECK_EQUAL_WAVES(wConfLevel, wConfLevelRef, mode = WAVE_DATA)
+
+	str = "preparefit(exp, 500, pred, shaded, 3, [1,2,3])"
+	WAVE/WAVE output = SFE_ExecuteFormula(str, win, useVariables = 0)
+	WAVE      coefs  = output[%COEFS]
+	CHECK_EQUAL_WAVES(coefs, {1, 2, 3}, mode = WAVE_DATA)
+
+	str = "preparefit(exp, 500, pred, shaded, 3, [1,2,3], XOX)"
+	WAVE/WAVE output  = SFE_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/T    fitArgs = output[%FITARGS]
+	CHECK_EQUAL_STR(fitArgs[%HOLDSTR], "101")
+
+	str = "preparefit(exp, 500, pred, shaded, 3, [1,2,3], XOX, [1,10])"
+	WAVE/WAVE output = SFE_ExecuteFormula(str, win, useVariables = 0)
+	WAVE      range  = output[%RANGE]
+	CHECK_EQUAL_WAVES(range, {1, 10}, mode = WAVE_DATA)
+
+	str = "preparefit(exp, 500, pred, shaded, 3, [1,2,3], XOX, [1,10], [K1,K2])"
+	WAVE/WAVE output      = SFE_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/T    constraints = output[%CONSTRAINTS]
+	CHECK_EQUAL_TEXTWAVES(constraints, {"K1", "K2"})
+End
+
+static Function TestOperationPreparefitFail()
+
+	string win, str
+
+	win = GetDataBrowserWithData()
+
+	str = "preparefit(nonExistingFitFunc)"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+	str = "preparefit(123)"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+
+	str = "preparefit(log, -1)"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+	str = "preparefit(log, abc)"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+	str = "preparefit(log, 0)"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+	str = "preparefit(log, 1)"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+
+	str = "preparefit(log, 200, unknown)"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+	str = "preparefit(log, 200, standard)"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+	str = "preparefit(log, 0, conf)"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+	str = "preparefit(log, 0, pred)"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+
+	str = "preparefit(log, 200, conf, unknown)"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+
+	str = "preparefit(log, 200, conf, shaded, -1)"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+	str = "preparefit(log, 200, conf, shaded, 101)"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+
+	// log requires 2 coefs
+	str = "preparefit(log, 200, conf, shaded, 85, 1)"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+	str = "preparefit(log, 200, conf, shaded, 85, [1,2,3])"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+	str = "preparefit(log, 200, conf, shaded, 85, [a,b,c])"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+
+	str = "preparefit(log, 200, conf, shaded, 85, [1,2], 1)"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+	str = "preparefit(log, 200, conf, shaded, 85, [1,2], AB)"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+	str = "preparefit(log, 200, conf, shaded, 85, [1,2], OOO)"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+
+	str = "preparefit(log, 200, conf, shaded, 85, [1,2], OO, 1)"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+	str = "preparefit(log, 200, conf, shaded, 85, [1,2], OO, [0])"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+	str = "preparefit(log, 200, conf, shaded, 85, [1,2], OO, [0, 0, 0])"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+	str = "preparefit(log, 200, conf, shaded, 85, [1,2], OO, [1, NaN])"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+	str = "preparefit(log, 200, conf, shaded, 85, [1,2], OO, [NaN, 1])"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+	str = "preparefit(log, 200, conf, shaded, 85, [1,2], OO, [2, 1])"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+
+	str = "preparefit(log, 200, conf, shaded, 85, [1,2], OO, [1, 10], 1)"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+	str = "preparefit(log, 200, conf, shaded, 85, [1,2], OO, [1, 10], [1, 2])"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+
+	str = "preparefit(log, 200, conf, shaded, 85, [1,2], OO, [1, 10], [K1, K2], obscureExtraArgument)"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+End
+
+// IUTF_TD_GENERATOR DataGenerators#IgorIntegratedFitFuncs
+static Function TestOperationPreparefitFitFuncs([string str])
+
+	string win, code
+
+	win = GetDataBrowserWithData()
+
+	code = "preparefit(\"" + str + "\")"
+	SFE_ExecuteFormula(code, win, useVariables = 0)
+End
+
+static Function TestOperationFit2()
+
+	string str
+	string win, msg
+	variable val
+
+	win = GetDataBrowserWithData()
+
+	str = "fit2([1, 2, 3], preparefit())"
+	WAVE/Z output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	CHECK_WAVE(output, NULL_WAVE)
+
+	str = "fit2([1, 5, 6], preparefit(line, 0 , standard))"
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	CHECK_WAVE(output, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(output, {1.5, 4, 6.5}, mode = WAVE_DATA)
+	val = JWN_GetNumberFromWaveNote(output, SF_SERIALIZE + SF_META_FITERROR)
+	CHECK_EQUAL_VAR(val, 0)
+	val = JWN_GetNumberFromWaveNote(output, SF_SERIALIZE + SF_META_FITQUITREASON)
+	CHECK_EQUAL_VAR(val, 0)
+	val = JWN_GetNumberFromWaveNote(output, SF_SERIALIZE + SF_META_FITNUMITERS)
+	CHECK_EQUAL_VAR(val, 0)
+	msg = JWN_GetStringFromWaveNote(output, SF_SERIALIZE + SF_META_FITSTATUSMESSAGE)
+	CHECK_EQUAL_STR(msg, "Fit Ok.\rIterations run: 0")
+	msg = JWN_GetStringFromWaveNote(output, SF_SERIALIZE + SF_META_FITFUNC)
+	CHECK_EQUAL_STR(msg, "line")
+	WAVE coefs = JWN_GetNumericWaveFromWaveNote(output, SF_SERIALIZE + SF_META_FITCOEFS)
+	CHECK_EQUAL_WAVES(coefs, {1.5, 2.5}, mode = WAVE_DATA)
+	WAVE yResiduals = JWN_GetNumericWaveFromWaveNote(output, SF_SERIALIZE + SF_META_FITYRESIDUALS)
+	CHECK_EQUAL_WAVES(yResiduals, {-0.5, 1, -0.5}, mode = WAVE_DATA)
+	WAVE/Z xResiduals = JWN_GetNumericWaveFromWaveNote(output, SF_SERIALIZE + SF_META_FITXRESIDUALS)
+	CHECK_WAVE(xResiduals, NULL_WAVE)
+	WAVE yErrorsMinus = JWN_GetNumericWaveFromWaveNote(output, SF_META_ERRORBARYMINUS)
+	CHECK_EQUAL_WAVES(yErrorsMinus, {1.224744871391589, 1.224744871391589, 1.224744871391589}, mode = WAVE_DATA, tol = 1E-12)
+	WAVE yErrorsPlus = JWN_GetNumericWaveFromWaveNote(output, SF_META_ERRORBARYPLUS)
+	CHECK_EQUAL_WAVES(yErrorsPlus, {1.224744871391589, 1.224744871391589, 1.224744871391589}, mode = WAVE_DATA, tol = 1E-12)
+	val = JWN_GetNumberFromWaveNote(output, SF_SERIALIZE + SF_META_FITCHISQUARE)
+	CHECK_EQUAL_VAR(val, 1.5)
+	WAVE/Z wSigma = JWN_GetNumericWaveFromWaveNote(output, SF_SERIALIZE + SF_META_FITWSIGMA)
+	CHECK_EQUAL_WAVES(wSigma, {0.9128709291752769, 0.7071067811865476}, mode = WAVE_DATA, tol = 1E-12)
+	WAVE/Z mCovar = JWN_GetNumericWaveFromWaveNote(output, SF_SERIALIZE + SF_META_FITMCOVAR)
+	CHECK_WAVE(mCovar, NULL_WAVE)
+	WAVE/Z mFitConstraints = JWN_GetNumericWaveFromWaveNote(output, SF_SERIALIZE + SF_META_FITMFITCONSTRAINT)
+	CHECK_WAVE(mFitConstraints, NULL_WAVE)
+	WAVE/Z wFitConstraints = JWN_GetNumericWaveFromWaveNote(output, SF_SERIALIZE + SF_META_FITWFITCONSTRAINT)
+	CHECK_WAVE(wFitConstraints, NULL_WAVE)
+	WAVE/Z fitConstants = JWN_GetNumericWaveFromWaveNote(output, SF_SERIALIZE + SF_META_FITCONSTANT)
+	CHECK_WAVE(fitConstants, NULL_WAVE)
+	WAVE/Z wConfU = JWN_GetNumericWaveFromWaveNote(output, SF_SERIALIZE + SF_META_FITUCONFIDENCE)
+	CHECK_WAVE(wConfU, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(DimSize(wConfU, ROWS), IGOR_CURVEFIT_DEFAULT_LENGTH)
+	WAVE/Z wConfL = JWN_GetNumericWaveFromWaveNote(output, SF_SERIALIZE + SF_META_FITLCONFIDENCE)
+	CHECK_WAVE(wConfL, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(DimSize(wConfL, ROWS), IGOR_CURVEFIT_DEFAULT_LENGTH)
+	WAVE/Z wPredU = JWN_GetNumericWaveFromWaveNote(output, SF_SERIALIZE + SF_META_FITUPREDICTION)
+	CHECK_WAVE(wPredU, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(DimSize(wPredU, ROWS), IGOR_CURVEFIT_DEFAULT_LENGTH)
+	WAVE/Z wPredL = JWN_GetNumericWaveFromWaveNote(output, SF_SERIALIZE + SF_META_FITLPREDICTION)
+	CHECK_WAVE(wPredL, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(DimSize(wPredL, ROWS), IGOR_CURVEFIT_DEFAULT_LENGTH)
+	WAVE/Z wCoefConfInt = JWN_GetNumericWaveFromWaveNote(output, SF_SERIALIZE + SF_META_FITCOEFCONFINT)
+	CHECK_WAVE(wCoefConfInt, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(DimSize(wCoefConfInt, ROWS), 3)
+	WAVE/Z xWave = JWN_GetNumericWaveFromWaveNote(output, SF_META_XVALUES)
+	CHECK_EQUAL_WAVES(xWave, {0, 1, 2}, mode = WAVE_DATA)
+	WAVE/Z errorBarStyle = JWN_GetNumericWaveFromWaveNote(output, SF_META_ERRORBARSTYLE)
+	CHECK_WAVE(errorBarStyle, NUMERIC_WAVE)
+
+	// with X
+	str = "fit2([1, 5, 6], [4, 5, 6], preparefit(line, 0, standard))"
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(output, {1.5, 4, 6.5}, mode = WAVE_DATA)
+	WAVE/Z xWave = JWN_GetNumericWaveFromWaveNote(output, SF_META_XVALUES)
+	CHECK_EQUAL_WAVES(xWave, {4, 5, 6}, mode = WAVE_DATA)
+
+	// with default length
+	str = "fit2([1, 5, 6], [4, 5, 6], preparefit(line))"
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), SF_PREPAREFIT_LENGTH_DEFAULT)
+	CHECK_EQUAL_VAR(output[0], 1.5)
+	CHECK_EQUAL_VAR(output[SF_PREPAREFIT_LENGTH_DEFAULT - 1], 6.5)
+	WAVE/Z xWave = JWN_GetNumericWaveFromWaveNote(output, SF_META_XVALUES)
+	CHECK_WAVE(xWave, NULL_WAVE)
+	WAVE yErrorsMinus = JWN_GetNumericWaveFromWaveNote(output, SF_META_ERRORBARYMINUS)
+	CHECK_WAVE(yErrorsMinus, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(DimSize(yErrorsMinus, ROWS), SF_PREPAREFIT_LENGTH_DEFAULT)
+	CHECK_EQUAL_VAR(yErrorsMinus[0], 3.802381071416012)
+	WAVE yErrorsPlus = JWN_GetNumericWaveFromWaveNote(output, SF_META_ERRORBARYPLUS)
+	CHECK_WAVE(yErrorsPlus, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(DimSize(yErrorsPlus, ROWS), SF_PREPAREFIT_LENGTH_DEFAULT)
+	CHECK_CLOSE_VAR(yErrorsPlus[0], 3.802381071416012)
+End
+
+static Function TestOperationFit2_ODR()
+
+	string str, wPath
+	string win
+
+	win = GetDataBrowserWithData()
+
+	Make/D data = {1, 5, 6}
+	Make/FREE/D errorB = {0.1, 0.1, 0.1}
+	JWN_SetWaveInWaveNote(data, SF_META_ERRORBARYMINUS, errorB)
+	JWN_SetWaveInWaveNote(data, SF_META_ERRORBARYPLUS, errorB)
+	JWN_SetWaveInWaveNote(data, SF_META_ERRORBARXMINUS, errorB)
+	JWN_SetWaveInWaveNote(data, SF_META_ERRORBARXPLUS, errorB)
+	wPath = GetWavesDataFolder(data, 2)
+
+	str = "fit2(wave(" + wPath + "), [4, 5, 6], preparefit(line))"
+	WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), SF_PREPAREFIT_LENGTH_DEFAULT)
+	CHECK_CLOSE_VAR(output[0], 1.2379534159593, tol = 5E-15)
+	CHECK_CLOSE_VAR(output[SF_PREPAREFIT_LENGTH_DEFAULT - 1], 6.762046584040696, tol = 5E-15)
+	WAVE/Z xWave = JWN_GetNumericWaveFromWaveNote(output, SF_META_XVALUES)
+	CHECK_WAVE(xWave, NULL_WAVE)
+	WAVE yErrorsMinus = JWN_GetNumericWaveFromWaveNote(output, SF_META_ERRORBARYMINUS)
+	CHECK_WAVE(yErrorsMinus, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(DimSize(yErrorsMinus, ROWS), SF_PREPAREFIT_LENGTH_DEFAULT)
+	CHECK_CLOSE_VAR(yErrorsMinus[0], 1.147218616615983, tol = 5E-15)
+	WAVE yErrorsPlus = JWN_GetNumericWaveFromWaveNote(output, SF_META_ERRORBARYPLUS)
+	CHECK_WAVE(yErrorsPlus, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(DimSize(yErrorsPlus, ROWS), SF_PREPAREFIT_LENGTH_DEFAULT)
+	CHECK_CLOSE_VAR(yErrorsPlus[0], 1.147218616615983, tol = 5E-15)
+	WAVE/Z xResiduals = JWN_GetNumericWaveFromWaveNote(output, SF_SERIALIZE + SF_META_FITXRESIDUALS)
+	CHECK_WAVE(xResiduals, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(DimSize(xResiduals, ROWS), 3)
+
+	str = "fit2(wave(" + wPath + "), [4, 5, 6], preparefit(line, 0, standard))"
+	WAVE   output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	WAVE/Z xWave  = JWN_GetNumericWaveFromWaveNote(output, SF_META_XVALUES)
+	CHECK_WAVE(xWave, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(DimSize(xWave, ROWS), 3)
+
+	KillWaves/Z data
+End
+
+static Function TestOperationFit2Fail()
+
+	string str, wPath
+	string win
+
+	win = GetDataBrowserWithData()
+
+	str = "fit2()"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+	str = "fit2(1)"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+	str = "fit2(abc, preparefit())"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+	str = "fit2([1, 2, 3], abc, preparefit())"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+	str = "fit2([1, 2, 3], [1, 2, 3], 1)"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+	str = "fit2([1, 2, 3], [1, 2, 3], preparefit(), obscureAdditionalArgument)"
+	ExecuteSweepFormulaCode(win, str, expectFailure = 1)
+End
+
+static Function TestOperationFit2FitError()
+
+	string str
+	string win, msg
+	variable val
+
+	win = GetDataBrowserWithData()
+
+	str = "fit2([0, 0, 0], preparefit(exp))"
+	WAVE/Z output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	CHECK_WAVE(output, NUMERIC_WAVE)
+	val = JWN_GetNumberFromWaveNote(output, SF_SERIALIZE + SF_META_FITERROR)
+	CHECK_EQUAL_VAR(val, 3)
+	msg = JWN_GetStringFromWaveNote(output, SF_SERIALIZE + SF_META_FITSTATUSMESSAGE)
+	CHECK_EQUAL_STR(msg, "Fit Error.\rSingular Matrix.\rchiSquare did not decrease in last 9 iterations.\rIterations run: 10")
+
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 0)
+	val = JWN_GetNumberFromWaveNote(output, SF_SERIALIZE + SF_META_FITQUITREASON)
+	CHECK_EQUAL_VAR(val, 3)
+	val = JWN_GetNumberFromWaveNote(output, SF_SERIALIZE + SF_META_FITNUMITERS)
+	CHECK_EQUAL_VAR(val, 10)
+	msg = JWN_GetStringFromWaveNote(output, SF_SERIALIZE + SF_META_FITFUNC)
+	CHECK_EQUAL_STR(msg, "exp")
+	WAVE/Z coefs = JWN_GetNumericWaveFromWaveNote(output, SF_SERIALIZE + SF_META_FITCOEFS)
+	CHECK_WAVE(coefs, NULL_WAVE)
 End
