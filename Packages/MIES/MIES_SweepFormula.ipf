@@ -129,7 +129,8 @@ Function/WAVE SF_GetNamedOperations()
 	                  SF_OP_MERGE, SF_OP_FIT, SF_OP_FITLINE, SF_OP_DATASET, SF_OP_SELECTVIS, SF_OP_SELECTCM, SF_OP_SELECTSTIMSET,       \
 	                  SF_OP_SELECTIVSCCSWEEPQC, SF_OP_SELECTIVSCCSETQC, SF_OP_SELECTRANGE, SF_OP_SELECTEXP, SF_OP_SELECTDEV,            \
 	                  SF_OP_SELECTEXPANDSCI, SF_OP_SELECTEXPANDRAC, SF_OP_SELECTSETCYCLECOUNT, SF_OP_SELECTSETSWEEPCOUNT,               \
-	                  SF_OP_SELECTSCIINDEX, SF_OP_SELECTRACINDEX, SF_OP_ANAFUNCPARAM, SF_OP_CONCAT, SF_OP_TABLE, SF_OP_EXTRACT}
+	                  SF_OP_SELECTSCIINDEX, SF_OP_SELECTRACINDEX, SF_OP_ANAFUNCPARAM, SF_OP_CONCAT, SF_OP_TABLE, SF_OP_EXTRACT,         \
+	                  SF_OP_PREPAREFIT, SF_OP_FIT2, SF_OP_GETMETA}
 #ifdef AUTOMATED_TESTING
 	Make/FREE/T wtTest = {SF_OP_TESTOP}
 	Concatenate/NP/T {wtTest}, wt
@@ -150,19 +151,6 @@ End
 Function/S SF_EscapeJsonPath(string str)
 
 	return ReplaceString("/", str, "~1")
-End
-
-/// @brief Retrieves the plot meta data from the JSON wave note or other sources and stores it in the plotMetaData wave
-static Function/WAVE SF_FillPlotMetaData(WAVE wvYRef, variable useXLabel, string dataUnits)
-
-	WAVE/T plotMetaData = GetSFPlotMetaData()
-	plotMetaData[%DATATYPE]      = JWN_GetStringFromWaveNote(wvYRef, SF_META_DATATYPE)
-	plotMetaData[%OPSTACK]       = JWN_GetStringFromWaveNote(wvYRef, SF_META_OPSTACK)
-	plotMetaData[%ARGSETUPSTACK] = JWN_GetStringFromWaveNote(wvYRef, SF_META_ARGSETUPSTACK)
-	plotMetaData[%XAXISLABEL]    = SelectString(useXLabel, SF_XLABEL_USER, JWN_GetStringFromWaveNote(wvYRef, SF_META_XAXISLABEL))
-	plotMetaData[%YAXISLABEL]    = JWN_GetStringFromWaveNote(wvYRef, SF_META_YAXISLABEL) + dataUnits
-
-	return plotMetaData
 End
 
 /// @brief transfer the wave scaling from one wave to another
@@ -210,6 +198,23 @@ Function SF_FormulaWaveScaleTransfer(WAVE source, WAVE dest, variable dimSource,
 		default:
 			FATAL_ERROR("Invalid dimDest")
 	endswitch
+End
+
+/// @brief Retrieves the plot meta data from the JSON wave note or other sources and stores it in the plotMetaData wave
+static Function/WAVE SF_FillPlotMetaData(WAVE wvYRef, variable useXLabel, string dataUnits)
+
+	WAVE/T plotMetaData = GetSFPlotMetaData()
+	plotMetaData[%DATATYPE]      = JWN_GetStringFromWaveNote(wvYRef, SF_META_DATATYPE)
+	plotMetaData[%OPSTACK]       = JWN_GetStringFromWaveNote(wvYRef, SF_META_OPSTACK)
+	plotMetaData[%ARGSETUPSTACK] = JWN_GetStringFromWaveNote(wvYRef, SF_META_ARGSETUPSTACK)
+	plotMetaData[%XAXISLABEL]    = SelectString(useXLabel, SF_XLABEL_USER, JWN_GetStringFromWaveNote(wvYRef, SF_META_XAXISLABEL))
+	plotMetaData[%YAXISLABEL]    = JWN_GetStringFromWaveNote(wvYRef, SF_META_YAXISLABEL) + dataUnits
+	plotMetaData[%XAXISOFFSET]   = num2str(JWN_GetNumberFromWaveNote(wvYRef, SF_META_XAXISOFFSET), "%f")
+	plotMetaData[%YAXISOFFSET]   = num2str(JWN_GetNumberFromWaveNote(wvYRef, SF_META_YAXISOFFSET), "%f")
+	plotMetaData[%XAXISPERCENT]  = num2str(JWN_GetNumberFromWaveNote(wvYRef, SF_META_XAXISPERCENT), "%f")
+	plotMetaData[%YAXISPERCENT]  = num2str(JWN_GetNumberFromWaveNote(wvYRef, SF_META_YAXISPERCENT), "%f")
+
+	return plotMetaData
 End
 
 static Function [WAVE/WAVE formulaResults, WAVE/T plotMetaData] SF_FillFormulaResults(WAVE/Z/WAVE wvYRef, WAVE/Z/WAVE wvXRef, string yFormula)
@@ -1039,6 +1044,8 @@ static Function [variable dataCnt, variable gdIndex, string annotation, variable
 		WAVE wvX   = dummy
 	endif
 
+	WAVE/Z errorbarStyle = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_ERRORBARSTYLE)
+
 	if(!WaveExists(wvX))
 		numTraces = yMxN
 		SF_CheckNumTraces(pg.graph, numTraces)
@@ -1048,7 +1055,7 @@ static Function [variable dataCnt, variable gdIndex, string annotation, variable
 			SF_CollectTraceData(gdIndex, plotFormData, traces[i], wvX, wvY)
 			AppendTograph/W=$pg.win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$traces[i]
 			annotation += SF_GetMetaDataAnnotationText(pg.plotMetaData, wvResultY, traces[i])
-			SF_AddErrorBars(pg.graph, pg.win, wvY, traces[i])
+			SF_AddErrorBars(pg.graph, pg.win, wvY, traces[i], errorbarStyle)
 		endfor
 	elseif((xMxN == 1) && (yMxN == 1)) // 1D
 		if(yPoints == 1) // 0D vs 1D
@@ -1060,7 +1067,7 @@ static Function [variable dataCnt, variable gdIndex, string annotation, variable
 				SF_CollectTraceData(gdIndex, plotFormData, traces[i], wvX, wvY)
 				AppendTograph/W=$pg.win/C=(color.red, color.green, color.blue) wvY[][0]/TN=$traces[i] vs wvX[i][]
 				annotation += SF_GetMetaDataAnnotationText(pg.plotMetaData, wvResultY, traces[i])
-				SF_AddErrorBars(pg.graph, pg.win, wvY, traces[i], rangeBeginX = i, rangeEndX = i)
+				SF_AddErrorBars(pg.graph, pg.win, wvY, traces[i], errorbarStyle, rangeBeginX = i, rangeEndX = i)
 			endfor
 		elseif(xPoints == 1) // 1D vs 0D
 			numTraces = yPoints
@@ -1071,7 +1078,7 @@ static Function [variable dataCnt, variable gdIndex, string annotation, variable
 				SF_CollectTraceData(gdIndex, plotFormData, traces[i], wvX, wvY)
 				AppendTograph/W=$pg.win/C=(color.red, color.green, color.blue) wvY[i][]/TN=$traces[i] vs wvX[][0]
 				annotation += SF_GetMetaDataAnnotationText(pg.plotMetaData, wvResultY, traces[i])
-				SF_AddErrorBars(pg.graph, pg.win, wvY, traces[i], rangeBeginY = i, rangeEndY = i)
+				SF_AddErrorBars(pg.graph, pg.win, wvY, traces[i], errorbarStyle, rangeBeginY = i, rangeEndY = i)
 			endfor
 		else // 1D vs 1D
 
@@ -1112,7 +1119,7 @@ static Function [variable dataCnt, variable gdIndex, string annotation, variable
 				AppendTograph/W=$pg.win/C=(color.red, color.green, color.blue) wvY[rangeBeginY, rangeEndY][0]/TN=$traces[i] vs wvX[rangeBeginX, rangeEndX][0]
 				annotation += SF_GetMetaDataAnnotationText(pg.plotMetaData, wvResultY, traces[i])
 
-				SF_AddErrorBars(pg.graph, pg.win, wvY, traces[i], rangeBeginX = rangeBeginX, rangeEndX = rangeEndX, rangeBeginY = rangeBeginY, rangeEndY = rangeEndY)
+				SF_AddErrorBars(pg.graph, pg.win, wvY, traces[i], errorbarStyle, rangeBeginX = rangeBeginX, rangeEndX = rangeEndX, rangeBeginY = rangeBeginY, rangeEndY = rangeEndY)
 			endfor
 		endif
 	elseif(yMxN == 1) // 1D vs 2D
@@ -1124,7 +1131,7 @@ static Function [variable dataCnt, variable gdIndex, string annotation, variable
 			SF_CollectTraceData(gdIndex, plotFormData, traces[i], wvX, wvY)
 			AppendTograph/W=$pg.win/C=(color.red, color.green, color.blue) wvY[][0]/TN=$traces[i] vs wvX[][i]
 			annotation += SF_GetMetaDataAnnotationText(pg.plotMetaData, wvResultY, traces[i])
-			SF_AddErrorBars(pg.graph, pg.win, wvY, traces[i])
+			SF_AddErrorBars(pg.graph, pg.win, wvY, traces[i], errorbarStyle)
 		endfor
 	elseif(xMxN == 1) // 2D vs 1D or 0D
 		if(xPoints == 1) // 2D vs 0D -> extend X to 1D with constant value
@@ -1140,7 +1147,7 @@ static Function [variable dataCnt, variable gdIndex, string annotation, variable
 			SF_CollectTraceData(gdIndex, plotFormData, traces[i], wvX, wvY)
 			AppendTograph/W=$pg.win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$traces[i] vs wvX
 			annotation += SF_GetMetaDataAnnotationText(pg.plotMetaData, wvResultY, traces[i])
-			SF_AddErrorBars(pg.graph, pg.win, wvY, traces[i])
+			SF_AddErrorBars(pg.graph, pg.win, wvY, traces[i], errorbarStyle)
 		endfor
 	else // 2D vs 2D
 		numTraces = WaveExists(wvX) ? max(1, max(yMxN, xMxN)) : max(1, yMxN)
@@ -1161,7 +1168,7 @@ static Function [variable dataCnt, variable gdIndex, string annotation, variable
 				AppendTograph/W=$pg.win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$traces[i]
 			endif
 			annotation += SF_GetMetaDataAnnotationText(pg.plotMetaData, wvResultY, traces[i])
-			SF_AddErrorBars(pg.graph, pg.win, wvY, traces[i])
+			SF_AddErrorBars(pg.graph, pg.win, wvY, traces[i], errorbarStyle)
 		endfor
 	endif
 
@@ -1172,7 +1179,7 @@ static Function [variable dataCnt, variable gdIndex, string annotation, variable
 	return [dataCnt, gdIndex, annotation, formulaAddedOncePerDataset]
 End
 
-static Function SF_AddErrorBars(string graph, string win, WAVE wvY, string traceName, [variable rangeBeginX, variable rangeEndX, variable rangeBeginY, variable rangeEndY])
+static Function SF_AddErrorBars(string graph, string win, WAVE wvY, string traceName, WAVE/Z style, [variable rangeBeginX, variable rangeEndX, variable rangeBeginY, variable rangeEndY])
 
 	rangeBeginX = ParamIsDefault(rangeBeginX) ? 0 : rangeBeginX
 	rangeEndX   = ParamIsDefault(rangeEndX) ? Inf : rangeEndX
@@ -1225,7 +1232,7 @@ static Function SF_AddErrorBars(string graph, string win, WAVE wvY, string trace
 	elseif(!WaveExists(errorbarYPlus) && WaveExists(errorbarYMinus) && WaveExists(errorbarXPlus) && !WaveExists(errorbarXMinus))
 		ErrorBars/W=$win $traceName, XY, wave=(errorbarXplus[rangeBeginX, rangeEndX],), wave=(, errorbarYminus[rangeBeginY, rangeEndY])
 	elseif(!WaveExists(errorbarYPlus) && WaveExists(errorbarYMinus) && !WaveExists(errorbarXPlus) && !WaveExists(errorbarXMinus))
-		ErrorBars/W=$win $traceName, Y, wave=(errorbarYminus[rangeBeginY, rangeEndY],)
+		ErrorBars/W=$win $traceName, Y, wave=(, errorbarYminus[rangeBeginY, rangeEndY])
 	elseif(!WaveExists(errorbarYPlus) && !WaveExists(errorbarYMinus) && WaveExists(errorbarXPlus) && WaveExists(errorbarXMinus))
 		ErrorBars/W=$win $traceName, X, wave=(errorbarXplus[rangeBeginX, rangeEndX], errorbarXminus[rangeBeginX, rangeEndX])
 	elseif(!WaveExists(errorbarYPlus) && !WaveExists(errorbarYMinus) && WaveExists(errorbarXPlus) && !WaveExists(errorbarXMinus))
@@ -1234,6 +1241,40 @@ static Function SF_AddErrorBars(string graph, string win, WAVE wvY, string trace
 		ErrorBars/W=$win $traceName, X, wave=(, errorbarXminus[rangeBeginX, rangeEndX])
 	else
 		FATAL_ERROR("Impossible case")
+	endif
+
+	if(WaveExists(style))
+		WAVE dimlabelSrc = CreateSFErrorbarStyleWave()
+		CopyDimLabels dimlabelSrc, style
+		switch(style[%TYPE])
+			case SF_ERRORBARSTYLE_NORMAL:
+				break
+			case SF_ERRORBARSTYLE_SHADED:
+				ErrorBars/W=$win $traceName, SHADE={0, style[%FILLMODE], (style[%FGCOLOR_R], style[%FGCOLOR_G], style[%FGCOLOR_B]), (style[%BGCOLOR_R], style[%BGCOLOR_G], style[%BGCOLOR_B]), style[%NEGFILLMODE], (style[%NEGFGCOLOR_R], style[%NEGFGCOLOR_G], style[%NEGFGCOLOR_B]), (style[%NEGBGCOLOR_R], style[%NEGBGCOLOR_G], style[%NEGBGCOLOR_B])}, nochange
+				break
+			// Changing the errorbar style to BOX without setting the errorbar data again does currently not compile in IP <= 10.02
+			// WM issue #8288, probably fixed in IP10.04
+			//			case SF_ERRORBARSTYLE_BOX:
+			//				if(IsNaN(style[%BOXCOLOR_R]))
+			//					ErrorBars/W=$win $traceName, BOX nochange, nochange
+			//				else
+			//					ErrorBars/W=$win $traceName, BOX=(style[%BOXCOLOR_R], style[%BOXCOLOR_G], style[%BOXCOLOR_B]) nochange, nochange
+			//				endif
+			//				break
+			case SF_ERRORBARSTYLE_ELLIPSE:
+				SFH_ASSERT(WaveExists(errorbarYPlusFree) && WaveExists(errorbarXPlusFree), "For ellipse errorbars information for y+ and x+ errorbars must be set")
+				SFH_ASSERT((rangeEndX - rangeBeginX) == (rangeEndY - rangeBeginY), "For ellipse errorbars the range for x- and y-errorbar points must have the same number of points")
+				Duplicate/FREE/RMD=[rangeBeginX, rangeEndX] errorbarXPlusFree, ellipseWave
+				Redimension/N=(-1, 3) ellipseWave
+				ellipseWave[][1] = errorbarYPlusFree[p + rangeBeginY]
+				ellipseWave[][2] = 0 // set to no correlation
+				WAVE ellipsePermanentOrig = GetSweepFormulaErrorbarEllipse(dfr, traceName)
+				WAVE ellipsePermanent     = MoveWaveWithOverwrite(ellipsePermanentOrig, ellipseWave)
+				ErrorBars/W=$win $traceName, ELLIPSE={style[%ELLMODE], style[%ELLP], style[%ELLALPHA]}, ewave=ellipsePermanent
+				break
+			default:
+				FATAL_ERROR("Unknown errorbar style")
+		endswitch
 	endif
 End
 
@@ -1589,6 +1630,29 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 	SF_KillOldDataDisplayWindows(graph, winDisplayMode, wList, outputWindows)
 End
 
+/// @brief Sets axis properties for plots of the SF formula plotter. The properties are stored in the plotMetaData wave.
+static Function SF_SetAxisProperties(STRUCT SF_PlotterGraphStruct &pg)
+
+	variable xaxisOffset, yaxisOffset, xaxisPercent, yaxisPercent
+
+	xaxisOffset = str2num(pg.plotMetaData[%XAXISOFFSET])
+	if(!IsNaN(xaxisOffset))
+		ModifyGraph/W=$pg.win axOffset(bottom)=xaxisOffset
+	endif
+	yaxisOffset = str2num(pg.plotMetaData[%YAXISOFFSET])
+	if(!IsNaN(yaxisOffset))
+		ModifyGraph/W=$pg.win axOffset(left)=yaxisOffset
+	endif
+	xaxisPercent = str2num(pg.plotMetaData[%XAXISPERCENT])
+	if(!IsNaN(xaxisPercent))
+		ModifyGraph/W=$pg.win axisEnab(bottom)={0, xaxisPercent * PERCENT_TO_ONE}
+	endif
+	yaxisPercent = str2num(pg.plotMetaData[%YAXISPERCENT])
+	if(!IsNaN(yaxisPercent))
+		ModifyGraph/W=$pg.win axisEnab(left)={0, yaxisPercent * PERCENT_TO_ONE}
+	endif
+End
+
 static Function SF_FinishPlotWindow(STRUCT SF_PlotterGraphStruct &pg, WAVE/T winGraphs)
 
 	variable formulasAreDifferent, numTableFormulas
@@ -1601,7 +1665,11 @@ static Function SF_FinishPlotWindow(STRUCT SF_PlotterGraphStruct &pg, WAVE/T win
 	endif
 
 	if(pg.panelsCreated[%GRAPH])
+
 		pg.win = winGraphs[GetNumberFromWaveNote(winGraphs, NOTE_INDEX) - 1]
+
+		SF_SetAxisProperties(pg)
+
 		if(pg.showLegend)
 			formulasAreDifferent = SF_AddPlotLegend(pg)
 		endif
