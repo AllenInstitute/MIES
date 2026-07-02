@@ -568,6 +568,20 @@ Function/WAVE SFOS_OperationSelectVis(STRUCT SF_ExecutionData &exd)
 	return SFH_GetOutputForExecutorSingle(output, exd.graph, SF_OP_SELECTVIS, discardOpStack = 1, dataType = SF_DATATYPE_SELECTVIS)
 End
 
+/// `seltag([tag1, tag2, ...])`
+///
+/// returns a text wave with single tags as elements
+Function/WAVE SFOS_OperationSelectTag(STRUCT SF_ExecutionData &exd)
+
+	SFH_CheckArgumentCount(exd, SF_OP_SELECTTAG, 1, maxArgs = 1)
+
+	WAVE/T tags = SFH_GetArgumentAsWave(exd, SF_OP_SELECTTAG, 0, singleResult = 1, expectedMajorType = IGOR_TYPE_TEXT_WAVE, copy = 1)
+	tags[] = SelectString(IsEmpty(tags[p]), CleanupName(tags[p], 0), "")
+	SFH_ASSERT(!SearchForDuplicates(tags), "seltag tags contain duplicate tag(s).")
+
+	return SFH_GetOutputForExecutorSingle(tags, exd.graph, SF_OP_SELECTTAG, discardOpStack = 1, dataType = SF_DATATYPE_SELECTTAG)
+End
+
 static Function SFOS_InitSelectFilterUninitalized(STRUCT SF_SelectParameters &s)
 
 	WAVE/Z s.selects  = $""
