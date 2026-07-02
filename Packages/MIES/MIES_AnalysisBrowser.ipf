@@ -1660,7 +1660,7 @@ End
 static Function AB_LoadFromExpandedRange(variable row, variable subSectionColumn, variable loadType, [variable overwrite, DFREF sweepBrowserDFR, WAVE/T dfCollect])
 
 	variable j, endRow, mapIndex, sweep, oneValidLoad, index, err, sweepLoadError
-	string device, discLocation, dataFolder, fileName, fileType, errMsg
+	string device, discLocation, dataFolder, fileName, fileType, errMsg, tags
 
 	WAVE   expBrowserSel  = GetExperimentBrowserGUISel()
 	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
@@ -1706,6 +1706,7 @@ static Function AB_LoadFromExpandedRange(variable row, variable subSectionColumn
 		discLocation = map[mapIndex][%DiscLocation]
 		fileType     = map[mapIndex][%FileType]
 		fileName     = map[mapIndex][%FileName]
+		tags         = map[mapIndex][%Tags]
 
 		switch(loadType)
 			case AB_LOAD_STIMSET:
@@ -1751,7 +1752,7 @@ static Function AB_LoadFromExpandedRange(variable row, variable subSectionColumn
 				dfCollect[index] = dataFolder
 				SetNumberInWaveNote(dfCollect, NOTE_INDEX, index + 1)
 
-				SB_AddToSweepBrowser(sweepBrowserDFR, fileName, dataFolder, device, sweep)
+				SB_AddToSweepBrowser(sweepBrowserDFR, fileName, dataFolder, device, sweep, tags)
 				break
 			default:
 				FATAL_ERROR("Unexpected loadType")
@@ -1790,7 +1791,7 @@ End
 static Function AB_LoadFromFile(variable loadType, [DFREF sweepBrowserDFR])
 
 	variable mapIndex, sweep, numRows, i, row, overwrite, oneValidLoad, index
-	string dataFolder, fileName, discLocation, fileType, device
+	string dataFolder, fileName, discLocation, fileType, device, tags
 
 	if(loadType == AB_LOAD_SWEEP)
 		ASSERT(!ParamIsDefault(sweepBrowserDFR), "create sweepBrowser DataFolder with SB_OpenSweepBrowser() prior")
@@ -1851,6 +1852,7 @@ static Function AB_LoadFromFile(variable loadType, [DFREF sweepBrowserDFR])
 		dataFolder   = map[mapIndex][%DataFolder]
 		discLocation = map[mapIndex][%DiscLocation]
 		fileType     = map[mapIndex][%FileType]
+		tags         = map[mapIndex][%Tags]
 
 		switch(loadType)
 			case AB_LOAD_STIMSET:
@@ -1865,7 +1867,7 @@ static Function AB_LoadFromFile(variable loadType, [DFREF sweepBrowserDFR])
 				endif
 				oneValidLoad = 1
 
-				SB_AddToSweepBrowser(sweepBrowserDFR, fileName, dataFolder, device, sweep)
+				SB_AddToSweepBrowser(sweepBrowserDFR, fileName, dataFolder, device, sweep, tags)
 
 				index = GetNumberFromWaveNote(dfCollect, NOTE_INDEX)
 				EnsureLargeEnoughWave(dfCollect, indexShouldExist = index)

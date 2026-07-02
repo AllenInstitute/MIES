@@ -7033,7 +7033,7 @@ End
 /// @brief Return the sweepBrowser map wave from the given DFR
 Function/WAVE GetSweepBrowserMap(DFREF dfr)
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	ASSERT(DataFolderExistsDFR(dfr), "Missing SweepBrowser DFR")
 
@@ -7042,16 +7042,22 @@ Function/WAVE GetSweepBrowserMap(DFREF dfr)
 		return wv
 	endif
 
-	Make/T/N=(MINIMUM_WAVE_SIZE, 4) dfr:map/WAVE=wv
-	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+	if(WaveExists(wv))
+		if(WaveVersionIsAtLeast(wv, 1))
+			Redimension/N=(-1, 5) wv
+		endif
+	else
+		Make/T/N=(MINIMUM_WAVE_SIZE, 5) dfr:map/WAVE=wv
+		SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+	endif
 
 	SetDimLabel COLS, 0, FileName, wv
 	SetDimLabel COLS, 1, DataFolder, wv
 	SetDimLabel COLS, 2, Device, wv
 	SetDimLabel COLS, 3, Sweep, wv
+	SetDimLabel COLS, 4, Tags, wv
 
-	SetNumberInWaveNote(wv, WAVE_NOTE_LAYOUT_KEY, versionOfNewWave)
-
+	SetWaveVersion(wv, versionOfNewWave)
 	return wv
 End
 
