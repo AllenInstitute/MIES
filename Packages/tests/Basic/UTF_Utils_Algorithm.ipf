@@ -733,6 +733,72 @@ static Function GSI_Expects1dWave()
 	endtry
 End
 
+static Function TestGetSetIntersectionWaves()
+
+	try
+		GetSetIntersectionWaves($"")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE/WAVE/N=0 input
+	try
+		GetSetIntersectionWaves(input)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE/WAVE/N=(1, 1) input
+	try
+		GetSetIntersectionWaves(input)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE/D data
+	try
+		GetSetIntersectionWaves(data)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE data1 = {1, 2, 3, 4}
+	Make/FREE data2 = {4, 5, 6}
+	Make/FREE data3 = {6, 5, 4}
+
+	Make/FREE/WAVE input = {$""}
+	WAVE/Z matches = GetSetIntersectionWaves(input)
+	CHECK_WAVE(matches, NULL_WAVE)
+
+	Make/FREE/WAVE input = {data1}
+	WAVE/Z matches = GetSetIntersectionWaves(input)
+	CHECK_EQUAL_WAVES(matches, {1, 2, 3, 4})
+
+	Make/FREE/WAVE input = {data1, data2}
+	WAVE/Z matches = GetSetIntersectionWaves(input)
+	CHECK_EQUAL_WAVES(matches, {4})
+
+	Make/FREE/WAVE input = {data1, $"", data2}
+	WAVE/Z matches = GetSetIntersectionWaves(input)
+	CHECK_EQUAL_WAVES(matches, {4})
+
+	Make/FREE/WAVE input = {data1, data2, data3}
+	WAVE/Z matches = GetSetIntersectionWaves(input)
+	CHECK_EQUAL_WAVES(matches, {4})
+
+	Make/FREE/WAVE input = {data3, data2, data1}
+	WAVE/Z matches = GetSetIntersectionWaves(input)
+	CHECK_EQUAL_WAVES(matches, {4})
+
+	Make/FREE/WAVE input = {data3, data2, data1, data1, data2, data3}
+	WAVE/Z matches = GetSetIntersectionWaves(input)
+	CHECK_EQUAL_WAVES(matches, {4})
+End
+
 Function GSI_Works()
 
 	Make/FREE data1 = {1, 2, 3, 4}
