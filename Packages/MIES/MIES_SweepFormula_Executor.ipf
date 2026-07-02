@@ -505,6 +505,9 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLoc
 		case SF_OP_SELECTVIS:
 			WAVE out = SFOS_OperationSelectVis(exdop)
 			break
+		case SF_OP_SELECTTAG:
+			WAVE out = SFOS_OperationSelectTag(exdop)
+			break
 		case SF_OP_SELECTEXP:
 			WAVE out = SFOS_OperationSelectExperiment(exdop)
 			break
