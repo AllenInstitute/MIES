@@ -601,6 +601,21 @@ Function GSD_WorksText6()
 	CHECK_EQUAL_TEXTWAVES(matches, data1)
 End
 
+Function GSD_WorksText7()
+
+	Make/FREE/T data1 = {"a", "A"}
+	Make/FREE/T data2 = {"a"}
+
+	WAVE/Z matches = GetSetDifference(data1, data2, caseSensitive = 1)
+	CHECK_EQUAL_TEXTWAVES(matches, {"A"})
+
+	Make/FREE/T data1 = {"A", "a"}
+	Make/FREE/T data2 = {"a"}
+
+	WAVE/Z matches = GetSetDifference(data1, data2, caseSensitive = 1)
+	CHECK_EQUAL_TEXTWAVES(matches, {"A"})
+End
+
 Function GSD_ReturnsInvalidWaveRefWOMatches()
 
 	Make/FREE/D/N=0 data1
