@@ -783,6 +783,38 @@ threadsafe Function/WAVE GetSetIntersection(WAVE wave1, WAVE wave2, [variable ge
 	return resultWave
 End
 
+/// @brief GetSetIntersection from more than two waves, the waves are input through a wave reference wave. The wave reference wave can contain null waves.
+threadsafe Function/WAVE GetSetIntersectionWaves(WAVE/Z/WAVE wv)
+
+	variable cnt, numWaves
+
+	ASSERT_TS(IsWaveRefWave(wv), "Expected waveref wave as input")
+	ASSERT_TS(GetWaveDimensionality(wv) == ROWS, "Expected a 1d wave as input")
+	ASSERT_TS(DimSize(wv, ROWS) > 0, "Expected at least one wave in input")
+	if(DimSize(wv, ROWS) == 1)
+		return wv[0]
+	endif
+	WAVE/Z/WAVE wvZapped = ZapNullRefs(wv)
+	if(!WaveExists(wvZapped))
+		return $""
+	endif
+	numWaves = DimSize(wvZapped, ROWS)
+	if(numWaves == 1)
+		return wvZapped[0]
+	endif
+
+	WAVE intersect = wvZapped[0]
+	for(cnt = 1; cnt < numWaves; cnt += 1)
+		WAVE   part1     = intersect
+		WAVE/Z intersect = GetSetIntersection(part1, wvZapped[cnt])
+		if(!WaveExists(intersect))
+			return $""
+		endif
+	endfor
+
+	return intersect
+End
+
 threadsafe static Function FindLevelSingle(WAVE data, variable level, variable edge, variable first, variable last)
 
 	variable found, numLevels
