@@ -335,7 +335,7 @@ Function SB_UpdateSweepPlot(string win)
 	SetAxesProperties(graph, axesProps)
 End
 
-Function SB_AddToSweepBrowser(DFREF sweepBrowser, string fileName, string dataFolder, string device, variable sweep)
+Function SB_AddToSweepBrowser(DFREF sweepBrowser, string fileName, string dataFolder, string device, variable sweep, string tags)
 
 	variable index
 	string sweepStr = num2str(sweep)
@@ -347,11 +347,12 @@ Function SB_AddToSweepBrowser(DFREF sweepBrowser, string fileName, string dataFo
 
 	Duplicate/FREE/R=[0][]/T map, singleRow
 
-	singleRow                 = ""
+	singleRow[][]             = ""
 	singleRow[0][%FileName]   = fileName
 	singleRow[0][%DataFolder] = dataFolder
 	singleRow[0][%Device]     = device
 	singleRow[0][%Sweep]      = sweepStr
+	singleRow[0][%Tags]       = tags
 
 	if(IsFinite(GetRowWithSameContent(map, singleRow, 0)))
 		// we already have that sweep in the map
@@ -362,6 +363,7 @@ Function SB_AddToSweepBrowser(DFREF sweepBrowser, string fileName, string dataFo
 	map[index][%DataFolder] = dataFolder
 	map[index][%Device]     = device
 	map[index][%Sweep]      = sweepStr
+	map[index][%Tags]       = tags
 
 	SetNumberInWaveNote(map, NOTE_INDEX, index + 1)
 End
