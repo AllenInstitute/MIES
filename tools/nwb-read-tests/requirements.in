@@ -1,3 +1,2 @@
-# needs to be pip-compile'd on debian bookworm
-pynwb==3.1.0
-dandi==0.67.0
+pynwb==4.0.0
+dandi==0.76.5
