@@ -49,11 +49,9 @@ These files are generated from requirements.in via
 
   .. code:: text
 
-    pip-compile --upgrade --generate-hashes --output-file=requirements.txt --strip-extras requirements.in
+    uv pip compile --python-version 3.11 --generate-hashes --universal requirements.in --output-file requirements.txt
 
-Therefore updates should be done directly in requirements.in and then calling pip-compile. The platform/OS
-needs to be the same when generating the requirements.txt and running them. We currently run all python code
-in debian bookworm docker containers. On Windows you can get a debian bookworm with WSL.
+Therefore updates should be done in requirements.in only as requirements.txt is completely generated.
 
 Linting
 -------
