@@ -16,6 +16,7 @@
 #include "UTF_Epochs"
 #include "UTF_ForeignFunctionInterfaceWithHardware"
 #include "UTF_HardwareTestsWithBUG"
+#include "UTF_Replay"
 #include "UTF_SweepFormulaHardware"
 #include "UTF_SweepSkipping"
 #include "UTF_TestPulseAndTPDuringDAQ"
