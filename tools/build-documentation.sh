@@ -8,9 +8,10 @@ case $(uname) in
     Linux)
       ;;
     *)
-      # install the correct packages
-      # this is more convenient for users
-      pip install -r $top_level/tools/documentation/requirements.txt > /dev/null || exit 1
+      # install the required packages into a venv
+      uv venv --allow-existing --python 3.11 --managed-python "$top_level/Packages/doc/.venv" || exit 1
+      source "$top_level/Packages/doc/.venv/Scripts/activate"
+      uv pip install -r "$top_level/tools/documentation/requirements.txt" || exit 1
       ;;
 esac
 
