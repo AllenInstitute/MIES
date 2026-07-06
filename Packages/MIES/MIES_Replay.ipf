@@ -139,7 +139,7 @@ static Function RD_CompareLabnotebooks_Impl(WAVE values_new, WAVE values_replay,
 	                                   "Slow compensation time",        \
 	                                   "Inter-trial interval",          \
 	                                   "Neut Cap Enabled",              \
-	                                   "Original Data",                 \
+	                                   "Original data",                 \
 	                                   "Bridge Bal Enable",             \
 	                                   "LPF Cutoff",                    \
 	                                   "Device"}

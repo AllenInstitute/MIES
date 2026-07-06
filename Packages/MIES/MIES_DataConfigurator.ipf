@@ -1253,6 +1253,7 @@ static Function DC_PrepareLBNEntries(string device, STRUCT DataConfigurationResu
 	DC_DocumentChannelProperty(device, "Save amplifier settings", INDEP_HEADSTAGE, NaN, NaN, var = DAG_GetNumericalValue(device, "check_Settings_SaveAmpSettings"))
 	DC_DocumentChannelProperty(device, "Require amplifier", INDEP_HEADSTAGE, NaN, NaN, var = DAG_GetNumericalValue(device, "check_Settings_RequireAmpConn"))
 	DC_DocumentChannelProperty(device, "Skip Ahead", INDEP_HEADSTAGE, NaN, NaN, var = s.skipAhead)
+	DC_DocumentChannelProperty(device, "Original data", INDEP_HEADSTAGE, NaN, NaN, var = !(RD_IsCompilationEnabled() && RD_IsEnabled()))
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
