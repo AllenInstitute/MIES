@@ -505,7 +505,10 @@ Function EnableDangerousDebugging()
 	variable/G root:V_debugDangerously = 1
 End
 
-// Return the status of an `SetIgorOption` setting
+/// @brief Return the status of an `SetIgorOption` setting
+///
+/// This can be used for global symbols via `QueryIgorOption("poundDefine=symb?")` as well,
+/// but ignores definitions done via `#define` in the main procedure window.
 Function QueryIgorOption(string option)
 
 	variable state
