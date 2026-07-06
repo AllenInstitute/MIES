@@ -3056,3 +3056,202 @@ static Function TestErrorBars()
 	errorBarsInfo = StringByKey("ERRORBARS", info)
 	CHECK_EQUAL_STR(errorBarsInfo, "ErrorBars T000000d0_X XY,wave=(::MIES:trash:sf_errorbar_T000000d0_X_xplus,::MIES:trash:sf_errorbar_T000000d0_X_xminus),wave=(::MIES:trash:sf_errorbar_T000000d0_X_yplus,::MIES:trash:sf_errorbar_T000000d0_X_yminus)")
 End
+
+static Function/WAVE CreateDataWithErrorBars()
+
+	Make/FREE/D data = {1, 2, 3, 4}
+	Duplicate/FREE data, bars
+	bars[] = 0.1
+	JWN_SetWaveInWaveNote(data, SF_META_ERRORBARXPLUS, bars)
+	JWN_SetWaveInWaveNote(data, SF_META_ERRORBARXMINUS, bars)
+	JWN_SetWaveInWaveNote(data, SF_META_ERRORBARYPLUS, bars)
+	JWN_SetWaveInWaveNote(data, SF_META_ERRORBARYMINUS, bars)
+
+	return data
+End
+
+static Function/WAVE SetErrorBarsStyle(STRUCT SF_ExecutionData &exd, WAVE style)
+
+	string opShort = SF_OP_TESTOP
+	WAVE   data    = CreateDataWithErrorBars()
+	JWN_SetWaveInWaveNote(data, SF_META_ERRORBARSTYLE, style)
+
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 1)
+
+	output[0] = data
+
+	return SFH_GetOutputForExecutor(output, exd.graph, opShort)
+End
+
+Function/WAVE TestErrorBarsStyleShadedOp(STRUCT SF_ExecutionData &exd)
+
+	WAVE wErrorbarStyle = CreateSFErrorbarStyleWave()
+	wErrorbarStyle[%TYPE]         = SF_ERRORBARSTYLE_SHADED
+	wErrorbarStyle[%FILLMODE]     = 5
+	wErrorbarStyle[%FGCOLOR_R]    = 11
+	wErrorbarStyle[%FGCOLOR_G]    = 12
+	wErrorbarStyle[%FGCOLOR_B]    = 13
+	wErrorbarStyle[%BGCOLOR_R]    = 14
+	wErrorbarStyle[%BGCOLOR_G]    = 15
+	wErrorbarStyle[%BGCOLOR_B]    = 16
+	wErrorbarStyle[%NEGFILLMODE]  = 5
+	wErrorbarStyle[%NEGFGCOLOR_R] = 17
+	wErrorbarStyle[%NEGFGCOLOR_G] = 18
+	wErrorbarStyle[%NEGFGCOLOR_B] = 19
+	wErrorbarStyle[%NEGBGCOLOR_R] = 20
+	wErrorbarStyle[%NEGBGCOLOR_G] = 21
+	wErrorbarStyle[%NEGBGCOLOR_B] = 22
+
+	return SetErrorBarsStyle(exd, wErrorbarStyle)
+End
+
+Function/WAVE TestErrorBarsStyleNormalOp(STRUCT SF_ExecutionData &exd)
+
+	WAVE wErrorbarStyle = CreateSFErrorbarStyleWave()
+	wErrorbarStyle[%TYPE] = SF_ERRORBARSTYLE_NORMAL
+
+	return SetErrorBarsStyle(exd, wErrorbarStyle)
+End
+
+Function/WAVE TestErrorBarsStyleEllipseOp(STRUCT SF_ExecutionData &exd)
+
+	WAVE wErrorbarStyle = CreateSFErrorbarStyleWave()
+	wErrorbarStyle[%TYPE]     = SF_ERRORBARSTYLE_ELLIPSE
+	wErrorbarStyle[%ELLMODE]  = 0
+	wErrorbarStyle[%ELLP]     = 0.6837
+	wErrorbarStyle[%ELLALPHA] = 32000
+
+	return SetErrorBarsStyle(exd, wErrorbarStyle)
+End
+
+// IUTF_TD_GENERATOR DataGenerators#SF_ErrorBarStyles
+static Function TestErrorBarsStyle([WAVE/T input])
+
+	string win
+	string graph, winResultBase
+
+	graph = CreateFakeSweepBrowser_IGNORE()
+	DFREF dfr = BSP_GetFolder(graph, MIES_BSP_PANEL_FOLDER)
+	winResultBase = BSP_GetFormulaGraph(graph)
+
+	SVAR funcName = $GetSFTestopName(graph)
+	funcName = input[0]
+
+	MIES_SF#SF_FormulaPlotter(graph, "testop()")
+	win = winResultBase + "_" + SF_WINNAME_SUFFIX_GRAPH + "#" + SF_WINNAME_SUFFIX_GRAPH + "0"
+
+	string traces, info, errorBarsInfo
+	traces = TraceNameList(win, ";", 1 + 2)
+	info   = TraceInfo(win, StringFromList(0, traces, ";"), 0)
+	CHECK_PROPER_STR(info)
+
+	errorBarsInfo = StringByKey("ERRORBARS", info)
+	CHECK_EQUAL_STR(errorBarsInfo, input[1])
+End
+
+Function/WAVE SetAxisOffsetOp(STRUCT SF_ExecutionData &exd)
+
+	string opShort = SF_OP_TESTOP
+	WAVE   data    = CreateDataWithErrorBars()
+
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 1)
+	output[0] = data
+	JWN_SetNumberInWaveNote(output, SF_META_XAXISOFFSET, 10)
+	JWN_SetNumberInWaveNote(output, SF_META_YAXISOFFSET, 12)
+
+	return SFH_GetOutputForExecutor(output, exd.graph, opShort)
+End
+
+static Function TestAxisOffset()
+
+	string win, rec, info, key
+	string graph, winResultBase
+	variable pos, offset
+
+	graph = CreateFakeSweepBrowser_IGNORE()
+	DFREF dfr = BSP_GetFolder(graph, MIES_BSP_PANEL_FOLDER)
+	winResultBase = BSP_GetFormulaGraph(graph)
+
+	SVAR funcName = $GetSFTestopName(graph)
+	funcName = "SetAxisOffsetOp"
+
+	MIES_SF#SF_FormulaPlotter(graph, "testop()")
+	win = winResultBase + "_" + SF_WINNAME_SUFFIX_GRAPH + "#" + SF_WINNAME_SUFFIX_GRAPH + "0"
+
+	key = ";RECREATION:"
+
+	info = AxisInfo(win, "bottom")
+	CHECK_PROPER_STR(info)
+	pos    = strsearch(info, key, 0)
+	rec    = info[pos + strlen(key), Inf]
+	offset = GetNumFromModifyStr(rec, "axOffset", "", 0)
+	CHECK_EQUAL_VAR(offset, 10)
+
+	info = AxisInfo(win, "left")
+	CHECK_PROPER_STR(info)
+	pos    = strsearch(info, key, 0)
+	rec    = info[pos + strlen(key), Inf]
+	offset = GetNumFromModifyStr(rec, "axOffset", "", 0)
+	CHECK_EQUAL_VAR(offset, 12)
+End
+
+Function/WAVE SetAxisPercentageOp(STRUCT SF_ExecutionData &exd)
+
+	string opShort = SF_OP_TESTOP
+	WAVE   data    = CreateDataWithErrorBars()
+
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 1)
+	output[0] = data
+	JWN_SetNumberInWaveNote(output, SF_META_XAXISPERCENT, 85)
+	JWN_SetNumberInWaveNote(output, SF_META_YAXISPERCENT, 95)
+
+	return SFH_GetOutputForExecutor(output, exd.graph, opShort)
+End
+
+static Function TestAxisPercentage()
+
+	string win, rec, info, key
+	string graph, winResultBase
+	variable pos, offset
+
+	graph = CreateFakeSweepBrowser_IGNORE()
+	DFREF dfr = BSP_GetFolder(graph, MIES_BSP_PANEL_FOLDER)
+	winResultBase = BSP_GetFormulaGraph(graph)
+
+	SVAR funcName = $GetSFTestopName(graph)
+	funcName = "SetAxisPercentageOp"
+
+	MIES_SF#SF_FormulaPlotter(graph, "testop()")
+	win = winResultBase + "_" + SF_WINNAME_SUFFIX_GRAPH + "#" + SF_WINNAME_SUFFIX_GRAPH + "0"
+
+	key = ";RECREATION:"
+
+	info = AxisInfo(win, "bottom")
+	CHECK_PROPER_STR(info)
+	pos    = strsearch(info, key, 0)
+	rec    = info[pos + strlen(key), Inf]
+	offset = GetNumFromModifyStr(rec, "axisEnab", "{", 1)
+	CHECK_EQUAL_VAR(offset, 0.85)
+
+	info = AxisInfo(win, "left")
+	CHECK_PROPER_STR(info)
+	pos    = strsearch(info, key, 0)
+	rec    = info[pos + strlen(key), Inf]
+	offset = GetNumFromModifyStr(rec, "axisEnab", "{", 1)
+	CHECK_EQUAL_VAR(offset, 0.95)
+End
+
+static Function TestSFHIsArray()
+
+	Make/FREE numData
+	CHECK_EQUAL_VAR(SFH_IsArray(numData), 0)
+
+	Make/FREE/N=1 numData
+	CHECK_EQUAL_VAR(SFH_IsArray(numData), 0)
+
+	Make/FREE/WAVE datasets
+	CHECK_EQUAL_VAR(SFH_IsArray(datasets), 0)
+
+	Make/FREE/WAVE/N=1 anArray
+	CHECK_EQUAL_VAR(SFH_IsArray(anArray), 1)
+End

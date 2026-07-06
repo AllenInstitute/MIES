@@ -2101,11 +2101,40 @@ static Function/WAVE ValidHashmapSizes()
 	return sizes
 End
 
+static Function/WAVE IgorIntegratedFitFuncs()
+
+	variable col
+
+	WAVE/T props = GetSFIgorFitProperties()
+	col = FindDimLabel(props, COLS, "FITFUNC")
+	Duplicate/FREE/RMD=[][col] props, fitFuncs
+	Redimension/N=(-1) fitFuncs
+	SetDimensionLabelsFromWaveContents(fitFuncs, cleanup = 1)
+
+	return fitFuncs
+End
+
 static Function/WAVE PermanentOrFree()
 
 	Make/FREE wv = {1, 0}
 
 	SetDimensionLabels(wv, "Permanent;Free", ROWS)
+
+	return wv
+End
+
+static Function/WAVE SF_ErrorBarStyles()
+
+	Make/FREE/WAVE/N=3 wv
+
+	SetDimensionLabels(wv, "NORMAL;SHADED;ELLIPSE;", ROWS)
+	// TestOp name, expected result
+	Make/FREE/T wvt = {"TestErrorBarsStyleNormalOp", "ErrorBars T000000d0_X XY,wave=(::MIES:trash:sf_errorbar_T000000d0_X_xplus,::MIES:trash:sf_errorbar_T000000d0_X_xminus),wave=(::MIES:trash:sf_errorbar_T000000d0_X_yplus,::MIES:trash:sf_errorbar_T000000d0_X_yminus)"}
+	wv[%NORMAL] = wvt
+	Make/FREE/T wvt = {"TestErrorBarsStyleShadedOp", "ErrorBars T000000d0_X SHADE= {0,5,(11,12,13),(14,15,16),5,(17,18,19),(20,21,22)},wave=(::MIES:trash:sf_errorbar_T000000d0_X_yplus,::MIES:trash:sf_errorbar_T000000d0_X_yminus)"}
+	wv[%SHADED] = wvt
+	Make/FREE/T wvt = {"TestErrorBarsStyleEllipseOp", "ErrorBars T000000d0_X ELLIPSE={0,0.6837,32000},ewave=::MIES:trash:sf_errorbar_T000000d0_X_ellipse"}
+	wv[%ELLIPSE] = wvt
 
 	return wv
 End

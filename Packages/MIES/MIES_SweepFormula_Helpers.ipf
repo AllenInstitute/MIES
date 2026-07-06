@@ -1815,7 +1815,7 @@ Function SFH_IsArray(WAVE data)
 	if(!IsWaveRefWave(data))
 		return 0
 	endif
-	if(!DimSize(data, ROWS) == 1)
+	if(!(DimSize(data, ROWS) == 1))
 		return 0
 	endif
 
@@ -2218,4 +2218,28 @@ Function SFH_CopyPlotMetaData(WAVE dest, WAVE src)
 	JWN_SetNumberInWaveNote(dest, SF_META_TRACE_MODE, JWN_GetNumberFromWaveNote(src, SF_META_TRACE_MODE))
 	JWN_SetNumberInWaveNote(dest, SF_META_TRACETOFRONT, JWN_GetNumberFromWaveNote(src, SF_META_TRACETOFRONT))
 	JWN_SetNumberInWaveNote(dest, SF_META_LINESTYLE, JWN_GetNumberFromWaveNote(src, SF_META_LINESTYLE))
+End
+
+Function SFH_SetTraceStyleForFit(WAVE fitData, string errorbarStyle)
+
+	JWN_SetWaveInWaveNote(fitData, SF_META_TRACECOLOR, {0, 0, 0}) // black
+	JWN_SetNumberInWaveNote(fitData, SF_META_TRACE_MODE, TRACE_DISPLAY_MODE_LINES)
+	WAVE wErrorbarStyle = CreateSFErrorbarStyleWave()
+	strswitch(errorbarStyle)
+		case SF_PREPAREFIT_ERRORBARSTYLE_NORMAL:
+			wErrorbarStyle[%TYPE] = SF_ERRORBARSTYLE_NORMAL
+			break
+		case SF_PREPAREFIT_ERRORBARSTYLE_SHADED:
+			wErrorbarStyle[%TYPE]         = SF_ERRORBARSTYLE_SHADED
+			wErrorbarStyle[%FILLMODE]     = 5
+			wErrorbarStyle[%FGCOLOR_R]    = 192 << 8
+			wErrorbarStyle[%BGCOLOR_R]    = 192 << 8
+			wErrorbarStyle[%NEGFILLMODE]  = 5
+			wErrorbarStyle[%NEGFGCOLOR_B] = 192 << 8
+			wErrorbarStyle[%NEGBGCOLOR_B] = 192 << 8
+			break
+		default:
+			FATAL_ERROR("Unhandled errorbar style")
+	endswitch
+	JWN_SetWaveInWaveNote(fitData, SF_META_ERRORBARSTYLE, wErrorbarStyle)
 End
