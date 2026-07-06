@@ -489,12 +489,14 @@ End
 Function DisableWaveCache()
 
 	Execute/P/Q "SetIgorOption poundDefine=WAVECACHE_DISABLED"
+	Execute/P/Q "COMPILEPROCEDURES "
 End
 
 /// @brief Enable wave caching support again
 Function EnableWaveCache()
 
 	Execute/P/Q "SetIgorOption poundUnDefine=WAVECACHE_DISABLED"
+	Execute/P/Q "COMPILEPROCEDURES "
 End
 
 /// @brief Enable dangerous debugging (allows to call user-defined functions in the debugger)
