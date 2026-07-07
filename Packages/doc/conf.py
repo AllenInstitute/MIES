@@ -52,6 +52,7 @@ exclude_patterns = [
     "releasenotes_template.rst",
     "IPNWB/specifications",
     "daephys_ttl_ni.rst",
+    ".venv",
 ]
 
 cpp_id_attributes = ["threadsafe"]

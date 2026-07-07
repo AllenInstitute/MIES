@@ -1958,20 +1958,21 @@ static Function/S GetDefaultTestSuitesForExperiment()
 			list = AddListItem("UTF_SetControls.ipf", list, ";", Inf)
 			break
 		case "UTF_HardwareBasic.ipf":
-			list = AddListItem("UTF_VeryBasicHardwareTests.ipf", list, ";", Inf)
-			list = AddListItem("UTF_TrackSweepCounts.ipf", list, ";", Inf)
+			// sorted list
+			list = AddListItem("UTF_AnalysisFunctionManagement.ipf", list, ";", Inf)
+			list = AddListItem("UTF_AutoTestpulse.ipf", list, ";", Inf)
 			list = AddListItem("UTF_BasicHardwareTests.ipf", list, ";", Inf)
 			list = AddListItem("UTF_ConfigurationHardware.ipf", list, ";", Inf)
-			list = AddListItem("UTF_SweepSkipping.ipf", list, ";", Inf)
-			list = AddListItem("UTF_ForeignFunctionInterfaceWithHardware.ipf", list, ";", Inf)
-			list = AddListItem("UTF_TestPulseAndTPDuringDAQ.ipf", list, ";", Inf)
 			list = AddListItem("UTF_DAEphys.ipf", list, ";", Inf)
 			list = AddListItem("UTF_Dashboard.ipf", list, ";", Inf)
 			list = AddListItem("UTF_Databrowser.ipf", list, ";", Inf)
 			list = AddListItem("UTF_Epochs.ipf", list, ";", Inf)
+			list = AddListItem("UTF_ForeignFunctionInterfaceWithHardware.ipf", list, ";", Inf)
 			list = AddListItem("UTF_SweepFormulaHardware.ipf", list, ";", Inf)
-			list = AddListItem("UTF_AnalysisFunctionManagement.ipf", list, ";", Inf)
-			list = AddListItem("UTF_AutoTestpulse.ipf", list, ";", Inf)
+			list = AddListItem("UTF_SweepSkipping.ipf", list, ";", Inf)
+			list = AddListItem("UTF_TestPulseAndTPDuringDAQ.ipf", list, ";", Inf)
+			list = AddListItem("UTF_TrackSweepCounts.ipf", list, ";", Inf)
+			list = AddListItem("UTF_VeryBasicHardwareTests.ipf", list, ";", Inf)
 			list = AddListItem("UTF_VeryLastTestSuite.ipf", list, ";", Inf)
 
 			// tests which BUG out must come after the test-all tests in UTF_VeryLastTestSuite.ipf
