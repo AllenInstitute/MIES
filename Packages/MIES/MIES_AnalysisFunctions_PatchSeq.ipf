@@ -2473,7 +2473,7 @@ static Function/WAVE PSQ_DS_GatherDAScaleFillin(STRUCT PSQ_DS_DAScaleParams &cdp
 				WAVE/ZZ foundEntries
 			endif
 
-			alreadyMeasured = WaveExists(foundEntries) || GetRowIndex(DAScalesSorted, val = xm) >= 0
+			alreadyMeasured = WaveExists(foundEntries) || GetRowIndex(DAScalesSorted, val = xm, tol = DEFAULT_TOL) >= 0
 
 			if(!alreadyMeasured)
 				EnsureLargeEnoughWave(results, indexShouldExist = idx)
@@ -2550,7 +2550,7 @@ static Function/WAVE PSQ_DS_CalculateDAScale(STRUCT PSQ_DS_DAScaleParams &cdp, W
 
 	[type, DAScaleNew] = PSQ_DS_AD_ParseFutureDAScaleEntry(DAScaleWithType[0])
 
-	if(GetRowIndex(DAScaleAll, val = DAScaleNew) > 0)
+	if(GetRowIndex(DAScaleAll, val = DAScaleNew, tol = DEFAULT_TOL) > 0)
 		type = SelectString(fromRhSuAd, PSQ_DS_AD_FALLBACK, PSQ_DS_AD_FALLBACK_RHSUAD)
 		WAVE/T DAScaleWithType = PSQ_DS_CalculateDAScaleFallback(cdp, sweepNo, type, DAScaleAll[Inf], apfreq)
 	endif
@@ -2787,7 +2787,7 @@ static Function PSQ_DS_CalculateFillinQC(WAVE DAScales, variable dascale)
 	variable idx, leftMax, fillinQC
 	string msg
 
-	idx = GetRowIndex(DAScales, val = dascale)
+	idx = GetRowIndex(DAScales, val = dascale, tol = DEFAULT_TOL)
 	ASSERT(idx >= 0, "Could not find given dascale")
 
 	// now check if there are entries left of idx which are larger
@@ -3341,7 +3341,7 @@ static Function PSQ_DS_AddDAScaleFillinBeforeNegSlope(string device, variable sw
 		return 1
 	endif
 
-	if(IsFinite(GetRowIndex(DAScale, val = centerDAScale)))
+	if(IsFinite(GetRowIndex(DAScale, val = centerDAScale, tol = DEFAULT_TOL)))
 		// already measured, do nothing
 		return 1
 	endif
