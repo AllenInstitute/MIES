@@ -1198,7 +1198,7 @@ End
 /// @brief Open the given files in the analysis browser. By default files are located relative to the symbolic path `home` unless absolutePaths is set
 Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, [variable loadSweeps, variable loadStimsets, variable absolutePaths, variable multipleSweepBrowser])
 
-	variable idx
+	variable idx, val
 	string filePath, fullFilePath
 
 	absolutePaths = ParamIsDefault(absolutePaths) ? 0 : !!absolutePaths
@@ -1242,8 +1242,10 @@ Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, 
 		if(multipleSweepBrowser)
 			WAVE/Z indizes = FindIndizes(expBrowserList, colLabel = "file", prop = PROP_EMPTY | PROP_NOT)
 			for(idx : indizes)
-				expBrowserSel[idx][0][0] = expBrowserSel[idx][0][0] | LISTBOX_SELECTED
+				val                      = expBrowserSel[idx][0][0]
+				expBrowserSel[idx][0][0] = val | LISTBOX_SELECTED
 				PGC_SetAndActivateControl(abWin, "button_load_sweeps")
+				expBrowserSel[idx][0][0] = val
 			endfor
 			sweepBrowsers = WinList("*", ";", "WIN:" + num2istr(WINTYPE_GRAPH))
 		else
