@@ -261,6 +261,15 @@ End
 /// @brief Return the row index of the given value, string converted to a variable, or wv
 ///
 /// Assumes wv being one dimensional and does not use any tolerance for numerical values.
+///
+/// Exactly one of `val`, `str`, `refWave` must be given.
+///
+/// @param wv            wave to search in
+/// @param val           [optional] numerical value to search
+/// @param str           [optional] string value to search
+/// @param refWave       [optional] wave to search in case `wv` is a wave reference wave
+/// @param reverseSearch [optional, defaults to false] search starting from the back (true) instead from the front (false)
+/// @param textOp        [optional, defaults to #TXOP_WHOLE_ELEM] Search tweaks when searching in text waves, see @ref FindValueTXOP
 threadsafe Function GetRowIndex(WAVE wv, [variable val, string str, WAVE/Z refWave, variable reverseSearch, variable textOp])
 
 	variable numEntries, i, wvType
