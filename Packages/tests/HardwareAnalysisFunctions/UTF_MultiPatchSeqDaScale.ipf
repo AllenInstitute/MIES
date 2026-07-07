@@ -120,7 +120,7 @@ static Function MSQ_DS2_REENTRY([string str])
 	CHECK_EQUAL_WAVES(headstagePass, {1, 1, 1, 0}, mode = WAVE_DATA)
 
 	WAVE/Z stimScale = GetLBNSingleEntry_IGNORE(sweepNo, str, STIMSET_SCALE_FACTOR_KEY, 0, EACH_SCI)
-	CHECK_EQUAL_WAVES(stimScale, {1023, 1523, 2023, 3023}, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(stimScale, {1023, 1523, 2023, 3023}, mode = WAVE_DATA, tol = DEFAULT_TOL)
 
 	WAVE/Z oorDAScale = GetLBNSingleEntry_IGNORE(sweepNo, str, MSQ_FMT_LBN_DASCALE_OOR, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 1}, mode = WAVE_DATA)

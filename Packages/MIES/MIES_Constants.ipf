@@ -2773,3 +2773,5 @@ Constant TXOP_CASE_SENSE = 0x1
 Constant TXOP_WHOLE_WORD = 0x2
 Constant TXOP_WHOLE_ELEM = 0x4
 ///@}
+/// Default absolute tolerance used for numeric comparisons when no domain-specific tolerance is required.
+Constant DEFAULT_TOL = 1e-12

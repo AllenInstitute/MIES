@@ -362,13 +362,13 @@ static Function TestSweepFormulaTP(string device)
 	formula = "tp(tpss(), select(selchannels(DA), selsweeps()))"
 	WAVE/WAVE tpResult = SFE_ExecuteFormula(formula, graph, useVariables = 0)
 	for(data : tpResult)
-		CHECK_EQUAL_WAVES(wRef, data, tol = 1e-12, mode = ~WAVE_NOTE)
+		CHECK_EQUAL_WAVES(wRef, data, tol = DEFAULT_TOL, mode = ~WAVE_NOTE)
 	endfor
 
 	formula = "tp(tpinst(), select(selchannels(DA), selsweeps()))"
 	WAVE/WAVE tpResult = SFE_ExecuteFormula(formula, graph, useVariables = 0)
 	for(data : tpResult)
-		CHECK_EQUAL_WAVES(wRef, data, tol = 1e-12, mode = ~WAVE_NOTE)
+		CHECK_EQUAL_WAVES(wRef, data, tol = DEFAULT_TOL, mode = ~WAVE_NOTE)
 	endfor
 
 	// Test base line
@@ -379,7 +379,7 @@ static Function TestSweepFormulaTP(string device)
 	i = 0
 	for(data : tpResult)
 		SetScale d, 0, 0, units[i], wRef
-		CHECK_EQUAL_WAVES(wRef, data, tol = 1e-12, mode = ~WAVE_NOTE)
+		CHECK_EQUAL_WAVES(wRef, data, tol = DEFAULT_TOL, mode = ~WAVE_NOTE)
 		i += 1
 	endfor
 

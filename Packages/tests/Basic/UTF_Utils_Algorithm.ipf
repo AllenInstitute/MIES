@@ -269,7 +269,7 @@ static Function TestGetRowIndex()
 
 	// no tolerance by default
 	Make/FREE/D doubleWave = {1}
-	valueToSearch = 1 + 1e-12
+	valueToSearch = 1 + DEFAULT_TOL
 	strToSearch   = num2str(valueToSearch, "%.15g")
 	CHECK_EQUAL_VAR(GetRowIndex(doubleWave, val = valueToSearch), NaN)
 	CHECK_EQUAL_VAR(GetRowIndex(doubleWave, str = strToSearch), NaN)
@@ -278,7 +278,7 @@ static Function TestGetRowIndex()
 
 	// but a tolerance can be set
 	Make/FREE/D doubleWave = {1, 1}
-	tol           = 1e-12
+	tol           = DEFAULT_TOL
 	valueToSearch = 1 + 1e-13
 	strToSearch   = num2str(valueToSearch, "%.15g")
 	CHECK_EQUAL_VAR(GetRowIndex(doubleWave, val = valueToSearch, tol = tol), 0)

@@ -4403,7 +4403,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 
 			val = DAG_GetNumericalValue(device, "setvar_DataAcq_AutoBiasV")
 
-			if(!IsFinite(val) || CheckIfSmall(val, tol = 1e-12))
+			if(!IsFinite(val) || CheckIfSmall(val, tol = DEFAULT_TOL))
 				printf "(%s): Autobias value is zero or non-finite\r", device
 				ControlWindowToFront()
 				return 1
@@ -5389,7 +5389,7 @@ Function PSQ_Rheobase(string device, STRUCT AnalysisFunction_V3 &s)
 
 			val = DAG_GetNumericalValue(device, "setvar_DataAcq_AutoBiasV")
 
-			if(!IsFinite(val) || CheckIfSmall(val, tol = 1e-12))
+			if(!IsFinite(val) || CheckIfSmall(val, tol = DEFAULT_TOL))
 				printf "(%s): Autobias value is zero or non-finite\r", device
 				ControlWindowToFront()
 				return 1
@@ -5861,7 +5861,7 @@ Function PSQ_Ramp(string device, STRUCT AnalysisFunction_V3 &s)
 
 			val = DAG_GetNumericalValue(device, "setvar_DataAcq_AutoBiasV")
 
-			if(!IsFinite(val) || CheckIfSmall(val, tol = 1e-12))
+			if(!IsFinite(val) || CheckIfSmall(val, tol = DEFAULT_TOL))
 				printf "(%s): Autobias value is zero or non-finite\r", device
 				ControlWindowToFront()
 				return 1

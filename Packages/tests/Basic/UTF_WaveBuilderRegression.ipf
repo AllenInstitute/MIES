@@ -95,7 +95,7 @@ Function WB_RegressionTest([string stimset])
 	Duplicate/O wv, root:wv
 #endif // AUTOMATED_TESTING_DEBUGGING
 
-	CHECK_EQUAL_WAVES(refWave, wv, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(refWave, wv, mode = WAVE_DATA, tol = DEFAULT_TOL)
 
 	text = note(wv)
 
