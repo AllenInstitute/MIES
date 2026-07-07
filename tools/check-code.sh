@@ -190,6 +190,15 @@ then
   ret=1
 fi
 
+matches=$(git grep $opts 'FindValue(?:/[^[:space:]]*)*/TXOP=\(?[[:digit:]]+\)?' '**/MIES_*.ipf' '**/UTF*.ipf' ':^*/MIES_Pictures.ipf')
+
+if [[ -n "$matches" ]]
+then
+  echo "The FindValue/TXOP numerical literal check failed and found the following occurrences:"
+  echo "$matches"
+  ret=1
+fi
+
 # ripgrep checks
 
 files=$(git ls-files '*.ipf' '*.sh' '*.rst' '*.dot' '*.md' ':!:**/releasenotes_template.rst' ':^*/IPA_Control.ipf')
