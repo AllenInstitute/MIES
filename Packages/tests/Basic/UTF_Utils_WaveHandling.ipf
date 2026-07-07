@@ -3317,6 +3317,15 @@ Function RTWE1D_WorksWithCustomOptions()
 	CHECK_EQUAL_STR(wv[1], "def")
 End
 
+Function RTWE1D_WorksWithWholeElement()
+
+	Make/FREE/T wv = {"abcd", "abc", "aabc"}
+	CHECK_EQUAL_VAR(RemoveTextWaveEntry1D(wv, "abc", options = TXOP_WHOLE_ELEM), 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 2)
+	CHECK_EQUAL_STR(wv[0], "abcd")
+	CHECK_EQUAL_STR(wv[1], "aabc")
+End
+
 Function RTWE1D_CombinedOptionsWithAll()
 
 	Make/FREE/T wv = {"Testing", "test", "TEST", "tests", "test"}
