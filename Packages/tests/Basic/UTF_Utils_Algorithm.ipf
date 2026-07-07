@@ -155,8 +155,8 @@ End
 
 static Function TestGetRowIndex()
 
-	variable valueToSearch
-	string   strToSearch
+	variable valueToSearch, tol
+	string strToSearch
 
 	Make/N=0/FREE emptyWave
 
@@ -179,6 +179,22 @@ static Function TestGetRowIndex()
 	// invalid refWave type
 	try
 		GetRowIndex(emptyWave, refWave = $"")
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// invalid tolerance #1
+	try
+		GetRowIndex(emptyWave, val = 0, tol = NaN)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// invalid tolerance #2
+	try
+		GetRowIndex(emptyWave, val = 0, tol = -1)
 		FAIL()
 	catch
 		CHECK_NO_RTE()
@@ -251,7 +267,7 @@ static Function TestGetRowIndex()
 	Make/FREE/WAVE/N=0 emptyWaveRefWave
 	CHECK_EQUAL_VAR(GetRowIndex(emptyWaveRefWave, refWave = content, reverseSearch = 1), NaN)
 
-	// no tolerance
+	// no tolerance by default
 	Make/FREE/D doubleWave = {1}
 	valueToSearch = 1 + 1e-12
 	strToSearch   = num2str(valueToSearch, "%.15g")
@@ -259,6 +275,16 @@ static Function TestGetRowIndex()
 	CHECK_EQUAL_VAR(GetRowIndex(doubleWave, str = strToSearch), NaN)
 	CHECK_EQUAL_VAR(GetRowIndex(doubleWave, val = valueToSearch, reverseSearch = 1), NaN)
 	CHECK_EQUAL_VAR(GetRowIndex(doubleWave, str = strToSearch, reverseSearch = 1), NaN)
+
+	// but a tolerance can be set
+	Make/FREE/D doubleWave = {1, 1}
+	tol           = 1e-12
+	valueToSearch = 1 + 1e-13
+	strToSearch   = num2str(valueToSearch, "%.15g")
+	CHECK_EQUAL_VAR(GetRowIndex(doubleWave, val = valueToSearch, tol = tol), 0)
+	CHECK_EQUAL_VAR(GetRowIndex(doubleWave, str = strToSearch, tol = tol), 0)
+	CHECK_EQUAL_VAR(GetRowIndex(doubleWave, val = valueToSearch, tol = tol, reverseSearch = 1), 1)
+	CHECK_EQUAL_VAR(GetRowIndex(doubleWave, str = strToSearch, tol = tol, reverseSearch = 1), 1)
 
 	// unsupported wave type
 	try

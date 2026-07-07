@@ -260,7 +260,7 @@ End
 
 /// @brief Return the row index of the given value, string converted to a variable, or wv
 ///
-/// Assumes wv being one dimensional and does not use any tolerance for numerical values.
+/// Assumes wv being one dimensional.
 ///
 /// Exactly one of `val`, `str`, `refWave` must be given.
 ///
@@ -270,7 +270,8 @@ End
 /// @param refWave       [optional] wave to search in case `wv` is a wave reference wave
 /// @param reverseSearch [optional, defaults to false] search starting from the back (true) instead from the front (false)
 /// @param textOp        [optional, defaults to #TXOP_WHOLE_ELEM] Search tweaks when searching in text waves, see @ref FindValueTXOP
-threadsafe Function GetRowIndex(WAVE wv, [variable val, string str, WAVE/Z refWave, variable reverseSearch, variable textOp])
+/// @param tol           [optional, defaults to 0] tolerance for numerical search
+threadsafe Function GetRowIndex(WAVE wv, [variable val, string str, WAVE/Z refWave, variable reverseSearch, variable textOp, variable tol])
 
 	variable numEntries, i, wvType
 
@@ -284,6 +285,12 @@ threadsafe Function GetRowIndex(WAVE wv, [variable val, string str, WAVE/Z refWa
 
 	if(ParamIsDefault(textOp))
 		textOp = TXOP_WHOLE_ELEM
+	endif
+
+	if(ParamIsDefault(tol))
+		tol = 0
+	else
+		ASSERT_TS(IsNullOrPositiveAndFinite(tol), "Expected finite and non-negative tolerance")
 	endif
 
 	wvType = WaveType(wv, 1)
@@ -327,10 +334,10 @@ threadsafe Function GetRowIndex(WAVE wv, [variable val, string str, WAVE/Z refWa
 							endif
 						endfor
 					else
-						FindValue/V=(val)/T=(0) wv
+						FindValue/V=(val)/T=(tol) wv
 					endif
 #else
-					FindValue/V=(val)/T=(0) wv
+					FindValue/V=(val)/T=(tol) wv
 #endif
 				endif
 			else
@@ -346,10 +353,10 @@ threadsafe Function GetRowIndex(WAVE wv, [variable val, string str, WAVE/Z refWa
 							endif
 						endfor
 					else
-						FindValue/V=(val)/R/T=(0) wv
+						FindValue/V=(val)/R/T=(tol) wv
 					endif
 #else
-					FindValue/V=(val)/R/T=(0) wv
+					FindValue/V=(val)/R/T=(tol) wv
 #endif
 				endif
 			endif
