@@ -831,7 +831,7 @@ static Function EP_TestUserEpochs_REENTRY([string str])
 			// now check that we can find epochs from the expected events
 			for(k = 0; k < TOTAL_NUM_EVENTS; k += 1)
 				sprintf tags, "HS=%d;eventType=%d;", j, k
-				// not using /TXOP=4 here as we have an unknown short name as well
+				// not using /TXOP=(TXOP_WHOLE_ELEM) here as we have an unknown short name as well
 				FindValue/TEXT=tags/RMD=[][EPOCH_COL_TAGS][DAC] epochWave
 
 				switch(k)

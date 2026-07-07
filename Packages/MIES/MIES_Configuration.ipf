@@ -834,7 +834,7 @@ End
 static Function CONF_RequireConfigBlockExists(variable jsonID)
 
 	WAVE/T ctrlGroups = JSON_GetKeys(jsonID, "")
-	FindValue/TXOP=4/TEXT=EXPCONFIG_RESERVED_DATABLOCK ctrlGroups
+	FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=EXPCONFIG_RESERVED_DATABLOCK ctrlGroups
 	ASSERT(V_Value >= 0, "\"" + EXPCONFIG_RESERVED_DATABLOCK + "\" block in config file not found.")
 End
 
@@ -917,7 +917,7 @@ static Function/S CONF_TraversalFinder(variable jsonID, string basePath, string 
 	WAVE/Z/T ctrlSubGroups
 	WAVE/Z/T niceNames
 	[ctrlSubGroups, niceNames] = SplitTextWaveBySuffix(ctrlGroups, EXPCONFIG_CTRLGROUP_SUFFIX)
-	FindValue/TXOP=4/TEXT=niceName niceNames
+	FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=niceName niceNames
 	if(V_Value >= 0)
 		return basePath + "/" + niceName
 	endif
@@ -1006,7 +1006,7 @@ static Function/WAVE CONF_GetControlArrayList(string wName)
 		ctrlName  = StringFromList(i, ctrlList)
 		arrayName = GetUserData(wName, ctrlName, EXPCONFIG_UDATA_CTRLARRAY)
 		if(!IsEmpty(arrayName))
-			FindValue/RMD=[][col1]/TXOP=4/TEXT=arrayName ctrlArrays
+			FindValue/RMD=[][col1]/TXOP=(TXOP_WHOLE_ELEM)/TEXT=arrayName ctrlArrays
 			if(V_Value >= 0)
 				ctrlArrays[V_Row][%CTRLNAMELIST] = AddListItem(ctrlName, ctrlArrays[V_Row][%CTRLNAMELIST])
 			else
@@ -1125,11 +1125,11 @@ Function/S CONF_JSONToWindow(string wName, variable restoreMask, variable jsonID
 				ctrlName  = StringFromList(i, ctrlList)
 				arrayName = GetUserData(subWinTarget, ctrlName, EXPCONFIG_UDATA_CTRLARRAY)
 				if(!IsEmpty(arrayName))
-					FindValue/RMD=[][colArrayName]/TXOP=4/TEXT=arrayName ctrlArrays
+					FindValue/RMD=[][colArrayName]/TXOP=(TXOP_WHOLE_ELEM)/TEXT=arrayName ctrlArrays
 					if(V_Value >= 0)
 						if(!ctrlArrayAdded[V_Row])
 							arrayNameIndex = V_Row
-							FindValue/RMD=[][colNiceName]/TXOP=4/TEXT=arrayName ctrlData
+							FindValue/RMD=[][colNiceName]/TXOP=(TXOP_WHOLE_ELEM)/TEXT=arrayName ctrlData
 							if(V_Value >= 0)
 								jsonCtrlGroupPath = ctrlData[V_Row][%JSONPATH]
 								DeletePoints V_Row, 1, ctrlData
@@ -1150,7 +1150,7 @@ Function/S CONF_JSONToWindow(string wName, variable restoreMask, variable jsonID
 				else
 					niceName = GetUserData(subWinTarget, ctrlName, EXPCONFIG_UDATA_NICENAME)
 					niceName = SelectString(IsEmpty(niceName), niceName, ctrlName)
-					FindValue/RMD=[][colNiceName]/TXOP=4/TEXT=niceName ctrlData
+					FindValue/RMD=[][colNiceName]/TXOP=(TXOP_WHOLE_ELEM)/TEXT=niceName ctrlData
 					if(V_Value >= 0)
 						ctrlData[V_Row][%CTRLNAME] = ctrlName
 						uData                      = GetUserData(subWinTarget, ctrlName, EXPCONFIG_UDATA_RESTORE_PRIORITY)
@@ -1168,7 +1168,7 @@ Function/S CONF_JSONToWindow(string wName, variable restoreMask, variable jsonID
 
 			colCtrlName = FindDimLabel(ctrlData, COLS, "CTRLNAME")
 			do
-				FindValue/RMD=[][colCtrlName]/TXOP=4/TEXT="" ctrlData
+				FindValue/RMD=[][colCtrlName]/TXOP=(TXOP_WHOLE_ELEM)/TEXT="" ctrlData
 				if(V_Value >= 0)
 					printf "Control %s from config file does not exist in window %s.\r", ctrlData[V_Row][%NICENAME], subWinTarget
 					DeletePoints V_Row, 1, ctrlData
@@ -1300,7 +1300,7 @@ static Function CONF_RestoreControl(string wName, variable restoreMask, variable
 
 	if(IsEmpty(arrayName))
 
-		FindValue/TXOP=4/TEXT=EXPCONFIG_FIELD_CTRLTYPE ctrlPropList
+		FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=EXPCONFIG_FIELD_CTRLTYPE ctrlPropList
 		if(V_Value >= 0)
 			ctrlTypeName = JSON_GetString(jsonID, jsonPath + EXPCONFIG_FIELD_CTRLTYPE)
 			i            = WhichListItem(ctrlTypeName, EXPCONFIG_GUI_CTRLLIST)
@@ -1322,7 +1322,7 @@ static Function CONF_RestoreControl(string wName, variable restoreMask, variable
 			ModifyControl $ctrlName, win=$wName, align=VAlign, size={VWidth, VHeight}, pos={VPos, VTop}
 		endif
 		if(restoreMask & EXPCONFIG_SAVE_DISABLED)
-			FindValue/TXOP=4/TEXT=EXPCONFIG_FIELD_CTRLDISABLED ctrlPropList
+			FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=EXPCONFIG_FIELD_CTRLDISABLED ctrlPropList
 			if(V_Value >= 0)
 				VDisabled = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_FIELD_CTRLDISABLED)
 				if(VDisabled & HIDDEN_CONTROL_BIT)
@@ -1336,7 +1336,7 @@ static Function CONF_RestoreControl(string wName, variable restoreMask, variable
 			endif
 		endif
 		if(restoreMask & EXPCONFIG_SAVE_USERDATA)
-			FindValue/TXOP=4/TEXT=EXPCONFIG_FIELD_CTRLUSERDATA ctrlPropList
+			FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=EXPCONFIG_FIELD_CTRLUSERDATA ctrlPropList
 			if(V_Value >= 0)
 				WAVE/T udataKeys = JSON_GetKeys(jsonID, jsonPath + EXPCONFIG_FIELD_CTRLUSERDATA)
 
@@ -1358,7 +1358,7 @@ static Function CONF_RestoreControl(string wName, variable restoreMask, variable
 				for(i = 0; i < numUdataKeys; i += 1)
 					uKey  = udataKeys[i]
 					uData = JSON_GetString(jsonID, jsonPath + EXPCONFIG_FIELD_CTRLUSERDATA + "/" + uKey)
-					FindValue/TXOP=4/TEXT=uKey udataBase64
+					FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=uKey udataBase64
 					if(V_Value >= 0)
 						uData = Base64Decode(uData)
 					endif
@@ -1632,7 +1632,7 @@ Function CONF_WindowToJSON(string wName, variable saveMask, [string excCtrlTypes
 		if(numCtrl > 1)
 			WAVE/T arrayNamesRedux = GetUniqueEntries(arrayNames)
 			arrayNamesRedux[] = LowerStr(arrayNamesRedux[p])
-			FindValue/TXOP=4/TEXT="" arrayNamesRedux
+			FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT="" arrayNamesRedux
 			if(V_Value >= 0)
 				DeletePoints V_Value, 1, arrayNamesRedux
 			endif
@@ -1687,7 +1687,7 @@ Function CONF_WindowToJSON(string wName, variable saveMask, [string excCtrlTypes
 				numCoupled = ItemsInList(radioList)
 				ASSERT(numCoupled >= 2, "At least two CheckBoxes must be coupled for Radio Buttons")
 				if(numCoupled == 2)
-					FindValue/TXOP=4/TEXT=(StringFromList(1, radioList)) ctrlNames
+					FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=(StringFromList(1, radioList)) ctrlNames
 					ASSERT(V_Value >= 0, "Specified coupled CheckBox is not present as control in " + wName)
 					DeletePoints V_Row, 1, ctrlNames
 				else
@@ -1709,7 +1709,7 @@ Function CONF_WindowToJSON(string wName, variable saveMask, [string excCtrlTypes
 					for(j = 0; j < numCoupled; j += 1)
 						cbCtrlName = StringFromList(j, radioList)
 						if(setRadioPos != j)
-							FindValue/TXOP=4/TEXT=cbCtrlName ctrlNames
+							FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=cbCtrlName ctrlNames
 							ASSERT(V_Value >= 0, "Specified coupled CheckBox " + cbCtrlName + " is not present as control in " + wName)
 							DeletePoints V_Row, 1, ctrlNames
 						endif
@@ -1930,7 +1930,7 @@ static Function CONF_ControlToJSON(string wName, string ctrlName, variable saveM
 		ASSERT(!IsNaN(arrayIndex) && arrayIndex >= 0, "Read invalid ControlArrayIndex from userdata of control " + ctrlName)
 		ASSERT(arrayIndex < EXPCONFIG_UDATA_MAXCTRLARRAYINDEX, "ControlArrayIndex is greater than " + num2str(EXPCONFIG_UDATA_MAXCTRLARRAYINDEX) + ".")
 		WAVE/T ctrlProps = JSON_GetKeys(jsonID, controlPath)
-		FindValue/TXOP=4/TEXT=EXPCONFIG_FIELD_CTRLARRAYVALUES ctrlProps
+		FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=EXPCONFIG_FIELD_CTRLARRAYVALUES ctrlProps
 		if(V_Value >= 0)
 			oldSize = JSON_GetArraySize(jsonID, ctrlPath + EXPCONFIG_FIELD_CTRLARRAYVALUES)
 		else
@@ -2007,7 +2007,7 @@ static Function CONF_RestoreHeadstageAssociation(string device, variable jsonID,
 
 	CONF_RequireConfigBlockExists(jsonID)
 	WAVE/T keys = JSON_GetKeys(jsonID, EXPCONFIG_RESERVED_DATABLOCK)
-	FindValue/TXOP=4/TEXT=EXPCONFIG_JSON_HSASSOCBLOCK keys
+	FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=EXPCONFIG_JSON_HSASSOCBLOCK keys
 	ASSERT(V_Value >= 0, "Headstage Association block not found in configuration.")
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
@@ -2192,7 +2192,7 @@ static Function CONF_RestoreUserPressure(string device, variable jsonID)
 
 	CONF_RequireConfigBlockExists(jsonID)
 	WAVE/T keys = JSON_GetKeys(jsonID, EXPCONFIG_RESERVED_DATABLOCK)
-	FindValue/TXOP=4/TEXT=EXPCONFIG_JSON_USERPRESSBLOCK keys
+	FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=EXPCONFIG_JSON_USERPRESSBLOCK keys
 	ASSERT(V_Value >= 0, "User Pressure block not found in configuration.")
 	jsonPath = EXPCONFIG_RESERVED_DATABLOCK + "/" + EXPCONFIG_JSON_USERPRESSBLOCK + "/"
 	PGC_SetAndActivateControl(device, "popup_Settings_UserPressure", str = JSON_GetString(jsonID, jsonPath + EXPCONFIG_JSON_USERPRESSDEV))

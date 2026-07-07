@@ -843,7 +843,7 @@ End
 ///
 /// @param w       text wave
 /// @param entry   element content to compare
-/// @param options [optional, defaults to "whole wave element"] FindValue/TXOP options
+/// @param options [optional, defaults to #TXOP_WHOLE_ELEM] see @ref FindValueTXOP
 /// @param all     [optional, defaults to false] removes all entries
 ///
 /// @return 0 if at least one entry was found, 1 otherwise
@@ -854,7 +854,7 @@ threadsafe Function RemoveTextWaveEntry1D(WAVE/T w, string entry, [variable opti
 	variable start, foundOnce
 
 	if(ParamIsDefault(options))
-		options = 4
+		options = TXOP_WHOLE_ELEM
 	endif
 
 	if(ParamIsDefault(all))

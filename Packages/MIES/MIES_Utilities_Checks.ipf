@@ -539,7 +539,7 @@ static Function [WAVE/T fitProps, variable row] GetIntegratedFitFunctionRow(stri
 
 	col = FindDimLabel(fitProps, COLS, "FITFUNC")
 	ASSERT(col >= 0, "Column not found")
-	FindValue/Z/TEXT=(fitFuncName)/TXOP=4/RMD=[][col] fitProps
+	FindValue/Z/TEXT=(fitFuncName)/TXOP=(TXOP_WHOLE_ELEM)/RMD=[][col] fitProps
 
 	return [fitProps, V_row]
 End

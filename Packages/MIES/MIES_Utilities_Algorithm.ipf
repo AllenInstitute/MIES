@@ -274,7 +274,7 @@ threadsafe Function GetRowIndex(WAVE wv, [variable val, string str, WAVE/Z refWa
 	endif
 
 	if(ParamIsDefault(textOp))
-		textOp = 4
+		textOp = TXOP_WHOLE_ELEM
 	endif
 
 	wvType = WaveType(wv, 1)
@@ -629,7 +629,7 @@ threadsafe static Function [WAVE result, variable index] GetSetDifferenceText(WA
 	if(getIndices)
 		Make/FREE/D/N=(numEntries) resultIndices
 		for(i = 0; i < numEntries; i += 1)
-			FindValue/UOFV/TEXT=(wave1[i])/TXOP=4 wave2
+			FindValue/UOFV/TEXT=(wave1[i])/TXOP=(TXOP_WHOLE_ELEM) wave2
 			if(V_Value == -1)
 				resultIndices[j++] = i
 			endif
@@ -638,7 +638,7 @@ threadsafe static Function [WAVE result, variable index] GetSetDifferenceText(WA
 	else
 		Duplicate/FREE/T wave1, resultTxT
 		for(str : wave1)
-			FindValue/UOFV/TEXT=(str)/TXOP=4 wave2
+			FindValue/UOFV/TEXT=(str)/TXOP=(TXOP_WHOLE_ELEM) wave2
 			if(V_Value == -1)
 				resultTxT[j++] = str
 			endif

@@ -501,7 +501,7 @@ Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE
 	numDoInh = DimSize(doInheritance, ROWS)
 	Make/FREE/N=(numDoInh) findPos
 	for(i = 0; i < numDoInh; i += 1)
-		FindValue/TEXT=doInheritance[i]/TXOP=4 opStackW
+		FindValue/TEXT=doInheritance[i]/TXOP=(TXOP_WHOLE_ELEM) opStackW
 		findPos[i] = (V_Value == -1) ? NaN : V_Value
 	endfor
 	minVal = WaveMin(findPos)
@@ -2911,7 +2911,7 @@ static Function SF_MarkErrorLocationInNotebook(string win)
 	[code, preProcCode]           = SF_GetCode(win)
 	[WAVE/T varAssignments, code] = SF_GetVariableAssignments(preProcCode)
 	col                           = FindDimLabel(varAssignments, COLS, "VARNAME")
-	FindValue/TEXT=(varName)/TXOP=4/RMD=[][col] varAssignments
+	FindValue/TEXT=(varName)/TXOP=(TXOP_WHOLE_ELEM)/RMD=[][col] varAssignments
 	ASSERT(V_row >= 0, "Variable not found")
 
 	paragraph = str2num(varAssignments[V_row][%LINE])

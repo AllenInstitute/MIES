@@ -155,8 +155,8 @@ static Function OVS_RemoveLowCountEntries(WAVE/T stimsets, WAVE/T setSweepCounts
 		endfor
 
 		if(!hasRepetitions)
-			RemoveTextWaveEntry1D(dupsRemovedSetSweepCounts, stimset, options = 1, all = 1)
-			RemoveTextWaveEntry1D(dupsRemovedSetCycleCounts, stimset, options = 1, all = 1)
+			RemoveTextWaveEntry1D(dupsRemovedSetSweepCounts, stimset, options = TXOP_CASE_SENSE, all = 1)
+			RemoveTextWaveEntry1D(dupsRemovedSetCycleCounts, stimset, options = TXOP_CASE_SENSE, all = 1)
 		endif
 	endfor
 End
@@ -422,7 +422,7 @@ Function OVS_ChangeSweepSelectionState(string win, variable newState, [variable 
 	WAVE   listboxSelWave = GetOverlaySweepsListSelWave(dfr)
 
 	if(!ParamIsDefault(sweepNo))
-		FindValue/RMD=[][0]/TEXT=(num2str(sweepNo))/TXOP=4 listboxWave
+		FindValue/RMD=[][0]/TEXT=(num2str(sweepNo))/TXOP=(TXOP_WHOLE_ELEM) listboxWave
 		if(V_value >= 0)
 			Make/FREE/N=(1, 2) indices = {{V_Value}, {0}}
 		endif
@@ -437,7 +437,7 @@ Function OVS_ChangeSweepSelectionState(string win, variable newState, [variable 
 
 			for(i = 0; i < numEntries; i += 1)
 				sweepNo = sweeps[i]
-				FindValue/RMD=[][0]/TEXT=(num2str(sweepNo))/TXOP=4 listboxWave
+				FindValue/RMD=[][0]/TEXT=(num2str(sweepNo))/TXOP=(TXOP_WHOLE_ELEM) listboxWave
 				indices1D[i] = (V_Value >= 0) ? V_Value : NaN
 			endfor
 
@@ -488,7 +488,7 @@ static Function OVS_AddToIgnoreList(string win, variable headstage, [variable sw
 	WAVE/T listboxWave = GetOverlaySweepsListWave(dfr)
 
 	if(!ParamIsDefault(sweepNo))
-		FindValue/TEXT=(num2str(sweepNo))/TXOP=4 listboxWave
+		FindValue/TEXT=(num2str(sweepNo))/TXOP=(TXOP_WHOLE_ELEM) listboxWave
 		index = V_Value
 	elseif(!ParamIsDefault(index))
 		// do nothing
@@ -538,7 +538,7 @@ Function/WAVE OVS_GetHeadstageRemoval(string win, [variable sweepNo, variable in
 	WAVE   headstageRemoval = GetOverlaySweepHeadstageRemoval(dfr)
 
 	if(!ParamIsDefault(sweepNo))
-		FindValue/TEXT=(num2str(sweepNo))/TXOP=4 listboxWave
+		FindValue/TEXT=(num2str(sweepNo))/TXOP=(TXOP_WHOLE_ELEM) listboxWave
 		index = V_Value
 	elseif(!ParamIsDefault(index))
 		// do nothing

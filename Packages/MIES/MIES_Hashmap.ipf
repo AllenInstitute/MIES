@@ -164,8 +164,8 @@ static Constant HM_HASHMAP_ROW = 1
 // 		ref = stopmSTimer(-2)
 // 		for(i = 0; i < NUM_RUNS_READ; i += 1)
 // 			name = "abcd" + num2str(indizes[i])
-// 			//FindValue/TEXT=(name)/TXOP=4/UOFV tw
-// 			FindValue/TEXT=(name)/TXOP=4 tw
+// 			//FindValue/TEXT=(name)/TXOP=(TXOP_WHOLE_ELEM)/UOFV tw
+// 			FindValue/TEXT=(name)/TXOP=(TXOP_WHOLE_ELEM) tw
 // 			output = num2str(V_Value)
 // 		endfor
 //

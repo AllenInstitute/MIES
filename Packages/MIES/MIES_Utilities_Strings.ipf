@@ -329,7 +329,7 @@ threadsafe Function GetDecimalMultiplierValue(string prefix)
 	WAVE/T prefixes = ListToTextWave(PREFIX_SHORT_LIST, ";")
 	WAVE/D values   = ListToNumericWave(PREFIX_VALUE_LIST, ";")
 
-	FindValue/Z/TXOP=(1 + 4)/TEXT=(prefix) prefixes
+	FindValue/Z/TXOP=(TXOP_CASE_SENSE + TXOP_WHOLE_ELEM)/TEXT=(prefix) prefixes
 	ASSERT_TS(V_Value != -1, "Could not find prefix")
 
 	ASSERT_TS(DimSize(prefixes, ROWS) == DimSize(values, ROWS), "prefixes and values wave sizes must match")

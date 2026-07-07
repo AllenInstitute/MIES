@@ -257,7 +257,7 @@ static Function CheckMessageFilters_IGNORE(string filter)
 	CHECK_WAVE(allFilters, TEXT_WAVE)
 
 	INFO("FFI_GetAvailableMessageFilters() needs updating as %s is missing.", s0 = filter)
-	FindValue/TXOP=4/TEXT=(filter) allFilters
+	FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=(filter) allFilters
 	CHECK_GE_VAR(V_Value, 0)
 End
 
@@ -1467,7 +1467,7 @@ static Function AdaptRecEpoch_U_RA_UD(WAVE/T epochChannelRec, WAVE/T epochChanne
 	string shortNameRef
 
 	Make/FREE/T/N=(DimSize(epochChannelRec, ROWS)) shortnamesRec = EP_GetShortName(epochChannelRec[p][EPOCH_COL_TAGS])
-	FindValue/TEXT="U_RA_UD"/TXOP=4 shortnamesRec
+	FindValue/TEXT="U_RA_UD"/TXOP=(TXOP_WHOLE_ELEM) shortnamesRec
 	if(V_Value == -1)
 		// Nothing to adapt
 		return NaN
@@ -1499,7 +1499,7 @@ static Function ExtendRefEpochsWithUserEpochs(WAVE/T epochChannelRef, WAVE/T epo
 		if(strsearch(shortName, EPOCH_SHORTNAME_USER_PREFIX, 0) != 0)
 			continue
 		endif
-		FindValue/TEXT=shortName/TXOP=4 epRefShortnames
+		FindValue/TEXT=shortName/TXOP=(TXOP_WHOLE_ELEM) epRefShortnames
 		if(V_value >= 0)
 			continue
 		endif
@@ -1532,7 +1532,7 @@ static Function CompareEpochsHistoricChannel(WAVE/T epochChannelRef, WAVE/T epoc
 		if(IsEmpty(shortName))
 			continue
 		endif
-		FindValue/TEXT=shortName/TXOP=4 epRecShortnames
+		FindValue/TEXT=shortName/TXOP=(TXOP_WHOLE_ELEM) epRecShortnames
 		INFO("Could not find reference epoch %s in recreated epochs.", s0 = shortName)
 		CHECK_GE_VAR(V_value, 0)
 	endfor
@@ -1543,7 +1543,7 @@ static Function CompareEpochsHistoricChannel(WAVE/T epochChannelRef, WAVE/T epoc
 		if(strsearch(shortName, EPOCH_SHORTNAME_USER_PREFIX, 0) != 0)
 			continue
 		endif
-		FindValue/TEXT=shortName/TXOP=4 epRefShortnames
+		FindValue/TEXT=shortName/TXOP=(TXOP_WHOLE_ELEM) epRefShortnames
 		INFO("Could not find recreated user epoch %s in reference epochs.", s0 = shortName)
 		CHECK_GE_VAR(V_value, 0)
 	endfor
