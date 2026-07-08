@@ -63,7 +63,77 @@ The type flag /U can be combined with numeric integer type flags.
 The /C flag can be combined with numeric type flags
 The /Z flag can be combined with other flags
 
-When WAVE is used without /Z flag and the right side is a null wave reference then the runtime error condition is set.
+When a `WAVE` statement (without `/Z`) *actually executes* and its right-hand-side
+expression fails to resolve to an existing wave, a runtime error is raised.
+This is a different situation from a `WAVE` declaration that is simply never
+reached at all due to control flow — see "Scoping and Default Initialization" below.
+
+### Scoping and Default Initialization
+
+Igor Pro has **no block scope**. A `WAVE`/`NVAR`/`SVAR`/`DFREF` declaration
+written inside an `if`, `for`, or `switch` block is visible for the rest of
+the function, exactly like a `Variable` or `String` declared in a block is.
+The declaration is allocated for the whole function regardless of where it
+textually appears; only the *assignment* is tied to that specific line
+actually executing at runtime.
+
+Reference-typed locals (`WAVE`, `NVAR`, `SVAR`, `DFREF`, `FUNCREF`) are
+automatically initialized to a null/non-existent reference at function
+entry — the same way a bare `Variable` defaults to 0 and a bare `String`
+defaults to a null string (not `""` — a null string is a distinct state,
+distinguishable from an empty string via `strlen()`, which returns `NaN`
+for a null string but `0` for `""`). If the code path containing the assignment never runs,
+the reference is simply left at that safe null default. No lookup is
+attempted, so no runtime error occurs:
+
+```igor
+Function/WAVE MaybeGetData(variable condition)
+
+    if(condition)
+        Make/FREE data
+        WAVE test1 = data
+    endif
+
+    // If condition was false, test1 is still a valid, null WAVE reference here —
+    // not an error, not uninitialized memory. This is safe:
+    Make/FREE/WAVE wref = {test1}
+
+    return wref
+End
+```
+
+Do **not** confuse this with a `WAVE` statement that *does* execute but whose
+right-hand side fails to resolve (e.g. `$name` pointing at a wave that
+doesn't exist). That is a different failure mode and, without `/Z`, does
+raise a runtime error:
+
+```igor
+// This line executes every time; if "someName" isn't an existing wave,
+// this errors (no /Z):
+WAVE w = $someName
+
+// Safe form when the target might not exist:
+WAVE/Z w = $someName
+if(!WaveExists(w))
+    // handle missing wave
+endif
+```
+
+The distinguishing question is not "does the reference look null" but
+"did the assignment statement itself run." A conditionally-assigned WAVE
+reference that's never reached is a normal, safe null. A WAVE statement
+that runs and can't find its target is a runtime error unless guarded
+with `/Z`.
+
+Practical implication: it's a legitimate pattern in this
+codebase to conditionally assign a WAVE reference inside a branch and use
+it unconditionally afterward (typically feeding into a wave-ref array or
+an `if(WaveExists(...))` check), without a separate `WAVE/Z x = $""`
+pre-declaration. That pre-declaration is harmless but redundant for this
+specific case — it's only necessary when you need the null-default to be
+explicit/self-documenting, or when reusing the same variable name across
+multiple, non-exclusive branches where the "did it run" tracking gets
+less obvious.
 
 ### Referencing waves in other data folders
 
@@ -629,6 +699,7 @@ WAVE/T wv = ListToTextWave(listStr, separatorStr)
 | Programming Overview (functions, parameters) | https://docs.wavemetrics.com/igorpro/programming/programming |
 | Programming Techniques (DF patterns) | https://docs.wavemetrics.com/igorpro/programming/programming-techniques |
 | WAVE keyword | https://docs.wavemetrics.com/igorpro/commands/wave |
+| Conditionally-assigned WAVE ref used after the block | Safe — defaults to null if the branch didn't run, not an error |
 | NewFreeWave | https://docs.wavemetrics.com/igorpro/commands/newfreewave |
 | NewFreeDataFolder | https://docs.wavemetrics.com/igorpro/commands/newfreedatafolder |
 | GetDataFolderDFR | https://docs.wavemetrics.com/igorpro/commands/getdatafolderdfr |
