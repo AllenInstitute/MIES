@@ -2442,6 +2442,7 @@ INCLUDE_FILE_PATTERNS  =
 
 PREDEFINED             = DEBUGGING_ENABLED= \
                          THREADSAFE= \
+                         REPLAY_DATA= \
                          IPNWB_INCLUDE_UTILS=0
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this

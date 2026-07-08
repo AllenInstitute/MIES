@@ -856,3 +856,25 @@ Function/S GetSFTestopName(string graph)
 	return GetSVARAsString(dfr, "TestopFunctionName", initialValue = "")
 End
 #endif // AUTOMATED_TESTING
+
+#ifdef REPLAY_DATA
+
+/// @brief Return the truth that replaying data is enabled
+Function/S GetReplayDataEnable()
+
+	return GetNVARAsString(GetReplay(), "enable", initialValue = 0)
+End
+
+/// @brief Return the reference sweep where replay was started
+Function/S GetReplayRefSweep()
+
+	return GetNVARAsString(GetReplay(), "refSweep", initialValue = NaN)
+End
+
+/// @brief Return the reference device used for replay
+Function/S GetReplayRefDevice()
+
+	return GetSVARAsString(GetReplay(), "refDevice", initialValue = NONE)
+End
+
+#endif // REPLAY_DATA

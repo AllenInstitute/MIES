@@ -29,7 +29,7 @@ static Constant PULSE_WAVE_VERSION = 4
 
 static StrConstant TP_SETTINGS_LABELS = "bufferSize;resistanceTol;sendToAllHS;baselinePerc;durationMS;amplitudeVC;amplitudeIC;autoTPEnable;autoAmpMaxCurrent;autoAmpVoltage;autoAmpVoltageRange;autoTPPercentage;autoTPInterval;autoTPCycleID"
 
-static Constant SWEEP_SETTINGS_WAVE_VERSION = 42
+static Constant SWEEP_SETTINGS_WAVE_VERSION = 43
 
 /// @brief Return a wave reference to the corresponding Logbook keys wave from an values wave input
 threadsafe Function/WAVE GetLogbookValuesFromKeys(WAVE keyWave)
@@ -2567,6 +2567,7 @@ End
 /// - 60: Skip Ahead
 /// - 61: TP power spectrum
 /// - 62: ADC Configuration bits
+/// - 63: Original data
 Function/WAVE GetSweepSettingsKeyWave(string device)
 
 	variable versionOfNewWave = SWEEP_SETTINGS_WAVE_VERSION
@@ -2586,9 +2587,9 @@ Function/WAVE GetSweepSettingsKeyWave(string device)
 	endif
 
 	if(WaveExists(wv))
-		Redimension/N=(-1, 63) wv
+		Redimension/N=(-1, 64) wv
 	else
-		Make/T/N=(3, 63) newDFR:$newName/WAVE=wv
+		Make/T/N=(3, 64) newDFR:$newName/WAVE=wv
 	endif
 
 	wv = ""
@@ -2848,6 +2849,10 @@ Function/WAVE GetSweepSettingsKeyWave(string device)
 	wv[%Parameter][62] = "ADC Configuration bits"
 	wv[%Units][62]     = ""
 	wv[%Tolerance][62] = "0.1"
+
+	wv[%Parameter][63] = "Original data"
+	wv[%Units][63]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][63] = LABNOTEBOOK_NO_TOLERANCE
 
 	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)
@@ -9591,3 +9596,37 @@ Function/WAVE CreateSFPrepareFitWave(string graph, string opShort)
 
 	return output
 End
+
+#ifdef REPLAY_DATA
+
+/// @brief Return various labnotebook settings of the replayed data, see RD_GetReplaySettings()
+Function/WAVE GetReplaySettings()
+
+	Make/FREE/N=(13)/D settings = NaN
+
+	SetDimensionLabels(settings, "RAC;SCI;SetColumn;SetCycleCount;StimScaleFactor;AsyncAD0;AsyncAD1;AsyncAD2;AsyncAD3;AsyncAD4;AsyncAD5;AsyncAD6;AsyncAD7;", ROWS)
+
+	return settings
+End
+
+Function/DF GetReplay()
+
+	return createDFWithAllParents(GetReplayAsString())
+End
+
+Function/S GetReplayAsString()
+
+	return "root:MIES:Replay"
+End
+
+Function/DF GetReplayStorage()
+
+	return createDFWithAllParents(GetReplayStorageAsString())
+End
+
+Function/S GetReplayStorageAsString()
+
+	return "root:MIES_replay"
+End
+
+#endif // REPLAY_DATA

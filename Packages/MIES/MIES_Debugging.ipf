@@ -499,6 +499,20 @@ Function EnableWaveCache()
 	Execute/P/Q "COMPILEPROCEDURES "
 End
 
+/// @brief Enable replay data support
+Function EnableReplayData()
+
+	Execute/P/Q "SetIgorOption poundDefine=REPLAY_DATA"
+	Execute/P/Q "COMPILEPROCEDURES "
+End
+
+/// @brief Disable replay data support
+Function DisableReplayData()
+
+	Execute/P/Q "SetIgorOption poundUnDefine=REPLAY_DATA"
+	Execute/P/Q "COMPILEPROCEDURES "
+End
+
 /// @brief Enable dangerous debugging (allows to call user-defined functions in the debugger)
 Function EnableDangerousDebugging()
 

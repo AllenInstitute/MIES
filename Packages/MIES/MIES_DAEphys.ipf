@@ -1245,6 +1245,14 @@ Function DAP_OneTimeCallBeforeDAQ(string device, variable runMode)
 	NVAR count = $GetCount(device)
 	count = 0
 
+#ifdef REPLAY_DATA
+	if(RD_IsEnabled())
+		WAVE replaySettings = RD_GetReplaySettings(device, RD_MODE_ONCE, RD_SWEEP_SELECTOR_NEXT)
+
+		count = replaySettings[%SetColumn]
+	endif
+#endif // REPLAY_DATA
+
 	NVAR activeSetCount = $GetActiveSetCount(device)
 	activeSetCount = IDX_CalculcateActiveSetCount(device)
 
@@ -1264,6 +1272,17 @@ Function DAP_OneTimeCallBeforeDAQ(string device, variable runMode)
 
 	WAVE setEventFlag = GetSetEventFlag(device)
 	setEventFlag[][%PRE_SET_EVENT] = 1
+
+#ifdef REPLAY_DATA
+	if(RD_IsEnabled())
+		WAVE replaySettings = RD_GetReplaySettings(device, RD_MODE_ONCE, RD_SWEEP_SELECTOR_NEXT)
+
+		raCycleID       = replaySettings[%RAC]
+		activeSetCount -= replaySettings[%SetColumn]
+
+		setEventFlag[][%PRE_SET_EVENT] = (replaySettings[%SetColumn] == 0)
+	endif
+#endif // REPLAY_DATA
 
 	if(DAG_GetNumericalValue(device, "Check_DataAcq_Indexing"))
 		IDX_StoreStartFinishForIndexing(device)
