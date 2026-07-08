@@ -135,6 +135,45 @@ explicit/self-documenting, or when reusing the same variable name across
 multiple, non-exclusive branches where the "did it run" tracking gets
 less obvious.
 
+### Default Size When /N Is Omitted
+
+`Make` (with or without `/FREE`) does not create a 0-point wave when `/N`
+is omitted entirely. What size it gets depends on whether an initializer
+is also given:
+
+* **No `/N` and no initializer** — defaults to a 1D wave with **128
+  points**:
+
+```igor
+  Make/FREE data              // data has 128 points, NOT 0
+  Make/FREE/WAVE datasets     // datasets is a wave-of-waves with 128 elements, NOT 0
+  Make numericWave             // numericWave has 128 points
+```
+
+* **No `/N`, but an explicit initializer list is given** — the wave is
+  sized to match the list, *not* defaulted to 128:
+
+```igor
+  Make wv = {1, 2, 3}          // wv has exactly 3 points
+  Make/FREE/T names = {"a", "b"} // names has exactly 2 points
+```
+
+  The initializer form implicitly determines the size; the 128-point
+  default only applies when there is nothing — no `/N` and no
+  initializer — to size the wave from.
+
+Curly-brace initializer lists always require at least one operand
+(`Make wv = {1}` is valid, `Make wv = {}` is not) — so there is no
+initializer-based way to create a wave with 0 points either. A genuinely
+empty wave must be produced via `Make/N=0` or by redimensioning
+(`Redimension/N=0`) after creation.
+
+Before assuming a `Make` call produces an empty/zero-size wave, check for
+both `/N` and an initializer list. Only when *both* are absent does the
+wave default to 128 points. (If `/N=(...)` is used, every dimension size
+must be given explicitly — there is no partial form where some
+dimensions are sized and others fall back to 128.)
+
 ### Referencing waves in other data folders
 
 ```igor
