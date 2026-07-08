@@ -560,6 +560,51 @@ Call it with:
 WAVE wv = MyWaveGetter()
 ```
 
+### Concatenate with Potentially Empty Source Waves
+
+`Concatenate` (e.g. with `/NP=dim` to accumulate along an existing dimension)
+safely creates the destination wave even when the source wave passed to it
+has zero rows. If every source wave across repeated/looped `Concatenate`
+calls has zero rows, the destination wave still gets created — it ends up
+with zero rows, but it is never left as a null/non-existent wave reference.
+
+Simple example without loop:
+
+```igor
+Make/FREE/T/N=(0) src
+Concatenate/FREE/T/NP=(ROWS) {src}, allSrc
+
+// allSrc is implicitly created by Concatenate and is guaranteed to exist after the call, with DimSize(allSrc, ROWS) == 0
+// same is true if src would be a numeric wave
+```
+
+Example with loop:
+
+```igor
+// Let `sources` be a wave reference wave with `DimSize(sources, ROWS) > 0` containing text waves.
+// Even if every `src` here is a 0-row wave (e.g. from
+// ListToTextWave("", ",") — see above), this loop is safe:
+for(WAVE/T src : sources)
+    Concatenate/FREE/T/NP=(ROWS) {src}, allSrc
+endfor
+
+// allSrc is implicitly created by Concatenate and is guaranteed to exist after the loop, with DimSize(allSrc, ROWS) == 0
+// if nothing non-empty was ever concatenated into it.
+// Note: this assumes `sources` itself has at least one row — see below for the case where it doesn't.
+```
+
+Do not assume `allSrc` needs a defensive `WAVE/Z` check or a pre-emptive
+`Make/FREE/T/N=(0) allSrc` before the loop purely to guard against the
+all-sources-empty case — `Concatenate` already guarantees the destination
+exists.
+
+This must not be confused with `sources` itself having zero rows (i.e. there
+is nothing to iterate over at all). In that case the loop body never
+executes, `Concatenate` is never called, and `allSrc` is never created — it
+remains a null/non-existent wave reference, per the default initialization
+described in "Scoping and Default Initialization" (section 2). Referencing
+`allSrc` afterward without `/Z` then fails with a runtime error.
+
 ### Global Permanent Waves with Versioning
 
 Global permanent waves with versioning are created in wave getter functions that must be located in MIES_WaveDataFolderGetters.ipf.
@@ -749,3 +794,4 @@ WAVE/T wv = ListToTextWave(listStr, separatorStr)
 | GetIndexedObjNameDFR | https://docs.wavemetrics.com/igorpro/commands/getindexedobjnamedfr |
 | NVAR_Exists | https://docs.wavemetrics.com/igorpro/commands/nvar_exists |
 | SVAR_Exists | https://docs.wavemetrics.com/igorpro/commands/svar_exists |
+| `Concatenate` destination when every source across a loop is 0-row | Destination wave is still created, with 0 rows — never left null |
