@@ -1114,13 +1114,13 @@ Function/WAVE SFH_GetArgumentSelect(STRUCT SF_ExecutionData &exd, variable argNu
 		endif
 		SFH_ASSERT(cond, "Expected a single array")
 		WAVE array = selectComp[0]
-		cond = IsTextWave(array)
+		cond = IsWaveRefWave(array)
 		if(doNotEnforce && !cond)
 			return $""
 		endif
-		SFH_ASSERT(cond, "Expected a text wave")
+		SFH_ASSERT(cond, "Expected a wave ref wave")
 
-		Make/FREE/WAVE/N=(DimSize(array, ROWS)) selectArray = SFH_AttemptDatasetResolve(WaveText(array, row = p), checkWithSFHAssert = 1)
+		Duplicate/FREE/WAVE array, selectArray
 		for(WAVE/Z/WAVE selectComp : selectArray)
 			cond = WaveExists(selectComp)
 			if(doNotEnforce && !cond)
@@ -1840,18 +1840,11 @@ Function/WAVE SFH_MoveDatasetHigherIfCompatible(WAVE/WAVE data)
 		return data
 	endif
 
-	WAVE array = data[0]
-	if(!IsTextWave(array))
+	WAVE/WAVE resolved = data[0]
+	if(!IsWaveRefWave(resolved))
 		return data
 	endif
-	if(DimSize(array, COLS))
-		return data
-	endif
-
-	numOldSets = DimSize(array, ROWS)
-	Make/FREE/WAVE/N=(numOldSets) resolved
-
-	resolved[] = SFH_AttemptDatasetResolve(WaveText(array, row = p))
+	numOldSets = DimSize(resolved, ROWS)
 
 	// check pre-conditions
 	WAVE/ZZ prevSets
@@ -2168,11 +2161,9 @@ Function/WAVE SFH_GetDatasetArrayAsResolvedWaverefs(STRUCT SF_ExecutionData &exd
 
 	if(!WaveExists(dataFromEachGroup))
 		WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, argNum)
-		SFH_ASSERT(IsTextWave(input[0]), "Expected a dataset")
-		WAVE/T elemRefs = input[0]
-		numGroups = DimSize(elemRefs, ROWS)
-		SFH_ASSERT(numGroups >= 2, "First argument must be an array with at least two elements")
-		Make/FREE/WAVE/N=(numGroups) dataFromEachGroup = SFH_AttemptDatasetResolve(elemRefs[p], checkWithSFHAssert = 1)
+		SFH_ASSERT(IsWaveRefWave(input[0]), "Expected a dataset")
+		WAVE dataFromEachGroup = input[0]
+		SFH_ASSERT(DimSize(dataFromEachGroup, ROWS) >= 2, "First argument must be an array with at least two elements")
 	endif
 
 	return dataFromEachGroup

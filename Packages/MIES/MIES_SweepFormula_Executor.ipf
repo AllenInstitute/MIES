@@ -137,6 +137,7 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLoc
 	string opName, str
 	variable i, size, JSONType, arrayElemJSONType, effectiveArrayDimCount, dim, onTopLevel
 	variable colSize, layerSize, chunkSize, operationsWithScalarResultCount
+	variable containsDataset, numElems, index
 
 	STRUCT SF_ExecutionData exdop
 
@@ -196,9 +197,61 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLoc
 
 		// Get indices of Objects, Arrays and Strings on current level
 		EXTRACT/FREE/INDX types, arrElemAt, (types[p] == JSON_OBJECT) || (types[p] == JSON_ARRAY) || (types[p] == JSON_STRING) || (types[p] == JSON_NUMERIC)
+
+		// Resolve every element once
+		numElems = DimSize(arrElemAt, ROWS)
+		Make/FREE/WAVE/N=(numElems) genericElements = SF_ResolveDatasetFromJSON(exd, arrElemAt[p])
+
+		// Prescan: check every element once, without committing to out/outT/outW yet, so we can
+		// tell up front whether any element is a dataset. If so, the whole array is promoted to a
+		// uniform wave-of-datasets, wrapping plain text/numeric elements individually.
+		numElems = DimSize(arrElemAt, ROWS)
+		Make/FREE/WAVE/N=(numElems) preResolved
+		Make/FREE/D/N=(numElems) preIsDataset
+		for(i = 0; i < numElems; i += 1)
+			index = arrElemAt[i]
+			WAVE/WAVE genericElement = genericElements[i]
+			if(DimSize(genericElement, ROWS) == 1)
+				WAVE/Z subArray = genericElement[0]
+				SFH_ASSERT(WaveExists(subArray), "no data in array element")
+				if(IsTextWave(subArray))
+					WAVE/Z numericalAttempt = SFE_ConvertNonFiniteElements(subArray)
+					if(WaveExists(numericalAttempt))
+						WAVE subArray = numericalAttempt
+					endif
+				elseif(!IsNumericWave(subArray))
+					preIsDataset[i] = 1
+					containsDataset = 1
+				endif
+			else
+				// multi dataset
+				WAVE subArray = genericElement
+				preIsDataset[i] = 1
+				containsDataset = 1
+			endif
+			preResolved[i] = subArray
+		endfor
+
+		if(containsDataset)
+			WAVE/WAVE outW = SFE_ExecutorCreateOrCheckWaveRef($"", topArraySize[0])
+			for(i = 0; i < numElems; i += 1)
+				index = arrElemAt[i]
+				WAVE subArray = preResolved[i]
+				if(!preIsDataset[i])
+					WAVE/WAVE promoted = SFH_CreateSFRefWave(exd.graph, "PromotedArrayElement", 1)
+					promoted[0] = subArray
+					WAVE subArray = promoted
+				endif
+				outW[index] = subArray
+			endfor
+
+			return SFE_ExeReturn(SFH_GetOutputForExecutorSingle(outW, exd.graph, "ExecutorArrayReturn"), onTopLevel)
+		endif
+
 		// Iterate over all subarrays and objects on current level
-		for(index : arrElemAt)
-			WAVE/WAVE genericElement = SF_ResolveDatasetFromJSON(exd, index)
+		for(i = 0; i < numElems; i += 1)
+			index = arrElemAt[i]
+			WAVE/WAVE genericElement = genericElements[i]
 			if(DimSize(genericElement, ROWS) == 1)
 				// single dataset
 				WAVE/Z subArray = genericElement[0]
