@@ -155,8 +155,8 @@ static Function OVS_RemoveLowCountEntries(WAVE/T stimsets, WAVE/T setSweepCounts
 		endfor
 
 		if(!hasRepetitions)
-			RemoveTextWaveEntry1D(dupsRemovedSetSweepCounts, stimset, options = TXOP_CASE_SENSE, all = 1)
-			RemoveTextWaveEntry1D(dupsRemovedSetCycleCounts, stimset, options = TXOP_CASE_SENSE, all = 1)
+			RemoveTextWaveEntry1D(dupsRemovedSetSweepCounts, stimset, options = TXOP_WHOLE_ELEM, all = 1)
+			RemoveTextWaveEntry1D(dupsRemovedSetCycleCounts, stimset, options = TXOP_WHOLE_ELEM, all = 1)
 		endif
 	endfor
 End
