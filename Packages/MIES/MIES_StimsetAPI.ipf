@@ -67,7 +67,7 @@ static Function/WAVE ST_GetStimsetParametersEpochType(string setName, variable e
 	Duplicate/FREE/T/RMD=[epochType][*] epochParameterNames, wv
 
 	// remove empty elements from the end
-	FindValue/TEXT=""/TXOP=4 wv
+	FindValue/TEXT=""/TXOP=(TXOP_WHOLE_ELEM) wv
 	Redimension/N=((V_Value >= 0) ? V_Value : numpnts(wv)) wv
 
 	return wv

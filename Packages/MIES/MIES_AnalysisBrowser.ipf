@@ -107,7 +107,7 @@ static Function AB_AddMapEntry(string baseFolder, string discLocation)
 
 	nextFreeIndex = GetNumberFromWaveNote(map, NOTE_INDEX)
 	dim           = FindDimLabel(map, COLS, "DiscLocation")
-	FindValue/TEXT=""/TXOP=4/RMD=[0, nextFreeIndex - 1][dim] map
+	FindValue/TEXT=""/TXOP=(TXOP_WHOLE_ELEM)/RMD=[0, nextFreeIndex - 1][dim] map
 	if(V_row >= 0)
 		writeIndex = V_row
 	else
@@ -206,7 +206,7 @@ Function/WAVE AB_GetMap(string discLocation)
 
 	WAVE/T map = GetAnalysisBrowserMap()
 	dim = FindDimLabel(map, COLS, "DiscLocation")
-	FindValue/TXOP=4/TEXT=(discLocation)/RMD=[][dim] map
+	FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=(discLocation)/RMD=[][dim] map
 	ASSERT(V_row >= 0, "invalid index")
 
 	Make/FREE/N=4/T wv
@@ -529,7 +529,7 @@ static Function AB_FillListWave(string diskLocation, string fileName, string dev
 	index      = startIndex
 
 	dim = FindDimLabel(list, COLS, "device")
-	FindValue/TXOP=4/TEXT=diskLocation/RMD=[0, index - 1][dim][1] list
+	FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=diskLocation/RMD=[0, index - 1][dim][1] list
 	if(V_value == -1)
 		EnsureLargeEnoughWave(list, indexShouldExist = index, dimension = ROWS)
 		list[index][%file][0]   = fileName
@@ -1572,7 +1572,7 @@ End
 static Function AB_GetListRowWithSameHash(WAVE/T list, string h)
 
 	variable dim = FindDimLabel(list, COLS, "sweep")
-	FindValue/TXOP=4/TEXT=h/RMD=[][dim][1] list
+	FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=h/RMD=[][dim][1] list
 	ASSERT(V_row >= 0, "List row not found")
 
 	return V_row
@@ -3108,7 +3108,7 @@ Function AB_ButtonProc_AddFolder(STRUCT WMButtonAction &ba) : ButtonControl
 			if(IsEmpty(folder))
 				break
 			endif
-			FindValue/TEXT=folder/TXOP=4 setFolderList
+			FindValue/TEXT=folder/TXOP=(TXOP_WHOLE_ELEM) setFolderList
 			if(V_Value >= 0)
 				break
 			endif
@@ -3215,7 +3215,7 @@ static Function AB_AddFiles(string win, WAVE/T selFiles)
 	WAVE/T folderList = GetAnalysisBrowserGUIFolderList()
 	size = DimSize(selFiles, ROWS)
 	for(i = 0; i < size; i += 1)
-		FindValue/TEXT=selFiles[i]/TXOP=4 folderList
+		FindValue/TEXT=selFiles[i]/TXOP=(TXOP_WHOLE_ELEM) folderList
 		if(V_Value >= 0)
 			continue
 		endif
@@ -3453,7 +3453,7 @@ static Function AB_UpdateColors()
 		if(IsEmpty(fName))
 			continue
 		endif
-		FindValue/TEXT=fName/TXOP=4 folderList
+		FindValue/TEXT=fName/TXOP=(TXOP_WHOLE_ELEM) folderList
 		ASSERT(V_row >= 0, "Source file not found in folderlist")
 		folderSelection[V_row][0][%$LISTBOX_LAYER_BACKGROUND] = 2
 	endfor

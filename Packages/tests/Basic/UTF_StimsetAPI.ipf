@@ -171,10 +171,10 @@ static Function GetStimsetParametersWorksGlobal()
 	WAVE/Z globalParams = ST_GetStimsetParameters(name)
 	CHECK_WAVE(globalParams, TEXT_WAVE)
 
-	FindValue/TXOP=4/TEXT="Flip time axis" globalParams
+	FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT="Flip time axis" globalParams
 	CHECK_GE_VAR(V_Value, 0)
 
-	FindValue/TXOP=4/TEXT="Analysis function (generic)" globalParams
+	FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT="Analysis function (generic)" globalParams
 	CHECK_GE_VAR(V_Value, 0)
 End
 
@@ -201,7 +201,7 @@ static Function GetStimsetParametersWorksPerEpoch()
 			entry = "Offset"
 		endif
 
-		FindValue/TXOP=4/TEXT=entry perEpochParams
+		FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=entry perEpochParams
 		CHECK_GE_VAR(V_Value, 0)
 	endfor
 

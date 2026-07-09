@@ -1482,7 +1482,7 @@ static Function [WAVE/T sweepEquiv, WAVE/WAVE sweepEquivRanges] PSX_GenerateSwee
 				nextFreeRow += 1
 			endif
 
-			FindValue/TXOP=4/TEXT=""/RMD=[idx][] sweepEquiv
+			FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=""/RMD=[idx][] sweepEquiv
 			if(V_col >= 0)
 				col = V_col
 			else

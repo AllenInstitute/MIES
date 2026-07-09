@@ -52,7 +52,7 @@ threadsafe Function [variable result, string unit, variable col] LBN_GetEntryPro
 	endif
 
 	row = FindDimLabel(keyWave, ROWS, "Parameter")
-	FindValue/TXOP=4/TEXT=key/RMD=[row] keyWave
+	FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=key/RMD=[row] keyWave
 
 	if(!(V_col >= 0))
 		return [1, unit, col]

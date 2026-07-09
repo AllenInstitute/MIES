@@ -1474,7 +1474,7 @@ threadsafe static Function SFOS_GetSweepMapIndexFromIds(WAVE/T sweepMapIds, stri
 	string id
 
 	id = SFOS_CreateSweepMapRowId(experiment, datafolder, device, num2istr(sweepNo))
-	FindValue/TXOP=4/TEXT=id sweepMapIds
+	FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=id sweepMapIds
 	ASSERT_TS(V_row >= 0, "SweepMap id not found")
 
 	return V_row

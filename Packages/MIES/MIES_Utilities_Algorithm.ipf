@@ -260,8 +260,18 @@ End
 
 /// @brief Return the row index of the given value, string converted to a variable, or wv
 ///
-/// Assumes wv being one dimensional and does not use any tolerance for numerical values.
-threadsafe Function GetRowIndex(WAVE wv, [variable val, string str, WAVE/Z refWave, variable reverseSearch, variable textOp])
+/// Assumes wv being one dimensional.
+///
+/// Exactly one of `val`, `str`, `refWave` must be given.
+///
+/// @param wv            wave to search in
+/// @param val           [optional] numerical value to search
+/// @param str           [optional] string value to search
+/// @param refWave       [optional] wave to search in case `wv` is a wave reference wave
+/// @param reverseSearch [optional, defaults to false] search starting from the back (true) instead from the front (false)
+/// @param textOp        [optional, defaults to #TXOP_WHOLE_ELEM] Search tweaks when searching in text waves, see @ref FindValueTXOP
+/// @param tol           [optional, defaults to 0] tolerance for numerical search
+threadsafe Function GetRowIndex(WAVE wv, [variable val, string str, WAVE/Z refWave, variable reverseSearch, variable textOp, variable tol])
 
 	variable numEntries, i, wvType
 
@@ -274,7 +284,13 @@ threadsafe Function GetRowIndex(WAVE wv, [variable val, string str, WAVE/Z refWa
 	endif
 
 	if(ParamIsDefault(textOp))
-		textOp = 4
+		textOp = TXOP_WHOLE_ELEM
+	endif
+
+	if(ParamIsDefault(tol))
+		tol = 0
+	else
+		ASSERT_TS(IsNullOrPositiveAndFinite(tol), "Expected finite and non-negative tolerance")
 	endif
 
 	wvType = WaveType(wv, 1)
@@ -318,10 +334,10 @@ threadsafe Function GetRowIndex(WAVE wv, [variable val, string str, WAVE/Z refWa
 							endif
 						endfor
 					else
-						FindValue/V=(val)/T=(0) wv
+						FindValue/V=(val)/T=(tol) wv
 					endif
 #else
-					FindValue/V=(val)/T=(0) wv
+					FindValue/V=(val)/T=(tol) wv
 #endif
 				endif
 			else
@@ -337,10 +353,10 @@ threadsafe Function GetRowIndex(WAVE wv, [variable val, string str, WAVE/Z refWa
 							endif
 						endfor
 					else
-						FindValue/V=(val)/R/T=(0) wv
+						FindValue/V=(val)/R/T=(tol) wv
 					endif
 #else
-					FindValue/V=(val)/R/T=(0) wv
+					FindValue/V=(val)/R/T=(tol) wv
 #endif
 				endif
 			endif
@@ -629,7 +645,7 @@ threadsafe static Function [WAVE result, variable index] GetSetDifferenceText(WA
 	if(getIndices)
 		Make/FREE/D/N=(numEntries) resultIndices
 		for(i = 0; i < numEntries; i += 1)
-			FindValue/UOFV/TEXT=(wave1[i])/TXOP=4 wave2
+			FindValue/UOFV/TEXT=(wave1[i])/TXOP=(TXOP_WHOLE_ELEM) wave2
 			if(V_Value == -1)
 				resultIndices[j++] = i
 			endif
@@ -638,7 +654,7 @@ threadsafe static Function [WAVE result, variable index] GetSetDifferenceText(WA
 	else
 		Duplicate/FREE/T wave1, resultTxT
 		for(str : wave1)
-			FindValue/UOFV/TEXT=(str)/TXOP=4 wave2
+			FindValue/UOFV/TEXT=(str)/TXOP=(TXOP_WHOLE_ELEM) wave2
 			if(V_Value == -1)
 				resultTxT[j++] = str
 			endif

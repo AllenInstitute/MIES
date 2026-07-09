@@ -3310,24 +3310,29 @@ End
 
 Function RTWE1D_WorksWithCustomOptions()
 
-	variable TXOP_CASE_INSENSITIVE = 2
 	Make/FREE/T wv = {"ABC", "abc", "def"}
-	CHECK_EQUAL_VAR(RemoveTextWaveEntry1D(wv, "abc", options = TXOP_CASE_INSENSITIVE), 0)
+	CHECK_EQUAL_VAR(RemoveTextWaveEntry1D(wv, "abc", options = TXOP_CASE_SENSE), 0)
 	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 2)
-	CHECK_EQUAL_STR(wv[0], "abc")
+	CHECK_EQUAL_STR(wv[0], "ABC", case_sensitive = 1)
+	CHECK_EQUAL_STR(wv[1], "def")
+End
+
+Function RTWE1D_WorksWithWholeElement()
+
+	Make/FREE/T wv = {"abcd", "abc", "aabc"}
+	CHECK_EQUAL_VAR(RemoveTextWaveEntry1D(wv, "abc", options = TXOP_WHOLE_ELEM), 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 2)
+	CHECK_EQUAL_STR(wv[0], "abcd")
+	CHECK_EQUAL_STR(wv[1], "aabc")
 End
 
 Function RTWE1D_CombinedOptionsWithAll()
 
-	variable TXOP_CASE_INSENSITIVE = 2
-	variable TXOP_WHOLEWORD        = 4
-	variable TXOP_COMBO            = TXOP_CASE_INSENSITIVE | TXOP_WHOLEWORD
-
-	Make/FREE/T wv = {"Testing", "test", "TEST", "tests"}
-	CHECK_EQUAL_VAR(RemoveTextWaveEntry1D(wv, "test", options = TXOP_COMBO, all = 1), 0)
+	Make/FREE/T wv = {"Testing", "test", "TEST", "tests", "test"}
+	CHECK_EQUAL_VAR(RemoveTextWaveEntry1D(wv, "test", options = TXOP_CASE_SENSE, all = 1), 0)
 	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 2)
 	CHECK_EQUAL_STR(wv[0], "Testing")
-	CHECK_EQUAL_STR(wv[1], "tests")
+	CHECK_EQUAL_STR(wv[1], "TEST")
 End
 
 /// @}

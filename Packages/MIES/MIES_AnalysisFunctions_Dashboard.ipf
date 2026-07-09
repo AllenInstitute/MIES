@@ -292,7 +292,7 @@ static Function AD_FillWaves(string win, WAVE/T list, WAVE/T info)
 
 			stimsetCycleID = stimsetCycleIDs[headstage]
 
-			FindValue/RMD=[][0]/TXOP=4/TEXT=(AD_FormatListKey(stimsetCycleID, headstage)) info
+			FindValue/RMD=[][0]/TXOP=(TXOP_WHOLE_ELEM)/TEXT=(AD_FormatListKey(stimsetCycleID, headstage)) info
 			if(V_Value >= 0)
 				if(!cmpstr(info[V_Value][%$"Ongoing DAQ"], "1"))
 					// if DAQ was ongoing we want to overwrite this entry and all later entries

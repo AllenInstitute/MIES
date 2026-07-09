@@ -865,7 +865,7 @@ Function CA_Compactify()
 	Make/FREE/N=(numEntries) keepKey
 
 	// remove entries with no hits or which are from CA_COMPACTIFY_KEYS_TO_DELETE
-	Multithread keepKey[] = (stats_old[CA_GetCacheIndex(keys_old, allKeys[p])][%Hits] > 0) && IsNaN(GetRowIndex(keysToDrop, str = StringFromList(0, allKeys[p], ":"), textOp = 2))
+	Multithread keepKey[] = (stats_old[CA_GetCacheIndex(keys_old, allKeys[p])][%Hits] > 0) && IsNaN(GetRowIndex(keysToDrop, str = StringFromList(0, allKeys[p], ":"), textOp = TXOP_WHOLE_ELEM))
 
 	for(i = 0; i < numEntries; i += 1)
 

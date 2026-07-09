@@ -298,7 +298,7 @@ static Function CheckEpochs(string dev)
 						WAVE/T epochInfo = EP_EpochStrToWave(str)
 						Make/FREE/N=(DimSize(epochInfo, ROWS))/T epNames = EP_GetShortName(epochInfo[p][EPOCH_COL_TAGS])
 						// All Epochs should have short names
-						FindValue/TXOP=4/TEXT="" epNames
+						FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT="" epNames
 						CHECK_EQUAL_VAR(V_Value, -1)
 						// No duplicate short names should exist
 						FindDuplicates/FREE/DT=dupsWave/Z epNames
@@ -1077,7 +1077,7 @@ Function CheckUserEpochs(string dev, WAVE times, string shortNameFormat, [variab
 					sprintf str, shortNameFormat, k
 				endif
 
-				FindValue/TEXT=str/TXOP=4 epochShortNames
+				FindValue/TEXT=str/TXOP=(TXOP_WHOLE_ELEM) epochShortNames
 				index = V_Value
 				CHECK_NEQ_VAR(index, -1)
 				startTime = str2num(userChunkEpochs[k][EPOCH_COL_STARTTIME])

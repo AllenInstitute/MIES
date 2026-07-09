@@ -1145,7 +1145,7 @@ End
 /// @return number of epochs for channel
 static Function EP_GetEpochCount(WAVE/T epochWave, variable channel, variable channelType)
 
-	FindValue/Z/RMD=[][][channel][channelType]/TXOP=4/TEXT="" epochWave
+	FindValue/Z/RMD=[][][channel][channelType]/TXOP=(TXOP_WHOLE_ELEM)/TEXT="" epochWave
 	return (V_row == -1) ? DimSize(epochWave, ROWS) : V_row
 End
 

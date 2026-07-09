@@ -1182,13 +1182,13 @@ Function CheckLBNDescriptions([WAVE/T wv])
 		// headstage contingency is known
 		entry = wv[%HeadstageContingency][i]
 		Make/FREE/T knownValues = {"ALL", "DEPEND", "INDEP"}
-		FindValue/TEXT=(entry)/TXOP=4 knownValues
+		FindValue/TEXT=(entry)/TXOP=(TXOP_WHOLE_ELEM) knownValues
 		CHECK_GE_VAR(V_Value, 0)
 
 		// clamp mode is empty or known
 		entry = wv[%ClampMode][i]
 		Make/FREE/T knownValues = {"", "IC", "VC", "IC;I=0", "IC;VC", "IC;VC;I=0"}
-		FindValue/TEXT=(entry)/TXOP=4 knownValues
+		FindValue/TEXT=(entry)/TXOP=(TXOP_WHOLE_ELEM) knownValues
 		CHECK_GE_VAR(V_Value, 0)
 	endfor
 End

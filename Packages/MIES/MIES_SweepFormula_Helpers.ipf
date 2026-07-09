@@ -1433,7 +1433,7 @@ static Function/S SFH_GetArgSetupValueByKey(WAVE/T argSetup, string key)
 	variable dim
 
 	dim = FindDimLabel(argSetup, COLS, "KEY")
-	FindValue/RMD=[][dim]/TEXT=key/TXOP=4 argSetup
+	FindValue/RMD=[][dim]/TEXT=key/TXOP=(TXOP_WHOLE_ELEM) argSetup
 	if(!(V_Value >= 0))
 		return ""
 	endif

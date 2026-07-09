@@ -21,13 +21,13 @@ Function DP_DebuggingEnabledForFile(string file)
 	WAVE/T listWave    = GetDebugPanelListWave()
 	WAVE   listSelWave = GetDebugPanelListSelWave()
 
-	FindValue/TXOP=4/TEXT=file listWave
+	FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=file listWave
 	if(V_Value == -1)
 		// list waves are out of date
 		DP_FillDebugPanelWaves()
 	endif
 
-	FindValue/TXOP=4/TEXT=file listWave
+	FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=file listWave
 	ASSERT(V_Value != -1, "Invalid filename")
 
 	return listSelWave[V_Value] & LISTBOX_CHECKBOX_SELECTED

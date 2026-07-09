@@ -140,7 +140,7 @@ Function AE_Works1()
 	WAVE   numericalValues = root:MIES:LabNoteBook:ITC18USB:Device0:numericalValues
 
 	// key is added with prefix, so there is no full match
-	FindValue/TXOP=4/TEXT=key numericalKeys
+	FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=key numericalKeys
 	CHECK_EQUAL_VAR(V_Value, -1)
 
 	FindValue/TEXT=key numericalKeys
@@ -181,7 +181,7 @@ Function AE_Works2()
 	WAVE   numericalValues = root:MIES:LabNoteBook:ITC18USB:Device0:numericalValues
 
 	// key is added with prefix, so there is no full match
-	FindValue/TXOP=4/TEXT=key numericalKeys
+	FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=key numericalKeys
 	CHECK_EQUAL_VAR(V_Value, -1)
 
 	FindValue/TEXT=key numericalKeys
@@ -223,7 +223,7 @@ Function AE_Works3()
 	WAVE   numericalValues = root:MIES:LabNoteBook:ITC18USB:Device0:numericalValues
 
 	// key is added with prefix, so there is no full match
-	FindValue/TXOP=4/TEXT=key numericalKeys
+	FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=key numericalKeys
 	CHECK_EQUAL_VAR(V_Value, -1)
 
 	FindValue/TEXT=key numericalKeys
@@ -264,7 +264,7 @@ Function AE_Works4()
 	WAVE   numericalValues = root:MIES:LabNoteBook:ITC18USB:Device0:numericalValues
 
 	// key is added with prefix, so there is no full match
-	FindValue/TXOP=4/TEXT=key numericalKeys
+	FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=key numericalKeys
 	CHECK_EQUAL_VAR(V_Value, -1)
 
 	FindValue/TEXT=key numericalKeys
@@ -305,7 +305,7 @@ Function AE_WorksMultiValues()
 	WAVE   numericalValues = root:MIES:LabNoteBook:ITC18USB:Device0:numericalValues
 
 	// key is added with prefix, so there is no full match
-	FindValue/TXOP=4/TEXT=key numericalKeys
+	FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=key numericalKeys
 	CHECK_EQUAL_VAR(V_Value, -1)
 
 	FindValue/TEXT=key numericalKeys
@@ -352,7 +352,7 @@ Function AE_NumericHasCorrectTimeStamps()
 		CHECK_WAVE(numericalValues, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
 
 		// key is added with prefix, so there is no full match
-		FindValue/TXOP=4/TEXT=key numericalKeys
+		FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=key numericalKeys
 		CHECK_EQUAL_VAR(V_Value, -1)
 
 		FindValue/TEXT=key numericalKeys
@@ -403,7 +403,7 @@ Function AE_WorksIndepHeadstage()
 	WAVE   numericalValues = root:MIES:LabNoteBook:ITC18USB:Device0:numericalValues
 
 	// key is added with prefix, so there is no full match
-	FindValue/TXOP=4/TEXT=key numericalKeys
+	FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=key numericalKeys
 	CHECK_EQUAL_VAR(V_Value, -1)
 
 	FindValue/TEXT=key numericalKeys
@@ -471,7 +471,7 @@ Function AE_OverrideSweepNoWorks()
 	WAVE   numericalValues = root:MIES:LabNoteBook:ITC18USB:Device0:numericalValues
 
 	// key is added with prefix, so there is no full match
-	FindValue/TXOP=4/TEXT=key numericalKeys
+	FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=key numericalKeys
 	CHECK_EQUAL_VAR(V_Value, -1)
 
 	FindValue/TEXT=key numericalKeys
@@ -513,7 +513,7 @@ Function ATE_TextWorks1()
 	WAVE/T textualValues = root:MIES:LabNoteBook:ITC18USB:Device0:textualValues
 
 	// key is added with prefix, so there is no full match
-	FindValue/TXOP=4/TEXT=key textualKeys
+	FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=key textualKeys
 	CHECK_EQUAL_VAR(V_Value, -1)
 
 	FindValue/TEXT=key textualKeys
@@ -559,7 +559,7 @@ Function AE_TextWorksIndepHeadstage()
 	WAVE/T textualValues = root:MIES:LabNoteBook:ITC18USB:Device0:textualValues
 
 	// key is added with prefix, so there is no full match
-	FindValue/TXOP=4/TEXT=key textualKeys
+	FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=key textualKeys
 	CHECK_EQUAL_VAR(V_Value, -1)
 
 	FindValue/TEXT=key textualKeys
@@ -602,7 +602,7 @@ Function AE_TextHasCorrectTimeStamps()
 		WAVE/T textualValues = root:MIES:LabNoteBook:ITC18USB:Device0:textualValues
 
 		// key is added with prefix, so there is no full match
-		FindValue/TXOP=4/TEXT=key textualKeys
+		FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=key textualKeys
 		CHECK_EQUAL_VAR(V_Value, -1)
 
 		FindValue/TEXT=key textualKeys
@@ -654,7 +654,7 @@ Function AE_NormalizesEOLs()
 	WAVE/T textualValues = root:MIES:LabNoteBook:ITC18USB:Device0:textualValues
 
 	// key is added with prefix, so there is no full match
-	FindValue/TXOP=4/TEXT=key textualKeys
+	FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=key textualKeys
 	CHECK_EQUAL_VAR(V_Value, -1)
 
 	FindValue/TEXT=key textualKeys

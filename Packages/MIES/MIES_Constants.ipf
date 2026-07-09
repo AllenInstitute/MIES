@@ -2765,3 +2765,11 @@ Constant RD_SWEEP_SELECTOR_NEXT    = 0x2
 ///@}
 
 #endif // REPLAY_DATA
+
+/// @name Possible values for TXOP from FindValue (bitmask)
+/// @anchor FindValueTXOP
+///@{
+Constant TXOP_CASE_SENSE = 0x1
+Constant TXOP_WHOLE_WORD = 0x2
+Constant TXOP_WHOLE_ELEM = 0x4
+///@}
