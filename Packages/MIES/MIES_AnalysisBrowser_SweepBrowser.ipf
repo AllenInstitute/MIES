@@ -706,3 +706,28 @@ Function/WAVE SB_GetSweepMap(string win)
 
 	return sweepMap
 End
+
+Function/WAVE SB_GetExperimentsFromTags(string win, WAVE/T tags)
+
+	string   tagString
+	variable size
+
+	if(DimSize(tags, ROWS) == 0)
+		tagString = ""
+	else
+		tagString = TextWaveToList(tags, AB_TAG_SEPARATOR)
+	endif
+
+	WAVE/T sweepMap = SB_GetSweepMap(win)
+	size = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
+
+	WAVE/Z indizes = FindIndizes(sweepMap, colLabel = "Tags", str = tagString, endRow = size - 1)
+	if(!WaveExists(indizes))
+		return $""
+	endif
+
+	Make/FREE/T/N=(DimSize(indizes, ROWS)) experiments = sweepMap[indizes[p]][%FileName]
+	WAVE/T unqiueExperiments = GetUniqueEntries(experiments)
+
+	return unqiueExperiments
+End
