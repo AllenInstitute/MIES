@@ -2562,3 +2562,27 @@ static Function [variable dataMin, variable dataMax] SFH_RecursiveXLimitsFromSca
 
 	return [dataMin, dataMax]
 End
+
+static Function/WAVE SFH_CreatePlotSpecificationWITH(variable numWITH)
+
+	ASSERT(IsNullOrPositiveAndInteger(numWITH), "numWITH must be zero or greater")
+
+	Make/FREE/WAVE/N=(numWITH, 2) plotWITH
+	SetDimlabel COLS, 0, FORMULAX, plotWITH
+	SetDimlabel COLS, 1, FORMULAY, plotWITH
+
+	return plotWITH
+End
+
+/// @brief Creates a plot specification wave where each AND part gets the same number of WITH plots
+Function/WAVE SFH_CreatePlotSpecificationAND(string graph, string opShort, variable numAND, variable numWITH)
+
+	ASSERT(IsGreaterNullAndInteger(numAND), "numAND must be greater than zero")
+	WAVE/WAVE plotAND = SFH_CreateSFRefWave(graph, opShort, numAND)
+
+	plotAND[] = SFH_CreatePlotSpecificationWITH(numWITH)
+
+	JWN_SetNumberInWaveNote(plotAND, SF_META_PLOT, 1)
+
+	return plotAND
+End
