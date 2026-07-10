@@ -2243,3 +2243,16 @@ Function SFH_SetTraceStyleForFit(WAVE fitData, string errorbarStyle)
 	endswitch
 	JWN_SetWaveInWaveNote(fitData, SF_META_ERRORBARSTYLE, wErrorbarStyle)
 End
+
+/// @brief simple helper to append X,Y trace data to a plotWITH part of a full plotting specification
+///        (plotWITH is a sub wave of plotAND)
+Function SFH_AppendPlotSpecificationWith(WAVE/WAVE plotWITH, WAVE wvY, WAVE/Z wvX)
+
+	variable size
+
+	size = DimSize(plotWITH, ROWS)
+	Redimension/N=(size + 1, -1) plotWITH
+
+	plotWITH[size][%FORMULAY] = wvY
+	plotWITH[size][%FORMULAX] = wvX
+End
