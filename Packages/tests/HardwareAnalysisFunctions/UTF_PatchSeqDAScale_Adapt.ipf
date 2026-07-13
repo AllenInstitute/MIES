@@ -364,10 +364,10 @@ static Function PrintSomeValues(WAVE/WAVE entries)
 	WAVE wv = entries[%maxSlope]
 	print/D wv
 
-	WAVE wv = entries[%fiSlope]
+	WAVE/Z wv = entries[%fiSlope]
 	print/D wv
 
-	WAVE wv = entries[%fiOffset]
+	WAVE/Z wv = entries[%fiOffset]
 	print/D wv
 
 	WAVE wv = entries[%futureDAScales]
@@ -382,7 +382,7 @@ static Function PrintSomeValues(WAVE/WAVE entries)
 	WAVE wv = entries[%dascale]
 	print/D wv
 
-	WAVE wv = entries[%apfreq]
+	WAVE/Z wv = entries[%apfreq]
 	print/D wv
 
 	WAVE wv = entries[%fiSlopeReachedPassFromRhSuAd]
