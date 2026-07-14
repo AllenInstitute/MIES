@@ -2304,8 +2304,8 @@ End
 
 static Function PSQ_DS_CreateSurveyPlotForUser(string device, variable sweepNo, variable headstage, [variable fromRhSuAd])
 
-	variable emptySCI
-	string   line
+	variable emptySCI, numSweeps
+	string line, databrowser, win, graph, name
 	string str = ""
 
 	if(ParamIsDefault(fromRhSuAd))
@@ -2364,6 +2364,15 @@ static Function PSQ_DS_CreateSurveyPlotForUser(string device, variable sweepNo, 
 
 	str += "\r"
 
+	// two sets of traces
+	// one with the marker and one with the sweep number as text marker
+
+	str += "$freq\r"
+	str += "vs\r"
+	str += "$daScale\r\r"
+
+	str += "with\r"
+
 	str += "$freq\r"
 	str += "vs\r"
 	str += "$daScale\r\r"
@@ -2374,7 +2383,46 @@ static Function PSQ_DS_CreateSurveyPlotForUser(string device, variable sweepNo, 
 	str += "vs\r"
 	str += "$daScaleWithoutFirst\r\r"
 
-	PSQ_ExecuteSweepFormula(device, str)
+	str += "with\r"
+
+	str += "$fitSlopes\r"
+	str += "vs\r"
+	str += "$daScaleWithoutFirst\r\r"
+
+	databrowser = PSQ_ExecuteSweepFormula(device, str)
+
+	// tweak the trace displays
+	win = SFH_GetFormulaPanelFromBrowser(databrowser, SF_DISPLAYTYPE_GRAPH)
+
+	DFREF dfr = SF_GetBrowserDF(databrowser)
+
+	[WAVE sweeps, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_SWEEP, filterPassing = 1, filterNegSlopeAndNaN = 1, fromRhSuAd = fromRhSuAd)
+	numSweeps               = DimSize(sweeps, ROWS)
+	ASSERT(numSweeps > 0, "Expected at least one sweep")
+
+	// freq vs dascale
+	graph = win + "#graph0"
+
+	SetWindow $graph, tooltipHook(SweepFormulaTraceValue)=TraceValueDisplayHook
+	Label/W=$graph left, "AP frequency (Hz)"
+	Label/W=$graph bottom, "Stimscale (a.u.)"
+
+	name = UniqueWaveName(dfr, "marker_labels")
+	Make/N=(numSweeps)/T dfr:$name/WAVE=labels = num2istr(sweeps[p])
+	ModifyGraph/W=$graph textMarker(T000000d0_X)={labels, "default", 0, 0, 5, 8, 0}, msize(T000000d0_X)=4
+	Legend/W=$graph/K/N=$SF_ANNOTATION_NAME
+
+	// fitslope vs dascale
+	graph = win + "#graph1"
+
+	SetWindow $graph, tooltipHook(SweepFormulaTraceValue)=TraceValueDisplayHook
+	Label/W=$graph bottom, "Stimscale (a.u.)"
+	Label/W=$graph left, "f-I slope (" + PSQ_DA_AT_SLOPE_UNIT + ")"
+
+	name = UniqueWaveName(dfr, "marker_labels")
+	Make/N=(numSweeps - 1)/T/O dfr:$name/WAVE=labels = num2istr(sweeps[p]) + "," + num2istr(sweeps[p + 1])
+	ModifyGraph/W=$graph textMarker(T000000d0_X)={labels, "default", 0, 0, 5, 12, 0}, msize(T000000d0_X)=4
+	Legend/W=$graph/K/N=$SF_ANNOTATION_NAME
 End
 
 Function [variable daScaleStepMinNorm, variable daScaleStepMaxNorm] PSQ_DS_GetDAScaleStepsNorm(string device, variable sweepNo, variable headstage)
