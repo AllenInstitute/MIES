@@ -401,13 +401,11 @@ static Function TCONF_CheckHideState()
 
 	// all are shown again
 	SetWindow $subPanel, hide=0
-	GetWindow $subPanel, hide
-	CHECK_EQUAL_VAR(V_Value, 0)
+	CHECK_EQUAL_VAR(IsWindowHidden(subPanel), 0)
 
 	CONF_JSONToWindow(panel, saveRestoreMask, jsonID)
 	DoUpdate/W=$panel
 
 	// and now the subwindow is hidden again
-	GetWindow $subPanel, hide
-	CHECK_EQUAL_VAR(V_Value, 1)
+	CHECK_EQUAL_VAR(IsWindowHidden(subPanel), 1)
 End

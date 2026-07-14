@@ -650,9 +650,7 @@ static Function BSP_UpdateHideButton(string win)
 			continue
 		endif
 
-		GetWindow $win, hide
-
-		if(V_Value == 1)
+		if(IsWindowHidden(win))
 			showButton = 1
 			break
 		endif

@@ -1224,6 +1224,16 @@ Function/S GetCurrentWindow()
 	return s_value
 End
 
+/// @brief Return the truth that the given window is hidden
+///
+/// UTF_NOINSTRUMENTATION
+Function IsWindowHidden(string win)
+
+	GetWindow $win, hide
+
+	return V_Value == 1
+End
+
 /// @brief Return a 1D text wave with all infos about the cursors
 ///
 /// Returns an invalid wave reference when no cursors are present. Counterpart
