@@ -671,6 +671,7 @@ End
 /// @brief If buffer has a sign then it is removed from buffer. If the sign was a minus then a negation is prefixed in the json.
 static Function [string buffer, variable bufOffset, STRUCT SF_ParserData pad] SFP_ParserEvaluatePossibleSign()
 
+	// a single character is sufficient here, e.g. the "[" of an empty array "[]"
 	ASSERT(strlen(buffer) >= 1, "Expected at least one character.")
 
 	if(!CmpStr(buffer[0], "-"))
