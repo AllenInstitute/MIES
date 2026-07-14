@@ -585,6 +585,14 @@ static Function array()
 	jsonID1 = DirectToFormulaParser("[]")
 	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
+	jsonID0 = JSON_Parse("[1,[]]")
+	jsonID1 = DirectToFormulaParser("[1,[]]")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("[[]]")
+	jsonID1 = DirectToFormulaParser("[[]]")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+
 	jsonID0 = JSON_Parse("[1]")
 	jsonID1 = DirectToFormulaParser("[1]")
 	CHECK_EQUAL_JSON(jsonID0, jsonID1)

@@ -404,7 +404,8 @@ static Function [STRUCT SF_ParserData pad, variable lastCalculation, variable wa
 			break
 		case SF_ACTION_PARENTHESIS:
 			[buffer, bufOffset, pad] = SFP_ParserEvaluatePossibleSign()
-			[pad]                    = SFP_ParserAddJSON(buffer[1, Inf], 1 + bufOffset, indentLevel)
+			SFH_ASSERT(CmpStr(buffer, "("), "Expected content inside parentheses.", jsonId = pad.jsonId)
+			[pad] = SFP_ParserAddJSON(buffer[1, Inf], 1 + bufOffset, indentLevel)
 			break
 		case SF_ACTION_HIGHERORDER:
 			// - called if for the first time a "," is encountered (from SF_STATE_ARRAYELEMENT)
