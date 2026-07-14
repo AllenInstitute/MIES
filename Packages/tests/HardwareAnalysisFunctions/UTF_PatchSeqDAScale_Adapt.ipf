@@ -251,91 +251,6 @@ static Function [WAVE/WAVE wv, variable sweepNo] GetEntries_IGNORE(string device
 	return [wv, sweepNo]
 End
 
-static Function CheckSurveyPlot(string device, WAVE/WAVE entries)
-
-	PASS()
-
-	return NaN
-
-	string databrowser, sfgraph, allGraphs, traceList, graph
-	variable i, numGraphs
-
-	databrowser = DB_FindDatabrowser(device, mode = BROWSER_MODE_AUTOMATION)
-	CHECK(WindowExists(databrowser))
-
-	sfgraph = SFH_GetFormulaPanelFromBrowser(databrowser, SF_DISPLAYTYPE_GRAPH)
-	CHECK(WindowExists(sfgraph))
-
-	allGraphs = GetAllWindows(sfGraph)
-
-	Duplicate/FREE entries[%sweepPassFromRhSuAd], sweepPassFromRhSuAddQC
-	sweepPassFromRhSuAddQC[] = 1
-
-	Concatenate/FREE/NP=(ROWS) {entries[%dascaleFromRhSuAd], entries[%dascale]}, DAScale
-	Concatenate/FREE/NP=(ROWS) {sweepPassFromRhSuAddQC, entries[%sweepPass]}, sweepPass
-	Concatenate/FREE/NP=(ROWS) {entries[%fiNegSlopesPassFromRhSuAd], entries[%fiNegSlopePass]}, fiNegSlopePass
-
-	if(WaveExists(entries[%fiSlope]))
-		Concatenate/FREE/NP=(ROWS) {entries[%fiSlopesFromRhSuAd], entries[%fiSlope]}, fISlope
-
-		WAVE fISlopeFiltered = MIES_PSQ#PSQ_DS_FilterPassingData(fISlope, sweepPass, inbetween = 1)
-		WaveClear fISlope
-	else
-		WAVE fISlopeFiltered = entries[%fiSlopesFromRhSuAd]
-	endif
-
-	Duplicate/FREE sweepPass, sweepPassAndFINegSlopePass
-
-	// TODO
-	sweepPassAndFINegSlopePass[] = sweepPass[p] && !fiNegSlopePass[p] && !IsNaN(fiSlopeFiltered[p])
-
-	if(WaveExists(entries[%apfreq]))
-		Concatenate/FREE/NP=(ROWS) {entries[%apFreqFromRhSuAd], entries[%apfreq]}, apFreq
-
-		WAVE ApFreqFiltered = MIES_PSQ#PSQ_DS_FilterPassingData(apFreq, sweepPassAndFINegSlopePass)
-		WaveClear ApFreq
-	else
-		WAVE apFreqFiltered = entries[%apFreqFromRhSuAd]
-	endif
-
-	WAVE DAScaleFiltered = MIES_PSQ#PSQ_DS_FilterPassingData(DAScale, sweepPassAndFINegSlopePass)
-	WaveClear DAScale
-
-	Duplicate/FREE DAScaleFiltered, DAScaleFilteredWithoutFirstPoint
-	DeletePoints/M=(ROWS) 0, 1, DAScaleFilteredWithoutFirstPoint
-
-	numGraphs = ItemsInList(allGraphs)
-	for(i = 0; i < numGraphs; i += 1)
-		graph     = StringFromList(i, allGraphs, ";")
-		traceList = TraceNameList(graph, ";", 1 + 2)
-
-		if(!isEmpty(traceList))
-			WAVE traces = ListToTextWave(traceList, ";")
-			CHECK_EQUAL_VAR(DimSize(traces, ROWS), 1)
-
-			WAVE/ZZ yWave = WaveRefIndexed(graph, 0, 1)
-			CHECK_WAVE(yWave, NUMERIC_WAVE)
-			Redimension/E=1/N=(-1, 0) yWave
-
-			WAVE/ZZ xWave = WaveRefIndexed(graph, 0, 2)
-			CHECK_WAVE(xWave, NUMERIC_WAVE)
-			Redimension/E=1/N=(-1, 0) xWave
-
-			if(strsearch(graph, "graph0", 0) >= 0)
-				// frequency vs DAScale
-				CHECK_EQUAL_WAVES(DAScaleFiltered, xWave, mode = WAVE_DATA, tol = 1e-6)
-				CHECK_EQUAL_WAVES(apFreqFiltered, yWave, mode = WAVE_DATA, tol = 1e-6)
-			elseif(strsearch(graph, "graph1", 0) >= 0)
-				// f-I slopes vs DAScale
-				CHECK_EQUAL_WAVES(DAScaleFilteredWithoutFirstPoint, xWave, mode = WAVE_DATA, tol = 1e-6)
-				CHECK_EQUAL_WAVES(fISlopeFiltered, yWave, mode = WAVE_DATA, tol = 1e-6)
-			else
-				FATAL_ERROR("Unexpected graph name")
-			endif
-		endif
-	endfor
-End
-
 static Function [WAVE apFreqRef, WAVE apFreqFromRhSuAd, WAVE DAScalesFromRhSuAd, WAVE sweepPassedFRomRhSuAd] ExtractRefValuesFromOverride(variable sweepNo, [WAVE baselineQC])
 
 	WAVE/Z overrideResults = GetOverrideResults()
@@ -560,7 +475,6 @@ static Function PS_DS_AD1_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%oorDAScale], {0, 0, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckSurveyPlot(str, entries)
 
 	// start again to check that PSQ_GetPreviousSetQCFailingAdaptive is working correctly
 	PGC_SetAndActivateControl(str, "DataAcquireButton")
@@ -700,7 +614,6 @@ static Function PS_DS_AD1a_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%dascale], DAScalesRef, mode = WAVE_DATA, tol = 1e-24)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckSurveyPlot(str, entries)
 
 	WAVE/Z overrideResults = GetOverrideResults()
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
@@ -885,7 +798,7 @@ static Function PS_DS_AD2_REENTRY([string str])
 	CHECK_WAVE(entries[%oorDAScale], NULL_WAVE)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckSurveyPlot(str, entries)
+
 End
 
 static Function PS_DS_AD2a_preAcq(string device)
@@ -1001,7 +914,7 @@ static Function PS_DS_AD2a_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%oorDAScale], {0, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckSurveyPlot(str, entries)
+
 End
 
 static Function PS_DS_AD2b_preAcq(string device)
@@ -1116,7 +1029,7 @@ static Function PS_DS_AD2b_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%oorDAScale], {0, 0, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckSurveyPlot(str, entries)
+
 End
 
 static Function PS_DS_AD3_preAcq(string device)
@@ -1230,7 +1143,7 @@ static Function PS_DS_AD3_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%oorDAScale], {0, 0, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckSurveyPlot(str, entries)
+
 End
 
 static Function PS_DS_AD4_preAcq(string device)
@@ -1500,7 +1413,7 @@ static Function PS_DS_AD6_REENTRY([string str])
 	CHECK_WAVE(entries[%oorDAScale], NULL_WAVE)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckSurveyPlot(str, entries)
+
 End
 
 static Function PS_DS_AD7_preAcq(string device)
@@ -1616,7 +1529,7 @@ static Function PS_DS_AD7_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%oorDAScale], {0, 0, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckSurveyPlot(str, entries)
+
 End
 
 static Function PS_DS_AD8_preAcq(string device)
@@ -1777,7 +1690,7 @@ static Function PS_DS_AD10_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%oorDAScale], {0, 0, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckSurveyPlot(str, entries)
+
 End
 
 static Function PS_DS_AD12_preAcq(string device)
@@ -1903,7 +1816,7 @@ static Function PS_DS_AD12_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%oorDAScale], {0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckSurveyPlot(str, entries)
+
 End
 
 static Function PS_DS_AD12a_preAcq(string device)
@@ -2034,7 +1947,7 @@ static Function PS_DS_AD12a_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%oorDAScale], {0, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckSurveyPlot(str, entries)
+
 End
 
 static Function PS_DS_AD13_preAcq(string device)
@@ -2146,7 +2059,7 @@ static Function PS_DS_AD13_REENTRY([string str])
 	CHECK_WAVE(entries[%oorDAScale], NULL_WAVE)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckSurveyPlot(str, entries)
+
 End
 
 static Function PS_DS_AD14_preAcq(string device)
@@ -2263,7 +2176,7 @@ static Function PS_DS_AD14_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%oorDAScale], {0, 0, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckSurveyPlot(str, entries)
+
 End
 
 static Function PS_DS_AD15_preAcq(string device)
@@ -2375,7 +2288,7 @@ static Function PS_DS_AD15_REENTRY([string str])
 	CHECK_WAVE(entries[%oorDAScale], NULL_WAVE)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckSurveyPlot(str, entries)
+
 End
 
 static Function PS_DS_AD16_preAcq(string device)
@@ -2495,7 +2408,7 @@ static Function PS_DS_AD16_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%oorDAScale], {0, 0, 0, 0, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckSurveyPlot(str, entries)
+
 End
 
 static Function PS_DS_AD17_preAcq(string device)
@@ -2603,7 +2516,7 @@ static Function PS_DS_AD17_REENTRY([string str])
 	CHECK_WAVE(entries[%oorDAScale], NULL_WAVE)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckSurveyPlot(str, entries)
+
 End
 
 static Function PS_DS_AD18_preAcq(string device)
@@ -2715,7 +2628,7 @@ static Function PS_DS_AD18_REENTRY([string str])
 	CHECK_WAVE(entries[%oorDAScale], NULL_WAVE)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckSurveyPlot(str, entries)
+
 End
 
 static Function PS_DS_AD19_preAcq(string device)
@@ -2811,7 +2724,7 @@ static Function PS_DS_AD19_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%oorDAScale], {1}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckSurveyPlot(str, entries)
+
 End
 
 static Function PS_DS_AD20_preAcq(string device)
@@ -2925,7 +2838,7 @@ static Function PS_DS_AD20_REENTRY([string str])
 	CHECK_WAVE(entries[%oorDAScale], NULL_WAVE)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckSurveyPlot(str, entries)
+
 End
 
 static Function PS_DS_AD21_preAcq(string device)
@@ -3041,7 +2954,7 @@ static Function PS_DS_AD21_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%oorDAScale], {0, 0, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckSurveyPlot(str, entries)
+
 End
 
 static Function PS_DS_AD22_preAcq(string device)
@@ -3155,5 +3068,5 @@ static Function PS_DS_AD22_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%oorDAScale], {0, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckSurveyPlot(str, entries)
+
 End
