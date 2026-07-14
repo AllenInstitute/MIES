@@ -669,6 +669,7 @@ Function BSP_ClosePanelHook(STRUCT WMWinHookStruct &s)
 	string mainPanel
 
 	switch(s.eventCode)
+		case EVENT_WINDOW_HOOK_HIDE: // fallthrough
 		case EVENT_WINDOW_HOOK_KILLVOTE:
 			BSP_HidePanel(s.winName)
 

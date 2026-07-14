@@ -409,3 +409,34 @@ static Function TCONF_CheckHideState()
 	// and now the subwindow is hidden again
 	CHECK_EQUAL_VAR(IsWindowHidden(subPanel), 1)
 End
+
+static Function TCONF_DataBrowserAndHideState()
+
+	variable mask, jsonID
+	string win, bsPanel
+
+	win     = DB_OpenDataBrowser()
+	bsPanel = BSP_GetPanel(win)
+
+	CHECK(IsControlHidden(win, BSP_SHOW_WIN_BUTTON))
+	CHECK_EQUAL_VAR(IsWindowHidden(bsPanel), 0)
+	KillWindow $bsPanel
+	Sleep/S 0.1
+	CHECK(IsControlEnabledAndVisible(win, BSP_SHOW_WIN_BUTTON))
+	CHECK_EQUAL_VAR(IsWindowHidden(bsPanel), 1)
+
+	mask = EXPCONFIG_SAVE_VALUE | EXPCONFIG_SAVE_POSITION | EXPCONFIG_SAVE_USERDATA | EXPCONFIG_SAVE_DISABLED | EXPCONFIG_SAVE_CTRLTYPE
+
+	jsonID = CONF_AllWindowsToJSON(win, mask)
+	KillWindow $win
+
+	win = DB_OpenDataBrowser()
+	CHECK(IsControlHidden(win, BSP_SHOW_WIN_BUTTON))
+	CHECK_EQUAL_VAR(IsWindowHidden(bsPanel), 0)
+	CONF_JSONToWindow(win, mask, jsonID)
+	Sleep/S 0.1
+	// the restore button is correctly displayed
+	CHECK(IsControlEnabledAndVisible(win, BSP_SHOW_WIN_BUTTON))
+	CHECK_EQUAL_VAR(IsWindowHidden(bsPanel), 1)
+	JSON_Release(jsonID)
+End
