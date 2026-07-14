@@ -401,7 +401,8 @@ static Function [STRUCT SF_ParserData pad, variable lastCalculation, variable wa
 			break
 		case SF_ACTION_PARENTHESIS:
 			[buffer, bufOffset, pad] = SFP_ParserEvaluatePossibleSign()
-			[pad]                    = SFP_ParserAddJSON(buffer[1, Inf], 1 + bufOffset, indentLevel)
+			SFH_ASSERT(CmpStr(buffer, "("), "Expected content inside parentheses.", jsonId = pad.jsonId)
+			[pad] = SFP_ParserAddJSON(buffer[1, Inf], 1 + bufOffset, indentLevel)
 			break
 		case SF_ACTION_HIGHERORDER:
 			// - called if for the first time a "," is encountered (from SF_STATE_ARRAYELEMENT)
@@ -430,6 +431,16 @@ static Function [STRUCT SF_ParserData pad, variable lastCalculation, variable wa
 			// to return an array.
 			[buffer, bufOffset, pad] = SFP_ParserEvaluatePossibleSign()
 			SFH_ASSERT(!CmpStr(buffer[0], "["), "Can not find array start. (Is there a \",\" before \"[\" missing?)", jsonId = pad.jsonId)
+			if(!CmpStr(buffer, "["))
+				// empty array "[]"
+				subId = JSON_New()
+				JSON_AddTreeArray(subId, "")
+				WAVE/T emptySrcLocs = GetNewSourceLocationWave()
+				SFP_AddToSourceLocationWave(emptySrcLocs, "", pad.bufferOffset + bufOffset)
+				SFP_AddArray(pad, emptySrcLocs, subId, 0)
+				ConcatenateWavesWithNoteIndex(pad.srcLocs, emptySrcLocs)
+				break
+			endif
 			bufOffset                 += pad.bufferOffset + 1
 			[subId, WAVE/T srcLocsSub] = SFP_FormulaParser(buffer[1, Inf], bufOffset, createdArray = wasArrayCreated, indentLevel = indentLevel + 1)
 			createArray                = JSON_GetType(subId, "") != JSON_ARRAY || !wasArrayCreated
@@ -651,7 +662,7 @@ End
 /// @brief If buffer has a sign then it is removed from buffer. If the sign was a minus then a negation is prefixed in the json.
 static Function [string buffer, variable bufOffset, STRUCT SF_ParserData pad] SFP_ParserEvaluatePossibleSign()
 
-	ASSERT(strlen(buffer) > 1, "Expected at least two characters.")
+	ASSERT(strlen(buffer) >= 1, "Expected at least one character.")
 
 	if(!CmpStr(buffer[0], "-"))
 		[pad] = SFP_ParserInsertNegation()
