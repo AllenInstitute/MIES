@@ -2748,7 +2748,7 @@ End
 
 Function TraceValueDisplayHook(STRUCT WMTooltipHookStruct &s)
 
-	string name, msg, allTraces, trace, tooltip, match, options, win, valueStr, tagText
+	string name, msg, allTraces, trace, match, options, win, valueStr, tagText
 	variable numTraces, i
 
 	// traceName is set only for graphs and only if the mouse hovered near a trace
@@ -2758,10 +2758,14 @@ Function TraceValueDisplayHook(STRUCT WMTooltipHookStruct &s)
 
 	win = s.winName
 
-	tooltip   = ""
 	allTraces = TraceNameList(win, ";", 1 + 2)
 
 	numTraces = ItemsInList(allTraces)
+	if(numTraces == 0)
+		return 0
+	endif
+
+	Make/FREE/T/N=(numTraces) tooltips
 	for(i = 0; i < numTraces; i += 1)
 		trace = StringFromList(i, allTraces)
 
@@ -2777,8 +2781,9 @@ Function TraceValueDisplayHook(STRUCT WMTooltipHookStruct &s)
 		name = JWN_GetStringFromWaveNote(wv, SF_META_LEGEND_LINE_PREFIX)
 
 		if(IsEmpty(name))
-			// not a labnotebook/analysis function parameter
-			continue
+			// not a labnotebook/analysis function parameter but just
+			// a generic trace
+			name = "Y"
 		endif
 
 		if(IsNumericWave(wv))
@@ -2793,12 +2798,16 @@ Function TraceValueDisplayHook(STRUCT WMTooltipHookStruct &s)
 			valueStr = wvText[s.row][s.column][s.layer][s.chunk]
 		endif
 
-		sprintf msg, "%s: %s\r", name, valueStr
-		tooltip += msg
+		sprintf msg, "%s: %s", name, valueStr
+
+		if(IsNaN(GetRowIndex(tooltips, str = msg, textOp = TXOP_WHOLE_ELEM)))
+			tooltips[i] = msg
+		endif
 	endfor
 
-	if(!IsEmpty(tooltip))
-		s.tooltip = "<pre>" + RemoveEnding(tooltip, "\r") + "</pre>"
+	if(HasOneValidEntry(tooltips))
+		RemoveTextWaveEntry1D(tooltips, "", all = 1)
+		s.tooltip = "<pre>" + TextwaveToList(tooltips, "\r", trailSep = 0) + "</pre>"
 		s.isHtml  = 1
 		return 1
 	endif
