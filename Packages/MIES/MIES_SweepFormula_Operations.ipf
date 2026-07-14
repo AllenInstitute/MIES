@@ -1089,6 +1089,70 @@ Function/WAVE SFO_OperationDiv(STRUCT SF_ExecutionData &exd)
 	return SFH_GetOutputForExecutor(output, exd.graph, SF_OPSHORT_DIV)
 End
 
+/// @brief Returns the numeric value of a non-finite literal (inf/-inf/nan)
+///
+/// @param[in]  element string to interpret
+/// @retval valid  one if `element` is a non-finite literal, zero otherwise
+/// @retval value  the numeric value if valid, NaN otherwise
+static Function [variable valid, variable value] SFO_ParseNonFiniteLiteral(string element)
+
+	valid = 1
+	strswitch(LowerStr(element))
+		case "inf": // fallthrough
+		case "+inf":
+			value = +Inf
+			break
+		case "-inf":
+			value = -Inf
+			break
+		case "nan": // fallthrough
+		case "+nan": // fallthrough
+		case "-nan":
+			value = NaN
+			break
+		default:
+			valid = 0
+			value = NaN
+			break
+	endswitch
+
+	return [valid, value]
+End
+
+/// @brief Converts a text wave that consists solely of non-finite literals (inf/-inf/nan) into a numeric wave
+///
+/// This allows primitive operations like `1 - NaN` or `1 - inf` where a non-finite value is entered as bare literal.
+/// Returns the input wave unchanged if it is not textual or if it contains at least one element that is not a
+/// non-finite literal.
+static Function/WAVE SFO_ConvertNonFiniteText(WAVE/Z data)
+
+	variable i, numElements, valid, value
+
+	if(!WaveExists(data) || !IsTextWave(data))
+		return data
+	endif
+
+	WAVE/T dataText = data
+	numElements = numpnts(dataText)
+	if(numElements == 0)
+		return data
+	endif
+
+	Make/FREE/D/N=(DimSize(dataText, ROWS), DimSize(dataText, COLS), DimSize(dataText, LAYERS), DimSize(dataText, CHUNKS)) converted
+
+	for(i = 0; i < numElements; i += 1)
+		[valid, value] = SFO_ParseNonFiniteLiteral(dataText[i])
+		if(!valid)
+			return data
+		endif
+		converted[i] = value
+	endfor
+
+	CopyScales dataText, converted
+
+	return converted
+End
+
 static Function/WAVE SFO_OperationDivImplDataSets(WAVE/Z data0, WAVE/Z data1)
 
 	variable divConst
@@ -1096,24 +1160,26 @@ static Function/WAVE SFO_OperationDivImplDataSets(WAVE/Z data0, WAVE/Z data1)
 	if(!WaveExists(data0) || !WaveExists(data1))
 		return $""
 	endif
-	SFH_ASSERT(IsNumericWave(data0) && IsNumericWave(data1), "Operand for / must be numeric.")
+	WAVE/Z data0Num = SFO_ConvertNonFiniteText(data0)
+	WAVE/Z data1Num = SFO_ConvertNonFiniteText(data1)
+	SFH_ASSERT(IsNumericWave(data0Num) && IsNumericWave(data1Num), "Operand for / must be numeric.")
 
-	if(numpnts(data1) == 1)
-		divConst = data1[0]
-		MatrixOp/FREE result = data0 / divConst
-		CopyScales data0, result
+	if(numpnts(data1Num) == 1)
+		divConst = data1Num[0]
+		MatrixOp/FREE result = data0Num / divConst
+		CopyScales data0Num, result
 		return result
 	endif
-	if(numpnts(data0) == 1)
-		divConst = data0[0]
-		MatrixOp/FREE result = divConst / data1
-		CopyScales data1, result
+	if(numpnts(data0Num) == 1)
+		divConst = data0Num[0]
+		MatrixOp/FREE result = divConst / data1Num
+		CopyScales data1Num, result
 		return result
 	endif
-	SFO_AssertOnMismatchedWaves(data0, data1, SF_OPSHORT_DIV)
+	SFO_AssertOnMismatchedWaves(data0Num, data1Num, SF_OPSHORT_DIV)
 
-	MatrixOp/FREE result = data0 / data1
-	CopyScales data0, result
+	MatrixOp/FREE result = data0Num / data1Num
+	CopyScales data0Num, result
 	return result
 End
 
@@ -1964,24 +2030,26 @@ static Function/WAVE SFO_OperationMinusImplDataSets(WAVE/Z data0, WAVE/Z data1)
 	if(!WaveExists(data0) || !WaveExists(data1))
 		return $""
 	endif
-	SFH_ASSERT(IsNumericWave(data0) && IsNumericWave(data1), "Operand for - must be numeric.")
+	WAVE/Z data0Num = SFO_ConvertNonFiniteText(data0)
+	WAVE/Z data1Num = SFO_ConvertNonFiniteText(data1)
+	SFH_ASSERT(IsNumericWave(data0Num) && IsNumericWave(data1Num), "Operand for - must be numeric.")
 
-	if(numpnts(data1) == 1)
-		minusConst = data1[0]
-		MatrixOp/FREE result = data0 - minusConst
-		CopyScales data0, result
+	if(numpnts(data1Num) == 1)
+		minusConst = data1Num[0]
+		MatrixOp/FREE result = data0Num - minusConst
+		CopyScales data0Num, result
 		return result
 	endif
-	if(numpnts(data0) == 1)
-		minusConst = data0[0]
-		MatrixOp/FREE result = minusConst - data1
-		CopyScales data1, result
+	if(numpnts(data0Num) == 1)
+		minusConst = data0Num[0]
+		MatrixOp/FREE result = minusConst - data1Num
+		CopyScales data1Num, result
 		return result
 	endif
-	SFO_AssertOnMismatchedWaves(data0, data1, SF_OPSHORT_MINUS)
+	SFO_AssertOnMismatchedWaves(data0Num, data1Num, SF_OPSHORT_MINUS)
 
-	MatrixOp/FREE result = data0 - data1
-	CopyScales data0, result
+	MatrixOp/FREE result = data0Num - data1Num
+	CopyScales data0Num, result
 	return result
 End
 
@@ -1999,24 +2067,26 @@ static Function/WAVE SFO_OperationMultImplDataSets(WAVE/Z data0, WAVE/Z data1)
 	if(!WaveExists(data0) || !WaveExists(data1))
 		return $""
 	endif
-	SFH_ASSERT(IsNumericWave(data0) && IsNumericWave(data1), "Operand for * must be numeric.")
+	WAVE/Z data0Num = SFO_ConvertNonFiniteText(data0)
+	WAVE/Z data1Num = SFO_ConvertNonFiniteText(data1)
+	SFH_ASSERT(IsNumericWave(data0Num) && IsNumericWave(data1Num), "Operand for * must be numeric.")
 
-	if(numpnts(data1) == 1)
-		multConst = data1[0]
-		MatrixOp/FREE result = data0 * multConst
-		CopyScales data0, result
+	if(numpnts(data1Num) == 1)
+		multConst = data1Num[0]
+		MatrixOp/FREE result = data0Num * multConst
+		CopyScales data0Num, result
 		return result
 	endif
-	if(numpnts(data0) == 1)
-		multConst = data0[0]
-		MatrixOp/FREE result = multConst * data1
-		CopyScales data1, result
+	if(numpnts(data0Num) == 1)
+		multConst = data0Num[0]
+		MatrixOp/FREE result = multConst * data1Num
+		CopyScales data1Num, result
 		return result
 	endif
-	SFO_AssertOnMismatchedWaves(data0, data1, SF_OPSHORT_MULT)
+	SFO_AssertOnMismatchedWaves(data0Num, data1Num, SF_OPSHORT_MULT)
 
-	MatrixOp/FREE result = data0 * data1
-	CopyScales data0, result
+	MatrixOp/FREE result = data0Num * data1Num
+	CopyScales data0Num, result
 	return result
 End
 
@@ -2034,24 +2104,26 @@ static Function/WAVE SFO_OperationPlusImplDataSets(WAVE/Z data0, WAVE/Z data1)
 	if(!WaveExists(data0) || !WaveExists(data1))
 		return $""
 	endif
-	SFH_ASSERT(IsNumericWave(data0) && IsNumericWave(data1), "Operand for + must be numeric.")
+	WAVE/Z data0Num = SFO_ConvertNonFiniteText(data0)
+	WAVE/Z data1Num = SFO_ConvertNonFiniteText(data1)
+	SFH_ASSERT(IsNumericWave(data0Num) && IsNumericWave(data1Num), "Operand for + must be numeric.")
 
-	if(numpnts(data1) == 1)
-		addConst = data1[0]
-		MatrixOp/FREE result = data0 + addConst
-		CopyScales data0, result
+	if(numpnts(data1Num) == 1)
+		addConst = data1Num[0]
+		MatrixOp/FREE result = data0Num + addConst
+		CopyScales data0Num, result
 		return result
 	endif
-	if(numpnts(data0) == 1)
-		addConst = data0[0]
-		MatrixOp/FREE result = addConst + data1
-		CopyScales data1, result
+	if(numpnts(data0Num) == 1)
+		addConst = data0Num[0]
+		MatrixOp/FREE result = addConst + data1Num
+		CopyScales data1Num, result
 		return result
 	endif
-	SFO_AssertOnMismatchedWaves(data0, data1, SF_OPSHORT_PLUS)
+	SFO_AssertOnMismatchedWaves(data0Num, data1Num, SF_OPSHORT_PLUS)
 
-	MatrixOp/FREE result = data0 + data1
-	CopyScales data0, result
+	MatrixOp/FREE result = data0Num + data1Num
+	CopyScales data0Num, result
 	return result
 End
 

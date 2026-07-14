@@ -81,7 +81,8 @@ concatenated as in `max(0,min(1,2),1)`.
      ]
    }
 
-A number can be entered as `1000`, `1e3`, or `10.0e2`. It is always stored as a
+A number can be entered as `1000`, `1e3`, `10.0e2`, or with a signed exponent as
+`1e-3` and `1e+3`. It is always stored as a
 numeric value and not as string. The formula parser treats everything that is
 not parsable but matches alphanumeric characters (excluding operations) to a
 string as in `a_string`. White spaces are ignored throughout the
@@ -197,6 +198,8 @@ The array evaluation supports numeric and text data. The interpretation of the J
 text data is preferred. This means that `["NaN"]` returns a one element text wave `{"NaN"}`,
 whereas `[1, "NaN"]` returns a two element numeric wave `{1, NaN}`. If one element can not be
 parsed as string then it is assumed that the array contains numeric data.
+The non-finite literals `inf`, `-inf` and `NaN` are also accepted as operands of the primitive
+operations `+`, `-`, `*` and `/`, so that e.g. `1 - NaN` and `1 - inf` are valid.
 The JSON null element is only allowed for the topmost array as the parser inserts it for
 operation with no argument like e.g. `select()`. For sub arrays null elements `[null]`
 are invalid and result in an error.

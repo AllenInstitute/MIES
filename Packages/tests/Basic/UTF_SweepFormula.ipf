@@ -100,20 +100,55 @@ static Function TestNonFiniteValues()
 	TestOperationMinMaxHelper(win, "\"NaN\"", "NaN", NaN)
 End
 
-// Fails with Abort
-// UTF_TD_GENERATOR DataGenerators#NonFiniteValues
-//static Function TestNonFiniteValuesPrimitiveOperations([variable var])
-//
-//	string win, device, str
-//
-//	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
-//
-//	str = "\"" + num2str(var) + "\""
-//	TestOperationMinMaxHelper(win, "{\"+\":[1," + str + "]}", "1+" + str, 1 + var)
-//	TestOperationMinMaxHelper(win, "{\"*\":[1," + str + "]}", "1*" + str, 1 * var)
-//	TestOperationMinMaxHelper(win, "{\"-\":[1," + str + "]}", "1-" + str, 1 - var)
-//	TestOperationMinMaxHelper(win, "{\"/\":[1," + str + "]}", "1/" + str, 1 / var)
-//End
+static Function TestScientificNotation()
+
+	string win
+
+	win = GetDataBrowserWithData()
+
+	// numbers in scientific notation, including signed exponents (see #1863)
+	TestOperationMinMaxHelper(win, "1000", "1e3", 1e3)
+	TestOperationMinMaxHelper(win, "1000", "10.0e2", 10.0e2)
+	TestOperationMinMaxHelper(win, "0.001", "1e-3", 1e-3)
+	TestOperationMinMaxHelper(win, "1000", "1e+3", 1e+3)
+	TestOperationMinMaxHelper(win, "-0.001", "-1e-3", -1e-3)
+	TestOperationMinMaxHelper(win, "1500", "1.5e3", 1.5e3)
+	TestOperationMinMaxHelper(win, "0.0015", "1.5e-3", 1.5e-3)
+
+	// scientific notation as operand of a calculation
+	TestOperationMinMaxHelper(win, "{\"+\":[1,0.001]}", "1+1e-3", 1 + 1e-3)
+	TestOperationMinMaxHelper(win, "{\"-\":[1,0.001]}", "1-1e-3", 1 - 1e-3)
+End
+
+static Function TestNonFiniteValuesPrimitiveOperations()
+
+	string win
+
+	win = GetDataBrowserWithData()
+
+	// non-finite values entered as bare literals are kept as string by the parser (see #1863)
+	CheckEqualFormulas("{\"+\":[1,\"NaN\"]}", "1+NaN")
+	CheckEqualFormulas("{\"-\":[1,\"NaN\"]}", "1-NaN")
+	CheckEqualFormulas("{\"*\":[1,\"NaN\"]}", "1*NaN")
+	CheckEqualFormulas("{\"/\":[1,\"NaN\"]}", "1/NaN")
+
+	// and are converted to numeric values when used in primitive operations
+	WAVE data = SFE_ExecuteFormula("1+NaN", win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, {NaN}, mode = WAVE_DATA)
+	WAVE data = SFE_ExecuteFormula("1-NaN", win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, {NaN}, mode = WAVE_DATA)
+	WAVE data = SFE_ExecuteFormula("1*NaN", win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, {NaN}, mode = WAVE_DATA)
+	WAVE data = SFE_ExecuteFormula("1/NaN", win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, {NaN}, mode = WAVE_DATA)
+
+	WAVE data = SFE_ExecuteFormula("1-inf", win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, {-Inf}, mode = WAVE_DATA)
+	WAVE data = SFE_ExecuteFormula("1+inf", win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, {+Inf}, mode = WAVE_DATA)
+	WAVE data = SFE_ExecuteFormula("1--inf", win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, {+Inf}, mode = WAVE_DATA)
+End
 
 static Function Transitions()
 
@@ -544,6 +579,11 @@ End
 static Function array()
 
 	variable jsonID0, jsonID1
+	string win
+
+	jsonID0 = JSON_Parse("[]")
+	jsonID1 = DirectToFormulaParser("[]")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = JSON_Parse("[1]")
 	jsonID1 = DirectToFormulaParser("[1]")
@@ -619,6 +659,12 @@ static Function array()
 	FailFormula("[1]2")
 	FailFormula("[0,[1]2]")
 	FailFormula("[0[1],2]")
+
+	// an empty array evaluates to an empty numeric wave
+	win = GetDataBrowserWithData()
+	WAVE data = SFE_ExecuteFormula("[]", win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_VAR(numpnts(data), 0)
+	CHECK_EQUAL_VAR(IsNumericWave(data), 1)
 End
 
 static Function whiteSpace()
