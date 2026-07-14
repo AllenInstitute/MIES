@@ -639,7 +639,7 @@ End
 static Function BSP_UpdateHideButton(string win)
 
 	string   mainPanel
-	variable visible
+	variable showButton
 
 	mainPanel = GetMainWindow(win)
 	WAVE/T allWindows = ListToTextWave(GetAllWindows(mainPanel), ";")
@@ -652,13 +652,13 @@ static Function BSP_UpdateHideButton(string win)
 
 		GetWindow $win, hide
 
-		if(V_Value)
-			visible = 1
+		if(V_Value == 1)
+			showButton = 1
 			break
 		endif
 	endfor
 
-	if(visible)
+	if(showButton)
 		ShowControl(mainPanel, BSP_SHOW_WIN_BUTTON)
 	else
 		HideControl(mainPanel, BSP_SHOW_WIN_BUTTON)
