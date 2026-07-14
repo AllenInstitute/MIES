@@ -544,6 +544,19 @@ End
 static Function array()
 
 	variable jsonID0, jsonID1
+	string win
+
+	jsonID0 = JSON_Parse("[]")
+	jsonID1 = DirectToFormulaParser("[]")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("[1,[]]")
+	jsonID1 = DirectToFormulaParser("[1,[]]")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("[[]]")
+	jsonID1 = DirectToFormulaParser("[[]]")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = JSON_Parse("[1]")
 	jsonID1 = DirectToFormulaParser("[1]")
@@ -619,6 +632,11 @@ static Function array()
 	FailFormula("[1]2")
 	FailFormula("[0,[1]2]")
 	FailFormula("[0[1],2]")
+
+	win = GetDataBrowserWithData()
+	WAVE data = SFE_ExecuteFormula("[]", win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_VAR(numpnts(data), 0)
+	CHECK_EQUAL_VAR(IsNumericWave(data), 1)
 End
 
 static Function whiteSpace()
