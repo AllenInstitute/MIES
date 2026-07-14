@@ -1249,7 +1249,10 @@ End
 /// Passing in a 2D wave also to sort all columns according to `col`
 ///
 /// Straight from wikipedia, top-down implementation, https://en.wikipedia.org/wiki/Merge_sort
-/// with the addition of `col`
+/// with the addition of `col`.
+///
+/// This is a stable sorting algorithm, meaning that neighbouring entries with
+/// the same value are not moved.
 Function MergeSortStableInplace(WAVE A, [variable col])
 
 	/// Array A[] has the items to sort; array B[] is a work array.

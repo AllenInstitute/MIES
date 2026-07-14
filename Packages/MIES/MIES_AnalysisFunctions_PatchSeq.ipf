@@ -2696,11 +2696,17 @@ End
 /// - slope must be acquired with a larger DAScale value than maximum slope
 static Function PSQ_DS_CalculateReachedFinalSlope(WAVE fitSlopes, WAVE DAScales, WAVE fillinPassed, variable fitSlope, variable maxSlope, variable slopePercentage)
 
-	return IsFinite(fitSlope)                                                         \
-	       && IsFinite(maxSlope)                                                      \
-	       && (fitSlope < (maxSlope * (1 - (slopePercentage * PERCENT_TO_ONE))))      \
-	       && PSQ_DS_IsValidFitSlopePosition(fitSlopes, DAScales, fitSlope, maxSlope) \
-	       && !PSQ_DS_IsFillin(fitSlopes, fillinPassed, fitSlope)
+	variable isBelowMaxSlopeByPercentage, isValidFitSlopePosition, isNotFillin
+
+	if(!IsFinite(fitSlope) || !IsFinite(maxSlope))
+		return 0
+	endif
+
+	isBelowMaxSlopeByPercentage = (fitSlope < (maxSlope * (1 - (slopePercentage * PERCENT_TO_ONE))))
+	isValidFitSlopePosition     = PSQ_DS_IsValidFitSlopePosition(fitSlopes, DAScales, fitSlope, maxSlope)
+	isNotFillin                 = !PSQ_DS_IsFillin(fitSlopes, fillinPassed, fitSlope)
+
+	return isBelowMaxSlopeByPercentage && isValidFitSlopePosition && isNotFillin
 End
 
 static Function PSQ_DS_CalculateNegativeSlopePass(WAVE fitSlopes, WAVE fillinPassed, variable fitSlope)
@@ -4403,7 +4409,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 
 			val = DAG_GetNumericalValue(device, "setvar_DataAcq_AutoBiasV")
 
-			if(!IsFinite(val) || CheckIfSmall(val, tol = 1e-12))
+			if(!IsFinite(val) || CheckIfSmall(val, tol = DEFAULT_TOL))
 				printf "(%s): Autobias value is zero or non-finite\r", device
 				ControlWindowToFront()
 				return 1
@@ -5389,7 +5395,7 @@ Function PSQ_Rheobase(string device, STRUCT AnalysisFunction_V3 &s)
 
 			val = DAG_GetNumericalValue(device, "setvar_DataAcq_AutoBiasV")
 
-			if(!IsFinite(val) || CheckIfSmall(val, tol = 1e-12))
+			if(!IsFinite(val) || CheckIfSmall(val, tol = DEFAULT_TOL))
 				printf "(%s): Autobias value is zero or non-finite\r", device
 				ControlWindowToFront()
 				return 1
@@ -5861,7 +5867,7 @@ Function PSQ_Ramp(string device, STRUCT AnalysisFunction_V3 &s)
 
 			val = DAG_GetNumericalValue(device, "setvar_DataAcq_AutoBiasV")
 
-			if(!IsFinite(val) || CheckIfSmall(val, tol = 1e-12))
+			if(!IsFinite(val) || CheckIfSmall(val, tol = DEFAULT_TOL))
 				printf "(%s): Autobias value is zero or non-finite\r", device
 				ControlWindowToFront()
 				return 1

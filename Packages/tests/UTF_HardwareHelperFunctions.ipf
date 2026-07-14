@@ -1085,7 +1085,7 @@ Function CheckUserEpochs(string dev, WAVE times, string shortNameFormat, [variab
 				startRef  = times[k << 1] * MILLI_TO_ONE
 				endRef    = times[(k << 1) + 1] * MILLI_TO_ONE
 
-				if(CheckIfSmall(startRef, tol = 1e-12))
+				if(CheckIfSmall(startRef, tol = DEFAULT_TOL))
 					CHECK_SMALL_VAR(startTime)
 				else
 					CHECK_CLOSE_VAR(startTime, startRef, tol = 0.0005)

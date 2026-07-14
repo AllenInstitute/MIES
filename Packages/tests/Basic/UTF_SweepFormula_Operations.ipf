@@ -1295,7 +1295,7 @@ static Function TestOperationAverage()
 	CHECK_EQUAL_WAVES(dataRef[0], ref, mode = WAVE_DATA)
 
 	Make/D/FREE ref = {10.66666666666667}
-	CHECK_EQUAL_WAVES(dataRef[1], ref, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(dataRef[1], ref, mode = WAVE_DATA, tol = DEFAULT_TOL)
 
 	Make/D/FREE ref = {8.666666666666666}
 	CHECK_EQUAL_WAVES(dataRef[2], ref, mode = WAVE_DATA)

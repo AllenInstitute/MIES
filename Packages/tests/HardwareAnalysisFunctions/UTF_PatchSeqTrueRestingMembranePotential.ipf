@@ -346,11 +346,11 @@ static Function PS_VM2_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(entries[%averageVChunk0], {12e-3}, mode = WAVE_DATA, tol = 1e-12)
-	CHECK_EQUAL_WAVES(entries[%averageVChunk1], {12e-3}, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(entries[%averageVChunk0], {12e-3}, mode = WAVE_DATA, tol = DEFAULT_TOL)
+	CHECK_EQUAL_WAVES(entries[%averageVChunk1], {12e-3}, mode = WAVE_DATA, tol = DEFAULT_TOL)
 
 	Make/D/FREE fullAvg = {12e-3}
-	CHECK_EQUAL_WAVES(entries[%fullAvg], fullAvg, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(entries[%fullAvg], fullAvg, mode = WAVE_DATA, tol = DEFAULT_TOL)
 
 	Make/D/FREE fullAvgADiff = {0}
 	CHECK_EQUAL_WAVES(entries[%fullAvgADiff], fullAvgADiff, mode = WAVE_DATA)
@@ -558,14 +558,14 @@ static Function PS_VM4_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(entries[%averageVChunk0], {12e-3, 13e-3, 14e-3}, mode = WAVE_DATA, tol = 1e-12)
-	CHECK_EQUAL_WAVES(entries[%averageVChunk1], {16e-3, 17e-3, 18e-3}, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(entries[%averageVChunk0], {12e-3, 13e-3, 14e-3}, mode = WAVE_DATA, tol = DEFAULT_TOL)
+	CHECK_EQUAL_WAVES(entries[%averageVChunk1], {16e-3, 17e-3, 18e-3}, mode = WAVE_DATA, tol = DEFAULT_TOL)
 
 	Make/D/FREE fullAvg = {14e-3, 15e-3, 16e-3}
-	CHECK_EQUAL_WAVES(entries[%fullAvg], fullAvg, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(entries[%fullAvg], fullAvg, mode = WAVE_DATA, tol = DEFAULT_TOL)
 
 	Make/D/FREE fullAvgADiff = {-4e-3, -4e-3, -4e-3}
-	CHECK_EQUAL_WAVES(entries[%fullAvgADiff], fullAvgADiff, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(entries[%fullAvgADiff], fullAvgADiff, mode = WAVE_DATA, tol = DEFAULT_TOL)
 
 	Make/D/FREE fullAvgRDiff = {-0.33, -0.30, -0.28}
 	CHECK_EQUAL_WAVES(entries[%fullAvgRDiff], fullAvgRDiff, mode = WAVE_DATA, tol = 1e-2)
@@ -666,14 +666,14 @@ static Function PS_VM5_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(entries[%averageVChunk0], {12e-3, 13e-3, 14e-3}, mode = WAVE_DATA, tol = 1e-12)
-	CHECK_EQUAL_WAVES(entries[%averageVChunk1], {16e-3, 17e-3, 18e-3}, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(entries[%averageVChunk0], {12e-3, 13e-3, 14e-3}, mode = WAVE_DATA, tol = DEFAULT_TOL)
+	CHECK_EQUAL_WAVES(entries[%averageVChunk1], {16e-3, 17e-3, 18e-3}, mode = WAVE_DATA, tol = DEFAULT_TOL)
 
 	Make/D/FREE fullAvg = {14e-3, 15e-3, 16e-3}
-	CHECK_EQUAL_WAVES(entries[%fullAvg], fullAvg, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(entries[%fullAvg], fullAvg, mode = WAVE_DATA, tol = DEFAULT_TOL)
 
 	Make/D/FREE fullAvgADiff = {-4e-3, -4e-3, -4e-3}
-	CHECK_EQUAL_WAVES(entries[%fullAvgADiff], fullAvgADiff, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(entries[%fullAvgADiff], fullAvgADiff, mode = WAVE_DATA, tol = DEFAULT_TOL)
 
 	Make/D/FREE fullAvgRDiff = {-0.33, -0.30, -0.28}
 	CHECK_EQUAL_WAVES(entries[%fullAvgRDiff], fullAvgRDiff, mode = WAVE_DATA, tol = 1e-2)
@@ -780,14 +780,14 @@ static Function PS_VM5a_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(entries[%averageVChunk0], {10e-3, 0.1e-3, 1e-3}, mode = WAVE_DATA, tol = 1e-12)
-	CHECK_EQUAL_WAVES(entries[%averageVChunk1], {11e-3, 0.15e-3, 1.05e-3}, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(entries[%averageVChunk0], {10e-3, 0.1e-3, 1e-3}, mode = WAVE_DATA, tol = DEFAULT_TOL)
+	CHECK_EQUAL_WAVES(entries[%averageVChunk1], {11e-3, 0.15e-3, 1.05e-3}, mode = WAVE_DATA, tol = DEFAULT_TOL)
 
 	Make/D/FREE fullAvg = {10.5e-3, 0.125e-3, 1.025e-3}
-	CHECK_EQUAL_WAVES(entries[%fullAvg], fullAvg, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(entries[%fullAvg], fullAvg, mode = WAVE_DATA, tol = DEFAULT_TOL)
 
 	Make/D/FREE fullAvgADiff = {-1e-3, -0.05e-3, -0.05e-3}
-	CHECK_EQUAL_WAVES(entries[%fullAvgADiff], fullAvgADiff, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(entries[%fullAvgADiff], fullAvgADiff, mode = WAVE_DATA, tol = DEFAULT_TOL)
 
 	Make/D/FREE fullAvgRDiff = {-0.1, -0.5, -0.05}
 	CHECK_EQUAL_WAVES(entries[%fullAvgRDiff], fullAvgRDiff, mode = WAVE_DATA, tol = 1e-3)
@@ -888,11 +888,11 @@ static Function PS_VM5b_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(entries[%averageVChunk0], {12e-3}, mode = WAVE_DATA, tol = 1e-12)
-	CHECK_EQUAL_WAVES(entries[%averageVChunk1], {12e-3}, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(entries[%averageVChunk0], {12e-3}, mode = WAVE_DATA, tol = DEFAULT_TOL)
+	CHECK_EQUAL_WAVES(entries[%averageVChunk1], {12e-3}, mode = WAVE_DATA, tol = DEFAULT_TOL)
 
 	Make/D/FREE fullAvg = {12e-3}
-	CHECK_EQUAL_WAVES(entries[%fullAvg], fullAvg, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(entries[%fullAvg], fullAvg, mode = WAVE_DATA, tol = DEFAULT_TOL)
 
 	Make/D/FREE fullAvgADiff = {0}
 	CHECK_EQUAL_WAVES(entries[%fullAvgADiff], fullAvgADiff, mode = WAVE_DATA)
@@ -1053,14 +1053,14 @@ static Function PS_VM7_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(entries[%averageVChunk0], {12e-3}, mode = WAVE_DATA, tol = 1e-12)
-	CHECK_EQUAL_WAVES(entries[%averageVChunk1], {12e-3}, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(entries[%averageVChunk0], {12e-3}, mode = WAVE_DATA, tol = DEFAULT_TOL)
+	CHECK_EQUAL_WAVES(entries[%averageVChunk1], {12e-3}, mode = WAVE_DATA, tol = DEFAULT_TOL)
 
 	Make/D/FREE fullAvg = {12e-3}
-	CHECK_EQUAL_WAVES(entries[%fullAvg], fullAvg, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(entries[%fullAvg], fullAvg, mode = WAVE_DATA, tol = DEFAULT_TOL)
 
 	Make/D/FREE fullAvgADiff = {0}
-	CHECK_EQUAL_WAVES(entries[%fullAvgADiff], fullAvgADiff, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(entries[%fullAvgADiff], fullAvgADiff, mode = WAVE_DATA, tol = DEFAULT_TOL)
 
 	Make/D/FREE fullAvgRDiff = {0}
 	CHECK_EQUAL_WAVES(entries[%fullAvgRDiff], fullAvgRDiff, mode = WAVE_DATA, tol = 1e-2)
@@ -1162,14 +1162,14 @@ static Function PS_VM7a_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(entries[%averageVChunk0], {12e-3, 13e-3}, mode = WAVE_DATA, tol = 1e-12)
-	CHECK_EQUAL_WAVES(entries[%averageVChunk1], {12e-3, 13e-3}, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(entries[%averageVChunk0], {12e-3, 13e-3}, mode = WAVE_DATA, tol = DEFAULT_TOL)
+	CHECK_EQUAL_WAVES(entries[%averageVChunk1], {12e-3, 13e-3}, mode = WAVE_DATA, tol = DEFAULT_TOL)
 
 	Make/D/FREE fullAvg = {12e-3, 13e-3}
-	CHECK_EQUAL_WAVES(entries[%fullAvg], fullAvg, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(entries[%fullAvg], fullAvg, mode = WAVE_DATA, tol = DEFAULT_TOL)
 
 	Make/D/FREE fullAvgADiff = {0, 0}
-	CHECK_EQUAL_WAVES(entries[%fullAvgADiff], fullAvgADiff, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(entries[%fullAvgADiff], fullAvgADiff, mode = WAVE_DATA, tol = DEFAULT_TOL)
 
 	Make/D/FREE fullAvgRDiff = {0, 0}
 	CHECK_EQUAL_WAVES(entries[%fullAvgRDiff], fullAvgRDiff, mode = WAVE_DATA, tol = 1e-2)
@@ -1182,7 +1182,7 @@ static Function PS_VM7a_REENTRY([string str])
 
 	// first sweep does not have autobias enabled
 	CHECK_EQUAL_WAVES(entries[%autobiasVcom], {0, 6 + 3}, mode = WAVE_DATA)
-	CHECK_CLOSE_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 13, tol = 1e-12)
+	CHECK_CLOSE_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 13, tol = DEFAULT_TOL)
 
 	CHECK_EQUAL_WAVES(entries[%autobias], {0, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "check_DataAcq_AutoBias"), 1)
@@ -1270,14 +1270,14 @@ static Function PS_VM7b_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(entries[%averageVChunk0], {12e-3, 13e-3, 14e-3}, mode = WAVE_DATA, tol = 1e-12)
-	CHECK_EQUAL_WAVES(entries[%averageVChunk1], {12e-3, 13e-3, 14e-3}, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(entries[%averageVChunk0], {12e-3, 13e-3, 14e-3}, mode = WAVE_DATA, tol = DEFAULT_TOL)
+	CHECK_EQUAL_WAVES(entries[%averageVChunk1], {12e-3, 13e-3, 14e-3}, mode = WAVE_DATA, tol = DEFAULT_TOL)
 
 	Make/D/FREE fullAvg = {12e-3, 13e-3, 14e-3}
-	CHECK_EQUAL_WAVES(entries[%fullAvg], fullAvg, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(entries[%fullAvg], fullAvg, mode = WAVE_DATA, tol = DEFAULT_TOL)
 
 	Make/D/FREE fullAvgADiff = {0, 0, 0}
-	CHECK_EQUAL_WAVES(entries[%fullAvgADiff], fullAvgADiff, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(entries[%fullAvgADiff], fullAvgADiff, mode = WAVE_DATA, tol = DEFAULT_TOL)
 
 	Make/D/FREE fullAvgRDiff = {0, 0, 0}
 	CHECK_EQUAL_WAVES(entries[%fullAvgRDiff], fullAvgRDiff, mode = WAVE_DATA, tol = 1e-2)
@@ -1379,14 +1379,14 @@ static Function PS_VM8_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {0}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(entries[%averageVChunk0], {12e-3}, mode = WAVE_DATA, tol = 1e-12)
-	CHECK_EQUAL_WAVES(entries[%averageVChunk1], {12e-3}, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(entries[%averageVChunk0], {12e-3}, mode = WAVE_DATA, tol = DEFAULT_TOL)
+	CHECK_EQUAL_WAVES(entries[%averageVChunk1], {12e-3}, mode = WAVE_DATA, tol = DEFAULT_TOL)
 
 	Make/D/FREE fullAvg = {12e-3}
-	CHECK_EQUAL_WAVES(entries[%fullAvg], fullAvg, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(entries[%fullAvg], fullAvg, mode = WAVE_DATA, tol = DEFAULT_TOL)
 
 	Make/D/FREE fullAvgADiff = {0}
-	CHECK_EQUAL_WAVES(entries[%fullAvgADiff], fullAvgADiff, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(entries[%fullAvgADiff], fullAvgADiff, mode = WAVE_DATA, tol = DEFAULT_TOL)
 
 	Make/D/FREE fullAvgRDiff = {0}
 	CHECK_EQUAL_WAVES(entries[%fullAvgRDiff], fullAvgRDiff, mode = WAVE_DATA, tol = 1e-2)
