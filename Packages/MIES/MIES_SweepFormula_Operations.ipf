@@ -1099,7 +1099,7 @@ static Function [variable valid, variable value] SFO_ParseNonFiniteLiteral(strin
 	// recognize the same non-finite literals as SFE_ConvertNonFiniteElementsImpl (case-sensitive)
 	valid = 1
 	if(!CmpStr(element, "inf"))
-		value = +Inf
+		value = Inf
 	elseif(!CmpStr(element, "-inf"))
 		value = -Inf
 	elseif(!CmpStr(element, "NaN") || !CmpStr(element, "-NaN"))
