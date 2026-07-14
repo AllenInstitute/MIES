@@ -3478,14 +3478,14 @@ static Function PSQ_DS_AdaptiveIsFinished(string device, variable sweepNo, varia
 	return PSQ_DS_ConsecutivePasses(sweepPassed, fitSlopeReached, numSweepsWithSaturation, numSweepsWithSaturation)
 End
 
-/// @brief Return the number of consecutive passing labnotebook entries `checkQC` which all have `refQC` passing
+/// @brief Return the truth that we have the required number of passes
 ///
 /// It is assumed that `checkQC` is a value which is calculated for two neighbouring sweeps.
 static Function PSQ_DS_ConsecutivePasses(WAVE refQC, WAVE checkQC, variable numRefRequired, variable numCheckRequired)
 
 	variable i, numCheckFound, numRefFound, numCheckEntries
 
-	// refQC is determined between sweeps so we have always one sweep more than refQC
+	// checkQC is determined between sweeps so refQC has one entry more than checkQC
 	ASSERT(DimSize(refQC, ROWS) == (DimSize(checkQC, ROWS) + 1), "Unmatched refQC and checkQC waves")
 	ASSERT(IsInteger(numRefRequired) && numRefRequired > 0, "numRefRequired must be a strictly positive integer")
 	ASSERT(IsInteger(numCheckRequired) && numCheckRequired > 0, "numCheckRequired must be a strictly positive integer")
