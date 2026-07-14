@@ -1096,25 +1096,18 @@ End
 /// @retval value  the numeric value if valid, NaN otherwise
 static Function [variable valid, variable value] SFO_ParseNonFiniteLiteral(string element)
 
+	// recognize the same non-finite literals as SFE_ConvertNonFiniteElementsImpl (case-sensitive)
 	valid = 1
-	strswitch(LowerStr(element))
-		case "inf": // fallthrough
-		case "+inf":
-			value = +Inf
-			break
-		case "-inf":
-			value = -Inf
-			break
-		case "nan": // fallthrough
-		case "+nan": // fallthrough
-		case "-nan":
-			value = NaN
-			break
-		default:
-			valid = 0
-			value = NaN
-			break
-	endswitch
+	if(!CmpStr(element, "inf"))
+		value = +Inf
+	elseif(!CmpStr(element, "-inf"))
+		value = -Inf
+	elseif(!CmpStr(element, "NaN") || !CmpStr(element, "-NaN"))
+		value = NaN
+	else
+		valid = 0
+		value = NaN
+	endif
 
 	return [valid, value]
 End
