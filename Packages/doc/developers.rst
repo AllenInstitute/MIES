@@ -261,7 +261,7 @@ The following labels are in use:
 
 - ``Linux``: Agents run on Linux with
 
-  - Rocky Linux release 8.6 (Green Obsidian)
+  - Rocky Linux release 8.10 (Green Obsidian)
   - No Hardware
   - No Igor Pro
 

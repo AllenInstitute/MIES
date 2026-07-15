@@ -42,10 +42,16 @@ echo "" >> changelog.txt
 
 git log --regexp-ignore-case --pretty="$fmt" -G LABNOTEBOOK_VERSION ${old_tag}.. $top_level/Packages/MIES/MIES_Constants.ipf >> changelog.txt
 
+submodules=$(git submodule  | cut -f 3 -d " ")
+
+for i in $submodules
+do
 echo "" >> changelog.txt
-echo "IPNWB:" >> changelog.txt
+echo "$(basename $i):" >> changelog.txt
 echo "" >> changelog.txt
 
-git log --pretty="$fmt" --submodule=diff ${old_tag}.. $top_level/Packages/IPNWB >> changelog.txt
+git -C $top_level/$i log --pretty="$fmt" --no-merges $(git rev-parse $old_tag:$i)..$(git rev-parse HEAD:$i) >> changelog.txt
 
 echo "" >> changelog.txt
+
+done
