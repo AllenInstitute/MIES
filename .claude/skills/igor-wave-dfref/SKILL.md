@@ -63,7 +63,116 @@ The type flag /U can be combined with numeric integer type flags.
 The /C flag can be combined with numeric type flags
 The /Z flag can be combined with other flags
 
-When WAVE is used without /Z flag and the right side is a null wave reference then the runtime error condition is set.
+When a `WAVE` statement (without `/Z`) *actually executes* and its right-hand-side
+expression fails to resolve to an existing wave, a runtime error is raised.
+This is a different situation from a `WAVE` declaration that is simply never
+reached at all due to control flow — see "Scoping and Default Initialization" below.
+
+### Scoping and Default Initialization
+
+Igor Pro has **no block scope**. A `WAVE`/`NVAR`/`SVAR`/`DFREF` declaration
+written inside an `if`, `for`, or `switch` block is visible for the rest of
+the function, exactly like a `Variable` or `String` declared in a block is.
+The declaration is allocated for the whole function regardless of where it
+textually appears; only the *assignment* is tied to that specific line
+actually executing at runtime.
+
+Reference-typed locals (`WAVE`, `NVAR`, `SVAR`, `DFREF`, `FUNCREF`) are
+automatically initialized to a null/non-existent reference at function
+entry — the same way a bare `Variable` defaults to 0 and a bare `String`
+defaults to a null string (not `""` — a null string is a distinct state,
+distinguishable from an empty string via `strlen()`, which returns `NaN`
+for a null string but `0` for `""`). If the code path containing the assignment never runs,
+the reference is simply left at that safe null default. No lookup is
+attempted, so no runtime error occurs:
+
+```igor
+Function/WAVE MaybeGetData(variable condition)
+
+    if(condition)
+        Make/FREE data
+        WAVE test1 = data
+    endif
+
+    // If condition was false, test1 is still a valid, null WAVE reference here —
+    // not an error, not uninitialized memory. This is safe:
+    Make/FREE/WAVE wref = {test1}
+
+    return wref
+End
+```
+
+Do **not** confuse this with a `WAVE` statement that *does* execute but whose
+right-hand side fails to resolve (e.g. `$name` pointing at a wave that
+doesn't exist). That is a different failure mode and, without `/Z`, does
+raise a runtime error:
+
+```igor
+// This line executes every time; if "someName" isn't an existing wave,
+// this errors (no /Z):
+WAVE w = $someName
+
+// Safe form when the target might not exist:
+WAVE/Z w = $someName
+if(!WaveExists(w))
+    // handle missing wave
+endif
+```
+
+The distinguishing question is not "does the reference look null" but
+"did the assignment statement itself run." A conditionally-assigned WAVE
+reference that's never reached is a normal, safe null. A WAVE statement
+that runs and can't find its target is a runtime error unless guarded
+with `/Z`.
+
+Practical implication: it's a legitimate pattern in this
+codebase to conditionally assign a WAVE reference inside a branch and use
+it unconditionally afterward (typically feeding into a wave-ref array or
+an `if(WaveExists(...))` check), without a separate `WAVE/Z x = $""`
+pre-declaration. That pre-declaration is harmless but redundant for this
+specific case — it's only necessary when you need the null-default to be
+explicit/self-documenting, or when reusing the same variable name across
+multiple, non-exclusive branches where the "did it run" tracking gets
+less obvious.
+
+### Default Size When /N Is Omitted
+
+`Make` (with or without `/FREE`) does not create a 0-point wave when `/N`
+is omitted entirely. What size it gets depends on whether an initializer
+is also given:
+
+* **No `/N` and no initializer** — defaults to a 1D wave with **128
+  points**:
+
+```igor
+  Make/FREE data              // data has 128 points, NOT 0
+  Make/FREE/WAVE datasets     // datasets is a wave-of-waves with 128 elements, NOT 0
+  Make numericWave             // numericWave has 128 points
+```
+
+* **No `/N`, but an explicit initializer list is given** — the wave is
+  sized to match the list, *not* defaulted to 128:
+
+```igor
+  Make wv = {1, 2, 3}          // wv has exactly 3 points
+  Make/FREE/T names = {"a", "b"} // names has exactly 2 points
+```
+
+  The initializer form implicitly determines the size; the 128-point
+  default only applies when there is nothing — no `/N` and no
+  initializer — to size the wave from.
+
+Curly-brace initializer lists always require at least one operand
+(`Make wv = {1}` is valid, `Make wv = {}` is not) — so there is no
+initializer-based way to create a wave with 0 points either. A genuinely
+empty wave must be produced via `Make/N=0` or by redimensioning
+(`Redimension/N=0`) after creation.
+
+Before assuming a `Make` call produces an empty/zero-size wave, check for
+both `/N` and an initializer list. Only when *both* are absent does the
+wave default to 128 points. (If `/N=(...)` is used, every dimension size
+must be given explicitly — there is no partial form where some
+dimensions are sized and others fall back to 128.)
 
 ### Referencing waves in other data folders
 
@@ -451,6 +560,51 @@ Call it with:
 WAVE wv = MyWaveGetter()
 ```
 
+### Concatenate with Potentially Empty Source Waves
+
+`Concatenate` (e.g. with `/NP=dim` to accumulate along an existing dimension)
+safely creates the destination wave even when the source wave passed to it
+has zero rows. If every source wave across repeated/looped `Concatenate`
+calls has zero rows, the destination wave still gets created — it ends up
+with zero rows, but it is never left as a null/non-existent wave reference.
+
+Simple example without loop:
+
+```igor
+Make/FREE/T/N=(0) src
+Concatenate/FREE/T/NP=(ROWS) {src}, allSrc
+
+// allSrc is implicitly created by Concatenate and is guaranteed to exist after the call, with DimSize(allSrc, ROWS) == 0
+// same is true if src would be a numeric wave
+```
+
+Example with loop:
+
+```igor
+// Let `sources` be a wave reference wave with `DimSize(sources, ROWS) > 0` containing text waves.
+// Even if every `src` here is a 0-row wave (e.g. from
+// ListToTextWave("", ",") — see above), this loop is safe:
+for(WAVE/T src : sources)
+    Concatenate/FREE/T/NP=(ROWS) {src}, allSrc
+endfor
+
+// allSrc is implicitly created by Concatenate and is guaranteed to exist after the loop, with DimSize(allSrc, ROWS) == 0
+// if nothing non-empty was ever concatenated into it.
+// Note: this assumes `sources` itself has at least one row — see below for the case where it doesn't.
+```
+
+Do not assume `allSrc` needs a defensive `WAVE/Z` check or a pre-emptive
+`Make/FREE/T/N=(0) allSrc` before the loop purely to guard against the
+all-sources-empty case — `Concatenate` already guarantees the destination
+exists.
+
+This must not be confused with `sources` itself having zero rows (i.e. there
+is nothing to iterate over at all). In that case the loop body never
+executes, `Concatenate` is never called, and `allSrc` is never created — it
+remains a null/non-existent wave reference, per the default initialization
+described in "Scoping and Default Initialization" (section 2). Referencing
+`allSrc` afterward without `/Z` then fails with a runtime error.
+
 ### Global Permanent Waves with Versioning
 
 Global permanent waves with versioning are created in wave getter functions that must be located in MIES_WaveDataFolderGetters.ipf.
@@ -629,6 +783,7 @@ WAVE/T wv = ListToTextWave(listStr, separatorStr)
 | Programming Overview (functions, parameters) | https://docs.wavemetrics.com/igorpro/programming/programming |
 | Programming Techniques (DF patterns) | https://docs.wavemetrics.com/igorpro/programming/programming-techniques |
 | WAVE keyword | https://docs.wavemetrics.com/igorpro/commands/wave |
+| Conditionally-assigned WAVE ref used after the block | Safe — defaults to null if the branch didn't run, not an error |
 | NewFreeWave | https://docs.wavemetrics.com/igorpro/commands/newfreewave |
 | NewFreeDataFolder | https://docs.wavemetrics.com/igorpro/commands/newfreedatafolder |
 | GetDataFolderDFR | https://docs.wavemetrics.com/igorpro/commands/getdatafolderdfr |
@@ -639,3 +794,4 @@ WAVE/T wv = ListToTextWave(listStr, separatorStr)
 | GetIndexedObjNameDFR | https://docs.wavemetrics.com/igorpro/commands/getindexedobjnamedfr |
 | NVAR_Exists | https://docs.wavemetrics.com/igorpro/commands/nvar_exists |
 | SVAR_Exists | https://docs.wavemetrics.com/igorpro/commands/svar_exists |
+| `Concatenate` destination when every source across a loop is 0-row | Destination wave is still created, with 0 rows — never left null |
