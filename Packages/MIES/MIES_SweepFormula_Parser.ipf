@@ -40,12 +40,7 @@ static Constant SF_ACTION_ARRAY         = 7
 
 static StrConstant SF_PARSER_REGEX_SIGNED_NUMBER      = "^(?i)[+-]?[0-9]+(?:\.[0-9]+)?(?:E[+-]?[0-9]+)?$"
 static StrConstant SF_PARSER_REGEX_QUOTED_STRING      = "^\".*\"$"
-static StrConstant SF_PARSER_REGEX_SIGNED_PARENTHESIS = "^(?i)[+-]?\\([\s\S]*$"
-static StrConstant SF_PARSER_REGEX_SIGNED_FUNCTION    = "^(?i)[+-]?[A-Za-z]+"
 static StrConstant SF_PARSER_REGEX_OTHER_VALID_CHARS  = "[A-Za-z0-9_\.:;=!$<>]"
-// matches the mantissa of a number in scientific notation up to and including the exponent
-// marker "E", e.g. "1e" or "-1.5E", so that a following sign is collected as part of the number
-static StrConstant SF_PARSER_REGEX_PENDING_EXPONENT = "^(?i)[+-]?[0-9]+(?:\.[0-9]+)?E$"
 
 // The structure stores data that is required and gathered when a SF formula is parsed
 static Structure SF_ParserData
@@ -583,6 +578,97 @@ static Function [variable action, variable lastState, variable collectedSign] SF
 	return [action, lastState, collectedSign]
 End
 
+static Function SFP_ParserIsDigit(string token)
+
+	variable code
+
+	ASSERT(strlen(token) == 1, "Expected one character.")
+	code = char2num(token)
+
+	return code >= char2num("0") && code <= char2num("9")
+End
+
+static Function SFP_ParserIsLetter(string token)
+
+	variable code
+
+	ASSERT(strlen(token) == 1, "Expected one character.")
+	code = char2num(token)
+
+	return (code >= char2num("A") && code <= char2num("Z")) || (code >= char2num("a") && code <= char2num("z"))
+End
+
+static Function SFP_ParserHasPendingExponent(string buffer)
+
+	variable pos, numChars
+
+	numChars = strlen(buffer)
+	if(!numChars)
+		return 0
+	endif
+
+	if(!CmpStr(buffer[0], "+") || !CmpStr(buffer[0], "-"))
+		pos += 1
+	endif
+
+	if(pos >= numChars || !SFP_ParserIsDigit(buffer[pos]))
+		return 0
+	endif
+
+	do
+		pos += 1
+	while(pos < numChars && SFP_ParserIsDigit(buffer[pos]))
+
+	if(pos < numChars && !CmpStr(buffer[pos], "."))
+		pos += 1
+		if(pos >= numChars || !SFP_ParserIsDigit(buffer[pos]))
+			return 0
+		endif
+
+		do
+			pos += 1
+		while(pos < numChars && SFP_ParserIsDigit(buffer[pos]))
+	endif
+
+	if(pos != (numChars - 1))
+		return 0
+	endif
+
+	return !CmpStr(buffer[pos], "e") || !CmpStr(buffer[pos], "E")
+End
+
+static Function SFP_ParserStartsSignedParenthesis(string buffer)
+
+	variable pos, numChars
+
+	numChars = strlen(buffer)
+	if(!numChars)
+		return 0
+	endif
+
+	if(!CmpStr(buffer[0], "+") || !CmpStr(buffer[0], "-"))
+		pos += 1
+	endif
+
+	return pos < numChars && !CmpStr(buffer[pos], "(")
+End
+
+static Function SFP_ParserStartsSignedFunction(string buffer)
+
+	variable pos, numChars
+
+	numChars = strlen(buffer)
+	if(!numChars)
+		return 0
+	endif
+
+	if(!CmpStr(buffer[0], "+") || !CmpStr(buffer[0], "-"))
+		pos += 1
+	endif
+
+	return pos < numChars && SFP_ParserIsLetter(buffer[pos])
+End
+
 static Function [variable state, variable arrayLevel, variable level] SFP_ParserGetStateFromToken(string token, variable jsonId, string buffer)
 
 	strswitch(token)
@@ -594,14 +680,14 @@ static Function [variable state, variable arrayLevel, variable level] SFP_Parser
 			break
 		case "-":
 			state = SF_STATE_SUBTRACTION
-			if(GrepString(buffer, SF_PARSER_REGEX_PENDING_EXPONENT))
+			if(SFP_ParserHasPendingExponent(buffer))
 				// sign belongs to the exponent of a number in scientific notation, e.g. "1e-3"
 				state = SF_STATE_COLLECT
 			endif
 			break
 		case "+":
 			state = SF_STATE_ADDITION
-			if(GrepString(buffer, SF_PARSER_REGEX_PENDING_EXPONENT))
+			if(SFP_ParserHasPendingExponent(buffer))
 				// sign belongs to the exponent of a number in scientific notation, e.g. "1e+3"
 				state = SF_STATE_COLLECT
 			endif
@@ -615,11 +701,11 @@ static Function [variable state, variable arrayLevel, variable level] SFP_Parser
 			break
 		case ")":
 			level -= 1
-			if(GrepString(buffer, SF_PARSER_REGEX_SIGNED_PARENTHESIS))
+			if(SFP_ParserStartsSignedParenthesis(buffer))
 				state = SF_STATE_PARENTHESIS
 				break
 			endif
-			if(GrepString(buffer, SF_PARSER_REGEX_SIGNED_FUNCTION))
+			if(SFP_ParserStartsSignedFunction(buffer))
 				state = SF_STATE_FUNCTION
 				break
 			endif
