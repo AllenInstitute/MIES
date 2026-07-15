@@ -11,7 +11,7 @@
 
 Window AnalysisBrowser() : Panel
 	PauseUpdate; Silent 1 // building window...
-	NewPanel/K=1/W=(8, 67, 1256, 678) as "AnalysisBrowser"
+	NewPanel/K=1/W=(27, 101, 1275, 712) as "AnalysisBrowser"
 	ListBox list_experiment_contents, pos={120.00, 217.00}, size={1124.00, 401.00}, proc=AB_ListBoxProc_ExpBrowser
 	ListBox list_experiment_contents, help={"Various properties of the loaded sweep data"}
 	ListBox list_experiment_contents, userdata(ResizeControlsInfo)=A"!!,FU!!#Ah!!#EGJ,hsXJ,fQL!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
@@ -185,43 +185,41 @@ Window AnalysisBrowser() : Panel
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={936,458.25,inf,inf}" // sizeLimit requires Igor 7 or later
-	NewPanel/HOST=#/EXT=0/W=(0, 0, 268, 392) as "Tag Control"
+	NewPanel/HOST=#/EXT=0/W=(0, 0, 235, 297) as "Tag Control"
 	ModifyPanel fixedSize=0
 	SetVariable setvar_tagcontrol_tagname, pos={8.00, 8.00}, size={149.00, 18.00}, proc=AB_SetVarProc_TagNameControl
 	SetVariable setvar_tagcontrol_tagname, title="Tag:"
 	SetVariable setvar_tagcontrol_tagname, help={"Enter a single tag.\rPress enter to add this tag to selected experiments in the experiment browser."}
+	SetVariable setvar_tagcontrol_tagname, userdata(ResizeControlsInfo)=A"!!,@c!!#:b!!#A$!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
+	SetVariable setvar_tagcontrol_tagname, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_tagcontrol_tagname, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_tagcontrol_tagname, value=_STR:""
-	Button button_tagcontrol_addtag, pos={165.00, 6.00}, size={61.00, 20.00}, proc=AB_ButtonProc_AddTagControl
-	Button button_tagcontrol_addtag, title="Add tag"
+	Button button_tagcontrol_addtag, pos={163.00, 6.00}, size={61.00, 20.00}, proc=AB_ButtonProc_AddTagControl
+	Button button_tagcontrol_addtag, title="Add"
 	Button button_tagcontrol_addtag, help={"Add the entered tag to selected experiments"}
-	ListBox list_tagcontrol_taglist, pos={8.00, 32.00}, size={149.00, 259.00}
-	ListBox list_tagcontrol_taglist, help={"List of tags of the selected experiments.\rIf a tags has a green background then all selected experiments have this tag."}
+	Button button_tagcontrol_addtag, userdata(ResizeControlsInfo)=A"!!,G3!!#:\"!!#?-!!#<Xz!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAezz"
+	Button button_tagcontrol_addtag, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	Button button_tagcontrol_addtag, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	ListBox list_tagcontrol_taglist, pos={8.00, 32.00}, size={149.00, 259.00}, proc=AB_ListBoxProc_TagList
+	ListBox list_tagcontrol_taglist, help={"List of tags of all experiments."}
+	ListBox list_tagcontrol_taglist, userdata(ResizeControlsInfo)=A"!!,@c!!#=c!!#A$!!#B;J,fQL!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
+	ListBox list_tagcontrol_taglist, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	ListBox list_tagcontrol_taglist, userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	ListBox list_tagcontrol_taglist, listWave=root:MIES:Analysis:AnaBrowserTagsList
 	ListBox list_tagcontrol_taglist, selWave=root:MIES:Analysis:AnaBrowserTagsSelection
 	ListBox list_tagcontrol_taglist, colorWave=root:MIES:Analysis:AnaBrowserTagsColors
 	ListBox list_tagcontrol_taglist, mode=9
-	Button button_tagcontrol_removetag, pos={164.00, 232.00}, size={90.00, 20.00}, proc=AB_ButtonProc_RemoveTags
-	Button button_tagcontrol_removetag, title="Remove tag(s)"
-	Button button_tagcontrol_removetag, help={"Remove the selected tags from selected experiments."}
-	Button button_tagcontrol_removeAllTags, pos={165.00, 269.00}, size={95.00, 20.00}, proc=AB_ButtonProc_RemoveAllTags
-	Button button_tagcontrol_removeAllTags, title="Remove all tags"
-	Button button_tagcontrol_removeAllTags, help={"Remove all tags from selected experiments - use with care"}
-	Button button_tagcontrol_selectone, pos={51.00, 316.00}, size={145.00, 20.00}, proc=AB_ButtonProc_SelectExperimentsOneTag
-	Button button_tagcontrol_selectone, title="Contains at least one tag"
-	Button button_tagcontrol_selectone, help={"Selects experiments that have at least one tag of the tags that are selected in the tags list"}
-	Button button_tagcontrol_selectall, pos={51.00, 338.00}, size={145.00, 20.00}, proc=AB_ButtonProc_SelectExperimentsAllTags
-	Button button_tagcontrol_selectall, title="Contains all tags"
-	Button button_tagcontrol_selectall, help={"Selects experiments that have all tags that are selected in the tags list"}
-	GroupBox group_select, pos={8.00, 298.00}, size={229.00, 66.00}
-	GroupBox group_select, title="Select experiments by tags from list"
-	SetVariable setvar_tagcontrol_taglist, pos={8.00, 368.00}, size={200.00, 18.00}, proc=AB_SetVarProc_TagListEnter
-	SetVariable setvar_tagcontrol_taglist, title="Tag list:"
-	SetVariable setvar_tagcontrol_taglist, help={"Enter a comma separated list of tags here.\rPress enter to select experiments in the experiment list that have all tags."}
-	SetVariable setvar_tagcontrol_taglist, value=_STR:""
-	Button button_tagcontrol_selectFromList, pos={212.00, 368.00}, size={49.00, 20.00}, proc=AB_ButtonProc_SelectExperimentsList
-	Button button_tagcontrol_selectFromList, title="Select"
-	Button button_tagcontrol_selectFromList, help={"Press enter to select experiments in the experiment list that have all tags entered in the Tag list input field"}
+	Button button_tagcontrol_removetag, pos={162.00, 32.00}, size={63.00, 20.00}, proc=AB_ButtonProc_RemoveTags
+	Button button_tagcontrol_removetag, title="Remove"
+	Button button_tagcontrol_removetag, help={"Remove all tags from selected experiments."}
+	Button button_tagcontrol_removetag, userdata(ResizeControlsInfo)=A"!!,G2!!#=c!!#?5!!#<Xz!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAezz"
+	Button button_tagcontrol_removetag, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	Button button_tagcontrol_removetag, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin, hook(close)=AB_TagControlHook
+	SetWindow kwTopWin, hook(ResizeControls)=ResizeControlsSafe
+	SetWindow kwTopWin, userdata(ResizeControlsInfo)=A"!!*'\"z!!#B%!!#BNJ,fQLzzzzzzzzzzzzzzzzzzzz"
+	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
+	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={27,42,inf,inf}" // sizeLimit requires Igor 7 or later
 	RenameWindow #, TagControl
 	SetActiveSubwindow ##

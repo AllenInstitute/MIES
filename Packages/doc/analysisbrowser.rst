@@ -69,18 +69,14 @@ are sanitized to valid Igor object names (e.g. a comma is replaced with an under
 
 * Input field "Tag": Enter a single tag name here. Pressing Enter adds it to all experiments currently
   selected in the experiment list.
-* Button "Add tag": Same action as pressing Enter in the "Tag" field.
-* Listbox: Lists the tags present across the currently selected experiments. A tag has a green
-  background if every selected experiment carries it.
-* Button "Remove tag(s)": Removes the tags selected in the listbox from all selected experiments.
-* Button "Remove all tags": Removes all tags from all selected experiments. Use with care, this cannot be undone.
-* Button "Contains at least one tag": Selects all experiments in the experiment list that carry at least
-  one of the tags selected in the listbox.
-* Button "Contains all tags": Selects all experiments in the experiment list whose tags are exactly the
-  tags selected in the listbox (not more, not fewer).
-* Input field "Tag list": Enter a comma-separated list of tags. Pressing Enter, or the "Select" button,
-  selects experiments whose tags exactly match this list.
-* Button "Select": Same action as pressing Enter in the "Tag list" field.
+* Button "Add": Same action as pressing Enter in the "Tag" field.
+* Listbox: Lists the tags present across all experiments.
+* Button "Remove": Removes all tags from selected experiments. Use with care, this cannot be undone.
+
+Tags can be selected in the tags list. When tags are selected then all experiments are selected that have
+these tags.
+Example: When tags "a", "b", "c" are selected then experiments with tags "a,b,c" are selected.
+Experiments with tag "a" or "a,b" are unselected.
 
 Tags assigned here can be used to filter sweeps loaded into a SweepBrowser via the `seltag` SweepFormula
 operation, see :ref:`SweepFormula`.

@@ -25,10 +25,6 @@ static Constant AB_LOADOPT_COMMENTS = 0x02
 static StrConstant AB_UDATA_WORKINGDF = "datafolder"
 static StrConstant AB_WORKFOLDER_NAME = "workFolder"
 
-static Constant SELECT_BY_TAG_ONE       = 0
-static Constant SELECT_BY_TAG_ALL       = 1
-static Constant SELECT_BY_TAG_INPUTLIST = 2
-
 static Function AB_ResetListBoxWaves()
 
 	variable col, val, newSize
@@ -1505,7 +1501,7 @@ End
 static Function AB_ClearExpBrowserSelection()
 
 	WAVE expBrowserSel = GetExperimentBrowserGUISel()
-	expBrowserSel[][0] = expBrowserSel[p][0] & ~LISTBOX_SELECT_OR_SHIFT_SELECTION
+	expBrowserSel[][0][0] = expBrowserSel[p][0][0] & ~LISTBOX_SELECT_OR_SHIFT_SELECTION
 End
 
 /// @brief Collapse the given treeview
@@ -2867,7 +2863,6 @@ Function AB_BrowserStartupSettings()
 
 	AB_SetTagControlHideState(0)
 	SetSetVariableString(AB_GetTagControlName(), "setvar_tagcontrol_tagname", "")
-	SetSetVariableString(AB_GetTagControlName(), "setvar_tagcontrol_taglist", "")
 	HideTools/W=$panel/A
 	SetWindow $panel, userData(panelVersion)=""
 	SetWindow $panel, userData(datafolder)=""
@@ -2877,6 +2872,7 @@ Function AB_BrowserStartupSettings()
 	SetCheckBoxState(panel, "checkbox_load_overwrite", CHECKBOX_UNSELECTED)
 
 	StoreCurrentPanelsResizeInfo(panel)
+	StoreCurrentPanelsResizeInfo(AB_GetTagControlName())
 
 	SearchForInvalidControlProcs(panel)
 	print "Do not forget to increase ANALYSISBROWSER_PANEL_VERSION."
@@ -3398,67 +3394,7 @@ Function AB_ButtonProc_AddTagControl(STRUCT WMButtonAction &ba) : ButtonControl
 	return 0
 End
 
-Function AB_ButtonProc_SelectExperimentsOneTag(STRUCT WMButtonAction &ba) : ButtonControl
-
-	switch(ba.eventCode)
-		case 2: // mouse up
-			AB_CheckPanelVersion(ba.win)
-			AB_SelectExperimentByTag(SELECT_BY_TAG_ONE)
-			AB_UpdateTagList()
-			break
-		default:
-			break
-	endswitch
-
-	return 0
-End
-
-Function AB_ButtonProc_SelectExperimentsAllTags(STRUCT WMButtonAction &ba) : ButtonControl
-
-	switch(ba.eventCode)
-		case 2: // mouse up
-			AB_CheckPanelVersion(ba.win)
-			AB_SelectExperimentByTag(SELECT_BY_TAG_ALL)
-			AB_UpdateTagList()
-			break
-		default:
-			break
-	endswitch
-
-	return 0
-End
-
-Function AB_ButtonProc_SelectExperimentsList(STRUCT WMButtonAction &ba) : ButtonControl
-
-	switch(ba.eventCode)
-		case 2: // mouse up
-			AB_CheckPanelVersion(ba.win)
-			AB_SelectExperimentByTag(SELECT_BY_TAG_INPUTLIST)
-			AB_UpdateTagList()
-			break
-		default:
-			break
-	endswitch
-
-	return 0
-End
-
 Function AB_ButtonProc_RemoveTags(STRUCT WMButtonAction &ba) : ButtonControl
-
-	switch(ba.eventCode)
-		case 2: // mouse up
-			AB_CheckPanelVersion(ba.win)
-			AB_RemoveSelectedTagsFromSelectedExperiments()
-			AB_UpdateTagList()
-			break
-		default:
-			break
-	endswitch
-
-	return 0
-End
-
-Function AB_ButtonProc_RemoveAllTags(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -3479,21 +3415,6 @@ Function AB_SetVarProc_TagNameControl(STRUCT WMSetVariableAction &sva) : SetVari
 		case 2: // Enter key
 			AB_CheckPanelVersion(sva.win)
 			AB_AddTagToSelectedExperiments()
-			AB_UpdateTagList()
-			break
-		default:
-			break
-	endswitch
-
-	return 0
-End
-
-Function AB_SetVarProc_TagListEnter(STRUCT WMSetVariableAction &sva) : SetVariableControl
-
-	switch(sva.eventCode)
-		case 2: // Enter key
-			AB_CheckPanelVersion(sva.win)
-			AB_SelectExperimentByTag(SELECT_BY_TAG_INPUTLIST)
 			AB_UpdateTagList()
 			break
 		default:
@@ -3548,6 +3469,33 @@ Function AB_ButtonProc_SelectStimSets(STRUCT WMButtonAction &ba) : ButtonControl
 	return 0
 End
 
+Function AB_ListBoxProc_TagList(STRUCT WMListboxAction &lba) : ListBoxControl
+
+	switch(lba.eventCode)
+		case EVENT_LISTBOXACTION_CELL_SELECTION_SHIFT: // fallthrough
+		case EVENT_LISTBOXACTION_CELL_SELECTION:
+			AB_CheckPanelVersion(lba.win)
+			AB_SelectExperimentByTags()
+			break
+		case EVENT_LISTBOXACTION_KEYSTROKE:
+			if(lba.eventMod & WINDOW_HOOK_EMOD_CTRLKEYDOWN)
+				switch(lba.row)
+					case LBP_A_KEY:
+						ListBoxSelectAll(lba.selWave)
+						AB_SelectExperimentByTags()
+						break
+					default:
+						break
+				endswitch
+			endif
+			break
+		default:
+			break
+	endswitch
+
+	return 0
+End
+
 /// @brief main ListBox list_experiment_contents
 Function AB_ListBoxProc_ExpBrowser(STRUCT WMListboxAction &lba) : ListBoxControl
 
@@ -3560,7 +3508,7 @@ Function AB_ListBoxProc_ExpBrowser(STRUCT WMListboxAction &lba) : ListBoxControl
 			endif
 			AB_ShowFileContextMenu(AB_GetFilePathFromExpBrowserListboxRow(lba.row))
 			break
-		case EVENT_LISTBOXACTION_CELL_SELECTION_SHIFT:
+		case EVENT_LISTBOXACTION_CELL_SELECTION_SHIFT: // fallthrough
 		case EVENT_LISTBOXACTION_CELL_SELECTION:
 			AB_CheckPanelVersion(lba.win)
 			AB_UpdateColors()
@@ -3595,8 +3543,8 @@ Function AB_ListBoxProc_ExpBrowser(STRUCT WMListboxAction &lba) : ListBoxControl
 		case EVENT_LISTBOXACTION_KEYSTROKE:
 			if(lba.eventMod & WINDOW_HOOK_EMOD_CTRLKEYDOWN)
 				switch(lba.row)
-					case LBP_A_KEY: // a
-						AB_ExperimentListSelectAllRows()
+					case LBP_A_KEY:
+						ListBoxSelectAll(lba.selWave)
 						break
 					default:
 						break
@@ -4187,12 +4135,21 @@ Function AB_ListBoxProc_FileFolderList(STRUCT WMListboxAction &lba) : ListBoxCon
 	return 0
 End
 
-/// @brief Returns the indizes of the selected experiments from the selected row of the experiment list
+/// @brief Returns the row indizes of the experiments rows
+static Function/WAVE AB_GetExperimentsIndices()
+
+	WAVE   expBrowserSel = GetExperimentBrowserGUISel()
+	WAVE/Z indizesExp    = FindIndizes(expBrowserSel, col = EXPERIMENT_TREEVIEW_COLUMN, var = LISTBOX_TREEVIEW, prop = PROP_MATCHES_VAR_BIT_MASK)
+
+	return indizesExp
+End
+
+/// @brief Returns the row indizes of the selected experiments
 static Function/WAVE AB_GetSelectedExperimentsIndices()
 
 	WAVE   expBrowserSel = GetExperimentBrowserGUISel()
 	WAVE/Z indizesSel    = FindIndizes(expBrowserSel, col = EXPERIMENT_TREEVIEW_COLUMN, var = LISTBOX_SELECT_OR_SHIFT_SELECTION, prop = PROP_MATCHES_VAR_BIT_MASK)
-	WAVE/Z indizesExp    = FindIndizes(expBrowserSel, col = EXPERIMENT_TREEVIEW_COLUMN, var = LISTBOX_TREEVIEW, prop = PROP_MATCHES_VAR_BIT_MASK)
+	WAVE/Z indizesExp    = AB_GetExperimentsIndices()
 	if(WaveExists(indizesSel) && WaveExists(indizesExp))
 		WAVE/Z indizes = GetSetIntersection(indizesSel, indizesExp)
 		return indizes
@@ -4274,41 +4231,6 @@ static Function AB_RemoveAllTagsFromSelectedExperiments()
 	endfor
 End
 
-/// @brief Removes the selected tags from selected experiments
-static Function AB_RemoveSelectedTagsFromSelectedExperiments()
-
-	variable idx
-	string   diffTags
-
-	WAVE/Z/T selectedTags = AB_GetSelectedTags()
-	if(!WaveExists(selectedTags))
-		return NaN
-	endif
-
-	WAVE/Z indizes = AB_GetSelectedExperimentsIndices()
-	if(!WaveExists(indizes))
-		return NaN
-	endif
-
-	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
-	WAVE/T map            = GetAnalysisBrowserMap()
-	for(idx : indizes)
-		WAVE/T expTags = ListToTextWave(expBrowserList[idx][%Tags][0], AB_TAG_SEPARATOR)
-		if(DimSize(expTags, ROWS) == 0)
-			continue
-		endif
-		WAVE/Z/T diff = GetSetDifference(expTags, selectedTags, caseSensitive = 1)
-		if(!WaveExists(diff))
-			expBrowserList[idx][%Tags][0]                      = ""
-			map[str2num(expBrowserList[idx][%file][1])][%Tags] = ""
-			continue
-		endif
-		diffTags                                           = TextWaveToList(diff, AB_TAG_SEPARATOR)
-		expBrowserList[idx][%Tags][0]                      = diffTags
-		map[str2num(expBrowserList[idx][%file][1])][%Tags] = diffTags
-	endfor
-End
-
 static Function AB_ClearTagsList()
 
 	WAVE/T tagsList      = GetAnalysisBrowserTagsList()
@@ -4317,25 +4239,24 @@ static Function AB_ClearTagsList()
 	FastOp tagsSelection = 0
 End
 
-/// @brief Updates the tags list with the tags from the selected experiments,
-///        tags that are present is all selected experiments get a green background
+/// @brief Updates the tag list with the tags from all experiments
 static Function AB_UpdateTagList()
 
-	variable numTags, i, numSelExp
+	variable numTags, i, numExp
 
 	if(!CmpStr(GetUserData(AB_GetPanelName(), "button_show_tagcontrol", "hideState"), "1"))
 		return NaN
 	endif
 
-	WAVE/Z indizes = AB_GetSelectedExperimentsIndices()
+	WAVE/Z indizes = AB_GetExperimentsIndices()
 	if(!WaveExists(indizes))
 		AB_ClearTagsList()
 		return NaN
 	endif
-	numSelExp = DimSize(indizes, ROWS)
+	numExp = DimSize(indizes, ROWS)
 
 	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
-	Make/FREE/WAVE/N=(numSelExp) expTags
+	Make/FREE/WAVE/N=(numExp) expTags
 	expTags[] = ListToTextWave(expBrowserList[indizes[p]][%Tags][0], AB_TAG_SEPARATOR)
 	for(WAVE/T tags : expTags)
 		Concatenate/FREE/T/NP=(ROWS) {tags}, allTags
@@ -4357,21 +4278,6 @@ static Function AB_UpdateTagList()
 	Redimension/N=(numTags, -1, -1) tagsSelection
 	tagsList[][0][0]      = uniqueTags[p]
 	tagsSelection[][0][0] = 0
-
-	Make/FREE/D/N=(numTags) tagCnt
-	for(i = 0; i < numTags; i += 1)
-		for(WAVE/T tags : expTags)
-			FindValue/TEXT=(uniqueTags[i])/TXOP=5 tags
-			if(V_value >= 0)
-				tagCnt[i] += 1
-			endif
-		endfor
-	endfor
-
-	WAVE tagsSel = GetAnalysisBrowserTagsSelection()
-	for(i = 0; i < numTags; i += 1)
-		tagsSel[i][0][%$LISTBOX_LAYER_BACKGROUND] = (tagCnt[i] == numSelExp) ? 2 : 0
-	endfor
 End
 
 /// @brief Returns a text wave containing the tags selected from the tags list
@@ -4396,43 +4302,14 @@ static Function/WAVE AB_GetSelectedTags()
 	return selectedTags
 End
 
-/// @brief Returns a text wave with the tags entered in the tags list input field
-static Function/WAVE AB_GetTagsFromListInput()
+/// @brief Selects in the experiment browser all entries that match the selected tags
+static Function AB_SelectExperimentByTags()
 
-	string tagList
-
-	tagList = GetSetVariableString(AB_GetTagControlName(), "setvar_tagcontrol_taglist")
-	if(IsEmpty(tagList))
-		return $""
-	endif
-
-	WAVE/T tags = ListToTextWave(tagList, AB_TAG_SEPARATOR)
-	tags[] = TrimString(tags[p])
-
-	return tags
-End
-
-/// @brief Selects in the experiment browser all entries that
-///        with mode SELECT_BY_TAG_ONE: have at least one tag from the selected tags
-///        with mode SELECT_BY_TAG_ALL: all entries that have exactly the tags of the selected tags
-///        with mode SELECT_BY_TAG_INPUTLIST: all entries that have exactly the tags from the tag input field
-static Function AB_SelectExperimentByTag(variable mode)
-
-	variable i, numRows, isSelected
-
-	ASSERT((mode == SELECT_BY_TAG_ONE) || (mode == SELECT_BY_TAG_ALL) || (mode == SELECT_BY_TAG_INPUTLIST), "Unknown selection mode")
+	variable i, numRows
 
 	AB_ClearExpBrowserSelection()
 
-	if(mode == SELECT_BY_TAG_INPUTLIST)
-		WAVE/Z/T selectedTags = AB_GetTagsFromListInput()
-		if(WaveExists(selectedTags))
-			Sort/A selectedTags, selectedTags
-		endif
-		mode = SELECT_BY_TAG_ALL
-	else
-		WAVE/Z/T selectedTags = AB_GetSelectedTags()
-	endif
+	WAVE/Z/T selectedTags = AB_GetSelectedTags()
 	if(!WaveExists(selectedTags))
 		return NaN
 	endif
@@ -4447,25 +4324,8 @@ static Function AB_SelectExperimentByTag(variable mode)
 			continue
 		endif
 
-		if(mode == SELECT_BY_TAG_ONE)
-			isSelected = WaveExists(GetSetIntersection(expTags, selectedTags))
-		elseif(mode == SELECT_BY_TAG_ALL)
-			isSelected = EqualWaves(selectedTags, expTags, EQWAVES_DATA)
-		else
-			FATAL_ERROR("Unknown selection mode")
-		endif
-
-		if(isSelected)
-			expBrowserSel[i][0] = expBrowserSel[i][0] | LISTBOX_SELECT_OR_SHIFT_SELECTION
+		if(EqualWaves(selectedTags, expTags, EQWAVES_DATA))
+			expBrowserSel[i][0][0] = expBrowserSel[i][0][0] | LISTBOX_SELECT_OR_SHIFT_SELECTION
 		endif
 	endfor
-End
-
-/// @brief Selects all rows of the experiment list and updates the tag list
-static Function AB_ExperimentListSelectAllRows()
-
-	WAVE expBrowserSel = GetExperimentBrowserGUISel()
-	expBrowserSel[][0] = expBrowserSel[p][0] | LISTBOX_SELECT_OR_SHIFT_SELECTION
-
-	AB_UpdateTagList()
 End
