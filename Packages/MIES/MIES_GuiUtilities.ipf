@@ -1205,6 +1205,16 @@ Function IsControlHidden(string win, string control)
 	return (V_disable & HIDDEN_CONTROL_BIT) == HIDDEN_CONTROL_BIT
 End
 
+/// @brief Return one if the given control is enabled and visible,
+/// zero otherwise
+Function IsControlEnabledAndVisible(string win, string control)
+
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+
+	return V_disable == 0
+End
+
 /// @brief Return the main window name from a full subwindow specification
 ///
 /// @param subwindow window name including subwindows, e.g. `panel#subWin1#subWin2`
@@ -1222,6 +1232,16 @@ Function/S GetCurrentWindow()
 
 	GetWindow kwTopWin, activesw
 	return s_value
+End
+
+/// @brief Return the truth that the given window is hidden
+///
+/// UTF_NOINSTRUMENTATION
+Function IsWindowHidden(string win)
+
+	GetWindow $win, hide
+
+	return V_Value == 1
 End
 
 /// @brief Return a 1D text wave with all infos about the cursors
