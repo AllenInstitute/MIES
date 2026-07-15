@@ -602,6 +602,7 @@ static Function SFP_ParserHasPendingExponent(string buffer)
 
 	variable pos, numChars
 
+	pos     = 0
 	numChars = strlen(buffer)
 	if(!numChars)
 		return 0
@@ -641,6 +642,7 @@ static Function SFP_ParserStartsSignedParenthesis(string buffer)
 
 	variable pos, numChars
 
+	pos     = 0
 	numChars = strlen(buffer)
 	if(!numChars)
 		return 0
@@ -657,6 +659,7 @@ static Function SFP_ParserStartsSignedFunction(string buffer)
 
 	variable pos, numChars
 
+	pos     = 0
 	numChars = strlen(buffer)
 	if(!numChars)
 		return 0
