@@ -3,6 +3,404 @@ Release notes
 
 .. toctree::
 
+Release 3.0
+===========
+
+Controls
+--------
+
+All added, removed or renamed controls of the main GUIs are listed. These lists are intended to help upgrading
+the JSON configuration files. Controls, like GroupBox'es, which can not be read/written with the configuration
+code are not included.
+
+AnalysisBrowser
+~~~~~~~~~~~~~~~
+
+Added
+^^^^^
+
+None
+
+Removed
+^^^^^^^
+
+None
+
+Renamed
+^^^^^^^
+
+None
+
+DA\_Ephys
+~~~~~~~~~
+
+Added
+^^^^^
+
+None
+
+Removed
+^^^^^^^
+
+None
+
+Renamed
+^^^^^^^
+
+None
+
+Databrowser
+~~~~~~~~~~~
+
+Added
+^^^^^
+
+None
+
+Removed
+^^^^^^^
+
+- ``setvar_sweepFormula_parseResult``
+- ``status_sweepFormula_parser``
+
+Renamed
+^^^^^^^
+
+None
+
+Wavebuilder
+~~~~~~~~~~~
+
+Added
+^^^^^
+
+None
+
+Removed
+^^^^^^^
+
+None
+
+Renamed
+^^^^^^^
+
+None
+
+Sweep Formula
+-------------
+
+- Exchange documentation blocks for selexp and seldev as they were swapped
+- Fix average option with SweepBrowser data
+- Always use lines as style for averaged data
+- ``log``: Add support for nested wave reference waves
+- Replace status LED and setvariable control with a notebook to show error messages
+- Check number of arguments in all ``psx`` related operations
+- ``labnotebook``: Warn when using the wrong mode and apply fallback or getting an unknown key
+- Make color groups work across with statements
+- Enhance error reporting with tracking the source location
+- Remove scale copy for ``min`` and ``max``
+- Add support to plotter to display data in tables and add ``table`` operation
+- ``avg``: Automatically convert first argument from selection to data
+- ``avg``: Add mode to average over groups of data and add ``bins``/``bins2`` modes
+- ``extract``: Add it to retrieve a single dataset from a multi ds result
+- Rework the plotter internally
+- ``psx``: Tweak the detection algorithm and various related adaptations
+- ``psx``: Implement sweep data shortening for faster FFT
+- Add support for operations which supply plotting specifications
+- Change ``minus``, ``plus``, ``mult``, ``div`` operation for zero size datasets on both sides
+- Allow greater/lesser characters in strings in the parser
+- Add support to plot errorbars on traces in SF plotter
+- ``merge``: Extend it to merge xValues and errorbar information
+- ``xValues``: Return xValues from SF meta data if present
+- Add support for errorbarstyle, axispercentage, axisoffset info for plotter
+- ``getmeta``: Add it
+- ``prepareFit``/``fit2``: Add them
+
+AnalysisBrowser
+---------------
+
+- Add column in experiment information list box for session start time
+
+DataBrowser
+-----------
+
+- Add support to open TTL/unassociated stimsets via context menu
+- Add ``UA`` labels for unassociated channels
+- Don't allow overlay channels with epoch display
+- Fix display of non-split TTL data (ITC only)
+- Handle hide/restore button more accurately
+
+DataBrowser/SweepBrowser
+------------------------
+
+None
+
+Dashboard
+~~~~~~~~~
+
+- AD_FillWaves: Fix edge case with sweeps from different experiments
+
+DA\_Ephys
+---------
+
+- Support data acquisition with NI hardware without RSE support
+- Use precise timestamps per test pulses
+- ITC: Empty FIFO queue more eagerly
+- Fix resistance plotting in Oscilloscope graph
+- Allow data acquisition with superfluous (neither required nor optional) analysis parameters present
+- Treat aborts as forced stop for repeated acquisitions
+
+JSON Configuration
+------------------
+
+- Record the hide state of a window
+- Be more lenient with rig file naming
+
+Downsample
+----------
+
+- Fix panel with no devices with data
+
+Analysis Functions
+------------------
+
+- ``PSQ_RAMP``: Adapt the search method to support noisy stimsets
+- ``PSQ_DAScale``: Revise operation under ``adaptive`` mode greatly
+
+Foreign Function interface
+--------------------------
+
+- Add functions for storing psx data into HDF5
+- Allow stopping/starting the testpulse
+
+Pulse Average Plot
+------------------
+
+None
+
+Publisher
+---------
+
+- Use correct scaling for published amplifier values
+
+Added
+~~~~~
+
+- ``configuration:finished``: JSON configuration for panel has finished
+- ``amplifier:set value``: Amplifier setting was changed through MIES
+
+General
+-------
+
+- Remove TPStorage field %TimeInSeconds
+- Fix querying the wave cache when there is only one element stored
+- Remove partial and broken support for unpacked experiments
+- Add support for Igor Pro 10
+- Package settings: Support remembering multiple windows of the same type and exterior sub windows
+- Fix window position restoration with non-100% (4k and up) displays
+- Use log axis for peak and steady state in oscilloscope plot
+- Allow to keep the cache across experiments
+- Packages/ITCXOP2/tools/Disable-ASLR-for-Igor64.ps1: Sign it
+- Mention Windows 11 instead of Windows 10 as that is already supported since at least two years
+- Make MIES_MassExperimentProcessing.ipf compile again, get it running again and add it to compilation testing CI
+- Automatically disable the holding potential when switching clamp modes for gathering the gains
+- Add SVG export option to graph context menus
+- SetDimensionLabels: Speed it up
+- Move data acquisition logic from tests into MIES_AcquireData.ipf
+- Enhance Wave Reference Wave Browser for nD waves
+- Handle failure to delete old version.txt when the file is not writeable
+- Add copilot and claude instructions for MIES repository
+- New replay data feature for advanced debugging
+
+TUF XOP
+-------
+
+None
+
+ITC XOP 2
+----------
+
+None
+
+ZeroMQ XOP
+----------
+
+None
+
+MCC XOP
+-------
+
+None
+
+MIESUtils XOP
+-------------
+
+None
+
+JSON XOP
+--------
+
+- Updated it to version 921
+
+Labnotebook
+-----------
+
+- Fix typos in labnotebook key descriptions
+- Fix labnotebook upgrades when empty rows are present and no NOTE_INDEX
+- Do labnotebook upgrade on most common MIES entry points
+- UpgradeLabNotebook: Handle very early labnotebooks
+
+New numerical keys
+~~~~~~~~~~~~~~~~~~
+
+- ``Original data``
+- ``ADC Configuration bits``
+- ``PSQ_DS_AD_FAIL_SWEEP_NEG_SLOPE``
+
+New textual keys
+~~~~~~~~~~~~~~~~
+
+- ``PSQ_DS_AD_FAIL_SWEEP_NEG_SLOPE_RHSUAD``
+
+Changed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Changed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Renamed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Renamed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Removed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- ``PSQ_FMT_LBN_DA_AT_FI_OFFSET_DASCALE``
+- ``PSQ_FMT_LBN_DA_AT_FI_SLOPE_DASCALE``
+
+Removed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+- ``PSQ_FMT_LBN_DA_AT_RSA_FI_OFFSETS_DASCALE``
+- ``PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES_DASCALE``
+
+Epoch information
+-----------------
+
+None
+
+NWB/IPNWB
+---------
+
+None
+
+IPNWB
+~~~~~
+
+- Make epoch writing faster by a factor of 10 by batching the writes
+- Use double precision waves when passing epoch ranges
+- Adapt version checks to handle IP 10 BUILD breakage
+- Accept lower case v for Volts
+- Add formatting and linting with `IPT <https://docs.byte-physics.de/ipt/>`__
+- Handle conversion issues with old data
+- Upgrade NWB schema version to 2.9.0
+- Tweak schema upgrade scripts
+
+File format
+~~~~~~~~~~~
+
+None
+
+Pressure Control
+----------------
+
+None
+
+WaveBuilder
+-----------
+
+None
+
+Work Sequencing Engine
+----------------------
+
+None
+
+Internal
+--------
+
+- Introduce FATAL_ERROR and SFH_FATAL_ERROR to help IPT
+- Unify case comment for no-break to fallthrough
+- Fix missing breaks
+- Add fallthrough statements but also remove bogus ones
+- Refactor SweepFormula files and data structures
+- Optimize FindIndizes further
+- Allow to store null waves in the cache
+- Handle missing result waves gracefully in Logbookviewer
+- Remove duplicate key "Sampling Interval Multiplier" in sweep settings wave
+- TS_ThreadGroupPutDFR: Make it more resilient
+- Format existing python code with black
+- GetMiesVersion: Store the version in the cache as well
+- DAP_GetNIDeviceList/DAP_GetITCDeviceList: Cache the results as well
+- AI_FindConnectedAmpsNoCache: Factor it out and cache the result
+- Enhance the reported MIES version with a potential ``dirty`` flag
+- Integrate check-code.sh and IPT in pre-commit
+- DeepCopyWaveRefWave: Work recursively on wave reference waves and add support for multi dimensional waves
+- Don't treat abort codes like error codes
+- Prefer HashXXX over CRC functions in various places
+- CHI_CheckInstallation: Check that we actually have installed with shortcuts
+- Add human readable prefixes to the cache keys
+- Add hashmap implementation with textual keys and numerical/textual values
+- Move to hashmap for key->index mapping in the cache and logbooks
+- Add support for compactifying the cache
+
+CI
+--
+
+- Add monthly schedule job for git garbage collection
+- Add test with Igor Pro 10
+
+Tests
+-----
+
+- Rework test include logic to have less code duplication and only one ``RunWithOpts`` function
+- Make OpenAnalysisBrowser work with loading sweeps of multiple files
+- Remove unneeded/confusing AbortOnRTE
+- Internalize binaries used for testing instead of downloading them from byte-physics.de
+- Add more tests for helper functions
+- Add ``testop`` sweep formula operation to have an overrideable operation for testing
+
+Async Framework
+---------------
+
+- Allow more than CPU 64 cores to be present and raise ASYNC_MAX_THREADS to 1014
+
+Logging
+-------
+
+None
+
+Installer
+---------
+
+- Disable trace dragging in Igor Pro on MIES installation
+- Update to NSIS version 3.11
+
+Release package
+---------------
+
+None
+
 Release 2.9
 ===========
 
