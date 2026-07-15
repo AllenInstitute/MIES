@@ -598,9 +598,16 @@ static Function SFP_ParserIsLetter(string token)
 	return (code >= char2num("A") && code <= char2num("Z")) || (code >= char2num("a") && code <= char2num("z"))
 End
 
+static Function SFP_ParserIsSign(string token)
+
+	ASSERT(strlen(token) == 1, "Expected one character.")
+
+	return !CmpStr(token, "+") || !CmpStr(token, "-")
+End
+
 static Function SFP_ParserHasPendingExponent(string buffer)
 
-	variable pos, numChars
+	variable pos, numChars, hasTrailingExponentMarker
 
 	pos     = 0
 	numChars = strlen(buffer)
@@ -608,7 +615,7 @@ static Function SFP_ParserHasPendingExponent(string buffer)
 		return 0
 	endif
 
-	if(!CmpStr(buffer[0], "+") || !CmpStr(buffer[0], "-"))
+	if(SFP_ParserIsSign(buffer[0]))
 		pos += 1
 	endif
 
@@ -631,11 +638,8 @@ static Function SFP_ParserHasPendingExponent(string buffer)
 		while(pos < numChars && SFP_ParserIsDigit(buffer[pos]))
 	endif
 
-	if(pos != (numChars - 1))
-		return 0
-	endif
-
-	return !CmpStr(buffer[pos], "e") || !CmpStr(buffer[pos], "E")
+	hasTrailingExponentMarker = (pos == (numChars - 1)) && !CmpStr(UpperStr(buffer[pos]), "E")
+	return hasTrailingExponentMarker
 End
 
 static Function SFP_ParserStartsSignedParenthesis(string buffer)
@@ -648,7 +652,7 @@ static Function SFP_ParserStartsSignedParenthesis(string buffer)
 		return 0
 	endif
 
-	if(!CmpStr(buffer[0], "+") || !CmpStr(buffer[0], "-"))
+	if(SFP_ParserIsSign(buffer[0]))
 		pos += 1
 	endif
 
@@ -665,7 +669,7 @@ static Function SFP_ParserStartsSignedFunction(string buffer)
 		return 0
 	endif
 
-	if(!CmpStr(buffer[0], "+") || !CmpStr(buffer[0], "-"))
+	if(SFP_ParserIsSign(buffer[0]))
 		pos += 1
 	endif
 
