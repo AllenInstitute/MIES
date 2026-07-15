@@ -220,8 +220,8 @@ QC and f-I slope QC passing?"];
 	n138 -> n139;
 	n112	[label="Mark set as passed"];
 	n139 -> n112	[label=Yes];
-	n141	[label="Do we have at least two passing sweeps with negative fit slope QC\n or a passing fit slope QC and then a negative fit slope QC\n \
-which are adjacent and ignoring sweeps with failed sweep QC in-between?\n"];
+	n141	[label="Do we have at least two sweeps with negative fit slope QC in a row,\n where at least one has passing sweep QC (except baseline),\n \
+or a passing fit slope QC and then a negative fit slope QC,\n which are adjacent and ignoring sweeps with failed sweep QC in-between?\n"];
 	n139 -> n141	[label=No];
 	n113	[label="Skip to end of active set"];
 	n112 -> n113;
@@ -235,6 +235,12 @@ which are adjacent and ignoring sweeps with failed sweep QC in-between?\n"];
 	n109 -> n100	[label=Yes];
 	n103	[label="Measured all future DAScale values?"];
 	n100 -> n103	[label=Yes];
+	n152	[label="Did the last acquired sweep fail sweep QC\n while the previous sweep had passing negative f-I slope QC?"];
+	n100 -> n152	[label=No];
+	n153	[label="Add a future DAScale value which is\n PSQ_DA_FAILSWEEP_NEGSLOPE_OFFSET (1 pA)\n larger than the last acquired DAScale value"];
+	n152 -> n153	[label=Yes];
+	n154	[label="Do not add a future DAScale value"];
+	n152 -> n154	[label=No];
 	n108	[label="Use the next DAScale value"];
 	n103 -> n108	[label=No];
 	n150	[label="Was f-I slope negative?"];
@@ -243,6 +249,7 @@ which are adjacent and ignoring sweeps with failed sweep QC in-between?\n"];
 Uses the fit slopes and offsets from the\n passing sweep with the highest DAScale searching from the back.\n Here we use the fit \
 offsets and slopes which have\n ignored sweeps with passing neg slope fit QC or sweeps with NaN as f-I slope"];
 	n106 -> n108;
+	n153 -> n108;
 	n131	[label="Plot AP frequency and f-I slope both versus DAScale"];
 	n128 -> n131;
 	n144	[label="Gather future DAScale values\n from the last  RhSuAd sweep\n and store it in the labnotebook"];
@@ -255,8 +262,8 @@ QC and f-I slope QC passing?"];
 	n120 -> n127	[label=Needed];
 	n136	[label="Skip to end of active set"];
 	n135 -> n136	[label=Yes];
-	n140	[label="Do we have at least two passing sweeps with negative fit slope QC\n or a passing fit slope QC and then a negative fit slope QC\n \
-which are adjacent and ignoring sweeps with failed sweep QC in-between?\n"];
+	n140	[label="Do we have at least two sweeps with negative fit slope QC in a row,\n where at least one has passing sweep QC (except baseline),\n \
+or a passing fit slope QC and then a negative fit slope QC,\n which are adjacent and ignoring sweeps with failed sweep QC in-between?\n"];
 	n135 -> n140	[label=No];
 	n127 -> n106	[label=Failure];
 	n129	[label="Use the analysis parameter \"DAScaleNegativeSlopePercent\"\n combined with the absolute DAScale step width\n to calculate the new \
@@ -268,12 +275,12 @@ DAScale value\n"];
 	n140 -> n146	[label=Yes];
 	n129 -> n108;
 	n146 -> n136	[label=Yes];
-	n147	[label="Add a future DAScale value between the last \npositive fit slope sweep and the first negative fit slope.\n Do nothing if that  transition \
-does not exist."];
+	n147	[label="Add a future DAScale value between the sweep before\n the last negative f-I slope and the last negative f-I slope.\n \
+Do nothing if that transition does not exist."];
 	n146 -> n147	[label=No];
 	n142 -> n112	[label=Yes];
-	n143	[label="Add a future DAScale value between the last \npositive fit slope sweep and the first negative fit slope.\n Do nothing if that  transition \
-does not exist."];
+	n143	[label="Add a future DAScale value between the sweep before\n the last negative f-I slope and the last negative f-I slope.\n \
+Do nothing if that transition does not exist."];
 	n142 -> n143	[label=No];
 	n145	[label="Add the fillin negative slope\n labnotebook entry"];
 	n143 -> n145;
