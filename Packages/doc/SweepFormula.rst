@@ -1729,7 +1729,7 @@ It is intended to be used with operations like `data`, `labnotebook`, `epochs`, 
 
 The function accepts any number of arguments from filter operations.
 
-Filter operations are `selchannels`, `selsweeps`, `selrange`, `selvis`, `seltag`, `selscm`, `selstimset`, `selivsccsetqc`, `selivsccsweepqc`, `selexp`, `seldev`, `selrac`, `selsci`, `selsetcyclecount`, `selsetsweepcount`, `selsciindex`, `selracindex`, `select`.
+Filter operations are `selchannels`, `selsweeps`, `selrange`, `selvis`, `seltag`, `selcm`, `selstimset`, `selivsccsetqc`, `selivsccsweepqc`, `selexp`, `seldev`, `selrac`, `selsci`, `selsetcyclecount`, `selsetsweepcount`, `selsciindex`, `selracindex`, `select`.
 
 Sweeps that fit all filter criteria are taken into the selection. Each filter operation except `select` may appear once as argument.
 It is not required that the arguments have a specific order.
@@ -1739,7 +1739,7 @@ If a specific filter is not part of the arguments and none of the arguments is a
 - `selsweeps`: select all sweep numbers
 - `selrange`: select full range
 - `selvis`: select displayed sweeps
-- `selscm`: select all clamp modes
+- `selcm`: select all clamp modes
 - `selstimset`: select all stimset wave names
 - `selivsccsetqc`: IVSCC SetQC is ignored
 - `selivsccsweepqc`: IVSCC SweepQC is ignored
@@ -1758,7 +1758,7 @@ If a specific filter is not part of the arguments and there exists at least one 
 - `selsweeps`: select all sweep numbers
 - `selrange`: select full range
 - `selvis`: select all sweeps
-- `selscm`: select all clamp modes
+- `selcm`: select all clamp modes
 - `selstimset`: select all stimset wave names
 - `selivsccsetqc`: IVSCC Set QC is ignored
 - `selivsccsweepqc`: IVSCC Sweep QC is ignored
