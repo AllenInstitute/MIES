@@ -5747,7 +5747,7 @@ Function DAP_TPSettingsToGUI(string device, [string entry, variable fast])
 
 	variable i, numEntries, val, headstage, col, originalHSAll
 	string ctrl, lbl
-	variable TPState
+	variable TPState, limitedVal
 
 	if(ParamIsDefault(fast))
 		fast = TP_FAST_NONE
@@ -5766,7 +5766,19 @@ Function DAP_TPSettingsToGUI(string device, [string entry, variable fast])
 	originalHSAll                             = TPSettings[%sendToAllHS][INDEP_HEADSTAGE]
 	TPSettings[%sendToAllHS][INDEP_HEADSTAGE] = 0
 
-	TPState = TP_StopTestPulse(device)
+	switch(fast)
+		case TP_FAST_NONE:
+			TPState = TP_StopTestPulse(device)
+			break
+		case TP_FAST_NO_CONFIG:
+			TPState = TP_StopTestPulseFast(device)
+			break
+		case TP_FAST_CONFIG:
+			TPState = TP_StopTestPulseFastConfig(device)
+			break
+		default:
+			FATAL_ERROR("Invalid fast mode")
+	endswitch
 
 	numEntries = DimSize(controls, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -5790,13 +5802,28 @@ Function DAP_TPSettingsToGUI(string device, [string entry, variable fast])
 		val = TPSettings[%$lbl][col]
 		ASSERT(IsFinite(val), "Value has to be finite")
 
-		PGC_SetAndActivateControl(device, ctrl, val = val)
+		// Special case: avoid PGC_SetAndActivateControl for the IC test pulse
+		// amplitude control. Going through the action proc would re-enter
+		// DAP_TPGUISettingToWave and trigger another stop/restart of the test
+		// pulse, which causes unwanted amplifier (AI_*) calls. The outer
+		// stop/restart in this function is sufficient; we only need to keep
+		// the GUI control, the GUI state cache, and subscribers in sync.
+		if(!cmpstr(ctrl, "SetVar_DataAcq_TPAmplitudeIC"))
+			limitedVal = SetSetVariable(device, ctrl, val, respectLimits = 1)
+			if(limitedVal != val)
+				TPSettings[%$lbl][col] = limitedVal
+			endif
+			DAG_Update(device, ctrl, val = limitedVal)
+			PUB_TPSettingChange(device, headstage, lbl, limitedVal, DAP_TPControlToUnit(ctrl))
+		else
+			PGC_SetAndActivateControl(device, ctrl, val = val)
+		endif
 	endfor
 
 	TPSettings[%sendToAllHS][INDEP_HEADSTAGE] = originalHSAll
 
 	if(IsFinite(TPState))
-		TP_RestartTestPulse(device, TPState)
+		TP_RestartTestPulse(device, TPState, fast = fast)
 	endif
 End
 

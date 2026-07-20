@@ -813,7 +813,7 @@ static Function TP_AutoAmplitudeAndBaseline(string device, WAVE TPResults, varia
 	endfor
 
 	if(needsUpdate)
-		DAP_TPSettingsToGUI(device, entry = "amplitudeIC")
+		DAP_TPSettingsToGUI(device, entry = "amplitudeIC", fast = TP_FAST_CONFIG)
 	endif
 End
 
