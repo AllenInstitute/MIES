@@ -196,6 +196,7 @@ End
 
 #include "MIES_Cache"
 #include "MIES_CheckInstallation"
+#include "MIES_ClaudeHelper"
 #include "MIES_Configuration"
 #include "MIES_ConversionConstants"
 #include "MIES_Constants"
