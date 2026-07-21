@@ -7,6 +7,7 @@ Table of Contents
   user
   installation
   developers
+  igor-pro-bridge
   reportingbugs
   releasenotes
   grouplist
