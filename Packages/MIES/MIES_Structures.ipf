@@ -650,6 +650,7 @@ Structure SF_SelectParameters
 	string vis // result from selvis(...), if this argument was given one of SF_OP_SELECTVIS_*, if not then if a select argument was given SF_OP_SELECTVIS_ALL, SF_OP_SELECTVIS_DISPLAYED otherwise
 	variable clampMode // result from selcm(...), if this argument was given a bit combination of SF_OP_SELECT_CLAMPCODE_*, SF_OP_SELECT_CLAMPCODE_ALL otherwise
 	WAVE/T stimsets // result from setstimset(...), wildcard patterns, if this argument was not given "*"
+	WAVE/T tags // result from seltag(...)
 	WAVE ranges // result from selrange(...), if this argument was not given the full range
 	variable sweepQC // result from selivsccsweepqc(...), if this argument was given SF_OP_SELECT_IVSCCSWEEPQC_PASSED or SF_OP_SELECT_IVSCCSWEEPQC_FAILED, SF_OP_SELECT_IVSCCSWEEPQC_IGNORE otherwise
 	variable setQC // result from selivsccsetqc(...), if this argument was given SF_OP_SELECT_IVSCCSETQC_PASSED or SF_OP_SELECT_IVSCCSETQC_FAILED, SF_OP_SELECT_IVSCCSETQC_IGNORE otherwise

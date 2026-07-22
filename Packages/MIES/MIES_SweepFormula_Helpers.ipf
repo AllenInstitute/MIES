@@ -1114,13 +1114,13 @@ Function/WAVE SFH_GetArgumentSelect(STRUCT SF_ExecutionData &exd, variable argNu
 		endif
 		SFH_ASSERT(cond, "Expected a single array")
 		WAVE array = selectComp[0]
-		cond = IsTextWave(array)
+		cond = IsWaveRefWave(array)
 		if(doNotEnforce && !cond)
 			return $""
 		endif
-		SFH_ASSERT(cond, "Expected a text wave")
+		SFH_ASSERT(cond, "Expected a wave ref wave")
 
-		Make/FREE/WAVE/N=(DimSize(array, ROWS)) selectArray = SFH_AttemptDatasetResolve(WaveText(array, row = p), checkWithSFHAssert = 1)
+		Duplicate/FREE/WAVE array, selectArray
 		for(WAVE/Z/WAVE selectComp : selectArray)
 			cond = WaveExists(selectComp)
 			if(doNotEnforce && !cond)
@@ -1840,18 +1840,11 @@ Function/WAVE SFH_MoveDatasetHigherIfCompatible(WAVE/WAVE data)
 		return data
 	endif
 
-	WAVE array = data[0]
-	if(!IsTextWave(array))
+	WAVE/WAVE resolved = data[0]
+	if(!IsWaveRefWave(resolved))
 		return data
 	endif
-	if(DimSize(array, COLS))
-		return data
-	endif
-
-	numOldSets = DimSize(array, ROWS)
-	Make/FREE/WAVE/N=(numOldSets) resolved
-
-	resolved[] = SFH_AttemptDatasetResolve(WaveText(array, row = p))
+	numOldSets = DimSize(resolved, ROWS)
 
 	// check pre-conditions
 	WAVE/ZZ prevSets
@@ -2168,11 +2161,9 @@ Function/WAVE SFH_GetDatasetArrayAsResolvedWaverefs(STRUCT SF_ExecutionData &exd
 
 	if(!WaveExists(dataFromEachGroup))
 		WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, argNum)
-		SFH_ASSERT(IsTextWave(input[0]), "Expected a dataset")
-		WAVE/T elemRefs = input[0]
-		numGroups = DimSize(elemRefs, ROWS)
-		SFH_ASSERT(numGroups >= 2, "First argument must be an array with at least two elements")
-		Make/FREE/WAVE/N=(numGroups) dataFromEachGroup = SFH_AttemptDatasetResolve(elemRefs[p], checkWithSFHAssert = 1)
+		SFH_ASSERT(IsWaveRefWave(input[0]), "Expected a dataset")
+		WAVE dataFromEachGroup = input[0]
+		SFH_ASSERT(DimSize(dataFromEachGroup, ROWS) >= 2, "First argument must be an array with at least two elements")
 	endif
 
 	return dataFromEachGroup
@@ -2220,6 +2211,15 @@ Function SFH_CopyPlotMetaData(WAVE dest, WAVE src)
 	JWN_SetNumberInWaveNote(dest, SF_META_LINESTYLE, JWN_GetNumberFromWaveNote(src, SF_META_LINESTYLE))
 End
 
+/// @brief Adds a variable to the variable storage from a given formula. If the variable already exists it is overwritten.
+Function/WAVE SFH_AddVariableToStorageByFormula(string graph, string name, string formula, string opShort)
+
+	WAVE/WAVE result = SFE_ExecuteFormula(formula, graph, preProcess = 0)
+	SFH_AddVariableToStorage(graph, name, SFH_GetOutputForExecutor(result, graph, opShort))
+
+	return result
+End
+
 Function SFH_SetTraceStyleForFit(WAVE fitData, string errorbarStyle)
 
 	JWN_SetWaveInWaveNote(fitData, SF_META_TRACECOLOR, {0, 0, 0}) // black
@@ -2242,4 +2242,41 @@ Function SFH_SetTraceStyleForFit(WAVE fitData, string errorbarStyle)
 			FATAL_ERROR("Unhandled errorbar style")
 	endswitch
 	JWN_SetWaveInWaveNote(fitData, SF_META_ERRORBARSTYLE, wErrorbarStyle)
+End
+
+/// @brief simple helper to append X,Y trace data to a plotWITH part of a full plotting specification
+///        (plotWITH is a sub wave of plotAND)
+Function SFH_AppendPlotSpecificationWith(WAVE/WAVE plotWITH, WAVE wvY, WAVE/Z wvX)
+
+	variable size
+
+	size = DimSize(plotWITH, ROWS)
+	Redimension/N=(size + 1, -1) plotWITH
+
+	plotWITH[size][%FORMULAY] = wvY
+	plotWITH[size][%FORMULAX] = wvX
+End
+
+static Function/WAVE SFH_CreatePlotSpecificationWITH(variable numWITH)
+
+	ASSERT(IsNullOrPositiveAndInteger(numWITH), "numWITH must be zero or greater")
+
+	Make/FREE/WAVE/N=(numWITH, 2) plotWITH
+	SetDimlabel COLS, 0, FORMULAX, plotWITH
+	SetDimlabel COLS, 1, FORMULAY, plotWITH
+
+	return plotWITH
+End
+
+/// @brief Creates a plot specification wave where each AND part gets the same number of WITH plots
+Function/WAVE SFH_CreatePlotSpecificationAND(string graph, string opShort, variable numAND, variable numWITH)
+
+	ASSERT(IsGreaterNullAndInteger(numAND), "numAND must be greater than zero")
+	WAVE/WAVE plotAND = SFH_CreateSFRefWave(graph, opShort, numAND)
+
+	plotAND[] = SFH_CreatePlotSpecificationWITH(numWITH)
+
+	JWN_SetNumberInWaveNote(plotAND, SF_META_PLOT, 1)
+
+	return plotAND
 End

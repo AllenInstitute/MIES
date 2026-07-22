@@ -137,6 +137,7 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLoc
 	string opName, str
 	variable i, size, JSONType, arrayElemJSONType, effectiveArrayDimCount, dim, onTopLevel
 	variable colSize, layerSize, chunkSize, operationsWithScalarResultCount
+	variable containsDataset, numElems, index
 
 	STRUCT SF_ExecutionData exdop
 
@@ -190,19 +191,73 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLoc
 		topArraySize[] = (topArraySize[p] != 0) ? topArraySize[p] : 1
 
 		Make/FREE/D/N=0 indicesOfOperationsWithScalarResult
-		WAVE/ZZ   out
-		WAVE/ZZ/T outT
+		WAVE/ZZ      out
+		WAVE/ZZ/T    outT
+		WAVE/ZZ/WAVE outW
 
 		// Get indices of Objects, Arrays and Strings on current level
 		EXTRACT/FREE/INDX types, arrElemAt, (types[p] == JSON_OBJECT) || (types[p] == JSON_ARRAY) || (types[p] == JSON_STRING) || (types[p] == JSON_NUMERIC)
+
+		// Resolve every element once
+		numElems = DimSize(arrElemAt, ROWS)
+		Make/FREE/WAVE/N=(numElems) genericElements = SF_ResolveDatasetFromJSON(exd, arrElemAt[p])
+
+		// Prescan: check every element once, without committing to out/outT/outW yet, so we can
+		// tell up front whether any element is a dataset. If so, the whole array is promoted to a
+		// uniform wave-of-datasets, wrapping plain text/numeric elements individually.
+		numElems = DimSize(arrElemAt, ROWS)
+		Make/FREE/WAVE/N=(numElems) preResolved
+		Make/FREE/D/N=(numElems) preIsDataset
+		for(i = 0; i < numElems; i += 1)
+			index = arrElemAt[i]
+			WAVE/WAVE genericElement = genericElements[i]
+			if(DimSize(genericElement, ROWS) == 1)
+				WAVE/Z subArray = genericElement[0]
+				SFH_ASSERT(WaveExists(subArray), "no data in array element")
+				if(IsTextWave(subArray))
+					WAVE/Z numericalAttempt = SFE_ConvertNonFiniteElements(subArray)
+					if(WaveExists(numericalAttempt))
+						WAVE subArray = numericalAttempt
+					endif
+				elseif(!IsNumericWave(subArray))
+					preIsDataset[i] = 1
+					containsDataset = 1
+				endif
+			else
+				// multi dataset
+				WAVE subArray = genericElement
+				preIsDataset[i] = 1
+				containsDataset = 1
+			endif
+			preResolved[i] = subArray
+		endfor
+
+		if(containsDataset)
+			WAVE/WAVE outW = SFE_ExecutorCreateOrCheckWaveRef($"", topArraySize[0])
+			for(i = 0; i < numElems; i += 1)
+				index = arrElemAt[i]
+				WAVE subArray = preResolved[i]
+				if(!preIsDataset[i])
+					WAVE/WAVE promoted = SFH_CreateSFRefWave(exd.graph, "PromotedArrayElement", 1)
+					promoted[0] = subArray
+					WAVE subArray = promoted
+				endif
+				outW[index] = subArray
+			endfor
+
+			return SFE_ExeReturn(SFH_GetOutputForExecutorSingle(outW, exd.graph, "ExecutorArrayReturn"), onTopLevel)
+		endif
+
 		// Iterate over all subarrays and objects on current level
-		for(index : arrElemAt)
-			WAVE/WAVE genericElement = SF_ResolveDatasetFromJSON(exd, index)
+		for(i = 0; i < numElems; i += 1)
+			index = arrElemAt[i]
+			WAVE/WAVE genericElement = genericElements[i]
 			if(DimSize(genericElement, ROWS) == 1)
 				// single dataset
 				WAVE/Z subArray = genericElement[0]
 				SFH_ASSERT(WaveExists(subArray), "no data in array element")
 				if(IsTextWave(subArray))
+					SFH_ASSERT(!WaveExists(outW), "mixed array types")
 					WAVE/Z numericalAttempt = SFE_ConvertNonFiniteElements(subArray)
 					if(WaveExists(numericalAttempt))
 						WAVE subArray = numericalAttempt
@@ -211,23 +266,27 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLoc
 						[out, outT] = SFE_ExecutorCreateOrCheckTextual(out, outT, topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3])
 					endif
 				elseif(IsNumericWave(subArray))
+					SFH_ASSERT(!WaveExists(outW), "mixed array types")
 					[out, outT] = SFE_ExecutorCreateOrCheckNumeric(out, outT, topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3])
 				else
-					[out, outT] = SFE_ExecutorCreateOrCheckTextual(out, outT, topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3])
-					WAVE subArrayWrapped = SFH_GetOutputForExecutor(subArray, exd.graph, "WrappedArrayElement")
-					WAVE subArray        = subArrayWrapped
+					// dataset (WAVE/WAVE) — store the reference directly, no marker string, no rewrap
+					SFH_ASSERT(!WaveExists(out) && !WaveExists(outT), "mixed array types")
+					WAVE/Z outWtmp = outW
+					WAVE   outW    = SFE_ExecutorCreateOrCheckWaveRef(outWtmp, topArraySize[0])
 				endif
 			else
-				// multi dataset
-				[out, outT] = SFE_ExecutorCreateOrCheckTextual(out, outT, topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3])
-				WAVE subArray = SFH_GetOutputForExecutor(genericElement, exd.graph, "WrappedArrayElement")
+				// multi dataset — same treatment, store genericElement directly as one unit
+				SFH_ASSERT(!WaveExists(out) && !WaveExists(outT), "mixed array types")
+				WAVE/Z outWtmp  = outW
+				WAVE   outW     = SFE_ExecutorCreateOrCheckWaveRef(outWtmp, topArraySize[0])
+				WAVE   subArray = genericElement
 			endif
 
 			SFH_ASSERT(numpnts(subArray), "Encountered subArray with zero size.")
 			SFH_ASSERT(GetWaveDimensionality(subArray) != CHUNKS, "Encountered 4d sub array at " + exd.jsonPath)
 
-			// Promote WaveNote with meta data if topArray is 1 point.
-			// The single topArray element is object or array at this point
+			// Promote WaveNote with meta data if topArray is 1 point. Only applies to out/outT —
+			// outW elements already carry their own note, nothing to promote.
 			if(WaveExists(out) && numpnts(out) == 1)
 				Note/K out, note(subArray)
 			endif
@@ -239,18 +298,32 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLoc
 			// - original source was a array
 			// - original source was not: a string that resolved to a scalar datum (the source string can refer to a variable that was resolved)
 			// - original source was not: a object (aka operation) that resolved to a scalar datum
-			if(types[index] == JSON_ARRAY || !((types[index] == JSON_STRING || types[index] == JSON_OBJECT || types[index] == JSON_NUMERIC) && WaveDims(subArray) == 1 && numpnts(subArray) == 1))
-				// subArray will be inserted into the current array, thus the dimension will be WaveDims(subArray) + 1
-				// Thus, [1, [2]] returns the correct wave of size (2, 1) with {{1, 2}}.
-				effectiveArrayDimCount = max(effectiveArrayDimCount, WaveDims(subArray) + 1)
+			// Datasets are placed as one opaque reference (see SFE_PlaceSubArrayAt) — their own internal
+			// shape must never influence the outer array's dimensionality or size.
+			if(!WaveExists(outW))
+				if(types[index] == JSON_ARRAY || !((types[index] == JSON_STRING || types[index] == JSON_OBJECT || types[index] == JSON_NUMERIC) && WaveDims(subArray) == 1 && numpnts(subArray) == 1))
+					// subArray will be inserted into the current array, thus the dimension will be WaveDims(subArray) + 1
+					// Thus, [1, [2]] returns the correct wave of size (2, 1) with {{1, 2}}.
+					effectiveArrayDimCount = max(effectiveArrayDimCount, WaveDims(subArray) + 1)
+				endif
 			endif
 
 			// If the whole JSON array consists of STRING or NUMERIC types then topArraySize already is of the correct size.
 			// If we encounter an Object aka operation it could return an array that is larger than a single element,
 			// then we might have to resize beyond the original topArraySize.
 			// Increase 4D array size tracking according to new data
-			topArraySize[1, *] = max(topArraySize[p], DimSize(subArray, p - 1))
-			WAVE outCombinedType = SelectWave(WaveExists(outT), out, outT)
+			// (skipped for outW — datasets are opaque references, not spread across the outer array's dims)
+			if(!WaveExists(outW))
+				topArraySize[1, *] = max(topArraySize[p], DimSize(subArray, p - 1))
+			endif
+
+			if(WaveExists(outW))
+				WAVE outCombinedType = outW
+			elseif(WaveExists(outT))
+				WAVE outCombinedType = outT
+			else
+				WAVE outCombinedType = out
+			endif
 			// resize data according to new topArraySize adapted by sub array size and fill new elements with NaN
 			if((DimSize(outCombinedType, COLS) < topArraySize[1]) ||   \
 			   (DimSize(outCombinedType, LAYERS) < topArraySize[2]) || \
@@ -266,13 +339,17 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLoc
 				if(WaveExists(outT))
 					Redimension/N=(topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3]) outT
 				endif
+				if(WaveExists(outW))
+					Redimension/N=(topArraySize[0]) outW
+				endif
 			endif
 			if(WaveExists(out))
 				SFE_PlaceSubArrayAt(out, subArray, index)
-			else
+			elseif(WaveExists(outT))
 				SFE_PlaceSubArrayAt(outT, subArray, index)
+			else
+				SFE_PlaceSubArrayAt(outW, subArray, index)
 			endif
-
 			// Save indices of operation/subArray evaluations that returned scalar results
 			if(numpnts(subArray) == 1)
 				EnsureLargeEnoughWave(indicesOfOperationsWithScalarResult, indexShouldExist = operationsWithScalarResultCount)
@@ -303,10 +380,11 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLoc
 				Multithread out[index][][][] = out[index][0][0][0]
 			endfor
 		endif
-
 		// out can be text or numeric, afterwards if following code has no type expectations
 		if(WaveExists(outT))
 			WAVE out = outT
+		elseif(WaveExists(outW))
+			WAVE out = outW
 		endif
 		// shrink data to actual array size
 		for(dim = effectiveArrayDimCount; dim < MAX_DIMENSION_COUNT; dim += 1)
@@ -505,6 +583,9 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLoc
 		case SF_OP_SELECTVIS:
 			WAVE out = SFOS_OperationSelectVis(exdop)
 			break
+		case SF_OP_SELECTTAG:
+			WAVE out = SFOS_OperationSelectTag(exdop)
+			break
 		case SF_OP_SELECTEXP:
 			WAVE out = SFOS_OperationSelectExperiment(exdop)
 			break
@@ -546,6 +627,9 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLoc
 			break
 		case SF_OP_TABLE:
 			WAVE out = SFO_OperationTable(exdop)
+			break
+		case SF_OP_IVSCCAPFREQUENCY:
+			WAVE out = SFO_OperationIVSCCApFrequency(exdop)
 			break
 		case SF_OP_PREPAREFIT:
 			WAVE out = SFO_OperationPrepareFit(exdop)
@@ -632,9 +716,25 @@ static Function [WAVE outNum, WAVE/T outText] SFE_ExecutorCreateOrCheckTextual(W
 	return [out, outT]
 End
 
+static Function/WAVE SFE_ExecutorCreateOrCheckWaveRef(WAVE/Z/WAVE outW, variable size0)
+
+	if(!WaveExists(outW))
+		Make/FREE/WAVE/N=(size0) outW
+	endif
+
+	return outW
+End
+
 static Function SFE_PlaceSubArrayAt(WAVE/Z out, WAVE/Z subArray, variable index)
 
 	if(!WaveExists(out))
+		return NaN
+	endif
+
+	if(IsWaveRefWave(out))
+		WAVE/WAVE outW = out
+		outW[index] = subArray
+
 		return NaN
 	endif
 

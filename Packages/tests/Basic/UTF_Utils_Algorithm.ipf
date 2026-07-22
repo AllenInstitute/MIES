@@ -601,6 +601,21 @@ Function GSD_WorksText6()
 	CHECK_EQUAL_TEXTWAVES(matches, data1)
 End
 
+Function GSD_WorksText7()
+
+	Make/FREE/T data1 = {"a", "A"}
+	Make/FREE/T data2 = {"a"}
+
+	WAVE/Z matches = GetSetDifference(data1, data2, caseSensitive = 1)
+	CHECK_EQUAL_TEXTWAVES(matches, {"A"})
+
+	Make/FREE/T data1 = {"A", "a"}
+	Make/FREE/T data2 = {"a"}
+
+	WAVE/Z matches = GetSetDifference(data1, data2, caseSensitive = 1)
+	CHECK_EQUAL_TEXTWAVES(matches, {"A"})
+End
+
 Function GSD_ReturnsInvalidWaveRefWOMatches()
 
 	Make/FREE/D/N=0 data1
@@ -716,6 +731,72 @@ static Function GSI_Expects1dWave()
 	catch
 		PASS()
 	endtry
+End
+
+static Function TestGetSetIntersectionWaves()
+
+	try
+		GetSetIntersectionWaves($"")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE/WAVE/N=0 input
+	try
+		GetSetIntersectionWaves(input)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE/WAVE/N=(1, 1) input
+	try
+		GetSetIntersectionWaves(input)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE/D data
+	try
+		GetSetIntersectionWaves(data)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE data1 = {1, 2, 3, 4}
+	Make/FREE data2 = {4, 5, 6}
+	Make/FREE data3 = {6, 5, 4}
+
+	Make/FREE/WAVE input = {$""}
+	WAVE/Z matches = GetSetIntersectionWaves(input)
+	CHECK_WAVE(matches, NULL_WAVE)
+
+	Make/FREE/WAVE input = {data1}
+	WAVE/Z matches = GetSetIntersectionWaves(input)
+	CHECK_EQUAL_WAVES(matches, {1, 2, 3, 4})
+
+	Make/FREE/WAVE input = {data1, data2}
+	WAVE/Z matches = GetSetIntersectionWaves(input)
+	CHECK_EQUAL_WAVES(matches, {4})
+
+	Make/FREE/WAVE input = {data1, $"", data2}
+	WAVE/Z matches = GetSetIntersectionWaves(input)
+	CHECK_EQUAL_WAVES(matches, {4})
+
+	Make/FREE/WAVE input = {data1, data2, data3}
+	WAVE/Z matches = GetSetIntersectionWaves(input)
+	CHECK_EQUAL_WAVES(matches, {4})
+
+	Make/FREE/WAVE input = {data3, data2, data1}
+	WAVE/Z matches = GetSetIntersectionWaves(input)
+	CHECK_EQUAL_WAVES(matches, {4})
+
+	Make/FREE/WAVE input = {data3, data2, data1, data1, data2, data3}
+	WAVE/Z matches = GetSetIntersectionWaves(input)
+	CHECK_EQUAL_WAVES(matches, {4})
 End
 
 Function GSI_Works()
@@ -1644,4 +1725,94 @@ static Function TestHashWave()
 	CHECK_EQUAL_STR(HashWave("123", some), "1220402755")
 #endif
 
+End
+
+static Function TestAvgYforXDuplicates()
+
+	Make/FREE/D/N=0 wvx, wvy
+	[WAVE wvxR, WAVE wvyR] = AvgYforXDuplicates(wvx, wvy)
+	CHECK_EQUAL_WAVES(wvx, wvxR)
+	CHECK_EQUAL_WAVES(wvy, wvyR)
+
+	Make/FREE/D wvx = {1}
+	Make/FREE/D wvy = {1}
+	[WAVE wvxR, WAVE wvyR] = AvgYforXDuplicates(wvx, wvy)
+	CHECK_EQUAL_WAVES(wvx, wvxR)
+	CHECK_EQUAL_WAVES(wvy, wvyR)
+
+	Make/FREE/D wvx = {1, 2}
+	Make/FREE/D wvy = {1, 2}
+	[WAVE wvxR, WAVE wvyR] = AvgYforXDuplicates(wvx, wvy)
+	CHECK_EQUAL_WAVES(wvx, wvxR)
+	CHECK_EQUAL_WAVES(wvy, wvyR)
+
+	Make/FREE/D wvx = {1, 1}
+	Make/FREE/D wvy = {1, 2}
+	Make/FREE/D wvxResult = {1}
+	Make/FREE/D wvyResult = {1.5}
+	[WAVE wvxR, WAVE wvyR] = AvgYforXDuplicates(wvx, wvy)
+	CHECK_EQUAL_WAVES(wvxResult, wvxR)
+	CHECK_EQUAL_WAVES(wvyResult, wvyR)
+
+	Make/FREE/D wvx = {1, 1, 2, 2}
+	Make/FREE/D wvy = {1, 2, 3, 4}
+	Make/FREE/D wvxResult = {1, 2}
+	Make/FREE/D wvyResult = {1.5, 3.5}
+	[WAVE wvxR, WAVE wvyR] = AvgYforXDuplicates(wvx, wvy)
+	CHECK_EQUAL_WAVES(wvxResult, wvxR)
+	CHECK_EQUAL_WAVES(wvyResult, wvyR)
+
+	Make/FREE/D wvx = {0, 1, 1, 2, 2, 3}
+	Make/FREE/D wvy = {0, 1, 2, 3, 4, 5}
+	Make/FREE/D wvxResult = {0, 1, 2, 3}
+	Make/FREE/D wvyResult = {0, 1.5, 3.5, 5}
+	[WAVE wvxR, WAVE wvyR] = AvgYforXDuplicates(wvx, wvy)
+	CHECK_EQUAL_WAVES(wvxResult, wvxR)
+	CHECK_EQUAL_WAVES(wvyResult, wvyR)
+
+	// NaN != NaN, so no avg is done
+	Make/FREE/D wvx = {NaN, NaN, 2, 2}
+	Make/FREE/D wvy = {1, 2, 3, 4}
+	Make/FREE/D wvxResult = {NaN, NaN, 2}
+	Make/FREE/D wvyResult = {1, 2, 3.5}
+	[WAVE wvxR, WAVE wvyR] = AvgYforXDuplicates(wvx, wvy)
+	CHECK_EQUAL_WAVES(wvxResult, wvxR)
+	CHECK_EQUAL_WAVES(wvyResult, wvyR)
+
+	Make/FREE/D wvx = {1, 1, NaN, NaN}
+	Make/FREE/D wvy = {1, 2, 3, 4}
+	Make/FREE/D wvxResult = {1, NaN, NaN}
+	Make/FREE/D wvyResult = {1.5, 3, 4}
+	[WAVE wvxR, WAVE wvyR] = AvgYforXDuplicates(wvx, wvy)
+	CHECK_EQUAL_WAVES(wvxResult, wvxR)
+	CHECK_EQUAL_WAVES(wvyResult, wvyR)
+
+	Make/FREE/D wvx = {1}
+	Make/FREE/D wvy = {1, 2}
+	try
+		[WAVE wvxR, WAVE wvyR] = AvgYforXDuplicates(wvx, wvy)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE/D/N=(1, 2) wvx
+	Make/FREE/D wvy = {1, 1}
+	try
+		[WAVE wvxR, WAVE wvyR] = AvgYforXDuplicates(wvx, wvy)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE/T wvxT
+	Make/FREE/T wvyT
+	WAVE wvx = wvxT
+	WAVE wvy = wvyT
+	try
+		[WAVE wvxR, WAVE wvyR] = AvgYforXDuplicates(wvx, wvy)
+		FAIL()
+	catch
+		PASS()
+	endtry
 End

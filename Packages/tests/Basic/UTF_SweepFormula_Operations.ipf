@@ -1430,6 +1430,72 @@ static Function TestOperationSelsweeps()
 	endtry
 End
 
+static Function TestOperationSeltag()
+
+	string win, device, str, type
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	str = "seltag()"
+	try
+		WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+	str = "seltag(abc, abc)"
+	try
+		WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+	str = "seltag(123)"
+	try
+		WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+	str = "seltag([abc, 123])"
+	try
+		WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	str = "seltag(abc)"
+	WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_WAVE(wref, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(wref, ROWS), 1)
+	WAVE/WAVE dataset = wref[0]
+	CHECK_WAVE(dataset, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(dataset, ROWS), 1)
+
+	WAVE/T array = dataset[0]
+	Make/FREE/T ref = {"abc"}
+	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+	type = JWN_GetStringFromWaveNote(wref, SF_META_DATATYPE)
+	CHECK_EQUAL_STR(type, SF_DATATYPE_SELECTTAG)
+
+	str = "seltag([abc,def])"
+	WAVE/WAVE wref    = SFE_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataset = wref[0]
+	WAVE/T    array   = dataset[0]
+	Make/FREE/T ref = {"abc", "def"}
+	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "seltag(\"a,b\")"
+	WAVE/WAVE wref    = SFE_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataset = wref[0]
+	WAVE/T    array   = dataset[0]
+	Make/FREE/T ref = {"a_b"}
+	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+End
+
 static Function TestOperationSelvis()
 
 	string win, device, str

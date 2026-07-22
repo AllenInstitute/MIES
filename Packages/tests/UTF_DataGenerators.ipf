@@ -2238,3 +2238,12 @@ static Function/WAVE VariousInputForConsecutivePasses()
 
 	return wv
 End
+
+static Function/WAVE IVSCCAPFrequencyOffsets()
+
+	Make/FREE/T wv = {"first", "min", "max", "none"}
+
+	SetDimensionLabelsFromWaveContents(wv)
+
+	return wv
+End

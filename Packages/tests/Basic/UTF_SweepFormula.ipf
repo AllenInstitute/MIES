@@ -1754,6 +1754,107 @@ static Function TestParseFitConstraints()
 	endtry
 End
 
+// check for formulas:
+// [dataset(1, \"abcd\"), dataset(2, \"cdef\")]
+// var1 = dataset(1, \"abcd\")\r[$var1, dataset(2, \"cdef\")]
+static Function TestOperationOrVariableInArrayDSCheck1(WAVE/WAVE output)
+
+	CHECK(SFH_IsArray(output))
+	WAVE/WAVE arrayContent = output[0]
+	CHECK_WAVE(arrayContent, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(arrayContent, ROWS), 2) // from two dataset statements
+	WAVE/WAVE datasets0 = arrayContent[0]
+	CHECK_WAVE(datasets0, WAVE_WAVE) // from first dataset statement
+	CHECK_EQUAL_VAR(DimSize(datasets0, ROWS), 2) // from first dataset statement
+	CHECK_EQUAL_WAVES(datasets0[0], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(datasets0[1], {"abcd"}, mode = WAVE_DATA)
+	WAVE/WAVE datasets1 = arrayContent[1]
+	CHECK_WAVE(datasets1, WAVE_WAVE) // from second dataset statement
+	CHECK_EQUAL_VAR(DimSize(datasets1, ROWS), 2) // from second dataset statement
+	CHECK_EQUAL_WAVES(datasets1[0], {2}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(datasets1[1], {"cdef"}, mode = WAVE_DATA)
+End
+
+// check for formulas:
+// [\"text\", dataset(2, \"cdef\")]
+// var1 = dataset(2, \"cdef\")\r[\"text\", $var1]
+static Function TestOperationOrVariableInArrayDSCheck2(WAVE/WAVE output)
+
+	CHECK(SFH_IsArray(output))
+	WAVE/WAVE arrayContent = output[0]
+	CHECK_WAVE(arrayContent, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(arrayContent, ROWS), 2) // from promoted dataset and dataset statements
+	WAVE/WAVE datasets0 = arrayContent[0]
+	CHECK_WAVE(datasets0, WAVE_WAVE) // from promoted dataset
+	CHECK_EQUAL_VAR(DimSize(datasets0, ROWS), 1) // from promoted dataset
+	CHECK_EQUAL_TEXTWAVES(datasets0[0], {"text"}, mode = WAVE_DATA)
+	WAVE/WAVE datasets1 = arrayContent[1]
+	CHECK_WAVE(datasets1, WAVE_WAVE) // from dataset statement
+	CHECK_EQUAL_VAR(DimSize(datasets1, ROWS), 2) // from dataset statement
+	CHECK_EQUAL_WAVES(datasets1[0], {2}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(datasets1[1], {"cdef"}, mode = WAVE_DATA)
+End
+
+// check for formulas:
+// [dataset(2, \"cdef\"), \"text\"]
+// var1 = dataset(2, \"cdef\")\r[$var1, \"text\"]
+static Function TestOperationOrVariableInArrayDSCheck3(WAVE/WAVE output)
+
+	CHECK(SFH_IsArray(output))
+	WAVE/WAVE arrayContent = output[0]
+	CHECK_WAVE(arrayContent, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(arrayContent, ROWS), 2) // from promoted dataset and dataset statements
+	WAVE/WAVE datasets0 = arrayContent[0]
+	CHECK_WAVE(datasets0, WAVE_WAVE) // from promoted dataset
+	CHECK_EQUAL_VAR(DimSize(datasets0, ROWS), 2) // from dataset statement
+	CHECK_EQUAL_WAVES(datasets0[0], {2}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(datasets0[1], {"cdef"}, mode = WAVE_DATA)
+	WAVE/WAVE datasets1 = arrayContent[1]
+	CHECK_WAVE(datasets1, WAVE_WAVE) // from dataset statement
+	CHECK_EQUAL_VAR(DimSize(datasets1, ROWS), 1) // from promoted dataset
+	CHECK_EQUAL_TEXTWAVES(datasets1[0], {"text"}, mode = WAVE_DATA)
+End
+
+// check for formulas:
+// [123, dataset(2, \"cdef\")]
+// var1 = dataset(2, \"cdef\")\r[123, $var1]
+static Function TestOperationOrVariableInArrayDSCheck4(WAVE/WAVE output)
+
+	CHECK(SFH_IsArray(output))
+	WAVE/WAVE arrayContent = output[0]
+	CHECK_WAVE(arrayContent, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(arrayContent, ROWS), 2) // from promoted dataset and dataset statements
+	WAVE/WAVE datasets0 = arrayContent[0]
+	CHECK_WAVE(datasets0, WAVE_WAVE) // from promoted dataset
+	CHECK_EQUAL_VAR(DimSize(datasets0, ROWS), 1) // from promoted dataset
+	CHECK_EQUAL_WAVES(datasets0[0], {123}, mode = WAVE_DATA)
+	WAVE/WAVE datasets1 = arrayContent[1]
+	CHECK_WAVE(datasets1, WAVE_WAVE) // from dataset statement
+	CHECK_EQUAL_VAR(DimSize(datasets1, ROWS), 2) // from dataset statement
+	CHECK_EQUAL_WAVES(datasets1[0], {2}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(datasets1[1], {"cdef"}, mode = WAVE_DATA)
+End
+
+// check for formulas:
+// [dataset(2, \"cdef\"), 123]
+// var1 = dataset(2, \"cdef\")\r[$var1, 123]
+static Function TestOperationOrVariableInArrayDSCheck5(WAVE/WAVE output)
+
+	CHECK(SFH_IsArray(output))
+	WAVE/WAVE arrayContent = output[0]
+	CHECK_WAVE(arrayContent, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(arrayContent, ROWS), 2) // from promoted dataset and dataset statements
+	WAVE/WAVE datasets0 = arrayContent[0]
+	CHECK_WAVE(datasets0, WAVE_WAVE) // from promoted dataset
+	CHECK_EQUAL_VAR(DimSize(datasets0, ROWS), 2) // from dataset statement
+	CHECK_EQUAL_WAVES(datasets0[0], {2}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(datasets0[1], {"cdef"}, mode = WAVE_DATA)
+	WAVE/WAVE datasets1 = arrayContent[1]
+	CHECK_WAVE(datasets1, WAVE_WAVE) // from dataset statement
+	CHECK_EQUAL_VAR(DimSize(datasets1, ROWS), 1) // from promoted dataset
+	CHECK_EQUAL_WAVES(datasets1[0], {123}, mode = WAVE_DATA)
+End
+
 static Function TestOperationOrVariableInArray()
 
 	string win, device, code
@@ -1853,77 +1954,155 @@ static Function TestOperationOrVariableInArray()
 	endtry
 
 	// operation with dataset return
+
+	// outer array -> size 1 wave ref wave
+	//   -> array elements -> size 2 wave ref wave - two dataset statements
+	//      -> array element 0 -> size 2 wave ref wave - from first dataset statement
+	//         -> element 0 -> size 1 DP wave
+	//         -> element 1 -> size 1 TEXT wave
+	//      -> array element 1 -> size 2 wave ref wave - from second dataset statement
+	//         -> element 0 -> size 1 DP wave
+	//         -> element 1 -> size 1 TEXT wave
 	code = "[dataset(1, \"abcd\"), dataset(2, \"cdef\")]"
 	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
-	CHECK_WAVE(output, WAVE_WAVE)
-	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
-	WAVE/T array = output[0]
-	CHECK_WAVE(array, TEXT_WAVE)
-	CHECK_EQUAL_VAR(DimSize(array, ROWS), 2) // array elements wrapped
+	TestOperationOrVariableInArrayDSCheck1(output)
 
-	Make/FREE/T wrap = {array[0]}
-	WAVE/WAVE element0 = MIES_SF#SF_ResolveDataset(wrap)
-	CHECK_WAVE(element0, WAVE_WAVE)
-	CHECK_EQUAL_VAR(DimSize(element0, ROWS), 2)
-	CHECK_EQUAL_WAVES(element0[0], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_TEXTWAVES(element0[1], {"abcd"}, mode = WAVE_DATA)
-
-	Make/FREE/T wrap = {array[1]}
-	WAVE/WAVE element1 = MIES_SF#SF_ResolveDataset(wrap)
-	CHECK_WAVE(element1, WAVE_WAVE)
-	CHECK_EQUAL_VAR(DimSize(element1, ROWS), 2)
-	CHECK_EQUAL_WAVES(element1[0], {2}, mode = WAVE_DATA)
-	CHECK_EQUAL_TEXTWAVES(element1[1], {"cdef"}, mode = WAVE_DATA)
-
+	// outer array -> size 1 wave ref wave
+	//   -> array elements -> size 2 wave ref wave - two array elements
+	//      -> array element 0 -> size 1 wave ref wave - from first wave promoted to dataset
+	//         -> element 0 -> size 1 TEXT wave
+	//      -> array element 1 -> size 2 wave ref wave - from second dataset statement
+	//         -> element 0 -> size 1 DP wave
+	//         -> element 1 -> size 1 TEXT wave
 	code = "[\"text\", dataset(2, \"cdef\")]"
 	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
-	CHECK_WAVE(output, WAVE_WAVE)
-	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
-	WAVE/T array = output[0]
-	CHECK_WAVE(array, TEXT_WAVE)
-	CHECK_EQUAL_VAR(DimSize(array, ROWS), 2) // array elements wrapped
+	TestOperationOrVariableInArrayDSCheck2(output)
 
-	CHECK_EQUAL_STR(array[0], "text")
-
-	Make/FREE/T wrap = {array[1]}
-	WAVE/WAVE element1 = MIES_SF#SF_ResolveDataset(wrap)
-	CHECK_WAVE(element1, WAVE_WAVE)
-	CHECK_EQUAL_VAR(DimSize(element1, ROWS), 2)
-	CHECK_EQUAL_WAVES(element1[0], {2}, mode = WAVE_DATA)
-	CHECK_EQUAL_TEXTWAVES(element1[1], {"cdef"}, mode = WAVE_DATA)
-
-	code = "[dataset(1, \"abcd\"), \"text\"]"
+	// outer array -> size 1 wave ref wave
+	//   -> array elements -> size 2 wave ref wave - two array elements
+	//      -> array element 0 -> size 1 wave ref wave - from first wave promoted to dataset
+	//         -> element 0 -> size 1 DP wave
+	//      -> array element 1 -> size 2 wave ref wave - from second dataset statement
+	//         -> element 0 -> size 1 DP wave
+	//         -> element 1 -> size 1 TEXT wave
+	code = "[123, dataset(2, \"cdef\")]"
 	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
-	CHECK_WAVE(output, WAVE_WAVE)
-	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
-	WAVE/T array = output[0]
-	CHECK_WAVE(array, TEXT_WAVE)
-	CHECK_EQUAL_VAR(DimSize(array, ROWS), 2) // array elements wrapped
+	TestOperationOrVariableInArrayDSCheck4(output)
 
-	Make/FREE/T wrap = {array[0]}
-	WAVE/WAVE element0 = MIES_SF#SF_ResolveDataset(wrap)
-	CHECK_WAVE(element0, WAVE_WAVE)
-	CHECK_EQUAL_VAR(DimSize(element0, ROWS), 2)
-	CHECK_EQUAL_WAVES(element0[0], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_TEXTWAVES(element0[1], {"abcd"}, mode = WAVE_DATA)
+	// outer array -> size 1 wave ref wave
+	//   -> array elements -> size 2 wave ref wave - two array elements
+	//      -> array element 0 -> size 1 wave ref wave - from first wave
+	//         -> element 0 -> size 2 DP wave
+	//      -> array element 1 -> size 2 wave ref wave - from second dataset statement
+	//         -> element 0 -> size 1 DP wave
+	//         -> element 1 -> size 1 TEXT wave
+	code = "[[123, 234], dataset(2, \"cdef\")]"
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
+	CHECK(SFH_IsArray(output))
+	WAVE/WAVE arrayContent = output[0]
+	CHECK_WAVE(arrayContent, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(arrayContent, ROWS), 2) // from promoted dataset and dataset statements
+	WAVE/WAVE array0 = arrayContent[0]
+	CHECK(SFH_IsArray(array0))
+	CHECK_EQUAL_WAVES(array0[0], {123, 234}, mode = WAVE_DATA)
+	WAVE/WAVE datasets1 = arrayContent[1]
+	CHECK_WAVE(datasets1, WAVE_WAVE) // from dataset statement
+	CHECK_EQUAL_VAR(DimSize(datasets1, ROWS), 2) // from dataset statement
+	CHECK_EQUAL_WAVES(datasets1[0], {2}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(datasets1[1], {"cdef"}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_STR(array[1], "text")
+	// outer array -> size 1 wave ref wave
+	//   -> array elements -> size 2 wave ref wave - two array elements
+	//      -> array element 0 -> size 1 wave ref wave - from first wave
+	//         -> element 0 -> size 2 TEXT wave
+	//      -> array element 1 -> size 2 wave ref wave - from second dataset statement
+	//         -> element 0 -> size 1 DP wave
+	//         -> element 1 -> size 1 TEXT wave
+	code = "[[abc, def], dataset(2, \"cdef\")]"
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
+	CHECK(SFH_IsArray(output))
+	WAVE/WAVE arrayContent = output[0]
+	CHECK_WAVE(arrayContent, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(arrayContent, ROWS), 2) // from promoted dataset and dataset statements
+	WAVE/WAVE array0 = arrayContent[0]
+	CHECK(SFH_IsArray(array0))
+	CHECK_EQUAL_TEXTWAVES(array0[0], {"abc", "def"}, mode = WAVE_DATA)
+	WAVE/WAVE datasets1 = arrayContent[1]
+	CHECK_WAVE(datasets1, WAVE_WAVE) // from dataset statement
+	CHECK_EQUAL_VAR(DimSize(datasets1, ROWS), 2) // from dataset statement
+	CHECK_EQUAL_WAVES(datasets1[0], {2}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(datasets1[1], {"cdef"}, mode = WAVE_DATA)
 
-	code = "[123, dataset(1, \"abcd\")]"
-	try
-		WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
-		FAIL()
-	catch
-		PASS()
-	endtry
+	// outer array -> size 1 wave ref wave
+	//   -> array elements -> size 2 wave ref wave - two array elements
+	//      -> outer array element 0 -> size 2 wave ref wave - from inner array
+	//         -> inner array element 0 -> size 2 wave ref wave - from first dataset statement
+	//            -> element 0 -> size 1 DP wave value 1
+	//            -> element 1 -> size 1 TEXT wave value abc
+	//         -> inner array element 1 -> size 2 wave ref wave - from second dataset statement
+	//            -> element 0 -> size 1 DP wave value 2
+	//            -> element 1 -> size 1 TEXT wave value def
+	//      -> outer array element 1 -> size 2 wave ref wave - from third dataset statement
+	//         -> element 0 -> size 1 DP wave
+	//         -> element 1 -> size 1 TEXT wave
+	code = "[[dataset(1, \"abc\"), dataset(2, \"def\")], dataset(3, \"ghi\")]"
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
+	CHECK(SFH_IsArray(output))
 
-	code = "[dataset(1, \"abcd\"), 123]"
-	try
-		WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
-		FAIL()
-	catch
-		PASS()
-	endtry
+	WAVE/WAVE arrayContent = output[0] // outer array
+	CHECK_WAVE(arrayContent, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(arrayContent, ROWS), 2)
+
+	WAVE/WAVE outerArray0 = arrayContent[0] // inner array that is element 0 of outer array
+	CHECK_WAVE(outerArray0, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(outerArray0, ROWS), 2)
+
+	WAVE/WAVE outerArray0Sub0 = outerArray0[0] // first dataset statement in inner array
+	CHECK_WAVE(outerArray0Sub0, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(outerArray0Sub0, ROWS), 2)
+	WAVE outerArray0Sub0Sub0 = outerArray0Sub0[0] // and its content
+	CHECK_EQUAL_WAVES(outerArray0Sub0Sub0, {1}, mode = WAVE_DATA)
+	WAVE outerArray0Sub0Sub1 = outerArray0Sub0[1]
+	CHECK_EQUAL_TEXTWAVES(outerArray0Sub0Sub1, {"abc"}, mode = WAVE_DATA)
+
+	WAVE/WAVE outerArray0Sub1 = outerArray0[1] // second dataset statement in inner array
+	CHECK_WAVE(outerArray0Sub1, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(outerArray0Sub1, ROWS), 2)
+	WAVE outerArray0Sub1Sub0 = outerArray0Sub1[0] // and its content
+	CHECK_EQUAL_WAVES(outerArray0Sub1Sub0, {2}, mode = WAVE_DATA)
+	WAVE outerArray0Sub1Sub1 = outerArray0Sub1[1]
+	CHECK_EQUAL_TEXTWAVES(outerArray0Sub1Sub1, {"def"}, mode = WAVE_DATA)
+
+	WAVE/WAVE outerArray1 = arrayContent[1] // dataset statement in element 1 of outer array
+	CHECK_WAVE(outerArray1, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(outerArray1, ROWS), 2)
+
+	WAVE outerArray1Sub0 = outerArray1[0] // and its content
+	CHECK_EQUAL_WAVES(outerArray1Sub0, {3}, mode = WAVE_DATA)
+	WAVE outerArray1Sub1 = outerArray1[1]
+	CHECK_EQUAL_TEXTWAVES(outerArray1Sub1, {"ghi"}, mode = WAVE_DATA)
+
+	// outer array -> size 1 wave ref wave
+	//   -> array elements -> size 2 wave ref wave - two array elements
+	//      -> array element 0 -> size 2 wave ref wave - from first dataset statement
+	//         -> element 0 -> size 1 DP wave
+	//         -> element 1 -> size 1 TEXT wave
+	//      -> array element 1 -> size 1 wave ref wave - from text wave promoted to dataset
+	//         -> element 0 -> size 1 TEXT wave
+	code = "[dataset(2, \"cdef\"), \"text\"]"
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
+	TestOperationOrVariableInArrayDSCheck3(output)
+
+	// outer array -> size 1 wave ref wave
+	//   -> array elements -> size 2 wave ref wave - two array elements
+	//      -> array element 0 -> size 2 wave ref wave - from second dataset statement
+	//         -> element 0 -> size 1 DP wave
+	//         -> element 1 -> size 1 TEXT wave
+	//      -> array element 1 -> size 1 wave ref wave - from first wave promoted to dataset
+	//         -> element 0 -> size 1 DP wave
+	code = "[dataset(2, \"cdef\"), 123]"
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 0)
+	TestOperationOrVariableInArrayDSCheck5(output)
 
 	// with variables
 	code = "var1 = selchannels(AD2)\r[$var1, selchannels(DA3)]"
@@ -2032,97 +2211,27 @@ static Function TestOperationOrVariableInArray()
 
 	code = "var1 = dataset(1, \"abcd\")\r[$var1, dataset(2, \"cdef\")]"
 	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 1)
-	CHECK_WAVE(output, WAVE_WAVE)
-	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
-	WAVE/T array = output[0]
-	CHECK_WAVE(array, TEXT_WAVE)
-	CHECK_EQUAL_VAR(DimSize(array, ROWS), 2) // array elements wrapped
-
-	Make/FREE/T wrap = {array[0]}
-	WAVE/WAVE element0 = MIES_SF#SF_ResolveDataset(wrap)
-	CHECK_WAVE(element0, WAVE_WAVE)
-	CHECK_EQUAL_VAR(DimSize(element0, ROWS), 2)
-	CHECK_EQUAL_WAVES(element0[0], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_TEXTWAVES(element0[1], {"abcd"}, mode = WAVE_DATA)
-
-	Make/FREE/T wrap = {array[1]}
-	WAVE/WAVE element1 = MIES_SF#SF_ResolveDataset(wrap)
-	CHECK_WAVE(element1, WAVE_WAVE)
-	CHECK_EQUAL_VAR(DimSize(element1, ROWS), 2)
-	CHECK_EQUAL_WAVES(element1[0], {2}, mode = WAVE_DATA)
-	CHECK_EQUAL_TEXTWAVES(element1[1], {"cdef"}, mode = WAVE_DATA)
+	TestOperationOrVariableInArrayDSCheck1(output)
 
 	code = "var1 = dataset(2, \"cdef\")\r[dataset(1, \"abcd\"), $var1]"
 	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 1)
-	CHECK_WAVE(output, WAVE_WAVE)
-	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
-	WAVE/T array = output[0]
-	CHECK_WAVE(array, TEXT_WAVE)
-	CHECK_EQUAL_VAR(DimSize(array, ROWS), 2) // array elements wrapped
-
-	Make/FREE/T wrap = {array[0]}
-	WAVE/WAVE element0 = MIES_SF#SF_ResolveDataset(wrap)
-	CHECK_WAVE(element0, WAVE_WAVE)
-	CHECK_EQUAL_VAR(DimSize(element0, ROWS), 2)
-	CHECK_EQUAL_WAVES(element0[0], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_TEXTWAVES(element0[1], {"abcd"}, mode = WAVE_DATA)
-
-	Make/FREE/T wrap = {array[1]}
-	WAVE/WAVE element1 = MIES_SF#SF_ResolveDataset(wrap)
-	CHECK_WAVE(element1, WAVE_WAVE)
-	CHECK_EQUAL_VAR(DimSize(element1, ROWS), 2)
-	CHECK_EQUAL_WAVES(element1[0], {2}, mode = WAVE_DATA)
-	CHECK_EQUAL_TEXTWAVES(element1[1], {"cdef"}, mode = WAVE_DATA)
+	TestOperationOrVariableInArrayDSCheck1(output)
 
 	code = "var1 = dataset(2, \"cdef\")\r[\"text\", $var1]"
 	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 1)
-	CHECK_WAVE(output, WAVE_WAVE)
-	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
-	WAVE/T array = output[0]
-	CHECK_WAVE(array, TEXT_WAVE)
-	CHECK_EQUAL_VAR(DimSize(array, ROWS), 2) // array elements wrapped
+	TestOperationOrVariableInArrayDSCheck2(output)
 
-	CHECK_EQUAL_STR(array[0], "text")
-
-	Make/FREE/T wrap = {array[1]}
-	WAVE/WAVE element1 = MIES_SF#SF_ResolveDataset(wrap)
-	CHECK_WAVE(element1, WAVE_WAVE)
-	CHECK_EQUAL_VAR(DimSize(element1, ROWS), 2)
-	CHECK_EQUAL_WAVES(element1[0], {2}, mode = WAVE_DATA)
-	CHECK_EQUAL_TEXTWAVES(element1[1], {"cdef"}, mode = WAVE_DATA)
-
-	code = "var1 = dataset(1, \"abcd\")\r[$var1, \"text\"]"
+	code = "var1 = dataset(2, \"cdef\")\r[$var1, \"text\"]"
 	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 1)
-	CHECK_WAVE(output, WAVE_WAVE)
-	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
-	WAVE/T array = output[0]
-	CHECK_WAVE(array, TEXT_WAVE)
-	CHECK_EQUAL_VAR(DimSize(array, ROWS), 2) // array elements wrapped
+	TestOperationOrVariableInArrayDSCheck3(output)
 
-	Make/FREE/T wrap = {array[0]}
-	WAVE/WAVE element0 = MIES_SF#SF_ResolveDataset(wrap)
-	CHECK_WAVE(element0, WAVE_WAVE)
-	CHECK_EQUAL_VAR(DimSize(element0, ROWS), 2)
-	CHECK_EQUAL_WAVES(element0[0], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_TEXTWAVES(element0[1], {"abcd"}, mode = WAVE_DATA)
+	code = "var1 = dataset(2, \"cdef\")\r[123, $var1]"
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 1)
+	TestOperationOrVariableInArrayDSCheck4(output)
 
-	CHECK_EQUAL_STR(array[1], "text")
-
-	code = "var1 = dataset(1, \"abcd\")\r[123, $var1]"
-	try
-		WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 1)
-		FAIL()
-	catch
-		PASS()
-	endtry
-
-	code = "var1 = dataset(1, \"abcd\")\r[$var1, 123]"
-	try
-		WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 1)
-		FAIL()
-	catch
-		PASS()
-	endtry
+	code = "var1 = dataset(2, \"cdef\")\r[$var1, 123]"
+	WAVE/WAVE output = SFE_ExecuteFormula(code, win, useVariables = 1)
+	TestOperationOrVariableInArrayDSCheck5(output)
 End
 
 static Function CheckMixingNonFiniteAndText()

@@ -184,6 +184,16 @@ Function/WAVE SFOS_OperationSelect(STRUCT SF_ExecutionData &exd)
 					SFH_FATAL_ERROR("select allows only a single " + SF_OP_SELECTRANGE + " argument.")
 				endif
 				break
+			case SF_DATATYPE_SELECTTAG:
+				if(!WaveExists(filter.tags))
+					// seltag returns a text wave wrapped in a single dataset
+					WAVE/WAVE argWave     = arg
+					WAVE/T    filter.tags = argWave[0]
+					Sort/A filter.tags, filter.tags
+				else
+					SFH_FATAL_ERROR("select allows only a single " + SF_OP_SELECTTAG + " argument.")
+				endif
+				break
 			case SF_DATATYPE_SELECTCOMP:
 				selectArgPresent = 1
 				if(!WaveExists(filter.selects))
@@ -568,6 +578,26 @@ Function/WAVE SFOS_OperationSelectVis(STRUCT SF_ExecutionData &exd)
 	return SFH_GetOutputForExecutorSingle(output, exd.graph, SF_OP_SELECTVIS, discardOpStack = 1, dataType = SF_DATATYPE_SELECTVIS)
 End
 
+/// `seltag([tag1, tag2, ...])`
+///
+/// returns a single dataset with a text wave with single tags as elements, the dataset has the type SF_DATATYPE_SELECTTAG
+Function/WAVE SFOS_OperationSelectTag(STRUCT SF_ExecutionData &exd)
+
+	string opShort = SF_OP_SELECTTAG
+
+	SFH_CheckArgumentCount(exd, opShort, 0, maxArgs = 1)
+
+	WAVE/WAVE arg0 = SFH_GetArgumentAsWave(exd, opShort, 0, expectedMajorType = IGOR_TYPE_TEXT_WAVE)
+	WAVE/T    tags = arg0[0]
+	tags[] = CleanupName(tags[p], 0)
+
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 1)
+	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_SELECTTAG)
+	output[0] = tags
+
+	return SFH_GetOutputForExecutorSingle(output, exd.graph, opShort, discardOpStack = 1, dataType = SF_DATATYPE_SELECTTAG)
+End
+
 static Function SFOS_InitSelectFilterUninitalized(STRUCT SF_SelectParameters &s)
 
 	WAVE/Z s.selects  = $""
@@ -577,6 +607,7 @@ static Function SFOS_InitSelectFilterUninitalized(STRUCT SF_SelectParameters &s)
 	s.vis       = ""
 	s.clampMode = NaN
 	WAVE/Z/T    s.stimsets = $""
+	WAVE/Z/T    s.tags     = $""
 	WAVE/Z/WAVE s.ranges   = $""
 	s.sweepQC       = NaN
 	s.setQC         = NaN
@@ -647,7 +678,7 @@ static Function SFOS_SetSelectionFilterDefaults(string graph, STRUCT SF_SelectPa
 	if(IsNaN(filter.expandRAC))
 		filter.expandRAC = 0
 	endif
-	// setCycleCount, setSweepCount same as uninitialied values
+	// setCycleCount, setSweepCount, tags same as uninitialized values
 End
 
 static Function/S SFOS_GetSelectionExperiment(string graph, string expName)
@@ -702,7 +733,7 @@ static Function/WAVE SFOS_GetSelectData(string graph, STRUCT SF_SelectParameters
 	variable dimPosTSweep, dimPosTChannelNumber, dimPosTChannelType, dimPosTClampMode, dimPosTExpName, dimPosTDevice, dimPosTSweepMapIndex
 	variable dimPosTNumericalValues, dimPosTTextualValues
 	variable numTraces, fromDisplayed, clampCode, smIndexCounter, mapIndex, setCycleCount, setSweepCount, doStimsetMatching
-	string msg, device, singleSweepDFStr, expName, dataFolder
+	string msg, device, singleSweepDFStr, expName, dataFolder, tags
 	variable mapSize = 1
 
 	WAVE/Z sweeps   = filter.sweeps
@@ -808,8 +839,12 @@ static Function/WAVE SFOS_GetSelectData(string graph, STRUCT SF_SelectParameters
 		numTraces = outIndex
 
 		outIndex = 0
-	elseif(isSweepBrowser)
+	endif
+
+	if(isSweepBrowser)
 		WAVE/T sweepMap = SB_GetSweepMap(graph)
+	else
+		tags = ""
 	endif
 
 	// search sweeps for active channels
@@ -833,7 +868,7 @@ static Function/WAVE SFOS_GetSelectData(string graph, STRUCT SF_SelectParameters
 
 		if(!fromDisplayed)
 			if(isSweepBrowser)
-				WAVE/Z mapIndices = SFOS_GetSweepMapIndices(sweepMap, sweepNo, filter.experimentName, filter.device)
+				WAVE/Z mapIndices = SFOS_GetSweepMapIndices(sweepMap, sweepNo, filter.experimentName, filter.device, filter.tags)
 				if(!WaveExists(mapIndices))
 					continue
 				endif
@@ -844,6 +879,9 @@ static Function/WAVE SFOS_GetSelectData(string graph, STRUCT SF_SelectParameters
 		for(smIndexCounter = 0; smIndexCounter < mapSize; smIndexCounter += 1)
 			if(!fromDisplayed)
 				mapIndex = isSweepBrowser ? mapIndices[smIndexCounter] : NaN
+				if(isSweepBrowser)
+					tags = sweepMap[mapIndex][%Tags]
+				endif
 
 				WAVE numericalValues = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_NUMERICAL_VALUES)
 				WAVE textualValues   = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_TEXTUAL_VALUES)
@@ -872,7 +910,11 @@ static Function/WAVE SFOS_GetSelectData(string graph, STRUCT SF_SelectParameters
 						for(l = 0; l < numTraces; l += 1)
 
 							clampCode = SFOS_MapClampModeToSelectCM(sweepPropertiesDisplayed[l][SWEEPPROP_CLAMPMODE])
-							if(!SFOS_IsValidSingleSelection(filter, sweepLNBsDisplayed[l][%NUMERICAL], sweepLNBsDisplayed[l][%TEXTUAL], sweepNo, channelNumber, channelType, selectDisplayed[l][dimPosSweep], selectDisplayed[l][dimPosChannelNumber], selectDisplayed[l][dimPosChannelType], clampCode, sweepPropertiesDisplayed[l][SWEEPPROP_SETCYCLECOUNT], sweepPropertiesDisplayed[l][SWEEPPROP_SETSWEEPCOUNT], doStimsetMatching))
+							if(isSweepBrowser)
+								mapIndex = selectDisplayed[l][dimPosSweepMapIndex]
+								tags     = sweepMap[mapIndex][%Tags]
+							endif
+							if(!SFOS_IsValidSingleSelection(filter, sweepLNBsDisplayed[l][%NUMERICAL], sweepLNBsDisplayed[l][%TEXTUAL], sweepNo, channelNumber, channelType, selectDisplayed[l][dimPosSweep], selectDisplayed[l][dimPosChannelNumber], selectDisplayed[l][dimPosChannelType], clampCode, sweepPropertiesDisplayed[l][SWEEPPROP_SETCYCLECOUNT], sweepPropertiesDisplayed[l][SWEEPPROP_SETSWEEPCOUNT], doStimsetMatching, tags))
 								continue
 							endif
 
@@ -907,7 +949,7 @@ static Function/WAVE SFOS_GetSelectData(string graph, STRUCT SF_SelectParameters
 								setSweepCount         = WaveExists(setting) ? setting[index] : NaN
 							endif
 
-							if(!SFOS_IsValidSingleSelection(filter, numericalValues, textualValues, sweepNo, channelNumber, channelType, sweepNo, l, channelType, clampCode, setCycleCount, setSweepCount, doStimsetMatching))
+							if(!SFOS_IsValidSingleSelection(filter, numericalValues, textualValues, sweepNo, channelNumber, channelType, sweepNo, l, channelType, clampCode, setCycleCount, setSweepCount, doStimsetMatching, tags))
 								continue
 							endif
 
@@ -1261,7 +1303,7 @@ static Function/S SFOS_MatchSweepMapColumn(string graph, string match, string co
 	variable col
 
 	WAVE/T sweepMap = SB_GetSweepMap(graph)
-	WAVE/Z indices  = SFOS_GetSweepMapIndices(sweepMap, NaN, "", "", colLabel = colLabel, wildCardPattern = match)
+	WAVE/Z indices  = SFOS_GetSweepMapIndicesFromCol(sweepMap, colLabel, match)
 	SFH_ASSERT(WaveExists(indices), "No match found in sweepMap in operation " + opShort)
 
 	col = FindDimlabel(sweepMap, COLS, colLabel)
@@ -1291,50 +1333,49 @@ static Function/WAVE SFOS_MakeSweepLNBsDisplayed(variable numTraces)
 	return wv
 End
 
-/// @brief Return the matching indices of sweepMap, if expName or device is an emtpy string then it is ignored
-static Function/WAVE SFOS_GetSweepMapIndices(WAVE/T sweepMap, variable sweepNo, string expName, string device, [string colLabel, string wildCardPattern])
+static Function/WAVE SFOS_GetSweepMapIndicesFromCol(WAVE/T sweepMap, string colLabel, string wildCardPattern)
 
 	variable mapSize
 
-	if(!ParamIsDefault(colLabel))
-		ASSERT(!IsEmpty(wildCardPattern), "Need a valid wildcard pattern")
-		mapSize = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
-		return FindIndizes(sweepMap, colLabel = colLabel, endRow = mapSize, str = wildCardPattern, prop = PROP_WILDCARD)
-	endif
+	ASSERT(!IsEmpty(wildCardPattern), "Need a valid wildcard pattern")
+	mapSize = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
+	return FindIndizes(sweepMap, colLabel = colLabel, endRow = mapSize - 1, str = wildCardPattern, prop = PROP_WILDCARD)
+End
 
-	WAVE/Z sweepIndices = FindIndizes(sweepMap, colLabel = "Sweep", var = sweepNo)
+/// @brief Return the matching indices of sweepMap, if expName or device is an emtpy string then it is ignored
+static Function/WAVE SFOS_GetSweepMapIndices(WAVE/T sweepMap, variable sweepNo, string expName, string device, WAVE/Z/T tags)
+
+	variable mapSize
+	string   tagList
+
+	mapSize = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
+	WAVE/Z sweepIndices = FindIndizes(sweepMap, endRow = mapSize - 1, colLabel = "Sweep", var = sweepNo)
 	if(!WaveExists(sweepIndices))
 		return $""
 	endif
-	if(IsEmpty(expName) && IsEmpty(device))
-		return sweepIndices
-	endif
-
 	if(!IsEmpty(expName))
-		WAVE/Z/D expIndices = FindIndizes(sweepMap, colLabel = "FileName", str = expName)
+		WAVE/Z/D expIndices = FindIndizes(sweepMap, endRow = mapSize - 1, colLabel = "FileName", str = expName)
 		if(!WaveExists(expIndices))
 			return $""
 		endif
 	endif
 	if(!IsEmpty(device))
-		WAVE/Z/D devIndices = FindIndizes(sweepMap, colLabel = "Device", str = device)
+		WAVE/Z/D devIndices = FindIndizes(sweepMap, endRow = mapSize - 1, colLabel = "Device", str = device)
 		if(!WaveExists(devIndices))
 			return $""
 		endif
 	endif
-
-	if(WaveExists(expIndices) && WaveExists(devIndices))
-		WAVE/Z set1 = GetSetIntersection(sweepIndices, expIndices)
-		if(!WaveExists(set1))
+	if(WaveExists(tags))
+		tagList = TextWaveToList(tags, AB_TAG_SEPARATOR)
+		WAVE/Z/D tagIndices = FindIndizes(sweepMap, endRow = mapSize - 1, colLabel = "Tags", str = tagList)
+		if(!WaveExists(tagIndices))
 			return $""
 		endif
-
-		return GetSetIntersection(set1, devIndices)
-	elseif(WaveExists(expIndices))
-		return GetSetIntersection(sweepIndices, expIndices)
 	endif
 
-	return GetSetIntersection(sweepIndices, devIndices)
+	Make/FREE/WAVE partIndices = {sweepIndices, expIndices, devIndices, tagIndices}
+
+	return GetSetIntersectionWaves(partIndices)
 End
 
 static Function SFOS_MapClampModeToSelectCM(variable clampMode)
@@ -1358,7 +1399,7 @@ static Function SFOS_MapClampModeToSelectCM(variable clampMode)
 	endswitch
 End
 
-static Function SFOS_IsValidSingleSelection(STRUCT SF_SelectParameters &filter, WAVE numericalValues, WAVE textualValues, variable filtSweepNo, variable filtChannelNumber, variable filtChannelType, variable sweepNo, variable channelNumber, variable channelType, variable clampMode, variable setCycleCount, variable setSweepCount, variable doStimsetMatching)
+static Function SFOS_IsValidSingleSelection(STRUCT SF_SelectParameters &filter, WAVE numericalValues, WAVE textualValues, variable filtSweepNo, variable filtChannelNumber, variable filtChannelType, variable sweepNo, variable channelNumber, variable channelType, variable clampMode, variable setCycleCount, variable setSweepCount, variable doStimsetMatching, string tags)
 
 	variable sweepQC, setQC
 	string setName
@@ -1408,6 +1449,12 @@ static Function SFOS_IsValidSingleSelection(STRUCT SF_SelectParameters &filter, 
 		return 0
 	endif
 
+	if(WaveExists(filter.tags))
+		if(CmpStr(TextWaveToList(filter.tags, AB_TAG_SEPARATOR), tags))
+			return 0
+		endif
+	endif
+
 	return 1
 End
 
@@ -1439,6 +1486,7 @@ static Function [STRUCT SF_SelectParameters filterDup] SFOS_DuplicateSelectFilte
 	WAVE/Z filterDup.sweeps   = filter.sweeps
 	filterDup.vis       = filter.vis
 	filterDup.clampMode = filter.clampMode
+	WAVE/Z/T filterDup.tags     = filter.tags
 	WAVE/Z/T filterDup.stimsets = filter.stimsets
 	WAVE/Z   filterDup.ranges   = filter.ranges
 	filterDup.sweepQC        = filter.sweepQC
