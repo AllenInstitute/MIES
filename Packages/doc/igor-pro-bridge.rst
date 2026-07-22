@@ -77,12 +77,16 @@ Available tools
 
 ``execute_igor_command(command)``
   Runs a command string on Igor's command line via ``Execute2``. Include an
-  ``fprintf 0, "..."`` call to get data back. **Caution**: if ``command`` calls
-  user-defined procedure code and the Debugger is enabled, a breakpoint/runtime
-  error/abort/stale-reference pause will hang this call indefinitely -- there is no
-  scriptable way to resume or dismiss the Debugger window. Prefer
-  ``execute_igor_command_unattended`` whenever nobody is watching who could close that
-  popup by hand.
+  ``fprintf 0, "..."`` call to get data back. Returns a dict with ``"results"``
+  (the ``fprintf`` output) and ``"history"`` (anything ``command`` sent to Igor's
+  history area during this call, e.g. ``print`` output or the command echo itself
+  -- confirmed from ``Automation Server.ihf``), so a ``print`` statement's output
+  can be verified directly from the return value, without needing a human to look
+  at Igor's screen. **Caution**: if ``command`` calls user-defined procedure code
+  and the Debugger is enabled, a breakpoint/runtime error/abort/stale-reference
+  pause will hang this call indefinitely -- there is no scriptable way to resume
+  or dismiss the Debugger window. Prefer ``execute_igor_command_unattended``
+  whenever nobody is watching who could close that popup by hand.
 
 ``execute_igor_command_unattended(command)``
   Same as ``execute_igor_command``, but automatically disables Igor's Debugger before
@@ -91,6 +95,17 @@ Available tools
   ``execute_igor_command`` include any partial ``results``/``history`` output captured,
   since Igor typically keeps running after an unhandled runtime error rather than
   stopping (see :ref:`igor_pro_bridge_runtime_errors`).
+
+``read_session_history(stop=False)``
+  Reads back everything sent to Igor's history area since this bridge process
+  first talked to Igor, via Igor's built-in ``CaptureHistoryStart()``/
+  ``CaptureHistory()`` functions (confirmed from ``Igor Reference.ihf``) -- a
+  capture starts automatically on first use. Unlike the per-call ``history`` field
+  above, this can verify *past* executions retroactively (e.g. if a command's
+  return value wasn't captured at the time, or to see everything printed across
+  many separate calls at once). Each call returns the full accumulated text since
+  the capture started, so repeated calls are always safe. ``stop=True`` ends the
+  current capture and starts a fresh one on next use.
 
 ``get_wave(wave_path)``
   Returns the data of an existing 1D Igor wave (numeric or text) as a list. Complex and
@@ -115,7 +130,33 @@ Available tools
   commands go through Igor's operation queue rather than running immediately (see
   "Operation Queue" in ``Advanced Topics.ihf``), so this cross-checks two independent
   signals before trusting a "compiled" result -- see
-  :ref:`igor_pro_bridge_claude_helper` and :ref:`igor_pro_bridge_compile_dialog`.
+  :ref:`igor_pro_bridge_claude_helper` and :ref:`igor_pro_bridge_compile_dialog`. If
+  compilation still isn't confirmed after the initial poll, this automatically makes
+  one attempt to dismiss a possible stuck compile-error dialog (see
+  ``dismiss_compile_error_dialog``) before falling back to
+  ``"prompt_user_to_check_for_dialog": true``. **Caution**: twice during this bridge's
+  development, a real Igor Pro 10.03 instance became unreachable via COM (crashed or
+  was closed) shortly after a reload/compile attempt -- no root cause was confirmed,
+  and it isn't established whether this is related to the bridge at all versus a
+  pre-existing Igor Pro stability issue (a subsequent retest against Igor Pro 9.06
+  ran the same sequence -- broken code, reload/compile, fix, reload/compile again --
+  without a repeat crash, which is reassuring but not conclusive either way). If a
+  subsequent call fails with a COM/RPC error, check ``check_bridge_health()`` and be
+  prepared to relaunch Igor Pro.
+
+``dismiss_compile_error_dialog()``
+  Attempts to close a stuck Igor Pro dialog by posting a simulated Escape key press
+  directly to it (via ``PostMessage``), targeting a visible window owned by an Igor
+  Pro process that either has class ``"#32770"`` (the standard Windows dialog class)
+  or a title matching a known stuck-dialog title -- this does **not** require or
+  change OS focus/foreground state. **Confirmed live against both Igor Pro 10.03 and
+  Igor Pro 9.06**: the compile-error dialog is titled exactly *"Function Compilation
+  Error"* and is a Qt window (class ``"Qt693QWindowIcon"`` on 10.03), not a native
+  ``"#32770"`` dialog as originally assumed -- title matching is what actually finds
+  it on both major versions, and a *posted* (not real hardware) Escape successfully
+  closed it in both cases, with no focus/foreground change needed. Does **not**
+  recover the actual error message -- it only clears the dialog so work can
+  continue. See :ref:`igor_pro_bridge_compile_dialog`.
 
 ``get_debugger_state()`` / ``set_debugger_enabled(enabled, ...)`` / ``restore_debugger_settings()``
   Read, change, and restore Igor's Debugger settings (``DebuggerOptions``). Use
@@ -171,8 +212,36 @@ ever actually running -- ``reload_and_compile_procedures`` will keep reporting
 "not compiled" even after the underlying ``.ipf`` file is genuinely fixed, until a
 person closes that dialog by hand.
 
-There is no documented way to detect or dismiss this dialog via COM. When
-``reload_and_compile_procedures`` times out, its result includes
+There is no documented way to detect or dismiss this dialog via COM, but Escape
+closes it. ``dismiss_compile_error_dialog()`` exploits that: it enumerates top-level
+windows for a visible one owned by an Igor Pro process that matches either window
+class ``"#32770"`` (the standard native Windows dialog class) or a known
+stuck-dialog title, then posts ``WM_KEYDOWN``/``WM_KEYUP`` for Escape directly to it
+via ``PostMessage`` -- no foreground switch, no stolen focus. This works despite
+Igor Pro's elevated status specifically because this bridge's own process is also
+required to run elevated (see Requirements above) -- Windows' UIPI blocks simulated
+input from a lower-privilege process reaching a higher-privilege one, but not
+between two equally elevated processes.
+
+**Confirmed live against a real stuck dialog on both Igor Pro 10.03 and Igor Pro
+9.06**: the original assumption that this dialog is an ordinary ``"#32770"``
+native dialog was wrong -- Igor Pro's UI (on both major versions tested) is
+Qt-based, and the compile-error dialog is a Qt window titled exactly *"Function
+Compilation Error"* on both (observed class on 10.03: ``"Qt693QWindowIcon"``, a
+version-hash-looking string not worth matching on directly). Title matching is what
+actually finds it, and a *posted* Escape (not a real hardware key press) was
+confirmed to close it on both versions -- Qt's Windows platform layer reacts to the
+posted message the same way it would a real key press. If a future window doesn't
+match either signature, dismissal safely reports "not found" (along with a
+diagnostic list of
+every window Igor currently owns) rather than doing something incorrect. The
+trade-off either way: this recovers the ability to continue working, not the actual
+error message -- check the ``.ipf`` file's syntax directly, or have a human read the
+dialog text, if the exact message matters. ``reload_and_compile_procedures`` now
+calls this automatically once, before falling back to asking a human.
+
+If the automatic attempt doesn't resolve it (or wasn't possible -- e.g. no matching
+dialog window was found), ``reload_and_compile_procedures``'s result includes
 ``"prompt_user_to_check_for_dialog": true``; whatever is driving the bridge (e.g. an AI
 agent) should use this as an explicit instruction to ask the human operator to check for
 and close a stuck dialog, rather than silently retrying or only logging advisory text --
@@ -254,8 +323,12 @@ too-old-Igor warning panel) without colliding.
 Known limitations
 ------------------
 
-- No scriptable way to resume a Debugger pause or to detect/dismiss a compile-error
-  dialog -- both require a human, as described above.
+- No scriptable way to resume a Debugger pause -- this requires a human, as described
+  above. A compile-error dialog can usually be auto-dismissed via a posted Escape key
+  press (see ``dismiss_compile_error_dialog``, confirmed live), but that recovers the
+  ability to continue, not the error message itself; if a genuinely new/different
+  Igor popup shows up (not the known "Function Compilation Error" dialog or a native
+  ``"#32770"`` one), dismissal safely reports "not found" and a human is still needed.
 - ``get_wave`` supports 1D, real-valued waves only.
 - The pywin32 dynamic-dispatch calling convention for ``Execute2``'s multiple ``[out]``
   parameters is assumed to follow the standard IDispatch convention (parameters come
@@ -264,3 +337,11 @@ Known limitations
 - This is a *local* MCP server (stdio transport): it only works from a Claude Desktop
   session running on the same Windows machine as Igor Pro, not from a cloud/sandboxed
   session.
+- **Observed twice during development on Igor Pro 10.03, root cause unconfirmed**:
+  Igor Pro became unreachable via COM (crashed or was closed) shortly after a
+  ``reload_and_compile_procedures`` call. It isn't established whether this is
+  related to the bridge's own actions or a pre-existing Igor Pro stability issue
+  independent of it. A repeat of the same broken-code/reload/fix/reload sequence
+  against Igor Pro 9.06 did not reproduce it, which doesn't rule out a 10.03-specific
+  or environment-specific cause -- treat any COM/RPC failure after a compile attempt
+  as a signal to check ``check_bridge_health()`` and be prepared to relaunch Igor Pro.
