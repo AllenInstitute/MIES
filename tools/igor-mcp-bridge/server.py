@@ -79,15 +79,20 @@ Setup
 
 Registering with Claude Desktop
 --------------------------------
-Add to claude_desktop_config.json under "mcpServers":
+Do NOT register this by manually editing claude_desktop_config.json -- that does not
+work reliably for local MCP servers in current Claude Desktop builds. Instead, package
+this directory as a Claude Desktop Extension (.mcpb) and install it via Settings ->
+Extensions -> Advanced settings -> Extension Developer -> Install Extension:
 
-    "igor-pro": {
-      "command": "python",
-      "args": ["C:\\path\\to\\server.py"]
-    }
+    mcpb pack tools/igor-mcp-bridge tools/igor-mcp-bridge/igor-pro-bridge-X.Y.Z.mcpb
 
-Then restart Claude Desktop. Remember: both Claude Desktop's Python process AND Igor Pro
-itself need to be running elevated (as Administrator) for the COM connection to succeed.
+See Packages/doc/igor-pro-bridge.rst ("Installation") for the full, up-to-date
+installation steps -- this docstring previously described the config.json approach,
+which was found to be unreliable and is no longer how this bridge is distributed.
+
+After installing (or updating), fully restart Claude Desktop (elevated). Remember: both
+Claude Desktop's Python process AND Igor Pro itself need to be running elevated (as
+Administrator) for the COM connection to succeed.
 
 This is a *local* MCP server (stdio transport) -- it only works from a Claude Desktop
 session running on the same Windows machine as Igor Pro, not from a cloud/Cowork sandbox.
@@ -95,8 +100,17 @@ session running on the same Windows machine as Igor Pro, not from a cloud/Cowork
 
 import ctypes
 import os
+import subprocess
 import sys
 import time
+
+if sys.platform != "win32":
+    raise RuntimeError(
+        "tools/igor-mcp-bridge/server.py is Windows-only (requires pywin32 and "
+        "Igor Pro's COM Automation Server). It cannot run on this platform "
+        f"({sys.platform!r}) -- e.g. running it by accident on a non-Windows dev "
+        "machine or in CI. See the module docstring for setup requirements."
+    )
 
 import pywintypes
 import win32api
@@ -113,9 +127,23 @@ IGOR_COM_PROGID = "IgorPro.Application"
 IP_DATATYPE_TEXT = 0
 IP_DATATYPE_COMPLEX_FLAG = 0x01
 
+# IgorProLoadType enum (confirmed from Automation Server.ihf, used by
+# IApplication.LoadExperiment): ipLoadTypeOpen = 2, ipLoadTypeStationery = 4,
+# ipLoadTypeMerge = 5. Only ipLoadTypeOpen is used by this bridge so far.
+IP_LOAD_TYPE_OPEN = 2
+
 mcp = FastMCP("igor-pro")
 
 _igor = None
+
+# Path to the Igor Pro executable to use for launch_igor_pro_unattended, set via
+# configure_igor_launch(). Deliberately session-scoped (this process's in-memory
+# lifetime only, not persisted to disk) and never defaulted/guessed -- see
+# configure_igor_launch's docstring for why: the calling agent should ask the user
+# for this once at the start of a session rather than assume a default installation
+# path, since Igor Pro version/location varies (this repo alone has been tested
+# against both an Igor Pro 9 and an Igor Pro 10 install in different folders).
+_configured_igor_exe_path = None
 
 
 def _is_current_process_elevated():
@@ -509,7 +537,7 @@ def get_wave(wave_path: str) -> list:
         raise RuntimeError(f"{wave_path} is complex-valued -- not supported yet.")
 
     is_text = dataType == IP_DATATYPE_TEXT
-    wave = _get_wave_ref(wave_path)
+    wave = _run_with_reconnect(lambda: _get_wave_ref(wave_path))
     values = []
     for i in range(numRows):
         try:
@@ -519,6 +547,131 @@ def get_wave(wave_path: str) -> list:
             wave = _get_wave_ref(wave_path)
             values.append(_read_wave_point(wave, i, is_text))
     return values
+
+
+@mcp.tool()
+def load_experiment(file_path: str) -> dict:
+    """Load an Igor Pro experiment file (.pxp) into the running instance, replacing
+    whatever experiment is currently open -- equivalent to Igor's File -> Open
+    Experiment menu command.
+
+    Confirmed from Automation Server.ihf: LoadExperiment(flags, loadType,
+    symbolicPathName, filePath) exists ONLY as a COM Automation method, not as part
+    of Igor's own procedure/macro language -- unlike execute_igor_command's Execute2
+    path, this cannot be run as a command string at all. Confirmed by checking Igor
+    Reference.ihf (Igor's full operations/functions reference): neither
+    "LoadExperiment" nor "OpenFile" appear there anywhere; both exist exclusively in
+    Automation Server.ihf. So this bridge calls the COM method directly instead of
+    going through _execute2, the same way get_wave calls DataFolder/Wave directly.
+
+    Uses loadType=ipLoadTypeOpen (2): "Does a normal experiment open, like Igor's
+    File->Open Experiment menu command." Per the docs, this does **not** ask to save
+    changes to whatever experiment is currently open first: "LoadExperiment does not
+    ask if you want to save changes to the previous current experiment. If you do
+    want to save changes, call the SaveExperiment method before calling the
+    LoadExperiment method." Call execute_igor_command('SaveExperiment') first if the
+    currently-open experiment's changes matter.
+
+    Disables Igor's Debugger for the duration of the call and restores it
+    afterward, the same way execute_igor_command_unattended does -- an experiment's
+    recreation procedures and startup hooks (e.g. MIES's IgorStartOrNewHook) run as
+    part of loading it, and this call bypasses _execute2 entirely so it would not
+    otherwise get that protection.
+
+    Loading a different experiment can change everything about the live environment
+    (included procedure files, XOPs, data folders, Debugger settings persist but
+    everything else may not) -- call get_environment_summary() afterward to see the
+    new state.
+
+    Raises if file_path does not point to an existing file.
+    """
+    normalized = os.path.abspath(file_path)
+    if not os.path.isfile(normalized):
+        raise RuntimeError(f"'{normalized}' does not exist or is not a file.")
+
+    saved = _read_debugger_options()
+    _apply_debugger_options(
+        {
+            "enable": False,
+            "debug_on_error": False,
+            "debug_on_abort": False,
+            "nvar_svar_wave_checking": False,
+        }
+    )
+    try:
+
+        def work():
+            igor = _get_igor()
+            igor.LoadExperiment(0, IP_LOAD_TYPE_OPEN, "", normalized)
+
+        _run_with_reconnect(work)
+    finally:
+        _apply_debugger_options(saved)
+
+    return {"loaded_file": normalized}
+
+
+# This bridge's own version, kept in sync with manifest.json's "version" field on every
+# release -- not read from manifest.json at runtime because the on-disk layout after
+# Claude Desktop installs a .mcpb extension is not guaranteed to keep server.py and
+# manifest.json at a fixed relative path to each other; a hardcoded constant avoids that
+# assumption entirely. Added specifically because a prior session had no way to confirm
+# from inside a conversation which .mcpb build was actually loaded/active in Claude
+# Desktop, which made it impossible to verify whether a given fix (e.g. the reload/compile
+# timing relaxation) was actually in effect during a test -- see SESSION_NOTES.md.
+_BRIDGE_VERSION = "1.22.0"
+
+
+@mcp.tool()
+def get_bridge_version() -> dict:
+    """Return the version of this Igor Pro Bridge build that is actually running right
+    now, in this Claude Desktop session.
+
+    Call this whenever it matters to confirm which build is active -- e.g. before
+    relying on a specific fix or behavior change from a recent version, or when
+    reporting results from a test that depends on a particular fix being in effect.
+    There is no other way to determine this from inside a conversation: installing a
+    newer .mcpb requires restarting Claude Desktop, and nothing else surfaces which
+    version ended up actually loaded afterward.
+    """
+    return {"version": _BRIDGE_VERSION}
+
+
+@mcp.tool()
+def close_data_browser() -> dict:
+    """Close Igor Pro's own built-in (stock) Data Browser window, if one is currently
+    open, via the documented `ModifyBrowser close` command (confirmed from Igor
+    Reference.ihf: "close | Closes the Data Browser."; without /M this targets the
+    regular, non-modal Data Browser).
+
+    **This is NOT MIES's own DataBrowser panel** (the DB_* windows opened via
+    DB_OpenDataBrowser in MIES_DataBrowser.ipf) -- that is a distinct, MIES-authored
+    panel with its own close/hide behavior. This tool only targets Igor Pro's
+    integrated Data Browser feature, which exists even without MIES loaded at all.
+
+    Added because an open instance of Igor's integrated Data Browser was reported to
+    sometimes cause Igor Pro to crash while procedure code is running (e.g. during a
+    reload/compile cycle or a test run) -- closing it first is a cheap precaution.
+    This is an on-demand tool only, not called automatically by any other tool in this
+    bridge (a deliberate choice, so existing tools' behavior does not change).
+
+    Confirmed empirically that `ModifyBrowser close` raises an Igor-level error ("The
+    Data Browser must be active.") if no Data Browser is currently open, rather than
+    silently doing nothing -- there is no documented /Z-style quiet flag for this
+    operation. That specific error is caught here and treated as a normal, expected
+    outcome (nothing to close), not a failure; any other error is re-raised.
+
+    Returns a dict with "was_open" (whether a Data Browser was actually open and got
+    closed) and "closed" (same value, kept for readability at the call site).
+    """
+    errorCode, errorMsg, history, results = _execute2("ModifyBrowser close")
+    if errorCode == 0:
+        return {"was_open": True, "closed": True}
+    if "must be active" in errorMsg.lower():
+        return {"was_open": False, "closed": False}
+    raise RuntimeError(
+        f"Failed attempting to close the Data Browser (error code {errorCode}): {errorMsg}"
+    )
 
 
 @mcp.tool()
@@ -628,8 +781,15 @@ def check_compilation_state() -> dict:
     return {"compiled": results == "", "raw_function_info": results}
 
 
-_COMPILE_POLL_INTERVAL_SECONDS = 0.2
+_COMPILE_POLL_INTERVAL_SECONDS = 0.5
 _COMPILE_POLL_TIMEOUT_SECONDS = 5.0
+# Pause between issuing "RELOAD CHANGED PROCS " and "COMPILEPROCEDURES ", and after
+# issuing "COMPILEPROCEDURES ", both queued via Execute/P (see reload_and_compile_procedures).
+# Added to relax the timing between these two operation-queue commands after Igor Pro
+# crashes were observed around reload/compile activity this session (see SESSION_NOTES.md) --
+# not a confirmed root-cause fix, just a precaution to reduce how tightly these are packed.
+_RELOAD_TO_COMPILE_PAUSE_SECONDS = 2.0
+_POST_COMPILE_PAUSE_SECONDS = 1.0
 # Number of consecutive "compiled" reads required before trusting the FunctionInfo-based
 # fallback signal -- see the false-positive race explained in
 # reload_and_compile_procedures's docstring. Not needed for the AfterCompiledHook-based
@@ -715,9 +875,17 @@ _COMPILE_ERROR_DIALOG_NOTE = (
 # thing to match on, this instead matches on the dialog's window TITLE, which was
 # directly observed to be exactly "Function Compilation Error" on BOTH Igor Pro
 # 10.03 and 9.06 -- a stable, Igor-chosen string, not a toolkit implementation
-# detail, and apparently stable across at least these two major versions. The
-# "#32770" class check is kept as a second, OR'd condition (harmless, and covers
-# the case of a genuinely native Win32 dialog for some other Igor-raised error).
+# detail, and apparently stable across at least these two major versions.
+#
+# An earlier version also OR'd in a blanket "#32770" (the standard native Windows
+# dialog class) check, on the theory that it was "harmless" and would cover some
+# other genuinely native Igor-raised dialog. A Copilot PR review correctly flagged
+# this as a real risk instead: since this is called automatically from
+# reload_and_compile_procedures, matching ANY "#32770" window regardless of title
+# could Escape-dismiss an unrelated native dialog (e.g. a save-changes
+# confirmation), causing data loss or unexpected state changes -- and it was never
+# actually needed, since the real compile-error dialog isn't "#32770" on either
+# version tested. Removed; title matching alone is both sufficient and safer.
 #
 # PostMessage(hwnd, WM_KEYDOWN/WM_KEYUP, VK_ESCAPE, ...) is used rather than a
 # hardware-level input simulation so this never needs to steal OS focus/
@@ -734,11 +902,11 @@ _COMPILE_ERROR_DIALOG_NOTE = (
 #
 # Targeting no longer relies on the OS foreground window at all (the very first,
 # now-superseded approach): it enumerates all top-level windows and keeps visible
-# ones belonging to an Igor Pro process (exe name starting with "igor") that either
-# have window class "#32770" or a title matching a known stuck-dialog title (see
-# _KNOWN_STUCK_DIALOG_TITLES). If neither ever matches, dismissal safely reports
-# "not found" (see "igor_windows_seen" in that result for exactly what windows
-# exist, to extend this list further if a new stuck-dialog title shows up).
+# ones belonging to an Igor Pro process (exe name starting with "igor") whose title
+# matches a known stuck-dialog title (see _KNOWN_STUCK_DIALOG_TITLES). If it never
+# matches, dismissal safely reports "not found" (see "igor_windows_seen" in that
+# result for exactly what windows exist, to extend this list further if a new
+# stuck-dialog title shows up).
 #
 # Trade-off, confirmed to be acceptable by the user who proposed this mitigation:
 # this recovers the ability to continue working, but does NOT recover the actual
@@ -748,23 +916,32 @@ _COMPILE_ERROR_DIALOG_NOTE = (
 # call to it dismisses it.
 
 _IGOR_PROCESS_NAME_PREFIX = "igor"
-_DIALOG_WINDOW_CLASS = "#32770"  # standard Windows "Dialog" window class
 # Known titles of Igor Pro popups that block the operation queue and are safe to
 # dismiss with Escape. Confirmed live against both Igor Pro 10.03 and Igor Pro
 # 9.06: the compile-error dialog is titled exactly "Function Compilation Error"
-# and is a Qt window, NOT a "#32770" native dialog -- so title matching is the
-# primary signal for this one, and it appears stable across major versions.
+# and is a Qt window, NOT a native "#32770" dialog -- so title matching is the
+# only signal used, and it appears stable across major versions.
 _KNOWN_STUCK_DIALOG_TITLES = ("Function Compilation Error",)
 _POSTED_KEY_GAP_SECONDS = 0.05
 _POSTED_KEY_SETTLE_SECONDS = 0.2
 
 
 def _is_stuck_dialog_window(class_name: str, title: str) -> bool:
-    """True if a window looks like one of the known stuck-dialog cases this bridge
-    knows how to dismiss -- either the standard Win32 dialog class, or a title
-    matching a known Igor popup (see _KNOWN_STUCK_DIALOG_TITLES)."""
-    if class_name == _DIALOG_WINDOW_CLASS:
-        return True
+    """True if a window's title matches one of the known stuck-dialog cases this
+    bridge knows how to dismiss (see _KNOWN_STUCK_DIALOG_TITLES).
+
+    Deliberately title-only. An earlier version also treated ANY window with the
+    generic native Windows dialog class ("#32770") as safe to dismiss regardless of
+    title -- flagged by a Copilot PR review as a real risk: since
+    dismiss_compile_error_dialog is called automatically from
+    reload_and_compile_procedures, that blanket rule could have Escape-dismissed an
+    unrelated native dialog (e.g. a save-changes confirmation), causing data loss or
+    unexpected state changes. It also never bought anything in practice: the actual
+    compile-error dialog confirmed live on both Igor Pro 10.03 and 9.06 is a Qt
+    window, not a "#32770" dialog at all, so the class-only branch could only ever
+    match something else. class_name is accepted as a parameter for signature
+    stability / potential future use, but is currently unused.
+    """
     return any(known.lower() in title.lower() for known in _KNOWN_STUCK_DIALOG_TITLES)
 
 
@@ -860,9 +1037,8 @@ def _attempt_dismiss_compile_error_dialog() -> dict:
         return {
             "attempted": False,
             "reason": (
-                "No visible window matching a known stuck-dialog signature "
-                '(class "#32770", or title containing one of '
-                f"{_KNOWN_STUCK_DIALOG_TITLES}) owned by an Igor Pro process was "
+                "No visible window with a title containing one of "
+                f"{_KNOWN_STUCK_DIALOG_TITLES}, owned by an Igor Pro process, was "
                 "found. Either there is no stuck dialog right now, or it's a kind "
                 "not seen before -- see 'igor_windows_seen' below for every "
                 "visible window Igor currently owns, to identify it."
@@ -916,14 +1092,18 @@ def dismiss_compile_error_dialog() -> dict:
     human).
 
     Mechanism: enumerates top-level windows for a visible one, owned by a process
-    whose exe name starts with "igor" (e.g. Igor64.exe), that either has window
-    class "#32770" (the standard Windows Dialog Box class) OR a title matching a
+    whose exe name starts with "igor" (e.g. Igor64.exe), whose title matches a
     known stuck-dialog title. **Confirmed live against both Igor Pro 10.03 and
     Igor Pro 9.06: the compile-error dialog is titled exactly "Function
     Compilation Error" and is a Qt window (class observed as "Qt693QWindowIcon" on
     10.03), NOT a native "#32770" dialog** -- so title matching is what actually
-    finds it, on both major versions tested. Once found, this posts
-    WM_KEYDOWN/WM_KEYUP for VK_ESCAPE directly to that window via PostMessage,
+    finds it, on both major versions tested. (An earlier version also matched any
+    generic native "#32770" dialog regardless of title; removed after a Copilot PR
+    review correctly flagged it as a real risk -- since this is called
+    automatically from reload_and_compile_procedures, it could have Escape-dismissed
+    an unrelated native dialog, e.g. a save-changes confirmation, and it was never
+    actually needed since the real dialog isn't "#32770" anyway.) Once found, this
+    posts WM_KEYDOWN/WM_KEYUP for VK_ESCAPE directly to that window via PostMessage,
     without requiring it to be focused or in the foreground.
 
     **Confirmed live on both Igor Pro 10.03 and Igor Pro 9.06: a POSTED (not real
@@ -1128,11 +1308,15 @@ def reload_and_compile_procedures() -> dict:
             f"RELOAD CHANGED PROCS failed (error code {errorCode}): {errorMsg}"
         )
 
+    time.sleep(_RELOAD_TO_COMPILE_PAUSE_SECONDS)
+
     errorCode, errorMsg, history, results = _execute2('Execute/P "COMPILEPROCEDURES "')
     if errorCode != 0:
         raise RuntimeError(
             f"COMPILEPROCEDURES failed (error code {errorCode}): {errorMsg}"
         )
+
+    time.sleep(_POST_COMPILE_PAUSE_SECONDS)
 
     poll_result = _poll_for_compile_confirmation(
         baseline_counter, _COMPILE_POLL_TIMEOUT_SECONDS
@@ -1335,18 +1519,35 @@ def set_debugger_enabled(
     function -- so debug_on_error/debug_on_abort/nvar_svar_wave_checking are only
     applied when enabled=True.
 
+    debug_on_error/debug_on_abort/nvar_svar_wave_checking are truly optional: any left
+    as None (the default) fall back to Igor's CURRENT setting for that specific
+    sub-flag (read via _read_debugger_options) rather than being forced off. (Fixed
+    from an earlier version of this function, caught by code review: bool(None) is
+    False, so leaving a sub-flag unspecified used to silently clear it to off, even
+    though the docstring described these as optional -- i.e. "leave unchanged", not
+    "turn off".) Pass explicit True/False for any you want to actually change.
+
     Recommended pattern around an unattended session:
         get_debugger_state()           # read + save the current settings
         set_debugger_enabled(False)    # disable for the unattended run
         ... run the unattended session ...
         restore_debugger_settings()    # put the saved settings back
     """
+    current = _read_debugger_options()
     _apply_debugger_options(
         {
             "enable": enabled,
-            "debug_on_error": bool(debug_on_error),
-            "debug_on_abort": bool(debug_on_abort),
-            "nvar_svar_wave_checking": bool(nvar_svar_wave_checking),
+            "debug_on_error": (
+                current["debug_on_error"] if debug_on_error is None else debug_on_error
+            ),
+            "debug_on_abort": (
+                current["debug_on_abort"] if debug_on_abort is None else debug_on_abort
+            ),
+            "nvar_svar_wave_checking": (
+                current["nvar_svar_wave_checking"]
+                if nvar_svar_wave_checking is None
+                else nvar_svar_wave_checking
+            ),
         }
     )
     return _read_debugger_options()
@@ -1583,6 +1784,280 @@ def get_environment_summary() -> dict:
         "data_folders": data_folders,
         "top_level_waves": top_level_waves,
         "debugger_settings": _read_debugger_options(),
+    }
+
+
+def _build_igor_launch_env():
+    """Return an environment dict for subprocess.Popen when launching Igor Pro as a
+    direct child process, patching in COMSPEC if this process's own environment is
+    missing it.
+
+    **Confirmed live this session, against a real launch_igor_pro_unattended call**:
+    Igor Pro's MIES procedures run a startup hook (IgorStartOrNewHook ->
+    GetMiesVersion -> CreateMiesVersionNoCache -> ExecuteGitForMIESVersion, in
+    MIES_GlobalStringAndVariableAccess.ipf) that shells out to git via
+    `ExecuteScriptText` to regenerate version.txt, using `GetCmdPath()`
+    (`GetEnvironmentVariable("COMSPEC")`, in MIES_Utilities_File.ipf) to find
+    cmd.exe. A child process launched via subprocess.Popen with no explicit env
+    inherits THIS Python process's own environment -- and querying the live
+    instance directly (`GetEnvironmentVariable("COMSPEC")`) showed it came back
+    empty, even though PATH itself was intact (including a working git
+    installation). Windows normally sets COMSPEC automatically for every
+    interactive login session, so a normal double-click/Start Menu launch of Igor
+    Pro never hits this; it only showed up because this bridge process's own
+    environment (inherited from whatever launched Claude Desktop) apparently never
+    had COMSPEC set. With COMSPEC empty, MIES's git-shell-out command becomes
+    malformed, ExecuteScriptText fails, and
+    `ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")`
+    (MIES_GlobalStringAndVariableAccess.ipf, ExecuteGitForMIESVersion) trips on every
+    fresh launch via this bridge. See SESSION_NOTES.md for the full diagnosis.
+
+    Only patches COMSPEC specifically (the one confirmed-missing variable), rather
+    than rebuilding the whole environment from scratch -- everything else (PATH,
+    etc.) was already intact when this was diagnosed.
+    """
+    env = os.environ.copy()
+    if not env.get("COMSPEC"):
+        system_root = env.get("SystemRoot", r"C:\Windows")
+        env["COMSPEC"] = os.path.join(system_root, "System32", "cmd.exe")
+    return env
+
+
+@mcp.tool()
+def configure_igor_launch(exe_path: str) -> dict:
+    """Record the full path to the Igor Pro executable (e.g. "...\\IgorBinaries_x64\\
+    Igor64.exe") to use for launch_igor_pro_unattended, for the rest of this bridge
+    process's session.
+
+    **Whatever agent is calling this tool should ask the user for this path (and
+    confirm they understand the elevation requirement below) once, at the start of
+    a session that might need to launch Igor Pro -- do not guess or default to a
+    typical installation path.** This repo alone has been tested against Igor Pro
+    installed in more than one differently-named folder (an Igor Pro 9 install and a
+    separate Igor Pro 10 install), so there is no single reliable default. This
+    setting is intentionally session-scoped, matching this bridge's other
+    session-scoped state (e.g. the history capture refnum) -- it resets if this
+    bridge process itself restarts (e.g. Claude Desktop fully restarts), so ask
+    again in a new session rather than assuming a previous answer still applies.
+
+    Raises if exe_path does not point to an existing file. Does not otherwise
+    validate that the file is actually Igor Pro (beyond a soft filename check) --
+    launch_igor_pro_unattended will simply fail informatively if it isn't.
+    """
+    global _configured_igor_exe_path
+
+    normalized = os.path.abspath(exe_path)
+    if not os.path.isfile(normalized):
+        raise RuntimeError(
+            f"'{normalized}' does not exist or is not a file. Ask the user for the "
+            "exact full path to the Igor Pro executable (typically something like "
+            r'"C:\Program Files\WaveMetrics\Igor Pro 9 Folder\IgorBinaries_x64\Igor64.exe"'
+            " -- the exact folder name varies by Igor Pro version) and try again."
+        )
+
+    note = None
+    if "igor" not in os.path.basename(normalized).lower():
+        note = (
+            "This file name does not look like a typical Igor Pro executable "
+            "(expected something like 'Igor64.exe'). Proceeding anyway in case the "
+            "user has a renamed executable, but this is worth double-checking with "
+            "them if launch_igor_pro_unattended behaves unexpectedly."
+        )
+
+    _configured_igor_exe_path = normalized
+    elevated = _is_current_process_elevated()
+
+    # _is_current_process_elevated() can return True, False, OR None (undetermined
+    # -- see its own docstring). A plain `if elevated` treats None the same as
+    # False, which would misreport "NOT currently elevated" as a confirmed fact
+    # when it's actually unknown -- flagged by a Copilot PR review as genuinely
+    # misleading guidance. Branched three ways explicitly instead.
+    if elevated is True:
+        elevation_plan = (
+            "This bridge process is already elevated: launch_igor_pro_unattended "
+            "will start Igor Pro as a direct child process, which inherits this "
+            "process's elevation automatically -- no UAC prompt expected."
+        )
+    elif elevated is False:
+        elevation_plan = (
+            "This bridge process is NOT currently elevated: "
+            "launch_igor_pro_unattended will request elevation via Windows' UAC "
+            "('Run as administrator') when launching Igor Pro, which requires the "
+            "user to approve a consent dialog themselves. Even after that succeeds, "
+            "THIS Python process will still not be elevated, so COM calls will keep "
+            "failing with the usual elevation-mismatch error (see "
+            "check_bridge_health) until Claude Desktop itself is relaunched as "
+            "Administrator -- make sure the user understands this before relying "
+            "on launch_igor_pro_unattended to get a fully working bridge."
+        )
+    else:
+        elevation_plan = (
+            "Could not determine whether this bridge process is currently "
+            "elevated. launch_igor_pro_unattended treats this the same as "
+            "'not elevated' as a conservative default (requesting UAC elevation "
+            "via ShellExecute's 'runas' verb rather than risking a silently "
+            "unelevated direct launch) -- if COM calls fail afterward, check "
+            "check_bridge_health and make sure both Claude Desktop and Igor Pro "
+            "are running as Administrator."
+        )
+
+    return {
+        "configured_exe_path": normalized,
+        "python_process_elevated": elevated,
+        "note": note,
+        "elevation_plan": elevation_plan,
+    }
+
+
+_POST_LAUNCH_POLL_INTERVAL_SECONDS = 1.0
+
+
+@mcp.tool()
+def launch_igor_pro_unattended(wait_for_ready_seconds: float = 30.0) -> dict:
+    """Launch the configured Igor Pro executable with the /UNATTENDED command-line
+    flag.
+
+    Per Igor Pro Folder/Igor Help Files/Advanced Topics.ihf ("Calling Igor from
+    Scripts"), /UNATTENDED "suppresses certain interactions that are inconvenient
+    for unattended operations" -- documented examples are the About Autosave dialog
+    and (Igor Pro 10+) the license activation dialog. Empirically confirmed this
+    session against a live Igor Pro 9.06 instance, but NOT documented anywhere in
+    Igor's help files: /UNATTENDED also suppresses the modal "Function Compilation
+    Error" dialog that normally appears on a bad procedure compile, and instead
+    reports the error as a plain line in Igor's history area (format
+    "<file>:<line>:<col>: error: <message>", readable via read_session_history) --
+    see SESSION_NOTES.md for the full finding. This means a bridge session started
+    this way should never need dismiss_compile_error_dialog at all.
+
+    **Requires configure_igor_launch(exe_path) to have been called first in this
+    same bridge session** -- there is no default or guessed path. Raises immediately
+    with an actionable message if it hasn't been. See configure_igor_launch's
+    docstring for why the calling agent should ask the user for this rather than
+    assume it.
+
+    Refuses to launch (returns "launched": False rather than raising) if an Igor Pro
+    instance is already reachable via COM right now: launching the executable again
+    with only /UNATTENDED (no /I, /X, /SN, or file-path argument) is documented to
+    start a genuinely new instance rather than reusing an existing one (Advanced
+    Topics.ihf, "Calling Igor from Scripts", Details section: an existing instance
+    is only reused if you include /X, /SN, or a path to a file), which would leave
+    two Igor64.exe processes running -- contradicting this bridge's existing
+    guidance elsewhere (check_bridge_health) that there should be exactly one.
+
+    Elevation handling: if this Python process is itself already elevated, Igor Pro
+    launches as a direct child process, which inherits that elevation automatically
+    -- no prompt, no separate step. If this process is NOT elevated, launches via
+    ShellExecute's "runas" verb instead, which triggers a normal Windows UAC consent
+    dialog the user must approve -- but even after that succeeds, THIS process will
+    still not be elevated, so COM calls will keep failing (the classic
+    elevation-mismatch failure mode -- see check_bridge_health) until Claude Desktop
+    itself is relaunched as Administrator. configure_igor_launch's own return value
+    already surfaces which of these two paths will be taken -- check that first.
+
+    The direct-child-process path also patches COMSPEC into the child's environment
+    if this Python process's own environment is missing it (see
+    _build_igor_launch_env) -- confirmed necessary this session: without it, MIES's
+    own startup code (IgorStartOrNewHook -> ... -> ExecuteGitForMIESVersion, which
+    shells out to git via ExecuteScriptText using GetCmdPath()/COMSPEC to find
+    cmd.exe) hits an assertion ("We have git installed but could not regenerate
+    version.txt") on every launch via this path, even though a normal
+    double-click/Start Menu launch never hits it (a real interactive login session
+    always has COMSPEC set).
+
+    After launching, polls for the new instance to become reachable via COM (every
+    ~1s) up to wait_for_ready_seconds, since Igor Pro can take several seconds to
+    finish initializing its Automation Server. Returns whether it became ready and
+    how many polling attempts that took.
+    """
+    if not _configured_igor_exe_path:
+        raise RuntimeError(
+            "No Igor Pro executable path configured yet. Ask the user for the full "
+            "path to their Igor Pro executable (e.g. "
+            r'"C:\Program Files\WaveMetrics\Igor Pro 9 Folder\IgorBinaries_x64\Igor64.exe")'
+            ", then call configure_igor_launch(exe_path) with it before calling "
+            "this tool."
+        )
+
+    try:
+        _get_igor(force_reconnect=True)
+        already_running = True
+    except RuntimeError:
+        already_running = False
+
+    if already_running:
+        return {
+            "launched": False,
+            "reason": (
+                "An Igor Pro instance is already running and reachable via COM. "
+                "Refusing to launch a second one -- close the existing instance "
+                "first if a genuinely fresh one (e.g. relaunched with /UNATTENDED) "
+                "is actually wanted."
+            ),
+        }
+
+    elevated = _is_current_process_elevated()
+    # _is_current_process_elevated() can return True, False, OR None (undetermined --
+    # see its own docstring). A plain `if elevated`/`elevated else ...` treats None the
+    # same as False -- behaviorally fine here since undetermined should conservatively
+    # fall back to the not-elevated (UAC-prompting) path anyway, but written as an
+    # explicit `is True` check for clarity, matching the same fix already applied to
+    # configure_igor_launch's elevation_plan text above.
+    launch_method = (
+        "direct_child_process" if elevated is True else "shell_execute_runas"
+    )
+
+    try:
+        if elevated is True:
+            subprocess.Popen(
+                [_configured_igor_exe_path, "/UNATTENDED"],
+                env=_build_igor_launch_env(),
+            )
+        else:
+            win32api.ShellExecute(
+                0,
+                "runas",
+                _configured_igor_exe_path,
+                "/UNATTENDED",
+                None,
+                win32con.SW_SHOWNORMAL,
+            )
+    except Exception as e:
+        return {
+            "launched": False,
+            "reason": f"Failed to start the process ({e}).",
+            "launch_method": launch_method,
+        }
+
+    deadline = time.monotonic() + wait_for_ready_seconds
+    attempts = 0
+    while time.monotonic() < deadline:
+        attempts += 1
+        try:
+            _get_igor(force_reconnect=True)
+            return {
+                "launched": True,
+                "launch_method": launch_method,
+                "com_ready": True,
+                "poll_attempts": attempts,
+            }
+        except RuntimeError:
+            time.sleep(_POST_LAUNCH_POLL_INTERVAL_SECONDS)
+
+    return {
+        "launched": True,
+        "launch_method": launch_method,
+        "com_ready": False,
+        "poll_attempts": attempts,
+        "note": (
+            f"The process was started, but no COM connection became reachable "
+            f"within {wait_for_ready_seconds:.0f}s. Igor Pro may still be "
+            "initializing (slower on first launch or a cold machine) -- try "
+            "check_bridge_health() again after waiting longer. If launch_method is "
+            "'shell_execute_runas', also consider that this Python process itself "
+            "is not elevated, which will prevent a COM connection indefinitely "
+            "regardless of how long you wait, until Claude Desktop is relaunched "
+            "as Administrator."
+        ),
     }
 
 

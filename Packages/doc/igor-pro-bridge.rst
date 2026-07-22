@@ -46,8 +46,9 @@ Requirements
 - Igor Pro 9.00 or later, running on Windows. The Automation Server is already included
   in Igor Pro 9; ``RELOAD CHANGED PROCS``, which ``reload_and_compile_procedures``
   depends on, was introduced in Igor Pro 9.00 and sets the actual minimum version.
-- Igor Pro must already be running before a tool call is made; the bridge attaches to
-  the running instance, it does not launch Igor.
+- Most tools require Igor Pro to already be running; the bridge attaches to the
+  running instance via COM. If needed, ``launch_igor_pro_unattended`` can start
+  Igor Pro itself (after ``configure_igor_launch``) -- see below.
 - **Both Igor Pro and the bridge's Python process must run elevated (as
   Administrator)**. This is a hard Windows COM requirement documented verbatim in
   Igor's own Automation Server reference and is not optional. Note that reopening
@@ -111,12 +112,47 @@ Available tools
   Returns the data of an existing 1D Igor wave (numeric or text) as a list. Complex and
   multi-dimensional waves are not supported.
 
+``load_experiment(file_path)``
+  Loads an Igor Pro experiment file (``.pxp``) into the running instance, replacing
+  whatever experiment is currently open -- equivalent to File -> Open Experiment.
+  Calls the COM ``IApplication.LoadExperiment`` method directly (with
+  ``loadType=ipLoadTypeOpen``) rather than going through ``Execute2``, since neither
+  ``LoadExperiment`` nor ``OpenFile`` exist anywhere in Igor's own procedure/macro
+  language (confirmed against ``Igor Reference.ihf``) -- they are Automation-only
+  methods, the same way ``Quit`` turned out to be. Does **not** save changes to the
+  currently-open experiment first; call ``execute_igor_command('SaveExperiment')``
+  beforehand if that matters. Disables the Debugger for the duration of the call
+  and restores it afterward, since loading an experiment runs its recreation
+  procedures and startup hooks (e.g. MIES's ``IgorStartOrNewHook``) and this call
+  bypasses the usual ``_execute2``-based Debugger protection. Call
+  ``get_environment_summary()`` afterward, since loading a different experiment can
+  change everything about the live environment.
+
 ``check_bridge_health()``
   Diagnoses exactly why the bridge can't reach Igor Pro, distinguishing three separate
   failure modes: this process not running elevated, no Igor Pro COM object registered
   at all, and a registered-but-dead COM object (Igor crashed or was force-closed,
   leaving a stale registration that reconnecting alone can't fix). Run this first
   whenever something doesn't work.
+
+``get_bridge_version()``
+  Returns the version of this Igor Pro Bridge build that is actually running in the
+  current Claude Desktop session (``{"version": "1.22.0"}``). Added because there was
+  previously no way to confirm from inside a conversation which ``.mcpb`` build ended
+  up loaded after an install/restart -- useful before relying on a specific recent
+  fix or behavior change.
+
+``close_data_browser()``
+  Closes Igor Pro's own built-in (stock) Data Browser window, if one is currently
+  open, via ``ModifyBrowser close``. **Not** the MIES-specific ``DB_*`` DataBrowser
+  panel (``DB_OpenDataBrowser`` in ``MIES_DataBrowser.ipf``) -- this targets only
+  Igor's integrated Data Browser feature, which exists even without MIES loaded.
+  Added as a precaution after an open Data Browser was reported to sometimes cause
+  Igor Pro to crash while procedure code (e.g. a reload/compile cycle or a test run)
+  is running. On-demand only -- not called automatically by any other tool here.
+  Returns ``{"was_open": ..., "closed": ...}``; calling it when no Data Browser is
+  open is a safe no-op (``ModifyBrowser close``'s "The Data Browser must be active."
+  error is caught and treated as an expected outcome, not a failure).
 
 ``check_compilation_state()``
   Reports whether Igor's procedure code is currently compiled or uncompiled, using the
@@ -147,16 +183,20 @@ Available tools
 ``dismiss_compile_error_dialog()``
   Attempts to close a stuck Igor Pro dialog by posting a simulated Escape key press
   directly to it (via ``PostMessage``), targeting a visible window owned by an Igor
-  Pro process that either has class ``"#32770"`` (the standard Windows dialog class)
-  or a title matching a known stuck-dialog title -- this does **not** require or
-  change OS focus/foreground state. **Confirmed live against both Igor Pro 10.03 and
-  Igor Pro 9.06**: the compile-error dialog is titled exactly *"Function Compilation
-  Error"* and is a Qt window (class ``"Qt693QWindowIcon"`` on 10.03), not a native
-  ``"#32770"`` dialog as originally assumed -- title matching is what actually finds
-  it on both major versions, and a *posted* (not real hardware) Escape successfully
-  closed it in both cases, with no focus/foreground change needed. Does **not**
-  recover the actual error message -- it only clears the dialog so work can
-  continue. See :ref:`igor_pro_bridge_compile_dialog`.
+  Pro process whose title matches a known stuck-dialog title -- this does **not**
+  require or change OS focus/foreground state. **Confirmed live against both Igor
+  Pro 10.03 and Igor Pro 9.06**: the compile-error dialog is titled exactly
+  *"Function Compilation Error"* and is a Qt window (class ``"Qt693QWindowIcon"``
+  on 10.03), not a native ``"#32770"`` dialog -- title matching is what actually
+  finds it on both major versions, and a *posted* (not real hardware) Escape
+  successfully closed it in both cases, with no focus/foreground change needed. An
+  earlier version also matched any generic native ``"#32770"`` dialog regardless of
+  title; removed after a Copilot PR review correctly flagged it as a real risk (this
+  is called automatically from ``reload_and_compile_procedures``, so it could have
+  Escape-dismissed an unrelated native dialog, e.g. a save-changes confirmation) and
+  it was never actually needed, since the real dialog isn't ``"#32770"`` anyway.
+  Does **not** recover the actual error message -- it only clears the dialog so work
+  can continue. See :ref:`igor_pro_bridge_compile_dialog`.
 
 ``get_debugger_state()`` / ``set_debugger_enabled(enabled, ...)`` / ``restore_debugger_settings()``
   Read, change, and restore Igor's Debugger settings (``DebuggerOptions``). Use
@@ -170,6 +210,43 @@ Available tools
   always-present "Procedure" window (which can carry experiment-specific
   ``#include``/``#define`` directives not present in any on-disk ``.ipf`` file), the
   top-level global data folder layout, and the current Debugger settings.
+
+``configure_igor_launch(exe_path)``
+  Records the full path to the Igor Pro executable to use for
+  ``launch_igor_pro_unattended``, for the rest of this bridge process's session.
+  There is no default or guessed path -- whatever agent is driving the bridge should
+  ask the user for this once, at the start of a session that might need to launch
+  Igor Pro, since the install location and version vary (this repo alone has been
+  tested against separately-named Igor Pro 9 and Igor Pro 10 installs). Session-scoped
+  like the history-capture refnum: resets if the bridge process itself restarts.
+  Returns the resolved path plus an ``"elevation_plan"`` describing which of the two
+  launch paths ``launch_igor_pro_unattended`` will take (see below) based on whether
+  this Python process is currently elevated.
+
+``launch_igor_pro_unattended(wait_for_ready_seconds=30.0)``
+  Launches the configured executable with the ``/UNATTENDED`` command-line flag (see
+  :ref:`igor_pro_bridge_unattended_flag` below) and polls for it to become reachable
+  via COM. Requires ``configure_igor_launch`` to have been called first in the same
+  session. Refuses to launch (returns ``"launched": false`` rather than raising) if
+  an Igor Pro instance is already reachable via COM, since launching the executable
+  again with only ``/UNATTENDED`` (no ``/I``, ``/X``, ``/SN``, or file-path argument)
+  is documented to start a genuinely new instance rather than reuse the existing one
+  -- see "Calling Igor from Scripts" in ``Advanced Topics.ihf``. If this process is
+  already elevated, Igor Pro is launched as a direct child process, which inherits
+  that elevation automatically with no prompt; if not, it launches via
+  ``ShellExecute``'s ``"runas"`` verb instead, triggering a normal Windows UAC consent
+  dialog -- but this process itself remains unelevated afterward, so COM calls will
+  keep failing (see ``check_bridge_health``) until Claude Desktop itself is
+  relaunched as Administrator. The direct-child-process path also patches
+  ``COMSPEC`` into the child's environment if this Python process's own
+  environment is missing it -- confirmed necessary this session: without it,
+  MIES's own startup hook (``IgorStartOrNewHook`` -> ... ->
+  ``ExecuteGitForMIESVersion``, which shells out to git via
+  ``ExecuteScriptText`` using ``GetCmdPath()``/``COMSPEC`` to find ``cmd.exe``)
+  asserted on every launch via this path with *"We have git installed but could
+  not regenerate version.txt"*, even though a normal double-click/Start Menu
+  launch never hits it (an interactive login session always has ``COMSPEC``
+  set). See ``SESSION_NOTES.md`` for the full diagnosis.
 
 .. _igor_pro_bridge_unattended:
 
@@ -214,8 +291,7 @@ person closes that dialog by hand.
 
 There is no documented way to detect or dismiss this dialog via COM, but Escape
 closes it. ``dismiss_compile_error_dialog()`` exploits that: it enumerates top-level
-windows for a visible one owned by an Igor Pro process that matches either window
-class ``"#32770"`` (the standard native Windows dialog class) or a known
+windows for a visible one owned by an Igor Pro process whose title matches a known
 stuck-dialog title, then posts ``WM_KEYDOWN``/``WM_KEYUP`` for Escape directly to it
 via ``PostMessage`` -- no foreground switch, no stolen focus. This works despite
 Igor Pro's elevated status specifically because this bridge's own process is also
@@ -231,9 +307,14 @@ Compilation Error"* on both (observed class on 10.03: ``"Qt693QWindowIcon"``, a
 version-hash-looking string not worth matching on directly). Title matching is what
 actually finds it, and a *posted* Escape (not a real hardware key press) was
 confirmed to close it on both versions -- Qt's Windows platform layer reacts to the
-posted message the same way it would a real key press. If a future window doesn't
-match either signature, dismissal safely reports "not found" (along with a
-diagnostic list of
+posted message the same way it would a real key press. An earlier version also
+matched any window with the generic native ``"#32770"`` dialog class regardless of
+title; removed after a Copilot PR review correctly flagged it as a real risk, since
+this is called automatically from ``reload_and_compile_procedures`` and could have
+Escape-dismissed an unrelated native dialog (e.g. a save-changes confirmation) --
+and it was never actually needed, since the real dialog isn't ``"#32770"`` on
+either version tested. If a future window's title doesn't match, dismissal safely
+reports "not found" (along with a diagnostic list of
 every window Igor currently owns) rather than doing something incorrect. The
 trade-off either way: this recovers the ability to continue working, not the actual
 error message -- check the ``.ipf`` file's syntax directly, or have a human read the
@@ -247,6 +328,47 @@ agent) should use this as an explicit instruction to ask the human operator to c
 and close a stuck dialog, rather than silently retrying or only logging advisory text --
 that distinction was confirmed in practice to be what actually keeps an
 agent-driven/unattended workflow moving.
+
+.. _igor_pro_bridge_unattended_flag:
+
+The ``/UNATTENDED`` launch flag and compile errors
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Igor Pro's own ``/UNATTENDED`` command-line flag (added in Igor Pro 9.00; see
+"Calling Igor from Scripts" in ``Advanced Topics.ihf``) is documented only as
+suppressing "certain interactions that are inconvenient for unattended
+operations," with two concrete documented examples: the About Autosave dialog, and
+(Igor Pro 10+) the license activation dialog. Nothing in Igor's help files ties it
+to compile errors specifically.
+
+Empirically confirmed this session, however, against a live Igor Pro 9.06 instance
+launched with ``/UNATTENDED``: it *also* suppresses the modal "Function Compilation
+Error" dialog described above. A genuine syntax error introduced into an
+actually-loaded procedure file produced ``reload_and_compile_procedures`` results of
+``compiled: false`` / ``raw_function_info: "Procedures Not Compiled"``, while
+``dismiss_compile_error_dialog``'s diagnostic window enumeration found no dialog
+window at all -- only Igor's main window was visible. Instead, the compile error
+appears as a plain line in Igor's history area, in the form
+``<file>:<line>:<col>: error: <message>`` (e.g.
+``MIES_ClaudeHelper.ipf:46:7: error: expected terminating quote``), fully readable
+via ``read_session_history``/the per-call ``history`` field.
+
+This makes an Igor Pro instance started with ``/UNATTENDED`` (e.g. via
+``launch_igor_pro_unattended``) strictly better for this bridge's purposes than one
+started normally: there is no dialog to dismiss at all, and the exact error message
+is available programmatically, which the dialog-dismissal path never provided (it
+only recovers the ability to continue, never the message itself). A bridge session
+driving an ``/UNATTENDED`` Igor Pro instance should never need
+``dismiss_compile_error_dialog`` in the first place.
+
+Methodological note: verify a target ``.ipf`` file is actually part of the
+currently-loaded environment (``get_environment_summary()``'s
+``included_procedure_files``) before editing it to test compile behavior. An
+earlier attempt at this same test edited a file that turned out not to be included
+in the loaded environment at all (no experiment file was open), so no compile ever
+actually occurred -- which superficially looked like a real ``/UNATTENDED``
+behavior change but was really a no-op test. See ``SESSION_NOTES.md`` for the full
+account.
 
 .. _igor_pro_bridge_runtime_errors:
 
@@ -327,8 +449,10 @@ Known limitations
   above. A compile-error dialog can usually be auto-dismissed via a posted Escape key
   press (see ``dismiss_compile_error_dialog``, confirmed live), but that recovers the
   ability to continue, not the error message itself; if a genuinely new/different
-  Igor popup shows up (not the known "Function Compilation Error" dialog or a native
-  ``"#32770"`` one), dismissal safely reports "not found" and a human is still needed.
+  Igor popup shows up (not the known "Function Compilation Error" title), dismissal
+  safely reports "not found" and a human is still needed -- title matching only,
+  deliberately, since matching any generic native dialog risked dismissing an
+  unrelated one (e.g. a save-changes confirmation).
 - ``get_wave`` supports 1D, real-valued waves only.
 - The pywin32 dynamic-dispatch calling convention for ``Execute2``'s multiple ``[out]``
   parameters is assumed to follow the standard IDispatch convention (parameters come
