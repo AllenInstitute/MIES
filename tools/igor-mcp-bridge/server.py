@@ -94,11 +94,16 @@ session running on the same Windows machine as Igor Pro, not from a cloud/Cowork
 """
 
 import ctypes
+import os
 import sys
 import time
 
 import pywintypes
+import win32api
+import win32con
 import win32com.client
+import win32gui
+import win32process
 
 from mcp.server.fastmcp import FastMCP
 
@@ -179,7 +184,7 @@ def _get_igor(force_reconnect=False):
                 "Could not attach to a running Igor Pro instance via COM. Make sure: "
                 "(1) Igor Pro is already running, (2) BOTH Igor Pro and this Python "
                 "process are running as Administrator (Windows requires this for COM "
-                "Automation), and (3) Igor Pro 10 (or later) is installed with the "
+                "Automation), and (3) Igor Pro 9.00 (or later) is installed with the "
                 "Automation Server component."
             ) from e
     return _igor
@@ -231,18 +236,120 @@ def _read_wave_point(wave, index: int, is_text: bool):
     return wave.GetNumericWavePointValue(index)
 
 
+# --- Session-wide history capture (verifying print output after the fact) ----------
+#
+# Confirmed from Igor Reference.ihf: CaptureHistoryStart() is a built-in Igor
+# function returning a reference number marking the CURRENT position in the history
+# area (the command/history window's text). CaptureHistory(refnum, stopCapturing)
+# then returns a string containing everything sent to the history area since that
+# reference point -- "Set stopCapturing to zero to retrieve history text captured
+# so far. Further calls to CaptureHistory with the same reference number will
+# return this text, plus any additional history text added subsequently" (i.e. each
+# call returns the FULL accumulated text since the start point, not just a delta,
+# so repeated reads are simple and never miss anything in between). This is the
+# documented, supported way to read back what Igor printed (via `print`, command
+# echoing, etc.) after the fact, rather than only being able to see it live on
+# screen or asking a human to look.
+#
+# A capture is started lazily, once, the first time _execute2 runs in this
+# process's lifetime (see _ensure_session_history_capture_started), so
+# read_session_history() always has something to report without requiring a
+# separate explicit "start" call first -- it covers everything since this bridge
+# process first talked to Igor.
+_session_history_capture_refnum = None
+
+
+def _ensure_session_history_capture_started():
+    """Start a session-wide CaptureHistoryStart() capture if one isn't already
+    running. Deliberately swallows all errors -- this is a best-effort convenience
+    feature, and must never break a normal command just because this bookkeeping
+    call failed for some reason (e.g. an ancient Igor version without this
+    function). Calls igor.Execute2 directly rather than going through _execute2 to
+    avoid recursing back into this same function.
+    """
+    global _session_history_capture_refnum
+    if _session_history_capture_refnum is not None:
+        return
+    try:
+        igor = _get_igor()
+        errorCode, errorMsg, history, results = igor.Execute2(
+            0, 0, 'fprintf 0, "%.0f", CaptureHistoryStart()'
+        )
+        if errorCode == 0 and results:
+            _session_history_capture_refnum = float(results)
+    except Exception:
+        pass
+
+
 def _execute2(command: str):
     """Run `command` via Execute2 and return (errorCode, errorMsg, history, results).
 
     See the calling-convention caveat in the module docstring -- this unpacking is the
     one thing to verify empirically on first real run.
     """
+    _ensure_session_history_capture_started()
+
     def work():
         igor = _get_igor()
         return igor.Execute2(0, 0, command)
 
     errorCode, errorMsg, history, results = _run_with_reconnect(work)
     return errorCode, errorMsg, history, results
+
+
+@mcp.tool()
+def read_session_history(stop: bool = False) -> dict:
+    """Read back everything sent to Igor's history area (print output, command
+    echoing, error messages, etc.) since this bridge process first talked to Igor
+    -- the reliable way to verify a PAST execute_igor_command/
+    execute_igor_command_unattended call's `print` output actually happened,
+    without asking a human to look at Igor's screen or needing to have captured
+    the per-call `history` field at the time.
+
+    Backed by Igor's built-in CaptureHistoryStart()/CaptureHistory() functions
+    (confirmed from Igor Reference.ihf). A capture is started automatically the
+    first time any command runs through this bridge in this process's lifetime,
+    so this always has something to report. Each call returns the FULL
+    accumulated text since that start point, not just what's new since the last
+    read -- so calling this repeatedly with stop=False (the default) is always
+    safe and simply returns more (growing) text as more commands run in between.
+
+    stop=True stops the capture (no further text will be recorded for it) and
+    returns whatever was captured up to that point; a subsequent call to this
+    tool (or the next command run through this bridge) then starts a brand-new
+    capture automatically, covering only from that point forward -- use this to
+    intentionally "reset" what counts as history for a fresh phase of work.
+
+    Raises if no capture is currently active, which should only happen if
+    CaptureHistoryStart() itself failed when first attempted (e.g. an
+    unexpectedly old Igor version) -- in that case, fall back to reading the
+    `history` field returned directly by execute_igor_command/
+    execute_igor_command_unattended for that specific call instead.
+    """
+    global _session_history_capture_refnum
+    if _session_history_capture_refnum is None:
+        raise RuntimeError(
+            "No history capture is currently active in this bridge process. This "
+            "starts automatically on first use, so this likely means "
+            "CaptureHistoryStart() failed earlier (see server logs) or nothing "
+            "has been executed yet -- try running check_bridge_health() first, "
+            "then retry this call."
+        )
+
+    refnum = _session_history_capture_refnum
+    stop_flag = 1 if stop else 0
+    cmd = f'fprintf 0, "%s", CaptureHistory({refnum:.0f}, {stop_flag})'
+    errorCode, errorMsg, history, results = _execute2(cmd)
+    if errorCode != 0:
+        raise RuntimeError(
+            f"Could not read history capture (error code {errorCode}): "
+            f"{errorMsg or '(no error message)'}"
+        )
+
+    if stop:
+        _session_history_capture_refnum = None
+
+    return {"history_text": results, "capture_stopped": stop}
 
 
 # --- Igor runtime error model (how errors surface through Execute2) -----------------
@@ -325,7 +432,7 @@ def _format_execute2_error(
 
 
 @mcp.tool()
-def execute_igor_command(command: str) -> str:
+def execute_igor_command(command: str) -> dict:
     """Execute a single Igor Pro command string in the running Igor instance.
 
     To get data back (not just run a command for its side effect), include an
@@ -344,18 +451,30 @@ def execute_igor_command(command: str) -> str:
     deliberately want the Debugger available (e.g. interactively testing a
     breakpoint).
 
+    Returns a dict with:
+      - "results": the fprintf output captured, if any (empty string otherwise).
+      - "history": any text `command` sent to Igor's history area during this
+        specific call -- confirmed from Automation Server.ihf: "history [output] is
+        a Basic string. On output it contains any text sent to Igor's history area
+        by the commands." This is exactly how to verify a `print` statement inside
+        `command` actually ran, without needing a human to look at Igor's screen or
+        calling the separate read_session_history tool. (Note: the command itself
+        is also normally echoed into history unless Silent 2 is in effect, so this
+        may include more than just explicit `print` output.)
+
     **On failure:** a nonzero error code means at least one unhandled runtime error
     occurred somewhere in `command` -- it does NOT mean execution stopped there, and
     it does NOT mean it was the only problem (see the runtime error model notes
     above `_format_execute2_error`). The raised error includes any partial `results`
-    captured, since that's often the only way to tell how far execution actually got.
+    and `history` captured, since that's often the only way to tell how far
+    execution actually got.
     """
     errorCode, errorMsg, history, results = _execute2(command)
     if errorCode != 0:
         raise RuntimeError(
             _format_execute2_error(command, errorCode, errorMsg, results, history)
         )
-    return results
+    return {"results": results, "history": history}
 
 
 @mcp.tool()
@@ -375,6 +494,7 @@ def get_wave(wave_path: str) -> list:
     4000 of 5000, this resumes from point 4000 after reconnecting instead of
     re-fetching the wave and re-reading points 0-3999 again.
     """
+
     def get_dims():
         return _get_wave_ref(wave_path).GetDimensions()
 
@@ -435,8 +555,8 @@ def check_bridge_health() -> dict:
     except RuntimeError as e:
         report["status"] = "FAIL"
         report["problem"] = (
-            f"No running Igor Pro instance found via COM ({e}). Make sure Igor Pro 10 "
-            "or later is open and running elevated."
+            f"No running Igor Pro instance found via COM ({e}). Make sure Igor Pro "
+            "9.00 or later is open and running elevated."
         )
         return report
 
@@ -539,7 +659,9 @@ def _read_claude_helper_compile_counter():
     (COM/Igor-level error, or the sentinel -1 meaning the variable doesn't exist -- see
     the constant's comment above for why both are treated as simply "unavailable", never
     fatal)."""
-    errorCode, errorMsg, history, results = _execute2(_CLAUDE_HELPER_COMPILE_COUNTER_CMD)
+    errorCode, errorMsg, history, results = _execute2(
+        _CLAUDE_HELPER_COMPILE_COUNTER_CMD
+    )
     if errorCode != 0:
         return None
     try:
@@ -547,6 +669,7 @@ def _read_claude_helper_compile_counter():
     except (TypeError, ValueError):
         return None
     return None if value < 0 else value
+
 
 _COMPILE_ERROR_DIALOG_NOTE = (
     "One confirmed cause if this is unexpected (e.g. you just fixed a known syntax "
@@ -559,15 +682,357 @@ _COMPILE_ERROR_DIALOG_NOTE = (
     "call sit there without ever actually running, even though this bridge's own COM "
     "calls keep responding normally throughout (confirmed empirically: this hang "
     "does not show up as a hung tool call, only as 'compiled' staying stuck at False "
-    "no matter how many times this is retried). There is no documented way to "
-    "detect or dismiss that dialog via COM. "
-    "ACTION FOR WHATEVER IS CALLING THIS TOOL: do not just log this and retry silently "
-    "-- explicitly ask the human operator right now whether a compile-error dialog is "
-    "showing in Igor Pro, and if so, to close it, before retrying. This was confirmed "
-    "during development to be the only thing that reliably un-sticks this state -- "
-    "passively worded advice in a note is easy to skip past; an explicit prompt to the "
-    "human is what actually keeps an unattended/agent-driven workflow moving."
+    "no matter how many times this is retried). "
+    "reload_and_compile_procedures already attempts an automatic fix for exactly this "
+    "case (posting an Escape key press directly to Igor's dialog window, via "
+    "dismiss_compile_error_dialog's underlying logic, without needing OS focus/"
+    "foreground) before returning this note -- see the 'auto_dismiss_attempted' "
+    "field for what that attempt found and did. "
+    "ACTION FOR WHATEVER IS CALLING THIS TOOL: if the automatic attempt did not "
+    "resolve it (or was not attempted, e.g. because no matching dialog window was "
+    "found), do not just log this and retry silently -- explicitly ask "
+    "the human operator right now whether a compile-error dialog is showing in Igor "
+    "Pro, and if so, to close it, before retrying. Explicitly prompting the human is "
+    "what actually keeps an unattended/agent-driven workflow moving when the "
+    "automatic attempt isn't enough."
 )
+
+
+# --- Compile-error dialog dismissal (posted Escape key message) ---------------------
+#
+# Added after a user-proposed mitigation for the compile-error-dialog problem
+# documented above: there is still no documented COM operation to detect or dismiss
+# that dialog, but Escape closes it, and a simulated key press can be delivered to
+# it directly.
+#
+# **Confirmed live against real Igor Pro instances -- both Igor Pro 10.03 and Igor
+# Pro 9.06 (this is no longer a guess for either)**: the original assumption that
+# this dialog is an ordinary "#32770" Win32 dialog was WRONG -- Igor Pro's UI (both
+# major versions tested) is Qt-based, and the compile-error dialog is a Qt window
+# with a version-hash-looking class name (observed on 10.03: "Qt693QWindowIcon";
+# not re-checked on 9.06 since title matching alone was already sufficient there).
+# Since that class name likely varies across Igor/Qt builds and isn't a stable
+# thing to match on, this instead matches on the dialog's window TITLE, which was
+# directly observed to be exactly "Function Compilation Error" on BOTH Igor Pro
+# 10.03 and 9.06 -- a stable, Igor-chosen string, not a toolkit implementation
+# detail, and apparently stable across at least these two major versions. The
+# "#32770" class check is kept as a second, OR'd condition (harmless, and covers
+# the case of a genuinely native Win32 dialog for some other Igor-raised error).
+#
+# PostMessage(hwnd, WM_KEYDOWN/WM_KEYUP, VK_ESCAPE, ...) is used rather than a
+# hardware-level input simulation so this never needs to steal OS focus/
+# foreground from whatever the user is doing. **Confirmed live against a real
+# stuck "Function Compilation Error" dialog on BOTH Igor Pro 10.03 and Igor Pro
+# 9.06: a POSTED (not real hardware) WM_KEYDOWN/WM_KEYUP for VK_ESCAPE
+# successfully closed it in both cases** -- Qt's Windows platform plugin
+# intercepts native window messages in its own WndProc regardless of a message's
+# origin, so it reacted the same way a real key press would, with no
+# foreground/focus change needed. (If a future Igor/Qt version doesn't react the
+# same way, the fallback would be a hardware-level simulation --
+# SetForegroundWindow + keybd_event/SendInput -- targeted at this same window, at
+# the cost of stealing focus.)
+#
+# Targeting no longer relies on the OS foreground window at all (the very first,
+# now-superseded approach): it enumerates all top-level windows and keeps visible
+# ones belonging to an Igor Pro process (exe name starting with "igor") that either
+# have window class "#32770" or a title matching a known stuck-dialog title (see
+# _KNOWN_STUCK_DIALOG_TITLES). If neither ever matches, dismissal safely reports
+# "not found" (see "igor_windows_seen" in that result for exactly what windows
+# exist, to extend this list further if a new stuck-dialog title shows up).
+#
+# Trade-off, confirmed to be acceptable by the user who proposed this mitigation:
+# this recovers the ability to continue working, but does NOT recover the actual
+# compile-error message -- Escape just closes the dialog, it doesn't read it. If the
+# exact error text matters, check Igor's procedure window/history directly (or ask a
+# human to read the dialog) before this or reload_and_compile_procedures's automatic
+# call to it dismisses it.
+
+_IGOR_PROCESS_NAME_PREFIX = "igor"
+_DIALOG_WINDOW_CLASS = "#32770"  # standard Windows "Dialog" window class
+# Known titles of Igor Pro popups that block the operation queue and are safe to
+# dismiss with Escape. Confirmed live against both Igor Pro 10.03 and Igor Pro
+# 9.06: the compile-error dialog is titled exactly "Function Compilation Error"
+# and is a Qt window, NOT a "#32770" native dialog -- so title matching is the
+# primary signal for this one, and it appears stable across major versions.
+_KNOWN_STUCK_DIALOG_TITLES = ("Function Compilation Error",)
+_POSTED_KEY_GAP_SECONDS = 0.05
+_POSTED_KEY_SETTLE_SECONDS = 0.2
+
+
+def _is_stuck_dialog_window(class_name: str, title: str) -> bool:
+    """True if a window looks like one of the known stuck-dialog cases this bridge
+    knows how to dismiss -- either the standard Win32 dialog class, or a title
+    matching a known Igor popup (see _KNOWN_STUCK_DIALOG_TITLES)."""
+    if class_name == _DIALOG_WINDOW_CLASS:
+        return True
+    return any(known.lower() in title.lower() for known in _KNOWN_STUCK_DIALOG_TITLES)
+
+
+def _get_process_exe_name(pid: int):
+    """Best-effort lookup of the executable file name (e.g. "Igor64.exe") owning
+    `pid`, or None if it can't be determined. Returns just the base file name, not
+    the full path, so callers can do a simple case-insensitive prefix check."""
+    ACCESS = win32con.PROCESS_QUERY_INFORMATION | win32con.PROCESS_VM_READ
+    hProcess = None
+    try:
+        hProcess = win32api.OpenProcess(ACCESS, False, pid)
+        path = win32process.GetModuleFileNameEx(hProcess, 0)
+        return os.path.basename(path)
+    except Exception:
+        return None
+    finally:
+        if hProcess is not None:
+            win32api.CloseHandle(hProcess)
+
+
+def _find_igor_dialog_window():
+    """Find a visible top-level window that looks like a known stuck Igor Pro
+    dialog (see _is_stuck_dialog_window) and is owned by an Igor Pro process,
+    without regard to OS foreground/focus state.
+
+    Returns (hwnd, title, exe_name) for the first match found, or None if no such
+    window exists right now. EnumWindows's callback is never made to return False
+    (pywin32 raises a spurious error if it does -- the underlying Win32 call reports
+    that as a failure even though it just means "the callback asked to stop early"),
+    so this always enumerates every top-level window and collects all matches, then
+    returns the first one -- windows are typically (though not strictly guaranteed)
+    reported in top-to-bottom Z-order, so in the common case of a single dialog this
+    is simply that dialog.
+    """
+    matches = []
+
+    def _callback(hwnd, _extra):
+        if win32gui.IsWindowVisible(hwnd):
+            title = win32gui.GetWindowText(hwnd)
+            class_name = win32gui.GetClassName(hwnd)
+            if _is_stuck_dialog_window(class_name, title):
+                _, pid = win32process.GetWindowThreadProcessId(hwnd)
+                exe_name = _get_process_exe_name(pid)
+                if exe_name and exe_name.lower().startswith(_IGOR_PROCESS_NAME_PREFIX):
+                    matches.append((hwnd, title, exe_name))
+        return True
+
+    win32gui.EnumWindows(_callback, None)
+    return matches[0] if matches else None
+
+
+def _list_igor_top_level_windows() -> list:
+    """Diagnostic helper: list EVERY visible top-level window owned by an Igor Pro
+    process, regardless of class -- title, class name, and exe name for each.
+
+    Used only when _find_igor_dialog_window() finds no match, to surface what's
+    actually there instead of just reporting "not found" with no further
+    information -- this is exactly how the compile-error dialog's real title
+    ("Function Compilation Error") and class ("Qt693QWindowIcon", a Qt window, NOT
+    a native "#32770" dialog) were identified live, without needing a separate
+    one-off diagnostic tool. Useful again if some other stuck dialog shows up with
+    a title not yet in _KNOWN_STUCK_DIALOG_TITLES.
+    """
+    windows = []
+
+    def _callback(hwnd, _extra):
+        if win32gui.IsWindowVisible(hwnd):
+            _, pid = win32process.GetWindowThreadProcessId(hwnd)
+            exe_name = _get_process_exe_name(pid)
+            if exe_name and exe_name.lower().startswith(_IGOR_PROCESS_NAME_PREFIX):
+                windows.append(
+                    {
+                        "title": win32gui.GetWindowText(hwnd),
+                        "class_name": win32gui.GetClassName(hwnd),
+                        "process": exe_name,
+                    }
+                )
+        return True
+
+    win32gui.EnumWindows(_callback, None)
+    return windows
+
+
+def _attempt_dismiss_compile_error_dialog() -> dict:
+    """Post a simulated Escape key press directly to an Igor Pro dialog window (if
+    one can be found), without requiring it to be focused or in the OS foreground.
+    Returns a dict describing what was found and whether anything was actually sent
+    -- see the module-level comment above this function for the reasoning, the
+    unverified assumptions, and the trade-offs.
+    """
+    found = _find_igor_dialog_window()
+    if found is None:
+        return {
+            "attempted": False,
+            "reason": (
+                "No visible window matching a known stuck-dialog signature "
+                '(class "#32770", or title containing one of '
+                f"{_KNOWN_STUCK_DIALOG_TITLES}) owned by an Igor Pro process was "
+                "found. Either there is no stuck dialog right now, or it's a kind "
+                "not seen before -- see 'igor_windows_seen' below for every "
+                "visible window Igor currently owns, to identify it."
+            ),
+            "igor_windows_seen": _list_igor_top_level_windows(),
+        }
+
+    hwnd, window_title, exe_name = found
+
+    try:
+        win32api.PostMessage(hwnd, win32con.WM_KEYDOWN, win32con.VK_ESCAPE, 0)
+        time.sleep(_POSTED_KEY_GAP_SECONDS)
+        win32api.PostMessage(hwnd, win32con.WM_KEYUP, win32con.VK_ESCAPE, 0)
+        time.sleep(_POSTED_KEY_SETTLE_SECONDS)
+    except Exception as e:
+        return {
+            "attempted": False,
+            "reason": f"Posting the simulated Escape key press failed: {e}",
+            "dialog_window_title": window_title,
+            "dialog_window_process": exe_name,
+        }
+
+    return {
+        "attempted": True,
+        "dialog_window_title": window_title,
+        "dialog_window_process": exe_name,
+        "note": (
+            "Posted a simulated Escape key press directly to this dialog window "
+            "(no OS foreground/focus change was made or needed) -- confirmed live "
+            'to close Igor\'s "Function Compilation Error" Qt dialog the same way '
+            "a real key press would. This does NOT recover the actual "
+            "compile-error message -- it only closes whatever modal dialog was "
+            "showing. Follow up with check_compilation_state() or "
+            "reload_and_compile_procedures() to see whether this actually "
+            "un-stuck anything."
+        ),
+    }
+
+
+@mcp.tool()
+def dismiss_compile_error_dialog() -> dict:
+    """Attempt to close a stuck Igor Pro modal compile-error dialog by posting a
+    simulated Escape key press directly to it, WITHOUT recovering the actual error
+    message and WITHOUT requiring or changing OS focus/foreground state.
+
+    Use this manually when you suspect Igor Pro has a compile-error dialog open (e.g.
+    reload_and_compile_procedures kept reporting "not compiled" even after fixing a
+    known syntax error) and want to try clearing it yourself, separately from
+    reload_and_compile_procedures's own automatic attempt at the same thing (see its
+    docstring -- it already calls this same logic once before giving up and asking a
+    human).
+
+    Mechanism: enumerates top-level windows for a visible one, owned by a process
+    whose exe name starts with "igor" (e.g. Igor64.exe), that either has window
+    class "#32770" (the standard Windows Dialog Box class) OR a title matching a
+    known stuck-dialog title. **Confirmed live against both Igor Pro 10.03 and
+    Igor Pro 9.06: the compile-error dialog is titled exactly "Function
+    Compilation Error" and is a Qt window (class observed as "Qt693QWindowIcon" on
+    10.03), NOT a native "#32770" dialog** -- so title matching is what actually
+    finds it, on both major versions tested. Once found, this posts
+    WM_KEYDOWN/WM_KEYUP for VK_ESCAPE directly to that window via PostMessage,
+    without requiring it to be focused or in the foreground.
+
+    **Confirmed live on both Igor Pro 10.03 and Igor Pro 9.06: a POSTED (not real
+    hardware) Escape key event is enough to make Qt's Windows platform layer
+    close this dialog the same way a real key press would** -- verified against a
+    real stuck "Function Compilation Error" dialog on each version, with no
+    foreground/focus change needed. If no matching window is found at all (e.g. a
+    different, not-yet-seen Igor popup), this reports "attempted": false (safe
+    failure) along with "igor_windows_seen": every visible top-level window
+    currently owned by an Igor Pro process (title/class/process), so a new stuck
+    dialog's real title/class can be identified and added to
+    _KNOWN_STUCK_DIALOG_TITLES instead of guessing.
+
+    This works despite Igor Pro's elevated status because this bridge's own process
+    is also required to run elevated (see the module docstring) -- Windows blocks
+    simulated input from a lower-privilege process reaching a higher-privilege
+    window (UIPI), but does not block it between two equally elevated processes.
+
+    **Trade-off: this does not tell you what the error was.** It only clears
+    whatever dialog is blocking Igor's operation queue so work can continue. If the
+    actual error text matters, check the .ipf file directly or ask a human to read
+    the dialog before calling this.
+    """
+    return _attempt_dismiss_compile_error_dialog()
+
+
+_COMPILE_POLL_TIMEOUT_AFTER_DISMISS_SECONDS = 3.0
+
+
+def _poll_for_compile_confirmation(baseline_counter, timeout_seconds: float) -> dict:
+    """Poll for up to timeout_seconds for confirmation that Igor Pro's procedure code
+    compiled successfully, checking both signals described in
+    reload_and_compile_procedures's docstring. Returns one of:
+
+    - {"compiled": True, "poll_attempts": N, "confirmed_via": "..."}
+    - {"compiled": False, "compiled_state_known": False, "poll_attempts": N,
+       "last_error_code": ..., "last_error_msg": ...} -- the compiled-state check
+      itself kept failing throughout the poll.
+    - {"compiled": False, "poll_attempts": N, "raw_function_info": ...} -- the
+      compiled-state check succeeded but never confirmed a compile within the
+      timeout.
+
+    Factored out of reload_and_compile_procedures so it can be called a second time,
+    with a shorter timeout, after an automatic compile-error-dialog dismissal
+    attempt, without duplicating the polling logic.
+    """
+    deadline = time.monotonic() + timeout_seconds
+    lastErrorCode = None
+    lastErrorMsg = None
+    lastResults = None
+    attempts = 0
+    consecutive_compiled = 0
+
+    while True:
+        attempts += 1
+
+        current_counter = _read_claude_helper_compile_counter()
+        if (
+            baseline_counter is not None
+            and current_counter is not None
+            and current_counter > baseline_counter
+        ):
+            return {
+                "compiled": True,
+                "poll_attempts": attempts,
+                "confirmed_via": "AfterCompiledHook counter (root:gClaudeHelperCompileCounter)",
+            }
+
+        compiledErrorCode, compiledErrorMsg, _, compiledResults = _execute2(
+            _PROCEDURES_COMPILED_CHECK_CMD
+        )
+        if compiledErrorCode == 0:
+            lastErrorCode = None
+            lastResults = compiledResults
+            if compiledResults == "":
+                consecutive_compiled += 1
+                if consecutive_compiled >= _COMPILE_CONFIRM_CHECKS:
+                    return {
+                        "compiled": True,
+                        "poll_attempts": attempts,
+                        "confirmed_via": (
+                            "FunctionInfo poll (AfterCompiledHook counter unavailable "
+                            "or unchanged)"
+                        ),
+                    }
+            else:
+                consecutive_compiled = 0
+        else:
+            lastErrorCode, lastErrorMsg = compiledErrorCode, compiledErrorMsg
+            consecutive_compiled = 0
+
+        if time.monotonic() >= deadline:
+            break
+        time.sleep(_COMPILE_POLL_INTERVAL_SECONDS)
+
+    if lastErrorCode is not None:
+        return {
+            "compiled": False,
+            "compiled_state_known": False,
+            "poll_attempts": attempts,
+            "last_error_code": lastErrorCode,
+            "last_error_msg": lastErrorMsg,
+        }
+
+    return {
+        "compiled": False,
+        "poll_attempts": attempts,
+        "raw_function_info": lastResults,
+    }
 
 
 @mcp.tool()
@@ -579,6 +1044,16 @@ def reload_and_compile_procedures() -> dict:
     MIES/Igor procedure code -- to make Igor pick up the change. Only call this while
     Igor Pro is not currently running other procedure code; reloading/compiling while
     code is running is not supported.
+
+    **Caution, observed twice during this bridge's development against a real Igor
+    Pro 10.03 instance**: Igor Pro became unreachable via COM (crashed or was
+    closed) shortly after a reload/compile attempt, in two separate incidents --
+    once with broken procedure code present, once immediately after fixing it. No
+    root cause has been confirmed (no Windows crash logs were accessible from
+    here), and it's not established whether this bridge's own actions are involved
+    at all versus a pre-existing Igor Pro stability issue independent of it. If a
+    tool call after this one starts failing with a COM/RPC error, check
+    check_bridge_health() and be prepared for Igor Pro to need relaunching.
 
     Mirrors the exact method used by CompileAndRestart() in igortest-tracing.ipf:
 
@@ -623,16 +1098,31 @@ def reload_and_compile_procedures() -> dict:
     even after the underlying .ipf file is genuinely fixed, until a person closes
     that dialog by hand. This happened for real during development.
 
+    Before giving up, if compilation isn't confirmed within the initial timeout, this
+    automatically makes ONE attempt to dismiss a possible stuck compile-error dialog
+    by posting an Escape key press directly to it (see dismiss_compile_error_dialog),
+    then polls again briefly. This does not require or change OS focus/foreground
+    state; it only fires if a matching Igor Pro dialog window can actually be found
+    -- see dismiss_compile_error_dialog's docstring for the full mechanism and its
+    trade-off (it recovers the ability to continue, not the error message). The
+    returned dict's "auto_dismiss_attempted" field always reports what that attempt
+    found/did, even when it wasn't needed or no matching window was found.
+
     **If the returned dict has "prompt_user_to_check_for_dialog": True, whatever is
     calling this tool should explicitly ask the human operator to check Igor Pro's
     screen for a stuck compile-error dialog and close it, before retrying** -- not
-    just read the accompanying "note" text and move on. Confirmed directly during
-    development: silently retrying or only logging the note left the workflow stuck;
-    explicitly prompting the human at this point is what actually un-stuck it.
+    just read the accompanying "note" text and move on. This only happens after the
+    automatic dismissal attempt above has already been tried and didn't resolve it
+    (or wasn't possible, e.g. no matching dialog window was found).
+    Confirmed directly during development: silently retrying or only logging the
+    note left the workflow stuck; explicitly prompting the human at this point is
+    what actually un-stuck it.
     """
     baseline_counter = _read_claude_helper_compile_counter()
 
-    errorCode, errorMsg, history, results = _execute2('Execute/P "RELOAD CHANGED PROCS "')
+    errorCode, errorMsg, history, results = _execute2(
+        'Execute/P "RELOAD CHANGED PROCS "'
+    )
     if errorCode != 0:
         raise RuntimeError(
             f"RELOAD CHANGED PROCS failed (error code {errorCode}): {errorMsg}"
@@ -644,87 +1134,62 @@ def reload_and_compile_procedures() -> dict:
             f"COMPILEPROCEDURES failed (error code {errorCode}): {errorMsg}"
         )
 
-    deadline = time.monotonic() + _COMPILE_POLL_TIMEOUT_SECONDS
-    lastErrorCode = None
-    lastErrorMsg = None
-    lastResults = None
-    attempts = 0
-    consecutive_compiled = 0
+    poll_result = _poll_for_compile_confirmation(
+        baseline_counter, _COMPILE_POLL_TIMEOUT_SECONDS
+    )
+    if poll_result["compiled"]:
+        return {"reload_triggered": True, "compile_triggered": True, **poll_result}
 
-    while True:
-        attempts += 1
+    dismiss_result = _attempt_dismiss_compile_error_dialog()
 
-        current_counter = _read_claude_helper_compile_counter()
-        if (
-            baseline_counter is not None
-            and current_counter is not None
-            and current_counter > baseline_counter
-        ):
+    if dismiss_result.get("attempted"):
+        poll_result = _poll_for_compile_confirmation(
+            baseline_counter, _COMPILE_POLL_TIMEOUT_AFTER_DISMISS_SECONDS
+        )
+        if poll_result["compiled"]:
             return {
                 "reload_triggered": True,
                 "compile_triggered": True,
-                "compiled": True,
-                "poll_attempts": attempts,
-                "confirmed_via": "AfterCompiledHook counter (root:gClaudeHelperCompileCounter)",
+                **poll_result,
+                "auto_dismiss_attempted": dismiss_result,
+                "note": (
+                    "Compilation only succeeded after automatically simulating an "
+                    "Escape key press to close what was very likely a stuck "
+                    "compile-error dialog. The dialog's exact error message was NOT "
+                    "recovered -- if this keeps happening, check the .ipf file's "
+                    "syntax directly, or ask a human to read the dialog text before "
+                    "it gets dismissed next time."
+                ),
             }
 
-        compiledErrorCode, compiledErrorMsg, _, compiledResults = _execute2(
-            _PROCEDURES_COMPILED_CHECK_CMD
+    if "compiled_state_known" in poll_result:
+        note = (
+            f"Reload/compile commands ran, but checking the resulting state kept "
+            f"failing (last error code {poll_result.get('last_error_code')}): "
+            f"{poll_result.get('last_error_msg')}. " + _COMPILE_ERROR_DIALOG_NOTE
         )
-        if compiledErrorCode == 0:
-            lastErrorCode = None
-            lastResults = compiledResults
-            if compiledResults == "":
-                consecutive_compiled += 1
-                if consecutive_compiled >= _COMPILE_CONFIRM_CHECKS:
-                    return {
-                        "reload_triggered": True,
-                        "compile_triggered": True,
-                        "compiled": True,
-                        "poll_attempts": attempts,
-                        "confirmed_via": (
-                            "FunctionInfo poll (AfterCompiledHook counter unavailable "
-                            "or unchanged)"
-                        ),
-                    }
-            else:
-                consecutive_compiled = 0
-        else:
-            lastErrorCode, lastErrorMsg = compiledErrorCode, compiledErrorMsg
-            consecutive_compiled = 0
-
-        if time.monotonic() >= deadline:
-            break
-        time.sleep(_COMPILE_POLL_INTERVAL_SECONDS)
-
-    if lastErrorCode is not None:
-        return {
-            "reload_triggered": True,
-            "compile_triggered": True,
-            "compiled_state_known": False,
-            "poll_attempts": attempts,
-            "prompt_user_to_check_for_dialog": True,
-            "note": (
-                f"Reload/compile commands ran, but checking the resulting state kept "
-                f"failing (last error code {lastErrorCode}): {lastErrorMsg}. "
-                + _COMPILE_ERROR_DIALOG_NOTE
-            ),
-        }
+    else:
+        note = (
+            f"Still not compiled after polling for {_COMPILE_POLL_TIMEOUT_SECONDS:.0f}s"
+            + (
+                f" plus a further {_COMPILE_POLL_TIMEOUT_AFTER_DISMISS_SECONDS:.0f}s "
+                "after an automatic Escape-key dismissal attempt"
+                if dismiss_result.get("attempted")
+                else ""
+            )
+            + f" (requiring {_COMPILE_CONFIRM_CHECKS} consecutive confirmations). This is "
+            "more likely a genuine compile error in the procedure code than a timing "
+            "artifact -- check Igor's history/procedure window directly. "
+            + _COMPILE_ERROR_DIALOG_NOTE
+        )
 
     return {
         "reload_triggered": True,
         "compile_triggered": True,
-        "compiled": False,
-        "poll_attempts": attempts,
-        "raw_function_info": lastResults,
+        **poll_result,
+        "auto_dismiss_attempted": dismiss_result,
         "prompt_user_to_check_for_dialog": True,
-        "note": (
-            f"Still not compiled after polling for {_COMPILE_POLL_TIMEOUT_SECONDS:.0f}s "
-            f"(requiring {_COMPILE_CONFIRM_CHECKS} consecutive confirmations). This is "
-            "more likely a genuine compile error in the procedure code than a timing "
-            "artifact -- check Igor's history/procedure window directly. "
-            + _COMPILE_ERROR_DIALOG_NOTE
-        ),
+        "note": note,
     }
 
 
@@ -909,7 +1374,7 @@ def restore_debugger_settings() -> dict:
 
 
 @mcp.tool()
-def execute_igor_command_unattended(command: str) -> str:
+def execute_igor_command_unattended(command: str) -> dict:
     """Run `command` exactly like execute_igor_command, but automatically disable
     Igor's Debugger before running it and restore it again afterward -- even if
     `command` raises an Igor-level error. Uses its own local snapshot rather than the
@@ -937,12 +1402,18 @@ def execute_igor_command_unattended(command: str) -> str:
     and restore_debugger_settings() once at the end, rather than paying the extra
     disable/restore COM round-trip on every single command via this tool.
 
+    Returns a dict with "results" (fprintf output) and "history" (anything
+    `command` sent to Igor's history area during this call, e.g. `print` output or
+    the command echo itself) -- see execute_igor_command's docstring for exactly
+    what "history" contains and why it's the reliable way to verify a `print`
+    actually happened.
+
     **On failure:** a nonzero error code means at least one unhandled runtime error
     occurred somewhere in `command` -- it does NOT mean execution stopped there, and
     it does NOT mean it was the only problem (see the runtime error model notes
     above _format_execute2_error, right before execute_igor_command). The raised
-    error includes any partial `results` captured, since that's often the only way
-    to tell how far execution actually got.
+    error includes any partial `results` and `history` captured, since that's often
+    the only way to tell how far execution actually got.
     """
     saved = _read_debugger_options()
     _apply_debugger_options(
@@ -962,7 +1433,7 @@ def execute_igor_command_unattended(command: str) -> str:
         raise RuntimeError(
             _format_execute2_error(command, errorCode, errorMsg, results, history)
         )
-    return results
+    return {"results": results, "history": history}
 
 
 # --- Environment summary -----------------------------------------------------------
@@ -1088,9 +1559,9 @@ def get_environment_summary() -> dict:
     for part in raw["data_folders_raw"].split("\r"):
         part = part.strip()
         if part.startswith("FOLDERS:"):
-            folders_part = part[len("FOLDERS:"):].rstrip(";")
+            folders_part = part[len("FOLDERS:") :].rstrip(";")
         elif part.startswith("WAVES:"):
-            waves_part = part[len("WAVES:"):].rstrip(";")
+            waves_part = part[len("WAVES:") :].rstrip(";")
     data_folders = [f for f in folders_part.split(",") if f]
     top_level_waves = [w for w in waves_part.split(",") if w]
 
