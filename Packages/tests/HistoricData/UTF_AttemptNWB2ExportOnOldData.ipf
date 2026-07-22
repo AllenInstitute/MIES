@@ -11,10 +11,14 @@ static Function TestExportingDataToNWB([string str])
 
 	LoadMIESFolderFromPXP("input:" + str)
 
+	WAVE devEpochVersionPre = GatherEpochVersions()
+
 	PathInfo home
 	templateName = S_path + GetBaseName(str)
 	// attempt export
-	NWB_ExportAllData(nwbVersion, overrideFileTemplate = templateName, writeStoredTestPulses = 1, writeIgorHistory = 1)
+	NWB_ExportAllData(nwbVersion, overrideFileTemplate = templateName, writeStoredTestPulses = 1, writeIgorHistory = 1, recreateEpochs = 1)
+
+	CheckIfPostProcessedEpochsAreAdded(devEpochVersionPre)
 
 	CHECK_NO_RTE()
 
