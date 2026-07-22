@@ -489,7 +489,7 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 		endif
 	endfor
 
-	TP_RestartTestPulse(device, runMode, fast = 1)
+	TP_RestartTestPulse(device, runMode, fast = TP_FAST_NO_CONFIG)
 
 	return 0
 End

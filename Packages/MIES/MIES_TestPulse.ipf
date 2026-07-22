@@ -813,7 +813,7 @@ static Function TP_AutoAmplitudeAndBaseline(string device, WAVE TPResults, varia
 	endfor
 
 	if(needsUpdate)
-		DAP_TPSettingsToGUI(device, entry = "amplitudeIC")
+		DAP_TPSettingsToGUI(device, entry = "amplitudeIC", fast = TP_FAST_CONFIG)
 	endif
 End
 
@@ -1411,20 +1411,25 @@ End
 /// @sa TP_StopTestPulseWrapper
 Function TP_StopTestPulseFast(string device)
 
-	return TP_StopTestPulseWrapper(device, fast = 1)
+	return TP_StopTestPulseWrapper(device, fast = TP_FAST_NO_CONFIG)
+End
+
+/// @sa TP_StopTestPulseWrapper
+Function TP_StopTestPulseFastConfig(string device)
+
+	return TP_StopTestPulseWrapper(device, fast = TP_FAST_CONFIG)
 End
 
 /// @sa TP_StopTestPulseWrapper
 Function TP_StopTestPulse(string device)
 
-	return TP_StopTestPulseWrapper(device, fast = 0)
+	return TP_StopTestPulseWrapper(device, fast = TP_FAST_NONE)
 End
 
 /// @brief Stop any running background test pulses
 ///
 /// @param device device
-/// @param fast       [optional, defaults to false] Performs only the totally
-///                   necessary steps for tear down.
+/// @param fast   [optional, defaults to #TP_FAST_NONE] One of @ref TestPulseFastModes.
 ///
 /// @return One of @ref TestPulseRunModes
 static Function TP_StopTestPulseWrapper(string device, [variable fast])
@@ -1432,10 +1437,10 @@ static Function TP_StopTestPulseWrapper(string device, [variable fast])
 	variable runMode
 
 	if(ParamIsDefault(fast))
-		fast = 0
-	else
-		fast = !!fast
+		fast = TP_FAST_NONE
 	endif
+
+	ASSERT(TP_IsValidFastMode(fast), "Invalid fast value")
 
 	NVAR runModeGlobal = $GetTestpulseRunMode(device)
 
@@ -1460,13 +1465,18 @@ static Function TP_StopTestPulseWrapper(string device, [variable fast])
 End
 
 /// @brief Restarts a test pulse previously stopped with #TP_StopTestPulse
+///
+/// @param device        device
+/// @param testPulseMode One of @ref TestPulseRunModes (the value previously
+///                      returned by #TP_StopTestPulse / #TP_StopTestPulseFast / #TP_StopTestPulseFastConfig)
+/// @param fast          [optional, defaults to #TP_FAST_NONE] One of @ref TestPulseFastModes.
 Function TP_RestartTestPulse(string device, variable testPulseMode, [variable fast])
 
 	if(ParamIsDefault(fast))
-		fast = 0
-	else
-		fast = !!fast
+		fast = TP_FAST_NONE
 	endif
+
+	ASSERT(TP_IsValidFastMode(fast), "Invalid fast value")
 
 	switch(testPulseMode)
 		case TEST_PULSE_NOT_RUNNING:
@@ -1484,20 +1494,25 @@ Function TP_RestartTestPulse(string device, variable testPulseMode, [variable fa
 End
 
 /// @brief Prepare device for TestPulse
+///
 /// @param device  device
-/// @param runMode     Testpulse running mode, one of @ref TestPulseRunModes
-/// @param fast        [optional, defaults to false] Performs only the totally necessary steps for setup
+/// @param runMode Testpulse running mode, one of @ref TestPulseRunModes
+/// @param fast    [optional, defaults to #TP_FAST_NONE] One of @ref TestPulseFastModes.
 Function TP_Setup(string device, variable runMode, [variable fast])
 
 	variable ADCConfig
 
 	if(ParamIsDefault(fast))
-		fast = 0
-	else
-		fast = !!fast
+		fast = TP_FAST_NONE
 	endif
 
-	if(fast)
+	ASSERT(TP_IsValidFastMode(fast), "Invalid fast value")
+
+	if(fast == TP_FAST_NO_CONFIG || fast == TP_FAST_CONFIG)
+		if(fast == TP_FAST_CONFIG)
+			DC_Configure(device, TEST_PULSE_MODE, multiDevice = (runMode & TEST_PULSE_BG_MULTI_DEVICE))
+		endif
+
 		NVAR runModeGlobal = $GetTestpulseRunMode(device)
 		runModeGlobal = runMode
 
@@ -1570,14 +1585,14 @@ End
 Function TP_Teardown(string device, [variable fast])
 
 	if(ParamIsDefault(fast))
-		fast = 0
-	else
-		fast = !!fast
+		fast = TP_FAST_NONE
 	endif
+
+	ASSERT(TP_IsValidFastMode(fast), "Invalid fast value")
 
 	NVAR runMode = $GetTestpulseRunMode(device)
 
-	if(fast)
+	if(fast == TP_FAST_NO_CONFIG || fast == TP_FAST_CONFIG)
 		runMode = TEST_PULSE_NOT_RUNNING
 		return NaN
 	endif
@@ -1914,4 +1929,10 @@ End
 threadsafe Function TP_GetPowerSpectrumLength(variable tpLength)
 
 	return 2^FindNextPower(tpLength, 2)
+End
+
+/// @brief Return the truth that `fast` is one of @ref TestPulseFastModes
+threadsafe Function TP_IsValidFastMode(variable fast)
+
+	return fast == TP_FAST_NONE || fast == TP_FAST_NO_CONFIG || fast == TP_FAST_CONFIG
 End

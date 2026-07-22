@@ -18,13 +18,18 @@ static Constant TPM_NI_FIFO_THRESHOLD_SIZE = 1073741824
 /// @brief __TPM__ Multi device background test pulse functionality
 
 /// @brief Start the test pulse when MD support is activated.
+///
+/// @param device      device
+/// @param runModifier [optional] Or'ed into the run mode (e.g. #TEST_PULSE_DURING_RA_MOD)
+/// @param fast        [optional, defaults to #TP_FAST_NONE] One of @ref TestPulseFastModes,
+///                    forwarded to `TP_Setup`.
 Function TPM_StartTPMultiDeviceLow(string device, [variable runModifier, variable fast])
 
 	if(ParamIsDefault(fast))
-		fast = 0
-	else
-		fast = !!fast
+		fast = TP_FAST_NONE
 	endif
+
+	ASSERT(TP_IsValidFastMode(fast), "Invalid fast value")
 
 	variable runMode
 
@@ -44,16 +49,19 @@ Function TPM_StartTPMultiDeviceLow(string device, [variable runModifier, variabl
 End
 
 /// @brief Start a multi device test pulse, always done in background mode
+///
+/// @param device device
+/// @param fast   [optional, defaults to #TP_FAST_NONE] One of @ref TestPulseFastModes.
 Function TPM_StartTestPulseMultiDevice(string device, [variable fast])
 
 	if(ParamIsDefault(fast))
-		fast = 0
-	else
-		fast = !!fast
+		fast = TP_FAST_NONE
 	endif
 
-	if(fast)
-		TPM_StartTPMultiDeviceLow(device, fast = 1)
+	ASSERT(TP_IsValidFastMode(fast), "Invalid fast value")
+
+	if(fast == TP_FAST_NO_CONFIG || fast == TP_FAST_CONFIG)
+		TPM_StartTPMultiDeviceLow(device, fast = fast)
 		return NaN
 	endif
 
@@ -270,10 +278,10 @@ End
 Function TPM_StopTestPulseMultiDevice(string device, [variable fast])
 
 	if(ParamIsDefault(fast))
-		fast = 0
-	else
-		fast = !!fast
+		fast = TP_FAST_NONE
 	endif
+
+	ASSERT(TP_IsValidFastMode(fast), "Invalid fast value")
 
 	NVAR deviceID = $GetDAQDeviceID(device)
 
