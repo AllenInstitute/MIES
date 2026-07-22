@@ -18,7 +18,7 @@
 /// for the too-old-Igor warning panel) without colliding.
 ///
 /// It records a monotonically increasing counter in root:gClaudeHelperCompileCounter
-/// each time it fires. This gives the Igor Pro Bridge bridge a compile confirmation
+/// each time it fires. This gives the Igor Pro Bridge a compile confirmation
 /// driven by Igor itself, rather than only inferred by polling FunctionInfo() for a
 /// non-existing function -- which can read stale state before Igor's operation queue
 /// (RELOAD CHANGED PROCS / COMPILEPROCEDURES) has actually drained. There is no
@@ -26,6 +26,18 @@
 /// not detect failure.
 
 static Function AfterCompiledHook()
+
+	variable modifiedBefore
+
+	// Creating/incrementing a global marks the experiment as modified, same as any
+	// other data change. Captured/restored here so this hook never flips an
+	// otherwise-unmodified experiment to modified, matching the existing convention
+	// in MIES_IgorHooks.ipf's own AfterCompiledHook -- flagged by a Copilot PR
+	// review as a real risk otherwise: an experiment spuriously marked modified can
+	// trigger a "Save changes?" prompt later, which is exactly the kind of dialog
+	// this bridge (built around unattended operation) cannot dismiss remotely.
+	ExperimentModified
+	modifiedBefore = V_flag
 
 	// Bare Variable/G (no initializer) is safe to call unconditionally: per Igor
 	// Reference.ihf, /G "overwrites any existing variable" but "the variable is
@@ -37,6 +49,10 @@ static Function AfterCompiledHook()
 	NVAR gClaudeHelperCompileCounter = root:gClaudeHelperCompileCounter
 
 	gClaudeHelperCompileCounter += 1
+
+	if(!modifiedBefore)
+		ExperimentModified 0
+	endif
 
 	return 0
 End
