@@ -38,11 +38,9 @@ static Constant SF_ACTION_PARENTHESIS   = 5
 static Constant SF_ACTION_FUNCTION      = 6
 static Constant SF_ACTION_ARRAY         = 7
 
-static StrConstant SF_PARSER_REGEX_SIGNED_NUMBER      = "^(?i)[+-]?[0-9]+(?:\.[0-9]+)?(?:[\+-]?E[0-9]+)?$"
-static StrConstant SF_PARSER_REGEX_QUOTED_STRING      = "^\".*\"$"
-static StrConstant SF_PARSER_REGEX_SIGNED_PARENTHESIS = "^(?i)[+-]?\\([\s\S]*$"
-static StrConstant SF_PARSER_REGEX_SIGNED_FUNCTION    = "^(?i)[+-]?[A-Za-z]+"
-static StrConstant SF_PARSER_REGEX_OTHER_VALID_CHARS  = "[A-Za-z0-9_\.:;=!$<>]"
+static StrConstant SF_PARSER_REGEX_SIGNED_NUMBER     = "^(?i)[+-]?[0-9]+(?:\.[0-9]+)?(?:E[+-]?[0-9]+)?$"
+static StrConstant SF_PARSER_REGEX_QUOTED_STRING     = "^\".*\"$"
+static StrConstant SF_PARSER_REGEX_OTHER_VALID_CHARS = "[A-Za-z0-9_\.:;=!$<>]"
 
 // The structure stores data that is required and gathered when a SF formula is parsed
 static Structure SF_ParserData
@@ -580,6 +578,104 @@ static Function [variable action, variable lastState, variable collectedSign] SF
 	return [action, lastState, collectedSign]
 End
 
+static Function SFP_ParserIsDigit(string token)
+
+	variable code
+
+	ASSERT(strlen(token) == 1, "Expected one character.")
+	code = char2num(token)
+
+	return code >= char2num("0") && code <= char2num("9")
+End
+
+static Function SFP_ParserIsLetter(string token)
+
+	variable code
+
+	ASSERT(strlen(token) == 1, "Expected one character.")
+	code = char2num(token)
+
+	return (code >= char2num("A") && code <= char2num("Z")) || (code >= char2num("a") && code <= char2num("z"))
+End
+
+static Function SFP_ParserIsSign(string token)
+
+	ASSERT(strlen(token) == 1, "Expected one character.")
+
+	return !CmpStr(token, "+") || !CmpStr(token, "-")
+End
+
+static Function SFP_ParserHasPendingExponent(string buffer)
+
+	variable pos, numChars, hasTrailingExponentMarker
+
+	pos      = 0
+	numChars = strlen(buffer)
+	if(!numChars)
+		return 0
+	endif
+
+	if(SFP_ParserIsSign(buffer[0]))
+		pos += 1
+	endif
+
+	if(pos >= numChars || !SFP_ParserIsDigit(buffer[pos]))
+		return 0
+	endif
+
+	do
+		pos += 1
+	while(pos < numChars && SFP_ParserIsDigit(buffer[pos]))
+
+	if(pos < numChars && !CmpStr(buffer[pos], "."))
+		pos += 1
+		if(pos >= numChars || !SFP_ParserIsDigit(buffer[pos]))
+			return 0
+		endif
+
+		do
+			pos += 1
+		while(pos < numChars && SFP_ParserIsDigit(buffer[pos]))
+	endif
+
+	hasTrailingExponentMarker = (pos == (numChars - 1)) && !CmpStr(UpperStr(buffer[pos]), "E")
+	return hasTrailingExponentMarker
+End
+
+static Function SFP_ParserStartsSignedParenthesis(string buffer)
+
+	variable pos, numChars
+
+	pos      = 0
+	numChars = strlen(buffer)
+	if(!numChars)
+		return 0
+	endif
+
+	if(SFP_ParserIsSign(buffer[0]))
+		pos += 1
+	endif
+
+	return pos < numChars && !CmpStr(buffer[pos], "(")
+End
+
+static Function SFP_ParserStartsSignedFunction(string buffer)
+
+	variable pos, numChars
+
+	pos      = 0
+	numChars = strlen(buffer)
+	if(!numChars)
+		return 0
+	endif
+
+	if(SFP_ParserIsSign(buffer[0]))
+		pos += 1
+	endif
+
+	return pos < numChars && SFP_ParserIsLetter(buffer[pos])
+End
+
 static Function [variable state, variable arrayLevel, variable level] SFP_ParserGetStateFromToken(string token, variable jsonId, string buffer)
 
 	strswitch(token)
@@ -591,9 +687,17 @@ static Function [variable state, variable arrayLevel, variable level] SFP_Parser
 			break
 		case "-":
 			state = SF_STATE_SUBTRACTION
+			if(SFP_ParserHasPendingExponent(buffer))
+				// sign belongs to the exponent of a number in scientific notation, e.g. "1e-3"
+				state = SF_STATE_COLLECT
+			endif
 			break
 		case "+":
 			state = SF_STATE_ADDITION
+			if(SFP_ParserHasPendingExponent(buffer))
+				// sign belongs to the exponent of a number in scientific notation, e.g. "1e+3"
+				state = SF_STATE_COLLECT
+			endif
 			break
 		case "…":
 			// use SF_STATE_DIVISION because it fulfills the same rules required for the range operation
@@ -604,11 +708,11 @@ static Function [variable state, variable arrayLevel, variable level] SFP_Parser
 			break
 		case ")":
 			level -= 1
-			if(GrepString(buffer, SF_PARSER_REGEX_SIGNED_PARENTHESIS))
+			if(SFP_ParserStartsSignedParenthesis(buffer))
 				state = SF_STATE_PARENTHESIS
 				break
 			endif
-			if(GrepString(buffer, SF_PARSER_REGEX_SIGNED_FUNCTION))
+			if(SFP_ParserStartsSignedFunction(buffer))
 				state = SF_STATE_FUNCTION
 				break
 			endif
@@ -651,6 +755,8 @@ End
 /// @brief If buffer has a sign then it is removed from buffer. If the sign was a minus then a negation is prefixed in the json.
 static Function [string buffer, variable bufOffset, STRUCT SF_ParserData pad] SFP_ParserEvaluatePossibleSign()
 
+	// callers pass a signed token or a non-empty parenthesis/array body, so single-character
+	// inputs like "(" or "[" are invalid at this point and must not be accepted here
 	ASSERT(strlen(buffer) > 1, "Expected at least two characters.")
 
 	if(!CmpStr(buffer[0], "-"))
