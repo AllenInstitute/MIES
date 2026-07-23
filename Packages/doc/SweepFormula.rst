@@ -810,6 +810,38 @@ The result of `seldev` has a data type attributed.
    # sweep data from a specific device
    seldev("Dev*")
 
+seltag
+""""""
+
+The operation `seltag` allows to specify how select filters data regarding the tags assigned to an
+experiment in the Analysis Browser before data was loaded in the Sweep Browser.
+It takes exactly one argument, either a single string or an array of strings, each element being one tag.
+Tag strings are sanitized the same way as tags entered through the Analysis Browser tag control
+(characters not allowed in Igor object names, e.g. `,`, are replaced with `_`).
+The operation returns a text wave with the given tag(s) as elements.
+The result of `seltag` has a data type attributed.
+
+A sweep/experiment is only selected by `seltag` if its assigned set of tags matches the given tags
+exactly; tags can be assigned to experiments through the tag control side panel of the Analysis Browser.
+Neither missing tags nor additional tags on the experiment result in a match.
+
+Experiments with no tag can be selected with `seltag("")`.
+
+The filter with seltag has no effect if the data source is a DataBrowser.
+
+`seltag` is intended to be used with the `select()` operation.
+
+.. code-block:: bash
+
+   # sweep data from experiments tagged with exactly "tag1"
+   select(seltag(tag1))
+
+   # sweep data from experiments tagged with exactly "tag1" and "tag2" (matched as a set, order does not matter)
+   select(seltag([tag1, tag2]))
+
+   # sweep data from experiments that have no tag
+   select(seltag(""))
+
 selsetcyclecount
 """"""""""""""""
 
@@ -1697,7 +1729,7 @@ It is intended to be used with operations like `data`, `labnotebook`, `epochs`, 
 
 The function accepts any number of arguments from filter operations.
 
-Filter operations are `selchannels`, `selsweeps`, `selrange`, `selvis`, `selscm`, `selstimset`, `selivsccsetqc`, `selivsccsweepqc`, `selexp`, `seldev`, `selrac`, `selsci`, `selsetcyclecount`, `selsetsweepcount`, `selsciindex`, `selracindex`, `select`.
+Filter operations are `selchannels`, `selsweeps`, `selrange`, `selvis`, `seltag`, `selcm`, `selstimset`, `selivsccsetqc`, `selivsccsweepqc`, `selexp`, `seldev`, `selrac`, `selsci`, `selsetcyclecount`, `selsetsweepcount`, `selsciindex`, `selracindex`, `select`.
 
 Sweeps that fit all filter criteria are taken into the selection. Each filter operation except `select` may appear once as argument.
 It is not required that the arguments have a specific order.
@@ -1707,12 +1739,13 @@ If a specific filter is not part of the arguments and none of the arguments is a
 - `selsweeps`: select all sweep numbers
 - `selrange`: select full range
 - `selvis`: select displayed sweeps
-- `selscm`: select all clamp modes
+- `selcm`: select all clamp modes
 - `selstimset`: select all stimset wave names
 - `selivsccsetqc`: IVSCC SetQC is ignored
 - `selivsccsweepqc`: IVSCC SweepQC is ignored
 - `selexp`: experiment name is ignored
 - `seldev`: device name is ignored
+- `seltag`: tags are ignored
 - `selsetcyclecount`: set cycle count is ignored
 - `selsetsweepcount`: set sweep count is ignored
 - `selsciindex`: stimset cycle id index is ignored
@@ -1725,7 +1758,7 @@ If a specific filter is not part of the arguments and there exists at least one 
 - `selsweeps`: select all sweep numbers
 - `selrange`: select full range
 - `selvis`: select all sweeps
-- `selscm`: select all clamp modes
+- `selcm`: select all clamp modes
 - `selstimset`: select all stimset wave names
 - `selivsccsetqc`: IVSCC Set QC is ignored
 - `selivsccsweepqc`: IVSCC Sweep QC is ignored

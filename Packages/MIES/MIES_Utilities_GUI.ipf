@@ -904,3 +904,10 @@ Function IsExteriorSubWindow(string win)
 	GetWindow/Z $win, exterior
 	return V_Value == 1
 End
+
+/// @brief Selects all rows of the list from a ListBox
+///        A common binding is to key press CTRL-A (same as Windows default)
+Function ListBoxSelectAll(WAVE selWave)
+
+	selWave[][0][0] = selWave[p][0][0] | LISTBOX_SELECT_OR_SHIFT_SELECTION
+End

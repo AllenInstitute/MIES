@@ -215,3 +215,65 @@ Function TestRemoveAllColumnsFromTable()
 
 	KillWaves/Z $wName1, $wName2, $wName3
 End
+
+/// @brief ListBoxSelectAll must OR LISTBOX_SELECT_OR_SHIFT_SELECTION into column 0 of the
+///        selection layer (layer 0) for every row, leaving other bits in that same cell,
+///        as well as other columns/layers, untouched.
+///
+/// The (rows, cols, layers) shape and layer assignment mirrors a real selWave as created by
+/// GetAnalysisBrowserGUIFolderSelection (layer 0 = selection/property bits, layers 1/2 =
+/// foreColors/backColors per the ListBox colorWave convention), and is also consistent with
+/// selWave's documented semantics in Igor Reference.ihf: a numeric wave with the same
+/// dimensions as listWave, where "in modes 3 and 4 bit 0 is set only in column zero of a
+/// multicolumn listbox" and "additional dimensions are used for color info."
+static Function TestListBoxSelectAll()
+
+	variable numRows = 5
+
+	Make/FREE/D/N=(numRows, 2, 3) selWave
+
+	// pre-existing bit in the target column/layer that must survive the bitwise OR, plus
+	// sentinel values in the column/layers ListBoxSelectAll must leave alone
+	selWave[][0][0] = LISTBOX_TREEVIEW
+	selWave[][1][0] = LISTBOX_TREEVIEW
+	selWave[][0][1] = LISTBOX_TREEVIEW
+	selWave[][0][2] = LISTBOX_TREEVIEW
+
+	ListBoxSelectAll(selWave)
+
+	Duplicate/FREE/RMD=[][0][0] selWave, col0Layer0
+	Redimension/N=(-1) col0Layer0
+
+	Duplicate/FREE/RMD=[][1][0] selWave, col1Layer0
+	Redimension/N=(-1) col1Layer0
+
+	Duplicate/FREE/RMD=[][0][1] selWave, col0Layer1
+	Redimension/N=(-1) col0Layer1
+
+	Duplicate/FREE/RMD=[][0][2] selWave, col0Layer2
+	Redimension/N=(-1) col0Layer2
+
+	Make/FREE/D/N=(numRows) expectedSelected = LISTBOX_TREEVIEW | LISTBOX_SELECT_OR_SHIFT_SELECTION
+	Make/FREE/D/N=(numRows) expectedUntouched = LISTBOX_TREEVIEW
+
+	CHECK_EQUAL_WAVES(col0Layer0, expectedSelected)
+	CHECK_EQUAL_WAVES(col1Layer0, expectedUntouched)
+	CHECK_EQUAL_WAVES(col0Layer1, expectedUntouched)
+	CHECK_EQUAL_WAVES(col0Layer2, expectedUntouched)
+End
+
+/// @brief Same as TestListBoxSelectAll but for the simplest real-world selWave shape: a plain
+///        2D numeric wave with no extra color layers (e.g. as used for
+///        list_experiment_contents' "sel" wave).
+static Function TestListBoxSelectAllOnPlainSelectionWave()
+
+	variable numRows = 4
+
+	Make/FREE/D/N=(numRows, 1) selWave
+
+	ListBoxSelectAll(selWave)
+
+	Make/FREE/D/N=(numRows, 1) expected = LISTBOX_SELECT_OR_SHIFT_SELECTION
+
+	CHECK_EQUAL_WAVES(selWave, expected)
+End

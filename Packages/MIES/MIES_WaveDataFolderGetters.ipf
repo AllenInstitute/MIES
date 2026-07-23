@@ -15,11 +15,12 @@
 ///   The latter ones are only useful if you need to know if the folder exists.
 /// - Modifying wave getter functions might require to introduce wave versioning, see @ref WaveVersioningSupport
 
-static Constant    ANALYSIS_BROWSER_LISTBOX_WAVE_VERSION           = 2
+static Constant    ANALYSIS_BROWSER_LISTBOX_WAVE_VERSION           = 3
 static Constant    ANALYSIS_BROWSER_FOLDER_LISTBOX_WAVE_VERSION    = 1
 static Constant    ANALYSIS_BROWSER_FOLDERCOL_LISTBOX_WAVE_VERSION = 1
 static Constant    ANALYSIS_BROWSER_FOLDERSEL_LISTBOX_WAVE_VERSION = 1
-static Constant    NUM_COLUMNS_LIST_WAVE                           = 14
+static Constant    ANALYSIS_BROWSER_TAGLIST_WAVE_VERSION           = 1
+static Constant    NUM_COLUMNS_LIST_WAVE                           = 15
 static StrConstant WAVE_NOTE_LAYOUT_KEY                            = "WAVE_LAYOUT_VERSION"
 
 static Constant WAVE_TYPE_NUMERICAL = 0x1
@@ -5652,10 +5653,11 @@ End
 /// - 1: %FileName:      Name of File in experiment column in ExperimentBrowser
 /// - 2: %DataFolder     Data folder inside current Igor experiment
 /// - 3: %FileType       File Type identifier for routing to loader functions, one of @ref AnalysisBrowserFileTypes
+/// - 4: %Tags           Tags of the experiment
 Function/WAVE GetAnalysisBrowserMap()
 
 	DFREF    dfr           = GetAnalysisFolder()
-	variable versionOfWave = 3
+	variable versionOfWave = 4
 
 	STRUCT WaveLocationMod p
 	p.dfr     = dfr
@@ -5669,16 +5671,24 @@ Function/WAVE GetAnalysisBrowserMap()
 		return wv
 	endif
 
-	if(ExistsWithCorrectLayoutVersion(wv, 1))
-		// update dimension labels
-	elseif(ExistsWithCorrectLayoutVersion(wv, 2))
-		// clear file type as this now holds nwb version as well
-		wv[][%FileType] = ""
-	elseif(WaveExists(wv))
-		Redimension/N=(-1, 4) wv
-		wv[][3] = ANALYSISBROWSER_FILE_TYPE_IGOR
+	if(WaveExists(wv))
+		if(WaveVersionIsSmaller(wv, 1))
+			Redimension/N=(-1, 4) wv
+			wv[][3] = ANALYSISBROWSER_FILE_TYPE_IGOR
+		endif
+		if(WaveVersionIsSmaller(wv, 2))
+			// update dimension labels
+			SetDimLabel COLS, 3, FileType, wv
+		endif
+		if(WaveVersionIsSmaller(wv, 3))
+			// clear file type as this now holds nwb version as well
+			wv[][%FileType] = ""
+		endif
+		if(WaveVersionIsSmaller(wv, 4))
+			Redimension/N=(-1, 5) wv
+		endif
 	else
-		Make/N=(MINIMUM_WAVE_SIZE, 4)/T dfr:analysisBrowserMap/WAVE=wv
+		Make/N=(MINIMUM_WAVE_SIZE, 5)/T dfr:analysisBrowserMap/WAVE=wv
 		SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 	endif
 
@@ -5686,6 +5696,98 @@ Function/WAVE GetAnalysisBrowserMap()
 	SetDimLabel COLS, 1, FileName, wv
 	SetDimLabel COLS, 2, DataFolder, wv
 	SetDimLabel COLS, 3, FileType, wv
+	SetDimLabel COLS, 4, Tags, wv
+
+	SetWaveVersion(wv, versionOfWave)
+
+	return wv
+End
+
+/// @brief Return the text wave used in the tags listbox of the analysis browser tags control subwindow
+Function/WAVE GetAnalysisBrowserTagsList()
+
+	string   name          = "AnaBrowserTagsList"
+	DFREF    dfr           = GetAnalysisFolder()
+	variable versionOfWave = ANALYSIS_BROWSER_TAGLIST_WAVE_VERSION
+
+	WAVE/Z/T/SDFR=dfr wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
+		return wv
+	endif
+
+	if(WaveExists(wv))
+		// Upgrade here
+	else
+		Make/N=(MINIMUM_WAVE_SIZE, 1, 2)/T dfr:$name/WAVE=wv
+	endif
+
+	SetDimLabel COLS, 0, tags, wv
+
+	SetWaveVersion(wv, versionOfWave)
+
+	return wv
+End
+
+/// @brief Return the selection wave used in the tags listbox of the analysis browser tags control subwindow
+Function/WAVE GetAnalysisBrowserTagsSelection()
+
+	string   name          = "AnaBrowserTagsSelection"
+	DFREF    dfr           = GetAnalysisFolder()
+	variable versionOfWave = ANALYSIS_BROWSER_TAGLIST_WAVE_VERSION
+
+	WAVE/Z/SDFR=dfr wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
+		return wv
+	endif
+
+	if(WaveExists(wv))
+		// Upgrade here
+	else
+		Make/N=(MINIMUM_WAVE_SIZE, 1, 3) dfr:$name/WAVE=wv
+	endif
+
+	SetDimLabel LAYERS, 1, $LISTBOX_LAYER_FOREGROUND, wv
+	SetDimLabel LAYERS, 2, $LISTBOX_LAYER_BACKGROUND, wv
+	SetWaveVersion(wv, versionOfWave)
+
+	return wv
+End
+
+/// @brief Return the color wave used in the tags listbox of the analysis browser tags control subwindow
+Function/WAVE GetAnalysisBrowserTagsColors()
+
+	string   name          = "AnaBrowserTagsColors"
+	DFREF    dfr           = GetAnalysisFolder()
+	variable versionOfWave = ANALYSIS_BROWSER_TAGLIST_WAVE_VERSION
+
+	WAVE/Z/U/W/SDFR=dfr wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
+		return wv
+	endif
+
+	if(WaveExists(wv))
+		// Upgrade here
+	else
+		Make/W/U/N=(3, 3) dfr:$name/WAVE=wv
+	endif
+
+	SetDimLabel COLS, 0, R, wv
+	SetDimLabel COLS, 1, G, wv
+	SetDimLabel COLS, 2, B, wv
+
+	// keep row 0 at {0, 0, 0} for default color
+	wv[1][%R] = 255
+	wv[1][%G] = 229
+	wv[1][%B] = 229
+
+	wv[2][%R] = 229
+	wv[2][%G] = 255
+	wv[2][%B] = 229
+
+	wv = wv << 8
 
 	SetWaveVersion(wv, versionOfWave)
 
@@ -5815,9 +5917,10 @@ Function/WAVE GetExperimentBrowserGUIList()
 	SetDimLabel COLS, 10, '#DAC', wv
 	SetDimLabel COLS, 11, '#ADC', wv
 	SetDimLabel COLS, 12, 'start time', wv
+	SetDimLabel COLS, 13, Tags, wv
 	// the last columns is a dummy column that reserves space
 	// where the scrollbar appears in the listbox. Otherwise the scrollbar covers data.
-	SetDimLabel COLS, 13, $"", wv
+	SetDimLabel COLS, 14, $"", wv
 
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 	SetWaveVersion(wv, versionOfWave)
@@ -6936,9 +7039,16 @@ Function/WAVE GetAxisLabelCacheWave()
 End
 
 /// @brief Return the sweepBrowser map wave from the given DFR
+///
+/// Unversioned wave:
+/// 4 columns: ExperimentName, ExperimentFolder, Device, Sweep
+/// Version 1:
+/// 4 columns: FileName, DataFolder, Device, Sweep
+/// Version 2:
+/// 5 columns: FileName, DataFolder, Device, Sweep, Tags
 Function/WAVE GetSweepBrowserMap(DFREF dfr)
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	ASSERT(DataFolderExistsDFR(dfr), "Missing SweepBrowser DFR")
 
@@ -6947,16 +7057,23 @@ Function/WAVE GetSweepBrowserMap(DFREF dfr)
 		return wv
 	endif
 
-	Make/T/N=(MINIMUM_WAVE_SIZE, 4) dfr:map/WAVE=wv
-	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+	if(WaveExists(wv))
+		if(WaveVersionIsSmaller(wv, 2))
+			// includes upgrade from the first unversioned wave layout to version 2:
+			Redimension/N=(-1, 5) wv
+		endif
+	else
+		Make/T/N=(MINIMUM_WAVE_SIZE, 5) dfr:map/WAVE=wv
+		SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+	endif
 
 	SetDimLabel COLS, 0, FileName, wv
 	SetDimLabel COLS, 1, DataFolder, wv
 	SetDimLabel COLS, 2, Device, wv
 	SetDimLabel COLS, 3, Sweep, wv
+	SetDimLabel COLS, 4, Tags, wv
 
-	SetNumberInWaveNote(wv, WAVE_NOTE_LAYOUT_KEY, versionOfNewWave)
-
+	SetWaveVersion(wv, versionOfNewWave)
 	return wv
 End
 

@@ -1122,13 +1122,13 @@ threadsafe Function ChangeFreeWaveName(WAVE wv, string name)
 	MoveWave wv, dfr:$name
 End
 
-Function/WAVE ZapNullRefs(WAVE/WAVE input)
+threadsafe Function/WAVE ZapNullRefs(WAVE/WAVE input)
 
 	variable numEntries, i, idx
 
-	ASSERT(IsWaveRefWave(input), "input must be a wave reference wave")
+	ASSERT_TS(IsWaveRefWave(input), "input must be a wave reference wave")
 
-	ASSERT(GetWaveDimensionality(input) == ROWS, "input must be 1D")
+	ASSERT_TS(GetWaveDimensionality(input) == ROWS, "input must be 1D")
 	numEntries = Dimsize(input, ROWS)
 
 	if(!numEntries)

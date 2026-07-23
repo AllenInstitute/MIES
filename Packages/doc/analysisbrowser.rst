@@ -39,7 +39,7 @@ The lower listbox shows by default a collapsed tree view with meta information o
 By clicking the "+" the tree view can be expanded. The leftmost "+" expands the tree view for a whole experiment file.
 The "+" in front of the device name expands a single device.
 The meta-information includes file name, file type, device name, number of sweeps per device, sweep number,
-headstage, stimset name, set count, number of DAC channels, number of ADC channels.
+headstage, stimset name, set count, number of DAC channels, number of ADC channels, tags.
 
 * Button "Select same stim sets sweeps": Selects all sweeps with the same stim set from all files.
 * Button "Collapse all": Collapses all tree branches
@@ -53,8 +53,33 @@ headstage, stimset name, set count, number of DAC channels, number of ADC channe
 * Button "Load both": Loads sweeps and stimsets.
 * Button "Load TPStorage": Loads TP storage data.
 * Button "Load History": Loads experiment history and shows it in a notebook.
+* Button "Hide tag control" / "Open tag control": Shows or hides the tag control side panel, see `Tag Control`_ below. Hidden by default when the AnalysisBrowser is opened.
+* Keyboard shortcut Ctrl-A on the experiment list: Selects all rows in the experiment list.
 
 The tree view is collapsed after loading sweeps/stimsets or refreshing the list.
+
+.. _Tag Control:
+
+Tag Control
+-----------
+
+The tag control side panel lets you assign free-form tags to experiments in the experiment list, and
+select experiments based on their tags. Tags are shown in the "Tags" column of the experiment list and
+are sanitized to valid Igor object names (e.g. a comma is replaced with an underscore).
+
+* Input field "Tag": Enter a single tag name here. Pressing Enter adds it to all experiments currently
+  selected in the experiment list.
+* Button "Add": Same action as pressing Enter in the "Tag" field.
+* Listbox: Lists the tags present across all experiments.
+* Button "Remove": Removes all tags from selected experiments. Use with care, this cannot be undone.
+
+Tags can be selected in the tags list. When tags are selected then all experiments are selected that have
+these tags.
+Example: When tags "a", "b", "c" are selected then experiments with tags "a,b,c" are selected.
+Experiments with tag "a" or "a,b" are unselected.
+
+Tags assigned here can be used to filter sweeps loaded into a SweepBrowser via the `seltag` SweepFormula
+operation, see :ref:`SweepFormula`.
 
 Known Limitations
 -----------------

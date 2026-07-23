@@ -575,17 +575,19 @@ End
 ///
 /// @sa GetListDifference for string lists
 ///
-/// @param wave1      first wave
-/// @param wave2      second wave
-/// @param getIndices [optional, default 0] when this flag is set instead of the values the indices in wave1 are returned
+/// @param wave1         first wave
+/// @param wave2         second wave
+/// @param getIndices    [optional, default 0] when this flag is set instead of the values the indices in wave1 are returned
+/// @param caseSensitive [optional, default 0] when this flag is set the comparison with text waves is case sensitive
 ///
 /// @returns Wave with partial values from wave1 or numeric wave with indices of elements in wave1
-threadsafe Function/WAVE GetSetDifference(WAVE wave1, WAVE wave2, [variable getIndices])
+threadsafe Function/WAVE GetSetDifference(WAVE wave1, WAVE wave2, [variable getIndices, variable caseSensitive])
 
 	variable isText, index
 
-	getIndices = ParamIsDefault(getIndices) ? 0 : !!getIndices
-	isText     = (IsTextWave(wave1) && IsTextWave(wave2))
+	getIndices    = ParamIsDefault(getIndices) ? 0 : !!getIndices
+	caseSensitive = ParamIsDefault(caseSensitive) ? 0 : !!caseSensitive
+	isText        = (IsTextWave(wave1) && IsTextWave(wave2))
 
 	ASSERT_TS((IsFloatingPointWave(wave1) && IsFloatingPointWave(wave2)) || isText, "Non matching wave types (both float or both text).")
 	ASSERT_TS(WaveType(wave1) == WaveType(wave2), "Wave type mismatch")
@@ -594,7 +596,7 @@ threadsafe Function/WAVE GetSetDifference(WAVE wave1, WAVE wave2, [variable getI
 	WAVE/Z result
 
 	if(isText)
-		[result, index] = GetSetDifferenceText(wave1, wave2, getIndices)
+		[result, index] = GetSetDifferenceText(wave1, wave2, getIndices, caseSensitive)
 	else
 		[result, index] = GetSetDifferenceNumeric(wave1, wave2, getIndices)
 	endif
@@ -636,16 +638,17 @@ threadsafe static Function [WAVE result, variable index] GetSetDifferenceNumeric
 	return [result, j]
 End
 
-threadsafe static Function [WAVE result, variable index] GetSetDifferenceText(WAVE/T wave1, WAVE/T wave2, variable getIndices)
+threadsafe static Function [WAVE result, variable index] GetSetDifferenceText(WAVE/T wave1, WAVE/T wave2, variable getIndices, variable caseSensitive)
 
-	variable numEntries, i, j
+	variable numEntries, i, j, compareStrategy
 	string str
 
-	numEntries = DimSize(wave1, ROWS)
+	compareStrategy = (caseSensitive == 1) ? (TXOP_CASE_SENSE | TXOP_WHOLE_ELEM) : TXOP_WHOLE_ELEM
+	numEntries      = DimSize(wave1, ROWS)
 	if(getIndices)
 		Make/FREE/D/N=(numEntries) resultIndices
 		for(i = 0; i < numEntries; i += 1)
-			FindValue/UOFV/TEXT=(wave1[i])/TXOP=(TXOP_WHOLE_ELEM) wave2
+			FindValue/UOFV/TEXT=(wave1[i])/TXOP=(compareStrategy) wave2
 			if(V_Value == -1)
 				resultIndices[j++] = i
 			endif
@@ -654,7 +657,7 @@ threadsafe static Function [WAVE result, variable index] GetSetDifferenceText(WA
 	else
 		Duplicate/FREE/T wave1, resultTxT
 		for(str : wave1)
-			FindValue/UOFV/TEXT=(str)/TXOP=(TXOP_WHOLE_ELEM) wave2
+			FindValue/UOFV/TEXT=(str)/TXOP=(compareStrategy) wave2
 			if(V_Value == -1)
 				resultTxT[j++] = str
 			endif
@@ -778,6 +781,38 @@ threadsafe Function/WAVE GetSetIntersection(WAVE wave1, WAVE wave2, [variable ge
 	Redimension/N=(j) resultWave
 
 	return resultWave
+End
+
+/// @brief GetSetIntersection from more than two waves, the waves are input through a wave reference wave. The wave reference wave can contain null waves.
+threadsafe Function/WAVE GetSetIntersectionWaves(WAVE/Z/WAVE wv)
+
+	variable cnt, numWaves
+
+	ASSERT_TS(IsWaveRefWave(wv), "Expected waveref wave as input")
+	ASSERT_TS(GetWaveDimensionality(wv) == ROWS, "Expected a 1d wave as input")
+	ASSERT_TS(DimSize(wv, ROWS) > 0, "Expected at least one wave in input")
+	if(DimSize(wv, ROWS) == 1)
+		return wv[0]
+	endif
+	WAVE/Z/WAVE wvZapped = ZapNullRefs(wv)
+	if(!WaveExists(wvZapped))
+		return $""
+	endif
+	numWaves = DimSize(wvZapped, ROWS)
+	if(numWaves == 1)
+		return wvZapped[0]
+	endif
+
+	WAVE intersect = wvZapped[0]
+	for(cnt = 1; cnt < numWaves; cnt += 1)
+		WAVE   part1     = intersect
+		WAVE/Z intersect = GetSetIntersection(part1, wvZapped[cnt])
+		if(!WaveExists(intersect))
+			return $""
+		endif
+	endfor
+
+	return intersect
 End
 
 threadsafe static Function FindLevelSingle(WAVE data, variable level, variable edge, variable first, variable last)

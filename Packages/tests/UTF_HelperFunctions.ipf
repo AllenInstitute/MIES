@@ -1198,7 +1198,7 @@ End
 /// @brief Open the given files in the analysis browser. By default files are located relative to the symbolic path `home` unless absolutePaths is set
 Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, [variable loadSweeps, variable loadStimsets, variable absolutePaths, variable multipleSweepBrowser])
 
-	variable idx
+	variable idx, val
 	string filePath, fullFilePath
 
 	absolutePaths = ParamIsDefault(absolutePaths) ? 0 : !!absolutePaths
@@ -1238,33 +1238,51 @@ Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, 
 	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
 	WAVE   expBrowserSel  = GetExperimentBrowserGUISel()
 
-	WAVE/Z indizes = FindIndizes(expBrowserList, colLabel = "file", prop = PROP_EMPTY | PROP_NOT)
-
 	if(loadSweeps)
 		if(multipleSweepBrowser)
+			WAVE/Z indizes = FindIndizes(expBrowserList, colLabel = "file", prop = PROP_EMPTY | PROP_NOT)
 			for(idx : indizes)
-				expBrowserSel[idx][0][0] = LISTBOX_TREEVIEW | LISTBOX_SELECTED
+				val                      = expBrowserSel[idx][0][0]
+				expBrowserSel[idx][0][0] = val | LISTBOX_SELECTED
 				PGC_SetAndActivateControl(abWin, "button_load_sweeps")
+				expBrowserSel[idx][0][0] = val
 			endfor
+			sweepBrowsers = WinList("*", ";", "WIN:" + num2istr(WINTYPE_GRAPH))
 		else
-			for(idx : indizes)
-				expBrowserSel[idx][0][0] = LISTBOX_TREEVIEW | LISTBOX_SELECTED
-			endfor
-
-			PGC_SetAndActivateControl(abWin, "button_load_sweeps")
+			sweepBrowsers = LoadSweepsFromAllExperimentsFromAB(abWin)
 		endif
 
-		sweepBrowsers = WinList("*", ";", "WIN:" + num2istr(WINTYPE_GRAPH))
 	endif
 
 	if(loadStimsets)
+		WAVE/Z indizes = FindIndizes(expBrowserList, colLabel = "file", prop = PROP_EMPTY | PROP_NOT)
 		for(idx : indizes)
-			expBrowserSel[idx][0][0] = LISTBOX_TREEVIEW | LISTBOX_SELECTED
+			expBrowserSel[idx][0][0] = expBrowserSel[idx][0][0] | LISTBOX_SELECTED
 			PGC_SetAndActivateControl(abWin, "button_load_stimsets")
 		endfor
 	endif
 
 	return [abWin, sweepBrowsers]
+End
+
+Function/S LoadSweepsFromAllExperimentsFromAB(string abWin)
+
+	string   sweepBrowsers
+	variable idx
+
+	sweepBrowsers = ""
+	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
+	WAVE   expBrowserSel  = GetExperimentBrowserGUISel()
+
+	WAVE/Z indizes = FindIndizes(expBrowserList, colLabel = "file", prop = PROP_EMPTY | PROP_NOT)
+	for(idx : indizes)
+		expBrowserSel[idx][0][0] = expBrowserSel[idx][0][0] | LISTBOX_SELECTED
+	endfor
+
+	PGC_SetAndActivateControl(abWin, "button_load_sweeps")
+	sweepBrowsers = WinList("*", ";", "WIN:" + num2istr(WINTYPE_GRAPH))
+
+	return StringFromList(0, sweepBrowsers)
 End
 
 Function DoExpensiveChecks()
@@ -1936,6 +1954,7 @@ static Function/S GetDefaultTestSuitesForExperiment()
 			list = AddListItem("UTF_HistoricDashboard.ipf", list, ";", Inf)
 			list = AddListItem("UTF_HistoricEpochClipping.ipf", list, ";", Inf)
 			list = AddListItem("UTF_HistoricSweepBrowser.ipf", list, ";", Inf)
+			list = AddListItem("UTF_HistoricSweepFormula.ipf", list, ";", Inf)
 			list = AddListItem("UTF_HistoricSweepUpgrade.ipf", list, ";", Inf)
 			break
 		case "UTF_HardwareAnalysisFunctions.ipf":

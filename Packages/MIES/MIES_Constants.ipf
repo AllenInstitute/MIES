@@ -21,7 +21,7 @@ Constant DAQ_CONFIG_WAVE_VERSION = 3
 Constant DA_EPHYS_PANEL_VERSION           = 67
 Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 55
 Constant WAVEBUILDER_PANEL_VERSION        = 15
-Constant ANALYSISBROWSER_PANEL_VERSION    = 11
+Constant ANALYSISBROWSER_PANEL_VERSION    = 12
 Constant PSX_PLOT_PANEL_VERSION           = 1
 
 /// Version of the stimset wave note
@@ -244,6 +244,35 @@ Constant EVENT_WINDOW_HOOK_SPINUPDATE          = 23
 Constant EVENT_WINDOW_HOOK_TABLEENTRYACCEPTED  = 24
 Constant EVENT_WINDOW_HOOK_TABLEENTRYCANCELLED = 25
 Constant EVENT_WINDOW_HOOK_EARLYKEYBOARD       = 26
+///@}
+
+/// @name Window Hook return code constants
+/// @anchor WinHookReturnCodes
+///@{
+Constant WINDOW_HOOK_RETURN_NEXT_HANDLER         = 0
+Constant WINDOW_HOOK_RETURN_HANDLED              = 1
+Constant WINDOW_HOOK_RETURN_KILLVOTE_PREVENTKILL = 2
+///@}
+
+/// @name WMListboxAction eventCode field constants
+/// @anchor ListBoxActionEventCodes
+///@{
+Constant EVENT_LISTBOXACTION_GOT_KEYBOARD_FOCUS   = -3
+Constant EVENT_LISTBOXACTION_LOST_KEYBOARD_FOCUS  = -2
+Constant EVENT_LISTBOXACTION_BEING_KILLED         = -1
+Constant EVENT_LISTBOXACTION_MOUSE_DOWN           = 1
+Constant EVENT_LISTBOXACTION_MOUSE_UP             = 2
+Constant EVENT_LISTBOXACTION_DOUBLECLICK          = 3
+Constant EVENT_LISTBOXACTION_CELL_SELECTION       = 4
+Constant EVENT_LISTBOXACTION_CELL_SELECTION_SHIFT = 5
+Constant EVENT_LISTBOXACTION_BEGIN_EDIT           = 6
+Constant EVENT_LISTBOXACTION_END_EDIT             = 7
+Constant EVENT_LISTBOXACTION_VERTICAL_SCROLL      = 8
+Constant EVENT_LISTBOXACTION_HORIZONTAL_SCROLL    = 9
+Constant EVENT_LISTBOXACTION_TOP_ROW_COL_SET      = 10
+Constant EVENT_LISTBOXACTION_COLDIVIDER_RESIZED   = 11
+Constant EVENT_LISTBOXACTION_KEYSTROKE            = 12
+Constant EVENT_LISTBOXACTION_CHECKBOX_CLICKED     = 13
 ///@}
 
 /// @name Trace Display Types
@@ -758,6 +787,11 @@ Constant COMMON_CONTROL_GROUP_COUNT_TXT = 10
 
 /// Equals 2^5 from `GetKeyState`
 Constant ESCAPE_KEY = 32
+
+/// ListboxProc handler key constants
+///@{
+Constant LBP_A_KEY = 65
+///@}
 
 /// Window hook key constants
 ///@{
@@ -2235,6 +2269,7 @@ StrConstant SF_DATATYPE_TPBASE              = "TestPulseMode_Baseline"
 StrConstant SF_DATATYPE_TPFIT               = "TestPulseMode_Fit"
 StrConstant SF_DATATYPE_POWERSPECTRUM       = "Powerspectrum"
 StrConstant SF_DATATYPE_PSX                 = "PSX"
+StrConstant SF_DATATYPE_SELECTTAG           = "SelectTag"
 StrConstant SF_DATATYPE_SELECTVIS           = "SelectVis"
 StrConstant SF_DATATYPE_SELECTEXP           = "SelectExp"
 StrConstant SF_DATATYPE_SELECTDEV           = "SelectDev"
@@ -2377,7 +2412,10 @@ StrConstant SETTINGS_AB_FOLDER             = "/analysisbrowser/directory"
 StrConstant SETTINGS_AB_FOLDER_OLD_DEFAULT = "C:"
 ///@}
 
-StrConstant ANALYSIS_BROWSER_NAME = "AnalysisBrowser"
+StrConstant ANALYSIS_BROWSER_NAME            = "AnalysisBrowser"
+StrConstant ANALYSIS_BROWSER_TAGCONTROL_NAME = "TagControl"
+
+StrConstant AB_TAG_SEPARATOR = ","
 
 StrConstant MEMORY_REFCOUNTER_DF = "MemoryReferenceCounterDF"
 
@@ -2575,6 +2613,7 @@ StrConstant SF_OP_TP                  = "tp"
 StrConstant SF_OP_STORE               = "store"
 StrConstant SF_OP_SELECT              = "select"
 StrConstant SF_OP_SELECTVIS           = "selvis"
+StrConstant SF_OP_SELECTTAG           = "seltag"
 StrConstant SF_OP_SELECTEXP           = "selexp"
 StrConstant SF_OP_SELECTDEV           = "seldev"
 StrConstant SF_OP_SELECTEXPANDSCI     = "selexpandsci"
