@@ -545,6 +545,22 @@ static Function array()
 
 	variable jsonID0, jsonID1
 
+	jsonID0 = JSON_Parse("[]")
+	jsonID1 = DirectToFormulaParser("[]")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("[1,[]]")
+	jsonID1 = DirectToFormulaParser("[1,[]]")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("[[],1]")
+	jsonID1 = DirectToFormulaParser("[[],1]")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("[[]]")
+	jsonID1 = DirectToFormulaParser("[[]]")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+
 	jsonID0 = JSON_Parse("[1]")
 	jsonID1 = DirectToFormulaParser("[1]")
 	CHECK_EQUAL_JSON(jsonID0, jsonID1)
@@ -619,6 +635,21 @@ static Function array()
 	FailFormula("[1]2")
 	FailFormula("[0,[1]2]")
 	FailFormula("[0[1],2]")
+
+End
+
+static Function TestSweepFormulaArrayExecution()
+
+	string win
+
+	win = GetDataBrowserWithData()
+
+	WAVE data = SFE_ExecuteFormula("[]", win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_VAR(DimSize(data, ROWS), 0)
+	CHECK_WAVE(data, NUMERIC_WAVE)
+
+	ExecuteSweepFormulaCode(win, "[1,[]]", expectFailure = 1)
+	ExecuteSweepFormulaCode(win, "[[],1]", expectFailure = 1)
 End
 
 static Function whiteSpace()

@@ -214,6 +214,10 @@ Formula Executor Limitations
 Mixed data types in arrays are not supported as this JSON property is hard to translate to Igor Pro data
 storage in waves.
 
+Array expansion from zero size arrays is not supported. Therefore `[]` is only supported as the
+topmost array result, but not as a nested sub array that would need expansion during formula
+execution.
+
 Internal Data Layout
 ^^^^^^^^^^^^^^^^^^^^
 
