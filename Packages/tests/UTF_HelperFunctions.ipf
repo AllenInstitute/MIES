@@ -1238,33 +1238,49 @@ Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, 
 	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
 	WAVE   expBrowserSel  = GetExperimentBrowserGUISel()
 
-	WAVE/Z indizes = FindIndizes(expBrowserList, colLabel = "file", prop = PROP_EMPTY | PROP_NOT)
-
 	if(loadSweeps)
 		if(multipleSweepBrowser)
+			WAVE/Z indizes = FindIndizes(expBrowserList, colLabel = "file", prop = PROP_EMPTY | PROP_NOT)
 			for(idx : indizes)
-				expBrowserSel[idx][0][0] = LISTBOX_TREEVIEW | LISTBOX_SELECTED
+				expBrowserSel[idx][0][0] = expBrowserSel[idx][0][0] | LISTBOX_SELECTED
 				PGC_SetAndActivateControl(abWin, "button_load_sweeps")
 			endfor
+			sweepBrowsers = WinList("*", ";", "WIN:" + num2istr(WINTYPE_GRAPH))
 		else
-			for(idx : indizes)
-				expBrowserSel[idx][0][0] = LISTBOX_TREEVIEW | LISTBOX_SELECTED
-			endfor
-
-			PGC_SetAndActivateControl(abWin, "button_load_sweeps")
+			sweepBrowsers = LoadSweepsFromAllExperimentsFromAB(abWin)
 		endif
 
-		sweepBrowsers = WinList("*", ";", "WIN:" + num2istr(WINTYPE_GRAPH))
 	endif
 
 	if(loadStimsets)
+		WAVE/Z indizes = FindIndizes(expBrowserList, colLabel = "file", prop = PROP_EMPTY | PROP_NOT)
 		for(idx : indizes)
-			expBrowserSel[idx][0][0] = LISTBOX_TREEVIEW | LISTBOX_SELECTED
+			expBrowserSel[idx][0][0] = expBrowserSel[idx][0][0] | LISTBOX_SELECTED
 			PGC_SetAndActivateControl(abWin, "button_load_stimsets")
 		endfor
 	endif
 
 	return [abWin, sweepBrowsers]
+End
+
+Function/S LoadSweepsFromAllExperimentsFromAB(string abWin)
+
+	string   sweepBrowsers
+	variable idx
+
+	sweepBrowsers = ""
+	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
+	WAVE   expBrowserSel  = GetExperimentBrowserGUISel()
+
+	WAVE/Z indizes = FindIndizes(expBrowserList, colLabel = "file", prop = PROP_EMPTY | PROP_NOT)
+	for(idx : indizes)
+		expBrowserSel[idx][0][0] = expBrowserSel[idx][0][0] | LISTBOX_SELECTED
+	endfor
+
+	PGC_SetAndActivateControl(abWin, "button_load_sweeps")
+	sweepBrowsers = WinList("*", ";", "WIN:" + num2istr(WINTYPE_GRAPH))
+
+	return StringFromList(0, sweepBrowsers)
 End
 
 Function DoExpensiveChecks()
