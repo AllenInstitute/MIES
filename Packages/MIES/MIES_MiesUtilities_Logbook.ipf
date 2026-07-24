@@ -1724,8 +1724,8 @@ Function HasLBNEntrySourceTypeCapability(WAVE values)
 
 	variable entryCol
 
-	entryCol = FindDimLabel(values, COLS, "EntrySourceType")
-	if(entryCol == -2)
+	entryCol = GetLogbookSettingsColumn(values, "EntrySourceType")
+	if(entryCol < 0)
 		return 0
 	endif
 
