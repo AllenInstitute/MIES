@@ -766,8 +766,8 @@ End
 /// @brief If buffer has a sign then it is removed from buffer. If the sign was a minus then a negation is prefixed in the json.
 static Function [string buffer, variable bufOffset, STRUCT SF_ParserData pad] SFP_ParserEvaluatePossibleSign()
 
-	// callers pass a signed token or a non-empty parenthesis/array body, so single-character
-	// inputs like "(" or "[" are invalid at this point and must not be accepted here
+	// callers may pass a 1-character buffer: "[" from an empty array "[]" or "(" from an empty
+	// parentheses expression "()". Both are valid and handled by the respective callers after sign stripping.
 	ASSERT(strlen(buffer) >= 1, "Expected at least one character.")
 
 	if(!CmpStr(buffer[0], "-"))

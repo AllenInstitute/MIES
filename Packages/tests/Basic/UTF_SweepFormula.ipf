@@ -573,6 +573,12 @@ static Function brackets()
 	TestOperationMinMaxHelper(win, "{\"-\": [{\"-\": [{\"-\": [2,{\"*\": [-1,2]}]},{\"*\": [-1,2]}]},{\"*\": [-1,2]}]}", "(2)--(2)--(2)--(2)", (2) - -(2) - -(2) - -(2))
 	TestOperationMinMaxHelper(win, "{\"/\": [{\"/\": [{\"/\": [2,{\"*\": [-1,2]}]},{\"*\": [-1,2]}]},{\"*\": [-1,2]}]}", "(2)/-(2)/-(2)/-(2)", (2) / -(2) / -(2) / -(2))
 	TestOperationMinMaxHelper(win, "{\"-\": [{\"-\": [{\"-\": [{\"*\": [-1,2]},{\"*\": [-1,2]}]},{\"*\": [-1,2]}]},{\"*\": [-1,2]}]}", "-(2)--(2)--(2)--(2)", -(2) - -(2) - -(2) - -(2))
+
+	// empty parentheses must fail: verifies the 1-char buffer "(" is correctly rejected
+	// by the caller after SFP_ParserEvaluatePossibleSign (with and without preceding sign)
+	FailFormula("()")
+	FailFormula("+()")
+	FailFormula("-()")
 End
 
 static Function array()
@@ -662,6 +668,16 @@ static Function array()
 	jsonID1 = DirectToFormulaParser("1,5/(6+7)")
 	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
+	// positive sign before array is a no-op: verifies that the 1-char buffer "[" from "[]"
+	// is accepted by SFP_ParserEvaluatePossibleSign (regression guard for the >= 1 assert)
+	jsonID0 = JSON_Parse("[1,2]")
+	jsonID1 = DirectToFormulaParser("+[1,2]")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("[]")
+	jsonID1 = DirectToFormulaParser("+[]")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+
 	// failures that have to SFH_ASSERT
 	FailFormula("1]")
 	FailFormula("[1")
@@ -684,6 +700,7 @@ static Function TestSweepFormulaArrayExecution()
 
 	ExecuteSweepFormulaCode(win, "[1,[]]", expectFailure = 1)
 	ExecuteSweepFormulaCode(win, "[[],1]", expectFailure = 1)
+	ExecuteSweepFormulaCode(win, "[[]]", expectFailure = 1)
 End
 
 static Function whiteSpace()
