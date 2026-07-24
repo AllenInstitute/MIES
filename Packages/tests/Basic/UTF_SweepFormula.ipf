@@ -66,6 +66,16 @@ Function TestOperationMinMaxHelper(string win, string jsonRefText, string formul
 	endif
 End
 
+Function TestOperationMinMaxHelperText(string win, string jsonRefText, string formula, string refResult)
+
+	CheckEqualFormulas(jsonRefText, formula)
+	WAVE data = SFE_ExecuteFormula(formula, win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
+	CHECK(IsTextWave(data))
+	WAVE/T dataText = data
+	CHECK_EQUAL_STR(dataText[0], refResult)
+End
+
 static Function primitiveOperations()
 
 	variable jsonID0, jsonID1
@@ -114,6 +124,30 @@ End
 //	TestOperationMinMaxHelper(win, "{\"-\":[1," + str + "]}", "1-" + str, 1 - var)
 //	TestOperationMinMaxHelper(win, "{\"/\":[1," + str + "]}", "1/" + str, 1 / var)
 //End
+
+static Function TestScientificNotation()
+
+	string win
+
+	win = GetDataBrowserWithData()
+
+	// numbers in scientific notation, including signed exponents (see #1863)
+	TestOperationMinMaxHelper(win, "1000", "1e3", 1e3)
+	TestOperationMinMaxHelper(win, "1000", "10.0e2", 10.0e2)
+	TestOperationMinMaxHelper(win, "0.001", "1e-3", 1e-3)
+	TestOperationMinMaxHelper(win, "1000", "1e+3", 1e+3)
+	TestOperationMinMaxHelper(win, "-0.001", "-1e-3", -1e-3)
+	TestOperationMinMaxHelper(win, "1500", "1.5e3", 1.5e3)
+	TestOperationMinMaxHelper(win, "0.0015", "1.5e-3", 1.5e-3)
+
+	TestOperationMinMaxHelper(win, "1000", "1E3", 1e3)
+	TestOperationMinMaxHelperText(win, "\"1e1.1\"", "1e1.1", "1e1.1")
+	TestOperationMinMaxHelper(win, "-0.11", "- 1 . 1 e - 1", -1.1e-1)
+
+	// scientific notation as operand of a calculation
+	TestOperationMinMaxHelper(win, "{\"+\":[1,0.001]}", "1+1e-3", 1 + 1e-3)
+	TestOperationMinMaxHelper(win, "{\"-\":[1,0.001]}", "1-1e-3", 1 - 1e-3)
+End
 
 static Function Transitions()
 

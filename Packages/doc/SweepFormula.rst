@@ -81,7 +81,8 @@ concatenated as in `max(0,min(1,2),1)`.
      ]
    }
 
-A number can be entered as `1000`, `1e3`, or `10.0e2`. It is always stored as a
+A number can be entered as `1000`, `1e3`, `10.0e2`, or with a signed exponent as
+`1e-3` and `1e+3`. It is always stored as a
 numeric value and not as string. The formula parser treats everything that is
 not parsable but matches alphanumeric characters (excluding operations) to a
 string as in `a_string`. White spaces are ignored throughout the
