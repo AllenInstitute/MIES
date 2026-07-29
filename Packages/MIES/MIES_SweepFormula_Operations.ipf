@@ -3359,7 +3359,8 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyPrepareVariables(STRUCT SF_Exe
 
 	WAVE/WAVE varStorage = GetSFVarStorage(exd.graph)
 	Duplicate/FREE varStorage, varBackup
-	SFE_ExecuteVariableAssignments(exd.graph, formula, allowEmptyCode = 1)
+
+	SFE_ExecuteVariableAssignments(exd.graph, formula, allowEmptyCode = 1, newFrame = 1)
 
 	return varBackup
 End
