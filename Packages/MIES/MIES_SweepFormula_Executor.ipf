@@ -29,7 +29,8 @@ static Constant SFE_VARIABLE_PREFIX = 36
 ///                                            Also the current error information for SFH_ASSERT is kept as is. The current variable storage is used.
 ///                                            This allows to internally execute a formula  where a triggered SFH_ASSERT should result in the marking
 ///                                            of the "outer" formula in the current SF notebook.
-Function/WAVE SFE_ExecuteFormula(string formula, string graph, [variable singleResult, variable checkExist, variable useVariables, variable line, variable offset, variable preProcess])
+/// @param newFrame     [optional, default 0] when set then execution runs in a new assert data frame
+Function/WAVE SFE_ExecuteFormula(string formula, string graph, [variable singleResult, variable checkExist, variable useVariables, variable line, variable offset, variable preProcess, variable newFrame])
 
 	STRUCT SF_ExecutionData exd
 	variable jsonId, srcLocId
@@ -42,6 +43,13 @@ Function/WAVE SFE_ExecuteFormula(string formula, string graph, [variable singleR
 	line         = ParamIsDefault(line) ? NaN : line
 	offset       = ParamIsDefault(offset) ? NaN : offset
 	preProcess   = ParamIsDefault(preProcess) ? 1 : !!preProcess
+	newFrame     = ParamIsDefault(newFrame) ? 0 : !!newFrame
+
+	if(newFrame)
+		// Ensure the base frame exists so we can safely push/pop a nested frame
+		GetSFAssertData()
+		SFH_PushAssertDataFrame()
+	endif
 
 	if(preProcess)
 		formula = SF_PreprocessInput(formula)
@@ -62,7 +70,16 @@ Function/WAVE SFE_ExecuteFormula(string formula, string graph, [variable singleR
 		WAVE/Z data = out[0]
 		SFH_ASSERT(!(checkExist && !WaveExists(data)), "No data in dataSet returned from executed formula.")
 		SFH_CleanUpInput(out)
+
+		if(newFrame)
+			SFH_PopAssertDataFrame()
+		endif
+
 		return data
+	endif
+
+	if(newFrame)
+		SFH_PopAssertDataFrame()
 	endif
 
 	return out
@@ -74,13 +91,15 @@ End
 /// @param preProcCode    preprocessed sweep formula notebook text
 /// @param allowEmptyCode [optional, default 0] when set then the check for empty formula code is disabled, such that
 ///                       input that contains only variable expressions can be evaluated
-Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode, [variable allowEmptyCode])
+/// @param newFrame       [optional, default 0] when set then execution runs in a new assert data frame
+Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode, [variable allowEmptyCode, variable newFrame])
 
 	STRUCT SF_ExecutionData exd
 	variable i, numAssignments, jsonId, srcLocId, line, offset
 	string code, sfWin, nbText
 
 	allowEmptyCode = ParamisDefault(allowEmptyCode) ? 0 : !!allowEmptyCode
+	newFrame       = ParamisDefault(newFrame) ? 0 : !!newFrame
 
 	exd.graph = graph
 
@@ -91,6 +110,12 @@ Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode, [var
 	[WAVE/T varAssignments, code] = SF_GetVariableAssignments(preProcCode)
 	if(!WaveExists(varAssignments))
 		return code
+	endif
+
+	if(newFrame)
+		// Ensure the base frame exists so we can safely push/pop a nested frame
+		GetSFAssertData()
+		SFH_PushAssertDataFrame()
 	endif
 
 	numAssignments = DimSize(varAssignments, ROWS)
@@ -121,6 +146,10 @@ Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode, [var
 
 		SFH_StoreAssertInfoParser(line + 1, 0, formula = "")
 		SFH_FATAL_ERROR("Only variables are present")
+	endif
+
+	if(newFrame)
+		SFH_PopAssertDataFrame()
 	endif
 
 	return code

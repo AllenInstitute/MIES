@@ -32,6 +32,9 @@ static StrConstant TP_SETTINGS_LABELS = "bufferSize;resistanceTol;sendToAllHS;ba
 
 static Constant SWEEP_SETTINGS_WAVE_VERSION = 43
 
+/// @brief Number of tracked fields in one SF assert-data stack frame, see GetSFAssertDataStack
+static Constant SF_ASSERTDATA_NUMFIELDS = 9
+
 /// @brief Return a wave reference to the corresponding Logbook keys wave from an values wave input
 threadsafe Function/WAVE GetLogbookValuesFromKeys(WAVE keyWave)
 
@@ -9522,9 +9525,22 @@ Function/WAVE GetNewSourceLocationWave()
 	return srcLocs
 End
 
-/// @brief Creates a global wave storing data for the case the SF executor runs into an SFH_ASSERT
+/// @brief Return the wave-reference-wave backing the SweepFormula assert-data LIFO stack.
 ///
-/// Rows:
+/// One frame per currently-active (possibly nested) formula-execution level. The base frame
+/// (index 0) represents the outermost, user-visible formula execution (from the SF notebook).
+/// The stack (including the base frame) is created lazily on first use and can be cleared by
+/// SFH_ResetAssertDataStack (e.g. when SF output state is cleared between runs). Additional frames get pushed
+/// *inside* an already-executing formula -- e.g. an operation like ivscc_apfrequency running
+/// its own internal formula against the same graph (see
+/// SFO_OperationIVSCCApFrequencyPrepareVariables) -- and popped (SFH_PopAssertDataFrame) once
+/// that nested execution returns normally. If it aborts instead (SFH_ASSERT), the frame is
+/// deliberately left on the stack so the failure's exact context remains available for
+/// building a multi-level error message (see SFH_GetAssertLocationMessage) and is only
+/// cleaned up later, defensively, by SFH_ResetAssertDataStack.
+///
+/// Frame rows (each frame is its own Make/T/N=(SF_ASSERTDATA_NUMFIELDS) text wave):
+/// JSONID : json id of the currently executing formula
 /// SRCLOCID : json id of the JSON storing the source location information
 /// JSONPATH : last json path the executor was working on, this element is updated by the executor while executing
 /// STEP : step in the sweepformula exection, one of @sa SFExecutionSteps
@@ -9532,30 +9548,77 @@ End
 /// OFFSET : character offset in the line where the current formula starts in the SF notebook
 /// FORMULA : current formula string
 /// INFORMULAOFFSET : character offset in the formula where the error is located
-Function/WAVE GetSFAssertData()
+/// LOCMSG : pre-rendered error-location message text (see SFH_GetAssertLocationMessageForFrame),
+///          frozen for this frame by SFH_PushAssertDataFrame at the moment a *deeper* frame is
+///          pushed on top of it. Empty for the current top-of-stack frame, whose location message
+///          is instead computed on demand from the live execution-position trackers (see
+///          GetSweepFormulaJSONPathTracker/GetSweepFormulaBufferOffsetTracker), since those
+///          trackers only ever reflect the position of whatever is executing *right now*, not any
+///          suspended outer frame.
+Function/WAVE GetSFAssertDataStack()
 
-	string name = "SFAssertData"
+	string name = "SFAssertDataStack"
 
 	DFREF dfr = GetSweepFormulaPath()
 
-	WAVE/Z/T/SDFR=dfr wv = $name
+	WAVE/Z/WAVE/SDFR=dfr wv = $name
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/T/N=(8) dfr:$name/WAVE=wv
+	Make/WAVE/N=0 dfr:$name/WAVE=wv
 
-	SetDimLabel ROWS, 0, JSONID, wv
-	SetDimLabel ROWS, 1, SRCLOCID, wv
-	SetDimLabel ROWS, 2, JSONPATH, wv
-	SetDimLabel ROWS, 3, STEP, wv
-	SetDimLabel ROWS, 4, LINE, wv
-	SetDimLabel ROWS, 5, OFFSET, wv
-	SetDimLabel ROWS, 6, FORMULA, wv
-	SetDimLabel ROWS, 7, INFORMULAOFFSET, wv
+	return wv
+End
 
-	wv[%STEP] = num2istr(SF_STEP_OUTSIDE)
+/// @brief Create a single, blank SweepFormula assert-data stack frame (see
+///        GetSFAssertDataStack for the field list and the LIFO stack this is a frame of).
+///
+/// Used by SFH_PushAssertDataFrame to create each new frame it pushes, and internally by
+/// GetSFAssertDataStack's own base-frame consumers -- pulled out into its own function so the
+/// frame layout (field count/dimension labels) is defined in exactly one place.
+Function/WAVE GetNewSFAssertDataFrame()
+
+	Make/T/N=(SF_ASSERTDATA_NUMFIELDS)/FREE newFrame
+
+	SetDimLabel ROWS, 0, JSONID, newFrame
+	SetDimLabel ROWS, 1, SRCLOCID, newFrame
+	SetDimLabel ROWS, 2, JSONPATH, newFrame
+	SetDimLabel ROWS, 3, STEP, newFrame
+	SetDimLabel ROWS, 4, LINE, newFrame
+	SetDimLabel ROWS, 5, OFFSET, newFrame
+	SetDimLabel ROWS, 6, FORMULA, newFrame
+	SetDimLabel ROWS, 7, INFORMULAOFFSET, newFrame
+	SetDimLabel ROWS, 8, LOCMSG, newFrame
+
+	newFrame[%STEP] = num2istr(SF_STEP_OUTSIDE)
+
+	return newFrame
+End
+
+/// @brief Return the current (innermost/top-of-stack) SF assert-data frame -- "the formula
+///        execution episode that is active right now" -- creating the stack and its base
+///        frame if this is the very first call. See GetSFAssertDataStack for the full stack
+///        and why more than one frame can exist at once.
+///
+/// This is what all of the existing single-frame-oriented code (SFH_StoreAssertInfoParser/
+/// Executor, SFH_ASSERT, SF_IsExecutionErrorInVariable, ...) should keep using unchanged --
+/// they all care about "whatever is currently executing", which is always the top frame.
+/// The one exception is locating the error visually in the on-screen SF notebook
+/// (SF_CalculateErrorLocationInNotebook), which needs the *outermost* frame instead, via
+/// SFH_GetOutermostAssertDataFrame -- only that frame's LINE/OFFSET are ever meaningful
+/// positions in the real notebook text; any inner frame's LINE/OFFSET describe a position in
+/// an operation's own internally-generated formula string, which was never displayed there.
+Function/WAVE GetSFAssertData()
+
+	WAVE/WAVE assertDataStack = GetSFAssertDataStack()
+
+	if(DimSize(assertDataStack, ROWS) == 0)
+		SFH_PushAssertDataFrame()
+	endif
+
+	WAVE/T wv = assertDataStack[DimSize(assertDataStack, ROWS) - 1]
 
 	return wv
 End

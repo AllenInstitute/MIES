@@ -3337,3 +3337,98 @@ static Function TestSFHIsArray()
 	Make/FREE/WAVE/N=1 anArray
 	CHECK_EQUAL_VAR(SFH_IsArray(anArray), 1)
 End
+
+static Function/WAVE TestAssertDataStackOP(STRUCT SF_ExecutionData &exd)
+
+	variable result
+	string formula, expr
+
+	string opShort = SF_OP_TESTOP
+
+	result = SFH_GetArgumentAsNumeric(exd, SF_OP_TESTOP, 0)
+	SFH_ASSERT(result < 3, "TestOP result threshold reached")
+
+	sprintf expr, "result=testop(%d)", result + 1
+	formula = SF_AddExpressionToFormula("", expr)
+	SFE_ExecuteVariableAssignments(exd.graph, formula, allowEmptyCode = 1, newFrame = 1)
+
+	Make/FREE/D output = {0}
+
+	return SFH_GetOutputForExecutorSingle(output, exd.graph, opShort)
+End
+
+static Function/WAVE TestAssertDataStack2OP(STRUCT SF_ExecutionData &exd)
+
+	variable result
+	string   formula
+
+	string opShort = SF_OP_TESTOP
+
+	result = SFH_GetArgumentAsNumeric(exd, SF_OP_TESTOP, 0)
+	SFH_ASSERT(result < 3, "TestOP result threshold reached")
+
+	sprintf formula, "testop(%d)", result + 1
+	SFE_ExecuteFormula(formula, exd.graph, newFrame = 1)
+	Make/FREE/D output = {0}
+
+	return SFH_GetOutputForExecutorSingle(output, exd.graph, opShort)
+End
+
+/// @brief Test op for TestAssertDataStack3: dispatched once, as the base ("testop(0)") frame. From
+/// there it makes *two sequential* nested (newFrame = 1) calls at two different call sites:
+/// - "testop(1)": succeeds normally, so its frame is pushed and popped again before the second call
+///   is made. This is what used to (a) freeze the base frame's LOCMSG and (b) release the base
+///   frame's SRCLOCID as a side effect of rendering that frozen message.
+/// - "testop(2)": fails via SFH_ASSERT, forcing the base frame's location to be rendered a second
+///   time for the final error message.
+///
+/// In between the two nested calls, the base frame's own SRCLOCID is checked directly: it must
+/// still be valid, i.e. not released by the first (already completed, popped) nested call.
+static Function/WAVE TestAssertDataStack3OP(STRUCT SF_ExecutionData &exd)
+
+	variable result
+	string opShort = SF_OP_TESTOP
+
+	result = SFH_GetArgumentAsNumeric(exd, SF_OP_TESTOP, 0)
+
+	if(result == 0)
+		SFE_ExecuteFormula("testop(1)", exd.graph, newFrame = 1)
+
+		WAVE/T baseFrame = SFH_GetOutermostAssertDataFrame()
+		CHECK_EQUAL_VAR(JSON_IsValid(str2numSafe(baseFrame[%SRCLOCID])), 1)
+
+		SFE_ExecuteFormula("testop(2)", exd.graph, newFrame = 1)
+	elseif(result == 2)
+		SFH_FATAL_ERROR("TestOP result threshold reached")
+	endif
+	// result == 1: succeeds trivially, no assert, no further nesting
+
+	Make/FREE/D output = {0}
+
+	return SFH_GetOutputForExecutorSingle(output, exd.graph, opShort)
+End
+
+// IUTF_TD_GENERATOR DataGenerators#SF_AssertDataStackCases
+static Function TestAssertDataStack([WAVE/T input])
+
+	string win, device, err
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+	win           = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	SVAR funcName = $GetSFTestopName(win)
+	funcName = input[0]
+
+	try
+		SFE_ExecuteFormula("testop(0)", win)
+		FAIL()
+	catch
+		SVAR sfError = $GetSweepFormulaOutputMessage()
+		err = sfError
+		CHECK_EQUAL_STR(err, input[1])
+
+		SFH_ResetAssertDataStack()
+		WAVE/WAVE assertDataStack = GetSFAssertDataStack()
+		CHECK_EQUAL_VAR(DimSize(assertDataStack, ROWS), 0)
+	endtry
+End
