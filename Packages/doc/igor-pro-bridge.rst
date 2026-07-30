@@ -137,22 +137,10 @@ Available tools
 
 ``get_bridge_version()``
   Returns the version of this Igor Pro Bridge build that is actually running in the
-  current Claude Desktop session (``{"version": "1.22.0"}``). Added because there was
+  current Claude Desktop session (``{"version": "1.23.0"}``). Added because there was
   previously no way to confirm from inside a conversation which ``.mcpb`` build ended
   up loaded after an install/restart -- useful before relying on a specific recent
   fix or behavior change.
-
-``close_data_browser()``
-  Closes Igor Pro's own built-in (stock) Data Browser window, if one is currently
-  open, via ``ModifyBrowser close``. **Not** the MIES-specific ``DB_*`` DataBrowser
-  panel (``DB_OpenDataBrowser`` in ``MIES_DataBrowser.ipf``) -- this targets only
-  Igor's integrated Data Browser feature, which exists even without MIES loaded.
-  Added as a precaution after an open Data Browser was reported to sometimes cause
-  Igor Pro to crash while procedure code (e.g. a reload/compile cycle or a test run)
-  is running. On-demand only -- not called automatically by any other tool here.
-  Returns ``{"was_open": ..., "closed": ...}``; calling it when no Data Browser is
-  open is a safe no-op (``ModifyBrowser close``'s "The Data Browser must be active."
-  error is caught and treated as an expected outcome, not a failure).
 
 ``check_compilation_state()``
   Reports whether Igor's procedure code is currently compiled or uncompiled, using the

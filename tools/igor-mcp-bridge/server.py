@@ -619,7 +619,7 @@ def load_experiment(file_path: str) -> dict:
 # from inside a conversation which .mcpb build was actually loaded/active in Claude
 # Desktop, which made it impossible to verify whether a given fix (e.g. the reload/compile
 # timing relaxation) was actually in effect during a test -- see SESSION_NOTES.md.
-_BRIDGE_VERSION = "1.22.0"
+_BRIDGE_VERSION = "1.23.0"
 
 
 @mcp.tool()
@@ -635,43 +635,6 @@ def get_bridge_version() -> dict:
     version ended up actually loaded afterward.
     """
     return {"version": _BRIDGE_VERSION}
-
-
-@mcp.tool()
-def close_data_browser() -> dict:
-    """Close Igor Pro's own built-in (stock) Data Browser window, if one is currently
-    open, via the documented `ModifyBrowser close` command (confirmed from Igor
-    Reference.ihf: "close | Closes the Data Browser."; without /M this targets the
-    regular, non-modal Data Browser).
-
-    **This is NOT MIES's own DataBrowser panel** (the DB_* windows opened via
-    DB_OpenDataBrowser in MIES_DataBrowser.ipf) -- that is a distinct, MIES-authored
-    panel with its own close/hide behavior. This tool only targets Igor Pro's
-    integrated Data Browser feature, which exists even without MIES loaded at all.
-
-    Added because an open instance of Igor's integrated Data Browser was reported to
-    sometimes cause Igor Pro to crash while procedure code is running (e.g. during a
-    reload/compile cycle or a test run) -- closing it first is a cheap precaution.
-    This is an on-demand tool only, not called automatically by any other tool in this
-    bridge (a deliberate choice, so existing tools' behavior does not change).
-
-    Confirmed empirically that `ModifyBrowser close` raises an Igor-level error ("The
-    Data Browser must be active.") if no Data Browser is currently open, rather than
-    silently doing nothing -- there is no documented /Z-style quiet flag for this
-    operation. That specific error is caught here and treated as a normal, expected
-    outcome (nothing to close), not a failure; any other error is re-raised.
-
-    Returns a dict with "was_open" (whether a Data Browser was actually open and got
-    closed) and "closed" (same value, kept for readability at the call site).
-    """
-    errorCode, errorMsg, history, results = _execute2("ModifyBrowser close")
-    if errorCode == 0:
-        return {"was_open": True, "closed": True}
-    if "must be active" in errorMsg.lower():
-        return {"was_open": False, "closed": False}
-    raise RuntimeError(
-        f"Failed attempting to close the Data Browser (error code {errorCode}): {errorMsg}"
-    )
 
 
 @mcp.tool()
@@ -1418,10 +1381,22 @@ def reload_and_compile_procedures() -> dict:
 #   when a Debugger pause is deliberately wanted (e.g. interactively testing a
 #   breakpoint).
 
+# The trailing KillVariables/Z is not optional cleanup -- it's load-bearing. Igor's
+# DebuggerOptions operation creates V_enable/V_debugOnError/V_debugOnAbort/
+# V_NVAR_SVAR_WAVE_Checking as output variables in whatever data folder happens to be
+# current *every single time it's invoked*, regardless of which arguments (if any) were
+# passed. Confirmed via a live A/B test: running an identical test suite via
+# execute_igor_command_unattended (which calls this query, and _apply_debugger_options
+# below, on every call) left those four variables behind in root:, which made the next
+# hardware test case's CHECK_EMPTY_FOLDER() teardown check fail spuriously -- while the
+# same test suite run via plain execute_igor_command (no DebuggerOptions call involved)
+# left root: untouched. The values are captured into `results` via fprintf on the same
+# line, before the KillVariables/Z runs, so nothing is lost by cleaning up immediately.
 _DEBUGGER_STATE_CHECK_CMD = (
     'DebuggerOptions; fprintf 0, "enable=%d,debugOnError=%d,debugOnAbort=%d,'
     'NVAR_SVAR_WAVE_Checking=%d", V_enable, V_debugOnError, V_debugOnAbort, '
-    "V_NVAR_SVAR_WAVE_Checking"
+    "V_NVAR_SVAR_WAVE_Checking; "
+    "KillVariables/Z V_enable, V_debugOnError, V_debugOnAbort, V_NVAR_SVAR_WAVE_Checking"
 )
 
 # Snapshot captured by get_debugger_state(), consumed by restore_debugger_settings().
@@ -1464,6 +1439,15 @@ def _apply_debugger_options(state: dict):
             f"NVAR_SVAR_WAVE_Checking={1 if state['nvar_svar_wave_checking'] else 0}"
         )
     cmd = "DebuggerOptions " + ", ".join(parts)
+    # See the comment above _DEBUGGER_STATE_CHECK_CMD: DebuggerOptions always creates
+    # these four globals in the current data folder as a side effect of being called at
+    # all. Clean them up immediately so every caller of this helper (execute_igor_
+    # command_unattended, load_experiment, set_debugger_enabled, restore_debugger_
+    # settings) never leaves them behind as stray root: globals.
+    cmd += (
+        "; KillVariables/Z V_enable, V_debugOnError, V_debugOnAbort, "
+        "V_NVAR_SVAR_WAVE_Checking"
+    )
 
     errorCode, errorMsg, history, results = _execute2(cmd)
     if errorCode != 0:
