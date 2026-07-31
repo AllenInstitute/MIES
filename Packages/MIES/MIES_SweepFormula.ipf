@@ -2035,6 +2035,11 @@ static Function SF_ClearSFOutputState()
 	result = ""
 	NVAR severity = $GetSweepFormulaOutputSeverity()
 	severity = SF_MSG_OK
+
+	// defensively drop any assert-data stack frames left behind by a previous run that
+	// aborted inside a nested operation call (e.g. ivscc_apfrequency), so they can never leak
+	// into, or get misread as belonging to, the next run, see SFH_ResetAssertDataStack
+	SFH_ResetAssertDataStack()
 End
 
 Function SF_DisplayOutputStateInGUI(string databrowser)
@@ -2860,7 +2865,12 @@ static Function [variable paragraph, variable charPosition] SF_CalculateErrorLoc
 	text  = SF_PreprocessInput(text)
 	WAVE/T wText = ListToTextWave(text, SF_CHAR_CR)
 
-	WAVE/T info = GetSFAssertData()
+	// use the outermost stack frame here (not the innermost/currently-failing one): its
+	// LINE/OFFSET/INFORMULAOFFSET are the only ones that describe a position in the real,
+	// on-screen SF notebook text below -- any nested frame's LINE/OFFSET instead describe a
+	// position inside an operation's own internally-generated formula string, see
+	// GetSFAssertDataStack and SFH_GetOutermostAssertDataFrame
+	WAVE/T info = SFH_GetOutermostAssertDataFrame()
 	line = str2numSafe(info[%LINE])
 
 	// find line in text and look how many CR are between 0 and offset
@@ -2993,4 +3003,10 @@ Function SF_TableWindowHook(STRUCT WMWinHookStruct &s)
 	endswitch
 
 	return 0
+End
+
+/// @brief Adds an expression to a formula string with the proper termination character
+Function/S SF_AddExpressionToFormula(string formula, string expr)
+
+	return formula + expr + SF_CHAR_CR
 End

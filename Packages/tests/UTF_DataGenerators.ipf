@@ -2148,6 +2148,37 @@ static Function/WAVE SF_ErrorBarStyles()
 	return wv
 End
 
+/// @brief TestOp function name and expected SFH_ASSERT error message for the three
+/// UTF_SweepFormula assert-data-stack scenarios (see UTF_SweepFormula#TestAssertDataStack):
+/// - VariableAssignmentRecursion: recursive newFrame pushes via SFE_ExecuteVariableAssignments
+///   (TestAssertDataStackOP), four nested frames deep (testop(0) -> testop(3)).
+/// - ExecuteFormulaRecursion: the same recursive scenario, but pushing newFrame via
+///   SFE_ExecuteFormula directly instead (TestAssertDataStack2OP). Same expected message since
+///   only the formula text ("testop(N)") is rendered, not which op implementation produced it.
+/// - SrcLocPreservation: a base frame that pushes/pops a first, successful nested frame and then
+///   pushes a second, failing one (TestAssertDataStack3OP). The base frame's own location must
+///   still be correctly attributed in the final message, proving that neither its SRCLOCID nor
+///   its LOCMSG were left in a stale/invalid state by the first, already completed nested call.
+static Function/WAVE SF_AssertDataStackCases()
+
+	string recursionError
+
+	Make/FREE/WAVE/N=3 wv
+
+	SetDimensionLabels(wv, "VariableAssignmentRecursion;ExecuteFormulaRecursion;SrcLocPreservation;", ROWS)
+
+	// TestOp name, expected error message
+	recursionError = "TestOP result threshold reached\rtestop(3)\r-------^\rCalled from:\rtestop(2)\r-------^\rCalled from:\rtestop(1)\r-------^\rCalled from:\rtestop(0)\r-------^"
+	Make/FREE/T wvt = {"UTF_SWEEPFORMULA#TestAssertDataStackOP", recursionError}
+	wv[%VariableAssignmentRecursion] = wvt
+	Make/FREE/T wvt = {"UTF_SWEEPFORMULA#TestAssertDataStack2OP", recursionError}
+	wv[%ExecuteFormulaRecursion] = wvt
+	Make/FREE/T wvt = {"UTF_SWEEPFORMULA#TestAssertDataStack3OP", "TestOP result threshold reached\rtestop(2)\r-------^\rCalled from:\rtestop(0)\r-------^"}
+	wv[%SrcLocPreservation] = wvt
+
+	return wv
+End
+
 static Function/WAVE VariousInputForConsecutivePasses()
 
 	// IPT_FORMAT_OFF

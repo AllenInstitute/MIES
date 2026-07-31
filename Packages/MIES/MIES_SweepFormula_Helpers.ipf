@@ -356,12 +356,137 @@ Function/WAVE SFH_GetArgumentAsWave(STRUCT SF_ExecutionData &exd, string opShort
 	return defWave
 End
 
-static Function/S SFH_GetAssertLocationMessage()
+/// @brief Push a new (blank) frame onto the SweepFormula assert-data LIFO stack, see
+///        GetSFAssertDataStack for the full picture.
+///
+/// Before pushing, if a frame is already active, its error-location message is rendered and
+/// frozen into its own LOCMSG field right now -- this is the last moment at which the global,
+/// single-slot execution-position trackers (GetSweepFormulaJSONPathTracker /
+/// GetSweepFormulaBufferOffsetTracker) still reflect *that* frame's position; the moment the
+/// nested formula execution we are pushing this frame for starts running, those trackers get
+/// overwritten with its position instead.
+Function SFH_PushAssertDataFrame()
+
+	variable numFrames
+
+	WAVE/WAVE assertDataStack = GetSFAssertDataStack()
+	numFrames = DimSize(assertDataStack, ROWS)
+
+	if(numFrames > 0)
+		WAVE/T outerFrame = assertDataStack[numFrames - 1]
+		if(str2numSafe(outerFrame[%STEP]) != SF_STEP_OUTSIDE)
+			outerFrame[%LOCMSG] = SFH_GetAssertLocationMessageForFrame(outerFrame)
+		endif
+	endif
+
+	WAVE/T newFrame = GetNewSFAssertDataFrame()
+
+	Redimension/N=(numFrames + 1) assertDataStack
+	assertDataStack[numFrames] = newFrame
+End
+
+/// @brief Pop the innermost frame off the SweepFormula assert-data LIFO stack once a nested
+///        formula execution (e.g. the internal formula run by an operation like
+///        ivscc_apfrequency, see SFO_OperationIVSCCApFrequencyPrepareVariables) has returned
+///        *normally*.
+///
+/// Deliberately does not release the popped frame's JSONID/SRCLOCID: by the time a nested
+/// execution finishes normally, its own JSON ids have already been released by the ordinary
+/// executor success path (SFE_ExecuteFormula/SFE_ExecuteVariableAssignments); releasing them
+/// again here would double-release. If the nested execution instead aborts (SFH_ASSERT), this
+/// function is simply never reached for that frame -- it is deliberately left on the stack, see
+/// GetSFAssertDataStack -- and its ids are only ever cleaned up defensively, tolerant of
+/// already-released ids, by SFH_ResetAssertDataStack.
+Function SFH_PopAssertDataFrame()
+
+	variable numFrames
+
+	WAVE/WAVE assertDataStack = GetSFAssertDataStack()
+	numFrames = DimSize(assertDataStack, ROWS)
+
+	ASSERT(numFrames > 1, "SFH_PopAssertDataFrame: refusing to pop the base frame")
+
+	Redimension/N=(numFrames - 1) assertDataStack
+
+	// The frame that resumes being "top of stack" was frozen (its LOCMSG populated) by
+	// SFH_PushAssertDataFrame right before the frame we just popped was pushed. Clear it now
+	// so that if *another* nested frame gets pushed later from this same resumed frame (e.g. a
+	// second, different operation call further along in the same formula), its location message
+	// gets recomputed fresh from the (by-then-different) live execution-position trackers,
+	// rather than reusing this stale, first-call-site message.
+	WAVE/T resumedFrame = assertDataStack[numFrames - 2]
+	resumedFrame[%LOCMSG] = ""
+End
+
+/// @brief Return the outermost (bottom-of-stack, index 0) SF assert-data frame.
+///
+/// This is the only frame whose LINE/OFFSET describe a position in the real, on-screen
+/// SweepFormula notebook text (see SF_CalculateErrorLocationInNotebook) -- any inner/nested
+/// frame's LINE/OFFSET instead describe a position inside an operation's own
+/// internally-generated formula string, which was never displayed in the notebook.
+Function/WAVE SFH_GetOutermostAssertDataFrame()
+
+	WAVE/WAVE assertDataStack = GetSFAssertDataStack()
+
+	if(DimSize(assertDataStack, ROWS) == 0)
+		SFH_PushAssertDataFrame()
+	endif
+
+	WAVE/T wv = assertDataStack[0]
+
+	return wv
+End
+
+/// @brief Defensively empty the SweepFormula assert-data LIFO stack, releasing every remaining
+///        frame's JSONID/SRCLOCID.
+///
+/// Call this whenever SweepFormula output state is cleared for a fresh run (see
+/// SF_ClearSFOutputState) so that frames left behind by a previous aborted nested execution
+/// (see SFH_PopAssertDataFrame) never leak into, or get misread as belonging to, the next run.
+/// JSON_Release(..., ignoreErr=1) tolerates ids that are already invalid or already released, so
+/// this is safe to call unconditionally, whether or not the previous run actually aborted inside
+/// a nested call.
+Function SFH_ResetAssertDataStack()
+
+	variable i, numFrames, jsonId, srcLocId
+
+	WAVE/WAVE assertDataStack = GetSFAssertDataStack()
+	numFrames = DimSize(assertDataStack, ROWS)
+
+	for(i = 0; i < numFrames; i += 1)
+		WAVE/T frame = assertDataStack[i]
+		jsonId   = str2numSafe(frame[%JSONID])
+		srcLocId = str2numSafe(frame[%SRCLOCID])
+		JSON_Release(jsonId, ignoreErr = 1)
+		JSON_Release(srcLocId, ignoreErr = 1)
+	endfor
+
+	Redimension/N=0 assertDataStack
+End
+
+/// @brief Render the error-location message for a single SF assert-data frame.
+///
+/// Extracted from the former (single-frame) SFH_GetAssertLocationMessage so it can be applied
+/// either to the live, currently-executing frame (reading the global execution-position
+/// trackers, which are only ever valid for whatever is executing *right now*) or, via the
+/// frozen LOCMSG field written by SFH_PushAssertDataFrame, to a suspended outer frame.
+///
+/// Deliberately does *not* release SRCLOCID: unlike the original single-frame version, this can
+/// now run opportunistically during perfectly normal, non-aborting execution (via
+/// SFH_PushAssertDataFrame, to freeze an outer frame's message before pushing a nested one on
+/// top of it), where the outer frame's SRCLOCID is still needed afterward. Releasing it here
+/// would strand the outer frame with an invalid id the next time its message needs (re-)rendering.
+/// SRCLOCID release is instead the sole responsibility of SFH_GetAssertLocationMessage (the only
+/// call site guaranteed to run right before an actual Abort) and SFH_ResetAssertDataStack.
+static Function/S SFH_GetAssertLocationMessageForFrame(WAVE/T assertData)
 
 	variable parserBufferOffset, srcLocId, srcLoc, sfStep
 	string attemptedFormula, currentExePath
 
-	WAVE/T assertData = GetSFAssertData()
+	if(!IsEmpty(assertData[%LOCMSG]))
+		return assertData[%LOCMSG]
+	endif
+
 	sfStep = str2numSafe(assertData[%STEP])
 	if(sfStep == SF_STEP_OUTSIDE)
 		return ""
@@ -386,11 +511,9 @@ static Function/S SFH_GetAssertLocationMessage()
 			if(!IsNaN(srcLoc))
 				attemptedFormula             = JSON_GetString(srcLocId, "/")
 				assertData[%INFORMULAOFFSET] = num2istr(srcLoc)
-				JSON_Release(srcLocId)
 				return SFH_FormatSourceLocationError(attemptedFormula, srcLoc)
 			endif
 
-			JSON_Release(srcLocId)
 			BUG("SFH_ASSERT: source path not found: " + currentExePath)
 			return ""
 		endif
@@ -400,6 +523,51 @@ static Function/S SFH_GetAssertLocationMessage()
 	endif
 
 	FATAL_ERROR("Unknown SF execution step")
+End
+
+/// @brief Build the full, possibly multi-level, error-location message for the currently
+///        active SweepFormula assert-data stack, see GetSFAssertDataStack.
+///
+/// Walks the stack from the innermost (top, currently-failing) frame down to the outermost
+/// (bottom, the formula visible in the SF notebook), rendering each frame's own location
+/// message (SFH_GetAssertLocationMessageForFrame) and joining more than one with a
+/// "Called from:" separator, so a failure inside a nested operation call (e.g.
+/// ivscc_apfrequency running its own internal formula, see
+/// SFO_OperationIVSCCApFrequencyPrepareVariables) reports both where inside that internal
+/// formula it failed *and* where in the user's own notebook formula the nested call was made.
+static Function/S SFH_GetAssertLocationMessage()
+
+	variable i, numFrames
+	string msg, frameMsg
+
+	WAVE/WAVE assertDataStack = GetSFAssertDataStack()
+	numFrames = DimSize(assertDataStack, ROWS)
+
+	msg = ""
+	for(i = numFrames - 1; i >= 0; i -= 1)
+		WAVE/T frame = assertDataStack[i]
+		frameMsg = SFH_GetAssertLocationMessageForFrame(frame)
+
+		// This walk only ever runs immediately before SFH_ASSERT calls Abort, so every frame's
+		// SRCLOCID is guaranteed to no longer be needed after this -- release it here rather
+		// than inside SFH_GetAssertLocationMessageForFrame itself, which can also run
+		// opportunistically during normal, non-aborting execution (via SFH_PushAssertDataFrame,
+		// to freeze an outer frame before a nested push). ignoreErr=1 tolerates frames whose
+		// SRCLOCID was never valid (e.g. a PARSER-step frame) or already released.
+		JSON_Release(str2numSafe(frame[%SRCLOCID]), ignoreErr = 1)
+
+		if(IsEmpty(frameMsg))
+			continue
+		endif
+
+		if(IsEmpty(msg))
+			msg = frameMsg
+		else
+			msg += "\rCalled from:" + frameMsg
+		endif
+	endfor
+
+	return msg
 End
 
 /// @brief Assertion for sweep formula
