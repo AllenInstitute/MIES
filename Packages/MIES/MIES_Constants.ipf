@@ -2821,3 +2821,11 @@ Constant TXOP_WHOLE_ELEM = 0x4
 ///@}
 /// Default absolute tolerance used for numeric comparisons when no domain-specific tolerance is required.
 Constant DEFAULT_TOL = 1e-12
+
+/// @name Auto Clamp Ctrls enum for FFI_TriggerAutoClampControl
+/// @anchor FFI_AutoClampCtrls
+///@{
+Constant AUTO_PIPETTE       = 1
+Constant AUTO_CAPACITANCE   = 2
+Constant AUTO_BRIDGEBALANCE = 3
+///@}

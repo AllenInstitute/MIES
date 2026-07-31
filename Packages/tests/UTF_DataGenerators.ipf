@@ -2238,3 +2238,56 @@ static Function/WAVE VariousInputForConsecutivePasses()
 
 	return wv
 End
+
+/// @brief Clamp mode cases for FFIGetCurrentClampStateWorks (see
+/// UTF_ForeignFunctionInterfaceWithHardware.ipf), one per headstage clamp mode. The set of
+/// clamp modes itself is sourced from #GetClampModes (the single source of truth for "which
+/// clamp modes exist"), rather than duplicated here, so that a clamp mode added there is
+/// automatically picked up here too:
+/// [0] CM token for InitDAQSettingsFromString's headstage spec ("_CM:<token>:")
+/// [1] expected FFI_GetCurrentClampState ClampMode value (as string; compare via str2num)
+/// [2] semicolon-separated list of representative clamp-state dimension labels for this
+///     mode, checked to be finite -- empty for I=0, which carries no further fields besides
+///     ClampMode itself
+///
+/// Fails with FATAL_ERROR if #GetClampModes ever returns a clamp mode this function does not
+/// have a case for below, rather than silently omitting coverage for it.
+static Function/WAVE FFI_ClampModeCases()
+
+	variable i, numModes, mode
+	string token, dimLabels, rowLabel
+
+	WAVE clampModes = GetClampModes()
+	numModes = DimSize(clampModes, ROWS)
+
+	Make/FREE/WAVE/N=(numModes) wv
+
+	for(i = 0; i < numModes; i += 1)
+		mode = clampModes[i]
+
+		switch(mode)
+			case V_CLAMP_MODE:
+				token     = "VC"
+				dimLabels = "HoldingPotential;PipetteOffsetVC"
+				break
+			case I_CLAMP_MODE:
+				token     = "IC"
+				dimLabels = "BiasCurrent;PipetteOffsetIC"
+				break
+			case I_EQUAL_ZERO_MODE:
+				token     = "I=0"
+				dimLabels = ""
+				break
+			default:
+				FATAL_ERROR("FFI_ClampModeCases does not know how to map clamp mode " + num2istr(mode) + " returned by GetClampModes; add a case for it here.")
+		endswitch
+
+		Make/FREE/T wvt = {token, num2istr(mode), dimLabels}
+		wv[i] = wvt
+
+		rowLabel = GetDimLabel(clampModes, ROWS, i)
+		SetDimLabel ROWS, i, $rowLabel, wv
+	endfor
+
+	return wv
+End
