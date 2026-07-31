@@ -137,7 +137,7 @@ Available tools
 
 ``get_bridge_version()``
   Returns the version of this Igor Pro Bridge build that is actually running in the
-  current Claude Desktop session (``{"version": "1.23.0"}``). Added because there was
+  current Claude Desktop session (``{"version": "1.24.0"}``). Added because there was
   previously no way to confirm from inside a conversation which ``.mcpb`` build ended
   up loaded after an install/restart -- useful before relying on a specific recent
   fix or behavior change.
@@ -198,6 +198,29 @@ Available tools
   always-present "Procedure" window (which can carry experiment-specific
   ``#include``/``#define`` directives not present in any on-disk ``.ipf`` file), the
   top-level global data folder layout, and the current Debugger settings.
+
+``read_help_file(file_path)``
+  Reads an Igor Pro help file (``.ihf``) as structured, formatted text -- e.g. to
+  confirm an operation's exact flags/behavior straight from Igor's own docs -- without
+  leaving any lasting change to Igor's help-window state. Better than an OS-level file
+  read for two reasons. First, Igor pre-registers every ``.ihf`` file in the Help Files
+  folder as an open help window (visible or hidden, ``WinList``'s ``WIN:512`` bit), and
+  a help-file view and a plain-notebook view of the same file are mutually exclusive
+  (``OpenNotebook/R`` fails with error 251 otherwise) -- this tool handles the required
+  ``CloseHelp/ALL`` -> ``OpenNotebook/R`` -> ``SaveNotebook`` export -> ``KillWindow/Z``
+  -> ``OpenHelp`` restore dance, entirely in a ``finally`` block so a mid-sequence
+  failure still restores whatever help state existed beforehand. Second, and more
+  importantly: the returned ``"paragraphs"`` list (``[{"style": "Topic", "text":
+  "Debugging"}, ...]``) preserves the paragraph style name WaveMetrics' own help
+  authoring convention assigns to nearly every paragraph (e.g. ``"Topic"`` for a section
+  heading, ``"Code1"`` for a line of example code, ``"Steps"`` for a bullet item) --
+  genuine content-block structure, not just flat prose. Not every XOP ships its own
+  help file this way -- some (e.g. the JSON XOP used elsewhere in this codebase) have
+  none at all and require external documentation instead; check
+  ``get_environment_summary()``'s ``loaded_xops`` field plus the global (``Igor
+  Application``) and user-specific (``Igor Pro User Files``) ``Igor Help Files``
+  folders (both resolved via Igor's own ``SpecialDirPath`` function) before assuming a
+  given XOP has one.
 
 ``configure_igor_launch(exe_path)``
   Records the full path to the Igor Pro executable to use for

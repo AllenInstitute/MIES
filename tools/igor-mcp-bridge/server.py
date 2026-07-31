@@ -99,9 +99,11 @@ session running on the same Windows machine as Igor Pro, not from a cloud/Cowork
 """
 
 import ctypes
+import html.parser
 import os
 import subprocess
 import sys
+import tempfile
 import time
 
 if sys.platform != "win32":
@@ -619,7 +621,7 @@ def load_experiment(file_path: str) -> dict:
 # from inside a conversation which .mcpb build was actually loaded/active in Claude
 # Desktop, which made it impossible to verify whether a given fix (e.g. the reload/compile
 # timing relaxation) was actually in effect during a test -- see SESSION_NOTES.md.
-_BRIDGE_VERSION = "1.23.0"
+_BRIDGE_VERSION = "1.24.0"
 
 
 @mcp.tool()
@@ -1619,6 +1621,254 @@ def execute_igor_command_unattended(command: str) -> dict:
             _format_execute2_error(command, errorCode, errorMsg, results, history)
         )
     return {"results": results, "history": history}
+
+
+# --- Reading .ihf help files as formatted notebooks ---------------------------------
+#
+# Confirmed live this session against Igor Pro 9 Nightly. An .ihf file is itself an
+# Igor formatted-text notebook, and Igor pre-registers every one in the Help Files
+# folder as "open as a help file" via an ordinary (often hidden) help window --
+# WinList("*", ";", "WIN:512") is the correct bit for these (confirmed against
+# WinList's own documented bit table; an earlier guess of WIN:1024 was wrong and
+# matches no window type at all). A help-file view and a plain-notebook view of the
+# same file are mutually exclusive: OpenNotebook/R on a file whose help window
+# (hidden or not) is currently open fails with error 251 ("already open but as a help
+# file"). CloseHelp/ALL releases every currently-open help file so OpenNotebook/R can
+# succeed; OpenHelp/V=.../INT=0 re-opens a specific file afterward to restore it.
+#
+# Reading the exported HTML (SaveNotebook/S=5) rather than the plain-text selection
+# (Notebook .../GetSelection) matters because WaveMetrics' own help-authoring
+# convention assigns a semantic paragraph style class to nearly every paragraph --
+# e.g. "Topic" for a heading, "Code1" for a line of example code, "Steps" for a
+# bullet item -- confirmed live against several real .ihf files. This is a direct,
+# reliable signal for a paragraph's content role that a flat plain-text read can't
+# provide.
+
+
+def _fprintf_query(expr: str) -> str:
+    """Run `fprintf 0, "%s", <expr>` and return the resulting string, raising on
+    failure. Deliberately avoids ever declaring an intermediate `String` variable
+    for this: an Execute2 command runs as top-level interpreted code, so `String x =
+    ...` creates a process-lifetime global -- confirmed this session to collide with
+    "error 25: the name already exists as a variable" the second time the same
+    command runs in one Igor session. A bare fprintf has no such state to collide
+    with."""
+    cmd = f'fprintf 0, "%s", {expr}'
+    errorCode, errorMsg, history, results = _execute2(cmd)
+    if errorCode != 0:
+        raise RuntimeError(
+            _format_execute2_error(cmd, errorCode, errorMsg, results, history)
+        )
+    return results
+
+
+def _winlist(match: str, options: str) -> list:
+    return [
+        name
+        for name in _fprintf_query(f'WinList("{match}", ";", "{options}")').split(";")
+        if name
+    ]
+
+
+def _igor_quote_path(path: str) -> str:
+    """Double every backslash so `path` is safe inside an Igor command string
+    literal -- Igor treats a single backslash as an escape character (Path
+    Separators, Advanced Topics.ihf)."""
+    return path.replace("\\", "\\\\")
+
+
+def _resolve_help_file_path(bare_name: str):
+    """Resolve a bare help-file name (WinList's help-window bit never includes a
+    path -- "Procedure windows and help windows don't have names. WinList returns
+    the window title instead", confirmed this session) back to a full path, by
+    checking the two folders Igor Pro itself loads help files from: the global
+    `<Igor Application>Igor Help Files` folder and the user-specific `<Igor Pro
+    User Files>Igor Help Files` folder. Both roots come from Igor's own
+    SpecialDirPath function rather than any hardcoded/guessed path, so this works
+    regardless of the specific Igor Pro version/install location. Returns None if
+    not found in either -- e.g. a third-party XOP's help file installed somewhere
+    else entirely."""
+    for special_dir in ("Igor Application", "Igor Pro User Files"):
+        try:
+            base = _fprintf_query(f'SpecialDirPath("{special_dir}", 0, 1, 0)')
+        except RuntimeError:
+            continue
+        if not base:
+            continue
+        candidate = os.path.join(base, "Igor Help Files", bare_name)
+        if os.path.isfile(candidate):
+            return candidate
+    return None
+
+
+class _NotebookHTMLParser(html.parser.HTMLParser):
+    """Extracts one {"style": ..., "text": ...} record per <P> paragraph from a
+    notebook's HTML export (SaveNotebook/S=5)."""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.paragraphs = []
+        self._in_paragraph = False
+        self._style = ""
+        self._text_parts = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag.lower() == "p":
+            self._in_paragraph = True
+            self._style = ""
+            self._text_parts = []
+            for key, value in attrs:
+                if key.lower() == "class" and value:
+                    self._style = value
+
+    def handle_endtag(self, tag):
+        if tag.lower() == "p" and self._in_paragraph:
+            text = "".join(self._text_parts).strip()
+            self.paragraphs.append({"style": self._style, "text": text})
+            self._in_paragraph = False
+
+    def handle_data(self, data):
+        if self._in_paragraph:
+            self._text_parts.append(data)
+
+
+@mcp.tool()
+def read_help_file(file_path: str) -> dict:
+    """Read an Igor Pro help file (.ihf) as structured, formatted text -- e.g. to
+    look up an operation's exact flags/behavior straight from Igor's own docs --
+    without leaving any lasting change to Igor's help-window state.
+
+    Better than an OS-level file read for two reasons. First, .ihf files are
+    themselves Igor formatted-text notebooks, and Igor pre-registers every one in
+    the Help Files folder as an open help window (visible or hidden); this tool
+    handles the required CloseHelp/ALL -> OpenNotebook/R -> ... -> OpenHelp restore
+    dance so the caller doesn't have to. Second, and more importantly: the returned
+    "paragraphs" list preserves the paragraph style name WaveMetrics' own help
+    authoring convention assigns to each paragraph (e.g. "Topic" for a section
+    heading, "Code1" for a line of example code, "Steps" for a bullet item) --
+    genuine content-block structure, not just flat prose.
+
+    file_path must be a full path to an existing .ihf file (e.g. one found by
+    listing the Help Files folder -- see get_environment_summary's "loaded_xops"
+    field plus the global/user Help Files folders under Igor's own installation for
+    XOP-supplied help files, which don't all exist -- some XOPs ship none at all,
+    and their functions/operations then require external documentation instead).
+
+    Full sequence, entirely reversible even if a step fails partway through:
+      1. Snapshot every currently open help file (visible or hidden, via WinList's
+         WIN:512 bit) and every currently open plain-notebook window.
+      2. CloseHelp/ALL (required: an .ihf file can't be opened as a notebook while
+         Igor considers it already open as a help file).
+      3. OpenNotebook/R file_path, then diff WinList's notebook list against the
+         step-1 snapshot to find the name Igor assigned the new window (e.g.
+         "Notebook0") -- OpenNotebook doesn't return this directly.
+      4. SaveNotebook/O/S=5/H=... export to a local temporary HTML file, parsed
+         here into the returned "paragraphs" list, then delete the temp file.
+      5. KillWindow/Z the temporary notebook.
+      6. Restore every help file captured in step 1 via OpenHelp/V=.../INT=0,
+         re-resolving each bare file name back to a full path via
+         SpecialDirPath("Igor Application"/"Igor Pro User Files", ...) + "Igor Help
+         Files" (Igor's global vs. user-specific include folders).
+
+    Steps 5-6 run in a `finally` block, so a failure in step 3 or 4 still restores
+    whatever help state existed before this call. Returns a dict with:
+      - "paragraphs": [{"style": "Topic", "text": "Debugging"}, ...] -- "style" is
+        "" for a paragraph with no explicit class.
+      - "restore_failures": bare file names from step 1 that could not be resolved
+        back to a full path (e.g. a help file supplied from somewhere other than
+        the two standard Help Files folders) -- these were NOT reopened, unlike
+        every other file captured in the snapshot.
+
+    Raises if file_path does not exist, or if OpenNotebook/SaveNotebook fail (e.g.
+    file_path is not actually a notebook-compatible file).
+    """
+    normalized = os.path.abspath(file_path)
+    if not os.path.isfile(normalized):
+        raise RuntimeError(f"'{normalized}' does not exist or is not a file.")
+    quoted_path = _igor_quote_path(normalized)
+
+    # Step 1: snapshot before touching anything.
+    help_all = _winlist("*", "WIN:512")
+    help_visible = set(_winlist("*", "WIN:512,VISIBLE:1"))
+    notebooks_before = set(_winlist("*", "WIN:16"))
+
+    tmp_fd, tmp_html_path = tempfile.mkstemp(suffix=".html", prefix="igor_help_")
+    os.close(tmp_fd)
+    os.remove(tmp_html_path)  # SaveNotebook must create it fresh; only the name is reused
+    quoted_tmp_html = _igor_quote_path(tmp_html_path)
+
+    notebook_name = None
+    try:
+        # Step 2.
+        errorCode, errorMsg, history, results = _execute2("CloseHelp/ALL")
+        if errorCode != 0:
+            raise RuntimeError(
+                _format_execute2_error(
+                    "CloseHelp/ALL", errorCode, errorMsg, results, history
+                )
+            )
+
+        # Step 3.
+        open_cmd = f'OpenNotebook/R "{quoted_path}"'
+        errorCode, errorMsg, history, results = _execute2(open_cmd)
+        if errorCode != 0:
+            raise RuntimeError(
+                _format_execute2_error(open_cmd, errorCode, errorMsg, results, history)
+            )
+        new_names = [n for n in _winlist("*", "WIN:16") if n not in notebooks_before]
+        if not new_names:
+            raise RuntimeError(
+                "OpenNotebook/R succeeded but no new notebook window was found via "
+                f"WinList -- before: {sorted(notebooks_before)!r}"
+            )
+        notebook_name = new_names[0]
+
+        # Step 4.
+        export_cmd = (
+            f'SaveNotebook/O/S=5/H={{"UTF-8", 3, 7, 0, 0.9, 32}} {notebook_name} '
+            f'as "{quoted_tmp_html}"'
+        )
+        errorCode, errorMsg, history, results = _execute2(export_cmd)
+        if errorCode != 0:
+            raise RuntimeError(
+                _format_execute2_error(
+                    export_cmd, errorCode, errorMsg, results, history
+                )
+            )
+        with open(tmp_html_path, "r", encoding="utf-8") as f:
+            html_text = f.read()
+        parser = _NotebookHTMLParser()
+        parser.feed(html_text)
+    finally:
+        # Step 5 (best-effort -- must not skip step 6).
+        if notebook_name:
+            try:
+                _execute2(f"KillWindow/Z {notebook_name}")
+            except Exception:
+                pass
+        try:
+            if os.path.isfile(tmp_html_path):
+                os.remove(tmp_html_path)
+        except Exception:
+            pass
+
+        # Step 6.
+        restore_failures = []
+        for name in help_all:
+            resolved = _resolve_help_file_path(name)
+            if resolved is None:
+                restore_failures.append(name)
+                continue
+            visible_flag = 1 if name in help_visible else 0
+            restore_cmd = (
+                f'OpenHelp/V={visible_flag}/INT=0/Z=1 "{_igor_quote_path(resolved)}"'
+            )
+            try:
+                _execute2(restore_cmd)
+            except Exception:
+                restore_failures.append(name)
+
+    return {"paragraphs": parser.paragraphs, "restore_failures": restore_failures}
 
 
 # --- Environment summary -----------------------------------------------------------
