@@ -17,6 +17,10 @@ The code lives in ``tools/igor-mcp-bridge/``:
 - ``server.py``: the MCP server implementation (Python, using ``pywin32`` for COM).
 - ``igor-pro-bridge-*.mcpb``: packaged Claude Desktop Extension bundles built from
   ``server.py`` via the `mcpb <https://www.npmjs.com/package/@anthropic-ai/mcpb>`__ CLI.
+- ``requirements.txt``: pinned Python dependency versions (see :ref:`igor_pro_bridge_requirements`).
+- ``install.ps1``: installs those pinned dependencies into the correct Python
+  environment and completes pywin32's post-install step -- see
+  :ref:`igor_pro_bridge_installation`.
 
 The companion procedure file ``Packages/MIES/MIES_ClaudeHelper.ipf`` (included from
 ``MIES_Include.ipf``) provides an ``AfterCompiledHook`` used by the bridge to get a more
@@ -40,6 +44,8 @@ failed -- the bridge checks the returned error code itself and raises a Python
 ``RuntimeError`` when appropriate. Data is retrieved by including ``fprintf 0, "..."``
 calls in the command string and reading the result back.
 
+.. _igor_pro_bridge_requirements:
+
 Requirements
 ------------
 
@@ -54,10 +60,21 @@ Requirements
   Igor's own Automation Server reference and is not optional. Note that reopening
   Claude Desktop normally does not preserve elevation from a previous launch -- it must
   be relaunched via "Run as administrator" each time.
-- Python, accessible as ``python`` on ``PATH``, with the ``mcp`` and ``pywin32``
-  packages installed (``pip install mcp pywin32``, followed by
-  ``python -m pywin32_postinstall -install``). The packaged extension does not vendor
-  these.
+- Python 3.10 or later, accessible as ``python`` on ``PATH``, with the pinned packages
+  in ``requirements.txt`` (``mcp==1.29.0``, ``pywin32==312``) installed into that same
+  environment -- see :ref:`igor_pro_bridge_installation` below for how. The packaged
+  extension does not vendor these.
+
+  ``mcp`` is pinned below its breaking v2.0.0 line (released 2026-07-27/28, protocol
+  revision 2026-07-28): v2 renamed ``FastMCP`` to ``MCPServer`` and moved it from
+  ``mcp.server.fastmcp`` to ``mcp.server.mcpserver``, among other changes, while
+  ``server.py`` still uses the v1 ``from mcp.server.fastmcp import FastMCP`` API. An
+  unpinned ``mcp`` dependency (or a plain ``pip install mcp`` today) resolves to v2 and
+  breaks the bridge outright (``ModuleNotFoundError``) -- confirmed directly from both
+  wheels' contents. Do not lift the ``<2`` upper bound without migrating ``server.py``
+  to the v2 API first.
+
+.. _igor_pro_bridge_installation:
 
 Installation
 ------------
@@ -69,9 +86,28 @@ servers in current Claude Desktop builds).
 - Build: ``mcpb pack tools/igor-mcp-bridge tools/igor-mcp-bridge/igor-pro-bridge-X.Y.Z.mcpb``
 - Install: Claude Desktop -> Settings -> Extensions -> Advanced settings -> Extension
   Developer -> Install Extension, then select the ``.mcpb`` file.
-- After installing a new version, fully restart Claude Desktop (elevated) so the
-  updated server code is actually loaded -- newly added tools can otherwise lag behind
-  what's installed.
+- **Before first use (or whenever a Python dependency changes), run
+  ``tools/igor-mcp-bridge/install.ps1`` from an elevated PowerShell** to install the
+  pinned packages and complete pywin32's required post-install step
+  (``Scripts\pywin32_postinstall.py -install``, which a plain ``pip install`` does not
+  do). Run it elevated specifically because Claude Desktop's manifest invokes the bridge
+  as the bare command ``python``, resolved via whatever ``PATH`` Claude Desktop's own
+  *elevated* process environment has at launch time -- not necessarily the same
+  interpreter an interactive elevated console session would resolve (e.g. a
+  PowerShell-profile-only conda activation, or a Microsoft Store app-execution-alias
+  stub that behaves differently once elevated). ``install.ps1`` resolves ``python.exe``
+  from the Machine/User ``PATH`` registry values directly rather than trusting the
+  invoking shell's own possibly-customized ``$env:Path``, to mirror what a freshly
+  launched elevated Claude Desktop process actually sees; pass ``-PythonPath`` to
+  override this if needed. See ``Get-Help ./install.ps1 -Full`` for the complete
+  rationale and all steps performed.
+- After installing (or after running ``install.ps1``), fully restart Claude Desktop
+  (elevated) so the updated server code/environment is actually picked up -- newly added
+  tools, or a freshly installed dependency, can otherwise lag behind what's on disk.
+- Call ``get_bridge_version()`` afterward and confirm its ``python_executable`` field
+  matches the interpreter ``install.ps1`` installed into. If it doesn't, Claude Desktop
+  resolved a different Python than ``install.ps1`` guessed -- re-run ``install.ps1
+  -PythonPath <that path>``.
 
 Available tools
 ----------------
@@ -137,10 +173,23 @@ Available tools
 
 ``get_bridge_version()``
   Returns the version of this Igor Pro Bridge build that is actually running in the
-  current Claude Desktop session (``{"version": "1.24.0"}``). Added because there was
-  previously no way to confirm from inside a conversation which ``.mcpb`` build ended
-  up loaded after an install/restart -- useful before relying on a specific recent
-  fix or behavior change.
+  current Claude Desktop session, plus which Python interpreter/packages it's actually
+  running with::
+
+      {
+        "version": "1.25.0",
+        "python_executable": "C:\\Python312\\python.exe",
+        "python_version": "3.12.4",
+        "mcp_package_version": "1.29.0",
+        "pywin32_build": "312"
+      }
+
+  Added because there was previously no way to confirm from inside a conversation
+  which ``.mcpb`` build ended up loaded after an install/restart -- useful before
+  relying on a specific recent fix or behavior change. The ``python_executable`` field
+  is also the authoritative way to confirm which Python environment Claude Desktop
+  actually launched the bridge with, e.g. to cross-check against what
+  ``install.ps1`` installed into -- see :ref:`igor_pro_bridge_installation`.
 
 ``check_compilation_state()``
   Reports whether Igor's procedure code is currently compiled or uncompiled, using the

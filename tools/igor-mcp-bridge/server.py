@@ -100,6 +100,7 @@ session running on the same Windows machine as Igor Pro, not from a cloud/Cowork
 
 import ctypes
 import html.parser
+import importlib.metadata
 import os
 import subprocess
 import sys
@@ -621,13 +622,26 @@ def load_experiment(file_path: str) -> dict:
 # from inside a conversation which .mcpb build was actually loaded/active in Claude
 # Desktop, which made it impossible to verify whether a given fix (e.g. the reload/compile
 # timing relaxation) was actually in effect during a test -- see SESSION_NOTES.md.
-_BRIDGE_VERSION = "1.24.0"
+_BRIDGE_VERSION = "1.25.0"
+
+
+def _installed_package_version(distribution_name: str) -> str | None:
+    """Return the installed version of a distribution (e.g. "mcp", "pywin32"), or None
+    if it isn't installed/resolvable. Best-effort only -- wrapped in
+    get_bridge_version() to help diagnose *which* Python environment this process is
+    actually running in, not to be relied on for anything else.
+    """
+    try:
+        return importlib.metadata.version(distribution_name)
+    except importlib.metadata.PackageNotFoundError:
+        return None
 
 
 @mcp.tool()
 def get_bridge_version() -> dict:
     """Return the version of this Igor Pro Bridge build that is actually running right
-    now, in this Claude Desktop session.
+    now, in this Claude Desktop session, plus which Python interpreter and package
+    versions it's actually running with.
 
     Call this whenever it matters to confirm which build is active -- e.g. before
     relying on a specific fix or behavior change from a recent version, or when
@@ -635,8 +649,27 @@ def get_bridge_version() -> dict:
     There is no other way to determine this from inside a conversation: installing a
     newer .mcpb requires restarting Claude Desktop, and nothing else surfaces which
     version ended up actually loaded afterward.
+
+    The "python_executable" field is also the authoritative answer to a separate,
+    easy-to-get-wrong question: *which* Python environment Claude Desktop actually
+    launched this process with. Claude Desktop's manifest.json only specifies the bare
+    command "python", resolved via whatever PATH Claude Desktop's own (elevated)
+    process environment has at launch time -- which is not guaranteed to match the
+    Python an interactive elevated console session resolves (e.g. a PowerShell profile
+    activating a conda environment, or a per-user Microsoft Store "app execution
+    alias" stub that behaves differently once elevated). install.ps1 makes its own
+    best-effort guess at install time; after installing and restarting Claude Desktop,
+    call this tool to confirm "python_executable" actually matches what install.ps1
+    installed into -- if it doesn't, re-run install.ps1 with an explicit -PythonPath
+    pointing at the path reported here.
     """
-    return {"version": _BRIDGE_VERSION}
+    return {
+        "version": _BRIDGE_VERSION,
+        "python_executable": sys.executable,
+        "python_version": sys.version.split()[0],
+        "mcp_package_version": _installed_package_version("mcp"),
+        "pywin32_build": _installed_package_version("pywin32"),
+    }
 
 
 @mcp.tool()

@@ -1,0 +1,200 @@
+# Pinned dependencies for the Igor Pro Bridge MCP server (tools/igor-mcp-bridge/server.py).
+# Install with install.ps1 (recommended -- also runs pywin32's required post-install
+# step), or manually via:
+#   <python> -m pip install --require-hashes -r requirements.txt
+#   <python> <path-to-Scripts-dir>\pywin32_postinstall.py -install
+#
+# Every package below -- direct AND transitive -- is pinned to an exact version with
+# one or more --hash=sha256:... values. This is pip's "hash-checking mode": it is
+# triggered automatically the moment any requirement has a --hash, and once active,
+# EVERY package pip would install (the whole dependency tree, not just mcp/pywin32
+# themselves) must appear here, pinned and hashed, or the install is refused outright.
+# This is a supply-chain-integrity measure (protects against a compromised/tampered
+# package on PyPI, or a MITM'd download) on top of the version pins already protecting
+# against unwanted upgrades (see the mcp v1/v2 note below).
+#
+# Regenerating this file (e.g. after deliberately bumping a version, or to add a newly
+# released Python version): resolve the full dependency tree for the target platform/
+# Python versions with `pip download --platform win_amd64 --python-version <NNN>
+# --implementation cp --abi cp<NNN> --only-binary=:all: -d <dir> -r requirements.in`,
+# where <NNN> is each Python minor version actually in use (currently 310/311/312/313/
+# 314 -- pyproject.toml declares an open-ended `>=3.10` floor, so a *new* Python release
+# can reach this bridge before its wheels are covered here; if install.ps1/pip reports a
+# hash mismatch or "no matching distribution", that's the likely cause -- add that
+# version the same way, don't just widen/drop the hash pin). Repeat per Python version to
+# catch any per-version wheel/version divergence -- rpds-py below is a real example of a
+# package whose resolved *version*, not just its wheel file, differs between Python 3.10
+# and 3.11+ -- then sha256sum every downloaded wheel. Verify with
+# `pip download --require-hashes -r requirements.txt ...` (same flags, run under an
+# actual interpreter of that target version -- environment markers like python_version/
+# sys_platform are evaluated against the REAL running interpreter, not these download
+# target flags, which only affect wheel-tag selection) before committing -- this
+# round-trips both the hash values and pip's ability to parse the file.
+#
+# mcp: pinned to the last 1.x release. The MCP Python SDK's v2 line (2.0.0, released
+# 2026-07-27/28 alongside MCP protocol revision 2026-07-28) is a deliberate breaking
+# rework: FastMCP was renamed to MCPServer and moved from mcp.server.fastmcp to
+# mcp.server.mcpserver, among other changes. server.py still uses the v1 API
+# (`from mcp.server.fastmcp import FastMCP`), so an unpinned or `>=1.0.0` requirement
+# would silently resolve to 2.x today and break the bridge outright (ModuleNotFoundError
+# on import) -- confirmed by inspecting both the 1.29.0 and 2.0.0 wheels directly.
+# Do not remove the exact pin without migrating server.py to the v2 API first.
+
+mcp==1.29.0 \
+    --hash=sha256:f5a075bb611f23d6f4d080c6a1699fa62772eebc562ba9e66b306ddde1c755f7
+
+# pywin32: provides win32com.client (COM automation), win32api/win32con/win32gui/
+# win32process (elevation and window handling), and pywintypes (COM error types) --
+# all used directly by server.py. Also requires the separate post-install step
+# (Scripts\pywin32_postinstall.py -install) to register its COM-support DLLs; both
+# install.ps1 and a plain `pip install` alone are not sufficient without that step.
+# Hashes cover the cp310/cp311/cp312/cp313/cp314 win_amd64 wheels.
+pywin32==312; sys_platform == "win32" \
+    --hash=sha256:5dbc35d2b5320dc07f25fa31269cfb767471002b17de5eb067d03da68c7cb2db \
+    --hash=sha256:a4dd3a848290ef724347b19f301045831d8e802fa4464f491b98b1e0a081432e \
+    --hash=sha256:b457f6d628a47e8a7346ce22acb7e1a46a4a78b52e1d17e1af56871bd19a93bc \
+    --hash=sha256:c53e878d15a1c44788082bfe712a905433473aa38f86375b7cf8b45e3acbaaf9 \
+    --hash=sha256:d11417d84412f859b722fad0841b3614459ed0047f7542d8362e77884f6b6e8a
+
+# --- Transitive dependencies (mcp's own dependency tree) -------------------------
+# Required by pip's hash-checking mode (see the top comment) -- pip resolves these
+# via mcp's own pyproject.toml at install time regardless, this just makes each one
+# an explicit, hash-verified pin instead of an unverified floating resolution.
+
+# async I/O abstraction -- required by mcp, httpx, starlette, sse-starlette
+anyio==4.14.2 \
+    --hash=sha256:9f505dda5ac9f0c8309b5e8bd445a8c2bf7246f3ce950121e45ea15bc41d1494
+
+# anyio's exceptiongroup backport (Python < 3.11 only, installed unconditionally here
+# for simplicity -- harmless no-op on newer Python)
+exceptiongroup==1.3.1 \
+    --hash=sha256:a7a39a3bd276781e98394987d3a5701d0c4edffb633bb7a5144577f82c773598
+
+# required by anyio and httpx
+idna==3.18 \
+    --hash=sha256:7f952cbe720b688055e3f87de14f5c3e5fdaa8bc3928985c4077ca689de849a2
+
+# HTTP client -- required by mcp
+httpx==0.28.1 \
+    --hash=sha256:d909fcccc110f8c7faf814ca82a9a4d816bc5a6dbfea25d6591d6985b8ba59ad
+
+# required by httpx
+httpcore==1.0.9 \
+    --hash=sha256:2d400746a40668fc9dec9810239072b40b4484b640a8c38fd654a024c7a1bf55
+
+# HTTP/1.1 protocol implementation -- required by httpcore
+h11==0.16.0 \
+    --hash=sha256:63cf8bbe7522de3bf65932fda1d9c2772064ffb3dae62d55932da54b31cb6c86
+
+# Server-Sent Events support for httpx -- required by mcp
+httpx-sse==0.4.3 \
+    --hash=sha256:0ac1c9fe3c0afad2e0ebb25a934a59f4c7823b60792691f779fad2c5568830fc
+
+# default CA bundle -- required by httpx
+certifi==2026.7.22 \
+    --hash=sha256:62f22742b58a1a33014a2b6b706588a8d7e2a88ae7bd1a6ebe8c992928483775
+
+# data validation -- required by mcp, pydantic-settings
+pydantic==2.13.4 \
+    --hash=sha256:45a282cde31d808236fd7ea9d919b128653c8b38b393d1c4ab335c62924d9aba
+
+# pydantic's compiled (Rust) backend -- per-Python-version wheels (cp310/311/312/313/314)
+pydantic-core==2.46.4 \
+    --hash=sha256:6b3ace8194b0e5204818c92802dcdca7fc6d88aabbb799d7c795540d9cd6d292 \
+    --hash=sha256:6f2eeda33a839975441c86a4119e1383c50b47faf0cbb5176985565c6bb02c33 \
+    --hash=sha256:811ff8e9c313ab425368bcbb36e5c4ebd7108c2bbf4e4089cfbb0b01eff63fac \
+    --hash=sha256:8358a950c8909158e3df31538a7e4edc2d7265a7c54b47f0864d9e5bae9dcebf \
+    --hash=sha256:e9c26f834c65f5752f3f06cb08cb86a913ceb7274d0db6e267808a708b46bc89
+
+# required by pydantic
+annotated-types==0.8.0 \
+    --hash=sha256:f072f4d804ea359e4eaf198b1af7a8b0943881a87f31bb764f8bf219bb9419e0
+
+# required by pydantic (unconditionally) and starlette (Python < 3.13)
+typing-extensions==4.16.0 \
+    --hash=sha256:481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8
+
+# required by pydantic and pydantic-settings
+typing-inspection==0.4.2 \
+    --hash=sha256:4ed1cacbdc298c220f1bd249ed5287caa16f34d44ef4e9c3d0cbad5b521545e7
+
+# required by mcp
+pydantic-settings==2.14.2 \
+    --hash=sha256:a20c97b37910b6550d5ea50fbcc2d4187defe58cd57070b73863d069419c9440
+
+# required by pydantic-settings
+python-dotenv==1.2.2 \
+    --hash=sha256:1d8214789a24de455a8b8bd8ae6fe3c6b69a5e3d64aa8a8e5d68e694bbcb285a
+
+# validates tool input schemas -- required by mcp
+jsonschema==4.26.0 \
+    --hash=sha256:d489f15263b8d200f8387e64b4c3a75f06629559fb73deb8fdfb525f2dab50ce
+
+# required by jsonschema
+attrs==26.1.0 \
+    --hash=sha256:c647aa4a12dfbad9333ca4e71fe62ddc36f4e63b2d260a37a8b83d2f043ac309
+
+# required by jsonschema
+referencing==0.37.0 \
+    --hash=sha256:381329a9f99628c9069361716891d34ad94af76e461dcb0335825aecc7692231
+
+# required by referencing/jsonschema
+jsonschema-specifications==2025.9.1 \
+    --hash=sha256:98802fee3a11ee76ecaca44429fda8a41bff98b00a0f2838151b113f210cc6fe
+
+# referencing/jsonschema's Rust-backed persistent data structures. Split into two
+# version-pinned lines because the current release (2026.6.3, below) dropped Python
+# 3.10 support -- pip resolves an older version on 3.10 instead, confirmed by
+# resolving this exact dependency tree separately for each target Python version.
+rpds-py==0.30.0; python_version < '3.11' \
+    --hash=sha256:1726859cd0de969f88dc8673bdd954185b9104e05806be64bcd87badbe313169
+
+# same package, for Python 3.11+ (cp311/312/313/314 wheels)
+rpds-py==2026.6.3; python_version >= '3.11' \
+    --hash=sha256:0be972be84cfcaf46c8c6edf690ca0f154ac17babf1f6a955a51579b34ad2dc5 \
+    --hash=sha256:2c54a076ca4d370980ab57bc0e31df57bbe8d41340436a90ef8b1219a3cbb127 \
+    --hash=sha256:2c958bf94822e9290a40aaf2a822d4bc5c88099093e3948ad6c571eca9272e5f \
+    --hash=sha256:9250a9a0a6fd4648b3f868da8d91a4c52b5811a62df58e753d50ae4454a36f80
+
+# required by mcp (with the [crypto] extra)
+pyjwt==2.13.0 \
+    --hash=sha256:66adcc2aff09b3f1bbd95fc1e1577df8ac8723c978552fd43304c8a290ac5728
+
+# required by pyjwt's [crypto] extra -- two hashes because this release ships two
+# abi3 wheels with different minimum-ABI baselines (cp39-abi3 and cp311-abi3)
+cryptography==50.0.0 \
+    --hash=sha256:bd1c592e4d5974f0d08d4888e432157adba757c66da0246918e43677fafa2d30 \
+    --hash=sha256:d24fead1d4d076e1bfb006dcec392074a3cd8d7b4fc8a595aa64073b2b7a96ba
+
+# required by cryptography -- per-Python-version wheels (cp310/311/312/313/314)
+cffi==2.1.0 \
+    --hash=sha256:1b96bfe2c4bd825681b7d311ad6d9b7280a091f43e8f63da5729638083cd3bfb \
+    --hash=sha256:4f26194e3d95e06501b942642855aed4f953d55e95d7d01b7c4483db3ecff458 \
+    --hash=sha256:8e74a6135550c4748af665b1b1118b6aab33b1fc6a16f9aff630af107c3b4512 \
+    --hash=sha256:c97f080ea627e2863524c5af3836e2270b5f5dfff1f104392b959f8df0c5d384 \
+    --hash=sha256:fb62edb5bb52cca65fab91a63afa7561607120d26090a7e8fda6fb9f064726da
+
+# required by cffi
+pycparser==3.0 \
+    --hash=sha256:b727414169a36b7d524c1c3e31839a521725078d7b2ff038656844266160a992
+
+# required by mcp
+python-multipart==0.0.32 \
+    --hash=sha256:ff6d3f776f16878c894e52e107296ffc890e913c611b1a4ec6c44e2821fe2e23
+
+# Server-Sent Events transport support -- required by mcp
+sse-starlette==3.4.6 \
+    --hash=sha256:56217ab4c9a9f9c5db7b21e08732d3e7c2b807f45231ad23de0551a24c4a41f6
+
+# required by mcp and sse-starlette
+starlette==1.3.1 \
+    --hash=sha256:c7372aae11c3c3f26a42df7bd626cec2f47d03483d261d369516a615a53714c6
+
+# ASGI server -- required by mcp (unused by this bridge's stdio transport, but still
+# an unconditional mcp dependency)
+uvicorn==0.52.1 \
+    --hash=sha256:e4403f9d93188cf9d1088e9f40e3acd12630e2df8675316704379a7fc20fff6a
+
+# required by uvicorn
+click==8.4.2 \
+    --hash=sha256:e6f9f66136c816745b9d65817da91d61d957fb16e02e4dcd0552553c5a197b76
