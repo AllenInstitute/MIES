@@ -122,7 +122,7 @@ End
 /// @param clampMode  clamp mode (pass `NaN` for doesn't matter)
 /// @param func       MCC function, one of @ref AI_SendToAmpConstants
 /// @param accessType One of @ref MCCAccessType
-Function AI_GetMCCScale(variable clampMode, variable func, variable accessType)
+static Function AI_GetMCCScale(variable clampMode, variable func, variable accessType)
 
 	AI_AssertOnInvalidAccessType(accessType)
 
@@ -601,7 +601,7 @@ static Function AI_UpdateAmpView(string device, variable headStage, [variable fu
 	endfor
 End
 
-Function AI_SetMIESHeadstage(string device, [variable headstage, variable increment])
+static Function AI_SetMIESHeadstage(string device, [variable headstage, variable increment])
 
 	if(ParamIsDefault(headstage) && ParamIsDefault(increment))
 		return NaN
@@ -1106,7 +1106,7 @@ threadsafe Function/S AI_MapFunctionConstantToName(variable func, variable clamp
 End
 
 /// @brief Map human readable names to functions constants from @ref AI_SendToAmpConstants
-threadsafe Function AI_MapNameToFunctionConstant(string name)
+threadsafe static Function AI_MapNameToFunctionConstant(string name)
 
 	strswitch(name)
 		// begin AmpStorageWave row labels
@@ -2184,7 +2184,7 @@ static Function [WAVE telegraphServers, WAVE ampMCC] AI_FindConnectedAmpsNoCache
 	return [telegraphServers, ampMCC]
 End
 
-Function [STRUCT AxonTelegraph_DataStruct tds] AI_GetTelegraphStruct(variable axonSerial, variable channel)
+static Function [STRUCT AxonTelegraph_DataStruct tds] AI_GetTelegraphStruct(variable axonSerial, variable channel)
 
 	variable i, err
 	string errMsg
@@ -2284,7 +2284,7 @@ Function AI_FindConnectedAmps([variable rescanHardware])
 	DEBUGPRINT("Unimplemented")
 End
 
-Function [STRUCT AxonTelegraph_DataStruct tds] AI_GetTelegraphStruct(variable axonSerial, variable channel)
+static Function [STRUCT AxonTelegraph_DataStruct tds] AI_GetTelegraphStruct(variable axonSerial, variable channel)
 
 	DEBUGPRINT("Unimplemented")
 End

@@ -212,7 +212,7 @@ static Function P_AddSealedEntryToTPStorage(string device, variable headstage)
 End
 
 /// @brief Sets the pressure to atmospheric
-Function P_MethodAtmospheric(string device, variable headstage)
+static Function P_MethodAtmospheric(string device, variable headstage)
 
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(device)
 	P_SetPressureValves(device, headStage, P_GetUserAccess(device, headStage, PRESSURE_METHOD_ATM))
@@ -639,7 +639,7 @@ static Function/S P_GetListOfPressureCtrlDevices(string device)
 End
 
 /// @brief Sets the pressure on a headStage
-Function P_SetAndGetPressure(string device, variable headStage, variable psi)
+static Function P_SetAndGetPressure(string device, variable headStage, variable psi)
 
 	variable hwType, deviceID, channel, scale, CalPsi
 	string msg
@@ -764,7 +764,7 @@ End
 /// NI hardware:
 /// There are no dedicated input or output channels for DIO. The last written value
 /// is read according to documentation.
-Function P_UpdateTTLstate(string device, variable headStage, variable ONorOFFA, variable ONorOFFB)
+static Function P_UpdateTTLstate(string device, variable headStage, variable ONorOFFA, variable ONorOFFB)
 
 	variable outputDecimal, val, idxA, idxB, channel
 	variable hwType, deviceID, ttlBitA, ttlBitB
@@ -1011,7 +1011,7 @@ static Function P_ITC_SetChannels(string device, variable headstage)
 End
 
 /// @brief Check wether the given device is used as pressure device already
-Function P_DeviceIsUsedForPressureCtrl(string device, string pressureDevice)
+static Function P_DeviceIsUsedForPressureCtrl(string device, string pressureDevice)
 
 	variable i, hwType, deviceID
 
@@ -2031,7 +2031,7 @@ static Function/WAVE P_DecToBinary(variable dec)
 End
 
 /// @brief Manual pressure control
-Function P_ManSetPressure(string device, variable headStage, variable manPressureAll)
+static Function P_ManSetPressure(string device, variable headStage, variable manPressureAll)
 
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(device)
 
@@ -2143,7 +2143,7 @@ End
 /// @brief Sets approach state
 ///
 /// Handles the TP depency of the approach pressure application
-Function P_SetApproach(string device, string cntrlName)
+static Function P_SetApproach(string device, string cntrlName)
 
 	P_UpdatePressureMode(device, PRESSURE_METHOD_APPROACH, cntrlName, 1)
 	P_RunP_ControlIfTPOFF(device)

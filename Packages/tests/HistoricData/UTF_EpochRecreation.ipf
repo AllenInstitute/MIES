@@ -44,7 +44,7 @@ Function ExportEpochsFromFileToDF(string dfNameTemp)
 		KillOrMoveToTrash(dfr = root:$dfName)
 		DFREF dfr = createDFWithAllParents("root:" + dfName)
 
-		WAVE/Z sweeps = SB_GetSweepsFromDevice(win, device)
+		WAVE/Z sweeps = MIES_SB#SB_GetSweepsFromDevice(win, device)
 		if(!WaveExists(sweeps))
 			printf "Found no sweeps for device %s\r", device
 			continue
@@ -139,7 +139,7 @@ static Function TestEpochRecreationShortNames([string str])
 			dfName = refEpFolder
 		endif
 
-		WAVE/Z sweeps = SB_GetSweepsFromDevice(win, device)
+		WAVE/Z sweeps = MIES_SB#SB_GetSweepsFromDevice(win, device)
 		REQUIRE_WAVE(sweeps, NUMERIC_WAVE)
 
 		for(sweep : sweeps)

@@ -634,8 +634,8 @@ static Function CheckAmplifierScaling([STRUCT IUTF_MDATA &md])
 	WAVE funcs = DataGenerators#GetAmplifierFuncs()
 
 	for(func : funcs)
-		forward  = AI_GetMCCScale(clampMode, func, MCC_READ)
-		backward = AI_GetMCCScale(clampMode, func, MCC_WRITE)
+		forward  = MIES_AI#AI_GetMCCScale(clampMode, func, MCC_READ)
+		backward = MIES_AI#AI_GetMCCScale(clampMode, func, MCC_WRITE)
 
 		CHECK_EQUAL_VAR(forward * backward, 1)
 	endfor

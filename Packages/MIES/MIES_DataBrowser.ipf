@@ -265,7 +265,7 @@ Function DB_DatabrowserStartupSettings()
 	CleanupOperationQueueResult()
 End
 
-Function/S DB_GetMainGraph(string win)
+static Function/S DB_GetMainGraph(string win)
 
 	return GetMainWindow(win)
 End

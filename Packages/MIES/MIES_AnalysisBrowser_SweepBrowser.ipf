@@ -192,7 +192,7 @@ End
 /// @param graph                                  name of main window or external subwindow in SweepBrowser
 /// @param channel                                type of the channel, one of #XOP_CHANNEL_NAMES
 /// @param experiment [optional, defaults to all] name of the experiment the channel wave should originate from
-Function/WAVE SB_GetChannelInfoFromGraph(string graph, string channel, [string experiment])
+static Function/WAVE SB_GetChannelInfoFromGraph(string graph, string channel, [string experiment])
 
 	variable i, j, numEntries, idx, numWaves, channelNumber
 	string list, headstage, path
@@ -475,7 +475,7 @@ Function/WAVE SB_GetMapIndizes(string win)
 End
 
 /// @brief Gets sweep numbers for a given device
-Function/WAVE SB_GetSweepsFromDevice(string win, string device)
+static Function/WAVE SB_GetSweepsFromDevice(string win, string device)
 
 	variable numRows, dimDevice, dimSweeps
 

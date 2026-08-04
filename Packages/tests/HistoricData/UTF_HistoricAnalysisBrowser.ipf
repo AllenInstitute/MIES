@@ -144,7 +144,7 @@ static Function TestGetChannelInfo()
 	CHECK_EQUAL_VAR(ItemsInList(sweepBrowsers), 1)
 	win = StringFromList(0, sweepBrowsers)
 
-	WAVE/T channelInfo = SB_GetChannelInfoFromGraph(win, "AD")
+	WAVE/T channelInfo = MIES_SB#SB_GetChannelInfoFromGraph(win, "AD")
 	CHECK_WAVE(channelInfo, TEXT_WAVE | FREE_WAVE)
 
 	Make/FREE/T channelInfoRef = {{"0"}, {"root:MIES:Analysis:workFolder:AB_LoadSweepsFromIgorData:Dev1:sweep:X_0:AD_0"}, {"0"}}

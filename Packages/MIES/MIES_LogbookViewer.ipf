@@ -147,7 +147,7 @@ static Function/WAVE LBV_CleanLogbookParamNames(WAVE/Z/T names)
 End
 
 /// @brief Return a text wave with all entries from all TPStorage waves which are candidates for plotting
-Function/WAVE LBV_GetTPStorageEntries(DFREF dfr)
+static Function/WAVE LBV_GetTPStorageEntries(DFREF dfr)
 
 	variable i, numEntries
 	string list
@@ -257,7 +257,7 @@ End
 /// @brief Return the keys/values logbook pair for the given key
 ///
 /// @return valid waves or null if it can not be found.
-Function [WAVE keys, WAVE values] LBV_GetLogbookWavesForEntry(string win, string key)
+static Function [WAVE keys, WAVE values] LBV_GetLogbookWavesForEntry(string win, string key)
 
 	variable col
 
@@ -1133,7 +1133,7 @@ Function LBV_EntryDescription(STRUCT WMWinHookStruct &s)
 	return 0
 End
 
-Function LBV_PlotAllAnalysisFunctionLBNKeys(string browser, variable anaFuncType)
+static Function LBV_PlotAllAnalysisFunctionLBNKeys(string browser, variable anaFuncType)
 
 	string key, graph, axes, prefix
 	variable i, numEntries

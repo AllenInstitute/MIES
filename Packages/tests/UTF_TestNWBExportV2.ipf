@@ -616,7 +616,7 @@ static Function/S TestFileExport()
 	[baseFolder, nwbFile] = GetUniqueNWBFileForExport(NWB_VERSION)
 	discLocation          = baseFolder + nwbFile
 
-	KillWindow/Z $AB_GetPanelName()
+	KillWindow/Z $MIES_AB#AB_GetPanelName()
 	KillOrMoveToTrash(dfr = GetAnalysisFolder())
 
 	NWB_ExportAllData(NWB_VERSION, compressionMode = GetNoCompression(), writeStoredTestPulses = 1, overrideFullFilePath = discLocation, overwrite = 1)
@@ -650,7 +650,7 @@ Function TestNwbExportV2()
 
 	discLocation = TestFileExport()
 
-	WAVE/Z/T entry = AB_GetMap(discLocation)
+	WAVE/Z/T entry = MIES_AB#AB_GetMap(discLocation)
 	CHECK_WAVE(entry, FREE_WAVE)
 
 	WAVE/Z/T devices = GetAnalysisDeviceWave(entry[%DataFolder])

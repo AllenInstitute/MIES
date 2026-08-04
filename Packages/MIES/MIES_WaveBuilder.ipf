@@ -347,7 +347,7 @@ End
 ///
 /// @param setName	string containing name of stimset
 /// @return date of last modification as double precision Igor date/time value
-Function WB_GetLastModStimSet(string setName)
+static Function WB_GetLastModStimSet(string setName)
 
 	variable channelType
 
@@ -1119,7 +1119,7 @@ End
 /// @param wv          WPT wave reference
 /// @param channelType AD/DA or TTL channel type
 /// @param i           index of epoch containing custom wave
-Function WB_UpgradeCustomWaveInWPT(WAVE/T wv, variable channelType, variable i)
+static Function WB_UpgradeCustomWaveInWPT(WAVE/T wv, variable channelType, variable i)
 
 	string customWaveName = wv[0][i][EPOCH_TYPE_CUSTOM]
 
@@ -1232,7 +1232,7 @@ End
 /// @brief Check if the given frequency is a valid setting for the noise epoch
 ///
 /// Requires a scaled frequency as input, see `DisplayHelpTopic "FilterIIR"`
-Function WB_IsValidScaledCutoffFrequency(variable freq)
+static Function WB_IsValidScaledCutoffFrequency(variable freq)
 
 	return freq > 0 && freq <= 0.5
 End

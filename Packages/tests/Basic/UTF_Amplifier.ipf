@@ -42,7 +42,7 @@ static Function TestFuncMapping()
 			CHECK_PROPER_STR(name)
 
 			INFO("entry: %s, ctrl: %s, name: %s", s0 = entry, s1 = ctrl, s2 = name)
-			funcBack = AI_MapNameToFunctionConstant(name)
+			funcBack = MIES_AI#AI_MapNameToFunctionConstant(name)
 			CHECK_EQUAL_VAR(func, funcBack)
 
 			CHECK_EQUAL_STR(MIES_AI#AI_AmpStorageControlToRowLabel(ctrl), AI_MapFunctionConstantToName(func, clampMode))

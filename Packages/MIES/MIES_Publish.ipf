@@ -32,7 +32,7 @@ static Function PUB_GetJSONTemplate(string device, variable headstage)
 End
 
 /// @brief Publish the given message as given by the JSON and the filter
-threadsafe Function PUB_Publish(variable jsonID, string messageFilter, [variable releaseJSON, WAVE/Z additionalData])
+threadsafe static Function PUB_Publish(variable jsonID, string messageFilter, [variable releaseJSON, WAVE/Z additionalData])
 
 	variable err
 

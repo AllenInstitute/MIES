@@ -483,7 +483,7 @@ static Function NWB_AddDeviceSpecificData(STRUCT NWBAsyncParameters &s, variable
 	NWB_WriteTestpulseData(s, writeStoredTestPulses)
 End
 
-Function NWB_WriteTestpulseData(STRUCT NWBAsyncParameters &s, variable writeStoredTestPulses)
+static Function NWB_WriteTestpulseData(STRUCT NWBAsyncParameters &s, variable writeStoredTestPulses)
 
 	variable groupID, i, numEntries, compressionModeStoredTP
 	string path, list, name, deviceDesc
@@ -788,7 +788,7 @@ End
 ///
 /// Currently wait up to 10min (NWB_ASYNC_WRITING_TIMEOUT * NWB_ASYNC_MAX_ITERATIONS),
 /// everything above 5s is considered a bug.
-Function NWB_ASYNC_FinishWriting(string device)
+static Function NWB_ASYNC_FinishWriting(string device)
 
 	string workload, msg
 	variable i
@@ -805,7 +805,7 @@ Function NWB_ASYNC_FinishWriting(string device)
 	endfor
 End
 
-Function NWB_CheckForMissingSweeps(string device, WAVE/T sweepNames)
+static Function NWB_CheckForMissingSweeps(string device, WAVE/T sweepNames)
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
@@ -2009,7 +2009,7 @@ threadsafe Function NWB_ConvertToStandardTTLBit(variable value)
 End
 
 /// @brief Reverse direction of NWB_ConvertToStandardTTLBit()
-threadsafe Function NWB_ConvertTTLBitToChannelSuffix(variable value)
+threadsafe static Function NWB_ConvertTTLBitToChannelSuffix(variable value)
 
 	return 2^value
 End
