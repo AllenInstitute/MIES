@@ -1774,6 +1774,85 @@ static Function TestVariables2()
 	CHECK_EQUAL_STR("12345\r", code)
 End
 
+// Covers MIES_SweepFormula_Executor.ipf: SFE_ExecuteVariableAssignments appending a missing
+// trailing CR to the SF notebook before erroring out on code that consists only of variable
+// assignments (default allowEmptyCode = 0).
+static Function TestOnlyVariablesNotebookFixup()
+
+	string win, device, sfWin, nbText
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+	win           = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	sfWin = BSP_GetSFFormula(win)
+	ReplaceNotebookText(sfWin, "1")
+
+	try
+		MIES_SFE#SFE_ExecuteVariableAssignments(win, "var = 1")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	nbText = GetNotebookText(sfWin, mode = 2)
+	CHECK(StringEndsWith(nbText, "\r"))
+End
+
+// Test-only testop() implementation returning a single dataset whose sole payload is itself a
+// WAVE/WAVE (neither text nor numeric), to drive the array-literal wrapping test below.
+Function/WAVE TestOp_NestedComposite(STRUCT SF_ExecutionData &exd)
+
+	WAVE/WAVE inner = SFH_CreateSFRefWave(exd.graph, "claudeInner", 1)
+	Make/FREE/D innerData = {42}
+	inner[0] = innerData
+
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_TESTOP, 1)
+	output[0] = inner
+
+	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_TESTOP)
+End
+
+// Covers MIES_SweepFormula_Executor.ipf: SFE_FormulaExecutor's array literal handling for an
+// element whose resolved dataset is itself neither a text nor a numeric wave (i.e. another
+// WAVE/WAVE), which must be wrapped as a "WrappedArrayElement" dataset marker.
+static Function TestArrayWithNestedComposite()
+
+	string win, str
+
+	win = GetDataBrowserWithData()
+
+	SVAR funcName = $GetSFTestopName(win)
+	funcName = "TestOp_NestedComposite"
+
+	str = "[testop()]"
+	WAVE/T output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1)
+
+	WAVE/Z/WAVE resolved = SFH_AttemptDatasetResolve(output[0])
+	CHECK_WAVE(resolved, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(resolved, ROWS), 1)
+
+	WAVE/Z leaf = resolved[0]
+	CHECK_WAVE(leaf, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(leaf[0], 42)
+End
+
+// Covers MIES_SweepFormula_Executor.ipf: SFE_FormulaExecutor's array literal handling growing
+// the text accumulator (outT) via Redimension when a later element's actual result size
+// exceeds what was assumed for earlier elements.
+static Function TestArrayTextResize()
+
+	string win, str
+
+	win = GetDataBrowserWithData()
+
+	str = "[text(1), text([1,2,3])]"
+	WAVE/T output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+
+	CHECK_EQUAL_TEXTWAVES(output, {{"1.0000000", "1.0000000"}, {"1.0000000", "2.0000000"}, {"1.0000000", "3.0000000"}})
+End
+
 static Function TestDefaultFormula()
 
 	string win, bsPanel, winRec, str
