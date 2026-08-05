@@ -2,32 +2,38 @@
 .SYNOPSIS
     Installs the pinned Python dependencies for the Igor Pro Bridge MCP server
     (tools/igor-mcp-bridge/server.py) into the same Python environment Claude Desktop
-    itself resolves when it launches the bridge elevated.
+    itself resolves when it launches the bridge.
 
 .DESCRIPTION
     Claude Desktop's manifest.json invokes the bridge as the bare command "python",
-    resolved via whatever PATH Claude Desktop's own elevated process environment has
-    at launch time. That is NOT guaranteed to be the same Python an interactive
-    elevated console session resolves -- e.g. a PowerShell profile script activating a
-    conda environment only for that session, or a per-user Microsoft Store "app
-    execution alias" stub (a placeholder python.exe that just opens the Store) which
-    is known to behave differently once elevated. Installing packages into whatever
-    Python a manually-opened elevated console happens to find can therefore silently
-    install into the wrong environment.
+    resolved via whatever PATH Claude Desktop's own process environment has at launch
+    time. That is NOT guaranteed to be the same Python an interactive console session
+    resolves -- e.g. a PowerShell profile script activating a conda environment only
+    for that session, or a per-user Microsoft Store "app execution alias" stub (a
+    placeholder python.exe that just opens the Store) which is known to behave
+    differently once elevated. Installing packages into whatever Python a
+    manually-opened console happens to find can therefore silently install into the
+    wrong environment.
 
     This script instead resolves python.exe from the Machine and then User PATH
     registry values directly (via [Environment]::GetEnvironmentVariable(..., target)),
     the same two sources and order Windows composes into a freshly created process's
-    environment block -- deliberately ignoring this session's own possibly-customized
-    $env:Path, to mirror what a freshly launched, elevated Claude Desktop process
-    actually sees. Pass -PythonPath explicitly to skip this resolution entirely if you
-    already know the right interpreter (e.g. from a prior get_bridge_version() call --
-    see below).
+    environment block regardless of that process's elevation state -- deliberately
+    ignoring this session's own possibly-customized $env:Path, to mirror what a
+    freshly launched Claude Desktop process actually sees, whether or not it happens
+    to be elevated. Pass -PythonPath explicitly to skip this resolution entirely if
+    you already know the right interpreter (e.g. from a prior get_bridge_version()
+    call -- see below).
 
     Steps performed, in order:
-      1. Confirm this script itself is running elevated (required: both the package
-         install destination and the later pywin32 post-install step must match/target
-         the same elevated environment Claude Desktop uses).
+      1. Confirm this script itself is running elevated. This is required only for
+         step 5 below (pywin32's post-install step, which registers COM-support DLLs
+         into protected system locations) -- it is NOT because Claude Desktop or Igor
+         Pro themselves need to be elevated at runtime. Confirmed empirically (see
+         igor-pro-bridge.rst, "Requirements"): Claude Desktop and Igor Pro just need to
+         run at the SAME privilege level as each other (both elevated, or both not);
+         this script needing elevation is a one-time, install-time requirement of its
+         own, independent of whichever level you later choose to run the bridge at.
       2. Resolve python.exe (or use -PythonPath).
       3. `<python> -m pip install --upgrade pip`
       4. `<python> -m pip install --require-hashes -r requirements.txt` (pinned,
@@ -41,11 +47,13 @@
       6. Import-check mcp and win32com.client with the same interpreter, and print
          its full path/version for you to cross-check.
 
-    After this script finishes, fully restart Claude Desktop (elevated), then call the
-    bridge's get_bridge_version tool from a conversation -- its "python_executable"
-    field is the authoritative answer for which interpreter Claude Desktop actually
-    launched. If it doesn't match what this script installed into, re-run this script
-    with -PythonPath pointing at that reported path.
+    After this script finishes, fully restart Claude Desktop (at whichever privilege
+    level you intend to run it and Igor Pro at -- both must match each other, but
+    neither has to be elevated), then call the bridge's get_bridge_version tool from a
+    conversation -- its "python_executable" field is the authoritative answer for
+    which interpreter Claude Desktop actually launched. If it doesn't match what this
+    script installed into, re-run this script with -PythonPath pointing at that
+    reported path.
 
 .PARAMETER PythonPath
     Full path to a specific python.exe to install into, bypassing auto-resolution
@@ -100,10 +108,12 @@ function Test-IsWindowsAppsStub {
 
 function Resolve-ClaudeDesktopPython {
     <#
-        Mirrors how Claude Desktop's own elevated process resolves the bare command
-        "python" from its manifest.json, without trusting this interactive
-        PowerShell session's own $env:Path -- see the script's top-level comment-based
-        help for the full rationale. Returns the first matching python.exe found by
+        Mirrors how Claude Desktop's own process resolves the bare command "python"
+        from its manifest.json (regardless of whether that process happens to be
+        elevated or not -- Machine/User PATH registry values are the same either way),
+        without trusting this interactive PowerShell session's own $env:Path -- see
+        the script's top-level comment-based help for the full rationale. Returns the
+        first matching python.exe found by
         searching the Machine PATH, then the User PATH, in that order (the same
         composition order Windows uses to build a fresh process's environment block),
         or $null if none is found.
@@ -145,11 +155,14 @@ function Invoke-Checked {
 
 if (-not (Test-IsElevated)) {
     Write-Error (
-        "This script must run elevated (as Administrator) -- both because the " +
-        "pywin32 post-install step below requires it, and because it needs to " +
-        "match the same elevated environment Claude Desktop itself runs in. " +
-        "Re-run this script from an elevated PowerShell (right-click PowerShell -> " +
-        "Run as administrator)."
+        "This script must run elevated (as Administrator) because the pywin32 " +
+        "post-install step below registers COM-support DLLs into protected system " +
+        "locations, which requires admin rights regardless of how you plan to run " +
+        "Claude Desktop/Igor Pro afterward. This is a one-time, install-time " +
+        "requirement only -- Claude Desktop and Igor Pro do NOT both need to be " +
+        "elevated at runtime, they just need to match each other's privilege level " +
+        "(see igor-pro-bridge.rst, 'Requirements'). Re-run this script from an " +
+        "elevated PowerShell (right-click PowerShell -> Run as administrator)."
     )
     exit 1
 }
@@ -251,8 +264,10 @@ try {
 }
 
 Write-Host (
-    "`nDone. Fully restart Claude Desktop (elevated), then call the bridge's " +
-    "get_bridge_version tool and confirm its 'python_executable' field matches: $python`n" +
+    "`nDone. Fully restart Claude Desktop (at whichever privilege level you intend " +
+    "to run it and Igor Pro at -- both must match each other, but neither has to be " +
+    "elevated), then call the bridge's get_bridge_version tool and confirm its " +
+    "'python_executable' field matches: $python`n" +
     "If it does not match, re-run this script with -PythonPath set to the path " +
     "get_bridge_version() actually reports."
 )

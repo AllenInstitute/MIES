@@ -55,10 +55,15 @@ All API details below were extracted directly from the local file:
   "for most uses" -- and the point-value methods sidestep SAFEARRAY marshaling questions
   entirely, so this file uses those instead. Whole-wave SAFEARRAY access could be added
   later as a faster path for large waves.)
-- **CRITICAL SETUP REQUIREMENT, confirmed verbatim from the docs**: "The Windows
-  operating system requires that you run the client and server (Igor) as administrator."
-  I.e. BOTH this Python process AND Igor Pro itself must be started as Administrator on
-  Windows 10+, or the COM connection will fail. This is not optional and is easy to miss.
+- **CRITICAL SETUP REQUIREMENT, per the docs**: "The Windows operating system requires
+  that you run the client and server (Igor) as administrator." Confirmed empirically,
+  however, that elevation itself is not the actual requirement -- this Python process
+  and Igor Pro must run at the SAME privilege level (both elevated as Administrator, or
+  both not); Igor's docs only document/test the both-elevated case. A mismatch between
+  the two, not non-elevation per se, is what breaks the COM connection, and is easy to
+  miss (e.g. after Claude Desktop is reopened normally, which does not preserve
+  elevation from a previous launch, while Igor Pro is still running elevated from
+  before).
 
 ONE THING THIS FILE CANNOT VERIFY FROM here (no Windows/Igor available to actually run
 this): the exact Python-side calling convention pywin32's dynamic dispatch uses for
@@ -90,9 +95,10 @@ See Packages/doc/igor-pro-bridge.rst ("Installation") for the full, up-to-date
 installation steps -- this docstring previously described the config.json approach,
 which was found to be unreliable and is no longer how this bridge is distributed.
 
-After installing (or updating), fully restart Claude Desktop (elevated). Remember: both
-Claude Desktop's Python process AND Igor Pro itself need to be running elevated (as
-Administrator) for the COM connection to succeed.
+After installing (or updating), fully restart Claude Desktop. Remember: Claude Desktop's
+Python process and Igor Pro itself need to be running at the SAME privilege level (both
+elevated as Administrator, or both not) for the COM connection to succeed -- elevation
+itself is not the requirement, a mismatch between the two is what breaks it.
 
 This is a *local* MCP server (stdio transport) -- it only works from a Claude Desktop
 session running on the same Windows machine as Igor Pro, not from a cloud/Cowork sandbox.
@@ -102,6 +108,7 @@ import ctypes
 import html.parser
 import importlib.metadata
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -175,11 +182,12 @@ def _is_current_process_elevated():
 _elevated_at_startup = _is_current_process_elevated()
 if _elevated_at_startup is False:
     print(
-        "WARNING: this MCP server process is NOT running elevated (as Administrator). "
-        "Igor Pro's COM Automation Server requires BOTH Igor Pro and this process to be "
-        "elevated, or every tool call will fail with a COM/RPC error. Relaunch Claude "
-        "Desktop specifically via 'Run as administrator' -- reopening it normally does "
-        "not preserve elevation across restarts.",
+        "NOTE: this MCP server process is NOT running elevated (as Administrator). "
+        "This is fine as long as Igor Pro is ALSO not running elevated -- COM requires "
+        "this process and Igor Pro to be at the SAME privilege level, not elevation "
+        "specifically. If Igor Pro is running elevated while this process isn't, every "
+        "tool call will fail with a COM/RPC error; either relaunch Claude Desktop via "
+        "'Run as administrator' to match, or restart Igor Pro non-elevated instead.",
         file=sys.stderr,
     )
 elif _elevated_at_startup is None:
@@ -213,10 +221,11 @@ def _get_igor(force_reconnect=False):
         except Exception as e:
             raise RuntimeError(
                 "Could not attach to a running Igor Pro instance via COM. Make sure: "
-                "(1) Igor Pro is already running, (2) BOTH Igor Pro and this Python "
-                "process are running as Administrator (Windows requires this for COM "
-                "Automation), and (3) Igor Pro 9.00 (or later) is installed with the "
-                "Automation Server component."
+                "(1) Igor Pro is already running, (2) Igor Pro and this Python process "
+                "are running at the SAME privilege level -- both elevated (as "
+                "Administrator), or both not; a mismatch, not elevation itself, is what "
+                "breaks the COM connection -- and (3) Igor Pro 9.00 (or later) is "
+                "installed with the Automation Server component."
             ) from e
     return _igor
 
@@ -622,7 +631,7 @@ def load_experiment(file_path: str) -> dict:
 # from inside a conversation which .mcpb build was actually loaded/active in Claude
 # Desktop, which made it impossible to verify whether a given fix (e.g. the reload/compile
 # timing relaxation) was actually in effect during a test -- see SESSION_NOTES.md.
-_BRIDGE_VERSION = "1.25.0"
+_BRIDGE_VERSION = "1.27.0"
 
 
 def _installed_package_version(distribution_name: str) -> str | None:
@@ -653,9 +662,10 @@ def get_bridge_version() -> dict:
     The "python_executable" field is also the authoritative answer to a separate,
     easy-to-get-wrong question: *which* Python environment Claude Desktop actually
     launched this process with. Claude Desktop's manifest.json only specifies the bare
-    command "python", resolved via whatever PATH Claude Desktop's own (elevated)
-    process environment has at launch time -- which is not guaranteed to match the
-    Python an interactive elevated console session resolves (e.g. a PowerShell profile
+    command "python", resolved via whatever PATH Claude Desktop's own process
+    environment has at launch time (regardless of whether that process happens to be
+    elevated) -- which is not guaranteed to match the Python an interactive console
+    session resolves (e.g. a PowerShell profile
     activating a conda environment, or a per-user Microsoft Store "app execution
     alias" stub that behaves differently once elevated). install.ps1 makes its own
     best-effort guess at install time; after installing and restarting Claude Desktop,
@@ -679,27 +689,25 @@ def check_bridge_health() -> dict:
 
     Call this first whenever a command fails or behaves unexpectedly. This session's
     own debugging hit three distinct failure modes that all needed different fixes:
-    (1) this Python process not running elevated, (2) no Igor Pro COM object
-    registered at all (Igor not running), and (3) a registered-but-dead COM object
-    (Igor crashed/was force-closed, leaving a stale registration that reconnecting
-    alone can't fix -- Igor itself needs relaunching). This check distinguishes all
-    three rather than surfacing one generic failure.
+    (1) this Python process and Igor Pro running at mismatched privilege levels (one
+    elevated, one not), (2) no Igor Pro COM object registered at all (Igor not
+    running), and (3) a registered-but-dead COM object (Igor crashed/was
+    force-closed, leaving a stale registration that reconnecting alone can't fix --
+    Igor itself needs relaunching). This check distinguishes all three rather than
+    surfacing one generic failure.
+
+    Note on (1): elevation itself is not the requirement -- empirically confirmed
+    (both this bridge process and Igor Pro running non-elevated, as an ordinary
+    user, via a standalone win32com.client.GetActiveObject test) that COM attaches
+    fine as long as client and server share the same privilege level. This check
+    therefore always attempts the real COM call rather than pre-emptively failing
+    based on this process's own elevation state -- a mismatch, if present, shows up
+    as the COM/RPC-transport error below.
 
     Returns a dict with at least a "status" key ("OK" or "FAIL") and, on FAIL, a
     "problem" key with a specific, actionable description.
     """
     report = {"python_process_elevated": _is_current_process_elevated()}
-
-    if report["python_process_elevated"] is False:
-        report["status"] = "FAIL"
-        report["problem"] = (
-            "This Python process is not running elevated (as Administrator). Igor "
-            "Pro's COM Automation Server requires both Igor Pro and this process to "
-            "be elevated. Relaunch Claude Desktop specifically via 'Run as "
-            "administrator' -- reopening it normally does not preserve elevation -- "
-            "then retry."
-        )
-        return report
 
     try:
         _get_igor()
@@ -707,7 +715,9 @@ def check_bridge_health() -> dict:
         report["status"] = "FAIL"
         report["problem"] = (
             f"No running Igor Pro instance found via COM ({e}). Make sure Igor Pro "
-            "9.00 or later is open and running elevated."
+            "9.00 or later is open, and that it and this Python process are running "
+            "at the same privilege level (both elevated, or both not) -- a mismatch "
+            "is the most common cause of this failure, not elevation itself."
         )
         return report
 
@@ -727,11 +737,12 @@ def check_bridge_health() -> dict:
             report["status"] = "FAIL"
             report["problem"] = (
                 f"Found a registered Igor Pro COM object, but calls to it fail with a "
-                f"COM/RPC-transport error even after reconnecting ({e2}). This means a "
-                "stale/dead COM registration, most likely because Igor Pro crashed or "
-                "was force-closed previously. Check Task Manager for Igor64.exe -- "
-                "there should be exactly one -- fully close it, and relaunch Igor Pro "
-                "fresh, as Administrator."
+                f"COM/RPC-transport error even after reconnecting ({e2}). This usually "
+                "means a stale/dead COM registration (Igor Pro crashed or was "
+                "force-closed previously -- check Task Manager for Igor64.exe, there "
+                "should be exactly one, fully close it, and relaunch Igor Pro fresh), "
+                "or a privilege-level mismatch between this process and Igor Pro (both "
+                "must be elevated, or both not -- elevation itself is not required)."
             )
             return report
 
@@ -1373,6 +1384,207 @@ def reload_and_compile_procedures() -> dict:
         "prompt_user_to_check_for_dialog": True,
         "note": note,
     }
+
+
+# --- Defining IGOR_PRO_BRIDGE without manual experiment setup ----------------------
+#
+# Some procedure files wrap bridge-support helper functions in
+# "#ifdef IGOR_PRO_BRIDGE / ... / #endif" so those helpers don't get silently
+# compiled into an ordinary end-user build -- this repo's own
+# Packages/MIES/MIES_ClaudeHelper.ipf is one example (see that file's own header
+# comment), but nothing about this convention or this tool is specific to MIES: ANY
+# Igor Pro experiment/procedure tree can adopt the same "#ifdef IGOR_PRO_BRIDGE"
+# pattern for its own bridge-support code. The catch is the same regardless of whose
+# code is gated: a freshly opened Igor Pro environment this bridge has never touched
+# before (a bare "Untitled" experiment, or any experiment/branch whose Procedure
+# window was never hand-edited for this) will not have IGOR_PRO_BRIDGE defined, so
+# that gated code stays uncompiled until someone adds "#define IGOR_PRO_BRIDGE" to
+# the experiment's Procedure window by hand and recompiles.
+#
+# Confirmed from Igor Pro Folder/Igor Help Files/Programming.ihf, "Conditional
+# Compilation" topic: an ordinary "#define symbol" inside a procedure file is scoped
+# to that file (or, for the main Procedure window specifically, to every
+# non-independent-module file) -- but "SetIgorOption poundDefine=symb" instead adds
+# symb to a separate *global* symbol list, "available in all procedure windows
+# (including independent modules)". Queried via "SetIgorOption poundDefine=symb?"
+# (sets V_flag to 1/0), reversed via "SetIgorOption poundUndefine=symb". "A symbol
+# defined in a global list is not undefined by a #undef in a procedure window."
+#
+# Also confirmed there and cross-checked in Advanced Topics.ihf: this change is
+# temporary -- it lasts only until Igor Pro quits (not saved into the experiment,
+# must be redone every fresh Igor session) -- and itself triggers a recompile: the
+# BeforeUncompiledHook table lists "SetIgorOption poundDefine" as changeCode 6 and
+# "SetIgorOption poundUndefine" as changeCode 7, each described as "causes a
+# recompile". Per Igor Reference.ihf's own SetIgorOption entry: "SetIgorOption is
+# not compilable. To use it in a user-defined function, you need to use Execute" --
+# a non-issue here, since this bridge always sends it as an interpreted command-line
+# statement via Execute2, never from inside compiled code.
+#
+# This tool deliberately has NO built-in knowledge of MIES or any other specific
+# codebase -- it only manages the IGOR_PRO_BRIDGE symbol itself (defining it,
+# recompiling, reporting the result), so it's equally useful for any Igor Pro
+# experiment that adopts this convention for its own bridge-support code. An
+# optional caller-supplied marker_function argument lets a caller who *does* know
+# about a specific gated function (e.g. this repo's own "CH_ListXOPExports") get an
+# extra confirmation that it actually became available, without that name being
+# hardcoded into the bridge itself.
+_IGOR_PRO_BRIDGE_DEFINE = "IGOR_PRO_BRIDGE"
+_IGOR_PRO_BRIDGE_DEFINE_QUERY_CMD = (
+    f'SetIgorOption poundDefine={_IGOR_PRO_BRIDGE_DEFINE}?; fprintf 0, "%d", V_flag'
+)
+# Function names in Igor are restricted to letters/digits/underscore (and can't start
+# with a digit); this is just a defensive check against a caller-supplied string
+# breaking out of the quoted FunctionInfo(...) call built below, not a claim about
+# every valid Igor identifier rule.
+_SAFE_IGOR_IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+
+
+def _is_igor_pro_bridge_defined() -> bool:
+    """Query Igor's global #define symbol list (see the block comment above) for
+    IGOR_PRO_BRIDGE."""
+    errorCode, errorMsg, history, results = _execute2(_IGOR_PRO_BRIDGE_DEFINE_QUERY_CMD)
+    if errorCode != 0:
+        raise RuntimeError(
+            f"Could not query {_IGOR_PRO_BRIDGE_DEFINE} define state (error code "
+            f"{errorCode}): {errorMsg or '(no error message)'}"
+        )
+    return results == "1"
+
+
+def _function_resolves(function_name: str) -> bool:
+    """True if FunctionInfo(function_name) is non-empty, i.e. Igor currently has a
+    compiled function/operation by that name -- no assumption about which procedure
+    file or codebase defines it."""
+    if not _SAFE_IGOR_IDENTIFIER_RE.match(function_name):
+        raise ValueError(
+            f"Not a plausible Igor function name: {function_name!r}"
+        )
+    errorCode, errorMsg, history, results = _execute2(
+        f'fprintf 0, "%s", FunctionInfo("{function_name}")'
+    )
+    if errorCode != 0:
+        raise RuntimeError(
+            f"Could not check FunctionInfo({function_name!r}) (error code "
+            f"{errorCode}): {errorMsg or '(no error message)'}"
+        )
+    return results != ""
+
+
+@mcp.tool()
+def ensure_igor_pro_bridge_defined(marker_function: str = "") -> dict:
+    """Make sure the IGOR_PRO_BRIDGE conditional-compilation symbol is defined in the
+    current Igor Pro instance -- defining it and forcing a recompile if it wasn't
+    already, instead of requiring a human to hand-edit the experiment's Procedure
+    window first. See the block comment above this tool in server.py for the full
+    SetIgorOption/Conditional-Compilation background, confirmed directly from Igor
+    Pro Folder/Igor Help Files/Programming.ihf and Advanced Topics.ihf.
+
+    This tool has NO built-in knowledge of MIES or any other specific codebase -- it
+    only manages the IGOR_PRO_BRIDGE symbol itself, so it's equally useful for any
+    Igor Pro experiment that adopts the "#ifdef IGOR_PRO_BRIDGE" convention for its
+    own bridge-support procedure code, not just this repo's own
+    MIES_ClaudeHelper.ipf.
+
+    Call this proactively whenever a fresh/unfamiliar Igor Pro environment is being
+    used with this bridge for the first time in a session, or whenever some
+    IGOR_PRO_BRIDGE-gated behavior you rely on (e.g.
+    reload_and_compile_procedures's AfterCompiledHook-counter signal, if the
+    procedure file providing it is gated this way) looks unavailable and you want to
+    try fixing that rather than just accepting a weaker fallback.
+
+    Args:
+        marker_function: optional. If you know of a *specific* function that should
+            become available once IGOR_PRO_BRIDGE is defined and compiled in (e.g.
+            "CH_ListXOPExports" for this repo's own MIES_ClaudeHelper.ipf), pass its
+            name here to get an extra before/after FunctionInfo(...) confirmation
+            layered on top of the define/recompile result. Leave blank to just
+            manage the define/recompile with no such check -- this is the fully
+            generic mode, appropriate when you don't know (or don't need to know)
+            about any specific gated function.
+
+    Steps taken:
+    1. If marker_function is given, checks FunctionInfo(marker_function) now, before
+       doing anything else (recorded as "marker_function_available_before").
+    2. Checks IGOR_PRO_BRIDGE's current state in the global #define list
+       (SetIgorOption poundDefine=IGOR_PRO_BRIDGE?). If already defined, returns
+       immediately with "igor_pro_bridge_defined": True and no recompile triggered --
+       if marker_function was given and still doesn't resolve, that means whatever
+       procedure file defines it simply isn't #include-d by whatever is currently
+       loaded (e.g. a bare "Untitled" experiment) -- NOT something this tool can fix
+       by redefining IGOR_PRO_BRIDGE, so it's reported via
+       "marker_function_available_before"/"_after" rather than retried.
+    3. If IGOR_PRO_BRIDGE is genuinely undefined, runs
+       'SetIgorOption poundDefine=IGOR_PRO_BRIDGE' then 'COMPILEPROCEDURES ' (both
+       via Execute/P, the same operation-queue mechanism reload_and_compile_procedures
+       uses -- RELOAD CHANGED PROCS is deliberately skipped here since no on-disk
+       .ipf file changed, only Igor's in-memory global symbol list), then polls for
+       compile confirmation exactly the way reload_and_compile_procedures does,
+       reusing _poll_for_compile_confirmation (see that function's docstring for why
+       two independent signals are checked).
+    4. If marker_function was given, re-checks FunctionInfo(marker_function) one
+       final time ("marker_function_available_after") and reports the outcome.
+
+    Only ever ADDS the define, never calls poundUndefine -- there is currently no
+    known reason for this bridge to want IGOR_PRO_BRIDGE turned back off within a
+    session, and doing so would itself force yet another recompile for no benefit.
+    """
+    marker_before = _function_resolves(marker_function) if marker_function else None
+
+    was_defined = _is_igor_pro_bridge_defined()
+
+    if was_defined:
+        result = {"igor_pro_bridge_defined": True, "define_set": False}
+        if marker_function:
+            result["marker_function"] = marker_function
+            result["marker_function_available_before"] = marker_before
+            result["marker_function_available_after"] = marker_before
+            if not marker_before:
+                result["note"] = (
+                    f"{_IGOR_PRO_BRIDGE_DEFINE} is already defined globally, but "
+                    f'FunctionInfo("{marker_function}") still does not resolve. '
+                    "This means whatever procedure file defines that function is "
+                    "not #include-d by whatever is currently loaded (e.g. a bare "
+                    f"'Untitled' experiment) -- defining {_IGOR_PRO_BRIDGE_DEFINE} "
+                    "again cannot fix that. Load an experiment/procedure file that "
+                    "actually includes it instead (see load_experiment)."
+                )
+        return result
+
+    baseline_counter = _read_claude_helper_compile_counter()
+
+    errorCode, errorMsg, history, results = _execute2(
+        f'Execute/P "SetIgorOption poundDefine={_IGOR_PRO_BRIDGE_DEFINE}"'
+    )
+    if errorCode != 0:
+        raise RuntimeError(
+            f"SetIgorOption poundDefine={_IGOR_PRO_BRIDGE_DEFINE} failed (error code "
+            f"{errorCode}): {errorMsg}"
+        )
+
+    time.sleep(_RELOAD_TO_COMPILE_PAUSE_SECONDS)
+
+    errorCode, errorMsg, history, results = _execute2('Execute/P "COMPILEPROCEDURES "')
+    if errorCode != 0:
+        raise RuntimeError(
+            f"COMPILEPROCEDURES failed (error code {errorCode}): {errorMsg}"
+        )
+
+    time.sleep(_POST_COMPILE_PAUSE_SECONDS)
+
+    poll_result = _poll_for_compile_confirmation(
+        baseline_counter, _COMPILE_POLL_TIMEOUT_SECONDS
+    )
+
+    result = {
+        "igor_pro_bridge_defined_before": False,
+        "define_set": True,
+        **poll_result,
+    }
+    if marker_function:
+        result["marker_function"] = marker_function
+        result["marker_function_available_before"] = marker_before
+        result["marker_function_available_after"] = _function_resolves(marker_function)
+    return result
 
 
 # --- Debugger control ---------------------------------------------------------------
@@ -2152,10 +2364,13 @@ def configure_igor_launch(exe_path: str) -> dict:
             "('Run as administrator') when launching Igor Pro, which requires the "
             "user to approve a consent dialog themselves. Even after that succeeds, "
             "THIS Python process will still not be elevated, so COM calls will keep "
-            "failing with the usual elevation-mismatch error (see "
-            "check_bridge_health) until Claude Desktop itself is relaunched as "
-            "Administrator -- make sure the user understands this before relying "
-            "on launch_igor_pro_unattended to get a fully working bridge."
+            "failing due to the resulting privilege-level mismatch (see "
+            "check_bridge_health) until Claude Desktop itself is relaunched at a "
+            "matching level (elevated, to match the now-elevated Igor Pro) -- make "
+            "sure the user understands this before relying on "
+            "launch_igor_pro_unattended to get a fully working bridge. "
+            "Alternatively, Igor Pro can simply be launched non-elevated by hand "
+            "instead, which needs no elevation match at all."
         )
     else:
         elevation_plan = (
@@ -2164,8 +2379,9 @@ def configure_igor_launch(exe_path: str) -> dict:
             "'not elevated' as a conservative default (requesting UAC elevation "
             "via ShellExecute's 'runas' verb rather than risking a silently "
             "unelevated direct launch) -- if COM calls fail afterward, check "
-            "check_bridge_health and make sure both Claude Desktop and Igor Pro "
-            "are running as Administrator."
+            "check_bridge_health and make sure Claude Desktop and Igor Pro are "
+            "running at the same privilege level (both elevated, or both not; "
+            "elevation itself is not required)."
         )
 
     return {
@@ -2217,9 +2433,11 @@ def launch_igor_pro_unattended(wait_for_ready_seconds: float = 30.0) -> dict:
     ShellExecute's "runas" verb instead, which triggers a normal Windows UAC consent
     dialog the user must approve -- but even after that succeeds, THIS process will
     still not be elevated, so COM calls will keep failing (the classic
-    elevation-mismatch failure mode -- see check_bridge_health) until Claude Desktop
-    itself is relaunched as Administrator. configure_igor_launch's own return value
-    already surfaces which of these two paths will be taken -- check that first.
+    privilege-level-mismatch failure mode -- see check_bridge_health; elevation
+    itself is not the requirement, matching levels is) until Claude Desktop itself
+    is relaunched at a matching level (elevated, to match the now-elevated Igor
+    Pro). configure_igor_launch's own return value already surfaces which of these
+    two paths will be taken -- check that first.
 
     The direct-child-process path also patches COMSPEC into the child's environment
     if this Python process's own environment is missing it (see
@@ -2321,9 +2539,10 @@ def launch_igor_pro_unattended(wait_for_ready_seconds: float = 30.0) -> dict:
             "initializing (slower on first launch or a cold machine) -- try "
             "check_bridge_health() again after waiting longer. If launch_method is "
             "'shell_execute_runas', also consider that this Python process itself "
-            "is not elevated, which will prevent a COM connection indefinitely "
-            "regardless of how long you wait, until Claude Desktop is relaunched "
-            "as Administrator."
+            "is not elevated while Igor Pro (just launched via the UAC prompt) now "
+            "is, which will prevent a COM connection indefinitely regardless of how "
+            "long you wait, until Claude Desktop is relaunched at a matching "
+            "(elevated) level."
         ),
     }
 

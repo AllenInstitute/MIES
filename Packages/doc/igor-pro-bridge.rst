@@ -55,11 +55,16 @@ Requirements
 - Most tools require Igor Pro to already be running; the bridge attaches to the
   running instance via COM. If needed, ``launch_igor_pro_unattended`` can start
   Igor Pro itself (after ``configure_igor_launch``) -- see below.
-- **Both Igor Pro and the bridge's Python process must run elevated (as
-  Administrator)**. This is a hard Windows COM requirement documented verbatim in
-  Igor's own Automation Server reference and is not optional. Note that reopening
-  Claude Desktop normally does not preserve elevation from a previous launch -- it must
-  be relaunched via "Run as administrator" each time.
+- **Igor Pro and the bridge's Python process must run at the same privilege
+  level** -- both elevated (as Administrator), or both not. Igor's own Automation
+  Server reference documents the both-elevated case, but elevation itself is not
+  the actual requirement: confirmed empirically (both processes running as an
+  ordinary, non-elevated user; a standalone ``win32com.client.GetActiveObject``
+  test attached and ran commands successfully) that a *matching* privilege level
+  is what's needed. A mismatch -- one elevated, one not -- is what breaks the COM
+  connection; this most often shows up after Claude Desktop is reopened normally
+  (which does not preserve elevation from a previous launch) while Igor Pro is
+  still running elevated from before, or vice versa.
 - Python 3.10 or later, accessible as ``python`` on ``PATH``, with the pinned packages
   in ``requirements.txt`` (``mcp==1.29.0``, ``pywin32==312``) installed into that same
   environment -- see :ref:`igor_pro_bridge_installation` below for how. The packaged
@@ -90,20 +95,23 @@ servers in current Claude Desktop builds).
   ``tools/igor-mcp-bridge/install.ps1`` from an elevated PowerShell** to install the
   pinned packages and complete pywin32's required post-install step
   (``Scripts\pywin32_postinstall.py -install``, which a plain ``pip install`` does not
-  do). Run it elevated specifically because Claude Desktop's manifest invokes the bridge
-  as the bare command ``python``, resolved via whatever ``PATH`` Claude Desktop's own
-  *elevated* process environment has at launch time -- not necessarily the same
-  interpreter an interactive elevated console session would resolve (e.g. a
+  do). The script itself must run elevated only because that post-install step
+  registers COM-support DLLs into protected system locations -- it is *not* because
+  Claude Desktop or Igor Pro need to be elevated at runtime (they don't; see
+  Requirements above). ``install.ps1`` resolves ``python.exe`` from the Machine/User
+  ``PATH`` registry values directly rather than trusting the invoking shell's own
+  possibly-customized ``$env:Path``, to mirror what a freshly launched Claude Desktop
+  process actually sees regardless of its own elevation state (not necessarily the
+  same interpreter an interactive console session would resolve, e.g. a
   PowerShell-profile-only conda activation, or a Microsoft Store app-execution-alias
-  stub that behaves differently once elevated). ``install.ps1`` resolves ``python.exe``
-  from the Machine/User ``PATH`` registry values directly rather than trusting the
-  invoking shell's own possibly-customized ``$env:Path``, to mirror what a freshly
-  launched elevated Claude Desktop process actually sees; pass ``-PythonPath`` to
-  override this if needed. See ``Get-Help ./install.ps1 -Full`` for the complete
-  rationale and all steps performed.
-- After installing (or after running ``install.ps1``), fully restart Claude Desktop
-  (elevated) so the updated server code/environment is actually picked up -- newly added
-  tools, or a freshly installed dependency, can otherwise lag behind what's on disk.
+  stub that behaves differently once elevated); pass ``-PythonPath`` to override this
+  if needed. See ``Get-Help ./install.ps1 -Full`` for the complete rationale and all
+  steps performed.
+- After installing (or after running ``install.ps1``), fully restart Claude Desktop (at
+  whichever privilege level you intend to run it and Igor Pro at -- both must match each
+  other, but neither has to be elevated) so the updated server code/environment is
+  actually picked up -- newly added tools, or a freshly installed dependency, can
+  otherwise lag behind what's on disk.
 - Call ``get_bridge_version()`` afterward and confirm its ``python_executable`` field
   matches the interpreter ``install.ps1`` installed into. If it doesn't, Claude Desktop
   resolved a different Python than ``install.ps1`` guessed -- re-run ``install.ps1
@@ -166,9 +174,10 @@ Available tools
 
 ``check_bridge_health()``
   Diagnoses exactly why the bridge can't reach Igor Pro, distinguishing three separate
-  failure modes: this process not running elevated, no Igor Pro COM object registered
-  at all, and a registered-but-dead COM object (Igor crashed or was force-closed,
-  leaving a stale registration that reconnecting alone can't fix). Run this first
+  failure modes: a privilege-level mismatch between this process and Igor Pro (one
+  elevated, one not), no Igor Pro COM object registered at all, and a registered-but-dead
+  COM object (Igor crashed or was force-closed, leaving a stale registration that
+  reconnecting alone can't fix). Run this first
   whenever something doesn't work.
 
 ``get_bridge_version()``
@@ -216,6 +225,28 @@ Available tools
   without a repeat crash, which is reassuring but not conclusive either way). If a
   subsequent call fails with a COM/RPC error, check ``check_bridge_health()`` and be
   prepared to relaunch Igor Pro.
+
+``ensure_igor_pro_bridge_defined(marker_function="")``
+  Checks whether the ``IGOR_PRO_BRIDGE`` conditional-compilation symbol is defined in the
+  current Igor Pro instance and, if not -- e.g. a fresh Igor Pro environment this bridge
+  has never touched before, such as a bare "Untitled" experiment -- defines it itself via
+  ``SetIgorOption poundDefine=IGOR_PRO_BRIDGE`` and forces a recompile
+  (``COMPILEPROCEDURES``, reusing ``reload_and_compile_procedures``'s own two-signal
+  polling), rather than requiring a human to hand-edit the experiment's Procedure window
+  first. **Generic by design**: this tool has no built-in knowledge of MIES or any other
+  specific codebase -- it only manages the ``IGOR_PRO_BRIDGE`` symbol itself, so it works
+  for any Igor Pro experiment that adopts the ``#ifdef IGOR_PRO_BRIDGE`` convention for its
+  own bridge-support code, not just this repo's ``MIES_ClaudeHelper.ipf`` (see
+  :ref:`igor_pro_bridge_claude_helper`). The optional ``marker_function`` argument lets a
+  caller who *does* know about a specific gated function (e.g.
+  ``"CH_ListXOPExports"`` for ``MIES_ClaudeHelper.ipf``) get an extra before/after
+  ``FunctionInfo(...)`` confirmation that it actually became available, without that name
+  being hardcoded into the bridge -- if ``IGOR_PRO_BRIDGE`` is already defined but the named
+  function still doesn't resolve, that means whatever procedure file defines it simply
+  isn't ``#include``-d by whatever is currently loaded, which this tool cannot fix by
+  redefining the symbol again. Only ever adds the define, never calls ``poundUndefine``.
+  See :ref:`igor_pro_bridge_claude_helper` for the full ``SetIgorOption``/global-symbol-list
+  background.
 
 ``dismiss_compile_error_dialog()``
   Attempts to close a stuck Igor Pro dialog by posting a simulated Escape key press
@@ -296,8 +327,9 @@ Available tools
   that elevation automatically with no prompt; if not, it launches via
   ``ShellExecute``'s ``"runas"`` verb instead, triggering a normal Windows UAC consent
   dialog -- but this process itself remains unelevated afterward, so COM calls will
-  keep failing (see ``check_bridge_health``) until Claude Desktop itself is
-  relaunched as Administrator. The direct-child-process path also patches
+  keep failing (see ``check_bridge_health``) due to the resulting privilege-level
+  mismatch, until Claude Desktop itself is relaunched at a matching level (elevated,
+  to match the now-elevated Igor Pro). The direct-child-process path also patches
   ``COMSPEC`` into the child's environment if this Python process's own
   environment is missing it -- confirmed necessary this session: without it,
   MIES's own startup hook (``IgorStartOrNewHook`` -> ... ->
@@ -355,9 +387,9 @@ windows for a visible one owned by an Igor Pro process whose title matches a kno
 stuck-dialog title, then posts ``WM_KEYDOWN``/``WM_KEYUP`` for Escape directly to it
 via ``PostMessage`` -- no foreground switch, no stolen focus. This works despite
 Igor Pro's elevated status specifically because this bridge's own process is also
-required to run elevated (see Requirements above) -- Windows' UIPI blocks simulated
+running elevated to match (see Requirements above) -- Windows' UIPI blocks simulated
 input from a lower-privilege process reaching a higher-privilege one, but not
-between two equally elevated processes.
+between two processes at the same privilege level.
 
 **Confirmed live against a real stuck dialog on both Igor Pro 10.03 and Igor Pro
 9.06**: the original assumption that this dialog is an ordinary ``"#32770"``
@@ -497,6 +529,23 @@ to the experiment's special "Procedure" window specifically -- Igor always compi
 Procedure window first, so only a ``#define`` placed there is reliably visible to every
 other file's ``#ifdef`` checks; a ``#define`` in an ordinary ``.ipf`` file has no such
 guarantee.
+
+That manual step can be skipped entirely by calling
+``ensure_igor_pro_bridge_defined(marker_function="CH_ListXOPExports")`` instead (the
+``marker_function`` argument is specific to this example -- the tool itself has no
+knowledge of ``MIES_ClaudeHelper.ipf`` or ``CH_ListXOPExports`` built in; see the tool
+reference above): per the "Conditional Compilation" topic in ``Programming.ihf``,
+``SetIgorOption poundDefine=IGOR_PRO_BRIDGE`` adds the symbol to a separate *global*
+list "available in all procedure windows (including independent modules)" -- broader
+than even the Procedure-window scope described above -- queryable via
+``SetIgorOption poundDefine=IGOR_PRO_BRIDGE?`` (sets ``V_flag``) and reversible via
+``SetIgorOption poundUndefine=IGOR_PRO_BRIDGE``. Confirmed from the same topic and
+cross-checked in ``Advanced Topics.ihf``: this is session-only (not saved into the
+experiment, lost on Igor Pro restart) and itself triggers a recompile
+(``BeforeUncompiledHook`` fires with ``changeCode`` 6 for ``poundDefine``/7 for
+``poundUndefine``). Per ``Igor Reference.ihf``'s ``SetIgorOption`` entry, the operation
+"is not compilable" and needs ``Execute`` from inside compiled code -- irrelevant here,
+since the bridge always sends it as an interpreted command-line statement.
 
 ``AfterCompiledHook`` is declared ``static`` so it coexists with any other file's own
 static ``AfterCompiledHook`` (e.g. the one in ``MIES_Include.ipf`` used only for the
