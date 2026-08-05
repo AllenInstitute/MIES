@@ -43,11 +43,13 @@
 mcp==1.29.0 \
     --hash=sha256:f5a075bb611f23d6f4d080c6a1699fa62772eebc562ba9e66b306ddde1c755f7
 
-# pywin32: provides win32com.client (COM automation), win32api/win32con/win32gui/
-# win32process (elevation and window handling), and pywintypes (COM error types) --
-# all used directly by server.py. Also requires the separate post-install step
-# (Scripts\pywin32_postinstall.py -install) to register its COM-support DLLs; both
-# install.ps1 and a plain `pip install` alone are not sufficient without that step.
+# pywin32: as of v2.0.0, no longer used for talking to Igor Pro itself (that's pyzmq,
+# below) -- only for win32api/win32con/win32gui/win32process, used by
+# dismiss_compile_error_dialog's window enumeration and by launch_igor_pro_unattended/
+# load_experiment's process launching. Still requires the separate post-install step
+# (Scripts\pywin32_postinstall.py -install) to register its COM-support DLLs even
+# though this bridge no longer uses COM itself; both install.ps1 and a plain
+# `pip install` alone are not sufficient without that step.
 # Hashes cover the cp310/cp311/cp312/cp313/cp314 win_amd64 wheels.
 pywin32==312; sys_platform == "win32" \
     --hash=sha256:5dbc35d2b5320dc07f25fa31269cfb767471002b17de5eb067d03da68c7cb2db \
@@ -55,6 +57,18 @@ pywin32==312; sys_platform == "win32" \
     --hash=sha256:b457f6d628a47e8a7346ce22acb7e1a46a4a78b52e1d17e1af56871bd19a93bc \
     --hash=sha256:c53e878d15a1c44788082bfe712a905433473aa38f86375b7cf8b45e3acbaaf9 \
     --hash=sha256:d11417d84412f859b722fad0841b3614459ed0047f7542d8362e77884f6b6e8a
+
+# pyzmq: provides the `zmq` module server.py uses to talk to Igor Pro's ZeroMQ-XOP
+# (new in v2.0.0 -- replaces the COM transport that pywin32.win32com.client used to
+# provide; pywin32 is still needed above, but now only for dismiss_compile_error_
+# dialog's window enumeration and for launching the Igor Pro process). No transitive
+# dependencies of its own -- the Windows wheels statically bundle libzmq. The
+# cp312-abi3 wheel covers 312/313/314; 310 and 311 need their own wheel each (pyzmq
+# does not build an abi3 wheel back that far).
+pyzmq==27.1.0 \
+    --hash=sha256:c0bb87227430ee3aefcc0ade2088100e528d5d3298a0a715a64f3d04c60ba02f \
+    --hash=sha256:190cbf120fbc0fc4957b56866830def56628934a9d112aec0e2507aa6a032b97 \
+    --hash=sha256:9ce490cf1d2ca2ad84733aa1d69ce6855372cb5ce9223802450c9b2a7cba0ccf
 
 # --- Transitive dependencies (mcp's own dependency tree) -------------------------
 # Required by pip's hash-checking mode (see the top comment) -- pip resolves these

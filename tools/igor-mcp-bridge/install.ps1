@@ -28,32 +28,35 @@
     Steps performed, in order:
       1. Confirm this script itself is running elevated. This is required only for
          step 5 below (pywin32's post-install step, which registers COM-support DLLs
-         into protected system locations) -- it is NOT because Claude Desktop or Igor
-         Pro themselves need to be elevated at runtime. Confirmed empirically (see
-         igor-pro-bridge.rst, "Requirements"): Claude Desktop and Igor Pro just need to
-         run at the SAME privilege level as each other (both elevated, or both not);
-         this script needing elevation is a one-time, install-time requirement of its
-         own, independent of whichever level you later choose to run the bridge at.
+         into protected system locations, even though this bridge no longer uses COM
+         itself as of v2.0.0 -- see below) -- it is NOT because Claude Desktop or Igor
+         Pro themselves need to be elevated at runtime. As of v2.0.0, the bridge talks
+         to Igor Pro over a plain localhost ZeroMQ socket, which has NO privilege-
+         matching requirement at all (unlike the old COM transport, which needed
+         Claude Desktop and Igor Pro to run at the same privilege level) -- this
+         script needing elevation is purely a one-time, install-time requirement of
+         its own (pywin32's DLL registration), unrelated to how you run the bridge or
+         Igor Pro afterward.
       2. Resolve python.exe (or use -PythonPath).
       3. `<python> -m pip install --upgrade pip`
       4. `<python> -m pip install --require-hashes -r requirements.txt` (pinned,
          hash-verified versions -- see that file's own comments, notably why "mcp" is
          pinned below its new v2 line, and why every transitive dependency is listed
-         and hashed too, not just mcp/pywin32 themselves).
+         and hashed too, not just mcp/pyzmq/pywin32 themselves).
       5. Run pywin32's required post-install step
          (Scripts\pywin32_postinstall.py -install), which `pip install pywin32` alone
-         does not do -- it registers pywin32's COM-support DLLs, without which
-         win32com.client calls can fail unpredictably.
-      6. Import-check mcp and win32com.client with the same interpreter, and print
-         its full path/version for you to cross-check.
+         does not do -- it registers pywin32's COM-support DLLs. This bridge itself no
+         longer uses COM (v2.0.0+), but pywin32 is still a dependency for
+         dismiss_compile_error_dialog's window enumeration and for process launching,
+         and skipping this step can still leave the install in a broken state.
+      6. Import-check mcp, zmq, and win32api/win32gui with the same interpreter, and
+         print its full path/version (plus pyzmq's version) for you to cross-check.
 
-    After this script finishes, fully restart Claude Desktop (at whichever privilege
-    level you intend to run it and Igor Pro at -- both must match each other, but
-    neither has to be elevated), then call the bridge's get_bridge_version tool from a
-    conversation -- its "python_executable" field is the authoritative answer for
-    which interpreter Claude Desktop actually launched. If it doesn't match what this
-    script installed into, re-run this script with -PythonPath pointing at that
-    reported path.
+    After this script finishes, fully restart Claude Desktop, then call the bridge's
+    get_bridge_version tool from a conversation -- its "python_executable" field is
+    the authoritative answer for which interpreter Claude Desktop actually launched.
+    If it doesn't match what this script installed into, re-run this script with
+    -PythonPath pointing at that reported path.
 
 .PARAMETER PythonPath
     Full path to a specific python.exe to install into, bypassing auto-resolution
@@ -159,9 +162,10 @@ if (-not (Test-IsElevated)) {
         "post-install step below registers COM-support DLLs into protected system " +
         "locations, which requires admin rights regardless of how you plan to run " +
         "Claude Desktop/Igor Pro afterward. This is a one-time, install-time " +
-        "requirement only -- Claude Desktop and Igor Pro do NOT both need to be " +
-        "elevated at runtime, they just need to match each other's privilege level " +
-        "(see igor-pro-bridge.rst, 'Requirements'). Re-run this script from an " +
+        "requirement only -- as of v2.0.0 the bridge talks to Igor Pro over " +
+        "ZeroMQ, which has no privilege-matching requirement at all, so neither " +
+        "Claude Desktop nor Igor Pro need to be elevated at runtime (see " +
+        "igor-pro-bridge.rst, 'Requirements'). Re-run this script from an " +
         "elevated PowerShell (right-click PowerShell -> Run as administrator)."
     )
     exit 1
@@ -247,13 +251,16 @@ $verifyScript = @'
 import importlib.metadata
 import sys
 import mcp
-import win32com.client
+import zmq
+import win32api
+import win32gui
 
 print(f"python_executable: {sys.executable}")
 print(f"python_version: {sys.version.split()[0]}")
 print(f"mcp_package_version: {importlib.metadata.version('mcp')}")
+print(f"pyzmq_version: {importlib.metadata.version('pyzmq')}")
 print(f"pywin32_build: {importlib.metadata.version('pywin32')}")
-print("win32com.client import OK")
+print("zmq / win32api / win32gui imports OK")
 '@
 $verifyScriptPath = Join-Path ([System.IO.Path]::GetTempPath()) "igor-bridge-verify-$([guid]::NewGuid()).py"
 try {
@@ -264,10 +271,8 @@ try {
 }
 
 Write-Host (
-    "`nDone. Fully restart Claude Desktop (at whichever privilege level you intend " +
-    "to run it and Igor Pro at -- both must match each other, but neither has to be " +
-    "elevated), then call the bridge's get_bridge_version tool and confirm its " +
-    "'python_executable' field matches: $python`n" +
+    "`nDone. Fully restart Claude Desktop, then call the bridge's get_bridge_version " +
+    "tool and confirm its 'python_executable' field matches: $python`n" +
     "If it does not match, re-run this script with -PythonPath set to the path " +
     "get_bridge_version() actually reports."
 )

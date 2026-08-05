@@ -2,85 +2,151 @@
 Igor Pro MCP bridge server
 ==========================
 
-Exposes a running Igor Pro instance to Claude (or any MCP client) as a set of MCP tools,
-by acting as a COM Automation *client* that talks to Igor Pro's built-in ActiveX
-Automation *Server* on Windows.
+Exposes a running Igor Pro instance to Claude (or any MCP client) as a set of MCP tools.
 
-All API details below were extracted directly from the local file:
-    Igor Pro Folder\\Miscellaneous\\Windows Automation\\Automation Server.ihf
-(WaveMetrics' own reference for this interface) during this session. Confirmed facts:
+**v2.0.0: transport rewritten from COM to ZeroMQ.** Versions through 1.27.0 talked to
+Igor Pro as a COM Automation *client* (win32com, `IgorPro.Application`, `Execute2`).
+From 2.0.0 on, this bridge instead talks to Igor Pro's ZeroMQ-XOP
+(https://github.com/AllenInstitute/ZeroMQ-XOP) over a plain TCP socket, sending
+`CallFunction` JSON requests and calling into Igor-side helper functions in
+`Packages/MIES/ZMQ_BridgeHelpers.ipf` (the `ZBR` independent module). See
+SESSION_NOTES.md for the full COM-vs-ZeroMQ evaluation that led here, and
+Packages/doc/igor-pro-bridge.rst for the up-to-date setup steps.
 
-- ProgID: "IgorPro.Application".
-- Connect to an ALREADY RUNNING Igor instance with GetActiveObject (this is the Python
-  equivalent of the documented VB pattern `GetObject(, "IgorPro.Application")`). Using
-  win32com.client.Dispatch() instead would *launch* a new Igor instance, which requires
-  extra care (the docs warn the client must then wait for Igor to finish initializing
-  before calling methods) -- GetActiveObject sidesteps that entirely by only attaching to
-  something already running and initialized.
-- Execute(BSTR cmds): fire-and-forget, raises a COM error on failure, no structured
-  output.
-- Execute2(int flags, int codePage, BSTR cmds, int* pIgorErrorCode, BSTR* errorMsg,
-  BSTR* history, BSTR* results): does NOT raise a COM/Automation error just because the
-  Igor command itself failed -- you must check pIgorErrorCode (0 == success) yourself.
-  `codePage` is ignored since Igor 7 (pass 0). `results` is how you get data back: put
-  `fprintf 0, "..."` calls inside `cmds` and read them from `results` afterwards (this is
-  literally WaveMetrics' own documented example: `fprintf 0, "%g", V_avg` then read
-  `results`).
-- IApplication.DataFolder(nameOrPath) -> IDataFolder. IDataFolder.Wave(waveNameOrPath) ->
-  IWave. `waveNameOrPath` may be an absolute path (e.g. "root:myFolder:myWave"), so in
-  practice you can anchor on "root:" and pass a full absolute path straight into .Wave().
-- IWave.GetDimensions(IgorProDataType* pDataType, long* pNumRows, long* pNumColumns,
-  long* pNumLayers, long* pNumChunks).
-- IgorProDataType enum values (confirmed from the .ihf, exact hex values):
-    ipDataTypeText          = 0
-    ipDataTypeComplex       = 0x01   (combination flag, OR'd with another value)
-    ipDataTypeFloat         = 0x02
-    ipDataTypeDouble        = 0x04
-    ipDataTypeSignedByte    = 0x08
-    ipDataTypeSignedShort   = 0x10
-    ipDataTypeSignedLong    = 0x20
-    ipDataTypeUnsignedByte  = 0x48
-    ipDataTypeUnsignedShort = 0x50
-    ipDataTypeUnsignedLong  = 0x60
-  i.e. dataType == 0 means text, anything else is some numeric flavor (real-valued
-  numeric flavors all supported by GetNumericWavePointValue below; complex waves --
-  dataType & 0x01 -- are NOT handled by this file yet, see limitation note below).
-- IWave.GetNumericWavePointValue(long index, double* pValue) -- single-point numeric
-  read, "supports real data only" (per the docs' own wording), works for any real
-  numeric subtype (float/double/int/etc.), 1D waves only.
-- IWave.GetTextWavePointValue(long index, int codePage, BSTR* pValue) -- single-point
-  text read, 1D waves only, codePage ignored since Igor 7 (pass 0).
-  (The docs also document GetRawTextWaveData/GetNumericWaveDataAsDouble, which pull an
-  entire wave at once via a SAFEARRAY, but explicitly recommend the point-value methods
-  "for most uses" -- and the point-value methods sidestep SAFEARRAY marshaling questions
-  entirely, so this file uses those instead. Whole-wave SAFEARRAY access could be added
-  later as a faster path for large waves.)
-- **CRITICAL SETUP REQUIREMENT, per the docs**: "The Windows operating system requires
-  that you run the client and server (Igor) as administrator." Confirmed empirically,
-  however, that elevation itself is not the actual requirement -- this Python process
-  and Igor Pro must run at the SAME privilege level (both elevated as Administrator, or
-  both not); Igor's docs only document/test the both-elevated case. A mismatch between
-  the two, not non-elevation per se, is what breaks the COM connection, and is easy to
-  miss (e.g. after Claude Desktop is reopened normally, which does not preserve
-  elevation from a previous launch, while Igor Pro is still running elevated from
-  before).
+Why this changed: COM requires this Python process and Igor Pro to run at the SAME
+Windows privilege level (both elevated, or both not) -- a mismatch is a real,
+easy-to-miss failure mode (e.g. Claude Desktop reopened normally after Igor Pro was
+left running elevated from before). ZeroMQ is a plain localhost TCP socket with no
+such requirement at all -- **this bridge no longer cares about elevation in any way**.
+That is also why `launch_igor_pro_unattended` no longer has an elevation-branching
+code path (see its docstring): it always launches Igor Pro as a plain, non-elevated
+child process, at whatever privilege level this bridge process itself is running at.
 
-ONE THING THIS FILE CANNOT VERIFY FROM here (no Windows/Igor available to actually run
-this): the exact Python-side calling convention pywin32's dynamic dispatch uses for
-methods with multiple [out] parameters. The general IDispatch convention -- and how
-win32com.client's dynamic dispatch conventionally exposes it -- is: [out]-only
-parameters (not [in,out]) are NOT passed by the caller; instead they come back bundled
-as a tuple appended to the method's normal return value. That is the convention this
-file assumes throughout (e.g. `errorCode, errorMsg, history, results = igor.Execute2(0,
-0, cmd)`). This is standard, well-established pywin32 behavior (the same pattern used
-for e.g. Excel's Automation methods), not a wild guess -- but it has not been run against
-the real Igor Pro COM server in this session, so treat it as the one item to confirm on
-first real use. If it doesn't unpack as expected, print(repr(result)) from a raw call to
-see the actual shape pywin32 returned and adjust the unpacking.
+**Setup requirement, new in v2.0.0**: unlike the COM transport (which worked against
+a completely stock Igor Pro installation with zero custom procedure code), this
+transport requires `Packages/MIES/ZMQ_BridgeHelpers.ipf` to be `#include`-d and
+compiled into whatever Igor Pro experiment this bridge talks to -- there is no
+bootstrap path over ZeroMQ itself (if that file isn't loaded, there is nothing
+listening on the port at all). This repo's own `Packages/MIES_Include.ipf` already
+does this permanently. Any OTHER Igor Pro experiment that wants to use this bridge
+needs `ZMQ_BridgeHelpers.ipf` copied onto its own procedure search path with a
+matching `#include` added by hand, then a recompile -- see
+Packages/doc/igor-pro-bridge.rst for the exact steps. This is a one-time,
+per-experiment setup cost that didn't exist before; it is the price of everything
+else this transport buys (see SESSION_NOTES.md's ZeroMQ-evaluation section for the
+full trade-off discussion).
+
+Protocol summary (confirmed empirically this session against a live Igor Pro 9.06
+instance, and against https://github.com/AllenInstitute/ZeroMQ-XOP's own README):
+
+- Endpoint: `tcp://127.0.0.1:5680` (`IGOR_ZMQ_ENDPOINT` below) -- matches
+  `ZBR_ZEROMQ_ENDPOINT` in ZMQ_BridgeHelpers.ipf, deliberately NOT MIES's own
+  `ZEROMQ_BIND_REP_PORT` (5670) so this can coexist with MIES's own (currently
+  short-circuited) ZeroMQ subsystem in the same experiment.
+- One JSON `CallFunction` request per ZeroMQ REQ-socket round trip: send
+  `{"version": 1, "messageID": ..., "CallFunction": {"name": ..., "params": [...]}}`,
+  receive `{"errorCode": {"value": ..., "msg": ...}, "result": ...}`. A NEW REQ socket
+  is created for every single call (see `call_function` below) rather than one
+  reused across calls -- a REQ socket that times out waiting for a reply is left in a
+  state where it cannot send again without being recreated (confirmed empirically
+  this session), so per-call sockets sidestep that fragility entirely at negligible
+  cost for a local TCP connection.
+- **Confirmed documentation bug in the XOP's own README/help**: it says
+  `CallFunction.name` should be "a ProcGlobal function without module and/or
+  independent module specification, i.e. without `#`" -- empirically confirmed this
+  session that this is simply wrong for independent-module functions (like
+  everything in the `ZBR` module): the qualified form (`"ZBR#ZBR_Ping"`) is what
+  actually works; the unqualified form fails with `errorCode.value=101` ("Unknown
+  function"). Every ZBR call in this file uses the qualified form.
+- Multi-return Igor functions (`Function [a, b] Foo()`, Igor 8+) are fully supported
+  over this protocol -- `result` becomes a JSON array of typed values in declaration
+  order. `call_function` below decodes this into a plain Python list automatically.
+- Wave return values carry the ENTIRE wave (dimensions, units, note, complex/text/
+  wave-ref support) natively-serialized as JSON -- see `_decode_wave` below. This
+  replaces the old COM bridge's per-point `GetNumericWavePointValue` loop entirely,
+  and is why the new `get_wave` supports far more than the old "1D real waves only"
+  limitation.
+- **Central architectural constraint, unchanged from the COM-vs-ZeroMQ evaluation**:
+  Igor's `Execute` operation (used to run arbitrary free-form command text) cannot be
+  called unqueued from inside a Function -- only `Execute/P` (deferred: queued to run
+  only after the calling function returns) is legal there. This means a single
+  CallFunction round trip cannot synchronously "run this arbitrary command string and
+  hand back what it printed" -- there is no direct equivalent of the COM bridge's
+  `Execute2`. `execute_igor_command`/`execute_igor_command_unattended` below instead
+  use a submit-then-poll pattern (`ZBR_SubmitCommand`/`ZBR_SubmitCommandUnattended`
+  queue the command and return a token immediately; `ZBR_PollCommand`, called via a
+  LATER separate request, reports completion and the captured output). Every OTHER
+  tool below that doesn't need to run arbitrary free-form text (get_wave,
+  check_compilation_state, get_debugger_state, get_environment_summary's underlying
+  queries, read_help_file, etc.) is backed by a small, purpose-built, directly-callable
+  Igor function instead, and is a single synchronous round trip -- no polling needed.
+- **Commands with an unknown or long runtime (v2.1.0+)**: `execute_igor_command`/
+  `execute_igor_command_unattended` block the whole MCP tool call while polling, up to
+  their own `timeout_seconds` -- workable for anything expected to finish in seconds,
+  but not for a calculation that might run for hours or weeks, since the underlying
+  MCP transport itself has been observed to time out a single tool call well under a
+  minute regardless of what `timeout_seconds` requests. `submit_igor_command`/
+  `submit_igor_command_unattended` expose the same submit step as its own tool
+  (returns a token immediately, no waiting at all), and `poll_igor_command(token)`
+  exposes the same poll step as its own tool (one cheap, instant check, callable any
+  number of times, spaced arbitrarily far apart). Because all of the actual state
+  (done flag, captured text) lives entirely in Igor Pro's own data waves
+  (`root:Packages:ZBR`), not in this bridge's Python process, polling stays reliable
+  no matter how long the job runs or how many times this bridge process/Claude
+  Desktop itself restarts in the meantime -- the only thing that actually ends the
+  job is Igor Pro itself quitting, crashing, or restarting.
+
+**Behavior changes from the COM version worth knowing about**:
+
+- `execute_igor_command`/`execute_igor_command_unattended` no longer return a clean,
+  separately-captured "results" (fprintf-only output) distinct from "history" (full
+  history including the echoed command) -- COM's `Execute2` had special handling to
+  split these; this transport cannot replicate that, since the submit/poll mechanism
+  only has Igor's own history-diffing (`CaptureHistory`) to go on. Both keys are now
+  populated with the same text (everything printed to history while the command ran,
+  including its own echo). Prefix a command with `Silent 1;` if you want the echo
+  suppressed from the returned text.
+- **Use `print`, not `fprintf 0, ...`, to get data back.** Confirmed live this
+  session: `CaptureHistory` (which the submit/poll mechanism above relies on)
+  captures `print` output but does NOT capture `fprintf`-to-history-refnum output at
+  all, whether directed at refnum 0 (history), -1, or -2 -- a command consisting of
+  only `fprintf 0, "..."` runs without error but returns empty "results"/"history"
+  every time, even though the exact same value printed via `print` is captured
+  correctly. This is a real behavior change from the COM version, whose `Execute2`
+  had its own dedicated mechanism for capturing `fprintf(0,...)` output specifically
+  (unrelated to `CaptureHistory`), which is why that was the documented pattern
+  before. `fprintf` remains fine (and necessary) for anything that ISN'T about
+  getting data back through this bridge, e.g. writing to a wave or a real file.
+- `load_experiment` no longer hot-swaps the open experiment in the running instance
+  (that was `IApplication.LoadExperiment`, a COM-only method -- confirmed neither
+  "LoadExperiment" nor "OpenFile" appear anywhere in Igor Reference.ihf, only in
+  Automation Server.ihf, and there is no procedure-language equivalent). It instead
+  asks the running instance to quit, then relaunches the configured Igor Pro
+  executable with the target file path as a launch argument -- a real process
+  restart, not an in-place swap. **Any unsaved changes in the currently-open
+  experiment are lost** (the same as before -- COM's LoadExperiment never auto-saved
+  either -- but now there is also no "hot" instance left to save from afterward if
+  you forgot). Call `execute_igor_command('SaveExperiment')` first if that matters.
+- `ensure_igor_pro_bridge_defined` is retired. It existed to make sure a
+  `#ifdef IGOR_PRO_BRIDGE`-gated procedure file's optional code got compiled in
+  without a human hand-editing the experiment's Procedure window. `ZBR`'s own
+  functions have no such gating (the whole point of an independent module is that it
+  compiles on its own regardless of ProcGlobal's `#define` state), so this bridge no
+  longer needs it for its own purposes.
+- `check_bridge_health`/`check_compilation_state` can no longer distinguish "Igor Pro
+  isn't running" from "Igor Pro is running but ZMQ_BridgeHelpers.ipf isn't
+  included/compiled/bound" from "wrong port" as cleanly as COM's `GetActiveObject`
+  could (a clean binary "is there a registered COM object" signal) -- a ZeroMQ REQ
+  socket that gets no reply at all looks the same in all three cases. See
+  `check_bridge_health`'s docstring for what to check by hand if this happens.
 
 Setup
 -----
-    pip install mcp pywin32
+    pip install mcp pyzmq pywin32
+
+(pywin32 is still needed for `dismiss_compile_error_dialog`'s window enumeration and
+for launching the Igor Pro process -- see below. It is no longer needed for, or
+involved in, talking to Igor Pro itself.)
 
 Registering with Claude Desktop
 --------------------------------
@@ -92,684 +158,507 @@ Extensions -> Advanced settings -> Extension Developer -> Install Extension:
     mcpb pack tools/igor-mcp-bridge tools/igor-mcp-bridge/igor-pro-bridge-X.Y.Z.mcpb
 
 See Packages/doc/igor-pro-bridge.rst ("Installation") for the full, up-to-date
-installation steps -- this docstring previously described the config.json approach,
-which was found to be unreliable and is no longer how this bridge is distributed.
-
-After installing (or updating), fully restart Claude Desktop. Remember: Claude Desktop's
-Python process and Igor Pro itself need to be running at the SAME privilege level (both
-elevated as Administrator, or both not) for the COM connection to succeed -- elevation
-itself is not the requirement, a mismatch between the two is what breaks it.
+installation steps, including the one-time ZMQ_BridgeHelpers.ipf setup step for any
+experiment other than this repo's own.
 
 This is a *local* MCP server (stdio transport) -- it only works from a Claude Desktop
 session running on the same Windows machine as Igor Pro, not from a cloud/Cowork sandbox.
 """
 
-import ctypes
 import html.parser
 import importlib.metadata
+import json
 import os
-import re
 import subprocess
 import sys
 import tempfile
 import time
+import uuid
 
 if sys.platform != "win32":
     raise RuntimeError(
-        "tools/igor-mcp-bridge/server.py is Windows-only (requires pywin32 and "
-        "Igor Pro's COM Automation Server). It cannot run on this platform "
+        "tools/igor-mcp-bridge/server.py is Windows-only (requires pywin32 for "
+        "dismiss_compile_error_dialog's window enumeration and for launching the "
+        "configured Igor Pro executable). It cannot run on this platform "
         f"({sys.platform!r}) -- e.g. running it by accident on a non-Windows dev "
-        "machine or in CI. See the module docstring for setup requirements."
+        "machine or in CI. The ZeroMQ transport itself is cross-platform; this "
+        "restriction is only about this file's OS-level helper tools."
     )
 
-import pywintypes
 import win32api
 import win32con
-import win32com.client
 import win32gui
 import win32process
 
+import zmq
+
 from mcp.server.fastmcp import FastMCP
-
-IGOR_COM_PROGID = "IgorPro.Application"
-
-# IgorProDataType enum (confirmed values, see module docstring)
-IP_DATATYPE_TEXT = 0
-IP_DATATYPE_COMPLEX_FLAG = 0x01
-
-# IgorProLoadType enum (confirmed from Automation Server.ihf, used by
-# IApplication.LoadExperiment): ipLoadTypeOpen = 2, ipLoadTypeStationery = 4,
-# ipLoadTypeMerge = 5. Only ipLoadTypeOpen is used by this bridge so far.
-IP_LOAD_TYPE_OPEN = 2
 
 mcp = FastMCP("igor-pro")
 
-_igor = None
+# --- ZeroMQ transport ----------------------------------------------------------------
 
-# Path to the Igor Pro executable to use for launch_igor_pro_unattended, set via
-# configure_igor_launch(). Deliberately session-scoped (this process's in-memory
-# lifetime only, not persisted to disk) and never defaulted/guessed -- see
-# configure_igor_launch's docstring for why: the calling agent should ask the user
-# for this once at the start of a session rather than assume a default installation
-# path, since Igor Pro version/location varies (this repo alone has been tested
-# against both an Igor Pro 9 and an Igor Pro 10 install in different folders).
-_configured_igor_exe_path = None
+# Matches ZBR_ZEROMQ_ENDPOINT in Packages/MIES/ZMQ_BridgeHelpers.ipf.
+IGOR_ZMQ_ENDPOINT = "tcp://127.0.0.1:5680"
+_ZMQ_DEFAULT_RECV_TIMEOUT_MS = 5000
+_ZMQ_SEND_TIMEOUT_MS = 2000
+_ZMQ_LINGER_MS = 0
+
+_zmq_context = None
 
 
-def _is_current_process_elevated():
-    """Return True/False if this Python process itself is running elevated (as
-    Administrator), or None if that can't be determined.
+def _get_zmq_context():
+    global _zmq_context
+    if _zmq_context is None:
+        _zmq_context = zmq.Context()
+    return _zmq_context
 
-    Uses ctypes.windll.shell32.IsUserAnAdmin() -- the standard, minimal way to check
-    *this* process's own elevation on Windows. This is deliberately much simpler than
-    the OpenProcessToken/GetTokenInformation dance needed to check an *arbitrary* other
-    process's elevation (e.g. Igor Pro's) from outside; for our own process, this one
-    call is sufficient and doesn't need that machinery.
 
-    This check exists because an elevation mismatch between this process and Igor Pro
-    is a real, easy-to-miss failure mode confirmed during development: Claude Desktop
-    can appear to be "running as Administrator" while the specific child process
-    running this script is not, if Claude Desktop itself was reopened normally rather
-    than explicitly relaunched via "Run as administrator" (Windows does not persist
-    elevation across relaunches by default).
-    """
-    try:
-        return bool(ctypes.windll.shell32.IsUserAnAdmin())
-    except Exception:
+class IgorZmqError(RuntimeError):
+    """Igor Pro replied, but reported errorCode.value != 0 for the CallFunction call."""
+
+
+class IgorZmqUnreachable(RuntimeError):
+    """No reply was received at all within the timeout. Could mean: Igor Pro isn't
+    running, ZMQ_BridgeHelpers.ipf isn't #include-d/compiled in the running instance,
+    its ZeroMQ server socket isn't bound to IGOR_ZMQ_ENDPOINT, or the reply is simply
+    slow (e.g. a long-running command; pass a longer timeout_ms)."""
+
+
+def _decode_number(value):
+    """Non-normal numbers (NaN/Inf/-Inf) are encoded as strings per the ZeroMQ-XOP's
+    own spec ("Messages consist of JSON ... NaN, Inf and -Inf are not supported by
+    JSON, so we encode these non-normal numbers as strings"). Decode those back to
+    real Python floats; pass anything else through unchanged."""
+    if isinstance(value, str):
+        low = value.strip().lower()
+        if low == "nan":
+            return float("nan")
+        if low in ("inf", "+inf"):
+            return float("inf")
+        if low == "-inf":
+            return float("-inf")
+    return value
+
+
+def _reshape_column_major(flat, dim_size):
+    """Reshape a flat, column-major list per dim_size (1 to 4 entries, per the
+    ZeroMQ-XOP's wave serialization spec) into nested Python lists indexed
+    data[row][col][layer][chunk] -- matches the spec's own worked example
+    (`np.array(raw).reshape(dim_size, order='F')`) without requiring numpy."""
+    if not dim_size or list(dim_size) == [0]:
+        return []
+
+    dims = list(dim_size) + [1] * (4 - len(dim_size))
+    rows, cols, layers, chunks = dims[:4]
+    if rows == 0:
+        return []
+
+    def at(r, c=0, l=0, k=0):
+        return flat[r + rows * (c + cols * (l + layers * k))]
+
+    ndims = len(dim_size)
+    if ndims <= 1:
+        return [at(r) for r in range(rows)]
+    if ndims == 2:
+        return [[at(r, c) for c in range(cols)] for r in range(rows)]
+    if ndims == 3:
+        return [
+            [[at(r, c, l) for l in range(layers)] for c in range(cols)]
+            for r in range(rows)
+        ]
+    return [
+        [
+            [[at(r, c, l, k) for k in range(chunks)] for l in range(layers)]
+            for c in range(cols)
+        ]
+        for r in range(rows)
+    ]
+
+
+def _decode_wave(value):
+    """value is None (an invalid/free wave reference, `$""`) or the wave-serialization
+    object documented in https://github.com/AllenInstitute/ZeroMQ-XOP's README ("Wave
+    serialization format"). Returns None, or a dict with the wave's type, shape, data
+    (reshaped into nested Python lists matching the wave's own dimensionality), unit,
+    and note. Supports numeric (real and complex), text, and wave-reference waves."""
+    if value is None:
         return None
 
+    wave_type = value.get("type", "")
+    dimension = value.get("dimension", {}) or {}
+    dim_size = dimension.get("size", [])
+    data = value.get("data", {}) or {}
+    raw = data.get("raw", [])
 
-_elevated_at_startup = _is_current_process_elevated()
-if _elevated_at_startup is False:
-    print(
-        "NOTE: this MCP server process is NOT running elevated (as Administrator). "
-        "This is fine as long as Igor Pro is ALSO not running elevated -- COM requires "
-        "this process and Igor Pro to be at the SAME privilege level, not elevation "
-        "specifically. If Igor Pro is running elevated while this process isn't, every "
-        "tool call will fail with a COM/RPC error; either relaunch Claude Desktop via "
-        "'Run as administrator' to match, or restart Igor Pro non-elevated instead.",
-        file=sys.stderr,
-    )
-elif _elevated_at_startup is None:
-    print(
-        "NOTE: could not determine whether this process is running elevated.",
-        file=sys.stderr,
-    )
+    if wave_type == "WAVE_TYPE":
+        decoded_data = [
+            _decode_wave(item) if item is not None else None for item in raw
+        ]
+    elif isinstance(raw, dict) and "real" in raw:
+        # Complex wave: raw = {"real": [...], "imag": [...]}.
+        real = [_decode_number(x) for x in raw.get("real", [])]
+        imag = [_decode_number(x) for x in raw.get("imag", [])]
+        decoded_data = [complex(r, i) for r, i in zip(real, imag)]
+    else:
+        decoded_data = [_decode_number(x) for x in raw]
+
+    return {
+        "type": wave_type,
+        "dim_size": dim_size,
+        "data": _reshape_column_major(decoded_data, dim_size),
+        "unit": data.get("unit"),
+        "note": value.get("note", ""),
+        "dimension": dimension,
+    }
 
 
-def _get_igor(force_reconnect=False):
-    """Attach to an already-running Igor Pro instance via COM.
+def _decode_typed(typed):
+    """typed is {"type": "variable"|"string"|"wave"|"dfref", "value": ...} -- return
+    the corresponding plain Python value (numbers get NaN/Inf decoded, waves get fully
+    decoded via _decode_wave, everything else passes through as-is)."""
+    if not isinstance(typed, dict):
+        return typed
+    kind = typed.get("type")
+    value = typed.get("value")
+    if kind == "variable":
+        return _decode_number(value)
+    if kind == "wave":
+        return _decode_wave(value)
+    return value
 
-    Uses GetActiveObject (not Dispatch) deliberately: GetActiveObject only attaches to
-    an instance that's already running and initialized, matching WaveMetrics' own
-    documented VB pattern `GetObject(, "IgorPro.Application")`. Dispatch() would instead
-    launch a brand-new Igor instance if one isn't already registered, which requires
-    extra initialization-wait handling this file doesn't implement.
 
-    force_reconnect=True discards any cached connection first. Needed because this
-    process caches _igor for its whole lifetime (it may serve many tool calls): if Igor
-    Pro is closed/restarted/crashes in between, the cached COM reference goes stale and
-    every subsequent call fails with a COM/RPC-transport error (e.g. "The RPC server is
-    unavailable") -- not a normal Igor-level failure. See _run_with_reconnect below.
+def call_function(name, params=None, timeout_ms=_ZMQ_DEFAULT_RECV_TIMEOUT_MS):
+    """Send one CallFunction request to Igor Pro and return its decoded result.
+
+    name must be the FULLY QUALIFIED function name for anything in the ZBR
+    independent module, e.g. "ZBR#ZBR_Ping" -- see the module docstring's
+    documentation-bug note for why (the XOP's own docs say to omit the "#"; that is
+    wrong for independent-module functions, confirmed empirically).
+
+    Returns a plain Python value: None/number/string for a single scalar return, a
+    dict for a wave return (see _decode_wave), or a list of such values (in
+    declaration order) for a multi-return ("Function [a, b] Foo()") function.
+
+    Raises IgorZmqUnreachable if no reply arrives within timeout_ms at all, or
+    IgorZmqError if Igor Pro replied but reported errorCode.value != 0 (the error
+    message includes any "history" the XOP reports alongside the error, which often
+    shows exactly where inside the called function things went wrong).
     """
-    global _igor
-    if force_reconnect:
-        _igor = None
-    if _igor is None:
-        try:
-            _igor = win32com.client.GetActiveObject(IGOR_COM_PROGID)
-        except Exception as e:
-            raise RuntimeError(
-                "Could not attach to a running Igor Pro instance via COM. Make sure: "
-                "(1) Igor Pro is already running, (2) Igor Pro and this Python process "
-                "are running at the SAME privilege level -- both elevated (as "
-                "Administrator), or both not; a mismatch, not elevation itself, is what "
-                "breaks the COM connection -- and (3) Igor Pro 9.00 (or later) is "
-                "installed with the Automation Server component."
-            ) from e
-    return _igor
+    request = {
+        "version": 1,
+        "messageID": uuid.uuid4().hex,
+        "CallFunction": {"name": name, "params": list(params) if params else []},
+    }
+    payload = json.dumps(request)
 
-
-def _run_with_reconnect(work_fn):
-    """Run work_fn() once, retrying exactly once with a fresh COM connection if the
-    cached connection turns out to be stale.
-
-    work_fn should call _get_igor() itself (not close over a stale `igor` variable) so
-    the retry actually picks up a freshly reconnected object.
-
-    Why this is safe to do unconditionally: Execute2 reports Igor-level command
-    failures via pIgorErrorCode, not exceptions (see module docstring) -- so a
-    pywintypes.com_error escaping from here always means the COM/RPC transport itself
-    broke (most commonly: Igor Pro was closed or restarted since the last call, leaving
-    a dead reference cached), never that an Igor command merely failed. If Igor is
-    genuinely not reachable at all, the retry's _get_igor() call raises a plain
-    RuntimeError (see above), which is not caught here and propagates immediately --
-    so this never turns into a silent retry loop.
-    """
+    sock = _get_zmq_context().socket(zmq.REQ)
+    sock.setsockopt(zmq.RCVTIMEO, timeout_ms)
+    sock.setsockopt(zmq.SNDTIMEO, _ZMQ_SEND_TIMEOUT_MS)
+    sock.setsockopt(zmq.LINGER, _ZMQ_LINGER_MS)
+    sock.connect(IGOR_ZMQ_ENDPOINT)
     try:
-        return work_fn()
-    except pywintypes.com_error:
-        _get_igor(force_reconnect=True)
-        return work_fn()
+        sock.send_string(payload)
+        reply_raw = sock.recv_string()
+    except zmq.error.Again:
+        raise IgorZmqUnreachable(
+            f"No reply from Igor Pro within {timeout_ms}ms while calling {name!r}. "
+            f"Make sure Igor Pro is running, ZMQ_BridgeHelpers.ipf is #include-d and "
+            f"compiled in the current experiment, and its ZeroMQ server socket is "
+            f"bound to {IGOR_ZMQ_ENDPOINT!r} (see check_bridge_health)."
+        ) from None
+    finally:
+        sock.close()
 
-
-def _get_wave_ref(wave_path: str):
-    """(Re)derive the IWave COM object for wave_path from the *current* Igor connection.
-
-    This goes through DataFolder() and Wave() -- two more COM calls, same reconnect
-    risk as everything else here. Factored out so both the initial fetch and any
-    post-reconnect re-fetch (in get_wave below) call the exact same path, and never
-    accidentally keep using a `wave` object derived from a now-dead `igor`/`root`.
-    """
-    igor = _get_igor()
-    root = igor.DataFolder("root:")
-    wave = root.Wave(wave_path)
-    if wave is None:
-        raise RuntimeError(f"Wave not found: {wave_path}")
-    return wave
-
-
-def _read_wave_point(wave, index: int, is_text: bool):
-    """One point-value COM call -- GetTextWavePointValue or GetNumericWavePointValue."""
-    if is_text:
-        return wave.GetTextWavePointValue(index, 0)
-    return wave.GetNumericWavePointValue(index)
-
-
-# --- Session-wide history capture (verifying print output after the fact) ----------
-#
-# Confirmed from Igor Reference.ihf: CaptureHistoryStart() is a built-in Igor
-# function returning a reference number marking the CURRENT position in the history
-# area (the command/history window's text). CaptureHistory(refnum, stopCapturing)
-# then returns a string containing everything sent to the history area since that
-# reference point -- "Set stopCapturing to zero to retrieve history text captured
-# so far. Further calls to CaptureHistory with the same reference number will
-# return this text, plus any additional history text added subsequently" (i.e. each
-# call returns the FULL accumulated text since the start point, not just a delta,
-# so repeated reads are simple and never miss anything in between). This is the
-# documented, supported way to read back what Igor printed (via `print`, command
-# echoing, etc.) after the fact, rather than only being able to see it live on
-# screen or asking a human to look.
-#
-# A capture is started lazily, once, the first time _execute2 runs in this
-# process's lifetime (see _ensure_session_history_capture_started), so
-# read_session_history() always has something to report without requiring a
-# separate explicit "start" call first -- it covers everything since this bridge
-# process first talked to Igor.
-_session_history_capture_refnum = None
-
-
-def _ensure_session_history_capture_started():
-    """Start a session-wide CaptureHistoryStart() capture if one isn't already
-    running. Deliberately swallows all errors -- this is a best-effort convenience
-    feature, and must never break a normal command just because this bookkeeping
-    call failed for some reason (e.g. an ancient Igor version without this
-    function). Calls igor.Execute2 directly rather than going through _execute2 to
-    avoid recursing back into this same function.
-    """
-    global _session_history_capture_refnum
-    if _session_history_capture_refnum is not None:
-        return
     try:
-        igor = _get_igor()
-        errorCode, errorMsg, history, results = igor.Execute2(
-            0, 0, 'fprintf 0, "%.0f", CaptureHistoryStart()'
+        reply = json.loads(reply_raw)
+    except json.JSONDecodeError as e:
+        raise IgorZmqError(
+            f"Malformed reply from Igor Pro for {name!r}: {reply_raw!r}"
+        ) from e
+
+    error_code = reply.get("errorCode") or {}
+    if error_code.get("value", 0) != 0:
+        detail = (
+            f"Igor Pro reported an error calling {name!r} (code "
+            f"{error_code.get('value')}): {error_code.get('msg', '(no message)')}"
         )
-        if errorCode == 0 and results:
-            _session_history_capture_refnum = float(results)
-    except Exception:
-        pass
+        history = reply.get("history")
+        if history:
+            detail += f"\nIgor history during this call: {history!r}"
+        raise IgorZmqError(detail)
+
+    result = reply.get("result")
+    if isinstance(result, list):
+        return [_decode_typed(item) for item in result]
+    return _decode_typed(result)
 
 
-def _execute2(command: str):
-    """Run `command` via Execute2 and return (errorCode, errorMsg, history, results).
+def _reachable(timeout_ms=1000):
+    """True if ZBR#ZBR_Ping answers within timeout_ms, False otherwise. Used for
+    "is anything listening right now" checks (already_running / poll loops) where the
+    caller doesn't need the actual reply."""
+    try:
+        call_function("ZBR#ZBR_Ping", timeout_ms=timeout_ms)
+        return True
+    except (IgorZmqError, IgorZmqUnreachable):
+        return False
 
-    See the calling-convention caveat in the module docstring -- this unpacking is the
-    one thing to verify empirically on first real run.
+
+# --- Command execution (submit/poll) ---------------------------------------------------
+
+_SUBMIT_POLL_INTERVAL_SECONDS = 0.1
+_SUBMIT_POLL_TIMEOUT_SECONDS = 30.0
+
+
+def _submit_and_poll(submit_function: str, command: str, timeout_seconds: float) -> str:
+    """Submit `command` via the given ZBR submit function (ZBR_SubmitCommand or
+    ZBR_SubmitCommandUnattended) and poll ZBR_PollCommand until it reports done,
+    returning the captured text. See the module docstring for why this submit/poll
+    dance is needed at all (Execute cannot run unqueued inside a Function)."""
+    token = call_function(f"ZBR#{submit_function}", [command])
+
+    deadline = time.monotonic() + timeout_seconds
+    while True:
+        is_done, text = call_function("ZBR#ZBR_PollCommand", [token])
+        if is_done:
+            return text
+        if time.monotonic() >= deadline:
+            raise RuntimeError(
+                f"Timed out after {timeout_seconds:.0f}s waiting for a submitted "
+                f"command to finish (token {token!r}). Command was: {command}"
+            )
+        time.sleep(_SUBMIT_POLL_INTERVAL_SECONDS)
+
+
+@mcp.tool()
+def execute_igor_command(command: str, timeout_seconds: float = _SUBMIT_POLL_TIMEOUT_SECONDS) -> dict:
+    """Execute a single Igor Pro command string in the running Igor instance.
+
+    **If `command`'s runtime is unknown or could be long (more than roughly a
+    minute), use submit_igor_command/poll_igor_command instead.** This tool blocks
+    the whole MCP call for up to `timeout_seconds` and will itself get killed by
+    Claude Desktop's own MCP request timeout well before that if `timeout_seconds`
+    is set too high -- it is only suitable for commands expected to finish quickly.
+
+    **To get data back, include a `print` call in `command` -- NOT `fprintf 0, ...`.**
+    Confirmed live: this transport's capture mechanism (`CaptureHistory`) picks up
+    `print` output but does not capture `fprintf`-to-history output at all (refnum 0,
+    -1, or -2 all silently produce nothing) -- see the module docstring's "Behavior
+    changes" section for why (the old COM-based Execute2 had its own separate
+    mechanism specifically for fprintf(0,...), which no longer applies here).
+    Whatever `print`s (and the echoed command itself, unless prefixed with
+    `Silent 1;`) is captured and returned in both "results" and "history" (see the
+    module docstring for why this transport can no longer separate the two the way
+    Execute2 did).
+
+    Example: execute_igor_command('WaveStats/Q jack; print V_avg')
+
+    Implementation note: this queues `command` (ZBR_SubmitCommand) and polls for
+    completion (ZBR_PollCommand) rather than running it in one synchronous round trip
+    -- Igor's Execute operation cannot run unqueued from inside a Function at all, so
+    there is no direct equivalent of COM's Execute2 here. `timeout_seconds` bounds how
+    long this will poll before giving up (raises TimeoutError-style RuntimeError).
+
+    **Caution:** if `command` calls user-defined procedure code and Igor Pro's
+    Debugger is currently enabled, a breakpoint/runtime error/abort/stale-reference
+    pause in that code will hang the underlying command indefinitely (this poll loop
+    will keep timing out and retrying, never actually seeing it finish) -- there is no
+    scriptable way to resume or dismiss the Debugger window (see set_debugger_enabled's
+    docstring). Use execute_igor_command_unattended instead whenever nobody is
+    watching who could close that popup manually.
+
+    **If `command` itself fails to parse or hits a genuine Igor-level runtime error
+    (Debugger not involved), this now still returns normally instead of hanging until
+    `timeout_seconds` expires** -- confirmed live for both cases. There is currently no
+    way to tell that apart from "ran fine and printed nothing", though: the returned
+    text will simply be shorter/emptier than expected, with no error indication. If
+    verifying success matters, have `command` `print` an explicit sentinel/result
+    value itself.
     """
-    _ensure_session_history_capture_started()
+    text = _submit_and_poll("ZBR_SubmitCommand", command, timeout_seconds)
+    return {"results": text, "history": text}
 
-    def work():
-        igor = _get_igor()
-        return igor.Execute2(0, 0, command)
 
-    errorCode, errorMsg, history, results = _run_with_reconnect(work)
-    return errorCode, errorMsg, history, results
+@mcp.tool()
+def execute_igor_command_unattended(command: str, timeout_seconds: float = _SUBMIT_POLL_TIMEOUT_SECONDS) -> dict:
+    """Run `command` exactly like execute_igor_command, but automatically disable
+    Igor's Debugger before running it and restore it again afterward -- even if
+    `command` raises an Igor-level error.
+
+    **This is the tool to reach for whenever `command` might call user-defined
+    procedure code and nothing is watching that could close a Debugger popup by
+    hand.** See set_debugger_enabled's docstring for why a Debugger pause has no
+    scriptable resume.
+
+    Only reach for plain execute_igor_command when you deliberately want the Debugger
+    available (e.g. interactively testing a breakpoint).
+    """
+    text = _submit_and_poll("ZBR_SubmitCommandUnattended", command, timeout_seconds)
+    return {"results": text, "history": text}
+
+
+_UNKNOWN_TOKEN_PREFIX = "ERROR: unknown token "
+
+
+@mcp.tool()
+def submit_igor_command(command: str) -> dict:
+    """Queue `command` for deferred execution and return a token immediately, WITHOUT
+    waiting for it to finish.
+
+    **Use this instead of execute_igor_command whenever a command's runtime is
+    unknown or could be long -- minutes, hours, even weeks.** execute_igor_command
+    blocks the entire MCP tool call until the command finishes or timeout_seconds
+    elapses, which cannot work for a genuinely long-running calculation: it will hit
+    Claude Desktop's own MCP request timeout (observed in practice to trigger in well
+    under a minute) long before a multi-hour command finishes, even though the
+    command itself keeps running in Igor Pro regardless of what the MCP call does.
+
+    Call poll_igor_command(token) afterward -- as many times as needed, spaced
+    however far apart in time you like -- to check whether it's done yet and
+    retrieve its output once it is.
+
+    **Why this is reliable even across very long waits**: the token is just a row
+    index into plain data waves in root:Packages:ZBR (done/resultText), maintained
+    entirely by Igor Pro itself. Nothing about polling it later depends on this
+    bridge's own Python process, on any particular MCP/Claude Desktop session
+    staying open, or on how much time passes between calls -- this bridge process
+    restarting, or Claude Desktop being closed and reopened, does not lose or
+    invalidate the token. The one thing that DOES end the underlying job is Igor
+    Pro itself quitting, crashing, or restarting -- in that case the computation
+    itself is gone, not just the token, so there is nothing to recover regardless of
+    transport.
+
+    **Caution:** if `command` calls user-defined procedure code and Igor Pro's
+    Debugger is enabled, a breakpoint/runtime error/abort/stale-reference pause
+    leaves poll_igor_command reporting "not done" forever -- indistinguishable from
+    a command that's still genuinely, legitimately running, since there is no
+    scriptable way to detect or resume a Debugger pause (see
+    set_debugger_enabled's docstring). **Use submit_igor_command_unattended instead
+    for anything long-running -- this matters far more here than for
+    execute_igor_command, since nobody is likely to be watching a job that might run
+    for weeks.**
+
+    **Separately (Debugger not involved): `command` failing to parse, or hitting a
+    genuine Igor-level runtime error partway through, will NOT leave the token stuck
+    forever** -- confirmed live. The finish-callback that flips poll_igor_command's
+    "done" flag is queued as its own independent step, so it always runs regardless
+    of what happens to `command`. There is, however, no reliable generic way to tell
+    "command ran and legitimately printed nothing" apart from "command errored out
+    with no output" -- both come back from poll_igor_command as `"done": True` with
+    an empty/short result and no error indication. If verifying success matters, have
+    `command` `print` an explicit sentinel/result value itself.
+    """
+    token = call_function("ZBR#ZBR_SubmitCommand", [command])
+    return {"token": token}
+
+
+@mcp.tool()
+def submit_igor_command_unattended(command: str) -> dict:
+    """Same as submit_igor_command, but disables Igor's Debugger for the duration of
+    `command` and restores it afterward -- see execute_igor_command_unattended's
+    docstring for the general reasoning.
+
+    **This is the recommended tool for anything long-running submitted via
+    submit_igor_command/poll_igor_command.** Without it, a Debugger pause partway
+    through a multi-hour or multi-week calculation would silently hang forever with
+    no way to distinguish it from the command still legitimately running -- there is
+    no periodic "is this actually still making progress" signal beyond
+    poll_igor_command's own done/not-done state.
+    """
+    token = call_function("ZBR#ZBR_SubmitCommandUnattended", [command])
+    return {"token": token}
+
+
+@mcp.tool()
+def poll_igor_command(token: str) -> dict:
+    """Check whether a command submitted via submit_igor_command/
+    submit_igor_command_unattended has finished yet, and retrieve its captured
+    output if so.
+
+    Returns `{"done": False}` while still pending -- call again later, there is no
+    limit on how long you can wait or how many times you poll (see
+    submit_igor_command's docstring for why this stays reliable no matter how much
+    time passes or how many times this bridge process itself restarts in the
+    meantime). Returns `{"done": True, "results": <text>, "history": <text>}` once
+    finished -- both keys hold the same captured text, matching
+    execute_igor_command's own return shape (see that tool's docstring for why
+    "results"/"history" can no longer be kept separate over this transport, and why
+    `print`, not `fprintf`, is what actually gets captured).
+
+    For a job expected to run over a very long horizon (hours to weeks), consider
+    setting up a scheduled task that calls this periodically and reports back once
+    `"done"` flips to true, rather than relying on this conversation staying open.
+
+    Raises if `token` is not recognized -- e.g. a typo, or a token from a
+    since-quit/since-restarted Igor Pro instance (tokens do not survive Igor Pro
+    itself restarting, only this bridge process or Claude Desktop restarting).
+
+    Does NOT raise just because the submitted command itself failed to parse or hit
+    a runtime error -- that case still reports `"done": True`, just with an
+    empty/shorter-than-expected result and no explicit error indication (see
+    submit_igor_command's docstring for why: there is currently no generic way to
+    detect this here).
+    """
+    is_done, text = call_function("ZBR#ZBR_PollCommand", [token])
+    if not is_done:
+        return {"done": False}
+    if isinstance(text, str) and text.startswith(_UNKNOWN_TOKEN_PREFIX):
+        raise RuntimeError(text)
+    return {"done": True, "results": text, "history": text}
 
 
 @mcp.tool()
 def read_session_history(stop: bool = False) -> dict:
     """Read back everything sent to Igor's history area (print output, command
-    echoing, error messages, etc.) since this bridge process first talked to Igor
-    -- the reliable way to verify a PAST execute_igor_command/
-    execute_igor_command_unattended call's `print` output actually happened,
-    without asking a human to look at Igor's screen or needing to have captured
-    the per-call `history` field at the time.
+    echoing, error messages, etc.) since this bridge (specifically, ZMQ_BridgeHelpers.
+    ipf's own capture) started tracking it -- the reliable way to verify a PAST
+    execute_igor_command/execute_igor_command_unattended call's output actually
+    happened, without asking a human to look at Igor's screen.
 
-    Backed by Igor's built-in CaptureHistoryStart()/CaptureHistory() functions
-    (confirmed from Igor Reference.ihf). A capture is started automatically the
-    first time any command runs through this bridge in this process's lifetime,
-    so this always has something to report. Each call returns the FULL
-    accumulated text since that start point, not just what's new since the last
-    read -- so calling this repeatedly with stop=False (the default) is always
-    safe and simply returns more (growing) text as more commands run in between.
+    A capture is started automatically, Igor-side, the first time it's needed (see
+    ZBR_EnsureCaptureStarted in ZMQ_BridgeHelpers.ipf) so this always has something to
+    report. Each call returns the FULL accumulated text since that start point, not
+    just what's new since the last read -- calling this repeatedly with stop=False
+    (the default) is always safe.
 
-    stop=True stops the capture (no further text will be recorded for it) and
-    returns whatever was captured up to that point; a subsequent call to this
-    tool (or the next command run through this bridge) then starts a brand-new
-    capture automatically, covering only from that point forward -- use this to
-    intentionally "reset" what counts as history for a fresh phase of work.
-
-    Raises if no capture is currently active, which should only happen if
-    CaptureHistoryStart() itself failed when first attempted (e.g. an
-    unexpectedly old Igor version) -- in that case, fall back to reading the
-    `history` field returned directly by execute_igor_command/
-    execute_igor_command_unattended for that specific call instead.
+    stop=True stops the capture (no further text will be recorded for it) and returns
+    whatever was captured up to that point; the next call (to this tool, or the next
+    command run through this bridge) transparently starts a brand-new capture.
     """
-    global _session_history_capture_refnum
-    if _session_history_capture_refnum is None:
-        raise RuntimeError(
-            "No history capture is currently active in this bridge process. This "
-            "starts automatically on first use, so this likely means "
-            "CaptureHistoryStart() failed earlier (see server logs) or nothing "
-            "has been executed yet -- try running check_bridge_health() first, "
-            "then retry this call."
-        )
-
-    refnum = _session_history_capture_refnum
-    stop_flag = 1 if stop else 0
-    cmd = f'fprintf 0, "%s", CaptureHistory({refnum:.0f}, {stop_flag})'
-    errorCode, errorMsg, history, results = _execute2(cmd)
-    if errorCode != 0:
-        raise RuntimeError(
-            f"Could not read history capture (error code {errorCode}): "
-            f"{errorMsg or '(no error message)'}"
-        )
-
-    if stop:
-        _session_history_capture_refnum = None
-
-    return {"history_text": results, "capture_stopped": stop}
-
-
-# --- Igor runtime error model (how errors surface through Execute2) -----------------
-#
-# Confirmed empirically this session, against a live Igor Pro instance, by
-# instrumenting test functions with checkpoints (a global string variable, since
-# GetRTError does not expose "where in the call did this happen", only "what/whether"):
-#
-# - With the Debugger disabled (the state required for unattended use -- see
-#   "Debugger control" below), an unhandled runtime error (e.g. indexing a wave
-#   reference that doesn't exist, or Make with invalid parameters) does NOT stop
-#   execution. It sets Igor's internal runtime-error flag (readable via GetRTError(0)
-#   without clearing it) and execution continues completely normally -- every
-#   subsequent line in the function runs, including any side effects (prints, wave
-#   writes, global variable assignments), all the way to the function's natural end,
-#   unless something explicitly checks the flag.
-# - AbortOnRTE is that explicit check: placed after a command that might set the
-#   flag, it raises an Igor abort if the flag is set, which unwinds the *entire*
-#   current function immediately (nothing after it in that function runs, not even
-#   the rest of the function) and propagates to the nearest enclosing
-#   try-catch-endtry, exactly like a normal exception -- confirmed with a runtime
-#   error inside a *called* function: the abort skipped the rest of that function
-#   entirely and was caught by a try/catch in the *caller*. Nested try-catch-endtry
-#   behaves as expected too: an inner catch fully absorbs an abort (the outer catch
-#   never triggers), and a bare `Abort` (no arguments) re-raised from inside a catch
-#   unwinds past that catch's own endtry to the next enclosing catch, still carrying
-#   the original pending error code if it was only peeked (GetRTError(0)) and not
-#   cleared (GetRTError(1)) beforehand.
-# - If nothing ever checks the flag (no AbortOnRTE, no try-catch), execution reaches
-#   the top-level command boundary -- i.e. this bridge's Execute2 call -- with the
-#   flag still set. Igor's command-line evaluator checks for this at that boundary
-#   and reports it as the Execute2 call's own failure (pIgorErrorCode/errorMsg),
-#   confirmed to carry the *original* error code and message, not a generic one.
-#   This boundary check also clears the flag afterward -- confirmed by checking
-#   GetRTError(0) in a completely separate subsequent call and seeing 0 -- so a
-#   failure here never contaminates the next command.
-# - The flag is "sticky": if two *different* unhandled runtime errors occur in
-#   sequence with nothing checking/clearing in between, GetRTError keeps reporting
-#   only the *first* one throughout -- confirmed by triggering two distinct errors
-#   (a null-wave read, then an invalid Make) and seeing the reported code/message
-#   stay fixed at the first error the whole time, including in the final Execute2
-#   result. This matches Igor's own documented caveat that GetErrMessage can be
-#   "incomplete" when multiple errors occur.
-#
-# Net effect for this bridge: a successful (errorCode 0) unattended call is a
-# reliable clean signal -- the boundary check guarantees no lingering error. A
-# failed call reliably reports the *first* unhandled runtime error's code and
-# message, but does NOT mean execution stopped there -- everything before and after
-# it in the procedure code likely still ran to completion -- and does NOT mean it
-# was the *only* problem, since any later distinct error would be silently masked
-# by the same stuck flag. Because of this, _format_execute2_error below includes
-# whatever `results` (fprintf output) was captured, not just the error itself --
-# that's often the only way to tell how far execution actually got.
-
-
-def _format_execute2_error(
-    command: str, errorCode: int, errorMsg: str, results: str, history: str = ""
-) -> str:
-    """Build the message for a RuntimeError raised after a failed Execute2 call,
-    including any partial `results` (fprintf output) and/or `history` captured
-    before/around the error -- see the runtime error model notes above for why that
-    matters: the procedure code very likely kept running after the error, so there
-    may be diagnostic output that would otherwise be silently discarded.
-
-    DIAGNOSTIC NOTE (temporary, being verified live): confirmed empirically that
-    Igor's Execute2 returns an EMPTY `results` string whenever pIgorErrorCode is
-    nonzero, even when an fprintf 0, ... earlier in the same command definitely ran
-    (confirmed via a separate global-variable checkpoint) -- so `results` alone does
-    NOT recover anything in the common case of a single top-level command/function
-    call failing. Including `history` here as well to check whether it fares better."""
-    parts = [
-        f"Igor command failed (error code {errorCode}): {errorMsg or '(no error message)'}"
-    ]
-    if results:
-        parts.append(f"Partial results captured before/around the error: {results!r}")
-    if history:
-        parts.append(f"History captured for this call: {history!r}")
-    parts.append(f"Command was: {command}")
-    return "\n".join(parts)
+    text = call_function("ZBR#ZBR_ReadSessionHistory", [1 if stop else 0])
+    return {"history_text": text, "capture_stopped": stop}
 
 
 @mcp.tool()
-def execute_igor_command(command: str) -> dict:
-    """Execute a single Igor Pro command string in the running Igor instance.
-
-    To get data back (not just run a command for its side effect), include an
-    `fprintf 0, "..."` call in `command` -- its output is captured and returned.
-
-    Example: execute_igor_command('WaveStats/Q jack; fprintf 0, "%g", V_avg')
-
-    **Caution:** if `command` calls user-defined procedure code (e.g. a MIES or test
-    function) and Igor Pro's Debugger is currently enabled, a breakpoint/runtime
-    error/abort/stale-reference pause in that code will hang this call indefinitely --
-    there is no scriptable way to resume or dismiss the Debugger window (see
-    set_debugger_enabled's docstring). This happened for real during development.
-    Whenever nobody is watching who could close that popup manually, use
-    execute_igor_command_unattended instead, which disables the Debugger for the
-    duration of the call automatically. Only use this plain version when you
-    deliberately want the Debugger available (e.g. interactively testing a
-    breakpoint).
-
-    Returns a dict with:
-      - "results": the fprintf output captured, if any (empty string otherwise).
-      - "history": any text `command` sent to Igor's history area during this
-        specific call -- confirmed from Automation Server.ihf: "history [output] is
-        a Basic string. On output it contains any text sent to Igor's history area
-        by the commands." This is exactly how to verify a `print` statement inside
-        `command` actually ran, without needing a human to look at Igor's screen or
-        calling the separate read_session_history tool. (Note: the command itself
-        is also normally echoed into history unless Silent 2 is in effect, so this
-        may include more than just explicit `print` output.)
-
-    **On failure:** a nonzero error code means at least one unhandled runtime error
-    occurred somewhere in `command` -- it does NOT mean execution stopped there, and
-    it does NOT mean it was the only problem (see the runtime error model notes
-    above `_format_execute2_error`). The raised error includes any partial `results`
-    and `history` captured, since that's often the only way to tell how far
-    execution actually got.
-    """
-    errorCode, errorMsg, history, results = _execute2(command)
-    if errorCode != 0:
-        raise RuntimeError(
-            _format_execute2_error(command, errorCode, errorMsg, results, history)
-        )
-    return {"results": results, "history": history}
-
-
-@mcp.tool()
-def get_wave(wave_path: str) -> list:
-    """Return the data of an existing 1D Igor wave as a list of numbers or strings.
+def get_wave(wave_path: str) -> dict:
+    """Return an existing Igor wave's data and metadata.
 
     wave_path should be an absolute Igor path, e.g. "root:testWave" or
     "root:myFolder:testWave".
 
-    Limitation: only 1D, real (non-complex) waves are supported. Multi-dimensional or
-    complex waves will raise an error.
+    Unlike the old COM-based version of this tool (limited to 1D, real-valued waves,
+    read one point at a time via GetNumericWavePointValue), this transport's native
+    wave serialization supports any dimensionality (up to 4D), real and complex
+    numeric waves, text waves, and wave-reference waves (waves of waves) -- the entire
+    wave comes back from ONE CallFunction round trip. See the module docstring's wave
+    serialization notes for the JSON format this is decoded from.
 
-    Every COM call below is individually reconnect-protected (DataFolder/Wave/
-    GetDimensions as one unit via _run_with_reconnect, then each point read
-    separately) rather than only wrapping the function as a whole. The point-level
-    wrapping matters for large waves specifically: if the connection drops on point
-    4000 of 5000, this resumes from point 4000 after reconnecting instead of
-    re-fetching the wave and re-reading points 0-3999 again.
+    Returns a dict with "wave_path", "type" (e.g. "NT_FP64", "TEXT_WAVE_TYPE",
+    "WAVE_TYPE"), "dim_size" (1 to 4 numbers), "data" (nested Python lists matching
+    the wave's own dimensionality -- data[row][col]... for multi-dimensional waves,
+    or a single flat list for 1D), "unit", "note", and "dimension" (delta/offset/
+    label/unit per dimension, if set).
+
+    Raises if wave_path does not refer to an existing wave.
     """
-
-    def get_dims():
-        return _get_wave_ref(wave_path).GetDimensions()
-
-    dataType, numRows, numCols, numLayers, numChunks = _run_with_reconnect(get_dims)
-
-    if numCols or numLayers or numChunks:
-        raise RuntimeError(
-            f"{wave_path} is not 1D (dims: rows={numRows}, cols={numCols}, "
-            f"layers={numLayers}, chunks={numChunks}) -- only 1D waves are supported."
-        )
-    if dataType & IP_DATATYPE_COMPLEX_FLAG:
-        raise RuntimeError(f"{wave_path} is complex-valued -- not supported yet.")
-
-    is_text = dataType == IP_DATATYPE_TEXT
-    wave = _run_with_reconnect(lambda: _get_wave_ref(wave_path))
-    values = []
-    for i in range(numRows):
-        try:
-            values.append(_read_wave_point(wave, i, is_text))
-        except pywintypes.com_error:
-            _get_igor(force_reconnect=True)
-            wave = _get_wave_ref(wave_path)
-            values.append(_read_wave_point(wave, i, is_text))
-    return values
+    wave = call_function("ZBR#ZBR_GetWaveGeneric", [wave_path])
+    if wave is None:
+        raise RuntimeError(f"Wave not found: {wave_path}")
+    return {"wave_path": wave_path, **wave}
 
 
-@mcp.tool()
-def load_experiment(file_path: str) -> dict:
-    """Load an Igor Pro experiment file (.pxp) into the running instance, replacing
-    whatever experiment is currently open -- equivalent to Igor's File -> Open
-    Experiment menu command.
-
-    Confirmed from Automation Server.ihf: LoadExperiment(flags, loadType,
-    symbolicPathName, filePath) exists ONLY as a COM Automation method, not as part
-    of Igor's own procedure/macro language -- unlike execute_igor_command's Execute2
-    path, this cannot be run as a command string at all. Confirmed by checking Igor
-    Reference.ihf (Igor's full operations/functions reference): neither
-    "LoadExperiment" nor "OpenFile" appear there anywhere; both exist exclusively in
-    Automation Server.ihf. So this bridge calls the COM method directly instead of
-    going through _execute2, the same way get_wave calls DataFolder/Wave directly.
-
-    Uses loadType=ipLoadTypeOpen (2): "Does a normal experiment open, like Igor's
-    File->Open Experiment menu command." Per the docs, this does **not** ask to save
-    changes to whatever experiment is currently open first: "LoadExperiment does not
-    ask if you want to save changes to the previous current experiment. If you do
-    want to save changes, call the SaveExperiment method before calling the
-    LoadExperiment method." Call execute_igor_command('SaveExperiment') first if the
-    currently-open experiment's changes matter.
-
-    Disables Igor's Debugger for the duration of the call and restores it
-    afterward, the same way execute_igor_command_unattended does -- an experiment's
-    recreation procedures and startup hooks (e.g. MIES's IgorStartOrNewHook) run as
-    part of loading it, and this call bypasses _execute2 entirely so it would not
-    otherwise get that protection.
-
-    Loading a different experiment can change everything about the live environment
-    (included procedure files, XOPs, data folders, Debugger settings persist but
-    everything else may not) -- call get_environment_summary() afterward to see the
-    new state.
-
-    Raises if file_path does not point to an existing file.
-    """
-    normalized = os.path.abspath(file_path)
-    if not os.path.isfile(normalized):
-        raise RuntimeError(f"'{normalized}' does not exist or is not a file.")
-
-    saved = _read_debugger_options()
-    _apply_debugger_options(
-        {
-            "enable": False,
-            "debug_on_error": False,
-            "debug_on_abort": False,
-            "nvar_svar_wave_checking": False,
-        }
-    )
-    try:
-
-        def work():
-            igor = _get_igor()
-            igor.LoadExperiment(0, IP_LOAD_TYPE_OPEN, "", normalized)
-
-        _run_with_reconnect(work)
-    finally:
-        _apply_debugger_options(saved)
-
-    return {"loaded_file": normalized}
-
-
-# This bridge's own version, kept in sync with manifest.json's "version" field on every
-# release -- not read from manifest.json at runtime because the on-disk layout after
-# Claude Desktop installs a .mcpb extension is not guaranteed to keep server.py and
-# manifest.json at a fixed relative path to each other; a hardcoded constant avoids that
-# assumption entirely. Added specifically because a prior session had no way to confirm
-# from inside a conversation which .mcpb build was actually loaded/active in Claude
-# Desktop, which made it impossible to verify whether a given fix (e.g. the reload/compile
-# timing relaxation) was actually in effect during a test -- see SESSION_NOTES.md.
-_BRIDGE_VERSION = "1.27.0"
-
-
-def _installed_package_version(distribution_name: str) -> str | None:
-    """Return the installed version of a distribution (e.g. "mcp", "pywin32"), or None
-    if it isn't installed/resolvable. Best-effort only -- wrapped in
-    get_bridge_version() to help diagnose *which* Python environment this process is
-    actually running in, not to be relied on for anything else.
-    """
-    try:
-        return importlib.metadata.version(distribution_name)
-    except importlib.metadata.PackageNotFoundError:
-        return None
-
-
-@mcp.tool()
-def get_bridge_version() -> dict:
-    """Return the version of this Igor Pro Bridge build that is actually running right
-    now, in this Claude Desktop session, plus which Python interpreter and package
-    versions it's actually running with.
-
-    Call this whenever it matters to confirm which build is active -- e.g. before
-    relying on a specific fix or behavior change from a recent version, or when
-    reporting results from a test that depends on a particular fix being in effect.
-    There is no other way to determine this from inside a conversation: installing a
-    newer .mcpb requires restarting Claude Desktop, and nothing else surfaces which
-    version ended up actually loaded afterward.
-
-    The "python_executable" field is also the authoritative answer to a separate,
-    easy-to-get-wrong question: *which* Python environment Claude Desktop actually
-    launched this process with. Claude Desktop's manifest.json only specifies the bare
-    command "python", resolved via whatever PATH Claude Desktop's own process
-    environment has at launch time (regardless of whether that process happens to be
-    elevated) -- which is not guaranteed to match the Python an interactive console
-    session resolves (e.g. a PowerShell profile
-    activating a conda environment, or a per-user Microsoft Store "app execution
-    alias" stub that behaves differently once elevated). install.ps1 makes its own
-    best-effort guess at install time; after installing and restarting Claude Desktop,
-    call this tool to confirm "python_executable" actually matches what install.ps1
-    installed into -- if it doesn't, re-run install.ps1 with an explicit -PythonPath
-    pointing at the path reported here.
-    """
-    return {
-        "version": _BRIDGE_VERSION,
-        "python_executable": sys.executable,
-        "python_version": sys.version.split()[0],
-        "mcp_package_version": _installed_package_version("mcp"),
-        "pywin32_build": _installed_package_version("pywin32"),
-    }
-
-
-@mcp.tool()
-def check_bridge_health() -> dict:
-    """Check whether the Igor Pro bridge is actually able to reach Igor Pro right now,
-    and report exactly which requirement is unmet if not.
-
-    Call this first whenever a command fails or behaves unexpectedly. This session's
-    own debugging hit three distinct failure modes that all needed different fixes:
-    (1) this Python process and Igor Pro running at mismatched privilege levels (one
-    elevated, one not), (2) no Igor Pro COM object registered at all (Igor not
-    running), and (3) a registered-but-dead COM object (Igor crashed/was
-    force-closed, leaving a stale registration that reconnecting alone can't fix --
-    Igor itself needs relaunching). This check distinguishes all three rather than
-    surfacing one generic failure.
-
-    Note on (1): elevation itself is not the requirement -- empirically confirmed
-    (both this bridge process and Igor Pro running non-elevated, as an ordinary
-    user, via a standalone win32com.client.GetActiveObject test) that COM attaches
-    fine as long as client and server share the same privilege level. This check
-    therefore always attempts the real COM call rather than pre-emptively failing
-    based on this process's own elevation state -- a mismatch, if present, shows up
-    as the COM/RPC-transport error below.
-
-    Returns a dict with at least a "status" key ("OK" or "FAIL") and, on FAIL, a
-    "problem" key with a specific, actionable description.
-    """
-    report = {"python_process_elevated": _is_current_process_elevated()}
-
-    try:
-        _get_igor()
-    except RuntimeError as e:
-        report["status"] = "FAIL"
-        report["problem"] = (
-            f"No running Igor Pro instance found via COM ({e}). Make sure Igor Pro "
-            "9.00 or later is open, and that it and this Python process are running "
-            "at the same privilege level (both elevated, or both not) -- a mismatch "
-            "is the most common cause of this failure, not elevation itself."
-        )
-        return report
-
-    def try_call():
-        igor = _get_igor()
-        return igor.Execute2(0, 0, 'fprintf 0, "%s", IgorInfo(1)')
-
-    try:
-        errorCode, errorMsg, history, results = try_call()
-        report["reconnect_was_needed"] = False
-    except pywintypes.com_error:
-        report["reconnect_was_needed"] = True
-        try:
-            _get_igor(force_reconnect=True)
-            errorCode, errorMsg, history, results = try_call()
-        except pywintypes.com_error as e2:
-            report["status"] = "FAIL"
-            report["problem"] = (
-                f"Found a registered Igor Pro COM object, but calls to it fail with a "
-                f"COM/RPC-transport error even after reconnecting ({e2}). This usually "
-                "means a stale/dead COM registration (Igor Pro crashed or was "
-                "force-closed previously -- check Task Manager for Igor64.exe, there "
-                "should be exactly one, fully close it, and relaunch Igor Pro fresh), "
-                "or a privilege-level mismatch between this process and Igor Pro (both "
-                "must be elevated, or both not -- elevation itself is not required)."
-            )
-            return report
-
-    if errorCode != 0:
-        report["status"] = "FAIL"
-        report["problem"] = f"Igor-level command failed (code {errorCode}): {errorMsg}"
-        return report
-
-    report["status"] = "OK"
-    report["igor_info"] = results
-    return report
-
-
-# Confirmed against a live Igor Pro instance during development: this is exactly the
-# method used by IsProcGlobalCompiled() in
-# Packages/igortest/procedures/igortest-test-compilation.ipf. FunctionInfo() for a
-# deliberately non-existing function returns an empty string when procedure code is
-# compiled, and a non-empty string (observed: "Procedures Not Compiled") when it is
-# not. The expression is inlined directly into the fprintf call (no intermediate
-# variable) deliberately: an earlier version assigned to a local first, but Igor's
-# command line persists local variables across separate command-line invocations, so
-# a *second* call declaring the same variable name again failed with "the name
-# already exists as a variable" -- confirmed empirically. Inlining the expression
-# sidesteps that entirely, since there is no variable to persist or collide with.
-_PROCEDURES_COMPILED_CHECK_CMD = (
-    'fprintf 0, "%s", FunctionInfo("ProcGlobal#NON_EXISTING_FUNCTION")'
-)
+# --- Compilation state -----------------------------------------------------------------
 
 
 @mcp.tool()
@@ -781,447 +670,30 @@ def check_compilation_state() -> dict:
     while nothing is running), or when nothing is running and an included procedure
     file changed on disk. Use reload_and_compile_procedures to get back to compiled
     after editing a .ipf file on disk.
+
+    Note: since ZBR (the independent module this bridge's Igor-side code lives in)
+    compiles separately from ProcGlobal/regular MIES code, a "true" result here
+    specifically means ProcGlobal's compile state -- confirmed reachable via ZBR at
+    all already implies ZBR itself is compiled (otherwise this call would have failed
+    with IgorZmqUnreachable/IgorZmqError instead of returning a result).
     """
-    errorCode, errorMsg, history, results = _execute2(_PROCEDURES_COMPILED_CHECK_CMD)
-    if errorCode != 0:
-        raise RuntimeError(
-            f"Could not check compilation state (error code {errorCode}): {errorMsg}"
-        )
-    return {"compiled": results == "", "raw_function_info": results}
+    compiled = call_function("ZBR#ZBR_IsCompiled")
+    return {"compiled": bool(compiled)}
 
 
 _COMPILE_POLL_INTERVAL_SECONDS = 0.5
-_COMPILE_POLL_TIMEOUT_SECONDS = 5.0
-# Pause between issuing "RELOAD CHANGED PROCS " and "COMPILEPROCEDURES ", and after
-# issuing "COMPILEPROCEDURES ", both queued via Execute/P (see reload_and_compile_procedures).
-# Added to relax the timing between these two operation-queue commands after Igor Pro
-# crashes were observed around reload/compile activity this session (see SESSION_NOTES.md) --
-# not a confirmed root-cause fix, just a precaution to reduce how tightly these are packed.
-_RELOAD_TO_COMPILE_PAUSE_SECONDS = 2.0
-_POST_COMPILE_PAUSE_SECONDS = 1.0
-# Number of consecutive "compiled" reads required before trusting the FunctionInfo-based
-# fallback signal -- see the false-positive race explained in
-# reload_and_compile_procedures's docstring. Not needed for the AfterCompiledHook-based
-# counter signal, which is race-free by construction (see _read_claude_helper_compile_counter).
-_COMPILE_CONFIRM_CHECKS = 2
-
-# MIES_ClaudeHelper.ipf's AfterCompiledHook (gated behind #ifdef IGOR_PRO_BRIDGE -- see
-# SESSION_NOTES.md) increments root:gClaudeHelperCompileCounter every time Igor calls it,
-# which only happens once ALL procedure windows have genuinely compiled successfully
-# (confirmed from Igor Pro Folder/Igor Help Files/Advanced Topics.ihf). Unlike the
-# FunctionInfo-based poll below, there is no staleness/race concern reading this: the
-# counter only ever changes at the exact moment Igor itself confirms a successful
-# compile, so any observed increase over a baseline is unconditionally trustworthy, no
-# repeated-confirmation dance required. NumVarOrDefault's own -1 default is used as the
-# "unavailable" sentinel (a real counter value can never be negative), which handles two
-# unavailability cases identically: IGOR_PRO_BRIDGE not defined for this experiment (the
-# hook doesn't exist at all), or MIES_ClaudeHelper.ipf not included in the first place --
-# this bridge has to keep working either way, so the counter is only ever an optional
-# extra confirmation, never a requirement.
-_CLAUDE_HELPER_COMPILE_COUNTER_CMD = (
-    'fprintf 0, "%g", NumVarOrDefault("root:gClaudeHelperCompileCounter", -1)'
-)
+_COMPILE_POLL_TIMEOUT_SECONDS = 15.0
 
 
-def _read_claude_helper_compile_counter():
-    """Read root:gClaudeHelperCompileCounter, or None if it's unavailable for any reason
-    (COM/Igor-level error, or the sentinel -1 meaning the variable doesn't exist -- see
-    the constant's comment above for why both are treated as simply "unavailable", never
-    fatal)."""
-    errorCode, errorMsg, history, results = _execute2(
-        _CLAUDE_HELPER_COMPILE_COUNTER_CMD
-    )
-    if errorCode != 0:
-        return None
+def _read_compile_counter():
+    """ZBR_ReadCompileCounter(), or None if the call itself fails (e.g. Igor is
+    mid-recompile and briefly unreachable) -- treated as "unknown", never fatal, same
+    as the counter's own -1-means-unavailable convention Igor-side."""
     try:
-        value = float(results)
-    except (TypeError, ValueError):
+        value = call_function("ZBR#ZBR_ReadCompileCounter")
+    except (IgorZmqError, IgorZmqUnreachable):
         return None
-    return None if value < 0 else value
-
-
-_COMPILE_ERROR_DIALOG_NOTE = (
-    "One confirmed cause if this is unexpected (e.g. you just fixed a known syntax "
-    "error and expected this to succeed): a compile-error dialog left open in Igor "
-    "from a PREVIOUS failed attempt blocks Igor's operation queue from ever draining "
-    "-- confirmed from Igor Pro Folder/Igor Help Files/Advanced Topics.ihf, "
-    "'Operation Queue' section: 'Igor services the operation queue when no "
-    "procedures are running and the command line is empty.' A modal dialog means "
-    "Igor is never idle, so RELOAD CHANGED PROCS/COMPILEPROCEDURES queued by a later "
-    "call sit there without ever actually running, even though this bridge's own COM "
-    "calls keep responding normally throughout (confirmed empirically: this hang "
-    "does not show up as a hung tool call, only as 'compiled' staying stuck at False "
-    "no matter how many times this is retried). "
-    "reload_and_compile_procedures already attempts an automatic fix for exactly this "
-    "case (posting an Escape key press directly to Igor's dialog window, via "
-    "dismiss_compile_error_dialog's underlying logic, without needing OS focus/"
-    "foreground) before returning this note -- see the 'auto_dismiss_attempted' "
-    "field for what that attempt found and did. "
-    "ACTION FOR WHATEVER IS CALLING THIS TOOL: if the automatic attempt did not "
-    "resolve it (or was not attempted, e.g. because no matching dialog window was "
-    "found), do not just log this and retry silently -- explicitly ask "
-    "the human operator right now whether a compile-error dialog is showing in Igor "
-    "Pro, and if so, to close it, before retrying. Explicitly prompting the human is "
-    "what actually keeps an unattended/agent-driven workflow moving when the "
-    "automatic attempt isn't enough."
-)
-
-
-# --- Compile-error dialog dismissal (posted Escape key message) ---------------------
-#
-# Added after a user-proposed mitigation for the compile-error-dialog problem
-# documented above: there is still no documented COM operation to detect or dismiss
-# that dialog, but Escape closes it, and a simulated key press can be delivered to
-# it directly.
-#
-# **Confirmed live against real Igor Pro instances -- both Igor Pro 10.03 and Igor
-# Pro 9.06 (this is no longer a guess for either)**: the original assumption that
-# this dialog is an ordinary "#32770" Win32 dialog was WRONG -- Igor Pro's UI (both
-# major versions tested) is Qt-based, and the compile-error dialog is a Qt window
-# with a version-hash-looking class name (observed on 10.03: "Qt693QWindowIcon";
-# not re-checked on 9.06 since title matching alone was already sufficient there).
-# Since that class name likely varies across Igor/Qt builds and isn't a stable
-# thing to match on, this instead matches on the dialog's window TITLE, which was
-# directly observed to be exactly "Function Compilation Error" on BOTH Igor Pro
-# 10.03 and 9.06 -- a stable, Igor-chosen string, not a toolkit implementation
-# detail, and apparently stable across at least these two major versions.
-#
-# An earlier version also OR'd in a blanket "#32770" (the standard native Windows
-# dialog class) check, on the theory that it was "harmless" and would cover some
-# other genuinely native Igor-raised dialog. A Copilot PR review correctly flagged
-# this as a real risk instead: since this is called automatically from
-# reload_and_compile_procedures, matching ANY "#32770" window regardless of title
-# could Escape-dismiss an unrelated native dialog (e.g. a save-changes
-# confirmation), causing data loss or unexpected state changes -- and it was never
-# actually needed, since the real compile-error dialog isn't "#32770" on either
-# version tested. Removed; title matching alone is both sufficient and safer.
-#
-# PostMessage(hwnd, WM_KEYDOWN/WM_KEYUP, VK_ESCAPE, ...) is used rather than a
-# hardware-level input simulation so this never needs to steal OS focus/
-# foreground from whatever the user is doing. **Confirmed live against a real
-# stuck "Function Compilation Error" dialog on BOTH Igor Pro 10.03 and Igor Pro
-# 9.06: a POSTED (not real hardware) WM_KEYDOWN/WM_KEYUP for VK_ESCAPE
-# successfully closed it in both cases** -- Qt's Windows platform plugin
-# intercepts native window messages in its own WndProc regardless of a message's
-# origin, so it reacted the same way a real key press would, with no
-# foreground/focus change needed. (If a future Igor/Qt version doesn't react the
-# same way, the fallback would be a hardware-level simulation --
-# SetForegroundWindow + keybd_event/SendInput -- targeted at this same window, at
-# the cost of stealing focus.)
-#
-# Targeting no longer relies on the OS foreground window at all (the very first,
-# now-superseded approach): it enumerates all top-level windows and keeps visible
-# ones belonging to an Igor Pro process (exe name starting with "igor") whose title
-# matches a known stuck-dialog title (see _KNOWN_STUCK_DIALOG_TITLES). If it never
-# matches, dismissal safely reports "not found" (see "igor_windows_seen" in that
-# result for exactly what windows exist, to extend this list further if a new
-# stuck-dialog title shows up).
-#
-# Trade-off, confirmed to be acceptable by the user who proposed this mitigation:
-# this recovers the ability to continue working, but does NOT recover the actual
-# compile-error message -- Escape just closes the dialog, it doesn't read it. If the
-# exact error text matters, check Igor's procedure window/history directly (or ask a
-# human to read the dialog) before this or reload_and_compile_procedures's automatic
-# call to it dismisses it.
-
-_IGOR_PROCESS_NAME_PREFIX = "igor"
-# Known titles of Igor Pro popups that block the operation queue and are safe to
-# dismiss with Escape. Confirmed live against both Igor Pro 10.03 and Igor Pro
-# 9.06: the compile-error dialog is titled exactly "Function Compilation Error"
-# and is a Qt window, NOT a native "#32770" dialog -- so title matching is the
-# only signal used, and it appears stable across major versions.
-_KNOWN_STUCK_DIALOG_TITLES = ("Function Compilation Error",)
-_POSTED_KEY_GAP_SECONDS = 0.05
-_POSTED_KEY_SETTLE_SECONDS = 0.2
-
-
-def _is_stuck_dialog_window(class_name: str, title: str) -> bool:
-    """True if a window's title matches one of the known stuck-dialog cases this
-    bridge knows how to dismiss (see _KNOWN_STUCK_DIALOG_TITLES).
-
-    Deliberately title-only. An earlier version also treated ANY window with the
-    generic native Windows dialog class ("#32770") as safe to dismiss regardless of
-    title -- flagged by a Copilot PR review as a real risk: since
-    dismiss_compile_error_dialog is called automatically from
-    reload_and_compile_procedures, that blanket rule could have Escape-dismissed an
-    unrelated native dialog (e.g. a save-changes confirmation), causing data loss or
-    unexpected state changes. It also never bought anything in practice: the actual
-    compile-error dialog confirmed live on both Igor Pro 10.03 and 9.06 is a Qt
-    window, not a "#32770" dialog at all, so the class-only branch could only ever
-    match something else. class_name is accepted as a parameter for signature
-    stability / potential future use, but is currently unused.
-    """
-    return any(known.lower() in title.lower() for known in _KNOWN_STUCK_DIALOG_TITLES)
-
-
-def _get_process_exe_name(pid: int):
-    """Best-effort lookup of the executable file name (e.g. "Igor64.exe") owning
-    `pid`, or None if it can't be determined. Returns just the base file name, not
-    the full path, so callers can do a simple case-insensitive prefix check."""
-    ACCESS = win32con.PROCESS_QUERY_INFORMATION | win32con.PROCESS_VM_READ
-    hProcess = None
-    try:
-        hProcess = win32api.OpenProcess(ACCESS, False, pid)
-        path = win32process.GetModuleFileNameEx(hProcess, 0)
-        return os.path.basename(path)
-    except Exception:
-        return None
-    finally:
-        if hProcess is not None:
-            win32api.CloseHandle(hProcess)
-
-
-def _find_igor_dialog_window():
-    """Find a visible top-level window that looks like a known stuck Igor Pro
-    dialog (see _is_stuck_dialog_window) and is owned by an Igor Pro process,
-    without regard to OS foreground/focus state.
-
-    Returns (hwnd, title, exe_name) for the first match found, or None if no such
-    window exists right now. EnumWindows's callback is never made to return False
-    (pywin32 raises a spurious error if it does -- the underlying Win32 call reports
-    that as a failure even though it just means "the callback asked to stop early"),
-    so this always enumerates every top-level window and collects all matches, then
-    returns the first one -- windows are typically (though not strictly guaranteed)
-    reported in top-to-bottom Z-order, so in the common case of a single dialog this
-    is simply that dialog.
-    """
-    matches = []
-
-    def _callback(hwnd, _extra):
-        if win32gui.IsWindowVisible(hwnd):
-            title = win32gui.GetWindowText(hwnd)
-            class_name = win32gui.GetClassName(hwnd)
-            if _is_stuck_dialog_window(class_name, title):
-                _, pid = win32process.GetWindowThreadProcessId(hwnd)
-                exe_name = _get_process_exe_name(pid)
-                if exe_name and exe_name.lower().startswith(_IGOR_PROCESS_NAME_PREFIX):
-                    matches.append((hwnd, title, exe_name))
-        return True
-
-    win32gui.EnumWindows(_callback, None)
-    return matches[0] if matches else None
-
-
-def _list_igor_top_level_windows() -> list:
-    """Diagnostic helper: list EVERY visible top-level window owned by an Igor Pro
-    process, regardless of class -- title, class name, and exe name for each.
-
-    Used only when _find_igor_dialog_window() finds no match, to surface what's
-    actually there instead of just reporting "not found" with no further
-    information -- this is exactly how the compile-error dialog's real title
-    ("Function Compilation Error") and class ("Qt693QWindowIcon", a Qt window, NOT
-    a native "#32770" dialog) were identified live, without needing a separate
-    one-off diagnostic tool. Useful again if some other stuck dialog shows up with
-    a title not yet in _KNOWN_STUCK_DIALOG_TITLES.
-    """
-    windows = []
-
-    def _callback(hwnd, _extra):
-        if win32gui.IsWindowVisible(hwnd):
-            _, pid = win32process.GetWindowThreadProcessId(hwnd)
-            exe_name = _get_process_exe_name(pid)
-            if exe_name and exe_name.lower().startswith(_IGOR_PROCESS_NAME_PREFIX):
-                windows.append(
-                    {
-                        "title": win32gui.GetWindowText(hwnd),
-                        "class_name": win32gui.GetClassName(hwnd),
-                        "process": exe_name,
-                    }
-                )
-        return True
-
-    win32gui.EnumWindows(_callback, None)
-    return windows
-
-
-def _attempt_dismiss_compile_error_dialog() -> dict:
-    """Post a simulated Escape key press directly to an Igor Pro dialog window (if
-    one can be found), without requiring it to be focused or in the OS foreground.
-    Returns a dict describing what was found and whether anything was actually sent
-    -- see the module-level comment above this function for the reasoning, the
-    unverified assumptions, and the trade-offs.
-    """
-    found = _find_igor_dialog_window()
-    if found is None:
-        return {
-            "attempted": False,
-            "reason": (
-                "No visible window with a title containing one of "
-                f"{_KNOWN_STUCK_DIALOG_TITLES}, owned by an Igor Pro process, was "
-                "found. Either there is no stuck dialog right now, or it's a kind "
-                "not seen before -- see 'igor_windows_seen' below for every "
-                "visible window Igor currently owns, to identify it."
-            ),
-            "igor_windows_seen": _list_igor_top_level_windows(),
-        }
-
-    hwnd, window_title, exe_name = found
-
-    try:
-        win32api.PostMessage(hwnd, win32con.WM_KEYDOWN, win32con.VK_ESCAPE, 0)
-        time.sleep(_POSTED_KEY_GAP_SECONDS)
-        win32api.PostMessage(hwnd, win32con.WM_KEYUP, win32con.VK_ESCAPE, 0)
-        time.sleep(_POSTED_KEY_SETTLE_SECONDS)
-    except Exception as e:
-        return {
-            "attempted": False,
-            "reason": f"Posting the simulated Escape key press failed: {e}",
-            "dialog_window_title": window_title,
-            "dialog_window_process": exe_name,
-        }
-
-    return {
-        "attempted": True,
-        "dialog_window_title": window_title,
-        "dialog_window_process": exe_name,
-        "note": (
-            "Posted a simulated Escape key press directly to this dialog window "
-            "(no OS foreground/focus change was made or needed) -- confirmed live "
-            'to close Igor\'s "Function Compilation Error" Qt dialog the same way '
-            "a real key press would. This does NOT recover the actual "
-            "compile-error message -- it only closes whatever modal dialog was "
-            "showing. Follow up with check_compilation_state() or "
-            "reload_and_compile_procedures() to see whether this actually "
-            "un-stuck anything."
-        ),
-    }
-
-
-@mcp.tool()
-def dismiss_compile_error_dialog() -> dict:
-    """Attempt to close a stuck Igor Pro modal compile-error dialog by posting a
-    simulated Escape key press directly to it, WITHOUT recovering the actual error
-    message and WITHOUT requiring or changing OS focus/foreground state.
-
-    Use this manually when you suspect Igor Pro has a compile-error dialog open (e.g.
-    reload_and_compile_procedures kept reporting "not compiled" even after fixing a
-    known syntax error) and want to try clearing it yourself, separately from
-    reload_and_compile_procedures's own automatic attempt at the same thing (see its
-    docstring -- it already calls this same logic once before giving up and asking a
-    human).
-
-    Mechanism: enumerates top-level windows for a visible one, owned by a process
-    whose exe name starts with "igor" (e.g. Igor64.exe), whose title matches a
-    known stuck-dialog title. **Confirmed live against both Igor Pro 10.03 and
-    Igor Pro 9.06: the compile-error dialog is titled exactly "Function
-    Compilation Error" and is a Qt window (class observed as "Qt693QWindowIcon" on
-    10.03), NOT a native "#32770" dialog** -- so title matching is what actually
-    finds it, on both major versions tested. (An earlier version also matched any
-    generic native "#32770" dialog regardless of title; removed after a Copilot PR
-    review correctly flagged it as a real risk -- since this is called
-    automatically from reload_and_compile_procedures, it could have Escape-dismissed
-    an unrelated native dialog, e.g. a save-changes confirmation, and it was never
-    actually needed since the real dialog isn't "#32770" anyway.) Once found, this
-    posts WM_KEYDOWN/WM_KEYUP for VK_ESCAPE directly to that window via PostMessage,
-    without requiring it to be focused or in the foreground.
-
-    **Confirmed live on both Igor Pro 10.03 and Igor Pro 9.06: a POSTED (not real
-    hardware) Escape key event is enough to make Qt's Windows platform layer
-    close this dialog the same way a real key press would** -- verified against a
-    real stuck "Function Compilation Error" dialog on each version, with no
-    foreground/focus change needed. If no matching window is found at all (e.g. a
-    different, not-yet-seen Igor popup), this reports "attempted": false (safe
-    failure) along with "igor_windows_seen": every visible top-level window
-    currently owned by an Igor Pro process (title/class/process), so a new stuck
-    dialog's real title/class can be identified and added to
-    _KNOWN_STUCK_DIALOG_TITLES instead of guessing.
-
-    This works despite Igor Pro's elevated status because this bridge's own process
-    is also required to run elevated (see the module docstring) -- Windows blocks
-    simulated input from a lower-privilege process reaching a higher-privilege
-    window (UIPI), but does not block it between two equally elevated processes.
-
-    **Trade-off: this does not tell you what the error was.** It only clears
-    whatever dialog is blocking Igor's operation queue so work can continue. If the
-    actual error text matters, check the .ipf file directly or ask a human to read
-    the dialog before calling this.
-    """
-    return _attempt_dismiss_compile_error_dialog()
-
-
-_COMPILE_POLL_TIMEOUT_AFTER_DISMISS_SECONDS = 3.0
-
-
-def _poll_for_compile_confirmation(baseline_counter, timeout_seconds: float) -> dict:
-    """Poll for up to timeout_seconds for confirmation that Igor Pro's procedure code
-    compiled successfully, checking both signals described in
-    reload_and_compile_procedures's docstring. Returns one of:
-
-    - {"compiled": True, "poll_attempts": N, "confirmed_via": "..."}
-    - {"compiled": False, "compiled_state_known": False, "poll_attempts": N,
-       "last_error_code": ..., "last_error_msg": ...} -- the compiled-state check
-      itself kept failing throughout the poll.
-    - {"compiled": False, "poll_attempts": N, "raw_function_info": ...} -- the
-      compiled-state check succeeded but never confirmed a compile within the
-      timeout.
-
-    Factored out of reload_and_compile_procedures so it can be called a second time,
-    with a shorter timeout, after an automatic compile-error-dialog dismissal
-    attempt, without duplicating the polling logic.
-    """
-    deadline = time.monotonic() + timeout_seconds
-    lastErrorCode = None
-    lastErrorMsg = None
-    lastResults = None
-    attempts = 0
-    consecutive_compiled = 0
-
-    while True:
-        attempts += 1
-
-        current_counter = _read_claude_helper_compile_counter()
-        if (
-            baseline_counter is not None
-            and current_counter is not None
-            and current_counter > baseline_counter
-        ):
-            return {
-                "compiled": True,
-                "poll_attempts": attempts,
-                "confirmed_via": "AfterCompiledHook counter (root:gClaudeHelperCompileCounter)",
-            }
-
-        compiledErrorCode, compiledErrorMsg, _, compiledResults = _execute2(
-            _PROCEDURES_COMPILED_CHECK_CMD
-        )
-        if compiledErrorCode == 0:
-            lastErrorCode = None
-            lastResults = compiledResults
-            if compiledResults == "":
-                consecutive_compiled += 1
-                if consecutive_compiled >= _COMPILE_CONFIRM_CHECKS:
-                    return {
-                        "compiled": True,
-                        "poll_attempts": attempts,
-                        "confirmed_via": (
-                            "FunctionInfo poll (AfterCompiledHook counter unavailable "
-                            "or unchanged)"
-                        ),
-                    }
-            else:
-                consecutive_compiled = 0
-        else:
-            lastErrorCode, lastErrorMsg = compiledErrorCode, compiledErrorMsg
-            consecutive_compiled = 0
-
-        if time.monotonic() >= deadline:
-            break
-        time.sleep(_COMPILE_POLL_INTERVAL_SECONDS)
-
-    if lastErrorCode is not None:
-        return {
-            "compiled": False,
-            "compiled_state_known": False,
-            "poll_attempts": attempts,
-            "last_error_code": lastErrorCode,
-            "last_error_msg": lastErrorMsg,
-        }
-
-    return {
-        "compiled": False,
-        "poll_attempts": attempts,
-        "raw_function_info": lastResults,
-    }
+    return None if value is None or value < 0 else value
 
 
 @mcp.tool()
@@ -1229,479 +701,109 @@ def reload_and_compile_procedures() -> dict:
     """Force Igor Pro to reload procedure code from the .ipf files on disk and attempt
     a fresh compilation, then report whether it ended up compiled.
 
-    Use this after editing a .ipf file directly on disk -- the correct way to change
-    MIES/Igor procedure code -- to make Igor pick up the change. Only call this while
-    Igor Pro is not currently running other procedure code; reloading/compiling while
-    code is running is not supported.
+    Use this after editing a .ipf file directly on disk. Only call this while Igor Pro
+    is not currently running other procedure code.
 
-    **Caution, observed twice during this bridge's development against a real Igor
-    Pro 10.03 instance**: Igor Pro became unreachable via COM (crashed or was
-    closed) shortly after a reload/compile attempt, in two separate incidents --
-    once with broken procedure code present, once immediately after fixing it. No
-    root cause has been confirmed (no Windows crash logs were accessible from
-    here), and it's not established whether this bridge's own actions are involved
-    at all versus a pre-existing Igor Pro stability issue independent of it. If a
-    tool call after this one starts failing with a COM/RPC error, check
+    **Caution, carried over from the COM-based version and confirmed to still apply**:
+    Igor Pro has been observed becoming unreachable shortly after a reload/compile
+    attempt on more than one occasion during this bridge's development (crashed or
+    was closed), root cause unconfirmed. If a tool call after this one starts failing,
     check_bridge_health() and be prepared for Igor Pro to need relaunching.
 
-    Mirrors the exact method used by CompileAndRestart() in igortest-tracing.ipf:
+    Mechanism: calls ZBR_SubmitReloadAndCompile(), which queues
+    `Execute/P "RELOAD CHANGED PROCS "` then `Execute/P "COMPILEPROCEDURES "`
+    Igor-side (both commands need their queue, and their own mandatory trailing
+    space -- see that function's docstring in ZMQ_BridgeHelpers.ipf), then polls for
+    completion using two independent signals, same as the COM-based version did:
 
-        Execute/P "RELOAD CHANGED PROCS "
-        Execute/P "COMPILEPROCEDURES "
+    1. root:gClaudeHelperCompileCounter (ZBR_ReadCompileCounter), bumped by
+       AfterCompiledHook every time Igor confirms a successful compile -- race-free:
+       any increase over the baseline read before submitting is trusted immediately.
+    2. ZBR_IsCompiled() (the FunctionInfo-based check), as a fallback.
 
-    Both commands go through Igor's operation queue, not immediate execution --
-    confirmed from Igor Pro Folder/Igor Help Files/Advanced Topics.ihf, "Operation
-    Queue" section (COMPILEPROCEDURES and RELOAD CHANGED PROCS are documented there;
-    neither has its own entry in the main Igor Reference): "Igor services the
-    operation queue when no procedures are running and the command line is empty. If
-    the operation queue is not empty, Igor then executes the oldest command in the
-    queue." /P only appends to that queue -- it does NOT guarantee either command has
-    actually run by the time this function starts checking, only that Igor will get
-    to it once genuinely idle.
+    Poll errors (IgorZmqError/IgorZmqUnreachable) during either check are treated as
+    "not ready yet" rather than fatal, since Igor Pro can be briefly unreachable while
+    genuinely mid-recompile.
 
-    Because of that, a single immediate compiled-state check was observed (against a
-    live Igor Pro instance) to occasionally report "compiled: true" on the very
-    first read even though the queue had not drained yet -- a false positive, reading
-    stale pre-reload state rather than the real post-compile result -- as well as the
-    opposite false negative (briefly still "not compiled" right after a compile that
-    actually succeeded). To guard against both, this checks two independent signals on
-    every poll (every 0.2s, up to 5s total):
-
-    1. root:gClaudeHelperCompileCounter, incremented by MIES_ClaudeHelper.ipf's
-       AfterCompiledHook (see _read_claude_helper_compile_counter) -- authoritative and
-       race-free when available (requires #define IGOR_PRO_BRIDGE in the experiment's
-       Procedure window), since it only changes at the exact moment Igor itself confirms
-       a successful compile. Any increase over the baseline read before issuing RELOAD/
-       COMPILE is trusted immediately, no repeated confirmation needed.
-    2. The original FunctionInfo-based check_compilation_state poll, kept as a fallback
-       for when the counter is unavailable (IGOR_PRO_BRIDGE not defined, or
-       MIES_ClaudeHelper.ipf not included at all) -- still requires
-       _COMPILE_CONFIRM_CHECKS consecutive "compiled" reads in a row before trusting it,
-       since this signal alone doesn't rule out the staleness race described above.
-
-    If neither signal confirms compilation after the full 5s, that's a much stronger
-    signal of a genuine compile error -- check Igor's history/procedure window
-    directly. See _COMPILE_ERROR_DIALOG_NOTE for one confirmed, concrete cause: a
-    compile-error dialog left open from an earlier failed attempt blocks the
-    operation queue from ever draining, so this will keep reporting "not compiled"
-    even after the underlying .ipf file is genuinely fixed, until a person closes
-    that dialog by hand. This happened for real during development.
-
-    Before giving up, if compilation isn't confirmed within the initial timeout, this
-    automatically makes ONE attempt to dismiss a possible stuck compile-error dialog
-    by posting an Escape key press directly to it (see dismiss_compile_error_dialog),
-    then polls again briefly. This does not require or change OS focus/foreground
-    state; it only fires if a matching Igor Pro dialog window can actually be found
-    -- see dismiss_compile_error_dialog's docstring for the full mechanism and its
-    trade-off (it recovers the ability to continue, not the error message). The
-    returned dict's "auto_dismiss_attempted" field always reports what that attempt
-    found/did, even when it wasn't needed or no matching window was found.
-
-    **If the returned dict has "prompt_user_to_check_for_dialog": True, whatever is
-    calling this tool should explicitly ask the human operator to check Igor Pro's
-    screen for a stuck compile-error dialog and close it, before retrying** -- not
-    just read the accompanying "note" text and move on. This only happens after the
-    automatic dismissal attempt above has already been tried and didn't resolve it
-    (or wasn't possible, e.g. no matching dialog window was found).
-    Confirmed directly during development: silently retrying or only logging the
-    note left the workflow stuck; explicitly prompting the human at this point is
-    what actually un-stuck it.
+    If this returns "compiled": False, check Igor's history/procedure window directly
+    -- if Igor Pro was launched with /UNATTENDED, a genuine compile error shows up as
+    a plain "<file>:<line>:<col>: error: <message>" line there (readable via
+    read_session_history), rather than a modal dialog. If NOT launched /UNATTENDED, a
+    stuck "Function Compilation Error" dialog is also possible -- see
+    dismiss_compile_error_dialog.
     """
-    baseline_counter = _read_claude_helper_compile_counter()
+    baseline_counter = _read_compile_counter()
 
-    errorCode, errorMsg, history, results = _execute2(
-        'Execute/P "RELOAD CHANGED PROCS "'
-    )
-    if errorCode != 0:
-        raise RuntimeError(
-            f"RELOAD CHANGED PROCS failed (error code {errorCode}): {errorMsg}"
-        )
+    call_function("ZBR#ZBR_SubmitReloadAndCompile")
 
-    time.sleep(_RELOAD_TO_COMPILE_PAUSE_SECONDS)
+    deadline = time.monotonic() + _COMPILE_POLL_TIMEOUT_SECONDS
+    attempts = 0
+    while True:
+        attempts += 1
 
-    errorCode, errorMsg, history, results = _execute2('Execute/P "COMPILEPROCEDURES "')
-    if errorCode != 0:
-        raise RuntimeError(
-            f"COMPILEPROCEDURES failed (error code {errorCode}): {errorMsg}"
-        )
-
-    time.sleep(_POST_COMPILE_PAUSE_SECONDS)
-
-    poll_result = _poll_for_compile_confirmation(
-        baseline_counter, _COMPILE_POLL_TIMEOUT_SECONDS
-    )
-    if poll_result["compiled"]:
-        return {"reload_triggered": True, "compile_triggered": True, **poll_result}
-
-    dismiss_result = _attempt_dismiss_compile_error_dialog()
-
-    if dismiss_result.get("attempted"):
-        poll_result = _poll_for_compile_confirmation(
-            baseline_counter, _COMPILE_POLL_TIMEOUT_AFTER_DISMISS_SECONDS
-        )
-        if poll_result["compiled"]:
+        counter = _read_compile_counter()
+        if (
+            baseline_counter is not None
+            and counter is not None
+            and counter > baseline_counter
+        ):
             return {
-                "reload_triggered": True,
-                "compile_triggered": True,
-                **poll_result,
-                "auto_dismiss_attempted": dismiss_result,
-                "note": (
-                    "Compilation only succeeded after automatically simulating an "
-                    "Escape key press to close what was very likely a stuck "
-                    "compile-error dialog. The dialog's exact error message was NOT "
-                    "recovered -- if this keeps happening, check the .ipf file's "
-                    "syntax directly, or ask a human to read the dialog text before "
-                    "it gets dismissed next time."
-                ),
+                "compiled": True,
+                "poll_attempts": attempts,
+                "confirmed_via": "AfterCompiledHook counter (ZBR_ReadCompileCounter)",
             }
 
-    if "compiled_state_known" in poll_result:
-        note = (
-            f"Reload/compile commands ran, but checking the resulting state kept "
-            f"failing (last error code {poll_result.get('last_error_code')}): "
-            f"{poll_result.get('last_error_msg')}. " + _COMPILE_ERROR_DIALOG_NOTE
-        )
-    else:
-        note = (
-            f"Still not compiled after polling for {_COMPILE_POLL_TIMEOUT_SECONDS:.0f}s"
-            + (
-                f" plus a further {_COMPILE_POLL_TIMEOUT_AFTER_DISMISS_SECONDS:.0f}s "
-                "after an automatic Escape-key dismissal attempt"
-                if dismiss_result.get("attempted")
-                else ""
-            )
-            + f" (requiring {_COMPILE_CONFIRM_CHECKS} consecutive confirmations). This is "
-            "more likely a genuine compile error in the procedure code than a timing "
-            "artifact -- check Igor's history/procedure window directly. "
-            + _COMPILE_ERROR_DIALOG_NOTE
-        )
+        try:
+            if call_function("ZBR#ZBR_IsCompiled"):
+                return {
+                    "compiled": True,
+                    "poll_attempts": attempts,
+                    "confirmed_via": "ZBR_IsCompiled",
+                }
+        except (IgorZmqError, IgorZmqUnreachable):
+            pass  # treat as "not ready yet", same as a False result
 
+        if time.monotonic() >= deadline:
+            break
+        time.sleep(_COMPILE_POLL_INTERVAL_SECONDS)
+
+    dismiss_result = _attempt_dismiss_compile_error_dialog()
     return {
-        "reload_triggered": True,
-        "compile_triggered": True,
-        **poll_result,
+        "compiled": False,
+        "poll_attempts": attempts,
         "auto_dismiss_attempted": dismiss_result,
-        "prompt_user_to_check_for_dialog": True,
-        "note": note,
+        "note": (
+            f"Still not compiled after polling for {_COMPILE_POLL_TIMEOUT_SECONDS:.0f}s. "
+            "This is more likely a genuine compile error than a timing artifact -- "
+            "check Igor's history/procedure window directly (or call "
+            "read_session_history() if launched with /UNATTENDED, see the "
+            "'<file>:<line>:<col>: error: ...' line reported there), or check for a "
+            "stuck compile-error dialog (see 'auto_dismiss_attempted' above)."
+        ),
     }
 
 
-# --- Defining IGOR_PRO_BRIDGE without manual experiment setup ----------------------
+# --- Debugger control --------------------------------------------------------------
 #
-# Some procedure files wrap bridge-support helper functions in
-# "#ifdef IGOR_PRO_BRIDGE / ... / #endif" so those helpers don't get silently
-# compiled into an ordinary end-user build -- this repo's own
-# Packages/MIES/MIES_ClaudeHelper.ipf is one example (see that file's own header
-# comment), but nothing about this convention or this tool is specific to MIES: ANY
-# Igor Pro experiment/procedure tree can adopt the same "#ifdef IGOR_PRO_BRIDGE"
-# pattern for its own bridge-support code. The catch is the same regardless of whose
-# code is gated: a freshly opened Igor Pro environment this bridge has never touched
-# before (a bare "Untitled" experiment, or any experiment/branch whose Procedure
-# window was never hand-edited for this) will not have IGOR_PRO_BRIDGE defined, so
-# that gated code stays uncompiled until someone adds "#define IGOR_PRO_BRIDGE" to
-# the experiment's Procedure window by hand and recompiles.
-#
-# Confirmed from Igor Pro Folder/Igor Help Files/Programming.ihf, "Conditional
-# Compilation" topic: an ordinary "#define symbol" inside a procedure file is scoped
-# to that file (or, for the main Procedure window specifically, to every
-# non-independent-module file) -- but "SetIgorOption poundDefine=symb" instead adds
-# symb to a separate *global* symbol list, "available in all procedure windows
-# (including independent modules)". Queried via "SetIgorOption poundDefine=symb?"
-# (sets V_flag to 1/0), reversed via "SetIgorOption poundUndefine=symb". "A symbol
-# defined in a global list is not undefined by a #undef in a procedure window."
-#
-# Also confirmed there and cross-checked in Advanced Topics.ihf: this change is
-# temporary -- it lasts only until Igor Pro quits (not saved into the experiment,
-# must be redone every fresh Igor session) -- and itself triggers a recompile: the
-# BeforeUncompiledHook table lists "SetIgorOption poundDefine" as changeCode 6 and
-# "SetIgorOption poundUndefine" as changeCode 7, each described as "causes a
-# recompile". Per Igor Reference.ihf's own SetIgorOption entry: "SetIgorOption is
-# not compilable. To use it in a user-defined function, you need to use Execute" --
-# a non-issue here, since this bridge always sends it as an interpreted command-line
-# statement via Execute2, never from inside compiled code.
-#
-# This tool deliberately has NO built-in knowledge of MIES or any other specific
-# codebase -- it only manages the IGOR_PRO_BRIDGE symbol itself (defining it,
-# recompiling, reporting the result), so it's equally useful for any Igor Pro
-# experiment that adopts this convention for its own bridge-support code. An
-# optional caller-supplied marker_function argument lets a caller who *does* know
-# about a specific gated function (e.g. this repo's own "CH_ListXOPExports") get an
-# extra confirmation that it actually became available, without that name being
-# hardcoded into the bridge itself.
-_IGOR_PRO_BRIDGE_DEFINE = "IGOR_PRO_BRIDGE"
-_IGOR_PRO_BRIDGE_DEFINE_QUERY_CMD = (
-    f'SetIgorOption poundDefine={_IGOR_PRO_BRIDGE_DEFINE}?; fprintf 0, "%d", V_flag'
-)
-# Function names in Igor are restricted to letters/digits/underscore (and can't start
-# with a digit); this is just a defensive check against a caller-supplied string
-# breaking out of the quoted FunctionInfo(...) call built below, not a claim about
-# every valid Igor identifier rule.
-_SAFE_IGOR_IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+# Unchanged in spirit from the COM-based version -- see that version's extensive
+# comment block (still true) for why the Debugger MUST be disabled for any
+# unattended/automated session: there is no scriptable way to resume, step, or
+# dismiss the Debugger window once something pauses it, and a paused call hangs
+# forever. DebuggerOptions is NOT subject to the Execute-only restriction (confirmed
+# live), so ZBR_GetDebuggerState/ZBR_SetDebuggerEnabled/ZBR_RestoreDebuggerSettings
+# are all single, synchronous CallFunction calls -- no submit/poll needed.
 
-
-def _is_igor_pro_bridge_defined() -> bool:
-    """Query Igor's global #define symbol list (see the block comment above) for
-    IGOR_PRO_BRIDGE."""
-    errorCode, errorMsg, history, results = _execute2(_IGOR_PRO_BRIDGE_DEFINE_QUERY_CMD)
-    if errorCode != 0:
-        raise RuntimeError(
-            f"Could not query {_IGOR_PRO_BRIDGE_DEFINE} define state (error code "
-            f"{errorCode}): {errorMsg or '(no error message)'}"
-        )
-    return results == "1"
-
-
-def _function_resolves(function_name: str) -> bool:
-    """True if FunctionInfo(function_name) is non-empty, i.e. Igor currently has a
-    compiled function/operation by that name -- no assumption about which procedure
-    file or codebase defines it."""
-    if not _SAFE_IGOR_IDENTIFIER_RE.match(function_name):
-        raise ValueError(
-            f"Not a plausible Igor function name: {function_name!r}"
-        )
-    errorCode, errorMsg, history, results = _execute2(
-        f'fprintf 0, "%s", FunctionInfo("{function_name}")'
-    )
-    if errorCode != 0:
-        raise RuntimeError(
-            f"Could not check FunctionInfo({function_name!r}) (error code "
-            f"{errorCode}): {errorMsg or '(no error message)'}"
-        )
-    return results != ""
-
-
-@mcp.tool()
-def ensure_igor_pro_bridge_defined(marker_function: str = "") -> dict:
-    """Make sure the IGOR_PRO_BRIDGE conditional-compilation symbol is defined in the
-    current Igor Pro instance -- defining it and forcing a recompile if it wasn't
-    already, instead of requiring a human to hand-edit the experiment's Procedure
-    window first. See the block comment above this tool in server.py for the full
-    SetIgorOption/Conditional-Compilation background, confirmed directly from Igor
-    Pro Folder/Igor Help Files/Programming.ihf and Advanced Topics.ihf.
-
-    This tool has NO built-in knowledge of MIES or any other specific codebase -- it
-    only manages the IGOR_PRO_BRIDGE symbol itself, so it's equally useful for any
-    Igor Pro experiment that adopts the "#ifdef IGOR_PRO_BRIDGE" convention for its
-    own bridge-support procedure code, not just this repo's own
-    MIES_ClaudeHelper.ipf.
-
-    Call this proactively whenever a fresh/unfamiliar Igor Pro environment is being
-    used with this bridge for the first time in a session, or whenever some
-    IGOR_PRO_BRIDGE-gated behavior you rely on (e.g.
-    reload_and_compile_procedures's AfterCompiledHook-counter signal, if the
-    procedure file providing it is gated this way) looks unavailable and you want to
-    try fixing that rather than just accepting a weaker fallback.
-
-    Args:
-        marker_function: optional. If you know of a *specific* function that should
-            become available once IGOR_PRO_BRIDGE is defined and compiled in (e.g.
-            "CH_ListXOPExports" for this repo's own MIES_ClaudeHelper.ipf), pass its
-            name here to get an extra before/after FunctionInfo(...) confirmation
-            layered on top of the define/recompile result. Leave blank to just
-            manage the define/recompile with no such check -- this is the fully
-            generic mode, appropriate when you don't know (or don't need to know)
-            about any specific gated function.
-
-    Steps taken:
-    1. If marker_function is given, checks FunctionInfo(marker_function) now, before
-       doing anything else (recorded as "marker_function_available_before").
-    2. Checks IGOR_PRO_BRIDGE's current state in the global #define list
-       (SetIgorOption poundDefine=IGOR_PRO_BRIDGE?). If already defined, returns
-       immediately with "igor_pro_bridge_defined": True and no recompile triggered --
-       if marker_function was given and still doesn't resolve, that means whatever
-       procedure file defines it simply isn't #include-d by whatever is currently
-       loaded (e.g. a bare "Untitled" experiment) -- NOT something this tool can fix
-       by redefining IGOR_PRO_BRIDGE, so it's reported via
-       "marker_function_available_before"/"_after" rather than retried.
-    3. If IGOR_PRO_BRIDGE is genuinely undefined, runs
-       'SetIgorOption poundDefine=IGOR_PRO_BRIDGE' then 'COMPILEPROCEDURES ' (both
-       via Execute/P, the same operation-queue mechanism reload_and_compile_procedures
-       uses -- RELOAD CHANGED PROCS is deliberately skipped here since no on-disk
-       .ipf file changed, only Igor's in-memory global symbol list), then polls for
-       compile confirmation exactly the way reload_and_compile_procedures does,
-       reusing _poll_for_compile_confirmation (see that function's docstring for why
-       two independent signals are checked).
-    4. If marker_function was given, re-checks FunctionInfo(marker_function) one
-       final time ("marker_function_available_after") and reports the outcome.
-
-    Only ever ADDS the define, never calls poundUndefine -- there is currently no
-    known reason for this bridge to want IGOR_PRO_BRIDGE turned back off within a
-    session, and doing so would itself force yet another recompile for no benefit.
-    """
-    marker_before = _function_resolves(marker_function) if marker_function else None
-
-    was_defined = _is_igor_pro_bridge_defined()
-
-    if was_defined:
-        result = {"igor_pro_bridge_defined": True, "define_set": False}
-        if marker_function:
-            result["marker_function"] = marker_function
-            result["marker_function_available_before"] = marker_before
-            result["marker_function_available_after"] = marker_before
-            if not marker_before:
-                result["note"] = (
-                    f"{_IGOR_PRO_BRIDGE_DEFINE} is already defined globally, but "
-                    f'FunctionInfo("{marker_function}") still does not resolve. '
-                    "This means whatever procedure file defines that function is "
-                    "not #include-d by whatever is currently loaded (e.g. a bare "
-                    f"'Untitled' experiment) -- defining {_IGOR_PRO_BRIDGE_DEFINE} "
-                    "again cannot fix that. Load an experiment/procedure file that "
-                    "actually includes it instead (see load_experiment)."
-                )
-        return result
-
-    baseline_counter = _read_claude_helper_compile_counter()
-
-    errorCode, errorMsg, history, results = _execute2(
-        f'Execute/P "SetIgorOption poundDefine={_IGOR_PRO_BRIDGE_DEFINE}"'
-    )
-    if errorCode != 0:
-        raise RuntimeError(
-            f"SetIgorOption poundDefine={_IGOR_PRO_BRIDGE_DEFINE} failed (error code "
-            f"{errorCode}): {errorMsg}"
-        )
-
-    time.sleep(_RELOAD_TO_COMPILE_PAUSE_SECONDS)
-
-    errorCode, errorMsg, history, results = _execute2('Execute/P "COMPILEPROCEDURES "')
-    if errorCode != 0:
-        raise RuntimeError(
-            f"COMPILEPROCEDURES failed (error code {errorCode}): {errorMsg}"
-        )
-
-    time.sleep(_POST_COMPILE_PAUSE_SECONDS)
-
-    poll_result = _poll_for_compile_confirmation(
-        baseline_counter, _COMPILE_POLL_TIMEOUT_SECONDS
-    )
-
-    result = {
-        "igor_pro_bridge_defined_before": False,
-        "define_set": True,
-        **poll_result,
-    }
-    if marker_function:
-        result["marker_function"] = marker_function
-        result["marker_function_available_before"] = marker_before
-        result["marker_function_available_after"] = _function_resolves(marker_function)
-    return result
-
-
-# --- Debugger control ---------------------------------------------------------------
-#
-# Confirmed against a live Igor Pro instance during development, and against Igor
-# Reference.ihf / Debugging.ihf directly (not guessed):
-#
-# - DebuggerOptions [enable=en, debugOnAbort=doa, debugOnError=doe,
-#   NVAR_SVAR_WAVE_Checking=nvwc] is the only operation that changes debugger settings.
-#   All parameters are optional; calling it with none just (re)sets its V_enable /
-#   V_debugOnError / V_debugOnAbort / V_NVAR_SVAR_WAVE_Checking output variables to the
-#   current state without changing anything -- confirmed verbatim from the docs: "All
-#   parameters are optional. If none are specified, no action is taken, but the output
-#   variables are still set." Multiple keyword arguments are comma-separated, confirmed
-#   from a real doc example: "DebuggerOptions enable=1, debugOnError=1".
-# - "If the debugger is disabled then the other settings are cleared even if other
-#   settings are on" (verbatim from the docs) -- so enable=0 always clears everything.
-# - **Why this matters for unattended/automated use, confirmed empirically this
-#   session**: there is no scriptable/COM way to resume, step, or dismiss the Debugger
-#   window once something pauses it (no such operation exists in Igor Reference.ihf,
-#   and the Debugger panel itself doesn't even show up as a window in
-#   WinList("*", ";", "WIN:65535")). If a breakpoint, a runtime error (debugOnError),
-#   a user abort (debugOnAbort), or a stale NVAR/SVAR/WAVE reference
-#   (NVAR_SVAR_WAVE_Checking) trips the debugger during an automated run, the specific
-#   COM call that triggered it hangs forever -- Execute2 is synchronous, and only a
-#   human clicking "Go" in the Debugger window can unblock it. (Other new COM calls
-#   still get answered while paused, since Igor's command line stays reentrant -- but
-#   the original call, and anything waiting on it, is stuck for good.) So: the debugger
-#   must be disabled before any unattended/automated session.
-# - **This is not hypothetical -- it happened during development of this bridge**: a
-#   plain execute_igor_command call ran a test function while the Debugger was still
-#   enabled from earlier interactive use, Igor paused with the Debugger window open,
-#   and the call hung until a person closed the window by hand. That's exactly why
-#   execute_igor_command_unattended exists below: it disables the Debugger, runs the
-#   command, and restores the Debugger afterward automatically (in a try/finally, so
-#   it restores even if the command errors), rather than depending on whoever/whatever
-#   is calling this bridge to remember the manual get_debugger_state() /
-#   set_debugger_enabled(False) / restore_debugger_settings() dance every time. Use
-#   execute_igor_command_unattended by default for anything that might call
-#   user-defined procedure code unattended; reach for plain execute_igor_command only
-#   when a Debugger pause is deliberately wanted (e.g. interactively testing a
-#   breakpoint).
-
-# The trailing KillVariables/Z is not optional cleanup -- it's load-bearing. Igor's
-# DebuggerOptions operation creates V_enable/V_debugOnError/V_debugOnAbort/
-# V_NVAR_SVAR_WAVE_Checking as output variables in whatever data folder happens to be
-# current *every single time it's invoked*, regardless of which arguments (if any) were
-# passed. Confirmed via a live A/B test: running an identical test suite via
-# execute_igor_command_unattended (which calls this query, and _apply_debugger_options
-# below, on every call) left those four variables behind in root:, which made the next
-# hardware test case's CHECK_EMPTY_FOLDER() teardown check fail spuriously -- while the
-# same test suite run via plain execute_igor_command (no DebuggerOptions call involved)
-# left root: untouched. The values are captured into `results` via fprintf on the same
-# line, before the KillVariables/Z runs, so nothing is lost by cleaning up immediately.
-_DEBUGGER_STATE_CHECK_CMD = (
-    'DebuggerOptions; fprintf 0, "enable=%d,debugOnError=%d,debugOnAbort=%d,'
-    'NVAR_SVAR_WAVE_Checking=%d", V_enable, V_debugOnError, V_debugOnAbort, '
-    "V_NVAR_SVAR_WAVE_Checking; "
-    "KillVariables/Z V_enable, V_debugOnError, V_debugOnAbort, V_NVAR_SVAR_WAVE_Checking"
-)
-
-# Snapshot captured by get_debugger_state(), consumed by restore_debugger_settings().
-# Process-lifetime state is fine here: one bridge process serves one Claude Desktop
-# session, and this is meant to bracket exactly one unattended run within that.
 _saved_debugger_settings = None
 
 
-def _read_debugger_options() -> dict:
-    """Read the four DebuggerOptions settings without changing them. Returns
-    {"enable": bool, "debug_on_error": bool, "debug_on_abort": bool,
-    "nvar_svar_wave_checking": bool}."""
-    errorCode, errorMsg, history, results = _execute2(_DEBUGGER_STATE_CHECK_CMD)
-    if errorCode != 0:
-        raise RuntimeError(
-            f"Could not read Debugger settings (error code {errorCode}): "
-            f"{errorMsg or '(no error message)'}"
-        )
-    values = {}
-    for pair in results.split(","):
-        key, _, value = pair.partition("=")
-        values[key] = value
+def _decode_debugger_state(multi) -> dict:
+    enable, debug_on_error, debug_on_abort, nvar_checking = multi
     return {
-        "enable": values.get("enable") == "1",
-        "debug_on_error": values.get("debugOnError") == "1",
-        "debug_on_abort": values.get("debugOnAbort") == "1",
-        "nvar_svar_wave_checking": values.get("NVAR_SVAR_WAVE_Checking") == "1",
+        "enable": bool(enable),
+        "debug_on_error": bool(debug_on_error),
+        "debug_on_abort": bool(debug_on_abort),
+        "nvar_svar_wave_checking": bool(nvar_checking),
     }
-
-
-def _apply_debugger_options(state: dict):
-    """Issue a DebuggerOptions command that sets all four settings to `state`
-    (enable/debug_on_error/debug_on_abort/nvar_svar_wave_checking), used by both
-    set_debugger_enabled and restore_debugger_settings so they can't drift apart."""
-    parts = [f"enable={1 if state['enable'] else 0}"]
-    if state["enable"]:
-        parts.append(f"debugOnError={1 if state['debug_on_error'] else 0}")
-        parts.append(f"debugOnAbort={1 if state['debug_on_abort'] else 0}")
-        parts.append(
-            f"NVAR_SVAR_WAVE_Checking={1 if state['nvar_svar_wave_checking'] else 0}"
-        )
-    cmd = "DebuggerOptions " + ", ".join(parts)
-    # See the comment above _DEBUGGER_STATE_CHECK_CMD: DebuggerOptions always creates
-    # these four globals in the current data folder as a side effect of being called at
-    # all. Clean them up immediately so every caller of this helper (execute_igor_
-    # command_unattended, load_experiment, set_debugger_enabled, restore_debugger_
-    # settings) never leaves them behind as stray root: globals.
-    cmd += (
-        "; KillVariables/Z V_enable, V_debugOnError, V_debugOnAbort, "
-        "V_NVAR_SVAR_WAVE_Checking"
-    )
-
-    errorCode, errorMsg, history, results = _execute2(cmd)
-    if errorCode != 0:
-        raise RuntimeError(
-            f"Could not set Debugger settings (error code {errorCode}): "
-            f"{errorMsg or '(no error message)'}\nCommand was: {cmd}"
-        )
 
 
 @mcp.tool()
@@ -1710,13 +812,11 @@ def get_debugger_state() -> dict:
     NVAR_SVAR_WAVE_Checking) without changing them, and save a snapshot inside this
     bridge process for restore_debugger_settings to restore later.
 
-    **Call this before starting any unattended/automated session**, immediately before
-    calling set_debugger_enabled(False) to actually turn the debugger off. See
-    set_debugger_enabled's docstring for why the debugger must be off for unattended
-    execution -- a pause it causes cannot be resumed or dismissed remotely.
+    **Call this before starting any unattended/automated session**, immediately
+    before calling set_debugger_enabled(False).
     """
     global _saved_debugger_settings
-    state = _read_debugger_options()
+    state = _decode_debugger_state(call_function("ZBR#ZBR_GetDebuggerState"))
     _saved_debugger_settings = dict(state)
     return state
 
@@ -1729,34 +829,17 @@ def set_debugger_enabled(
     nvar_svar_wave_checking: bool = None,
 ) -> dict:
     """Turn Igor Pro's Debugger on or off (and optionally its debugOnError/
-    debugOnAbort/NVAR_SVAR_WAVE_Checking sub-settings), via DebuggerOptions.
+    debugOnAbort/NVAR_SVAR_WAVE_Checking sub-settings).
 
-    **For any unattended/automated session -- running tests, scripted builds, anything
-    without a person watching -- the debugger MUST be disabled: call
-    set_debugger_enabled(False) before starting.** Confirmed empirically this session:
-    there is no scriptable/COM way to resume, step, or dismiss the Debugger window once
-    something pauses it (no such operation is documented in Igor Reference.ihf, and the
-    Debugger panel doesn't even appear as a window in WinList). If a breakpoint, a
-    runtime error (debugOnError), a user abort (debugOnAbort), or a stale NVAR/SVAR/WAVE
-    reference (NVAR_SVAR_WAVE_Checking) trips the debugger mid-run, the specific COM
-    call that triggered it hangs forever -- Execute2 is synchronous, and only a human
-    clicking "Go" in the Debugger window can unblock it. Other new COM calls still get
-    answered while paused (Igor's command line stays reentrant), but the original call,
-    and anything waiting on it, is stuck for good.
+    **For any unattended/automated session, the debugger MUST be disabled: call
+    set_debugger_enabled(False) before starting.** See get_debugger_state's docstring
+    and the module-level Debugger-control comment above for why.
 
-    enabled=False clears all four settings regardless of the other arguments -- this is
-    Igor's own documented behavior ("If the debugger is disabled then the other
-    settings are cleared even if other settings are on"), not a limitation of this
-    function -- so debug_on_error/debug_on_abort/nvar_svar_wave_checking are only
-    applied when enabled=True.
-
-    debug_on_error/debug_on_abort/nvar_svar_wave_checking are truly optional: any left
-    as None (the default) fall back to Igor's CURRENT setting for that specific
-    sub-flag (read via _read_debugger_options) rather than being forced off. (Fixed
-    from an earlier version of this function, caught by code review: bool(None) is
-    False, so leaving a sub-flag unspecified used to silently clear it to off, even
-    though the docstring described these as optional -- i.e. "leave unchanged", not
-    "turn off".) Pass explicit True/False for any you want to actually change.
+    enabled=False clears all four settings regardless of the other arguments -- this
+    is Igor's own documented DebuggerOptions behavior, not a limitation of this
+    function -- so the sub-flags are only applied when enabled=True. Any sub-flag left
+    as None (the default) falls back to Igor's CURRENT setting for that flag rather
+    than being forced off.
 
     Recommended pattern around an unattended session:
         get_debugger_state()           # read + save the current settings
@@ -1764,24 +847,24 @@ def set_debugger_enabled(
         ... run the unattended session ...
         restore_debugger_settings()    # put the saved settings back
     """
-    current = _read_debugger_options()
-    _apply_debugger_options(
-        {
-            "enable": enabled,
-            "debug_on_error": (
-                current["debug_on_error"] if debug_on_error is None else debug_on_error
-            ),
-            "debug_on_abort": (
-                current["debug_on_abort"] if debug_on_abort is None else debug_on_abort
-            ),
-            "nvar_svar_wave_checking": (
-                current["nvar_svar_wave_checking"]
-                if nvar_svar_wave_checking is None
-                else nvar_svar_wave_checking
-            ),
-        }
-    )
-    return _read_debugger_options()
+    current = _decode_debugger_state(call_function("ZBR#ZBR_GetDebuggerState"))
+    if not enabled:
+        call_function("ZBR#ZBR_SetDebuggerEnabled", [0])
+    else:
+        call_function(
+            "ZBR#ZBR_RestoreDebuggerSettings",
+            [
+                1,
+                int(current["debug_on_error"] if debug_on_error is None else debug_on_error),
+                int(current["debug_on_abort"] if debug_on_abort is None else debug_on_abort),
+                int(
+                    current["nvar_svar_wave_checking"]
+                    if nvar_svar_wave_checking is None
+                    else nvar_svar_wave_checking
+                ),
+            ],
+        )
+    return _decode_debugger_state(call_function("ZBR#ZBR_GetDebuggerState"))
 
 
 @mcp.tool()
@@ -1789,161 +872,129 @@ def restore_debugger_settings() -> dict:
     """Restore Igor Pro's Debugger settings to whatever get_debugger_state last
     captured.
 
-    **Call this when an unattended/automated session ends**, to put the debugger back
-    the way it was before set_debugger_enabled(False) turned it off for the run.
+    **Call this when an unattended/automated session ends.**
 
-    Raises if get_debugger_state was never called in this bridge process (nothing has
-    been saved to restore).
+    Raises if get_debugger_state was never called in this bridge process.
     """
     if _saved_debugger_settings is None:
         raise RuntimeError(
             "No saved Debugger settings to restore -- call get_debugger_state() "
-            "before starting the unattended session so there is something to restore "
-            "afterward."
+            "before starting the unattended session so there is something to "
+            "restore afterward."
         )
-    _apply_debugger_options(_saved_debugger_settings)
-    return _read_debugger_options()
+    s = _saved_debugger_settings
+    call_function(
+        "ZBR#ZBR_RestoreDebuggerSettings",
+        [
+            int(s["enable"]),
+            int(s["debug_on_error"]),
+            int(s["debug_on_abort"]),
+            int(s["nvar_svar_wave_checking"]),
+        ],
+    )
+    return _decode_debugger_state(call_function("ZBR#ZBR_GetDebuggerState"))
+
+
+# --- Environment summary -----------------------------------------------------------
+#
+# Composed client-side from the small, generic ZBR_IgorInfo/ZBR_WinList/
+# ZBR_ProcedureText/ZBR_DataFolderDir wrappers in ZMQ_BridgeHelpers.ipf -- exactly
+# mirroring how the COM-based version worked (it also just ran fprintf-wrapped
+# built-in calls and parsed/structured the raw string results in Python). See that
+# file's own comments for the confirmed IgorInfo() index meanings and the
+# ProcedureText("", 0, "Procedure") argument-order gotcha.
+
+
+def _categorize_procedure_file(name: str) -> str:
+    """Bucket an included procedure file name into a coarse category, purely to make a
+    ~250-entry file list skimmable in a summary. Buckets reflect this specific repo's
+    naming conventions (MIES_*, UTF_* unit tests, igortest-* test framework, IPNWB_*),
+    not a general Igor Pro convention."""
+    if name.startswith("igortest"):
+        return "igortest_framework"
+    if name.startswith("UTF_"):
+        return "unit_tests"
+    if name.startswith("IPNWB"):
+        return "ipnwb"
+    if name.startswith("MIES_"):
+        return "mies_production"
+    return "other"
 
 
 @mcp.tool()
-def execute_igor_command_unattended(command: str) -> dict:
-    """Run `command` exactly like execute_igor_command, but automatically disable
-    Igor's Debugger before running it and restore it again afterward -- even if
-    `command` raises an Igor-level error. Uses its own local snapshot rather than the
-    get_debugger_state/restore_debugger_settings pair, so it's self-contained and
-    won't clash with a separate manual bracket around a longer session.
+def get_environment_summary() -> dict:
+    """Summarize the current Igor Pro instance's live environment: Igor version, the
+    loaded experiment, loaded external operations (XOPs), which procedure files are
+    actually included right now, the contents of the always-present "Procedure"
+    window, and the top-level global data folder layout.
 
-    **This is the tool to reach for whenever `command` might call user-defined
-    procedure code (e.g. any MIES or test function) and nothing is watching that could
-    close a Debugger popup by hand.** It exists because of a concrete failure hit
-    during development of this bridge: a plain execute_igor_command call ran a test
-    function while the Debugger was still enabled from earlier interactive use; Igor
-    Pro paused with the Debugger window open, and the call hung until a person closed
-    it manually -- there is no scriptable way to resume or dismiss a Debugger pause
-    (see set_debugger_enabled's docstring for the full explanation of why). Wrapping
-    the call so the Debugger is guaranteed off first removes that failure mode
-    entirely, instead of relying on remembering to call set_debugger_enabled(False)
-    beforehand every time.
-
-    Only reach for plain execute_igor_command when you deliberately want the Debugger
-    available -- e.g. interactively testing a breakpoint, as done earlier in this
-    bridge's own development.
-
-    For a longer unattended session made of many calls, prefer bracketing the whole
-    session with get_debugger_state() / set_debugger_enabled(False) once at the start
-    and restore_debugger_settings() once at the end, rather than paying the extra
-    disable/restore COM round-trip on every single command via this tool.
-
-    Returns a dict with "results" (fprintf output) and "history" (anything
-    `command` sent to Igor's history area during this call, e.g. `print` output or
-    the command echo itself) -- see execute_igor_command's docstring for exactly
-    what "history" contains and why it's the reliable way to verify a `print`
-    actually happened.
-
-    **On failure:** a nonzero error code means at least one unhandled runtime error
-    occurred somewhere in `command` -- it does NOT mean execution stopped there, and
-    it does NOT mean it was the only problem (see the runtime error model notes
-    above _format_execute2_error, right before execute_igor_command). The raised
-    error includes any partial `results` and `history` captured, since that's often
-    the only way to tell how far execution actually got.
+    Returns a dict with:
+      - igor_version_info / os_info: raw IgorInfo(0) / IgorInfo(3) strings
+      - experiment_file_name / experiment_file_kind: e.g. "Basic.pxp" / "Packed"
+      - loaded_xops: list of loaded external operations
+      - procedure_window_text: raw contents of the special "Procedure" window --
+        inspect this for experiment-specific #include/#define directives
+      - included_procedure_file_count / included_procedure_files_by_category /
+        included_procedure_files: currently included .ipf files
+      - data_folders / top_level_waves: top-level layout under root:
+      - debugger_settings: current Debugger state (see set_debugger_enabled's
+        docstring for why this matters before any unattended session)
     """
-    saved = _read_debugger_options()
-    _apply_debugger_options(
-        {
-            "enable": False,
-            "debug_on_error": False,
-            "debug_on_abort": False,
-            "nvar_svar_wave_checking": False,
-        }
-    )
-    try:
-        errorCode, errorMsg, history, results = _execute2(command)
-    finally:
-        _apply_debugger_options(saved)
+    igor_version_info = call_function("ZBR#ZBR_IgorInfo", [0])
+    os_info = call_function("ZBR#ZBR_IgorInfo", [3])
+    loaded_xops_raw = call_function("ZBR#ZBR_IgorInfo", [10])
+    experiment_file_kind = call_function("ZBR#ZBR_IgorInfo", [11])
+    experiment_file_name = call_function("ZBR#ZBR_IgorInfo", [12])
+    included_raw = call_function("ZBR#ZBR_WinList", ["*", "WIN:128"])
+    data_folders_raw = call_function("ZBR#ZBR_DataFolderDir", [3])
+    procedure_window_text = call_function("ZBR#ZBR_ProcedureText", ["", 0, "Procedure"])
+    debugger_settings = _decode_debugger_state(call_function("ZBR#ZBR_GetDebuggerState"))
 
-    if errorCode != 0:
-        raise RuntimeError(
-            _format_execute2_error(command, errorCode, errorMsg, results, history)
-        )
-    return {"results": results, "history": history}
-
-
-# --- Reading .ihf help files as formatted notebooks ---------------------------------
-#
-# Confirmed live this session against Igor Pro 9 Nightly. An .ihf file is itself an
-# Igor formatted-text notebook, and Igor pre-registers every one in the Help Files
-# folder as "open as a help file" via an ordinary (often hidden) help window --
-# WinList("*", ";", "WIN:512") is the correct bit for these (confirmed against
-# WinList's own documented bit table; an earlier guess of WIN:1024 was wrong and
-# matches no window type at all). A help-file view and a plain-notebook view of the
-# same file are mutually exclusive: OpenNotebook/R on a file whose help window
-# (hidden or not) is currently open fails with error 251 ("already open but as a help
-# file"). CloseHelp/ALL releases every currently-open help file so OpenNotebook/R can
-# succeed; OpenHelp/V=.../INT=0 re-opens a specific file afterward to restore it.
-#
-# Reading the exported HTML (SaveNotebook/S=5) rather than the plain-text selection
-# (Notebook .../GetSelection) matters because WaveMetrics' own help-authoring
-# convention assigns a semantic paragraph style class to nearly every paragraph --
-# e.g. "Topic" for a heading, "Code1" for a line of example code, "Steps" for a
-# bullet item -- confirmed live against several real .ihf files. This is a direct,
-# reliable signal for a paragraph's content role that a flat plain-text read can't
-# provide.
-
-
-def _fprintf_query(expr: str) -> str:
-    """Run `fprintf 0, "%s", <expr>` and return the resulting string, raising on
-    failure. Deliberately avoids ever declaring an intermediate `String` variable
-    for this: an Execute2 command runs as top-level interpreted code, so `String x =
-    ...` creates a process-lifetime global -- confirmed this session to collide with
-    "error 25: the name already exists as a variable" the second time the same
-    command runs in one Igor session. A bare fprintf has no such state to collide
-    with."""
-    cmd = f'fprintf 0, "%s", {expr}'
-    errorCode, errorMsg, history, results = _execute2(cmd)
-    if errorCode != 0:
-        raise RuntimeError(
-            _format_execute2_error(cmd, errorCode, errorMsg, results, history)
-        )
-    return results
-
-
-def _winlist(match: str, options: str) -> list:
-    return [
-        name
-        for name in _fprintf_query(f'WinList("{match}", ";", "{options}")').split(";")
-        if name
+    included_procedure_files = [
+        name for name in included_raw.split(";") if name and name != "Procedure"
     ]
+    loaded_xops = [x for x in loaded_xops_raw.split(";") if x]
+
+    folders_part, waves_part = "", ""
+    for part in data_folders_raw.split("\r"):
+        part = part.strip()
+        if part.startswith("FOLDERS:"):
+            folders_part = part[len("FOLDERS:") :].rstrip(";")
+        elif part.startswith("WAVES:"):
+            waves_part = part[len("WAVES:") :].rstrip(";")
+    data_folders = [f for f in folders_part.split(",") if f]
+    top_level_waves = [w for w in waves_part.split(",") if w]
+
+    category_counts: dict = {}
+    for name in included_procedure_files:
+        category = _categorize_procedure_file(name)
+        category_counts[category] = category_counts.get(category, 0) + 1
+
+    return {
+        "igor_version_info": igor_version_info,
+        "os_info": os_info,
+        "experiment_file_name": experiment_file_name,
+        "experiment_file_kind": experiment_file_kind,
+        "loaded_xops": loaded_xops,
+        "procedure_window_text": procedure_window_text,
+        "included_procedure_file_count": len(included_procedure_files),
+        "included_procedure_files_by_category": category_counts,
+        "included_procedure_files": included_procedure_files,
+        "data_folders": data_folders,
+        "top_level_waves": top_level_waves,
+        "debugger_settings": debugger_settings,
+    }
 
 
-def _igor_quote_path(path: str) -> str:
-    """Double every backslash so `path` is safe inside an Igor command string
-    literal -- Igor treats a single backslash as an escape character (Path
-    Separators, Advanced Topics.ihf)."""
-    return path.replace("\\", "\\\\")
-
-
-def _resolve_help_file_path(bare_name: str):
-    """Resolve a bare help-file name (WinList's help-window bit never includes a
-    path -- "Procedure windows and help windows don't have names. WinList returns
-    the window title instead", confirmed this session) back to a full path, by
-    checking the two folders Igor Pro itself loads help files from: the global
-    `<Igor Application>Igor Help Files` folder and the user-specific `<Igor Pro
-    User Files>Igor Help Files` folder. Both roots come from Igor's own
-    SpecialDirPath function rather than any hardcoded/guessed path, so this works
-    regardless of the specific Igor Pro version/install location. Returns None if
-    not found in either -- e.g. a third-party XOP's help file installed somewhere
-    else entirely."""
-    for special_dir in ("Igor Application", "Igor Pro User Files"):
-        try:
-            base = _fprintf_query(f'SpecialDirPath("{special_dir}", 0, 1, 0)')
-        except RuntimeError:
-            continue
-        if not base:
-            continue
-        candidate = os.path.join(base, "Igor Help Files", bare_name)
-        if os.path.isfile(candidate):
-            return candidate
-    return None
+# --- Reading .ihf help files ---------------------------------------------------------
+#
+# The actual CloseHelp/OpenNotebook/SaveNotebook/KillWindow/OpenHelp sequence now runs
+# synchronously, Igor-side, in ZBR_ReadHelpFile (ZMQ_BridgeHelpers.ipf) -- none of
+# those operations are subject to the Execute-only restriction, so this needs no
+# submit/poll. The exported HTML is written to a temp file (built here, same as the
+# COM-based version did) and read directly off disk afterward rather than serialized
+# back through the CallFunction reply -- both processes run on the same machine, so
+# this sidesteps any question about reply-size limits for a potentially large export.
 
 
 class _NotebookHTMLParser(html.parser.HTMLParser):
@@ -1978,322 +1029,353 @@ class _NotebookHTMLParser(html.parser.HTMLParser):
 
 
 @mcp.tool()
-def read_help_file(file_path: str) -> dict:
+def read_help_file(file_path: str, timeout_ms: int = 30000) -> dict:
     """Read an Igor Pro help file (.ihf) as structured, formatted text -- e.g. to
     look up an operation's exact flags/behavior straight from Igor's own docs --
     without leaving any lasting change to Igor's help-window state.
 
-    Better than an OS-level file read for two reasons. First, .ihf files are
-    themselves Igor formatted-text notebooks, and Igor pre-registers every one in
-    the Help Files folder as an open help window (visible or hidden); this tool
-    handles the required CloseHelp/ALL -> OpenNotebook/R -> ... -> OpenHelp restore
-    dance so the caller doesn't have to. Second, and more importantly: the returned
-    "paragraphs" list preserves the paragraph style name WaveMetrics' own help
-    authoring convention assigns to each paragraph (e.g. "Topic" for a section
-    heading, "Code1" for a line of example code, "Steps" for a bullet item) --
-    genuine content-block structure, not just flat prose.
+    file_path must be a full path to an existing .ihf file (e.g. one found via
+    get_environment_summary's "loaded_xops" field plus the global/user Help Files
+    folders under Igor's own installation for XOP-supplied help files).
 
-    file_path must be a full path to an existing .ihf file (e.g. one found by
-    listing the Help Files folder -- see get_environment_summary's "loaded_xops"
-    field plus the global/user Help Files folders under Igor's own installation for
-    XOP-supplied help files, which don't all exist -- some XOPs ship none at all,
-    and their functions/operations then require external documentation instead).
+    timeout_ms defaults to 30 seconds rather than this bridge's usual 5-second
+    default -- confirmed live that exporting a genuinely large help file (e.g. the
+    entire "Igor Reference.ihf" manual) as HTML can take longer than 5 seconds, which
+    would otherwise time out this call even though Igor-side the export eventually
+    succeeds anyway (harmlessly logging a "Host unreachable" ZeroMQ-XOP error to
+    history when it tries to reply to a client that already gave up -- see
+    check_bridge_health if you see that in read_session_history's output after a
+    timeout here). Pass a larger value still for very large help files if 30s isn't
+    enough.
 
-    Full sequence, entirely reversible even if a step fails partway through:
-      1. Snapshot every currently open help file (visible or hidden, via WinList's
-         WIN:512 bit) and every currently open plain-notebook window.
-      2. CloseHelp/ALL (required: an .ihf file can't be opened as a notebook while
-         Igor considers it already open as a help file).
-      3. OpenNotebook/R file_path, then diff WinList's notebook list against the
-         step-1 snapshot to find the name Igor assigned the new window (e.g.
-         "Notebook0") -- OpenNotebook doesn't return this directly.
-      4. SaveNotebook/O/S=5/H=... export to a local temporary HTML file, parsed
-         here into the returned "paragraphs" list, then delete the temp file.
-      5. KillWindow/Z the temporary notebook.
-      6. Restore every help file captured in step 1 via OpenHelp/V=.../INT=0,
-         re-resolving each bare file name back to a full path via
-         SpecialDirPath("Igor Application"/"Igor Pro User Files", ...) + "Igor Help
-         Files" (Igor's global vs. user-specific include folders).
-
-    Steps 5-6 run in a `finally` block, so a failure in step 3 or 4 still restores
-    whatever help state existed before this call. Returns a dict with:
+    Returns a dict with:
       - "paragraphs": [{"style": "Topic", "text": "Debugging"}, ...] -- "style" is
-        "" for a paragraph with no explicit class.
-      - "restore_failures": bare file names from step 1 that could not be resolved
-        back to a full path (e.g. a help file supplied from somewhere other than
-        the two standard Help Files folders) -- these were NOT reopened, unlike
-        every other file captured in the snapshot.
+        WaveMetrics' own paragraph-class convention (e.g. "Topic" for a heading,
+        "Code1" for example code, "Steps" for a bullet item), "" if unset.
+      - "restore_failures": bare file names that could not be resolved back to a full
+        path and so were NOT reopened as help windows (e.g. a help file supplied from
+        somewhere other than the two standard Help Files folders).
 
-    Raises if file_path does not exist, or if OpenNotebook/SaveNotebook fail (e.g.
-    file_path is not actually a notebook-compatible file).
+    Raises if file_path does not exist, or if the underlying OpenNotebook/SaveNotebook
+    sequence fails Igor-side (e.g. file_path is not actually a notebook-compatible
+    file) -- help-window restoration is still attempted even then.
     """
     normalized = os.path.abspath(file_path)
     if not os.path.isfile(normalized):
         raise RuntimeError(f"'{normalized}' does not exist or is not a file.")
-    quoted_path = _igor_quote_path(normalized)
-
-    # Step 1: snapshot before touching anything.
-    help_all = _winlist("*", "WIN:512")
-    help_visible = set(_winlist("*", "WIN:512,VISIBLE:1"))
-    notebooks_before = set(_winlist("*", "WIN:16"))
 
     tmp_fd, tmp_html_path = tempfile.mkstemp(suffix=".html", prefix="igor_help_")
     os.close(tmp_fd)
     os.remove(tmp_html_path)  # SaveNotebook must create it fresh; only the name is reused
-    quoted_tmp_html = _igor_quote_path(tmp_html_path)
 
-    notebook_name = None
     try:
-        # Step 2.
-        errorCode, errorMsg, history, results = _execute2("CloseHelp/ALL")
-        if errorCode != 0:
-            raise RuntimeError(
-                _format_execute2_error(
-                    "CloseHelp/ALL", errorCode, errorMsg, results, history
-                )
-            )
-
-        # Step 3.
-        open_cmd = f'OpenNotebook/R "{quoted_path}"'
-        errorCode, errorMsg, history, results = _execute2(open_cmd)
-        if errorCode != 0:
-            raise RuntimeError(
-                _format_execute2_error(open_cmd, errorCode, errorMsg, results, history)
-            )
-        new_names = [n for n in _winlist("*", "WIN:16") if n not in notebooks_before]
-        if not new_names:
-            raise RuntimeError(
-                "OpenNotebook/R succeeded but no new notebook window was found via "
-                f"WinList -- before: {sorted(notebooks_before)!r}"
-            )
-        notebook_name = new_names[0]
-
-        # Step 4.
-        export_cmd = (
-            f'SaveNotebook/O/S=5/H={{"UTF-8", 3, 7, 0, 0.9, 32}} {notebook_name} '
-            f'as "{quoted_tmp_html}"'
+        status = call_function(
+            "ZBR#ZBR_ReadHelpFile", [normalized, tmp_html_path], timeout_ms=timeout_ms
         )
-        errorCode, errorMsg, history, results = _execute2(export_cmd)
-        if errorCode != 0:
+        parts = status.split("|")
+        outcome = parts[0] if parts else ""
+        restore_failures = [f for f in (parts[-1] if parts else "").split(";") if f]
+
+        if outcome != "OK":
+            message = parts[1] if len(parts) > 1 else "(no message)"
             raise RuntimeError(
-                _format_execute2_error(
-                    export_cmd, errorCode, errorMsg, results, history
-                )
+                f"Could not read help file {normalized!r}: {message} "
+                f"(restore_failures={restore_failures!r})"
             )
+
+        if not os.path.isfile(tmp_html_path):
+            raise RuntimeError(
+                f"ZBR_ReadHelpFile reported success but {tmp_html_path!r} was not "
+                "created."
+            )
+
         with open(tmp_html_path, "r", encoding="utf-8") as f:
             html_text = f.read()
         parser = _NotebookHTMLParser()
         parser.feed(html_text)
     finally:
-        # Step 5 (best-effort -- must not skip step 6).
-        if notebook_name:
-            try:
-                _execute2(f"KillWindow/Z {notebook_name}")
-            except Exception:
-                pass
         try:
             if os.path.isfile(tmp_html_path):
                 os.remove(tmp_html_path)
         except Exception:
             pass
 
-        # Step 6.
-        restore_failures = []
-        for name in help_all:
-            resolved = _resolve_help_file_path(name)
-            if resolved is None:
-                restore_failures.append(name)
-                continue
-            visible_flag = 1 if name in help_visible else 0
-            restore_cmd = (
-                f'OpenHelp/V={visible_flag}/INT=0/Z=1 "{_igor_quote_path(resolved)}"'
-            )
-            try:
-                _execute2(restore_cmd)
-            except Exception:
-                restore_failures.append(name)
-
     return {"paragraphs": parser.paragraphs, "restore_failures": restore_failures}
 
 
-# --- Environment summary -----------------------------------------------------------
-#
-# Confirmed against a live Igor Pro instance during development (Igor Pro 10.03, build
-# 30115). These are ordinary Igor built-in functions -- not part of the COM Automation
-# Server API itself -- run the same way as any other command, via _execute2/fprintf:
-#
-# - IgorInfo(n) for n in 0-18 (n outside that range raises an Igor-level error, e.g.
-#   "expected value between 0 and 18"). The indices used below were identified
-#   empirically by probing all valid values against a live instance and matching each
-#   returned string to its evident meaning -- there is no single confirmed index for
-#   "the experiment's name", for example, so this was found by inspection, not assumed:
-#     IgorInfo(0)  -- system report string (IGORVERS/BUILD/COMMIT/memory/screen info)
-#     IgorInfo(3)  -- OS name/version/locale string
-#     IgorInfo(10) -- semicolon-separated list of loaded XOPs
-#     IgorInfo(11) -- experiment file kind (e.g. "Packed")
-#     IgorInfo(12) -- experiment file name (e.g. "Basic.pxp")
-# - WinList("*", ";", "WIN:128") -- lists currently included procedure windows/files.
-#   The "128" bit was confirmed empirically (tested directly against a live instance,
-#   not looked up in documentation) to mean "procedure windows"; it reliably returns a
-#   complete, sensible-looking list of every included .ipf plus the special "Procedure"
-#   window (see below).
-# - ProcedureText(macroOrFunctionNameStr, flags, winTitleStr) -- retrieves procedure
-#   text. IMPORTANT, confirmed the hard way this session: to get the *entire contents*
-#   of a named procedure window, the window name goes in winTitleStr (the third
-#   argument), with macroOrFunctionNameStr left as "" -- i.e.
-#   ProcedureText("", 0, "Procedure"), NOT ProcedureText("Procedure", 0, ""). The first
-#   argument instead names one specific macro/function *within* a window; passing a
-#   window name there matches nothing and silently returns "" rather than raising an
-#   error, which produced an incorrect "the Procedure window is empty" result during
-#   development until the user caught and corrected it.
-# - The always-present "Procedure" window matters because Igor experiments (.pxp) can
-#   carry additional #include/#define directives there beyond what's in any on-disk
-#   .ipf file in the repo -- e.g. this project's experiments were found to #include
-#   ":UTF_Basic" and #define AUTOMATED_TESTING directly in that window. So the live
-#   in-memory environment is experiment-dependent, not fully determined by the repo
-#   file system alone.
-# - DataFolderDir(3) -- returns "FOLDERS:name1,name2,...;WAVES:name1,name2,...;"
-#   (bitmask 3 = folders + waves) for the current data folder; confirmed empirically
-#   against root: to list top-level data folders and top-level waves.
+# --- Bridge identity / health --------------------------------------------------------
 
-_ENV_SUMMARY_COMMANDS = {
-    "igor_version_info": 'fprintf 0, "%s", IgorInfo(0)',
-    "os_info": 'fprintf 0, "%s", IgorInfo(3)',
-    "loaded_xops_raw": 'fprintf 0, "%s", IgorInfo(10)',
-    "experiment_file_kind": 'fprintf 0, "%s", IgorInfo(11)',
-    "experiment_file_name": 'fprintf 0, "%s", IgorInfo(12)',
-    "included_procedure_windows_raw": 'fprintf 0, "%s", WinList("*", ";", "WIN:128")',
-    "data_folders_raw": 'fprintf 0, "%s", DataFolderDir(3)',
-    "procedure_window_text": 'fprintf 0, "%s", ProcedureText("", 0, "Procedure")',
-}
+# Kept as a hardcoded constant (not read from manifest.json at runtime) for the same
+# reason as before: the on-disk layout after Claude Desktop installs a .mcpb isn't
+# guaranteed to keep server.py and manifest.json at a fixed relative path, and this
+# needs to be confirmable from inside a conversation independent of that.
+_BRIDGE_VERSION = "2.2.3"
 
 
-def _categorize_procedure_file(name: str) -> str:
-    """Bucket an included procedure file name into a coarse category, purely to make a
-    ~250-entry file list skimmable in a summary. Buckets reflect this specific repo's
-    naming conventions (MIES_*, UTF_* unit tests, igortest-* test framework, IPNWB_*),
-    not a general Igor Pro convention."""
-    if name.startswith("igortest"):
-        return "igortest_framework"
-    if name.startswith("UTF_"):
-        return "unit_tests"
-    if name.startswith("IPNWB"):
-        return "ipnwb"
-    if name.startswith("MIES_"):
-        return "mies_production"
-    return "other"
+def _installed_package_version(distribution_name: str) -> str | None:
+    try:
+        return importlib.metadata.version(distribution_name)
+    except importlib.metadata.PackageNotFoundError:
+        return None
 
 
 @mcp.tool()
-def get_environment_summary() -> dict:
-    """Summarize the current Igor Pro instance's live environment: Igor version, the
-    loaded experiment, loaded external operations (XOPs), which procedure files are
-    actually included right now, the contents of the always-present "Procedure" window
-    (which can carry experiment-specific #include/#define directives not present in any
-    on-disk .ipf file), and the top-level global data folder layout.
+def get_bridge_version() -> dict:
+    """Return the version of this Igor Pro Bridge build that is actually running right
+    now, plus which Python interpreter and package versions it's running with.
 
-    This queries the live instance directly rather than assuming the repo's file system
-    determines what's loaded -- which experiment (.pxp) is open changes all of this.
-
-    Returns a dict with:
-      - igor_version_info: raw IgorInfo(0) string (version/build/commit/memory/screen)
-      - os_info: raw IgorInfo(3) string (OS name/version/locale)
-      - experiment_file_name / experiment_file_kind: e.g. "Basic.pxp" / "Packed"
-      - loaded_xops: list of loaded external operations (e.g. NIDAQmx64, itcXOP2-64)
-      - procedure_window_text: raw contents of the special "Procedure" window --
-        inspect this for experiment-specific #include/#define directives
-      - included_procedure_file_count: total number of currently included .ipf files
-        (excluding the "Procedure" window entry itself)
-      - included_procedure_files_by_category: counts per category (see
-        _categorize_procedure_file)
-      - included_procedure_files: the full list of currently included .ipf file names
-      - data_folders: top-level data folder names under root:
-      - top_level_waves: top-level wave names directly under root: (usually empty --
-        MIES keeps its data organized into subfolders)
-      - debugger_settings: current enable/debugOnError/debugOnAbort/
-        NVAR_SVAR_WAVE_Checking state (see _read_debugger_options). If "enable" is
-        True here, any unattended/automated session must call
-        get_debugger_state() + set_debugger_enabled(False) first -- see
-        set_debugger_enabled's docstring for why.
+    Call this whenever it matters to confirm which build is active -- e.g. before
+    relying on a specific fix, or when reporting results from a test that depends on
+    a particular fix being in effect. Installing a newer .mcpb requires restarting
+    Claude Desktop; this is the only way to confirm afterward which version actually
+    loaded.
     """
-    raw = {}
-    for key, cmd in _ENV_SUMMARY_COMMANDS.items():
-        errorCode, errorMsg, history, results = _execute2(cmd)
-        if errorCode != 0:
-            raise RuntimeError(
-                f"Could not retrieve '{key}' (error code {errorCode}): "
-                f"{errorMsg or '(no error message)'}\nCommand was: {cmd}"
-            )
-        raw[key] = results
-
-    included_procedure_files = [
-        name for name in raw["included_procedure_windows_raw"].split(";") if name
-    ]
-    included_procedure_files = [
-        name for name in included_procedure_files if name != "Procedure"
-    ]
-
-    loaded_xops = [x for x in raw["loaded_xops_raw"].split(";") if x]
-
-    folders_part, waves_part = "", ""
-    for part in raw["data_folders_raw"].split("\r"):
-        part = part.strip()
-        if part.startswith("FOLDERS:"):
-            folders_part = part[len("FOLDERS:") :].rstrip(";")
-        elif part.startswith("WAVES:"):
-            waves_part = part[len("WAVES:") :].rstrip(";")
-    data_folders = [f for f in folders_part.split(",") if f]
-    top_level_waves = [w for w in waves_part.split(",") if w]
-
-    category_counts: dict = {}
-    for name in included_procedure_files:
-        category = _categorize_procedure_file(name)
-        category_counts[category] = category_counts.get(category, 0) + 1
-
     return {
-        "igor_version_info": raw["igor_version_info"],
-        "os_info": raw["os_info"],
-        "experiment_file_name": raw["experiment_file_name"],
-        "experiment_file_kind": raw["experiment_file_kind"],
-        "loaded_xops": loaded_xops,
-        "procedure_window_text": raw["procedure_window_text"],
-        "included_procedure_file_count": len(included_procedure_files),
-        "included_procedure_files_by_category": category_counts,
-        "included_procedure_files": included_procedure_files,
-        "data_folders": data_folders,
-        "top_level_waves": top_level_waves,
-        "debugger_settings": _read_debugger_options(),
+        "version": _BRIDGE_VERSION,
+        "python_executable": sys.executable,
+        "python_version": sys.version.split()[0],
+        "mcp_package_version": _installed_package_version("mcp"),
+        "pyzmq_version": _installed_package_version("pyzmq"),
     }
 
 
+@mcp.tool()
+def check_bridge_health() -> dict:
+    """Check whether this bridge can actually reach Igor Pro's ZeroMQ server right
+    now, and report what's known if not.
+
+    Call this first whenever a command fails or behaves unexpectedly.
+
+    Unlike the old COM-based version, this can no longer cleanly distinguish "Igor
+    Pro isn't running" from "Igor Pro is running but ZMQ_BridgeHelpers.ipf isn't
+    included/compiled/bound" from "wrong port/firewall" -- a ZeroMQ REQ socket that
+    gets no reply at all looks the same in all three cases (see the module docstring's
+    "Behavior changes" section). If this reports FAIL, check by hand: is Igor64.exe
+    actually running (Task Manager)? Is Packages/MIES/ZMQ_BridgeHelpers.ipf
+    #include-d and does check_compilation_state-equivalent info suggest it's
+    compiled? Try `netstat -a -b` (needs admin) to see whether anything is actually
+    listening on IGOR_ZMQ_ENDPOINT's port.
+
+    Returns a dict with a "status" key ("OK" or "FAIL") and, on FAIL, a "problem" key.
+    """
+    try:
+        info = call_function("ZBR#ZBR_Ping")
+    except IgorZmqUnreachable as e:
+        return {
+            "status": "FAIL",
+            "problem": (
+                f"No reply from Igor Pro's ZeroMQ server ({e}). This can mean Igor "
+                "Pro isn't running, ZMQ_BridgeHelpers.ipf isn't #include-d/compiled "
+                "in the current experiment (see that file's own header comment for "
+                "the one-time setup step), or its ZeroMQ socket isn't bound to "
+                f"{IGOR_ZMQ_ENDPOINT} for some other reason."
+            ),
+        }
+    except IgorZmqError as e:
+        return {
+            "status": "FAIL",
+            "problem": f"Igor Pro's ZeroMQ server replied but reported an error: {e}",
+        }
+
+    return {"status": "OK", "igor_info": info}
+
+
+# --- Compile-error dialog dismissal (posted Escape key message) ---------------------
+#
+# Unchanged from the COM-based version: this is pure OS-level window handling
+# (win32gui/win32api), entirely independent of which transport talks to Igor Pro's
+# procedure code. See the original version's extensive comment history (still
+# accurate) for how the dialog's title/class were identified live, why title-only
+# matching is used (a Copilot PR review flagged blanket "#32770" matching as unsafe),
+# and why PostMessage (not a real hardware key event) is used.
+
+_IGOR_PROCESS_NAME_PREFIX = "igor"
+_KNOWN_STUCK_DIALOG_TITLES = ("Function Compilation Error",)
+_POSTED_KEY_GAP_SECONDS = 0.05
+_POSTED_KEY_SETTLE_SECONDS = 0.2
+
+
+def _is_stuck_dialog_window(class_name: str, title: str) -> bool:
+    return any(known.lower() in title.lower() for known in _KNOWN_STUCK_DIALOG_TITLES)
+
+
+def _get_process_exe_name(pid: int):
+    ACCESS = win32con.PROCESS_QUERY_INFORMATION | win32con.PROCESS_VM_READ
+    hProcess = None
+    try:
+        hProcess = win32api.OpenProcess(ACCESS, False, pid)
+        path = win32process.GetModuleFileNameEx(hProcess, 0)
+        return os.path.basename(path)
+    except Exception:
+        return None
+    finally:
+        if hProcess is not None:
+            win32api.CloseHandle(hProcess)
+
+
+def _list_pids_for_exe_basename(basename_lower: str) -> list:
+    """Return the PIDs of every currently running process whose own module file name
+    matches basename_lower exactly (case-insensitively), e.g. "igor64.exe".
+
+    Used by load_experiment to wait for an Igor Pro process to fully exit -- **not**
+    the same thing as it going quiet over ZeroMQ. Confirmed live (user report, this
+    session): ZeroMQ stops answering well before the underlying Igor64.exe process
+    actually terminates, and launching a replacement `Igor64.exe /UNATTENDED <path>`
+    command line while the old process is still alive -- even if it's already mid-quit
+    -- does NOT spawn a new process at all. Windows/Igor's single-instance-per-user
+    behavior instead either (a) redirects the launch request into the still-live old
+    instance, which can pop an unhandled "save changes?" dialog if it has unsaved
+    edits, or (b) if the old instance is already mid-shutdown, silently drops the
+    request altogether -- which looks exactly like the relaunch had no effect at all,
+    with no error reported anywhere. Waiting for the actual OS process list to be
+    clear of the target exe name, rather than trusting ZeroMQ silence, avoids both.
+    """
+    matches = []
+    for pid in win32process.EnumProcesses():
+        if pid == 0:
+            continue
+        exe_name = _get_process_exe_name(pid)
+        if exe_name and exe_name.lower() == basename_lower:
+            matches.append(pid)
+    return matches
+
+
+def _find_igor_dialog_window():
+    matches = []
+
+    def _callback(hwnd, _extra):
+        if win32gui.IsWindowVisible(hwnd):
+            title = win32gui.GetWindowText(hwnd)
+            class_name = win32gui.GetClassName(hwnd)
+            if _is_stuck_dialog_window(class_name, title):
+                _, pid = win32process.GetWindowThreadProcessId(hwnd)
+                exe_name = _get_process_exe_name(pid)
+                if exe_name and exe_name.lower().startswith(_IGOR_PROCESS_NAME_PREFIX):
+                    matches.append((hwnd, title, exe_name))
+        return True
+
+    win32gui.EnumWindows(_callback, None)
+    return matches[0] if matches else None
+
+
+def _list_igor_top_level_windows() -> list:
+    windows = []
+
+    def _callback(hwnd, _extra):
+        if win32gui.IsWindowVisible(hwnd):
+            _, pid = win32process.GetWindowThreadProcessId(hwnd)
+            exe_name = _get_process_exe_name(pid)
+            if exe_name and exe_name.lower().startswith(_IGOR_PROCESS_NAME_PREFIX):
+                windows.append(
+                    {
+                        "title": win32gui.GetWindowText(hwnd),
+                        "class_name": win32gui.GetClassName(hwnd),
+                        "process": exe_name,
+                    }
+                )
+        return True
+
+    win32gui.EnumWindows(_callback, None)
+    return windows
+
+
+def _attempt_dismiss_compile_error_dialog() -> dict:
+    found = _find_igor_dialog_window()
+    if found is None:
+        return {
+            "attempted": False,
+            "reason": (
+                "No visible window with a title containing one of "
+                f"{_KNOWN_STUCK_DIALOG_TITLES}, owned by an Igor Pro process, was "
+                "found. Either there is no stuck dialog right now, or it's a kind "
+                "not seen before -- see 'igor_windows_seen' below."
+            ),
+            "igor_windows_seen": _list_igor_top_level_windows(),
+        }
+
+    hwnd, window_title, exe_name = found
+
+    try:
+        win32api.PostMessage(hwnd, win32con.WM_KEYDOWN, win32con.VK_ESCAPE, 0)
+        time.sleep(_POSTED_KEY_GAP_SECONDS)
+        win32api.PostMessage(hwnd, win32con.WM_KEYUP, win32con.VK_ESCAPE, 0)
+        time.sleep(_POSTED_KEY_SETTLE_SECONDS)
+    except Exception as e:
+        return {
+            "attempted": False,
+            "reason": f"Posting the simulated Escape key press failed: {e}",
+            "dialog_window_title": window_title,
+            "dialog_window_process": exe_name,
+        }
+
+    return {
+        "attempted": True,
+        "dialog_window_title": window_title,
+        "dialog_window_process": exe_name,
+        "note": (
+            "Posted a simulated Escape key press directly to this dialog window "
+            "(no OS foreground/focus change was made or needed). This does NOT "
+            "recover the actual compile-error message -- it only closes whatever "
+            "modal dialog was showing. Follow up with check_compilation_state() or "
+            "reload_and_compile_procedures() to see whether this actually un-stuck "
+            "anything."
+        ),
+    }
+
+
+@mcp.tool()
+def dismiss_compile_error_dialog() -> dict:
+    """Attempt to close a stuck Igor Pro modal compile-error dialog by posting a
+    simulated Escape key press directly to it, WITHOUT recovering the actual error
+    message and WITHOUT requiring or changing OS focus/foreground state.
+
+    Use this manually when you suspect Igor Pro has a compile-error dialog open (e.g.
+    reload_and_compile_procedures kept reporting "not compiled" even after fixing a
+    known syntax error). Note: launching Igor Pro with /UNATTENDED (see
+    launch_igor_pro_unattended) suppresses this dialog entirely in favor of a plain
+    history line, so this should rarely be needed for an instance launched that way.
+
+    Mechanism: enumerates top-level windows for a visible one, owned by a process
+    whose exe name starts with "igor", whose title matches a known stuck-dialog title
+    ("Function Compilation Error", confirmed live on both Igor Pro 10.03 and 9.06,
+    both a Qt window rather than a native "#32770" dialog). Posts WM_KEYDOWN/WM_KEYUP
+    for VK_ESCAPE via PostMessage, without requiring focus or foreground.
+
+    If no matching window is found, reports "attempted": False along with
+    "igor_windows_seen": every visible top-level window currently owned by an Igor
+    Pro process, so a new stuck dialog's real title/class can be identified.
+
+    **Trade-off: this does not tell you what the error was.** It only clears whatever
+    dialog is blocking Igor's operation queue so work can continue.
+    """
+    return _attempt_dismiss_compile_error_dialog()
+
+
+# --- Launching / relaunching Igor Pro -------------------------------------------------
+#
+# Still pure Python/OS-level (starting a whole new Igor Pro *process* has to be done
+# from outside any already-running instance -- no transport can do this from the
+# inside). **No more elevation branching at all** -- see the module docstring: ZeroMQ
+# has no privilege-matching requirement, so Igor Pro is always launched as a plain
+# child process of this bridge process, at whatever privilege level that already is.
+
+_configured_igor_exe_path = None
+
+
 def _build_igor_launch_env():
-    """Return an environment dict for subprocess.Popen when launching Igor Pro as a
-    direct child process, patching in COMSPEC if this process's own environment is
-    missing it.
+    """Return an environment dict for subprocess.Popen when launching Igor Pro,
+    patching in COMSPEC if this process's own environment is missing it.
 
-    **Confirmed live this session, against a real launch_igor_pro_unattended call**:
-    Igor Pro's MIES procedures run a startup hook (IgorStartOrNewHook ->
-    GetMiesVersion -> CreateMiesVersionNoCache -> ExecuteGitForMIESVersion, in
-    MIES_GlobalStringAndVariableAccess.ipf) that shells out to git via
-    `ExecuteScriptText` to regenerate version.txt, using `GetCmdPath()`
-    (`GetEnvironmentVariable("COMSPEC")`, in MIES_Utilities_File.ipf) to find
-    cmd.exe. A child process launched via subprocess.Popen with no explicit env
-    inherits THIS Python process's own environment -- and querying the live
-    instance directly (`GetEnvironmentVariable("COMSPEC")`) showed it came back
-    empty, even though PATH itself was intact (including a working git
-    installation). Windows normally sets COMSPEC automatically for every
-    interactive login session, so a normal double-click/Start Menu launch of Igor
-    Pro never hits this; it only showed up because this bridge process's own
-    environment (inherited from whatever launched Claude Desktop) apparently never
-    had COMSPEC set. With COMSPEC empty, MIES's git-shell-out command becomes
-    malformed, ExecuteScriptText fails, and
+    Confirmed necessary during this bridge's development: MIES's own startup hook
+    (IgorStartOrNewHook -> ... -> ExecuteGitForMIESVersion, MIES_GlobalStringAndVariable
+    Access.ipf) shells out to git via ExecuteScriptText using GetCmdPath()/COMSPEC to
+    find cmd.exe. A child process launched via subprocess.Popen with no explicit env
+    inherits this process's own environment -- which may not have COMSPEC set (a
+    normal interactive login session always does; this bridge process's own
+    environment, inherited from whatever launched Claude Desktop, might not). Without
+    it, MIES's git-shell-out becomes malformed and
     `ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")`
-    (MIES_GlobalStringAndVariableAccess.ipf, ExecuteGitForMIESVersion) trips on every
-    fresh launch via this bridge. See SESSION_NOTES.md for the full diagnosis.
-
-    Only patches COMSPEC specifically (the one confirmed-missing variable), rather
-    than rebuilding the whole environment from scratch -- everything else (PATH,
-    etc.) was already intact when this was diagnosed.
+    trips on every launch via this path.
     """
     env = os.environ.copy()
     if not env.get("COMSPEC"):
@@ -2305,23 +1387,17 @@ def _build_igor_launch_env():
 @mcp.tool()
 def configure_igor_launch(exe_path: str) -> dict:
     """Record the full path to the Igor Pro executable (e.g. "...\\IgorBinaries_x64\\
-    Igor64.exe") to use for launch_igor_pro_unattended, for the rest of this bridge
-    process's session.
+    Igor64.exe") to use for launch_igor_pro_unattended/load_experiment, for the rest
+    of this bridge process's session.
 
-    **Whatever agent is calling this tool should ask the user for this path (and
-    confirm they understand the elevation requirement below) once, at the start of
-    a session that might need to launch Igor Pro -- do not guess or default to a
-    typical installation path.** This repo alone has been tested against Igor Pro
-    installed in more than one differently-named folder (an Igor Pro 9 install and a
-    separate Igor Pro 10 install), so there is no single reliable default. This
-    setting is intentionally session-scoped, matching this bridge's other
-    session-scoped state (e.g. the history capture refnum) -- it resets if this
-    bridge process itself restarts (e.g. Claude Desktop fully restarts), so ask
-    again in a new session rather than assuming a previous answer still applies.
+    **Whatever agent is calling this tool should ask the user for this path once, at
+    the start of a session that might need to launch Igor Pro** -- do not guess or
+    default to a typical installation path; this repo alone has been tested against
+    Igor Pro installed in more than one differently-named folder. This setting is
+    session-scoped: it resets if this bridge process itself restarts.
 
     Raises if exe_path does not point to an existing file. Does not otherwise
-    validate that the file is actually Igor Pro (beyond a soft filename check) --
-    launch_igor_pro_unattended will simply fail informatively if it isn't.
+    validate that the file is actually Igor Pro (beyond a soft filename check).
     """
     global _configured_igor_exe_path
 
@@ -2339,57 +1415,11 @@ def configure_igor_launch(exe_path: str) -> dict:
         note = (
             "This file name does not look like a typical Igor Pro executable "
             "(expected something like 'Igor64.exe'). Proceeding anyway in case the "
-            "user has a renamed executable, but this is worth double-checking with "
-            "them if launch_igor_pro_unattended behaves unexpectedly."
+            "user has a renamed executable."
         )
 
     _configured_igor_exe_path = normalized
-    elevated = _is_current_process_elevated()
-
-    # _is_current_process_elevated() can return True, False, OR None (undetermined
-    # -- see its own docstring). A plain `if elevated` treats None the same as
-    # False, which would misreport "NOT currently elevated" as a confirmed fact
-    # when it's actually unknown -- flagged by a Copilot PR review as genuinely
-    # misleading guidance. Branched three ways explicitly instead.
-    if elevated is True:
-        elevation_plan = (
-            "This bridge process is already elevated: launch_igor_pro_unattended "
-            "will start Igor Pro as a direct child process, which inherits this "
-            "process's elevation automatically -- no UAC prompt expected."
-        )
-    elif elevated is False:
-        elevation_plan = (
-            "This bridge process is NOT currently elevated: "
-            "launch_igor_pro_unattended will request elevation via Windows' UAC "
-            "('Run as administrator') when launching Igor Pro, which requires the "
-            "user to approve a consent dialog themselves. Even after that succeeds, "
-            "THIS Python process will still not be elevated, so COM calls will keep "
-            "failing due to the resulting privilege-level mismatch (see "
-            "check_bridge_health) until Claude Desktop itself is relaunched at a "
-            "matching level (elevated, to match the now-elevated Igor Pro) -- make "
-            "sure the user understands this before relying on "
-            "launch_igor_pro_unattended to get a fully working bridge. "
-            "Alternatively, Igor Pro can simply be launched non-elevated by hand "
-            "instead, which needs no elevation match at all."
-        )
-    else:
-        elevation_plan = (
-            "Could not determine whether this bridge process is currently "
-            "elevated. launch_igor_pro_unattended treats this the same as "
-            "'not elevated' as a conservative default (requesting UAC elevation "
-            "via ShellExecute's 'runas' verb rather than risking a silently "
-            "unelevated direct launch) -- if COM calls fail afterward, check "
-            "check_bridge_health and make sure Claude Desktop and Igor Pro are "
-            "running at the same privilege level (both elevated, or both not; "
-            "elevation itself is not required)."
-        )
-
-    return {
-        "configured_exe_path": normalized,
-        "python_process_elevated": elevated,
-        "note": note,
-        "elevation_plan": elevation_plan,
-    }
+    return {"configured_exe_path": normalized, "note": note}
 
 
 _POST_LAUNCH_POLL_INTERVAL_SECONDS = 1.0
@@ -2401,58 +1431,34 @@ def launch_igor_pro_unattended(wait_for_ready_seconds: float = 30.0) -> dict:
     flag.
 
     Per Igor Pro Folder/Igor Help Files/Advanced Topics.ihf ("Calling Igor from
-    Scripts"), /UNATTENDED "suppresses certain interactions that are inconvenient
-    for unattended operations" -- documented examples are the About Autosave dialog
-    and (Igor Pro 10+) the license activation dialog. Empirically confirmed this
-    session against a live Igor Pro 9.06 instance, but NOT documented anywhere in
-    Igor's help files: /UNATTENDED also suppresses the modal "Function Compilation
-    Error" dialog that normally appears on a bad procedure compile, and instead
-    reports the error as a plain line in Igor's history area (format
-    "<file>:<line>:<col>: error: <message>", readable via read_session_history) --
-    see SESSION_NOTES.md for the full finding. This means a bridge session started
-    this way should never need dismiss_compile_error_dialog at all.
+    Scripts"), /UNATTENDED "suppresses certain interactions that are inconvenient for
+    unattended operations" -- documented examples are the About Autosave dialog and
+    (Igor Pro 10+) the license activation dialog. Also confirmed empirically (not
+    documented anywhere in Igor's help files): /UNATTENDED also suppresses the modal
+    "Function Compilation Error" dialog on a bad procedure compile, reporting the
+    error as a plain history line instead (format "<file>:<line>:<col>: error:
+    <message>", readable via read_session_history).
 
-    **Requires configure_igor_launch(exe_path) to have been called first in this
-    same bridge session** -- there is no default or guessed path. Raises immediately
-    with an actionable message if it hasn't been. See configure_igor_launch's
-    docstring for why the calling agent should ask the user for this rather than
-    assume it.
+    **Requires configure_igor_launch(exe_path) to have been called first.**
 
-    Refuses to launch (returns "launched": False rather than raising) if an Igor Pro
-    instance is already reachable via COM right now: launching the executable again
-    with only /UNATTENDED (no /I, /X, /SN, or file-path argument) is documented to
-    start a genuinely new instance rather than reusing an existing one (Advanced
-    Topics.ihf, "Calling Igor from Scripts", Details section: an existing instance
-    is only reused if you include /X, /SN, or a path to a file), which would leave
-    two Igor64.exe processes running -- contradicting this bridge's existing
-    guidance elsewhere (check_bridge_health) that there should be exactly one.
+    Refuses to launch (returns "launched": False) if something already answers
+    ZBR#ZBR_Ping right now -- launching the executable again with only /UNATTENDED
+    starts a genuinely new instance rather than reusing an existing one (Advanced
+    Topics.ihf), which would leave two Igor64.exe processes running.
 
-    Elevation handling: if this Python process is itself already elevated, Igor Pro
-    launches as a direct child process, which inherits that elevation automatically
-    -- no prompt, no separate step. If this process is NOT elevated, launches via
-    ShellExecute's "runas" verb instead, which triggers a normal Windows UAC consent
-    dialog the user must approve -- but even after that succeeds, THIS process will
-    still not be elevated, so COM calls will keep failing (the classic
-    privilege-level-mismatch failure mode -- see check_bridge_health; elevation
-    itself is not the requirement, matching levels is) until Claude Desktop itself
-    is relaunched at a matching level (elevated, to match the now-elevated Igor
-    Pro). configure_igor_launch's own return value already surfaces which of these
-    two paths will be taken -- check that first.
+    **Always launches as a plain child process (subprocess.Popen), at whatever
+    privilege level this bridge process itself is running at -- no elevation request,
+    no UAC prompt, ever.** This is a deliberate change from the COM-based version:
+    ZeroMQ has no privilege-matching requirement at all (unlike COM, which needed this
+    process and Igor Pro to run at the SAME privilege level), so there is nothing to
+    branch on anymore.
 
-    The direct-child-process path also patches COMSPEC into the child's environment
-    if this Python process's own environment is missing it (see
-    _build_igor_launch_env) -- confirmed necessary this session: without it, MIES's
-    own startup code (IgorStartOrNewHook -> ... -> ExecuteGitForMIESVersion, which
-    shells out to git via ExecuteScriptText using GetCmdPath()/COMSPEC to find
-    cmd.exe) hits an assertion ("We have git installed but could not regenerate
-    version.txt") on every launch via this path, even though a normal
-    double-click/Start Menu launch never hits it (a real interactive login session
-    always has COMSPEC set).
+    Patches COMSPEC into the child's environment if missing (see
+    _build_igor_launch_env) -- needed for MIES's own git-based startup hook.
 
-    After launching, polls for the new instance to become reachable via COM (every
-    ~1s) up to wait_for_ready_seconds, since Igor Pro can take several seconds to
-    finish initializing its Automation Server. Returns whether it became ready and
-    how many polling attempts that took.
+    After launching, polls for ZBR#ZBR_Ping to start answering (every ~1s) up to
+    wait_for_ready_seconds. Returns whether it became ready and how many polling
+    attempts that took.
     """
     if not _configured_igor_exe_path:
         raise RuntimeError(
@@ -2463,86 +1469,164 @@ def launch_igor_pro_unattended(wait_for_ready_seconds: float = 30.0) -> dict:
             "this tool."
         )
 
-    try:
-        _get_igor(force_reconnect=True)
-        already_running = True
-    except RuntimeError:
-        already_running = False
-
-    if already_running:
+    if _reachable(timeout_ms=1000):
         return {
             "launched": False,
             "reason": (
-                "An Igor Pro instance is already running and reachable via COM. "
-                "Refusing to launch a second one -- close the existing instance "
-                "first if a genuinely fresh one (e.g. relaunched with /UNATTENDED) "
-                "is actually wanted."
+                "Something already answered ZBR#ZBR_Ping over ZeroMQ. Refusing to "
+                "launch a second Igor Pro instance -- close the existing one first "
+                "if a genuinely fresh one is actually wanted."
             ),
         }
 
-    elevated = _is_current_process_elevated()
-    # _is_current_process_elevated() can return True, False, OR None (undetermined --
-    # see its own docstring). A plain `if elevated`/`elevated else ...` treats None the
-    # same as False -- behaviorally fine here since undetermined should conservatively
-    # fall back to the not-elevated (UAC-prompting) path anyway, but written as an
-    # explicit `is True` check for clarity, matching the same fix already applied to
-    # configure_igor_launch's elevation_plan text above.
-    launch_method = (
-        "direct_child_process" if elevated is True else "shell_execute_runas"
-    )
-
     try:
-        if elevated is True:
-            subprocess.Popen(
-                [_configured_igor_exe_path, "/UNATTENDED"],
-                env=_build_igor_launch_env(),
-            )
-        else:
-            win32api.ShellExecute(
-                0,
-                "runas",
-                _configured_igor_exe_path,
-                "/UNATTENDED",
-                None,
-                win32con.SW_SHOWNORMAL,
-            )
+        subprocess.Popen(
+            [_configured_igor_exe_path, "/UNATTENDED"],
+            env=_build_igor_launch_env(),
+        )
     except Exception as e:
-        return {
-            "launched": False,
-            "reason": f"Failed to start the process ({e}).",
-            "launch_method": launch_method,
-        }
+        return {"launched": False, "reason": f"Failed to start the process ({e})."}
 
     deadline = time.monotonic() + wait_for_ready_seconds
     attempts = 0
     while time.monotonic() < deadline:
         attempts += 1
-        try:
-            _get_igor(force_reconnect=True)
-            return {
-                "launched": True,
-                "launch_method": launch_method,
-                "com_ready": True,
-                "poll_attempts": attempts,
-            }
-        except RuntimeError:
-            time.sleep(_POST_LAUNCH_POLL_INTERVAL_SECONDS)
+        if _reachable(timeout_ms=1000):
+            return {"launched": True, "zmq_ready": True, "poll_attempts": attempts}
+        time.sleep(_POST_LAUNCH_POLL_INTERVAL_SECONDS)
 
     return {
         "launched": True,
-        "launch_method": launch_method,
-        "com_ready": False,
+        "zmq_ready": False,
         "poll_attempts": attempts,
         "note": (
-            f"The process was started, but no COM connection became reachable "
-            f"within {wait_for_ready_seconds:.0f}s. Igor Pro may still be "
-            "initializing (slower on first launch or a cold machine) -- try "
-            "check_bridge_health() again after waiting longer. If launch_method is "
-            "'shell_execute_runas', also consider that this Python process itself "
-            "is not elevated while Igor Pro (just launched via the UAC prompt) now "
-            "is, which will prevent a COM connection indefinitely regardless of how "
-            "long you wait, until Claude Desktop is relaunched at a matching "
-            "(elevated) level."
+            f"The process was started, but nothing answered ZBR#ZBR_Ping within "
+            f"{wait_for_ready_seconds:.0f}s. Igor Pro may still be initializing "
+            "(slower on first launch or a cold machine), or ZMQ_BridgeHelpers.ipf may "
+            "not be #include-d/compiled in whatever experiment this instance opened "
+            "by default -- try check_bridge_health() again after waiting longer."
+        ),
+    }
+
+
+@mcp.tool()
+def load_experiment(
+    file_path: str,
+    wait_for_ready_seconds: float = 30.0,
+    process_exit_timeout_seconds: float = 30.0,
+) -> dict:
+    """Load an Igor Pro experiment file (.pxp), replacing whatever is currently open.
+
+    **Behavior change from the COM-based version, read carefully**: COM's
+    IApplication.LoadExperiment hot-swapped the experiment inside the SAME running
+    Igor Pro process. That method is COM-only (confirmed: neither "LoadExperiment"
+    nor "OpenFile" appear anywhere in Igor Reference.ihf, only in Automation
+    Server.ihf) -- there is no procedure-language equivalent, so this transport
+    cannot replicate it. Instead, this tool:
+
+    1. Asks the currently-running instance to quit (`Quit/N`, submitted via
+       ZBR_SubmitCommand -- deferred, so this step itself still gets a normal reply
+       before Igor actually exits).
+    2. Waits for the underlying Igor64.exe **OS process** to fully disappear from the
+       process list -- see below for why this can't just check ZeroMQ reachability.
+    3. Relaunches the configured Igor Pro executable (see configure_igor_launch) with
+       `/UNATTENDED` plus the target file path as a launch argument -- passing a file
+       path on launch is documented (Advanced Topics.ihf, "Calling Igor from
+       Scripts") to open that specific file.
+    4. Polls for the new instance to start answering ZBR#ZBR_Ping, same as
+       launch_igor_pro_unattended.
+
+    **Step 2 is not optional, and checking ZeroMQ reachability alone is not enough --
+    confirmed live (user report) after an early version of this tool relied on exactly
+    that and silently failed.** ZeroMQ goes quiet well before the Igor64.exe process
+    actually terminates (Igor can take several seconds to fully exit after `Quit/N`
+    runs). If the replacement `Igor64.exe /UNATTENDED <path>` command line is launched
+    while the old process is still alive -- even mid-shutdown -- Windows/Igor's
+    single-instance-per-user behavior does not spawn a new process at all: it either
+    (a) redirects the launch into the still-live old instance, which pops an unhandled
+    "save changes?" dialog if it happens to have unsaved edits, or (b) if the old
+    instance is already mid-quit, silently drops the request altogether. Case (b) is
+    especially deceptive: nothing errors, no new process appears, and the net effect
+    looks exactly like the relaunch had no effect whatsoever. This tool instead polls
+    the actual OS process list (matching the configured executable's own file name,
+    e.g. "Igor64.exe") until no such process remains, up to
+    process_exit_timeout_seconds, before ever invoking the relaunch command line. If
+    that timeout elapses with the process still present, this raises rather than
+    proceeding -- proceeding anyway would just reproduce the same silent-failure risk
+    this check exists to prevent. A stuck "save changes?" dialog on the OLD instance
+    (e.g. if something modified the experiment after your last save) is the most
+    likely cause; check for one by hand if this happens.
+
+    This is a genuine process restart, not an in-place swap. **Any unsaved changes in
+    the currently-open experiment are lost** -- call
+    execute_igor_command('SaveExperiment') first if that matters (matching the old
+    version's own behavior: LoadExperiment never auto-saved either, but there was at
+    least still a "hot" instance to save from afterward if you forgot; now there
+    isn't).
+
+    Requires configure_igor_launch(exe_path) to have been called first.
+
+    Raises if file_path does not point to an existing file, or if the old Igor Pro
+    process does not fully exit within process_exit_timeout_seconds.
+    """
+    if not _configured_igor_exe_path:
+        raise RuntimeError(
+            "No Igor Pro executable path configured yet -- call "
+            "configure_igor_launch(exe_path) first."
+        )
+
+    normalized = os.path.abspath(file_path)
+    if not os.path.isfile(normalized):
+        raise RuntimeError(f"'{normalized}' does not exist or is not a file.")
+
+    igor_basename_lower = os.path.basename(_configured_igor_exe_path).lower()
+
+    try:
+        call_function("ZBR#ZBR_SubmitCommand", ["Quit/N"])
+    except (IgorZmqError, IgorZmqUnreachable):
+        pass  # nothing was running/reachable to begin with -- nothing to quit
+
+    quit_deadline = time.monotonic() + process_exit_timeout_seconds
+    remaining_pids = _list_pids_for_exe_basename(igor_basename_lower)
+    while remaining_pids and time.monotonic() < quit_deadline:
+        time.sleep(0.5)
+        remaining_pids = _list_pids_for_exe_basename(igor_basename_lower)
+
+    if remaining_pids:
+        raise RuntimeError(
+            f"'{igor_basename_lower}' did not fully exit within "
+            f"{process_exit_timeout_seconds:.0f}s of sending Quit/N (PIDs still "
+            f"running: {remaining_pids}). Relaunching now would risk silently doing "
+            "nothing (see this tool's own docstring) -- check whether the existing "
+            "Igor Pro instance is stuck on an unhandled dialog (e.g. 'save changes?' "
+            "if something modified the experiment since your last save) and resolve "
+            "it by hand, or retry with a longer process_exit_timeout_seconds."
+        )
+
+    try:
+        subprocess.Popen(
+            [_configured_igor_exe_path, "/UNATTENDED", normalized],
+            env=_build_igor_launch_env(),
+        )
+    except Exception as e:
+        raise RuntimeError(f"Failed to relaunch Igor Pro with {normalized!r}: {e}") from e
+
+    deadline = time.monotonic() + wait_for_ready_seconds
+    attempts = 0
+    while time.monotonic() < deadline:
+        attempts += 1
+        if _reachable(timeout_ms=1000):
+            return {"loaded_file": normalized, "zmq_ready": True, "poll_attempts": attempts}
+        time.sleep(_POST_LAUNCH_POLL_INTERVAL_SECONDS)
+
+    return {
+        "loaded_file": normalized,
+        "zmq_ready": False,
+        "poll_attempts": attempts,
+        "note": (
+            f"Process relaunched with {normalized!r}, but nothing answered "
+            f"ZBR#ZBR_Ping within {wait_for_ready_seconds:.0f}s. Try "
+            "check_bridge_health() again after waiting longer."
         ),
     }
 
