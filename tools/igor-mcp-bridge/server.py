@@ -704,16 +704,27 @@ def reload_and_compile_procedures() -> dict:
     Use this after editing a .ipf file directly on disk. Only call this while Igor Pro
     is not currently running other procedure code.
 
-    **Caution, carried over from the COM-based version and confirmed to still apply**:
-    Igor Pro has been observed becoming unreachable shortly after a reload/compile
-    attempt on more than one occasion during this bridge's development (crashed or
-    was closed), root cause unconfirmed. If a tool call after this one starts failing,
+    **Caution, carried over from the COM-based version**: Igor Pro has been observed
+    becoming unreachable shortly after a reload/compile attempt on more than one
+    occasion during this bridge's development (crashed or was closed). As of v2.3.0,
+    crash-dump analysis traced this to a genuine EXCEPTION_ACCESS_VIOLATION deep inside
+    Igor64.exe itself (not this bridge's own code), and a likely mechanism was
+    identified: this bridge's ZeroMQ handler runs as a background thread that keeps
+    dispatching incoming CallFunction requests regardless of what Igor's main thread is
+    doing, so a request arriving while COMPILEPROCEDURES is mid-rebuild of Igor's own
+    internal function/symbol tables is a plausible cross-thread race. v2.3.0 mitigates
+    this by stopping the ZeroMQ handler before RELOAD CHANGED PROCS/COMPILEPROCEDURES
+    run and restarting it only after compilation finishes (see
+    ZBR_StopHandlerBeforeRecompile/ZBR_SubmitReloadAndCompile in ZMQ_BridgeHelpers.ipf).
+    This is a well-reasoned mitigation, not a proven fix -- Igor64.exe ships no public
+    symbols, so the exact fault can't be confirmed from here, and the crash was already
+    rare/nondeterministic. If a tool call after this one starts failing anyway,
     check_bridge_health() and be prepared for Igor Pro to need relaunching.
 
-    Mechanism: calls ZBR_SubmitReloadAndCompile(), which queues
-    `Execute/P "RELOAD CHANGED PROCS "` then `Execute/P "COMPILEPROCEDURES "`
-    Igor-side (both commands need their queue, and their own mandatory trailing
-    space -- see that function's docstring in ZMQ_BridgeHelpers.ipf), then polls for
+    Mechanism: calls ZBR_SubmitReloadAndCompile(), which queues (as three independent
+    Execute/P entries) a call to stop the ZeroMQ handler, then
+    `Execute/P "RELOAD CHANGED PROCS "`, then `Execute/P "COMPILEPROCEDURES "`
+    Igor-side (see that function's docstring in ZMQ_BridgeHelpers.ipf), then polls for
     completion using two independent signals, same as the COM-based version did:
 
     1. root:gClaudeHelperCompileCounter (ZBR_ReadCompileCounter), bumped by
@@ -1109,7 +1120,7 @@ def read_help_file(file_path: str, timeout_ms: int = 30000) -> dict:
 # reason as before: the on-disk layout after Claude Desktop installs a .mcpb isn't
 # guaranteed to keep server.py and manifest.json at a fixed relative path, and this
 # needs to be confirmable from inside a conversation independent of that.
-_BRIDGE_VERSION = "2.2.3"
+_BRIDGE_VERSION = "2.3.0"
 
 
 def _installed_package_version(distribution_name: str) -> str | None:

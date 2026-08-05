@@ -1,7 +1,7 @@
-#pragma TextEncoding   = "UTF-8"
-#pragma rtGlobals      = 3
+#pragma TextEncoding      = "UTF-8"
+#pragma rtGlobals         = 3
 #pragma IndependentModule = ZBR
-#pragma version        = 1.00
+#pragma version           = 1.00
 
 // ZMQ_BridgeHelpers.ipf -- Igor Pro-side utility functions backing the Igor Pro Bridge
 // (tools/igor-mcp-bridge/) from v2.0.0 onward, which now talks to Igor Pro over the
@@ -127,9 +127,9 @@ static Function ZBR_EnsureStorage()
 	DFREF dfr = root:Packages:ZBR
 
 	if(!WaveExists(dfr:done))
-		Make/N=0/O   dfr:done         // 0 = pending, 1 = done
+		Make/N=0/O dfr:done // 0 = pending, 1 = done
 		Make/N=0/O/T dfr:resultText
-		Make/N=0/O   dfr:historyStart
+		Make/N=0/O dfr:historyStart
 	endif
 End
 
@@ -184,7 +184,7 @@ End
 /// trigger the Debugger.
 static Function ZBR_EnsureCaptureStarted()
 
-	string dummy
+	string   dummy
 	variable err
 
 	NewDataFolder/O root:Packages
@@ -192,14 +192,14 @@ static Function ZBR_EnsureCaptureStarted()
 
 	NVAR/Z refnum = root:Packages:ZBR:captureRefNum
 	if(!NVAR_Exists(refnum))
-		Variable/G root:Packages:ZBR:captureRefNum = CaptureHistoryStart()
+		variable/G root:Packages:ZBR:captureRefNum = CaptureHistoryStart()
 	else
 		NVAR refnumRW = root:Packages:ZBR:captureRefNum
 
 		try
-			dummy = CaptureHistory(refnumRW, 0);AbortOnRTE
+			dummy = CaptureHistory(refnumRW, 0); AbortOnRTE
 		catch
-			err = GetRTError(1) // clear the trapped error; discard the specific code, we always recover the same way
+			err      = GetRTError(1) // clear the trapped error; discard the specific code, we always recover the same way
 			refnumRW = CaptureHistoryStart()
 		endtry
 	endif
@@ -240,7 +240,7 @@ static Function/S ZBR_AllocateToken()
 	variable n
 
 	ZBR_EnsureStorage()
-	DFREF dfr = root:Packages:ZBR
+	DFREF  dfr          = root:Packages:ZBR
 	WAVE   done         = dfr:done
 	WAVE/T resultText   = dfr:resultText
 	WAVE   historyStart = dfr:historyStart
@@ -299,10 +299,10 @@ Function/S ZBR_SubmitCommandUnattended(string cmd)
 	string token, finishCall, restore
 
 	DebuggerOptions
-	Variable/G root:Packages:ZBR:savedDebugEnable      = V_enable
-	Variable/G root:Packages:ZBR:savedDebugOnError     = V_debugOnError
-	Variable/G root:Packages:ZBR:savedDebugOnAbort     = V_debugOnAbort
-	Variable/G root:Packages:ZBR:savedDebugNvarCheck   = V_NVAR_SVAR_WAVE_Checking
+	variable/G root:Packages:ZBR:savedDebugEnable    = V_enable
+	variable/G root:Packages:ZBR:savedDebugOnError   = V_debugOnError
+	variable/G root:Packages:ZBR:savedDebugOnAbort   = V_debugOnAbort
+	variable/G root:Packages:ZBR:savedDebugNvarCheck = V_NVAR_SVAR_WAVE_Checking
 	KillVariables/Z V_enable, V_debugOnError, V_debugOnAbort, V_NVAR_SVAR_WAVE_Checking
 
 	restore  = "DebuggerOptions enable=root:Packages:ZBR:savedDebugEnable, "
@@ -364,9 +364,9 @@ End
 Function ZBR_FinishToken(variable idx)
 
 	variable err
-	string errMsg
+	string   errMsg
 
-	DFREF dfr = root:Packages:ZBR
+	DFREF  dfr          = root:Packages:ZBR
 	WAVE   done         = dfr:done
 	WAVE/T resultText   = dfr:resultText
 	WAVE   historyStart = dfr:historyStart
@@ -397,7 +397,7 @@ Function [variable isDone, string result] ZBR_PollCommand(string token)
 
 	variable idx
 
-	DFREF dfr = root:Packages:ZBR
+	DFREF  dfr        = root:Packages:ZBR
 	WAVE   done       = dfr:done
 	WAVE/T resultText = dfr:resultText
 
@@ -473,10 +473,66 @@ End
 /// error reported anywhere). Poll ZBR_IsCompiled() instead -- already a direct,
 /// synchronous, standalone check that doesn't depend on anything surviving the
 /// recompile -- to find out when this has taken effect.
+///
+/// **User-identified crash hypothesis, now addressed here**: this bridge has hit
+/// multiple unexplained `EXCEPTION_ACCESS_VIOLATION` crashes deep inside Igor64.exe
+/// itself (confirmed via crash-dump analysis, see SESSION_NOTES.md) coinciding with
+/// COMPILEPROCEDURES, with no root cause ever identified. `igortest-tracing.ipf`'s own
+/// `CompileAndRestart()` runs the exact same RELOAD-CHANGED-PROCS/COMPILEPROCEDURES
+/// pair reliably, with no crashes ever observed -- the key structural difference
+/// (per direct user review) is that nothing else can call into Igor between
+/// `CompileAndRestart()` running and Igor itself firing `AfterCompiledHook`, whereas
+/// this bridge's ZeroMQ-XOP runs "a threaded message handler" (its own help file's
+/// wording, ZeroMQ.ihf) that keeps dispatching incoming CallFunction requests in the
+/// background regardless of what Igor's main thread is doing. If a new CallFunction
+/// request -- including this bridge's own compile-status polling, or any other tool
+/// call that happens to be in flight -- gets dispatched while Igor's main thread is
+/// mid-COMPILEPROCEDURES (tearing down and rebuilding its own internal
+/// compiled-function/symbol tables), that's a genuine cross-thread race on those very
+/// tables, and a bad-pointer read deep inside Igor64.exe (exactly what both crash dumps
+/// showed) is a very plausible symptom.
+///
+/// Fix: stop the ZeroMQ handler (`zeromq_handler_stop()`, queued via
+/// ZBR_StopHandlerBeforeRecompile so it runs only after THIS call's own reply has
+/// already gone out -- see that function's docstring) before RELOAD CHANGED
+/// PROCS/COMPILEPROCEDURES ever run, so nothing can be dispatched into Igor while
+/// it's mid-recompile. AfterCompiledHook's existing (unchanged, synchronous)
+/// ZBR_EnsureZeroMQBound() call restarts the handler once compilation has actually
+/// finished. This is a mitigation based on a well-reasoned but not 100%-certain
+/// mechanism (Igor64.exe ships no public symbols, so the exact fault can't be proven
+/// from here) -- see SESSION_NOTES.md for the full reasoning and its honest
+/// limitations.
 Function ZBR_SubmitReloadAndCompile()
 
+	Execute/P/Q/Z "ZBR#ZBR_StopHandlerBeforeRecompile()"
 	Execute/P/Q/Z "RELOAD CHANGED PROCS "
 	Execute/P/Q/Z "COMPILEPROCEDURES "
+
+	return 0
+End
+
+/// Stops this module's ZeroMQ message handler thread (zeromq_handler_stop()) -- queued
+/// as its own independent Execute/P entry by ZBR_SubmitReloadAndCompile, deliberately
+/// BEFORE RELOAD CHANGED PROCS/COMPILEPROCEDURES, so no new CallFunction request can be
+/// dispatched into Igor while it's mid-recompile. See ZBR_SubmitReloadAndCompile's own
+/// docstring for the full crash-hypothesis reasoning this targets.
+///
+/// Deliberately NOT called directly/synchronously from inside ZBR_SubmitReloadAndCompile
+/// itself -- that function's own invocation is, in the end, just another CallFunction
+/// request being served by the very same handler this stops. Queuing the stop via
+/// Execute/P instead guarantees it only actually runs after Igor has returned to idle,
+/// i.e. after THIS call's own reply has already been sent back over ZeroMQ -- avoiding
+/// any risk of the handler being stopped out from under its own in-flight response.
+///
+/// Does not call zeromq_stop() (which would tear down every ZeroMQ bind/connection for
+/// the whole Igor Pro instance, not just this module's own -- see ZBR_EnsureZeroMQBound's
+/// docstring for why that's avoided elsewhere too) -- zeromq_handler_stop() is the
+/// narrower, paired stop for zeromq_handler_start(), per ZeroMQ.ihf.
+Function ZBR_StopHandlerBeforeRecompile()
+
+	variable err
+
+	zeromq_handler_stop(); err = GetRTError(1)
 
 	return 0
 End
@@ -733,7 +789,7 @@ Function/S ZBR_ReadHelpFile(string filePath, string tmpHtmlPath)
 	endif
 
 	restoreFailures = ""
-	n = ItemsInList(helpAll)
+	n               = ItemsInList(helpAll)
 	for(i = 0; i < n; i += 1)
 		name         = StringFromList(i, helpAll)
 		resolvedPath = ZBR_ResolveHelpFilePath(name)
@@ -779,6 +835,14 @@ End
 /// later line would risk popping the Debugger window here, which -- same as every other
 /// popup this session has hit -- has no scriptable dismissal and would hang unattended
 /// operation.
+///
+/// Called synchronously and directly from AfterCompiledHook (not deferred) -- confirmed
+/// via user review that this part of the design is fine as-is. See
+/// ZBR_StopHandlerBeforeRecompile's docstring instead for the actual fix targeting the
+/// crashes this bridge has hit coinciding with COMPILEPROCEDURES: the real hazard is on
+/// the OTHER side of the recompile window (a live ZeroMQ handler thread able to dispatch
+/// a new CallFunction request WHILE Igor is mid-recompile), not anything happening here
+/// after compilation has already finished successfully.
 static Function ZBR_EnsureZeroMQBound()
 
 	variable err
@@ -805,7 +869,13 @@ static Function AfterCompiledHook()
 
 	// Make this module's ZeroMQ server listen again immediately after every compile --
 	// the whole point of running this from AfterCompiledHook rather than requiring a
-	// separate manual step each time the code changes.
+	// separate manual step each time the code changes. Called directly/synchronously
+	// (not deferred) -- confirmed via user review that this is fine: by the time
+	// AfterCompiledHook runs, compilation has already finished successfully, so there
+	// is nothing left to race against here. See ZBR_StopHandlerBeforeRecompile's
+	// docstring for the actual fix targeting this bridge's COMPILEPROCEDURES-adjacent
+	// crashes -- the real hazard is upstream of this point (a live handler able to
+	// dispatch a new CallFunction request while Igor is still mid-recompile).
 	ZBR_EnsureZeroMQBound()
 
 	// Bare Variable/G (no initializer) is safe to call unconditionally: per Igor

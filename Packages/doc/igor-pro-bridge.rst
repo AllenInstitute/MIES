@@ -405,12 +405,31 @@ Available tools
   errors (the bridge briefly unable to reach Igor mid-recompile) are treated as "not
   ready yet" rather than fatal. If compilation still isn't confirmed after the poll
   times out, this automatically makes one attempt to dismiss a possible stuck
-  compile-error dialog (see ``dismiss_compile_error_dialog``). **Caution**: on more
-  than one occasion during this bridge's development (both under the COM transport
-  and, circumstantially, still suspected under ZeroMQ), Igor Pro became unreachable
-  shortly after a reload/compile attempt -- root cause unconfirmed; treat any failure
-  on a subsequent call as a signal to check ``check_bridge_health()`` and be prepared
-  to relaunch Igor Pro. See ``SESSION_NOTES.md`` for the ongoing investigation.
+  compile-error dialog (see ``dismiss_compile_error_dialog``). **Caution, carried
+  over from the COM-based version**: Igor Pro has been observed becoming
+  unreachable shortly after a reload/compile attempt on more than one occasion
+  during this bridge's development (crashed or was closed). As of **v2.3.0**,
+  crash-dump analysis (two ``.dmp`` files, parsed with Python's ``minidump``
+  package) traced this to a genuine ``EXCEPTION_ACCESS_VIOLATION`` deep inside
+  ``Igor64.exe`` itself, not this bridge's own code, and a likely mechanism was
+  identified by comparing against this repo's own ``igortest-tracing.ipf``
+  (whose ``CompileAndRestart()``/``AfterCompiledHook()`` pattern never crashes):
+  this bridge's ZeroMQ-XOP handler runs as a background thread that keeps
+  dispatching incoming ``CallFunction`` requests regardless of what Igor's main
+  thread is doing, so a request arriving while ``COMPILEPROCEDURES`` is
+  mid-rebuild of Igor's own internal function/symbol tables is a plausible
+  cross-thread race. v2.3.0 mitigates this by stopping the ZeroMQ handler
+  (``zeromq_handler_stop()``, via ``ZBR_StopHandlerBeforeRecompile``) before
+  ``RELOAD CHANGED PROCS``/``COMPILEPROCEDURES`` run, and restarting it only
+  after compilation finishes (the existing ``AfterCompiledHook`` ->
+  ``ZBR_EnsureZeroMQBound()`` call, unchanged). This is a well-reasoned
+  mitigation, not a proven fix -- ``Igor64.exe`` ships no public symbols, so the
+  exact fault can't be confirmed from here, and the crash was already
+  rare/nondeterministic. Confirmed live afterward, including three concurrent
+  ``reload_and_compile_procedures()`` calls as a stress test with no crash. If a
+  tool call after this one starts failing anyway, check
+  ``check_bridge_health()`` and be prepared for Igor Pro to need relaunching.
+  See ``SESSION_NOTES.md`` for the full investigation.
 
 ``dismiss_compile_error_dialog()``
   Attempts to close a stuck Igor Pro dialog by posting a simulated Escape key press
@@ -816,16 +835,21 @@ Known limitations
   session running on the same Windows machine as Igor Pro, not from a cloud/sandboxed
   session.
 - **Observed on more than one occasion during this bridge's development (both under
-  the v1.x COM transport, and circumstantially suspected under v2.0.0's ZeroMQ
-  transport), root cause unconfirmed**: Igor Pro became unreachable (crashed or was
-  closed) shortly after a ``reload_and_compile_procedures`` call. It isn't established
-  whether this is related to the bridge's own actions (either transport) or a
-  pre-existing Igor Pro stability issue independent of both -- fresh Igor Pro launches
-  followed by ordinary (non-reload/compile) tool calls have never reproduced it in this
-  bridge's development, which is circumstantial evidence pointing away from the new
-  ZeroMQ code specifically, but is not conclusive. Treat any unreachability after a
-  compile attempt as a signal to check ``check_bridge_health()`` and be prepared to
-  relaunch Igor Pro. See ``SESSION_NOTES.md`` for the full, ongoing investigation.
+  the v1.x COM transport and v2.0.0's ZeroMQ transport)**: Igor Pro became unreachable
+  (crashed or was closed) shortly after a ``reload_and_compile_procedures`` call. As
+  of **v2.3.0**, this was traced via crash-dump analysis to a genuine
+  ``EXCEPTION_ACCESS_VIOLATION`` inside ``Igor64.exe`` itself, with a likely
+  mechanism identified (confirmed correct by the repo owner's comparison against
+  ``igortest-tracing.ipf``'s crash-free ``CompileAndRestart()``/``AfterCompiledHook()``
+  pattern): the ZeroMQ-XOP's background message-handler thread dispatching a
+  ``CallFunction`` request while Igor's main thread is mid-``COMPILEPROCEDURES``,
+  racing on Igor's own internal function/symbol tables. v2.3.0 mitigates this by
+  stopping the handler before reload/compile and restarting it only after
+  compilation finishes -- see the ``reload_and_compile_procedures()`` reference entry
+  above for the full mechanism and the caveat that this is a mitigation, not a
+  proven fix. Treat any unreachability after a compile attempt as a signal to check
+  ``check_bridge_health()`` and be prepared to relaunch Igor Pro. See
+  ``SESSION_NOTES.md`` for the full investigation.
 
 .. _igor_pro_bridge_v1_history:
 
