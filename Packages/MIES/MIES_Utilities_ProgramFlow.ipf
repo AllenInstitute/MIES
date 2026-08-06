@@ -39,12 +39,42 @@ threadsafe Function AssertOnAndClearRTError()
 	string   msg
 	variable err
 
-	msg = GetRTErrMessage()
-	err = ClearRTError()
+	[err, msg] = GetAndClearRTError()
 
 	if(err)
-		BUG_TS("Encountered pending RTE: " + num2istr(err) + ", " + msg)
+		if(IsFunctionCalledRecursively())
+			return NaN
+		endif
+		sprintf msg, "Encountered pending RTE: %d, %s\r%s", err, msg, GetVerboseMIESState_TS()
+		BUG_TS(msg)
 	endif
+End
+
+/// @brief Entry-point guard for functional MIES subsystems/modules.
+///
+/// UTF_NOINSTRUMENTATION
+Function PerformSubsystemEntry()
+
+	string   msg
+	variable err
+
+	[err, msg] = GetAndClearRTError()
+
+	if(err)
+		if(IsFunctionCalledRecursively())
+			return NaN
+		endif
+		sprintf msg, "Encountered pending RTE: %d, %s\r%s", err, msg, GetVerboseMIESState()
+		BUG(msg)
+	endif
+End
+
+/// @brief Entry-point guard for functional MIES subsystems/modules (threadsafe).
+///
+/// UTF_NOINSTRUMENTATION
+threadsafe Function PerformSubsystemEntry_TS()
+
+	AssertOnAndClearRTError()
 End
 
 /// @brief Helper function to unconditionally clear a RTE condition
@@ -55,6 +85,15 @@ End
 threadsafe Function ClearRTError()
 
 	return GetRTError(1)
+End
+
+/// @brief Returns err and msg of a RTE
+threadsafe static Function [variable err, string msg] GetAndClearRTError()
+
+	msg = GetRTErrMessage()
+	err = ClearRTError()
+
+	return [err, msg]
 End
 
 /// @brief Return true if the calling function is called recursively, i.e. it

@@ -44,7 +44,10 @@ Function ASYNC_Start(variable numThreads, [variable disableTask])
 
 	variable i
 
+	PerformSubsystemEntry()
+
 	DFREF dfr = GetAsyncHomeDF()
+
 	if(ASYNC_IsASYNCRunning())
 		return 0
 	endif
@@ -173,6 +176,9 @@ Function ASYNC_ThreadReadOut()
 	variable wlcIndex, statCnt, index
 	string                     msg
 	STRUCT ASYNC_ReadOutStruct ar
+
+	PerformSubsystemEntry()
+
 	NVAR tgID = $GetThreadGroupID()
 	ASSERT(!isNaN(tgID), "Async frame work is not running")
 	WAVE/DF DFREFbuffer = GetDFREFBuffer(getAsyncHomeDF())
@@ -276,6 +282,8 @@ Function ASYNC_IsWorkloadClassDone(string workloadClass, [variable removeClass])
 
 	variable done, index
 
+	PerformSubsystemEntry()
+
 	if(IsEmpty(workloadClass))
 		return NaN
 	endif
@@ -303,6 +311,8 @@ End
 Function ASYNC_WaitForWLCToFinishAndRemove(string workloadClass, variable timeout)
 
 	variable result
+
+	PerformSubsystemEntry()
 
 	timeout += datetime
 	for(;;)
@@ -347,6 +357,8 @@ Function ASYNC_AddParam(DFREF dfr, [WAVE w, variable var, string str, variable m
 
 	variable paramCnt
 	string   paramName
+
+	PerformSubsystemEntry()
 
 	ASSERT(ASYNC_isThreadDF(dfr), "Invalid data folder or not a thread data folder")
 	DFREF dfrInp = dfr:input
@@ -424,6 +436,8 @@ Function ASYNC_Stop([variable timeout, variable fromAssert])
 
 	variable i, endtime, waitResult, localtgID, outatime, err, doe, d
 	variable inputCount, outputCount
+
+	PerformSubsystemEntry()
 
 	if(!ASYNC_IsASYNCRunning())
 		return 2
@@ -549,6 +563,8 @@ End
 /// @return data folder for thread, where parameters can be put to with :cpp:func:`ASYNC_AddParam`
 Function/DF ASYNC_PrepareDF(string WorkerFunc, string ReadOutFunc, string workloadClass, [variable inOrder])
 
+	PerformSubsystemEntry()
+
 	ASSERT(!IsEmpty(workloadClass), "No work load class string specified")
 	ASSERT(IsValidObjectName(workloadClass), "Work load class name does not follow strict object naming rules")
 	FUNCREF ASYNC_Worker fw = $WorkerFunc
@@ -587,6 +603,8 @@ Function ASYNC_Execute(DFREF dfr)
 
 	variable orderIndex, size, index
 	string dest
+
+	PerformSubsystemEntry()
 
 	ASSERT(ASYNC_IsThreadDF(dfr), "Invalid data folder or not a thread data folder")
 	NVAR tgID = $GetThreadGroupID()

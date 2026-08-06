@@ -1896,6 +1896,8 @@ End
 
 Function AB_FreeWorkingDFs(WAVE/T relativeDFPaths, variable actualSize)
 
+	PerformSubsystemEntry()
+
 	AB_FreeOrAllocWorkingDF(relativeDFPaths, actualSize, 1)
 End
 
@@ -1927,6 +1929,8 @@ End
 Function AB_LoadStimsetForSweep(string device, variable index, variable sweep)
 
 	string dataFolder, discLocation, fileType
+
+	PerformSubsystemEntry()
 
 	WAVE/T map = GetAnalysisBrowserMap()
 
@@ -2789,7 +2793,11 @@ Function/S AB_OpenAnalysisBrowser([variable restoreSettings])
 
 	variable oldFolderListSize, i
 	string workingDF
-	string panel = AB_GetPanelName()
+	string panel
+
+	PerformSubsystemEntry()
+
+	panel = AB_GetPanelName()
 
 	restoreSettings = ParamisDefault(restoreSettings) ? 1 : !!restoreSettings
 
@@ -2859,6 +2867,8 @@ End
 Function AB_BrowserStartupSettings()
 
 	string panel
+
+	PerformSubsystemEntry()
 
 	panel = AB_GetPanelName()
 
@@ -3314,6 +3324,8 @@ Function/S AB_GetSweepBrowserTitles()
 	string wName
 	string sbList = ""
 
+	PerformSubsystemEntry()
+
 	WAVE/T wList = ListToTextWave(WinList(SWEEPBROWSER_WINDOW_NAME + "*", ";", "WIN:1"), ";")
 	for(wName : wList)
 		GetWindow $wName, title
@@ -3334,6 +3346,8 @@ Function/S AB_GetSweepBrowserListForPopup()
 End
 
 Function/S AB_GetSweepBrowserWindowFromTitle(string winTitle)
+
+	PerformSubsystemEntry()
 
 	WAVE/T wList = ListToTextWave(WinList(SWEEPBROWSER_WINDOW_NAME + "*", ";", "WIN:1"), ";")
 	for(wName : wList)
@@ -4000,6 +4014,8 @@ End
 /// @returns list of stimsets
 Function/S AB_GetStimsetFromPanel(string device, variable sweep)
 
+	PerformSubsystemEntry()
+
 	WAVE   numericalValues = GetLBNumericalValues(device)
 	WAVE/T textualValues   = GetLBTextualValues(device)
 
@@ -4087,6 +4103,8 @@ End
 Function AB_OnCloseSweepBrowserUpdatePopup(string closingSweepBrowser)
 
 	string sbTitle, sbWin
+
+	PerformSubsystemEntry()
 
 	if(!WindowExists(ANALYSIS_BROWSER_NAME))
 		return NaN

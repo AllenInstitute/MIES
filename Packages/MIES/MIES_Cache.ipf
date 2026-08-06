@@ -605,6 +605,8 @@ threadsafe Function CA_StoreEntryIntoCache(string key, WAVE/Z val, [variable opt
 
 	variable index, storeDuplicate, foundIndex
 
+	PerformSubsystemEntry_TS()
+
 #ifdef WAVECACHE_DISABLED
 	return NaN
 #endif // WAVECACHE_DISABLED
@@ -702,6 +704,8 @@ threadsafe Function [WAVE entry, variable found] CA_TryFetchingEntryFromCacheWit
 
 	variable index, returnDuplicate
 
+	PerformSubsystemEntry_TS()
+
 #ifdef WAVECACHE_DISABLED
 	return [$"", 0]
 #endif // WAVECACHE_DISABLED
@@ -752,6 +756,8 @@ End
 /// @return One if it could be found and deleted, zero otherwise
 Function CA_DeleteCacheEntry(string key)
 
+	PerformSubsystemEntry()
+
 	WAVE/WAVE keys = GetCacheKeyHashMap()
 
 	variable index = CA_GetCacheIndex(keys, key)
@@ -781,6 +787,8 @@ End
 /// @brief Remove all entries from the wave cache
 Function CA_FlushCache()
 
+	PerformSubsystemEntry()
+
 	KillOrMoveToTrash(dfr = GetCacheFolder())
 End
 
@@ -789,6 +797,8 @@ Function CA_OutputCacheStatistics()
 
 	variable numEntries, i, size, idx
 	string key, modTime, str, msg
+
+	PerformSubsystemEntry()
 
 	WAVE/WAVE keys    = GetCacheKeyHashMap()
 	WAVE/Z/T  allKeys = HM_GetAllKeys(keys)
@@ -833,6 +843,8 @@ Function CA_Compactify()
 
 	string key
 	variable index, numEntries, i, newIndex
+
+	PerformSubsystemEntry()
 
 	DFREF dfr = GetCacheFolder()
 

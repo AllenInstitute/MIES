@@ -35,6 +35,8 @@ Function/WAVE SFE_ExecuteFormula(string formula, string graph, [variable singleR
 	STRUCT SF_ExecutionData exd
 	variable jsonId, srcLocId
 
+	PerformSubsystemEntry()
+
 	exd.graph = graph
 
 	singleResult = ParamIsDefault(singleResult) ? 0 : !!singleResult
@@ -97,6 +99,8 @@ Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode, [var
 	STRUCT SF_ExecutionData exd
 	variable i, numAssignments, jsonId, srcLocId, line, offset
 	string code, sfWin, nbText
+
+	PerformSubsystemEntry()
 
 	allowEmptyCode = ParamisDefault(allowEmptyCode) ? 0 : !!allowEmptyCode
 	newFrame       = ParamisDefault(newFrame) ? 0 : !!newFrame

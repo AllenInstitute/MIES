@@ -57,6 +57,8 @@ EndStructure
 // returns jsonID or Aborts is not successful
 Function [variable jsonid, variable srcLocId] SFP_ParseFormulaToJSON(string formula)
 
+	PerformSubsystemEntry()
+
 	WAVE/T assertData = GetSFAssertData()
 	assertData[%FORMULA] = formula
 	NVAR trackParserBufferOffset = $GetSweepFormulaBufferOffsetTracker()

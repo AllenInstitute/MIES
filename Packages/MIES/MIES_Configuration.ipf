@@ -278,6 +278,8 @@ Function CONF_OpenConfigInNotebook()
 	variable i, numFiles
 	string path, name
 
+	PerformSubsystemEntry()
+
 	WAVE/Z/T rawFileList = CONF_GetConfigFiles()
 
 	if(!WaveExists(rawFileList))
@@ -330,6 +332,8 @@ Function CONF_AutoLoader([string customIPath])
 
 	variable i, numFiles
 	string rigCandidate, pattern
+
+	PerformSubsystemEntry()
 
 	if(ParamIsDefault(customIPath))
 		WAVE/Z/T rawFileList = CONF_GetConfigFiles()
@@ -411,7 +415,8 @@ Function CONF_SaveWindow(string fName)
 	variable i, jsonID, saveMask, saveResult
 	string out, wName, errMsg
 
-	AssertOnAndClearRTError()
+	PerformSubsystemEntry()
+
 	try
 		wName = GetMainWindow(GetCurrentWindow())
 		if(!CmpStr(wName, "HistoryCarbonCopy"))
@@ -455,6 +460,8 @@ Function CONF_RestoreWindow(string fName, [string rigFile])
 
 	variable jsonID, restoreMask
 	string input, wName, errMsg, fullFilePath, panelType
+
+	PerformSubsystemEntry()
 
 	rigFile = SelectString(ParamIsDefault(rigFile), rigFile, "")
 
@@ -592,7 +599,11 @@ End
 Function CONF_PrimeDeviceLists(string device)
 
 	variable hardwareType
-	string emptyDevList = DAP_GetEmptyDeviceList()
+	string   emptyDevList
+
+	PerformSubsystemEntry()
+
+	emptyDevList = DAP_GetEmptyDeviceList()
 
 	SVAR globalITCDeviceList = $GetITCDeviceList()
 	SVAR globalNIDeviceList  = $GetNIDeviceList()
@@ -644,7 +655,8 @@ Function/S CONF_RestoreDAEphys(variable jsonID, string fullFilePath, [variable m
 	string AmpSerialLocal, AmpTitleLocal, deviceToRecreate, StimSetPath, path, filename, rStateSync
 	string input = ""
 
-	AssertOnAndClearRTError()
+	PerformSubsystemEntry()
+
 	try
 		middleOfExperiment = ParamIsDefault(middleOfExperiment) ? 0 : !!middleOfExperiment
 		forceNewPanel      = ParamIsDefault(forceNewPanel) ? 0 : !!forceNewPanel
@@ -1073,7 +1085,8 @@ Function/S CONF_JSONToWindow(string wName, variable restoreMask, variable jsonID
 	variable arrayNameIndex, wType
 	string ctrlName, niceName, arrayName, ctrlList, wList, uData, winHandle, jsonCtrlGroupPath, subWinTarget, str, errMsg
 
-	AssertOnAndClearRTError()
+	PerformSubsystemEntry()
+
 	try
 		ASSERT(WinType(wName), "Window " + wName + " does not exist!")
 		ASSERT(restoreMask & (EXPCONFIG_SAVE_VALUE | EXPCONFIG_SAVE_POSITION | EXPCONFIG_SAVE_USERDATA | EXPCONFIG_SAVE_DISABLED | EXPCONFIG_SAVE_CTRLTYPE), "No property class enabled to restore in restoreMask.")
@@ -1492,7 +1505,8 @@ Function CONF_AllWindowsToJSON(string wName, variable saveMask, [string excCtrlT
 	string wList, curWinName, errMsg
 	variable i, numWins, jsonID, jsonIDWin
 
-	AssertOnAndClearRTError()
+	PerformSubsystemEntry()
+
 	try
 		excCtrlTypes = SelectString(ParamIsDefault(excCtrlTypes), excCtrlTypes, "")
 
@@ -1599,7 +1613,8 @@ Function CONF_WindowToJSON(string wName, variable saveMask, [string excCtrlTypes
 	variable numCtrl, i, j, jsonID, numCoupled, setRadioPos, ctrlType, coupledCnt, numUniqueCtrlArray, numDupCheck
 	variable rbcIndex, wType
 
-	AssertOnAndClearRTError()
+	PerformSubsystemEntry()
+
 	try
 		excCtrlTypes = SelectString(ParamIsDefault(excCtrlTypes), excCtrlTypes, "")
 		wType        = WinType(wName)
@@ -2506,6 +2521,8 @@ Function CONF_Position_MCC_Win(string serialNum, string winTitle, string winPosi
 	string cmd, fullPath, cmdPath
 	variable w
 
+	PerformSubsystemEntry()
+
 	if(cmpstr(winPosition, NONE) == 0)
 		return 0
 	endif
@@ -2696,6 +2713,8 @@ Function CONF_UpdatePackageSettingsFromConfigFiles(variable jsonIdPkg)
 
 	string fName, input, fullFilePath, globalSettingsPath
 	variable jsonIdConf
+
+	PerformSubsystemEntry()
 
 	WAVE/Z/T configFiles = CONF_GetConfigFiles()
 	if(WaveExists(configFiles))

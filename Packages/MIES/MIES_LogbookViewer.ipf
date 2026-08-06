@@ -22,15 +22,21 @@ static StrConstant LBV_UD_YAXIS       = "yaxis"
 
 Function/S LBV_GetSettingsHistoryPanel(string win)
 
+	PerformSubsystemEntry()
+
 	return GetMainWindow(win) + "#" + EXT_PANEL_SETTINGSHISTORY
 End
 
 Function/S LBV_GetLabNoteBookGraph(string win)
 
+	PerformSubsystemEntry()
+
 	return LBV_GetSettingsHistoryPanel(win) + "#Labnotebook"
 End
 
 Function/S LBV_GetDescriptionNotebook(string win)
+
+	PerformSubsystemEntry()
 
 	return LBV_GetSettingsHistoryPanel(win) + "#Description"
 End
@@ -93,6 +99,8 @@ End
 Function/WAVE LBV_GetAllLogbookParamNames(WAVE/Z/T textualValues, WAVE/Z/T numericalValues)
 
 	string key
+
+	PerformSubsystemEntry()
 
 	if(!WaveExists(textualValues) && !WaveExists(numericalValues))
 		return $""
@@ -328,6 +336,8 @@ End
 
 Function/S LBV_GetExperiments(string win)
 
+	PerformSubsystemEntry()
+
 	if(BSP_IsDataBrowser(win))
 		return NONE + ";" + GetExperimentName()
 	endif
@@ -339,7 +349,11 @@ Function/S LBV_GetAllDevicesForExperiment(string win)
 
 	string dataFolder, shPanel, device
 	variable index
-	string emptyDevList = DAP_GetEmptyDeviceList()
+	string   emptyDevList
+
+	PerformSubsystemEntry()
+
+	emptyDevList = DAP_GetEmptyDeviceList()
 
 	if(BSP_IsDataBrowser(win))
 		device = BSP_GetDevice(win)
@@ -374,6 +388,8 @@ End
 Function LBV_ClearGraph(string win)
 
 	string graph, descNB
+
+	PerformSubsystemEntry()
 
 	graph = LBV_GetLabNoteBookGraph(win)
 	if(!WindowExists(graph))
@@ -597,6 +613,8 @@ End
 
 Function LBV_Update(string win)
 
+	PerformSubsystemEntry()
+
 	LBV_LimitXRangeToSelected(win)
 End
 
@@ -604,6 +622,8 @@ Function LBV_UpdateTagsForTextualLBNEntries(string win, variable sweepNo)
 
 	string lbGraph, traceList, key, trace
 	variable i, numTraces
+
+	PerformSubsystemEntry()
 
 	lbGraph = LBV_GetLabNotebookGraph(win)
 
@@ -1007,6 +1027,8 @@ End
 Function LBV_SelectExperimentAndDevice(string win)
 
 	string experiments, devices, shPanel
+
+	PerformSubsystemEntry()
 
 	shPanel = LBV_GetSettingsHistoryPanel(win)
 

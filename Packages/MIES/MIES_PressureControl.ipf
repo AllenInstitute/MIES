@@ -61,6 +61,8 @@ Function P_PressureControl(string device)
 
 	variable headStage, manPressureAll
 
+	PerformSubsystemEntry()
+
 	if(DAP_DeviceIsUnlocked(device))
 		return NaN
 	endif
@@ -672,6 +674,8 @@ End
 /// @param pressureMode One of the pressure modes defined in @ref PRESSURE_CONSTANTS
 Function P_GetUserAccess(string device, variable headStage, variable pressureMode)
 
+	PerformSubsystemEntry()
+
 	WAVE pressureDataWv = P_GetPressureDataWaveRef(device)
 
 	if(PressureDataWv[0][%UserSelectedHeadStage] == headStage) // does the slider selected headstage match the headstage being passed
@@ -730,6 +734,9 @@ End
 Function P_SetPressureValves(string device, variable headStage, variable Access)
 
 	variable ONorOFFA, ONorOFFB
+
+	PerformSubsystemEntry()
+
 	WAVE pressureDataWv = P_GetPressureDataWaveRef(device)
 	switch(Access)
 		case ACCESS_ATM:
@@ -875,7 +882,11 @@ End
 Function P_UpdatePressureDataStorageWv(string device) /// @todo Needs to be reworked for specific controls and allow the value to be directly passed in with an optional parameter
 
 	variable idx
-	variable settingHS      = GetPopupMenuIndex(device, "Popup_Settings_HeadStage") // get the active headstage
+	variable settingHS
+
+	PerformSubsystemEntry()
+
+	settingHS = GetPopupMenuIndex(device, "Popup_Settings_HeadStage") // get the active headstage
 	WAVE     PressureDataWv = P_GetPressureDataWaveRef(device)
 	variable userHS         = PressureDataWv[settingHS][%UserSelectedHeadStage]
 
@@ -914,6 +925,9 @@ End
 Function P_UpdatePressureControls(string device, variable headStageNo)
 
 	variable ttl
+
+	PerformSubsystemEntry()
+
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(device)
 
 	P_UpdatePopupDevices(device, headStageNo)
@@ -1137,6 +1151,8 @@ End
 Function P_NI_StopDAQ(string device, variable headStage)
 
 	variable hwType, deviceID, TTL
+
+	PerformSubsystemEntry()
 
 	WAVE pressureDataWv = P_GetPressureDataWaveRef(device)
 	hwType   = pressureDataWv[headStage][%HW_DAC_Type]
@@ -1481,6 +1497,8 @@ End
 /// @brief Updates the pressure mode button state in the DA_Ephys Data Acq tab
 Function P_UpdatePressureMode(string device, variable pressureMode, string pressureControlName, variable checkALL)
 
+	PerformSubsystemEntry()
+
 	WAVE     PressureDataWv    = P_GetPressureDataWaveRef(device)
 	variable headStageNo       = PressureDataWv[0][%UserSelectedHeadStage]
 	variable SavedPressureMode = PressureDataWv[headStageNo][%Approach_Seal_BrkIn_Clear]
@@ -1572,6 +1590,8 @@ Function P_SetPressureOffset(string device, variable headstage, variable userOff
 
 	variable method, val
 
+	PerformSubsystemEntry()
+
 	WAVE pressureDataWv = P_GetPressureDataWaveRef(device)
 
 	if(headstage < 0 || headstage >= NUM_headstageS)
@@ -1630,6 +1650,8 @@ Function P_InitBeforeTP(string device)
 
 	variable headstage
 
+	PerformSubsystemEntry()
+
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(device)
 	headstage = PressureDataWv[0][%UserSelectedHeadStage]
 	P_ResetPressureData(device)
@@ -1641,6 +1663,8 @@ End
 Function P_LoadPressureButtonState(string device)
 
 	variable headStageNo
+
+	PerformSubsystemEntry()
 
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(device)
 	// value is equal for all rows
@@ -1710,6 +1734,8 @@ End
 ///@brief updates the tablabels for the pressure tabControl according to the pressure mode
 Function P_UpdatePressureModeTabs(string device, variable headStage)
 
+	PerformSubsystemEntry()
+
 	WAVE     pressureWave  = P_GetPressureDataWaveRef(device)
 	variable pressureMode  = PressureWave[headStage][%Approach_Seal_BrkIn_Clear]
 	string   highlightSpec = "\\f01\\Z11"
@@ -1734,6 +1760,8 @@ End
 ///
 /// @returns 1 if all settings are valid, 0 otherwise
 Function P_ValidatePressureSetHeadstage(string device, variable headStageNo)
+
+	PerformSubsystemEntry()
 
 	WAVE   PressureDataWv    = P_GetPressureDataWaveRef(device)
 	WAVE/T PressureDataTxtWv = P_PressureDataTxtWaveRef(device)
@@ -1857,6 +1885,9 @@ Function P_PressureDisplayHighlite(string device, variable hilite)
 
 	variable RGB
 	string Zero, Low, High
+
+	PerformSubsystemEntry()
+
 	if(hilite)
 		Zero = ZERO_COLOR_HILITE
 		Low  = LOW_COLOR_HILITE
@@ -1990,11 +2021,14 @@ End
 /// @brief Disables devices for all locked DA_Ephys panels. Sets the correct pressure button state for all locked DA_Ephys panels.
 Function P_Disable()
 
-	string ListOfLockedDA_Ephys = GetListOfLockedDevices()
+	string ListOfLockedDA_Ephys
 	variable i, numPressureDevices, numLocked
 	string lockedDevice, listOfPressureCtrlDevices, device
 
-	numLocked = ItemsInList(ListOfLockedDA_Ephys)
+	PerformSubsystemEntry()
+
+	ListOfLockedDA_Ephys = GetListOfLockedDevices()
+	numLocked            = ItemsInList(ListOfLockedDA_Ephys)
 	for(i = 0; i < numLocked; i += 1)
 		lockedDevice              = StringFromList(i, ListOfLockedDA_Ephys)
 		listOfPressureCtrlDevices = P_GetListOfPressureCtrlDevices(lockedDevice)
@@ -2055,6 +2089,8 @@ End
 ///
 Function P_SaveUserSelectedHeadstage(string device, variable headStage)
 
+	PerformSubsystemEntry()
+
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(device)
 	PressureDataWv[][%UserSelectedHeadStage] = headStage
 End
@@ -2062,6 +2098,8 @@ End
 /// @brief Sets all headstage to atmospheric pressure
 ///
 Function P_SetAllHStoAtmospheric(string device)
+
+	PerformSubsystemEntry()
 
 	DFREF dfr = P_DeviceSpecificPressureDFRef(device)
 	WAVE/Z/SDFR=dfr PressureData
@@ -2078,6 +2116,8 @@ End
 ///
 Function P_GetPressureMethod(string device, variable headStage)
 
+	PerformSubsystemEntry()
+
 	return P_GetPressureDataWaveRef(device)[headStage][%Approach_Seal_BrkIn_Clear]
 End
 
@@ -2089,6 +2129,8 @@ End
 /// @param pressureMode One of the pressure modes defined in @ref PressureModeConstants
 /// @param pressure [optional, ignored by default. Sets pressure of manual mode]
 Function P_SetPressureMode(string device, variable headStage, variable pressureMode, [variable pressure])
+
+	PerformSubsystemEntry()
 
 	ASSERT(IsValidHeadstage(headStage), "Select headstage number between 0 and 7")
 	ASSERT(pressureMode >= PRESSURE_METHOD_ATM && pressureMode <= PRESSURE_METHOD_MANUAL, "Select a pressure mode between -1 and 4")
@@ -2193,6 +2235,8 @@ End
 
 /// @brief Handles the TP depency of the Manual pressure application
 Function P_SetManual(string device, string cntrlName)
+
+	PerformSubsystemEntry()
 
 	P_UpdatePressureMode(device, PRESSURE_METHOD_MANUAL, cntrlName, 1)
 	P_RunP_ControlIfTPOFF(device)
@@ -2436,6 +2480,8 @@ End
 /// @brief Runs P_PressureControl if the TP is OFF
 Function P_RunP_ControlIfTPOFF(string device)
 
+	PerformSubsystemEntry()
+
 	if(!TP_CheckIfTestpulseIsRunning(device)) // P_PressureControl will be called from TP functions when the TP is running
 		P_PressureControl(device)
 	endif
@@ -2444,6 +2490,8 @@ End
 /// @brief If auto-user-OFF is checked, then user access is turned off
 /// this function is run by the active headstage slider control
 Function P_GetAutoUserOff(string device)
+
+	PerformSubsystemEntry()
 
 	WAVE pressureDataWv = P_GetPressureDataWaveRef(device)
 
@@ -2485,6 +2533,8 @@ Function P_UpdatePressureType(string device)
 
 	variable headstage
 
+	PerformSubsystemEntry()
+
 	WAVE pressureType   = GetPressureTypeWv(device)
 	WAVE pressureDataWv = P_GetPressureDataWaveRef(device)
 	// Encode atm pressure mode
@@ -2501,6 +2551,8 @@ Function P_UpdatePressureType(string device)
 End
 
 Function/S P_PressureMethodToString(variable method)
+
+	PerformSubsystemEntry()
 
 	switch(method)
 		case PRESSURE_METHOD_ATM:

@@ -52,6 +52,8 @@ Function/WAVE WB_CreateAndGetStimSet(string setName)
 
 	variable type, needToCreateStimSet
 
+	PerformSubsystemEntry()
+
 	if(isEmpty(setName))
 		return $""
 	endif
@@ -93,6 +95,8 @@ Function/S WB_GetParameterWaveName(string stimset, variable type, [variable nwbF
 
 	string shortname, fullname
 
+	PerformSubsystemEntry()
+
 	if(ParamIsDefault(nwbFormat))
 		nwbFormat = 0
 	else
@@ -116,6 +120,8 @@ End
 Function/WAVE WB_GetWaveParamForSet(string setName)
 
 	variable type
+
+	PerformSubsystemEntry()
 
 	type = WB_GetStimSetType(setName)
 
@@ -141,6 +147,8 @@ Function/WAVE WB_GetWaveTextParamForSet(string setName)
 
 	variable type
 
+	PerformSubsystemEntry()
+
 	type = WB_GetStimSetType(setName)
 
 	if(type == CHANNEL_TYPE_UNKNOWN)
@@ -164,6 +172,8 @@ End
 Function/WAVE WB_GetSegWvTypeForSet(string setName)
 
 	variable type
+
+	PerformSubsystemEntry()
 
 	type = WB_GetStimSetType(setName)
 
@@ -309,6 +319,8 @@ Function WB_GetStimsetChecksum(WAVE stimset, string setName, variable dataAcqOrT
 
 	variable crc
 
+	PerformSubsystemEntry()
+
 	if(dataAcqOrTP == TEST_PULSE_MODE)
 		return NaN
 	endif
@@ -368,6 +380,8 @@ End
 
 /// @brief Return the current stimset wave for the wavebuilder
 Function/WAVE WB_GetStimSetForWaveBuilder()
+
+	PerformSubsystemEntry()
 
 	return WB_GetStimSet()
 End
@@ -544,6 +558,8 @@ End
 Function WB_GetDeltaDimLabel(WAVE wv, variable index, STRUCT DeltaControlNames &s)
 
 	string name
+
+	PerformSubsystemEntry()
 
 	if(index >= DimSize(wv, ROWS))
 		InitDeltaControlNames(s)
@@ -1095,6 +1111,8 @@ Function WB_GetITI(WAVE stimset, variable sweep)
 
 	variable ITI
 
+	PerformSubsystemEntry()
+
 	// per sweep ITI
 	ITI = WB_GetWaveNoteEntryAsNumber(note(stimset), SWEEP_ENTRY, key = "ITI", sweep = sweep)
 
@@ -1225,6 +1243,8 @@ End
 
 /// @brief Check if the given frequency is a valid setting for the noise epoch
 Function WB_IsValidCutoffFrequency(variable freq)
+
+	PerformSubsystemEntry()
 
 	return WB_IsValidScaledCutoffFrequency(freq / WAVEBUILDER_MIN_SAMPINT_HZ)
 End
@@ -1548,6 +1568,8 @@ End
 /// @brief Convert the stringified epoch type to a numerical one
 Function WB_ToEpochType(string epochTypeStr)
 
+	PerformSubsystemEntry()
+
 	strswitch(epochTypeStr)
 		case "Square pulse":
 			return EPOCH_TYPE_SQUARE_PULSE
@@ -1633,6 +1655,8 @@ Function/S WB_GetWaveNoteEntry(string text, variable entryType, [string key, var
 
 	string match, re
 
+	PerformSubsystemEntry()
+
 	if(!ParamIsDefault(sweep))
 		ASSERT(IsValidSweepNumber(sweep), "Invalid sweep number")
 	endif
@@ -1678,6 +1702,8 @@ End
 Function WB_GetWaveNoteEntryAsNumber(string text, variable entryType, [string key, variable sweep, variable epoch])
 
 	string str
+
+	PerformSubsystemEntry()
 
 	if(ParamIsDefault(key) && ParamIsDefault(sweep) && ParamIsDefault(epoch))
 		str = WB_GetWaveNoteEntry(text, entryType)
@@ -1937,6 +1963,8 @@ Function WB_UpdateEpochCombineList(WAVE/T epochCombineList, variable channelType
 	string list, setPath, setParamPath, entry
 	variable numEntries, i
 
+	PerformSubsystemEntry()
+
 	list = ST_GetStimsetList(channelType = channelType)
 	list = RemoveFromList(STIMSET_TP_WHILE_DAQ, list)
 
@@ -2009,6 +2037,8 @@ Function WB_ParseCombinerFormula(variable channelType, string formula, variable 
 	variable numRows = Inf
 	variable numCols = Inf
 
+	PerformSubsystemEntry()
+
 	InitFormulaProperties(fp)
 	InitFormulaProperties(trans)
 	WB_FormulaSwitchToStimset(channelType, formula, trans)
@@ -2061,6 +2091,8 @@ Function WB_FormulaSwitchToStimset(variable channelType, string formula, STRUCT 
 
 	string stimset, shorthand, stimsetSpec, prefix, suffix
 	variable numSets, i, stimsetFound
+
+	PerformSubsystemEntry()
 
 	InitFormulaProperties(fp)
 
@@ -2122,6 +2154,8 @@ Function/S WB_FormulaSwitchToShorthand(variable channelType, string formula)
 	variable numSets, i
 	string stimset, shorthand, regex
 
+	PerformSubsystemEntry()
+
 	if(isEmpty(formula))
 		return ""
 	endif
@@ -2148,6 +2182,8 @@ End
 Function/WAVE WB_CustomWavesFromStimSet(string stimsetList)
 
 	variable i, j, numStimsets
+
+	PerformSubsystemEntry()
 
 	WB_UpgradeCustomWaves(stimsetList)
 	WAVE/T cw = WB_CustomWavesPathFromStimSet(stimsetList)
@@ -2177,6 +2213,8 @@ Function/WAVE WB_CustomWavesPathFromStimSet(string stimsetList)
 
 	variable numStimSets, i, j, k, numEpochs
 	string stimset
+
+	PerformSubsystemEntry()
 
 	numStimsets = ItemsInList(stimsetList)
 
@@ -2296,6 +2334,8 @@ Function WB_StimsetFamilyNames(string &knownNames, [string parent])
 	string children, familynames
 	variable numChildren, i, numMoved
 
+	PerformSubsystemEntry()
+
 	// look for family members
 	if(ParamIsDefault(parent))
 		children = WB_StimsetChildren()
@@ -2322,6 +2362,8 @@ Function/S WB_StimsetRecursion([string parent, string knownStimsets])
 
 	string stimset, stimsetQueue
 	variable numStimsets, i, numBefore, numAfter, numMoved
+
+	PerformSubsystemEntry()
 
 	if(ParamIsDefault(knownStimsets))
 		knownStimsets = ""
@@ -2363,6 +2405,8 @@ Function/S WB_StimsetRecursionForList(string stimsetQueue)
 	variable i, numStimsets
 	string stimset, stimsetList
 
+	PerformSubsystemEntry()
+
 	stimsetQueue = GetUniqueTextEntriesFromList(stimsetQueue, caseSensitive = 0)
 
 	// loop through list
@@ -2381,6 +2425,8 @@ End
 /// @return 1 if parameter waves exist, 0 otherwise
 Function WB_ParameterWavesExist(string stimset)
 
+	PerformSubsystemEntry()
+
 	WAVE/Z   WP        = WB_GetWaveParamForSet(stimset)
 	WAVE/Z/T WPT       = WB_GetWaveTextParamForSet(stimset)
 	WAVE/Z   SegWvType = WB_GetSegWvTypeForSet(stimset)
@@ -2398,6 +2444,8 @@ End
 Function WB_StimsetExists(string stimset)
 
 	variable channelType
+
+	PerformSubsystemEntry()
 
 	channelType = WB_GetStimSetType(stimset)
 
@@ -2418,6 +2466,8 @@ End
 /// @brief Kill Parameter waves for stimset
 Function WB_KillParameterWaves(string stimset)
 
+	PerformSubsystemEntry()
+
 	WAVE/Z   WP        = WB_GetWaveParamForSet(stimset)
 	WAVE/Z/T WPT       = WB_GetWaveTextParamForSet(stimset)
 	WAVE/Z   SegWvType = WB_GetSegWvTypeForSet(stimset)
@@ -2437,6 +2487,8 @@ End
 Function WB_KillStimset(string stimset)
 
 	variable channelType
+
+	PerformSubsystemEntry()
 
 	channelType = WB_GetStimSetType(stimset)
 
@@ -2463,6 +2515,8 @@ End
 /// @return true if from third party, false otherwise
 Function WB_StimsetIsFromThirdParty(string stimset)
 
+	PerformSubsystemEntry()
+
 	ASSERT(!IsEmpty(stimset), "Stimset name can not be empty")
 
 	WAVE/Z WP        = WB_GetWaveParamForSet(stimSet)
@@ -2476,6 +2530,8 @@ End
 Function WB_AddAnalysisParameterIntoWPT(WAVE/T WPT, string name, [variable var, string str, WAVE wv])
 
 	string params
+
+	PerformSubsystemEntry()
 
 	ASSERT((ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(wv)) == 2, "Expected one of var, str or wv")
 
@@ -2494,6 +2550,8 @@ End
 
 /// @brief Internal use only
 Function WB_SetAnalysisFunctionGeneric(variable stimulusType, string analysisFunction, WAVE/T WPT)
+
+	PerformSubsystemEntry()
 
 	if(stimulusType != CHANNEL_TYPE_DAC)
 		// only store analysis functions for DAC
@@ -2532,6 +2590,8 @@ Function/S WB_SaveStimSet(string baseName, variable stimulusType, WAVE SegWvType
 	string setName, genericFunc, params, errorMessage, childStimsets
 	string   tempName
 	variable i
+
+	PerformSubsystemEntry()
 
 	setName = WB_AssembleSetName(baseName, stimulusType, setNumber)
 
@@ -2612,6 +2672,8 @@ End
 Function/WAVE WB_GetEpochLengths(string setName)
 
 	variable numEpochs
+
+	PerformSubsystemEntry()
 
 	numEpochs = ST_GetStimsetParameterAsVariable(setName, "Total number of epochs")
 	ASSERT(IsInteger(numEpochs), "Expected numEpochs to be an integer")
@@ -2694,6 +2756,8 @@ Function WB_SplitStimsetName(string setName, string &setPrefix, variable &stimul
 
 	string stimulusTypeString, setNumberString, setPrefixString
 
+	PerformSubsystemEntry()
+
 	setNumber    = NaN
 	setPrefix    = ""
 	stimulusType = CHANNEL_TYPE_UNKNOWN
@@ -2729,6 +2793,8 @@ End
 
 /// @brief Propagate added/removed stimsets to DA_Ephys panels and our epoch combine list
 Function WB_UpdateChangedStimsets([string device, variable stimulusType])
+
+	PerformSubsystemEntry()
 
 	if(ParamIsDefault(device))
 		DAP_UpdateDaEphysStimulusSetPopups()
@@ -2779,6 +2845,8 @@ Function WB_GetStimSetType(string setName)
 	string setPrefix
 	variable channelType, setNumber
 
+	PerformSubsystemEntry()
+
 	WB_SplitStimsetName(setName, setPrefix, channelType, setNumber)
 
 	return channelType
@@ -2789,6 +2857,8 @@ End
 Function/S WB_ExtractAnalysisFuncFromStimSet(WAVE stimSet, variable eventType)
 
 	string eventName
+
+	PerformSubsystemEntry()
 
 	eventName = StringFromList(eventType, EVENT_NAME_LIST)
 	ASSERT(!IsEmpty(eventName), "Unknown event type")

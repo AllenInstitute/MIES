@@ -16,10 +16,14 @@ End
 
 Function/DF SB_GetSweepBrowserFolder(string win)
 
+	PerformSubsystemEntry()
+
 	return BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 End
 
 Function SB_TranslateSBMapIndexToABMapIndex(string win, variable sbIndex)
+
+	PerformSubsystemEntry()
 
 	WAVE/T sweepMap    = SB_GetSweepBrowserMapFromGraph(win)
 	WAVE/T analysisMap = GetAnalysisBrowserMap()
@@ -36,6 +40,8 @@ Function/DF SB_GetSweepDataFolder(WAVE/T sweepMap, variable mapIndex)
 
 	string dataFolder, device
 
+	PerformSubsystemEntry()
+
 	dataFolder = sweepMap[mapIndex][%DataFolder]
 	device     = sweepMap[mapIndex][%Device]
 
@@ -46,6 +52,8 @@ Function/DF SB_GetSweepDataPathFromIndex(DFREF sweepBrowserDFR, variable mapInde
 
 	string device, expFolder
 	variable sweep
+
+	PerformSubsystemEntry()
 
 	WAVE/T sweepMap = GetSweepBrowserMap(sweepBrowserDFR)
 
@@ -68,6 +76,8 @@ Function SB_GetIndexFromSweepDataPath(string win, DFREF dataDFR)
 
 	variable mapIndex, sweepNo
 	string device, expFolder, sweepFolder, datafolder
+
+	PerformSubsystemEntry()
 
 	WAVE/T sweepMap = SB_GetSweepBrowserMapFromGraph(win)
 
@@ -140,6 +150,8 @@ End
 ///
 /// @param graph sweep browser name
 Function/S SB_GetListOfExperiments(string graph)
+
+	PerformSubsystemEntry()
 
 	WAVE/T sweepMap = SB_GetSweepBrowserMapFromGraph(graph)
 
@@ -272,6 +284,8 @@ Function SB_UpdateSweepPlot(string win)
 	variable mapIndex, i, numEntries, sweepNo, traceIndex, currentSweep
 	STRUCT TiledGraphSettings tgs
 
+	PerformSubsystemEntry()
+
 	graph   = GetMainWindow(win)
 	scPanel = BSP_GetSweepControlsPanel(win)
 	lbPanel = BSP_GetNotebookSubWindow(win)
@@ -338,7 +352,11 @@ End
 Function SB_AddToSweepBrowser(DFREF sweepBrowser, string fileName, string dataFolder, string device, variable sweep, string tags)
 
 	variable index
-	string sweepStr = num2str(sweep)
+	string   sweepStr
+
+	PerformSubsystemEntry()
+
+	sweepStr = num2str(sweep)
 
 	WAVE/T map = GetSweepBrowserMap(sweepBrowser)
 
@@ -371,6 +389,8 @@ End
 Function/DF SB_OpenSweepBrowser([variable mode])
 
 	string mainWin
+
+	PerformSubsystemEntry()
 
 	if(ParamIsDefault(mode))
 		mode = BROWSER_MODE_USER
@@ -443,6 +463,8 @@ Function/WAVE SB_GetPlainSweepList(string win)
 
 	variable numRows
 
+	PerformSubsystemEntry()
+
 	WAVE/T map = SB_GetSweepBrowserMapFromGraph(win)
 	numRows = GetNumberFromWaveNote(map, NOTE_INDEX)
 
@@ -461,6 +483,8 @@ End
 Function/WAVE SB_GetMapIndizes(string win)
 
 	variable numRows
+
+	PerformSubsystemEntry()
 
 	WAVE/T map = SB_GetSweepBrowserMapFromGraph(win)
 	numRows = GetNumberFromWaveNote(map, NOTE_INDEX)
@@ -549,6 +573,8 @@ End
 Function/WAVE SB_GetLogbookWave(string win, variable logbookType, variable logbookWaveType, [variable sweepNumber, string dataFolder, string device])
 
 	variable numRows
+
+	PerformSubsystemEntry()
 
 	WAVE/T map = SB_GetSweepBrowserMapFromGraph(win)
 
@@ -670,6 +696,8 @@ Function SB_AddSweepToGraph(string win, variable index)
 	string experiment, graph
 	string device, dataFolder
 
+	PerformSubsystemEntry()
+
 	graph = GetMainWindow(win)
 	WAVE/T map = SB_GetSweepBrowserMapFromGraph(graph)
 
@@ -700,6 +728,8 @@ Function SB_AddSweepToGraph(string win, variable index)
 End
 
 Function/WAVE SB_GetSweepMap(string win)
+
+	PerformSubsystemEntry()
 
 	DFREF  sweepBrowserDFR = SB_GetSweepBrowserFolder(win)
 	WAVE/T sweepMap        = GetSweepBrowserMap(sweepBrowserDFR)
