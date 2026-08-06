@@ -432,7 +432,9 @@ def _submit_and_poll(submit_function: str, command: str, timeout_seconds: float)
 
 
 @mcp.tool()
-def execute_igor_command(command: str, timeout_seconds: float = _SUBMIT_POLL_TIMEOUT_SECONDS) -> dict:
+def execute_igor_command(
+    command: str, timeout_seconds: float = _SUBMIT_POLL_TIMEOUT_SECONDS
+) -> dict:
     """Execute a single Igor Pro command string in the running Igor instance.
 
     **If `command`'s runtime is unknown or could be long (more than roughly a
@@ -481,7 +483,9 @@ def execute_igor_command(command: str, timeout_seconds: float = _SUBMIT_POLL_TIM
 
 
 @mcp.tool()
-def execute_igor_command_unattended(command: str, timeout_seconds: float = _SUBMIT_POLL_TIMEOUT_SECONDS) -> dict:
+def execute_igor_command_unattended(
+    command: str, timeout_seconds: float = _SUBMIT_POLL_TIMEOUT_SECONDS
+) -> dict:
     """Run `command` exactly like execute_igor_command, but automatically disable
     Igor's Debugger before running it and restore it again afterward -- even if
     `command` raises an Igor-level error.
@@ -714,15 +718,44 @@ def reload_and_compile_procedures() -> dict:
     doing, so a request arriving while COMPILEPROCEDURES is mid-rebuild of Igor's own
     internal function/symbol tables is a plausible cross-thread race. v2.3.0 mitigates
     this by stopping the ZeroMQ handler before RELOAD CHANGED PROCS/COMPILEPROCEDURES
-    run and restarting it only after compilation finishes (see
-    ZBR_StopHandlerBeforeRecompile/ZBR_SubmitReloadAndCompile in ZMQ_BridgeHelpers.ipf).
-    This is a well-reasoned mitigation, not a proven fix -- Igor64.exe ships no public
-    symbols, so the exact fault can't be confirmed from here, and the crash was already
-    rare/nondeterministic. If a tool call after this one starts failing anyway,
-    check_bridge_health() and be prepared for Igor Pro to need relaunching.
+    run and restarting it only after compilation finishes. This is a well-reasoned
+    mitigation, not a proven fix -- Igor64.exe ships no public symbols, so the exact
+    fault can't be confirmed from here, and the crash was already rare/nondeterministic.
+    If a tool call after this one starts failing anyway, check_bridge_health() and be
+    prepared for Igor Pro to need relaunching.
+
+    **v2.3.1 fix -- handler could stay stopped forever on a failed compile**: v2.3.0's
+    restart path was AfterCompiledHook alone, which Igor only calls after a
+    *successful* compile. If the edited .ipf had a syntax error, COMPILEPROCEDURES
+    failed, AfterCompiledHook never fired, and the ZeroMQ handler -- already stopped by
+    ZBR_StopHandlerBeforeRecompile -- stayed stopped permanently, killing the bridge
+    with no recovery path short of restarting Igor. Fixed by ZBR_ArmRecompileWatchdog/
+    ZBR_RecompileWatchdogTick in ZMQ_BridgeHelpers.ipf: a named background task, armed
+    right before the handler is stopped, that unconditionally rebinds/restarts the
+    handler regardless of whether the compile succeeds or fails. It is registered with
+    `start=60` (an explicit ~1-second floor before its first possible tick, independent
+    of its `period=30` interval) so it cannot fire before RELOAD CHANGED
+    PROCS/COMPILEPROCEDURES have finished draining Igor's operation queue -- confirmed
+    necessary by live timing instrumentation (stopmstimer(-2)) showing the background
+    task could otherwise tick within ~62ms of being armed, well before a real compile
+    (~414ms observed) finishes. AfterCompiledHook still restarts the handler
+    immediately on the success path; the watchdog is what covers the failure path, and
+    self-disarms (CtrlNamedBackground .. stop) the first time either one runs.
+
+    **v2.3.1 fix -- ZBR_IsCompiled() checked the wrong module**: its FunctionInfo() call
+    was unqualified, so it resolved against ZBR's own (independent-module) namespace
+    -- which compiles separately from ProcGlobal -- instead of ProcGlobal's. This meant
+    it could report "compiled" even while ProcGlobal itself had a compile error. Fixed
+    by qualifying the lookup as `FunctionInfo("ProcGlobal#...")`.
+
+    **v2.3.1 fix -- "Function Execution Module is still active" dialog**: an unrelated
+    pre-existing MIES background thread (not task) left running during
+    COMPILEPROCEDURES could raise this modal dialog and freeze the entire operation
+    queue. Mitigated by a new BeforeUncompiledHook in ZMQ_BridgeHelpers.ipf that calls
+    ThreadGroupRelease(-2) to release any running thread groups before Igor uncompiles.
 
     Mechanism: calls ZBR_SubmitReloadAndCompile(), which queues (as three independent
-    Execute/P entries) a call to stop the ZeroMQ handler, then
+    Execute/P entries) a call to stop the ZeroMQ handler and arm the watchdog, then
     `Execute/P "RELOAD CHANGED PROCS "`, then `Execute/P "COMPILEPROCEDURES "`
     Igor-side (see that function's docstring in ZMQ_BridgeHelpers.ipf), then polls for
     completion using two independent signals, same as the COM-based version did:
@@ -741,7 +774,9 @@ def reload_and_compile_procedures() -> dict:
     a plain "<file>:<line>:<col>: error: <message>" line there (readable via
     read_session_history), rather than a modal dialog. If NOT launched /UNATTENDED, a
     stuck "Function Compilation Error" dialog is also possible -- see
-    dismiss_compile_error_dialog.
+    dismiss_compile_error_dialog. As of v2.3.1, the bridge itself should still be
+    reachable in this case (see the watchdog fix above) -- fix the .ipf and call this
+    tool again rather than needing to relaunch Igor Pro.
     """
     baseline_counter = _read_compile_counter()
 
@@ -866,8 +901,16 @@ def set_debugger_enabled(
             "ZBR#ZBR_RestoreDebuggerSettings",
             [
                 1,
-                int(current["debug_on_error"] if debug_on_error is None else debug_on_error),
-                int(current["debug_on_abort"] if debug_on_abort is None else debug_on_abort),
+                int(
+                    current["debug_on_error"]
+                    if debug_on_error is None
+                    else debug_on_error
+                ),
+                int(
+                    current["debug_on_abort"]
+                    if debug_on_abort is None
+                    else debug_on_abort
+                ),
                 int(
                     current["nvar_svar_wave_checking"]
                     if nvar_svar_wave_checking is None
@@ -959,7 +1002,9 @@ def get_environment_summary() -> dict:
     included_raw = call_function("ZBR#ZBR_WinList", ["*", "WIN:128"])
     data_folders_raw = call_function("ZBR#ZBR_DataFolderDir", [3])
     procedure_window_text = call_function("ZBR#ZBR_ProcedureText", ["", 0, "Procedure"])
-    debugger_settings = _decode_debugger_state(call_function("ZBR#ZBR_GetDebuggerState"))
+    debugger_settings = _decode_debugger_state(
+        call_function("ZBR#ZBR_GetDebuggerState")
+    )
 
     included_procedure_files = [
         name for name in included_raw.split(";") if name and name != "Procedure"
@@ -1077,7 +1122,9 @@ def read_help_file(file_path: str, timeout_ms: int = 30000) -> dict:
 
     tmp_fd, tmp_html_path = tempfile.mkstemp(suffix=".html", prefix="igor_help_")
     os.close(tmp_fd)
-    os.remove(tmp_html_path)  # SaveNotebook must create it fresh; only the name is reused
+    os.remove(
+        tmp_html_path
+    )  # SaveNotebook must create it fresh; only the name is reused
 
     try:
         status = call_function(
@@ -1120,7 +1167,7 @@ def read_help_file(file_path: str, timeout_ms: int = 30000) -> dict:
 # reason as before: the on-disk layout after Claude Desktop installs a .mcpb isn't
 # guaranteed to keep server.py and manifest.json at a fixed relative path, and this
 # needs to be confirmable from inside a conversation independent of that.
-_BRIDGE_VERSION = "2.3.0"
+_BRIDGE_VERSION = "2.3.1"
 
 
 def _installed_package_version(distribution_name: str) -> str | None:
@@ -1620,14 +1667,20 @@ def load_experiment(
             env=_build_igor_launch_env(),
         )
     except Exception as e:
-        raise RuntimeError(f"Failed to relaunch Igor Pro with {normalized!r}: {e}") from e
+        raise RuntimeError(
+            f"Failed to relaunch Igor Pro with {normalized!r}: {e}"
+        ) from e
 
     deadline = time.monotonic() + wait_for_ready_seconds
     attempts = 0
     while time.monotonic() < deadline:
         attempts += 1
         if _reachable(timeout_ms=1000):
-            return {"loaded_file": normalized, "zmq_ready": True, "poll_attempts": attempts}
+            return {
+                "loaded_file": normalized,
+                "zmq_ready": True,
+                "poll_attempts": attempts,
+            }
         time.sleep(_POST_LAUNCH_POLL_INTERVAL_SECONDS)
 
     return {

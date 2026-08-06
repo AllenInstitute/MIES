@@ -1,3 +1,4 @@
+#pragma rtFunctionErrors  = 1
 #pragma TextEncoding      = "UTF-8"
 #pragma rtGlobals         = 3
 #pragma IndependentModule = ZBR
@@ -433,9 +434,30 @@ End
 /// FunctionInfo() for a deliberately non-existent function returns "" when procedures
 /// are compiled, and a non-empty string ("Procedures Not Compiled") otherwise. No
 /// Execute needed -- FunctionInfo is a plain built-in function.
+///
+/// **Bug fixed (identified live by the repo owner while testing the v2.3.1 recompile
+/// watchdog): the function name passed to FunctionInfo() MUST be qualified with the
+/// "ProcGlobal#" prefix, exactly as igortest-test-compilation.ipf's own
+/// IsProcGlobalCompiled() already does (`FunctionInfo("ProcGlobal#NON_EXISTING_FUNCTION")`)
+/// -- an earlier version of this function omitted it. Per Igor's own FunctionInfo
+/// documentation (Igor Reference.ihf): an unqualified functionNameStr resolves relative
+/// to the CALLING function's own module context, and explicitly names "ProcGlobal" as a
+/// valid independent-module qualifier for asking about a DIFFERENT module's namespace
+/// (their own example: "Procedure [ProcGlobal]" to reach the main procedure window from
+/// inside an independent module). Since ZBR_IsCompiled() itself is compiled INTO the ZBR
+/// independent module, the unqualified name resolved against ZBR's OWN (always-fine)
+/// compile state instead of ProcGlobal's -- meaning this function was silently reporting
+/// "compiled" no matter what ProcGlobal's real state was, confirmed live: with a
+/// deliberately broken ProcGlobal function in place, this returned true (via
+/// check_compilation_state) while a plain `print FunctionInfo("ProcGlobal#...")`
+/// dispatched through the ordinary top-level command queue correctly reported
+/// "Procedures Not Compiled". reload_and_compile_procedures() happened to still report
+/// the correct answer during that same test only because its PRIMARY signal (the
+/// AfterCompiledHook-driven compile counter) never advanced -- this function was a
+/// silently-broken fallback the whole time it existed.
 Function ZBR_IsCompiled()
 
-	return strlen(FunctionInfo("ZBR_DefinitelyNotARealFunctionName_8f3a1c")) == 0
+	return strlen(FunctionInfo("ProcGlobal#ZBR_DefinitelyNotARealFunctionName_8f3a1c")) == 0
 End
 
 /// Read root:gClaudeHelperCompileCounter (bumped by AfterCompiledHook below every time
@@ -496,12 +518,17 @@ End
 /// ZBR_StopHandlerBeforeRecompile so it runs only after THIS call's own reply has
 /// already gone out -- see that function's docstring) before RELOAD CHANGED
 /// PROCS/COMPILEPROCEDURES ever run, so nothing can be dispatched into Igor while
-/// it's mid-recompile. AfterCompiledHook's existing (unchanged, synchronous)
-/// ZBR_EnsureZeroMQBound() call restarts the handler once compilation has actually
-/// finished. This is a mitigation based on a well-reasoned but not 100%-certain
-/// mechanism (Igor64.exe ships no public symbols, so the exact fault can't be proven
-/// from here) -- see SESSION_NOTES.md for the full reasoning and its honest
+/// it's mid-recompile. This is a mitigation based on a well-reasoned but not
+/// 100%-certain mechanism (Igor64.exe ships no public symbols, so the exact fault can't
+/// be proven from here) -- see SESSION_NOTES.md for the full reasoning and its honest
 /// limitations.
+///
+/// **v2.3.1**: the handler is restarted via TWO independent paths, not just
+/// AfterCompiledHook -- see ZBR_ArmRecompileWatchdog/ZBR_RecompileWatchdogTick's
+/// docstrings for why AfterCompiledHook alone was a real, live-confirmed bug (it never
+/// runs at all if the compile attempt fails, leaving the handler stopped forever) and
+/// for the actual, empirically-verified fix (a `start=60`-armed named background task
+/// that restarts the handler unconditionally, whether the compile succeeded or failed).
 Function ZBR_SubmitReloadAndCompile()
 
 	Execute/P/Q/Z "ZBR#ZBR_StopHandlerBeforeRecompile()"
@@ -528,13 +555,117 @@ End
 /// the whole Igor Pro instance, not just this module's own -- see ZBR_EnsureZeroMQBound's
 /// docstring for why that's avoided elsewhere too) -- zeromq_handler_stop() is the
 /// narrower, paired stop for zeromq_handler_start(), per ZeroMQ.ihf.
+///
+/// **v2.3.1: also arms ZBR_ArmRecompileWatchdog here** -- see that function's docstring
+/// for the concept flaw in the original v2.3.0 design this fixes (AfterCompiledHook,
+/// which used to be the ONLY thing that restarted the handler, never fires at all if the
+/// upcoming compile attempt fails).
 Function ZBR_StopHandlerBeforeRecompile()
 
 	variable err
 
 	zeromq_handler_stop(); err = GetRTError(1)
+	ZBR_ArmRecompileWatchdog()
 
 	return 0
+End
+
+/// Name of the one-shot named background task armed by ZBR_ArmRecompileWatchdog. Named
+/// (not the legacy unnamed CtrlBackground task) per Igor's own recommendation ("New code
+/// should use named background tasks") and so it can't collide with any unrelated
+/// background task some other part of this experiment (e.g. MIES's own) might be running.
+static StrConstant ZBR_RECOMPILE_WATCHDOG_TASK = "ZBR_RecompileWatchdog"
+
+/// **v2.3.1 fix for a concept flaw in v2.3.0, identified live by the repo owner**: v2.3.0
+/// stopped the ZeroMQ handler before RELOAD CHANGED PROCS/COMPILEPROCEDURES and relied
+/// entirely on AfterCompiledHook (via its existing, unchanged ZBR_EnsureZeroMQBound()
+/// call) to restart it afterward. But per Igor's own Advanced Topics.ihf, "AfterCompiledHook
+/// is a user-defined function that Igor calls after the procedure windows have all been
+/// compiled successfully" -- if the triggering reload/compile attempt instead FAILS (e.g.
+/// a syntax error in whatever .ipf was just edited), AfterCompiledHook never runs at all,
+/// so the handler this bridge deliberately stopped moments earlier would stay stopped
+/// forever, killing the entire bridge until a human manually fixes the compile error and
+/// recompiles via Igor's own GUI. Confirmed live: exactly this scenario (a deliberately
+/// broken ProcGlobal compile) left the bridge permanently unreachable under the
+/// unpatched v2.3.0 code.
+///
+/// A plain Execute/P entry queued to run right after COMPILEPROCEDURES was considered and
+/// rejected: ZBR_SubmitReloadAndCompile's own docstring already documents (from earlier,
+/// unrelated live testing) that anything queued behind COMPILEPROCEDURES in Igor's
+/// deferred *operation queue* gets silently discarded/invalidated by the recompile, so
+/// that mechanism can't be trusted here either, regardless of success or failure.
+///
+/// A NAMED BACKGROUND TASK is a different Igor subsystem entirely (driven by Igor's own
+/// idle-time task scheduler, not the deferred operation queue), and -- per Igor's own
+/// Background Tasks help (Advanced Topics.ihf): "If you need your background task to
+/// continue running even if you edit other procedures in Igor, you need to make your
+/// project an independent module" -- a background task whose target function lives in an
+/// independent module (like ZBR_RecompileWatchdogTick here, in this same ZBR module)
+/// keeps running/ticking even while ProcGlobal is uncompiled or failed to compile.
+///
+/// **Correction, found live via direct timer instrumentation (repo owner added
+/// stopmstimer(-2) printouts at the start of the queue, in this function, and in
+/// AfterCompiledHook, then had Claude recompute the deltas)**: an earlier version of this
+/// docstring claimed background tasks "can't tick at all while Igor's main thread is
+/// actually busy compiling," and concluded from that there was "no risk of this watchdog
+/// firing while COMPILEPROCEDURES is still actually running." That conclusion was
+/// DISPROVEN by the timer data: with a plain `start` (no explicit startTicks) and
+/// period=30, the watchdog tick fired only ~62ms after the operation queue began
+/// draining, while the actual compile (confirmed via AfterCompiledHook's own timestamp)
+/// didn't finish until ~414ms in -- i.e. the watchdog CAN and did fire before
+/// COMPILEPROCEDURES had actually finished. Background tasks and the deferred operation
+/// queue are apparently NOT strictly ordered with respect to each other the way this
+/// module's earlier reasoning assumed.
+///
+/// **Actual fix: the `start=60` argument below** (distinct from a bare `start`) sets an
+/// explicit ~1-second floor (60 ticks, ~1/60s each) before the watchdog's EARLIEST
+/// possible first tick, decoupled from `period` (which only governs the interval between
+/// ticks after the first one). The correctness property this needs is not "fires after
+/// AfterCompiledHook" -- AfterCompiledHook never runs at all on a failed compile, so
+/// there's nothing to compare against on that path -- it's "does not fire before the
+/// operation queue (ZBR_StopHandlerBeforeRecompile's own queuing, then RELOAD CHANGED
+/// PROCS, then COMPILEPROCEDURES) has actually finished draining." The repo owner's
+/// judgment call: the brief setup overhead before RELOAD CHANGED PROCS begins, plus any
+/// realistic compile of this codebase, comfortably finishes within that 1-second floor
+/// (every recompile observed this session, including deliberately large ones, finished in
+/// well under a second) -- not a mathematically airtight guarantee against an arbitrarily
+/// slow future compile, but a practical, generous margin over anything actually observed.
+///
+/// Called from ZBR_StopHandlerBeforeRecompile, i.e. right before RELOAD CHANGED
+/// PROCS/COMPILEPROCEDURES run. `start` on an already-running named background task is
+/// tolerated (err cleared) rather than propagated, since overlapping/concurrent
+/// reload-and-compile attempts (already live-tested elsewhere, see SESSION_NOTES.md) would
+/// otherwise each try to arm the same task name.
+static Function ZBR_ArmRecompileWatchdog()
+
+	variable err
+
+	CtrlNamedBackground $ZBR_RECOMPILE_WATCHDOG_TASK, period=30, proc=ZBR_RecompileWatchdogTick, start=60
+	err = GetRTError(1)
+
+	return 0
+End
+
+/// Fires once, at least ~1 second after ZBR_ArmRecompileWatchdog armed it (see that
+/// function's docstring for why the `start=60` floor -- not "background tasks can't run
+/// during a compile" -- is what actually keeps this safely behind the triggering RELOAD
+/// CHANGED PROCS/COMPILEPROCEDURES attempt finishing, whether it succeeded or failed).
+/// Unconditionally restarts this module's ZeroMQ server/handler via
+/// ZBR_EnsureZeroMQBound() -- harmless even if AfterCompiledHook already did the exact
+/// same thing moments earlier on a successful compile, since that function already
+/// tolerates being called when already bound/started (see its own docstring) -- then
+/// stops itself (returning 1, which per Igor's own documented convention for background
+/// task functions is how a task tells Igor to stop calling it again).
+///
+/// Public (non-static): background-task `proc=` targets, like Execute/P-dispatched
+/// callbacks elsewhere in this module (e.g. ZBR_FinishToken), need to be resolvable from
+/// outside this function's own immediate caller.
+Function ZBR_RecompileWatchdogTick(STRUCT WMBackgroundStruct &s)
+
+	ZBR_EnsureZeroMQBound()
+	CtrlNamedBackground $ZBR_RECOMPILE_WATCHDOG_TASK, stop
+
+	return 1
 End
 
 // --- Debugger control ----------------------------------------------------------------
@@ -544,7 +675,10 @@ End
 Function [variable enable, variable debugOnError, variable debugOnAbort, variable nvarChecking] ZBR_GetDebuggerState()
 
 	DebuggerOptions
-	variable e = V_enable, doe = V_debugOnError, doa = V_debugOnAbort, nv = V_NVAR_SVAR_WAVE_Checking
+	variable e   = V_enable
+	variable doe = V_debugOnError
+	variable doa = V_debugOnAbort
+	variable nv  = V_NVAR_SVAR_WAVE_Checking
 	KillVariables/Z V_enable, V_debugOnError, V_debugOnAbort, V_NVAR_SVAR_WAVE_Checking
 
 	return [e, doe, doa, nv]
@@ -851,6 +985,13 @@ static Function ZBR_EnsureZeroMQBound()
 	zeromq_handler_start(); err = GetRTError(1)
 
 	return 0
+End
+
+static Function BeforeUncompiledHook(variable changeCode, string procedureWindowTitleStr, string textChangeStr)
+
+	variable err
+
+	err = ThreadGroupRelease(-2)
 End
 
 static Function AfterCompiledHook()

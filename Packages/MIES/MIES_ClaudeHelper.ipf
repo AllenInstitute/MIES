@@ -48,52 +48,6 @@ static Constant CH_CSTRING_SEARCH_INITIAL_CHUNK          = 256        // initial
 static Constant CH_CSTRING_SEARCH_MAX_CHUNK              = 8192       // give up (return -1) once search size exceeds this many bytes
 static Constant CH_CMPSTR_CASE_SENSITIVE                 = 1          // CmpStr's caseSensitive flag (1 = case-sensitive, per Igor Reference)
 
-/// AfterCompiledHook() is a predefined Igor hook: Igor calls it after ALL procedure
-/// windows have compiled successfully (confirmed from Igor Pro Folder/Igor Help
-/// Files/Advanced Topics.ihf). It is declared static so it coexists with any other
-/// file's own static AfterCompiledHook() (e.g. the one in MIES_Include.ipf used only
-/// for the too-old-Igor warning panel) without colliding.
-///
-/// It records a monotonically increasing counter in root:gClaudeHelperCompileCounter
-/// each time it fires. This gives the Igor Pro Bridge a compile confirmation
-/// driven by Igor itself, rather than only inferred by polling FunctionInfo() for a
-/// non-existing function -- which can read stale state before Igor's operation queue
-/// (RELOAD CHANGED PROCS / COMPILEPROCEDURES) has actually drained. There is no
-/// equivalent Igor hook for a *failed* compile, so this only helps confirm success,
-/// not detect failure.
-
-static Function AfterCompiledHook()
-
-	variable modifiedBefore
-
-	// Creating/incrementing a global marks the experiment as modified, same as any
-	// other data change. Captured/restored here so this hook never flips an
-	// otherwise-unmodified experiment to modified, matching the existing convention
-	// in MIES_IgorHooks.ipf's own AfterCompiledHook -- flagged by a Copilot PR
-	// review as a real risk otherwise: an experiment spuriously marked modified can
-	// trigger a "Save changes?" prompt later, which is exactly the kind of dialog
-	// this bridge (built around unattended operation) cannot dismiss remotely.
-	ExperimentModified
-	modifiedBefore = V_flag
-
-	// Bare Variable/G (no initializer) is safe to call unconditionally: per Igor
-	// Reference.ihf, /G "overwrites any existing variable" but "the variable is
-	// initialized when it is created if you supply the initial value" -- i.e. the
-	// overwrite-to-a-value only happens when an initializer is given. Without one,
-	// this creates the global at 0 the first time and leaves an existing value
-	// alone on every call after that, so no NVAR_Exists guard is needed.
-	variable/G root:gClaudeHelperCompileCounter
-	NVAR gClaudeHelperCompileCounter = root:gClaudeHelperCompileCounter
-
-	gClaudeHelperCompileCounter += 1
-
-	if(!modifiedBefore)
-		ExperimentModified 0
-	endif
-
-	return 0
-End
-
 /// CH_ListXOPExports(xopPath) reads the operations and functions a compiled .xop
 /// file (a Windows DLL) adds to Igor, straight from the file's own bytes -- no
 /// vendor documentation or source needed, and no live Igor Pro instance needs to
@@ -228,7 +182,7 @@ static Function CH_PERVAToFileOffset(variable refNum, variable sectionTableOffse
 		secVirtSize = CH_PEReadU32(refNum, secPos + CH_PE_SECTION_VIRTUAL_SIZE_OFFSET)
 		secVA       = CH_PEReadU32(refNum, secPos + CH_PE_SECTION_VIRTUAL_ADDRESS_OFFSET)
 		secRawPtr   = CH_PEReadU32(refNum, secPos + CH_PE_SECTION_RAW_DATA_PTR_OFFSET)
-		if(rva >= secVA && rva < secVA + secVirtSize)
+		if(rva >= secVA && rva < (secVA + secVirtSize))
 			return secRawPtr + (rva - secVA)
 		endif
 	endfor

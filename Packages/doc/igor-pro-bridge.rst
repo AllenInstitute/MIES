@@ -392,7 +392,12 @@ Available tools
   ``Packages/igortest/procedures/igortest-test-compilation.ipf``). Since ``ZBR``
   compiles as its own independent module, a ``true`` result here specifically reflects
   ProcGlobal's compile state -- reaching ``ZBR`` at all over ZeroMQ already implies
-  ``ZBR`` itself is compiled.
+  ``ZBR`` itself is compiled. **Fixed in v2.3.1**: the ``FunctionInfo()`` call was
+  previously unqualified, so it resolved against ``ZBR``'s own (always-compiled)
+  independent-module namespace instead of ProcGlobal's, meaning this could report
+  ``true`` even with a genuine ProcGlobal compile error. Fixed by qualifying it as
+  ``FunctionInfo("ProcGlobal#...")``, matching ``igortest``'s own reference
+  implementation.
 
 ``reload_and_compile_procedures()``
   Forces Igor to reload changed ``.ipf`` files from disk (``RELOAD CHANGED PROCS``) and
@@ -430,6 +435,46 @@ Available tools
   tool call after this one starts failing anyway, check
   ``check_bridge_health()`` and be prepared for Igor Pro to need relaunching.
   See ``SESSION_NOTES.md`` for the full investigation.
+
+  **v2.3.1 fix -- the handler could stay stopped forever on a failed compile.**
+  v2.3.0's restart path was ``AfterCompiledHook`` alone, and Igor only calls that
+  hook after a *successful* compile. If the edited ``.ipf`` failed to compile, the
+  hook never fired, and the handler -- already stopped by
+  ``ZBR_StopHandlerBeforeRecompile`` -- stayed stopped permanently, killing the
+  bridge with no recovery short of relaunching Igor Pro. Found live by the repo
+  owner while intentionally testing a bad edit. Fixed by
+  ``ZBR_ArmRecompileWatchdog``/``ZBR_RecompileWatchdogTick`` (see
+  :ref:`igor_pro_bridge_zbr_helpers`): a named ``CtrlNamedBackground`` task, armed
+  immediately before the handler is stopped, that unconditionally restarts/rebinds
+  the handler regardless of whether the compile succeeds or fails, then
+  self-disarms the first time either it or ``AfterCompiledHook`` runs. Because the
+  background-task scheduler and the deferred operation queue (``Execute/P``) are
+  two independent Igor subsystems, live ``stopmstimer(-2)`` instrumentation (three
+  timestamped printouts: queue start, watchdog tick, ``AfterCompiledHook``)
+  confirmed they are **not** strictly ordered -- with only ``period=30`` set, the
+  watchdog ticked ~62ms after being armed, well before a real compile finished
+  (~414ms). The task is therefore registered with an explicit ``start=60`` (an
+  ~1-second floor before its first possible tick, independent of the ``period=30``
+  interval governing later ticks), comfortably longer than any compile observed
+  this session. The property this protects is that the watchdog must not fire
+  before the operation queue has finished draining -- not that it must fire after
+  ``AfterCompiledHook`` specifically, which is meaningless on the failure path
+  since that hook never runs then; once the queue has drained, the relative order
+  of the two on the success path no longer matters, since both converge on the
+  same idempotent ``ZBR_EnsureZeroMQBound()`` call. This is a generous empirical
+  margin, not a mathematically airtight guarantee against an arbitrarily slow
+  future compile. As of v2.3.1, the bridge itself should stay reachable even after
+  a failed compile -- fix the ``.ipf`` and call ``reload_and_compile_procedures``
+  again rather than needing to relaunch Igor Pro.
+
+  A separate, unrelated issue also surfaced during this work: a pre-existing MIES
+  background *thread* (not task) left running during ``COMPILEPROCEDURES`` could
+  raise a blocking "Function Execution Module is still active" dialog, freezing
+  Igor's entire operation queue (direct ``CallFunction`` calls like
+  ``check_bridge_health`` kept working throughout, since they don't route through
+  the queue). Mitigated by a new ``BeforeUncompiledHook`` in
+  ``ZMQ_BridgeHelpers.ipf`` that calls ``ThreadGroupRelease(-2)`` to release
+  running thread groups before Igor uncompiles, added by the repo owner.
 
 ``dismiss_compile_error_dialog()``
   Attempts to close a stuck Igor Pro dialog by posting a simulated Escape key press
@@ -747,9 +792,19 @@ race-free confirmation signal, read back via ``ZBR_ReadCompileCounter()``.
 ``reload_and_compile_procedures`` reads a baseline before issuing
 ``RELOAD CHANGED PROCS``/``COMPILEPROCEDURES`` and treats any increase as immediate,
 trustworthy success, falling back to the ``ZBR_IsCompiled()``-based poll when the
-counter is unavailable. There is no equivalent hook for a *failed* compile. Declared
+counter is unavailable. There is no equivalent hook for a *failed* compile -- that
+gap is exactly why v2.3.1 added the ``ZBR_ArmRecompileWatchdog``/
+``ZBR_RecompileWatchdogTick`` background-task restart path described in the
+``reload_and_compile_procedures()`` reference entry above, since ``AfterCompiledHook``
+by itself cannot recover the ZeroMQ handler on the failure path. Declared
 ``static`` so it coexists with any other file's own static ``AfterCompiledHook``
 without colliding.
+
+A companion ``BeforeUncompiledHook`` (also added in v2.3.1) calls
+``ThreadGroupRelease(-2)`` before Igor uncompiles, to release any running Igor
+thread groups and avoid a blocking "Function Execution Module is still active"
+dialog that a pre-existing MIES background thread could otherwise raise during
+``COMPILEPROCEDURES``.
 
 Auto-binding the ZeroMQ server socket on every compile
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -850,6 +905,14 @@ Known limitations
   proven fix. Treat any unreachability after a compile attempt as a signal to check
   ``check_bridge_health()`` and be prepared to relaunch Igor Pro. See
   ``SESSION_NOTES.md`` for the full investigation.
+- **v2.3.0's restart path had its own concept flaw, fixed in v2.3.1**: it relied
+  solely on ``AfterCompiledHook``, which Igor never calls if the compile itself
+  fails -- so a bad edit left the ZeroMQ handler stopped permanently, with no
+  recovery short of relaunching Igor Pro. Fixed by an unconditional background-task
+  watchdog (armed with an explicit ``start=60`` floor, after live timing data showed
+  it could otherwise fire before the operation queue finished draining) -- see the
+  ``reload_and_compile_procedures()`` reference entry above for the full mechanism.
+  As of v2.3.1 the bridge should stay reachable even after a failed compile.
 
 .. _igor_pro_bridge_v1_history:
 
