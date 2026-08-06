@@ -39,10 +39,13 @@ full trade-off discussion).
 Protocol summary (confirmed empirically this session against a live Igor Pro 9.06
 instance, and against https://github.com/AllenInstitute/ZeroMQ-XOP's own README):
 
-- Endpoint: `tcp://127.0.0.1:5680` (`IGOR_ZMQ_ENDPOINT` below) -- matches
-  `ZBR_ZEROMQ_ENDPOINT` in ZMQ_BridgeHelpers.ipf, deliberately NOT MIES's own
-  `ZEROMQ_BIND_REP_PORT` (5670) so this can coexist with MIES's own (currently
-  short-circuited) ZeroMQ subsystem in the same experiment.
+- Endpoint: `tcp://127.0.0.1:5680` by default (`_igor_zmq_endpoint()` below) --
+  matches `ZBR_ZEROMQ_ENDPOINT`/`ZBR_ZEROMQ_DEFAULT_PORT` in ZMQ_BridgeHelpers.ipf,
+  deliberately NOT MIES's own `ZEROMQ_BIND_REP_PORT` (5670) so this can coexist with
+  MIES's own (currently short-circuited) ZeroMQ subsystem in the same experiment.
+  configure_igor_launch(port=...) can override the port this bridge itself connects
+  to (every ZMQ-talking function goes through `_igor_zmq_endpoint()`, not a fixed
+  constant, so they all pick up a configured custom port together).
 - One JSON `CallFunction` request per ZeroMQ REQ-socket round trip: send
   `{"version": 1, "messageID": ..., "CallFunction": {"name": ..., "params": [...]}}`,
   receive `{"errorCode": {"value": ..., "msg": ...}, "result": ...}`. A NEW REQ socket
@@ -174,6 +177,7 @@ import sys
 import tempfile
 import time
 import uuid
+from typing import Optional
 
 if sys.platform != "win32":
     raise RuntimeError(
@@ -198,11 +202,17 @@ mcp = FastMCP("igor-pro")
 
 # --- ZeroMQ transport ----------------------------------------------------------------
 
-# Matches ZBR_ZEROMQ_ENDPOINT in Packages/MIES/ZMQ_BridgeHelpers.ipf.
-IGOR_ZMQ_ENDPOINT = "tcp://127.0.0.1:5680"
+# Matches ZBR_ZEROMQ_ENDPOINT/ZBR_ZEROMQ_DEFAULT_PORT in
+# Packages/MIES/ZMQ_BridgeHelpers.ipf.
+IGOR_ZMQ_HOST = "tcp://127.0.0.1"
+IGOR_ZMQ_DEFAULT_PORT = 5680
 _ZMQ_DEFAULT_RECV_TIMEOUT_MS = 5000
 _ZMQ_SEND_TIMEOUT_MS = 2000
 _ZMQ_LINGER_MS = 0
+
+# Set by configure_igor_launch(port=...) -- see that tool's docstring. None means
+# "use IGOR_ZMQ_DEFAULT_PORT".
+_configured_igor_port = None
 
 _zmq_context = None
 
@@ -214,6 +224,19 @@ def _get_zmq_context():
     return _zmq_context
 
 
+def _igor_zmq_endpoint():
+    """The ZeroMQ endpoint this bridge currently connects to. Every function that
+    talks to Igor Pro over ZeroMQ must go through this (not a fixed string) so they
+    all consistently follow whatever custom port configure_igor_launch(port=...) set,
+    instead of some functions silently still targeting the default port."""
+    port = (
+        _configured_igor_port
+        if _configured_igor_port is not None
+        else IGOR_ZMQ_DEFAULT_PORT
+    )
+    return f"{IGOR_ZMQ_HOST}:{port}"
+
+
 class IgorZmqError(RuntimeError):
     """Igor Pro replied, but reported errorCode.value != 0 for the CallFunction call."""
 
@@ -221,8 +244,9 @@ class IgorZmqError(RuntimeError):
 class IgorZmqUnreachable(RuntimeError):
     """No reply was received at all within the timeout. Could mean: Igor Pro isn't
     running, ZMQ_BridgeHelpers.ipf isn't #include-d/compiled in the running instance,
-    its ZeroMQ server socket isn't bound to IGOR_ZMQ_ENDPOINT, or the reply is simply
-    slow (e.g. a long-running command; pass a longer timeout_ms)."""
+    its ZeroMQ server socket isn't bound to this bridge's currently configured
+    endpoint (see _igor_zmq_endpoint), or the reply is simply slow (e.g. a
+    long-running command; pass a longer timeout_ms)."""
 
 
 def _decode_number(value):
@@ -352,11 +376,12 @@ def call_function(name, params=None, timeout_ms=_ZMQ_DEFAULT_RECV_TIMEOUT_MS):
     }
     payload = json.dumps(request)
 
+    endpoint = _igor_zmq_endpoint()
     sock = _get_zmq_context().socket(zmq.REQ)
     sock.setsockopt(zmq.RCVTIMEO, timeout_ms)
     sock.setsockopt(zmq.SNDTIMEO, _ZMQ_SEND_TIMEOUT_MS)
     sock.setsockopt(zmq.LINGER, _ZMQ_LINGER_MS)
-    sock.connect(IGOR_ZMQ_ENDPOINT)
+    sock.connect(endpoint)
     try:
         sock.send_string(payload)
         reply_raw = sock.recv_string()
@@ -365,7 +390,7 @@ def call_function(name, params=None, timeout_ms=_ZMQ_DEFAULT_RECV_TIMEOUT_MS):
             f"No reply from Igor Pro within {timeout_ms}ms while calling {name!r}. "
             f"Make sure Igor Pro is running, ZMQ_BridgeHelpers.ipf is #include-d and "
             f"compiled in the current experiment, and its ZeroMQ server socket is "
-            f"bound to {IGOR_ZMQ_ENDPOINT!r} (see check_bridge_health)."
+            f"bound to {endpoint!r} (see check_bridge_health)."
         ) from None
     finally:
         sock.close()
@@ -1167,7 +1192,7 @@ def read_help_file(file_path: str, timeout_ms: int = 30000) -> dict:
 # reason as before: the on-disk layout after Claude Desktop installs a .mcpb isn't
 # guaranteed to keep server.py and manifest.json at a fixed relative path, and this
 # needs to be confirmable from inside a conversation independent of that.
-_BRIDGE_VERSION = "2.3.1"
+_BRIDGE_VERSION = "2.3.2"
 
 
 def _installed_package_version(distribution_name: str) -> str | None:
@@ -1212,7 +1237,10 @@ def check_bridge_health() -> dict:
     actually running (Task Manager)? Is Packages/MIES/ZMQ_BridgeHelpers.ipf
     #include-d and does check_compilation_state-equivalent info suggest it's
     compiled? Try `netstat -a -b` (needs admin) to see whether anything is actually
-    listening on IGOR_ZMQ_ENDPOINT's port.
+    listening on this bridge's currently configured port (see _igor_zmq_endpoint;
+    reported in the "problem" message below on FAIL) -- if a custom port was set via
+    configure_igor_launch(port=...), make sure the target Igor Pro instance was
+    actually launched with that same port in effect.
 
     Returns a dict with a "status" key ("OK" or "FAIL") and, on FAIL, a "problem" key.
     """
@@ -1226,7 +1254,7 @@ def check_bridge_health() -> dict:
                 "Pro isn't running, ZMQ_BridgeHelpers.ipf isn't #include-d/compiled "
                 "in the current experiment (see that file's own header comment for "
                 "the one-time setup step), or its ZeroMQ socket isn't bound to "
-                f"{IGOR_ZMQ_ENDPOINT} for some other reason."
+                f"{_igor_zmq_endpoint()} for some other reason."
             ),
         }
     except IgorZmqError as e:
@@ -1417,6 +1445,13 @@ def dismiss_compile_error_dialog() -> dict:
 # has no privilege-matching requirement, so Igor Pro is always launched as a plain
 # child process of this bridge process, at whatever privilege level that already is.
 
+# Matches ZBR_ZEROMQ_ENV_PORT in Packages/MIES/ZMQ_BridgeHelpers.ipf: when set, a
+# launched Igor Pro instance's ZBR_EnsureZeroMQBound binds its ZeroMQ socket to this
+# port instead of its own default (5680). Preparation for talking to more than one
+# Igor Pro instance -- see configure_igor_launch. _configured_igor_port itself lives
+# up in the "ZeroMQ transport" section since _igor_zmq_endpoint() also reads it.
+_IGOR_PRO_BRIDGE_PORT_ENV_VAR = "IGOR_PRO_BRIDGE_PORT"
+
 _configured_igor_exe_path = None
 
 
@@ -1434,6 +1469,10 @@ def _build_igor_launch_env():
     it, MIES's git-shell-out becomes malformed and
     `ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")`
     trips on every launch via this path.
+
+    Also carries through _IGOR_PRO_BRIDGE_PORT_ENV_VAR if configure_igor_launch set
+    (or cleared) it on this process's own os.environ -- no extra handling needed here
+    since this starts from a plain copy of that.
     """
     env = os.environ.copy()
     if not env.get("COMSPEC"):
@@ -1443,7 +1482,7 @@ def _build_igor_launch_env():
 
 
 @mcp.tool()
-def configure_igor_launch(exe_path: str) -> dict:
+def configure_igor_launch(exe_path: str, port: Optional[int] = None) -> dict:
     """Record the full path to the Igor Pro executable (e.g. "...\\IgorBinaries_x64\\
     Igor64.exe") to use for launch_igor_pro_unattended/load_experiment, for the rest
     of this bridge process's session.
@@ -1454,10 +1493,31 @@ def configure_igor_launch(exe_path: str) -> dict:
     Igor Pro installed in more than one differently-named folder. This setting is
     session-scoped: it resets if this bridge process itself restarts.
 
-    Raises if exe_path does not point to an existing file. Does not otherwise
-    validate that the file is actually Igor Pro (beyond a soft filename check).
+    port, if given, is a custom ZeroMQ port for the NEXT launched instance to bind
+    to, instead of its own default (5680) -- preparation for eventually talking to
+    more than one Igor Pro instance at once. Setting this writes
+    IGOR_PRO_BRIDGE_PORT=str(port) into this bridge process's own environment;
+    launch_igor_pro_unattended/load_experiment inherit that when they start Igor Pro
+    (see _build_igor_launch_env), and the launched instance's own
+    ZBR_EnsureZeroMQBound (ZMQ_BridgeHelpers.ipf) reads it back to decide which port
+    to bind. **Omitting port (or passing None) clears any previously-configured
+    custom port** -- it removes IGOR_PRO_BRIDGE_PORT from this process's environment
+    entirely, so the next launch uses Igor's own default port again. This is not
+    "leave unchanged": repeat the same port value on every call while a custom port
+    should stay in effect.
+
+    Also updates which port THIS bridge itself connects to for every subsequent tool
+    call (see _igor_zmq_endpoint) -- every ZMQ-talking function goes through that one
+    helper, so setting/clearing port here immediately retargets all of them, not just
+    the next launch. This bridge still only tracks ONE currently-configured
+    endpoint at a time, though -- talking to two Igor Pro instances simultaneously
+    (rather than switching which single one this points at) isn't supported yet.
+
+    Raises if exe_path does not point to an existing file, or if port is given but
+    is not a valid TCP port number (1-65535). Does not otherwise validate that
+    exe_path is actually Igor Pro (beyond a soft filename check).
     """
-    global _configured_igor_exe_path
+    global _configured_igor_exe_path, _configured_igor_port
 
     normalized = os.path.abspath(exe_path)
     if not os.path.isfile(normalized):
@@ -1468,6 +1528,14 @@ def configure_igor_launch(exe_path: str) -> dict:
             " -- the exact folder name varies by Igor Pro version) and try again."
         )
 
+    if port is not None and (
+        not isinstance(port, int) or isinstance(port, bool) or not (1 <= port <= 65535)
+    ):
+        raise RuntimeError(
+            f"'{port}' is not a valid TCP port -- expected an integer between 1 and "
+            "65535, or omit/None to clear a previously-configured custom port."
+        )
+
     note = None
     if "igor" not in os.path.basename(normalized).lower():
         note = (
@@ -1476,8 +1544,14 @@ def configure_igor_launch(exe_path: str) -> dict:
             "user has a renamed executable."
         )
 
+    if port is not None:
+        os.environ[_IGOR_PRO_BRIDGE_PORT_ENV_VAR] = str(port)
+    else:
+        os.environ.pop(_IGOR_PRO_BRIDGE_PORT_ENV_VAR, None)
+
     _configured_igor_exe_path = normalized
-    return {"configured_exe_path": normalized, "note": note}
+    _configured_igor_port = port
+    return {"configured_exe_path": normalized, "configured_port": port, "note": note}
 
 
 _POST_LAUNCH_POLL_INTERVAL_SECONDS = 1.0

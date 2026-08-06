@@ -365,6 +365,13 @@ Available tools
   all three cases; the ``"problem"`` field lists all three as things to check by
   hand. Run this first whenever something doesn't work.
 
+  **As of v2.3.2**, this (like every ZeroMQ-talking function) connects to whichever
+  endpoint is currently configured via ``configure_igor_launch(port=...)`` -- if a
+  custom port was set but the target Igor Pro instance wasn't actually launched with
+  that same port in effect, this reports unreachable even though Igor Pro itself may
+  be running fine on its default port. The ``"problem"`` message on failure includes
+  the exact endpoint that was tried.
+
 ``get_bridge_version()``
   Returns the version of this Igor Pro Bridge build that is actually running in the
   current Claude Desktop session, plus which Python interpreter/packages it's actually
@@ -524,7 +531,13 @@ Available tools
   (``OpenNotebook/R`` fails with error 251 otherwise) -- this tool handles the required
   ``CloseHelp/ALL`` -> ``OpenNotebook/R`` -> ``SaveNotebook`` export -> ``KillWindow/Z``
   -> ``OpenHelp`` restore dance, entirely in a ``finally`` block so a mid-sequence
-  failure still restores whatever help state existed beforehand. Second, and more
+  failure still restores whatever help state existed beforehand. **Fixed in v2.3.2**:
+  the case where the expected new notebook window isn't found used to raise a plain
+  ``Abort "<message>"``, which displays a real alert dialog the moment it executes --
+  before the surrounding ``try``/``catch`` ever gets a chance to intervene, unlike an
+  ordinary runtime error. That would have hung unattended use exactly like every other
+  undismissable popup this bridge works around elsewhere. Fixed by setting the error
+  status directly instead of calling ``Abort`` at all in that branch. Second, and more
   importantly: the returned ``"paragraphs"`` list (``[{"style": "Topic", "text":
   "Debugging"}, ...]``) preserves the paragraph style name WaveMetrics' own help
   authoring convention assigns to nearly every paragraph (e.g. ``"Topic"`` for a section
@@ -537,7 +550,7 @@ Available tools
   folders (both resolved via Igor's own ``SpecialDirPath`` function) before assuming a
   given XOP has one.
 
-``configure_igor_launch(exe_path)``
+``configure_igor_launch(exe_path, port=None)``
   Records the full path to the Igor Pro executable to use for
   ``launch_igor_pro_unattended``/``load_experiment``, for the rest of this bridge
   process's session. There is no default or guessed path -- whatever agent is driving
@@ -545,6 +558,20 @@ Available tools
   need to launch Igor Pro, since the install location and version vary (this repo
   alone has been tested against separately-named Igor Pro 9 and Igor Pro 10 installs).
   Session-scoped: resets if the bridge process itself restarts.
+
+  **``port``, added in v2.3.2** -- preparation for eventually talking to more than one
+  Igor Pro instance, not full simultaneous multi-instance support yet (this bridge
+  still only tracks one currently-configured endpoint at a time). Passing an integer
+  1-65535 sets ``IGOR_PRO_BRIDGE_PORT`` in this bridge process's own environment;
+  ``launch_igor_pro_unattended``/``load_experiment`` inherit it when they start Igor
+  Pro, and the launched instance's ``ZBR_EnsureZeroMQBound`` (``ZMQ_BridgeHelpers.ipf``)
+  reads it back to decide which port to bind instead of its own default (5680). Every
+  ZeroMQ-talking function in this bridge also immediately starts targeting that same
+  port for its own connections (see ``check_bridge_health()`` above), not just the
+  next launch. **Omitting ``port`` (or passing ``None``) clears a previously-configured
+  custom port** -- it removes the environment variable entirely rather than leaving it
+  as-is, so calling this again to change just ``exe_path`` will also clear ``port``
+  unless it's repeated on that same call.
 
 ``launch_igor_pro_unattended(wait_for_ready_seconds=30.0)``
   Launches the configured executable with the ``/UNATTENDED`` command-line flag (see
