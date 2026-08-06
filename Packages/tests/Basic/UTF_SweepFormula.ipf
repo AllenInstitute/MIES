@@ -1798,11 +1798,9 @@ static Function TestOnlyVariablesNotebookFixup()
 	CHECK(StringEndsWith(nbText, "\r"))
 End
 
-// Test-only testop() implementation returning a single dataset whose sole payload is itself a
-// WAVE/WAVE (neither text nor numeric), to drive the array-literal wrapping test below.
 Function/WAVE TestOp_NestedComposite(STRUCT SF_ExecutionData &exd)
 
-	WAVE/WAVE inner = SFH_CreateSFRefWave(exd.graph, "claudeInner", 1)
+	WAVE/WAVE inner = SFH_CreateSFRefWave(exd.graph, SF_OP_TESTOP, 1)
 	Make/FREE/D innerData = {42}
 	inner[0] = innerData
 
@@ -1812,9 +1810,6 @@ Function/WAVE TestOp_NestedComposite(STRUCT SF_ExecutionData &exd)
 	return SFH_GetOutputForExecutor(output, exd.graph, SF_OP_TESTOP)
 End
 
-// Covers MIES_SweepFormula_Executor.ipf: SFE_FormulaExecutor's array literal handling for an
-// element whose resolved dataset is itself neither a text nor a numeric wave (i.e. another
-// WAVE/WAVE), which must be wrapped as a "WrappedArrayElement" dataset marker.
 static Function TestArrayWithNestedComposite()
 
 	string win, str
@@ -1824,16 +1819,23 @@ static Function TestArrayWithNestedComposite()
 	SVAR funcName = $GetSFTestopName(win)
 	funcName = "TestOp_NestedComposite"
 
-	str = "[testop()]"
-	WAVE/T output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
+	// The outermost array brackets are implicit, thus if there are outermost array bracket
+	// the resulting data structure is that minus one array level
+	// therefore, we see here array -> dataset -> content
+	str = "[[testop()]]"
+	WAVE/WAVE output = SFE_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 
+	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1)
 
-	WAVE/Z/WAVE resolved = SFH_AttemptDatasetResolve(output[0])
-	CHECK_WAVE(resolved, WAVE_WAVE)
-	CHECK_EQUAL_VAR(DimSize(resolved, ROWS), 1)
+	WAVE/WAVE array = output[0]
+	CHECK(SFH_IsArray(array))
 
-	WAVE/Z leaf = resolved[0]
+	WAVE/WAVE dataset = array[0]
+	CHECK_WAVE(dataset, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(dataset, ROWS), 1)
+
+	WAVE/Z leaf = dataset[0]
 	CHECK_WAVE(leaf, NUMERIC_WAVE)
 	CHECK_EQUAL_VAR(leaf[0], 42)
 End
