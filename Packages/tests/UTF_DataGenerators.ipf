@@ -736,6 +736,92 @@ static Function/WAVE NonFiniteValues()
 	return data
 End
 
+static Function NonFinitePrimitiveOperationsWaveAdd(WAVE/WAVE target, variable idx, WAVE/T wv0, WAVE wv1)
+
+	string lbl = wv0[0]
+
+	Make/FREE/WAVE wv = {wv0, wv1}
+	target[idx] = wv
+
+	lbl = ReplaceString("+", lbl, "_plus_")
+	lbl = ReplaceString("-", lbl, "_minus_")
+	lbl = ReplaceString("*", lbl, "_times_")
+	lbl = ReplaceString("/", lbl, "_div_")
+	lbl = ReplaceString("\"", lbl, "_quote_")
+	SetDimLabel ROWS, idx, $lbl, target
+End
+
+static Function/WAVE NonFinitePrimitiveOperations()
+
+	variable i, idx, numNonFinites, numPrimitiveOps
+	string str, strq
+
+	numPrimitiveOps = 4
+
+	WAVE nonFinites = NonFiniteValues()
+	numNonFinites = DimSize(nonFinites, ROWS)
+
+	Make/FREE/WAVE/N=(numNonFinites * numPrimitiveOps * 4) result
+
+	for(i = 0; i < numNonFinites; i += 1)
+
+		idx = i * numPrimitiveOps * 4
+
+		str  = num2str(nonFinites[i])
+		strq = "\"" + str + "\""
+
+		Make/FREE/T wt = {"1+" + str}
+		Make/FREE/D wv = {1 + nonFinites[i]}
+		NonFinitePrimitiveOperationsWaveAdd(result, idx + 0, wt, wv)
+		Make/FREE/T wt = {"1+" + strq}
+		NonFinitePrimitiveOperationsWaveAdd(result, idx + 1, wt, wv)
+
+		Make/FREE/T wt = {"1-" + str}
+		Make/FREE/D wv = {1 - nonFinites[i]}
+		NonFinitePrimitiveOperationsWaveAdd(result, idx + 2, wt, wv)
+		Make/FREE/T wt = {"1-" + strq}
+		NonFinitePrimitiveOperationsWaveAdd(result, idx + 3, wt, wv)
+
+		Make/FREE/T wt = {"1*" + str}
+		Make/FREE/D wv = {1 * nonFinites[i]}
+		NonFinitePrimitiveOperationsWaveAdd(result, idx + 4, wt, wv)
+		Make/FREE/T wt = {"1*" + strq}
+		NonFinitePrimitiveOperationsWaveAdd(result, idx + 5, wt, wv)
+
+		Make/FREE/T wt = {"1/" + str}
+		Make/FREE/D wv = {1 / nonFinites[i]}
+		NonFinitePrimitiveOperationsWaveAdd(result, idx + 6, wt, wv)
+		Make/FREE/T wt = {"1/" + strq}
+		NonFinitePrimitiveOperationsWaveAdd(result, idx + 7, wt, wv)
+
+		Make/FREE/T wt = {str + "+1"}
+		Make/FREE/D wv = {nonFinites[i] + 1}
+		NonFinitePrimitiveOperationsWaveAdd(result, idx + 8, wt, wv)
+		Make/FREE/T wt = {strq + "+1"}
+		NonFinitePrimitiveOperationsWaveAdd(result, idx + 9, wt, wv)
+
+		Make/FREE/T wt = {str + "-1"}
+		Make/FREE/D wv = {nonFinites[i] - 1}
+		NonFinitePrimitiveOperationsWaveAdd(result, idx + 10, wt, wv)
+		Make/FREE/T wt = {strq + "-1"}
+		NonFinitePrimitiveOperationsWaveAdd(result, idx + 11, wt, wv)
+
+		Make/FREE/T wt = {str + "*1"}
+		Make/FREE/D wv = {nonFinites[i] * 1}
+		NonFinitePrimitiveOperationsWaveAdd(result, idx + 12, wt, wv)
+		Make/FREE/T wt = {strq + "*1"}
+		NonFinitePrimitiveOperationsWaveAdd(result, idx + 13, wt, wv)
+
+		Make/FREE/T wt = {str + "/1"}
+		Make/FREE/D wv = {nonFinites[i] / 1}
+		NonFinitePrimitiveOperationsWaveAdd(result, idx + 14, wt, wv)
+		Make/FREE/T wt = {strq + "/1"}
+		NonFinitePrimitiveOperationsWaveAdd(result, idx + 15, wt, wv)
+	endfor
+
+	return result
+End
+
 static Function/WAVE InvalidUnits()
 
 	Make/FREE/T result = {"", "ab", "MOhm", "xs", "sx"}

@@ -194,10 +194,11 @@ three dimensional at best.
 Array Evaluation
 """"""""""""""""
 
-The array evaluation supports numeric and text data. The interpretation of the JSON arrays as
-text data is preferred. This means that `["NaN"]` returns a one element text wave `{"NaN"}`,
-whereas `[1, "NaN"]` returns a two element numeric wave `{1, NaN}`. If one element can not be
-parsed as string then it is assumed that the array contains numeric data.
+The array evaluation supports numeric and text data. Non-finite values that are entered as text,
+`NaN`, `Inf`, `-Inf` are treated as numerical. This means that `["NaN"]` returns a one element
+numeric wave `{NaN}` and `[1, "NaN"]` returns a two element numeric wave `{1, NaN}`.
+If one element can not be parsed as string then it is assumed that the array contains numeric data.
+
 The JSON null element is only allowed for the topmost array as the parser inserts it for
 operation with no argument like e.g. `select()`. For sub arrays null elements `[null]`
 are invalid and result in an error.
