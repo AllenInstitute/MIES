@@ -1,15 +1,16 @@
 #!/usr/bin/python
 
-from pynwb import NWBHDF5IO
-import h5py
-import sys
 import os
-from subprocess import run, PIPE, STDOUT
+import sys
 from argparse import ArgumentParser
+from subprocess import PIPE, STDOUT, run
+
+import h5py
+from pynwb import NWBHDF5IO
 
 vers = sys.version_info
 if vers < (3, 7):
-    print("Unsupported python version: {}".format(vers), file=sys.stderr)
+    print(f"Unsupported python version: {vers}", file=sys.stderr)
     sys.exit(1)
 
 
@@ -31,8 +32,9 @@ def checkFile(path):
         ["pynwb-validate", path],
         stdout=PIPE,
         stderr=STDOUT,
-        universal_newlines=True,
+        text=True,
         timeout=120,
+        check=False,
     )
 
     if comp.returncode != 0:
@@ -46,8 +48,9 @@ def checkFile(path):
         ["dandi", "validate", "--ignore", "(NWBI|DANDI)", path],
         stdout=PIPE,
         stderr=STDOUT,
-        universal_newlines=True,
+        text=True,
         timeout=120,
+        check=False,
     )
 
     if comp.returncode != 0:
@@ -109,9 +112,8 @@ def main():
 
 
 if __name__ == "__main__":
-
     try:
         sys.exit(main())
     except Exception as e:
         print(e, file=sys.stderr)
-        sys.exit(1)
+        raise
