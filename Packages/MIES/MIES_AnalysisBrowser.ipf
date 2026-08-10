@@ -3283,6 +3283,10 @@ static Function AB_AddElementToSourceList(string entry)
 	AB_SaveSourceListInSettings()
 End
 
+Function AB_GatherFoldersFromLIMS(WAVE/T cellIDs)
+
+End
+
 static Function AB_SaveSourceListInSettings()
 
 	WAVE/T entryList = GetAnalysisBrowserGUIFolderList()
