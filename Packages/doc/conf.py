@@ -1,5 +1,5 @@
 # imports
-from subprocess import Popen, PIPE
+from subprocess import PIPE, Popen
 
 
 def setup(app):
