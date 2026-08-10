@@ -198,6 +198,7 @@ The array evaluation supports numeric and text data. The interpretation of the J
 text data is preferred. This means that `["NaN"]` returns a one element text wave `{"NaN"}`,
 whereas `[1, "NaN"]` returns a two element numeric wave `{1, NaN}`. If one element can not be
 parsed as string then it is assumed that the array contains numeric data.
+The literals `inf`, `-inf`, `NaN` and `-NaN` are evaluated as non-finite numbers when appearing in a formula.
 The JSON null element is only allowed for the topmost array as the parser inserts it for
 operation with no argument like e.g. `select()`. For sub arrays null elements `[null]`
 are invalid and result in an error.
