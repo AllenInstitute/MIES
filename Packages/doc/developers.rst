@@ -96,8 +96,8 @@ Cutting a new release
 -  Create the release branch:
 
    -  ``git checkout -b release/X.Y``
-   -  ``git push --no-verify -u origin release/X.Y``
    -  ``git commit --allow-empty -m "Start of the release X.Y"``
+   -  ``git push --no-verify -u origin release/X.Y``
 
 -  Create a new release on github and check that the Github Actions job
    correctly uploads the artifacts
