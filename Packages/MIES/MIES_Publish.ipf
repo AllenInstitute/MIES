@@ -32,7 +32,7 @@ static Function PUB_GetJSONTemplate(string device, variable headstage)
 End
 
 /// @brief Publish the given message as given by the JSON and the filter
-threadsafe Function PUB_Publish(variable jsonID, string messageFilter, [variable releaseJSON, WAVE/Z additionalData])
+threadsafe static Function PUB_Publish(variable jsonID, string messageFilter, [variable releaseJSON, WAVE/Z additionalData])
 
 	variable err
 
@@ -117,6 +117,8 @@ Function PUB_AutoBridgeBalance(string device, variable headstage, variable resis
 
 	variable jsonID
 
+	PerformSubsystemEntry()
+
 	jsonID = PUB_GetJSONTemplate(device, headstage)
 	JSON_AddTreeObject(jsonID, "bridge balance resistance")
 	JSON_AddVariable(jsonID, "bridge balance resistance/value", resistance)
@@ -183,6 +185,8 @@ Function PUB_PipetteInBath(string device, variable sweepNo, variable headstage)
 
 	variable jsonID
 	string   key
+
+	PerformSubsystemEntry()
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE numericalKeys   = GetLBNumericalKeys(device)
@@ -251,6 +255,8 @@ Function PUB_SealEvaluation(string device, variable sweepNo, variable headstage)
 	variable jsonID
 	string   key
 
+	PerformSubsystemEntry()
+
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE numericalKeys   = GetLBNumericalKeys(device)
 
@@ -308,6 +314,8 @@ Function PUB_TrueRestingMembranePotential(string device, variable sweepNo, varia
 	variable jsonID
 	string   key
 
+	PerformSubsystemEntry()
+
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE numericalKeys   = GetLBNumericalKeys(device)
 
@@ -352,6 +360,8 @@ Function PUB_ClampModeChange(string device, variable headstage, variable oldClam
 	variable jsonID
 	string   payload
 
+	PerformSubsystemEntry()
+
 	if(oldClampMode == newClampMode)
 		return NaN
 	endif
@@ -393,6 +403,8 @@ Function PUB_PressureMethodChange(string device, variable headstage, variable ol
 
 	variable jsonID
 
+	PerformSubsystemEntry()
+
 	if(EqualValuesOrBothNaN(oldMethod, newMethod))
 		return NaN
 	endif
@@ -425,6 +437,8 @@ Function PUB_PressureSealedState(string device, variable headstage)
 
 	variable jsonID
 
+	PerformSubsystemEntry()
+
 	jsonID = PUB_GetJSONTemplate(device, headstage)
 	JSON_AddBoolean(jsonID, "/sealed", 1)
 
@@ -450,6 +464,8 @@ End
 Function PUB_PressureBreakin(string device, variable headstage)
 
 	variable jsonID
+
+	PerformSubsystemEntry()
 
 	jsonID = PUB_GetJSONTemplate(device, headstage)
 	JSON_AddBoolean(jsonID, "/break in", 1)
@@ -495,6 +511,8 @@ Function PUB_AutoTPResult(string device, variable headstage, variable result)
 
 	variable jsonID, err
 	string payload, path
+
+	PerformSubsystemEntry()
 
 	WAVE TPSettings = GetTPSettings(device)
 	WAVE TPStorage  = GetTPStorage(device)
@@ -568,6 +586,8 @@ Function PUB_DAQStateChange(string device, variable mode, variable oldState, var
 
 	variable jsonID
 	string name, name_null
+
+	PerformSubsystemEntry()
 
 	ASSERT(oldState != newState, "Unexpected old/new state combination")
 	ASSERT(IsFinite(oldState) && IsFinite(newState), "Both oldState and newState must be finite")
@@ -663,6 +683,8 @@ Function PUB_AccessResistanceSmoke(string device, variable sweepNo, variable hea
 
 	variable jsonID
 	string   key
+
+	PerformSubsystemEntry()
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE numericalKeys   = GetLBNumericalKeys(device)
@@ -854,10 +876,16 @@ End
 /// \endrst
 threadsafe Function PUB_TPResult(string device, WAVE tpData, WAVE ampParamStorageSlice, WAVE additionalData)
 
-	string path
-	variable jsonId = JSON_New()
-	string   adUnit = GetADChannelUnit(tpData[%CLAMPMODE])
-	string   daUnit = GetDAChannelUnit(tpData[%CLAMPMODE])
+	string   path
+	variable jsonId
+	string   adUnit
+	string   daUnit
+
+	PerformSubsystemEntry_TS()
+
+	jsonId = JSON_New()
+	adUnit = GetADChannelUnit(tpData[%CLAMPMODE])
+	daUnit = GetDAChannelUnit(tpData[%CLAMPMODE])
 
 	path = "properties"
 	JSON_AddTreeObject(jsonID, path)
@@ -948,6 +976,8 @@ Function PUB_ConfigurationFinished(string windowName, string panelType, string f
 
 	variable jsonID
 
+	PerformSubsystemEntry()
+
 	jsonID = PUB_GetJSONTemplate("", NaN)
 
 	JSON_AddString(jsonID, "window", windowName)
@@ -989,6 +1019,8 @@ Function PUB_AmplifierSettingChange(string device, variable headstage, variable 
 	variable jsonID
 	string path, unit, name
 
+	PerformSubsystemEntry()
+
 	jsonID = PUB_GetJSONTemplate(device, headstage)
 
 	JSON_AddString(jsonID, "clamp mode", ConvertAmplifierModeToString(mode))
@@ -1007,6 +1039,8 @@ Function PUB_TPSettingChange(string device, variable headstage, string name, var
 
 	variable jsonID
 	string   path
+
+	PerformSubsystemEntry()
 
 	jsonID = PUB_GetJSONTemplate(device, headstage)
 

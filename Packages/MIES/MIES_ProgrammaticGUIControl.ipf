@@ -113,11 +113,15 @@ End
 /// @brief Wrapper for PGC_SetAndActivateControl()
 Function PGC_SetAndActivateControlStr(string win, string control, string str)
 
+	PerformSubsystemEntry()
+
 	return PGC_SetAndActivateControl(win, control, str = str)
 End
 
 /// @brief Wrapper for PGC_SetAndActivateControl()
 Function PGC_SetAndActivateControlVar(string win, string control, variable var)
+
+	PerformSubsystemEntry()
 
 	return PGC_SetAndActivateControl(win, control, val = var)
 End
@@ -162,6 +166,8 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 	string procedure, popupMenuList, popupMenuValue
 	variable paramType, controlType, variableType, inputWasModified, limitedVal
 	variable isCheckbox, checkBoxMode, popupMenuType, index
+
+	PerformSubsystemEntry()
 
 	if(ParamIsDefault(switchTab))
 		switchTab = 0

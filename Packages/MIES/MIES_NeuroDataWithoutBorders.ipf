@@ -286,6 +286,8 @@ Function/S NWB_ReadSessionStartTimeImpl(variable fileID)
 
 	string str
 
+	PerformSubsystemEntry()
+
 	str = ReadTextDataSetAsString(fileID, "/session_start_time")
 	if(!CmpStr(str, IPNWB_PLACEHOLDER))
 		return ""
@@ -358,6 +360,8 @@ threadsafe Function/DF NWB_ASYNC_Worker(DFREF dfr)
 
 	STRUCT NWBAsyncParameters s
 
+	PerformSubsystemEntry_TS()
+
 	// kill everything just to be sure
 	// with IP9 r37462 the root of preemptive threads is always empty on each call
 	KillDataFolder/Z root:
@@ -378,6 +382,8 @@ threadsafe Function/DF NWB_ASYNC_Worker(DFREF dfr)
 End
 
 Function NWB_ASYNC_Readout(STRUCT ASYNC_ReadOutStruct &ar)
+
+	PerformSubsystemEntry()
 
 	if(ar.rtErr)
 		BUG("Async jobs finished with RTE: " + ar.rtErrMsg)
@@ -483,7 +489,7 @@ static Function NWB_AddDeviceSpecificData(STRUCT NWBAsyncParameters &s, variable
 	NWB_WriteTestpulseData(s, writeStoredTestPulses)
 End
 
-Function NWB_WriteTestpulseData(STRUCT NWBAsyncParameters &s, variable writeStoredTestPulses)
+static Function NWB_WriteTestpulseData(STRUCT NWBAsyncParameters &s, variable writeStoredTestPulses)
 
 	variable groupID, i, numEntries, compressionModeStoredTP
 	string path, list, name, deviceDesc
@@ -595,6 +601,8 @@ Function NWB_ExportAllData(variable nwbVersion, [string device, string overrideF
 	string list, name, fileName
 	variable locationID, sweep, createdNewNWBFile, argCheck
 	string stimsetList = ""
+
+	PerformSubsystemEntry()
 
 	if(ParamIsDefault(keepFileOpen))
 		keepFileOpen = 0
@@ -788,7 +796,7 @@ End
 ///
 /// Currently wait up to 10min (NWB_ASYNC_WRITING_TIMEOUT * NWB_ASYNC_MAX_ITERATIONS),
 /// everything above 5s is considered a bug.
-Function NWB_ASYNC_FinishWriting(string device)
+static Function NWB_ASYNC_FinishWriting(string device)
 
 	string workload, msg
 	variable i
@@ -805,7 +813,7 @@ Function NWB_ASYNC_FinishWriting(string device)
 	endfor
 End
 
-Function NWB_CheckForMissingSweeps(string device, WAVE/T sweepNames)
+static Function NWB_CheckForMissingSweeps(string device, WAVE/T sweepNames)
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
@@ -907,6 +915,8 @@ Function NWB_ExportWithDialog(variable exportType, [variable nwbVersion])
 	string path, filename
 	variable refNum, pathNeedsKilling, numDevices
 	string msg, fileTemplate
+
+	PerformSubsystemEntry()
 
 	if(ParamIsDefault(nwbVersion))
 		nwbVersion = GetNWBVersion()
@@ -1040,6 +1050,8 @@ Function NWB_PrepareExport(variable nwbVersion, string device)
 	variable locationID, createdNewNWBFile
 	string stimsets
 
+	PerformSubsystemEntry()
+
 	[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion, device)
 	if(!IsFinite(locationID))
 		return NaN
@@ -1059,6 +1071,8 @@ Function NWB_AppendSweepDuringDAQ(string device, WAVE DAQDataWave, WAVE DAQConfi
 
 	variable locationID, createdNewNWBFile
 	string workload
+
+	PerformSubsystemEntry()
 
 	[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion, device)
 
@@ -1611,6 +1625,8 @@ Function NWB_LoadCustomWave(variable locationID, string fullPath, variable overw
 
 	string pathInNWB
 
+	PerformSubsystemEntry()
+
 	WAVE/Z wv = $fullPath
 	if(WaveExists(wv))
 		if(overwrite)
@@ -1657,6 +1673,8 @@ Function/S NWB_ReadStimSetList(string fullPath)
 	variable fileId
 	string   stimsets
 
+	PerformSubsystemEntry()
+
 	fileID = H5_OpenFile(fullPath)
 
 	if(!StimsetPathExists(fileID))
@@ -1682,6 +1700,8 @@ Function NWB_LoadAllStimsets([variable overwrite, string fileName, variable load
 	variable fileID, groupID, error, numStimsets, i, refNum
 	string stimsets, stimset, suffix, fullPath
 	string loadedStimsets = ""
+
+	PerformSubsystemEntry()
 
 	if(ParamIsDefault(overwrite))
 		overwrite = 0
@@ -1760,6 +1780,8 @@ Function NWB_LoadStimsets(variable groupID, string stimsets, variable overwrite,
 	string stimset, totalStimsets, newStimsets, oldStimsets
 	variable numBefore, numMoved, numAfter, numNewStimsets, i
 
+	PerformSubsystemEntry()
+
 	if(ParamIsDefault(processedStimsets))
 		processedStimsets = ""
 	endif
@@ -1801,6 +1823,8 @@ Function NWB_LoadCustomWaves(variable groupID, string stimsets, variable overwri
 
 	string custom_waves
 	variable numWaves, i
+
+	PerformSubsystemEntry()
 
 	stimsets = WB_StimsetRecursionForList(stimsets)
 	WAVE/T cw = WB_CustomWavesPathFromStimSet(stimsets)
@@ -1908,6 +1932,8 @@ Function NWB_LoadLabNoteBook(variable locationID, string notebook, DFREF dfr)
 
 	string deviceList, path
 
+	PerformSubsystemEntry()
+
 	if(!DataFolderExistsDFR(dfr))
 		return 0
 	endif
@@ -1925,6 +1951,8 @@ End
 
 /// @brief Flushes the contents of the NWB file to disc
 threadsafe Function NWB_Flush(variable locationID)
+
+	PerformSubsystemEntry_TS()
 
 	if(IsNaN(locationID))
 		return NaN
@@ -2000,6 +2028,8 @@ threadsafe Function NWB_ConvertToStandardTTLBit(variable value)
 
 	variable bit
 
+	PerformSubsystemEntry_TS()
+
 	ASSERT_TS(IsInteger(value) && value > 0, "Expected positive integer value")
 
 	bit = FindRightMostHighBit(value)
@@ -2009,7 +2039,7 @@ threadsafe Function NWB_ConvertToStandardTTLBit(variable value)
 End
 
 /// @brief Reverse direction of NWB_ConvertToStandardTTLBit()
-threadsafe Function NWB_ConvertTTLBitToChannelSuffix(variable value)
+threadsafe static Function NWB_ConvertTTLBitToChannelSuffix(variable value)
 
 	return 2^value
 End
@@ -2017,12 +2047,18 @@ End
 /// @brief Closes all possibly open export-into-NWB files
 Function NWB_CloseAllNWBFiles()
 
-	string devicesWithContent = GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL)
+	string devicesWithContent
+
+	PerformSubsystemEntry()
+
+	devicesWithContent = GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL)
 	CallFunctionForEachListItem(NWB_CloseNWBFile, devicesWithContent)
 End
 
 /// @brief Close a possibly open export-into-NWB file
 Function NWB_CloseNWBFile(string device)
+
+	PerformSubsystemEntry()
 
 	NVAR fileID = $GetNWBFileIDExport(device)
 

@@ -13,6 +13,8 @@ Function/S DB_OpenDataBrowser([variable mode])
 
 	string win, device, devicesWithData, bsPanel
 
+	PerformSubsystemEntry()
+
 	if(ParamIsDefault(mode))
 		mode = BROWSER_MODE_USER
 	else
@@ -48,6 +50,8 @@ Function DB_DatabrowserStartupSettings()
 
 	string device, bsPanel, scPanel, shPanel, recreationCode
 	string sfJSON, descNB, helpNBWin
+
+	PerformSubsystemEntry()
 
 	device = GetMainWindow(GetCurrentWindow())
 	if(!windowExists(device))
@@ -265,7 +269,7 @@ Function DB_DatabrowserStartupSettings()
 	CleanupOperationQueueResult()
 End
 
-Function/S DB_GetMainGraph(string win)
+static Function/S DB_GetMainGraph(string win)
 
 	return GetMainWindow(win)
 End
@@ -276,6 +280,8 @@ Function/S DB_ClearAllGraphs()
 	string listOfPanels = ""
 	string graph
 	variable i, numEntries
+
+	PerformSubsystemEntry()
 
 	locked   = WinList("DB_*", ";", "WIN:1")
 	unlocked = WinList("DataBrowser*", ";", "WIN:1")
@@ -354,6 +360,8 @@ Function/WAVE DB_GetPlainSweepList(string win)
 
 	string device
 
+	PerformSubsystemEntry()
+
 	device = BSP_GetDevice(win)
 
 	if(!BSP_IsBoundDevice(win, device))
@@ -367,6 +375,8 @@ Function DB_UpdateLastSweepControls(string win, variable first, variable last)
 
 	variable formerLast
 	string   scPanel
+
+	PerformSubsystemEntry()
 
 	scPanel = BSP_GetSweepControlsPanel(win)
 	if(!WindowExists(scPanel))
@@ -397,6 +407,8 @@ Function DB_UpdateSweepPlot(string win)
 	variable numEntries, i, sweepNo, highlightSweep, referenceTime, traceIndex
 	string device, lbPanel, scPanel, graph, experiment
 	STRUCT TiledGraphSettings tgs
+
+	PerformSubsystemEntry()
 
 	if(!HasPanelLatestVersion(win, DATA_SWEEP_BROWSER_PANEL_VERSION))
 		DoAbortNow("Can not display data. The Databrowser panel is too old to be usable. Please close it and open a new one.")
@@ -486,6 +498,8 @@ Function/WAVE DB_GetLBNWave(string win, variable type)
 
 	string device
 
+	PerformSubsystemEntry()
+
 	device = BSP_GetDevice(win)
 
 	return GetLogbookWaves(LBT_LABNOTEBOOK, type, device = device)
@@ -495,6 +509,8 @@ End
 ///
 /// `force` is off by default and in this case respects the autoupdate checkbox setting.
 Function DB_UpdateToLastSweep(string databrowser, [variable force])
+
+	PerformSubsystemEntry()
 
 	if(ParamIsDefault(force))
 		force = 0
@@ -613,6 +629,8 @@ Function DB_AddSweepToGraph(string win, variable index, [STRUCT BufferedDrawInfo
 	variable sweepNo, traceIndex
 	string experiment, device, graph
 
+	PerformSubsystemEntry()
+
 	graph  = GetMainWindow(win)
 	device = BSP_GetDevice(win)
 
@@ -656,6 +674,8 @@ End
 /// @brief Find a Databrowser which is locked to the given DAEphys panel
 Function/S DB_FindDataBrowser(string device, [variable mode])
 
+	PerformSubsystemEntry()
+
 	if(ParamIsDefault(mode))
 		mode = BROWSER_MODE_USER
 	else
@@ -677,6 +697,8 @@ Function/WAVE DB_FindAllDataBrowser(string device, [variable mode])
 	string panelList
 	string panel
 	variable numPanels, i, idx
+
+	PerformSubsystemEntry()
 
 	if(ParamIsDefault(mode))
 		mode = BROWSER_MODE_USER
@@ -726,6 +748,8 @@ Function/S DB_GetBoundDataBrowser(string device, [variable mode])
 
 	string databrowser, bsPanel
 
+	PerformSubsystemEntry()
+
 	if(ParamIsDefault(mode))
 		mode = BROWSER_MODE_USER
 	else
@@ -758,7 +782,11 @@ End
 /// @returns 0 if help for operation was found, 1 in case of error
 Function DB_SFHelpJumpToLine(string str)
 
-	string win = BSP_GetSFHELP(GetCurrentWindow())
+	string win
+
+	PerformSubsystemEntry()
+
+	win = BSP_GetSFHELP(GetCurrentWindow())
 
 	Notebook $win, selection={startOfFile, startOfFile}
 	Notebook $win, findText={"", 1}
@@ -772,6 +800,8 @@ End
 Function/S DB_GetDevice(string win)
 
 	string device
+
+	PerformSubsystemEntry()
 
 	ASSERT(BSP_IsDataBrowser(win), "Requires window to be a DataBrowser")
 
@@ -787,6 +817,8 @@ End
 Function/DF DB_GetDeviceDF(string win)
 
 	string device
+
+	PerformSubsystemEntry()
 
 	device = DB_GetDevice(win)
 	if(IsEmpty(device))

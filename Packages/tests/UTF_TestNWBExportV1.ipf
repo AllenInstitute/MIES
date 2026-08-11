@@ -598,7 +598,7 @@ Function TestNwbExportV1()
 
 	discLocation = TestFileExport()
 
-	WAVE/Z/T entry = AB_GetMap(discLocation)
+	WAVE/Z/T entry = MIES_AB#AB_GetMap(discLocation)
 	CHECK_WAVE(entry, FREE_WAVE)
 
 	WAVE/Z/T devices = GetAnalysisDeviceWave(entry[%DataFolder])

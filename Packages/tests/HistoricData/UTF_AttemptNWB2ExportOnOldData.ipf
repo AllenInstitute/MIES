@@ -44,7 +44,7 @@ static Function TestSweepBrowserExportToNWB([string str])
 	CHECK_NO_RTE()
 
 	dataFolder = map[0][%DataFolder]
-	WAVE/T devices = ListToTextWave(AB_GetAllDevicesForExperiment(dataFolder), ";")
+	WAVE/T devices = ListToTextWave(MIES_AB#AB_GetAllDevicesForExperiment(dataFolder), ";")
 	for(device : devices)
 		nwbFileName = MIES_AB#AB_ReExportGetNewFullFilePath(map[0][%DiscLocation], DimSize(devices, ROWS), device)
 		CHECK_EQUAL_VAR(FileExists(nwbFileName), 1)

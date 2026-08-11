@@ -57,6 +57,8 @@ EndStructure
 // returns jsonID or Aborts is not successful
 Function [variable jsonid, variable srcLocId] SFP_ParseFormulaToJSON(string formula)
 
+	PerformSubsystemEntry()
+
 	WAVE/T assertData = GetSFAssertData()
 	assertData[%FORMULA] = formula
 	NVAR trackParserBufferOffset = $GetSweepFormulaBufferOffsetTracker()
@@ -225,7 +227,7 @@ End
 /// @param createdArray [optional, default 0] set on recursive calls, returns boolean if parser created a JSON array
 /// @param indentLevel [internal use only] recursive call level, used for debug output
 /// @returns a JSONid representation
-Function [variable jsonId, WAVE/T srcLocs] SFP_FormulaParser(string formula, variable bufOffset, [variable &createdArray, variable indentLevel])
+static Function [variable jsonId, WAVE/T srcLocs] SFP_FormulaParser(string formula, variable bufOffset, [variable &createdArray, variable indentLevel])
 
 	STRUCT SF_ParserData pad
 	variable action, collectedSign, level, arrayLevel, createdArrayLocal, wasArrayCreated, numStates

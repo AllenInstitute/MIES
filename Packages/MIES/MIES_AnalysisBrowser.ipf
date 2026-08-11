@@ -200,7 +200,7 @@ End
 /// @brief  Get single matching entry from GetAnalysisBrowserMap
 /// @param  discLocation: first column. Path to file on disc
 /// @return wave with the same number of rows as the number of columns in analysis browser map, @sa GetAnalysisBrowserMap
-Function/WAVE AB_GetMap(string discLocation)
+static Function/WAVE AB_GetMap(string discLocation)
 
 	variable idx
 
@@ -228,9 +228,10 @@ End
 
 /// @brief save deviceList to wave
 /// @return created wave.
-Function/WAVE AB_SaveDeviceList(string deviceList, string dataFolder)
+static Function/WAVE AB_SaveDeviceList(string deviceList, string dataFolder)
 
 	variable numDevices
+
 	WAVE/T wv = GetAnalysisDeviceWave(dataFolder)
 
 	WAVE/T deviceListWave = ListToTextWave(deviceList, ";")
@@ -288,7 +289,7 @@ End
 /// @brief from a list of extended stimset names with WP_, WPT_ or SegWvType_ prefix
 ///        return a boiled down list of unique stimset names without prefix
 ///        @sa NWB_SuffixExtendedStimsetNamesToStimsetNames
-Function/S AB_PrefixExtendedStimsetNamesToStimsetNames(string stimsets)
+static Function/S AB_PrefixExtendedStimsetNamesToStimsetNames(string stimsets)
 
 	string prefix1, prefix2, prefix3
 	string regexp, prefixRemovedList
@@ -1895,10 +1896,12 @@ End
 
 Function AB_FreeWorkingDFs(WAVE/T relativeDFPaths, variable actualSize)
 
+	PerformSubsystemEntry()
+
 	AB_FreeOrAllocWorkingDF(relativeDFPaths, actualSize, 1)
 End
 
-Function AB_AllocWorkingDFs(WAVE/T relativeDFPaths, variable actualSize)
+static Function AB_AllocWorkingDFs(WAVE/T relativeDFPaths, variable actualSize)
 
 	AB_FreeOrAllocWorkingDF(relativeDFPaths, actualSize, 0)
 End
@@ -1926,6 +1929,8 @@ End
 Function AB_LoadStimsetForSweep(string device, variable index, variable sweep)
 
 	string dataFolder, discLocation, fileType
+
+	PerformSubsystemEntry()
 
 	WAVE/T map = GetAnalysisBrowserMap()
 
@@ -2756,12 +2761,12 @@ static Function AB_AddExperimentEntries(string win, WAVE/T entries)
 	AB_ResetListBoxWaves()
 End
 
-Function/S AB_GetPanelName()
+static Function/S AB_GetPanelName()
 
 	return ANALYSIS_BROWSER_NAME
 End
 
-Function/S AB_GetTagControlName()
+static Function/S AB_GetTagControlName()
 
 	return AB_GetPanelName() + "#" + ANALYSIS_BROWSER_TAGCONTROL_NAME
 End
@@ -2788,7 +2793,11 @@ Function/S AB_OpenAnalysisBrowser([variable restoreSettings])
 
 	variable oldFolderListSize, i
 	string workingDF
-	string panel = AB_GetPanelName()
+	string panel
+
+	PerformSubsystemEntry()
+
+	panel = AB_GetPanelName()
 
 	restoreSettings = ParamisDefault(restoreSettings) ? 1 : !!restoreSettings
 
@@ -2858,6 +2867,8 @@ End
 Function AB_BrowserStartupSettings()
 
 	string panel
+
+	PerformSubsystemEntry()
 
 	panel = AB_GetPanelName()
 
@@ -3256,7 +3267,7 @@ static Function AB_AddFiles(string win, WAVE/T selFiles)
 	AB_AddExperimentEntries(win, newFiles)
 End
 
-Function AB_AddElementToSourceList(string entry)
+static Function AB_AddElementToSourceList(string entry)
 
 	variable size
 
@@ -3313,6 +3324,8 @@ Function/S AB_GetSweepBrowserTitles()
 	string wName
 	string sbList = ""
 
+	PerformSubsystemEntry()
+
 	WAVE/T wList = ListToTextWave(WinList(SWEEPBROWSER_WINDOW_NAME + "*", ";", "WIN:1"), ";")
 	for(wName : wList)
 		GetWindow $wName, title
@@ -3333,6 +3346,8 @@ Function/S AB_GetSweepBrowserListForPopup()
 End
 
 Function/S AB_GetSweepBrowserWindowFromTitle(string winTitle)
+
+	PerformSubsystemEntry()
 
 	WAVE/T wList = ListToTextWave(WinList(SWEEPBROWSER_WINDOW_NAME + "*", ";", "WIN:1"), ";")
 	for(wName : wList)
@@ -3897,7 +3912,7 @@ static Function BeforeFileOpenHook(variable refNum, string file, string pathName
 	return 1
 End
 
-Function/S AB_GetAllDevicesForExperiment(string dataFolder)
+static Function/S AB_GetAllDevicesForExperiment(string dataFolder)
 
 	DFREF dfr = GetAnalysisExpFolder(dataFolder)
 
@@ -3905,7 +3920,7 @@ Function/S AB_GetAllDevicesForExperiment(string dataFolder)
 End
 
 /// @brief Return all experiments the analysis browser knows about
-Function/S AB_GetAllExperiments()
+static Function/S AB_GetAllExperiments()
 
 	variable i, index
 	string list = ""
@@ -3927,7 +3942,7 @@ End
 /// on load a sweep is stored in a device/dataFolder hierarchy.
 ///
 /// @returns list of stimsets
-Function/S AB_GetStimsetList(string fileType, string discLocation, string dataFolder, string device, variable sweep)
+static Function/S AB_GetStimsetList(string fileType, string discLocation, string dataFolder, string device, variable sweep)
 
 	if(IsEmpty(device))
 		strswitch(fileType)
@@ -3998,6 +4013,8 @@ End
 ///
 /// @returns list of stimsets
 Function/S AB_GetStimsetFromPanel(string device, variable sweep)
+
+	PerformSubsystemEntry()
 
 	WAVE   numericalValues = GetLBNumericalValues(device)
 	WAVE/T textualValues   = GetLBTextualValues(device)
@@ -4086,6 +4103,8 @@ End
 Function AB_OnCloseSweepBrowserUpdatePopup(string closingSweepBrowser)
 
 	string sbTitle, sbWin
+
+	PerformSubsystemEntry()
 
 	if(!WindowExists(ANALYSIS_BROWSER_NAME))
 		return NaN
@@ -4201,7 +4220,7 @@ static Function AB_AddTagToRow(variable idx, string newTag)
 End
 
 /// @brief Sanitizes a given tag and updates the tag input field if the sanitized tag is different
-Function/S AB_SanitizeTag(string tagStr)
+static Function/S AB_SanitizeTag(string tagStr)
 
 	string sanitizedTag
 

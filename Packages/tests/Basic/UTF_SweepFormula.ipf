@@ -3057,7 +3057,7 @@ static Function TestSourceLocationContent([WAVE/WAVE wv])
 	WAVE/T wFormula = wv[0]
 	WAVE/T wSrcLocs = wv[1]
 
-	[jsonId, WAVE/T srcLocs] = SFP_FormulaParser(wFormula[0], 0)
+	[jsonId, WAVE/T srcLocs] = MIES_SFP#SFP_FormulaParser(wFormula[0], 0)
 	JSON_Release(jsonId)
 	size = GetNumberFromWaveNote(srcLocs, NOTE_INDEX)
 	Redimension/N=(size, -1) srcLocs

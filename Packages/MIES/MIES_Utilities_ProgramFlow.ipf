@@ -39,12 +39,42 @@ threadsafe Function AssertOnAndClearRTError()
 	string   msg
 	variable err
 
-	msg = GetRTErrMessage()
-	err = ClearRTError()
+	[err, msg] = GetAndClearRTError()
 
 	if(err)
-		BUG_TS("Encountered pending RTE: " + num2istr(err) + ", " + msg)
+		if(IsFunctionCalledRecursively())
+			return NaN
+		endif
+		sprintf msg, "Encountered pending RTE: %d, %s\r%s", err, msg, GetVerboseMIESState_TS()
+		BUG_TS(msg)
 	endif
+End
+
+/// @brief Entry-point guard for functional MIES subsystems/modules.
+///
+/// UTF_NOINSTRUMENTATION
+Function PerformSubsystemEntry()
+
+	string   msg
+	variable err
+
+	[err, msg] = GetAndClearRTError()
+
+	if(err)
+		if(IsFunctionCalledRecursively())
+			return NaN
+		endif
+		sprintf msg, "Encountered pending RTE: %d, %s\r%s", err, msg, GetVerboseMIESState()
+		BUG(msg)
+	endif
+End
+
+/// @brief Entry-point guard for functional MIES subsystems/modules (threadsafe).
+///
+/// UTF_NOINSTRUMENTATION
+threadsafe Function PerformSubsystemEntry_TS()
+
+	AssertOnAndClearRTError()
 End
 
 /// @brief Helper function to unconditionally clear a RTE condition
@@ -55,6 +85,15 @@ End
 threadsafe Function ClearRTError()
 
 	return GetRTError(1)
+End
+
+/// @brief Returns err and msg of a RTE
+threadsafe static Function [variable err, string msg] GetAndClearRTError()
+
+	msg = GetRTErrMessage()
+	err = ClearRTError()
+
+	return [err, msg]
 End
 
 /// @brief Return true if the calling function is called recursively, i.e. it
@@ -180,9 +219,7 @@ End
 /// UTF_NOINSTRUMENTATION
 Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 
-	string stracktrace, miesVersionStr, lockedDevicesStr, device
-	string stacktrace = ""
-	variable i, numLockedDevices, doCallDebugger
+	variable doCallDebugger
 
 	try
 		AbortOnValue var == 0, 1
@@ -228,68 +265,8 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 		printf "Message: \"%s\"\r", RemoveEnding(errorMsg, "\r")
 
 		if(extendedOutput)
-			// hard coding the path here so that we don't depend on GetMiesVersion()
-			// in MIES_GlobalStringAndVariableAccess.ipf
-			SVAR/Z miesVersion = root:MIES:version
 
-			if(SVAR_Exists(miesVersion))
-				miesVersionStr = miesVersion
-			else
-				miesVersionStr = ""
-			endif
-
-			SVAR/Z lockedDevices = root:MIES:HardwareDevices:lockedDevices
-
-			Make/FREE/T sweeps = {NONE}
-			Make/FREE/T tpStates = {NONE}
-			Make/FREE/T daqStates = {NONE}
-			Make/FREE/T acqStates = {NONE}
-			Make/FREE/T fifoPos = {NONE}
-
-			if(!SVAR_Exists(lockedDevices) || IsEmpty(lockedDevices))
-				lockedDevicesStr = NONE
-			else
-				lockedDevicesStr = lockedDevices
-
-				numLockedDevices = ItemsInList(lockedDevicesStr)
-
-				Redimension/N=(numLockedDevices) sweeps, daqStates, tpStates, acqStates, fifoPos
-
-				for(i = 0; i < numLockedDevices; i += 1)
-					device = StringFromList(i, lockedDevicesStr)
-					NVAR runMode       = $GetDataAcqRunMode(device)
-					NVAR testpulseMode = $GetTestpulseRunMode(device)
-
-					sweeps[i]    = num2str(AFH_GetLastSweepAcquired(device))
-					tpStates[i]  = TestPulseRunModeToString(testpulseMode)
-					daqStates[i] = DAQRunModeToString(runMode)
-					acqStates[i] = AS_StateToString(ROVar(GetAcquisitionState(device)))
-					fifoPos[i]   = num2istr(ROVar(GetFifoPosition(device)))
-				endfor
-			endif
-
-			print "Please provide the following information if you contact the MIES developers:"
-			print "################################"
-			print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-
-			stacktrace = GetStackTrace()
-			print "Stacktrace:"
-			print stacktrace
-
-			print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-			printf "Time: %s\r", GetIso8601TimeStamp(localTimeZone = 1, numFracSecondsDigits = 3)
-			printf "Locked device: [%s]\r", RemoveEnding(lockedDevicesStr, ";")
-			printf "Current sweep: [%s]\r", TextWaveToList(sweeps, ";", trailSep = 0)
-			printf "DAQ: [%s]\r", TextWaveToList(daqStates, ";", trailSep = 0)
-			printf "Testpulse: [%s]\r", TextWaveToList(tpStates, ";", trailSep = 0)
-			printf "Acquisition state: [%s]\r", TextWaveToList(acqStates, ";", trailSep = 0)
-			printf "Fifo position: [%s]\r", TextWaveToList(fifoPos, ";", trailSep = 0)
-			printf "Experiment: %s (%s)\r", GetExperimentName(), GetExperimentFileType()
-			printf "Igor Pro version: %s (%s)\r", GetIgorProVersion(), GetIgorProBuildVersion()
-			print "MIES version:"
-			print miesVersionStr
-			print "################################"
-
+			printf "%s", GetVerboseMIESState()
 			LOG_AddEntry(PACKAGE_MIES, LOG_ACTION_ASSERT, stacktrace = 1, keys = {LOG_MESSAGE_KEY}, values = {errorMsg})
 
 			ControlWindowToFront()
@@ -325,8 +302,6 @@ End
 /// UTF_NOINSTRUMENTATION
 threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedOutput])
 
-	string stacktrace
-
 	try
 		AbortOnValue var == 0, 1
 	catch
@@ -361,24 +336,100 @@ threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedO
 		printf "Message: \"%s\"\r", RemoveEnding(errorMsg, "\r")
 
 		if(extendedOutput)
-			print "Please provide the following information if you contact the MIES developers:"
-			print "################################"
-			print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-			stacktrace = GetStackTrace()
-			print "Stacktrace:"
-			print stacktrace
 
-			print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-			printf "Time: %s\r", GetIso8601TimeStamp(localTimeZone = 1, numFracSecondsDigits = 3)
-			printf "Experiment: %s (%s)\r", GetExperimentName(), GetExperimentFileType()
-			printf "Igor Pro version: %s (%s)\r", GetIgorProVersion(), GetIgorProBuildVersion()
-			print "################################"
-
+			printf "%s", GetVerboseMIESState_TS()
 			LOG_AddEntry(PACKAGE_MIES, LOG_ACTION_ASSERT, stacktrace = 1, keys = {LOG_MESSAGE_KEY}, values = {errorMsg})
 		endif
 
 		AbortOnValue 1, 1
 	endtry
+End
+
+/// @brief Returns a string with MIES state information
+static Function/S GetVerboseMIESState()
+
+	string msg, device, miesVersionStr, lockedDevicesStr
+	variable i, numLockedDevices
+
+	// hard coding the path here so that we don't depend on GetMiesVersion()
+	// in MIES_GlobalStringAndVariableAccess.ipf
+	SVAR/Z miesVersion = root:MIES:version
+
+	if(SVAR_Exists(miesVersion))
+		miesVersionStr = miesVersion
+	else
+		miesVersionStr = ""
+	endif
+
+	SVAR/Z lockedDevices = root:MIES:HardwareDevices:lockedDevices
+
+	Make/FREE/T sweeps = {NONE}
+	Make/FREE/T tpStates = {NONE}
+	Make/FREE/T daqStates = {NONE}
+	Make/FREE/T acqStates = {NONE}
+	Make/FREE/T fifoPos = {NONE}
+
+	if(!SVAR_Exists(lockedDevices) || IsEmpty(lockedDevices))
+		lockedDevicesStr = NONE
+	else
+		lockedDevicesStr = lockedDevices
+
+		numLockedDevices = ItemsInList(lockedDevicesStr)
+
+		Redimension/N=(numLockedDevices) sweeps, daqStates, tpStates, acqStates, fifoPos
+
+		for(i = 0; i < numLockedDevices; i += 1)
+			device = StringFromList(i, lockedDevicesStr)
+			NVAR runMode       = $GetDataAcqRunMode(device)
+			NVAR testpulseMode = $GetTestpulseRunMode(device)
+
+			sweeps[i]    = num2str(AFH_GetLastSweepAcquired(device))
+			tpStates[i]  = TestPulseRunModeToString(testpulseMode)
+			daqStates[i] = DAQRunModeToString(runMode)
+			acqStates[i] = AS_StateToString(ROVar(GetAcquisitionState(device)))
+			fifoPos[i]   = num2istr(ROVar(GetFifoPosition(device)))
+		endfor
+	endif
+
+	sprintf msg, "Please provide the following information if you contact the MIES developers:\r"
+	sprintf msg, "%s################################\r", msg
+	sprintf msg, "%s~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r", msg
+	sprintf msg, "%sStacktrace:\r", msg
+	sprintf msg, "%s%s\r", msg, GetStackTrace()
+	sprintf msg, "%s~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r", msg
+	sprintf msg, "%sTime: %s\r", msg, GetIso8601TimeStamp(localTimeZone = 1, numFracSecondsDigits = 3)
+	sprintf msg, "%sLocked device: [%s]\r", msg, RemoveEnding(lockedDevicesStr, ";")
+	sprintf msg, "%sCurrent sweep: [%s]\r", msg, TextWaveToList(sweeps, ";", trailSep = 0)
+	sprintf msg, "%sDAQ: [%s]\r", msg, TextWaveToList(daqStates, ";", trailSep = 0)
+	sprintf msg, "%sTestpulse: [%s]\r", msg, TextWaveToList(tpStates, ";", trailSep = 0)
+	sprintf msg, "%sAcquisition state: [%s]\r", msg, TextWaveToList(acqStates, ";", trailSep = 0)
+	sprintf msg, "%sFifo position: [%s]\r", msg, TextWaveToList(fifoPos, ";", trailSep = 0)
+	sprintf msg, "%sExperiment: %s (%s)\r", msg, GetExperimentName(), GetExperimentFileType()
+	sprintf msg, "%sIgor Pro version: %s (%s)\r", msg, GetIgorProVersion(), GetIgorProBuildVersion()
+	sprintf msg, "%sMIES version:\r", msg
+	sprintf msg, "%s%s\r", msg, miesVersionStr
+	sprintf msg, "%s################################\r", msg
+
+	return msg
+End
+
+/// @brief Returns a string with MIES state information that can be gathered in a threadsafe call
+threadsafe static Function/S GetVerboseMIESState_TS()
+
+	string msg
+
+	sprintf msg, "Please provide the following information if you contact the MIES developers:\r"
+	sprintf msg, "%s################################\r", msg
+	sprintf msg, "%s~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r", msg
+	sprintf msg, "%sStacktrace:\r", msg
+	sprintf msg, "%s%s\r", msg, GetStackTrace()
+	sprintf msg, "%s~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r", msg
+	sprintf msg, "%sTime: %s\r", msg, GetIso8601TimeStamp(localTimeZone = 1, numFracSecondsDigits = 3)
+	sprintf msg, "%sExperiment: %s (%s)\r", msg, GetExperimentName(), GetExperimentFileType()
+	sprintf msg, "%sIgor Pro version: %s (%s)\r", msg, GetIgorProVersion(), GetIgorProBuildVersion()
+	sprintf msg, "%s################################\r", msg
+
+	return msg
 End
 
 /// @brief Abort program execution with a message

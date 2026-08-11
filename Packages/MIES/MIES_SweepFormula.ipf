@@ -119,6 +119,8 @@ End
 
 Function/WAVE SF_GetNamedOperations()
 
+	PerformSubsystemEntry()
+
 	Make/FREE/T wt = {SF_OP_RANGE, SF_OP_MIN, SF_OP_MAX, SF_OP_AVG, SF_OP_MEAN, SF_OP_RMS, SF_OP_VARIANCE, SF_OP_STDEV,                 \
 	                  SF_OP_DERIVATIVE, SF_OP_INTEGRATE, SF_OP_TIME, SF_OP_XVALUES, SF_OP_TEXT, SF_OP_LOG,                              \
 	                  SF_OP_LOG10, SF_OP_APFREQUENCY, SF_OP_CURSORS, SF_OP_SELECTSWEEPS, SF_OP_AREA, SF_OP_SETSCALE, SF_OP_BUTTERWORTH, \
@@ -140,6 +142,8 @@ Function/WAVE SF_GetNamedOperations()
 End
 
 Function/WAVE SF_GetFormulaKeywords()
+
+	PerformSubsystemEntry()
 
 	// see also SF_SWEEPFORMULA_REGEXP and SF_SWEEPFORMULA_GRAPHS_REGEXP
 	Make/FREE/T wt = {"vs", "and", "with"}
@@ -2047,8 +2051,11 @@ Function SF_DisplayOutputStateInGUI(string databrowser)
 	variable        severity
 	string          error
 	STRUCT RGBColor s
+	string          nb
 
-	string nb = BSP_GetSFOutputState(databrowser)
+	PerformSubsystemEntry()
+
+	nb = BSP_GetSFOutputState(databrowser)
 
 	severity = ROVar(GetSweepFormulaOutputSeverity())
 	ASSERT(severity == SF_MSG_ERROR || severity == SF_MSG_OK || severity == SF_MSG_WARN, "Unknown severity for SF error")
@@ -2066,6 +2073,8 @@ Function [WAVE/T varAssignments, string code] SF_GetVariableAssignments(string p
 	string line, varName, formula
 	string lineEnd = "\r"
 	string varPart = ""
+
+	PerformSubsystemEntry()
 
 	WAVE/T varAssignments = GetSFVarAssignments()
 	dimVarName = FindDimlabel(varAssignments, COLS, "VARNAME")
@@ -2258,7 +2267,11 @@ End
 
 Function SF_Update(string graph)
 
-	string bsPanel = BSP_GetPanel(graph)
+	string bsPanel
+
+	PerformSubsystemEntry()
+
+	bsPanel = BSP_GetPanel(graph)
 
 	if(!SF_IsActive(bsPanel))
 		return NaN
@@ -2269,6 +2282,8 @@ End
 
 /// @brief checks if SweepFormula (SF) is active.
 Function SF_IsActive(string win)
+
+	PerformSubsystemEntry()
 
 	return BSP_IsActive(win, MIES_BSP_SF)
 End
@@ -2565,6 +2580,8 @@ End
 // Use this function from within SF to set an error state
 Function SF_SetOutputState(string error, variable severity)
 
+	PerformSubsystemEntry()
+
 	ASSERT(!IsNull(error), "Error can not be a null string")
 	ASSERT(severity == SF_MSG_ERROR || severity == SF_MSG_OK || severity == SF_MSG_WARN, "Unknown severity for SF error")
 
@@ -2582,7 +2599,11 @@ End
 // Sets a formula in the SweepFormula notebook of the given data/sweepbrowser
 Function SF_SetFormula(string databrowser, string formula)
 
-	string nb = BSP_GetSFFormula(databrowser)
+	string nb
+
+	PerformSubsystemEntry()
+
+	nb = BSP_GetSFFormula(databrowser)
 	ReplaceNotebookText(nb, formula)
 End
 
@@ -2692,6 +2713,8 @@ Function/WAVE SF_ResolveDataset(WAVE input)
 End
 
 Function/S SF_GetDefaultFormula()
+
+	PerformSubsystemEntry()
 
 	return "trange = [0, inf]\r"                                            + \
 	       "sel = select(selrange($trange),selchannels(AD), selsweeps())\r" + \
