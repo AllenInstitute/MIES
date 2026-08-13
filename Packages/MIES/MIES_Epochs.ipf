@@ -1207,6 +1207,7 @@ static Function EP_AddEpoch(WAVE/T epochWave, variable channel, variable channel
 
 	epBegin = limit(epBegin, lowerlimit, Inf)
 	epEnd   = limit(epEnd, -Inf, upperlimit)
+	ASSERT(epBegin >= 0, "Epoch begin must be >= 0")
 
 	i = EP_GetEpochCount(epochWave, channel, channelType)
 	EnsureLargeEnoughWave(epochWave, indexShouldExist = i, dimension = ROWS)
