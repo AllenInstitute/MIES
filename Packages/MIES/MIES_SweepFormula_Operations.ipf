@@ -2981,7 +2981,7 @@ End
 
 static Function [WAVE/D inflectionCurrent, WAVE/D inflectionFreq] SFO_OperationIVSCCApFrequencyGetInflectionPoints(STRUCT SF_ExecutionData &exd, variable numExp)
 
-	variable i, size
+	variable i, size, maxIdx
 	string lbl
 
 	WAVE/WAVE varStorage = GetSFVarStorage(exd.graph)
@@ -2990,10 +2990,18 @@ static Function [WAVE/D inflectionCurrent, WAVE/D inflectionFreq] SFO_OperationI
 	FastOp inflectionFreq = (NaN)
 	for(i = 0; i < numExp; i += 1)
 		sprintf lbl, "freqNorm%d", i
-		WAVE freqStor = WaveRef(SF_ResolveDataset(varStorage[%$lbl]), row = 0)
+		WAVE/WAVE freqDatasets = SF_ResolveDataset(varStorage[%$lbl])
+		if(DimSize(freqDatasets, ROWS) == 0)
+			continue
+		endif
+		WAVE freqStor = freqDatasets[0]
 		Duplicate/FREE freqStor, freq
 		sprintf lbl, "currentNormMerged%d", i
-		WAVE currentStor = WaveRef(SF_ResolveDataset(varStorage[%$lbl]), row = 0)
+		WAVE/WAVE currentDatasets = SF_ResolveDataset(varStorage[%$lbl])
+		if(DimSize(currentDatasets, ROWS) == 0)
+			continue
+		endif
+		WAVE currentStor = currentDatasets[0]
 		Duplicate/FREE currentStor, current
 
 		Sort current, current, freq
@@ -3007,10 +3015,18 @@ static Function [WAVE/D inflectionCurrent, WAVE/D inflectionFreq] SFO_OperationI
 		endif
 		Make/FREE/N=(size - 1) slopeDirection
 		slopeDirection[] = sign(freq[p + 1] - freq[p])
-		FindValue/Z/V=(-1) slopeDirection
-		if(V_value != -1)
-			inflectionCurrent[i] = current[V_row]
-			inflectionFreq[i]    = freq[V_row]
+		if(slopeDirection[Inf] < 0)
+			SetScale/P x, 0, 0.1, "test", freq
+			WaveStats/Q/M=1 freq
+			maxIdx               = ScaleToIndex(freq, V_maxloc, ROWS)
+			inflectionCurrent[i] = current[maxIdx]
+			inflectionFreq[i]    = freq[maxIdx]
+		else
+			FindValue/Z/V=(-1) slopeDirection
+			if(V_value != -1)
+				inflectionCurrent[i] = current[V_row]
+				inflectionFreq[i]    = freq[V_row]
+			endif
 		endif
 	endfor
 
@@ -3432,6 +3448,9 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 		WAVE/WAVE wvY = SF_ResolveDataset(varStorage[%$varName])
 		sprintf varName, "currentNormMerged%d", i
 		WAVE/WAVE wvX = SF_ResolveDataset(varStorage[%$varName])
+		if(DimSize(wvY, ROWS) == 0 || DimSize(wvX, ROWS) == 0)
+			continue
+		endif
 
 		WAVE wvXdata = wvX[0]
 		WAVE wvYdata = wvY[0]
@@ -3452,6 +3471,10 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 		Concatenate/FREE/NP=(ROWS) {wvX[0]}, currentAll
 		Concatenate/FREE/NP=(ROWS) {wvY[0]}, freqAll
 	endfor
+
+	[s] = GetTraceColorNonHeadstage(traceIndex)
+	Make/FREE/W/U traceColor = {s.red, s.green, s.blue, 0xFFFF}
+
 	// trace with apfrequency points from all experiments concatenated
 	Note/K currentAll
 	Note/K freqAll
@@ -3460,18 +3483,18 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 	WAVE/WAVE wvYAllRef = SFH_CreateSFRefWave(exd.graph, opShort, 1)
 	wvXAllRef[0] = currentAll
 	wvYAllRef[0] = freqAll
+	JWN_SetWaveInWaveNote(freqAll, SF_META_TRACECOLOR, traceColor)
 	JWN_SetNumberInWaveNote(freqAll, SF_META_TRACE_MODE, TRACE_DISPLAY_MODE_LINES)
 	JWN_SetNumberInWaveNote(freqAll, SF_META_LINESTYLE, 2)
 	JWN_SetStringInWaveNote(freqAll, SF_META_LEGEND_LINE_PREFIX, tagList + " ivscc_apfrequency concat")
 	SFH_AppendPlotSpecificationWith(plotWITH, wvYAllRef, wvXAllRef)
 	// DAScale trace
 	JWN_SetStringInWaveNote(inflFreqRef[0], SF_META_LEGEND_LINE_PREFIX, tagList + " ivscc_apfrequency DAScale")
+	JWN_SetWaveInWaveNote(inflFreqRef[0], SF_META_TRACECOLOR, traceColor)
 	JWN_SetNumberInWaveNote(inflFreqRef[0], SF_META_MOD_MARKER, 1)
 	SFH_AppendPlotSpecificationWith(plotWITH, inflFreqRef, inflCurrentRef)
 	// DAScale average trace (single point)
 	JWN_SetStringInWaveNote(inflFreqAvgRef[0], SF_META_LEGEND_LINE_PREFIX, tagList + " ivscc_apfrequency DAScale Avg")
-	[s] = GetTraceColorForAverage()
-	Make/FREE/W/U traceColor = {s.red, s.green, s.blue, 0xFFFF}
 	JWN_SetWaveInWaveNote(inflFreqAvgRef[0], SF_META_TRACECOLOR, traceColor)
 	JWN_SetNumberInWaveNote(inflFreqAvgRef[0], SF_META_MOD_MARKER, 18)
 	SFH_AppendPlotSpecificationWith(plotWITH, inflFreqAvgRef, inflCurrentAvgRef)
@@ -3483,7 +3506,8 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 		if(DimSize(wvY, ROWS) > 0)
 			JWN_SetStringInWaveNote(wvY[0], SF_META_LEGEND_LINE_PREFIX, tagList + " ivscc_apfrequency avg " + args.avgMode)
 		endif
-		JWN_SetStringInWaveNote(wvY, SF_META_XAXISLABEL, "x value") // activates x values
+		JWN_SetStringInWaveNote(wvY, SF_META_XAXISLABEL, "placeholder") // activates x values
+		JWN_SetWaveInWaveNote(wvY[0], SF_META_TRACECOLOR, traceColor)
 		SFO_OperationIVSCCApFrequencySetPlotProperties(wvY, args.xAxisPercentage, args.yAxisPercentage)
 		varName = "ivsccavg_norm_x"
 		WAVE/WAVE wvX = SF_ResolveDataset(varStorage[%$varName])
