@@ -82,7 +82,7 @@ Function TestAnalysisBrowserAddingFiles()
 	PGC_SetAndActivateControl(abWin, "button_AB_Remove")
 	CHECK_EQUAL_VAR(GetNumberFromWaveNote(map, NOTE_INDEX), DimSize(files, ROWS))
 
-	MIES_AB#AB_AddFiles(abWin, {fileToReadd})
+	AB_AddFilesAndFolders(abWin, {fileToReadd})
 	CHECK_EQUAL_VAR(GetNumberFromWaveNote(map, NOTE_INDEX), DimSize(files, ROWS))
 End
 
