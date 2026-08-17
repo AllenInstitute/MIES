@@ -5797,7 +5797,7 @@ Function/WAVE GetAnalysisBrowserTagsColors()
 	return wv
 End
 
-/// @brief Return the text wave used in the folder listbox of the analysis browser
+/// @brief Return the text wave used in the file/folder listbox of the analysis browser
 Function/WAVE GetAnalysisBrowserGUIFolderList()
 
 	string   name          = "AnaBrowserFolderList"
@@ -5821,7 +5821,7 @@ Function/WAVE GetAnalysisBrowserGUIFolderList()
 	return wv
 End
 
-/// @brief Return the selection wave used in the folder listbox of the analysis browser
+/// @brief Return the selection wave used in the file/folder listbox of the analysis browser
 Function/WAVE GetAnalysisBrowserGUIFolderSelection()
 
 	string   name          = "AnaBrowserFolderSelection"
@@ -5847,7 +5847,7 @@ Function/WAVE GetAnalysisBrowserGUIFolderSelection()
 	return wv
 End
 
-/// @brief Return the color wave used in the folder listbox of the analysis browser
+/// @brief Return the color wave used in the file/folder listbox of the analysis browser
 Function/WAVE GetAnalysisBrowserGUIFolderColors()
 
 	string   name          = "AnaBrowserFolderColors"
