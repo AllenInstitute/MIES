@@ -64,6 +64,7 @@ XOPs-MacOSX-64bit       export-ignore
 
 *.pxp filter=compress
 *.nwb filter=compress
+tools/uv.exe filter=compress
 
 # github specialities, see https://github.com/github/linguist
 Packages/doc/** linguist-documentation
