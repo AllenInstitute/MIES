@@ -3152,10 +3152,7 @@ Function AB_ButtonProc_AddFolder(STRUCT WMButtonAction &ba) : ButtonControl
 				break
 			endif
 
-			AB_AddElementToSourceList(folder)
-
-			Make/FREE/T wFolder = {folder}
-			AB_AddExperimentEntries(ba.win, wFolder)
+			AB_AddFilesAndFolders(ba.win, {folder})
 			AB_CollapseAll()
 			break
 		default:
