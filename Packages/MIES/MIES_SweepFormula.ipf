@@ -1254,7 +1254,7 @@ static Function SF_AddErrorBars(string graph, string win, WAVE wvY, string trace
 			case SF_ERRORBARSTYLE_NORMAL:
 				break
 			case SF_ERRORBARSTYLE_SHADED:
-				ErrorBars/W=$win $traceName, SHADE={0, style[%FILLMODE], (style[%FGCOLOR_R], style[%FGCOLOR_G], style[%FGCOLOR_B]), (style[%BGCOLOR_R], style[%BGCOLOR_G], style[%BGCOLOR_B]), style[%NEGFILLMODE], (style[%NEGFGCOLOR_R], style[%NEGFGCOLOR_G], style[%NEGFGCOLOR_B]), (style[%NEGBGCOLOR_R], style[%NEGBGCOLOR_G], style[%NEGBGCOLOR_B])}, nochange
+				ErrorBars/W=$win $traceName, SHADE={0, style[%FILLMODE], (style[%FGCOLOR_R], style[%FGCOLOR_G], style[%FGCOLOR_B], style[%FGCOLOR_A]), (style[%BGCOLOR_R], style[%BGCOLOR_G], style[%BGCOLOR_B], style[%BGCOLOR_A]), style[%NEGFILLMODE], (style[%NEGFGCOLOR_R], style[%NEGFGCOLOR_G], style[%NEGFGCOLOR_B], style[%NEGFGCOLOR_A]), (style[%NEGBGCOLOR_R], style[%NEGBGCOLOR_G], style[%NEGBGCOLOR_B], style[%NEGBGCOLOR_A])}, nochange
 				break
 			// Changing the errorbar style to BOX without setting the errorbar data again does currently not compile in IP <= 10.02
 			// WM issue #8288, probably fixed in IP10.04
@@ -1262,7 +1262,7 @@ static Function SF_AddErrorBars(string graph, string win, WAVE wvY, string trace
 			//				if(IsNaN(style[%BOXCOLOR_R]))
 			//					ErrorBars/W=$win $traceName, BOX nochange, nochange
 			//				else
-			//					ErrorBars/W=$win $traceName, BOX=(style[%BOXCOLOR_R], style[%BOXCOLOR_G], style[%BOXCOLOR_B]) nochange, nochange
+			//					ErrorBars/W=$win $traceName, BOX=(style[%BOXCOLOR_R], style[%BOXCOLOR_G], style[%BOXCOLOR_B], style[%BOXCOLOR_A]) nochange, nochange
 			//				endif
 			//				break
 			case SF_ERRORBARSTYLE_ELLIPSE:
