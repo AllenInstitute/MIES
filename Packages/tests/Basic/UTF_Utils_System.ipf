@@ -171,3 +171,15 @@ static Function TestCacheBackupAndRestoreNoWaves()
 
 	CHECK(IsDataFolderEmpty(dfr))
 End
+
+#if IgorVersion() >= 10
+
+static Function TestGetPythonScriptsFolder()
+
+	string loc = GetPythonScriptsFolder()
+
+	CHECK_PROPER_STR(loc)
+	CHECK(FolderExists(loc))
+End
+
+#endif
