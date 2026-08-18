@@ -3383,6 +3383,8 @@ End
 
 static Function [WAVE/WAVE inflCurrentRef, WAVE/WAVE inflFreqRef, WAVE/WAVE inflCurrentAvgRef, WAVE/WAVE inflFreqAvgRef] SFO_OperationIVSCCApFrequencyGetInflectionTraces(STRUCT SF_ExecutionData &exd, string opShort, variable numExp)
 
+	variable xSE
+
 	[WAVE inflectionCurrent, WAVE inflectionFreq] = SFO_OperationIVSCCApFrequencyGetInflectionPoints(exd, numExp)
 
 	WAVE/WAVE inflCurrentRef = SFH_CreateSFRefWave(exd.graph, opShort, 1)
@@ -3392,9 +3394,21 @@ static Function [WAVE/WAVE inflCurrentRef, WAVE/WAVE inflFreqRef, WAVE/WAVE infl
 	// avg with NaNs zapped
 	WAVE/Z inflectionCurrentZapped = ZapNaNs(inflectionCurrent)
 	WAVE/Z inflectionFreqZapped    = ZapNaNs(inflectionFreq)
-	Make/FREE/D/N=(1) inflCurrentAvg, inflFreqAvg
-	inflCurrentAvg[0] = WaveExists(inflectionCurrentZapped) ? mean(inflectionCurrentZapped) : NaN
-	inflFreqAvg[0]    = WaveExists(inflectionFreqZapped) ? mean(inflectionFreqZapped) : NaN
+	Make/FREE/D/N=(1) inflCurrentAvg = NaN
+	Make/FREE/D/N=(1) inflFreqAvg = NaN
+	if(WaveExists(inflectionCurrentZapped))
+		WaveStats/Q inflectionCurrentZapped
+		inflCurrentAvg[0] = V_avg
+		xSE               = V_sem
+	endif
+	if(WaveExists(inflectionFreqZapped))
+		WaveStats/Q inflectionFreqZapped
+		inflFreqAvg[0] = V_avg
+		JWN_SetWaveInWaveNote(inflFreqAvg, SF_META_ERRORBARYMINUS, {V_sem})
+		JWN_SetWaveInWaveNote(inflFreqAvg, SF_META_ERRORBARYPLUS, {V_sem})
+		JWN_SetWaveInWaveNote(inflFreqAvg, SF_META_ERRORBARXMINUS, {xSE})
+		JWN_SetWaveInWaveNote(inflFreqAvg, SF_META_ERRORBARXPLUS, {xSE})
+	endif
 
 	WAVE/WAVE inflCurrentAvgRef = SFH_CreateSFRefWave(exd.graph, opShort, 1)
 	WAVE/WAVE inflFreqAvgRef    = SFH_CreateSFRefWave(exd.graph, opShort, 1)
@@ -3406,7 +3420,7 @@ End
 
 static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData &exd, STRUCT IVSCCApFrequencyArgs &args, string opShort, WAVE/T tagGroup, variable traceIndex)
 
-	string varName, tagList, tagSuffix
+	string varName, tagList, tagSuffix, fitFormula
 	variable i, numExp
 
 	STRUCT RGBColor s
@@ -3425,11 +3439,16 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 
 	if(numExp > 1)
 		WAVE/Z fitRange = args.prepareFit[%RANGE]
+		fitFormula = "fit2($ivsccavg_norm_y, $ivsccavg_norm_x, $pfit)"
 		if(!WaveExists(fitRange))
 			args.prepareFit[%RANGE] = SFO_OperationIVSCCApFrequencyAdaptFitRange(exd)
+			SFH_AddVariableToStorage(exd.graph, "pfit", SFH_GetOutputForExecutor(args.prepareFit, exd.graph, opShort))
+			WAVE/WAVE fitResult = SFH_AddVariableToStorageByFormula(exd.graph, "ivscc_apfrequency_fit", fitFormula, opShort)
+			args.prepareFit[%RANGE] = $""
+		else
+			SFH_AddVariableToStorage(exd.graph, "pfit", SFH_GetOutputForExecutor(args.prepareFit, exd.graph, opShort))
+			WAVE/WAVE fitResult = SFH_AddVariableToStorageByFormula(exd.graph, "ivscc_apfrequency_fit", fitFormula, opShort)
 		endif
-		SFH_AddVariableToStorage(exd.graph, "pfit", SFH_GetOutputForExecutor(args.prepareFit, exd.graph, opShort))
-		WAVE/WAVE fitResult = SFH_AddVariableToStorageByFormula(exd.graph, "ivscc_apfrequency_fit", "fit2($ivsccavg_norm_y, $ivsccavg_norm_x, $pfit)", opShort)
 	endif
 
 	// build plot tree
