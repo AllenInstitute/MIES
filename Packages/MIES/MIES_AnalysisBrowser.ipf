@@ -3152,10 +3152,7 @@ Function AB_ButtonProc_AddFolder(STRUCT WMButtonAction &ba) : ButtonControl
 				break
 			endif
 
-			AB_AddElementToSourceList(folder)
-
-			Make/FREE/T wFolder = {folder}
-			AB_AddExperimentEntries(ba.win, wFolder)
+			AB_AddFilesAndFolders(ba.win, {folder})
 			AB_CollapseAll()
 			break
 		default:
@@ -3196,7 +3193,7 @@ Function AB_ButtonProc_AddFiles(STRUCT WMButtonAction &ba) : ButtonControl
 				break
 			endif
 			WAVE/T selFiles = ListToTextWave(fileList, "\r")
-			AB_AddFiles(ba.win, selFiles)
+			AB_AddFilesAndFolders(ba.win, selFiles)
 			AB_CheckFileTypeCheckbox(ba.win, selFiles)
 			AB_CollapseAll()
 			break
@@ -3245,26 +3242,31 @@ static Function AB_CheckFileTypeCheckbox(string win, WAVE/T files)
 	endfor
 End
 
-static Function AB_AddFiles(string win, WAVE/T selFiles)
+/// @brief Add files and folders to the analysis browser
+///
+/// @param win     analysis browser window
+/// @param entries text wave with absolute folder paths containing pxps/nwbs/uxps or absolute paths to files
+///                of that type (backslashes need escaping)
+Function AB_AddFilesAndFolders(string win, WAVE/T entries)
 
 	variable i, index, size
 
-	Duplicate/FREE/T selFiles, newFiles
+	Duplicate/FREE/T entries, newEntries
 
 	WAVE/T folderList = GetAnalysisBrowserGUIFolderList()
-	size = DimSize(selFiles, ROWS)
+	size = DimSize(entries, ROWS)
 	for(i = 0; i < size; i += 1)
-		FindValue/TEXT=selFiles[i]/TXOP=(TXOP_WHOLE_ELEM) folderList
+		FindValue/TEXT=entries[i]/TXOP=(TXOP_WHOLE_ELEM) folderList
 		if(V_Value >= 0)
 			continue
 		endif
-		AB_AddElementToSourceList(selFiles[i])
-		newFiles[index] = selFiles[i]
-		index          += 1
+		AB_AddElementToSourceList(entries[i])
+		newEntries[index] = entries[i]
+		index            += 1
 	endfor
-	Redimension/N=(index) newFiles
+	Redimension/N=(index) newEntries
 
-	AB_AddExperimentEntries(win, newFiles)
+	AB_AddExperimentEntries(win, newEntries)
 End
 
 static Function AB_AddElementToSourceList(string entry)
