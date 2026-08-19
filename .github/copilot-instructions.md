@@ -97,9 +97,13 @@ End
 
 ### Entry Guard: `PerformSubsystemEntry()`
 
-Public (non-`static`) functions in MIES generally start with `PerformSubsystemEntry()` (a
-`threadsafe` wrapper around `AssertOnAndClearRTError()`, defined in
-`MIES_Utilities_ProgramFlow.ipf`) as their first executable statement:
+Public (non-`static`) functions in MIES generally start with `PerformSubsystemEntry()`
+(defined in `MIES_Utilities_ProgramFlow.ipf`) as their first executable statement.
+`PerformSubsystemEntry()` itself is **not** `threadsafe` -- it has its own inline
+`GetAndClearRTError()`/`BUG()` logic. The `threadsafe` equivalent, for `threadsafe`
+functions, is the separate `PerformSubsystemEntry_TS()`, which does wrap
+`AssertOnAndClearRTError()`/`BUG_TS()`. Use `PerformSubsystemEntry_TS()` -- not
+`PerformSubsystemEntry()` -- as the entry guard for `threadsafe` public functions:
 
 - Insert it as the literal first executable statement after only plain `variable`/`string`/
   `STRUCT` declarations with non-function-call initializers (or as the very first line if there

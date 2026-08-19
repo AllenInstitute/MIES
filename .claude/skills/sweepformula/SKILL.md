@@ -19,15 +19,26 @@ general WAVE/DFREF semantics.
 
 ## Dataset Wrapping Convention
 
-Every SweepFormula operation result is a "dataset" — a single-element
-`WAVE/WAVE` container (typically built via `SFH_CreateSFRefWave`) carrying an
-`SF_META_DATATYPE` JSON wave note (set/read via `JWN_SetStringInWaveNote`/
-`JWN_GetStringFromWaveNote`) that identifies its kind (e.g.
-`SF_DATATYPE_SELECTCOMP`, `SF_DATATYPE_SELECTTAG`).
+A SweepFormula operation result is a "dataset": a `WAVE/WAVE` container
+(typically built via `SFH_CreateSFRefWave(win, opShort, size)`). `size` is
+**not** always 1 — most operations size it to match their input (e.g.
+`SFH_CreateSFRefWave(exd.graph, opShort, DimSize(input, ROWS))`, one output
+row per input row), and only some operations route through the
+single-element convenience wrapper `SFH_GetOutputForExecutorSingle` (which
+hardcodes `size=1`).
 
-- `SFH_GetOutputForExecutorSingle(data, ..., dataType=X)` wraps whatever it's
-  given in a **new** wrapper wave, setting the note on that new wrapper — it
-  never tags `data` itself.
+The `SF_META_DATATYPE` JSON wave note (set/read via `JWN_SetStringInWaveNote`/
+`JWN_GetStringFromWaveNote`) is **optional per-operation metadata**, not a
+universal property of every dataset — it identifies specific semantic kinds
+(e.g. `SF_DATATYPE_SELECTCOMP`, `SF_DATATYPE_SELECTTAG`) and is set only when
+an operation explicitly asks for it:
+
+- `SFH_GetOutputForExecutorSingle(data, ..., dataType=X)` only sets the note
+  when the optional `dataType` argument is actually supplied — most calls in
+  `MIES_SweepFormula_Operations_Select.ipf` do; plenty of other call sites
+  across the codebase omit `dataType` entirely and get no note at all. When
+  it does set the note, it wraps `data` in a **new** wrapper wave and tags
+  that wrapper — it never tags `data` itself.
 - `select()` is a deliberate counter-example: it builds its own composite
   wrapper directly, sets the note on it, and returns via
   `SFH_GetOutputForExecutor` — skipping `SFH_GetOutputForExecutorSingle`
@@ -48,8 +59,10 @@ dataset (`WAVE/WAVE`) elements, the executor:
    with side effects) to determine if any element is dataset-kind.
 2. If any element is a dataset, the **whole array** is promoted to a uniform
    wave-of-datasets accumulator (`outW`), with plain scalar/text elements
-   individually wrapped in their own single-element `"PromotedArrayElement"`
-   dataset (no `SF_META_DATATYPE` note on that wrapper).
+   individually wrapped via `Make/FREE/WAVE promoted = {subArray}`
+   (`MIES_SweepFormula_Executor.ipf`) into their own single-element
+   wave-of-waves wrapper — an ad hoc free wave, not a named/tagged dataset
+   kind (no `SF_META_DATATYPE` note is set on it).
 3. A dataset's own internal dimensionality must never leak into the outer
    array's shape — guard any dimension-widening logic with
    `if(!WaveExists(outW))` so the dataset accumulator stays strictly 1D

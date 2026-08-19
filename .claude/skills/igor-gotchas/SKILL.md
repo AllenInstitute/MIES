@@ -53,9 +53,14 @@ Important properties:
 - **Not compilable** — "`SetIgorOption` is not compilable. To use it in a
   user-defined function, you need to use `Execute`." Only `Execute`/`Execute/P`
   can invoke it, never a bare call from inside a `Function`.
-- **Triggers a recompile** the same way `RELOAD CHANGED PROCS`/
-  `COMPILEPROCEDURES` do — an `#ifdef`/`#ifndef` block gated on the symbol
-  only takes effect after the next compile.
+- **Does NOT itself trigger a recompile** — setting/clearing the symbol only
+  changes what a *subsequent* `RELOAD CHANGED PROCS`/`COMPILEPROCEDURES` call
+  will see. An `#ifdef`/`#ifndef` block gated on the symbol keeps its old
+  branch compiled in until a separate, explicit recompile actually runs --
+  every real call site in this repo issues the two as separate queued calls
+  (e.g. `MIES_Debugging.ipf`'s `EnableDebugMode()`/`DisableDebugMode()`/
+  `EnableEvilMode()`/etc.: `Execute/P/Q "SetIgorOption poundDefine=..."`
+  immediately followed by its own separate `Execute/P/Q "COMPILEPROCEDURES "`).
 
 ### `RELOAD CHANGED PROCS` / `COMPILEPROCEDURES` — separate calls, mandatory trailing space
 
@@ -101,15 +106,31 @@ this repo's tooling already uses).
 
 ## `Execute`, Deferred Execution, and Error Handling
 
-### `Execute` (unqueued) cannot be called from inside a `Function` at all
+### Bare `Execute` is legal inside a `Function` — `Execute/P` is only required for operations that can't run while the calling code is still on the stack
 
-Only `Execute/P` (deferred — runs after the calling function returns control
-to Igor's main loop) is legal inside a compiled function. This is a genuine
-language restriction, not a tooling limitation. Several operations —
-`COMPILEPROCEDURES`, `RELOAD CHANGED PROCS`, `SetIgorOption poundDefine` —
-are themselves restricted to only running via `Execute`/`Execute/P` in the
-first place, so this combination (`Execute/P "SetIgorOption ..."`) is often
-the only legal way to invoke them from procedure code.
+Bare, unqueued `Execute` (no `/P`) *is* legal from inside a compiled
+`Function` — Igor's own reference documentation confirms this is in fact the
+**standard**, intended use: "The most common use of Execute is to call a
+macro or an external operation from a user-defined function. This is
+necessary because Igor does not allow you to make such calls directly."
+(Igor Reference.ihf, "Execute [/Z] cmdStr"). This repo relies on it directly,
+e.g. `WBP_CreateWaveBuilderPanel()`'s `Execute "WaveBuilder()"`
+(`MIES_WaveBuilderPanel.ipf`) and `QueryIgorOption()`'s
+`Execute/Q "SetIgorOption " + option + "=?"` (`MIES_Debugging.ipf`).
+
+`Execute/P` (deferred — posted to Igor's operation queue, only running once
+"nothing else is happening... Macros and functions must not be running and
+the command line must be empty") is specifically required for operations
+that cannot run synchronously while the calling function itself is still on
+the call stack — most notably `COMPILEPROCEDURES`/`RELOAD CHANGED PROCS`
+(recompiling the very procedures the calling function is compiled from), and,
+for the same reason, a `SetIgorOption poundDefine`/`poundUndefine` call meant
+to take effect before an immediately-following queued compile. For commands
+without that constraint, a plain (optionally `/Q`/`/Z`-flagged) `Execute`
+from inside a `Function` works fine and is the documented pattern —
+`COMPILEPROCEDURES`/`RELOAD CHANGED PROCS`/`SetIgorOption` still need
+`Execute`/`Execute/P` rather than a bare compiled call (they are themselves
+non-compilable operations), just not exclusively the deferred form.
 
 ### A `;`-joined command string aborts entirely on its first runtime error
 
@@ -273,10 +294,13 @@ in the target folder afterward, or expect stray globals to trip a
 ### Auto-indexing order in waveform assignments
 
 An auto-indexed waveform assignment (e.g. `Make/WAVE/N=(n) w = SomeFunc(p)`)
-runs strictly in increasing index order when `Multithread` is **not** used.
-With `Multithread`, per-index execution order is not guaranteed and the
-right-hand side must be threadsafe. This matters whenever the called
-function has order-dependent side effects.
+evaluates the right-hand side once per destination element, strictly in
+increasing linear index order (`0, 1, 2, ..., numpnts(w)-1` — column-major
+for a multi-dimensional destination, i.e. all of column 0 before column 1,
+matching the `p`/`q`/`r`/`s` symbols' own progression) when `Multithread` is
+**not** used. With `Multithread`, per-index execution order is not
+guaranteed and the right-hand side must be threadsafe. This matters whenever
+the called function has order-dependent side effects.
 
 ### `MultiThread` works with any wave type -- the restriction is on the expression, not the wave
 
