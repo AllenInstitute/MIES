@@ -843,6 +843,48 @@ Independent Modules) -- but this restriction does **not** apply to direct
 Independent Module needing only wave/data-folder access (no function calls)
 into/out of another module needs no `Execute` indirection.
 
+### `for(elem : wv)` Range-Based Loops Are Equivalent to an Indexed Loop over `wv[i]`
+
+A range-based for loop (`for(<type> varName : <wave>) ... endfor`, added in
+Igor Pro 9.00) iterates over every element of a wave, regardless of its
+dimensionality:
+
+```igor
+for(String s : tw)
+    Print s
+endfor
+```
+
+- The loop variable's type must match the wave's element type: `string` for
+  a text wave, `WAVE` for a wave-reference wave, `DFREF` for a data-folder-
+  reference wave. For a numeric wave the type doesn't need to be an exact
+  match (e.g. a `variable` loop var is fine even over an integer wave). The
+  type can be omitted entirely if the loop variable (or the wave expression,
+  if it's a wave reference) was already declared earlier in the function.
+- For a multi-dimensional wave, iteration order is **column-major**: for a
+  2D wave, all rows of column 0, then all rows of column 1, and so on.
+
+This is genuinely equivalent to an indexed loop reading `wv[i]` for
+`i = 0` to `numpnts(wv) - 1`, confirmed both by Igor's own documentation and
+empirically for a multi-dimensional wave:
+
+```igor
+// Equivalent to: for(v : wv) ... endfor
+for(i = 0; i < numpnts(wv); i += 1)
+    variable elem = wv[i]
+    // ...
+endfor
+```
+
+This works because Igor's single-bracket point-indexing (`wv[i]`) is not
+limited to addressing row `i`, column 0 on a multi-dimensional wave --
+once the index exceeds the row count, it continues into column-major
+linear addressing across the wave's remaining dimensions, exactly matching
+`numpnts(wv)` and the range-based loop's own traversal order. Confirmed live
+against a 3x4 numeric wave: both `for(i=0; i<numpnts(wv); i+=1) wv[i]` and
+`for(v : wv)` produced the identical value sequence
+(`0;1;2;10;11;12;20;21;22;30;31;32`) in the identical order.
+
 ---
 
 ## 11. Quick Reference Table

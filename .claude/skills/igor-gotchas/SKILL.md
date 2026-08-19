@@ -278,6 +278,46 @@ With `Multithread`, per-index execution order is not guaranteed and the
 right-hand side must be threadsafe. This matters whenever the called
 function has order-dependent side effects.
 
+### `MultiThread` works with any wave type -- the restriction is on the expression, not the wave
+
+The `MultiThread` keyword (in front of a wave assignment statement inside a
+function, e.g. `MultiThread w = expr`) has no restriction based on the
+destination or source wave's data type. Confirmed against Igor's own
+"MultiThread" keyword reference and the "Automatic Parallel Processing with
+MultiThread" article (Advanced Topics.ihf): the entire discussion is about
+whether the *expression* (and any function it calls) is thread-safe, never
+about which wave type is involved. Igor's own docs explicitly cover
+`MultiThread` with numeric waves, and separately confirm it for wave
+reference waves (`WAVE/WAVE`, "You can use a wave reference wave as a list
+of waves for further processing and in multithreaded wave assignment using
+the MultiThread keyword") and data folder reference waves (`WAVE/DF`, same
+wording) -- Advanced Topics.ihf has dedicated worked examples for both
+("Wave Reference MultiThread Example", "Data Folder Reference MultiThread
+Example"), plus one for structure arrays ("Structure Array MultiThread
+Example"). This repo's own code confirms `MultiThread` with **text** waves
+too, e.g. `SFE_ConvertNonFiniteElements`
+(`MIES_SweepFormula_Executor.ipf`) reads a `WAVE/T` source
+(`subArray[p][q][r][s]`) via `MultiThread`, and
+`SFE_FormulaExecutor` writes into a `WAVE/T` destination
+(`Multithread outT[index][][][] = outT[index][0][0][0]`).
+
+The real constraints are about the *expression*, not the wave type:
+- It must be thread-safe -- any function it calls (built-in or
+  user-defined) must be thread-safe; user-defined functions need the
+  `ThreadSafe` keyword.
+- Do not reference any point of the destination wave other than the
+  current point (`p`/`q`/`r`/`s`) being computed -- e.g.
+  `wave1 = wave1[p+1] - wave1[p-1]` gives indeterminate results.
+- A thread-safe function called from the expression must not resize/
+  retype/kill any wave passed to it, write to a text wave passed to it, or
+  write to a variable passed by reference; any waves/globals it creates
+  itself disappear when the assignment finishes; and it cannot use `WAVE`/
+  `NVAR`/`SVAR` to reach into the main thread's data folder tree (each
+  thread has its own private data folder tree).
+- Only worth the overhead for a destination with a large number of points,
+  or an expensive expression -- for small waves `MultiThread` can be
+  slower than the unthreaded assignment.
+
 ### Igor Pro on Windows is single-instance-per-user for command-line launches
 
 Launching `Igor64.exe <path>` while an instance is already running does
