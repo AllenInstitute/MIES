@@ -14,6 +14,18 @@ Function GetZeroMQXOPFlags()
 	return ZeroMQ_SET_FLAGS_DEFAULT | ZeroMQ_SET_FLAGS_NOBUSYWAITRECV
 End
 
+/// @brief Stop every ZeroMQ socket/handler in this Igor Pro instance, then
+/// immediately rebind an active Igor Pro Bridge session (if present).
+Function StopZeroMQSockets()
+
+	Sleep/S 1 // workaround for issue #2768
+	zeromq_stop()
+
+#if exists("ZBR#ZBR_EnsureZeroMQBound")
+	ZBR#ZBR_EnsureZeroMQBound()
+#endif
+End
+
 /// @brief Start the ZeroMQ sockets and the message handler
 ///
 /// Debug note: Tracking the connection state can be done via
@@ -32,6 +44,15 @@ Function StartZeroMQSockets([variable forceRestart])
 		forceRestart = !!forceRestart
 	endif
 
+#if exists("ZBR#ZBR_EnsureZeroMQBound")
+	// The MIES code assumes that it is the only package that uses zeromq
+	// As optimization this function checks if the zeromq handler is running and if yes,
+	// assumes that MIES is already bound.
+	// With another zeromq user, like the Igor Pro Bridge, this assumption does not hold.
+	// forceRestart = 1 disables this optimization.
+	forceRestart = 1
+#endif
+
 	if(!forceRestart)
 		// do nothing if we are already running
 		AssertOnAndClearRTError()
@@ -42,7 +63,7 @@ Function StartZeroMQSockets([variable forceRestart])
 		endif
 	endif
 
-	zeromq_stop()
+	StopZeroMQSockets()
 
 	flags = GetZeroMQXOPFlags()
 
@@ -73,13 +94,22 @@ Function StartZeroMQSockets([variable forceRestart])
 	endif
 
 	if(numBinds == expectedBinds)
-		zeromq_handler_start()
-		return 0
+		AssertOnAndClearRTError()
+		zeromq_handler_start(); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
+		err = ConvertXOPErrorCode(err)
+		if(!err || err == ZeroMQ_HANDLER_ALREADY_RUNNING)
+			DEBUGPRINT("Successfully started zeromq handler")
+			return 0
+		endif
+		printf "Error %d starting ZeroMQ handler\r", err
+		ControlWindowToFront()
+		StopZeroMQSockets()
+		return 2
 	endif
 
 	printf "Could only establish %d ZeroMQ bind connections and not %d. Shutting down ZeroMQ subsystem.\r", numBinds, expectedBinds
 	ControlWindowToFront()
-	zeromq_stop()
+	StopZeroMQSockets()
 
 	return 2
 End
