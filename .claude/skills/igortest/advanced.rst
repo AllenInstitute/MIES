@@ -317,9 +317,18 @@ Supported types for `arg` are variable, string, complex, Integer64, data folder
 references and wave references. The type of the returned wave of the attributed
 data generator function must fit to the argument type that the multi data test
 case takes.
-The data generator function name must be attributed with a comment within four
-lines above the test cases Function line. The key word is `IUTF_TD_GENERATOR` with
-the data generators function name following as seen in the simple example here.
+The data generator function name must be attributed with a comment above the
+test case's Function line, using the key word `IUTF_TD_GENERATOR` with the data
+generator's function name following, as seen in the simple example here. This
+scan is not limited to a fixed number of lines -- confirmed against the
+implementation (`GetFunctionTagWave` in
+`Packages/igortest/procedures/igortest-functiontags.ipf`): it considers every
+comment line between the end of the previous function and the current
+`Function` line (matching the "all lines above Function up to the previous
+Function" statement above), trying each known tag pattern against every
+non-empty line and silently skipping any line that doesn't match. This means
+ordinary `///` doc-comment lines can be freely interspersed above a
+`// IUTF_TD_GENERATOR ...` tag line without breaking the attribution.
 If no data generator is given or the format of the test case function does not fit
 to the wave type then a error message is printed and the test run is aborted.
 

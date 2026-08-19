@@ -83,7 +83,85 @@ End
 - Use `ASSERT_TS()` for internal consistency checks in threadsafe functions
 - Use `FATAL_ERROR()` for code paths that unconditionally create an error
 - Use `SFH_ASSERT()` in SweepFormula operations for user-facing errors
+- Use `SFH_FATAL_ERROR(message, [jsonId])` instead of `SFH_ASSERT(0, message)` for SweepFormula
+  code paths that unconditionally abort -- the dedicated name makes "this always aborts" explicit
+  at the call site
 - Use `DEBUGPRINT()` for debug output (only active when `DEBUGGING_ENABLED` is defined)
+
+### Constants
+
+- Constants must be `static` whenever not needed cross-file, and declared at the top of the
+  procedure file in a dedicated block, not inline near their first use
+- Non-static/global constants belong only in `MIES_Constants.ipf` -- a new global constant
+  introduced elsewhere is a convention violation
+
+### Entry Guard: `PerformSubsystemEntry()`
+
+Public (non-`static`) functions in MIES generally start with `PerformSubsystemEntry()` (a
+`threadsafe` wrapper around `AssertOnAndClearRTError()`, defined in
+`MIES_Utilities_ProgramFlow.ipf`) as their first executable statement:
+
+- Insert it as the literal first executable statement after only plain `variable`/`string`/
+  `STRUCT` declarations with non-function-call initializers (or as the very first line if there
+  are none)
+- Split a declaration whose initializer is a scalar/string function call into a bare declaration
+  plus a separate assignment placed after the guard; literal initializers don't need splitting
+- `WAVE`/`DFREF`/`NVAR` declarations with function-call initializers are never split -- insert the
+  guard immediately before such a line instead
+- Do not add it to: `static` functions; pure public-to-public pass-throughs (the callee gets its
+  own guard, though a pass-through to a `static` callee still needs it since it is the sole public
+  entry point); empty prototype/`FUNCREF`-template functions; GUI control-event callbacks;
+  `PopupMenu value=#` functions; `CtrlNamedBackground proc=` callbacks; `SetWindow
+  hook(...)=`/`tooltipHook(...)=` functions; functions invoked only via `Menu`/`TablePopup`/
+  `userdata(Items)=` popup-extension buttons (these start from interpreted Igor Pro mode, not a
+  normal function-call chain)
+
+### Conditional Compilation Branches (`#if exists(...) / #else`)
+
+When a function is split into two independently-compiled real implementations behind
+`#if exists(...) #define X_PRESENT #else ... #endif` (e.g. `AMPLIFIER_XOPS_PRESENT` in
+`MIES_AmplifierInteraction.ipf`), both branches are real public functions with the same name and
+must receive equal treatment (entry guards, doc comments, etc.) in any repo-wide rollout of a new
+convention -- it is easy to update only the branch currently compiled in your own environment and
+miss the other one.
+
+### Scratch Code
+
+`Packages/MIES/MIES_ClaudeScrapCode.ipf` (`#include`d from `Packages/MIES_Include.ipf`) is a
+permanently-uncommitted scratch procedure file for throwaway helper/test code written during
+interactive AI-assisted sessions. Neither the file's contents nor its `#include` line are ever
+meant to be committed. Check and clean it up when switching branches -- scratch code calling
+`static`/module-qualified functions from one branch's task may fail to compile, or silently do
+something meaningless, on a different branch's code.
+
+## Common Pitfalls
+
+- `GetNotebookText(win, mode=N)`'s `mode` parameter is not interchangeable across call sites -- a
+  mode value copied from an unrelated call site can silently return an empty string for real
+  content. Check the specific mode the real code path you're touching actually uses (e.g.
+  `SF_GetCode` uses `mode=2` for the SweepFormula notebook) rather than assuming a mode number
+  transfers.
+- `SF_SetFormula(win, formula)` (non-static, `MIES_SweepFormula.ipf`) is the documented public API
+  for setting the SweepFormula notebook's contents (wraps `ReplaceNotebookText`) -- use it instead
+  of manipulating the notebook directly; pass `""` to clear.
+- `PGC_SetAndActivateControl` (`MIES_ProgrammaticGUIControl.ipf`) cannot drive row *selection* on a
+  "mode=9" (treeview/checkbox-style) `ListBox` -- neither the PGC call nor a raw `ListBox
+  ..., selRow=row` changes selection bits for this style. Selection must be set directly by
+  writing the `LISTBOX_SELECT_OR_SHIFT_SELECTION` bit into the control's `selWave` (the mechanism
+  the existing `ListBoxSelectAll`/Ctrl+A handler already uses). Not every GUI interaction has a
+  PGC equivalent.
+- Never end a `//` comment with a semicolon, regardless of indentation.
+  `tools/check-code.sh`'s trailing-semicolon regex has a blind spot on indented comment lines
+  (leading whitespace can be consumed by its backtracking match), so an indented `// comment;`
+  can slip through locally but still trip the same check elsewhere (e.g. the pre-push hook) --
+  treat the rule as absolute rather than relying on the local check catching every case.
+- A hardware hook function referenced only by name string (e.g.
+  `sprintf endFunc, "P_NI_StopDAQ(...)"` for a DAQmx `EOSH=` callback) is not caught by the
+  compiler if that function is later made `static` or renamed -- this is a real runtime-only risk
+  worth calling out explicitly during refactors rather than assuming the compiler would catch it.
+- A duplicate function name across two independently-included copies of the same file is a real,
+  specific compile error (`error: the name "X" already exists as a function`) -- relevant if a
+  procedure file could ever be reachable both by direct load and via `#include` at the same time.
 
 ## Build and Test
 
@@ -93,6 +171,35 @@ The repository uses pre-commit hooks configured in `.pre-commit-config.yaml`:
 
 - Run `./tools/run-ipt.sh lint -i --noreturn-func='FATAL_ERROR|SFH_FATAL_ERROR|FAIL'` for IPF formatting
 - Custom code checks via `./tools/check-code.sh`
+
+### Igor Programming Tool (`ipt`)
+
+`tools/ipt`/`tools/ipt.exe` (invoke via `tools/run-ipt.sh`) parses real Igor Pro source into a
+genuine AST/symbol table without needing a live Igor Pro instance. Reach for it proactively in any
+Igor Pro code task, not only when explicitly asked for a parse/AST -- use it as a standing habit
+alongside direct reading of the source, not as a replacement for it:
+
+- `ipt check [--print-ast] <files>` -- confirm a file/edit actually parses, or get an authoritative
+  AST (node types, precise line:column spans).
+- `ipt lint <files>` -- catches known bug/style patterns (e.g.
+  `BugproneReservedKeywordsAsIdentifier`, which flags a variable named after a reserved
+  **keyword/type** like `variable wave`, but does **not** flag one named after a built-in
+  **function** like `variable abs`/`string log` -- it has no symbol-resolution semantics for that
+  case, so built-in-function-name shadowing still needs manual review).
+- `ipt rename --print-symbol-table <files>` (with a full `-f`/`-l`/`-c`/`-n` target to avoid a
+  known no-target crash) -- a genuine cross-referenced symbol table (every
+  declaration/read/write/definition point with exact spans, function signatures); also usable for
+  the rename itself.
+- `ipt format` -- run this after every manual edit to a `.ipf` file, every time, not just when
+  restructuring -- it reformats the whole file consistently (aligned `=` across consecutive
+  assignment/declaration lines, a blank line separating local declarations from the first
+  statement), matching this repo's canonical formatting.
+- A clean `ipt check`/`ipt lint` pass only confirms syntax/style -- it does **not** confirm test
+  assertions or logic are correct (e.g. a dimension-mismatched `Make/FREE` between two waves being
+  compared can parse/lint cleanly and still fail at runtime). Always run new/changed tests live
+  against Igor Pro, never rely on `ipt` alone as a substitute for that.
+- `ipt` only knows about files explicitly passed via `files`/`-f` -- it does not resolve
+  `#include`s itself, so pass every file actually relevant to the question at hand.
 
 ### Running Tests
 
@@ -123,6 +230,23 @@ Test categories:
 - Data generator functions must be in Packages/tests/UTF_DataGenerators.ipf and declared as static
 - Any new utility function that is created for a generic task in either MIES_Utilities*.ipf or MIES_MiesUtilities*.ipf must have its own test cases
 - Test cases may call static MIES functions by prefixing the ModuleName defined in the MIES procedure files when AUTOMATED_TESTING is defined
+- Run a single test case via `RunWithOpts(testcase="TestName", testsuite="UTF_SomeFile.ipf")`
+  (MIES's own wrapper, in `Packages/tests/UTF_HelperFunctions.ipf`, around IgorTest's `RunTest`) --
+  never call the (`static`, module-scoped) test function directly. A direct call bypasses the
+  framework's fixture setup/teardown (e.g. leftover windows from earlier manual work can cause
+  spurious failures that `RunWithOpts` avoids via its normal per-test cleanup)
+- `testsuite` defaults to `GetDefaultTestSuitesForExperiment()` if omitted; `testcase` defaults to
+  every test case in the suite. `enableRegExp=1` matches both `testsuite`/`testcase` as anchored,
+  case-insensitive regexes, but then `testsuite` must include the `.ipf` extension
+- A test that deliberately triggers an internal `ASSERT`/prints `"!!! Assertion FAILED !!!"`
+  inside its own `try`/`catch` (to verify a function correctly rejects bad input) is expected
+  console output, not a real failure -- it will not appear in the suite's final failure list
+- `TestEndCommon()` (`Packages/tests/UTF_HelperFunctions.ipf`) must never call the ZeroMQ XOP's
+  raw `zeromq_stop()` unconditionally -- that operation tears down *every* ZeroMQ socket in the
+  whole Igor Pro instance (not just test-related ones), which can kill an unrelated, live ZeroMQ
+  connection (e.g. an interactive AI-assisted bridge session) process-wide. Any such cleanup call
+  must be gated (e.g. behind `#ifndef IGOR_PRO_BRIDGE`) so it still runs in CI but can be excluded
+  when something else in the same process depends on ZeroMQ staying up
 
 ### Building Documentation
 

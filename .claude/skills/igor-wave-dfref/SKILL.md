@@ -749,6 +749,100 @@ WAVE/T wv = ListToTextWave(listStr, separatorStr)
 // code working with wv
 ```
 
+### Wave Versioning Migration Must Use Independent `if` Blocks
+
+When a wave getter upgrades an old wave layout across multiple versions, use a
+sequence of independent `if(WaveVersionIsSmaller(wv, N))` blocks (`N`
+increasing), never an exclusive `if/elseif` chain. An `elseif` chain can skip
+needed intermediate migration steps for a wave that is several versions behind
+the latest.
+
+When a migration step widens a wave's dimensions, `Redimension` to the new
+size **before** writing to any newly-added column/row index -- Igor
+bounds-checks wave assignments, so writing to column 3 of a wave still sized
+at 3 columns (valid indices 0..2) throws a runtime error instead of migrating:
+
+```igor
+// WRONG -- writes before the wave is big enough:
+wv[][3] = someValue   // errors if wv only has 3 columns (0..2)
+Redimension/N=(-1, 4) wv
+
+// CORRECT -- resize first, then write:
+Redimension/N=(-1, 4) wv
+wv[][3] = someValue
+```
+
+### A `WAVE name = expr` Declaration Cannot Reference Its Own Name in `expr`
+
+The compiler rejects a `WAVE name = expr` declaration where `name` itself
+appears inside `expr` as an argument, even if `name` was already declared
+earlier in the function:
+
+```igor
+// WRONG -- does not compile:
+WAVE data = SomeFunc(data)
+
+// CORRECT -- introduce a second reference under a different name:
+WAVE/Z tmp = data
+WAVE data = SomeFunc(tmp)
+```
+
+This differs from a destructuring *reassignment* via Multiple Return Syntax
+(e.g. `[out, outT] = SomeFunc(out, outT)`), which is legal -- it updates
+already-declared references rather than re-declaring them.
+
+### `Make/N=(...)`: a Trailing Dimension Size of 0 vs. 1
+
+An explicit dimension size of `0` in `Make/N=(...)` means "this dimension
+does not exist," while `1` creates a real, if trivial, additional dimension.
+`Make/N=(n, 1, 1, 1)` is **not** equivalent to a true 1D wave --
+`DimSize(wv, COLS)` is `1`, not `0`, in that case. MIES convention: a
+wave-of-waves value that must be strictly 1D (e.g. asserted via
+`DimSize(wv, COLS) == 0` in some helpers, or `GetWaveDimensionality(wv) ==
+ROWS` -- see `MIES_Utilities_WaveHandling.ipf` -- as the idiom for "this wave
+is 1D") should be created with `0`/omitted trailing dimensions, never `1`.
+
+### `Variable/G name = value` Overwrites an Existing Global Every Time
+
+`Variable/G name = value`, with an explicit initializer, overwrites the
+global's current value every time that line executes, even if the global
+already exists (per the Igor Reference: "`/G` ... overwrites any existing
+variable"). For code that must run unconditionally on every invocation
+without resetting an existing value, use the bare form with no initializer:
+
+```igor
+// WRONG if this runs more than once and the value should persist between calls:
+Variable/G root:Packages:MyPkg:counter = 0
+
+// CORRECT -- creates at 0 only if missing, leaves an existing value untouched:
+Variable/G root:Packages:MyPkg:counter
+```
+
+No `NVAR_Exists`-style guard is needed for this bare form.
+
+### Never Name a Local After an Igor Built-in Function or Keyword
+
+The compiler does not stop a local variable/string/`WAVE` reference from
+being named after a built-in Igor function or reserved keyword (e.g.
+`string log` shadows `log()`). This compiles cleanly but silently breaks any
+code in that scope expecting the real built-in behavior. Never name a
+variable/string/WAVE reference after an Igor built-in function or reserved
+keyword -- check the name against `.claude/skills/igor-commands/SKILL.md`
+before choosing it if there's any doubt. Note that `ipt lint`'s
+`BugproneReservedKeywordsAsIdentifier` check only flags shadowing a reserved
+**keyword/type** (e.g. `variable wave`), not a built-in **function** name
+(e.g. `variable abs`) -- it has no symbol-resolution semantics for that case,
+so this specific mistake must still be caught by manual review.
+
+### WAVE/DFREF References Are Not Scoped by Independent Modules
+
+Independent Modules cannot call functions in other modules except through
+`Execute` (per Igor's own "Advanced Topics" documentation on Limitations of
+Independent Modules) -- but this restriction does **not** apply to direct
+`WAVE`/`DFREF` references, which aren't module-scoped at all. Code in an
+Independent Module needing only wave/data-folder access (no function calls)
+into/out of another module needs no `Execute` indirection.
+
 ---
 
 ## 11. Quick Reference Table
