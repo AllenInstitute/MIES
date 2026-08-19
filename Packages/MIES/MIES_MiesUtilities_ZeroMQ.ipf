@@ -14,45 +14,24 @@ Function GetZeroMQXOPFlags()
 	return ZeroMQ_SET_FLAGS_DEFAULT | ZeroMQ_SET_FLAGS_NOBUSYWAITRECV
 End
 
-/// @brief Start the ZeroMQ sockets and the message handler
-///
-/// Debug note: Tracking the connection state can be done via
-/// `netstat | grep $port`. The binded port only shows up *after* a
-/// successfull connection with zeromq_client_connect() is established.
-///
-/// @return 0 on success, 1 if already running and 2 on error
-Function StartZeroMQSockets([variable forceRestart])
-
-	variable err, numBinds, flags, port
-	variable expectedBinds = 2
-
-	if(ParamIsDefault(forceRestart))
-		forceRestart = 0
-	else
-		forceRestart = !!forceRestart
-	endif
-
-	if(!forceRestart)
-		// do nothing if we are already running
-		AssertOnAndClearRTError()
-		zeromq_handler_start(); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
-		if(ConvertXOPErrorCode(err) == ZeroMQ_HANDLER_ALREADY_RUNNING)
-			DEBUGPRINT("Already running, nothing to do.")
-			return 1
-		endif
-	endif
+/// @brief Stop every ZeroMQ socket/handler in this Igor Pro instance, then
+/// immediately rebind an active Igor Pro Bridge session (if present).
+Function StopZeroMQSockets()
 
 	zeromq_stop()
 
-	flags = GetZeroMQXOPFlags()
-
-	zeromq_set(flags)
-
-#if defined(DEBUGGING_ENABLED)
-	if(DP_DebuggingEnabledForCaller())
-		zeromq_set(flags | ZeroMQ_SET_FLAGS_DEBUG)
-	endif
+#if exists("ZBR#ZBR_EnsureZeroMQBound")
+	ZBR#ZBR_EnsureZeroMQBound()
 #endif
+End
+
+/// @brief Bind the server and publisher endpoints of MIES
+///
+/// @returns number of successful binds
+static Function BindZeroMQEndpoints()
+
+	variable err, port
+	variable numBinds = 0
 
 	AssertOnAndClearRTError()
 	port = ZEROMQ_BIND_REP_PORT
@@ -72,14 +51,69 @@ Function StartZeroMQSockets([variable forceRestart])
 		numBinds += 1
 	endif
 
-	if(numBinds == expectedBinds)
-		zeromq_handler_start()
-		return 0
+	return numBinds
+End
+
+/// @brief Start the ZeroMQ sockets and the message handler
+///
+/// Debug note: Tracking the connection state can be done via
+/// `netstat | grep $port`. The binded port only shows up *after* a
+/// successfull connection with zeromq_client_connect() is established.
+///
+/// @return 0 on success, 1 if already running and 2 on error
+Function StartZeroMQSockets([variable forceRestart])
+
+	variable err, numBinds, flags
+	variable expectedBinds = 2
+
+	if(ParamIsDefault(forceRestart))
+		forceRestart = 0
+	else
+		forceRestart = !!forceRestart
 	endif
 
-	printf "Could only establish %d ZeroMQ bind connections and not %d. Shutting down ZeroMQ subsystem.\r", numBinds, expectedBinds
+	if(!forceRestart)
+		AssertOnAndClearRTError()
+		zeromq_handler_start(); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
+		if(ConvertXOPErrorCode(err) == ZeroMQ_HANDLER_ALREADY_RUNNING)
+			if(!BindZeroMQEndpoints())
+				DEBUGPRINT("Already running, nothing to do.")
+				return 1
+			endif
+
+			return 0
+		endif
+	endif
+
+	StopZeroMQSockets()
+
+	flags = GetZeroMQXOPFlags()
+
+	zeromq_set(flags)
+
+#if defined(DEBUGGING_ENABLED)
+	if(DP_DebuggingEnabledForCaller())
+		zeromq_set(flags | ZeroMQ_SET_FLAGS_DEBUG)
+	endif
+#endif
+
+	numBinds = BindZeroMQEndpoints()
+
+	if(numBinds == expectedBinds)
+		AssertOnAndClearRTError()
+		zeromq_handler_start(); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
+		err = ConvertXOPErrorCode(err)
+		if(!err || err == ZeroMQ_HANDLER_ALREADY_RUNNING)
+			DEBUGPRINT("Successfully started zeromq handler")
+			return 0
+		endif
+		printf "Error %d starting ZeroMQ handler\r", err
+	else
+		printf "Could only establish %d ZeroMQ bind connections and not %d. Shutting down ZeroMQ subsystem.\r", numBinds, expectedBinds
+	endif
+
 	ControlWindowToFront()
-	zeromq_stop()
+	StopZeroMQSockets()
 
 	return 2
 End
