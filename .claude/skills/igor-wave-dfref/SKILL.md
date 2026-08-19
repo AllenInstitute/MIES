@@ -885,6 +885,53 @@ against a 3x4 numeric wave: both `for(i=0; i<numpnts(wv); i+=1) wv[i]` and
 `for(v : wv)` produced the identical value sequence
 (`0;1;2;10;11;12;20;21;22;30;31;32`) in the identical order.
 
+### Fractional Point Indices: 1D Waves Interpolate, Multi-Dimensional Waves Round to Nearest
+
+Single-bracket point-indexing with a **fractional** index (`wv[2.7]`) behaves
+completely differently depending on the wave's dimensionality -- this is
+Igor's own documented behavior (`Multidimensional Waves.ihf`, "Multidimensional
+Wave Indexing"): "There is one important difference between wave access using
+1D waves versus multidimensional waves. For 1D waves alone, Igor performs
+linear interpolation when the specified index value, whether scaled or
+unscaled, falls between two points. For multidimensional waves, Igor returns
+the value of the element whose indices are closest to the specified indices."
+
+- **1D wave**: a fractional index triggers **linear interpolation** between
+  the two neighboring points -- the result is generally *not* one of the
+  wave's stored values at all.
+- **Multi-dimensional wave** (2D/3D/4D): a fractional index in any dimension
+  is **rounded to the nearest integer index** (not truncated/floored) and
+  Igor returns that exact grid point's value -- no interpolation across
+  dimensions.
+
+This means a fractional index is **not** truncated in either case, and it is
+**not** "rounded for 1D, truncated for multi-D" -- if anything the relationship
+is closer to the opposite of that (1D interpolates rather than picking a
+single rounded index at all; multi-D rounds rather than truncating).
+
+Confirmed empirically against a 1D wave `wv1d = p` (values 0..4 at points
+0..4) and a 2D wave `wv2d = p + 10*q`:
+
+```igor
+// 1D: fractional index interpolates -- result is not an integer wave value
+wv1d[2.3]  // 2.3  (linearly interpolated between wv1d[2]=2 and wv1d[3]=3)
+wv1d[2.5]  // 2.5
+wv1d[2.7]  // 2.7
+
+// 2D: fractional index rounds each dimension to its nearest integer point
+wv2d[2.3][1]  // 12  (row rounds 2.3 -> 2;  wv2d[2][1] = 2 + 10*1 = 12)
+wv2d[2.5][1]  // 13  (row rounds 2.5 -> 3;  wv2d[3][1] = 3 + 10*1 = 13 -- NOT truncated to 12)
+wv2d[2.7][1]  // 13  (row rounds 2.7 -> 3)
+wv2d[1][2.3]  // 21  (col rounds 2.3 -> 2;  wv2d[1][2] = 1 + 10*2 = 21)
+wv2d[1][2.5]  // 31  (col rounds 2.5 -> 3;  wv2d[1][3] = 1 + 10*3 = 31 -- NOT truncated to 21)
+wv2d[1][2.7]  // 31  (col rounds 2.7 -> 3)
+```
+
+The `2.5`/`2.7` cases are the ones that distinguish rounding from truncation:
+truncation would give `12`/`21` (flooring to `2`) in every one of those rows,
+but the actual results are `13`/`31` (rounding up to `3`), matching "closest to
+the specified index," not "truncated toward zero."
+
 ---
 
 ## 11. Quick Reference Table
