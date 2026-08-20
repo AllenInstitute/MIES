@@ -957,7 +957,7 @@ End
 
 Function TestEndCommon()
 
-	zeromq_stop()
+	StopZeroMQSockets()
 End
 
 Function TestCaseBeginCommon(string testcase)
@@ -1932,6 +1932,7 @@ static Function/S GetDefaultTestSuitesForExperiment()
 			list = AddListItem("UTF_Utils_Mies_Config.ipf", list, ";", Inf)
 			list = AddListItem("UTF_Utils_Mies_Logging.ipf", list, ";", Inf)
 			list = AddListItem("UTF_Utils_Mies_Sweep.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Utils_Mies_ZeroMQ.ipf", list, ";", Inf)
 			list = AddListItem("UTF_Utils_Numeric.ipf", list, ";", Inf)
 			list = AddListItem("UTF_Utils_ProgramFlow.ipf", list, ";", Inf)
 			list = AddListItem("UTF_Utils_Strings.ipf", list, ";", Inf)
