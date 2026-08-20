@@ -2379,7 +2379,18 @@ Function SFH_CopyPlotMetaData(WAVE dest, WAVE src)
 	JWN_SetNumberInWaveNote(dest, SF_META_LINESTYLE, JWN_GetNumberFromWaveNote(src, SF_META_LINESTYLE))
 End
 
+/// @brief Adds a variable to the variable storage from a given formula. If the variable already exists it is overwritten.
+Function/WAVE SFH_AddVariableToStorageByFormula(string graph, string name, string formula, string opShort)
+
+	WAVE/WAVE result = SFE_ExecuteFormula(formula, graph, preProcess = 0)
+	SFH_AddVariableToStorage(graph, name, SFH_GetOutputForExecutor(result, graph, opShort))
+
+	return result
+End
+
 Function SFH_SetTraceStyleForFit(WAVE fitData, string errorbarStyle)
+
+	variable transparency = 64
 
 	JWN_SetWaveInWaveNote(fitData, SF_META_TRACECOLOR, {0, 0, 0}) // black
 	JWN_SetNumberInWaveNote(fitData, SF_META_TRACE_MODE, TRACE_DISPLAY_MODE_LINES)
@@ -2390,15 +2401,52 @@ Function SFH_SetTraceStyleForFit(WAVE fitData, string errorbarStyle)
 			break
 		case SF_PREPAREFIT_ERRORBARSTYLE_SHADED:
 			wErrorbarStyle[%TYPE]         = SF_ERRORBARSTYLE_SHADED
-			wErrorbarStyle[%FILLMODE]     = 5
+			wErrorbarStyle[%FILLMODE]     = 5 // solid fill 25% gray, background color not relevant
 			wErrorbarStyle[%FGCOLOR_R]    = 192 << 8
-			wErrorbarStyle[%BGCOLOR_R]    = 192 << 8
+			wErrorbarStyle[%FGCOLOR_A]    = transparency << 8
 			wErrorbarStyle[%NEGFILLMODE]  = 5
 			wErrorbarStyle[%NEGFGCOLOR_B] = 192 << 8
-			wErrorbarStyle[%NEGBGCOLOR_B] = 192 << 8
+			wErrorbarStyle[%NEGFGCOLOR_A] = transparency << 8
 			break
 		default:
 			FATAL_ERROR("Unhandled errorbar style")
 	endswitch
 	JWN_SetWaveInWaveNote(fitData, SF_META_ERRORBARSTYLE, wErrorbarStyle)
+End
+
+/// @brief simple helper to append X,Y trace data to a plotWITH part of a full plotting specification
+///        (plotWITH is a sub wave of plotAND)
+Function SFH_AppendPlotSpecificationWith(WAVE/WAVE plotWITH, WAVE wvY, WAVE/Z wvX)
+
+	variable size
+
+	size = DimSize(plotWITH, ROWS)
+	Redimension/N=(size + 1, -1) plotWITH
+
+	plotWITH[size][%FORMULAY] = wvY
+	plotWITH[size][%FORMULAX] = wvX
+End
+
+static Function/WAVE SFH_CreatePlotSpecificationWITH(variable numWITH)
+
+	ASSERT(IsNullOrPositiveAndInteger(numWITH), "numWITH must be zero or greater")
+
+	Make/FREE/WAVE/N=(numWITH, 2) plotWITH
+	SetDimlabel COLS, 0, FORMULAX, plotWITH
+	SetDimlabel COLS, 1, FORMULAY, plotWITH
+
+	return plotWITH
+End
+
+/// @brief Creates a plot specification wave where each AND part gets the same number of WITH plots
+Function/WAVE SFH_CreatePlotSpecificationAND(string graph, string opShort, variable numAND, variable numWITH)
+
+	ASSERT(IsGreaterNullAndInteger(numAND), "numAND must be greater than zero")
+	WAVE/WAVE plotAND = SFH_CreateSFRefWave(graph, opShort, numAND)
+
+	plotAND[] = SFH_CreatePlotSpecificationWITH(numWITH)
+
+	JWN_SetNumberInWaveNote(plotAND, SF_META_PLOT, 1)
+
+	return plotAND
 End

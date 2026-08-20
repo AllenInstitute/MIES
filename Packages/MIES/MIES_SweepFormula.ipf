@@ -132,7 +132,7 @@ Function/WAVE SF_GetNamedOperations()
 	                  SF_OP_SELECTIVSCCSWEEPQC, SF_OP_SELECTIVSCCSETQC, SF_OP_SELECTRANGE, SF_OP_SELECTEXP, SF_OP_SELECTDEV,            \
 	                  SF_OP_SELECTEXPANDSCI, SF_OP_SELECTEXPANDRAC, SF_OP_SELECTSETCYCLECOUNT, SF_OP_SELECTSETSWEEPCOUNT,               \
 	                  SF_OP_SELECTSCIINDEX, SF_OP_SELECTRACINDEX, SF_OP_ANAFUNCPARAM, SF_OP_CONCAT, SF_OP_TABLE, SF_OP_EXTRACT,         \
-	                  SF_OP_PREPAREFIT, SF_OP_FIT2, SF_OP_GETMETA, SF_OP_SELECTTAG}
+	                  SF_OP_IVSCCAPFREQUENCY, SF_OP_PREPAREFIT, SF_OP_FIT2, SF_OP_GETMETA, SF_OP_SELECTTAG}
 #ifdef AUTOMATED_TESTING
 	Make/FREE/T wtTest = {SF_OP_TESTOP}
 	Concatenate/NP/T {wtTest}, wt
@@ -1254,7 +1254,7 @@ static Function SF_AddErrorBars(string graph, string win, WAVE wvY, string trace
 			case SF_ERRORBARSTYLE_NORMAL:
 				break
 			case SF_ERRORBARSTYLE_SHADED:
-				ErrorBars/W=$win $traceName, SHADE={0, style[%FILLMODE], (style[%FGCOLOR_R], style[%FGCOLOR_G], style[%FGCOLOR_B]), (style[%BGCOLOR_R], style[%BGCOLOR_G], style[%BGCOLOR_B]), style[%NEGFILLMODE], (style[%NEGFGCOLOR_R], style[%NEGFGCOLOR_G], style[%NEGFGCOLOR_B]), (style[%NEGBGCOLOR_R], style[%NEGBGCOLOR_G], style[%NEGBGCOLOR_B])}, nochange
+				ErrorBars/W=$win $traceName, SHADE={0, style[%FILLMODE], (style[%FGCOLOR_R], style[%FGCOLOR_G], style[%FGCOLOR_B], style[%FGCOLOR_A]), (style[%BGCOLOR_R], style[%BGCOLOR_G], style[%BGCOLOR_B], style[%BGCOLOR_A]), style[%NEGFILLMODE], (style[%NEGFGCOLOR_R], style[%NEGFGCOLOR_G], style[%NEGFGCOLOR_B], style[%NEGFGCOLOR_A]), (style[%NEGBGCOLOR_R], style[%NEGBGCOLOR_G], style[%NEGBGCOLOR_B], style[%NEGBGCOLOR_A])}, nochange
 				break
 			// Changing the errorbar style to BOX without setting the errorbar data again does currently not compile in IP <= 10.02
 			// WM issue #8288, probably fixed in IP10.04
