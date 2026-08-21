@@ -696,10 +696,23 @@ static Function/WAVE SFE_FormulaExecutorStringOrVariable(STRUCT SF_ExecutionData
 	endif
 
 	Make/FREE/T outT = {str}
+	WAVE/Z converted = SFE_ConvertNonFiniteElements(outT)
+	if(WaveExists(converted))
+		return SFH_GetOutputForExecutorSingle(converted, exd.graph, "ExecutorNumberReturn")
+	endif
+
 	return SFH_GetOutputForExecutorSingle(outT, exd.graph, "ExecutorStringReturn")
 End
 
-static Function/WAVE SFE_ConvertNonFiniteElements(WAVE/T subArray)
+/// @brief Convert a text wave that consists solely of the non-finite literals inf/-inf/NaN/-NaN into a numeric wave
+///
+/// @return numeric wave with the converted values or a null wave reference if the input is empty or at least one
+///         element is not a non-finite literal
+Function/WAVE SFE_ConvertNonFiniteElements(WAVE/T subArray)
+
+	if(numpnts(subArray) == 0)
+		return $""
+	endif
 
 	Make/FREE/D/N=(DimSize(subArray, ROWS), DimSize(subArray, COLS), DimSize(subArray, LAYERS), DimSize(subArray, CHUNKS)) convert
 	MultiThread convert[][][][] = SFE_ConvertNonFiniteElementsImpl(subArray[p][q][r][s])
