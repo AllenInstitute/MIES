@@ -1395,9 +1395,11 @@ End
 /// - Making dimension labels valid liberal object names
 /// - Extending the row dimension to 6 for the key waves including setting the dimension labels
 /// - Fixing empty column dimension labels in the columns of the value waves
+/// - Add capabilities to wavenote
 Function UpgradeLabNotebook(string device)
 
 	variable numCols, i, col, numEntries, sourceCol, timeStampColumn, nextFreeRow
+	variable hasCapability
 	string list, key
 
 	// we only have to check the new place and name as we are called
@@ -1687,6 +1689,18 @@ Function UpgradeLabNotebook(string device)
 	endif
 	// END add dimension labels for key waves
 
+	// BEGIN add capability note for EntrySourceType
+	if(WaveVersionIsSmaller(numericalKeys, 87))
+		hasCapability = HasLBNEntrySourceTypeCapability(numericalValues)
+		SetNumberInWaveNote(numericalKeys, LBN_CAP_SUPPORTS_ENTRYSOURCETYPE, hasCapability)
+	endif
+
+	if(WaveVersionIsSmaller(textualKeys, 87))
+		hasCapability = HasLBNEntrySourceTypeCapability(textualValues)
+		SetNumberInWaveNote(textualKeys, LBN_CAP_SUPPORTS_ENTRYSOURCETYPE, hasCapability)
+	endif
+	// END add capability note for EntrySourceType
+
 	SetWaveVersion(numericalKeys, LABNOTEBOOK_VERSION)
 	SetWaveVersion(textualkeys, LABNOTEBOOK_VERSION)
 End
@@ -1761,6 +1775,7 @@ Function/WAVE GetLBTextualKeys(string device)
 		return wv
 	else
 		Make/T/N=(6, INITIAL_KEY_WAVE_COL_COUNT) newDFR:$newName/WAVE=wv
+		SetNumberInWaveNote(wv, LBN_CAP_SUPPORTS_ENTRYSOURCETYPE, 1)
 	endif
 
 	wv = ""
@@ -1815,6 +1830,7 @@ Function/WAVE GetLBNumericalKeys(string device)
 		return wv
 	else
 		Make/T/N=(6, INITIAL_KEY_WAVE_COL_COUNT) newDFR:$newName/WAVE=wv
+		SetNumberInWaveNote(wv, LBN_CAP_SUPPORTS_ENTRYSOURCETYPE, 1)
 	endif
 
 	wv = ""
@@ -1949,7 +1965,7 @@ End
 /// - Fixing empty column dimension labels in key waves
 static Function UpgradeResultsNotebook()
 
-	variable i, numCols
+	variable i, numCols, hasCapability
 
 	DFREF dfr = GetResultsFolder()
 
@@ -1995,6 +2011,17 @@ static Function UpgradeResultsNotebook()
 		endfor
 	endif
 	// END fix missing column dimension labels in keyWaves
+	// BEGIN add capability note for EntrySourceType
+	if(WaveVersionIsSmaller(numericalResultKeys, 5))
+		hasCapability = HasLBNEntrySourceTypeCapability(numericalResultValues)
+		SetNumberInWaveNote(numericalResultKeys, LBN_CAP_SUPPORTS_ENTRYSOURCETYPE, hasCapability)
+	endif
+
+	if(WaveVersionIsSmaller(textualResultKeys, 5))
+		hasCapability = HasLBNEntrySourceTypeCapability(textualResultValues)
+		SetNumberInWaveNote(textualResultKeys, LBN_CAP_SUPPORTS_ENTRYSOURCETYPE, hasCapability)
+	endif
+	// END add capability note for EntrySourceType
 End
 
 /// @brief Return a wave reference to the numeric labnotebook keys
@@ -2064,6 +2091,7 @@ Function/WAVE GetNumericalResultsKeys()
 		return wv
 	else
 		Make/T/N=(3, INITIAL_KEY_WAVE_COL_COUNT) dfr:$name/WAVE=wv
+		SetNumberInWaveNote(wv, LBN_CAP_SUPPORTS_ENTRYSOURCETYPE, 1)
 	endif
 
 	wv = ""
@@ -2159,6 +2187,7 @@ Function/WAVE GetTextualResultsKeys()
 		return wv
 	else
 		Make/T/N=(3, INITIAL_KEY_WAVE_COL_COUNT) dfr:$name/WAVE=wv
+		SetNumberInWaveNote(wv, LBN_CAP_SUPPORTS_ENTRYSOURCETYPE, 1)
 	endif
 
 	wv = ""

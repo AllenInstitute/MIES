@@ -313,7 +313,7 @@ End
 
 static Function TestTimeSeries(variable fileID, string filepath, string device, variable groupID, string channel, variable sweep, DFREF pxpSweepsDFR, WAVE/Z epochs)
 
-	variable channelGroupID, starting_time, session_start_time, actual, idx, index, GUIchannelNumber, ttlBit
+	variable channelGroupID, starting_time, session_start_time, actual, idx, index, GUIchannelNumber, ttlBit, col, timeSeriesEnd
 	variable clampMode, gain, gain_ref, resolution, conversion, headstage, rate_ref, rate, samplingInterval, samplingInterval_ref
 	string stimulus, stimulus_expected, channelName, str, path, neurodata_type
 	string electrode_name, electrode_name_ref, key, unit_ref, unit, base_unit_ref
@@ -520,6 +520,7 @@ static Function TestTimeSeries(variable fileID, string filepath, string device, 
 	// introduced in 18e1406b (Labnotebook: Add DA/AD ChannelType, 2019-02-15)
 	[WAVE setting, index] = GetLastSettingChannel(numericalValues, $"", sweep, "DA ChannelType", params.channelNumber, params.channelType, DATA_ACQUISITION_MODE)
 
+	timeSeriesEnd = IndexToScale(loadedFromNWB, Inf, ROWS)
 	// epochs
 	if(((params.channelType == XOP_CHANNEL_TYPE_DAC  \
 	     && clampMode != I_EQUAL_ZERO_MODE           \
@@ -539,6 +540,15 @@ static Function TestTimeSeries(variable fileID, string filepath, string device, 
 		CHECK_WAVE(epochsLBN, TEXT_WAVE)
 		INFO("Channeltype: %s, GUI channel number %d, hardware channel number %d, TTL bit %d", s0 = StringFromList(params.channelType, CHANNEL_NAMES), n0 = GUIchannelNumber, n1 = params.channelNumber, n2 = ttlBit)
 		CHECK_EQUAL_TEXTWAVES(epochsLBN, epochsSingleChannel)
+
+		col = FindDimLabel(epochsLBN, COLS, "StartTime")
+		Duplicate/FREE/T/RMD=[][col] epochsLBN, startTimesT
+		Make/FREE/D/N=(DimSize(startTimesT, ROWS)) epTimes = str2num(startTimesT[p])
+		CHECK_GE_VAR(WaveMin(epTimes), 0)
+		col = FindDimLabel(epochsLBN, COLS, "EndTime")
+		Duplicate/FREE/T/RMD=[][col] epochsLBN, EndTimesT
+		epTimes[] = str2num(EndTimesT[p])
+		CHECK_LE_VAR(WaveMax(epTimes), timeSeriesEnd)
 	endif
 End
 

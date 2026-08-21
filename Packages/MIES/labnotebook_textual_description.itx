@@ -1,5 +1,5 @@
 IGOR
-WAVES/T/N=(78,6)	labnotebook_textual_description
+WAVES/T/N=(79,6)	labnotebook_textual_description
 BEGIN
 	"Name"	"Unit"	"Tolerance"	"Description"	"Headstage Contingency"	"ClampMode"
 	"TimeStamp"	"s"	"-"	"Time Stamp: Seconds since Igor epoch (1/1/1904) in local time zone with millisecond precision. Written at time of labnotebook entry."	"ALL"	""
@@ -79,6 +79,7 @@ BEGIN
 	"TTL Epochs Channel 5"	""	"-"	"Epochs of TTL Channel 5"	"INDEP"	""
 	"TTL Epochs Channel 6"	""	"-"	"Epochs of TTL Channel 6"	"INDEP"	""
 	"TTL Epochs Channel 7"	""	"-"	"Epochs of TTL Channel 7"	"INDEP"	""
+	"PostProcessed"	"On/Off"	"-"	"Information added at a later time through a post processing step. (e.g. recreated epoch information)"	"ALL"	""
 END
 X SetScale/P x 0,1,"", labnotebook_textual_description; SetScale/P y 0,1,"", labnotebook_textual_description; SetScale d 0,0,"", labnotebook_textual_description
 X Note labnotebook_textual_description, "WAVE_LAYOUT_VERSION:1;"
