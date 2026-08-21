@@ -19,6 +19,46 @@ link index).
 
 ---
 
+## Recognize when a parameter is an instance of a general Igor convention
+
+Before deriving a function's edge-case behavior from its one-line reference
+entry or from generic arithmetic/language intuition, ask whether the argument
+in question is actually an *instance of a broader concept* Igor documents
+once, generally, elsewhere — rather than something that function defines on
+its own. Igor Reference.ihf entries are typically terse formulas (e.g.
+"returns `offset + p*delta`") that describe the common case only; they don't
+restate conventions that apply to that whole category of argument across many
+unrelated functions. If a shared convention exists, it's usually documented
+once in a conceptual chapter (`Waves.ihf`, `Programming.ihf`), not repeated in
+each function's own entry — search for the general concept name ("point
+number", "index", "subrange", "data folder path", ...) there, not just the
+specific function name, before concluding behavior from the specific
+function's doc alone or from raw arithmetic.
+
+Confirmed example of this pattern — **point-index arguments**: any function
+or operator taking a "point number" into a wave (subscripting `wave[p]`,
+subrange bounds, `IndexToScale`'s `p`, etc.) can potentially inherit the
+general convention documented in `Waves.ihf`'s wave-assignment section: `INF`
+(or `*`, in subrange syntax) denotes "the last point of the wave," and an
+omitted subrange bound defaults to the first/last point. This is *not*
+restated in `IndexToScale`'s own reference entry, which only gives the
+`offset + p*delta` formula — reasoning from that formula alone predicts
+`IndexToScale(wave, Inf, dim)` returns `Inf`, which is wrong; it actually
+returns the scale value at the last point, because `p` here is the same kind
+of argument the general convention covers.
+
+This narrows the hypothesis, but doesn't replace confirming the specific
+function — shared conventions are not always applied uniformly. Confirmed
+live: `wv[Inf]` returns the last point's value (matching the documented
+convention), but `wv[-Inf]` throws "Index out of range" (`-INF` is not part
+of that documented convention for direct indexing), while
+`IndexToScale(wave, -Inf, dim)` resolves to the last point rather than
+erroring (an extra leniency specific to that function). Use the general
+convention to form a hypothesis, then verify the specific function still
+matches it — don't stop at either step alone.
+
+---
+
 ## Compilation and Conditional Compilation
 
 ### `#define` symbols for cross-file `#ifdef`/`#ifndef` belong in the main Procedure window
