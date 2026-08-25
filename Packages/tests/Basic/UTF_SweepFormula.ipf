@@ -3726,3 +3726,46 @@ static Function TestNonFiniteScalarArgument()
 	// textual arguments that are not non-finite literals are still rejected
 	ExecuteSweepFormulaCode(win, "testop(abc)", expectFailure = 1)
 End
+
+/// Test op that allows only the first arguments value as value for the second argument
+static Function/WAVE TestNonFiniteAllowedValuesOp(STRUCT SF_ExecutionData &exd)
+
+	variable result, allowedValue
+	string opShort = SF_OP_TESTOP
+
+	allowedValue = SFH_GetArgumentAsNumeric(exd, SF_OP_TESTOP, 0)
+	result       = SFH_GetArgumentAsNumeric(exd, SF_OP_TESTOP, 1, allowedValues = {allowedValue})
+
+	Make/FREE/D output = {80085}
+
+	return SFH_GetOutputForExecutorSingle(output, exd.graph, opShort)
+End
+
+static Function TestNonFiniteAllowedValues()
+
+	string win, device
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+	win           = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	SVAR funcName = $GetSFTestopName(win)
+	funcName = "UTF_SWEEPFORMULA#TestNonFiniteAllowedValuesOp"
+
+	ExecuteSweepFormulaCode(win, "testop(inf,inf)")
+	ExecuteSweepFormulaCode(win, "testop(-inf,-inf)")
+	ExecuteSweepFormulaCode(win, "testop(NaN,NaN)")
+	ExecuteSweepFormulaCode(win, "testop(NaN,-NaN)")
+	ExecuteSweepFormulaCode(win, "testop(-NaN,NaN)")
+	ExecuteSweepFormulaCode(win, "testop(inf,-inf)", expectFailure = 1)
+	ExecuteSweepFormulaCode(win, "testop(inf,NaN)", expectFailure = 1)
+	ExecuteSweepFormulaCode(win, "testop(inf,-NaN)", expectFailure = 1)
+	ExecuteSweepFormulaCode(win, "testop(NaN,inf)", expectFailure = 1)
+	ExecuteSweepFormulaCode(win, "testop(NaN,-inf)", expectFailure = 1)
+	ExecuteSweepFormulaCode(win, "testop(-inf,inf)", expectFailure = 1)
+	ExecuteSweepFormulaCode(win, "testop(-inf,NaN)", expectFailure = 1)
+	ExecuteSweepFormulaCode(win, "testop(-inf,-NaN)", expectFailure = 1)
+	ExecuteSweepFormulaCode(win, "testop(inf,1)", expectFailure = 1)
+	ExecuteSweepFormulaCode(win, "testop(-inf,1)", expectFailure = 1)
+	ExecuteSweepFormulaCode(win, "testop(NaN,1)", expectFailure = 1)
+	ExecuteSweepFormulaCode(win, "testop(-NaN,1)", expectFailure = 1)
+End
