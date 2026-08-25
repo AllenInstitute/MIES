@@ -447,7 +447,7 @@ Function/WAVE SFOS_OperationSelectRACIndex(STRUCT SF_ExecutionData &exd)
 
 	SFH_CheckArgumentCount(exd, SF_OP_SELECTRACINDEX, 1, maxArgs = 1)
 
-	value = SFH_GetArgumentAsNumeric(exd, SF_OP_SELECTRACINDEX, 0)
+	value = SFH_GetArgumentAsNumeric(exd, SF_OP_SELECTRACINDEX, 0, checkFunc = IsNullOrPositiveAndInteger)
 	Make/FREE/D output = {value}
 
 	return SFH_GetOutputForExecutorSingle(output, exd.graph, SF_OP_SELECTRACINDEX, discardOpStack = 1, dataType = SF_DATATYPE_SELECTRACINDEX)
@@ -479,7 +479,7 @@ Function/WAVE SFOS_OperationSelectSCIIndex(STRUCT SF_ExecutionData &exd)
 
 	SFH_CheckArgumentCount(exd, SF_OP_SELECTSCIINDEX, 1, maxArgs = 1)
 
-	value = SFH_GetArgumentAsNumeric(exd, SF_OP_SELECTSCIINDEX, 0)
+	value = SFH_GetArgumentAsNumeric(exd, SF_OP_SELECTSCIINDEX, 0, checkFunc = IsNullOrPositiveAndInteger)
 	Make/FREE/D output = {value}
 
 	return SFH_GetOutputForExecutorSingle(output, exd.graph, SF_OP_SELECTSCIINDEX, discardOpStack = 1, dataType = SF_DATATYPE_SELECTSCIINDEX)
@@ -494,7 +494,7 @@ Function/WAVE SFOS_OperationSelectSetCycleCount(STRUCT SF_ExecutionData &exd)
 
 	SFH_CheckArgumentCount(exd, SF_OP_SELECTSETCYCLECOUNT, 1, maxArgs = 1)
 
-	value = SFH_GetArgumentAsNumeric(exd, SF_OP_SELECTSETCYCLECOUNT, 0)
+	value = SFH_GetArgumentAsNumeric(exd, SF_OP_SELECTSETCYCLECOUNT, 0, checkFunc = IsNullOrPositiveAndInteger)
 	Make/FREE/D output = {value}
 
 	return SFH_GetOutputForExecutorSingle(output, exd.graph, SF_OP_SELECTSETCYCLECOUNT, discardOpStack = 1, dataType = SF_DATATYPE_SELECTSETCYCLECOUNT)
@@ -509,7 +509,7 @@ Function/WAVE SFOS_OperationSelectSetSweepCount(STRUCT SF_ExecutionData &exd)
 
 	SFH_CheckArgumentCount(exd, SF_OP_SELECTSETSWEEPCOUNT, 1, maxArgs = 1)
 
-	value = SFH_GetArgumentAsNumeric(exd, SF_OP_SELECTSETSWEEPCOUNT, 0)
+	value = SFH_GetArgumentAsNumeric(exd, SF_OP_SELECTSETSWEEPCOUNT, 0, checkFunc = IsNullOrPositiveAndInteger)
 	Make/FREE/D output = {value}
 
 	return SFH_GetOutputForExecutorSingle(output, exd.graph, SF_OP_SELECTSETSWEEPCOUNT, discardOpStack = 1, dataType = SF_DATATYPE_SELECTSETSWEEPCOUNT)

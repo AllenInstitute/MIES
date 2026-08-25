@@ -489,7 +489,7 @@ Function/WAVE SFOTP_OperationTPFit(STRUCT SF_ExecutionData &exd)
 	retVal = wReturn[0]
 	SFH_ASSERT(!CmpStr(retVal, SF_OP_TPFIT_RET_TAULARGE) || !CmpStr(retVal, SF_OP_TPFIT_RET_TAUSMALL) || !CmpStr(retVal, SF_OP_TPFIT_RET_AMP) || !CmpStr(retVal, SF_OP_TPFIT_RET_MINAMP) || !CmpStr(retVal, SF_OP_TPFIT_RET_FITQUALITY), "TP fit result must be tau, tausmall, amp, minabsamp, fitq")
 
-	maxTrailLength = SFH_GetArgumentAsNumeric(exd, SF_OP_TPFIT, 2, defValue = 250)
+	maxTrailLength = SFH_GetArgumentAsNumeric(exd, SF_OP_TPFIT, 2, defValue = 250, checkFunc = IsFiniteSF)
 
 	Make/FREE/T fitSettingsT = {func, retVal}
 	SetDimLabel ROWS, 0, FITFUNCTION, fitSettingsT
