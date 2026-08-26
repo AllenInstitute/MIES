@@ -199,6 +199,21 @@ then
   ret=1
 fi
 
+# Igor Pro predefines the platform symbols WINDOWS and MACINTOSH. A misspelled
+# platform symbol is never defined, so the branch it guards is silently dropped
+# and the #else branch is compiled in its place.
+matches=$(git grep $opts                                                                \
+                   -e '^#[[:space:]]*(if|elif|ifdef|ifndef)\b.*\b(WIND|MACINT)[A-Z]*\b' \
+                   --and --not -e '\b(WINDOWS|MACINTOSH)\b'                             \
+                   -- '*.ipf')
+
+if [[ -n "$matches" ]]
+then
+  echo "The conditional compilation platform symbol check failed, only WINDOWS and MACINTOSH exist, and found the following occurrences:"
+  echo "$matches"
+  ret=1
+fi
+
 # ripgrep checks
 
 files=$(git ls-files '*.ipf' '*.sh' '*.rst' '*.dot' '*.md' ':!:**/releasenotes_template.rst' ':^*/IPA_Control.ipf')
