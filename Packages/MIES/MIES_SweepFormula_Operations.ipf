@@ -67,7 +67,14 @@ static Constant    SF_POWERSPECTRUM_RATIO_GAUSS_NUMCOEFS   = 4
 
 static StrConstant SF_AVERAGING_NONSWEEPDATA_LBL = "NOSWEEPDATA"
 
-static Constant SF_IVSCC_APFREQUENCY_OPACITY = 13107 // 0.2 * 65535
+static Constant SF_IVSCC_APFREQUENCY_OPACITY             = 13107 // 0.2 * 65535
+static Constant SF_IVSCC_APFREQUENCY_PLOTTYPE_INDIVIDUAL = 0
+static Constant SF_IVSCC_APFREQUENCY_PLOTTYPE_CONCAT     = 1
+static Constant SF_IVSCC_APFREQUENCY_PLOTTYPE_AVERAGE    = 2
+static Constant SF_IVSCC_APFREQUENCY_PLOTTYPE_FIT        = 3
+static Constant SF_IVSCC_APFREQUENCY_PLOTTYPE_DASCALE    = 4
+static Constant SF_IVSCC_APFREQUENCY_PLOTTYPE_DASCALEAVG = 5
+static Constant SF_IVSCC_APFREQUENCY_PLOTTYPE_ENUM_MAX   = 6
 
 static Constant SF_FIT2_MAX_ITERATIONS = 40
 
@@ -3179,29 +3186,30 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyGetDefaultTagGroups(STRUCT SF_
 	return tagGroups
 End
 
-static Function/WAVE SFO_OperationIVSCCApFrequencyJoinPlots(STRUCT SF_ExecutionData &exd, string opShort, WAVE/WAVE plotSpecifications)
+static Function/WAVE SFO_OperationIVSCCApFrequencyJoinPlots(STRUCT SF_ExecutionData &exd, string opShort, WAVE/WAVE plotByTypeSpecs)
 
-	variable i, offset, numPlotsSum, numPlotsInGroup, numPlotSpec
+	variable i, j, k, numTraces, numPlotsOfType, numPlotSpec
 
-	numPlotSpec = DimSize(plotSpecifications, ROWS)
-	Make/FREE/D/N=(numPlotSpec) numWITHPlots
+	numPlotSpec = DimSize(plotByTypeSpecs, ROWS)
+	WAVE/WAVE plotAND = SFH_CreatePlotSpecificationAND(exd.graph, opShort, SF_IVSCC_APFREQUENCY_PLOTTYPE_ENUM_MAX, 0)
 	for(i = 0; i < numPlotSpec; i += 1)
-		WAVE/Z/WAVE plotWITH = WaveRef(plotSpecifications[i], row = 0)
-		if(WaveExists(plotWITH))
-			numWITHPlots[i] = DimSize(plotWITH, ROWS)
-		endif
-	endfor
-	numPlotsSum = sum(numWITHPlots)
-	WAVE/WAVE plotAND     = SFH_CreatePlotSpecificationAND(exd.graph, opShort, 1, numPlotsSum)
-	WAVE/WAVE plotWITHTgt = plotAND[0]
-	for(WAVE/WAVE plot : plotSpecifications)
-		if(!WaveExists(plot))
+		WAVE/Z/WAVE plotByType = plotByTypeSpecs[i]
+		if(!WaveExists(plotByType))
 			continue
 		endif
-		WAVE/WAVE plotWITHSrc = plot[0]
-		numPlotsInGroup                                     = DimSize(plotWITHSrc, ROWS)
-		plotWITHTgt[offset, offset + numPlotsInGroup - 1][] = plotWITHSrc[p - offset][q]
-		offset                                             += numPlotsInGroup
+		numPlotsOfType = DimSize(plotByType, ROWS)
+		for(j = 0; j < numPlotsOfType; j += 1)
+			WAVE/Z/WAVE tracesOfType = plotByType[j]
+			if(!WaveExists(tracesOfType))
+				continue
+			endif
+			WAVE/WAVE plotWITH = plotAND[j]
+			numTraces = DimSize(tracesOfType, ROWS)
+			for(k = 0; k < numTraces; k += 1)
+				WAVE/WAVE trace = tracesOfType[k]
+				SFH_AppendPlotSpecificationWith(plotWITH, trace[%FORMULAY], trace[%FORMULAX])
+			endfor
+		endfor
 	endfor
 
 	return plotAND
@@ -3216,16 +3224,13 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl(STRUCT SF_ExecutionData &
 	endif
 
 	numTagGroups = DimSize(args.tagGroups, ROWS)
-	Make/FREE/WAVE/N=(numTagGroups) plotSpecifications
+	Make/FREE=1/WAVE/N=(numTagGroups) plotByTypeSpecs
 	for(i = 0; i < numTagGroups; i += 1)
-		plotSpecifications[i] = SFO_OperationIVSCCApFrequencyImpl2(exd, args, opShort, args.tagGroups[i], traceIndex)
-		WAVE/Z/WAVE plotWITH = WaveRef(plotSpecifications[i], row = 0)
-		if(WaveExists(plotWITH))
-			traceIndex += DimSize(plotWITH, ROWS)
-		endif
+		plotByTypeSpecs[i] = SFO_OperationIVSCCApFrequencyImpl2(exd, args, opShort, args.tagGroups[i], traceIndex)
+		traceIndex        += 1
 	endfor
 
-	WAVE/WAVE plotAND = SFO_OperationIVSCCApFrequencyJoinPlots(exd, opShort, plotSpecifications)
+	WAVE/WAVE plotAND = SFO_OperationIVSCCApFrequencyJoinPlots(exd, opShort, plotByTypeSpecs)
 
 	return plotAND
 End
@@ -3418,6 +3423,31 @@ static Function [WAVE/WAVE inflCurrentRef, WAVE/WAVE inflFreqRef, WAVE/WAVE infl
 	return [inflCurrentRef, inflFreqRef, inflCurrentAvgRef, inflFreqAvgRef]
 End
 
+static Function/WAVE SFO_OperationIVSCCApFrequencyGetPlotTypeWave()
+
+	Make/FREE/WAVE/N=(SF_IVSCC_APFREQUENCY_PLOTTYPE_ENUM_MAX) plotTypes
+	SetDimensionLabels(plotTypes, "INDIVIDUAL;CONCAT;AVERAGE;FIT;DASCALE;DASCALEAVG;", ROWS)
+
+	return plotTypes
+End
+
+Function SFO_OperationIVSCCApFrequencyAppendPlotType(WAVE/WAVE plotByType, variable plotType, WAVE wvY, WAVE/Z wvX)
+
+	variable size
+
+	Make/FREE=1/WAVE trace = {wvY, wvX}
+	SetDimensionLabels(trace, "FORMULAY;FORMULAX;", ROWS)
+
+	WAVE/Z/WAVE plotList = plotByType[plotType]
+	if(!WaveExists(plotList))
+		Make/FREE=1/WAVE/N=(0) plotList
+		plotByType[plotType] = plotList
+	endif
+	size = DimSize(plotList, ROWS)
+	Redimension/N=(size + 1, -1) plotList
+	plotList[size] = trace
+End
+
 static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData &exd, STRUCT IVSCCApFrequencyArgs &args, string opShort, WAVE/T tagGroup, variable traceIndex)
 
 	string varName, tagList, tagSuffix, fitFormula
@@ -3452,9 +3482,9 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 	endif
 
 	// build plot tree
+	WAVE/WAVE plotsByType = SFO_OperationIVSCCApFrequencyGetPlotTypeWave()
+
 	WAVE/WAVE varStorage = GetSFVarStorage(exd.graph)
-	WAVE/WAVE plotAND    = SFH_CreatePlotSpecificationAND(exd.graph, opShort, 1, 0)
-	WAVE/WAVE plotWITH   = plotAND[0]
 
 	tagList = TextWaveToList(tagGroup, AB_TAG_SEPARATOR)
 	if(IsEmpty(tagList))
@@ -3484,7 +3514,7 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 				JWN_SetStringInWaveNote(wvY[0], SF_META_LEGEND_LINE_PREFIX, tagList + " " + experiments[i])
 			endif
 			SFO_OperationIVSCCApFrequencySetPlotProperties(wvY, args.xAxisPercentage, args.yAxisPercentage)
-			SFH_AppendPlotSpecificationWith(plotWITH, wvY, wvX)
+			SFO_OperationIVSCCApFrequencyAppendPlotType(plotsByType, SF_IVSCC_APFREQUENCY_PLOTTYPE_INDIVIDUAL, wvY, wvX)
 		endif
 
 		Concatenate/FREE/NP=(ROWS) {wvX[0]}, currentAll
@@ -3506,17 +3536,17 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 	JWN_SetNumberInWaveNote(freqAll, SF_META_TRACE_MODE, TRACE_DISPLAY_MODE_LINES)
 	JWN_SetNumberInWaveNote(freqAll, SF_META_LINESTYLE, 2)
 	JWN_SetStringInWaveNote(freqAll, SF_META_LEGEND_LINE_PREFIX, tagList + " ivscc_apfrequency concat")
-	SFH_AppendPlotSpecificationWith(plotWITH, wvYAllRef, wvXAllRef)
+	SFO_OperationIVSCCApFrequencyAppendPlotType(plotsByType, SF_IVSCC_APFREQUENCY_PLOTTYPE_CONCAT, wvYAllRef, wvXAllRef)
 	// DAScale trace
 	JWN_SetStringInWaveNote(inflFreqRef[0], SF_META_LEGEND_LINE_PREFIX, tagList + " ivscc_apfrequency DAScale")
 	JWN_SetWaveInWaveNote(inflFreqRef[0], SF_META_TRACECOLOR, traceColor)
 	JWN_SetNumberInWaveNote(inflFreqRef[0], SF_META_MOD_MARKER, 1)
-	SFH_AppendPlotSpecificationWith(plotWITH, inflFreqRef, inflCurrentRef)
+	SFO_OperationIVSCCApFrequencyAppendPlotType(plotsByType, SF_IVSCC_APFREQUENCY_PLOTTYPE_DASCALE, inflFreqRef, inflCurrentRef)
 	// DAScale average trace (single point)
 	JWN_SetStringInWaveNote(inflFreqAvgRef[0], SF_META_LEGEND_LINE_PREFIX, tagList + " ivscc_apfrequency DAScale Avg")
 	JWN_SetWaveInWaveNote(inflFreqAvgRef[0], SF_META_TRACECOLOR, traceColor)
 	JWN_SetNumberInWaveNote(inflFreqAvgRef[0], SF_META_MOD_MARKER, 18)
-	SFH_AppendPlotSpecificationWith(plotWITH, inflFreqAvgRef, inflCurrentAvgRef)
+	SFO_OperationIVSCCApFrequencyAppendPlotType(plotsByType, SF_IVSCC_APFREQUENCY_PLOTTYPE_DASCALEAVG, inflFreqAvgRef, inflCurrentAvgRef)
 
 	if(numExp > 1)
 		// avg trace
@@ -3530,7 +3560,7 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 		SFO_OperationIVSCCApFrequencySetPlotProperties(wvY, args.xAxisPercentage, args.yAxisPercentage)
 		varName = "ivsccavg_norm_x"
 		WAVE/WAVE wvX = SF_ResolveDataset(varStorage[%$varName])
-		SFH_AppendPlotSpecificationWith(plotWITH, wvY, wvX)
+		SFO_OperationIVSCCApFrequencyAppendPlotType(plotsByType, SF_IVSCC_APFREQUENCY_PLOTTYPE_AVERAGE, wvY, wvX)
 
 		// fit trace
 		varName = "ivscc_apfrequency_fit"
@@ -3539,7 +3569,7 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 			JWN_SetStringInWaveNote(wvY[0], SF_META_LEGEND_LINE_PREFIX, tagList + " ivscc_apfrequency fit")
 		endif
 		SFO_OperationIVSCCApFrequencySetPlotProperties(wvY, args.xAxisPercentage, args.yAxisPercentage)
-		SFH_AppendPlotSpecificationWith(plotWITH, wvY, $"")
+		SFO_OperationIVSCCApFrequencyAppendPlotType(plotsByType, SF_IVSCC_APFREQUENCY_PLOTTYPE_FIT, wvY, $"")
 	endif
 
 	WAVE expList = varStorage[%ivscc_apfrequency_explist]
@@ -3551,7 +3581,7 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 		SFH_AddVariableToStorage(exd.graph, "ivscc_apfrequency_fit_" + tagSuffix, SFH_GetOutputForExecutor(fitResult, exd.graph, opShort))
 	endif
 
-	return plotAND
+	return plotsByType
 End
 
 Function SFO_OperationPrepareFit_PROTO(WAVE w, variable x)
