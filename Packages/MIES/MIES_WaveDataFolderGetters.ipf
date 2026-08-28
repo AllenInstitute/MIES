@@ -9642,8 +9642,8 @@ End
 /// @brief Wave storing sf plot meta information per formularesult, filled in SF_GatherFormulaResults
 Function/WAVE GetSFPlotMetaData()
 
-	Make/FREE/T/N=(9) wv
-	SetDimensionLabels(wv, "DATATYPE;OPSTACK;ARGSETUPSTACK;XAXISLABEL;YAXISLABEL;XAXISOFFSET;YAXISOFFSET;XAXISPERCENT;YAXISPERCENT;", ROWS)
+	Make/FREE/T/N=(10) wv
+	SetDimensionLabels(wv, "DATATYPE;OPSTACK;ARGSETUPSTACK;XAXISLABEL;YAXISLABEL;XAXISOFFSET;YAXISOFFSET;XAXISPERCENT;YAXISPERCENT;XAXISRANGE;", ROWS)
 
 	return wv
 End

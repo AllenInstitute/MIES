@@ -218,6 +218,9 @@ static Function/WAVE SF_FillPlotMetaData(WAVE wvYRef, variable useXLabel, string
 	plotMetaData[%XAXISPERCENT]  = num2str(JWN_GetNumberFromWaveNote(wvYRef, SF_META_XAXISPERCENT), "%f")
 	plotMetaData[%YAXISPERCENT]  = num2str(JWN_GetNumberFromWaveNote(wvYRef, SF_META_YAXISPERCENT), "%f")
 
+	WAVE/Z xAxisRange = JWN_GetNumericWaveFromWaveNote(wvYRef, SF_META_XAXISRANGE)
+	plotMetaData[%XAXISRANGE] = NumericWaveToList(xAxisRange, ";")
+
 	return plotMetaData
 End
 
@@ -1654,6 +1657,11 @@ static Function SF_SetAxisProperties(STRUCT SF_PlotterGraphStruct &pg)
 	yaxisPercent = str2num(pg.plotMetaData[%YAXISPERCENT])
 	if(!IsNaN(yaxisPercent))
 		ModifyGraph/W=$pg.win axisEnab(left)={0, yaxisPercent * PERCENT_TO_ONE}
+	endif
+
+	WAVE xAxisRange = ListToNumericWave(pg.plotMetaData[%XAXISRANGE], ";")
+	if(DimSize(xAxisRange, ROWS) == 2)
+		SetAxis/W=$pg.win bottom, xAxisRange[0], xAxisRange[1]
 	endif
 End
 
