@@ -563,7 +563,7 @@ End
 
 static Function/WAVE SFO_OperationAvgImplBins2(WAVE/WAVE input, string graph, string opShort, WAVE/WAVE binData)
 
-	variable i, j, maxBins, numGroups, numDataSets, idx, numBins, numEntries, size, xValue, xSdev, ySdev
+	variable i, j, maxBins, numGroups, numDataSets, idx, numBins, numEntries, size, xValue, xSdev, ySdev, xNpnts, yNpnts
 	string unit, msg
 	STRUCT RGBColor s
 
@@ -682,16 +682,17 @@ static Function/WAVE SFO_OperationAvgImplBins2(WAVE/WAVE input, string graph, st
 		size = DimSize(wavesInBin, ROWS)
 		Make/FREE/D/N=(size) valuesFromBin = WaveRef(wavesInBin, row = p)[0]
 		WaveStats/Q valuesFromBin
-		ySdev = V_sdev
+		ySdev  = V_sdev
+		yNpnts = V_npnts
 
 		WAVE xValues = xValuesBin[i]
 		Redimension/N=(numEntries) xValues
-		xValue = mean(xValues)
 		WaveStats/Q xValues
-		xSdev = V_sdev
+		xValue = V_avg
+		xSdev  = V_sdev
+		xNpnts = V_npnts
 
 		WAVE wTmp = output[i]
-
 		sprintf msg, "Bin: %d Avg result: %f, xValue: %f, ySdev: %f, xSdev: %f", i, wTmp[0], xValue, ySdev, xSdev
 		DEBUGPRINT(msg)
 
@@ -703,6 +704,8 @@ static Function/WAVE SFO_OperationAvgImplBins2(WAVE/WAVE input, string graph, st
 		JWN_SetWaveInWaveNote(output[i], SF_META_ERRORBARYMINUS, {ySdev})
 		JWN_SetWaveInWaveNote(output[i], SF_META_ERRORBARXPLUS, {xSdev})
 		JWN_SetWaveInWaveNote(output[i], SF_META_ERRORBARXMINUS, {xSdev})
+		JWN_SetWaveInWaveNote(output[i], SF_META_AVG_NPNTS_X, {xNpnts})
+		JWN_SetWaveInWaveNote(output[i], SF_META_AVG_NPNTS_Y, {yNpnts})
 	endfor
 
 	if(IsEmpty(unit))
@@ -1829,7 +1832,7 @@ End
 Function/WAVE SFO_OperationMerge(STRUCT SF_ExecutionData &exd)
 
 	variable numElements, numOutputDatasets, wvType
-	string errorTag
+	string tags
 
 	SFH_CheckArgumentCount(exd, SF_OP_MERGE, 1, maxArgs = 1)
 	WAVE/WAVE inputWithNull = SF_ResolveDatasetFromJSON(exd, 0)
@@ -1866,11 +1869,11 @@ Function/WAVE SFO_OperationMerge(STRUCT SF_ExecutionData &exd)
 	if(WaveExists(mergedX))
 		JWN_SetWaveInWaveNote(content, SF_META_XVALUES, mergedX)
 	endif
-	Make/FREE/T errorBarTags = {SF_META_ERRORBARYPLUS, SF_META_ERRORBARYMINUS, SF_META_ERRORBARXPLUS, SF_META_ERRORBARXMINUS}
-	for(string errorTag : errorBarTags)
-		WAVE/Z errorbarMerged = SFO_OperationMergeErrorBars(input, errorTag)
-		if(WaveExists(errorbarMerged))
-			JWN_SetWaveInWaveNote(content, errorTag, errorbarMerged)
+	Make/FREE/T wTags = {SF_META_ERRORBARYPLUS, SF_META_ERRORBARYMINUS, SF_META_ERRORBARXPLUS, SF_META_ERRORBARXMINUS, SF_META_AVG_NPNTS_X, SF_META_AVG_NPNTS_Y}
+	for(string tags : wTags)
+		WAVE/Z merged = SFO_OperationMergeSingleValueTags(input, tags)
+		if(WaveExists(merged))
+			JWN_SetWaveInWaveNote(content, tags, merged)
 		endif
 	endfor
 
@@ -1911,7 +1914,7 @@ static Function/WAVE SFO_OperationMergeXValues(WAVE/WAVE input)
 	return mergedX
 End
 
-static Function/WAVE SFO_OperationMergeErrorBars(WAVE/WAVE input, string metaTag)
+static Function/WAVE SFO_OperationMergeSingleValueTags(WAVE/WAVE input, string metaTag)
 
 	variable numElements, i
 
@@ -1919,23 +1922,23 @@ static Function/WAVE SFO_OperationMergeErrorBars(WAVE/WAVE input, string metaTag
 
 	SFH_ASSERT(DimSize(input, ROWS) > 0, "input must have at least one dataset")
 
-	Make/FREE/D/N=(numElements) mergedError
-	FastOp mergedError = (NaN)
+	Make/FREE/D/N=(numElements) merged
+	FastOp merged = (NaN)
 
 	for(i = 0; i < numElements; i += 1)
 
 		WAVE/Z errorbar = JWN_GetNumericWaveFromWaveNote(input[i], metaTag)
 		if(WaveExists(errorbar))
-			SFH_ASSERT(DimSize(errorbar, ROWS) == 1, "errorBar wave must be only a one element")
-			mergedError[i] = errorbar[0]
+			SFH_ASSERT(DimSize(errorbar, ROWS) == 1, "wave from tag " + metaTag + " must be only a one element")
+			merged[i] = errorbar[0]
 		endif
 	endfor
 
-	if(!HasOneFiniteEntry(mergedError))
+	if(!HasOneFiniteEntry(merged))
 		return $""
 	endif
 
-	return mergedError
+	return merged
 End
 
 Function/WAVE SFO_OperationMin(STRUCT SF_ExecutionData &exd)
@@ -3449,6 +3452,18 @@ static Function SFO_OperationIVSCCApFrequencyAppendPlotType(WAVE/WAVE plotByType
 	plotList[size] = trace
 End
 
+static Function SFO_OperationIVSCCApFrequencyConvertSdevToStdError(WAVE wvY, string errTag, string numPntsTag)
+
+	WAVE/Z/D errors = JWN_GetNumericWaveFromWaveNote(wvY, errTag)
+	if(WaveExists(errors))
+		WAVE/Z/D wNumPnts = JWN_GetNumericWaveFromWaveNote(wvY, numPntsTag)
+		ASSERT(WaveExists(wNumPnts), "Required " + numPntsTag + " information missing for sdev to StdError conversion")
+		ASSERT(DimSize(errors, ROWS) == DimSize(wNumPnts, ROWS), "Wave with sdev values and NumPnts must have the same number of points")
+		MultiThread errors[] /= sqrt(wNumPnts[p])
+		JWN_SetwaveInWaveNote(wvY, errTag, errors)
+	endif
+End
+
 static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData &exd, STRUCT IVSCCApFrequencyArgs &args, string opShort, WAVE/T tagGroup, variable tagGroupIndex)
 
 	string varName, tagList, tagSuffix, fitFormula
@@ -3509,7 +3524,7 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 		if(!CmpStr(args.showSingleExp, SF_OP_IVSCCAPFREQUENCY_SHOWSINGLE_ON))
 			if(DimSize(wvY, ROWS) > 0)
 				[s] = GetTraceColorNonHeadstage(tagGroupIndex)
-				Make/FREE/W/U traceColor = {s.red, s.green, s.blue, 0xFFFF} //SF_IVSCC_APFREQUENCY_OPACITY}
+				Make/FREE/W/U traceColor = {s.red, s.green, s.blue, SF_IVSCC_APFREQUENCY_OPACITY}
 				JWN_SetWaveInWaveNote(wvY[0], SF_META_TRACECOLOR, traceColor)
 				JWN_SetNumberInWaveNote(wvY[0], SF_META_MOD_MARKER, 19)
 				JWN_SetStringInWaveNote(wvY[0], SF_META_LEGEND_LINE_PREFIX, tagList + " " + experiments[i])
@@ -3556,6 +3571,10 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 		WAVE/WAVE wvY = SF_ResolveDataset(varStorage[%$varName])
 		if(DimSize(wvY, ROWS) > 0)
 			JWN_SetStringInWaveNote(wvY[0], SF_META_LEGEND_LINE_PREFIX, tagList + " ivscc_apfrequency avg " + args.avgMode)
+			SFO_OperationIVSCCApFrequencyConvertSdevToStdError(wvY[0], SF_META_ERRORBARXPLUS, SF_META_AVG_NPNTS_X)
+			SFO_OperationIVSCCApFrequencyConvertSdevToStdError(wvY[0], SF_META_ERRORBARXMINUS, SF_META_AVG_NPNTS_X)
+			SFO_OperationIVSCCApFrequencyConvertSdevToStdError(wvY[0], SF_META_ERRORBARYPLUS, SF_META_AVG_NPNTS_Y)
+			SFO_OperationIVSCCApFrequencyConvertSdevToStdError(wvY[0], SF_META_ERRORBARYMINUS, SF_META_AVG_NPNTS_Y)
 		endif
 		JWN_SetStringInWaveNote(wvY, SF_META_XAXISLABEL, "placeholder") // activates x values
 		JWN_SetWaveInWaveNote(wvY[0], SF_META_TRACECOLOR, traceColor)
