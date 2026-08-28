@@ -2207,6 +2207,7 @@ StrConstant SF_META_XAXISOFFSET       = "/XAxisOffset"               // number
 StrConstant SF_META_YAXISOFFSET       = "/YAxisOffset"               // number
 StrConstant SF_META_XAXISPERCENT      = "/XAxisPercent"              // number
 StrConstant SF_META_YAXISPERCENT      = "/YAxisPercent"              // number
+StrConstant SF_META_XAXISRANGE        = "/XAxisRange"                // numeric wave with two elements [xMin, xMax]
 StrConstant SF_META_FITCOEFS          = "/FitCoefs"                  // numeric wave
 StrConstant SF_META_FITERROR          = "/FitError"                  // number
 StrConstant SF_META_FITQUITREASON     = "/FitQuitReason"             // number
