@@ -3217,7 +3217,7 @@ End
 
 static Function/WAVE SFO_OperationIVSCCApFrequencyImpl(STRUCT SF_ExecutionData &exd, STRUCT IVSCCApFrequencyArgs &args, string opShort)
 
-	variable i, numTagGroups, traceIndex
+	variable i, numTagGroups, traceIndex, xMin, xMax
 
 	if(!WaveExists(args.tagGroups))
 		WAVE/WAVE args.tagGroups = SFO_OperationIVSCCApFrequencyGetDefaultTagGroups(exd)
@@ -3231,6 +3231,8 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl(STRUCT SF_ExecutionData &
 	endfor
 
 	WAVE/WAVE plotAND = SFO_OperationIVSCCApFrequencyJoinPlots(exd, opShort, plotByTypeSpecs)
+	[xMin, xMax] = SFH_GetGlobalXAxisRange(plotAND)
+	SFH_SetGlobalXAxisRange(plotAND, xMin, xMax)
 
 	return plotAND
 End
@@ -3431,7 +3433,7 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyGetPlotTypeWave()
 	return plotTypes
 End
 
-Function SFO_OperationIVSCCApFrequencyAppendPlotType(WAVE/WAVE plotByType, variable plotType, WAVE wvY, WAVE/Z wvX)
+static Function SFO_OperationIVSCCApFrequencyAppendPlotType(WAVE/WAVE plotByType, variable plotType, WAVE wvY, WAVE/Z wvX)
 
 	variable size
 
@@ -3525,18 +3527,20 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 	Make/FREE/W/U traceColor = {s.red, s.green, s.blue, 0xFFFF}
 
 	// trace with apfrequency points from all experiments concatenated
-	Note/K currentAll
-	Note/K freqAll
-	Sort currentAll, currentAll, freqAll
-	WAVE/WAVE wvXAllRef = SFH_CreateSFRefWave(exd.graph, opShort, 1)
-	WAVE/WAVE wvYAllRef = SFH_CreateSFRefWave(exd.graph, opShort, 1)
-	wvXAllRef[0] = currentAll
-	wvYAllRef[0] = freqAll
-	JWN_SetWaveInWaveNote(freqAll, SF_META_TRACECOLOR, traceColor)
-	JWN_SetNumberInWaveNote(freqAll, SF_META_TRACE_MODE, TRACE_DISPLAY_MODE_LINES)
-	JWN_SetNumberInWaveNote(freqAll, SF_META_LINESTYLE, 2)
-	JWN_SetStringInWaveNote(freqAll, SF_META_LEGEND_LINE_PREFIX, tagList + " ivscc_apfrequency concat")
-	SFO_OperationIVSCCApFrequencyAppendPlotType(plotsByType, SF_IVSCC_APFREQUENCY_PLOTTYPE_CONCAT, wvYAllRef, wvXAllRef)
+	if(WaveExists(currentAll) && WaveExists(freqAll))
+		Note/K currentAll
+		Note/K freqAll
+		Sort currentAll, currentAll, freqAll
+		WAVE/WAVE wvXAllRef = SFH_CreateSFRefWave(exd.graph, opShort, 1)
+		WAVE/WAVE wvYAllRef = SFH_CreateSFRefWave(exd.graph, opShort, 1)
+		wvXAllRef[0] = currentAll
+		wvYAllRef[0] = freqAll
+		JWN_SetWaveInWaveNote(freqAll, SF_META_TRACECOLOR, traceColor)
+		JWN_SetNumberInWaveNote(freqAll, SF_META_TRACE_MODE, TRACE_DISPLAY_MODE_LINES)
+		JWN_SetNumberInWaveNote(freqAll, SF_META_LINESTYLE, 2)
+		JWN_SetStringInWaveNote(freqAll, SF_META_LEGEND_LINE_PREFIX, tagList + " ivscc_apfrequency concat")
+		SFO_OperationIVSCCApFrequencyAppendPlotType(plotsByType, SF_IVSCC_APFREQUENCY_PLOTTYPE_CONCAT, wvYAllRef, wvXAllRef)
+	endif
 	// DAScale trace
 	JWN_SetStringInWaveNote(inflFreqRef[0], SF_META_LEGEND_LINE_PREFIX, tagList + " ivscc_apfrequency DAScale")
 	JWN_SetWaveInWaveNote(inflFreqRef[0], SF_META_TRACECOLOR, traceColor)
