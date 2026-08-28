@@ -2500,6 +2500,30 @@ Function [variable globXMin, variable globXMax] SFH_GetGlobalXAxisRange(WAVE/WAV
 	return [xMin, xMax]
 End
 
+/// @brief Sets SF_META_XAXISRANGE on all FORMULAY datasets of plotAND so that the
+///        SweepFormula plotter applies the same fixed x-axis range [xMin, xMax] to
+///        all of its plots
+///
+/// @sa SFH_GetGlobalXAxisRange
+Function SFH_SetGlobalXAxisRange(WAVE/WAVE plotAND, variable xMin, variable xMax)
+
+	variable i, j, numAND, numWITH
+
+	if(IsNaN(xMin) || IsNaN(xMax))
+		return NaN
+	endif
+
+	numAND = DimSize(plotAND, ROWS)
+	for(i = 0; i < numAND; i += 1)
+		WAVE/WAVE plotWITH = plotAND[i]
+		numWITH = DimSize(plotWITH, ROWS)
+		for(j = 0; j < numWITH; j += 1)
+			WAVE/WAVE wvY = plotWITH[j][%FORMULAY]
+			JWN_SetWaveInWaveNote(wvY, SF_META_XAXISRANGE, {xMin, xMax})
+		endfor
+	endfor
+End
+
 /// @brief Recursively determine [dataMin, dataMax] spanning the numeric data range of wvX
 static Function [variable dataMin, variable dataMax] SFH_RecursiveXLimitsFromDataRange(WAVE/Z wvX)
 
