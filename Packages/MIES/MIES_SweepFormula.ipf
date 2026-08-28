@@ -1262,7 +1262,7 @@ static Function SF_AddErrorBars(string graph, string win, WAVE wvY, string trace
 			//				if(IsNaN(style[%BOXCOLOR_R]))
 			//					ErrorBars/W=$win $traceName, BOX nochange, nochange
 			//				else
-			//					ErrorBars/W=$win $traceName, BOX=(style[%BOXCOLOR_R], style[%BOXCOLOR_G], style[%BOXCOLOR_B]) nochange, nochange
+			//					ErrorBars/W=$win $traceName, BOX=(style[%BOXCOLOR_R], style[%BOXCOLOR_G], style[%BOXCOLOR_B], style[%BOXCOLOR_A]) nochange, nochange
 			//				endif
 			//				break
 			case SF_ERRORBARSTYLE_ELLIPSE:

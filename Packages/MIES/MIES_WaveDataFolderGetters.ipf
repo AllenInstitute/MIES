@@ -9685,7 +9685,7 @@ End
 ///        @sa SF_META_ERRORBARSTYLE
 Function/WAVE CreateSFErrorbarStyleWave()
 
-	Make/FREE/D/N=25 style
+	Make/FREE/D/N=26 style
 	SetDimLabel ROWS, 0, TYPE, style
 	SetDimLabel ROWS, 1, FILLMODE, style
 	SetDimLabel ROWS, 2, FGCOLOR_R, style
@@ -9708,9 +9708,18 @@ Function/WAVE CreateSFErrorbarStyleWave()
 	SetDimLabel ROWS, 19, BOXCOLOR_R, style
 	SetDimLabel ROWS, 20, BOXCOLOR_G, style
 	SetDimLabel ROWS, 21, BOXCOLOR_B, style
-	SetDimLabel ROWS, 22, ELLMODE, style
-	SetDimLabel ROWS, 23, ELLP, style
-	SetDimLabel ROWS, 24, ELLALPHA, style
+	SetDimLabel ROWS, 22, BOXCOLOR_A, style
+	SetDimLabel ROWS, 23, ELLMODE, style
+	SetDimLabel ROWS, 24, ELLP, style
+	SetDimLabel ROWS, 25, ELLALPHA, style
+
+	// set full opacity as default
+	style[%FGCOLOR_A]    = 0xFFFF
+	style[%BGCOLOR_A]    = 0xFFFF
+	style[%NEGFGCOLOR_A] = 0xFFFF
+	style[%NEGBGCOLOR_A] = 0xFFFF
+	style[%BOXCOLOR_A]   = 0xFFFF
+	style[%ELLALPHA]     = 0xFFFF
 
 	return style
 End
