@@ -2450,3 +2450,107 @@ Function/WAVE SFH_CreatePlotSpecificationAND(string graph, string opShort, varia
 
 	return plotAND
 End
+
+Function [variable globXMin, variable globXMax] SFH_GetGlobalXAxisRange(WAVE/WAVE plotAND)
+
+	variable i, j, numAND, numWITH
+	variable dataMin, dataMax
+	variable xMin = Inf
+	variable xMax = -Inf
+
+	numAND = DimSize(plotAND, ROWS)
+	for(i = 0; i < numAND; i += 1)
+		WAVE/WAVE plotWITH = plotAND[i]
+		numWITH = DimSize(plotWITH, ROWS)
+		for(j = 0; j < numWITH; j += 1)
+			// plotWITH's FORMULAX/FORMULAY entries are always datasets (or non-existent)
+			WAVE/Z/WAVE wvX = plotWITH[j][%FORMULAX]
+			// Same priority order as evaluation in formula plotter
+			if(WaveExists(wvX))
+				[dataMin, dataMax] = SFH_RecursiveXLimitsFromDataRange(wvX)
+				xMin               = min(xMin, dataMin)
+				xMax               = max(xMax, dataMax)
+				continue
+			endif
+
+			WAVE/Z/WAVE wvY = plotWITH[j][%FORMULAY]
+			if(WaveExists(wvY))
+				WAVE/Z wvXFromMeta = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_XVALUES)
+			else
+				WAVE/Z wvXFromMeta = $""
+			endif
+			if(WaveExists(wvXFromMeta))
+				[dataMin, dataMax] = SFH_RecursiveXLimitsFromDataRange(wvXFromMeta)
+				xMin               = min(xMin, dataMin)
+				xMax               = max(xMax, dataMax)
+				continue
+			endif
+
+			if(WaveExists(wvY))
+				[dataMin, dataMax] = SFH_RecursiveXLimitsFromScaleRange(wvY)
+				xMin               = min(xMin, dataMin)
+				xMax               = max(xMax, dataMax)
+			endif
+		endfor
+	endfor
+	if(xMin == Inf && xMax == -Inf)
+		return [NaN, NaN]
+	endif
+
+	return [xMin, xMax]
+End
+
+/// @brief Recursively determine [dataMin, dataMax] spanning the numeric data range of wvX
+static Function [variable dataMin, variable dataMax] SFH_RecursiveXLimitsFromDataRange(WAVE/Z wvX)
+
+	variable elemMin, elemMax
+	dataMin = Inf
+	dataMax = -Inf
+
+	if(!WaveExists(wvX))
+		return [dataMin, dataMax]
+	endif
+
+	if(IsWaveRefWave(wvX))
+		for(WAVE/Z elem : wvX)
+			[elemMin, elemMax] = SFH_RecursiveXLimitsFromDataRange(elem)
+			dataMin            = min(dataMin, elemMin)
+			dataMax            = max(dataMax, elemMax)
+		endfor
+		return [dataMin, dataMax]
+	endif
+
+	if(IsNumericWave(wvX) && DimSize(wvX, ROWS))
+		dataMin = WaveMin(wvX)
+		dataMax = WaveMax(wvX)
+	endif
+
+	return [dataMin, dataMax]
+End
+
+/// @brief Recursively determine [dataMin, dataMax] spanning the native x-axis scaling range of wv
+static Function [variable dataMin, variable dataMax] SFH_RecursiveXLimitsFromScaleRange(WAVE/Z wv)
+
+	variable elemMin, elemMax
+	dataMin = Inf
+	dataMax = -Inf
+
+	if(!WaveExists(wv))
+		return [dataMin, dataMax]
+	endif
+
+	if(IsWaveRefWave(wv))
+		for(WAVE/Z elem : wv)
+			[elemMin, elemMax] = SFH_RecursiveXLimitsFromScaleRange(elem)
+			dataMin            = min(dataMin, elemMin)
+			dataMax            = max(dataMax, elemMax)
+		endfor
+		return [dataMin, dataMax]
+	endif
+
+	if(IsNumericWave(wv) && DimSize(wv, ROWS))
+		[dataMin, dataMax] = MinMax(IndexToScale(wv, 0, ROWS), IndexToScale(wv, Inf, ROWS))
+	endif
+
+	return [dataMin, dataMax]
+End
