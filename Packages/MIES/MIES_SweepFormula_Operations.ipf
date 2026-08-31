@@ -3031,12 +3031,6 @@ static Function [WAVE/D inflectionCurrent, WAVE/D inflectionFreq] SFO_OperationI
 			maxIdx               = ScaleToIndex(freq, V_maxloc, ROWS)
 			inflectionCurrent[i] = current[maxIdx]
 			inflectionFreq[i]    = freq[maxIdx]
-		else
-			FindValue/Z/V=(-1) slopeDirection
-			if(V_value != -1)
-				inflectionCurrent[i] = current[V_row]
-				inflectionFreq[i]    = freq[V_row]
-			endif
 		endif
 	endfor
 
