@@ -2178,6 +2178,7 @@ StrConstant SF_META_YTICKLABELS        = "/YTickLabels"      // text wave
 StrConstant SF_META_YTICKPOSITIONS     = "/YTickPositions"   // numeric wave
 StrConstant SF_META_XAXISLABEL         = "/XAxisLabel"       // string
 StrConstant SF_META_YAXISLABEL         = "/YAxisLabel"       // string
+StrConstant SF_META_XAXISGROUP         = "/XAxisGroup"       // number
 StrConstant SF_META_LEGEND_LINE_PREFIX = "/LegendLinePrefix" // string
 StrConstant SF_META_SHOW_LEGEND        = "/ShowLegend"       // numeric, boolean, defaults to true (1)
 StrConstant SF_META_CUSTOM_LEGEND      = "/CustomLegend"     // string with custom legend text, honours /ShowLegend

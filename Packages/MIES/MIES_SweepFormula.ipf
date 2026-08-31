@@ -34,6 +34,9 @@ static Constant SF_SWEEPFORMULA_AXIS_X = 0
 static Constant SF_SWEEPFORMULA_AXIS_Y = 1
 
 static StrConstant SF_UDATA_TABLEFORMULAS = "formulas"
+static StrConstant SF_UDATA_XAXISGROUP    = "xAxisGroup"
+static StrConstant SF_UDATA_XAXIS_OLD_MIN = "xAxisOldMin"
+static StrConstant SF_UDATA_XAXIS_OLD_MAX = "xAxisOldMax"
 
 static Structure SF_PlotterGraphStruct
 
@@ -217,6 +220,7 @@ static Function/WAVE SF_FillPlotMetaData(WAVE wvYRef, variable useXLabel, string
 	plotMetaData[%YAXISOFFSET]   = num2str(JWN_GetNumberFromWaveNote(wvYRef, SF_META_YAXISOFFSET), "%f")
 	plotMetaData[%XAXISPERCENT]  = num2str(JWN_GetNumberFromWaveNote(wvYRef, SF_META_XAXISPERCENT), "%f")
 	plotMetaData[%YAXISPERCENT]  = num2str(JWN_GetNumberFromWaveNote(wvYRef, SF_META_YAXISPERCENT), "%f")
+	plotMetaData[%XAXISGROUP]    = num2istr(JWN_GetNumberFromWaveNote(wvYRef, SF_META_XAXISGROUP))
 
 	WAVE/Z xAxisRange = JWN_GetNumericWaveFromWaveNote(wvYRef, SF_META_XAXISRANGE)
 	plotMetaData[%XAXISRANGE] = NumericWaveToList(xAxisRange, ";")
@@ -1668,7 +1672,7 @@ End
 static Function SF_FinishPlotWindow(STRUCT SF_PlotterGraphStruct &pg, WAVE/T winGraphs)
 
 	variable formulasAreDifferent, numTableFormulas
-	string winHook
+	string winHook, win
 
 	numTableFormulas = GetNumberFromWaveNote(pg.tableFormulas, NOTE_INDEX)
 	if(numTableFormulas)
@@ -1697,12 +1701,60 @@ static Function SF_FinishPlotWindow(STRUCT SF_PlotterGraphStruct &pg, WAVE/T win
 
 		if(pg.traceCnt > 0)
 			SF_AddPlotLabels(pg.win, pg.xAxisLabels, pg.yAxisLabels)
+			SetWindow $pg.win, userdata($SF_UDATA_XAXISGROUP)=pg.plotMetaData[%XAXISGROUP]
+			win = GetMainWindow(pg.win)
+			SetWindow $win, hook(xAxisRangeChange)=SF_XAxisChangeHook
 		endif
 	endif
 
 	if(pg.postPlotPSX)
 		PSX_PostPlot(pg.win)
 	endif
+End
+
+static Function SF_SetXRangeInSubWindows(string win, variable groupId, variable minVal, variable maxVal)
+
+	variable winId, oldMin, oldMax
+	variable epsilon = GetMachineEpsilon(IGOR_TYPE_64BIT_FLOAT)
+
+	WAVE/T allWindows = ListToTextWave(GetAllWindows(win), ";")
+	for(win : allWindows)
+		winId = str2num(GetUserData(win, "", SF_UDATA_XAXISGROUP))
+		if(winId != groupId)
+			continue
+		endif
+		oldMin = str2num(GetUserData(win, "", SF_UDATA_XAXIS_OLD_MIN))
+		oldMax = str2num(GetUserData(win, "", SF_UDATA_XAXIS_OLD_MAX))
+		if(abs(oldMin - minVal) <= epsilon && abs(oldMax - maxVal) <= epsilon)
+			continue
+		endif
+		SetAxis/W=$win/Z bottom, minVal, maxVal
+		SetWindow $win, userdata($SF_UDATA_XAXIS_OLD_MIN)=num2str(minVal, "%.15f")
+		SetWindow $win, userdata($SF_UDATA_XAXIS_OLD_MAX)=num2str(maxVal, "%.15f")
+	endfor
+End
+
+Function SF_XAxisChangeHook(STRUCT WMWinHookStruct &s)
+
+	variable groupId
+
+	switch(s.eventCode)
+		case EVENT_WINDOW_HOOK_MODIFIED:
+			groupId = str2num(GetUserData(s.winName, "", SF_UDATA_XAXISGROUP))
+			if(IsNaN(groupId))
+				break
+			endif
+			GetAxis/W=$s.winName/Q bottom
+			if(V_flag == 1)
+				break
+			endif
+			SF_SetXRangeInSubWindows(GetMainWindow(s.winName), groupId, V_min, V_max)
+			break
+		default:
+			break
+	endswitch
+
+	return 0
 End
 
 static Function SF_AddPlotTraceStyle(STRUCT SF_PlotterGraphStruct &pg, variable formulasAreDifferent)

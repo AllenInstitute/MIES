@@ -3214,16 +3214,17 @@ End
 
 static Function/WAVE SFO_OperationIVSCCApFrequencyImpl(STRUCT SF_ExecutionData &exd, STRUCT IVSCCApFrequencyArgs &args, string opShort)
 
-	variable i, numTagGroups, xMin, xMax
+	variable i, numTagGroups, xMin, xMax, xAxisGroupId
 
 	if(!WaveExists(args.tagGroups))
 		WAVE/WAVE args.tagGroups = SFO_OperationIVSCCApFrequencyGetDefaultTagGroups(exd)
 	endif
 
+	xAxisGroupId = GetUniqueInteger()
 	numTagGroups = DimSize(args.tagGroups, ROWS)
 	Make/FREE=1/WAVE/N=(numTagGroups) plotByTypeSpecs
 	for(i = 0; i < numTagGroups; i += 1)
-		plotByTypeSpecs[i] = SFO_OperationIVSCCApFrequencyImpl2(exd, args, opShort, args.tagGroups[i], i)
+		plotByTypeSpecs[i] = SFO_OperationIVSCCApFrequencyImpl2(exd, args, opShort, args.tagGroups[i], i, xAxisGroupId)
 	endfor
 
 	WAVE/WAVE plotAND = SFO_OperationIVSCCApFrequencyJoinPlots(exd, opShort, plotByTypeSpecs)
@@ -3458,7 +3459,7 @@ static Function SFO_OperationIVSCCApFrequencyConvertSdevToStdError(WAVE wvY, str
 	endif
 End
 
-static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData &exd, STRUCT IVSCCApFrequencyArgs &args, string opShort, WAVE/T tagGroup, variable tagGroupIndex)
+static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData &exd, STRUCT IVSCCApFrequencyArgs &args, string opShort, WAVE/T tagGroup, variable tagGroupIndex, variable xAxisGroupId)
 
 	string varName, tagList, tagSuffix, fitFormula
 	variable i, numExp
@@ -3501,7 +3502,7 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 		tagList = "untagged"
 	endif
 
-	[s] = SFH_GenerateTraceColors(tagGroupIndex)
+	[s]          = SFH_GenerateTraceColors(tagGroupIndex)
 	for(i = 0; i < numExp; i += 1)
 		// apfrequency traces
 		sprintf varName, "freqNorm%d", i
@@ -3523,6 +3524,7 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 				JWN_SetNumberInWaveNote(wvY[0], SF_META_MOD_MARKER, 19)
 				JWN_SetStringInWaveNote(wvY[0], SF_META_LEGEND_LINE_PREFIX, tagList + " " + experiments[i])
 			endif
+			JWN_SetNumberInWaveNote(wvY, SF_META_XAXISGROUP, xAxisGroupId)
 			SFO_OperationIVSCCApFrequencySetPlotProperties(wvY, args.xAxisPercentage, args.yAxisPercentage)
 			SFO_OperationIVSCCApFrequencyAppendPlotType(plotsByType, SF_IVSCC_APFREQUENCY_PLOTTYPE_INDIVIDUAL, wvY, wvX)
 		endif
@@ -3544,17 +3546,20 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 		JWN_SetWaveInWaveNote(freqAll, SF_META_TRACECOLOR, traceColor)
 		JWN_SetNumberInWaveNote(freqAll, SF_META_MOD_MARKER, 19)
 		JWN_SetStringInWaveNote(freqAll, SF_META_LEGEND_LINE_PREFIX, tagList + " ivscc_apfrequency concat")
+		JWN_SetNumberInWaveNote(wvYAllRef, SF_META_XAXISGROUP, xAxisGroupId)
 		SFO_OperationIVSCCApFrequencyAppendPlotType(plotsByType, SF_IVSCC_APFREQUENCY_PLOTTYPE_CONCAT, wvYAllRef, wvXAllRef)
 	endif
 	// DAScale trace
 	JWN_SetStringInWaveNote(inflFreqRef[0], SF_META_LEGEND_LINE_PREFIX, tagList + " ivscc_apfrequency DAScale")
 	JWN_SetWaveInWaveNote(inflFreqRef[0], SF_META_TRACECOLOR, traceColor)
 	JWN_SetNumberInWaveNote(inflFreqRef[0], SF_META_MOD_MARKER, 19)
+	JWN_SetNumberInWaveNote(inflFreqRef, SF_META_XAXISGROUP, xAxisGroupId)
 	SFO_OperationIVSCCApFrequencyAppendPlotType(plotsByType, SF_IVSCC_APFREQUENCY_PLOTTYPE_DASCALE, inflFreqRef, inflCurrentRef)
 	// DAScale average trace (single point)
 	JWN_SetStringInWaveNote(inflFreqAvgRef[0], SF_META_LEGEND_LINE_PREFIX, tagList + " ivscc_apfrequency Mean Maximal Firing Point")
 	JWN_SetWaveInWaveNote(inflFreqAvgRef[0], SF_META_TRACECOLOR, traceColor)
 	JWN_SetNumberInWaveNote(inflFreqAvgRef[0], SF_META_MOD_MARKER, 19)
+	JWN_SetNumberInWaveNote(inflFreqAvgRef, SF_META_XAXISGROUP, xAxisGroupId)
 	SFO_OperationIVSCCApFrequencyAppendPlotType(plotsByType, SF_IVSCC_APFREQUENCY_PLOTTYPE_DASCALEAVG, inflFreqAvgRef, inflCurrentAvgRef)
 
 	if(numExp > 1)
@@ -3567,9 +3572,10 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 			SFO_OperationIVSCCApFrequencyConvertSdevToStdError(wvY[0], SF_META_ERRORBARXMINUS, SF_META_AVG_NPNTS_X)
 			SFO_OperationIVSCCApFrequencyConvertSdevToStdError(wvY[0], SF_META_ERRORBARYPLUS, SF_META_AVG_NPNTS_Y)
 			SFO_OperationIVSCCApFrequencyConvertSdevToStdError(wvY[0], SF_META_ERRORBARYMINUS, SF_META_AVG_NPNTS_Y)
+			JWN_SetWaveInWaveNote(wvY[0], SF_META_TRACECOLOR, traceColor)
 		endif
 		JWN_SetStringInWaveNote(wvY, SF_META_XAXISLABEL, "placeholder") // activates x values
-		JWN_SetWaveInWaveNote(wvY[0], SF_META_TRACECOLOR, traceColor)
+		JWN_SetNumberInWaveNote(wvY, SF_META_XAXISGROUP, xAxisGroupId)
 		SFO_OperationIVSCCApFrequencySetPlotProperties(wvY, args.xAxisPercentage, args.yAxisPercentage)
 		varName = "ivsccavg_norm_x"
 		WAVE/WAVE wvX = SF_ResolveDataset(varStorage[%$varName])
@@ -3582,6 +3588,7 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 			JWN_SetStringInWaveNote(wvY[0], SF_META_LEGEND_LINE_PREFIX, tagList + " ivscc_apfrequency fit")
 			JWN_SetWaveInWaveNote(wvY[0], SF_META_TRACECOLOR, traceColor)
 		endif
+		JWN_SetNumberInWaveNote(wvY, SF_META_XAXISGROUP, xAxisGroupId)
 		SFO_OperationIVSCCApFrequencySetPlotProperties(wvY, args.xAxisPercentage, args.yAxisPercentage)
 		SFO_OperationIVSCCApFrequencyAppendPlotType(plotsByType, SF_IVSCC_APFREQUENCY_PLOTTYPE_FIT, wvY, $"")
 	endif
