@@ -3501,6 +3501,7 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 		tagList = "untagged"
 	endif
 
+	[s] = SFH_GenerateTraceColors(tagGroupIndex)
 	for(i = 0; i < numExp; i += 1)
 		// apfrequency traces
 		sprintf varName, "freqNorm%d", i
@@ -3517,7 +3518,6 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 
 		if(!CmpStr(args.showSingleExp, SF_OP_IVSCCAPFREQUENCY_SHOWSINGLE_ON))
 			if(DimSize(wvY, ROWS) > 0)
-				[s] = GetTraceColorNonHeadstage(tagGroupIndex)
 				Make/FREE/W/U traceColor = {s.red, s.green, s.blue, SF_IVSCC_APFREQUENCY_OPACITY}
 				JWN_SetWaveInWaveNote(wvY[0], SF_META_TRACECOLOR, traceColor)
 				JWN_SetNumberInWaveNote(wvY[0], SF_META_MOD_MARKER, 19)
@@ -3531,9 +3531,7 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 		Concatenate/FREE/NP=(ROWS) {wvY[0]}, freqAll
 	endfor
 
-	[s] = GetTraceColorNonHeadstage(tagGroupIndex)
 	Make/FREE/W/U traceColor = {s.red, s.green, s.blue, 0xFFFF}
-
 	// trace with apfrequency points from all experiments concatenated
 	if(WaveExists(currentAll) && WaveExists(freqAll))
 		Note/K currentAll

@@ -1760,6 +1760,83 @@ Function SFH_GetPlotLineCodeSelection(variable count)
 	return wv[mod(count, DimSize(wv, ROWS))]
 End
 
+/// @brief Returns a perceptually distinct trace color by index, cycling through 16 colors
+///
+/// The 16 colors are a subset of the 26-color "Colour Alphabet" from Green-Armytage (2010),
+/// selected for use on a white background: the 10 palest members of the original alphabet
+/// (chosen there to also work against a black background) have too little luminance contrast
+/// against white to remain visible as thin line traces, so they are excluded here. "Green" was
+/// additionally darkened from the original #2BCE48 to #197629 (same hue and saturation, lower
+/// lightness) as its contrast against white (1.5:1) fell noticeably below the rest of the set;
+/// the replacement reaches 2.5:1. Colors are listed in decreasing order of that contrast.
+///
+/// References:
+/// - P. Green-Armytage (2010). "A Colour Alphabet and the Limits of Colour Coding."
+///   Colour: Design & Creativity, 5, 10, 1-23.
+/// - Colour hex values as reproduced by the "pals" R package (kwstat/pals, alphabet()),
+///   which also cites Green-Armytage (2010).
+///
+/// @param index color index, values above 15 wrap around via modulus
+Function [STRUCT RGBColor s] SFH_GenerateTraceColors(variable index)
+
+	index = mod(index, 16)
+
+	switch(index)
+		case 0: // Damson
+			s.red = 19532; s.green = 0; s.blue = 23644
+			break
+		case 1: // Ebony
+			s.red = 6425; s.green = 6425; s.blue = 6425
+			break
+		case 2: // Wine
+			s.red = 39321; s.green = 0; s.blue = 0
+			break
+		case 3: // Navy
+			s.red = 0; s.green = 13107; s.blue = 32896
+			break
+		case 4: // Violet
+			s.red = 29812; s.green = 2570; s.blue = 65535
+			break
+		case 5: // Mallow (magenta)
+			s.red = 49858; s.green = 0; s.blue = 34952
+			break
+		case 6: // Red
+			s.red = 65535; s.green = 0; s.blue = 4112
+			break
+		case 7: // Forest
+			s.red = 0; s.green = 23644; s.blue = 12593
+			break
+		case 8: // Caramel
+			s.red = 39321; s.green = 16191; s.blue = 0
+			break
+		case 9: // Quagmire
+			s.red = 16962; s.green = 26214; s.blue = 0
+			break
+		case 10: // Green (darkened)
+			s.red = 6425; s.green = 30326; s.blue = 10537
+			break
+		case 11: // Blue
+			s.red = 0; s.green = 30069; s.blue = 56540
+			break
+		case 12: // Zinnia
+			s.red = 65535; s.green = 20560; s.blue = 1285
+			break
+		case 13: // Khaki
+			s.red = 36751; s.green = 31868; s.blue = 0
+			break
+		case 14: // Turquoise
+			s.red = 0; s.green = 39321; s.blue = 36751
+			break
+		case 15: // Iron
+			s.red = 32896; s.green = 32896; s.blue = 32896
+			break
+		default:
+			FATAL_ERROR("Invalid index")
+	endswitch
+
+	return [s]
+End
+
 /// @brief filters data from select, currently supports only one option:
 ///        - specify a channel type to keep
 Function/WAVE SFH_FilterSelect(WAVE/Z selectData, variable keepChanType)
