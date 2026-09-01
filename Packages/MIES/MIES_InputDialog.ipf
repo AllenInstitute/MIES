@@ -30,13 +30,14 @@ Function ID_AskUserForSettings(variable mode, string title, WAVE data, WAVE mock
 
 	ASSERT(!IsFreeWave(data), "Can only work with permanent waves")
 	ASSERT(EqualWaves(data, mock, EQWAVES_DATATYPE + EQWAVES_DIMSIZE), "Mismatched types or dimension sizes")
-	ASSERT(mode == ID_HEADSTAGE_SETTINGS || mode == ID_POPUPMENU_SETTINGS, "Invalid mode")
 	ASSERT(DimSize(data, ROWS) > 0, "Empty wave")
 
 	if(mode == ID_HEADSTAGE_SETTINGS)
 		Execute "IDM_Headstage_Panel()"
 	elseif(mode == ID_POPUPMENU_SETTINGS)
 		Execute "IDM_Popup_Panel()"
+	else
+		FATAL_ERROR("Unknown mode: " + num2str(mode))
 	endif
 
 	win = GetCurrentWindow()
