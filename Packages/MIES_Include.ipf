@@ -70,7 +70,7 @@ static Function/S GetDownloadLink()
 
 #if defined(WINDOWS)
 	os = "Windows"
-#elif defined(MACINTHOSH)
+#elif defined(MACINTOSH)
 	os = "MacOSX"
 #else
 	FATAL_ERROR("Unsupported OS")
