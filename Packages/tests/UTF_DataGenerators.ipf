@@ -299,7 +299,7 @@ static Function/WAVE GetMiesMacrosWithPanelType()
 
 	WAVE/T allMiesMacros = GetMIESMacros()
 
-	Make/FREE/T panelsWithoutType = {"IDM_Headstage_Panel", "IDM_Popup_Panel", "DebugPanel", "ExportSettingsPanel", "PSXPanel", "WaverefBrowser"}
+	Make/FREE/T panelsWithoutType = {"IDM_Headstage_Panel", "IDM_Popup_Panel", "IDM_KVPairs_Panel", "DebugPanel", "ExportSettingsPanel", "PSXPanel", "WaverefBrowser"}
 
 	WAVE/T matches = GetSetDifference(allMiesMacros, panelsWithoutType)
 
@@ -312,7 +312,7 @@ static Function/WAVE GetMiesMacrosWithCoordinateSaving()
 
 	WAVE/T allMiesMacros = GetMIESMacros()
 
-	Make/FREE/T panelsWithoutGroup = {"IDM_Headstage_Panel", "IDM_Popup_Panel", "DebugPanel", "ExportSettingsPanel", "WaverefBrowser"}
+	Make/FREE/T panelsWithoutGroup = {"IDM_Headstage_Panel", "IDM_Popup_Panel", "IDM_KVPairs_Panel", "DebugPanel", "ExportSettingsPanel", "WaverefBrowser"}
 
 	WAVE/T matches = GetSetDifference(allMiesMacros, panelsWithoutGroup)
 

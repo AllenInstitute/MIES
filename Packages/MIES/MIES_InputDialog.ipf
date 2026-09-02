@@ -7,34 +7,46 @@
 #endif // AUTOMATED_TESTING
 
 /// @file MIES_InputDialog.ipf
-/// @brief __ID__ Input dialog handling for numeric entries
+/// @brief __ID__ Input dialog handling for numeric/text entries
 
-/// @brief Shows a dialog and queries numeric values from the user
+/// @brief Shows a dialog and queries values from the user
 ///
-/// We currently ask for #NUM_HEADSTAGES headstage dependent entries and one independent value when mode = ID_HEADSTAGE_SETTINGS.
-/// All values must be numeric. For ID_POPUPMENU_SETTINGS the row dimension labels of data fill the popup menu, and on return
-/// data will have a 1 at the selected entry.
+/// ## Different modes
+///
+/// - ID_HEADSTAGE_SETTINGS
+///   Ask for #NUM_HEADSTAGES headstage dependent entries and one independent value. All numeric.
+/// - ID_POPUPMENU_SETTINGS
+///   The row dimension labels of data fill the popup menu, and on return data will have a 1 at the selected entry. All numeric.
+/// - ID_KVPAIRS_SETTINGS
+///   Pairs of keys and values, values being the wave element and the key the dimension label. Supports 1 to #ID_KVPAIRS_MAX_VALUES text entries.
 ///
 /// @param mode  One of @ref AskUserSettingsModeFlag
 /// @param title dialog title
-/// @param data  1D numeric wave, which must be permanent
+/// @param data  1D wave, which must be permanent
 /// @param mock  This is mock data for testing which is written into data when
 ///              GetInteractiveMode() is false
 ///
 /// @return 0 on success, 1 if the user cancelled the dialog
 Function ID_AskUserForSettings(variable mode, string title, WAVE data, WAVE mock)
 
-	string win, ctrl
-	variable i, state_var
+	string win, ctrl, ctrlTitle
+	variable i, state_var, numEntries
+
+	numEntries = DimSize(data, ROWS)
 
 	ASSERT(IsGlobalWave(data), "Can only work with permanent waves")
 	ASSERT(EqualWaves(data, mock, EQWAVES_DATATYPE + EQWAVES_DIMSIZE), "Mismatched types or dimension sizes")
-	ASSERT(DimSize(data, ROWS) > 0, "Empty wave")
+	ASSERT(numEntries > 0, "Empty wave")
 
 	if(mode == ID_HEADSTAGE_SETTINGS)
+		ASSERT(IsFloatingPointWave(data), "Expected a floating point wave for data")
 		Execute "IDM_Headstage_Panel()"
 	elseif(mode == ID_POPUPMENU_SETTINGS)
 		Execute "IDM_Popup_Panel()"
+	elseif(mode == ID_KVPAIRS_SETTINGS)
+		ASSERT(IsTextWave(data), "Expected a text wave for data")
+		ASSERT(numEntries <= ID_KVPAIRS_MAX_VALUES, "Can only show up to 10 entries with mode ID_KVPAIRS_SETTINGS")
+		Execute "IDM_KVPairs_Panel()"
 	else
 		FATAL_ERROR("Unknown mode: " + num2str(mode))
 	endif
@@ -48,7 +60,7 @@ Function ID_AskUserForSettings(variable mode, string title, WAVE data, WAVE mock
 
 	if(mode == ID_HEADSTAGE_SETTINGS)
 		for(i = 0; i < LABNOTEBOOK_LAYER_COUNT; i += 1)
-			ctrl = ID_GetControl(i)
+			ctrl = ID_GetControl(mode, i)
 
 			if(IsNaN(data[i]))
 				DisableControl(win, ctrl)
@@ -60,12 +72,37 @@ Function ID_AskUserForSettings(variable mode, string title, WAVE data, WAVE mock
 		PopupMenu popup0, mode=1, win=$win, popvalue="", value=#"ID_GetPopupEntries()"
 		// select the first entry
 		PGC_SetAndActivateControl(win, "popup0", val = 0)
+	elseif(mode == ID_KVPAIRS_SETTINGS)
+		WAVE/T dataTXT = data
+
+		for(i = 0; i < ID_KVPAIRS_MAX_VALUES; i += 1)
+			ctrl = ID_GetControl(mode, i)
+
+			if(i >= numEntries)
+				DisableControl(win, ctrl)
+				continue
+			endif
+
+			SetSetVariableString(win, ctrl, dataTXT[i])
+
+			ctrlTitle = GetDimlabel(dataTXT, ROWS, i)
+			ASSERT(!IsEmpty(ctrlTitle), "Title for entry can not be empty")
+			SetControlTitle(win, ctrl, ctrlTitle)
+		endfor
 	endif
 
 	if(ROVar(GetInteractiveMode()))
 		PauseForUser $win
 	else
-		data = mock
+		if(IsTextWave(mock))
+			WAVE/T dataTXT = data
+			WAVE/T mockTXT = mock
+
+			dataTXT = mockTXT
+		else
+			data = mock
+		endif
+
 		PGC_SetAndActivateControl(win, "button_continue")
 	endif
 
@@ -85,14 +122,20 @@ static Function ID_SetTitle(string win, string title)
 	DrawText/W=$win 0.5, 15, title
 End
 
-static Function/S ID_GetControl(variable index)
+static Function/S ID_GetControl(variable mode, variable index)
 
 	string ctrl
 
-	if(index < NUM_HEADSTAGES)
-		sprintf ctrl, "setvar_HS%d", index
+	if(mode == ID_HEADSTAGE_SETTINGS)
+		if(index < NUM_HEADSTAGES)
+			sprintf ctrl, "setvar_HS%d", index
+		else
+			ctrl = "setvar_INDEP"
+		endif
+	elseif(mode == ID_KVPAIRS_SETTINGS)
+		sprintf ctrl, "setvar_%d", index
 	else
-		ctrl = "setvar_INDEP"
+		FATAL_ERROR("Unsupported mode")
 	endif
 
 	return ctrl
@@ -149,8 +192,13 @@ Function ID_SetVarProc(STRUCT WMSetVariableAction &sva) : SetVariableControl
 			idx = str2num(GetUserData(sva.win, sva.ctrlName, "index"))
 			ASSERT(IsFinite(idx), "Invalid index")
 
-			WAVE data = ID_GetWave(sva.win)
-			data[idx] = sva.dval
+			if(sva.isStr)
+				WAVE/T dataTXT = ID_GetWave(sva.win)
+				dataTXT[idx] = sva.sval
+			else
+				WAVE data = ID_GetWave(sva.win)
+				data[idx] = sva.dval
+			endif
 			break
 		default:
 			break
