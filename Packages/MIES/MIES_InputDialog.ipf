@@ -28,7 +28,7 @@ Function ID_AskUserForSettings(variable mode, string title, WAVE data, WAVE mock
 	string win, ctrl
 	variable i, state_var
 
-	ASSERT(!IsFreeWave(data), "Can only work with permanent waves")
+	ASSERT(IsGlobalWave(data), "Can only work with permanent waves")
 	ASSERT(EqualWaves(data, mock, EQWAVES_DATATYPE + EQWAVES_DIMSIZE), "Mismatched types or dimension sizes")
 	ASSERT(DimSize(data, ROWS) > 0, "Empty wave")
 
