@@ -1281,7 +1281,8 @@ End
 /// @brief Tag the experiments currently listed in the analysis browser
 ///
 /// @param tagList list of tags, one per experiment, in the same order the experiments were added
-static Function TagExperimentsInAnalysisBrowser(WAVE/Z/T tagList)
+/// ??? FIXME
+static Function TagExperimentsInAnalysisBrowser(WAVE/Z/WAVE tagList)
 
 	variable i, numTags
 
@@ -1952,6 +1953,7 @@ static Function/S GetDefaultTestSuitesForExperiment()
 			list = AddListItem("UTF_oodDAQ.ipf", list, ";", Inf)
 			list = AddListItem("UTF_PackageSettings.ipf", list, ";", Inf)
 			list = AddListItem("UTF_PGCSetAndActivateControl.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Python.ipf", list, ";", Inf)
 			list = AddListItem("UTF_StimsetAPI.ipf", list, ";", Inf)
 			list = AddListItem("UTF_SweepFormula.ipf", list, ";", Inf)
 			list = AddListItem("UTF_SweepFormula_Operations.ipf", list, ";", Inf)
@@ -1972,6 +1974,7 @@ static Function/S GetDefaultTestSuitesForExperiment()
 			list = AddListItem("UTF_Utils_Mies_BackupWaves.ipf", list, ";", Inf)
 			list = AddListItem("UTF_Utils_Mies_Config.ipf", list, ";", Inf)
 			list = AddListItem("UTF_Utils_Mies_Logging.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Utils_Mies_Settings.ipf", list, ";", Inf)
 			list = AddListItem("UTF_Utils_Mies_Sweep.ipf", list, ";", Inf)
 			list = AddListItem("UTF_Utils_Numeric.ipf", list, ";", Inf)
 			list = AddListItem("UTF_Utils_ProgramFlow.ipf", list, ";", Inf)

@@ -21,7 +21,7 @@ Constant DAQ_CONFIG_WAVE_VERSION = 3
 Constant DA_EPHYS_PANEL_VERSION           = 67
 Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 55
 Constant WAVEBUILDER_PANEL_VERSION        = 15
-Constant ANALYSISBROWSER_PANEL_VERSION    = 12
+Constant ANALYSISBROWSER_PANEL_VERSION    = 13
 Constant PSX_PLOT_PANEL_VERSION           = 1
 
 /// Version of the stimset wave note
@@ -2159,6 +2159,7 @@ StrConstant CO_ARCHIVE_ONCE          = "ArchiveLogs"
 StrConstant CO_PSX_UPGRADE_EVENT     = "psx_updateEvent"
 StrConstant CO_AB_LOADHISTORYFROMPXP = "ABLoadHistoryFromPXP"
 StrConstant CO_DAP_DIFF_FALLBACK_NI  = "DiffFallbackNI"
+StrConstant CO_AB_NO_CELLNAMES_IP9   = "ABNoCellNamesIP9"
 ///@}
 
 /// @name Constants for SweepFormula Meta data in JSON format
@@ -2838,3 +2839,12 @@ Constant AUTO_BRIDGEBALANCE = 3
 ///@}
 
 Constant ID_KVPAIRS_MAX_VALUES = 10
+
+/// Valid states for state machine of AB_ParsePasteFormat()
+///@{
+Constant AB_PASTE_STATE_INVALID  = 0
+Constant AB_PASTE_STATE_TAG      = 1
+Constant AB_PASTE_STATE_FILE     = 2
+Constant AB_PASTE_STATE_FOLDER   = 3
+Constant AB_PASTE_STATE_CELLNAME = 4
+///@}
