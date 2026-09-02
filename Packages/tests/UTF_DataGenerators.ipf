@@ -1214,12 +1214,13 @@ End
 
 /// @brief Mode values which ID_AskUserForSettings() must reject
 ///
-/// The last entry checks that the two valid modes can not be combined.
+/// The modes are consecutive numbers and not bit flags, so the last entry
+/// checks the first value above the largest valid mode.
 static Function/WAVE InvalidInputDialogModes()
 
-	Make/FREE/D modes = {0, -1, NaN, Inf, -Inf, ID_HEADSTAGE_SETTINGS | ID_POPUPMENU_SETTINGS}
+	Make/FREE/D modes = {0, -1, NaN, Inf, -Inf, ID_KVPAIRS_SETTINGS + 1}
 
-	SetDimensionLabels(modes, "Zero;Negative;NotANumber;PosInfinity;NegInfinity;BothModesCombined", ROWS)
+	SetDimensionLabels(modes, "Zero;Negative;NotANumber;PosInfinity;NegInfinity;AboveLargestMode", ROWS)
 
 	return modes
 End
@@ -1233,6 +1234,20 @@ static Function/WAVE InputDialogPopupEntryIndizes()
 	SetDimensionLabels(indizes, "FirstEntry;MiddleEntry;LastEntry", ROWS)
 
 	return indizes
+End
+
+/// @brief Number of entries of a key/value pairs dialog wave, must be in
+///        [1, #ID_TEST_MAX_KVPAIRS_ENTRIES], see UTF_InputDialog.ipf
+///
+/// Everything below the maximum leaves some dialog controls unused and
+/// therefore disabled.
+static Function/WAVE InputDialogKVPairsEntryCounts()
+
+	Make/FREE/D counts = {1, 5, 10}
+
+	SetDimensionLabels(counts, "SingleEntry;SomeEntries;AllEntries", ROWS)
+
+	return counts
 End
 
 static Function/WAVE StatsTest_GetInput()
