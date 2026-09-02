@@ -17,8 +17,7 @@
 ///
 /// @param mode  One of @ref AskUserSettingsModeFlag
 /// @param title dialog title
-/// @param data  1D numeric wave, which must be permanent and
-///              in an otherwise empty folder
+/// @param data  1D numeric wave, which must be permanent
 /// @param mock  This is mock data for testing which is written into data when
 ///              GetInteractiveMode() is false
 ///
@@ -43,6 +42,7 @@ Function ID_AskUserForSettings(variable mode, string title, WAVE data, WAVE mock
 	win = GetCurrentWindow()
 	DFREF dfr = GetWavesDataFolderDFR(data)
 	SetWindow $win, userdata(folder)=GetDataFolder(1, dfr)
+	SetWindow $win, userdata(wave)=GetWavesDataFolder(data, 2)
 
 	ID_SetTitle(win, title)
 
@@ -108,12 +108,11 @@ End
 
 static Function/WAVE ID_GetWave(string win)
 
-	DFREF dfr = ID_GetFolder(win)
+	DFREF  dfr = ID_GetFolder(win)
+	WAVE/Z wv  = $GetUserData(win, "", "wave")
+	ASSERT(WaveExists(wv), "wv does not exist")
 
-	WAVE/WAVE waves = ListToWaveRefWave(GetListOfObjects(dfr, ".*", fullPath = 1), 1)
-	ASSERT(DimSize(waves, ROWS) == 1, "Expected only one wave")
-
-	return waves[0]
+	return wv
 End
 
 Function ID_ButtonProc(STRUCT WMButtonAction &ba) : ButtonControl
