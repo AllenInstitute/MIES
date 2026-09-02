@@ -101,5 +101,5 @@ Window IDM_Popup_Panel() : Panel
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)=A"!!*'\"z!!#B7!!#A!zzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
-	SetWindow kwTopWin, userdata(ResizeControlsHookStash)="ResizeControlsSafe"
+	SetWindow kwTopWin, hook(ResizeControls)=ResizeControlsSafe
 EndMacro
