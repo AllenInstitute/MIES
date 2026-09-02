@@ -108,22 +108,44 @@ static Function TestNonFiniteValues()
 	TestOperationMinMaxHelper(win, "\"inf\"", "inf", +Inf)
 	TestOperationMinMaxHelper(win, "\"-inf\"", "-inf", -Inf)
 	TestOperationMinMaxHelper(win, "\"NaN\"", "NaN", NaN)
+	TestOperationMinMaxHelper(win, "\"-NaN\"", "-NaN", NaN)
+
+	WAVE data = SFE_ExecuteFormula("inf", win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, {Inf}, mode = WAVE_DATA)
+	WAVE data = SFE_ExecuteFormula("-inf", win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, {-Inf}, mode = WAVE_DATA)
+	WAVE data = SFE_ExecuteFormula("NaN", win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, {NaN}, mode = WAVE_DATA)
+	WAVE data = SFE_ExecuteFormula("-NaN", win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, {NaN}, mode = WAVE_DATA)
 End
 
-// Fails with Abort
 // UTF_TD_GENERATOR DataGenerators#NonFiniteValues
-//static Function TestNonFiniteValuesPrimitiveOperations([variable var])
-//
-//	string win, device, str
-//
-//	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
-//
-//	str = "\"" + num2str(var) + "\""
-//	TestOperationMinMaxHelper(win, "{\"+\":[1," + str + "]}", "1+" + str, 1 + var)
-//	TestOperationMinMaxHelper(win, "{\"*\":[1," + str + "]}", "1*" + str, 1 * var)
-//	TestOperationMinMaxHelper(win, "{\"-\":[1," + str + "]}", "1-" + str, 1 - var)
-//	TestOperationMinMaxHelper(win, "{\"/\":[1," + str + "]}", "1/" + str, 1 / var)
-//End
+static Function TestNonFiniteValuesPrimitiveOperations([variable var])
+
+	string win, str
+
+	win = GetDataBrowserWithData()
+
+	str = "\"" + num2str(var) + "\""
+	TestOperationMinMaxHelper(win, "{\"+\":[1," + str + "]}", "1+" + str, 1 + var)
+	TestOperationMinMaxHelper(win, "{\"*\":[1," + str + "]}", "1*" + str, 1 * var)
+	TestOperationMinMaxHelper(win, "{\"-\":[1," + str + "]}", "1-" + str, 1 - var)
+	TestOperationMinMaxHelper(win, "{\"/\":[1," + str + "]}", "1/" + str, 1 / var)
+End
+
+// UTF_TD_GENERATOR DataGenerators#NonFinitePrimitiveOperations
+static Function TestNonFiniteValuesPrimitiveOperations2([WAVE/WAVE tuple])
+
+	string win
+
+	win = GetDataBrowserWithData()
+
+	WAVE/T wt   = tuple[0]
+	WAVE   wv   = tuple[1]
+	WAVE   data = SFE_ExecuteFormula(wt[0], win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, {wv[0]}, mode = WAVE_DATA)
+End
 
 static Function TestScientificNotation()
 
@@ -3513,6 +3535,48 @@ static Function TestAxisPercentage()
 	CHECK_EQUAL_VAR(offset, 0.95)
 End
 
+/// Directly exercises SFE_ConvertNonFiniteElements' numpnts(subArray) == 0 guard (see #1863):
+static Function TestNonFiniteConvertEmptyTextWave()
+
+	Make/FREE/T/N=0 emptyText
+
+	WAVE/Z converted = MIES_SFE#SFE_ConvertNonFiniteElements(emptyText)
+	CHECK_WAVE(converted, NULL_WAVE)
+End
+
+/// Test op that returns an empty text wave, mimicking an operation result with no
+/// entries (e.g. a lookup with zero matches)
+static Function/WAVE TestNonFiniteEmptyTextOp(STRUCT SF_ExecutionData &exd)
+
+	Make/FREE/T/N=0 output
+
+	return SFH_GetOutputForExecutorSingle(output, exd.graph, SF_OP_TESTOP)
+End
+
+/// Integration counterpart to TestNonFiniteConvertEmptyTextWave
+static Function TestNonFiniteEmptyTextInDatasetArray()
+
+	string win, device
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+	win           = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	SVAR funcName = $GetSFTestopName(win)
+	funcName = "UTF_SWEEPFORMULA#TestNonFiniteEmptyTextOp"
+
+	WAVE/WAVE output = SFE_ExecuteFormula("[testop(), data()]", win, singleResult = 1, useVariables = 0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 2)
+
+	WAVE/WAVE testopSlot = output[0]
+	CHECK_WAVE(testopSlot, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(testopSlot, ROWS), 1)
+
+	WAVE/Z leaf = testopSlot[0]
+	CHECK_WAVE(leaf, TEXT_WAVE)
+	CHECK_EQUAL_VAR(DimSize(leaf, ROWS), 0)
+End
+
 static Function TestSFHIsArray()
 
 	Make/FREE numData
@@ -3621,4 +3685,87 @@ static Function TestAssertDataStack([WAVE/T input])
 		WAVE/WAVE assertDataStack = GetSFAssertDataStack()
 		CHECK_EQUAL_VAR(DimSize(assertDataStack, ROWS), 0)
 	endtry
+End
+
+/// Test op that echoes its first argument resolved as numeric scalar via SFH_GetArgumentAsNumeric
+static Function/WAVE TestNonFiniteScalarArgOp(STRUCT SF_ExecutionData &exd)
+
+	variable result
+	string opShort = SF_OP_TESTOP
+
+	result = SFH_GetArgumentAsNumeric(exd, SF_OP_TESTOP, 0)
+
+	Make/FREE/D output = {result}
+
+	return SFH_GetOutputForExecutorSingle(output, exd.graph, opShort)
+End
+
+static Function TestNonFiniteScalarArgument()
+
+	string win, device
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+	win           = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	SVAR funcName = $GetSFTestopName(win)
+	funcName = "UTF_SWEEPFORMULA#TestNonFiniteScalarArgOp"
+
+	// bare non-finite literals are accepted wherever a numeric scalar argument is taken, see #1863
+	WAVE data = SFE_ExecuteFormula("testop(inf)", win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, {Inf}, mode = WAVE_DATA)
+
+	WAVE data = SFE_ExecuteFormula("testop(-inf)", win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, {-Inf}, mode = WAVE_DATA)
+
+	WAVE data = SFE_ExecuteFormula("testop(NaN)", win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, {NaN}, mode = WAVE_DATA)
+
+	WAVE data = SFE_ExecuteFormula("testop(-NaN)", win, singleResult = 1, useVariables = 0)
+	CHECK_EQUAL_WAVES(data, {NaN}, mode = WAVE_DATA)
+
+	// textual arguments that are not non-finite literals are still rejected
+	ExecuteSweepFormulaCode(win, "testop(abc)", expectFailure = 1)
+End
+
+/// Test op that allows only the first arguments value as value for the second argument
+static Function/WAVE TestNonFiniteAllowedValuesOp(STRUCT SF_ExecutionData &exd)
+
+	variable result, allowedValue
+	string opShort = SF_OP_TESTOP
+
+	allowedValue = SFH_GetArgumentAsNumeric(exd, SF_OP_TESTOP, 0)
+	result       = SFH_GetArgumentAsNumeric(exd, SF_OP_TESTOP, 1, allowedValues = {allowedValue})
+
+	Make/FREE/D output = {80085}
+
+	return SFH_GetOutputForExecutorSingle(output, exd.graph, opShort)
+End
+
+static Function TestNonFiniteAllowedValues()
+
+	string win, device
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+	win           = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	SVAR funcName = $GetSFTestopName(win)
+	funcName = "UTF_SWEEPFORMULA#TestNonFiniteAllowedValuesOp"
+
+	ExecuteSweepFormulaCode(win, "testop(inf,inf)")
+	ExecuteSweepFormulaCode(win, "testop(-inf,-inf)")
+	ExecuteSweepFormulaCode(win, "testop(NaN,NaN)")
+	ExecuteSweepFormulaCode(win, "testop(NaN,-NaN)")
+	ExecuteSweepFormulaCode(win, "testop(-NaN,NaN)")
+	ExecuteSweepFormulaCode(win, "testop(inf,-inf)", expectFailure = 1)
+	ExecuteSweepFormulaCode(win, "testop(inf,NaN)", expectFailure = 1)
+	ExecuteSweepFormulaCode(win, "testop(inf,-NaN)", expectFailure = 1)
+	ExecuteSweepFormulaCode(win, "testop(NaN,inf)", expectFailure = 1)
+	ExecuteSweepFormulaCode(win, "testop(NaN,-inf)", expectFailure = 1)
+	ExecuteSweepFormulaCode(win, "testop(-inf,inf)", expectFailure = 1)
+	ExecuteSweepFormulaCode(win, "testop(-inf,NaN)", expectFailure = 1)
+	ExecuteSweepFormulaCode(win, "testop(-inf,-NaN)", expectFailure = 1)
+	ExecuteSweepFormulaCode(win, "testop(inf,1)", expectFailure = 1)
+	ExecuteSweepFormulaCode(win, "testop(-inf,1)", expectFailure = 1)
+	ExecuteSweepFormulaCode(win, "testop(NaN,1)", expectFailure = 1)
+	ExecuteSweepFormulaCode(win, "testop(-NaN,1)", expectFailure = 1)
 End

@@ -238,7 +238,7 @@ End
 static Function [variable method, variable level, string timeFreq, string normalize, string xAxisType] SFO_GetApFrequencyArguments(STRUCT SF_ExecutionData &exd, string opShort, variable offset)
 
 	method    = SFH_GetArgumentAsNumeric(exd, opShort, offset, defValue = SF_APFREQUENCY_FULL, allowedValues = {SF_APFREQUENCY_FULL, SF_APFREQUENCY_INSTANTANEOUS, SF_APFREQUENCY_APCOUNT, SF_APFREQUENCY_INSTANTANEOUS_PAIR})
-	level     = SFH_GetArgumentAsNumeric(exd, opShort, offset + 1, defValue = 0)
+	level     = SFH_GetArgumentAsNumeric(exd, opShort, offset + 1, defValue = 0, checkFunc = IsFiniteSF)
 	timeFreq  = SFH_GetArgumentAsText(exd, opShort, offset + 2, defValue = SF_OP_APFREQUENCY_Y_FREQ, allowedValues = {SF_OP_APFREQUENCY_Y_TIME, SF_OP_APFREQUENCY_Y_FREQ})
 	normalize = SFH_GetArgumentAsText(exd, opShort, offset + 3, defValue = SF_OP_APFREQUENCY_NONORM, allowedValues = {                                      \
 	                                                                                                                  SF_OP_APFREQUENCY_NONORM,             \
@@ -453,7 +453,7 @@ Function/WAVE SFO_OperationArea(STRUCT SF_ExecutionData &exd)
 
 	WAVE/WAVE input = SF_ResolveDatasetFromJSON(exd, 0)
 
-	zero = !!SFH_GetArgumentAsNumeric(exd, SF_OP_AREA, 1, defValue = 1)
+	zero = !!SFH_GetArgumentAsNumeric(exd, SF_OP_AREA, 1, defValue = 1, checkFunc = IsFiniteSF)
 
 	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_AREA, DimSize(input, ROWS))
 
@@ -901,9 +901,9 @@ Function/WAVE SFO_OperationButterworth(STRUCT SF_ExecutionData &exd)
 	SFH_CheckArgumentCount(exd, SF_OP_BUTTERWORTH, 4, maxArgs = 4)
 
 	WAVE/WAVE input = SFH_GetArgumentAsWave(exd, SF_OP_BUTTERWORTH, 0, copy = 1)
-	lowPassCutoff  = SFH_GetArgumentAsNumeric(exd, SF_OP_BUTTERWORTH, 1)
-	highPassCutoff = SFH_GetArgumentAsNumeric(exd, SF_OP_BUTTERWORTH, 2)
-	order          = SFH_GetArgumentAsNumeric(exd, SF_OP_BUTTERWORTH, 3)
+	lowPassCutoff  = SFH_GetArgumentAsNumeric(exd, SF_OP_BUTTERWORTH, 1, checkFunc = IsNullOrPositiveAndFinite)
+	highPassCutoff = SFH_GetArgumentAsNumeric(exd, SF_OP_BUTTERWORTH, 2, checkFunc = IsNullOrPositiveAndFinite)
+	order          = SFH_GetArgumentAsNumeric(exd, SF_OP_BUTTERWORTH, 3, checkFunc = BetweenZeroAndOneHoundred)
 
 	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, SF_OP_BUTTERWORTH, DimSize(input, ROWS))
 
@@ -1038,7 +1038,7 @@ Function/WAVE SFO_OperationExtract(STRUCT SF_ExecutionData &exd)
 	SFH_CheckArgumentCount(exd, opShort, 2, maxArgs = 2)
 
 	WAVE/WAVE datasets = SFH_GetArgumentAsWave(exd, opShort, 0)
-	idx = SFH_GetArgumentAsNumeric(exd, opShort, 1)
+	idx = SFH_GetArgumentAsNumeric(exd, opShort, 1, checkFunc = IsNullOrPositiveAndInteger)
 	SFH_ASSERT(idx >= 0 && idx < DimSize(datasets, ROWS), "index out of range")
 
 	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 1)
@@ -2264,9 +2264,9 @@ Function/WAVE SFO_OperationRange(STRUCT SF_ExecutionData &exd)
 
 	SFH_CheckArgumentCount(exd, SF_OP_RANGE, 1, maxArgs = 3)
 
-	start = SFH_GetArgumentAsNumeric(exd, SF_OP_RANGE, 0)
-	stop  = SFH_GetArgumentAsNumeric(exd, SF_OP_RANGE, 1, defValue = NaN)
-	step  = SFH_GetArgumentAsNumeric(exd, SF_OP_RANGE, 2, defValue = 1)
+	start = SFH_GetArgumentAsNumeric(exd, SF_OP_RANGE, 0, checkFunc = IsFiniteSF)
+	stop  = SFH_GetArgumentAsNumeric(exd, SF_OP_RANGE, 1, defValue = NaN, checkFunc = IsFiniteSF, checkDefault = 0)
+	step  = SFH_GetArgumentAsNumeric(exd, SF_OP_RANGE, 2, defValue = 1, checkFunc = IsFiniteSF)
 
 	if(IsNaN(stop))
 		stop        = 0

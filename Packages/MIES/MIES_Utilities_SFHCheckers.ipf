@@ -112,3 +112,11 @@ threadsafe Function IsNullOrTwoAndHigherButFinite(variable val)
 
 	return val == 0 || val >= 2
 End
+
+/// @brief SFH Checker wrapper for IsFinite
+///
+/// UTF_NOINSTRUMENTATION
+threadsafe Function IsFiniteSF(variable val)
+
+	return IsFinite(val)
+End

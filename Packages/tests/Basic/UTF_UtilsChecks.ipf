@@ -90,3 +90,15 @@ static Function TestIsNullOrPositiveAndFiniteInfinite([variable var])
 
 	CHECK(!IsNullOrPositiveAndFinite(var))
 End
+
+static Function TestIsFiniteSF()
+
+	CHECK(IsFiniteSF(0))
+	CHECK(IsFiniteSF(1))
+	CHECK(IsFiniteSF(-1))
+	CHECK(IsFiniteSF(1.5))
+	CHECK(IsFiniteSF(-1.5))
+	CHECK(!IsFiniteSF(NaN))
+	CHECK(!IsFiniteSF(Inf))
+	CHECK(!IsFiniteSF(-Inf))
+End

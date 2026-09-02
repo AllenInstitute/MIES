@@ -333,12 +333,10 @@ threadsafe Function GetRowIndex(WAVE wv, [variable val, string str, WAVE/Z refWa
 								return i
 							endif
 						endfor
-					else
-						FindValue/V=(val)/T=(tol) wv
+						return NaN
 					endif
-#else
-					FindValue/V=(val)/T=(tol) wv
 #endif
+					FindValue/V=(val)/T=(tol) wv
 				endif
 			else
 				if(IsNaN(val))
@@ -352,12 +350,10 @@ threadsafe Function GetRowIndex(WAVE wv, [variable val, string str, WAVE/Z refWa
 								return i
 							endif
 						endfor
-					else
-						FindValue/V=(val)/R/T=(tol) wv
+						return NaN
 					endif
-#else
-					FindValue/V=(val)/R/T=(tol) wv
 #endif
+					FindValue/V=(val)/R/T=(tol) wv
 				endif
 			endif
 
