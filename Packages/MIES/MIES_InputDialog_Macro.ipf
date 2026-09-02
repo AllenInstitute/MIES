@@ -103,3 +103,83 @@ Window IDM_Popup_Panel() : Panel
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin, hook(ResizeControls)=ResizeControlsSafe
 EndMacro
+
+Window IDM_KVPairs_Panel() : Panel
+	PauseUpdate; Silent 1 // building window...
+	NewPanel/K=1/W=(354, 910, 606, 1216) as "InputPanelForKVPairs"
+	Button button_continue, pos={29, 274}, size={92, 20}, proc=ID_ButtonProc
+	Button button_continue, title="Continue"
+	Button button_continue, userdata(ResizeControlsInfo)=A"!!,CL!!#BC!!#?q!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_continue, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	Button button_continue, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	Button button_cancel, pos={132, 274}, size={92, 20}, proc=ID_ButtonProc
+	Button button_cancel, title="Cancel"
+	Button button_cancel, userdata(ResizeControlsInfo)=A"!!,Fi!!#BC!!#?q!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_cancel, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	Button button_cancel, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_0, pos={60, 36}, size={129, 19}, bodyWidth=100, proc=ID_SetVarProc
+	SetVariable setvar_0, title="Key0", userdata(index)="0"
+	SetVariable setvar_0, userdata(ResizeControlsInfo)=A"!!,E*!!#=s!!#@e!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_0, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_0, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_0, limits={-Inf, Inf, 0}, value=_STR:"Value0"
+	SetVariable setvar_1, pos={60, 59}, size={129, 19}, bodyWidth=100, proc=ID_SetVarProc
+	SetVariable setvar_1, title="Key1", userdata(index)="1"
+	SetVariable setvar_1, userdata(ResizeControlsInfo)=A"!!,E*!!#?%!!#@e!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_1, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_1, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_1, limits={-Inf, Inf, 0}, value=_STR:"Value1"
+	SetVariable setvar_2, pos={60, 82}, size={129, 19}, bodyWidth=100, proc=ID_SetVarProc
+	SetVariable setvar_2, title="Key2", userdata(index)="2"
+	SetVariable setvar_2, userdata(ResizeControlsInfo)=A"!!,E*!!#?]!!#@e!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_2, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_2, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_2, limits={-Inf, Inf, 0}, value=_STR:"Value2"
+	SetVariable setvar_3, pos={60, 106}, size={129, 19}, bodyWidth=100, proc=ID_SetVarProc
+	SetVariable setvar_3, title="Key3", userdata(index)="3"
+	SetVariable setvar_3, userdata(ResizeControlsInfo)=A"!!,E*!!#@8!!#@e!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_3, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_3, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_3, limits={-Inf, Inf, 0}, value=_STR:"Value3"
+	SetVariable setvar_4, pos={60, 129}, size={129, 19}, bodyWidth=100, proc=ID_SetVarProc
+	SetVariable setvar_4, title="Key4", userdata(index)="4"
+	SetVariable setvar_4, userdata(ResizeControlsInfo)=A"!!,E*!!#@e!!#@e!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_4, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_4, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_4, limits={-Inf, Inf, 0}, value=_STR:"Value4"
+	SetVariable setvar_5, pos={60, 153}, size={129, 19}, bodyWidth=100, proc=ID_SetVarProc
+	SetVariable setvar_5, title="Key5", userdata(index)="5"
+	SetVariable setvar_5, userdata(ResizeControlsInfo)=A"!!,E*!!#A(!!#@e!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_5, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_5, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_5, limits={-Inf, Inf, 0}, value=_STR:"Value5"
+	SetVariable setvar_6, pos={60, 176}, size={129, 19}, bodyWidth=100, proc=ID_SetVarProc
+	SetVariable setvar_6, title="Key6", userdata(index)="6"
+	SetVariable setvar_6, userdata(ResizeControlsInfo)=A"!!,E*!!#A?!!#@e!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_6, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_6, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_6, limits={-Inf, Inf, 0}, value=_STR:"Value6"
+	SetVariable setvar_7, pos={60, 200}, size={129, 19}, bodyWidth=100, proc=ID_SetVarProc
+	SetVariable setvar_7, title="Key7", userdata(index)="7"
+	SetVariable setvar_7, userdata(ResizeControlsInfo)=A"!!,E*!!#AW!!#@e!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_7, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_7, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_7, limits={-Inf, Inf, 0}, value=_STR:"Value7"
+	SetVariable setvar_8, pos={60, 223}, size={129, 19}, bodyWidth=100, proc=ID_SetVarProc
+	SetVariable setvar_8, title="Key8", userdata(index)="8"
+	SetVariable setvar_8, userdata(ResizeControlsInfo)=A"!!,E*!!#An!!#@e!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_8, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_8, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_8, limits={-Inf, Inf, 0}, value=_STR:"Value8"
+	SetVariable setvar_9, pos={60, 247}, size={129, 19}, bodyWidth=100, proc=ID_SetVarProc
+	SetVariable setvar_9, title="Key9", userdata(index)="9"
+	SetVariable setvar_9, userdata(ResizeControlsInfo)=A"!!,E*!!#B1!!#@e!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_9, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_9, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_9, limits={-Inf, Inf, 0}, value=_STR:"Value9"
+	SetWindow kwTopWin, hook(ResizeControls)=ResizeControls#ResizeControlsHook
+	SetWindow kwTopWin, userdata(ResizeControlsInfo)=A"!!*'\"z!!#B6!!#BSzzzzzzzzzzzzzzzzzzzzz"
+	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
+	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
+	Execute/Q/Z "SetWindow kwTopWin sizeLimit={189,228.75,inf,inf}" // sizeLimit requires Igor 7 or later
+EndMacro

@@ -1902,6 +1902,8 @@ Constant DQ_STOP_REASON_INVALID           = 0xFFFF
 ///@{
 Constant ID_HEADSTAGE_SETTINGS = 0x1
 Constant ID_POPUPMENU_SETTINGS = 0x2
+Constant ID_KVPAIRS_SETTINGS   = 0x3
+
 ///@}
 
 Constant DND_STIMSET_DANDI_SET = 107
