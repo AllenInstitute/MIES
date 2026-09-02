@@ -1298,6 +1298,29 @@ static Function/WAVE VariousModeFlags()
 	return modes
 End
 
+/// @brief Mode values which ID_AskUserForSettings() must reject
+///
+/// The last entry checks that the two valid modes can not be combined.
+static Function/WAVE InvalidInputDialogModes()
+
+	Make/FREE/D modes = {0, -1, NaN, Inf, -Inf, ID_HEADSTAGE_SETTINGS | ID_POPUPMENU_SETTINGS}
+
+	SetDimensionLabels(modes, "Zero;Negative;NotANumber;PosInfinity;NegInfinity;BothModesCombined", ROWS)
+
+	return modes
+End
+
+/// @brief Row indices into a popup menu dialog wave with
+///        #ID_TEST_NUM_POPUP_ENTRIES entries, see UTF_InputDialog.ipf
+static Function/WAVE InputDialogPopupEntryIndices()
+
+	Make/FREE/D indices = {0, 1, 2}
+
+	SetDimensionLabels(indices, "FirstEntry;MiddleEntry;LastEntry", ROWS)
+
+	return indices
+End
+
 static Function/WAVE StatsTest_GetInput()
 
 	Make/T/FREE/N=(3) template
