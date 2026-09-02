@@ -28,6 +28,47 @@ static Function/S GetPanelList_IGNORE()
 	return WinList("*", ";", "WIN:64")
 End
 
+/// @brief Kill all panels which were created after `panelsBefore` was queried
+///
+/// Required for the code paths which assert only after the dialog panel was
+/// already created.
+static Function KillNewPanels_IGNORE(string panelsBefore)
+
+	string   win
+	variable i
+
+	string   panelsAfter = GetPanelList_IGNORE()
+	variable numPanels   = ItemsInList(panelsAfter)
+
+	for(i = 0; i < numPanels; i += 1)
+		win = StringFromList(i, panelsAfter)
+
+		if(WhichListItem(win, panelsBefore) == -1)
+			KillWindow/Z $win
+		endif
+	endfor
+End
+
+/// @brief Create a permanent key/value pairs dialog wave with `numEntries` entries
+///
+/// The row dimension labels hold the keys, the wave contents the values.
+static Function/WAVE GetKVPairsWave_IGNORE(DFREF dfr, variable numEntries)
+
+	variable i
+	string keys = ""
+
+	Make/T/N=(numEntries) dfr:data/WAVE=data
+	data[] = "value" + num2istr(p)
+
+	for(i = 0; i < numEntries; i += 1)
+		keys = AddListItem("key" + num2istr(i), keys, ";", Inf)
+	endfor
+
+	SetDimensionLabels(data, keys, ROWS)
+
+	return data
+End
+
 /// ID_AskUserForSettings
 /// @{
 
@@ -121,6 +162,91 @@ static Function IDA_PopupMenuSettingsWorks([variable var])
 
 	leftOverVariables = GetListOfObjects(dfr, ".*", typeFlag = COUNTOBJECTS_VAR)
 	CHECK_EMPTY_STR(leftOverVariables)
+
+	KillOrMoveToTrash(dfr = dfr)
+End
+
+// UTF_TD_GENERATOR DataGenerators#InputDialogKVPairsEntryCounts
+static Function IDA_KVPairsSettingsWorks([variable var])
+
+	variable ret
+	string panelsBefore, panelsAfter, leftOverVariables
+
+	REQUIRE_GE_VAR(var, 1)
+	REQUIRE_LE_VAR(var, ID_KVPAIRS_MAX_VALUES)
+
+	DFREF dfr = GetDialogFolder_IGNORE()
+
+	WAVE/T data = GetKVPairsWave_IGNORE(dfr, var)
+
+	Duplicate/FREE/T data, mock
+	mock[] = data[p] + "_edited"
+
+	panelsBefore = GetPanelList_IGNORE()
+
+	ret = ID_AskUserForSettings(ID_KVPAIRS_SETTINGS, "Metadata", data, mock)
+	CHECK_EQUAL_VAR(ret, 0)
+
+	// only the values are written back, the keys are untouched
+	CHECK_EQUAL_TEXTWAVES(data, mock, mode = WAVE_DATA)
+
+	Make/FREE/T/N=(var) keys = GetDimLabel(data, ROWS, p)
+	Make/FREE/T/N=(var) refKeys = "key" + num2istr(p)
+	CHECK_EQUAL_TEXTWAVES(keys, refKeys, mode = WAVE_DATA)
+
+	// the dialog closes itself and does not leave its state variable behind
+	panelsAfter = GetPanelList_IGNORE()
+	CHECK_EQUAL_STR(panelsBefore, panelsAfter)
+
+	leftOverVariables = GetListOfObjects(dfr, ".*", typeFlag = COUNTOBJECTS_VAR)
+	CHECK_EMPTY_STR(leftOverVariables)
+
+	KillOrMoveToTrash(dfr = dfr)
+End
+
+static Function IDA_KVPairsAssertsOnNumericDataWave()
+
+	string panelsBefore
+
+	DFREF dfr = GetDialogFolder_IGNORE()
+
+	Make/D/N=(ID_KVPAIRS_MAX_VALUES) dfr:data/WAVE=data
+	Duplicate/FREE data, mock
+
+	panelsBefore = GetPanelList_IGNORE()
+
+	try
+		ID_AskUserForSettings(ID_KVPAIRS_SETTINGS, "Metadata", data, mock)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	KillNewPanels_IGNORE(panelsBefore)
+
+	KillOrMoveToTrash(dfr = dfr)
+End
+
+static Function IDA_KVPairsAssertsOnEmptyKey()
+
+	string panelsBefore
+
+	DFREF dfr = GetDialogFolder_IGNORE()
+
+	// without row dimension labels the entries have no keys
+	Make/T/N=(ID_KVPAIRS_MAX_VALUES) dfr:data/WAVE=data
+	Duplicate/FREE/T data, mock
+
+	panelsBefore = GetPanelList_IGNORE()
+
+	try
+		ID_AskUserForSettings(ID_KVPAIRS_SETTINGS, "Metadata", data, mock)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	KillNewPanels_IGNORE(panelsBefore)
 
 	KillOrMoveToTrash(dfr = dfr)
 End
