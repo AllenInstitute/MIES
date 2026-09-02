@@ -299,7 +299,7 @@ static Function/WAVE GetMiesMacrosWithPanelType()
 
 	WAVE/T allMiesMacros = GetMIESMacros()
 
-	Make/FREE/T panelsWithoutType = {"IDM_Headstage_Panel", "IDM_Popup_Panel", "DebugPanel", "ExportSettingsPanel", "PSXPanel", "WaverefBrowser"}
+	Make/FREE/T panelsWithoutType = {"IDM_Headstage_Panel", "IDM_Popup_Panel", "IDM_KVPairs_Panel", "DebugPanel", "ExportSettingsPanel", "PSXPanel", "WaverefBrowser"}
 
 	WAVE/T matches = GetSetDifference(allMiesMacros, panelsWithoutType)
 
@@ -312,7 +312,7 @@ static Function/WAVE GetMiesMacrosWithCoordinateSaving()
 
 	WAVE/T allMiesMacros = GetMIESMacros()
 
-	Make/FREE/T panelsWithoutGroup = {"IDM_Headstage_Panel", "IDM_Popup_Panel", "DebugPanel", "ExportSettingsPanel", "WaverefBrowser"}
+	Make/FREE/T panelsWithoutGroup = {"IDM_Headstage_Panel", "IDM_Popup_Panel", "IDM_KVPairs_Panel", "DebugPanel", "ExportSettingsPanel", "WaverefBrowser"}
 
 	WAVE/T matches = GetSetDifference(allMiesMacros, panelsWithoutGroup)
 
@@ -1296,6 +1296,44 @@ static Function/WAVE VariousModeFlags()
 	Make/FREE/D modes = {-1, PGC_MODE_ASSERT_ON_DISABLED, PGC_MODE_FORCE_ON_DISABLED, PGC_MODE_SKIP_ON_DISABLED}
 
 	return modes
+End
+
+/// @brief Mode values which ID_AskUserForSettings() must reject
+///
+/// The modes are consecutive numbers and not bit flags, so the last entry
+/// checks the first value above the largest valid mode.
+static Function/WAVE InvalidInputDialogModes()
+
+	Make/FREE/D modes = {0, -1, NaN, Inf, -Inf, ID_KVPAIRS_SETTINGS + 1}
+
+	SetDimensionLabels(modes, "Zero;Negative;NotANumber;PosInfinity;NegInfinity;AboveLargestMode", ROWS)
+
+	return modes
+End
+
+/// @brief Row indices into a popup menu dialog wave with
+///        #ID_TEST_NUM_POPUP_ENTRIES entries, see UTF_InputDialog.ipf
+static Function/WAVE InputDialogPopupEntryIndizes()
+
+	Make/FREE/D indizes = {0, 1, 2}
+
+	SetDimensionLabels(indizes, "FirstEntry;MiddleEntry;LastEntry", ROWS)
+
+	return indizes
+End
+
+/// @brief Number of entries of a key/value pairs dialog wave, must be in
+///        [1, #ID_TEST_MAX_KVPAIRS_ENTRIES], see UTF_InputDialog.ipf
+///
+/// Everything below the maximum leaves some dialog controls unused and
+/// therefore disabled.
+static Function/WAVE InputDialogKVPairsEntryCounts()
+
+	Make/FREE/D counts = {1, 5, 10}
+
+	SetDimensionLabels(counts, "SingleEntry;SomeEntries;AllEntries", ROWS)
+
+	return counts
 End
 
 static Function/WAVE StatsTest_GetInput()
