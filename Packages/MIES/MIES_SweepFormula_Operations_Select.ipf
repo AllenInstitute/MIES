@@ -1408,11 +1408,11 @@ static Function/WAVE SFOS_GetSweepMapIndices(WAVE/T sweepMap, variable sweepNo, 
 		endif
 	endif
 	if(WaveExists(tags))
-		tagList = TextWaveToList(tags, AB_TAG_SEPARATOR)
-		if(!CmpStr(tagList, AB_TAG_SEPARATOR))
-			tagList = ""
-		endif
-		WAVE/Z/D tagIndices = FindIndizes(sweepMap, endRow = mapSize - 1, colLabel = "Tags", str = tagList)
+
+		Make/WAVE/N=(mapSize)/FREE sweepTags = ListToTextWave(sweepMap[p][%Tags], AB_TAG_SEPARATOR)
+
+		WAVE/Z tagIndices = SB_MatchSweepTags(tags, sweepTags)
+
 		if(!WaveExists(tagIndices))
 			return $""
 		endif
@@ -1495,11 +1495,12 @@ static Function SFOS_IsValidSingleSelection(STRUCT SF_SelectParameters &filter, 
 	endif
 
 	if(WaveExists(filter.tags))
-		if((DimSize(filter.tags, ROWS) == 1) && IsEmpty(tags))
-			if(!IsEmpty(filter.tags[0]))
-				return 0
-			endif
-		elseif(CmpStr(TextWaveToList(filter.tags, AB_TAG_SEPARATOR), tags))
+		WAVE/T sweepTag = ListToTextWave(tags, AB_TAG_SEPARATOR)
+		Make/WAVE/FREE sweepTags = {sweepTag}
+
+		WAVE/Z match = SB_MatchSweepTags(filter.tags, sweepTags)
+
+		if(!WaveExists(match))
 			return 0
 		endif
 	endif

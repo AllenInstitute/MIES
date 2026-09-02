@@ -737,36 +737,91 @@ Function/WAVE SB_GetSweepMap(string win)
 	return sweepMap
 End
 
+/// @brief Return the indizes of all entries in sweepTags which fullfill the required tags
+///
+/// Matching always ignores case.
+///
+/// Valid condititions are:
+/// - List of required tags is equal to the list of sweep tags (no wildcards present, this includes empty tag lists)
+/// - Every required tag which is a wildcard matches at least one tag, required tags with negated wildcards don't match anything
+Function/WAVE SB_MatchSweepTags(WAVE/T reqTags, WAVE/WAVE sweepTagsWave)
+
+	variable size, i, j, numEntries, numReqTags, numSweepTags
+
+	numEntries = DimSize(sweepTagsWave, ROWS)
+	numReqTags = DimSize(reqTags, ROWS)
+
+	Make/FREE/N=(numEntries)/D matches = NaN
+
+	reqTags[] = LowerStr(reqTags[p])
+
+	for(i = 0; i < numEntries; i += 1)
+		WAVE/Z/T sweepTags = sweepTagsWave[i]
+
+		// no tags is the same as an empty tag
+		if(!WaveExists(sweepTags) || DimSize(sweepTags, ROWS) == 0)
+			Make/FREE/T sweepTags = {""}
+		endif
+
+		numSweepTags = DimSize(sweepTags, ROWS)
+		sweepTags[p] = LowerStr(sweepTags[p])
+
+		if(numReqTags == 0)
+			// no tags requested
+			if(numSweepTags == 0)
+				matches[i] = i
+			endif
+			continue
+		endif
+
+		// rows are the requested tags, columns are the sweep tags
+		Make/FREE/N=(numReqTags, numSweepTags) matchMatrix = stringmatch(sweepTags[q], reqTags[p])
+		MatrixOP/FREE rowSum = sumRows(matchMatrix)
+
+		if(GetRowIndex(rowSum, val = 0) >= 0)
+			// some required tags where not matched
+			// this is always a failure
+			continue
+		endif
+
+		MatrixOP/FREE colSum = sumCols(matchMatrix)
+
+		if(GetRowIndex(colSum, val = 0) >= 0)
+			// some sweep tags where not matched
+			continue
+		endif
+
+		matches[i] = i
+	endfor
+
+	return ZapNaNs(matches)
+End
+
 Function/WAVE SB_GetExperimentsFromTags(string win, WAVE/T tags)
 
-	string   tagString
-	variable size
+	variable numEntries
 
 	PerformSubsystemEntry()
 
-	if(DimSize(tags, ROWS) == 0)
-		tagString = ""
-	else
-		Duplicate/FREE/T tags, sortedTags
-		Sort/A sortedTags, sortedTags
-		tagString = TextWaveToList(sortedTags, AB_TAG_SEPARATOR)
-		if(!CmpStr(tagString, AB_TAG_SEPARATOR))
-			tagString = ""
-		endif
-	endif
-
 	WAVE/T sweepMap = SB_GetSweepMap(win)
-	size = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
-	if(size == 0)
+	numEntries = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
+	if(numEntries == 0)
 		return $""
 	endif
 
-	WAVE/Z indizes = FindIndizes(sweepMap, colLabel = "Tags", str = tagString, endRow = size - 1)
-	if(!WaveExists(indizes))
+	Make/WAVE/N=(numEntries)/FREE sweepTags = ListToTextWave(sweepMap[p][%Tags], AB_TAG_SEPARATOR)
+
+	Duplicate/FREE/T tags, sortedTags
+	Sort/A sortedTags, sortedTags
+	WaveClear tags
+
+	WAVE/Z matches = SB_MatchSweepTags(sortedTags, sweepTags)
+
+	if(!WaveExists(matches))
 		return $""
 	endif
 
-	Make/FREE/T/N=(DimSize(indizes, ROWS)) experiments = sweepMap[indizes[p]][%FileName]
+	Make/FREE/T/N=(DimSize(matches, ROWS)) experiments = sweepMap[matches[p]][%FileName]
 	WAVE/T uniqueExperiments = GetUniqueEntries(experiments)
 
 	return uniqueExperiments
