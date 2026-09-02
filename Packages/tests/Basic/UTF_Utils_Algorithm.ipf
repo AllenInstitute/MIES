@@ -214,6 +214,18 @@ static Function TestGetRowIndex()
 	CHECK_EQUAL_VAR(GetRowIndex(floatWave, str = "inf"), 4)
 	CHECK_EQUAL_VAR(GetRowIndex(floatWave, str = "-inf"), 5)
 	CHECK_EQUAL_VAR(GetRowIndex(floatWave, val = 123), NaN)
+	// handle non-finite properly
+	Make/FREE floatWave = {Inf}
+	CHECK_EQUAL_VAR(GetRowIndex(floatWave, val = -Inf), NaN)
+	CHECK_EQUAL_VAR(GetRowIndex(floatWave, val = -Inf, reverseSearch = 1), NaN)
+	CHECK_EQUAL_VAR(GetRowIndex(floatWave, val = NaN), NaN)
+	Make/FREE floatWave = {-Inf}
+	CHECK_EQUAL_VAR(GetRowIndex(floatWave, val = Inf), NaN)
+	CHECK_EQUAL_VAR(GetRowIndex(floatWave, val = Inf, reverseSearch = 1), NaN)
+	CHECK_EQUAL_VAR(GetRowIndex(floatWave, val = NaN), NaN)
+	Make/FREE floatWave = {NaN}
+	CHECK_EQUAL_VAR(GetRowIndex(floatWave, val = Inf), NaN)
+	CHECK_EQUAL_VAR(GetRowIndex(floatWave, val = -Inf), NaN)
 
 	// text waves
 	Make/FREE/T textWave = {"a", "b", "c", "d", "1"}
