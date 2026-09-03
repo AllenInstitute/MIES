@@ -3502,7 +3502,7 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 		tagList = "untagged"
 	endif
 
-	[s]          = SFH_GenerateTraceColors(tagGroupIndex)
+	[s] = GetTraceColorAlternative(tagGroupIndex)
 	for(i = 0; i < numExp; i += 1)
 		// apfrequency traces
 		sprintf varName, "freqNorm%d", i
