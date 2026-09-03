@@ -39,8 +39,8 @@ Constant SWEEP_EPOCH_VERSION = 9
 /// - New/Changed layers of entries
 ///
 ///@{
-Constant LABNOTEBOOK_VERSION = 85
-Constant RESULTS_VERSION     = 4
+Constant LABNOTEBOOK_VERSION = 87
+Constant RESULTS_VERSION     = 5
 ///@}
 
 /// @name Analysis function versions
@@ -1043,6 +1043,7 @@ StrConstant STIMSET_SIZE_KEY              = "Stimset Size"
 StrConstant STIMSET_ERROR_KEY             = "Wavebuilder Error"
 StrConstant AUTOBIAS_PERC_KEY             = "Autobias %"
 StrConstant SWEEP_EPOCH_VERSION_ENTRY_KEY = "Epochs Version"
+StrConstant POSTPROCESSED_ENTRY_KEY       = "PostProcessed"
 
 Constant WAVEBUILDER_STATUS_ERROR = 1
 
@@ -2723,6 +2724,12 @@ Constant TRACECOLORMAX = 21
 ///@}
 
 StrConstant BSP_USER_DATA_SF_CONTENT_HASH = "SweepFormulaContentHash"
+
+/// Labnotebook capabilities are stored in the key wave note
+/// @anchor LabnotebookCapabilityKeys
+///@{
+StrConstant LBN_CAP_SUPPORTS_ENTRYSOURCETYPE = "SupportsEntrySourceType"
+///@}
 
 Constant HM_HASHMAP_WAVE_VERSION = 1
 
