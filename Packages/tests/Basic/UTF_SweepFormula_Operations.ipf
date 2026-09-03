@@ -1478,19 +1478,32 @@ static Function TestOperationSeltag()
 	WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(wref, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(wref, ROWS), 1)
-	WAVE/T array = wref[0]
-	Make/FREE/T ref = {"abc"}
-	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+	WAVE/WAVE dataset = wref[0]
+	CHECK_WAVE(dataset, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(dataset, ROWS), 1)
+
+	WAVE/T array = dataset[0]
+	CHECK_EQUAL_TEXTWAVES(array, {"abc"}, mode = WAVE_DATA | DIMENSION_SIZES)
 	type = JWN_GetStringFromWaveNote(wref, SF_META_DATATYPE)
 	CHECK_EQUAL_STR(type, SF_DATATYPE_SELECTTAG)
 
 	str = "seltag([abc,def])"
-	WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
-	CHECK_EQUAL_TEXTWAVES(wref[0], {"abc", "def"}, mode = WAVE_DATA)
+	WAVE/WAVE wref    = SFE_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataset = wref[0]
+	WAVE/T    array   = dataset[0]
+	CHECK_EQUAL_TEXTWAVES(array, {"abc", "def"}, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	str = "seltag(\"a,b\")"
-	WAVE/WAVE wref = SFE_ExecuteFormula(str, win, useVariables = 0)
-	CHECK_EQUAL_TEXTWAVES(wref[0], {"a_b"}, mode = WAVE_DATA)
+	WAVE/WAVE wref    = SFE_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataset = wref[0]
+	WAVE/T    array   = dataset[0]
+	CHECK_EQUAL_TEXTWAVES(array, {"a_b"}, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "seltag(\"\")"
+	WAVE/WAVE wref    = SFE_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataset = wref[0]
+	WAVE/T    array   = dataset[0]
+	CHECK_EQUAL_TEXTWAVES(array, {""}, mode = WAVE_DATA | DIMENSION_SIZES)
 End
 
 static Function TestOperationSelvis()

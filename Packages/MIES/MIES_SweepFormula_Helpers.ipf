@@ -1760,6 +1760,83 @@ Function SFH_GetPlotLineCodeSelection(variable count)
 	return wv[mod(count, DimSize(wv, ROWS))]
 End
 
+/// @brief Returns a perceptually distinct trace color by index, cycling through 16 colors
+///
+/// The 16 colors are a subset of the 26-color "Colour Alphabet" from Green-Armytage (2010),
+/// selected for use on a white background: the 10 palest members of the original alphabet
+/// (chosen there to also work against a black background) have too little luminance contrast
+/// against white to remain visible as thin line traces, so they are excluded here. "Green" was
+/// additionally darkened from the original #2BCE48 to #197629 (same hue and saturation, lower
+/// lightness) as its contrast against white (1.5:1) fell noticeably below the rest of the set;
+/// the replacement reaches 2.5:1. Colors are listed in decreasing order of that contrast.
+///
+/// References:
+/// - P. Green-Armytage (2010). "A Colour Alphabet and the Limits of Colour Coding."
+///   Colour: Design & Creativity, 5, 10, 1-23.
+/// - Colour hex values as reproduced by the "pals" R package (kwstat/pals, alphabet()),
+///   which also cites Green-Armytage (2010).
+///
+/// @param index color index, values above 15 wrap around via modulus
+Function [STRUCT RGBColor s] SFH_GenerateTraceColors(variable index)
+
+	index = mod(index, 16)
+
+	switch(index)
+		case 0: // Damson
+			s.red = 19532; s.green = 0; s.blue = 23644
+			break
+		case 1: // Ebony
+			s.red = 6425; s.green = 6425; s.blue = 6425
+			break
+		case 2: // Wine
+			s.red = 39321; s.green = 0; s.blue = 0
+			break
+		case 3: // Navy
+			s.red = 0; s.green = 13107; s.blue = 32896
+			break
+		case 4: // Violet
+			s.red = 29812; s.green = 2570; s.blue = 65535
+			break
+		case 5: // Mallow (magenta)
+			s.red = 49858; s.green = 0; s.blue = 34952
+			break
+		case 6: // Red
+			s.red = 65535; s.green = 0; s.blue = 4112
+			break
+		case 7: // Forest
+			s.red = 0; s.green = 23644; s.blue = 12593
+			break
+		case 8: // Caramel
+			s.red = 39321; s.green = 16191; s.blue = 0
+			break
+		case 9: // Quagmire
+			s.red = 16962; s.green = 26214; s.blue = 0
+			break
+		case 10: // Green (darkened)
+			s.red = 6425; s.green = 30326; s.blue = 10537
+			break
+		case 11: // Blue
+			s.red = 0; s.green = 30069; s.blue = 56540
+			break
+		case 12: // Zinnia
+			s.red = 65535; s.green = 20560; s.blue = 1285
+			break
+		case 13: // Khaki
+			s.red = 36751; s.green = 31868; s.blue = 0
+			break
+		case 14: // Turquoise
+			s.red = 0; s.green = 39321; s.blue = 36751
+			break
+		case 15: // Iron
+			s.red = 32896; s.green = 32896; s.blue = 32896
+			break
+		default:
+			FATAL_ERROR("Invalid index")
+	endswitch
+
+	return [s]
+End
+
 /// @brief filters data from select, currently supports only one option:
 ///        - specify a channel type to keep
 Function/WAVE SFH_FilterSelect(WAVE/Z selectData, variable keepChanType)
@@ -2379,7 +2456,18 @@ Function SFH_CopyPlotMetaData(WAVE dest, WAVE src)
 	JWN_SetNumberInWaveNote(dest, SF_META_LINESTYLE, JWN_GetNumberFromWaveNote(src, SF_META_LINESTYLE))
 End
 
+/// @brief Adds a variable to the variable storage from a given formula. If the variable already exists it is overwritten.
+Function/WAVE SFH_AddVariableToStorageByFormula(string graph, string name, string formula, string opShort)
+
+	WAVE/WAVE result = SFE_ExecuteFormula(formula, graph, preProcess = 0)
+	SFH_AddVariableToStorage(graph, name, SFH_GetOutputForExecutor(result, graph, opShort))
+
+	return result
+End
+
 Function SFH_SetTraceStyleForFit(WAVE fitData, string errorbarStyle)
+
+	variable transparency = 64
 
 	JWN_SetWaveInWaveNote(fitData, SF_META_TRACECOLOR, {0, 0, 0}) // black
 	JWN_SetNumberInWaveNote(fitData, SF_META_TRACE_MODE, TRACE_DISPLAY_MODE_LINES)
@@ -2390,15 +2478,180 @@ Function SFH_SetTraceStyleForFit(WAVE fitData, string errorbarStyle)
 			break
 		case SF_PREPAREFIT_ERRORBARSTYLE_SHADED:
 			wErrorbarStyle[%TYPE]         = SF_ERRORBARSTYLE_SHADED
-			wErrorbarStyle[%FILLMODE]     = 5
+			wErrorbarStyle[%FILLMODE]     = 5 // solid fill 25% gray, background color not relevant
 			wErrorbarStyle[%FGCOLOR_R]    = 192 << 8
-			wErrorbarStyle[%BGCOLOR_R]    = 192 << 8
+			wErrorbarStyle[%FGCOLOR_A]    = transparency << 8
 			wErrorbarStyle[%NEGFILLMODE]  = 5
 			wErrorbarStyle[%NEGFGCOLOR_B] = 192 << 8
-			wErrorbarStyle[%NEGBGCOLOR_B] = 192 << 8
+			wErrorbarStyle[%NEGFGCOLOR_A] = transparency << 8
 			break
 		default:
 			FATAL_ERROR("Unhandled errorbar style")
 	endswitch
 	JWN_SetWaveInWaveNote(fitData, SF_META_ERRORBARSTYLE, wErrorbarStyle)
+End
+
+/// @brief simple helper to append X,Y trace data to a plotWITH part of a full plotting specification
+///        (plotWITH is a sub wave of plotAND)
+Function SFH_AppendPlotSpecificationWith(WAVE/WAVE plotWITH, WAVE wvY, WAVE/Z wvX)
+
+	variable size
+
+	size = DimSize(plotWITH, ROWS)
+	Redimension/N=(size + 1, -1) plotWITH
+
+	plotWITH[size][%FORMULAY] = wvY
+	plotWITH[size][%FORMULAX] = wvX
+End
+
+static Function/WAVE SFH_CreatePlotSpecificationWITH(variable numWITH)
+
+	ASSERT(IsNullOrPositiveAndInteger(numWITH), "numWITH must be zero or greater")
+
+	Make/FREE/WAVE/N=(numWITH, 2) plotWITH
+	SetDimlabel COLS, 0, FORMULAX, plotWITH
+	SetDimlabel COLS, 1, FORMULAY, plotWITH
+
+	return plotWITH
+End
+
+/// @brief Creates a plot specification wave where each AND part gets the same number of WITH plots
+Function/WAVE SFH_CreatePlotSpecificationAND(string graph, string opShort, variable numAND, variable numWITH)
+
+	ASSERT(IsGreaterNullAndInteger(numAND), "numAND must be greater than zero")
+	WAVE/WAVE plotAND = SFH_CreateSFRefWave(graph, opShort, numAND)
+
+	plotAND[] = SFH_CreatePlotSpecificationWITH(numWITH)
+
+	JWN_SetNumberInWaveNote(plotAND, SF_META_PLOT, 1)
+
+	return plotAND
+End
+
+Function [variable globXMin, variable globXMax] SFH_GetGlobalXAxisRange(WAVE/WAVE plotAND)
+
+	variable i, j, numAND, numWITH
+	variable dataMin, dataMax
+	variable xMin = Inf
+	variable xMax = -Inf
+
+	numAND = DimSize(plotAND, ROWS)
+	for(i = 0; i < numAND; i += 1)
+		WAVE/WAVE plotWITH = plotAND[i]
+		numWITH = DimSize(plotWITH, ROWS)
+		for(j = 0; j < numWITH; j += 1)
+			// plotWITH's FORMULAX/FORMULAY entries are always datasets (or non-existent)
+			WAVE/Z/WAVE wvX = plotWITH[j][%FORMULAX]
+			// Same priority order as evaluation in formula plotter
+			if(WaveExists(wvX))
+				[dataMin, dataMax] = SFH_RecursiveXLimitsFromDataRange(wvX)
+				xMin               = min(xMin, dataMin)
+				xMax               = max(xMax, dataMax)
+				continue
+			endif
+
+			WAVE/Z/WAVE wvY = plotWITH[j][%FORMULAY]
+			if(WaveExists(wvY))
+				WAVE/Z wvXFromMeta = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_XVALUES)
+			else
+				WAVE/Z wvXFromMeta = $""
+			endif
+			if(WaveExists(wvXFromMeta))
+				[dataMin, dataMax] = SFH_RecursiveXLimitsFromDataRange(wvXFromMeta)
+				xMin               = min(xMin, dataMin)
+				xMax               = max(xMax, dataMax)
+				continue
+			endif
+
+			if(WaveExists(wvY))
+				[dataMin, dataMax] = SFH_RecursiveXLimitsFromScaleRange(wvY)
+				xMin               = min(xMin, dataMin)
+				xMax               = max(xMax, dataMax)
+			endif
+		endfor
+	endfor
+	if(xMin == Inf && xMax == -Inf)
+		return [NaN, NaN]
+	endif
+
+	return [xMin, xMax]
+End
+
+/// @brief Sets SF_META_XAXISRANGE on all FORMULAY datasets of plotAND so that the
+///        SweepFormula plotter applies the same fixed x-axis range [xMin, xMax] to
+///        all of its plots
+///
+/// @sa SFH_GetGlobalXAxisRange
+Function SFH_SetGlobalXAxisRange(WAVE/WAVE plotAND, variable xMin, variable xMax)
+
+	variable i, j, numAND, numWITH
+
+	if(IsNaN(xMin) || IsNaN(xMax))
+		return NaN
+	endif
+
+	numAND = DimSize(plotAND, ROWS)
+	for(i = 0; i < numAND; i += 1)
+		WAVE/WAVE plotWITH = plotAND[i]
+		numWITH = DimSize(plotWITH, ROWS)
+		for(j = 0; j < numWITH; j += 1)
+			WAVE/WAVE wvY = plotWITH[j][%FORMULAY]
+			JWN_SetWaveInWaveNote(wvY, SF_META_XAXISRANGE, {xMin, xMax})
+		endfor
+	endfor
+End
+
+/// @brief Recursively determine [dataMin, dataMax] spanning the numeric data range of wvX
+static Function [variable dataMin, variable dataMax] SFH_RecursiveXLimitsFromDataRange(WAVE/Z wvX)
+
+	variable elemMin, elemMax
+	dataMin = Inf
+	dataMax = -Inf
+
+	if(!WaveExists(wvX))
+		return [dataMin, dataMax]
+	endif
+
+	if(IsWaveRefWave(wvX))
+		for(WAVE/Z elem : wvX)
+			[elemMin, elemMax] = SFH_RecursiveXLimitsFromDataRange(elem)
+			dataMin            = min(dataMin, elemMin)
+			dataMax            = max(dataMax, elemMax)
+		endfor
+		return [dataMin, dataMax]
+	endif
+
+	if(IsNumericWave(wvX) && DimSize(wvX, ROWS))
+		dataMin = WaveMin(wvX)
+		dataMax = WaveMax(wvX)
+	endif
+
+	return [dataMin, dataMax]
+End
+
+/// @brief Recursively determine [dataMin, dataMax] spanning the native x-axis scaling range of wv
+static Function [variable dataMin, variable dataMax] SFH_RecursiveXLimitsFromScaleRange(WAVE/Z wv)
+
+	variable elemMin, elemMax
+	dataMin = Inf
+	dataMax = -Inf
+
+	if(!WaveExists(wv))
+		return [dataMin, dataMax]
+	endif
+
+	if(IsWaveRefWave(wv))
+		for(WAVE/Z elem : wv)
+			[elemMin, elemMax] = SFH_RecursiveXLimitsFromScaleRange(elem)
+			dataMin            = min(dataMin, elemMin)
+			dataMax            = max(dataMax, elemMax)
+		endfor
+		return [dataMin, dataMax]
+	endif
+
+	if(IsNumericWave(wv) && DimSize(wv, ROWS))
+		[dataMin, dataMax] = MinMax(IndexToScale(wv, 0, ROWS), IndexToScale(wv, Inf, ROWS))
+	endif
+
+	return [dataMin, dataMax]
 End

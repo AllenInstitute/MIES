@@ -78,6 +78,18 @@ static Function TestIsNullOrPositiveAndInteger()
 	CHECK(!IsNullOrPositiveAndInteger(NaN))
 End
 
+static Function TestIsGreaterNullAndInteger()
+
+	CHECK(IsGreaterNullAndInteger(1))
+	CHECK(IsGreaterNullAndInteger(2))
+	CHECK(IsGreaterNullAndInteger(1234))
+	CHECK(!IsGreaterNullAndInteger(0))
+	CHECK(!IsGreaterNullAndInteger(-2))
+	CHECK(!IsGreaterNullAndInteger(Inf))
+	CHECK(!IsGreaterNullAndInteger(-Inf))
+	CHECK(!IsGreaterNullAndInteger(NaN))
+End
+
 static Function TestIsNullOrPositiveAndFinite()
 
 	CHECK(IsNullOrPositiveAndFinite(1))

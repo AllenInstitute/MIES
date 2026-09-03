@@ -53,6 +53,12 @@ threadsafe Function IsNullOrPositiveAndInteger(variable var)
 	return var >= 0 && IsInteger(var)
 End
 
+/// UTF_NOINSTRUMENTATION
+threadsafe Function IsGreaterNullAndInteger(variable var)
+
+	return var > 0 && IsInteger(var)
+End
+
 /// @brief Return the truth if `val` is in the range `]0, 1[`
 ///
 /// UTF_NOINSTRUMENTATION
