@@ -1639,6 +1639,10 @@ static Function SF_SetAxisProperties(STRUCT SF_PlotterGraphStruct &pg)
 
 	variable xaxisOffset, yaxisOffset, xaxisPercent, yaxisPercent
 
+	if(pg.traceCnt == 0)
+		return NaN
+	endif
+
 	xaxisOffset = str2num(pg.plotMetaData[%XAXISOFFSET])
 	if(!IsNaN(xaxisOffset))
 		ModifyGraph/W=$pg.win axOffset(bottom)=xaxisOffset
