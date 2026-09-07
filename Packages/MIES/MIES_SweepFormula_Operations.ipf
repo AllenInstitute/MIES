@@ -3547,6 +3547,7 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 		JWN_SetNumberInWaveNote(freqAll, SF_META_MOD_MARKER, 19)
 		JWN_SetStringInWaveNote(freqAll, SF_META_LEGEND_LINE_PREFIX, tagList + " ivscc_apfrequency concat")
 		JWN_SetNumberInWaveNote(wvYAllRef, SF_META_XAXISGROUP, xAxisGroupId)
+		SFO_OperationIVSCCApFrequencySetPlotProperties(wvYAllRef, args.xAxisPercentage, args.yAxisPercentage)
 		SFO_OperationIVSCCApFrequencyAppendPlotType(plotsByType, SF_IVSCC_APFREQUENCY_PLOTTYPE_CONCAT, wvYAllRef, wvXAllRef)
 	endif
 	// DAScale trace
@@ -3554,12 +3555,14 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 	JWN_SetWaveInWaveNote(inflFreqRef[0], SF_META_TRACECOLOR, traceColor)
 	JWN_SetNumberInWaveNote(inflFreqRef[0], SF_META_MOD_MARKER, 19)
 	JWN_SetNumberInWaveNote(inflFreqRef, SF_META_XAXISGROUP, xAxisGroupId)
+	SFO_OperationIVSCCApFrequencySetPlotProperties(inflFreqRef, args.xAxisPercentage, args.yAxisPercentage)
 	SFO_OperationIVSCCApFrequencyAppendPlotType(plotsByType, SF_IVSCC_APFREQUENCY_PLOTTYPE_DASCALE, inflFreqRef, inflCurrentRef)
 	// DAScale average trace (single point)
 	JWN_SetStringInWaveNote(inflFreqAvgRef[0], SF_META_LEGEND_LINE_PREFIX, tagList + " ivscc_apfrequency Mean Maximal Firing Point")
 	JWN_SetWaveInWaveNote(inflFreqAvgRef[0], SF_META_TRACECOLOR, traceColor)
 	JWN_SetNumberInWaveNote(inflFreqAvgRef[0], SF_META_MOD_MARKER, 19)
 	JWN_SetNumberInWaveNote(inflFreqAvgRef, SF_META_XAXISGROUP, xAxisGroupId)
+	SFO_OperationIVSCCApFrequencySetPlotProperties(inflFreqAvgRef, args.xAxisPercentage, args.yAxisPercentage)
 	SFO_OperationIVSCCApFrequencyAppendPlotType(plotsByType, SF_IVSCC_APFREQUENCY_PLOTTYPE_DASCALEAVG, inflFreqAvgRef, inflCurrentAvgRef)
 
 	if(numExp > 1)
