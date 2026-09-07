@@ -2950,7 +2950,9 @@ static Function SF_MarkErrorLocationInNotebook(string win)
 	varName = SF_IsExecutionErrorInVariable(win)
 	WAVE/T assertData = GetSFAssertData()
 	JSON_Release(str2num(assertData[%JSONID]), ignoreErr = 1)
-	if(IsEmpty(varName))
+
+	WAVE/WAVE assertDataStack = GetSFAssertDataStack()
+	if(IsEmpty(varName) || DimSize(assertDataStack, ROWS) > 1)
 		return NaN
 	endif
 
