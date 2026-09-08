@@ -2234,7 +2234,7 @@ static Function/WAVE SF_ErrorBarStyles()
 	return wv
 End
 
-/// @brief TestOp function name and expected SFH_ASSERT error message for the three
+/// @brief TestOp function name and expected SFH_ASSERT error message for the four
 /// UTF_SweepFormula assert-data-stack scenarios (see UTF_SweepFormula#TestAssertDataStack):
 /// - VariableAssignmentRecursion: recursive newFrame pushes via SFE_ExecuteVariableAssignments
 ///   (TestAssertDataStackOP), four nested frames deep (testop(0) -> testop(3)).
@@ -2245,13 +2245,17 @@ End
 ///   pushes a second, failing one (TestAssertDataStack3OP). The base frame's own location must
 ///   still be correctly attributed in the final message, proving that neither its SRCLOCID nor
 ///   its LOCMSG were left in a stale/invalid state by the first, already completed nested call.
+/// - JsonPathTrackerAcrossSiblings: like SrcLocPreservation, but the first, successful nested
+///   call (TestAssertDataStack4OP) runs a multi-statement formula, so the live JSON path tracker
+///   left behind after it pops is deep inside *that* formula's own document rather than matching
+///   the base frame's own (single-statement) one by coincidence
 static Function/WAVE SF_AssertDataStackCases()
 
 	string recursionError
 
-	Make/FREE/WAVE/N=3 wv
+	Make/FREE/WAVE/N=4 wv
 
-	SetDimensionLabels(wv, "VariableAssignmentRecursion;ExecuteFormulaRecursion;SrcLocPreservation;", ROWS)
+	SetDimensionLabels(wv, "VariableAssignmentRecursion;ExecuteFormulaRecursion;SrcLocPreservation;JsonPathTrackerAcrossSiblings;", ROWS)
 
 	// TestOp name, expected error message
 	recursionError = "TestOP result threshold reached\rtestop(3)\r-------^\rCalled from:\rtestop(2)\r-------^\rCalled from:\rtestop(1)\r-------^\rCalled from:\rtestop(0)\r-------^"
@@ -2261,6 +2265,8 @@ static Function/WAVE SF_AssertDataStackCases()
 	wv[%ExecuteFormulaRecursion] = wvt
 	Make/FREE/T wvt = {"UTF_SWEEPFORMULA#TestAssertDataStack3OP", "TestOP result threshold reached\rtestop(2)\r-------^\rCalled from:\rtestop(0)\r-------^"}
 	wv[%SrcLocPreservation] = wvt
+	Make/FREE/T wvt = {"UTF_SWEEPFORMULA#TestAssertDataStack4OP", "TestOP result threshold reached\rtestop(2)\r-------^\rCalled from:\rtestop(0)\r-------^"}
+	wv[%JsonPathTrackerAcrossSiblings] = wvt
 
 	return wv
 End

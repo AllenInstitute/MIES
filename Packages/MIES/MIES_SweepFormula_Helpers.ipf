@@ -376,6 +376,10 @@ Function SFH_PushAssertDataFrame()
 		WAVE/T outerFrame = assertDataStack[numFrames - 1]
 		if(str2numSafe(outerFrame[%STEP]) != SF_STEP_OUTSIDE)
 			outerFrame[%LOCMSG] = SFH_GetAssertLocationMessageForFrame(outerFrame)
+			if(str2numSafe(outerFrame[%STEP]) == SF_STEP_EXECUTOR)
+				// Snapshot the live JSON path tracker for this frame
+				outerFrame[%JSONPATH] = ROStr(GetSweepFormulaJSONPathTracker())
+			endif
 		endif
 	endif
 
@@ -416,6 +420,12 @@ Function SFH_PopAssertDataFrame()
 	// rather than reusing this stale, first-call-site message.
 	WAVE/T resumedFrame = assertDataStack[numFrames - 2]
 	resumedFrame[%LOCMSG] = ""
+
+	if(str2numSafe(resumedFrame[%STEP]) == SF_STEP_EXECUTOR)
+		// Restore the live JSON path tracker to this frame's own position
+		SVAR jsonPathTracker = $GetSweepFormulaJSONPathTracker()
+		jsonPathTracker = resumedFrame[%JSONPATH]
+	endif
 End
 
 /// @brief Return the outermost (bottom-of-stack, index 0) SF assert-data frame.

@@ -3662,6 +3662,42 @@ static Function/WAVE TestAssertDataStack3OP(STRUCT SF_ExecutionData &exd)
 	return SFH_GetOutputForExecutorSingle(output, exd.graph, opShort)
 End
 
+/// @brief Test op for TestAssertDataStack4: dispatched once, as the base ("testop(0)") frame.
+///        Reproduces the bug fixed for ivscc_apfrequency's tag-groups feature (see
+///        SFH_PushAssertDataFrame/SFH_PopAssertDataFrame): the first nested (newFrame = 1) call
+///        below runs a *multi-statement* internal formula (unlike testop(1)'s single statement in
+///        TestAssertDataStack3OP), so SFE_FormulaExecutor's live JSON path tracker ends up deep
+///        inside *that* formula's own document (e.g. "/4") by the time it finishes and its frame
+///        is popped. Before the fix, that leftover path was never restored, so pushing the
+///        *second*, sibling nested frame ("testop(2)") tried to look it up in the base frame's
+///        own (much simpler, single-statement) SRCLOCID document instead, printing
+///        "SFH_ASSERT: source path not found" via BUG()
+static Function/WAVE TestAssertDataStack4OP(STRUCT SF_ExecutionData &exd)
+
+	variable result, i
+	string opShort = SF_OP_TESTOP
+	string formula, expr
+
+	result = SFH_GetArgumentAsNumeric(exd, SF_OP_TESTOP, 0)
+
+	if(result == 0)
+		formula = ""
+		for(i = 0; i < 5; i += 1)
+			sprintf expr, "unusedVar%d = %d", i, i
+			formula = SF_AddExpressionToFormula(formula, expr)
+		endfor
+		SFE_ExecuteVariableAssignments(exd.graph, formula, allowEmptyCode = 1, newFrame = 1)
+
+		SFE_ExecuteFormula("testop(2)", exd.graph, newFrame = 1)
+	elseif(result == 2)
+		SFH_FATAL_ERROR("TestOP result threshold reached")
+	endif
+
+	Make/FREE/D output = {0}
+
+	return SFH_GetOutputForExecutorSingle(output, exd.graph, opShort)
+End
+
 // IUTF_TD_GENERATOR DataGenerators#SF_AssertDataStackCases
 static Function TestAssertDataStack([WAVE/T input])
 
