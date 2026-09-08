@@ -3266,10 +3266,36 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl(STRUCT SF_ExecutionData &
 	return plotAND
 End
 
+/// @brief Build a "normalize by FIRST/MIN/MAX/NONE" assignment expression: `outVar = srcVar`,
+///        optionally offset by srcVar's own first/min/max value
+///
+/// @param outVar     name of the variable the expression assigns to
+/// @param srcVar     formula-side reference to the source variable to normalize, e.g. "$freq0"
+/// @param offsetMode one of SF_OP_IVSCCAPFREQUENCY_FIRST/MIN/MAX/NONE
+/// @param wrapMerge  when set, wrap the whole resulting expression in merge()
+static Function/S SFO_OperationIVSCCApFrequencyBuildOffsetExpr(string outVar, string srcVar, string offsetMode, variable wrapMerge)
+
+	string unwrapped
+
+	if(!CmpStr(offsetMode, SF_OP_IVSCCAPFREQUENCY_FIRST))
+		unwrapped = srcVar + " - extract(" + srcVar + ", 0)"
+	elseif(!CmpStr(offsetMode, SF_OP_IVSCCAPFREQUENCY_MIN))
+		unwrapped = srcVar + " - min(merge(" + srcVar + "))"
+	elseif(!CmpStr(offsetMode, SF_OP_IVSCCAPFREQUENCY_MAX))
+		unwrapped = srcVar + " - max(merge(" + srcVar + "))"
+	elseif(!CmpStr(offsetMode, SF_OP_IVSCCAPFREQUENCY_NONE))
+		unwrapped = srcVar
+	else
+		FATAL_ERROR("Unknown axisoffset mode")
+	endif
+
+	return outVar + " = " + SelectString(wrapMerge, unwrapped, "merge(" + unwrapped + ")")
+End
+
 static Function/S SFO_OperationIVSCCApFrequencyBuildSinglePlotsExpr(STRUCT IVSCCApFrequencyArgs &args, WAVE/T experiments)
 
 	variable i, numExp
-	string expr
+	string expr, outVar, srcVar
 
 	string formula = ""
 
@@ -3284,30 +3310,14 @@ static Function/S SFO_OperationIVSCCApFrequencyBuildSinglePlotsExpr(STRUCT IVSCC
 		sprintf expr, "current%d = max(data($selexpDA%d))", i, i
 		formula = SF_AddExpressionToFormula(formula, expr)
 
-		if(!CmpStr(args.xaxisOffset, SF_OP_IVSCCAPFREQUENCY_FIRST))
-			sprintf expr, "currentNorm%d = $current%d - extract($current%d, 0)", i, i, i
-		elseif(!CmpStr(args.xaxisOffset, SF_OP_IVSCCAPFREQUENCY_MIN))
-			sprintf expr, "currentNorm%d = $current%d - min(merge($current%d))", i, i, i
-		elseif(!CmpStr(args.xaxisOffset, SF_OP_IVSCCAPFREQUENCY_MAX))
-			sprintf expr, "currentNorm%d = $current%d - max(merge($current%d))", i, i, i
-		elseif(!CmpStr(args.xaxisOffset, SF_OP_IVSCCAPFREQUENCY_NONE))
-			sprintf expr, "currentNorm%d = $current%d", i, i
-		else
-			FATAL_ERROR("Unknown xaxisoffset mode")
-		endif
+		sprintf outVar, "currentNorm%d", i
+		sprintf srcVar, "$current%d", i
+		expr    = SFO_OperationIVSCCApFrequencyBuildOffsetExpr(outVar, srcVar, args.xaxisOffset, 0)
 		formula = SF_AddExpressionToFormula(formula, expr)
 
-		if(!CmpStr(args.yaxisOffset, SF_OP_IVSCCAPFREQUENCY_FIRST))
-			sprintf expr, "freqNorm%d = merge($freq%d - extract($freq%d, 0))", i, i, i
-		elseif(!CmpStr(args.yaxisOffset, SF_OP_IVSCCAPFREQUENCY_MIN))
-			sprintf expr, "freqNorm%d = merge($freq%d - min(merge($freq%d)))", i, i, i
-		elseif(!CmpStr(args.yaxisOffset, SF_OP_IVSCCAPFREQUENCY_MAX))
-			sprintf expr, "freqNorm%d = merge($freq%d - max(merge($freq%d)))", i, i, i
-		elseif(!CmpStr(args.yaxisOffset, SF_OP_IVSCCAPFREQUENCY_NONE))
-			sprintf expr, "freqNorm%d = merge($freq%d)", i, i
-		else
-			FATAL_ERROR("Unknown yaxisoffset mode")
-		endif
+		sprintf outVar, "freqNorm%d", i
+		sprintf srcVar, "$freq%d", i
+		expr    = SFO_OperationIVSCCApFrequencyBuildOffsetExpr(outVar, srcVar, args.yaxisOffset, 1)
 		formula = SF_AddExpressionToFormula(formula, expr)
 
 		sprintf expr, "currentNormMerged%d = merge($currentNorm%d)", i, i
@@ -3336,17 +3346,7 @@ static Function/S SFO_OperationIVSCCApFrequencyBuildAvgPlotsExpr(STRUCT IVSCCApF
 		sprintf expr, "ivscccurrentavg = avg([%s], bins, [%f,%f],%f,[%s])", currentList, binRange[0], binRange[1], args.binWidth, currentList
 		formula = SF_AddExpressionToFormula(formula, expr)
 
-		if(!CmpStr(args.xaxisOffset, SF_OP_IVSCCAPFREQUENCY_FIRST))
-			expr = "ivsccavg_norm_x = merge($ivscccurrentavg - extract($ivscccurrentavg, 0))"
-		elseif(!CmpStr(args.xaxisOffset, SF_OP_IVSCCAPFREQUENCY_MIN))
-			expr = "ivsccavg_norm_x = merge($ivscccurrentavg - min(merge($ivscccurrentavg)))"
-		elseif(!CmpStr(args.xaxisOffset, SF_OP_IVSCCAPFREQUENCY_MAX))
-			expr = "ivsccavg_norm_x = merge($ivscccurrentavg - max(merge($ivscccurrentavg)))"
-		elseif(!CmpStr(args.xaxisOffset, SF_OP_IVSCCAPFREQUENCY_NONE))
-			expr = "ivsccavg_norm_x = merge($ivscccurrentavg)"
-		else
-			FATAL_ERROR("Unknown xaxisoffset mode")
-		endif
+		expr    = SFO_OperationIVSCCApFrequencyBuildOffsetExpr("ivsccavg_norm_x", "$ivscccurrentavg", args.xaxisOffset, 1)
 		formula = SF_AddExpressionToFormula(formula, expr)
 	else
 		// SF_OP_AVG_BINS2
@@ -3370,17 +3370,7 @@ static Function/S SFO_OperationIVSCCApFrequencyBuildAvgPlotsExpr(STRUCT IVSCCApF
 		endif
 		formula = SF_AddExpressionToFormula(formula, expr)
 	endif
-	if(!CmpStr(args.yaxisOffset, SF_OP_IVSCCAPFREQUENCY_FIRST))
-		expr = "ivsccavg_norm_y = merge($ivsccavg - extract($ivsccavg, 0))"
-	elseif(!CmpStr(args.yaxisOffset, SF_OP_IVSCCAPFREQUENCY_MIN))
-		expr = "ivsccavg_norm_y = merge($ivsccavg - min(merge($ivsccavg)))"
-	elseif(!CmpStr(args.yaxisOffset, SF_OP_IVSCCAPFREQUENCY_MAX))
-		expr = "ivsccavg_norm_y = merge($ivsccavg - max(merge($ivsccavg)))"
-	elseif(!CmpStr(args.yaxisOffset, SF_OP_IVSCCAPFREQUENCY_NONE))
-		expr = "ivsccavg_norm_y = merge($ivsccavg)"
-	else
-		FATAL_ERROR("Unknown yaxisoffset mode")
-	endif
+	expr    = SFO_OperationIVSCCApFrequencyBuildOffsetExpr("ivsccavg_norm_y", "$ivsccavg", args.yaxisOffset, 1)
 	formula = SF_AddExpressionToFormula(formula, expr)
 	expr    = "ivsccavg_merged = merge($ivsccavg)"
 	formula = SF_AddExpressionToFormula(formula, expr)
