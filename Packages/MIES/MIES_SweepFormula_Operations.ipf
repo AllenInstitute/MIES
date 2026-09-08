@@ -3135,21 +3135,17 @@ Function/WAVE SFO_OperationIVSCCApFrequency(STRUCT SF_ExecutionData &exd)
 		SFH_ASSERT(!IsNaN(args.binRange[0]) && !IsNaN(args.binRange[1]), "binRange can not be NaN")
 		args.binWidth                                   = SFH_GetArgumentAsNumeric(exd, opShort, argOffset + 8, checkFunc = IsStrictlyPositiveAndFinite, defValue = 100)
 		[method, level, timeFreq, normalize, xAxisType] = SFO_GetApFrequencyArguments(exd, opShort, argOffset + 9)
-		args.method                                     = method
-		args.level                                      = level
-		args.timeFreq                                   = timeFreq
-		args.normalize                                  = normalize
-		args.xAxisType                                  = xAxisType
 	elseif(!CmpStr(args.avgMode, SF_OP_AVG_BINS2))
 		[method, level, timeFreq, normalize, xAxisType] = SFO_GetApFrequencyArguments(exd, opShort, argOffset + 7)
-		args.method                                     = method
-		args.level                                      = level
-		args.timeFreq                                   = timeFreq
-		args.normalize                                  = normalize
-		args.xAxisType                                  = xAxisType
 	else
 		FATAL_ERROR("Unknown avg method")
 	endif
+	SFH_ASSERT(method != SF_APFREQUENCY_INSTANTANEOUS_PAIR, "apfrequency method instantaneous pair is not supported.")
+	args.method    = method
+	args.level     = level
+	args.timeFreq  = timeFreq
+	args.normalize = normalize
+	args.xAxisType = xAxisType
 
 	WAVE output = SFO_OperationIVSCCApFrequencyImpl(exd, args, opShort)
 
