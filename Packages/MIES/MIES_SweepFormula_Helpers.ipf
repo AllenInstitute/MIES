@@ -2428,13 +2428,15 @@ End
 ///        (plotWITH is a sub wave of plotAND)
 Function SFH_AppendPlotSpecificationWith(WAVE/WAVE plotWITH, WAVE wvY, WAVE/Z wvX)
 
-	variable size
+	variable index
 
-	size = DimSize(plotWITH, ROWS)
-	Redimension/N=(size + 1, -1) plotWITH
+	index = GetNumberFromWaveNote(plotWITH, NOTE_INDEX)
+	EnsureLargeEnoughWave(plotWITH, indexShouldExist = index)
 
-	plotWITH[size][%FORMULAY] = wvY
-	plotWITH[size][%FORMULAX] = wvX
+	plotWITH[index][%FORMULAY] = wvY
+	plotWITH[index][%FORMULAX] = wvX
+
+	SetNumberInWaveNote(plotWITH, NOTE_INDEX, index + 1)
 End
 
 Function [variable globXMin, variable globXMax] SFH_GetGlobalXAxisRange(WAVE/WAVE plotAND)
@@ -2446,7 +2448,7 @@ Function [variable globXMin, variable globXMax] SFH_GetGlobalXAxisRange(WAVE/WAV
 
 	numAND = DimSize(plotAND, ROWS)
 	for(i = 0; i < numAND; i += 1)
-		WAVE/WAVE plotWITH = plotAND[i]
+		WAVE/WAVE plotWITH = RemoveUnusedRows(plotAND[i])
 		numWITH = DimSize(plotWITH, ROWS)
 		for(j = 0; j < numWITH; j += 1)
 			// plotWITH's FORMULAX/FORMULAY entries are always datasets (or non-existent)
@@ -2501,7 +2503,7 @@ Function SFH_SetGlobalXAxisRange(WAVE/WAVE plotAND, variable xMin, variable xMax
 
 	numAND = DimSize(plotAND, ROWS)
 	for(i = 0; i < numAND; i += 1)
-		WAVE/WAVE plotWITH = plotAND[i]
+		WAVE/WAVE plotWITH = RemoveUnusedRows(plotAND[i])
 		numWITH = DimSize(plotWITH, ROWS)
 		for(j = 0; j < numWITH; j += 1)
 			WAVE/WAVE wvY = plotWITH[j][%FORMULAY]
@@ -2572,6 +2574,7 @@ static Function/WAVE SFH_CreatePlotSpecificationWITH(variable numWITH)
 	Make/FREE/WAVE/N=(numWITH, 2) plotWITH
 	SetDimlabel COLS, 0, FORMULAX, plotWITH
 	SetDimlabel COLS, 1, FORMULAY, plotWITH
+	SetNumberInWaveNote(plotWITH, NOTE_INDEX, numWITH)
 
 	return plotWITH
 End

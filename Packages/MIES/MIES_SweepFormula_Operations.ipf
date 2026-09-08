@@ -3196,10 +3196,11 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyJoinPlots(STRUCT SF_ExecutionD
 			if(!WaveExists(tracesOfType))
 				continue
 			endif
-			WAVE/WAVE plotWITH = plotAND[j]
-			numTraces = DimSize(tracesOfType, ROWS)
+			WAVE/WAVE plotWITH            = plotAND[j]
+			WAVE/WAVE tracesOfTypeTrimmed = RemoveUnusedRows(tracesOfType)
+			numTraces = DimSize(tracesOfTypeTrimmed, ROWS)
 			for(k = 0; k < numTraces; k += 1)
-				WAVE/WAVE trace = tracesOfType[k]
+				WAVE/WAVE trace = tracesOfTypeTrimmed[k]
 				SFH_AppendPlotSpecificationWith(plotWITH, trace[%FORMULAY], trace[%FORMULAX])
 			endfor
 		endfor
@@ -3428,7 +3429,7 @@ End
 
 static Function SFO_OperationIVSCCApFrequencyAppendPlotType(WAVE/WAVE plotByType, variable plotType, WAVE wvY, WAVE/Z wvX)
 
-	variable size
+	variable index
 
 	Make/FREE=1/WAVE trace = {wvY, wvX}
 	SetDimensionLabels(trace, "FORMULAY;FORMULAX;", ROWS)
@@ -3436,11 +3437,14 @@ static Function SFO_OperationIVSCCApFrequencyAppendPlotType(WAVE/WAVE plotByType
 	WAVE/Z/WAVE plotList = plotByType[plotType]
 	if(!WaveExists(plotList))
 		Make/FREE=1/WAVE/N=(0) plotList
+		SetNumberInWaveNote(plotList, NOTE_INDEX, 0)
 		plotByType[plotType] = plotList
 	endif
-	size = DimSize(plotList, ROWS)
-	Redimension/N=(size + 1, -1) plotList
-	plotList[size] = trace
+
+	index = GetNumberFromWaveNote(plotList, NOTE_INDEX)
+	EnsureLargeEnoughWave(plotList, indexShouldExist = index)
+	plotList[index] = trace
+	SetNumberInWaveNote(plotList, NOTE_INDEX, index + 1)
 End
 
 static Function SFO_OperationIVSCCApFrequencyConvertSdevToStdError(WAVE wvY, string errTag, string numPntsTag)

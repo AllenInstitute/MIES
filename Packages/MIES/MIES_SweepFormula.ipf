@@ -1573,7 +1573,11 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 			numPlotAND = isFullPlot ? DimSize(formulaResults, ROWS) : 1
 			for(j = 0; j < numPlotAND; j += 1)
 				if(isFullPlot)
-					WAVE/WAVE plotsWITH = formulaResults[j][%FORMULAY]
+					WAVE/WAVE plotsWITHRaw = formulaResults[j][%FORMULAY]
+					if(DimSize(plotsWITHRaw, ROWS) == 0)
+						continue
+					endif
+					WAVE/WAVE plotsWITH = RemoveUnusedRows(plotsWITHRaw)
 				endif
 				numPlotWITH = isFullPlot ? DimSize(plotsWITH, ROWS) : 1
 				for(k = 0; k < numPlotWITH; k += 1)
