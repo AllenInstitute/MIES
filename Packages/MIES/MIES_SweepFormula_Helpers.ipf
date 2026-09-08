@@ -2369,6 +2369,45 @@ Function SFH_AddVariableToStorage(string graph, string name, WAVE result)
 	varStorage[idx] = result
 End
 
+/// @brief Begin a scoped, temporary mutation of the graph's SweepFormula variable storage
+///
+/// Returns a backup of the storage's current state.
+///
+/// @param graph SweepBrowser graph
+Function/WAVE SFH_BeginScopedVarStorage(string graph)
+
+	WAVE/WAVE varStorage = GetSFVarStorage(graph)
+	Duplicate/FREE varStorage, varBackup
+
+	return varBackup
+End
+
+/// @brief End a scoped mutation of the graph's SweepFormula variable storage, begun via
+///        #SFH_BeginScopedVarStorage
+///
+/// Restores the storage to exactly the state captured by #SFH_BeginScopedVarStorage, discarding
+/// everything the scope added or changed, and then adds back exactly the given name/value pairs.
+///
+/// @param graph     SweepBrowser graph
+/// @param varBackup backup returned by #SFH_BeginScopedVarStorage
+/// @param names     [optional, default {}] SF variable names to add/overwrite after the restore
+/// @param values    [optional, default {}] values for each entry in names, same size as names
+Function SFH_EndScopedVarStorage(string graph, WAVE varBackup, [WAVE/T names, WAVE/WAVE values])
+
+	variable i, numNames
+
+	ASSERT(ParamIsDefault(names) == ParamIsDefault(values), "names and values must be given together")
+	numNames = ParamIsDefault(names) ? 0 : DimSize(names, ROWS)
+	ASSERT(ParamIsDefault(values) || DimSize(values, ROWS) == numNames, "names and values must have the same size")
+
+	WAVE/WAVE varStorage = GetSFVarStorage(graph)
+	Duplicate/O varBackup, varStorage
+
+	for(i = 0; i < numNames; i += 1)
+		SFH_AddVariableToStorage(graph, names[i], values[i])
+	endfor
+End
+
 /// @brief Copy plot meta data JSON properties from a source to a target wave
 Function SFH_CopyPlotMetaData(WAVE dest, WAVE src)
 
