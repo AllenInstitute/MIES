@@ -3217,7 +3217,7 @@ End
 
 static Function/WAVE SFO_OperationIVSCCApFrequencyImpl(STRUCT SF_ExecutionData &exd, STRUCT IVSCCApFrequencyArgs &args, string opShort)
 
-	variable i, numTagGroups, traceIndex
+	variable i, numTagGroups, traceIndex, xMin, xMax
 
 	if(!WaveExists(args.tagGroups))
 		WAVE/WAVE args.tagGroups = SFO_OperationIVSCCApFrequencyGetDefaultTagGroups(exd)
@@ -3231,6 +3231,8 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl(STRUCT SF_ExecutionData &
 	endfor
 
 	WAVE/WAVE plotAND = SFO_OperationIVSCCApFrequencyJoinPlots(exd, opShort, plotByTypeSpecs)
+	[xMin, xMax] = SFH_GetGlobalXAxisRange(plotAND)
+	SFH_SetGlobalXAxisRange(plotAND, xMin, xMax)
 
 	return plotAND
 End
