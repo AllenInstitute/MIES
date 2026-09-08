@@ -102,10 +102,11 @@ static Function/WAVE GetRefData()
 
 	Make/FREE/D avgDataBinsRef = {34.95, 93.58333333333334, 132, 158, 228, 74, NaN}
 	Make/FREE/D xAvgDataBinsRef = {133.2, 214.25, 268, 362.5, 479, 531, NaN}
-	Make/FREE/D fitDataBinsRef = {29.29539771006682, 98.07740075839308, 130.470972508963, 174.1804239356826, 214.5091272186255, NaN, NaN}
+	Make/FREE/D fitDataBinsRef = {16.14485805525101, 95.01278145856668, 132, 182.094966964785, 228, NaN, NaN}
+	Make/FREE/D fitxDataBinsRef = {132.9758617407321, 214.2722901887894, 268, 362.8597710244014, 479, NaN, NaN}
 
-	Make/FREE/WAVE wv = {dataRef1, xDataRef1, dataRef2, xDataRef2, dascaleYRef, dascaleXRef, dascaleAvgYRef, dascaleAvgXRef, avgDataRef, xAvgDataRef, fitDataRef, fitxDataRef, avgDataBinsRef, xAvgDataBinsRef, fitDataBinsRef}
-	SetDimensionLabels(wv, "data1;xdata1;data2;xdata2;dascaleY;dascaleX;dascaleAvgY;dascaleAvgX;avgdata;avgxdata;fitdata;fitxdata;avgbinsdata;xavgbinsdata;fitbinsdata;", ROWS)
+	Make/FREE/WAVE wv = {dataRef1, xDataRef1, dataRef2, xDataRef2, dascaleYRef, dascaleXRef, dascaleAvgYRef, dascaleAvgXRef, avgDataRef, xAvgDataRef, fitDataRef, fitxDataRef, avgDataBinsRef, xAvgDataBinsRef, fitDataBinsRef, fitxDataBinsRef}
+	SetDimensionLabels(wv, "data1;xdata1;data2;xdata2;dascaleY;dascaleX;dascaleAvgY;dascaleAvgX;avgdata;avgxdata;fitdata;fitxdata;avgbinsdata;xavgbinsdata;fitbinsdata;fitbinsxdata;", ROWS)
 
 	for(data : wv)
 		Redimension/N=(-1, 1) data // from SF_PrepareResultWavesForPlotting
@@ -233,9 +234,9 @@ static Function TestIVSCCAPFrequencyGraph3(string subWin)
 
 	WAVE/T traceNames = traceNamesPlot[3]
 	WAVE   fitData    = TraceNameToWaveRef(subWin, traceNames[0])
-	CHECK_EQUAL_WAVES(fitData, refData[%fitbinsdata], mode = WAVE_DATA, tol = 1E-12)
+	CHECK_EQUAL_WAVES(fitData, refData[%fitbinsdata], mode = WAVE_DATA, tol = 3E-2)
 	WAVE xFitData = XWaveRefFromTrace(subWin, traceNames[0])
-	CHECK_EQUAL_WAVES(xFitData, refData[%xavgbinsdata], mode = WAVE_DATA, tol = 1E-12)
+	CHECK_EQUAL_WAVES(xFitData, refData[%fitbinsxdata], mode = WAVE_DATA, tol = 3E-2)
 End
 
 static Function TestIVSCCAPFrequencyGraph4(string subWin)

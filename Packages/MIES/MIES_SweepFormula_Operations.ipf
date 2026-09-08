@@ -719,6 +719,7 @@ End
 static Function/WAVE SFO_OperationAvgImplBins(WAVE/WAVE input, string graph, string opShort, WAVE/WAVE binData, WAVE binRange, variable binWidth)
 
 	variable i, j, numBins, binStart, binEnd, numGroups, numDataSets, binValue, binPos, idx
+	variable xSdev, ySdev, xNpnts, yNpnts
 	string          msg
 	STRUCT RGBColor s
 
@@ -735,7 +736,7 @@ static Function/WAVE SFO_OperationAvgImplBins(WAVE/WAVE input, string graph, str
 	SFH_ASSERT(numBins < 1E6, "Maximum number of bins is 1E6.")
 
 	// Gather
-	Make/FREE/WAVE/N=(numBins, numGroups) binnedPerGroup
+	Make/FREE/WAVE/N=(numBins, numGroups) binnedPerGroup, binnedXPerGroup
 	for(i = 0; i < numGroups; i += 1)
 		WAVE/WAVE dataSets    = input[i]
 		WAVE/WAVE binDataSets = binData[i]
@@ -759,12 +760,21 @@ static Function/WAVE SFO_OperationAvgImplBins(WAVE/WAVE input, string graph, str
 				Make/FREE/WAVE wavesInBin = {dataSets[j]}
 				SetNumberInWaveNote(wavesInBin, NOTE_INDEX, 1)
 				binnedPerGroup[binPos][i] = wavesInBin
+
+				Make/FREE/D xValuesInBin = {binValue}
+				SetNumberInWaveNote(xValuesInBin, NOTE_INDEX, 1)
+				binnedXPerGroup[binPos][i] = xValuesInBin
 				continue
 			endif
 			idx = GetNumberFromWaveNote(wavesInBin, NOTE_INDEX)
 			EnsureLargeEnoughWave(wavesInBin, indexShouldExist = idx)
 			wavesInBin[idx] = dataSets[j]
 			SetNumberInWaveNote(wavesInBin, NOTE_INDEX, idx + 1)
+
+			WAVE xValuesInBin = binnedXPerGroup[binPos][i]
+			EnsureLargeEnoughWave(xValuesInBin, indexShouldExist = idx)
+			xValuesInBin[idx] = binValue
+			SetNumberInWaveNote(xValuesInBin, NOTE_INDEX, idx + 1)
 		endfor
 	endfor
 
@@ -777,9 +787,11 @@ static Function/WAVE SFO_OperationAvgImplBins(WAVE/WAVE input, string graph, str
 			if(!WaveExists(binnedPerGroup[i][j]))
 				continue
 			endif
-			WAVE/WAVE wavesInBin = binnedPerGroup[i][j]
+			WAVE/WAVE wavesInBin   = binnedPerGroup[i][j]
+			WAVE      xValuesInBin = binnedXPerGroup[i][j]
 			idx = GetNumberFromWaveNote(wavesInBin, NOTE_INDEX)
 			Redimension/N=(idx) wavesInBin
+			Redimension/N=(idx) xValuesInBin
 
 			sprintf msg, "Bin %d, Group %d, NumWaves %d, ", i, j, idx
 			DEBUGPRINT(msg)
@@ -795,28 +807,51 @@ static Function/WAVE SFO_OperationAvgImplBins(WAVE/WAVE input, string graph, str
 			WAVE/WAVE avg = MIES_fWaveAverage(wavesInBin, 1, IGOR_TYPE_64BIT_FLOAT)
 			Redimension/N=(1) wavesInBin
 			wavesInBin[0] = avg[0]
+
+			WaveStats/Q xValuesInBin
+			Redimension/N=(1) xValuesInBin
+			xValuesInBin[0] = V_avg
 		endfor
 	endfor
 	// avg same bins
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, numBins)
 	for(i = 0; i < numBins; i += 1)
 		Make/FREE/WAVE/N=(numGroups) sameBin
+		Make/FREE/D/N=(numGroups) sameBinX
 		idx = 0
 		for(j = 0; j < numGroups; j += 1)
 			if(!WaveExists(binnedPerGroup[i][j]))
 				continue
 			endif
-			WAVE/WAVE wavesInBin = binnedPerGroup[i][j]
-			sameBin[idx] = wavesInBin[0]
-			idx         += 1
+			WAVE/WAVE wavesInBin   = binnedPerGroup[i][j]
+			WAVE      xValuesInBin = binnedXPerGroup[i][j]
+			sameBin[idx]  = wavesInBin[0]
+			sameBinX[idx] = xValuesInBin[0]
+			idx          += 1
 		endfor
 		if(idx == 0)
 			Make/FREE/D tmp = {NaN}
 			output[i] = tmp
 		else
-			Redimension/N=(idx) sameBin
+			Redimension/N=(idx) sameBin, sameBinX
 			WAVE/WAVE avg = MIES_fWaveAverage(sameBin, 1, IGOR_TYPE_64BIT_FLOAT)
 			output[i] = avg[0]
+
+			Make/FREE/D/N=(idx) valuesFromBin = WaveRef(sameBin, row = p)[0]
+			WaveStats/Q valuesFromBin
+			ySdev  = V_sdev
+			yNpnts = V_npnts
+
+			WaveStats/Q sameBinX
+			xSdev  = V_sdev
+			xNpnts = V_npnts
+
+			JWN_SetWaveInWaveNote(output[i], SF_META_ERRORBARYPLUS, {ySdev})
+			JWN_SetWaveInWaveNote(output[i], SF_META_ERRORBARYMINUS, {ySdev})
+			JWN_SetWaveInWaveNote(output[i], SF_META_ERRORBARXPLUS, {xSdev})
+			JWN_SetWaveInWaveNote(output[i], SF_META_ERRORBARXMINUS, {xSdev})
+			JWN_SetWaveInWaveNote(output[i], SF_META_AVG_NPNTS_X, {xNpnts})
+			JWN_SetWaveInWaveNote(output[i], SF_META_AVG_NPNTS_Y, {yNpnts})
 		endif
 		JWN_SetWaveInWaveNote(output[i], SF_META_TRACECOLOR, traceColor)
 		JWN_SetNumberInWaveNote(output[i], SF_META_TRACETOFRONT, 1)
