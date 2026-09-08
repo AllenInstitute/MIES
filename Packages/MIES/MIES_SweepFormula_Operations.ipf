@@ -3383,6 +3383,8 @@ End
 
 static Function [WAVE/WAVE inflCurrentRef, WAVE/WAVE inflFreqRef, WAVE/WAVE inflCurrentAvgRef, WAVE/WAVE inflFreqAvgRef] SFO_OperationIVSCCApFrequencyGetInflectionTraces(STRUCT SF_ExecutionData &exd, string opShort, variable numExp)
 
+	variable xSE
+
 	[WAVE inflectionCurrent, WAVE inflectionFreq] = SFO_OperationIVSCCApFrequencyGetInflectionPoints(exd, numExp)
 
 	WAVE/WAVE inflCurrentRef = SFH_CreateSFRefWave(exd.graph, opShort, 1)
@@ -3392,9 +3394,21 @@ static Function [WAVE/WAVE inflCurrentRef, WAVE/WAVE inflFreqRef, WAVE/WAVE infl
 	// avg with NaNs zapped
 	WAVE/Z inflectionCurrentZapped = ZapNaNs(inflectionCurrent)
 	WAVE/Z inflectionFreqZapped    = ZapNaNs(inflectionFreq)
-	Make/FREE/D/N=(1) inflCurrentAvg, inflFreqAvg
-	inflCurrentAvg[0] = WaveExists(inflectionCurrentZapped) ? mean(inflectionCurrentZapped) : NaN
-	inflFreqAvg[0]    = WaveExists(inflectionFreqZapped) ? mean(inflectionFreqZapped) : NaN
+	Make/FREE/D/N=(1) inflCurrentAvg = NaN
+	Make/FREE/D/N=(1) inflFreqAvg = NaN
+	if(WaveExists(inflectionCurrentZapped))
+		WaveStats/Q inflectionCurrentZapped
+		inflCurrentAvg[0] = V_avg
+		xSE               = V_sem
+	endif
+	if(WaveExists(inflectionFreqZapped))
+		WaveStats/Q inflectionFreqZapped
+		inflFreqAvg[0] = V_avg
+		JWN_SetWaveInWaveNote(inflFreqAvg, SF_META_ERRORBARYMINUS, {V_sem})
+		JWN_SetWaveInWaveNote(inflFreqAvg, SF_META_ERRORBARYPLUS, {V_sem})
+		JWN_SetWaveInWaveNote(inflFreqAvg, SF_META_ERRORBARXMINUS, {xSE})
+		JWN_SetWaveInWaveNote(inflFreqAvg, SF_META_ERRORBARXPLUS, {xSE})
+	endif
 
 	WAVE/WAVE inflCurrentAvgRef = SFH_CreateSFRefWave(exd.graph, opShort, 1)
 	WAVE/WAVE inflFreqAvgRef    = SFH_CreateSFRefWave(exd.graph, opShort, 1)
