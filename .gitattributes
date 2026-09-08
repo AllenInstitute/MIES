@@ -42,6 +42,8 @@ ctags.cnf               export-ignore
 .editorconfig           export-ignore
 Packages/Artwork        export-ignore
 XOPs-MacOSX-64bit       export-ignore
+CLAUDE.md               export-ignore
+.claude                 export-ignore
 
 *.dot !diff
 
