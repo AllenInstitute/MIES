@@ -3420,7 +3420,7 @@ End
 
 static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData &exd, STRUCT IVSCCApFrequencyArgs &args, string opShort, WAVE/T tagGroup, variable traceIndex)
 
-	string varName, tagList, tagSuffix
+	string varName, tagList, tagSuffix, fitFormula
 	variable i, numExp
 
 	STRUCT RGBColor s
@@ -3439,11 +3439,16 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 
 	if(numExp > 1)
 		WAVE/Z fitRange = args.prepareFit[%RANGE]
+		fitFormula = "fit2($ivsccavg_norm_y, $ivsccavg_norm_x, $pfit)"
 		if(!WaveExists(fitRange))
 			args.prepareFit[%RANGE] = SFO_OperationIVSCCApFrequencyAdaptFitRange(exd)
+			SFH_AddVariableToStorage(exd.graph, "pfit", SFH_GetOutputForExecutor(args.prepareFit, exd.graph, opShort))
+			WAVE/WAVE fitResult = SFH_AddVariableToStorageByFormula(exd.graph, "ivscc_apfrequency_fit", fitFormula, opShort)
+			args.prepareFit[%RANGE] = $""
+		else
+			SFH_AddVariableToStorage(exd.graph, "pfit", SFH_GetOutputForExecutor(args.prepareFit, exd.graph, opShort))
+			WAVE/WAVE fitResult = SFH_AddVariableToStorageByFormula(exd.graph, "ivscc_apfrequency_fit", fitFormula, opShort)
 		endif
-		SFH_AddVariableToStorage(exd.graph, "pfit", SFH_GetOutputForExecutor(args.prepareFit, exd.graph, opShort))
-		WAVE/WAVE fitResult = SFH_AddVariableToStorageByFormula(exd.graph, "ivscc_apfrequency_fit", "fit2($ivsccavg_norm_y, $ivsccavg_norm_x, $pfit)", opShort)
 	endif
 
 	// build plot tree
