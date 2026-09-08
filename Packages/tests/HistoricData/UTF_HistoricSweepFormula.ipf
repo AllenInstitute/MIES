@@ -129,6 +129,24 @@ static Function/WAVE TestIVSCCAPFrequencyBinsGetTraceNames()
 	return traceNamesPlot
 End
 
+static Function TestIVSCCAPFrequencyCheckTraceNames(WAVE/WAVE traceNamesPlot, string wName)
+
+	variable i
+	string   subWin
+
+	for(WAVE/T traceNames : traceNamesPlot)
+		subWin = wName + "#graph" + num2istr(i) // see SF_CreateDataDisplayWindow
+		if(!WaveExists(traceNames))
+			CHECK_EQUAL_VAR(WindowExists(subWin), 0)
+			i += 1
+			continue
+		endif
+		WAVE/T traceList = ListToTextWave(TraceNameList(subWin, ";", 0x01), ";")
+		CHECK_EQUAL_WAVES(traceList, traceNames)
+		i += 1
+	endfor
+End
+
 static Function TestIVSCCAPFrequencyTraceDistribution()
 
 	string abWin, code, sweepBrowsers, sweepBrowser
@@ -148,13 +166,7 @@ static Function TestIVSCCAPFrequencyTraceDistribution()
 	wName = GetMainWindow(GetCurrentWindow())
 
 	WAVE/WAVE traceNamesPlot = TestIVSCCAPFrequencyBinsGetTraceNames()
-	CHECK_EQUAL_VAR(DimSize(traceNamesPlot, ROWS), 6) // see SF_IVSCC_APFREQUENCY_PLOTTYPE_ENUM_MAX
-	for(WAVE/T traceNames : traceNamesPlot)
-		subWin = wName + "#graph" + num2istr(i) // see SF_CreateDataDisplayWindow
-		WAVE/T traceList = ListToTextWave(TraceNameList(subWin, ";", 0x01), ";")
-		CHECK_EQUAL_WAVES(traceList, traceNames)
-		i += 1
-	endfor
+	TestIVSCCAPFrequencyCheckTraceNames(traceNamesPlot, wName)
 End
 
 static Function [WAVE yWave, WAVE xWave] TestIVSCCAPFrequencyConcat(WAVE/WAVE yWaves, WAVE/WAVE xWaves)
@@ -321,6 +333,97 @@ static Function TestIVSCCAPFrequencyBins2()
 	TestIVSCCAPFrequencyGraph5(wName + "11")
 End
 
+static Function TestIVSCCAPFrequencyTagGroups()
+
+	string abWin, code, sweepBrowsers, sweepBrowser, wName
+
+	WAVE/T files = HistoricDataHelpers#GetHistoricDataFilesSweepFormulaIVSCCAPFreq()
+
+	files[] = "input:" + files[p]
+
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser(files, loadSweeps = 1, multipleSweepBrowser = 0, tagList = {"a", "b"})
+	sweepBrowser           = StringFromList(0, sweepBrowsers)
+
+	code = "ivscc_apfrequency(on, none, none, 100, 100, prepareFit(log), bins2)\r"
+
+	ExecuteSweepFormulaCode(sweepBrowser, code)
+	wName = GetMainWindow(GetCurrentWindow())
+
+	Make/FREE/T plot0 = {"T000000d0_a__Scn1a_R613X_B6_825669_02_09_02_nwb", "T000001d0_b__Scn1a_R613X_B6_825669_02_09_04_nwb"}
+	Make/FREE/T plot1 = {"T000000d0_a__ivscc_apfrequency_concat", "T000001d0_b__ivscc_apfrequency_concat"}
+	Make/FREE/T plot2 = {"T000000d0_a__ivscc_apfrequency_DAScale", "T000001d0_b__ivscc_apfrequency_DAScale"}
+	Make/FREE/T plot3 = {"T000000d0_a__ivscc_apfrequency_Mean_Maximal_Firing_Point", "T000001d0_b__ivscc_apfrequency_Mean_Maximal_Firing_Point"}
+	WAVE/Z plot4 = $""
+	WAVE/Z plot5 = $""
+	Make/FREE/WAVE traceNamesPlot = {plot0, plot1, plot2, plot3, plot4, plot5}
+
+	CHECK_EQUAL_VAR(DimSize(traceNamesPlot, ROWS), 6) // see SF_IVSCC_APFREQUENCY_PLOTTYPE_ENUM_MAX
+
+	TestIVSCCAPFrequencyCheckTraceNames(traceNamesPlot, wName)
+End
+
+static Function TestIVSCCAPFrequencySyncXAxis()
+
+	string abWin, code, sweepBrowsers, sweepBrowser, wName, subWin
+	variable i, numWins
+
+	WAVE/T files = HistoricDataHelpers#GetHistoricDataFilesSweepFormulaIVSCCAPFreq()
+
+	files[] = "input:" + files[p]
+
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser(files, loadSweeps = 1, multipleSweepBrowser = 0)
+	sweepBrowser           = StringFromList(0, sweepBrowsers)
+
+	code = "ivscc_apfrequency(on, none, none, 100, 100, prepareFit(log), bins2)\r"
+
+	ExecuteSweepFormulaCode(sweepBrowser, code)
+	wName = GetMainWindow(GetCurrentWindow())
+
+	numWins = 6
+	// check if all bottom axis have the same xAxis scale
+	Make/FREE/D/N=(numWins) xMin, xMax
+	for(i = 0; i < numWins; i += 1)
+		subWin = wName + "#graph" + num2istr(i)
+		GetAxis/W=$subWin/Q bottom
+		xMin[i] = V_min
+		xMax[i] = V_max
+	endfor
+	CHECK_EQUAL_VAR(IsConstant(xMin, xMin[0]), 1)
+	CHECK_EQUAL_VAR(IsConstant(xMax, xMax[0]), 1)
+
+	// check if all sync
+	subWin = wName + "#graph0"
+	SetAxis/W=$subWin/Z bottom, -1, 1
+
+	// Just need to drop to the command line to trigger the hook functions
+	CtrlNamedBackGround ivsccapfrequencytask, proc=TestIVSCCAPFrequencyWait, period=1, start
+	RegisterIUTFMonitor("ivsccapfrequencytask", 1, "HistoricDataSweepFormula#TestIVSCCAPFrequencySyncXAxis_REENTRY")
+End
+
+Function TestIVSCCAPFrequencyWait(STRUCT WMBackgroundStruct &s)
+
+	return 1
+End
+
+static Function TestIVSCCAPFrequencySyncXAxis_REENTRY()
+
+	variable i, numWins
+	string wName, subWin
+
+	wName = GetMainWindow(GetCurrentWindow())
+
+	numWins = 6
+	Make/FREE/D/N=(numWins) xMin, xMax
+	for(i = 0; i < numWins; i += 1)
+		subWin = wName + "#graph" + num2istr(i)
+		GetAxis/W=$subWin/Q bottom
+		xMin[i] = V_min
+		xMax[i] = V_max
+	endfor
+	CHECK_EQUAL_VAR(IsConstant(xMin, -1), 1)
+	CHECK_EQUAL_VAR(IsConstant(xMax, 1), 1)
+End
+
 static Function TestIVSCCAPFrequencyAxisPercentage()
 
 	string abWin, code, sweepBrowsers, sweepBrowser
@@ -453,7 +556,7 @@ static Function TestIVSCCAPFrequencyWorks()
 
 	files[] = "input:" + files[p]
 
-	[abWin, sweepBrowsers] = OpenAnalysisBrowser(files, loadSweeps = 1)
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser(files, loadSweeps = 1, multipleSweepBrowser = 0)
 	sweepBrowser           = StringFromList(0, sweepBrowsers)
 
 	// with optional apfrequency argument set
@@ -471,7 +574,7 @@ static Function TestIVSCCAPFrequencyFails()
 
 	files[] = "input:" + files[p]
 
-	[abWin, sweepBrowsers] = OpenAnalysisBrowser(files, loadSweeps = 1)
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser(files, loadSweeps = 1, multipleSweepBrowser = 0)
 	sweepBrowser           = StringFromList(0, sweepBrowsers)
 
 	code = "ivscc_apfrequency(fail, on, fail, none, 100, 100, prepareFit(log), bins, [100, 600], 80)\r"
@@ -517,5 +620,8 @@ static Function TestIVSCCAPFrequencyFails()
 	ExecuteSweepFormulaCode(sweepBrowser, code, expectFailure = 1)
 
 	code = "ivscc_apfrequency(seltag(a), on, none, none, 100, 100, 0, bins, [100, 600], 80)\r"
+	ExecuteSweepFormulaCode(sweepBrowser, code, expectFailure = 1)
+
+	code = "ivscc_apfrequency(seltag(a), on, none, none, 100, 100, 0, bins2, 3)\r"
 	ExecuteSweepFormulaCode(sweepBrowser, code, expectFailure = 1)
 End
