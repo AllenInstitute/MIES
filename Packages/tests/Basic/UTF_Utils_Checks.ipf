@@ -57,15 +57,15 @@ Function HOV_AssertsOnInvalidType()
 	endtry
 End
 
-Function HOV_AssertsOnEmptyWave()
+Function HOV_WorksWithEmptyWave()
 
 	Make/FREE/D/N=0 wv
-	try
-		HasOneValidEntry(wv)
-		FAIL()
-	catch
-		PASS()
-	endtry
+	CHECK(!HasOneValidEntry(wv))
+End
+
+Function HOV_WorksWithNullWave()
+
+	CHECK(!HasOneValidEntry($""))
 End
 
 Function HOV_Works1()
@@ -120,6 +120,31 @@ Function HOV_WorksWithText2()
 	Make/FREE/T/N=(2) wv = ""
 	wv[0] = "a"
 	CHECK(HasOneValidEntry(wv))
+End
+
+Function HOV_WorksWithWaveRefWave1()
+
+	Make/FREE/WAVE/N=(2) wv
+	// all empty entries make it non valid
+	CHECK(!HasOneValidEntry(wv))
+End
+
+Function HOV_WorksWithWaveRefWave2()
+
+	Make/FREE/WAVE/N=(2) wv
+	Make/FREE numeric
+	wv[] = numeric
+	CHECK(HasOneValidEntry(wv))
+End
+
+Function HOV_WorksWithWaveRefWave3()
+
+	Make/FREE/WAVE/N=(2) wv
+	Make/FREE numeric = NaN
+	wv[0] = numeric
+	Make/FREE/T text = ""
+	wv[1] = text
+	CHECK(!HasOneValidEntry(wv))
 End
 
 /// @}

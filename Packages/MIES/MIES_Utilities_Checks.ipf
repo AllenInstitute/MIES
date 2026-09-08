@@ -252,15 +252,19 @@ End
 
 /// @brief Return one if at least one entry is non-NaN (numeric) or non-empty (text), zero otherwise
 ///
-/// @param wv wave with at least one point
+/// @param wv wave to check
+///
+/// Invalid and empty wave references are accepted but result in zero as return value.
 ///
 /// UTF_NOINSTRUMENTATION
-threadsafe Function HasOneValidEntry(WAVE wv)
+threadsafe Function HasOneValidEntry(WAVE/Z wv)
 
-	string   str
-	variable val
+	string str
+	variable val, i, numEntries
 
-	ASSERT_TS(numpnts(wv) > 0, "Expected non-empty wave")
+	if(!WaveExists(wv) || numpnts(wv) == 0)
+		return 0
+	endif
 
 	if(IsFloatingPointWave(wv))
 		return numType(WaveMin(wv)) != 2
@@ -271,6 +275,17 @@ threadsafe Function HasOneValidEntry(WAVE wv)
 
 		for(str : wvText)
 			if(strlen(str) > 0)
+				return 1
+			endif
+		endfor
+	elseif(IsWaveRefWave(wv))
+
+		numEntries = DimSize(wv, ROWS)
+		for(i = 0; i < numEntries; i += 1)
+
+			WAVE/Z single = WaveRef(wv, row = i)
+
+			if(HasOneValidEntry(single))
 				return 1
 			endif
 		endfor
