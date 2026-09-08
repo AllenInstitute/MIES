@@ -3195,7 +3195,10 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyGetDefaultTagGroups(STRUCT SF_
 
 	WAVE/T sweepMap = SB_GetSweepMap(exd.graph)
 	size = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
-	col  = FindDimlabel(sweepMap, COLS, "Tags")
+	if(!size)
+		return $""
+	endif
+	col = FindDimlabel(sweepMap, COLS, "Tags")
 	Duplicate/FREE/RMD=[0, size - 1][col] sweepMap, tagCol
 	Redimension/N=(-1) tagCol
 	WAVE/T uniqueTagLists = GetUniqueEntries(tagCol, caseSensitive = 1)
@@ -3251,7 +3254,7 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl(STRUCT SF_ExecutionData &
 	string name
 
 	if(!WaveExists(args.tagGroups))
-		WAVE/WAVE args.tagGroups = SFO_OperationIVSCCApFrequencyGetDefaultTagGroups(exd)
+		WAVE/Z/WAVE args.tagGroups = SFO_OperationIVSCCApFrequencyGetDefaultTagGroups(exd)
 	endif
 
 	WAVE/WAVE varStorage = GetSFVarStorage(exd.graph)
@@ -3260,7 +3263,7 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl(STRUCT SF_ExecutionData &
 	SFE_ExecuteVariableAssignments(exd.graph, "sel = select(selsweeps(), selstimset(\"*LP_Rheo*\", \"*supra*\"), selvis(all), selivsccsweepqc(passed))\r", newFrame = 1, allowEmptyCode = 1)
 
 	xAxisGroupId = GetUniqueInteger()
-	numTagGroups = DimSize(args.tagGroups, ROWS)
+	numTagGroups = WaveExists(args.tagGroups) ? DimSize(args.tagGroups, ROWS) : 0
 	Make/FREE=1/WAVE/N=(numTagGroups) plotByTypeSpecs
 	for(i = 0; i < numTagGroups; i += 1)
 		plotByTypeSpecs[i] = SFO_OperationIVSCCApFrequencyImpl2(exd, args, opShort, args.tagGroups[i], i, xAxisGroupId)
