@@ -36,6 +36,7 @@ static StrConstant SF_OP_IVSCCAPFREQUENCY_MAX            = "max"
 static StrConstant SF_OP_IVSCCAPFREQUENCY_NONE           = "none"
 static StrConstant SF_OP_IVSCCAPFREQUENCY_SHOWSINGLE_ON  = "on"
 static StrConstant SF_OP_IVSCCAPFREQUENCY_SHOWSINGLE_OFF = "off"
+static StrConstant SF_OP_IVSCCAPFREQUENCY_VARPREFIX      = "ivscc_apfrequency_"
 
 static StrConstant SF_OP_AVG_INSWEEPS   = "in"
 static StrConstant SF_OP_AVG_OVERSWEEPS = "over"
@@ -3246,17 +3247,33 @@ End
 
 static Function/WAVE SFO_OperationIVSCCApFrequencyImpl(STRUCT SF_ExecutionData &exd, STRUCT IVSCCApFrequencyArgs &args, string opShort)
 
-	variable i, numTagGroups, xMin, xMax, xAxisGroupId
+	variable i, numTagGroups, xMin, xMax, xAxisGroupId, numFinalNames
+	string name
 
 	if(!WaveExists(args.tagGroups))
 		WAVE/WAVE args.tagGroups = SFO_OperationIVSCCApFrequencyGetDefaultTagGroups(exd)
 	endif
+
+	WAVE/WAVE varStorage = GetSFVarStorage(exd.graph)
+	Duplicate/FREE varStorage, varBackup
+
+	SFE_ExecuteVariableAssignments(exd.graph, "sel = select(selsweeps(), selstimset(\"*LP_Rheo*\", \"*supra*\"), selvis(all), selivsccsweepqc(passed))\r", newFrame = 1, allowEmptyCode = 1)
 
 	xAxisGroupId = GetUniqueInteger()
 	numTagGroups = DimSize(args.tagGroups, ROWS)
 	Make/FREE=1/WAVE/N=(numTagGroups) plotByTypeSpecs
 	for(i = 0; i < numTagGroups; i += 1)
 		plotByTypeSpecs[i] = SFO_OperationIVSCCApFrequencyImpl2(exd, args, opShort, args.tagGroups[i], i, xAxisGroupId)
+	endfor
+
+	Duplicate/FREE/WAVE varStorage, varFinal
+	Duplicate/O varBackup, varStorage
+	numFinalNames = DimSize(varFinal, ROWS)
+	for(i = 0; i < numFinalNames; i += 1)
+		name = GetDimLabel(varFinal, ROWS, i)
+		if(StringMatch(name, SF_OP_IVSCCAPFREQUENCY_VARPREFIX + "*"))
+			SFH_AddVariableToStorage(exd.graph, name, varFinal[i])
+		endif
 	endfor
 
 	WAVE/WAVE plotAND = SFO_OperationIVSCCApFrequencyJoinPlots(exd, opShort, plotByTypeSpecs)
@@ -3385,9 +3402,8 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyPrepareVariables(STRUCT SF_Exe
 
 	numExp = DimSize(experiments, ROWS)
 
-	formula         = "sel = select(selsweeps(), selstimset(\"*LP_Rheo*\", \"*supra*\"), selvis(all), selivsccsweepqc(passed))\r"
 	singlePlotsExpr = SFO_OperationIVSCCApFrequencyBuildSinglePlotsExpr(args, experiments)
-	formula         = SF_AddExpressionToFormula(formula, singlePlotsExpr)
+	formula         = SF_AddExpressionToFormula("", singlePlotsExpr)
 	if(numExp > 1)
 		avgPlotExpr = SFO_OperationIVSCCApFrequencyBuildAvgPlotsExpr(args, numExp)
 		formula     = SF_AddExpressionToFormula(formula, avgPlotExpr)
@@ -3396,13 +3412,13 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyPrepareVariables(STRUCT SF_Exe
 	Make/FREE/T/N=(numExp) exps
 	exps[]  = "\"" + experiments[p] + "\""
 	expList = TextWaveToList(exps, ",", trailSep = 0)
-	sprintf expr, "ivscc_apfrequency_explist = [%s]", expList
+	sprintf expr, "%sexplist = [%s]", SF_OP_IVSCCAPFREQUENCY_VARPREFIX, expList
 	formula = SF_AddExpressionToFormula(formula, expr)
 
 	WAVE/WAVE varStorage = GetSFVarStorage(exd.graph)
 	Duplicate/FREE varStorage, varBackup
 
-	SFE_ExecuteVariableAssignments(exd.graph, formula, allowEmptyCode = 1, newFrame = 1)
+	SFE_ExecuteVariableAssignments(exd.graph, formula, allowEmptyCode = 1, newFrame = 1, keepVarStorage = 1)
 
 	return varBackup
 End
@@ -3610,7 +3626,7 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 		SFO_OperationIVSCCApFrequencyAppendPlotType(plotsByType, SF_IVSCC_APFREQUENCY_PLOTTYPE_AVERAGE, wvY, wvX)
 
 		// fit trace
-		varName = "ivscc_apfrequency_fit"
+		varName = SF_OP_IVSCCAPFREQUENCY_VARPREFIX + "fit"
 		WAVE/WAVE wvY = SF_ResolveDataset(varStorage[%$varName])
 		if(DimSize(wvY, ROWS) > 0 && WaveExists(wvY[0]))
 			JWN_SetStringInWaveNote(wvY[0], SF_META_LEGEND_LINE_PREFIX, tagList + " ivscc_apfrequency fit")
@@ -3621,13 +3637,14 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 		SFO_OperationIVSCCApFrequencyAppendPlotType(plotsByType, SF_IVSCC_APFREQUENCY_PLOTTYPE_FIT, wvY, $"")
 	endif
 
-	WAVE expList = varStorage[%ivscc_apfrequency_explist]
+	varName = SF_OP_IVSCCAPFREQUENCY_VARPREFIX + "explist"
+	WAVE expList = varStorage[%$varName]
 	Duplicate/O varBackup, varStorage
 
 	tagSuffix = RemoveEnding(CleanupName(tagList, 0), "_")
-	SFH_AddVariableToStorage(exd.graph, "ivscc_apfrequency_explist_" + tagSuffix, expList)
+	SFH_AddVariableToStorage(exd.graph, SF_OP_IVSCCAPFREQUENCY_VARPREFIX + "explist_" + tagSuffix, expList)
 	if(WaveExists(fitResult))
-		SFH_AddVariableToStorage(exd.graph, "ivscc_apfrequency_fit_" + tagSuffix, SFH_GetOutputForExecutor(fitResult, exd.graph, opShort))
+		SFH_AddVariableToStorage(exd.graph, SF_OP_IVSCCAPFREQUENCY_VARPREFIX + "fit_" + tagSuffix, SFH_GetOutputForExecutor(fitResult, exd.graph, opShort))
 	endif
 
 	return plotsByType
