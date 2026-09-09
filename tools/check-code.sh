@@ -31,7 +31,7 @@ then
   ret=1
 fi
 
-matches=$(git grep $opts "hook(ResizeControls)=ResizeControls#ResizeControlsHook" -- '*.ipf')
+matches=$(git grep $opts "hook\(ResizeControls\)=ResizeControls#ResizeControlsHook" -- '*.ipf')
 
 if [[ -n "$matches" ]]
 then

@@ -28,7 +28,7 @@ Window WaverefBrowser() : Panel
 	Button BackWrefWave, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button BackWrefWave, userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin, hook(cleanup)=WRB_BrowserWindowHook
-	SetWindow kwTopWin, hook(ResizeControls)=ResizeControls#ResizeControlsHook
+	SetWindow kwTopWin, hook(ResizeControls)=ResizeControlsSafe
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)=A"!!*'\"z!!#B`!!#C=zzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
