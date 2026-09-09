@@ -3531,12 +3531,11 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyImpl2(STRUCT SF_ExecutionData 
 		fitFormula = "fit2($ivsccavg_norm_y, $ivsccavg_norm_x, $pfit)"
 		if(!WaveExists(fitRange))
 			args.prepareFit[%RANGE] = SFO_OperationIVSCCApFrequencyAdaptFitRange(exd)
-			SFH_AddVariableToStorage(exd.graph, "pfit", SFH_GetOutputForExecutor(args.prepareFit, exd.graph, opShort))
-			WAVE/WAVE fitResult = SFH_AddVariableToStorageByFormula(exd.graph, "ivscc_apfrequency_fit", fitFormula, opShort)
+		endif
+		SFH_AddVariableToStorage(exd.graph, "pfit", SFH_GetOutputForExecutor(args.prepareFit, exd.graph, opShort))
+		WAVE/WAVE fitResult = SFH_AddVariableToStorageByFormula(exd.graph, "ivscc_apfrequency_fit", fitFormula, opShort)
+		if(!WaveExists(fitRange))
 			args.prepareFit[%RANGE] = $""
-		else
-			SFH_AddVariableToStorage(exd.graph, "pfit", SFH_GetOutputForExecutor(args.prepareFit, exd.graph, opShort))
-			WAVE/WAVE fitResult = SFH_AddVariableToStorageByFormula(exd.graph, "ivscc_apfrequency_fit", fitFormula, opShort)
 		endif
 	endif
 
