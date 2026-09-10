@@ -97,13 +97,26 @@ Function ID_AskUserForSettings(variable mode, string title, WAVE data, WAVE mock
 	if(ROVar(GetInteractiveMode()))
 		PauseForUser $win
 	else
-		if(IsTextWave(mock))
-			WAVE/T dataTXT = data
-			WAVE/T mockTXT = mock
+		if(mode == ID_HEADSTAGE_SETTINGS || mode == ID_KVPAIRS_SETTINGS)
+			for(i = 0; i < numEntries; i += 1)
+				ctrl = ID_GetControl(mode, i)
+				if(IsControlDisabled(win, ctrl))
+					continue
+				endif
 
-			dataTXT = mockTXT
+				if(IsNumericWave(mock))
+					PGC_SetAndActivateControl(win, ctrl, val = mock[i])
+				else
+					WAVE/T mockTXT = mock
+					PGC_SetAndActivateControl(win, ctrl, str = mockTXT[i])
+				endif
+			endfor
 		else
-			data = mock
+			for(i = 0; i < numEntries; i += 1)
+				if(mock[i] == 1)
+					PGC_SetAndActivateControl(win, "popup0", str = GetDimlabel(mock, ROWS, i))
+				endif
+			endfor
 		endif
 
 		PGC_SetAndActivateControl(win, "button_continue")
