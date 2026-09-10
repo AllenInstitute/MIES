@@ -30,7 +30,7 @@
 Function ID_AskUserForSettings(variable mode, string title, WAVE data, WAVE mock)
 
 	string win, ctrl, ctrlTitle
-	variable i, state_var, numEntries
+	variable i, numEntries
 
 	numEntries = DimSize(data, ROWS)
 
@@ -106,12 +106,10 @@ Function ID_AskUserForSettings(variable mode, string title, WAVE data, WAVE mock
 		PGC_SetAndActivateControl(win, "button_continue")
 	endif
 
-	NVAR/Z/SDFR=dfr state
-	ASSERT(NVAR_Exists(state), "Missing state variable")
-	state_var = state
-	KillVariables state
+	NVAR state = $GetInputDialogState(dfr)
+	ASSERT(IsFinite(state), "Missing state variable")
 
-	return state_var
+	return state
 End
 
 static Function ID_SetTitle(string win, string title)
@@ -161,14 +159,15 @@ Function ID_ButtonProc(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			DFREF dfr = ID_GetFolder(ba.win)
+			DFREF dfr   = ID_GetFolder(ba.win)
+			NVAR  state = $GetInputDialogState(dfr)
 
 			strswitch(ba.ctrlName)
 				case "button_continue":
-					variable/G dfr:state = 0
+					state = 0
 					break
 				case "button_cancel":
-					variable/G dfr:state = 1
+					state = 1
 					break
 				default:
 					FATAL_ERROR("Unknown control")
