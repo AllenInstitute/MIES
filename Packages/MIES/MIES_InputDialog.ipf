@@ -32,6 +32,8 @@ Function ID_AskUserForSettings(variable mode, string title, WAVE data, WAVE mock
 	string win, ctrl, ctrlTitle
 	variable i, numEntries
 
+	PerformSubsystemEntry()
+
 	numEntries = DimSize(data, ROWS)
 
 	ASSERT(IsGlobalWave(data), "Can only work with permanent waves")
