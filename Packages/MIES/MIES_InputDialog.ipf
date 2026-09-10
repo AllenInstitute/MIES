@@ -52,7 +52,7 @@ Function ID_AskUserForSettings(variable mode, string title, WAVE data, WAVE mock
 	endif
 
 	win = GetCurrentWindow()
-	DFREF dfr = GetWavesDataFolderDFR(data)
+	DFREF dfr = GetUniqueTempPath()
 	SetWindow $win, userdata(folder)=GetDataFolder(1, dfr)
 	SetWindow $win, userdata(wave)=GetWavesDataFolder(data, 2)
 
