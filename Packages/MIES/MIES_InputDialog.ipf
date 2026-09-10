@@ -39,6 +39,7 @@ Function ID_AskUserForSettings(variable mode, string title, WAVE data, WAVE mock
 	ASSERT(IsGlobalWave(data), "Can only work with permanent waves")
 	ASSERT(EqualWaves(data, mock, EQWAVES_DATATYPE + EQWAVES_DIMSIZE), "Mismatched types or dimension sizes")
 	ASSERT(numEntries > 0, "Empty wave")
+	ASSERT(GetWaveDimensionality(data) == ROWS, "Expected a 1D wave")
 
 	if(mode == ID_HEADSTAGE_SETTINGS)
 		ASSERT(IsFloatingPointWave(data), "Expected a floating point wave for data")
