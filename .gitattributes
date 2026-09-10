@@ -28,22 +28,23 @@ LICENSE whitespace=cr-at-eol
 *.awk eol=lf
 *.json eol=lf
 
-.git*                   export-ignore
-.pre-commit-config.yaml export-ignore
-*.sh                    export-ignore
-tools/*                 export-ignore
-tools/uv.exe            -export-ignore
-Packages/*/tools        -export-ignore
-Packages/tests          export-ignore
-Packages/Sutter         export-ignore
-.mailmap                export-ignore
-CODEOWNERS              export-ignore
-ctags.cnf               export-ignore
-.editorconfig           export-ignore
-Packages/Artwork        export-ignore
-XOPs-MacOSX-64bit       export-ignore
-CLAUDE.md               export-ignore
-.claude                 export-ignore
+.git*                             export-ignore
+.pre-commit-config.yaml           export-ignore
+*.sh                              export-ignore
+tools/*                           export-ignore
+tools/uv.exe                      -export-ignore
+tools/lims-query/requirements.txt -export-ignore
+Packages/*/tools                  -export-ignore
+Packages/tests                    export-ignore
+Packages/Sutter                   export-ignore
+.mailmap                          export-ignore
+CODEOWNERS                        export-ignore
+ctags.cnf                         export-ignore
+.editorconfig                     export-ignore
+Packages/Artwork                  export-ignore
+XOPs-MacOSX-64bit                 export-ignore
+CLAUDE.md                         export-ignore
+.claude                           export-ignore
 
 *.dot !diff
 
