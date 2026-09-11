@@ -20,7 +20,7 @@ Window AnalysisBrowser() : Panel
 	ListBox list_experiment_contents, userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	ListBox list_experiment_contents, mode=9
 	ListBox list_experiment_contents, widths={17, 250, 52, 15, 104, 54, 46, 77, 153, 58, 47, 43, 144, 44, 7}
-	ListBox list_experiment_contents, userColumnResize=1
+	ListBox list_experiment_contents, userColumnResize=1, special={4, 0, 0}
 	Button button_select_same_stim_sets, pos={10, 262}, size={100, 30}, proc=AB_ButtonProc_SelectStimSets
 	Button button_select_same_stim_sets, title="Select same\r stim sets sweeps"
 	Button button_select_same_stim_sets, help={"Starting from one selected sweep, select all other sweeps which were acquired with the same stimset"}
