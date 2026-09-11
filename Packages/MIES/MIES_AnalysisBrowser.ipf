@@ -2726,6 +2726,11 @@ static Function AB_AddExperimentEntries(string win, WAVE/T entries, WAVE/Z/T tag
 			endif
 			if(GetCheckBoxState(win, "check_load_nwb"))
 				WAVE/Z/T nwbs = GetAllFilesRecursivelyFromPath(symbPath, regex = "(?i)\.nwb$")
+
+				if(WaveExists(nwbs))
+					WAVE/Z/T nwbs_clean = GrepTextWave(nwbs, "(?i)_spikes\.nwb$", invert = 1)
+					WAVE/Z/T nwbs       = nwbs_clean
+				endif
 			endif
 			KillPath/Z $symbPath
 
