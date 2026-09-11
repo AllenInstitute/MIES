@@ -81,6 +81,82 @@ Experiments with tag "a" or "a,b" are unselected.
 Tags assigned here can be used to filter sweeps loaded into a SweepBrowser via the `seltag` SweepFormula
 operation, see :ref:`SweepFormula`.
 
+Paste Notebook
+------------
+
+The paste notebook allows to quickly input files/folders/cellnames to load NWBs/PXPs from.
+
+The expected input format consists of labels and input.
+
+The following minimal example defines that the file ``data.nwb`` in the folder ``c:\myfiles`` should be loaded.
+
+.. code:: text
+
+  file:
+   c:\folderA\data.nwb
+
+The available labels are ``file``, ``folder`` (can also be an UNC path), ``cellname`` or ``tag``.
+
+Alternatively if one would want to load all files one could do
+
+.. code:: text
+
+  folder:
+  c:\folderA
+
+Multiple inputs can be separated with newlines
+
+.. code:: text
+
+  folder:
+  c:\folderA
+  z:\folderB
+  \\server\share\path
+
+and UNC paths are also supported.
+
+When using Igor Pro 10 or later and access to the Allen Institute for Brain Science Lab Information System (LIMS) is available
+one can also query files directly via
+
+.. code:: text
+
+  cellname:
+  cell1
+  cell4
+
+The cell names are used as input to query LIMS which returns UNC paths which are then loaded as folders.
+
+Assigning tags to files can be done via
+
+.. code:: text
+
+  tag:
+  tagA
+  tagB
+
+  cellname:
+  cell1
+  cell4
+
+which would set the tags ``tabA,tabB`` to all files from ``cell1`` and ``cell4``.
+
+The tags are valid until new tags are set, which then completely override the old tags.
+
+It is also possible to set the tags per ``file``/``folder``/``cellname`` via
+
+.. code:: text
+
+  tag:
+  tagA
+  tagB
+
+  cellname:
+  cell1 tagC tagD
+  cell4
+
+the tags need to be separated by tabs ``\t`` from the inputs and other tags. Here ``cell1`` has ``tagC`` and
+``tagD`` while ``cell4`` has ``tagA`` and ``tagB`` as before.
+
 Known Limitations
 -----------------
 
