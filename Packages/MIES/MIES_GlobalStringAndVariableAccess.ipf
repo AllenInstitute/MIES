@@ -878,3 +878,8 @@ Function/S GetReplayRefDevice()
 End
 
 #endif // REPLAY_DATA
+
+Function/S GetInputDialogState(DFREF dfr)
+
+	return GetNVARAsString(dfr, "state", initialValue = NaN)
+End
