@@ -186,7 +186,9 @@ Function/WAVE SFOS_OperationSelect(STRUCT SF_ExecutionData &exd)
 				break
 			case SF_DATATYPE_SELECTTAG:
 				if(!WaveExists(filter.tags))
-					WAVE/T filter.tags = arg
+					// seltag returns a text wave wrapped in a single dataset
+					WAVE/WAVE argWave     = arg
+					WAVE/T    filter.tags = argWave[0]
 					Sort/A filter.tags, filter.tags
 				else
 					SFH_FATAL_ERROR("select allows only a single " + SF_OP_SELECTTAG + " argument.")
@@ -578,16 +580,22 @@ End
 
 /// `seltag([tag1, tag2, ...])`
 ///
-/// returns a text wave with single tags as elements
+/// returns a single dataset with a text wave with single tags as elements, the dataset has the type SF_DATATYPE_SELECTTAG
 Function/WAVE SFOS_OperationSelectTag(STRUCT SF_ExecutionData &exd)
 
-	SFH_CheckArgumentCount(exd, SF_OP_SELECTTAG, 1, maxArgs = 1)
+	string opShort = SF_OP_SELECTTAG
+
+	SFH_CheckArgumentCount(exd, opShort, 0, maxArgs = 1)
 
 	WAVE/T tags = SFH_GetArgumentAsWave(exd, SF_OP_SELECTTAG, 0, singleResult = 1, expectedMajorType = IGOR_TYPE_TEXT_WAVE, copy = 1)
 	tags[] = SelectString(IsEmpty(tags[p]), CleanupName(tags[p], 0), "")
 	SFH_ASSERT(!SearchForDuplicates(tags), "seltag tags contain duplicate tag(s).")
 
-	return SFH_GetOutputForExecutorSingle(tags, exd.graph, SF_OP_SELECTTAG, discardOpStack = 1, dataType = SF_DATATYPE_SELECTTAG)
+	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 1)
+	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_SELECTTAG)
+	output[0] = tags
+
+	return SFH_GetOutputForExecutorSingle(output, exd.graph, opShort, discardOpStack = 1, dataType = SF_DATATYPE_SELECTTAG)
 End
 
 static Function SFOS_InitSelectFilterUninitalized(STRUCT SF_SelectParameters &s)
@@ -902,7 +910,7 @@ static Function/WAVE SFOS_GetSelectData(string graph, STRUCT SF_SelectParameters
 						for(l = 0; l < numTraces; l += 1)
 
 							clampCode = SFOS_MapClampModeToSelectCM(sweepPropertiesDisplayed[l][SWEEPPROP_CLAMPMODE])
-							if(IsSweepBrowser)
+							if(isSweepBrowser)
 								mapIndex = selectDisplayed[l][dimPosSweepMapIndex]
 								tags     = sweepMap[mapIndex][%Tags]
 							endif
@@ -1331,7 +1339,7 @@ static Function/WAVE SFOS_GetSweepMapIndicesFromCol(WAVE/T sweepMap, string colL
 
 	ASSERT(!IsEmpty(wildCardPattern), "Need a valid wildcard pattern")
 	mapSize = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
-	return FindIndizes(sweepMap, colLabel = colLabel, endRow = mapSize, str = wildCardPattern, prop = PROP_WILDCARD)
+	return FindIndizes(sweepMap, colLabel = colLabel, endRow = mapSize - 1, str = wildCardPattern, prop = PROP_WILDCARD)
 End
 
 /// @brief Return the matching indices of sweepMap, if expName or device is an emtpy string then it is ignored
@@ -1341,18 +1349,18 @@ static Function/WAVE SFOS_GetSweepMapIndices(WAVE/T sweepMap, variable sweepNo, 
 	string   tagList
 
 	mapSize = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
-	WAVE/Z sweepIndices = FindIndizes(sweepMap, endRow = mapSize, colLabel = "Sweep", var = sweepNo)
+	WAVE/Z sweepIndices = FindIndizes(sweepMap, endRow = mapSize - 1, colLabel = "Sweep", var = sweepNo)
 	if(!WaveExists(sweepIndices))
 		return $""
 	endif
 	if(!IsEmpty(expName))
-		WAVE/Z/D expIndices = FindIndizes(sweepMap, endRow = mapSize, colLabel = "FileName", str = expName)
+		WAVE/Z/D expIndices = FindIndizes(sweepMap, endRow = mapSize - 1, colLabel = "FileName", str = expName)
 		if(!WaveExists(expIndices))
 			return $""
 		endif
 	endif
 	if(!IsEmpty(device))
-		WAVE/Z/D devIndices = FindIndizes(sweepMap, endRow = mapSize, colLabel = "Device", str = device)
+		WAVE/Z/D devIndices = FindIndizes(sweepMap, endRow = mapSize - 1, colLabel = "Device", str = device)
 		if(!WaveExists(devIndices))
 			return $""
 		endif
@@ -1362,7 +1370,7 @@ static Function/WAVE SFOS_GetSweepMapIndices(WAVE/T sweepMap, variable sweepNo, 
 		if(!CmpStr(tagList, AB_TAG_SEPARATOR))
 			tagList = ""
 		endif
-		WAVE/Z/D tagIndices = FindIndizes(sweepMap, endRow = mapSize, colLabel = "Tags", str = tagList)
+		WAVE/Z/D tagIndices = FindIndizes(sweepMap, endRow = mapSize - 1, colLabel = "Tags", str = tagList)
 		if(!WaveExists(tagIndices))
 			return $""
 		endif

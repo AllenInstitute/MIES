@@ -376,6 +376,10 @@ Function SFH_PushAssertDataFrame()
 		WAVE/T outerFrame = assertDataStack[numFrames - 1]
 		if(str2numSafe(outerFrame[%STEP]) != SF_STEP_OUTSIDE)
 			outerFrame[%LOCMSG] = SFH_GetAssertLocationMessageForFrame(outerFrame)
+			if(str2numSafe(outerFrame[%STEP]) == SF_STEP_EXECUTOR)
+				// Snapshot the live JSON path tracker for this frame
+				outerFrame[%JSONPATH] = ROStr(GetSweepFormulaJSONPathTracker())
+			endif
 		endif
 	endif
 
@@ -416,6 +420,12 @@ Function SFH_PopAssertDataFrame()
 	// rather than reusing this stale, first-call-site message.
 	WAVE/T resumedFrame = assertDataStack[numFrames - 2]
 	resumedFrame[%LOCMSG] = ""
+
+	if(str2numSafe(resumedFrame[%STEP]) == SF_STEP_EXECUTOR)
+		// Restore the live JSON path tracker to this frame's own position
+		SVAR jsonPathTracker = $GetSweepFormulaJSONPathTracker()
+		jsonPathTracker = resumedFrame[%JSONPATH]
+	endif
 End
 
 /// @brief Return the outermost (bottom-of-stack, index 0) SF assert-data frame.
@@ -2359,6 +2369,45 @@ Function SFH_AddVariableToStorage(string graph, string name, WAVE result)
 	varStorage[idx] = result
 End
 
+/// @brief Begin a scoped, temporary mutation of the graph's SweepFormula variable storage
+///
+/// Returns a backup of the storage's current state.
+///
+/// @param graph SweepBrowser graph
+Function/WAVE SFH_BeginScopedVarStorage(string graph)
+
+	WAVE/WAVE varStorage = GetSFVarStorage(graph)
+	Duplicate/FREE varStorage, varBackup
+
+	return varBackup
+End
+
+/// @brief End a scoped mutation of the graph's SweepFormula variable storage, begun via
+///        #SFH_BeginScopedVarStorage
+///
+/// Restores the storage to exactly the state captured by #SFH_BeginScopedVarStorage, discarding
+/// everything the scope added or changed, and then adds back exactly the given name/value pairs.
+///
+/// @param graph     SweepBrowser graph
+/// @param varBackup backup returned by #SFH_BeginScopedVarStorage
+/// @param names     [optional, default {}] SF variable names to add/overwrite after the restore
+/// @param values    [optional, default {}] values for each entry in names, same size as names
+Function SFH_EndScopedVarStorage(string graph, WAVE varBackup, [WAVE/T names, WAVE/WAVE values])
+
+	variable i, numNames
+
+	ASSERT(ParamIsDefault(names) == ParamIsDefault(values), "names and values must be given together")
+	numNames = ParamIsDefault(names) ? 0 : DimSize(names, ROWS)
+	ASSERT(ParamIsDefault(values) || DimSize(values, ROWS) == numNames, "names and values must have the same size")
+
+	WAVE/WAVE varStorage = GetSFVarStorage(graph)
+	Duplicate/O varBackup, varStorage
+
+	for(i = 0; i < numNames; i += 1)
+		SFH_AddVariableToStorage(graph, names[i], values[i])
+	endfor
+End
+
 /// @brief Copy plot meta data JSON properties from a source to a target wave
 Function SFH_CopyPlotMetaData(WAVE dest, WAVE src)
 
@@ -2379,7 +2428,18 @@ Function SFH_CopyPlotMetaData(WAVE dest, WAVE src)
 	JWN_SetNumberInWaveNote(dest, SF_META_LINESTYLE, JWN_GetNumberFromWaveNote(src, SF_META_LINESTYLE))
 End
 
+/// @brief Adds a variable to the variable storage from a given formula. If the variable already exists it is overwritten.
+Function/WAVE SFH_AddVariableToStorageByFormula(string graph, string name, string formula, string opShort)
+
+	WAVE/WAVE result = SFE_ExecuteFormula(formula, graph, preProcess = 0, newFrame = 1)
+	SFH_AddVariableToStorage(graph, name, SFH_GetOutputForExecutor(result, graph, opShort))
+
+	return result
+End
+
 Function SFH_SetTraceStyleForFit(WAVE fitData, string errorbarStyle)
+
+	variable transparency = 64
 
 	JWN_SetWaveInWaveNote(fitData, SF_META_TRACECOLOR, {0, 0, 0}) // black
 	JWN_SetNumberInWaveNote(fitData, SF_META_TRACE_MODE, TRACE_DISPLAY_MODE_LINES)
@@ -2390,15 +2450,183 @@ Function SFH_SetTraceStyleForFit(WAVE fitData, string errorbarStyle)
 			break
 		case SF_PREPAREFIT_ERRORBARSTYLE_SHADED:
 			wErrorbarStyle[%TYPE]         = SF_ERRORBARSTYLE_SHADED
-			wErrorbarStyle[%FILLMODE]     = 5
+			wErrorbarStyle[%FILLMODE]     = 5 // solid fill 25% gray, background color not relevant
 			wErrorbarStyle[%FGCOLOR_R]    = 192 << 8
-			wErrorbarStyle[%BGCOLOR_R]    = 192 << 8
+			wErrorbarStyle[%FGCOLOR_A]    = transparency << 8
 			wErrorbarStyle[%NEGFILLMODE]  = 5
 			wErrorbarStyle[%NEGFGCOLOR_B] = 192 << 8
-			wErrorbarStyle[%NEGBGCOLOR_B] = 192 << 8
+			wErrorbarStyle[%NEGFGCOLOR_A] = transparency << 8
 			break
 		default:
 			FATAL_ERROR("Unhandled errorbar style")
 	endswitch
 	JWN_SetWaveInWaveNote(fitData, SF_META_ERRORBARSTYLE, wErrorbarStyle)
+End
+
+/// @brief simple helper to append X,Y trace data to a plotWITH part of a full plotting specification
+///        (plotWITH is a sub wave of plotAND)
+Function SFH_AppendPlotSpecificationWith(WAVE/WAVE plotWITH, WAVE wvY, WAVE/Z wvX)
+
+	variable index
+
+	index = GetNumberFromWaveNote(plotWITH, NOTE_INDEX)
+	EnsureLargeEnoughWave(plotWITH, indexShouldExist = index)
+
+	plotWITH[index][%FORMULAY] = wvY
+	plotWITH[index][%FORMULAX] = wvX
+
+	SetNumberInWaveNote(plotWITH, NOTE_INDEX, index + 1)
+End
+
+Function [variable globXMin, variable globXMax] SFH_GetGlobalXAxisRange(WAVE/WAVE plotAND)
+
+	variable i, j, numAND, numWITH
+	variable dataMin, dataMax
+	variable xMin = Inf
+	variable xMax = -Inf
+
+	numAND = DimSize(plotAND, ROWS)
+	for(i = 0; i < numAND; i += 1)
+		WAVE/WAVE plotWITH = RemoveUnusedRows(plotAND[i])
+		numWITH = DimSize(plotWITH, ROWS)
+		for(j = 0; j < numWITH; j += 1)
+			// plotWITH's FORMULAX/FORMULAY entries are always datasets (or non-existent)
+			WAVE/Z/WAVE wvX = plotWITH[j][%FORMULAX]
+			// Same priority order as evaluation in formula plotter
+			if(WaveExists(wvX))
+				[dataMin, dataMax] = SFH_RecursiveXLimitsFromDataRange(wvX)
+				xMin               = min(xMin, dataMin)
+				xMax               = max(xMax, dataMax)
+				continue
+			endif
+
+			WAVE/Z/WAVE wvY = plotWITH[j][%FORMULAY]
+			if(WaveExists(wvY))
+				WAVE/Z wvXFromMeta = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_XVALUES)
+			else
+				WAVE/Z wvXFromMeta = $""
+			endif
+			if(WaveExists(wvXFromMeta))
+				[dataMin, dataMax] = SFH_RecursiveXLimitsFromDataRange(wvXFromMeta)
+				xMin               = min(xMin, dataMin)
+				xMax               = max(xMax, dataMax)
+				continue
+			endif
+
+			if(WaveExists(wvY))
+				[dataMin, dataMax] = SFH_RecursiveXLimitsFromScaleRange(wvY)
+				xMin               = min(xMin, dataMin)
+				xMax               = max(xMax, dataMax)
+			endif
+		endfor
+	endfor
+	if(xMin == Inf && xMax == -Inf)
+		return [NaN, NaN]
+	endif
+
+	return [xMin, xMax]
+End
+
+/// @brief Sets SF_META_XAXISRANGE on all FORMULAY datasets of plotAND so that the
+///        SweepFormula plotter applies the same fixed x-axis range [xMin, xMax] to
+///        all of its plots
+///
+/// @sa SFH_GetGlobalXAxisRange
+Function SFH_SetGlobalXAxisRange(WAVE/WAVE plotAND, variable xMin, variable xMax)
+
+	variable i, j, numAND, numWITH
+
+	if(IsNaN(xMin) || IsNaN(xMax))
+		return NaN
+	endif
+
+	numAND = DimSize(plotAND, ROWS)
+	for(i = 0; i < numAND; i += 1)
+		WAVE/WAVE plotWITH = RemoveUnusedRows(plotAND[i])
+		numWITH = DimSize(plotWITH, ROWS)
+		for(j = 0; j < numWITH; j += 1)
+			WAVE/WAVE wvY = plotWITH[j][%FORMULAY]
+			JWN_SetWaveInWaveNote(wvY, SF_META_XAXISRANGE, {xMin, xMax})
+		endfor
+	endfor
+End
+
+/// @brief Recursively determine [dataMin, dataMax] spanning the numeric data range of wvX
+static Function [variable dataMin, variable dataMax] SFH_RecursiveXLimitsFromDataRange(WAVE/Z wvX)
+
+	variable elemMin, elemMax
+	dataMin = Inf
+	dataMax = -Inf
+
+	if(!WaveExists(wvX))
+		return [dataMin, dataMax]
+	endif
+
+	if(IsWaveRefWave(wvX))
+		for(WAVE/Z elem : wvX)
+			[elemMin, elemMax] = SFH_RecursiveXLimitsFromDataRange(elem)
+			dataMin            = min(dataMin, elemMin)
+			dataMax            = max(dataMax, elemMax)
+		endfor
+		return [dataMin, dataMax]
+	endif
+
+	if(IsNumericWave(wvX) && DimSize(wvX, ROWS))
+		dataMin = WaveMin(wvX)
+		dataMax = WaveMax(wvX)
+	endif
+
+	return [dataMin, dataMax]
+End
+
+/// @brief Recursively determine [dataMin, dataMax] spanning the native x-axis scaling range of wv
+static Function [variable dataMin, variable dataMax] SFH_RecursiveXLimitsFromScaleRange(WAVE/Z wv)
+
+	variable elemMin, elemMax
+	dataMin = Inf
+	dataMax = -Inf
+
+	if(!WaveExists(wv))
+		return [dataMin, dataMax]
+	endif
+
+	if(IsWaveRefWave(wv))
+		for(WAVE/Z elem : wv)
+			[elemMin, elemMax] = SFH_RecursiveXLimitsFromScaleRange(elem)
+			dataMin            = min(dataMin, elemMin)
+			dataMax            = max(dataMax, elemMax)
+		endfor
+		return [dataMin, dataMax]
+	endif
+
+	if(IsNumericWave(wv) && DimSize(wv, ROWS))
+		[dataMin, dataMax] = MinMax(IndexToScale(wv, 0, ROWS), IndexToScale(wv, Inf, ROWS))
+	endif
+
+	return [dataMin, dataMax]
+End
+
+static Function/WAVE SFH_CreatePlotSpecificationWITH(variable numWITH)
+
+	ASSERT(IsNullOrPositiveAndInteger(numWITH), "numWITH must be zero or greater")
+
+	Make/FREE/WAVE/N=(numWITH, 2) plotWITH
+	SetDimlabel COLS, 0, FORMULAX, plotWITH
+	SetDimlabel COLS, 1, FORMULAY, plotWITH
+	SetNumberInWaveNote(plotWITH, NOTE_INDEX, numWITH)
+
+	return plotWITH
+End
+
+/// @brief Creates a plot specification wave where each AND part gets the same number of WITH plots
+Function/WAVE SFH_CreatePlotSpecificationAND(string graph, string opShort, variable numAND, variable numWITH)
+
+	ASSERT(IsGreaterNullAndInteger(numAND), "numAND must be greater than zero")
+	WAVE/WAVE plotAND = SFH_CreateSFRefWave(graph, opShort, numAND)
+
+	plotAND[] = SFH_CreatePlotSpecificationWITH(numWITH)
+
+	JWN_SetNumberInWaveNote(plotAND, SF_META_PLOT, 1)
+
+	return plotAND
 End

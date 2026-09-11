@@ -94,22 +94,28 @@ End
 /// @param allowEmptyCode [optional, default 0] when set then the check for empty formula code is disabled, such that
 ///                       input that contains only variable expressions can be evaluated
 /// @param newFrame       [optional, default 0] when set then execution runs in a new assert data frame
-Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode, [variable allowEmptyCode, variable newFrame])
+/// @param keepVarStorage [optional, default 0] when set, existing entries in varStorage are preserved instead of
+///                       wiping it first; each assignment then overwrites its own name's existing entry if one is
+///                       already present, or is appended as a new one otherwise.
+Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode, [variable allowEmptyCode, variable newFrame, variable keepVarStorage])
 
 	STRUCT SF_ExecutionData exd
-	variable i, numAssignments, jsonId, srcLocId, line, offset
-	string code, sfWin, nbText
+	variable i, numAssignments, jsonId, srcLocId, line, offset, idx, size
+	string code, sfWin, nbText, varName
 
 	PerformSubsystemEntry()
 
 	allowEmptyCode = ParamisDefault(allowEmptyCode) ? 0 : !!allowEmptyCode
 	newFrame       = ParamisDefault(newFrame) ? 0 : !!newFrame
+	keepVarStorage = ParamIsDefault(keepVarStorage) ? 0 : !!keepVarStorage
 
 	exd.graph = graph
 
 	WAVE/WAVE varStorage = GetSFVarStorage(graph)
-	RemoveAllDimLabels(varStorage)
-	Redimension/N=(0, -1) varStorage
+	if(!keepVarStorage)
+		RemoveAllDimLabels(varStorage)
+		Redimension/N=(0, -1) varStorage
+	endif
 
 	[WAVE/T varAssignments, code] = SF_GetVariableAssignments(preProcCode)
 	if(!WaveExists(varAssignments))
@@ -123,7 +129,9 @@ Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode, [var
 	endif
 
 	numAssignments = DimSize(varAssignments, ROWS)
-	Redimension/N=(numAssignments) varStorage
+	if(!keepVarStorage)
+		Redimension/N=(numAssignments) varStorage
+	endif
 
 	for(i = 0; i < numAssignments; i += 1)
 		line   = str2num(varAssignments[i][%LINE])
@@ -134,8 +142,22 @@ Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode, [var
 		WAVE dataRef = SFE_FormulaExecutor(exd, srcLocId = srcLocId)
 		WAVE data    = SF_ResolveDataset(dataRef)
 		JWN_SetNumberInWaveNote(data, SF_VARIABLE_MARKER, 1)
-		varStorage[i] = dataRef
-		SetDimLabel ROWS, i, $varAssignments[i][%VARNAME], varStorage
+
+		varName = varAssignments[i][%VARNAME]
+		if(keepVarStorage)
+			idx = FindDimLabel(varStorage, ROWS, varName)
+			if(idx == -2)
+				size = DimSize(varStorage, ROWS)
+				Redimension/N=(size + 1) varStorage
+				idx = size
+				SetDimLabel ROWS, size, $varName, varStorage
+			endif
+		else
+			idx = i
+			SetDimLabel ROWS, i, $varName, varStorage
+		endif
+		varStorage[idx] = dataRef
+
 		JSON_Release(exd.jsonId)
 		JSON_Release(srcLocId)
 	endfor
@@ -659,6 +681,9 @@ Function/WAVE SFE_FormulaExecutor(STRUCT SF_ExecutionData &exd, [variable srcLoc
 			break
 		case SF_OP_TABLE:
 			WAVE out = SFO_OperationTable(exdop)
+			break
+		case SF_OP_IVSCCAPFREQUENCY:
+			WAVE out = SFO_OperationIVSCCApFrequency(exdop)
 			break
 		case SF_OP_PREPAREFIT:
 			WAVE out = SFO_OperationPrepareFit(exdop)

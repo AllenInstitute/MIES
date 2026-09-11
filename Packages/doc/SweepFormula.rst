@@ -2451,6 +2451,362 @@ Shows the last sweep data in a table
 
 Shows 1 and 2 in the first table, 4 in the second table and 3 in the plot window.
 
+ivscc_apfrequency
+"""""""""""""""""
+
+Introduction
+============
+
+A neuron's intrinsic excitability is commonly characterized by how its action potential firing rate
+depends on the amplitude of an injected step current -- the frequency-current (F-I) relationship, also
+called the neuron's input-output function. This relationship typically rises with increasing current and,
+in many cell types, saturates or declines again at higher currents (e.g. through strong spike-frequency
+adaptation or depolarization block). Its shape -- the current needed to reach a given firing rate, the
+maximal firing rate reached, and the current at which firing starts to decline again -- is a standard,
+quantitative way to characterize and compare the excitability of neurons between genotypes, treatments,
+cell types or other experimental conditions. `ivscc_apfrequency` automates deriving and comparing this F-I
+relationship from suprathreshold current step sweeps (matching the `LP_Rheo`/`supra` stimset naming
+convention of such a protocol, see "Details of the analysis" below) for one or more experiments.
+
+The operation `ivscc_apfrequency` analyzes the action potential frequency response to the injected step
+current for one or more experiments loaded in the sweep browser. For every relevant sweep it runs the
+`apfrequency` operation, pairs the result with the current step amplitude of that sweep, averages the
+per-sweep results into a single response curve, and optionally fits the averaged curve. The operation
+creates a collection of plot traces (per-experiment, concatenated, averaged and fitted) showing the
+result, and exposes the experiment list and fit result as sweepformula variables.
+
+Experiments can be split into one or more independent tag groups (see the `seltag` operation), so that
+e.g. experiments from different genotypes or treatment conditions are analyzed and plotted side by side,
+each with its own averaged/fitted trace and its own output variables. If no tag group is given explicitly
+then one tag group is created automatically for every unique combination of tags currently present on a
+sweep in the sweep browser (including a group for sweeps without any tag), and `ivscc_apfrequency` analyzes
+all of them in a single call.
+
+The call syntax depends on the chosen averaging mode:
+
+.. code-block:: bash
+
+   # averaging mode: bins
+   ivscc_apfrequency([seltag, showSingleExp, xaxisOffset, yaxisOffset, xAxisPercentage, yAxisPercentage, prepareFit, avgMode, binRange, binWidth, method, level, timeFreq, normalize, xAxisType])
+   # averaging mode: bins2
+   ivscc_apfrequency([seltag, showSingleExp, xaxisOffset, yaxisOffset, xAxisPercentage, yAxisPercentage, prepareFit, avgMode, method, level, timeFreq, normalize, xAxisType])
+
+All arguments are optional. Except for `seltag` (see below), arguments are positional: to set an argument,
+every argument to its left must also be given an explicit value; trailing arguments may be left out.
+
+Tag group selection
+====================
+
+.. parsed-literal::
+
+   ivscc_apfrequency([**seltag**, showSingleExp, xaxisOffset, yaxisOffset, xAxisPercentage, yAxisPercentage, prepareFit, avgMode, binRange, binWidth, method, level, timeFreq, normalize, xAxisType])
+   ivscc_apfrequency([**seltag**, showSingleExp, xaxisOffset, yaxisOffset, xAxisPercentage, yAxisPercentage, prepareFit, avgMode, method, level, timeFreq, normalize, xAxisType])
+
+seltag
+  Selects which experiments are analyzed, split into one or more tag groups. The argument is either a
+  single `seltag(...)` result or an array of `seltag(...)` results.
+
+  * A single `seltag(...)` result defines one tag group: only experiments whose assigned tags match it
+    exactly (see the `seltag` operation) are analyzed, all as a single group.
+  * An array of `seltag(...)` results (e.g. `[seltag(tag1), seltag([tag2, tag3])]`) defines one tag group
+    per array element. `ivscc_apfrequency` runs once for each of these groups, each with its own traces
+    and output variables.
+  * If omitted, one tag group is created automatically per unique tag combination currently assigned to a
+    sweep in the sweep browser, see "Introduction" above. Unlike the other arguments, `seltag` can be
+    omitted while still setting `showSingleExp` and later arguments: the first argument is checked for
+    whether it is a `seltag(...)` result (or an array of them); if it is not, `seltag` is treated as
+    omitted and that same first argument is read as `showSingleExp` instead.
+
+  A tag group without any matching experiment is silently skipped: no traces or variables are created for it.
+
+Display
+========
+
+.. parsed-literal::
+
+   ivscc_apfrequency([seltag, **showSingleExp**, xaxisOffset, yaxisOffset, **xAxisPercentage**, **yAxisPercentage**, prepareFit, avgMode, binRange, binWidth, method, level, timeFreq, normalize, xAxisType])
+   ivscc_apfrequency([seltag, **showSingleExp**, xaxisOffset, yaxisOffset, **xAxisPercentage**, **yAxisPercentage**, prepareFit, avgMode, method, level, timeFreq, normalize, xAxisType])
+
+showSingleExp
+  `on` or `off`. Selects whether the individual, per-experiment trace is added to the plot in addition to
+  the concatenated, averaged and fitted traces, see "Traces" below. Default is `on`.
+
+xAxisPercentage
+  Sets which percentage in x-direction of the full plot area is used by the plot. Default is `100`.
+
+yAxisPercentage
+  Sets which percentage in y-direction of the full plot area is used by the plot. Default is `100`.
+
+Value offsets
+=============
+
+.. parsed-literal::
+
+   ivscc_apfrequency([seltag, showSingleExp, **xaxisOffset**, **yaxisOffset**, xAxisPercentage, yAxisPercentage, prepareFit, avgMode, binRange, binWidth, method, level, timeFreq, normalize, xAxisType])
+   ivscc_apfrequency([seltag, showSingleExp, **xaxisOffset**, **yaxisOffset**, xAxisPercentage, yAxisPercentage, prepareFit, avgMode, method, level, timeFreq, normalize, xAxisType])
+
+xaxisOffset
+  Sets an offset for the x-values (current) from the apfrequency analysis that is applied to the result
+  from each selected experiment as well as to the averaged data. Default is `min`.
+
++-------------------+--------------------------------------------------------+
+| xaxisOffset       | description                                            |
++===================+========================================================+
+| `first`           | The subtracted offset is the first x-value (current)   |
++-------------------+--------------------------------------------------------+
+| `min`             | The subtracted offset is the minimum x-value (current) |
++-------------------+--------------------------------------------------------+
+| `max`             | The subtracted offset is the maximum x-value (current) |
++-------------------+--------------------------------------------------------+
+| `none`            | The x-values (current) are kept as is                  |
++-------------------+--------------------------------------------------------+
+
+  .. note::
+
+     With `avgMode` `bins2` (see below) `first` currently has the same effect as `none`: the averaged
+     x-values are not offset.
+
+yaxisOffset
+  Sets an offset for the y-values (apfrequency result) from the apfrequency analysis that is applied to
+  the result from each selected experiment as well as to the averaged data. Default is `min`.
+
++-------------------+-------------------------------------------------------------------+
+| yaxisOffset       | description                                                       |
++===================+===================================================================+
+| `first`           | The subtracted offset is the first y-value (apfrequency result)   |
++-------------------+-------------------------------------------------------------------+
+| `min`             | The subtracted offset is the minimum y-value (apfrequency result) |
++-------------------+-------------------------------------------------------------------+
+| `max`             | The subtracted offset is the maximum y-value (apfrequency result) |
++-------------------+-------------------------------------------------------------------+
+| `none`            | The y-values (apfrequency result) are kept as is                  |
++-------------------+-------------------------------------------------------------------+
+
+Fitting
+========
+
+.. parsed-literal::
+
+   ivscc_apfrequency([seltag, showSingleExp, xaxisOffset, yaxisOffset, xAxisPercentage, yAxisPercentage, **prepareFit**, avgMode, binRange, binWidth, method, level, timeFreq, normalize, xAxisType])
+   ivscc_apfrequency([seltag, showSingleExp, xaxisOffset, yaxisOffset, xAxisPercentage, yAxisPercentage, **prepareFit**, avgMode, method, level, timeFreq, normalize, xAxisType])
+
+prepareFit
+  A fitting specification created through the `preparefit` operation. It defines how the averaged results
+  are fitted, per tag group. The default is `preparefit()`, which disables the fit. Fitting only happens
+  for tag groups with more than one experiment, see "Details of the analysis" below.
+
+Averaging
+=========
+
+.. parsed-literal::
+
+   ivscc_apfrequency([seltag, showSingleExp, xaxisOffset, yaxisOffset, xAxisPercentage, yAxisPercentage, prepareFit, **avgMode**, **binRange**, **binWidth**, method, level, timeFreq, normalize, xAxisType])
+   ivscc_apfrequency([seltag, showSingleExp, xaxisOffset, yaxisOffset, xAxisPercentage, yAxisPercentage, prepareFit, **avgMode**, method, level, timeFreq, normalize, xAxisType])
+
+avgMode
+  Specifies the averaging mode that is applied to average the apfrequency results from the sweeps of the
+  input experiments, per tag group. The modes `bins` and `bins2` are allowed. Default is `bins`. See the
+  `avg` operation for the specifics of these modes.
+
+binRange, binWidth
+  When `avgMode` is `bins` these two arguments set the bin range (`binRange`, a two element array in the
+  form `[start, end]`) and the bin width (`binWidth`); the number of bins results automatically from the
+  given range and width. Both are optional: the default `binRange` is `[0, 1000]` and the default
+  `binWidth` is `100`. These two arguments do not exist when `avgMode` is `bins2`, see the call syntax
+  above.
+
+ApFrequency analysis
+====================
+
+.. parsed-literal::
+
+   ivscc_apfrequency([seltag, showSingleExp, xaxisOffset, yaxisOffset, xAxisPercentage, yAxisPercentage, prepareFit, avgMode, binRange, binWidth, **method**, **level**, **timeFreq**, **normalize**, **xAxisType**])
+   ivscc_apfrequency([seltag, showSingleExp, xaxisOffset, yaxisOffset, xAxisPercentage, yAxisPercentage, prepareFit, avgMode, **method**, **level**, **timeFreq**, **normalize**, **xAxisType**])
+
+method, level, timeFreq, normalize, xAxisType
+  These arguments configure the apfrequency analysis applied to every selected sweep and are the same as
+  for the `apfrequency` operation; their defaults are the same as well. The apfrequency method
+  `instantaneous pair` is not supported by `ivscc_apfrequency`.
+
+Details of the analysis
+========================
+
+For each tag group the experiments belonging to it are determined (see "Tag group selection" above), and
+for each of these experiments the sweeps with the following properties are selected, regardless of whether
+they are currently displayed:
+
+* the stimset name contains `LP_Rheo` or `supra`
+* the sweep passed the sweep quality check from the IVSCC analysis functions (`selivsccsweepqc(passed)`)
+
+For each experiment the apfrequency analysis is run on all selected sweeps on epoch `E1` with the
+apfrequency settings specified. The result of each sweep is paired with an x-value that is the maximum
+current (pA) output in the same epoch (`E1`). Per experiment the apfrequency and current results therefore
+yield multiple value pairs, one per selected sweep.
+
+The x-values (current) of each experiment are offset by the specified `xaxisOffset`, using only that
+experiment's own values. The y-values (apfrequency results) used for that experiment's own individual and
+concatenated traces (see "Traces" below) are offset the same way by `yaxisOffset`. This per-experiment
+offsetting has no effect on how experiments are averaged together, since it is an additive shift and the
+raw (not yet offset) apfrequency results together with the offset current values are what feeds the
+averaging step described next.
+
+Both averaging modes use each sweep's raw (not yet `yaxisOffset`-adjusted) apfrequency result together with
+that sweep's per-experiment `xaxisOffset`-adjusted current; see the `avg` operation for the precise,
+general binning mechanism behind each mode.
+
+In average mode `bins`:
+The current axis is divided into fixed-width bins covering `binRange` with the given `binWidth`; the
+number of bins is `ceil((binRange[1] - binRange[0]) / binWidth)`. Averaging into a bin happens in two
+stages: first, for each experiment individually, all of that experiment's own sweeps whose current falls
+into the bin are averaged together into one representative value for that experiment; second, the
+representative values of every experiment that has one for this bin are averaged together into the bin's
+final output. Each contributing experiment therefore has equal weight regardless of how many of its own
+sweeps landed in the bin. A bin
+that no experiment contributes to yields `NaN`. Since this bins the apfrequency results by current but does
+not itself produce an averaged current, the (per-experiment offset) currents are separately averaged the
+same way (with the same two stages), using the same bins, giving one averaged current value to pair with
+each averaged apfrequency value.
+
+In average mode `bins2`:
+No fixed bins are used. Instead, within each experiment its sweeps are sorted by their current, and sweeps
+at the same sorted position (e.g. the sweep with the lowest current of each experiment, then the sweep
+with the second-lowest, and so on) are averaged together across all experiments of the tag group; a
+position with a contribution from only a single experiment is dropped. Unlike `bins` mode, no separate
+averaging of the currents is needed: the averaging operation itself attaches an x-value to each averaged
+apfrequency value (the mean of the currents of the sweeps contributing to that position), which is
+extracted directly to obtain the averaged current.
+
+The averaged current is again offset by the `xaxisOffset` specification, and the averaged apfrequency
+result is offset by the `yaxisOffset` specification -- this second, global offsetting is what positions
+the averaged/fitted trace, independently of the per-experiment offsetting described above.
+
+The averaged trace's error bars (both x- and y-direction) display the standard error. This conversion from
+the averaging operation's own standard deviation is applied only to what is displayed, and only after a fit
+(see below) was already computed from the same averaged data, since `fit2` expects standard deviation, not
+standard error, for its weights.
+
+For each experiment the (per-experiment offset) current/frequency value pairs are sorted by current. If an
+experiment has multiple results with the same current (e.g. from different sweeps) the frequencies are
+averaged. Only the last (highest-current) segment of this sequence is inspected: if the frequency there is
+lower than at the second-highest current -- i.e. firing rate is still declining at the highest tested
+current, the current/frequency pair at that
+experiment's overall maximal firing rate (which can occur well before the highest current) is recorded as
+its inflection point. If the frequency at the highest current is not lower than at the second-highest one,
+no inflection point is recorded for that experiment, even if firing rate happened to decrease somewhere
+in the middle of the sequence before recovering. These per-experiment inflection points are additionally
+averaged into a single, tag-group-wide inflection point, labeled the "Mean Maximal Firing Point" in the
+trace legend (see "Traces" below).
+
+When a valid fitting specification was given through `prepareFit` and the tag group has more than one
+experiment, the averaged apfrequency result is fitted with `fit2` (the averaged current as x-values). If
+`prepareFit` did not specify a fit range explicitly, the range is determined automatically: it starts at
+the first current with a non-zero averaged frequency and ends at the current of the maximum averaged
+frequency. The x- and y-errors from the averaging are used in the fit as weights, so with x-errors an
+orthogonal distance regression is applied; `fit2` requires these weights to be the standard deviation, not
+the standard error described above -- which is why that conversion to standard error is deliberately
+applied only afterwards, to the displayed averaged trace, and does not affect the fit. The fit result's own
+error bars, if any, instead follow whatever `errorbarType` was configured through `prepareFit`, see the
+`preparefit` operation. The fit result is plotted as its own trace.
+
+Traces
+======
+
+The following traces are created for each tag group. All traces of one tag group share the same color,
+picked from a cycling palette of alternative colors by the tag group's index (wrapping after every 8 tag
+groups):
+
+* If `showSingleExp` is `on`: for each experiment, the apfrequency result offset by `yaxisOffset` vs. the
+  current offset by `xaxisOffset`. These traces use the tag group's color at 20% opacity and use lines and
+  filled circles as markers.
+* The current/frequency pairs of all experiments of the tag group, concatenated into a single trace.
+* If the tag group has more than one experiment: the offset averaged apfrequency result vs. the offset
+  averaged current, with error bars showing the standard error in both directions (see "Details of the
+  analysis" above).
+* If a fit was performed: the fit result, plotted vs. the same averaged current values, with error bars
+  following the `errorbarType` configured through `prepareFit` instead of the standard error used above.
+* The per-experiment inflection points (current/frequency pairs where the firing rate rolls over), one
+  filled circle marker per experiment, in the tag group's color.
+* The tag-group-wide averaged inflection point (see "Details of the analysis" above) as a single point,
+  using the same filled circle marker and color as the previous trace, labeled "Mean Maximal Firing Point".
+
+Variables
+=========
+
+The operation `ivscc_apfrequency` creates variables in the sweepformula variable storage, one set per tag
+group. These variables are available after the `ivscc_apfrequency` call (if a variable with that name
+existed previously it is overwritten). The variable names are suffixed with the tag group's own tags (joined
+and sanitized into a valid variable name), or with `untagged` for the group of sweeps without any tag.
+
++--------------------------------------------+------------------------------------------------------------------------------------------------------------------------+
+| variable                                   | description                                                                                                            |
++============================================+========================================================================================================================+
+| `ivscc_apfrequency_explist_<tags>`         | A string array containing the experiment list `ivscc_apfrequency` worked on for this tag group                         |
++--------------------------------------------+------------------------------------------------------------------------------------------------------------------------+
+| `ivscc_apfrequency_fit_<tags>`             | The result of the fit for this tag group, only created for tag groups with more than one experiment. The result        |
+|                                            | can be used e.g. with `getmeta` to retrieve more information from the fit. See also operation `fit2`. Note: Even if no |
+|                                            | fit is displayed as trace that can happen if the fit resulted in an error, meta information can still be retrieved.    |
++--------------------------------------------+------------------------------------------------------------------------------------------------------------------------+
+
+Examples
+========
+
+.. code-block:: bash
+
+   # default tag groups (one per unique tag combination in the sweep browser), individual traces shown,
+   # default apfrequency and averaging settings (mode bins), no fit
+   ivscc_apfrequency()
+
+   # seltag omitted (still default tag groups): the first argument is read as showSingleExp instead,
+   # individual traces shown, averaging mode: bins, 6 bins with 100 pA each, default apfrequency
+   # settings, fit with natural logarithm
+   ivscc_apfrequency(on, none, none, 100, 100, preparefit(lognormal), bins, [0, 600], 100)
+
+   # a single explicit tag group, averaging mode: bins2, number of bins determined by the averaging
+   # operation, default apfrequency settings, fit with logarithm base 10
+   ivscc_apfrequency(seltag(control), on, none, none, 100, 100, preparefit(log), bins2)
+
+   # two explicit tag groups plotted side by side, individual traces hidden, apfrequency and current
+   # results offset to zero (min subtracted), averaging mode: bins2, fit with exponential
+   ivscc_apfrequency([seltag(mutant), seltag(control)], off, min, min, 100, 100, preparefit(exp), bins2)
+
+   # three explicit tag groups plotted side by side (control, mutant, and mutant experiments that are
+   # additionally tagged treated -- the last group matches only experiments tagged with both mutant and
+   # treated, not either one alone), individual traces shown, averaging mode: bins2, fit with a sigmoid
+   ivscc_apfrequency([seltag(control), seltag(mutant), seltag([mutant, treated])], on, min, min, 100, 100, preparefit(sigmoid), bins2)
+
+   # fit configuration with an explicit fit range (400 to 800 pA current) stored in a "pfit" variable and
+   # reused via $pfit; without an explicit range each tag group's fit range would otherwise be determined
+   # automatically (see "Details of the analysis" above). The same range then applies to every tag group.
+   pfit = preparefit(line, 200, conf, normal, 85, [0, 0], OO, [400, 800])
+   ivscc_apfrequency([seltag(mutant), seltag(control)], on, min, min, 100, 100, $pfit, bins2)
+
+   # retrieve the fit meta data for one specific tag group and show it in a table, demonstrating how the
+   # tag group's own tags (given through seltag) become the "ivscc_apfrequency_fit_<tags>" variable's
+   # suffix: the tag group [mutant, treated] is joined and sanitized (comma replaced by underscore)
+   ivscc_apfrequency([seltag(control), seltag([mutant, treated])], on, min, min, 100, 100, preparefit(sigmoid), bins2)
+   and
+   table(getmeta("fit*", $ivscc_apfrequency_fit_mutant_treated))
+
+Finding a point's source experiment
+====================================
+
+The per-experiment inflection points trace (see "Traces" above) has exactly one point per experiment, in
+the same order as the tag group's experiment list variable (see "Variables" above): both are built by
+iterating over the same, alphabetically sorted list of experiments, and neither is reordered afterwards.
+To identify a point's source experiment on the per-experiment inflection points trace:
+
+* Select the graph and press ``Ctrl+I`` to enable cursor navigation, then place a cursor on the point of
+  interest and move it exactly onto that point.
+* Read the point's index from the cursor readout.
+* Display the tag group's experiment list variable, `ivscc_apfrequency_explist_<tags>` (see "Variables"
+  above), in a table. The experiment named in the row at that same index is the point's source experiment.
+
+.. code-block:: bash
+
+   ivscc_apfrequency([seltag(control), seltag([mutant, treated])], on, min, min, 100, 100, preparefit(sigmoid), bins2)
+   and
+   table($ivscc_apfrequency_explist_mutant_treated)
+
 Plotting
 ^^^^^^^^
 

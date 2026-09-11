@@ -9642,8 +9642,8 @@ End
 /// @brief Wave storing sf plot meta information per formularesult, filled in SF_GatherFormulaResults
 Function/WAVE GetSFPlotMetaData()
 
-	Make/FREE/T/N=(9) wv
-	SetDimensionLabels(wv, "DATATYPE;OPSTACK;ARGSETUPSTACK;XAXISLABEL;YAXISLABEL;XAXISOFFSET;YAXISOFFSET;XAXISPERCENT;YAXISPERCENT;", ROWS)
+	Make/FREE/T/N=(11) wv
+	SetDimensionLabels(wv, "DATATYPE;OPSTACK;ARGSETUPSTACK;XAXISLABEL;YAXISLABEL;XAXISOFFSET;YAXISOFFSET;XAXISPERCENT;YAXISPERCENT;XAXISRANGE;XAXISGROUP;", ROWS)
 
 	return wv
 End
@@ -9685,28 +9685,41 @@ End
 ///        @sa SF_META_ERRORBARSTYLE
 Function/WAVE CreateSFErrorbarStyleWave()
 
-	Make/FREE/D/N=21 style
+	Make/FREE/D/N=26 style
 	SetDimLabel ROWS, 0, TYPE, style
 	SetDimLabel ROWS, 1, FILLMODE, style
 	SetDimLabel ROWS, 2, FGCOLOR_R, style
 	SetDimLabel ROWS, 3, FGCOLOR_G, style
 	SetDimLabel ROWS, 4, FGCOLOR_B, style
-	SetDimLabel ROWS, 5, BGCOLOR_R, style
-	SetDimLabel ROWS, 6, BGCOLOR_G, style
-	SetDimLabel ROWS, 7, BGCOLOR_B, style
-	SetDimLabel ROWS, 8, NEGFILLMODE, style
-	SetDimLabel ROWS, 9, NEGFGCOLOR_R, style
-	SetDimLabel ROWS, 10, NEGFGCOLOR_G, style
-	SetDimLabel ROWS, 11, NEGFGCOLOR_B, style
-	SetDimLabel ROWS, 12, NEGBGCOLOR_R, style
-	SetDimLabel ROWS, 13, NEGBGCOLOR_G, style
-	SetDimLabel ROWS, 14, NEGBGCOLOR_B, style
-	SetDimLabel ROWS, 15, BOXCOLOR_R, style
-	SetDimLabel ROWS, 16, BOXCOLOR_G, style
-	SetDimLabel ROWS, 17, BOXCOLOR_B, style
-	SetDimLabel ROWS, 18, ELLMODE, style
-	SetDimLabel ROWS, 19, ELLP, style
-	SetDimLabel ROWS, 20, ELLALPHA, style
+	SetDimLabel ROWS, 5, FGCOLOR_A, style
+	SetDimLabel ROWS, 6, BGCOLOR_R, style
+	SetDimLabel ROWS, 7, BGCOLOR_G, style
+	SetDimLabel ROWS, 8, BGCOLOR_B, style
+	SetDimLabel ROWS, 9, BGCOLOR_A, style
+	SetDimLabel ROWS, 10, NEGFILLMODE, style
+	SetDimLabel ROWS, 11, NEGFGCOLOR_R, style
+	SetDimLabel ROWS, 12, NEGFGCOLOR_G, style
+	SetDimLabel ROWS, 13, NEGFGCOLOR_B, style
+	SetDimLabel ROWS, 14, NEGFGCOLOR_A, style
+	SetDimLabel ROWS, 15, NEGBGCOLOR_R, style
+	SetDimLabel ROWS, 16, NEGBGCOLOR_G, style
+	SetDimLabel ROWS, 17, NEGBGCOLOR_B, style
+	SetDimLabel ROWS, 18, NEGBGCOLOR_A, style
+	SetDimLabel ROWS, 19, BOXCOLOR_R, style
+	SetDimLabel ROWS, 20, BOXCOLOR_G, style
+	SetDimLabel ROWS, 21, BOXCOLOR_B, style
+	SetDimLabel ROWS, 22, BOXCOLOR_A, style
+	SetDimLabel ROWS, 23, ELLMODE, style
+	SetDimLabel ROWS, 24, ELLP, style
+	SetDimLabel ROWS, 25, ELLALPHA, style
+
+	// set full opacity as default
+	style[%FGCOLOR_A]    = 0xFFFF
+	style[%BGCOLOR_A]    = 0xFFFF
+	style[%NEGFGCOLOR_A] = 0xFFFF
+	style[%NEGBGCOLOR_A] = 0xFFFF
+	style[%BOXCOLOR_A]   = 0xFFFF
+	style[%ELLALPHA]     = 0xFFFF
 
 	return style
 End

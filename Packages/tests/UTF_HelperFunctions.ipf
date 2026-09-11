@@ -1196,7 +1196,14 @@ Function/S LoadSweeps(string winAB)
 End
 
 /// @brief Open the given files in the analysis browser. By default files are located relative to the symbolic path `home` unless absolutePaths is set
-Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, [variable loadSweeps, variable loadStimsets, variable absolutePaths, variable multipleSweepBrowser])
+///
+/// @param files                list of file paths to add to the analysis browser
+/// @param loadSweeps           [optional, default 0] load sweeps from all added experiments
+/// @param loadStimsets         [optional, default 0] load stimsets from all added experiments
+/// @param absolutePaths        [optional, default 0] treat entries in files as absolute paths instead of relative to the symbolic path `home`
+/// @param multipleSweepBrowser [optional, default 1] load sweeps of each experiment into its own SweepBrowser instead of combining all experiments into a single, shared SweepBrowser
+/// @param tagList              [optional] list of tags, one per experiment
+Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, [variable loadSweeps, variable loadStimsets, variable absolutePaths, variable multipleSweepBrowser, WAVE/T tagList])
 
 	variable idx, val
 	string filePath, fullFilePath
@@ -1210,6 +1217,10 @@ Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, 
 	loadStimsets = ParamIsDefault(loadStimsets) ? 0 : !!loadStimsets
 
 	multipleSweepBrowser = ParamIsDefault(multipleSweepBrowser) ? 1 : !!multipleSweepBrowser
+
+	if(ParamIsDefault(tagList))
+		WAVE/Z/T tagList = $""
+	endif
 
 	if(absolutePaths)
 		WAVE/T filesWithPath = files
@@ -1229,6 +1240,8 @@ Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, 
 	endfor
 
 	PGC_SetAndActivateControl(abWin, "button_AB_refresh")
+
+	TagExperimentsInAnalysisBrowser(tagList)
 
 	if(!loadSweeps && !loadStimsets)
 		return [abWin, ""]
@@ -1263,6 +1276,33 @@ Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, 
 	endif
 
 	return [abWin, sweepBrowsers]
+End
+
+/// @brief Tag the experiments currently listed in the analysis browser
+///
+/// @param tagList list of tags, one per experiment, in the same order the experiments were added
+static Function TagExperimentsInAnalysisBrowser(WAVE/Z/T tagList)
+
+	variable i, numTags
+
+	if(!WaveExists(tagList))
+		return NaN
+	endif
+
+	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
+	WAVE/Z indizes        = FindIndizes(expBrowserList, colLabel = "file", prop = PROP_EMPTY | PROP_NOT)
+
+	numTags = DimSize(tagList, ROWS)
+	if(numTags == 0)
+		return NaN
+	endif
+
+	ASSERT(WaveExists(indizes), "No experiments were added to the analysis browser")
+	ASSERT(numTags <= DimSize(indizes, ROWS), "More tags than experiments in the analysis browser")
+
+	for(i = 0; i < numTags; i += 1)
+		MIES_AB#AB_AddTagToRow(indizes[i], tagList[i])
+	endfor
 End
 
 Function/S LoadSweepsFromAllExperimentsFromAB(string abWin)
