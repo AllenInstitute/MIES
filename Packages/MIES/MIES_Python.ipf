@@ -161,8 +161,13 @@ Function/WAVE PY_FetchFilesFromLims(WAVE/T cellnames)
 	list += TextWaveToList(cellnames, " ", trailSep = 0)
 	Make/FREE/T/N=0 results
 	loc = PY_GetMIESPythonScriptsDiscLocation() + "limspath_from_cellname.py"
+	print list
 	PythonFile/Z file=loc, array={"paths", results}, args=list
 	ASSERT(!V_flag, "Error executing LIMS path querying:" + S_PythonError)
+
+	if(DimSize(results, ROWS) == 0)
+		return $""
+	endif
 
 	// forward slashes to backward slashes
 	// and UNC server prefix

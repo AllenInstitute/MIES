@@ -3562,15 +3562,23 @@ static Function AB_AddEntriesFromParseResult(string win, WAVE/Z/WAVE results)
 	AB_AddEntriesFromParseResultImpl(win, results[%Folder])
 
 	if(WaveExists(results[%CellName]))
+#if IgorVersion() >= 10
+		WAVE/T single = results[%CellName]
+		Duplicate/FREE/RMD=[][FindDimlabel(results, COLS, "Content")] single, cellNames
+		Redimension/N=(DimSize(cellNames, ROWS))/E=1 cellnames
+		WAVE/Z/T paths = PY_FetchFilesFromLims(cellNames)
+
+		// TODO
+		if(WaveExists(paths))
+			Duplicate/FREE/T single, combined
+			combined[][%Content] = paths[p]
+			AB_AddEntriesFromParseResultImpl(win, combined)
+		endif
+#else
 		if(!AlreadyCalledOnce(CO_AB_NO_CELLNAMES_IP9))
 			print "Querying LIMS with cell names is not supported on Igor Pro 9"
 			ControlwindowToFront()
 		endif
-
-#if IgorVersion() >= 10
-		WAVE/T paths = PY_FetchFilesFromLims(results[%CellName])
-		Note/K paths, note(results[%CellName])
-		AB_AddEntriesFromParseResultImpl(win, paths)
 #endif
 	endif
 
