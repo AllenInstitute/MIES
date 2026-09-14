@@ -1504,6 +1504,21 @@ static Function TestOperationSeltag()
 	WAVE/WAVE dataset = wref[0]
 	WAVE/T    array   = dataset[0]
 	CHECK_EQUAL_TEXTWAVES(array, {""}, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "seltag([\"abc*\", \"!def\", \"*\"])"
+	WAVE/WAVE wref    = SFE_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataset = wref[0]
+	WAVE/T    array   = dataset[0]
+	CHECK_EQUAL_TEXTWAVES(array, {"abc*", "!def", "*"}, mode = WAVE_DATA | DIMENSION_SIZES)
+End
+
+static Function TestCleanupTags()
+
+	CHECK_EQUAL_STR(SFOS_CleanupTag(""), "")
+	CHECK_EQUAL_STR(SFOS_CleanupTag(PadString("", 300, 0x41)), PadString("", 255, 0x41))
+	CHECK_EQUAL_STR(SFOS_CleanupTag("a"), "a")
+	CHECK_EQUAL_STR(SFOS_CleanupTag("1a"), "_a")
+	CHECK_EQUAL_STR(SFOS_CleanupTag("!a 1_b*\t"), "!a_1_b*_")
 End
 
 static Function TestOperationSelvis()
