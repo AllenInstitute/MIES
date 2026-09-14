@@ -578,6 +578,48 @@ Function/WAVE SFOS_OperationSelectVis(STRUCT SF_ExecutionData &exd)
 	return SFH_GetOutputForExecutorSingle(output, exd.graph, SF_OP_SELECTVIS, discardOpStack = 1, dataType = SF_DATATYPE_SELECTVIS)
 End
 
+Function/S SFOS_CleanupTag(string singleTag)
+
+	variable i, length, isDigit, isLetter, isUS, code
+	string ch
+
+	if(IsEmpty(singleTag))
+		return singleTag
+	endif
+
+	// See DisplayHelpTopic "Object Names"
+	// we do allow empty tags though
+	length = strlen(singleTag)
+
+	if(length > 255)
+		singleTag = singleTag[0, 254]
+		length    = 255
+	endif
+
+	for(i = 0; i < length; i += 1)
+		ch   = singleTag[i]
+		code = char2num(ch)
+
+		if(!cmpstr(ch, "!") || !cmpstr(ch, "*"))
+			// ignore wildcard characters
+			continue
+		endif
+
+		isDigit  = code >= char2num("0") && code <= char2num("9")
+		isLetter = (code >= char2num("A") && code <= char2num("Z")) || (code >= char2num("a") && code <= char2num("z"))
+		isUS     = !cmpstr(ch, "_")
+
+		if((i == 0 && isLetter)                       \
+		   || (i > 0 && (isDigit || isLetter || isUS)))
+			continue
+		endif
+
+		singleTag[i, i] = "_"
+	endfor
+
+	return singleTag
+End
+
 /// `seltag([tag1, tag2, ...])`
 ///
 /// returns a single dataset with a text wave with single tags as elements, the dataset has the type SF_DATATYPE_SELECTTAG
@@ -588,7 +630,7 @@ Function/WAVE SFOS_OperationSelectTag(STRUCT SF_ExecutionData &exd)
 	SFH_CheckArgumentCount(exd, opShort, 0, maxArgs = 1)
 
 	WAVE/T tags = SFH_GetArgumentAsWave(exd, SF_OP_SELECTTAG, 0, singleResult = 1, expectedMajorType = IGOR_TYPE_TEXT_WAVE, copy = 1)
-	tags[] = SelectString(IsEmpty(tags[p]), CleanupName(tags[p], 0), "")
+	tags[] = SFOS_CleanupTag(tags[p])
 	SFH_ASSERT(!SearchForDuplicates(tags), "seltag tags contain duplicate tag(s).")
 
 	WAVE/WAVE output = SFH_CreateSFRefWave(exd.graph, opShort, 1)

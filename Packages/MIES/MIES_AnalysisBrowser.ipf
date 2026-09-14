@@ -4226,7 +4226,7 @@ static Function/S AB_SanitizeTag(string tagStr)
 
 	string sanitizedTag
 
-	sanitizedTag = CleanupName(tagStr, 0)
+	sanitizedTag = SFOS_CleanupTag(tagStr)
 	if(CmpStr(sanitizedTag, tagStr))
 		SetSetVariableString(AB_GetTagControlName(), "setvar_tagcontrol_tagname", sanitizedTag)
 	endif
