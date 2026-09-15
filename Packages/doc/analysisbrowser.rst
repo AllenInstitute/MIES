@@ -82,7 +82,7 @@ Tags assigned here can be used to filter sweeps loaded into a SweepBrowser via t
 operation, see :ref:`SweepFormula`.
 
 Paste Notebook
-------------
+--------------
 
 The paste notebook allows to quickly input files/folders/cellnames to load NWBs/PXPs from.
 
@@ -151,7 +151,7 @@ It is also possible to set the tags per ``file``/``folder``/``cellname`` via
   tagB
 
   cellname:
-  cell1 tagC tagD
+  cell1	tagC	tagD
   cell4
 
 the tags need to be separated by tabs ``\t`` from the inputs and other tags. Here ``cell1`` has ``tagC`` and
