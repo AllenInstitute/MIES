@@ -355,7 +355,7 @@ End
 
 static Function CheckRestoreSettings()
 
-	string abWin, sweepBrowsers
+	string abWin, sweepBrowsers, str
 
 	Make/FREE/T files = {PXP_FILENAME}
 	DownloadFilesIfRequired(files)
@@ -370,6 +370,16 @@ static Function CheckRestoreSettings()
 	WAVE/T list = GetExperimentBrowserGUIList()
 	CHECK_EQUAL_VAR(DimSize(list, ROWS), 1)
 	CHECK_EQUAL_STR(GetFile(files[0]), list[0][%file][0])
+
+	KillWindow/Z $abWin
+
+	// but we do the refresh not automatically anymore
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser($"", restoreSettings = 1, refresh = 0)
+
+	WAVE/T list = GetExperimentBrowserGUIList()
+	CHECK_EQUAL_VAR(DimSize(list, ROWS), MINIMUM_WAVE_SIZE)
+	str = list[0][%file][0]
+	CHECK_EMPTY_STR(str)
 
 	KillWindow/Z $abWin
 
