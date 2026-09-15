@@ -2861,11 +2861,6 @@ Function/S AB_OpenAnalysisBrowser([variable restoreSettings])
 	// so we need to change the focus back
 	DoWindow/F $panel
 
-	if(restoreSettings)
-		DoUpdate/W=$panel
-		PGC_SetAndActivateControl(panel, "button_AB_refresh")
-	endif
-
 	return panel
 End
 
