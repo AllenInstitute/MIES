@@ -746,11 +746,15 @@ End
 /// - Every required tag which is a wildcard matches at least one tag, required tags with negated wildcards don't match anything
 Function/WAVE SB_MatchSweepTags(WAVE/T reqTags, WAVE/WAVE sweepTagsWave)
 
-	variable size, i, j, numEntries, numReqTags, numSweepTags
+	variable size, i, numEntries, numReqTags, numSweepTags
 
-	numEntries = DimSize(sweepTagsWave, ROWS)
+	if(DimSize(reqTags, ROWS) == 0)
+		Make/FREE/T reqTags = {""}
+	endif
+
 	numReqTags = DimSize(reqTags, ROWS)
 
+	numEntries = DimSize(sweepTagsWave, ROWS)
 	Make/FREE/N=(numEntries)/D matches = NaN
 
 	reqTags[] = LowerStr(reqTags[p])
@@ -765,14 +769,6 @@ Function/WAVE SB_MatchSweepTags(WAVE/T reqTags, WAVE/WAVE sweepTagsWave)
 
 		numSweepTags = DimSize(sweepTags, ROWS)
 		sweepTags[p] = LowerStr(sweepTags[p])
-
-		if(numReqTags == 0)
-			// no tags requested
-			if(numSweepTags == 0)
-				matches[i] = i
-			endif
-			continue
-		endif
 
 		// rows are the requested tags, columns are the sweep tags
 		Make/FREE/N=(numReqTags, numSweepTags) matchMatrix = stringmatch(sweepTags[q], reqTags[p])
