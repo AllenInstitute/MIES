@@ -626,3 +626,26 @@ static Function TestIVSCCAPFrequencyFails()
 	code = "ivscc_apfrequency(seltag(a), on, none, none, 100, 100, 0, bins2, 3)\r"
 	ExecuteSweepFormulaCode(sweepBrowser, code, expectFailure = 1)
 End
+
+static Function TestSelectionWithMultipleExperiments()
+
+	string abWin, code, sweepBrowsers, sweepBrowser, win
+
+	WAVE/T files = HistoricDataHelpers#GetManyHistoricDataFiles()
+
+	files[] = "input:" + files[p]
+
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser(files, loadSweeps = 1, multipleSweepBrowser = 0)
+	sweepBrowser           = StringFromList(0, sweepBrowsers)
+
+	code = "data(select(selvis(all), selsweeps(0)))"
+	ExecuteSweepFormulaCode(sweepBrowser, code)
+	CHECK_NO_RTE()
+
+	win = BSP_GetPanel(StringFromList(0, sweepBrowsers))
+	PGC_SetAndActivateControl(win, "check_BrowserSettings_OVS", val = 1)
+	PGC_SetAndActivateControl(win, "popup_overlaySweeps_select", str = "All")
+	code = "data(select(selvis(displayed), selsweeps(0)))"
+	ExecuteSweepFormulaCode(sweepBrowser, code)
+	CHECK_NO_RTE()
+End
