@@ -957,7 +957,22 @@ End
 
 Function TestEndCommon()
 
+	variable i, childStart, childEnd, numSuiteErrors
+
 	zeromq_stop()
+
+	WAVE/T wvTestRun   = IUTF_Reporting#GetTestRunWave()
+	WAVE/T wvTestSuite = IUTF_Reporting#GetTestSuiteWave()
+
+	childStart = str2num(wvTestRun[%CURRENT][%CHILD_START])
+	childEnd   = str2num(wvTestRun[%CURRENT][%CHILD_END])
+	for(i = childStart; i < childEnd; i += 1)
+		numSuiteErrors += str2num(wvTestSuite[i][%NUM_ASSERT_ERROR])
+	endfor
+
+	// workaround https://github.com/byte-physics/igortest/issues/504
+	INFO("Expected no unreported global errors")
+	CHECK_EQUAL_VAR(str2num(wvTestRun[%CURRENT][%NUM_ASSERT_ERROR]), numSuiteErrors)
 End
 
 Function TestCaseBeginCommon(string testcase)
