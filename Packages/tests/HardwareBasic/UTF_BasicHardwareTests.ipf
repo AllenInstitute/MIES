@@ -272,7 +272,7 @@ End
 // UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD0
 static Function ChangeToOtherDeviceDAQ([STRUCT IUTF_MDATA &md])
 
-	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD" + num2str(md.v0) + "_RA0_I0_L0_BKG1_TAD1" + \
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD" + num2str(md.v0) + "_RA0_I0_L0_BKG1" + \
 	                                                           "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
 	ACD_AcquireData(s, md.s0)
 End
