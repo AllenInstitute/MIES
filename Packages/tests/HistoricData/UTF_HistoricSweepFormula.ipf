@@ -135,7 +135,7 @@ static Function TestIVSCCAPFrequencyCheckTraceNames(WAVE/WAVE traceNamesPlot, st
 	variable i
 	string   subWin
 
-	for(WAVE/T traceNames : traceNamesPlot)
+	for(WAVE/Z/T traceNames : traceNamesPlot)
 		subWin = wName + "#graph" + num2istr(i) // see SF_CreateDataDisplayWindow
 		if(!WaveExists(traceNames))
 			CHECK_EQUAL_VAR(WindowExists(subWin), 0)

@@ -125,6 +125,15 @@ Function/S GetIgorExecutable()
 #endif // IGOR64
 End
 
+/// @brief Return the folder "Python Scripts" usable with Igor Pro 10 or higher
+Function/S GetPythonScriptsFolder()
+
+	string path = SpecialDirPath("Igor Pro User Files", 0, 0, 0) + "Python Scripts:"
+	CreateFolderOnDisk(path)
+
+	return path
+End
+
 /// @brief Return the number of bits of the architecture
 ///        Igor Pro was built for.
 Function GetArchitectureBits()
