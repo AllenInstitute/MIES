@@ -350,6 +350,19 @@ Function StringEndsWith(string str, string suffix)
 	return 0
 End
 
+Function StringStartsWith(string str, string prefix)
+
+	variable pos
+
+	if(IsNull(str) || IsNull(prefix))
+		return 0
+	endif
+
+	pos = strsearch(str, prefix, 0, 2)
+
+	return pos == 0
+End
+
 /// @brief Check wether `val1` and `val2` are equal or both are NaN
 ///
 /// UTF_NOINSTRUMENTATION

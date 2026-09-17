@@ -1504,6 +1504,88 @@ static Function TestOperationSeltag()
 	WAVE/WAVE dataset = wref[0]
 	WAVE/T    array   = dataset[0]
 	CHECK_EQUAL_TEXTWAVES(array, {""}, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "seltag([\"abc*\", \"!def\", \"*\"])"
+	WAVE/WAVE wref    = SFE_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE dataset = wref[0]
+	WAVE/T    array   = dataset[0]
+	CHECK_EQUAL_TEXTWAVES(array, {"abc*", "!def", "*"}, mode = WAVE_DATA | DIMENSION_SIZES)
+End
+
+static Function TestCleanupTags()
+
+	CHECK_EQUAL_STR(SFOS_CleanupTag(""), "")
+	CHECK_EQUAL_STR(SFOS_CleanupTag(PadString("", 300, 0x41)), PadString("", 255, 0x41))
+	CHECK_EQUAL_STR(SFOS_CleanupTag("a"), "a")
+	CHECK_EQUAL_STR(SFOS_CleanupTag("1a"), "_a")
+	CHECK_EQUAL_STR(SFOS_CleanupTag("!a 1_b*\t"), "!a_1_b*_")
+End
+
+static Function TestMatchTags()
+
+	Make/FREE/T sweepTag0 = {"a"}
+	Make/FREE/T sweepTag1 = {"a", "b"}
+	Make/FREE/T sweepTag2 = {"a", "b", "c"}
+	Make/FREE/T sweepTag3 = {"a", "bb"}
+	Make/FREE/T sweepTag4 = {""}
+	Make/FREE/T sweepTag5 = {"a", "aaa"}
+	Make/FREE/T/N=0 sweepTag6
+
+	Make/FREE/WAVE sweepTagsWave = {sweepTag0, sweepTag1, sweepTag2, sweepTag3, sweepTag4, sweepTag5, sweepTag6, $""}
+
+	// exact match, ignores case (non-empty tags)
+	Make/FREE/T reqTags = {"a", "B"}
+	WAVE/Z results = MIES_SB#SB_MatchSweepTags(reqTags, sweepTagsWave)
+	CHECK_WAVE(results, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(results, {1}, mode = WAVE_DATA)
+
+	// empty tag
+	Make/FREE/T reqTags = {""}
+	WAVE/Z results = MIES_SB#SB_MatchSweepTags(reqTags, sweepTagsWave)
+	CHECK_WAVE(results, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(results, {4, 6, 7}, mode = WAVE_DATA)
+
+	// allow additional tags and no required tags
+	Make/FREE/T reqTags = {"*"}
+	WAVE/Z results = MIES_SB#SB_MatchSweepTags(reqTags, sweepTagsWave)
+	CHECK_WAVE(results, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(results, {0, 1, 2, 3, 4, 5, 6, 7}, mode = WAVE_DATA)
+
+	// subset with additional tags
+	Make/FREE/T reqTags = {"a", "B", "*"}
+	WAVE/Z results = MIES_SB#SB_MatchSweepTags(reqTags, sweepTagsWave)
+	CHECK_WAVE(results, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(results, {1, 2}, mode = WAVE_DATA)
+
+	// wildcards
+	Make/FREE/T reqTags = {"a", "b*"}
+	WAVE/Z results = MIES_SB#SB_MatchSweepTags(reqTags, sweepTagsWave)
+	CHECK_WAVE(results, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(results, {1, 3}, mode = WAVE_DATA)
+
+	// single wildcard matches multiple sweep tags
+	Make/FREE/T reqTags = {"a*"}
+	WAVE/Z results = MIES_SB#SB_MatchSweepTags(reqTags, sweepTagsWave)
+	CHECK_WAVE(results, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(results, {0, 5}, mode = WAVE_DATA)
+
+	// single wildcard matches multiple sweep tags with additional tags
+	Make/FREE/T reqTags = {"a*", "*"}
+	WAVE/Z results = MIES_SB#SB_MatchSweepTags(reqTags, sweepTagsWave)
+	CHECK_WAVE(results, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(results, {0, 1, 2, 3, 5}, mode = WAVE_DATA)
+
+	// negative wildcard
+	Make/FREE/T reqTags = {"!b"}
+	WAVE/Z results = MIES_SB#SB_MatchSweepTags(reqTags, sweepTagsWave)
+	CHECK_WAVE(results, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(results, {0, 3, 4, 5, 6, 7}, mode = WAVE_DATA)
+
+	// negative wildcard and positive wildcard
+	Make/FREE/T reqTags = {"!b", "AA*"}
+	WAVE/Z results = MIES_SB#SB_MatchSweepTags(reqTags, sweepTagsWave)
+	CHECK_WAVE(results, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(results, {5}, mode = WAVE_DATA)
 End
 
 static Function TestOperationSelvis()

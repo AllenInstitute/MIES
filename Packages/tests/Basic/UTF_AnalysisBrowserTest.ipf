@@ -263,3 +263,62 @@ static Function RoundTripDepStimsetsRecursion([string str])
 	CHECK_EQUAL_VAR(V_max, amplitude)
 	CHECK_EQUAL_VAR(V_min, amplitude)
 End
+
+Function TestParseFormatEmpty()
+
+	Make/FREE/T empty
+
+	WAVE/Z result = AB_ParsePasteFormat(empty)
+	CHECK_WAVE(result, NULL_WAVE)
+End
+
+Function TestParseFormatWhitespaceOnly()
+
+	Make/FREE/T empty = {" \t"}
+
+	WAVE/Z result = AB_ParsePasteFormat(empty)
+	CHECK_WAVE(result, NULL_WAVE)
+End
+
+Function TestParseFormat1()
+
+	Make/T/FREE entries = {"tag:", "tagA", "tagB",                                                    \
+	                       "file:", "fileA", "fileB",                                                 \
+	                       "tag:", "tagC", "tagD",                                                    \
+	                       "folder:", "folderC", "folderD",                                           \
+	                       "# comment",                                                               \
+	                       "tag:", "tagE", "tagF",                                                    \
+	                       "cellname:", "cellnameE\ttagG\ttagH", "cellnameF", "cellnameG\ttagI\ttagJ" \
+	                      }
+
+	WAVE/Z/WAVE result = AB_ParsePasteFormat(entries)
+	CHECK_WAVE(result, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(result, ROWS), 3)
+
+	CHECK_WAVE(result[%File], TEXT_WAVE)
+	CHECK_EQUAL_TEXTWAVES(result[%File], {{"fileA", "fileB"}, {"tagA,tagB,", "tagA,tagB,"}}, mode = WAVE_DATA)
+	CHECK_EQUAL_STR(note(result[%File]), "Index:2;")
+
+	CHECK_WAVE(result[%Folder], TEXT_WAVE)
+	CHECK_EQUAL_TEXTWAVES(result[%Folder], {{"folderC", "folderD"}, {"tagC,tagD,", "tagC,tagD,"}}, mode = WAVE_DATA)
+	CHECK_EQUAL_STR(note(result[%Folder]), "Index:2;")
+
+	CHECK_WAVE(result[%cellname], TEXT_WAVE)
+	CHECK_EQUAL_TEXTWAVES(result[%cellname], {{"cellnameE", "cellnameF", "cellnameG"}, {"tagG,tagH,", "tagE,tagF,", "tagI,tagJ,"}}, mode = WAVE_DATA)
+	CHECK_EQUAL_STR(note(result[%cellname]), "Index:3;")
+End
+
+Function TestParseFormatNoTags()
+
+	Make/T/FREE entries = {"file:", "fileA", "fileB"}
+
+	WAVE/Z/WAVE result = AB_ParsePasteFormat(entries)
+	CHECK_WAVE(result, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(result, ROWS), 3)
+
+	CHECK_WAVE(result[%File], TEXT_WAVE)
+	CHECK_EQUAL_TEXTWAVES(result[%File], {{"fileA", "fileB"}, {"", ""}}, mode = WAVE_DATA)
+	CHECK_EQUAL_STR(note(result[%File]), "Index:2;")
+	CHECK_WAVE(result[%Folder], NULL_WAVE)
+	CHECK_WAVE(result[%cellname], NULL_WAVE)
+End
