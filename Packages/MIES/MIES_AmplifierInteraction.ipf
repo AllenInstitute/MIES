@@ -569,6 +569,26 @@ Function [variable ampType, variable ampSerial, variable ampChannelID] AI_ParseA
 	return [ampType, ampSerial, ampChannelID]
 End
 
+/// @brief Return the amplifier type the device supports
+///
+/// Each device supports only amplifiers of one type, besides headstages
+/// without amplifier. Sutter devices have integrated amplifiers, all other
+/// devices use MCC amplifiers.
+///
+/// @param device device, can be empty if not yet known
+///
+/// @returns one of @ref AmplifierTypes, never #AMPLIFIER_TYPE_NONE
+threadsafe Function AI_GetAmplifierTypeOfDevice(string device)
+
+	PerformSubsystemEntry_TS()
+
+	if(IsDeviceNameFromSutter(device))
+		return AMPLIFIER_TYPE_SUTTER
+	endif
+
+	return AMPLIFIER_TYPE_MCC
+End
+
 /// @brief Return the amplifier type of the given headstage
 ///
 /// @param device    device
