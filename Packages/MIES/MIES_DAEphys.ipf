@@ -2676,7 +2676,7 @@ static Function DAP_CheckHeadStage(string device, variable headStage, variable m
 
 		if(needResetting)
 			AI_UpdateChanAmpAssign(device, headStage, clampMode, DAGainMCC, ADGainMCC, DAUnitMCC, ADUnitMCC)
-			printf "(%s) The automatically imported gains from MCC were used to overwrite differing manual settings.\r", device
+			printf "(%s) The automatically imported gains from the amplifier were used to overwrite differing manual settings.\r", device
 			ControlWindowToFront()
 			DAP_UpdateChanAmpAssignPanel(device)
 			DAP_SyncChanAmpAssignToActiveHS(device)
