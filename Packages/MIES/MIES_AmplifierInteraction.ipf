@@ -223,7 +223,7 @@ Function [variable DAGain, variable ADGain, string DAUnit, string ADUnit] AI_Que
 			[DAGain, ADGain, DAUnit, ADUnit] = AIMCC_QueryGainsUnitsForClampMode(device, headstage, clampMode)
 			return [DAGain, ADGain, DAUnit, ADUnit]
 		case AMPLIFIER_TYPE_SUTTER:
-			// @todo implement
+			[DAGain, ADGain, DAUnit, ADUnit] = AISU_QueryGainsUnitsForClampMode(device, headstage, clampMode)
 			return [DAGain, ADGain, DAUnit, ADUnit]
 		default:
 			FATAL_ERROR("Invalid amplifier type")
@@ -1779,8 +1779,7 @@ Function AI_QueryGainsFromMCC(string device)
 		case AMPLIFIER_TYPE_MCC:
 			return AIMCC_QueryGainsFromMCC(device)
 		case AMPLIFIER_TYPE_SUTTER:
-			// @todo implement
-			return 0
+			return AISU_QueryGainsFromMCC(device)
 		default:
 			FATAL_ERROR("Invalid amplifier type")
 	endswitch
