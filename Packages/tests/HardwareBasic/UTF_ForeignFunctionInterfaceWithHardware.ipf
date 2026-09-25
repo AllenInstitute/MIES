@@ -171,11 +171,13 @@ static Function FFISetClampModeWorks_REENTRY([STRUCT IUTF_MDATA &md])
 	CHECK_WAVE(clampState, NUMERIC_WAVE)
 	CHECK_EQUAL_VAR(clampState[%ClampMode], V_CLAMP_MODE)
 
-	// switch to I=0 and verify
+#ifndef TESTS_WITH_SUTTER_HARDWARE
+	// switch to I=0 and verify, not supported for Sutter amplifiers
 	FFI_SetClampMode(device, headstage, I_EQUAL_ZERO_MODE)
 	WAVE/Z clampState = FFI_GetCurrentClampState(device, headstage)
 	CHECK_WAVE(clampState, NUMERIC_WAVE)
 	CHECK_EQUAL_VAR(clampState[%ClampMode], I_EQUAL_ZERO_MODE)
+#endif // !TESTS_WITH_SUTTER_HARDWARE
 
 	// switch back to IC, leaving the headstage in its original mode
 	FFI_SetClampMode(device, headstage, I_CLAMP_MODE)
