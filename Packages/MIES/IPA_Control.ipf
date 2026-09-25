@@ -1646,6 +1646,15 @@ Function IPA_MIES_Connect()
 	return TRUE
 End
 
+/// @brief Return TRUE if the package is initialized, i.e. IPA_Initialize() was called
+///        and IPA_Shutdown() was not called afterwards
+Function IPA_MIES_IsInitialized()
+
+	PerformSubsystemEntry()
+
+	return DataFolderExists(AmpPath)
+End
+
 /// @brief Set the clamp mode of the given probe
 ///
 /// In contrast to the "VCMode" and "CCMode" keywords of IPA_SetValue() this uses

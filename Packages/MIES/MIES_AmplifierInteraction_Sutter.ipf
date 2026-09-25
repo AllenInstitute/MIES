@@ -16,6 +16,11 @@
 
 static StrConstant AMPLIFIER_DEF_FORMAT = "%s HS %d"
 
+// IPA_Control.ipf is only included with the Sutter XOP, see MIES_Include.ipf
+#if exists("SutterDAQScanWave")
+#define SUTTER_AMPLIFIER_PRESENT
+#endif
+
 /// @brief Return the number of amplifier headstages of all IPA devices
 static Function AI_SU_GetNumberOfProbes()
 
@@ -128,3 +133,73 @@ Function AI_SU_ParseAmplifierDef(string amplifierDef)
 
 	return AI_SU_GetProbeFromDeviceHeadstage(serial, deviceHeadstage)
 End
+
+#ifdef SUTTER_AMPLIFIER_PRESENT
+
+/// @brief Initialize the Sutter amplifiers
+///
+/// Must only be called when no acquisition is running as it resets the USB connection.
+///
+/// @returns 0 on success, 1 on error
+Function AI_SU_Initialize(string device)
+
+	variable i, numProbes, clampMode
+
+	PerformSubsystemEntry()
+
+	if(!IPA_MIES_IsXOPCompatible())
+		printf "(%s) The Sutter XOP is not compatible with the Sutter amplifier control procedures.\r", device
+		ControlWindowToFront()
+		return 1
+	endif
+
+	if(!IPA_Initialize() || !IPA_MIES_Connect())
+		printf "(%s) Could not connect to the Sutter amplifiers.\r", device
+		ControlWindowToFront()
+		return 1
+	endif
+
+	// the stored control values of the package do not reflect the state of
+	// the amplifiers, so send the state of MIES
+	numProbes = AI_SU_GetNumberOfProbes()
+	for(i = 0; i < numProbes; i += 1)
+		if(AI_GetAmplifierType(device, i) != AMPLIFIER_TYPE_SUTTER)
+			continue
+		endif
+
+		clampMode = DAG_GetHeadstageMode(device, i)
+		IPA_MIES_SetClampMode(i + 1, clampMode != V_CLAMP_MODE)
+	endfor
+
+	return 0
+End
+
+/// @brief Shutdown the Sutter amplifiers
+Function AI_SU_Shutdown(string device)
+
+	PerformSubsystemEntry()
+
+	if(IPA_MIES_IsInitialized())
+		IPA_Shutdown()
+	endif
+End
+
+#else // SUTTER_AMPLIFIER_PRESENT
+
+Function AI_SU_Initialize(string device)
+
+	PerformSubsystemEntry()
+
+	DEBUGPRINT("Unimplemented")
+
+	return 1
+End
+
+Function AI_SU_Shutdown(string device)
+
+	PerformSubsystemEntry()
+
+	DEBUGPRINT("Unimplemented")
+End
+
+#endif // SUTTER_AMPLIFIER_PRESENT
