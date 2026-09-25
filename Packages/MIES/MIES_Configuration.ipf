@@ -2094,17 +2094,7 @@ static Function CONF_RestoreHeadstageAssociation(string device, variable jsonID,
 				PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
 			else
 				PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", str = NONE)
-				jsonPath = jsonPathAmpBlock + EXPCONFIG_JSON_VCBLOCK + "/"
-				CONF_OnExistSetAndActivateControlVar(device, "setvar_Settings_VC_DAgain", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDAGAIN)
-				CONF_OnExistSetAndActivateControlVar(device, "setvar_Settings_VC_ADgain", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCADGAIN)
-				CONF_OnExistSetAndActivateControlStr(device, "SetVar_Hardware_VC_DA_Unit", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDAUNIT)
-				CONF_OnExistSetAndActivateControlStr(device, "SetVar_Hardware_VC_AD_Unit", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCADUNIT)
-
-				jsonPath = jsonPathAmpBlock + EXPCONFIG_JSON_ICBLOCK + "/"
-				CONF_OnExistSetAndActivateControlVar(device, "setvar_Settings_IC_DAgain", jsonID, jsonPath + EXPCONFIG_JSON_AMPICDAGAIN)
-				CONF_OnExistSetAndActivateControlVar(device, "setvar_Settings_IC_ADgain", jsonID, jsonPath + EXPCONFIG_JSON_AMPICADGAIN)
-				CONF_OnExistSetAndActivateControlStr(device, "SetVar_Hardware_IC_DA_Unit", jsonID, jsonPath + EXPCONFIG_JSON_AMPICDAUNIT)
-				CONF_OnExistSetAndActivateControlStr(device, "SetVar_Hardware_IC_AD_Unit", jsonID, jsonPath + EXPCONFIG_JSON_AMPICADUNIT)
+				CONF_RestoreGainsAndUnits(device, jsonID, jsonPathAmpBlock)
 			endif
 			jsonPath = jsonPathAmpBlock + EXPCONFIG_JSON_VCBLOCK + "/"
 			CONF_SetDAEPhysChannelPopup(device, "Popup_Settings_VC_DA", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDA)
@@ -2149,6 +2139,28 @@ static Function CONF_RestoreHeadstageAssociation(string device, variable jsonID,
 	endfor
 	PGC_SetAndActivateControl(device, "button_Hardware_P_Enable")
 
+End
+
+/// @brief Restore the DA/AD gains and units of the currently selected headstage in the hardware tab
+///
+/// @param device           device
+/// @param jsonID           ID of the configuration json
+/// @param jsonPathAmpBlock json path of the amplifier block of the headstage, including the trailing slash
+static Function CONF_RestoreGainsAndUnits(string device, variable jsonID, string jsonPathAmpBlock)
+
+	string jsonPath
+
+	jsonPath = jsonPathAmpBlock + EXPCONFIG_JSON_VCBLOCK + "/"
+	CONF_OnExistSetAndActivateControlVar(device, "setvar_Settings_VC_DAgain", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDAGAIN)
+	CONF_OnExistSetAndActivateControlVar(device, "setvar_Settings_VC_ADgain", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCADGAIN)
+	CONF_OnExistSetAndActivateControlStr(device, "SetVar_Hardware_VC_DA_Unit", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDAUNIT)
+	CONF_OnExistSetAndActivateControlStr(device, "SetVar_Hardware_VC_AD_Unit", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCADUNIT)
+
+	jsonPath = jsonPathAmpBlock + EXPCONFIG_JSON_ICBLOCK + "/"
+	CONF_OnExistSetAndActivateControlVar(device, "setvar_Settings_IC_DAgain", jsonID, jsonPath + EXPCONFIG_JSON_AMPICDAGAIN)
+	CONF_OnExistSetAndActivateControlVar(device, "setvar_Settings_IC_ADgain", jsonID, jsonPath + EXPCONFIG_JSON_AMPICADGAIN)
+	CONF_OnExistSetAndActivateControlStr(device, "SetVar_Hardware_IC_DA_Unit", jsonID, jsonPath + EXPCONFIG_JSON_AMPICDAUNIT)
+	CONF_OnExistSetAndActivateControlStr(device, "SetVar_Hardware_IC_AD_Unit", jsonID, jsonPath + EXPCONFIG_JSON_AMPICADUNIT)
 End
 
 static Function CONF_OnExistSetAndActivateControlVar(string win, string ctrl, variable jsonId, string jsonPath)
