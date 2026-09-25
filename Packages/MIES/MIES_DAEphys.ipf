@@ -1810,7 +1810,7 @@ Function DAP_ButtonCtrlFindConnectedAmps(STRUCT WMButtonAction &ba) : ButtonCont
 
 	switch(ba.eventcode)
 		case 2: // mouse up
-			if(AI_FindConnectedAmps(rescanHardware = 1) == 0)
+			if(AI_FindConnectedAmps(ba.win, rescanHardware = 1) == 0)
 				print "Activate Multiclamp Commander software to populate list of available amplifiers"
 				ControlWindowToFront()
 			endif
@@ -2698,7 +2698,7 @@ static Function DAP_CheckHeadStage(string device, variable headStage, variable m
 	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS)
 
 		AI_EnsureCorrectMode(device, headStage)
-		AI_QueryGainsUnitsForClampMode(device, headStage, clampMode, DAGainMCC, ADGainMCC, DAUnitMCC, ADUnitMCC)
+		[DAGainMCC, ADGainMCC, DAUnitMCC, ADUnitMCC] = AI_QueryGainsUnitsForClampMode(device, headStage, clampMode)
 
 		if(cmpstr(DAUnit, DAUnitMCC))
 			printf "(%s) The configured unit for the DA channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%s vs %s).\r", device, DACchannel, DAUnit, DAUnitMCC
@@ -4641,7 +4641,7 @@ Function DAP_LockDevice(string win)
 	locked = 1
 	DAP_UpdateDataFolderDisplay(deviceLocked, locked)
 
-	AI_FindConnectedAmps()
+	AI_FindConnectedAmps(deviceLocked)
 	DAP_UpdateListOfLockedDevices()
 	DAP_UpdateListOfPressureDevices()
 	headstage = str2num(GetPopupMenuString(deviceLocked, "Popup_Settings_HeadStage"))

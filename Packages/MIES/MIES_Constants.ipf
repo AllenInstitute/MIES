@@ -438,7 +438,13 @@ Constant I_EQUAL_ZERO_MODE = 2
 
 Constant NUM_CLAMP_MODES = 3
 
-/// @name Possible values for the function parameter of AI_SendToAmp
+/// @name Amplifier related controls of the DA_Ephys panel per clamp mode
+///@{
+StrConstant AMPLIFIER_CONTROLS_VC = "setvar_DataAcq_Hold_VC;check_DataAcq_Amp_Chain;check_DatAcq_HoldEnableVC;setvar_DataAcq_WCC;setvar_DataAcq_WCR;check_DatAcq_WholeCellEnable;setvar_DataAcq_RsCorr;setvar_DataAcq_RsPred;check_DatAcq_RsCompEnable;setvar_DataAcq_PipetteOffset_VC;button_DataAcq_FastComp_VC;button_DataAcq_SlowComp_VC;button_DataAcq_AutoPipOffset_VC;button_DataAcq_WCAuto"
+StrConstant AMPLIFIER_CONTROLS_IC = "setvar_DataAcq_Hold_IC;check_DatAcq_HoldEnable;setvar_DataAcq_BB;check_DatAcq_BBEnable;setvar_DataAcq_CN;check_DatAcq_CNEnable;setvar_DataAcq_AutoBiasV;setvar_DataAcq_AutoBiasVrange;setvar_DataAcq_IbiasMax;check_DataAcq_AutoBias;setvar_DataAcq_PipetteOffset_IC;button_DataAcq_AutoBridgeBal_IC;button_DataAcq_AutoPipOffset_IC"
+///@}
+
+/// @name Possible values for the function parameter of AI_WriteToAmplifier/AI_ReadFromAmplifier
 /// @anchor AI_SendToAmpConstants
 ///@{
 Constant MCC_BEGIN_INVALID_FUNC       = 10000
