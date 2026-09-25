@@ -168,7 +168,7 @@ Function AI_SU_Initialize(string device)
 		endif
 
 		clampMode = DAG_GetHeadstageMode(device, i)
-		IPA_MIES_SetClampMode(i + 1, clampMode != V_CLAMP_MODE)
+		AI_SU_SetClampMode(device, i, clampMode)
 	endfor
 
 	return 0
@@ -182,6 +182,71 @@ Function AI_SU_Shutdown(string device)
 	if(IPA_MIES_IsInitialized())
 		IPA_Shutdown()
 	endif
+End
+
+/// @brief Return the clamp mode of the headstage as read from the amplifier
+///
+/// @returns #V_CLAMP_MODE, #I_CLAMP_MODE or NaN if the amplifier can not be read
+Function AI_SU_GetMode(string device, variable headstage)
+
+	variable currentClamp
+
+	PerformSubsystemEntry()
+
+	currentClamp = IPA_MIES_ReadClampModeFromHardware(headstage + 1)
+	if(IsNaN(currentClamp))
+		return NaN
+	endif
+
+	return currentClamp ? I_CLAMP_MODE : V_CLAMP_MODE
+End
+
+/// @brief Set the clamp mode of the amplifier of the headstage
+///
+/// I=0 is not supported for Sutter amplifiers, therefore `zeroStep` is ignored. DAEphys
+/// does not allow selecting it for Sutter devices.
+///
+/// Switching fails only for probes without amplifier or when the amplifier control package
+/// is not initialized, which both must not happen for a locked Sutter device.
+Function AI_SU_SetClampMode(string device, variable headstage, variable mode)
+
+	string msg
+
+	PerformSubsystemEntry()
+
+	AI_AssertOnInvalidClampMode(mode)
+
+	if(mode == I_EQUAL_ZERO_MODE)
+		FATAL_ERROR("The clamp mode I=0 is not supported for Sutter amplifiers")
+	endif
+
+	if(!IPA_MIES_SetClampMode(headstage + 1, mode == I_CLAMP_MODE))
+		sprintf msg, "The Sutter amplifier of headstage %d could not be switched to %s", headstage, ConvertAmplifierModeToString(mode)
+		FATAL_ERROR(msg)
+	endif
+End
+
+/// @brief Set the clamp mode of the amplifier to the clamp mode stored in MIES
+///
+/// @returns 0 on success, 1 when the amplifier can not be used
+Function AI_SU_EnsureCorrectMode(string device, variable headstage)
+
+	variable storedMode, setMode
+
+	PerformSubsystemEntry()
+
+	setMode = AI_SU_GetMode(device, headstage)
+	if(IsNaN(setMode))
+		return 1
+	endif
+
+	storedMode = DAG_GetHeadstageMode(device, headstage)
+	if(setMode != storedMode)
+		print "There was a mismatch in clamp mode between MIES and the Sutter amplifier. The amplifier mode was switched to match the mode specified by MIES."
+		AI_SU_SetClampMode(device, headstage, storedMode)
+	endif
+
+	return 0
 End
 
 #else // SUTTER_AMPLIFIER_PRESENT
@@ -200,6 +265,31 @@ Function AI_SU_Shutdown(string device)
 	PerformSubsystemEntry()
 
 	DEBUGPRINT("Unimplemented")
+End
+
+Function AI_SU_GetMode(string device, variable headstage)
+
+	PerformSubsystemEntry()
+
+	DEBUGPRINT("Unimplemented")
+
+	return NaN
+End
+
+Function AI_SU_SetClampMode(string device, variable headstage, variable mode)
+
+	PerformSubsystemEntry()
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function AI_SU_EnsureCorrectMode(string device, variable headstage)
+
+	PerformSubsystemEntry()
+
+	DEBUGPRINT("Unimplemented")
+
+	return 1
 End
 
 #endif // SUTTER_AMPLIFIER_PRESENT
