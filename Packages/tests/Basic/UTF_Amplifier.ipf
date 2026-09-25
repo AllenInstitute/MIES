@@ -380,3 +380,37 @@ static Function TestClampModeSupported()
 	CHECK_EQUAL_VAR(AI_IsClampModeSupported(sutterDevice, I_CLAMP_MODE), 1)
 	CHECK_EQUAL_VAR(AI_IsClampModeSupported(sutterDevice, I_EQUAL_ZERO_MODE), 0)
 End
+
+static Function TestSutterGainsAndUnits()
+
+	string sutterDevice = DEVICE_SUTTER_NAME_START_CLEAN + "1"
+	string DAUnit, ADUnit
+	variable DAGain, ADGain
+
+	WAVE   chanAmpAssign     = GetChanAmpAssign(sutterDevice)
+	WAVE/T chanAmpAssignUnit = GetChanAmpAssignUnit(sutterDevice)
+	chanAmpAssign[%AmpType][0]      = AMPLIFIER_TYPE_SUTTER
+	chanAmpAssign[%AmpChannelID][0] = 0
+
+	[DAGain, ADGain, DAUnit, ADUnit] = AI_QueryGainsUnitsForClampMode(sutterDevice, 0, V_CLAMP_MODE)
+	CHECK_EQUAL_VAR(DAGain, ONE_TO_MILLI)
+	CHECK_EQUAL_VAR(ADGain, PICO_TO_ONE)
+	CHECK_EQUAL_STR(DAUnit, "mV")
+	CHECK_EQUAL_STR(ADUnit, "pA")
+
+	[DAGain, ADGain, DAUnit, ADUnit] = AI_QueryGainsUnitsForClampMode(sutterDevice, 0, I_CLAMP_MODE)
+	CHECK_EQUAL_VAR(DAGain, ONE_TO_PICO)
+	CHECK_EQUAL_VAR(ADGain, MILLI_TO_ONE)
+	CHECK_EQUAL_STR(DAUnit, "pA")
+	CHECK_EQUAL_STR(ADUnit, "mV")
+
+	// only headstages with Sutter amplifiers are filled
+	CHECK_EQUAL_VAR(AI_QueryGainsFromMCC(sutterDevice), 1)
+	CHECK_EQUAL_VAR(chanAmpAssign[%VC_DAGain][0], ONE_TO_MILLI)
+	CHECK_EQUAL_VAR(chanAmpAssign[%VC_ADGain][0], PICO_TO_ONE)
+	CHECK_EQUAL_VAR(chanAmpAssign[%IC_DAGain][0], ONE_TO_PICO)
+	CHECK_EQUAL_VAR(chanAmpAssign[%IC_ADGain][0], MILLI_TO_ONE)
+	CHECK_EQUAL_STR(chanAmpAssignUnit[%VC_ADUnit][0], "pA")
+	CHECK_EQUAL_STR(chanAmpAssignUnit[%IC_ADUnit][0], "mV")
+	CHECK_EQUAL_VAR(chanAmpAssign[%VC_DAGain][1], 1)
+End
