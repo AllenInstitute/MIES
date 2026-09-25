@@ -1481,8 +1481,7 @@ Function AI_GetMode(string device, variable headstage)
 		case AMPLIFIER_TYPE_MCC:
 			return AI_MCC_GetMode(device, headstage)
 		case AMPLIFIER_TYPE_SUTTER:
-			// @todo implement
-			return NaN
+			return AI_SU_GetMode(device, headstage)
 		default:
 			FATAL_ERROR("Invalid amplifier type")
 	endswitch
@@ -1542,8 +1541,8 @@ Function AI_SetClampMode(string device, variable headStage, variable mode, [vari
 			AI_MCC_SetClampMode(device, headStage, mode, zeroStep, selectAmp)
 			break
 		case AMPLIFIER_TYPE_SUTTER:
-			// @todo implement
-			return NaN
+			AI_SU_SetClampMode(device, headStage, mode)
+			break
 		default:
 			FATAL_ERROR("Invalid amplifier type")
 	endswitch
@@ -1574,8 +1573,7 @@ Function AI_EnsureCorrectMode(string device, variable headStage, [variable selec
 		case AMPLIFIER_TYPE_MCC:
 			return AI_MCC_EnsureCorrectMode(device, headStage, selectAmp)
 		case AMPLIFIER_TYPE_SUTTER:
-			// @todo implement
-			return 1
+			return AI_SU_EnsureCorrectMode(device, headStage)
 		default:
 			FATAL_ERROR("Invalid amplifier type")
 	endswitch
