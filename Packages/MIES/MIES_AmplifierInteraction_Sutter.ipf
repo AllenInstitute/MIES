@@ -69,6 +69,17 @@ static Function AI_SU_GetProbeFromDeviceHeadstage(string serial, variable device
 	FATAL_ERROR("Unknown IPA device: " + serial)
 End
 
+/// @brief Return the number of connected amplifier headstages
+///
+/// The amplifiers are integrated in the IPA devices, so these are the
+/// amplifier headstages of all IPA devices found when opening the device.
+Function AI_SU_FindConnectedAmps()
+
+	PerformSubsystemEntry()
+
+	return AI_SU_GetNumberOfProbes()
+End
+
 /// @brief Return a nicely layouted list of the amplifier headstages of all IPA devices
 Function/S AI_SU_GetAmplifierList()
 
