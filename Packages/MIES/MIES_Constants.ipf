@@ -1103,18 +1103,20 @@ Constant NI_TTL_MAX = 1
 ///
 /// @anchor SUDAQ_WaveRanges
 ///@{
-Constant SU_HS_IN_V_MIN = -1     // V
-Constant SU_HS_IN_V_MAX = 1      // V
-Constant SU_HS_IN_I_MIN = -20E-9 // A
-Constant SU_HS_IN_I_MAX = 20E-9  // A
-Constant SU_DAC_MIN     = -10    // V
-Constant SU_DAC_MAX     = 10     // V
-Constant SU_ADC_MIN     = -10    // V
-Constant SU_ADC_MAX     = 10     // V
-Constant SU_HS_OUT_MIN  = -1     // V
-Constant SU_HS_OUT_MAX  = 1      // V
-Constant SU_TTL_MIN     = 0      // V
-Constant SU_TTL_MAX     = 1      // V
+Constant SU_HS_IN_V_MIN  = -1     // V
+Constant SU_HS_IN_V_MAX  = 1      // V
+Constant SU_HS_IN_I_MIN  = -20E-9 // A
+Constant SU_HS_IN_I_MAX  = 20E-9  // A
+Constant SU_DAC_MIN      = -10    // V
+Constant SU_DAC_MAX      = 10     // V
+Constant SU_ADC_MIN      = -10    // V
+Constant SU_ADC_MAX      = 10     // V
+Constant SU_HS_OUT_MIN   = -1     // V
+Constant SU_HS_OUT_MAX   = 1      // V
+Constant SU_HS_OUT_I_MIN = -20E-9 // A, current clamp
+Constant SU_HS_OUT_I_MAX = 20E-9  // A, current clamp
+Constant SU_TTL_MIN      = 0      // V
+Constant SU_TTL_MAX      = 1      // V
 ///@}
 
 /// Maximum length of a valid object name in bytes in Igor Pro >= 8
