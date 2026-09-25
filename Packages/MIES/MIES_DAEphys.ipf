@@ -15,8 +15,6 @@ static Constant HARDWARE_TAB_NUM  = 6
 static StrConstant COMMENT_PANEL          = "UserComments"
 static StrConstant COMMENT_PANEL_NOTEBOOK = "NB"
 
-static StrConstant AMPLIFIER_DEF_FORMAT = "AmpNo %d Chan %d"
-
 //                                   PCIe-6343                                    | PXI-6259                                   | PCIe-6341                                 | USB-6346
 static StrConstant NI_DAC_PATTERNS = "AI:32;AO:4;COUNTER:4;DIOPORTS:3;LINES:32,8,8|AI:32;AO:4;COUNTER:2;DIOPORTS:3;LINES:32,8,8|AI:16;AO:2;COUNTER:4;DIOPORTS:3;LINES:8,8,8|AI:8;AO:2;COUNTER:4;DIOPORTS:3;LINES:8,8,8"
 
@@ -1820,56 +1818,6 @@ Function DAP_ButtonCtrlFindConnectedAmps(STRUCT WMButtonAction &ba) : ButtonCont
 	endswitch
 End
 
-/// @brief Return a nicely layouted list of amplifier channels
-Function/S DAP_GetNiceAmplifierChannelList()
-
-	WAVE telegraphServers = GetAmplifierTelegraphServers()
-
-	if(!DimSize(telegraphServers, ROWS))
-		return AddListItem("\\M1(MC not available", NONE, ";", Inf)
-	endif
-
-	return AddListItem(DAP_FormatTelegraphServerList(telegraphServers), NONE, ";", Inf)
-End
-
-Function/S DAP_FormatTelegraphServerList(WAVE telegraphServers)
-
-	variable i, numRows
-	string str
-	string list = ""
-
-	numRows = DimSize(telegraphServers, ROWS)
-	for(i = 0; i < numRows; i += 1)
-		str  = DAP_GetAmplifierDef(telegraphServers[i][0], telegraphServers[i][1])
-		list = AddListItem(str, list, ";", Inf)
-	endfor
-
-	return list
-End
-
-static Function/S DAP_GetAmplifierDef(variable ampSerial, variable ampChannel)
-
-	string str
-
-	sprintf str, AMPLIFIER_DEF_FORMAT, ampSerial, ampChannel
-
-	return str
-End
-
-/// @brief Parse the entries which DAP_GetAmplifierDef() created
-Function DAP_ParseAmplifierDef(string amplifierDef, variable &ampSerial, variable &ampChannelID)
-
-	ampSerial    = NaN
-	ampChannelID = NaN
-
-	if(!cmpstr(amplifierDef, NONE))
-		return NaN
-	endif
-
-	sscanf amplifierDef, AMPLIFIER_DEF_FORMAT, ampSerial, ampChannelID
-	ASSERT(V_Flag == 2, "Unexpected amplifier popup list format")
-End
-
 Function DAP_SyncDeviceAssocSettToGUI(string device, variable headStage)
 
 	DAP_AbortIfUnlocked(device)
@@ -2315,7 +2263,7 @@ Function DAP_CheckSettings(string device, variable mode)
 		ampSerial    = ChanAmpAssign[%AmpSerialNo][i]
 		ampChannelID = ChanAmpAssign[%AmpChannelID][i]
 		if(IsFinite(ampSerial) && IsFinite(ampChannelID))
-			ampSpec[i] = DAP_GetAmplifierDef(ampSerial, ampChannelID)
+			ampSpec[i] = AI_GetAmplifierDef(ampSerial, ampChannelID)
 		else
 			// add a unique alternative entry
 			ampSpec[i] = num2str(i)
@@ -5022,8 +4970,8 @@ static Function DAP_UpdateChanAmpAssignStorWv(string device)
 	// Assigns amplifier to a particular headstage
 	// sounds weird because this relationship is predetermined in hardware
 	// but now you are telling the software what it is
-	amplifierDef = GetPopupMenuString(device, "popup_Settings_Amplifier")
-	DAP_ParseAmplifierDef(amplifierDef, ampSerial, ampChannelID)
+	amplifierDef              = GetPopupMenuString(device, "popup_Settings_Amplifier")
+	[ampSerial, ampChannelID] = AI_ParseAmplifierDef(amplifierDef)
 
 	if(IsFinite(ampSerial) && IsFinite(ampChannelID))
 		ChanAmpAssign[%AmpSerialNo][HeadStageNo]  = ampSerial
@@ -5073,7 +5021,7 @@ static Function DAP_UpdateChanAmpAssignPanel(string device)
 	ampSerial    = ChanAmpAssign[%AmpSerialNo][HeadStageNo]
 	ampChannelID = ChanAmpAssign[%AmpChannelID][HeadStageNo]
 	if(isFinite(ampSerial) && isFinite(ampChannelID))
-		entry = DAP_GetAmplifierDef(ampSerial, ampChannelID)
+		entry = AI_GetAmplifierDef(ampSerial, ampChannelID)
 		Popupmenu popup_Settings_Amplifier, win=$device, popmatch=entry
 	else
 		Popupmenu popup_Settings_Amplifier, win=$device, popmatch=NONE

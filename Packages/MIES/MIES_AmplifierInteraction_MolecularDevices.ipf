@@ -16,6 +16,8 @@ static Constant MIN_PIPETTEOFFSET = -150
 
 static Constant NUM_TRIES_AXON_TELEGRAPH = 10
 
+static StrConstant AMPLIFIER_DEF_FORMAT = "AmpNo %d Chan %d"
+
 #if exists("MCC_GetMode") && exists("AxonTelegraphGetDataStruct")
 #define AMPLIFIER_XOPS_PRESENT
 #endif
@@ -753,6 +755,65 @@ static Function/S AIMCC_GetMCCWinFilePath()
 	return "ERROR"
 End
 
+/// @brief Return a nicely layouted list of amplifier channels
+Function/S AIMCC_GetAmplifierList()
+
+	PerformSubsystemEntry()
+
+	WAVE telegraphServers = GetAmplifierTelegraphServers()
+
+	if(!DimSize(telegraphServers, ROWS))
+		return AddListItem("\\M1(MC not available", NONE, ";", Inf)
+	endif
+
+	return AddListItem(AIMCC_FormatTelegraphServerList(telegraphServers), NONE, ";", Inf)
+End
+
+static Function/S AIMCC_FormatTelegraphServerList(WAVE telegraphServers)
+
+	variable i, numRows
+	string str
+	string list = ""
+
+	numRows = DimSize(telegraphServers, ROWS)
+	for(i = 0; i < numRows; i += 1)
+		str  = AIMCC_GetAmplifierDef(telegraphServers[i][0], telegraphServers[i][1])
+		list = AddListItem(str, list, ";", Inf)
+	endfor
+
+	return list
+End
+
+/// @brief Return the amplifier list entry for the given amplifier serial and channel
+Function/S AIMCC_GetAmplifierDef(variable ampSerial, variable ampChannel)
+
+	string str
+
+	PerformSubsystemEntry()
+
+	sprintf str, AMPLIFIER_DEF_FORMAT, ampSerial, ampChannel
+
+	return str
+End
+
+/// @brief Parse the entries which AIMCC_GetAmplifierDef() created
+Function [variable ampSerial, variable ampChannelID] AIMCC_ParseAmplifierDef(string amplifierDef)
+
+	PerformSubsystemEntry()
+
+	ampSerial    = NaN
+	ampChannelID = NaN
+
+	if(!cmpstr(amplifierDef, NONE))
+		return [ampSerial, ampChannelID]
+	endif
+
+	sscanf amplifierDef, AMPLIFIER_DEF_FORMAT, ampSerial, ampChannelID
+	ASSERT(V_Flag == 2, "Unexpected amplifier popup list format")
+
+	return [ampSerial, ampChannelID]
+End
+
 #ifdef AMPLIFIER_XOPS_PRESENT
 
 ///@brief Returns the holding command of the amplifier
@@ -1473,7 +1534,7 @@ static Function [WAVE telegraphServers, WAVE ampMCC] AIMCC_FindConnectedAmpsNoCa
 
 	SetDataFolder saveDFR
 
-	list = DAP_FormatTelegraphServerList(telegraphServers)
+	list = AIMCC_FormatTelegraphServerList(telegraphServers)
 
 	LOG_AddEntry(PACKAGE_MIES, "amplifiers", keys = {"list"}, values = {list})
 
