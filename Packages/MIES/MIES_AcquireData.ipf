@@ -519,6 +519,8 @@ Function ACD_AcquireData(STRUCT ACD_DAQSettings &s, string device)
 			// the Sutter amplifiers are fixed
 			INFO("HS %d has not the fixed Sutter amplifier", n0 = i)
 			CHECK_EQUAL_VAR(AI_GetAmplifierType(device, i), AMPLIFIER_TYPE_SUTTER)
+
+			PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
 #else
 			// first entry is none
 			PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 1 + activeHS)
@@ -638,12 +640,7 @@ Function ACD_AcquireData(STRUCT ACD_DAQSettings &s, string device)
 		endif
 	endfor
 
-#ifdef TESTS_WITH_SUTTER_HARDWARE
-	// @todo require the amplifier once the Sutter amplifiers are supported
-	PGC_SetAndActivateControl(device, "check_Settings_RequireAmpConn", val = CHECKBOX_UNSELECTED)
-#else
 	PGC_SetAndActivateControl(device, "check_Settings_RequireAmpConn", val = (s.amp ? CHECKBOX_SELECTED : CHECKBOX_UNSELECTED))
-#endif // TESTS_WITH_SUTTER_HARDWARE
 	PGC_SetAndActivateControl(device, "check_Settings_MD", val = s.MD)
 	PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = s.RA)
 	PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = s.IDX)
