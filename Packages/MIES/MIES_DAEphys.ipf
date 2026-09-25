@@ -4638,6 +4638,8 @@ Function DAP_LockDevice(string win)
 	DAP_UpdateSweepLimitsAndDisplay(deviceLocked)
 	DAP_AdaptPanelForDeviceSpecifics(deviceLocked)
 
+	AI_InitializeAmplifiers(deviceLocked)
+
 	WAVE TPSettings = GetTPSettings(deviceLocked)
 	// force update the stored TP settings
 	// they could have been changed during panel unlock
@@ -4884,6 +4886,8 @@ static Function DAP_UnlockDevice(string device)
 	hardwareType = GetHardwareType(device)
 	// shutdown the FIFO thread now in case it is still running (which should never be the case)
 	TFH_StopFIFODaemon(hardwareType, deviceID)
+
+	AI_ShutdownAmplifiers(device)
 
 	flags = HARDWARE_ABORT_ON_ERROR
 	HW_CloseDevice(hardwareType, deviceID, flags = flags)
