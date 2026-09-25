@@ -16,6 +16,17 @@
 
 static StrConstant AMPLIFIER_DEF_FORMAT = "%s HS %d"
 
+/// @name Gains of the Sutter headstages
+///
+/// The Sutter XOP outputs and acquires the headstage signals in SI units,
+/// independent of the gain setting of the amplifier.
+///@{
+static Constant SUTTER_VC_DA_GAIN = 1000  ///< mV/V, command in V
+static Constant SUTTER_VC_AD_GAIN = 1e-12 ///< A/pA, current in A
+static Constant SUTTER_IC_DA_GAIN = 1e12  ///< pA/A, command in A
+static Constant SUTTER_IC_AD_GAIN = 1e-3  ///< V/mV, voltage in V
+///@}
+
 // IPA_Control.ipf is only included with the Sutter XOP, see MIES_Include.ipf
 #if exists("SutterDAQScanWave")
 #define SUTTER_AMPLIFIER_PRESENT
@@ -83,6 +94,63 @@ Function AI_SU_FindConnectedAmps()
 	PerformSubsystemEntry()
 
 	return AI_SU_GetNumberOfProbes()
+End
+
+/// @brief Return the gains and units of the given clamp mode
+///
+/// These are fixed for Sutter amplifiers, see @ref SUTTER_VC_DA_GAIN.
+Function [variable DAGain, variable ADGain, string DAUnit, string ADUnit] AI_SU_QueryGainsUnitsForClampMode(string device, variable headstage, variable clampMode)
+
+	PerformSubsystemEntry()
+
+	switch(clampMode)
+		case V_CLAMP_MODE:
+			DAGain = SUTTER_VC_DA_GAIN
+			ADGain = SUTTER_VC_AD_GAIN
+			DAUnit = "mV"
+			ADUnit = "pA"
+			break
+		case I_CLAMP_MODE:
+			DAGain = SUTTER_IC_DA_GAIN
+			ADGain = SUTTER_IC_AD_GAIN
+			DAUnit = "pA"
+			ADUnit = "mV"
+			break
+		default:
+			FATAL_ERROR("Unsupported clamp mode for Sutter amplifiers: " + num2istr(clampMode))
+	endswitch
+
+	return [DAGain, ADGain, DAUnit, ADUnit]
+End
+
+/// @brief Fill the gains and units of all headstages with Sutter amplifiers
+///
+/// The data is inserted into `ChanAmpAssign` and `ChanAmpAssignUnit`.
+///
+/// @returns number of Sutter amplifiers
+Function AI_SU_QueryGainsFromMCC(string device)
+
+	variable i, clampMode, numAmplifiers, DAGain, ADGain
+	string DAUnit, ADUnit
+
+	PerformSubsystemEntry()
+
+	Make/FREE/D clampModes = {V_CLAMP_MODE, I_CLAMP_MODE}
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+		if(AI_GetAmplifierType(device, i) != AMPLIFIER_TYPE_SUTTER)
+			continue
+		endif
+
+		numAmplifiers += 1
+
+		for(clampMode : clampModes)
+			[DAGain, ADGain, DAUnit, ADUnit] = AI_SU_QueryGainsUnitsForClampMode(device, i, clampMode)
+			AI_UpdateChanAmpAssign(device, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
+		endfor
+	endfor
+
+	return numAmplifiers
 End
 
 /// @brief Return a nicely layouted list of the amplifier headstages of all IPA devices
