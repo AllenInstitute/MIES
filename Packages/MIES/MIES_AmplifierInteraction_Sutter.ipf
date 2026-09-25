@@ -317,6 +317,27 @@ Function AI_SU_EnsureCorrectMode(string device, variable headstage)
 	return 0
 End
 
+/// @brief Check that the amplifier of the headstage can be used
+///
+/// There is nothing to select as the amplifiers are addressed by their probe index.
+///
+/// @returns one of @ref AISelectMultiClampReturnValues, #AMPLIFIER_CONNECTION_MCC_FAILED
+///          if the amplifiers are not connected
+Function AI_SU_SelectMultiClamp(string device, variable headstage)
+
+	PerformSubsystemEntry()
+
+	if(headstage >= AI_SU_GetNumberOfProbes())
+		return AMPLIFIER_CONNECTION_INVAL_SER
+	endif
+
+	if(!IPA_OkToSendCommand())
+		return AMPLIFIER_CONNECTION_MCC_FAILED
+	endif
+
+	return AMPLIFIER_CONNECTION_SUCCESS
+End
+
 #else // SUTTER_AMPLIFIER_PRESENT
 
 Function AI_SU_Initialize(string device)
@@ -358,6 +379,15 @@ Function AI_SU_EnsureCorrectMode(string device, variable headstage)
 	DEBUGPRINT("Unimplemented")
 
 	return 1
+End
+
+Function AI_SU_SelectMultiClamp(string device, variable headstage)
+
+	PerformSubsystemEntry()
+
+	DEBUGPRINT("Unimplemented")
+
+	return AMPLIFIER_CONNECTION_INVAL_SER
 End
 
 #endif // SUTTER_AMPLIFIER_PRESENT
