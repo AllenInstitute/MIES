@@ -1955,8 +1955,9 @@ Function DAP_ButtonProc_ClearChanCon(STRUCT WMButtonAction &ba) : ButtonControl
 			endif
 
 			// set all DA/AD channels for both clamp modes to an invalid channel number
-			ChanAmpAssign[0, 6; 2][headStage] = NaN
-			ChanAmpAssign[8, 9][headStage]    = NaN
+			ChanAmpAssign[0, 6; 2][headStage]  = NaN
+			ChanAmpAssign[8, 9][headStage]     = NaN
+			ChanAmpAssign[%AmpType][headStage] = AMPLIFIER_TYPE_NONE
 
 			DAP_UpdateChanAmpAssignPanel(device)
 			break
@@ -4977,9 +4978,11 @@ static Function DAP_UpdateChanAmpAssignStorWv(string device)
 	if(IsFinite(ampSerial) && IsFinite(ampChannelID))
 		ChanAmpAssign[%AmpSerialNo][HeadStageNo]  = ampSerial
 		ChanAmpAssign[%AmpChannelID][HeadStageNo] = ampChannelID
+		ChanAmpAssign[%AmpType][HeadStageNo]      = AMPLIFIER_TYPE_MCC
 	else
 		ChanAmpAssign[%AmpSerialNo][HeadStageNo]  = NaN
 		ChanAmpAssign[%AmpChannelID][HeadStageNo] = NaN
+		ChanAmpAssign[%AmpType][HeadStageNo]      = AMPLIFIER_TYPE_NONE
 	endif
 End
 

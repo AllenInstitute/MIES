@@ -121,3 +121,77 @@ static Function TestAmplifierStorageLabels()
 
 	CHECK_GE_VAR(WaveMin(rows), 0)
 End
+
+static Function TestChanAmpAssignLayout()
+
+	variable row
+	string   lbl
+
+	WAVE/Z chanAmpAssign = GetChanAmpAssign("RandomDeviceName")
+	CHECK_WAVE(chanAmpAssign, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(DimSize(chanAmpAssign, COLS), NUM_HEADSTAGES)
+
+	Make/FREE/T labels = {"VC_DA", "VC_DAGain", "VC_AD", "VC_ADGain", "IC_DA", "IC_DAGain", "IC_AD", "IC_ADGain", "AmpSerialNo", "AmpChannelID", "AmpType"}
+	for(lbl : labels)
+		INFO("label: %s", s0 = lbl)
+		CHECK_GE_VAR(FindDimLabel(chanAmpAssign, ROWS, lbl), 0)
+	endfor
+
+	// defaults of a new wave
+	Make/FREE/T gainLabels = {"VC_DAGain", "VC_ADGain", "IC_DAGain", "IC_ADGain"}
+	for(lbl : gainLabels)
+		INFO("label: %s", s0 = lbl)
+		row = FindDimLabel(chanAmpAssign, ROWS, lbl)
+		Duplicate/FREE/RMD=[row][] chanAmpAssign, gains
+		CHECK_EQUAL_VAR(IsConstant(gains, 1, ignoreNaN = 0), 1)
+	endfor
+
+	Make/FREE/T ampLabels = {"AmpSerialNo", "AmpChannelID"}
+	for(lbl : ampLabels)
+		INFO("label: %s", s0 = lbl)
+		row = FindDimLabel(chanAmpAssign, ROWS, lbl)
+		Duplicate/FREE/RMD=[row][] chanAmpAssign, ampEntries
+		CHECK_EQUAL_VAR(IsConstant(ampEntries, NaN, ignoreNaN = 0), 1)
+	endfor
+
+	row = FindDimLabel(chanAmpAssign, ROWS, "AmpType")
+	Duplicate/FREE/RMD=[row][] chanAmpAssign, ampTypes
+	CHECK_EQUAL_VAR(IsConstant(ampTypes, AMPLIFIER_TYPE_NONE, ignoreNaN = 0), 1)
+End
+
+static Function TestChanAmpAssignUpgradeToAmplifierType()
+
+	variable row
+
+	WAVE chanAmpAssign = GetChanAmpAssign("RandomDeviceName")
+
+	// create a version 3 layout
+	Redimension/N=(10, -1) chanAmpAssign
+	MIES_WAVEGETTERS#SetWaveVersion(chanAmpAssign, 3)
+
+	// headstage 0: MCC amplifier
+	chanAmpAssign[%AmpSerialNo][0]  = 123
+	chanAmpAssign[%AmpChannelID][0] = 1
+	// headstage 1: incomplete amplifier assignment
+	chanAmpAssign[%AmpSerialNo][1]  = 456
+	chanAmpAssign[%AmpChannelID][1] = NaN
+	// all other headstages: no amplifier
+	chanAmpAssign[%AmpSerialNo][2, *]  = NaN
+	chanAmpAssign[%AmpChannelID][2, *] = NaN
+
+	Duplicate/FREE chanAmpAssign, chanAmpAssignOld
+
+	WAVE chanAmpAssign = GetChanAmpAssign("RandomDeviceName")
+	CHECK_GT_VAR(GetWaveVersion(chanAmpAssign), 3)
+
+	CHECK_EQUAL_VAR(chanAmpAssign[%AmpType][0], AMPLIFIER_TYPE_MCC)
+	CHECK_EQUAL_VAR(chanAmpAssign[%AmpType][1], AMPLIFIER_TYPE_NONE)
+
+	row = FindDimLabel(chanAmpAssign, ROWS, "AmpType")
+	Duplicate/FREE/RMD=[row][2, *] chanAmpAssign, ampTypes
+	CHECK_EQUAL_VAR(IsConstant(ampTypes, AMPLIFIER_TYPE_NONE, ignoreNaN = 0), 1)
+
+	// existing entries are kept
+	Duplicate/FREE/RMD=[0, 9][] chanAmpAssign, chanAmpAssignKept
+	CHECK_EQUAL_WAVES(chanAmpAssignKept, chanAmpAssignOld, mode = WAVE_DATA)
+End
