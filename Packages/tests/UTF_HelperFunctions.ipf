@@ -42,6 +42,35 @@ Function FixupJSONConfigImplRig(variable jsonId)
 	string serialNumStr, jsonPath
 	variable serialNum, i
 
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	variable numProbes
+
+	// the Sutter amplifiers are fixed, replace the stored MCC amplifiers
+	WAVE/T deviceInfo = GetSUDeviceInfo()
+	numProbes = str2num(deviceInfo[%SUMHEADSTAGES])
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+		sprintf jsonPath, "/Common configuration data/Headstage Association/%d/Amplifier", i
+		if(!JSON_Exists(jsonID, jsonPath))
+			continue
+		endif
+		if(JSON_GetType(jsonID, jsonPath + "/Serial", ignoreErr = 1) != JSON_NUMERIC)
+			continue
+		endif
+
+		if(i < numProbes)
+			JSON_SetString(jsonID, jsonPath + "/Type", "Sutter")
+			JSON_SetVariable(jsonID, jsonPath + "/Channel", i)
+		else
+			// headstages without amplifier, stored as CONF_GetAmplifierSettings() does
+			JSON_SetNull(jsonID, jsonPath + "/Serial")
+			JSON_SetNull(jsonID, jsonPath + "/Channel")
+		endif
+	endfor
+
+	return NaN
+#endif // TESTS_WITH_SUTTER_HARDWARE
+
 	// replace stored serial number with present serial number
 	AI_FindConnectedAmps("")
 	WAVE ampMCC = GetAmplifierMultiClamps()
