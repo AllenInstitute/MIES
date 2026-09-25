@@ -3375,13 +3375,20 @@ Function HW_SU_StopAcq(variable deviceID, [variable zeroDAC, variable flags])
 
 	device = HW_GetMainDeviceName(HARDWARE_SUTTER_DAC, deviceID, flags = flags)
 	NVAR acq = $GetSU_IsAcquisitionRunning(device)
-	if(acq)
-		SutterDAQReset()
-		acq = 0
-	endif
+
+	// Always reset, even if no acquisition is running at the moment:
+	// `acq` is already cleared by HW_SU_AcqDone() when a single sweep has finished,
+	// e.g. between two test pulse sweeps, but the output stays in the streaming
+	// state of the last SutterDAQWriteWave call. In that state the amplifier holding
+	// command has no effect until SutterDAQReset() is called.
+	SutterDAQReset()
+	acq = 0
 
 	if(zeroDAC)
 		HW_SU_ZeroDAC(deviceID, flags = flags)
+		// zeroing the DACs is an acquisition on its own, which leaves the output
+		// in the streaming state as well, see above
+		SutterDAQReset()
 	endif
 End
 
