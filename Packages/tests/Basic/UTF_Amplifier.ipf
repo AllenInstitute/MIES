@@ -299,3 +299,38 @@ static Function TestAllowedAmplifierTypes()
 	CHECK_EQUAL_VAR(AI_IsAllowedAmplifierType(sutterDevice, AMPLIFIER_TYPE_MCC), 0)
 	CHECK_EQUAL_VAR(AI_IsAllowedAmplifierType(sutterDevice, AMPLIFIER_TYPE_NONE), 0)
 End
+
+static Function TestSutterAmplifierList()
+
+	string sutterDevice = DEVICE_SUTTER_NAME_START_CLEAN + "1"
+	string list, def, refList
+	variable ampType, ampSerial, ampChannelID, i
+
+	WAVE/T deviceInfo = GetSUDeviceInfo()
+
+	// one double and one single IPA
+	deviceInfo[%LISTOFDEVICES]    = "IPA_E_211111;IPA_E_122222;"
+	deviceInfo[%LISTOFHEADSTAGES] = "2;1;"
+	deviceInfo[%SUMHEADSTAGES]    = "3"
+
+	refList = AddListItem(NONE, "", ";", Inf)
+	refList = AddListItem("IPA_E_211111 HS 1", refList, ";", Inf)
+	refList = AddListItem("IPA_E_211111 HS 2", refList, ";", Inf)
+	refList = AddListItem("IPA_E_122222 HS 1", refList, ";", Inf)
+
+	list = AI_GetAmplifierList(device = sutterDevice)
+	CHECK_EQUAL_STR(list, refList)
+
+	for(i = 0; i < 3; i += 1)
+		def                                = StringFromList(i + 1, list)
+		[ampType, ampSerial, ampChannelID] = AI_ParseAmplifierDef(sutterDevice, def)
+		CHECK_EQUAL_VAR(ampType, AMPLIFIER_TYPE_SUTTER)
+		CHECK_EQUAL_VAR(ampSerial, NaN)
+		CHECK_EQUAL_VAR(ampChannelID, i)
+	endfor
+
+	WAVE chanAmpAssign = GetChanAmpAssign(sutterDevice)
+	chanAmpAssign[%AmpType][2]      = AMPLIFIER_TYPE_SUTTER
+	chanAmpAssign[%AmpChannelID][2] = 2
+	CHECK_EQUAL_STR(AI_GetAmplifierDef(sutterDevice, 2), "IPA_E_122222 HS 1")
+End
