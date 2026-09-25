@@ -20,7 +20,8 @@ static StrConstant NI_DAC_PATTERNS = "AI:32;AO:4;COUNTER:4;DIOPORTS:3;LINES:32,8
 
 static Constant DAP_WAITFORTPANALYSIS_TIMEOUT = 2
 
-static StrConstant SU_DISABLED_CONTROLS = "Popup_Settings_VC_DA;Popup_Settings_VC_AD;Popup_Settings_IC_DA;Popup_Settings_IC_AD;button_Hardware_ClearChanConn;popup_Settings_Amplifier;button_Settings_UpdateAmpStatus;"
+// the I=0 controls are disabled as I=0 is not supported for Sutter amplifiers
+static StrConstant SU_DISABLED_CONTROLS = "Popup_Settings_VC_DA;Popup_Settings_VC_AD;Popup_Settings_IC_DA;Popup_Settings_IC_AD;button_Hardware_ClearChanConn;popup_Settings_Amplifier;button_Settings_UpdateAmpStatus;Radio_ClampMode_1IZ;Radio_ClampMode_3IZ;Radio_ClampMode_5IZ;Radio_ClampMode_7IZ;Radio_ClampMode_9IZ;Radio_ClampMode_11IZ;Radio_ClampMode_13IZ;Radio_ClampMode_15IZ;Radio_ClampMode_AllIZero;check_Settings_AmpIEQZstep;"
 
 /// @brief Creates meta information about coupled CheckBoxes (Radio Button) controls
 ///        Used for saving/restoring the GUI state
@@ -3323,6 +3324,7 @@ Function DAP_ChangeHeadStageMode(string device, variable clampMode, variable hea
 
 	AI_AssertOnInvalidClampMode(clampMode)
 	DAP_AbortIfUnlocked(device)
+	ASSERT(AI_IsClampModeSupported(device, clampMode), "The clamp mode " + ConvertAmplifierModeToString(clampMode) + " is not supported for the amplifiers of the device")
 
 	if(options != MCC_SKIP_UPDATES)
 		// explicitly switch to the data acquistion tab to avoid having
