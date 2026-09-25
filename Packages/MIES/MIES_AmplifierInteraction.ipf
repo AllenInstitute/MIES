@@ -278,6 +278,35 @@ Function/S AI_GetAmplifierDef(string device, variable headstage)
 	endswitch
 End
 
+/// @brief Return the amplifier list entry of the amplifier fixed to the headstage
+///
+/// Only devices with integrated amplifiers have fixed amplifiers.
+///
+/// @param device    device
+/// @param headstage MIES headstage number, must be in the range [0, NUM_HEADSTAGES[
+///
+/// @returns list entry as returned by AI_GetAmplifierList(), #NONE if the headstage has no fixed amplifier
+///          or an empty string if the device has no fixed amplifiers
+Function/S AI_GetFixedAmplifierDef(string device, variable headstage)
+
+	string list
+
+	PerformSubsystemEntry()
+
+	ASSERT(IsValidHeadstage(headstage), "Invalid headstage")
+
+	switch(AI_GetAmplifierTypeOfDevice(device))
+		case AMPLIFIER_TYPE_MCC:
+			return ""
+		case AMPLIFIER_TYPE_SUTTER:
+			// first entry is NONE
+			list = AISU_GetAmplifierList()
+			return SelectString((headstage + 1) < ItemsInList(list), NONE, StringFromList(headstage + 1, list))
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
+End
+
 /// @brief Parse the entries which AI_GetAmplifierList() created
 ///
 /// @param[in]  device       device
