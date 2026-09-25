@@ -168,6 +168,9 @@ static StrConstant EXPCONFIG_JSON_PRESSUREBLOCK = "Pressure"
 static StrConstant EXPCONFIG_JSON_AMPSERIAL     = "Serial"
 static StrConstant EXPCONFIG_JSON_AMPTITLE      = "Title"
 static StrConstant EXPCONFIG_JSON_AMPCHANNEL    = "Channel"
+static StrConstant EXPCONFIG_JSON_AMPTYPE       = "Type"
+static StrConstant EXPCONFIG_AMPTYPE_MCC        = "MCC"
+static StrConstant EXPCONFIG_AMPTYPE_SUTTER     = "Sutter"
 static StrConstant EXPCONFIG_JSON_AMPVCDA       = "DA"
 static StrConstant EXPCONFIG_JSON_AMPVCDAGAIN   = "DA gain"
 static StrConstant EXPCONFIG_JSON_AMPVCDAUNIT   = "DA unit"
@@ -2227,13 +2230,28 @@ static Function CONF_RestoreUserPressure(string device, variable jsonID)
 	PGC_SetAndActivateControl(device, "button_Hardware_PUser_Enable")
 End
 
+/// @brief Convert an amplifier type to its configuration file representation
+///
+/// @param ampType one of @ref AmplifierTypes, except #AMPLIFIER_TYPE_NONE
+static Function/S CONF_AmplifierTypeToString(variable ampType)
+
+	switch(ampType)
+		case AMPLIFIER_TYPE_MCC:
+			return EXPCONFIG_AMPTYPE_MCC
+		case AMPLIFIER_TYPE_SUTTER:
+			return EXPCONFIG_AMPTYPE_SUTTER
+		default:
+			FATAL_ERROR("Invalid amplifier type: " + num2istr(ampType))
+	endswitch
+End
+
 /// @brief Retrieves current amplifier and pressure settings to json
 ///
 /// @param[in] device device
 /// @returns jsonID ID of json object with user pressure configuration data
 static Function CONF_GetAmplifierSettings(string device)
 
-	variable jsonID, i, clampMode, ampSerial, ampChannelID, index
+	variable jsonID, i, clampMode, ampSerial, ampChannelID, index, ampType
 	string jsonPath, amplifierDef, basePath
 
 	jsonID = JSON_New()
@@ -2280,12 +2298,22 @@ static Function CONF_GetAmplifierSettings(string device)
 		JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPICDAUNIT, GetSetVariableString(device, "SetVar_Hardware_IC_DA_Unit"))
 		JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPICADUNIT, GetSetVariableString(device, "SetVar_Hardware_IC_AD_Unit"))
 
-		if(AI_HasAmplifier(device, i))
+		ampType = AI_GetAmplifierType(device, i)
+
+		if(ampType == AMPLIFIER_TYPE_SUTTER)
+			jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/"
+
+			JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPTYPE, CONF_AmplifierTypeToString(ampType))
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPCHANNEL, ChanAmpAssign[%AmpChannelID][i])
+
+			// @todo store the amplifier settings once they are supported for Sutter amplifiers
+		elseif(ampType == AMPLIFIER_TYPE_MCC)
 			ampSerial    = ChanAmpAssign[%AmpSerialNo][i]
 			ampChannelID = ChanAmpAssign[%AmpChannelID][i]
 
 			jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/"
 
+			JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPTYPE, CONF_AmplifierTypeToString(ampType))
 			JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPTITLE, StringFromList(trunc(i / 2), EXPCONFIG_SETTINGS_AMPTITLE))
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPSERIAL, ampSerial)
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPCHANNEL, ampChannelID)
