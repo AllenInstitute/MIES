@@ -5798,7 +5798,7 @@ Function DAP_GetDAScaleMax(string device, variable headstage, string stimsetName
 	ASSERT(IsFinite(minStimset) && IsFinite(maxStimset), "Invalid minimum/maximum")
 
 	hardwareType       = GetHardwareType(device)
-	[minData, maxData] = HW_GetDataRange(hardwareType, XOP_CHANNEL_TYPE_DAC, 1)
+	[minData, maxData] = HW_GetDataRange(hardwareType, XOP_CHANNEL_TYPE_DAC, 1, clampMode = DAG_GetHeadstageMode(device, headstage))
 
 	WAVE DAQConfigWave = GetDAQConfigWave(device)
 	WAVE DACs          = GetDACListFromConfig(DAQConfigWave)
