@@ -2031,7 +2031,7 @@ End
 Function DAP_CheckSettings(string device, variable mode)
 
 	variable numDACs, numADCs, numHS, numEntries, i, clampMode, headstage
-	variable ampSerial, ampChannelID, hardwareType
+	variable hardwareType
 	variable lastStartSeconds, lastITI, nextStart, leftTime, sweepNo
 	variable DACchannel, ret
 	string ctrl, endWave, ttlWave, dacWave, refDacWave, reqParams
@@ -2262,9 +2262,7 @@ Function DAP_CheckSettings(string device, variable mode)
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
 		if(AI_HasAmplifier(device, i))
-			ampSerial    = ChanAmpAssign[%AmpSerialNo][i]
-			ampChannelID = ChanAmpAssign[%AmpChannelID][i]
-			ampSpec[i]   = AI_GetAmplifierDef(ampSerial, ampChannelID)
+			ampSpec[i] = AI_GetAmplifierDef(device, i)
 		else
 			// add a unique alternative entry
 			ampSpec[i] = num2str(i)
@@ -4592,6 +4590,7 @@ Function DAP_LockDevice(string win)
 	DAP_UpdateDataFolderDisplay(deviceLocked, locked)
 
 	AI_FindConnectedAmps(deviceLocked)
+	PopupMenu popup_Settings_Amplifier, win=$deviceLocked, value=#("AI_GetAmplifierList(device = \"" + deviceLocked + "\")")
 	DAP_UpdateListOfLockedDevices()
 	DAP_UpdateListOfPressureDevices()
 	headstage = str2num(GetPopupMenuString(deviceLocked, "Popup_Settings_HeadStage"))
@@ -4874,6 +4873,7 @@ static Function DAP_UnlockDevice(string device)
 		unlockedDevice = UniqueName(BASE_WINDOW_NAME + "_", CONTROL_PANEL_TYPE, 1)
 	endif
 	DoWindow/W=$device/C $unlockedDevice
+	PopupMenu popup_Settings_Amplifier, win=$unlockedDevice, value=#"AI_GetAmplifierList()"
 
 	variable locked = 0
 	DAP_UpdateDataFolderDisplay(unlockedDevice, locked)
@@ -4946,7 +4946,7 @@ End
 
 static Function DAP_UpdateChanAmpAssignStorWv(string device)
 
-	variable HeadStageNo, ampSerial, ampChannelID
+	variable HeadStageNo, ampSerial, ampChannelID, ampType
 	string amplifierDef
 	WAVE   ChanAmpAssign     = GetChanAmpAssign(device)
 	WAVE/T ChanAmpAssignUnit = GetChanAmpAssignUnit(device)
@@ -4972,23 +4972,17 @@ static Function DAP_UpdateChanAmpAssignStorWv(string device)
 	// Assigns amplifier to a particular headstage
 	// sounds weird because this relationship is predetermined in hardware
 	// but now you are telling the software what it is
-	amplifierDef              = GetPopupMenuString(device, "popup_Settings_Amplifier")
-	[ampSerial, ampChannelID] = AI_ParseAmplifierDef(amplifierDef)
+	amplifierDef                       = GetPopupMenuString(device, "popup_Settings_Amplifier")
+	[ampType, ampSerial, ampChannelID] = AI_ParseAmplifierDef(device, amplifierDef)
 
-	if(IsFinite(ampSerial) && IsFinite(ampChannelID))
-		ChanAmpAssign[%AmpSerialNo][HeadStageNo]  = ampSerial
-		ChanAmpAssign[%AmpChannelID][HeadStageNo] = ampChannelID
-		ChanAmpAssign[%AmpType][HeadStageNo]      = AMPLIFIER_TYPE_MCC
-	else
-		ChanAmpAssign[%AmpSerialNo][HeadStageNo]  = NaN
-		ChanAmpAssign[%AmpChannelID][HeadStageNo] = NaN
-		ChanAmpAssign[%AmpType][HeadStageNo]      = AMPLIFIER_TYPE_NONE
-	endif
+	ChanAmpAssign[%AmpSerialNo][HeadStageNo]  = ampSerial
+	ChanAmpAssign[%AmpChannelID][HeadStageNo] = ampChannelID
+	ChanAmpAssign[%AmpType][HeadStageNo]      = ampType
 End
 
 static Function DAP_UpdateChanAmpAssignPanel(string device)
 
-	variable HeadStageNo, channel, ampSerial, ampChannelID
+	variable HeadStageNo, channel
 	string entry
 
 	WAVE   ChanAmpAssign     = GetChanAmpAssign(device)
@@ -5022,14 +5016,8 @@ static Function DAP_UpdateChanAmpAssignPanel(string device)
 	Setvariable setvar_Settings_IC_ADgain, win=$device, value=_NUM:ChanAmpAssign[%IC_ADGain][HeadStageNo]
 	Setvariable SetVar_Hardware_IC_AD_Unit, win=$device, value=_STR:ChanAmpAssignUnit[%IC_ADUnit][HeadStageNo]
 
-	if(AI_HasAmplifier(device, HeadStageNo))
-		ampSerial    = ChanAmpAssign[%AmpSerialNo][HeadStageNo]
-		ampChannelID = ChanAmpAssign[%AmpChannelID][HeadStageNo]
-		entry        = AI_GetAmplifierDef(ampSerial, ampChannelID)
-		Popupmenu popup_Settings_Amplifier, win=$device, popmatch=entry
-	else
-		Popupmenu popup_Settings_Amplifier, win=$device, popmatch=NONE
-	endif
+	entry = AI_GetAmplifierDef(device, HeadStageNo)
+	Popupmenu popup_Settings_Amplifier, win=$device, popmatch=entry
 End
 
 /// @brief Helper function to update all DAQ related controls after something changed.

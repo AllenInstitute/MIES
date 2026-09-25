@@ -2090,7 +2090,7 @@ static Function CONF_RestoreHeadstageAssociation(string device, variable jsonID,
 			ampChannel       = JSON_GetVariable(jsonID, jsonPathAmpBlock + EXPCONFIG_JSON_AMPCHANNEL)
 
 			if(IsFinite(ampSerial) && IsFinite(ampChannel))
-				PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = CONF_FindAmpInList(ampSerial, ampChannel))
+				PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = CONF_FindAmpInList(device, ampSerial, ampChannel))
 				PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
 			else
 				PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", str = NONE)
@@ -2459,20 +2459,21 @@ End
 
 /// @brief Find the list index of a connected amplifier serial number
 ///
+/// @param device          device
 /// @param ampSerialRef    Amplifier Serial Number to search for
 /// @param ampChannelIDRef Headstage reference number
-static Function CONF_FindAmpInList(variable ampSerialRef, variable ampChannelIDRef)
+static Function CONF_FindAmpInList(string device, variable ampSerialRef, variable ampChannelIDRef)
 
 	string listOfAmps, ampDef
-	variable numAmps, i, ampSerial, ampChannelID
+	variable numAmps, i, ampType, ampSerial, ampChannelID
 
-	listOfAmps = AI_GetAmplifierList()
+	listOfAmps = AI_GetAmplifierList(device = device)
 	numAmps    = ItemsInList(listOfAmps)
 
 	for(i = 0; i < numAmps; i += 1)
-		ampDef                    = StringFromList(i, listOfAmps)
-		[ampSerial, ampChannelID] = AI_ParseAmplifierDef(ampDef)
-		if(ampSerial == ampSerialRef && ampChannelID == ampChannelIDRef)
+		ampDef                             = StringFromList(i, listOfAmps)
+		[ampType, ampSerial, ampChannelID] = AI_ParseAmplifierDef(device, ampDef)
+		if(ampType == AMPLIFIER_TYPE_MCC && ampSerial == ampSerialRef && ampChannelID == ampChannelIDRef)
 			return i
 		endif
 	endfor

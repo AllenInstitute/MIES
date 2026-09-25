@@ -504,25 +504,69 @@ Function [variable DAGain, variable ADGain, string DAUnit, string ADUnit] AI_Que
 	return [DAGain, ADGain, DAUnit, ADUnit]
 End
 
-/// @brief Return a nicely layouted list of amplifier channels
+/// @brief Return a nicely layouted list of the amplifiers available for the device
 ///
 /// Used as popup menu value function.
-Function/S AI_GetAmplifierList()
+///
+/// @param device [optional, defaults to none] device, for unlocked panels
+///               the device is not yet known
+Function/S AI_GetAmplifierList([string device])
+
+	if(ParamIsDefault(device))
+		device = ""
+	endif
 
 	return AI_MCC_GetAmplifierList()
 End
 
-/// @brief Return the amplifier list entry for the given amplifier serial and channel
-Function/S AI_GetAmplifierDef(variable ampSerial, variable ampChannel)
+/// @brief Return the amplifier list entry of the amplifier associated with the headstage
+///
+/// @param device    device
+/// @param headstage MIES headstage number, must be in the range [0, NUM_HEADSTAGES[
+///
+/// @returns list entry as returned by AI_GetAmplifierList() or #NONE
+Function/S AI_GetAmplifierDef(string device, variable headstage)
 
-	return AI_MCC_GetAmplifierDef(ampSerial, ampChannel)
+	PerformSubsystemEntry()
+
+	WAVE ChanAmpAssign = GetChanAmpAssign(device)
+
+	switch(AI_GetAmplifierType(device, headstage))
+		case AMPLIFIER_TYPE_NONE:
+			return NONE
+		case AMPLIFIER_TYPE_MCC:
+			return AI_MCC_GetAmplifierDef(ChanAmpAssign[%AmpSerialNo][headstage], ChanAmpAssign[%AmpChannelID][headstage])
+		case AMPLIFIER_TYPE_SUTTER:
+			// @todo implement
+			FATAL_ERROR("Sutter amplifiers are not yet supported")
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
 End
 
-/// @brief Parse the entries which AI_GetAmplifierDef() created
-Function [variable ampSerial, variable ampChannelID] AI_ParseAmplifierDef(string amplifierDef)
+/// @brief Parse the entries which AI_GetAmplifierList() created
+///
+/// @param[in]  device       device
+/// @param[in]  amplifierDef amplifier list entry
+/// @retval     ampType      amplifier type, one of @ref AmplifierTypes
+/// @retval     ampSerial    amplifier serial number
+/// @retval     ampChannelID amplifier channel
+Function [variable ampType, variable ampSerial, variable ampChannelID] AI_ParseAmplifierDef(string device, string amplifierDef)
+
+	PerformSubsystemEntry()
+
+	ampType      = AMPLIFIER_TYPE_NONE
+	ampSerial    = NaN
+	ampChannelID = NaN
+
+	if(!cmpstr(amplifierDef, NONE))
+		return [ampType, ampSerial, ampChannelID]
+	endif
 
 	[ampSerial, ampChannelID] = AI_MCC_ParseAmplifierDef(amplifierDef)
-	return [ampSerial, ampChannelID]
+	ampType                   = AMPLIFIER_TYPE_MCC
+
+	return [ampType, ampSerial, ampChannelID]
 End
 
 /// @brief Return the amplifier type of the given headstage
