@@ -249,3 +249,11 @@ static Function TestAmplifierDefAndParse()
 	CHECK_EQUAL_VAR(ampSerial, 123)
 	CHECK_EQUAL_VAR(ampChannelID, 2)
 End
+
+static Function TestAmplifierTypeOfDevice()
+
+	CHECK_EQUAL_VAR(AI_GetAmplifierTypeOfDevice(""), AMPLIFIER_TYPE_MCC)
+	CHECK_EQUAL_VAR(AI_GetAmplifierTypeOfDevice("ITC18USB_DEV_0"), AMPLIFIER_TYPE_MCC)
+	CHECK_EQUAL_VAR(AI_GetAmplifierTypeOfDevice("Dev1"), AMPLIFIER_TYPE_MCC)
+	CHECK_EQUAL_VAR(AI_GetAmplifierTypeOfDevice(DEVICE_SUTTER_NAME_START_CLEAN + "1"), AMPLIFIER_TYPE_SUTTER)
+End
