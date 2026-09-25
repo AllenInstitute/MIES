@@ -367,3 +367,16 @@ static Function TestSutterFindConnectedAmps()
 	deviceInfo[%SUMHEADSTAGES] = ""
 	CHECK_EQUAL_VAR(AI_FindConnectedAmps(sutterDevice), 0)
 End
+
+static Function TestClampModeSupported()
+
+	string sutterDevice = DEVICE_SUTTER_NAME_START_CLEAN + "1"
+
+	CHECK_EQUAL_VAR(AI_IsClampModeSupported("Dev1", V_CLAMP_MODE), 1)
+	CHECK_EQUAL_VAR(AI_IsClampModeSupported("Dev1", I_CLAMP_MODE), 1)
+	CHECK_EQUAL_VAR(AI_IsClampModeSupported("Dev1", I_EQUAL_ZERO_MODE), 1)
+
+	CHECK_EQUAL_VAR(AI_IsClampModeSupported(sutterDevice, V_CLAMP_MODE), 1)
+	CHECK_EQUAL_VAR(AI_IsClampModeSupported(sutterDevice, I_CLAMP_MODE), 1)
+	CHECK_EQUAL_VAR(AI_IsClampModeSupported(sutterDevice, I_EQUAL_ZERO_MODE), 0)
+End
