@@ -1228,8 +1228,7 @@ Function AI_SelectMultiClamp(string device, variable headStage)
 		case AMPLIFIER_TYPE_MCC:
 			return AIMCC_SelectMultiClamp(device, headStage)
 		case AMPLIFIER_TYPE_SUTTER:
-			// @todo implement
-			return AMPLIFIER_CONNECTION_INVAL_SER
+			return AISU_SelectMultiClamp(device, headStage)
 		default:
 			FATAL_ERROR("Invalid amplifier type")
 	endswitch
