@@ -85,6 +85,7 @@ End
 ///      E.g.: "00000123" vs 123
 ///      E.g.: "Demo"     vs 0
 /// - 9: Amplifier Channel ID
+/// - 10: Amplifier type, one of @ref AmplifierTypes
 ///
 /// Columns:
 /// - Head stage number
@@ -92,7 +93,7 @@ End
 Function/WAVE GetChanAmpAssign(string device)
 
 	DFREF    dfr              = GetDevicePath(device)
-	variable versionOfNewWave = 3
+	variable versionOfNewWave = 4
 
 	WAVE/Z/D/SDFR=dfr wv = ChanAmpAssign
 
@@ -101,9 +102,15 @@ Function/WAVE GetChanAmpAssign(string device)
 	endif
 
 	if(WaveExists(wv))
-		Redimension/D/N=(10, NUM_HEADSTAGES, -1, -1) wv
+		Redimension/D/N=(11, NUM_HEADSTAGES, -1, -1) wv
+
+		if(WaveVersionIsSmaller(wv, 4))
+			// this version adds the amplifier type row
+			// in previous versions only MCC amplifiers existed
+			wv[10][] = (IsFinite(wv[8][q]) && IsFinite(wv[9][q])) ? AMPLIFIER_TYPE_MCC : AMPLIFIER_TYPE_NONE
+		endif
 	else
-		Make/D/N=(10, NUM_HEADSTAGES) dfr:ChanAmpAssign/WAVE=wv
+		Make/D/N=(11, NUM_HEADSTAGES) dfr:ChanAmpAssign/WAVE=wv
 		wv = NaN
 
 		// we don't have dimension labels yet
@@ -122,6 +129,7 @@ Function/WAVE GetChanAmpAssign(string device)
 		endif
 
 		wv[1, 7; 2][] = 1
+		wv[10][]      = AMPLIFIER_TYPE_NONE
 	endif
 
 	SetDimLabel ROWS, 0, VC_DA, wv
@@ -136,6 +144,7 @@ Function/WAVE GetChanAmpAssign(string device)
 
 	SetDimLabel ROWS, 8, AmpSerialNo, wv
 	SetDimLabel ROWS, 9, AmpChannelID, wv
+	SetDimLabel ROWS, 10, AmpType, wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 	return wv
