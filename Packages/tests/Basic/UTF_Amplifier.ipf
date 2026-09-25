@@ -257,3 +257,26 @@ static Function TestAmplifierTypeOfDevice()
 	CHECK_EQUAL_VAR(AI_GetAmplifierTypeOfDevice("Dev1"), AMPLIFIER_TYPE_MCC)
 	CHECK_EQUAL_VAR(AI_GetAmplifierTypeOfDevice(DEVICE_SUTTER_NAME_START_CLEAN + "1"), AMPLIFIER_TYPE_SUTTER)
 End
+
+static Function TestAmplifierFunctionsWithoutAmplifier()
+
+	string device = "RandomDeviceName"
+	string DAUnit, ADUnit
+	variable DAGain, ADGain
+
+	CHECK_EQUAL_VAR(AI_HasAmplifier(device, 0), 0)
+
+	CHECK_EQUAL_VAR(AI_SelectMultiClamp(device, 0), AMPLIFIER_CONNECTION_INVAL_SER)
+	CHECK_EQUAL_VAR(AI_GetMode(device, 0), NaN)
+	CHECK_EQUAL_VAR(AI_GetHoldingCommand(device, 0), NaN)
+	AI_SetClampMode(device, 0, V_CLAMP_MODE)
+	CHECK_NO_RTE()
+	CHECK_EQUAL_VAR(AI_ReadFromAmplifier(device, 0, V_CLAMP_MODE, MCC_HOLDING_FUNC), NaN)
+	CHECK_EQUAL_VAR(AI_EnsureCorrectMode(device, 0), 1)
+
+	[DAGain, ADGain, DAUnit, ADUnit] = AI_QueryGainsUnitsForClampMode(device, 0, V_CLAMP_MODE)
+	CHECK_EQUAL_VAR(DAGain, NaN)
+	CHECK_EQUAL_VAR(ADGain, NaN)
+	CHECK_EMPTY_STR(DAUnit)
+	CHECK_EMPTY_STR(ADUnit)
+End
