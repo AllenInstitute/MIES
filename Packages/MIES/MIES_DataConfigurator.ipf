@@ -1422,7 +1422,7 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 					ASSERT(!mod(DimSize(SUChannel, ROWS), s.testPulseLength), "Sutter TP channel length is not integer multiple of test pulse length")
 					tpAmp = s.DACAmp[i][%TPAMP] * s.gains[i]
 
-					[minLimit, maxLimit] = HW_GetDataRange(s.hardwareType, XOP_CHANNEL_TYPE_DAC, !IsNaN(config[i][%HEADSTAGE]))
+					[minLimit, maxLimit] = HW_GetDataRange(s.hardwareType, XOP_CHANNEL_TYPE_DAC, !IsNaN(config[i][%HEADSTAGE]), clampMode = config[i][%CLAMPMODE])
 					Multithread SUChannel[] = limit(tpAmp * s.testPulse[mod(p, s.testPulseLength)], minLimit, maxLimit); AbortOnRTE
 				endfor
 
@@ -1456,7 +1456,7 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 		isAssociated = IsAssociatedChannel(headstage)
 		tpAmp        = s.DACAmp[i][%TPAMP] * s.gains[i]
 
-		[minLimit, maxLimit] = HW_GetDataRange(s.hardwareType, XOP_CHANNEL_TYPE_DAC, isAssociated)
+		[minLimit, maxLimit] = HW_GetDataRange(s.hardwareType, XOP_CHANNEL_TYPE_DAC, isAssociated, clampMode = config[i][%CLAMPMODE])
 
 		if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
 			ASSERT(GetWaveDimensionality(s.testPulse) == ROWS, "Expected a 1D testpulse wave")
@@ -1968,7 +1968,7 @@ static Function [variable result, variable row, variable column] DC_CheckIfDataW
 					i += 1
 					continue
 				endif
-				[minVal, maxVal] = HW_GetDataRange(hardwareType, channelType, !IsNaN(configWave[i][%HEADSTAGE]))
+				[minVal, maxVal] = HW_GetDataRange(hardwareType, channelType, !IsNaN(configWave[i][%HEADSTAGE]), clampMode = configWave[i][%CLAMPMODE])
 
 				FindValue/UOFV/V=(minVal)/T=1E-6 channel
 				if(V_Value != -1)

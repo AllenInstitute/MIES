@@ -903,7 +903,17 @@ End
 /// @param hardwareType One of @ref HardwareDACTypeConstants
 /// @param channelType  One of @ref XopChannelConstants
 /// @param isAssociated For Sutter hardware the voltage range differs for associated channels or unassociated ones
-Function [variable minimum, variable maximum] HW_GetDataRange(variable hardwareType, variable channelType, variable isAssociated)
+/// @param clampMode    [optional] Clamp mode of the headstage, required for associated DA channels on Sutter hardware
+///                     as the output is in Ampere for current clamp
+Function [variable minimum, variable maximum] HW_GetDataRange(variable hardwareType, variable channelType, variable isAssociated, [variable clampMode])
+
+	if(ParamIsDefault(clampMode))
+		clampMode = NaN
+	endif
+
+	if(hardwareType == HARDWARE_SUTTER_DAC && isAssociated && channelType == XOP_CHANNEL_TYPE_DAC)
+		AI_AssertOnInvalidClampMode(clampMode)
+	endif
 
 	switch(hardwareType)
 		case HARDWARE_NI_DAC: // fallthrough
@@ -922,6 +932,9 @@ Function [variable minimum, variable maximum] HW_GetDataRange(variable hardwareT
 		case HARDWARE_SUTTER_DAC: // fallthrough
 			if(isAssociated)
 				ASSERT(channelType != XOP_CHANNEL_TYPE_TTL, "Associated must be 0 for TTL")
+				if(channelType == XOP_CHANNEL_TYPE_DAC && clampMode == I_CLAMP_MODE)
+					return [SU_HS_OUT_I_MIN, SU_HS_OUT_I_MAX]
+				endif
 				return [SU_HS_OUT_MIN, SU_HS_OUT_MAX]
 			endif
 
