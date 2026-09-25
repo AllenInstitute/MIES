@@ -392,7 +392,15 @@ Function AI_OpenMCCs(string device, string ampSerialNumList, [string ampTitleLis
 		ASSERT(ItemsInList(ampSerialNumList) == ItemsInList(ampTitleList), "Number of amplifier serials does not match number of amplifier titles.")
 	endif
 
-	return AIMCC_OpenMCCs(ampSerialNumList, ampTitleList)
+	switch(AI_GetAmplifierTypeOfDevice(device))
+		case AMPLIFIER_TYPE_MCC:
+			return AIMCC_OpenMCCs(ampSerialNumList, ampTitleList)
+		case AMPLIFIER_TYPE_SUTTER:
+			// @todo implement
+			return 1
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
 End
 
 /// @brief Map from amplifier control names to @ref AI_SendToAmpConstants constants and clamp mode
@@ -1431,11 +1439,19 @@ Function AI_WriteToAmplifier(string device, variable headStage, variable mode, v
 		GUIWrite = !!GUIWrite
 	endif
 
-	if(IsNaN(sendToAll))
-		return AI_UpdateAmpModel(device, headStage, clampMode = mode, func = func, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = selectAmp, GUIWrite = GUIWrite)
-	endif
+	switch(AI_GetAmplifierTypeOfDevice(device))
+		case AMPLIFIER_TYPE_MCC:
+			if(IsNaN(sendToAll))
+				return AI_UpdateAmpModel(device, headStage, clampMode = mode, func = func, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = selectAmp, GUIWrite = GUIWrite)
+			endif
 
-	return AI_UpdateAmpModel(device, headStage, clampMode = mode, func = func, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = selectAmp, GUIWrite = GUIWrite, sendToAll = sendToAll)
+			return AI_UpdateAmpModel(device, headStage, clampMode = mode, func = func, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = selectAmp, GUIWrite = GUIWrite, sendToAll = sendToAll)
+		case AMPLIFIER_TYPE_SUTTER:
+			// @todo implement
+			return 1
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
 End
 
 /// @brief Read from amplifier
@@ -1498,7 +1514,15 @@ Function AI_FillAndSendAmpliferSettings(string device, variable sweepNo)
 
 	PerformSubsystemEntry()
 
-	return AIMCC_FillAndSendAmpliferSettings(device, sweepNo)
+	switch(AI_GetAmplifierTypeOfDevice(device))
+		case AMPLIFIER_TYPE_MCC:
+			return AIMCC_FillAndSendAmpliferSettings(device, sweepNo)
+		case AMPLIFIER_TYPE_SUTTER:
+			// @todo implement
+			return NaN
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
 End
 
 /// @brief Auto fills the units and gains for all headstages connected to amplifiers
@@ -1511,7 +1535,15 @@ Function AI_QueryGainsFromMCC(string device)
 
 	PerformSubsystemEntry()
 
-	return AIMCC_QueryGainsFromMCC(device)
+	switch(AI_GetAmplifierTypeOfDevice(device))
+		case AMPLIFIER_TYPE_MCC:
+			return AIMCC_QueryGainsFromMCC(device)
+		case AMPLIFIER_TYPE_SUTTER:
+			// @todo implement
+			return 0
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
 End
 
 /// @brief Return the number of connected amplifiers
@@ -1528,5 +1560,13 @@ Function AI_FindConnectedAmps(string device, [variable rescanHardware])
 		rescanHardware = !!rescanHardware
 	endif
 
-	return AIMCC_FindConnectedAmps(rescanHardware)
+	switch(AI_GetAmplifierTypeOfDevice(device))
+		case AMPLIFIER_TYPE_MCC:
+			return AIMCC_FindConnectedAmps(rescanHardware)
+		case AMPLIFIER_TYPE_SUTTER:
+			// @todo implement
+			return 0
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
 End
