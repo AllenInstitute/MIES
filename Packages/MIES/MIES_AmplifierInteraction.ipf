@@ -236,6 +236,34 @@ Function [variable ampSerial, variable ampChannelID] AI_ParseAmplifierDef(string
 	return [ampSerial, ampChannelID]
 End
 
+/// @brief Return the amplifier type of the given headstage
+///
+/// @param device    device
+/// @param headstage MIES headstage number, must be in the range [0, NUM_HEADSTAGES[
+///
+/// @returns one of @ref AmplifierTypes
+Function AI_GetAmplifierType(string device, variable headstage)
+
+	PerformSubsystemEntry()
+
+	ASSERT(IsValidHeadstage(headstage), "Invalid headstage")
+
+	WAVE ChanAmpAssign = GetChanAmpAssign(device)
+
+	return ChanAmpAssign[%AmpType][headstage]
+End
+
+/// @brief Return true if the given headstage has an amplifier associated
+///
+/// @param device    device
+/// @param headstage MIES headstage number, must be in the range [0, NUM_HEADSTAGES[
+Function AI_HasAmplifier(string device, variable headstage)
+
+	PerformSubsystemEntry()
+
+	return AI_GetAmplifierType(device, headstage) != AMPLIFIER_TYPE_NONE
+End
+
 /// @brief Update the `ChanAmpAssign` and `ChanAmpAssignUnit` waves according to the passed
 /// clamp mode with the gains and units.
 Function AI_UpdateChanAmpAssign(string device, variable headStage, variable clampMode, variable DAGain, variable ADGain, string DAUnit, string ADUnit)
