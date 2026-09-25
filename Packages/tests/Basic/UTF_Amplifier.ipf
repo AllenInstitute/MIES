@@ -195,3 +195,28 @@ static Function TestChanAmpAssignUpgradeToAmplifierType()
 	Duplicate/FREE/RMD=[0, 9][] chanAmpAssign, chanAmpAssignKept
 	CHECK_EQUAL_WAVES(chanAmpAssignKept, chanAmpAssignOld, mode = WAVE_DATA)
 End
+
+static Function TestAmplifierTypeAccessors()
+
+	string device = "RandomDeviceName"
+
+	WAVE chanAmpAssign = GetChanAmpAssign(device)
+
+	CHECK_EQUAL_VAR(AI_GetAmplifierType(device, 0), AMPLIFIER_TYPE_NONE)
+	CHECK_EQUAL_VAR(AI_HasAmplifier(device, 0), 0)
+
+	chanAmpAssign[%AmpType][1] = AMPLIFIER_TYPE_MCC
+	CHECK_EQUAL_VAR(AI_GetAmplifierType(device, 1), AMPLIFIER_TYPE_MCC)
+	CHECK_EQUAL_VAR(AI_HasAmplifier(device, 1), 1)
+
+	chanAmpAssign[%AmpType][NUM_HEADSTAGES - 1] = AMPLIFIER_TYPE_SUTTER
+	CHECK_EQUAL_VAR(AI_GetAmplifierType(device, NUM_HEADSTAGES - 1), AMPLIFIER_TYPE_SUTTER)
+	CHECK_EQUAL_VAR(AI_HasAmplifier(device, NUM_HEADSTAGES - 1), 1)
+
+	try
+		AI_GetAmplifierType(device, NUM_HEADSTAGES)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
