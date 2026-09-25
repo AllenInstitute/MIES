@@ -3375,10 +3375,11 @@ Function HW_SU_StopAcq(variable deviceID, [variable zeroDAC, variable flags])
 
 	device = HW_GetMainDeviceName(HARDWARE_SUTTER_DAC, deviceID, flags = flags)
 	NVAR acq = $GetSU_IsAcquisitionRunning(device)
-	if(acq)
-		SutterDAQReset()
-		acq = 0
-	endif
+
+	// also without running acquisition, the device ignores the holding command
+	// until the streaming of the last sweep is reset
+	HW_SU_ResetDevice(flags = flags)
+	acq = 0
 
 	if(zeroDAC)
 		HW_SU_ZeroDAC(deviceID, flags = flags)
@@ -3625,6 +3626,7 @@ Function HW_SU_ZeroDAC(variable deviceID, [variable flags])
 	input[0][%ENCODEINFO]   = encodeInfo
 
 	HW_SU_AcquireImpl(device, input, output, $"", SUTTER_ACQUISITION_FOREGROUND, timeout = 1)
+	HW_SU_ResetDevice(flags = flags)
 End
 
 Function HW_SU_ReadADC(variable deviceID, variable channel, [variable flags])
