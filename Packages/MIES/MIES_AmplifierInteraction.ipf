@@ -698,6 +698,28 @@ Function AI_ShutdownAmplifiers(string device)
 	endswitch
 End
 
+/// @brief Return true if the clamp mode is supported by the amplifiers of the device
+///
+/// I=0 is not supported for Sutter amplifiers.
+///
+/// @param device    device
+/// @param clampMode one of #V_CLAMP_MODE, #I_CLAMP_MODE or #I_EQUAL_ZERO_MODE
+Function AI_IsClampModeSupported(string device, variable clampMode)
+
+	PerformSubsystemEntry()
+
+	AI_AssertOnInvalidClampMode(clampMode)
+
+	switch(AI_GetAmplifierTypeOfDevice(device))
+		case AMPLIFIER_TYPE_MCC:
+			return 1
+		case AMPLIFIER_TYPE_SUTTER:
+			return clampMode != I_EQUAL_ZERO_MODE
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
+End
+
 /// @brief Return the amplifier types headstages with associated channels of the device can have
 ///
 /// Sutter devices have fixed integrated amplifiers for all their headstages.
