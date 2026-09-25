@@ -3721,7 +3721,9 @@ static Function HW_SU_AcquireImpl(string device, WAVE input, WAVE/Z output, WAVE
 	acq = 1
 	if(!inputOnly)
 		ASSERT(WaveExists(output), "definition wave for output is a null wave")
-		SutterDAQWriteWave/MULT=1/T=1/R=0/RHP=0 output
+		// write the output relative to the holding command of the amplifier (RHP=1),
+		// with absolute values the holding command has no effect during acquisition
+		SutterDAQWriteWave/MULT=1/T=1/R=0/RHP=1 output
 	endif
 	if(WaveExists(gain))
 		SutterDAQScanWave/MULT=1/T=1/C=0/B=1/G=gain/E=cmdError/H=cmdDone input
