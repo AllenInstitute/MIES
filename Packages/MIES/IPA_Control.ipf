@@ -1600,6 +1600,24 @@ End
 // The probe index is one-based over all headstages of all connected IPA
 // devices, as in IPA_SetValue() and IPA_GetValue().
 
+/// @brief Return TRUE if the loaded SutterXOP is compatible with this package
+///
+/// Same check as CheckXOPVersion() but without showing a dialog.
+Function IPA_MIES_IsXOPCompatible()
+
+	variable majorVersion, minorVersion
+
+	PerformSubsystemEntry()
+
+#if exists("SutterXOP_GetXOPVersion")
+	SutterXOP_GetXOPVersion(majorVersion, minorVersion)
+
+	return majorVersion == SutterXOP_XOPVersion
+#else
+	return FALSE
+#endif
+End
+
 /// @brief Switch to live mode after IPA_Initialize()
 ///
 /// IPA_Initialize() leaves the package in demo mode, where IPA_SetValue() only
