@@ -1592,3 +1592,118 @@ static Function Buzz(Struct IPASeries &SIPA, Variable probeIndex, Variable durat
 
 	return TRUE
 End
+// ---------------- MIES specific functions ----------------
+//
+// The following functions were added for MIES, they are not part of the
+// original Sutter Instrument package.
+//
+// The probe index is one-based over all headstages of all connected IPA
+// devices, as in IPA_SetValue() and IPA_GetValue().
+
+/// @brief Switch to live mode after IPA_Initialize()
+///
+/// IPA_Initialize() leaves the package in demo mode, where IPA_SetValue() only
+/// changes the stored control values without sending them to the amplifier.
+///
+/// @returns TRUE on success and FALSE if no amplifier was found by IPA_Initialize()
+Function IPA_MIES_Connect()
+
+	STRUCT IPASeries SIPA
+
+	PerformSubsystemEntry()
+
+	GetStructure(SIPA)
+
+	if(!cmpstr(SIPA.amp[0].serialNum, "demo"))
+		// no amplifier found by IPA_Initialize()
+		return FALSE
+	endif
+
+	NVAR SD_USB       = $(AmpPath + ":SD_USB")
+	NVAR demo_amptype = $(AmpPath + ":demo_amptype")
+
+	SD_USB       = SIPA.numAmps
+	demo_amptype = kLiveMode
+
+	return TRUE
+End
+
+/// @brief Set the clamp mode of the given probe
+///
+/// In contrast to the "VCMode" and "CCMode" keywords of IPA_SetValue() this uses
+/// the probe index over all IPA devices, which is also correct for double IPAs
+/// and multiple IPA devices.
+///
+/// Sends all stored control values of the probe to the amplifier.
+///
+/// @param probeCount   one-based probe index
+/// @param currentClamp TRUE for current clamp, FALSE for voltage clamp
+///
+/// @returns TRUE on success and FALSE on error
+Function IPA_MIES_SetClampMode(variable probeCount, variable currentClamp)
+
+	variable probeIndex, ret
+
+	STRUCT IPASeries SIPA
+
+	PerformSubsystemEntry()
+
+	if(probeCount <= 0)
+		return FALSE
+	endif
+
+	GetStructure(SIPA)
+
+	probeIndex = probeCount - 1
+	if(probeIndex >= SIPA.numHeadstages)
+		return FALSE
+	endif
+
+	SIPA.ipa.HS[probeIndex].vc = currentClamp ? 2 : 0
+
+	// returns FALSE on error and nothing otherwise
+	ret = SetDIPA_fromStructure(SIPA, probeIndex)
+	SaveStructure(SIPA)
+
+	return (ret == FALSE) ? FALSE : TRUE
+End
+
+/// @brief Read the clamp mode of the given probe from the amplifier
+///
+/// @param probeCount one-based probe index
+///
+/// @returns TRUE for current clamp, FALSE for voltage clamp and NaN on error
+Function IPA_MIES_ReadClampModeFromHardware(variable probeCount)
+
+	variable probeIndex, ampIndex, hsIndex, value
+
+	STRUCT IPASeries SIPA
+
+	PerformSubsystemEntry()
+
+	if(probeCount <= 0)
+		return NaN
+	endif
+
+	GetStructure(SIPA)
+
+	probeIndex = probeCount - 1
+	if(probeIndex >= SIPA.numHeadstages)
+		return NaN
+	endif
+
+	ampIndex = SIPA.ipa.HS[probeIndex].ampIndex
+	hsIndex  = SIPA.ipa.HS[probeIndex].HSIndex
+	if(ampIndex == kNoDevice)
+		return NaN
+	endif
+
+	// item 0: gain and VC vs CC of HS#1, item 15: the same for HS#2 of a double IPA
+	value = SutterDAQRead(ampIndex, (hsIndex == 0) ? 0 : 15)
+	if(value < 0)
+		return NaN
+	endif
+
+	// VC adds 256
+	return (value & 256) ? FALSE : TRUE
+End
