@@ -2280,9 +2280,9 @@ static Function CONF_GetAmplifierSettings(string device)
 		JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPICDAUNIT, GetSetVariableString(device, "SetVar_Hardware_IC_DA_Unit"))
 		JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPICADUNIT, GetSetVariableString(device, "SetVar_Hardware_IC_AD_Unit"))
 
-		ampSerial    = ChanAmpAssign[%AmpSerialNo][i]
-		ampChannelID = ChanAmpAssign[%AmpChannelID][i]
-		if(IsFinite(ampSerial) && IsFinite(ampChannelID))
+		if(AI_HasAmplifier(device, i))
+			ampSerial    = ChanAmpAssign[%AmpSerialNo][i]
+			ampChannelID = ChanAmpAssign[%AmpChannelID][i]
 
 			jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/"
 

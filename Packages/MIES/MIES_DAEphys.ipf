@@ -2261,10 +2261,10 @@ Function DAP_CheckSettings(string device, variable mode)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
-		ampSerial    = ChanAmpAssign[%AmpSerialNo][i]
-		ampChannelID = ChanAmpAssign[%AmpChannelID][i]
-		if(IsFinite(ampSerial) && IsFinite(ampChannelID))
-			ampSpec[i] = AI_GetAmplifierDef(ampSerial, ampChannelID)
+		if(AI_HasAmplifier(device, i))
+			ampSerial    = ChanAmpAssign[%AmpSerialNo][i]
+			ampChannelID = ChanAmpAssign[%AmpChannelID][i]
+			ampSpec[i]   = AI_GetAmplifierDef(ampSerial, ampChannelID)
 		else
 			// add a unique alternative entry
 			ampSpec[i] = num2str(i)
@@ -5022,10 +5022,10 @@ static Function DAP_UpdateChanAmpAssignPanel(string device)
 	Setvariable setvar_Settings_IC_ADgain, win=$device, value=_NUM:ChanAmpAssign[%IC_ADGain][HeadStageNo]
 	Setvariable SetVar_Hardware_IC_AD_Unit, win=$device, value=_STR:ChanAmpAssignUnit[%IC_ADUnit][HeadStageNo]
 
-	ampSerial    = ChanAmpAssign[%AmpSerialNo][HeadStageNo]
-	ampChannelID = ChanAmpAssign[%AmpChannelID][HeadStageNo]
-	if(isFinite(ampSerial) && isFinite(ampChannelID))
-		entry = AI_GetAmplifierDef(ampSerial, ampChannelID)
+	if(AI_HasAmplifier(device, HeadStageNo))
+		ampSerial    = ChanAmpAssign[%AmpSerialNo][HeadStageNo]
+		ampChannelID = ChanAmpAssign[%AmpChannelID][HeadStageNo]
+		entry        = AI_GetAmplifierDef(ampSerial, ampChannelID)
 		Popupmenu popup_Settings_Amplifier, win=$device, popmatch=entry
 	else
 		Popupmenu popup_Settings_Amplifier, win=$device, popmatch=NONE
