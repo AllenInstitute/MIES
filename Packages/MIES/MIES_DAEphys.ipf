@@ -20,7 +20,7 @@ static StrConstant NI_DAC_PATTERNS = "AI:32;AO:4;COUNTER:4;DIOPORTS:3;LINES:32,8
 
 static Constant DAP_WAITFORTPANALYSIS_TIMEOUT = 2
 
-static StrConstant SU_DISABLED_CONTROLS = "Popup_Settings_VC_DA;Popup_Settings_VC_AD;Popup_Settings_IC_DA;Popup_Settings_IC_AD;button_Hardware_ClearChanConn;"
+static StrConstant SU_DISABLED_CONTROLS = "Popup_Settings_VC_DA;Popup_Settings_VC_AD;Popup_Settings_IC_DA;Popup_Settings_IC_AD;button_Hardware_ClearChanConn;popup_Settings_Amplifier;"
 
 /// @brief Creates meta information about coupled CheckBoxes (Radio Button) controls
 ///        Used for saving/restoring the GUI state
@@ -4727,6 +4727,7 @@ static Function DAP_AdaptPanelForDeviceSpecifics(string device, [variable forceE
 				PGC_SetAndActivateControl(device, "Popup_Settings_IC_DA", val = i)
 				PGC_SetAndActivateControl(device, "Popup_Settings_VC_AD", val = i)
 				PGC_SetAndActivateControl(device, "Popup_Settings_IC_AD", val = i)
+				PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", str = AI_GetFixedAmplifierDef(device, i))
 			else
 				PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
 			endif
