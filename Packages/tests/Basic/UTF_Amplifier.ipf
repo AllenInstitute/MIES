@@ -280,3 +280,22 @@ static Function TestAmplifierFunctionsWithoutAmplifier()
 	CHECK_EMPTY_STR(DAUnit)
 	CHECK_EMPTY_STR(ADUnit)
 End
+
+static Function TestAllowedAmplifierTypes()
+
+	string sutterDevice = DEVICE_SUTTER_NAME_START_CLEAN + "1"
+
+	WAVE/Z types = AI_GetAllowedAmplifierTypes("ITC18USB_DEV_0")
+	CHECK_EQUAL_WAVES(types, {AMPLIFIER_TYPE_MCC, AMPLIFIER_TYPE_NONE}, mode = WAVE_DATA)
+
+	WAVE/Z types = AI_GetAllowedAmplifierTypes(sutterDevice)
+	CHECK_EQUAL_WAVES(types, {AMPLIFIER_TYPE_SUTTER}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_VAR(AI_IsAllowedAmplifierType("Dev1", AMPLIFIER_TYPE_MCC), 1)
+	CHECK_EQUAL_VAR(AI_IsAllowedAmplifierType("Dev1", AMPLIFIER_TYPE_NONE), 1)
+	CHECK_EQUAL_VAR(AI_IsAllowedAmplifierType("Dev1", AMPLIFIER_TYPE_SUTTER), 0)
+
+	CHECK_EQUAL_VAR(AI_IsAllowedAmplifierType(sutterDevice, AMPLIFIER_TYPE_SUTTER), 1)
+	CHECK_EQUAL_VAR(AI_IsAllowedAmplifierType(sutterDevice, AMPLIFIER_TYPE_MCC), 0)
+	CHECK_EQUAL_VAR(AI_IsAllowedAmplifierType(sutterDevice, AMPLIFIER_TYPE_NONE), 0)
+End

@@ -614,6 +614,45 @@ threadsafe Function AI_GetAmplifierTypeOfDevice(string device)
 	return AMPLIFIER_TYPE_MCC
 End
 
+/// @brief Return the amplifier types headstages with associated channels of the device can have
+///
+/// Sutter devices have fixed integrated amplifiers for all their headstages.
+/// Headstages without associated channels have no amplifier.
+///
+/// @param device device, can be empty if not yet known
+///
+/// @returns numeric wave with entries from @ref AmplifierTypes
+Function/WAVE AI_GetAllowedAmplifierTypes(string device)
+
+	PerformSubsystemEntry()
+
+	switch(AI_GetAmplifierTypeOfDevice(device))
+		case AMPLIFIER_TYPE_MCC:
+			Make/FREE/D types = {AMPLIFIER_TYPE_MCC, AMPLIFIER_TYPE_NONE}
+			break
+		case AMPLIFIER_TYPE_SUTTER:
+			Make/FREE/D types = {AMPLIFIER_TYPE_SUTTER}
+			break
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
+
+	return types
+End
+
+/// @brief Return true if headstages of the device can have the given amplifier type
+///
+/// @param device  device, can be empty if not yet known
+/// @param ampType one of @ref AmplifierTypes
+Function AI_IsAllowedAmplifierType(string device, variable ampType)
+
+	PerformSubsystemEntry()
+
+	WAVE types = AI_GetAllowedAmplifierTypes(device)
+
+	return IsFinite(GetRowIndex(types, val = ampType))
+End
+
 /// @brief Return the amplifier type of the given headstage
 ///
 /// @param device    device
