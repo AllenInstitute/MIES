@@ -20,7 +20,7 @@ static StrConstant NI_DAC_PATTERNS = "AI:32;AO:4;COUNTER:4;DIOPORTS:3;LINES:32,8
 
 static Constant DAP_WAITFORTPANALYSIS_TIMEOUT = 2
 
-static StrConstant SU_DISABLED_CONTROLS = "Popup_Settings_VC_DA;Popup_Settings_VC_AD;Popup_Settings_IC_DA;Popup_Settings_IC_AD;button_Hardware_ClearChanConn;popup_Settings_Amplifier;"
+static StrConstant SU_DISABLED_CONTROLS = "Popup_Settings_VC_DA;Popup_Settings_VC_AD;Popup_Settings_IC_DA;Popup_Settings_IC_AD;button_Hardware_ClearChanConn;popup_Settings_Amplifier;button_Settings_UpdateAmpStatus;"
 
 /// @brief Creates meta information about coupled CheckBoxes (Radio Button) controls
 ///        Used for saving/restoring the GUI state
