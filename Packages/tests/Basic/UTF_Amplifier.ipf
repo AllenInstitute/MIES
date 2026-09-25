@@ -350,3 +350,20 @@ static Function TestFixedAmplifierDef()
 	CHECK_EQUAL_STR(AI_GetFixedAmplifierDef(sutterDevice, 1), NONE)
 	CHECK_EQUAL_STR(AI_GetFixedAmplifierDef(sutterDevice, NUM_HEADSTAGES - 1), NONE)
 End
+
+static Function TestSutterFindConnectedAmps()
+
+	string sutterDevice = DEVICE_SUTTER_NAME_START_CLEAN + "1"
+
+	WAVE/T deviceInfo = GetSUDeviceInfo()
+
+	deviceInfo[%LISTOFDEVICES]    = "IPA_E_211111;IPA_E_122222;"
+	deviceInfo[%LISTOFHEADSTAGES] = "2;1;"
+	deviceInfo[%SUMHEADSTAGES]    = "3"
+
+	CHECK_EQUAL_VAR(AI_FindConnectedAmps(sutterDevice), 3)
+	CHECK_EQUAL_VAR(AI_FindConnectedAmps(sutterDevice, rescanHardware = 1), 3)
+
+	deviceInfo[%SUMHEADSTAGES] = ""
+	CHECK_EQUAL_VAR(AI_FindConnectedAmps(sutterDevice), 0)
+End

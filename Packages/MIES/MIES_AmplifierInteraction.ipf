@@ -1745,8 +1745,8 @@ Function AI_FindConnectedAmps(string device, [variable rescanHardware])
 		case AMPLIFIER_TYPE_MCC:
 			return AIMCC_FindConnectedAmps(rescanHardware)
 		case AMPLIFIER_TYPE_SUTTER:
-			// @todo implement
-			return 0
+			// the integrated amplifiers can not be rescanned without resetting the device
+			return AISU_FindConnectedAmps()
 		default:
 			FATAL_ERROR("Invalid amplifier type")
 	endswitch

@@ -69,6 +69,17 @@ static Function AISU_GetProbeFromDeviceHeadstage(string serial, variable deviceH
 	FATAL_ERROR("Unknown IPA device: " + serial)
 End
 
+/// @brief Return the number of connected amplifier headstages
+///
+/// The amplifiers are integrated in the IPA devices, so these are the
+/// amplifier headstages of all IPA devices found when opening the device.
+Function AISU_FindConnectedAmps()
+
+	PerformSubsystemEntry()
+
+	return AISU_GetNumberOfProbes()
+End
+
 /// @brief Return a nicely layouted list of the amplifier headstages of all IPA devices
 Function/S AISU_GetAmplifierList()
 
