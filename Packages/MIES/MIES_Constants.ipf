@@ -881,6 +881,14 @@ Constant WAVEBUILDER_MIN_SAMPINT_HZ = 200e3 ///< Stimulus sets are created with 
 StrConstant CHANNEL_DA_SEARCH_STRING  = "*DA*"
 StrConstant CHANNEL_TTL_SEARCH_STRING = "*TTL*"
 
+/// @name Amplifier types of a headstage
+/// @anchor AmplifierTypes
+///@{
+Constant AMPLIFIER_TYPE_NONE   = 0 ///< no amplifier associated
+Constant AMPLIFIER_TYPE_MCC    = 1 ///< Molecular Devices amplifier controlled via MultiClamp Commander
+Constant AMPLIFIER_TYPE_SUTTER = 2 ///< Sutter amplifier integrated in the Sutter IPA DAQ device
+///@}
+
 /// @name Constants for the return value of AI_SelectMultiClamp()
 /// @anchor AISelectMultiClampReturnValues
 ///@{
