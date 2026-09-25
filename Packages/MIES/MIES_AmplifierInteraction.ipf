@@ -662,7 +662,7 @@ threadsafe Function AI_IsValidClampMode(variable clampMode)
 	return clampMode == V_CLAMP_MODE || clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE
 End
 
-/// @brief Opens Multi-clamp commander software
+/// @brief Opens the amplifier control software
 ///
 /// @param device           device
 /// @param ampSerialNumList A text list of amplifier serial numbers without leading zeroes
@@ -681,7 +681,15 @@ Function AI_OpenMCCs(string device, string ampSerialNumList, [string ampTitleLis
 		ASSERT(ItemsInList(ampSerialNumList) == ItemsInList(ampTitleList), "Number of amplifier serials does not match number of amplifier titles.")
 	endif
 
-	return AI_MCC_OpenMCCs(ampSerialNumList, ampTitleList)
+	switch(AI_GetAmplifierTypeOfDevice(device))
+		case AMPLIFIER_TYPE_MCC:
+			return AI_MCC_OpenMCCs(ampSerialNumList, ampTitleList)
+		case AMPLIFIER_TYPE_SUTTER:
+			// @todo implement
+			return 1
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
 End
 
 /// @brief Map from amplifier control names to @ref AI_SendToAmpConstants constants and clamp mode
@@ -1367,19 +1375,27 @@ Function AI_EnsureCorrectMode(string device, variable headStage, [variable selec
 	return AI_MCC_EnsureCorrectMode(device, headStage, selectAmp)
 End
 
-/// @brief Fill the amplifier settings wave by querying the MC700B and send the data to ED_AddEntriesToLabnotebook
+/// @brief Fill the amplifier settings wave by querying the amplifier and send the data to ED_AddEntriesToLabnotebook
 ///
-/// @param device 		 device
-/// @param sweepNo           data wave sweep number
+/// @param device  device
+/// @param sweepNo data wave sweep number
 Function AI_FillAndSendAmpliferSettings(string device, variable sweepNo)
 
 	PerformSubsystemEntry()
 
-	return AI_MCC_FillAndSendAmpliferSettings(device, sweepNo)
+	switch(AI_GetAmplifierTypeOfDevice(device))
+		case AMPLIFIER_TYPE_MCC:
+			return AI_MCC_FillAndSendAmpliferSettings(device, sweepNo)
+		case AMPLIFIER_TYPE_SUTTER:
+			// @todo implement
+			return NaN
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
 End
 
 /// @brief Auto fills the units and gains for all headstages connected to amplifiers
-/// by querying the MCC application
+/// by querying the amplifier
 ///
 /// The data is inserted into `ChanAmpAssign` and `ChanAmpAssignUnit`
 ///
@@ -1388,7 +1404,15 @@ Function AI_QueryGainsFromMCC(string device)
 
 	PerformSubsystemEntry()
 
-	return AI_MCC_QueryGainsFromMCC(device)
+	switch(AI_GetAmplifierTypeOfDevice(device))
+		case AMPLIFIER_TYPE_MCC:
+			return AI_MCC_QueryGainsFromMCC(device)
+		case AMPLIFIER_TYPE_SUTTER:
+			// @todo implement
+			return 0
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
 End
 
 /// @brief Return the number of connected amplifiers
@@ -1405,7 +1429,15 @@ Function AI_FindConnectedAmps(string device, [variable rescanHardware])
 		rescanHardware = !!rescanHardware
 	endif
 
-	return AI_MCC_FindConnectedAmps(rescanHardware)
+	switch(AI_GetAmplifierTypeOfDevice(device))
+		case AMPLIFIER_TYPE_MCC:
+			return AI_MCC_FindConnectedAmps(rescanHardware)
+		case AMPLIFIER_TYPE_SUTTER:
+			// @todo implement
+			return 0
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
 End
 
 /// @brief Generic interface to call amplifier functions
@@ -1477,11 +1509,19 @@ Function AI_WriteToAmplifier(string device, variable headStage, variable mode, v
 		GUIWrite = !!GUIWrite
 	endif
 
-	if(ParamIsDefault(sendToAll))
-		return AI_UpdateAmpModel(device, headStage, clampMode = mode, func = func, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = selectAmp, GUIWrite = GUIWrite)
-	endif
+	switch(AI_GetAmplifierTypeOfDevice(device))
+		case AMPLIFIER_TYPE_MCC:
+			if(ParamIsDefault(sendToAll))
+				return AI_UpdateAmpModel(device, headStage, clampMode = mode, func = func, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = selectAmp, GUIWrite = GUIWrite)
+			endif
 
-	return AI_UpdateAmpModel(device, headStage, clampMode = mode, func = func, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = selectAmp, GUIWrite = GUIWrite, sendToAll = !!sendToAll)
+			return AI_UpdateAmpModel(device, headStage, clampMode = mode, func = func, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = selectAmp, GUIWrite = GUIWrite, sendToAll = !!sendToAll)
+		case AMPLIFIER_TYPE_SUTTER:
+			// @todo implement
+			return 1
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
 End
 
 /// @brief Read from amplifier
