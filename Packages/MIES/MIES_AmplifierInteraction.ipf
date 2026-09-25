@@ -541,7 +541,14 @@ Function/S AI_GetAmplifierList([string device])
 		device = ""
 	endif
 
-	return AI_MCC_GetAmplifierList()
+	switch(AI_GetAmplifierTypeOfDevice(device))
+		case AMPLIFIER_TYPE_MCC:
+			return AI_MCC_GetAmplifierList()
+		case AMPLIFIER_TYPE_SUTTER:
+			return AI_SU_GetAmplifierList()
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
 End
 
 /// @brief Return the amplifier list entry of the amplifier associated with the headstage
@@ -562,8 +569,7 @@ Function/S AI_GetAmplifierDef(string device, variable headstage)
 		case AMPLIFIER_TYPE_MCC:
 			return AI_MCC_GetAmplifierDef(ChanAmpAssign[%AmpSerialNo][headstage], ChanAmpAssign[%AmpChannelID][headstage])
 		case AMPLIFIER_TYPE_SUTTER:
-			// @todo implement
-			FATAL_ERROR("Sutter amplifiers are not yet supported")
+			return AI_SU_GetAmplifierDef(ChanAmpAssign[%AmpChannelID][headstage])
 		default:
 			FATAL_ERROR("Invalid amplifier type")
 	endswitch
@@ -588,8 +594,18 @@ Function [variable ampType, variable ampSerial, variable ampChannelID] AI_ParseA
 		return [ampType, ampSerial, ampChannelID]
 	endif
 
-	[ampSerial, ampChannelID] = AI_MCC_ParseAmplifierDef(amplifierDef)
-	ampType                   = AMPLIFIER_TYPE_MCC
+	ampType = AI_GetAmplifierTypeOfDevice(device)
+
+	switch(ampType)
+		case AMPLIFIER_TYPE_MCC:
+			[ampSerial, ampChannelID] = AI_MCC_ParseAmplifierDef(amplifierDef)
+			break
+		case AMPLIFIER_TYPE_SUTTER:
+			ampChannelID = AI_SU_ParseAmplifierDef(amplifierDef)
+			break
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
 
 	return [ampType, ampSerial, ampChannelID]
 End
