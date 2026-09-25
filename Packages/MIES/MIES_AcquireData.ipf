@@ -523,9 +523,9 @@ Function ACD_AcquireData(STRUCT ACD_DAQSettings &s, string device)
 #else
 			// first entry is none
 			PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 1 + activeHS)
+#endif // TESTS_WITH_SUTTER_HARDWARE
 
 			PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
-#endif // TESTS_WITH_SUTTER_HARDWARE
 		endif
 
 		if(!IsEmpty(s.ist[i]))
@@ -639,12 +639,7 @@ Function ACD_AcquireData(STRUCT ACD_DAQSettings &s, string device)
 		endif
 	endfor
 
-#ifdef TESTS_WITH_SUTTER_HARDWARE
-	// @todo require the amplifier once the Sutter amplifiers are supported
-	PGC_SetAndActivateControl(device, "check_Settings_RequireAmpConn", val = CHECKBOX_UNSELECTED)
-#else
 	PGC_SetAndActivateControl(device, "check_Settings_RequireAmpConn", val = (s.amp ? CHECKBOX_SELECTED : CHECKBOX_UNSELECTED))
-#endif // TESTS_WITH_SUTTER_HARDWARE
 	PGC_SetAndActivateControl(device, "check_Settings_MD", val = s.MD)
 	PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = s.RA)
 	PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = s.IDX)

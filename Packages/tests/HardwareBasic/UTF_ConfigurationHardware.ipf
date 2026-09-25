@@ -11,12 +11,6 @@ static Function RestoreDAEphysPanel([string str])
 	string fName, rewrittenConfigPath
 	variable jsonID
 
-#ifdef TESTS_WITH_SUTTER_HARDWARE
-	// @todo enable once gains and units can be queried from the Sutter amplifiers
-	INFO("The reference configuration requires amplifier gains and units")
-	SKIP_TESTCASE()
-#endif // TESTS_WITH_SUTTER_HARDWARE
-
 	fName = PrependExperimentFolder_IGNORE(REF_DAEPHYS_CONFIG_FILE)
 
 	[jsonID, rewrittenConfigPath] = FixupJSONConfig_IGNORE(fName, str)
@@ -43,12 +37,6 @@ static Function RestoreAndSaveConfiguration([string str])
 	string stimsetJsonPath  = "/Common configuration data/Stim set file name"
 	string hsAssocJsonPath  = "/Common configuration data/Headstage Association"
 
-#ifdef TESTS_WITH_SUTTER_HARDWARE
-	// @todo enable once gains and units can be queried from the Sutter amplifiers
-	INFO("The reference configuration requires amplifier gains and units")
-	SKIP_TESTCASE()
-#endif // TESTS_WITH_SUTTER_HARDWARE
-
 	settingsIPath = MIES_CONF#CONF_GetSettingsPath(0x0)
 	PathInfo $settingsIPath
 	settingsFolder = S_Path
@@ -68,7 +56,7 @@ static Function RestoreAndSaveConfiguration([string str])
 		if(JSON_Exists(jsonId, stimsetJsonPath))
 			FixupJSONConfigImplMain(jsonId, str)
 		elseif(JSON_Exists(jsonId, hsAssocJsonPath))
-			FixupJSONConfigImplRig(jsonId)
+			FixupJSONConfigImplRig(jsonId, rigOnly = 1)
 		endif
 
 		fContent = JSON_Dump(jsonId, indent = 2)
