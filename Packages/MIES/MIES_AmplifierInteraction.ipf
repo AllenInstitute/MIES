@@ -659,6 +659,45 @@ threadsafe Function AI_GetAmplifierTypeOfDevice(string device)
 	return AMPLIFIER_TYPE_MCC
 End
 
+/// @brief Initialize the amplifiers of the device
+///
+/// Called when locking the device.
+///
+/// @returns 0 on success, 1 on error
+Function AI_InitializeAmplifiers(string device)
+
+	PerformSubsystemEntry()
+
+	switch(AI_GetAmplifierTypeOfDevice(device))
+		case AMPLIFIER_TYPE_MCC:
+			// the MCC amplifiers are independent of the device
+			return 0
+		case AMPLIFIER_TYPE_SUTTER:
+			return AI_SU_Initialize(device)
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
+End
+
+/// @brief Shutdown the amplifiers of the device
+///
+/// Called when unlocking the device.
+Function AI_ShutdownAmplifiers(string device)
+
+	PerformSubsystemEntry()
+
+	switch(AI_GetAmplifierTypeOfDevice(device))
+		case AMPLIFIER_TYPE_MCC:
+			// the MCC amplifiers are independent of the device
+			break
+		case AMPLIFIER_TYPE_SUTTER:
+			AI_SU_Shutdown(device)
+			break
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
+End
+
 /// @brief Return the amplifier types headstages with associated channels of the device can have
 ///
 /// Sutter devices have fixed integrated amplifiers for all their headstages.
