@@ -1970,12 +1970,15 @@ static Function [variable result, variable row, variable column] DC_CheckIfDataW
 				endif
 				[minVal, maxVal] = HW_GetDataRange(hardwareType, channelType, !IsNaN(configWave[i][%HEADSTAGE]), clampMode = configWave[i][%CLAMPMODE])
 
-				FindValue/UOFV/V=(minVal)/T=1E-6 channel
+				// limit() stores the border values in the precision of the wave
+				Make/FREE/Y=(WaveType(channel))/N=2 borderVals = {minVal, maxVal}
+
+				FindValue/UOFV/V=(borderVals[0])/T=0 channel
 				if(V_Value != -1)
 					return [1, V_row, i]
 				endif
 
-				FindValue/UOFV/V=(maxVal)/T=1E-6 channel
+				FindValue/UOFV/V=(borderVals[1])/T=0 channel
 				if(V_Value != -1)
 					return [1, V_row, i]
 				endif
