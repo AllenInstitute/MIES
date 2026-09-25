@@ -2132,13 +2132,17 @@ static Function CONF_RestoreHeadstageAssociation(string device, variable jsonID,
 						sprintf msg, "The Sutter amplifier of headstage %d in the configuration does not match the connected IPA devices.", i
 						FATAL_ERROR(msg)
 					endif
-					CONF_RestoreGainsAndUnits(device, jsonID, jsonPathAmpBlock)
+					// the gains of Sutter amplifiers are fixed
+					PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
 					break
 				case AMPLIFIER_TYPE_NONE:
 					if(AI_IsAllowedAmplifierType(device, AMPLIFIER_TYPE_NONE))
 						PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", str = NONE)
+						CONF_RestoreGainsAndUnits(device, jsonID, jsonPathAmpBlock)
+					elseif(AI_HasAmplifier(device, i))
+						// keeps the fixed amplifier of devices with integrated amplifiers
+						PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
 					endif
-					CONF_RestoreGainsAndUnits(device, jsonID, jsonPathAmpBlock)
 					break
 				default:
 					FATAL_ERROR("Invalid amplifier type")
