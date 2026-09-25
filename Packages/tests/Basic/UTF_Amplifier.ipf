@@ -334,3 +334,19 @@ static Function TestSutterAmplifierList()
 	chanAmpAssign[%AmpChannelID][2] = 2
 	CHECK_EQUAL_STR(AI_GetAmplifierDef(sutterDevice, 2), "IPA_E_122222 HS 1")
 End
+
+static Function TestFixedAmplifierDef()
+
+	string sutterDevice = DEVICE_SUTTER_NAME_START_CLEAN + "1"
+
+	WAVE/T deviceInfo = GetSUDeviceInfo()
+
+	deviceInfo[%LISTOFDEVICES]    = "IPA_E_111111;"
+	deviceInfo[%LISTOFHEADSTAGES] = "1;"
+	deviceInfo[%SUMHEADSTAGES]    = "1"
+
+	CHECK_EQUAL_STR(AI_GetFixedAmplifierDef("Dev1", 0), "")
+	CHECK_EQUAL_STR(AI_GetFixedAmplifierDef(sutterDevice, 0), "IPA_E_111111 HS 1")
+	CHECK_EQUAL_STR(AI_GetFixedAmplifierDef(sutterDevice, 1), NONE)
+	CHECK_EQUAL_STR(AI_GetFixedAmplifierDef(sutterDevice, NUM_HEADSTAGES - 1), NONE)
+End
