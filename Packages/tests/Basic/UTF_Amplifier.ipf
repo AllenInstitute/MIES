@@ -220,3 +220,32 @@ static Function TestAmplifierTypeAccessors()
 		PASS()
 	endtry
 End
+
+static Function TestAmplifierDefAndParse()
+
+	string device = "RandomDeviceName"
+	string def
+	variable ampType, ampSerial, ampChannelID
+
+	WAVE chanAmpAssign = GetChanAmpAssign(device)
+
+	CHECK_EQUAL_STR(AI_GetAmplifierDef(device, 0), NONE)
+
+	[ampType, ampSerial, ampChannelID] = AI_ParseAmplifierDef(device, NONE)
+	CHECK_EQUAL_VAR(ampType, AMPLIFIER_TYPE_NONE)
+	CHECK_EQUAL_VAR(ampSerial, NaN)
+	CHECK_EQUAL_VAR(ampChannelID, NaN)
+
+	chanAmpAssign[%AmpType][0]      = AMPLIFIER_TYPE_MCC
+	chanAmpAssign[%AmpSerialNo][0]  = 123
+	chanAmpAssign[%AmpChannelID][0] = 2
+
+	def = AI_GetAmplifierDef(device, 0)
+	CHECK_PROPER_STR(def)
+	CHECK_NEQ_STR(def, NONE)
+
+	[ampType, ampSerial, ampChannelID] = AI_ParseAmplifierDef(device, def)
+	CHECK_EQUAL_VAR(ampType, AMPLIFIER_TYPE_MCC)
+	CHECK_EQUAL_VAR(ampSerial, 123)
+	CHECK_EQUAL_VAR(ampChannelID, 2)
+End

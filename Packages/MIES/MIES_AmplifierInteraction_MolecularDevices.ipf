@@ -379,7 +379,7 @@ static Function/S AI_MCC_GetMCCWinFilePath()
 	return "ERROR"
 End
 
-/// @copydoc AI_GetAmplifierList
+/// @brief Return a nicely layouted list of the MCC amplifiers
 Function/S AI_MCC_GetAmplifierList()
 
 	PerformSubsystemEntry()
@@ -408,7 +408,10 @@ static Function/S AI_MCC_FormatTelegraphServerList(WAVE telegraphServers)
 	return list
 End
 
-/// @copydoc AI_GetAmplifierDef
+/// @brief Return the amplifier list entry for the given amplifier serial and channel
+///
+/// @param ampSerial  amplifier serial number
+/// @param ampChannel amplifier channel
 Function/S AI_MCC_GetAmplifierDef(variable ampSerial, variable ampChannel)
 
 	string str
@@ -420,7 +423,11 @@ Function/S AI_MCC_GetAmplifierDef(variable ampSerial, variable ampChannel)
 	return str
 End
 
-/// @copydoc AI_ParseAmplifierDef
+/// @brief Parse the entries which AI_MCC_GetAmplifierDef() created
+///
+/// @param[in]  amplifierDef amplifier list entry
+/// @retval     ampSerial    amplifier serial number
+/// @retval     ampChannelID amplifier channel
 Function [variable ampSerial, variable ampChannelID] AI_MCC_ParseAmplifierDef(string amplifierDef)
 
 	PerformSubsystemEntry()
