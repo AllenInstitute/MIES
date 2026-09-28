@@ -625,6 +625,88 @@ Function CheckAmplifierReadAndWrite([STRUCT IUTF_MDATA &md])
 	endfor
 End
 
+static Function CheckRsCompSettings(string device, variable headstage, variable correction, variable prediction)
+
+	variable actual
+
+	WAVE ampStorageWave = GetAmplifierParamStorageWave(device)
+
+	INFO("headstage %d", n0 = headstage)
+
+	CHECK_CLOSE_VAR(ampStorageWave[%Correction][0][headstage], correction, tol = 1e-3)
+	CHECK_CLOSE_VAR(ampStorageWave[%Prediction][0][headstage], prediction, tol = 1e-3)
+
+	// only the prediction, which is always written last, as the MCC application
+	// can change the correction when the prediction is set
+	actual = AI_ReadFromAmplifier(device, headstage, V_CLAMP_MODE, MCC_RSCOMPPREDICTION_FUNC)
+	CHECK_CLOSE_VAR(actual, prediction, tol = 1e-3)
+End
+
+static Function CheckSendToAllAmplifiers_preAcq(string device)
+
+	PGC_SetAndActivateControl(device, "check_Settings_SyncMiesToMCC", val = 1)
+End
+
+/// Writing the Rs chaining or a chained Rs correction with "send to all" must apply the requested
+/// function and value to every headstage
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+static Function CheckSendToAllAmplifiers([STRUCT IUTF_MDATA &md])
+
+	variable ret, headstage
+	string device
+
+	device = md.s0
+
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP0_DAQ0"                + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:")
+	ACD_AcquireData(s, device)
+
+	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = 0)
+	PGC_SetAndActivateControl(device, "Check_DataAcq_SendToAllAmp", val = 0)
+
+	Make/FREE/D correction = {10, 20}
+	Make/FREE/D prediction = {10, 5}
+
+	for(headstage = 0; headstage < 2; headstage += 1)
+		ret = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_NO_AMPCHAIN_FUNC, 0, sendToAll = 0)
+		CHECK_EQUAL_VAR(ret, 0)
+		ret = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_RSCOMPCORRECTION_FUNC, correction[headstage], sendToAll = 0)
+		CHECK_EQUAL_VAR(ret, 0)
+		ret = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_RSCOMPPREDICTION_FUNC, prediction[headstage], sendToAll = 0)
+		CHECK_EQUAL_VAR(ret, 0)
+
+		// enabling the chaining keeps the settings
+		ret = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_NO_AMPCHAIN_FUNC, 1, sendToAll = 0)
+		CHECK_EQUAL_VAR(ret, 0)
+
+		CheckRsCompSettings(device, headstage, correction[headstage], prediction[headstage])
+	endfor
+
+	PGC_SetAndActivateControl(device, "Check_DataAcq_SendToAllAmp", val = 1)
+
+	// toggling the chaining on all headstages keeps the settings of each headstage
+	ret = AI_WriteToAmplifier(device, 0, V_CLAMP_MODE, MCC_NO_AMPCHAIN_FUNC, 0)
+	CHECK_EQUAL_VAR(ret, 0)
+	ret = AI_WriteToAmplifier(device, 0, V_CLAMP_MODE, MCC_NO_AMPCHAIN_FUNC, 1)
+	CHECK_EQUAL_VAR(ret, 0)
+
+	for(headstage = 0; headstage < 2; headstage += 1)
+		CheckRsCompSettings(device, headstage, correction[headstage], prediction[headstage])
+	endfor
+
+	// correction and with chaining also the prediction change by the same amount on each headstage
+	ret = AI_WriteToAmplifier(device, 0, V_CLAMP_MODE, MCC_RSCOMPCORRECTION_FUNC, 30)
+	CHECK_EQUAL_VAR(ret, 0)
+
+	CheckRsCompSettings(device, 0, 30, 30)
+	CheckRsCompSettings(device, 1, 30, 15)
+
+	// GUI shows the settings of the selected headstage
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(device, "setvar_DataAcq_RsCorr"), 30)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(device, "setvar_DataAcq_RsPred"), 30)
+End
+
 // UTF_TD_GENERATOR v0:DataGenerators#GetClampModes
 static Function CheckAmplifierScaling([STRUCT IUTF_MDATA &md])
 
