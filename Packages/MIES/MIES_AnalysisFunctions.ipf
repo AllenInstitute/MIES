@@ -1299,8 +1299,6 @@ Function ReportOutOfRangeDAScale(string device, variable sweepNo, variable anaFu
 	variable i
 	string   key
 
-	ASSERT(GetHardwareType(device) != HARDWARE_SUTTER_DAC, "Missing support for Sutter amplifier")
-
 	switch(anaFuncType)
 		case PSQ_CHIRP: // fallthrough
 		case PSQ_RAMP: // fallthrough
@@ -1332,7 +1330,11 @@ Function ReportOutOfRangeDAScale(string device, variable sweepNo, variable anaFu
 	endif
 
 	printf "(%s) The DAScale value could not be set as it is out-of-range.\r", GetRTStackInfo(2)
-	printf "Please adjust the \"External Command Sensitivity\" in the MultiClamp Commander application and try again.\r"
+	if(GetHardwareType(device) == HARDWARE_SUTTER_DAC)
+		printf "The output range of the Sutter amplifier is fixed, please reduce the DAScale value or the stimulus set amplitude and try again.\r"
+	else
+		printf "Please adjust the \"External Command Sensitivity\" in the MultiClamp Commander application and try again.\r"
+	endif
 	ControlWindowToFront()
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
