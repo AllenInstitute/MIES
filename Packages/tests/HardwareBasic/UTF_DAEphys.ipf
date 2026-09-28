@@ -410,7 +410,7 @@ End
 static Function SyncMIESMccWorksOutoftheBox_preAcq(string device)
 
 	/// desync MCC and MIES
-	MIES_AIMCC#AIMCC_SendToAmp(device, 0, V_CLAMP_MODE, MCC_HOLDING_FUNC, MCC_WRITE, value = 5)
+	AI_SendToAmp(device, 0, V_CLAMP_MODE, MCC_HOLDING_FUNC, MCC_WRITE, value = 5)
 
 	PGC_SetAndActivateControl(device, "check_Settings_SyncMiesToMCC", val = 1)
 End
@@ -441,6 +441,14 @@ static Function SyncMIESMccWorksOutoftheBox([STRUCT IUTF_MDATA &md])
 	rowLabel = "HoldingPotential"
 	expected = ampStorageWave[%$rowLabel][0][headstage]
 	CHECK_EQUAL_VAR(expected, actual)
+End
+
+/// @brief Return true if the amplifier function has no Sutter counterpart
+static Function IsUnsupportedSutterFunc(variable func)
+
+	Make/FREE unsupported = {MCC_AUTOBRIDGEBALANCE_FUNC, MCC_RSCOMPBANDWIDTH_FUNC, MCC_OSCKILLERENABLE_FUNC, MCC_SLOWCOMPCAP_FUNC, MCC_SLOWCOMPTAU_FUNC, MCC_SLOWCOMPTAUX20ENAB_FUNC, MCC_AUTOSLOWCOMP_FUNC, MCC_SLOWCURRENTINJENABL_FUNC, MCC_SLOWCURRENTINJLEVEL_FUNC, MCC_SLOWCURRENTINJSETLT_FUNC, MCC_PRIMARYSIGNALGAIN_FUNC, MCC_SECONDARYSIGNALGAIN_FUNC, MCC_PRIMARYSIGNALHPF_FUNC, MCC_SECONDARYSIGNALLPF_FUNC}
+
+	return IsFinite(GetRowIndex(unsupported, val = func))
 End
 
 static Function CheckAmplifierReadAndWrite_preAcq(string device)
@@ -479,6 +487,12 @@ Function CheckAmplifierReadAndWrite([STRUCT IUTF_MDATA &md])
 	WAVE funcs = DataGenerators#GetAmplifierFuncs()
 
 	for(func : funcs)
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+		if(IsUnsupportedSutterFunc(func))
+			continue
+		endif
+#endif // TESTS_WITH_SUTTER_HARDWARE
+
 		switch(func)
 			case MCC_OSCKILLERENABLE_FUNC:
 				// functions without controls
@@ -606,6 +620,16 @@ Function CheckAmplifierReadAndWrite([STRUCT IUTF_MDATA &md])
 				REQUIRE_CLOSE_VAR(expected, actual, tol = 1e-3)
 				break
 		endswitch
+
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+		// Sutter amplifiers have one pipette offset for both clamp modes
+		if(func == MCC_PIPETTEOFFSET_FUNC)
+			rowLabel = AI_MapFunctionConstantToName(func, (clampMode == V_CLAMP_MODE) ? I_CLAMP_MODE : V_CLAMP_MODE)
+			expected = ampStorageWave[%$rowLabel][0][headstage]
+			INFO("rowLabel %s, func %d", s0 = rowLabel, n0 = func)
+			CHECK_CLOSE_VAR(expected, actual, tol = 1e-3)
+		endif
+#endif // TESTS_WITH_SUTTER_HARDWARE
 	endfor
 
 	// handle funcs which don't interact with the MCC
