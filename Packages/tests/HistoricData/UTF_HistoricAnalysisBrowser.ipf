@@ -456,3 +456,53 @@ static Function TestTagControl()
 
 	KillWindow/Z sweepBrowser
 End
+
+static Function TestPastePanel()
+
+	string abWin, content, path, symbPath, homePath, hist, refMsg
+	variable historyRef
+
+	Make/FREE/T files = {PXP_FILENAME}
+	DownloadFilesIfRequired(files)
+	files[] = PrependExperimentFolder_IGNORE(files[p])
+
+	PathInfo home
+	homePath = S_path
+	path     = S_path + "testPastePanel:"
+	symbPath = GetUniqueSymbolicPath()
+	NewPath/Q/C $symbPath, path
+	CopyFile/D/Z=1/O/P=$symbPath files[0]
+	CHECK_EQUAL_VAR(V_flag, 0)
+
+	abWin = AB_OpenAnalysisBrowser(restoreSettings = 0)
+	PGC_SetAndActivateControl(abWin, "button_show_pastewindow")
+
+	content = "file:\r" + TextWaveToList(files, "\r")
+
+	content += "folder:\r" + GetWindowsPath(path) + "\r"
+
+	content += "cellname:\r" + "fake"
+	ReplaceNotebookText("AnalysisBrowser#PasteWindow#data", content)
+
+	historyRef = CaptureHistoryStart()
+	PGC_SetAndActivateControl("AnalysisBrowser#PasteWindow", "button_add")
+	hist   = CaptureHistory(historyRef, 1)
+	refMsg = "Querying LIMS with cell names is not supported on Igor Pro 9."
+
+	WAVE/T locations = GetAnalysisBrowserGUIFolderList()
+
+#if IgorVersion() >= 10
+	CHECK_EQUAL_VAR(strsearch(hist, refMsg, 0), -1)
+
+	Make/FREE/T ref = {homePath + "input:AB_LoadSweepsFromIgorData.pxp",                                                   \
+	                   homePath + "testPastePanel:",                                                                       \
+	                   "\\\\allen\\programs\\celltypes\\production\\mousecelltypes\\prod174\\Ephys_Roi_Result_1429085938\\"}
+#else
+	CHECK_GE_VAR(strsearch(hist, refMsg, 0), 0)
+
+	Make/FREE/T ref = {homePath + "input:AB_LoadSweepsFromIgorData.pxp", \
+	                   homePath + "testPastePanel:"}
+#endif
+
+	CHECK_EQUAL_TEXTWAVES(locations, ref, mode = WAVE_DATA)
+End
