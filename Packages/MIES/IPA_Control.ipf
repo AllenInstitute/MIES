@@ -1770,3 +1770,109 @@ Function IPA_MIES_ReadClampModeFromHardware(variable probeCount)
 	// VC adds 256
 	return (value & 256) ? FALSE : TRUE
 End
+
+/// @brief Set a value without changing its enable state
+///
+/// In contrast to IPA_SetValue() the keywords "VHold", "IHold", "Bridge",
+/// "CmComp", "RsComp", "RsCorr" and "RsPred" do not enable the
+/// corresponding setting. The value is stored and then sent to the
+/// amplifier with the unchanged enable state. All other keywords are
+/// passed to IPA_SetValue().
+///
+/// @param probeCount one-based probe index
+/// @param setting    keyword of IPA_SetValue()
+/// @param value      value in SI units, as for IPA_SetValue()
+///
+/// @returns TRUE on success and FALSE on error
+Function IPA_MIES_SetValue(variable probeCount, string setting, variable value)
+
+	variable probeIndex
+
+	STRUCT IPASeries SIPA
+
+	PerformSubsystemEntry()
+
+	GetStructure(SIPA)
+
+	probeIndex = probeCount - 1
+	if(probeIndex < 0 || probeIndex >= SIPA.numHeadstages)
+		return FALSE
+	endif
+
+	// same limits and units as in IPA_SetValue()
+	strswitch(setting)
+		case IPA_SET_V_HOLD:
+			value                        = limit(value, -1, 1)
+			SIPA.ipa.HS[probeIndex].hpot = round(value * 1000)
+			SaveStructure(SIPA)
+			return IPA_SetValue(probeCount, IPA_SET_V_HOLD_ON, SIPA.ipa.HS[probeIndex].hpoton)
+		case IPA_SET_I_HOLD:
+			value                         = limit(value, -20e-9, 20e-9)
+			SIPA.ipa.HS[probeIndex].hcurr = round(value * 1e12)
+			SaveStructure(SIPA)
+			return IPA_SetValue(probeCount, IPA_SET_I_HOLD_ON, SIPA.ipa.HS[probeIndex].hcurron)
+		case IPA_SET_BRIDGE:
+			value                          = limit(value, 0, 200e6)
+			SIPA.ipa.HS[probeIndex].bridge = value * 1e-6
+			SaveStructure(SIPA)
+			return IPA_SetValue(probeCount, IPA_SET_BRIDGE_ON, SIPA.ipa.HS[probeIndex].bridgeon)
+		case IPA_SET_CM_COMP:
+			value                          = limit(value, 0, 100e-12)
+			SIPA.ipa.HS[probeIndex].cmcomp = value * 1e12
+			break
+		case IPA_SET_RS_COMP:
+			value                          = limit(value, 0, 100e6)
+			SIPA.ipa.HS[probeIndex].rscomp = value * 1e-6
+			break
+		case IPA_SET_RS_CORR:
+			value                          = limit(value, 0, 1)
+			SIPA.ipa.HS[probeIndex].rscorr = value * 100
+			break
+		case IPA_SET_RS_PRED:
+			value                          = limit(value, 0, 1)
+			SIPA.ipa.HS[probeIndex].rspred = value * 100
+			break
+		default:
+			return IPA_SetValue(probeCount, setting, value)
+	endswitch
+
+	// whole cell compensation and Rs correction/prediction are sent together
+	SaveStructure(SIPA)
+
+	return IPA_SetValue(probeCount, IPA_SET_RS_CORR_ON, SIPA.ipa.HS[probeIndex].corron)
+End
+
+/// @brief Return a stored value
+///
+/// In contrast to IPA_GetValue() the keywords "VHold" and "IHold" return the
+/// stored holding value also when the holding is disabled. All other
+/// keywords are passed to IPA_GetValue().
+///
+/// @param probeCount one-based probe index
+/// @param setting    keyword of IPA_GetValue()
+///
+/// @returns value in SI units, as for IPA_GetValue(), or NaN on error
+Function IPA_MIES_GetValue(variable probeCount, string setting)
+
+	variable probeIndex
+
+	STRUCT IPASeries SIPA
+
+	PerformSubsystemEntry()
+
+	GetStructure(SIPA)
+
+	probeIndex = probeCount - 1
+	if(probeIndex < 0 || probeIndex >= SIPA.numHeadstages)
+		return NaN
+	endif
+
+	strswitch(setting)
+		case IPA_SET_V_HOLD:
+			return SIPA.ipa.HS[probeIndex].hpot * 1e-3
+		case IPA_SET_I_HOLD:
+			return SIPA.ipa.HS[probeIndex].hcurr * 1e-12
+		default:
+			return IPA_GetValue(probeCount, setting)
+	endswitch
+End
