@@ -1203,10 +1203,12 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 				value = 25e-12
 			endif
 			value *= 1e12
-			if (SIPA.ipa.HS[probeIndex].vc == 2)
-				value += kCC_deltaCap - kStabilityControl
-			endif				
+			// store the value without the CC offset, it is added when the value is sent in CC,
+			// see ModifyCapMag()
 			setval =  round(value*655.32)
+			if (SIPA.ipa.HS[probeIndex].vc == 2)
+				ModifyCapMag(setval)
+			endif
 			if (setval<0)
 				setval=0
 			endif
