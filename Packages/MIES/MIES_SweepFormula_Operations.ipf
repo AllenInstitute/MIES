@@ -3206,13 +3206,8 @@ static Function/WAVE SFO_OperationIVSCCApFrequencyGetDefaultTagGroups(STRUCT SF_
 	numTagLists = DimSize(uniqueTagLists, ROWS)
 	Make/FREE/WAVE/N=(numTagLists) tagGroups
 	for(i = 0; i < numTagLists; i += 1)
-		tagList = uniqueTagLists[i]
-		if(IsEmpty(tagList))
-			Make/FREE/T/N=(0) tags
-		else
-			WAVE/T tags = ListToTextWave(tagList, AB_TAG_SEPARATOR)
-		endif
-		tagGroups[i] = tags
+		tagList      = uniqueTagLists[i]
+		tagGroups[i] = ListToTextWave(tagList, AB_TAG_SEPARATOR)
 	endfor
 
 	return tagGroups
