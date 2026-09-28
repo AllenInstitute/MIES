@@ -1506,7 +1506,8 @@ static Function ZeroIPAOffset(Struct IPASeries &SIPA, Variable probeIndex)	//Thi
 		endif
 		direction = (readvalue > 0)		//1 is positive, 0 is negative
 		
-		if (abs(readvalue*SIPA.ipa.HS[probeIndex].gainvc) > 9.9)
+		// output voltage of the amplifier, gainvc is the index into the VC gains in mV/pA
+		if (abs(readvalue*str2num(stringfromlist(SIPA.ipa.HS[probeIndex].gainvc,"0.5;1;2.5;5;10;25"))*1e9) > 9.9)
 			//Print "Out of Range"
 			offsetstep = 2048	//32 mV
 		endif
