@@ -240,8 +240,9 @@ End
 /// Change the holding command during a running test pulse and stop the test pulse afterwards
 ///
 /// Reads the headstage, clamp mode and new holding command from `root:holdingChangeDuringTP`, waits until
-/// the test pulse has cycled a few times, changes the holding command and stores the TPStorage index at the
-/// time of the change in `root:holdingChangeDuringTP[%IndexAtChange]`. The test pulse is stopped after it
+/// the test pulse has cycled a few times, changes the holding command of all active headstages and stores the
+/// TPStorage index at the time of the change in `root:holdingChangeDuringTP[%IndexAtChange]`. The test pulse
+/// is stopped after it
 /// has cycled a few more times.
 Function ChangeHoldingAndStopTP_IGNORE(STRUCT WMBackgroundStruct &s)
 
@@ -267,7 +268,7 @@ Function ChangeHoldingAndStopTP_IGNORE(STRUCT WMBackgroundStruct &s)
 		endif
 
 		settings[%IndexAtChange] = index
-		AI_WriteToAmplifier(device, settings[%Headstage], settings[%ClampMode], MCC_HOLDING_FUNC, settings[%Holding], sendToAll = 0)
+		AI_WriteToAmplifier(device, settings[%Headstage], settings[%ClampMode], MCC_HOLDING_FUNC, settings[%Holding], sendToAll = 1)
 
 		return 0
 	endif
