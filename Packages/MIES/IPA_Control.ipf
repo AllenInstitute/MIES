@@ -535,7 +535,7 @@ static Function SetDIPA_fromStructure(Struct IPASeries &SIPA, variable probeInde
 
 	//SRs Lag
 	setval=min(1023,round(SIPA.ipa.HS[probeIndex].lag*5.12)) 	//Settings from 20 to 200  (us)
-	setval=max(51,round(SIPA.ipa.HS[probeIndex].lag*5.12))
+	setval=max(51,setval)
 	if (HS)
 		SutterDAQwrite(Amp,23,10,(setval&0xff00)/256,setval&0x00ff) //14bit unsigned?
 	else
