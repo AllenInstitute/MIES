@@ -263,6 +263,7 @@ End
 #include "MIES_ProgrammaticGuiControl"
 #include "MIES_Publish"
 #include "MIES_PulseAveraging"
+#include "MIES_Python"
 #include "MIES_RepeatedAcquisition"
 #include "MIES_Replay"
 #include "MIES_SamplingInterval"
