@@ -362,6 +362,29 @@ Function AISU_GetMode(string device, variable headstage)
 	return currentClamp ? I_CLAMP_MODE : V_CLAMP_MODE
 End
 
+/// @brief Return the holding command of the amplifier in the current clamp mode
+///
+/// @returns holding potential in mV (VC) or holding current in pA (IC), zero if the
+///          holding is disabled and NaN if the amplifier can not be used
+Function AISU_GetHoldingCommand(string device, variable headstage)
+
+	PerformSubsystemEntry()
+
+	if(AISU_SelectMultiClamp(device, headstage) != AMPLIFIER_CONNECTION_SUCCESS)
+		return NaN
+	endif
+
+	switch(DAG_GetHeadstageMode(device, headstage))
+		case V_CLAMP_MODE:
+			// zero if disabled
+			return IPA_GetValue(headstage + 1, "VHold") * ONE_TO_MILLI
+		case I_CLAMP_MODE:
+			return IPA_GetValue(headstage + 1, "IHold") * ONE_TO_PICO
+		default:
+			return NaN
+	endswitch
+End
+
 /// @brief Set the clamp mode of the amplifier of the headstage
 ///
 /// I=0 is not supported for Sutter amplifiers, therefore `zeroStep` is ignored. DAEphys
@@ -544,6 +567,15 @@ Function AISU_Shutdown(string device)
 End
 
 Function AISU_GetMode(string device, variable headstage)
+
+	PerformSubsystemEntry()
+
+	DEBUGPRINT("Unimplemented")
+
+	return NaN
+End
+
+Function AISU_GetHoldingCommand(string device, variable headstage)
 
 	PerformSubsystemEntry()
 

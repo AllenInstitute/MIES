@@ -1182,8 +1182,7 @@ Function AI_GetHoldingCommand(string device, variable headstage)
 		case AMPLIFIER_TYPE_MCC:
 			return AIMCC_GetHoldingCommand(device, headstage)
 		case AMPLIFIER_TYPE_SUTTER:
-			// @todo implement
-			return NaN
+			return AISU_GetHoldingCommand(device, headstage)
 		default:
 			FATAL_ERROR("Invalid amplifier type")
 	endswitch
@@ -1308,8 +1307,7 @@ Function AI_SendToAmp(string device, variable headStage, variable mode, variable
 
 			return AIMCC_SendToAmp(device, headStage, mode, func, accessType, checkBeforeWrite = checkBeforeWrite, usePrefixes = usePrefixes, selectAmp = selectAmp, value = value)
 		case AMPLIFIER_TYPE_SUTTER:
-			// @todo implement
-			return NaN
+			return AISU_SendToAmp(device, headStage, mode, func, accessType, checkBeforeWrite, usePrefixes, selectAmp, ParamIsDefault(value) ? NaN : value)
 		default:
 			FATAL_ERROR("Invalid amplifier type")
 	endswitch
@@ -1660,15 +1658,13 @@ Function AI_WriteToAmplifier(string device, variable headStage, variable mode, v
 	endif
 
 	switch(AI_GetAmplifierTypeOfDevice(device))
-		case AMPLIFIER_TYPE_MCC:
+		case AMPLIFIER_TYPE_MCC: // fallthrough
+		case AMPLIFIER_TYPE_SUTTER:
 			if(IsNaN(sendToAll))
 				return AI_UpdateAmpModel(device, headStage, clampMode = mode, func = func, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = selectAmp, GUIWrite = GUIWrite)
 			endif
 
 			return AI_UpdateAmpModel(device, headStage, clampMode = mode, func = func, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = selectAmp, GUIWrite = GUIWrite, sendToAll = sendToAll)
-		case AMPLIFIER_TYPE_SUTTER:
-			// @todo implement
-			return 1
 		default:
 			FATAL_ERROR("Invalid amplifier type")
 	endswitch
@@ -1704,11 +1700,9 @@ Function AI_ReadFromAmplifier(string device, variable headStage, variable mode, 
 	switch(AI_GetAmplifierType(device, headStage))
 		case AMPLIFIER_TYPE_NONE:
 			return NaN
-		case AMPLIFIER_TYPE_MCC:
-			return AI_SendToAmp(device, headStage, mode, func, MCC_READ, usePrefixes = usePrefixes, selectAmp = selectAmp)
+		case AMPLIFIER_TYPE_MCC: // fallthrough
 		case AMPLIFIER_TYPE_SUTTER:
-			// @todo implement
-			return NaN
+			return AI_SendToAmp(device, headStage, mode, func, MCC_READ, usePrefixes = usePrefixes, selectAmp = selectAmp)
 		default:
 			FATAL_ERROR("Invalid amplifier type")
 	endswitch
