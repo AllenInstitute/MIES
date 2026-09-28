@@ -1388,7 +1388,7 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 			if (SIPA.ipa.HS[probeIndex].vc == 0) //only set if in VC
 				setval = 32.767*SIPA.ipa.HS[probeIndex].hpot*value
 				if (oktosend)
-					SutterDAQwrite(ampl_index,16,0,(setval&0xff00)/256,setval&0x00ff)
+					SutterDAQwrite(ampl_index,16,amp_channel,(setval&0xff00)/256,setval&0x00ff)
 				endif
 			endif
 			SIPA.ipa.HS[probeIndex].hpoton = value
@@ -1397,7 +1397,7 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 			if (SIPA.ipa.HS[probeIndex].vc == 2) //only set if in CC
 				setval = 1.63835*SIPA.ipa.HS[probeIndex].hcurr*value
 				if (oktosend)
-					SutterDAQwrite(ampl_index,16,0,(setval&0xff00)/256,setval&0x00ff)
+					SutterDAQwrite(ampl_index,16,amp_channel,(setval&0xff00)/256,setval&0x00ff)
 				endif
 			endif
 			SIPA.ipa.HS[probeIndex].hcurron = value
