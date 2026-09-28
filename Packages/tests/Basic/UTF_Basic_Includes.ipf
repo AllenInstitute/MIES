@@ -28,6 +28,7 @@
 #include "UTF_oodDAQ"
 #include "UTF_PackageSettings"
 #include "UTF_PGCSetAndActivateControl"
+#include "UTF_Python"
 #include "UTF_StimsetAPI"
 #include "UTF_SweepFormula"
 #include "UTF_SweepFormula_Operations"
