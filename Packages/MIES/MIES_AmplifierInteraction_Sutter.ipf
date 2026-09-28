@@ -202,6 +202,99 @@ Function AISU_ParseAmplifierDef(string amplifierDef)
 	return AISU_GetProbeFromDeviceHeadstage(serial, deviceHeadstage)
 End
 
+/// @brief Return the IPA control keyword and the scale factors for the given amplifier function
+///
+/// The value for the IPA control package is `value * prefixScale * unitScale`, where `value`
+/// is in MIES units (see `usePrefixes` of AI_SendToAmp()), `prefixScale` converts from MIES units
+/// to SI units and `unitScale` from SI units to the unit of the IPA control package.
+///
+/// @param func      Function to call, see @ref AI_SendToAmpConstants
+/// @param clampMode #V_CLAMP_MODE or #I_CLAMP_MODE
+///
+/// @returns keyword, empty if the function is not supported by the Sutter amplifiers
+static Function [string setting, variable prefixScale, variable unitScale] AISU_GetSetting(variable func, variable clampMode)
+
+	switch(func)
+		case MCC_HOLDING_FUNC:
+			if(clampMode == V_CLAMP_MODE)
+				return ["VHold", MILLI_TO_ONE, 1]
+			endif
+
+			return ["IHold", PICO_TO_ONE, 1]
+		case MCC_HOLDINGENABLE_FUNC:
+			if(clampMode == V_CLAMP_MODE)
+				return ["VHoldOn", 1, 1]
+			endif
+
+			return ["IHoldOn", 1, 1]
+		case MCC_BRIDGEBALENABLE_FUNC:
+			return ["BridgeOn", 1, 1]
+		case MCC_BRIDGEBALRESIST_FUNC:
+			return ["Bridge", MEGA_TO_ONE, 1]
+		case MCC_NEUTRALIZATIONENABL_FUNC:
+			return ["ECompOn", 1, 1]
+		case MCC_NEUTRALIZATIONCAP_FUNC:
+			return ["ECompMag", PICO_TO_ONE, 1]
+		case MCC_WHOLECELLCOMPENABLE_FUNC:
+			return ["RsCompOn", 1, 1]
+		case MCC_WHOLECELLCOMPCAP_FUNC:
+			return ["CmComp", PICO_TO_ONE, 1]
+		case MCC_WHOLECELLCOMPRESIST_FUNC:
+			return ["RsComp", MEGA_TO_ONE, 1]
+		case MCC_AUTOWHOLECELLCOMP_FUNC:
+			return ["AutoCellComp", 1, 1]
+		case MCC_RSCOMPENABLE_FUNC:
+			return ["RsCorrOn", 1, 1]
+		case MCC_RSCOMPCORRECTION_FUNC:
+			// in percent also without prefixes, the IPA control package uses fractions
+			return ["RsCorr", 1, PERCENT_TO_ONE]
+		case MCC_RSCOMPPREDICTION_FUNC:
+			return ["RsPred", 1, PERCENT_TO_ONE]
+		case MCC_PIPETTEOFFSET_FUNC:
+			return ["Offset", MILLI_TO_ONE, 1]
+		case MCC_AUTOPIPETTEOFFSET_FUNC:
+			return ["AutoOffset", 1, 1]
+		case MCC_FASTCOMPCAP_FUNC:
+			return ["ECompMag", 1, 1]
+		case MCC_FASTCOMPTAU_FUNC:
+			return ["ECompTau", 1, 1]
+		case MCC_AUTOFASTCOMP_FUNC:
+			return ["AutoEComp", 1, 1]
+		case MCC_PRIMARYSIGNALLPF_FUNC:
+			return ["Filter", 1, 1]
+		case MCC_AUTOBRIDGEBALANCE_FUNC: // fallthrough
+		case MCC_RSCOMPBANDWIDTH_FUNC: // fallthrough
+		case MCC_OSCKILLERENABLE_FUNC: // fallthrough
+		case MCC_SLOWCOMPCAP_FUNC: // fallthrough
+		case MCC_SLOWCOMPTAU_FUNC: // fallthrough
+		case MCC_SLOWCOMPTAUX20ENAB_FUNC: // fallthrough
+		case MCC_AUTOSLOWCOMP_FUNC: // fallthrough
+		case MCC_SLOWCURRENTINJENABL_FUNC: // fallthrough
+		case MCC_SLOWCURRENTINJLEVEL_FUNC: // fallthrough
+		case MCC_SLOWCURRENTINJSETLT_FUNC: // fallthrough
+		case MCC_PRIMARYSIGNALGAIN_FUNC: // fallthrough
+		case MCC_SECONDARYSIGNALGAIN_FUNC: // fallthrough
+		case MCC_PRIMARYSIGNALHPF_FUNC: // fallthrough
+		case MCC_SECONDARYSIGNALLPF_FUNC:
+			return ["", NaN, NaN]
+		default:
+			FATAL_ERROR("Invalid func: " + num2istr(func))
+	endswitch
+End
+
+/// @brief Return true if `func` is an automatic function, which has no value to read or compare
+static Function AISU_IsAutomaticFunction(variable func)
+
+	switch(func)
+		case MCC_AUTOWHOLECELLCOMP_FUNC: // fallthrough
+		case MCC_AUTOPIPETTEOFFSET_FUNC: // fallthrough
+		case MCC_AUTOFASTCOMP_FUNC:
+			return 1
+		default:
+			return 0
+	endswitch
+End
+
 #ifdef SUTTER_AMPLIFIER_PRESENT
 
 /// @brief Initialize the Sutter amplifiers
@@ -338,6 +431,100 @@ Function AISU_SelectMultiClamp(string device, variable headstage)
 	return AMPLIFIER_CONNECTION_SUCCESS
 End
 
+/// @brief Generic interface to call Sutter amplifier functions
+///
+/// See AI_SendToAmp() for the parameters. Setting a value does not change its
+/// enable state, see IPA_MIES_SetValue().
+///
+/// @returns return value (for getters, respects `usePrefixes`), success (`0`) or error (`NaN`).
+Function AISU_SendToAmp(string device, variable headStage, variable mode, variable func, variable accessType, variable checkBeforeWrite, variable usePrefixes, variable selectAmp, variable value)
+
+	variable prefixScale, unitScale, scale, ret, current, success
+	string setting, str
+
+	PerformSubsystemEntry()
+
+	ASSERT(func > MCC_BEGIN_INVALID_FUNC && func < MCC_END_INVALID_FUNC, "Function constant is out for range")
+	ASSERT(IsValidHeadstage(headstage), "invalid headStage index")
+	AI_AssertOnInvalidClampMode(mode)
+	ASSERT(accessType == MCC_READ || accessType == MCC_WRITE, "Invalid access type")
+
+	if(accessType == MCC_READ)
+		ASSERT(IsNaN(value), "Can't pass value for reading")
+		ASSERT(!checkBeforeWrite, "Can't use checkBeforeWrite for reading")
+	endif
+
+	if(mode == I_EQUAL_ZERO_MODE || DAG_GetHeadstageMode(device, headStage) != mode)
+		return NaN
+	endif
+
+	[setting, prefixScale, unitScale] = AISU_GetSetting(func, mode)
+
+	if(IsEmpty(setting))
+		DEBUGPRINT("Unsupported function for Sutter amplifiers: " + num2istr(func))
+		return NaN
+	endif
+
+	if(selectAmp)
+		if(AISU_SelectMultiClamp(device, headstage) != AMPLIFIER_CONNECTION_SUCCESS)
+			return NaN
+		endif
+	endif
+
+	if(AISU_EnsureCorrectMode(device, headStage))
+		return NaN
+	endif
+
+	scale = (usePrefixes ? prefixScale : 1) * unitScale
+
+	sprintf str, "headStage=%d, mode=%d, func=%d, setting=%s, value(passed)=%g, scale=%g\r", headStage, mode, func, setting, value, scale
+	DEBUGPRINT(str)
+
+	if(accessType == MCC_READ)
+		ret = IPA_MIES_GetValue(headstage + 1, setting)
+
+		return ret / scale
+	endif
+
+	if(checkBeforeWrite && !AISU_IsAutomaticFunction(func))
+		current = IPA_MIES_GetValue(headstage + 1, setting)
+
+		// Don't send the value if it is equal to the current value, with tolerance
+		// being 1% of the reference value, or if it is zero and the current value is
+		// smaller than DEFAULT_TOL.
+		if(CheckIfClose(current, value * scale, tol = 1e-2 * abs(current), strong_or_weak = 1) || (value == 0 && CheckIfSmall(current, tol = DEFAULT_TOL)))
+			DEBUGPRINT("The value to be set is equal to the current value, skip setting it: " + num2istr(func))
+			return 0
+		endif
+	endif
+
+	success = IPA_MIES_SetValue(headstage + 1, setting, value * scale)
+
+	if(success)
+		strswitch(setting)
+			case "AutoOffset":
+				// return the new offset, as done for MCC amplifiers
+				[setting, prefixScale, unitScale] = AISU_GetSetting(MCC_PIPETTEOFFSET_FUNC, mode)
+				ret                               = IPA_MIES_GetValue(headstage + 1, setting) / ((usePrefixes ? prefixScale : 1) * unitScale)
+				break
+			default:
+				ret = 0
+				break
+		endswitch
+	else
+		ret = NaN
+	endif
+
+	PUB_AmplifierSettingChange(device, headstage, mode, func, value)
+
+	if(!IsFinite(ret))
+		printf "(%s) The setting \"%s\" could not be sent to the Sutter amplifier of headstage %d.\r", device, setting, headstage
+		ControlWindowToFront()
+	endif
+
+	return ret
+End
+
 #else // SUTTER_AMPLIFIER_PRESENT
 
 Function AISU_Initialize(string device)
@@ -388,6 +575,15 @@ Function AISU_SelectMultiClamp(string device, variable headstage)
 	DEBUGPRINT("Unimplemented")
 
 	return AMPLIFIER_CONNECTION_INVAL_SER
+End
+
+Function AISU_SendToAmp(string device, variable headStage, variable mode, variable func, variable accessType, variable checkBeforeWrite, variable usePrefixes, variable selectAmp, variable value)
+
+	PerformSubsystemEntry()
+
+	DEBUGPRINT("Unimplemented")
+
+	return NaN
 End
 
 #endif // SUTTER_AMPLIFIER_PRESENT
