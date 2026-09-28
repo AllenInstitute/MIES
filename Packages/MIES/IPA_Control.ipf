@@ -1372,7 +1372,7 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 				endif
 			else 					//Tracking turned OFF
 				if ((SIPA.ipa.HS[probeIndex].vc == 2) && (oktosend))
-					SutterDAQwrite(ampl_index,19,0,0,0)
+					SutterDAQwrite(ampl_index,19+6*amp_channel,0,0,0)
 				endif
 			endif		
 			break	
