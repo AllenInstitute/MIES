@@ -2826,7 +2826,6 @@ Function/S AB_OpenAnalysisBrowser([variable restoreSettings])
 	WAVE/T folderList      = GetAnalysisBrowserGUIFolderList()
 	WAVE   folderSelection = GetAnalysisBrowserGUIFolderSelection()
 	WAVE   folderColors    = GetAnalysisBrowserGUIFolderColors()
-	WAVE   tagsColors      = GetAnalysisBrowserTagsColors()
 	if(restoreSettings)
 		NVAR   JSONid        = $GetSettingsJSONid()
 		WAVE/T oldFolderList = JSON_GetTextWave(jsonID, SETTINGS_AB_FOLDER)
@@ -2851,6 +2850,11 @@ Function/S AB_OpenAnalysisBrowser([variable restoreSettings])
 	WAVE/T list = GetExperimentBrowserGUIList()
 	WAVE   sel  = GetExperimentBrowserGUISel()
 	ListBox list_experiment_contents, win=$panel, listWave=list, selWave=sel
+
+	WAVE/T list   = GetAnalysisBrowserTagsList()
+	WAVE   sel    = GetAnalysisBrowserTagsSelection()
+	WAVE   colors = GetAnalysisBrowserTagsColors()
+	ListBox list_tagcontrol_taglist, win=$(panel + "#" + ANALYSIS_BROWSER_TAGCONTROL_NAME), listWave=list, selWave=sel, colorWave=colors
 
 	PS_InitCoordinates(JSONid, panel)
 	SetWindow $panel, hook(cleanup)=AB_WindowHook
@@ -2895,6 +2899,8 @@ Function AB_BrowserStartupSettings()
 
 	ListBox list_experiment_contents, win=$panel, listWave=$"", selWave=$"", colorWave=$""
 	ListBox listbox_AB_Folders, win=$panel, listWave=$"", selWave=$"", colorWave=$""
+	ListBox list_tagcontrol_taglist, win=$(panel + "#" + ANALYSIS_BROWSER_TAGCONTROL_NAME), listWave=$"", selWave=$"", colorWave=$""
+
 	SetCheckBoxState(panel, "check_load_nwb", CHECKBOX_SELECTED)
 	SetCheckBoxState(panel, "check_load_pxp", CHECKBOX_UNSELECTED)
 	SetCheckBoxState(panel, "check_load_results", CHECKBOX_UNSELECTED)
