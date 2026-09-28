@@ -108,6 +108,25 @@ static Function IPAVHoldOnCurrentClamp()
 	RestoreIPA_IGNORE(state)
 End
 
+/// Requires the model cell in position "Cell", with an open input the automatic offset does not
+/// change the offset
+static Function IPAAutoOffset()
+
+	variable offset, startOffset
+	string state = InitIPA_IGNORE()
+
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_VC_MODE, 1), 1)
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_OFFSET_LOCK, 0), 1)
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_OFFSET, 0.05), 1)
+	startOffset = IPA_GetValue(IPA_PROBE, IPA_SET_OFFSET)
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_AUTO_OFFSET, 1), 1)
+
+	offset = IPA_GetValue(IPA_PROBE, IPA_SET_OFFSET)
+	CHECK_NEQ_VAR(offset, startOffset)
+
+	RestoreIPA_IGNORE(state)
+End
+
 #else
 
 static Function IPARequiresSutterHardware()

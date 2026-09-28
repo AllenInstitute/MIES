@@ -1426,7 +1426,7 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 				return FALSE
 			endif
 			ZeroIPAOffset(SIPA,probeIndex)
-			return TRUE
+			break	// store the new offset
 		case "SealTest":
 			if (oktosend)
 				if (value==0)
