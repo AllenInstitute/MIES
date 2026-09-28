@@ -1327,7 +1327,7 @@ static Function AI_UpdateDependentSettings(string device, variable headStage, va
 		case AMPLIFIER_TYPE_MCC:
 			return AIMCC_UpdateDependentSettings(device, headStage, func, clampMode)
 		case AMPLIFIER_TYPE_SUTTER:
-			return NaN
+			return AISU_UpdateDependentSettings(device, headStage, func, clampMode)
 		default:
 			FATAL_ERROR("Invalid amplifier type")
 	endswitch

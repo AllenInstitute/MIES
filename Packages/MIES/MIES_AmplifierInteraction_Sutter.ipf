@@ -362,6 +362,58 @@ Function AISU_GetMode(string device, variable headstage)
 	return currentClamp ? I_CLAMP_MODE : V_CLAMP_MODE
 End
 
+/// @brief Update the settings which the Sutter amplifier changed as a side effect of writing `func`
+///
+/// The Sutter amplifiers have one pipette offset for both clamp modes, and the electrode
+/// compensation magnitude is the fast capacitance compensation in voltage clamp and the
+/// capacitance neutralization in current clamp. The automatic whole cell compensation also
+/// sets the bridge balance. MIES stores these values separately, so update the other entries
+/// to the values of the amplifier.
+///
+/// @param device    device
+/// @param headStage MIES headstage number, must be in the range [0, NUM_HEADSTAGES[
+/// @param func      Function which was written, see @ref AI_SendToAmpConstants
+/// @param clampMode clamp mode of `func`
+Function AISU_UpdateDependentSettings(string device, variable headStage, variable func, variable clampMode)
+
+	variable dependentFunc, dependentClampMode, value
+	string rowLabel
+
+	PerformSubsystemEntry()
+
+	switch(func)
+		case MCC_PIPETTEOFFSET_FUNC: // fallthrough
+		case MCC_AUTOPIPETTEOFFSET_FUNC:
+			dependentFunc      = MCC_PIPETTEOFFSET_FUNC
+			dependentClampMode = (clampMode == V_CLAMP_MODE) ? I_CLAMP_MODE : V_CLAMP_MODE
+			value              = IPA_MIES_GetValue(headStage + 1, "Offset") * ONE_TO_MILLI
+			break
+		case MCC_FASTCOMPCAP_FUNC: // fallthrough
+		case MCC_AUTOFASTCOMP_FUNC:
+			dependentFunc      = MCC_NEUTRALIZATIONCAP_FUNC
+			dependentClampMode = I_CLAMP_MODE
+			value              = IPA_MIES_GetValue(headStage + 1, "ECompMag") * ONE_TO_PICO
+			break
+		case MCC_AUTOWHOLECELLCOMP_FUNC:
+			dependentFunc      = MCC_BRIDGEBALRESIST_FUNC
+			dependentClampMode = I_CLAMP_MODE
+			value              = IPA_MIES_GetValue(headStage + 1, "Bridge") * ONE_TO_MEGA
+			break
+		default:
+			return NaN
+	endswitch
+
+	if(!IsFinite(value))
+		return NaN
+	endif
+
+	WAVE AmpStorageWave = GetAmplifierParamStorageWave(device)
+
+	rowLabel                                 = AI_MapFunctionConstantToName(dependentFunc, dependentClampMode)
+	AmpStorageWave[%$rowLabel][0][headStage] = value
+	AI_UpdateAmpView(device, headStage, func = dependentFunc, clampMode = dependentClampMode)
+End
+
 /// @brief Return the holding command of the amplifier in the current clamp mode
 ///
 /// @returns holding potential in mV (VC) or holding current in pA (IC), zero if the
@@ -573,6 +625,13 @@ Function AISU_GetMode(string device, variable headstage)
 	DEBUGPRINT("Unimplemented")
 
 	return NaN
+End
+
+Function AISU_UpdateDependentSettings(string device, variable headStage, variable func, variable clampMode)
+
+	PerformSubsystemEntry()
+
+	DEBUGPRINT("Unimplemented")
 End
 
 Function AISU_GetHoldingCommand(string device, variable headstage)
