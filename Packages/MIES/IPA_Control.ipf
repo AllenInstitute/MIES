@@ -1379,7 +1379,7 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 			if (SIPA.ipa.HS[probeIndex].vc == 2) //only set if in CC
 				setval=value*round((SIPA.ipa.HS[probeIndex].fastmag+kCC_deltaCap-kStabilityControl)*655.32)
 				if (oktosend)
-					SutterDAQwrite(ampl_index ,2,2,(setval&0xff00)/256,setval&0x00ff)
+					SutterDAQwrite(ampl_index,2+21*amp_channel,2,(setval&0xff00)/256,setval&0x00ff)
 				endif
 			endif	
 			SIPA.ipa.HS[probeIndex].capneuton = value
