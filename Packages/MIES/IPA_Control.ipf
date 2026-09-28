@@ -1304,11 +1304,12 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 			SIPA.ipa.HS[probeIndex].bridgeon = TRUE
 			break
 		case "BridgeOn":
+			value = !!value
 			setval =  value*round(SIPA.ipa.HS[probeIndex].bridge*81.92)
 			if (oktosend)
 				SutterDAQwrite(ampl_index,2+21*amp_channel,5,(setval&0xff00)/256,setval&0x00ff)
 			endif
-			SIPA.ipa.HS[probeIndex].bridgeon = !value
+			SIPA.ipa.HS[probeIndex].bridgeon = value
 			break	
 		case "AutoEComp":
 			Auto_ElectrodeCompensation(SIPA,probeIndex)
