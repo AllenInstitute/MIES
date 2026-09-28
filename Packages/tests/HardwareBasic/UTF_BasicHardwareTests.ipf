@@ -2467,7 +2467,8 @@ End
 // UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGenerator
 static Function AnalysisFunctionNotCalledForAbortedIndexing([STRUCT IUTF_MDATA &md])
 
-	ST_SetStimsetParameter("AnaFuncIdx2_DA_0", "Amplitude", epochIndex = 0, var = 10e3)
+	// out of range for all hardware, e.g. the Sutter current clamp output allows +/-20 nA
+	ST_SetStimsetParameter("AnaFuncIdx2_DA_0", "Amplitude", epochIndex = 0, var = 100e3)
 
 	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD" + num2str(md.v0) + "_RA1_I1_L0_BKG1"                         + \
 	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncIdx1_DA_0:_IST:AnaFuncIdx2_DA_0:" + \
