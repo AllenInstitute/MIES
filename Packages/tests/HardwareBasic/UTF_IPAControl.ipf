@@ -123,6 +123,7 @@ static Function IPAAutoOffset()
 
 	offset = IPA_GetValue(IPA_PROBE, IPA_SET_OFFSET)
 	CHECK_NEQ_VAR(offset, startOffset)
+	CHECK_LT_VAR(abs(offset), 0.2)
 
 	RestoreIPA_IGNORE(state)
 End

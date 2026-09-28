@@ -1468,7 +1468,7 @@ static Function ZeroIPAOffset(Struct IPASeries &SIPA, Variable probeIndex)	//Thi
 	Variable amp_channel = SIPA.ipa.HS[probeIndex].HSindex
 	Variable oktosend = IPA_OKToSendCommand()
 	variable readvalue
-	variable myoffset = SIPA.ipa.HS[probeIndex].offset * 2^16
+	variable myoffset = SIPA.ipa.HS[probeIndex].offset	// already in DAC units, see "Offset" in IPA_SetValue
 	variable myLJP = SIPA.ipa.HS[probeIndex].ljp * 2^16
 	variable offsetMV
 	variable readchannel
