@@ -1158,6 +1158,9 @@ Function CheckLBNDescriptions([WAVE/T wv])
 			PASS()
 		elseif(!cmpstr(entry, "bit mask"))
 			PASS()
+		elseif(ItemsInList(entry, "/") == 2)
+			IsValidUnit(StringFromList(0, entry, "/"))
+			IsValidUnit(StringFromList(1, entry, "/"))
 		else
 			IsValidUnit(entry)
 		endif
