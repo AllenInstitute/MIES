@@ -2445,7 +2445,12 @@ static Function/WAVE FFI_ClampModeCases()
 	variable i, numModes, mode
 	string token, dimLabels, rowLabel
 
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	// I=0 is not supported for Sutter amplifiers
+	WAVE clampModes = GetClampModesWithoutIZero()
+#else
 	WAVE clampModes = GetClampModes()
+#endif // TESTS_WITH_SUTTER_HARDWARE
 	numModes = DimSize(clampModes, ROWS)
 
 	Make/FREE/WAVE/N=(numModes) wv
