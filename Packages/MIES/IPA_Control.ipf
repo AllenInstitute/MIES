@@ -890,6 +890,10 @@ Function IPA_GetValue(variable probe_count, string value)
 	Struct IPASeries SIPA
 	GetStructure(SIPA)
 
+	if (probeIndex >= SIPA.numHeadstages)
+		return FALSE
+	endif
+
 	DFREF dfr=$AmpPath
 	
 	strswitch (value)
@@ -1065,6 +1069,10 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 	GetStructure(SIPA)
 	
 	Variable probeIndex = probe_count-1
+	if (probeIndex >= SIPA.numHeadstages)
+		return FALSE
+	endif
+
 	Variable ampl_index = SIPA.ipa.HS[probeIndex].ampIndex
 	Variable amptype = SIPA.amp[ampl_index].amptype
 	Variable amp_channel = SIPA.ipa.HS[probeIndex].HSindex
