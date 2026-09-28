@@ -328,7 +328,7 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 				AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 
 				if(func == MCC_HOLDING_FUNC || func == MCC_HOLDINGENABLE_FUNC)
-					TP_UpdateHoldCmdInTPStorage(device, headstage)
+					TP_UpdateHoldCmdInTPStorage(device, i)
 				endif
 				break
 			case MCC_AUTOFASTCOMP_FUNC: // fallthrough
@@ -345,19 +345,19 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 				rowLabel                         = AI_MapFunctionConstantToName(func, clampMode)
 				value                            = AI_SendToAmp(device, i, clampMode, func, MCC_READ, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				AmpStorageWave[%$rowLabel][0][i] = value
-				AI_UpdateAmpView(device, headstage, func = func, clampMode = clampMode)
+				AI_UpdateAmpView(device, i, func = func, clampMode = clampMode)
 
 				func                             = MCC_WHOLECELLCOMPRESIST_FUNC
 				rowLabel                         = AI_MapFunctionConstantToName(func, clampMode)
 				value                            = AI_SendToAmp(device, i, clampMode, func, MCC_READ, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				AmpStorageWave[%$rowLabel][0][i] = value
-				AI_UpdateAmpView(device, headstage, func = func, clampMode = clampMode)
+				AI_UpdateAmpView(device, i, func = func, clampMode = clampMode)
 
 				func                             = MCC_WHOLECELLCOMPENABLE_FUNC
 				rowLabel                         = AI_MapFunctionConstantToName(func, clampMode)
 				value                            = AI_SendToAmp(device, i, clampMode, func, MCC_READ, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				AmpStorageWave[%$rowLabel][0][i] = value
-				AI_UpdateAmpView(device, headstage, func = func, clampMode = clampMode)
+				AI_UpdateAmpView(device, i, func = func, clampMode = clampMode)
 				break
 			case MCC_RSCOMPCORRECTION_FUNC:
 				rowLabel = AI_MapFunctionConstantToName(func, clampMode)

@@ -624,17 +624,21 @@ End
 
 static Function CheckTPStorageHoldingCmd_PreAcq(string device)
 
-	variable clampMode, holdingStart, holdingChanged
+	variable clampMode, holdingStart, holdingChanged, headstage
 
 	clampMode = DAG_GetHeadstageMode(device, 0)
 
 	[holdingStart, holdingChanged] = GetHoldingCommandsForTP_IGNORE(clampMode)
 
-	AI_WriteToAmplifier(device, 0, clampMode, MCC_HOLDING_FUNC, holdingStart, sendToAll = 0)
-	AI_WriteToAmplifier(device, 0, clampMode, MCC_HOLDINGENABLE_FUNC, 1, sendToAll = 0)
+	for(headstage = 0; headstage < 2; headstage += 1)
+		AI_WriteToAmplifier(device, headstage, clampMode, MCC_HOLDING_FUNC, holdingStart, sendToAll = 0)
+		AI_WriteToAmplifier(device, headstage, clampMode, MCC_HOLDINGENABLE_FUNC, 1, sendToAll = 0)
+	endfor
 End
 
 /// Check that the holding command at TP start and after a change during the TP is stored in TPStorage
+///
+/// The holding command of headstage 0 is changed with "send to all", so it also changes for headstage 1.
 ///
 /// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
 /// UTF_TD_GENERATOR v0:DataGenerators#GetClampModesWithoutIZero
@@ -646,8 +650,9 @@ static Function CheckTPStorageHoldingCmd([STRUCT IUTF_MDATA &md])
 	clampMode    = md.v0
 	clampModeStr = SelectString(clampMode == V_CLAMP_MODE, "IC", "VC")
 
-	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP1_STP1"                               + \
-	                                                           "__HS0_DA0_AD0_CM:" + clampModeStr + ":_ST:StimulusSetA_DA_0:")
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP1_STP1"                                  + \
+	                                                           "__HS0_DA0_AD0_CM:" + clampModeStr + ":_ST:StimulusSetA_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:" + clampModeStr + ":_ST:StimulusSetA_DA_0:")
 
 	ACD_AcquireData(s, md.s0)
 
@@ -665,7 +670,7 @@ End
 
 static Function CheckTPStorageHoldingCmd_REENTRY([STRUCT IUTF_MDATA &md])
 
-	variable clampMode, holdingStart, holdingChanged, index, indexOnTPStart, indexAtChange
+	variable clampMode, holdingStart, holdingChanged, index, indexOnTPStart, indexAtChange, headstage
 	string entry
 	string device = md.s0
 
@@ -673,8 +678,10 @@ static Function CheckTPStorageHoldingCmd_REENTRY([STRUCT IUTF_MDATA &md])
 
 	[holdingStart, holdingChanged] = GetHoldingCommandsForTP_IGNORE(clampMode)
 
-	AI_WriteToAmplifier(device, 0, clampMode, MCC_HOLDINGENABLE_FUNC, 0, sendToAll = 0)
-	AI_WriteToAmplifier(device, 0, clampMode, MCC_HOLDING_FUNC, 0, sendToAll = 0)
+	for(headstage = 0; headstage < 2; headstage += 1)
+		AI_WriteToAmplifier(device, headstage, clampMode, MCC_HOLDINGENABLE_FUNC, 0, sendToAll = 0)
+		AI_WriteToAmplifier(device, headstage, clampMode, MCC_HOLDING_FUNC, 0, sendToAll = 0)
+	endfor
 
 	WAVE/Z holdingChangeDuringTP
 	CHECK_WAVE(holdingChangeDuringTP, NUMERIC_WAVE)
@@ -693,11 +700,15 @@ static Function CheckTPStorageHoldingCmd_REENTRY([STRUCT IUTF_MDATA &md])
 
 	entry = SelectString(clampMode == V_CLAMP_MODE, "HoldingCmd_IC", "HoldingCmd_VC")
 
-	// holding command queried at TP start
-	CheckHoldingCmdInTPStorage_IGNORE(TPStorage, 0, entry, indexOnTPStart, indexAtChange - 1, holdingStart)
+	for(headstage = 0; headstage < 2; headstage += 1)
+		INFO("headstage %d", n0 = headstage)
 
-	// holding command changed during TP
-	CheckHoldingCmdInTPStorage_IGNORE(TPStorage, 0, entry, indexAtChange, index - 1, holdingChanged)
+		// holding command queried at TP start
+		CheckHoldingCmdInTPStorage_IGNORE(TPStorage, headstage, entry, indexOnTPStart, indexAtChange - 1, holdingStart)
+
+		// holding command changed during TP
+		CheckHoldingCmdInTPStorage_IGNORE(TPStorage, headstage, entry, indexAtChange, index - 1, holdingChanged)
+	endfor
 
 	KillWaves holdingChangeDuringTP
 End

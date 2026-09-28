@@ -253,7 +253,7 @@ Function ChangeHoldingAndStopTP_IGNORE(STRUCT WMBackgroundStruct &s)
 		endif
 
 		settings[%IndexAtChange] = index
-		AI_WriteToAmplifier(device, settings[%Headstage], settings[%ClampMode], MCC_HOLDING_FUNC, settings[%Holding], sendToAll = 0)
+		AI_WriteToAmplifier(device, settings[%Headstage], settings[%ClampMode], MCC_HOLDING_FUNC, settings[%Holding], sendToAll = 1)
 
 		return 0
 	endif
