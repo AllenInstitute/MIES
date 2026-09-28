@@ -777,7 +777,7 @@ static Function SetAuxOut(Struct IPASeries &SIPA, Variable ampIndex, Variable ch
 	if (IPA_OKToSendCommand())
 		SutterDAQwrite(ampIndex,17,DACout, (scaledvalue&0xff00)/256,scaledvalue&0x00ff)
 	endif
-	SIPA.amp[ampindex].analogOut[channel] = value
+	SIPA.amp[ampindex].analogOut[channel - 1] = value // channel is one based
 
 	return TRUE
 End
