@@ -556,6 +556,11 @@ Function AI_SU_SendToAmp(string device, variable headStage, variable mode, varia
 	DEBUGPRINT(str)
 
 	if(accessType == MCC_READ)
+		// the automatic functions have no value, as for MCC amplifiers
+		if(AI_SU_IsAutomaticFunction(func))
+			return 0
+		endif
+
 		ret = IPA_MIES_GetValue(headstage + 1, setting)
 
 		return ret / scale
