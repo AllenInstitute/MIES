@@ -1373,8 +1373,8 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 				if (oktosend)
 					SutterDAQwrite(ampl_index,16,0,(setval&0xff00)/256,setval&0x00ff)
 				endif
-				SIPA.ipa.HS[probeIndex].hpoton = value
 			endif
+			SIPA.ipa.HS[probeIndex].hpoton = value
 			break
 		case "IHoldOn":		//Holding current set
 			if (SIPA.ipa.HS[probeIndex].vc == 2) //only set if in CC
