@@ -1042,7 +1042,7 @@ Function IPA_GetValue(variable probe_count, string value)
 			break
 		case "AuxIn1":
 			ampIndex = SIPA.ipa.HS[probeIndex].ampIndex
-			ReadAuxIn(SIPA,ampIndex,1)
+			ReadAuxIn(SIPA,ampIndex,0)
 			return SIPA.amp[ampindex].analogIn[0]
 		case "AuxIn2":
 			ampIndex = SIPA.ipa.HS[probeIndex].ampIndex
@@ -1050,11 +1050,11 @@ Function IPA_GetValue(variable probe_count, string value)
 			return SIPA.amp[ampindex].analogIn[1]
 		case "AuxIn3":
 			ampIndex = SIPA.ipa.HS[probeIndex].ampIndex
-			ReadAuxIn(SIPA,ampIndex,1)
+			ReadAuxIn(SIPA,ampIndex,2)
 			return SIPA.amp[ampindex].analogIn[2]
 		case "AuxIn4":
 			ampIndex = SIPA.ipa.HS[probeIndex].ampIndex
-			ReadAuxIn(SIPA,ampIndex,1)
+			ReadAuxIn(SIPA,ampIndex,3)
 			return SIPA.amp[ampindex].analogIn[3]
 	endswitch
 End

@@ -192,6 +192,33 @@ static Function IPAAuxOutputs()
 	RestoreIPA_IGNORE(state)
 End
 
+static Function IPAAuxInputs()
+
+	variable i, numAmps
+	string state = InitIPA_IGNORE()
+
+	// without connection ReadAuxIn returns the register number of the input
+	NVAR SD_USB = $(IPA_PACKAGE_FOLDER + ":SD_USB")
+	numAmps = SD_USB
+	SD_USB  = 0
+
+	if(IPA_GetValue(IPA_PROBE, IPA_SET_AMP_TYPE) == 1)
+		Make/FREE/D expected = {3, 4, 5, 6}
+	else
+		Make/FREE/D expected = {5, 6, 23, 24}
+	endif
+
+	Make/FREE/T auxInputs = {IPA_SET_AUX_IN1, IPA_SET_AUX_IN2, IPA_SET_AUX_IN3, IPA_SET_AUX_IN4}
+	for(i = 0; i < 4; i += 1)
+		INFO("%s", s0 = auxInputs[i])
+		CHECK_EQUAL_VAR(IPA_GetValue(IPA_PROBE, auxInputs[i]), expected[i])
+	endfor
+
+	SD_USB = numAmps
+
+	RestoreIPA_IGNORE(state)
+End
+
 #else
 
 static Function IPARequiresSutterHardware()
