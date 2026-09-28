@@ -1453,6 +1453,7 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 				endif
 			endif
 			SIPA.ipa.HS[probeIndex].seal = value
+			break
 		case "Buzz":
 			Buzz(SIPA,probeIndex,value)
 			break
