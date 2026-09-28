@@ -128,6 +128,22 @@ static Function IPAAutoOffset()
 	RestoreIPA_IGNORE(state)
 End
 
+static Function IPAOffsetLimit()
+
+	string state = InitIPA_IGNORE()
+
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_VC_MODE, 1), 1)
+
+	// the amplifier ignores +16384
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_OFFSET, 0.3), 1)
+	CHECK_EQUAL_VAR(IPA_GetValue(IPA_PROBE, IPA_SET_OFFSET), 16383 / 2^16)
+
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_OFFSET, -0.3), 1)
+	CHECK_EQUAL_VAR(IPA_GetValue(IPA_PROBE, IPA_SET_OFFSET), -16384 / 2^16)
+
+	RestoreIPA_IGNORE(state)
+End
+
 #else
 
 static Function IPARequiresSutterHardware()

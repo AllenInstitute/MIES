@@ -27,6 +27,10 @@ Static Constant kMaxHeadstages = 8 //(2 double IPA * max amplifiers)
 Static Constant kCC_deltaCap = 1.4  // CC circuit has 1.4 pF more headstage capacitance.
 Static Constant kStabilityControl = 1  //pF moved to prefs
 
+// Valid range of the offset DAC value (2^16/V), the amplifier ignores +16384
+Static Constant kOffsetMin = -16384
+Static Constant kOffsetMax = 16383
+
 //-------------------Structure to store amplifier values ------------------------
 
 STRUCTURE ControlValues
@@ -1188,6 +1192,7 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 				value = 0.25*sign(value)
 			endif
 			Value = round(2^16*value)  //convert to 16bit value
+			Value = limit(Value, kOffsetMin, kOffsetMax)
 			if (oktosend)
 				SutterDAQwrite(ampl_index,17,1+3*amp_channel,(value&0xff00)/256,value&0x00ff)		//1 for HS#0, 4 for HS#1
 			endif
@@ -1509,8 +1514,8 @@ static Function ZeroIPAOffset(Struct IPASeries &SIPA, Variable probeIndex)	//Thi
 				myoffset += offsetstep
 				direction = 0
 			endif
-			if (abs(myoffset)>16384)
-				myoffset = 16384*sign(myoffset) //limit to +/- 250 mV
+			if (myoffset < kOffsetMin || myoffset > kOffsetMax)
+				myoffset = limit(myoffset, kOffsetMin, kOffsetMax) //limit to +/- 250 mV
 				break
 			endif
 			if (oktosend)
@@ -1526,6 +1531,7 @@ static Function ZeroIPAOffset(Struct IPASeries &SIPA, Variable probeIndex)	//Thi
 			endif
 		endfor
 		myoffset += myljp
+		myoffset = limit(myoffset, kOffsetMin, kOffsetMax)
 		if (oktosend)
 			if (amp_channel==1)  //Second HS on dIPA
 					SutterDAQwrite(ampl_index,17,4,(myoffset&0xff00)/256,myoffset&0x00ff)
@@ -1539,10 +1545,9 @@ static Function ZeroIPAOffset(Struct IPASeries &SIPA, Variable probeIndex)	//Thi
 			readvalue = Sutterdaqread(ampl_index,readchannel)
 		endif
 		myoffset += readvalue*2^16
-		if (abs(myoffset)>16384)
-			myoffset = 16384*sign(myoffset)
-		endif
+		myoffset = limit(myoffset, kOffsetMin, kOffsetMax)
 		myoffset += myljp
+		myoffset = limit(myoffset, kOffsetMin, kOffsetMax)
 		
 		if (oktosend)
 			if (amp_channel==1)   //Second HS on dIPA
