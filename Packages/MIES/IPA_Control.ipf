@@ -1591,17 +1591,17 @@ static Function Buzz(Struct IPASeries &SIPA, Variable probeIndex, Variable durat
 	Variable ampl_index = SIPA.ipa.HS[probeIndex].ampIndex
 	Variable amp_channel = SIPA.ipa.HS[probeIndex].HSindex
 
-	SutterDAQwrite(0,2,1,3,0)
-	SutterDAQwrite(0,2,2,40,0)
+	SutterDAQwrite(ampl_index,2+21*amp_channel,1,3,0)
+	SutterDAQwrite(ampl_index,2+21*amp_channel,2,40,0)
 	
 	variable step, stepsign
 	stepsign=1
 	for (step=0; step<(1*duration); step+=1)
 		if (stepsign==1)
-			SutterDAQwrite(0,16,0,192,0)
+			SutterDAQwrite(ampl_index,16,amp_channel,192,0)
 			stepsign= -1
 		else
-			SutterDAQwrite(0,16,0,64,0)
+			SutterDAQwrite(ampl_index,16,amp_channel,64,0)
 			stepsign=1
 		endif
 		IPA_usdelay(1000)
@@ -1609,11 +1609,11 @@ static Function Buzz(Struct IPASeries &SIPA, Variable probeIndex, Variable durat
 	
 	variable setval
 	setval=round((SIPA.ipa.HS[probeIndex].fastmag+kCC_deltaCap-kStabilityControl)*655.32)*SIPA.ipa.HS[probeIndex].capneuton
-	SutterDAQwrite(0,2,2,(setval&0xff00)/256,setval&0x00ff)	
+	SutterDAQwrite(ampl_index,2+21*amp_channel,2,(setval&0xff00)/256,setval&0x00ff)
 	setval=round((SIPA.ipa.HS[probeIndex].fastphase-0.1)*1023/4.4)
-	SutterDAQwrite(0,2,1,(setval&0xff00)/256,setval&0x00ff)	
+	SutterDAQwrite(ampl_index,2+21*amp_channel,1,(setval&0xff00)/256,setval&0x00ff)
 	setval = 1.63835*SIPA.ipa.HS[probeIndex].hcurr*SIPA.ipa.HS[probeIndex].hcurron
-	SutterDAQwrite(0,16,0,(setval&0xff00)/256,setval&0x00ff)
+	SutterDAQwrite(ampl_index,16,amp_channel,(setval&0xff00)/256,setval&0x00ff)
 
 	return TRUE
 End
