@@ -440,7 +440,8 @@ Function ACD_AcquireData(STRUCT ACD_DAQSettings &s, string device)
 	ACD_CreateLockedDAEphys(device)
 
 #ifdef TESTS_WITH_SUTTER_HARDWARE
-	Duplicate/FREE s.hs, sutterRequirementCheck
+	// s.hs can also have the labnotebook layout with the headstage independent entry, e.g. for replay
+	Duplicate/FREE/RMD=[0, NUM_HEADSTAGES - 1] s.hs, sutterRequirementCheck
 	sutterRequirementCheck[] = s.aso[p] == 1 && s.hs[p] == 1
 	if(!(sum(sutterRequirementCheck) == 1 && sutterRequirementCheck[0] == 1))
 		INFO("SUTTER hardware currently supports only 1 HS")
