@@ -1447,9 +1447,9 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 		case "SealTest":
 			if (oktosend)
 				if (value==0)
-					SutterDAQWrite(0,18,0,10,10)
+					SutterDAQWrite(ampl_index,18,0,10,10)
 				else 
-					SutterDAQwrite(0,18,1,10,value)
+					SutterDAQwrite(ampl_index,18,1,10,value)
 				endif
 			endif
 			SIPA.ipa.HS[probeIndex].seal = value
