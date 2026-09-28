@@ -346,6 +346,17 @@ Function StringEndsWith(string str, string suffix)
 	return 0
 End
 
+/// @brief Checks if a string starts with a specific prefix. The check is case-insensitive.
+///
+/// @param[in] str string to check for prefix
+/// @param[in] prefix to check for
+///
+/// @returns 1 if str starts with prefix, 0 otherwise. If str and/or prefix are empty 0 is returned.
+Function StringStartsWith(string str, string prefix)
+
+	return strsearch(str, prefix, 0, 2) == 0
+End
+
 /// @brief Check wether `val1` and `val2` are equal or both are NaN
 ///
 /// UTF_NOINSTRUMENTATION
