@@ -2858,7 +2858,8 @@ Function/S AB_OpenAnalysisBrowser([variable restoreSettings])
 
 	PS_InitCoordinates(JSONid, panel)
 	SetWindow $panel, hook(cleanup)=AB_WindowHook
-	AB_SetTagControlHideState(1)
+	AB_SetHideStateForPastePanel(1)
+	AB_SetHideStateForTagControl(1)
 	// Hiding the subwindow while the AB is not yet shown moves the focus to the previous window,
 	// so we need to change the focus back
 	DoWindow/F $panel
@@ -2881,7 +2882,8 @@ Function AB_BrowserStartupSettings()
 
 	panel = AB_GetPanelName()
 
-	AB_SetTagControlHideState(0)
+	AB_SetHideStateForTagControl(0)
+	AB_SetHideStateForPastePanel(0)
 	SetSetVariableString(AB_GetTagControlName(), "setvar_tagcontrol_tagname", "")
 	HideTools/W=$panel/A
 	SetWindow $panel, userData(panelVersion)=""
@@ -3374,16 +3376,25 @@ Function/S AB_GetSweepBrowserWindowFromTitle(string winTitle)
 	FATAL_ERROR("Could not find SweepBrowser with given title: " + winTitle)
 End
 
-static Function AB_SetTagControlHideState(variable hideState)
+static Function AB_SetHideStateForTagControl(variable hideState)
+
+	AB_SetHideStateForSubwindow(ANALYSIS_BROWSER_TAGCONTROL_NAME, hideState, "button_show_tagcontrol", "Open tag control", "Hide tag control")
+End
+
+static Function AB_SetHideStateForPastePanel(variable hideState)
+
+	AB_SetHideStateForSubwindow("PasteWindow", hideState, "button_show_pastewindow", "Open paste window", "Hide paste window")
+End
+
+static Function AB_SetHideStateForSubwindow(string subwindowName, variable hideState, string ctrl, string showText, string hideText)
 
 	string title, wName
-	string ctrl = "button_show_tagcontrol"
 
 	hideState = !!hideState
 
-	title = SelectString(hideState, "Hide tag control", "Open tag control")
+	title = SelectString(hideState, hideText, showText)
 
-	wName = ANALYSIS_BROWSER_NAME + "#" + ANALYSIS_BROWSER_TAGCONTROL_NAME
+	wName = ANALYSIS_BROWSER_NAME + "#" + subwindowName
 	SetWindow $wName, hide=hideState, needUpdate=1
 	SetControlTitle(ANALYSIS_BROWSER_NAME, ctrl, title)
 	ModifyControl $ctrl, win=$ANALYSIS_BROWSER_NAME, userdata(hideState)=num2istr(hideState)
@@ -3391,14 +3402,16 @@ End
 
 Function AB_ButtonProc_ShowTagControl(STRUCT WMButtonAction &ba) : ButtonControl
 
-	string hideStateStr
+	string   hideStateStr
+	variable hideState
 
 	switch(ba.eventCode)
 		case 2: // mouse up
 			AB_CheckPanelVersion(ba.win)
 
 			hideStateStr = GetUserData(ba.win, ba.ctrlName, "hideState")
-			AB_SetTagControlHideState(1 - !CmpStr(hideStateStr, "1"))
+			hideState    = 1 - !CmpStr(hideStateStr, "1")
+			AB_SetHideStateForTagControl(hideState)
 			AB_UpdateTagList()
 			break
 		default:
@@ -3451,6 +3464,125 @@ Function AB_SetVarProc_TagNameControl(STRUCT WMSetVariableAction &sva) : SetVari
 	endswitch
 
 	return 0
+End
+
+Function AB_ButtonProc_ShowPasteWindow(STRUCT WMButtonAction &ba) : ButtonControl
+
+	string   hideStateStr
+	variable hideState
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			AB_CheckPanelVersion(ba.win)
+
+			hideStateStr = GetUserData(ba.win, ba.ctrlName, "hideState")
+			hideState    = 1 - !CmpStr(hideStateStr, "1")
+			AB_SetHideStateForPastePanel(hideState)
+			break
+		default:
+			break
+	endswitch
+
+	return 0
+End
+
+Function AB_ButtonProc_AddEntriesFromPasteWindow(STRUCT WMButtonAction &ba) : ButtonControl
+
+	string text, mainWindow
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			AB_CheckPanelVersion(ba.win)
+
+			text = GetNotebookText("AnalysisBrowser#PasteWindow#data")
+			WAVE/Z entries = ListToTextWave(text, "\r")
+
+			if(!WaveExists(entries))
+				break
+			endif
+
+			WAVE/Z/WAVE results = AB_ParsePasteFormat(entries)
+
+			mainWindow = GetMainWindow(ba.win)
+			AB_AddEntriesFromParseResult(mainWindow, results)
+			break
+		default:
+			break
+	endswitch
+
+	return 0
+End
+
+Function AB_ButtonProc_PasteWindowShowHelp(STRUCT WMButtonAction &ba) : ButtonControl
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			BrowseURL "https://alleninstitute.github.io/MIES/analysisbrowser.html"
+			break
+		default:
+			break
+	endswitch
+
+	return 0
+End
+
+static Function AB_AddEntriesFromParseResultImpl(string win, WAVE/Z/T wv)
+
+	variable i, numRows
+	string tagString
+
+	if(!WaveExists(wv))
+		return NaN
+	endif
+
+	numRows = DimSize(wv, ROWS)
+	for(i = 0; i < numRows; i += 1)
+		Make/FREE/T content = {wv[i][%Content]}
+		tagString = wv[i][%Tags]
+		if(IsEmpty(tagString))
+			WAVE/Z/T tags
+		else
+			WAVE/T tags = ListToTextWave(tagString, ",")
+		endif
+		AB_AddFilesAndFolders(win, content, tags)
+	endfor
+End
+
+static Function AB_AddEntriesFromParseResult(string win, WAVE/Z/WAVE results)
+
+	if(!WaveExists(results))
+		return NaN
+	endif
+
+	//	print note(results[%File])
+	//	print note(results[%Folder])
+	//	print note(results[%CellName])
+
+	AB_AddEntriesFromParseResultImpl(win, results[%File])
+	AB_AddEntriesFromParseResultImpl(win, results[%Folder])
+
+	if(WaveExists(results[%CellName]))
+#if IgorVersion() >= 10
+		WAVE/T single = results[%CellName]
+		Duplicate/FREE/RMD=[][FindDimlabel(results, COLS, "Content")] single, cellNames
+		Redimension/N=(DimSize(cellNames, ROWS))/E=1 cellnames
+		WAVE/Z/T paths = PY_FetchFilesFromLims(cellNames)
+
+		// TODO
+		if(WaveExists(paths))
+			Duplicate/FREE/T single, combined
+			combined[][%Content] = paths[p]
+			AB_AddEntriesFromParseResultImpl(win, combined)
+		endif
+#else
+		if(!AlreadyCalledOnce(CO_AB_NO_CELLNAMES_IP9))
+			print "Querying LIMS with cell names is not supported on Igor Pro 9"
+			ControlwindowToFront()
+		endif
+#endif
+	endif
+
+	AB_CollapseAll()
 End
 
 /// @brief Button "Select same stim set sweeps"
@@ -4040,7 +4172,20 @@ Function AB_TagControlHook(STRUCT WMWinHookStruct &s)
 
 	switch(s.eventCode)
 		case EVENT_WINDOW_HOOK_KILLVOTE:
-			AB_SetTagControlHideState(1)
+			AB_SetHideStateForTagControl(1)
+			return WINDOW_HOOK_RETURN_KILLVOTE_PREVENTKILL
+		default:
+			break
+	endswitch
+
+	return WINDOW_HOOK_RETURN_NEXT_HANDLER
+End
+
+Function AB_PastePanelHook(STRUCT WMWinHookStruct &s)
+
+	switch(s.eventCode)
+		case EVENT_WINDOW_HOOK_KILLVOTE:
+			AB_SetHideStateForPastePanel(1)
 			return WINDOW_HOOK_RETURN_KILLVOTE_PREVENTKILL
 		default:
 			break
@@ -4364,4 +4509,180 @@ static Function AB_SelectExperimentByTags()
 			expBrowserSel[i][0][0] = expBrowserSel[i][0][0] | LISTBOX_SELECT_OR_SHIFT_SELECTION
 		endif
 	endfor
+End
+
+//// @brief List of entities (files, folders, cellids)
+///
+/// This is the parsing result from the Notebook
+static Function/WAVE GetAnalysisBrowserPasteResultSingle()
+
+	Make/FREE/N=(MINIMUM_WAVE_SIZE, 2)/T wv
+
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+	SetDimensionLabels(wv, "Content;Tags;", COLS)
+
+	return wv
+End
+
+//// @brief Return a wave reference wave with waves to store the entities (files, folders, cellids)
+Function/WAVE GetAnalysisBrowserPasteResult()
+
+	Make/FREE/WAVE/N=3 wv
+	SetDimensionLabels(wv, "File;Folder;CellName", ROWS)
+
+	wv[%File]     = GetAnalysisBrowserPasteResultSingle()
+	wv[%Folder]   = GetAnalysisBrowserPasteResultSingle()
+	wv[%CellName] = GetAnalysisBrowserPasteResultSingle()
+
+	return wv
+End
+
+static Function GetStateFromLine(string str)
+
+	strswitch(str)
+		case "tag:":
+			return AB_PASTE_STATE_TAG
+		case "file:":
+			return AB_PASTE_STATE_FILE
+		case "folder:":
+			return AB_PASTE_STATE_FOLDER
+		case "cellname:":
+			return AB_PASTE_STATE_CELLNAME
+		default:
+			break
+	endswitch
+
+	return AB_PASTE_STATE_INVALID
+End
+
+static Function/S GetLabelForState(variable state)
+
+	switch(state)
+		case AB_PASTE_STATE_FILE:
+			return "File"
+		case AB_PASTE_STATE_FOLDER:
+			return "Folder"
+		case AB_PASTE_STATE_CELLNAME:
+			return "CellName"
+		default:
+			break
+	endswitch
+
+	FATAL_ERROR("Invalid state: " + num2str(state))
+End
+
+/// @brief
+///
+/// \rst
+/// .. code-block:: text
+///
+///    Format
+///    ------
+///
+///    LabelA:
+///
+///    ContentA
+///    ContentB
+///    ContentC
+///    # comment
+///
+///    LabelB:
+///    ContentD<\t>tagA<\t>tagB
+///
+/// \endrst
+///
+/// where label is one of file, folder, cellname, tag.
+/// Tags can also be set per line and need to be separated via tabs `\t` from content and other tags.
+///
+/// Additional rules:
+/// - comment symbol: # (needs to be the first non-whitespace character of the line)
+/// - leading and trailing whitespace is ignored
+Function/WAVE AB_ParsePasteFormat(WAVE/T text)
+
+	variable newState, idx, i, numEntries, index
+	variable state = AB_PASTE_STATE_INVALID
+	string lbl, entry, str
+
+	ASSERT(IsTextWave(text), "Expected a text wave")
+
+	Make/FREE/N=(MINIMUM_WAVE_SIZE)/T tags
+	SetNumberInWaveNote(tags, NOTE_INDEX, 0)
+
+	WAVE/WAVE result = GetAnalysisBrowserPasteResult()
+
+	for(entry : text)
+
+		entry = TrimString(entry)
+
+		if(IsEmpty(entry))
+			continue
+		elseif(!cmpstr(entry[0], "#"))
+			// comment
+			continue
+		endif
+
+		newState = GetStateFromLine(entry)
+
+		if(newState == AB_PASTE_STATE_INVALID)
+			// we have content
+
+			switch(state)
+				case AB_PASTE_STATE_TAG:
+					idx = GetNumberFromWaveNote(tags, NOTE_INDEX)
+					EnsureLargeEnoughWave(tags, indexShouldExist = idx)
+					tags[idx] = entry
+					SetNumberInWaveNote(tags, NOTE_INDEX, ++idx)
+					break
+				default:
+					lbl = GetLabelForState(state)
+
+					WAVE/T single = result[%$lbl]
+					idx = GetNumberFromWaveNote(single, NOTE_INDEX)
+					EnsureLargeEnoughWave(single, indexShouldExist = idx)
+
+					if(strsearch(entry, "\t", 0) >= 0)
+						// we have per line tags
+						// content<\t>tagA<\t>tagB
+						WAVE/T wv = ListToTextWave(entry, "\t")
+						entry = wv[0]
+						DeletePoints/M=(ROWS) 0, 1, wv
+						WAVE currentTags = wv
+					else
+						WAVE currentTags = tags
+					endif
+
+					single[idx][%Content] = entry
+					single[idx][%Tags]    = TextWaveToList(currentTags, ",", stopOnEmpty = 1)
+
+					SetNumberInWaveNote(single, NOTE_INDEX, ++idx)
+					break
+			endswitch
+		else
+			// state change
+			if(newState == AB_PASTE_STATE_TAG)
+				tags[] = ""
+				SetNumberInWaveNote(tags, NOTE_INDEX, 0)
+			endif
+
+			state = newState
+		endif
+	endfor
+
+	if(!HasOneValidEntry(result))
+		return $""
+	endif
+
+	numEntries = DimSize(result, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		WAVE/T single = result[i]
+		index = GetNumberFromWaveNote(single, NOTE_INDEX)
+		if(index == 0)
+			WaveClear single
+			result[i] = $""
+		else
+			Redimension/N=(index, -1) single
+		endif
+	endfor
+
+	return result
 End
