@@ -1023,10 +1023,12 @@ End
 /// @param value            [optional] Required for writers, must be left out for readers
 ///
 /// @returns return value (for getters, respects `usePrefixes`), success (`0`) or error (`NaN`).
-static Function AIMCC_SendToAmp(string device, variable headStage, variable mode, variable func, variable accessType, [variable checkBeforeWrite, variable usePrefixes, variable selectAmp, variable value])
+Function AIMCC_SendToAmp(string device, variable headStage, variable mode, variable func, variable accessType, [variable checkBeforeWrite, variable usePrefixes, variable selectAmp, variable value])
 
 	variable ret, headstageMode, scale, nonScaledValue
 	string str
+
+	PerformSubsystemEntry()
 
 	ASSERT(func > MCC_BEGIN_INVALID_FUNC && func < MCC_END_INVALID_FUNC, "MCC function constant is out for range")
 	ASSERT(IsValidHeadstage(headstage), "invalid headStage index")
@@ -1620,7 +1622,7 @@ Function AIMCC_WriteToAmplifier(string device, variable headStage, variable mode
 	DEBUGPRINT("Unimplemented")
 End
 
-static Function AIMCC_SendToAmp(string device, variable headStage, variable mode, variable func, variable accessType, [variable checkBeforeWrite, variable usePrefixes, variable selectAmp, variable value])
+Function AIMCC_SendToAmp(string device, variable headStage, variable mode, variable func, variable accessType, [variable checkBeforeWrite, variable usePrefixes, variable selectAmp, variable value])
 
 	DEBUGPRINT("Unimplemented")
 End

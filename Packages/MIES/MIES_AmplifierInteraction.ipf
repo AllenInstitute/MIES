@@ -890,6 +890,39 @@ Function AI_SetClampMode(string device, variable headStage, variable mode, [vari
 	return AIMCC_SetClampMode(device, headStage, mode, zeroStep, selectAmp)
 End
 
+/// @brief Generic interface to call amplifier functions
+///
+/// Forwards to the implementation of the amplifier.
+///
+/// @param device           device
+/// @param headStage        MIES headstage number, must be in the range [0, NUM_HEADSTAGES[
+/// @param mode             one of V_CLAMP_MODE, I_CLAMP_MODE or I_EQUAL_ZERO_MODE
+/// @param func             Function to call, see @ref AI_SendToAmpConstants
+/// @param accessType       One of @ref MCCAccessType
+/// @param checkBeforeWrite [optional, defaults to false] (ignored for getter functions)
+///                         check the current value and do nothing if it is equal within some tolerance to the one written
+/// @param usePrefixes      [optional, defaults to true] Use SI-prefixes common in MIES for the passed and returned values, e.g.
+///                         `mV` instead of `V`
+/// @param selectAmp        [optional, defaults to true] Select the amplifier
+///                         before use, some callers might save time in doing that once themselves.
+/// @param value            [optional] Required for writers, must be left out for readers
+///
+/// @returns return value (for getters, respects `usePrefixes`), success (`0`) or error (`NaN`).
+Function AI_SendToAmp(string device, variable headStage, variable mode, variable func, variable accessType, [variable checkBeforeWrite, variable usePrefixes, variable selectAmp, variable value])
+
+	PerformSubsystemEntry()
+
+	checkBeforeWrite = ParamIsDefault(checkBeforeWrite) ? 0 : !!checkBeforeWrite
+	usePrefixes      = ParamIsDefault(usePrefixes) ? 1 : !!usePrefixes
+	selectAmp        = ParamIsDefault(selectAmp) ? 1 : !!selectAmp
+
+	if(ParamIsDefault(value))
+		return AIMCC_SendToAmp(device, headStage, mode, func, accessType, checkBeforeWrite = checkBeforeWrite, usePrefixes = usePrefixes, selectAmp = selectAmp)
+	endif
+
+	return AIMCC_SendToAmp(device, headStage, mode, func, accessType, checkBeforeWrite = checkBeforeWrite, usePrefixes = usePrefixes, selectAmp = selectAmp, value = value)
+End
+
 /// @brief Write to the amplifier
 ///
 /// @param device           device
