@@ -255,7 +255,7 @@ static Function CheckIfConfigurationRestoresDAEphysWithUnassocDA([string str])
 		else
 			CHECK_EQUAL_WAVES(TTLState, {0, 1, 0, 1, 0, 0, 0, 0}, mode = WAVE_DATA)
 		endif
-	elseif(hardwareType == HARDWARE_NI_DAC)
+	elseif(hardwareType == HARDWARE_NI_DAC || hardwareType == HARDWARE_SUTTER_DAC)
 		CHECK_EQUAL_WAVES(TTLState, {0, 1, 0, 1, 0, 1, 0, 1}, mode = WAVE_DATA)
 	else
 		FAIL()
