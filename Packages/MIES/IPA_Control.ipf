@@ -1091,11 +1091,11 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 			break
 		case "CCMode":
 		  	SIPA.ipa.HS[probeIndex].vc = 2
-		  	SetDIPA_fromStructure(SIPA, amp_channel)
+			SetDIPA_fromStructure(SIPA, probeIndex)
 			break
 		case "VCMode":
 		  	SIPA.ipa.HS[probeIndex].vc= 0
-		  	SetDIPA_fromStructure(SIPA, amp_channel)
+			SetDIPA_fromStructure(SIPA, probeIndex)
 			break
 		case "IHold":  
 			if (abs(value)>20e-9)
