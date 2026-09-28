@@ -157,6 +157,24 @@ static Function IPASetCompensationInvalidProbe()
 	RestoreIPA_IGNORE(state)
 End
 
+static Function IPAInvalidProbe()
+
+	variable invalidProbe, probe
+	string state = InitIPA_IGNORE()
+
+	invalidProbe = IPA_GetValue(IPA_PROBE, IPA_SET_NUM_PROBES) + 1
+
+	Make/FREE/D probes = {0, invalidProbe}
+	for(probe : probes)
+		INFO("probe %d", n0 = probe)
+		CHECK_EQUAL_VAR(IPA_SetValue(probe, IPA_SET_V_HOLD, 0), 0)
+		CHECK_EQUAL_VAR(IPA_GetValue(probe, IPA_SET_V_HOLD), 0)
+		CHECK_NO_RTE()
+	endfor
+
+	RestoreIPA_IGNORE(state)
+End
+
 #else
 
 static Function IPARequiresSutterHardware()
