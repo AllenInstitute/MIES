@@ -219,7 +219,7 @@ End
 /// @return 0 on success, 1 otherwise
 static Function AI_UpdateAmpModel(string device, variable headStage, [string ctrl, variable value, variable sendToAll, variable checkBeforeWrite, variable selectAmp, variable func, variable clampMode, variable GUIWrite])
 
-	variable i, diff, selectedHeadstage, oppositeMode, oldTab, requestedFunc, requestedClampMode, requestedValue
+	variable i, diff, selectedHeadstage, oppositeMode, oldTab, requestedFunc, requestedClampMode, requestedValue, chainedFunc
 	variable runMode = TEST_PULSE_NOT_RUNNING
 	string str, rowLabel
 
@@ -371,12 +371,12 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 				AmpStorageWave[%$rowLabel][0][i] = value
 				AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				if(AmpStorageWave[%RSCompChaining][0][i])
-					func     = MCC_RSCOMPPREDICTION_FUNC
-					rowLabel = AI_MapFunctionConstantToName(func, clampMode)
+					chainedFunc = MCC_RSCOMPPREDICTION_FUNC
+					rowLabel    = AI_MapFunctionConstantToName(chainedFunc, clampMode)
 
 					AmpStorageWave[%$rowLabel][0][i] += diff
-					AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = AmpStorageWave[%$rowLabel][0][i], checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
-					AI_UpdateAmpView(device, i, func = func, clampMode = clampMode)
+					AI_SendToAmp(device, i, clampMode, chainedFunc, MCC_WRITE, value = AmpStorageWave[%$rowLabel][0][i], checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+					AI_UpdateAmpView(device, i, func = chainedFunc, clampMode = clampMode)
 				endif
 				break
 			case MCC_RSCOMPPREDICTION_FUNC:
@@ -391,12 +391,12 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 				AmpStorageWave[%$rowLabel][0][i] = value
 				AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				if(AmpStorageWave[%RSCompChaining][0][i])
-					func     = MCC_RSCOMPCORRECTION_FUNC
-					rowLabel = AI_MapFunctionConstantToName(func, clampMode)
+					chainedFunc = MCC_RSCOMPCORRECTION_FUNC
+					rowLabel    = AI_MapFunctionConstantToName(chainedFunc, clampMode)
 
 					AmpStorageWave[%$rowLabel][0][i] += diff
-					AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = AmpStorageWave[%$rowLabel][0][i], checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
-					AI_UpdateAmpView(device, i, func = func, clampMode = clampMode)
+					AI_SendToAmp(device, i, clampMode, chainedFunc, MCC_WRITE, value = AmpStorageWave[%$rowLabel][0][i], checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+					AI_UpdateAmpView(device, i, func = chainedFunc, clampMode = clampMode)
 				endif
 				break
 			case MCC_AUTOPIPETTEOFFSET_FUNC:
