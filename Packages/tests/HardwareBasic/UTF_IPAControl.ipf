@@ -78,6 +78,17 @@ static Function IPABridgeOnState()
 	RestoreIPA_IGNORE(state)
 End
 
+static Function IPAECompMagCurrentClamp()
+
+	string state = InitIPA_IGNORE()
+
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_CC_MODE, 1), 1)
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_E_COMP_MAG, 5e-12), 1)
+	CHECK_CLOSE_VAR(IPA_GetValue(IPA_PROBE, IPA_SET_E_COMP_MAG), 5e-12, tol = 1e-15)
+
+	RestoreIPA_IGNORE(state)
+End
+
 #else
 
 static Function IPARequiresSutterHardware()
