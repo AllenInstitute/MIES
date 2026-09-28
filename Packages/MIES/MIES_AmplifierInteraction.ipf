@@ -1751,8 +1751,7 @@ Function AI_FillAndSendAmpliferSettings(string device, variable sweepNo)
 		case AMPLIFIER_TYPE_MCC:
 			return AIMCC_FillAndSendAmpliferSettings(device, sweepNo)
 		case AMPLIFIER_TYPE_SUTTER:
-			// @todo implement
-			return NaN
+			return AISU_FillAndSendAmpliferSettings(device, sweepNo)
 		default:
 			FATAL_ERROR("Invalid amplifier type")
 	endswitch
