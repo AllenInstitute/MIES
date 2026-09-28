@@ -821,7 +821,12 @@ static Function TPDuringDAQTPAndUnAssoc_REENTRY([string str])
 	CHECK_EQUAL_VAR(DimSize(configWave, COLS), 8)
 
 	WAVE channelAD = ResolveSweepChannel(sweepWave, GetFirstADCChannelIndex(configWave))
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	// each Sutter input channel is acquired with the minimum sampling interval
+	CHECK_EQUAL_VAR(GetMinSamplingInterval(unit = "ms"), DimDelta(channelAD, ROWS))
+#else
 	CHECK_EQUAL_VAR(2 * GetMinSamplingInterval(unit = "ms"), DimDelta(channelAD, ROWS))
+#endif // TESTS_WITH_SUTTER_HARDWARE
 	stimSetLengthRef = 0.958336 // length of StimulusSetA_DA_0
 	CHECK_CLOSE_VAR(DimSize(channelAD, ROWS) * DimDelta(channelAD, ROWS) / 1000, stimSetLengthRef, tol = 1E-3)
 
