@@ -451,7 +451,8 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 
 				PUB_AmplifierSettingChange(device, i, clampMode, func, value)
 
-				AI_UpdateAmpModel(device, i, ctrl = "setvar_DataAcq_RsCorr", value = AmpStorageWave[%$rowLabel][0][i], sendToAll = 0, selectAmp = 0)
+				// resend the Rs correction with the new chaining state
+				AI_UpdateAmpModel(device, i, ctrl = "setvar_DataAcq_RsCorr", value = AmpStorageWave[%Correction][0][i], sendToAll = 0, selectAmp = 0)
 				break
 			case MCC_NO_AUTOBIAS_V_FUNC: // fallthrough
 				ASSERT(value > -100 && value < 100, "Out of range: value = " + num2str(value) + " mV, expected (-100, 100) mV")
