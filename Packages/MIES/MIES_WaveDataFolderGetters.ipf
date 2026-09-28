@@ -3858,6 +3858,111 @@ Function/WAVE GetAmplifierSettingsTextKeyWave()
 	return wv
 End
 
+/// @brief Return a free wave reference for the Sutter amplifier settings, data wave
+///
+/// Holds the settings of Sutter amplifiers without MCC counterpart, the other settings
+/// use the waves from GetAmplifierSettingsWave() and GetAmplifierSettingsTextWave().
+///
+/// Rows:
+/// - Only one
+///
+/// Columns:
+/// - Amplifier parameters as described in the Sutter amplifier settings key wave
+///
+/// Layers:
+/// - 0-7: data for a particular headstage using the layer index
+/// - 8: headstage independent data
+Function/WAVE GetSutterAmplifierSettingsWave()
+
+	Make/FREE/N=(1, 5, LABNOTEBOOK_LAYER_COUNT)/D wv
+
+	wv = NaN
+
+	return wv
+End
+
+/// @brief Return a free wave reference for the Sutter amplifier settings, key wave
+///
+/// Rows:
+/// - 0: Parameter
+/// - 1: Units
+/// - 2: Tolerance factor
+///
+/// Columns:
+/// - Various settings
+Function/WAVE GetSutterAmplifierSettingsKeyWave()
+
+	Make/FREE/T/N=(3, 5) wv
+
+	SetDimLabel ROWS, 0, Parameter, wv
+	SetDimLabel ROWS, 1, Units, wv
+	SetDimLabel ROWS, 2, Tolerance, wv
+
+	wv[0][0] = "V-Clamp Output Gain"
+	wv[1][0] = "mV/pA"
+	wv[2][0] = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[0][1] = "I-Clamp Output Gain"
+	wv[1][1] = "mV/mV"
+	wv[2][1] = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[0][2] = "RsComp Lag"
+	wv[1][2] = "s"
+	wv[2][2] = "1e-6"
+
+	wv[0][3] = "Dynamic Hold Enable"
+	wv[1][3] = LABNOTEBOOK_BINARY_UNIT
+	wv[2][3] = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[0][4] = "Dynamic Hold Level"
+	wv[1][4] = "mV"
+	wv[2][4] = "0.1"
+
+	return wv
+End
+
+/// @brief Return a *free* wave for the Sutter amplifier text settings, data wave
+///
+/// Rows:
+/// - Only one
+///
+/// Columns:
+/// - Amplifier parameters as described in the Sutter amplifier settings text key wave
+///
+/// Layers:
+/// - 0-7: data for a particular headstage using the layer index
+/// - 8: headstage independent data
+Function/WAVE GetSutterAmplifierSettingsTextWave()
+
+	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) wv
+
+	return wv
+End
+
+/// @brief Return a *free* wave for the Sutter amplifier text settings, key wave
+///
+/// Rows:
+/// - 0: Parameter
+/// - 1: Units
+/// - 2: Tolerance factor
+///
+/// Columns:
+/// - Various settings
+Function/WAVE GetSutterAmplifierSettingsTextKeyWave()
+
+	Make/FREE/T/N=(3, 1) wv
+
+	SetDimLabel ROWS, 0, Parameter, wv
+	SetDimLabel ROWS, 1, Units, wv
+	SetDimLabel ROWS, 2, Tolerance, wv
+
+	wv[0][0] = "Amplifier Serial Number"
+	wv[1][0] = ""
+	wv[2][0] = LABNOTEBOOK_NO_TOLERANCE
+
+	return wv
+End
+
 /// @brief Return wave reference to the `W_TelegraphServers` wave
 ///
 /// Call AI_FindConnectedAmps() to create that wave, otherwise an empty wave is
