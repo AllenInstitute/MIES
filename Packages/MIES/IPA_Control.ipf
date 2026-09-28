@@ -1355,7 +1355,8 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 			endif
 			value*=1000
 			setval =  round(value*32.767)
-			if (oktosend)
+			// sending the value enables the dynamic hold, only do that when it is on
+			if (oktosend && SIPA.ipa.HS[probeIndex].trackon && (SIPA.ipa.HS[probeIndex].vc == 2))
 				SutterDAQwrite(ampl_index,19+6*amp_channel,1,(setval&0xff00)/256,setval&0x00ff)
 			endif
 			SIPA.ipa.HS[probeIndex].track = value
