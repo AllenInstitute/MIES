@@ -1004,6 +1004,17 @@ Function AI_SendToAmp(string device, variable headStage, variable mode, variable
 	return AIMCC_SendToAmp(device, headStage, mode, func, accessType, checkBeforeWrite = checkBeforeWrite, usePrefixes = usePrefixes, selectAmp = selectAmp, value = value)
 End
 
+/// @brief Update the settings which the amplifier changed as a side effect of writing `func`
+///
+/// @param device    device
+/// @param headStage MIES headstage number, must be in the range [0, NUM_HEADSTAGES[
+/// @param func      Function which was written, see @ref AI_SendToAmpConstants
+/// @param clampMode clamp mode of `func`
+static Function AI_UpdateDependentSettings(string device, variable headStage, variable func, variable clampMode)
+
+	return AIMCC_UpdateDependentSettings(device, headStage, func, clampMode)
+End
+
 /// @brief Update the AmpStorageWave entry and send the value to the amplifier
 ///
 /// One of either `ctrl` or `func` plus `clampMode` is required.
@@ -1026,7 +1037,7 @@ End
 /// @return 0 on success, 1 otherwise
 static Function AI_UpdateAmpModel(string device, variable headStage, [string ctrl, variable value, variable sendToAll, variable checkBeforeWrite, variable selectAmp, variable func, variable clampMode, variable GUIWrite])
 
-	variable i, diff, selectedHeadstage, oppositeMode, oldTab, requestedFunc, requestedClampMode, requestedValue, chainedFunc
+	variable i, diff, selectedHeadstage, requestedFunc, requestedClampMode, requestedValue, chainedFunc
 	variable runMode = TEST_PULSE_NOT_RUNNING
 	string str, rowLabel
 
@@ -1207,13 +1218,6 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 				endif
 				break
 			case MCC_AUTOPIPETTEOFFSET_FUNC:
-
-				if(clampMode == V_CLAMP_MODE)
-					oppositeMode = I_CLAMP_MODE
-				else
-					oppositeMode = V_CLAMP_MODE
-				endif
-
 				value = AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 
 				func     = MCC_PIPETTEOFFSET_FUNC
@@ -1221,35 +1225,6 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 
 				AmpStorageWave[%$rowLabel][0][i] = value
 				AI_UpdateAmpView(device, i, func = func, clampMode = clampMode)
-				// the pipette offset for the opposite mode has also changed, fetch that too
-				AssertOnAndClearRTError()
-				try
-					oldTab = GetTabID(device, "ADC")
-					if(oldTab != 0)
-						PGC_SetAndActivateControl(device, "ADC", val = 0)
-					endif
-
-					DAP_ChangeHeadStageMode(device, oppositeMode, i, MCC_SKIP_UPDATES)
-
-					func     = MCC_PIPETTEOFFSET_FUNC
-					rowLabel = AI_MapFunctionConstantToName(func, oppositeMode)
-
-					// selecting amplifier here, as the clamp mode is now different
-					value                            = AI_SendToAmp(device, i, oppositeMode, func, MCC_READ, checkBeforeWrite = checkBeforeWrite, selectAmp = 1)
-					AmpStorageWave[%$rowLabel][0][i] = value
-					AI_UpdateAmpView(device, i, func = func, clampMode = oppositeMode)
-					DAP_ChangeHeadStageMode(device, clampMode, i, MCC_SKIP_UPDATES)
-
-					if(oldTab != 0)
-						PGC_SetAndActivateControl(device, "ADC", val = oldTab)
-					endif
-				catch
-					ClearRTError()
-					if(DAG_GetNumericalValue(device, "check_Settings_SyncMiesToMCC"))
-						printf "(%s) The pipette offset for %s of headstage %d is invalid.\r", device, ConvertAmplifierModeToString(oppositeMode), i
-					endif
-					// do nothing
-				endtry
 				break
 			case MCC_NO_AMPCHAIN_FUNC:
 				rowLabel = AI_MapFunctionConstantToName(func, clampMode)
@@ -1311,6 +1286,8 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 		if(GUIWrite)
 			AI_UpdateAmpView(device, i, func = func, clampMode = clampMode)
 		endif
+
+		AI_UpdateDependentSettings(device, i, requestedFunc, requestedClampMode)
 	endfor
 
 	TP_RestartTestPulse(device, runMode, fast = TP_FAST_NO_CONFIG)

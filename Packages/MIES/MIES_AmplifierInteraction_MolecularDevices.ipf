@@ -191,6 +191,60 @@ static Function AIMCC_GetMCCScale(variable clampMode, variable func, variable ac
 	endif
 End
 
+/// @brief Update the settings which the MCC amplifier changed as a side effect of writing `func`
+///
+/// @param device    device
+/// @param headStage MIES headstage number, must be in the range [0, NUM_HEADSTAGES[
+/// @param func      Function which was written, see @ref AI_SendToAmpConstants
+/// @param clampMode clamp mode of `func`
+Function AIMCC_UpdateDependentSettings(string device, variable headStage, variable func, variable clampMode)
+
+	variable oppositeMode, oldTab, value
+	string rowLabel
+
+	PerformSubsystemEntry()
+
+	switch(func)
+		case MCC_AUTOPIPETTEOFFSET_FUNC:
+			oppositeMode = AIMCC_GetOppositeClampAmpMode(clampMode)
+
+			WAVE AmpStorageWave = GetAmplifierParamStorageWave(device)
+
+			// the pipette offset for the opposite mode has also changed, fetch that too
+			AssertOnAndClearRTError()
+			try
+				oldTab = GetTabID(device, "ADC")
+				if(oldTab != 0)
+					PGC_SetAndActivateControl(device, "ADC", val = 0)
+				endif
+
+				DAP_ChangeHeadStageMode(device, oppositeMode, headstage, MCC_SKIP_UPDATES)
+
+				func     = MCC_PIPETTEOFFSET_FUNC
+				rowLabel = AI_MapFunctionConstantToName(func, oppositeMode)
+
+				// selecting amplifier here, as the clamp mode is now different
+				value                                    = AIMCC_SendToAmp(device, headstage, oppositeMode, func, MCC_READ, selectAmp = 1)
+				AmpStorageWave[%$rowLabel][0][headstage] = value
+				AI_UpdateAmpView(device, headstage, func = func, clampMode = oppositeMode)
+				DAP_ChangeHeadStageMode(device, clampMode, headstage, MCC_SKIP_UPDATES)
+
+				if(oldTab != 0)
+					PGC_SetAndActivateControl(device, "ADC", val = oldTab)
+				endif
+			catch
+				ClearRTError()
+				if(DAG_GetNumericalValue(device, "check_Settings_SyncMiesToMCC"))
+					printf "(%s) The pipette offset for %s of headstage %d is invalid.\r", device, ConvertAmplifierModeToString(oppositeMode), headstage
+				endif
+				// do nothing
+			endtry
+			break
+		default:
+			break
+	endswitch
+End
+
 /// @brief Query the MCC application for the gains and units of the given clamp mode
 ///
 /// Assumes that the correct amplifier is already selected!
