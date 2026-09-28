@@ -823,13 +823,20 @@ The operation `seltag` allows to specify how select filters data regarding the t
 experiment in the Analysis Browser before data was loaded in the Sweep Browser.
 It takes exactly one argument, either a single string or an array of strings, each element being one tag.
 Tag strings are sanitized the same way as tags entered through the Analysis Browser tag control
-(characters not allowed in Igor object names, e.g. `,`, are replaced with `_`).
+(characters not allowed in Igor object names, e.g. `,`, are replaced with `_`)
+but the wildcard symbols asterisk `*` (any number of characters) and
+exclamation mark `!` (invert matching behaviour to **not** match) are
+supported.
+
 The operation returns a text wave with the given tag(s) as elements.
 The result of `seltag` has a data type attributed.
 
-A sweep/experiment is only selected by `seltag` if its assigned set of tags matches the given tags
-exactly; tags can be assigned to experiments through the tag control side panel of the Analysis Browser.
-Neither missing tags nor additional tags on the experiment result in a match.
+Without any asterisk the sweep/experiment must match the tags exactly, i.e.
+neither missing tags nor additional tags on the experiment result in a match.
+With an asterisk additional tags can be present in the result if they all match the
+tag(s) with the asterisk.
+
+Tags can be assigned to experiments through the tag control side panel of the Analysis Browser.
 
 Experiments with no tag can be selected with `seltag("")`.
 
@@ -839,13 +846,20 @@ The filter with seltag has no effect if the data source is a DataBrowser.
 
 .. code-block:: bash
 
-   # sweep data from experiments tagged with exactly "tag1"
-   select(seltag(tag1))
+   # sweep data tagged with exactly "tag1"
+   select(seltag("tag1"))
 
-   # sweep data from experiments tagged with exactly "tag1" and "tag2" (matched as a set, order does not matter)
-   select(seltag([tag1, tag2]))
+   # sweep data tagged with "tag1" allowing all additional tags
+   select(seltag("tag1", "*"))
 
-   # sweep data from experiments that have no tag
+   # sweep data tagged with exactly "tag1" and "tag2" but not "tag3" (matched as a set, order does not matter)
+   select(seltag(["tag1", "tag2", "!tag3"]))
+
+   # sweep data tagged with "tag1" and "tag2" but not "tag3"
+   # allowing additional tags starting with "other"
+   select(seltag(["tag1", "tag2", "!tag3", "other*"]))
+
+   # sweep data that has no tag
    select(seltag(""))
 
 selsetcyclecount

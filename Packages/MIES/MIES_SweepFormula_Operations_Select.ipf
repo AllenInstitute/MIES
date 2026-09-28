@@ -1405,8 +1405,8 @@ End
 /// @brief Return the matching indices of sweepMap, if expName or device is an emtpy string then it is ignored
 static Function/WAVE SFOS_GetSweepMapIndices(WAVE/T sweepMap, variable sweepNo, string expName, string device, WAVE/Z/T tags)
 
-	variable mapSize
-	string   tagList
+	variable mapSize, numMatches
+	string tagList
 
 	mapSize = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
 	WAVE/Z indices = FindIndizes(sweepMap, endRow = mapSize - 1, colLabel = "Sweep", var = sweepNo)
@@ -1428,14 +1428,18 @@ static Function/WAVE SFOS_GetSweepMapIndices(WAVE/T sweepMap, variable sweepNo, 
 		WAVE indices = devIndices
 	endif
 	if(WaveExists(tags))
-		tagList = TextWaveToList(tags, AB_TAG_SEPARATOR)
-		if(!CmpStr(tagList, AB_TAG_SEPARATOR))
-			tagList = ""
-		endif
-		WAVE/Z tagIndices = FindIndizes(sweepMap, endRow = mapSize - 1, colLabel = "Tags", str = tagList, rowIndizes = indices)
+		// look only in the indices were we have already matches
+		numMatches = DimSize(indices, ROWS)
+		Make/WAVE/N=(numMatches)/FREE sweepTags = ListToTextWave(sweepMap[indices[p]][%Tags], AB_TAG_SEPARATOR)
+
+		WAVE/Z tagIndices = SB_MatchSweepTags(tags, sweepTags)
+
 		if(!WaveExists(tagIndices))
 			return $""
 		endif
+
+		// but then translate them back to sweepMap indizes
+		tagIndices[] = indices[tagIndices[p]]
 		WAVE indices = tagIndices
 	endif
 
@@ -1514,11 +1518,12 @@ static Function SFOS_IsValidSingleSelection(STRUCT SF_SelectParameters &filter, 
 	endif
 
 	if(WaveExists(filter.tags))
-		if((DimSize(filter.tags, ROWS) == 1) && IsEmpty(tags))
-			if(!IsEmpty(filter.tags[0]))
-				return 0
-			endif
-		elseif(CmpStr(TextWaveToList(filter.tags, AB_TAG_SEPARATOR), tags))
+		WAVE/T sweepTag = ListToTextWave(tags, AB_TAG_SEPARATOR)
+		Make/WAVE/FREE sweepTags = {sweepTag}
+
+		WAVE/Z match = SB_MatchSweepTags(filter.tags, sweepTags)
+
+		if(!WaveExists(match))
 			return 0
 		endif
 	endif
