@@ -1208,6 +1208,10 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 			setval =  round(value*655.32)
 			if (SIPA.ipa.HS[probeIndex].vc == 2)
 				ModifyCapMag(setval)
+				// in CC the value is the capacitance neutralization, only active with ECompOn
+				if (SIPA.ipa.HS[probeIndex].capneuton == 0)
+					setval = 0
+				endif
 			endif
 			if (setval<0)
 				setval=0
