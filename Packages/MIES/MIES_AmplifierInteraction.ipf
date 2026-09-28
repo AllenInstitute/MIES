@@ -219,7 +219,7 @@ End
 /// @return 0 on success, 1 otherwise
 static Function AI_UpdateAmpModel(string device, variable headStage, [string ctrl, variable value, variable sendToAll, variable checkBeforeWrite, variable selectAmp, variable func, variable clampMode, variable GUIWrite])
 
-	variable i, diff, selectedHeadstage, oppositeMode, oldTab
+	variable i, diff, selectedHeadstage, oppositeMode, oldTab, requestedFunc, requestedClampMode, requestedValue
 	variable runMode = TEST_PULSE_NOT_RUNNING
 	string str, rowLabel
 
@@ -285,6 +285,10 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 		runMode = TP_StopTestPulseFast(device)
 	endif
 
+	requestedFunc      = func
+	requestedClampMode = clampMode
+	requestedValue     = value
+
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
 		if(!statusHS[i])
@@ -296,6 +300,11 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 				continue
 			endif
 		endif
+
+		// the cases below can change these, e.g. to update dependent settings
+		func      = requestedFunc
+		clampMode = requestedClampMode
+		value     = requestedValue
 
 		sprintf str, "headstage %d, func %d, clamp mode %s, value %g", i, func, ConvertAmplifierModeToString(clampMode), value
 		DEBUGPRINT(str)

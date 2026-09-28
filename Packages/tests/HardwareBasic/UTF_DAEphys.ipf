@@ -790,3 +790,45 @@ static Function CheckAutoBridgeBalance([STRUCT IUTF_MDATA &md])
 	ret = AI_WriteToAmplifier(device, 0, I_CLAMP_MODE, MCC_BRIDGEBALENABLE_FUNC, 0)
 	CHECK_EQUAL_VAR(ret, 0)
 End
+
+static Function CheckSendToAllAutoWholeCellComp_preAcq(string device)
+
+	PGC_SetAndActivateControl(device, "check_Settings_SyncMiesToMCC", val = 1)
+End
+
+/// The automatic whole cell compensation with "send to all" must be executed for every headstage
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+static Function CheckSendToAllAutoWholeCellComp([STRUCT IUTF_MDATA &md])
+
+	variable ret, headstage, actual
+	string device, rowLabel
+
+	device = md.s0
+
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP0_DAQ0"                + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:")
+	ACD_AcquireData(s, device)
+
+	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = 0)
+	PGC_SetAndActivateControl(device, "Check_DataAcq_SendToAllAmp", val = 1)
+
+	// invalid capacitance, so that the update from the amplifier is visible
+	WAVE ampStorageWave = GetAmplifierParamStorageWave(device)
+	rowLabel                            = AI_MapFunctionConstantToName(MCC_WHOLECELLCOMPCAP_FUNC, V_CLAMP_MODE)
+	ampStorageWave[%$rowLabel][0][0, 1] = -1
+
+	ret = AI_WriteToAmplifier(device, 0, V_CLAMP_MODE, MCC_AUTOWHOLECELLCOMP_FUNC, 1, GUIWrite = 0)
+	CHECK_EQUAL_VAR(ret, 0)
+
+	for(headstage = 0; headstage < 2; headstage += 1)
+		INFO("headstage %d", n0 = headstage)
+
+		actual = AI_ReadFromAmplifier(device, headstage, V_CLAMP_MODE, MCC_WHOLECELLCOMPCAP_FUNC)
+		CHECK_GE_VAR(actual, 0)
+		CHECK_CLOSE_VAR(ampStorageWave[%$rowLabel][0][headstage], actual, tol = 1e-3)
+	endfor
+
+	ret = AI_WriteToAmplifier(device, 0, V_CLAMP_MODE, MCC_WHOLECELLCOMPENABLE_FUNC, 0)
+	CHECK_EQUAL_VAR(ret, 0)
+End
