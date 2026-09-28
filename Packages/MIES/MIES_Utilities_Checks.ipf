@@ -329,14 +329,10 @@ End
 ///
 /// @param[in] str string to check for suffix
 /// @param[in] suffix to check for
-/// @returns 1 if str ends with suffix, 0 otherwise. If str and/or suffix are empty or null 0 is returned.
+/// @returns 1 if str ends with suffix, 0 otherwise. If str and/or suffix are empty 0 is returned.
 Function StringEndsWith(string str, string suffix)
 
 	variable pos
-
-	if(IsNull(str) || IsNull(suffix))
-		return 0
-	endif
 
 	pos = strsearch(str, suffix, Inf, 3)
 	if(pos == -1)
