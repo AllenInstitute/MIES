@@ -600,6 +600,111 @@ Function AI_SU_SendToAmp(string device, variable headStage, variable mode, varia
 	return ret
 End
 
+/// @brief Fill the amplifier settings waves from the Sutter amplifiers and add them to the labnotebook
+///
+/// Settings with an MCC counterpart use the keys of GetAmplifierSettingsKeyWave() and
+/// GetAmplifierSettingsTextKeyWave(), the others the keys of GetSutterAmplifierSettingsKeyWave()
+/// and GetSutterAmplifierSettingsTextKeyWave(). Only the gain and the clamp mode can be read back
+/// from the hardware, all other values are the stored values of the IPA control package.
+///
+/// @param device  device
+/// @param sweepNo data wave sweep number
+Function AI_SU_FillAndSendAmpliferSettings(string device, variable sweepNo)
+
+	variable i, probe, clampMode, deviceHeadstage
+	string serial
+
+	PerformSubsystemEntry()
+
+	WAVE   statusHS               = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
+	WAVE   ampSettingsWave        = GetAmplifierSettingsWave()
+	WAVE/T ampSettingsKey         = GetAmplifierSettingsKeyWave()
+	WAVE/T ampSettingsTextWave    = GetAmplifierSettingsTextWave()
+	WAVE/T ampSettingsTextKey     = GetAmplifierSettingsTextKeyWave()
+	WAVE   sutterSettingsWave     = GetSutterAmplifierSettingsWave()
+	WAVE/T sutterSettingsKey      = GetSutterAmplifierSettingsKeyWave()
+	WAVE/T sutterSettingsTextWave = GetSutterAmplifierSettingsTextWave()
+	WAVE/T sutterSettingsTextKey  = GetSutterAmplifierSettingsTextKeyWave()
+	WAVE   ampParamStorage        = GetAmplifierParamStorageWave(device)
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+		if(!statusHS[i] || AI_GetAmplifierType(device, i) != AMPLIFIER_TYPE_SUTTER)
+			continue
+		endif
+
+		if(AI_SU_SelectMultiClamp(device, i) != AMPLIFIER_CONNECTION_SUCCESS)
+			if(DAG_GetNumericalValue(device, "check_Settings_RequireAmpConn"))
+				BUG("The amplifier could not be selected, but that should work")
+			endif
+			continue
+		endif
+
+		probe     = i + 1
+		clampMode = DAG_GetHeadstageMode(device, i)
+		ASSERT(clampMode == AI_SU_GetMode(device, i), "A clamp mode mismatch was detected. Please describe the events leading up to that assertion. Thanks!")
+
+		if(clampMode == V_CLAMP_MODE)
+			ampSettingsWave[0][0][i]  = IPA_MIES_GetValue(probe, IPA_SET_V_HOLD_ON)
+			ampSettingsWave[0][1][i]  = IPA_MIES_GetValue(probe, IPA_SET_V_HOLD) * ONE_TO_MILLI
+			ampSettingsWave[0][4][i]  = IPA_MIES_GetValue(probe, IPA_SET_RS_CORR) * ONE_TO_PERCENT
+			ampSettingsWave[0][5][i]  = IPA_MIES_GetValue(probe, IPA_SET_RS_CORR_ON)
+			ampSettingsWave[0][6][i]  = IPA_MIES_GetValue(probe, IPA_SET_RS_PRED) * ONE_TO_PERCENT
+			ampSettingsWave[0][7][i]  = IPA_MIES_GetValue(probe, IPA_SET_RS_COMP_ON)
+			ampSettingsWave[0][8][i]  = IPA_MIES_GetValue(probe, IPA_SET_CM_COMP) * ONE_TO_PICO
+			ampSettingsWave[0][9][i]  = IPA_MIES_GetValue(probe, IPA_SET_RS_COMP) * ONE_TO_MEGA
+			ampSettingsWave[0][39][i] = IPA_MIES_GetValue(probe, IPA_SET_E_COMP_MAG)
+			ampSettingsWave[0][41][i] = IPA_MIES_GetValue(probe, IPA_SET_E_COMP_TAU)
+
+			// V/A -> mV/pA
+			sutterSettingsWave[0][0][i] = IPA_MIES_GetValue(probe, IPA_SET_I_GAIN) * PICO_TO_ONE * ONE_TO_MILLI
+			sutterSettingsWave[0][2][i] = IPA_MIES_GetValue(probe, IPA_SET_RS_LAG)
+		elseif(clampMode == I_CLAMP_MODE)
+			ampSettingsWave[0][10][i] = IPA_MIES_GetValue(probe, IPA_SET_I_HOLD_ON)
+			ampSettingsWave[0][11][i] = IPA_MIES_GetValue(probe, IPA_SET_I_HOLD) * ONE_TO_PICO
+			ampSettingsWave[0][12][i] = IPA_MIES_GetValue(probe, IPA_SET_E_COMP_ON)
+			ampSettingsWave[0][13][i] = IPA_MIES_GetValue(probe, IPA_SET_E_COMP_MAG) * ONE_TO_PICO
+			ampSettingsWave[0][14][i] = IPA_MIES_GetValue(probe, IPA_SET_BRIDGE_ON)
+			ampSettingsWave[0][15][i] = IPA_MIES_GetValue(probe, IPA_SET_BRIDGE) * ONE_TO_MEGA
+
+			// parameters exclusively on the MIES amplifier panel
+			ampSettingsWave[0][43][i] = ampParamStorage[%AutoBiasVcom][0][i]
+			ampSettingsWave[0][44][i] = ampParamStorage[%AutoBiasVcomVariance][0][i]
+			ampSettingsWave[0][45][i] = ampParamStorage[%AutoBiasIbiasmax][0][i]
+			ampSettingsWave[0][46][i] = ampParamStorage[%AutoBiasEnable][0][i]
+
+			sutterSettingsWave[0][1][i] = IPA_MIES_GetValue(probe, IPA_SET_V_GAIN)
+			sutterSettingsWave[0][3][i] = IPA_MIES_GetValue(probe, IPA_SET_DYN_HOLD_ON)
+			sutterSettingsWave[0][4][i] = IPA_MIES_GetValue(probe, IPA_SET_DYN_HOLD) * ONE_TO_MILLI
+		else
+			FATAL_ERROR("Unsupported clamp mode for Sutter amplifiers: " + num2istr(clampMode))
+		endif
+
+		[serial, deviceHeadstage] = AI_SU_GetDeviceHeadstageFromProbe(i)
+
+		// AmpSN of the IPA control package omits the device type digit, e.g. 170 for IPA_E_100170, which
+		// is ambiguous between IPA and dIPA devices
+		ampSettingsWave[0][16][i] = str2num(StringFromList(ItemsInList(serial, "_") - 1, serial, "_"))
+		ampSettingsWave[0][17][i] = deviceHeadstage
+		ampSettingsWave[0][20][i] = clampMode
+		ampSettingsWave[0][25][i] = IPA_MIES_GetValue(probe, IPA_SET_FILTER)
+		// as the MCC telegraph: the whole cell compensation values in all clamp modes
+		ampSettingsWave[0][26][i] = IPA_MIES_GetValue(probe, IPA_SET_CM_COMP) * ONE_TO_PICO
+		ampSettingsWave[0][34][i] = IPA_MIES_GetValue(probe, IPA_SET_RS_COMP) * ONE_TO_MEGA
+		ampSettingsWave[0][35][i] = IPA_MIES_GetValue(probe, IPA_SET_OFFSET) * ONE_TO_MILLI
+
+		ampSettingsTextWave[0][0][i] = SelectString(clampMode == V_CLAMP_MODE, "I-Clamp", "V-Clamp")
+		ampSettingsTextWave[0][5][i] = SelectString(IPA_MIES_GetValue(probe, IPA_SET_AMP_TYPE) == 2, "Sutter IPA", "Sutter dIPA")
+
+		sutterSettingsTextWave[0][0][i] = serial
+	endfor
+
+	ED_AddEntriesToLabnotebook(ampSettingsWave, ampSettingsKey, sweepNo, device, DATA_ACQUISITION_MODE)
+	ED_AddEntriesToLabnotebook(ampSettingsTextWave, ampSettingsTextKey, sweepNo, device, DATA_ACQUISITION_MODE)
+	ED_AddEntriesToLabnotebook(sutterSettingsWave, sutterSettingsKey, sweepNo, device, DATA_ACQUISITION_MODE)
+	ED_AddEntriesToLabnotebook(sutterSettingsTextWave, sutterSettingsTextKey, sweepNo, device, DATA_ACQUISITION_MODE)
+End
+
 #else // SUTTER_AMPLIFIER_PRESENT
 
 Function AI_SU_Initialize(string device)
@@ -628,6 +733,13 @@ Function AI_SU_GetMode(string device, variable headstage)
 End
 
 Function AI_SU_UpdateDependentSettings(string device, variable headStage, variable func, variable clampMode)
+
+	PerformSubsystemEntry()
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function AI_SU_FillAndSendAmpliferSettings(string device, variable sweepNo)
 
 	PerformSubsystemEntry()
 
