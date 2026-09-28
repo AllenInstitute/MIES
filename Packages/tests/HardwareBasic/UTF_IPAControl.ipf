@@ -144,6 +144,19 @@ static Function IPAOffsetLimit()
 	RestoreIPA_IGNORE(state)
 End
 
+static Function IPASetCompensationInvalidProbe()
+
+	string state = InitIPA_IGNORE()
+
+	STRUCT IPASeries SIPA
+	IPAControl#GetStructure(SIPA)
+
+	CHECK_EQUAL_VAR(IPAControl#SetCompensation(SIPA, -1), 0)
+	CHECK_EQUAL_VAR(IPAControl#SetCompensation(SIPA, SIPA.numHeadstages), 0)
+
+	RestoreIPA_IGNORE(state)
+End
+
 #else
 
 static Function IPARequiresSutterHardware()

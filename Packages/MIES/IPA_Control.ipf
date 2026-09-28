@@ -16,7 +16,7 @@ Static Constant FALSE = 0
 Static Constant SutterXOP_XOPVersion = 2.60			// SutterXOP major version number needs to match SutterPatch, minor version is for info only
 
 Static Constant kLiveMode = -1
-Static Constant kNoDevice = -1
+Static Constant kNoDevice = 255 // ampIndex and HSIndex are uchar, so -1 would be stored as 255
 Static Constant kIPASingle = 1
 Static Constant kIPADouble = 2
 Static Constant kSutterInterface = 3
@@ -391,7 +391,11 @@ static Function SetCompensation(Struct IPASeries &SIPA, variable probeIndex)  //
 		return FALSE
 	endif
 	
-	if (probeIndex > SIPA.numHeadstages)
+	if (probeIndex < 0)
+		return FALSE
+	endif
+
+	if (probeIndex >= SIPA.numHeadstages)
 		return FALSE
 	endif
 
