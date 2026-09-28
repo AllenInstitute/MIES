@@ -585,7 +585,7 @@ Function/WAVE SFOS_OperationSelectTag(STRUCT SF_ExecutionData &exd)
 
 	string opShort = SF_OP_SELECTTAG
 
-	SFH_CheckArgumentCount(exd, opShort, 0, maxArgs = 1)
+	SFH_CheckArgumentCount(exd, opShort, 1, maxArgs = 1)
 
 	WAVE/T tags = SFH_GetArgumentAsWave(exd, SF_OP_SELECTTAG, 0, singleResult = 1, expectedMajorType = IGOR_TYPE_TEXT_WAVE, copy = 1)
 	tags[] = SelectString(IsEmpty(tags[p]), CleanupName(tags[p], 0), "")
