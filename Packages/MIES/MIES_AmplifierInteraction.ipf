@@ -9,6 +9,11 @@
 /// @file MIES_AmplifierInteraction.ipf
 /// @brief __AI__ Interface with headstage amplifiers
 
+static Constant ZERO_TOLERANCE = 100 // pA
+
+static Constant MAX_PIPETTEOFFSET = 150 // mV
+static Constant MIN_PIPETTEOFFSET = -150
+
 /// @brief Convenience wrapper for #AI_UpdateAmpView
 ///
 /// Disallows setting single controls for outside callers as #AI_WriteToAmplifier should be used for that.
@@ -27,15 +32,47 @@ End
 /// @param force     [optional, defaults to false] write all values instead of only the changed ones
 Function AI_SyncGUIToAmpStorageAndMCCApp(string device, variable headStage, variable clampMode, [variable force])
 
+	string ctrl, list
+	variable i, numEntries, value, checkBeforeWrite
+
 	PerformSubsystemEntry()
 
-	if(ParamIsDefault(force))
-		force = 0
-	else
-		force = !!force
+	force = ParamIsDefault(force) ? 0 : !!force
+
+	DAP_AbortIfUnlocked(device)
+	AI_AssertOnInvalidClampMode(clampMode)
+
+	if(DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage") != headStage)
+		return NaN
 	endif
 
-	return AIMCC_SyncGUIToAmpStorageAndMCCApp(device, headStage, clampMode, force)
+	if(AI_EnsureCorrectMode(device, headStage, selectAmp = 1))
+		return NaN
+	endif
+
+	if(clampMode == V_CLAMP_MODE)
+		list = AMPLIFIER_CONTROLS_VC
+	else
+		list = AMPLIFIER_CONTROLS_IC
+	endif
+
+	if(force)
+		checkBeforeWrite = 0
+	else
+		checkBeforeWrite = 1
+	endif
+
+	numEntries = ItemsInList(list)
+	for(i = 0; i < numEntries; i += 1)
+		ctrl = StringFromList(i, list)
+
+		if(StringMatch(ctrl, "button_*"))
+			continue
+		endif
+
+		value = DAG_GetNumericalValue(device, ctrl)
+		AI_UpdateAmpModel(device, headStage, ctrl = ctrl, value = value, checkBeforeWrite = checkBeforeWrite, sendToAll = 0, selectAmp = 0)
+	endfor
 End
 
 /// @brief Synchronizes the AmpStorageWave to the amplifier GUI control
@@ -114,13 +151,57 @@ End
 /// @param headStage [optional: defaults to all active headstages]
 Function AI_ZeroAmps(string device, [variable headStage])
 
+	variable i
+
 	PerformSubsystemEntry()
 
 	if(ParamIsDefault(headStage))
 		headStage = NaN
 	endif
 
-	return AIMCC_ZeroAmps(device, headStage)
+	// Ensure that data in BaselineSSAvg is up to date by verifying that TP is active
+	if(IsDeviceActiveWithBGTask(device, "TestPulse") || IsDeviceActiveWithBGTask(device, "TestPulseMD"))
+
+		WAVE TPResults = GetTPResults(device)
+		if(IsValidHeadstage(headstage))
+			if(abs(TPResults[%BaselineSteadyState][headstage]) >= ZERO_TOLERANCE)
+				AI_MIESAutoPipetteOffset(device, headStage)
+			endif
+		else
+			for(i = 0; i < NUM_HEADSTAGES; i += 1)
+				if(abs(TPResults[%BaselineSteadyState][i]) >= ZERO_TOLERANCE)
+					AI_MIESAutoPipetteOffset(device, i)
+				endif
+			endfor
+		endif
+	endif
+End
+
+/// @brief Auto pipette zeroing
+/// Quicker than MCC auto pipette offset
+///
+/// @param device device
+/// @param headStage MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
+static Function AI_MIESAutoPipetteOffset(string device, variable headStage)
+
+	variable clampMode, vDelta, offset, value
+
+	WAVE TPResults = GetTPResults(device)
+
+	clampMode = DAG_GetHeadstageMode(device, headStage)
+
+	ASSERT(clampMode == V_CLAMP_MODE || clampMode == I_CLAMP_MODE, "Headstage must be in VC/IC mode to use this function")
+	// calculate delta current to reach zero
+	// @todo check for IC
+	vdelta = ((TPResults[%BaselineSteadyState][headstage] * PICO_TO_ONE) * (TPResults[%ResistanceSteadyState][headstage] * MEGA_TO_ONE)) * ONE_TO_MILLI
+	// get current DC V offset
+	offset = AI_SendToAmp(device, headStage, clampMode, MCC_PIPETTEOFFSET_FUNC, MCC_READ)
+	// add delta to current DC V offset
+	value = offset - vDelta
+	if(value > MIN_PIPETTEOFFSET && value < MAX_PIPETTEOFFSET)
+		AI_UpdateAmpModel(device, headStage, ctrl = "setvar_DataAcq_PipetteOffset_VC", value = value, checkBeforeWrite = 1)
+		AI_UpdateAmpModel(device, headStage, ctrl = "setvar_DataAcq_PipetteOffset_IC", value = value, checkBeforeWrite = 1)
+	endif
 End
 
 /// @brief Query the amplifier for the gains and units of the given clamp mode
@@ -923,13 +1004,327 @@ Function AI_SendToAmp(string device, variable headStage, variable mode, variable
 	return AIMCC_SendToAmp(device, headStage, mode, func, accessType, checkBeforeWrite = checkBeforeWrite, usePrefixes = usePrefixes, selectAmp = selectAmp, value = value)
 End
 
+/// @brief Update the AmpStorageWave entry and send the value to the amplifier
+///
+/// One of either `ctrl` or `func` plus `clampMode` is required.
+///
+/// @param device           device
+/// @param ctrl             [optional] name of the amplifier control
+/// @param headStage        MIES headstage number, must be in the range [0, NUM_HEADSTAGES[
+/// @param value            [optional: defaults to the controls value] value to set. values is in MIES units, see AI_SendToAmp()
+///                         and there the description of `usePrefixes`.
+/// @param sendToAll        [optional: defaults to the state of the checkbox] should the value be send
+///                         to all active headstages (true) or just to the given one (false)
+/// @param checkBeforeWrite [optional, defaults to false] (ignored for getter functions)
+///                         check the current value and do nothing if it is equal within some tolerance to the one written
+/// @param selectAmp        [optional, defaults to true] Select the amplifier
+///                         before use, some callers might save time in doing that once themselves.
+/// @param func             [optional] Function to call, see @ref AI_SendToAmpConstants
+/// @param clampMode        [optional] One of V_CLAMP_MODE, I_CLAMP_MODE or I_EQUAL_ZERO_MODE
+/// @param GUIWrite         [optional, defaults to false] Should the amplifier control, if available, be updated with the value
+///
+/// @return 0 on success, 1 otherwise
+static Function AI_UpdateAmpModel(string device, variable headStage, [string ctrl, variable value, variable sendToAll, variable checkBeforeWrite, variable selectAmp, variable func, variable clampMode, variable GUIWrite])
+
+	variable i, diff, selectedHeadstage, oppositeMode, oldTab, requestedFunc, requestedClampMode, requestedValue, chainedFunc
+	variable runMode = TEST_PULSE_NOT_RUNNING
+	string str, rowLabel
+
+	DAP_AbortIfUnlocked(device)
+
+	selectedHeadstage = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
+
+	if(ParamIsDefault(value))
+		FATAL_ERROR("Missing optional parameter value")
+	endif
+
+	if(ParamIsDefault(selectAmp))
+		selectAmp = 1
+	else
+		selectAmp = !!selectAmp
+	endif
+
+	if(ParamIsDefault(GUIWrite))
+		GUIWrite = 1
+	else
+		GUIWrite = !!GUIWrite
+	endif
+
+	if(ParamIsDefault(sendToAll))
+		if(headstage == selectedHeadstage)
+			sendToAll = DAG_GetNumericalValue(device, "Check_DataAcq_SendToAllAmp")
+		else
+			sendToAll = 0
+		endif
+	else
+		sendToAll = !!sendToAll
+	endif
+
+	if(ParamIsDefault(checkBeforeWrite))
+		checkBeforeWrite = 0
+	endif
+
+	if(ParamIsDefault(ctrl))
+		ASSERT(!ParamIsDefault(func) && !ParamIsDefault(clampMode), "Default ctrl requires func and clampMode")
+		ASSERT(func > MCC_BEGIN_INVALID_FUNC && func < MCC_END_INVALID_FUNC, "MCC function constant is out for range")
+		AI_AssertOnInvalidClampMode(clampMode)
+
+		ctrl = AI_MapFunctionConstantToControl(func, clampMode)
+	else
+		[func, clampMode] = AI_MapControlNameToFunctionConstant(ctrl)
+	endif
+
+	WAVE AmpStoragewave = GetAmplifierParamStorageWave(device)
+
+	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
+	if(!sendToAll)
+		statusHS[] = ((p == headStage) ? 1 : 0)
+	endif
+
+	if(IsEmpty(ctrl))
+		GUIWrite = 0
+	elseif(!CheckIfValueIsInsideLimits(device, ctrl, value))
+		DEBUGPRINT("Ignoring value to set as it is out of range compared to the control limits")
+		return 1
+	endif
+
+	if(func == MCC_AUTOPIPETTEOFFSET_FUNC)
+		runMode = TP_StopTestPulseFast(device)
+	endif
+
+	requestedFunc      = func
+	requestedClampMode = clampMode
+	requestedValue     = value
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+		// the cases below can change these, e.g. to update dependent settings
+		func      = requestedFunc
+		clampMode = requestedClampMode
+		value     = requestedValue
+
+		if(!statusHS[i])
+			continue
+		endif
+
+		if(selectAmp)
+			if(AI_SelectMultiClamp(device, i) != AMPLIFIER_CONNECTION_SUCCESS)
+				continue
+			endif
+		endif
+
+		sprintf str, "headstage %d, func %d, clamp mode %s, value %g", i, func, ConvertAmplifierModeToString(clampMode), value
+		DEBUGPRINT(str)
+
+		switch(func)
+			case MCC_HOLDING_FUNC: // fallthrough
+			case MCC_HOLDINGENABLE_FUNC: // fallthrough
+			case MCC_WHOLECELLCOMPCAP_FUNC: // fallthrough
+			case MCC_WHOLECELLCOMPRESIST_FUNC: // fallthrough
+			case MCC_WHOLECELLCOMPENABLE_FUNC: // fallthrough
+			case MCC_RSCOMPENABLE_FUNC: // fallthrough
+			case MCC_PIPETTEOFFSET_FUNC: // fallthrough
+			case MCC_BRIDGEBALRESIST_FUNC: // fallthrough
+			case MCC_BRIDGEBALENABLE_FUNC: // fallthrough
+			case MCC_NEUTRALIZATIONCAP_FUNC: // fallthrough
+			case MCC_NEUTRALIZATIONENABL_FUNC:
+				rowLabel = AI_MapFunctionConstantToName(func, clampMode)
+
+				AmpStorageWave[%$rowLabel][0][i] = value
+
+				AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+
+				if(func == MCC_HOLDING_FUNC || func == MCC_HOLDINGENABLE_FUNC)
+					TP_UpdateHoldCmdInTPStorage(device, i)
+				endif
+				break
+			case MCC_AUTOFASTCOMP_FUNC: // fallthrough
+			case MCC_AUTOSLOWCOMP_FUNC:
+				rowLabel = AI_MapFunctionConstantToName(func, clampMode)
+
+				AmpStorageWave[%$rowLabel][0][i] = 0
+				AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				break
+			case MCC_AUTOWHOLECELLCOMP_FUNC:
+				AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+
+				func                             = MCC_WHOLECELLCOMPCAP_FUNC
+				rowLabel                         = AI_MapFunctionConstantToName(func, clampMode)
+				value                            = AI_SendToAmp(device, i, clampMode, func, MCC_READ, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AmpStorageWave[%$rowLabel][0][i] = value
+				AI_UpdateAmpView(device, i, func = func, clampMode = clampMode)
+
+				func                             = MCC_WHOLECELLCOMPRESIST_FUNC
+				rowLabel                         = AI_MapFunctionConstantToName(func, clampMode)
+				value                            = AI_SendToAmp(device, i, clampMode, func, MCC_READ, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AmpStorageWave[%$rowLabel][0][i] = value
+				AI_UpdateAmpView(device, i, func = func, clampMode = clampMode)
+
+				func                             = MCC_WHOLECELLCOMPENABLE_FUNC
+				rowLabel                         = AI_MapFunctionConstantToName(func, clampMode)
+				value                            = AI_SendToAmp(device, i, clampMode, func, MCC_READ, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AmpStorageWave[%$rowLabel][0][i] = value
+				AI_UpdateAmpView(device, i, func = func, clampMode = clampMode)
+				break
+			case MCC_RSCOMPCORRECTION_FUNC:
+				rowLabel = AI_MapFunctionConstantToName(func, clampMode)
+
+				diff = value - AmpStorageWave[%$rowLabel][0][i]
+				// abort if the corresponding value with chaining would be outside the limits
+				if(AmpStorageWave[%RSCompChaining][0][i] && !CheckIfValueIsInsideLimits(device, "setvar_DataAcq_RsPred", AmpStorageWave[%Prediction][0][i] + diff))
+					AI_UpdateAmpView(device, i, func = func, clampMode = clampMode)
+					return 1
+				endif
+				AmpStorageWave[%$rowLabel][0][i] = value
+				AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				if(AmpStorageWave[%RSCompChaining][0][i])
+					chainedFunc = MCC_RSCOMPPREDICTION_FUNC
+					rowLabel    = AI_MapFunctionConstantToName(chainedFunc, clampMode)
+
+					AmpStorageWave[%$rowLabel][0][i] += diff
+					AI_SendToAmp(device, i, clampMode, chainedFunc, MCC_WRITE, value = AmpStorageWave[%$rowLabel][0][i], checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+					AI_UpdateAmpView(device, i, func = chainedFunc, clampMode = clampMode)
+				endif
+				break
+			case MCC_RSCOMPPREDICTION_FUNC:
+				rowLabel = AI_MapFunctionConstantToName(func, clampMode)
+
+				diff = value - AmpStorageWave[%$rowLabel][0][i]
+				// abort if the corresponding value with chaining would be outside the limits
+				if(AmpStorageWave[%RSCompChaining][0][i] && !CheckIfValueIsInsideLimits(device, "setvar_DataAcq_RsCorr", AmpStorageWave[%Correction][0][i] + diff))
+					AI_UpdateAmpView(device, i, func = func, clampMode = clampMode)
+					return 1
+				endif
+				AmpStorageWave[%$rowLabel][0][i] = value
+				AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				if(AmpStorageWave[%RSCompChaining][0][i])
+					chainedFunc = MCC_RSCOMPCORRECTION_FUNC
+					rowLabel    = AI_MapFunctionConstantToName(chainedFunc, clampMode)
+
+					AmpStorageWave[%$rowLabel][0][i] += diff
+					AI_SendToAmp(device, i, clampMode, chainedFunc, MCC_WRITE, value = AmpStorageWave[%$rowLabel][0][i], checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+					AI_UpdateAmpView(device, i, func = chainedFunc, clampMode = clampMode)
+				endif
+				break
+			case MCC_AUTOPIPETTEOFFSET_FUNC:
+
+				if(clampMode == V_CLAMP_MODE)
+					oppositeMode = I_CLAMP_MODE
+				else
+					oppositeMode = V_CLAMP_MODE
+				endif
+
+				value = AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+
+				func     = MCC_PIPETTEOFFSET_FUNC
+				rowLabel = AI_MapFunctionConstantToName(func, clampMode)
+
+				AmpStorageWave[%$rowLabel][0][i] = value
+				AI_UpdateAmpView(device, i, func = func, clampMode = clampMode)
+				// the pipette offset for the opposite mode has also changed, fetch that too
+				AssertOnAndClearRTError()
+				try
+					oldTab = GetTabID(device, "ADC")
+					if(oldTab != 0)
+						PGC_SetAndActivateControl(device, "ADC", val = 0)
+					endif
+
+					DAP_ChangeHeadStageMode(device, oppositeMode, i, MCC_SKIP_UPDATES)
+
+					func     = MCC_PIPETTEOFFSET_FUNC
+					rowLabel = AI_MapFunctionConstantToName(func, oppositeMode)
+
+					// selecting amplifier here, as the clamp mode is now different
+					value                            = AI_SendToAmp(device, i, oppositeMode, func, MCC_READ, checkBeforeWrite = checkBeforeWrite, selectAmp = 1)
+					AmpStorageWave[%$rowLabel][0][i] = value
+					AI_UpdateAmpView(device, i, func = func, clampMode = oppositeMode)
+					DAP_ChangeHeadStageMode(device, clampMode, i, MCC_SKIP_UPDATES)
+
+					if(oldTab != 0)
+						PGC_SetAndActivateControl(device, "ADC", val = oldTab)
+					endif
+				catch
+					ClearRTError()
+					if(DAG_GetNumericalValue(device, "check_Settings_SyncMiesToMCC"))
+						printf "(%s) The pipette offset for %s of headstage %d is invalid.\r", device, ConvertAmplifierModeToString(oppositeMode), i
+					endif
+					// do nothing
+				endtry
+				break
+			case MCC_NO_AMPCHAIN_FUNC:
+				rowLabel = AI_MapFunctionConstantToName(func, clampMode)
+
+				AmpStorageWave[%$rowLabel][0][i] = value
+
+				PUB_AmplifierSettingChange(device, i, clampMode, func, value)
+
+				// resend the Rs correction with the new chaining state
+				AI_UpdateAmpModel(device, i, ctrl = "setvar_DataAcq_RsCorr", value = AmpStorageWave[%Correction][0][i], sendToAll = 0, selectAmp = 0)
+				break
+			case MCC_NO_AUTOBIAS_V_FUNC: // fallthrough
+				ASSERT(value > -100 && value < 100, "Out of range: value = " + num2str(value) + " mV, expected (-100, 100) mV")
+			case MCC_NO_AUTOBIAS_VRANGE_FUNC: // fallthrough
+			case MCC_NO_AUTOBIAS_IBIASMAX_FUNC: // fallthrough
+			case MCC_NO_AUTOBIAS_ENABLE_FUNC:
+				rowLabel = AI_MapFunctionConstantToName(func, clampMode)
+
+				AmpStorageWave[%$rowLabel][0][i] = value
+
+				PUB_AmplifierSettingChange(device, i, clampMode, func, value)
+				break
+			case MCC_AUTOBRIDGEBALANCE_FUNC:
+				clampMode = I_CLAMP_MODE
+
+				value = AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+
+				// not supported by the amplifier or failed
+				if(!IsFinite(value))
+					break
+				endif
+
+				AI_UpdateAmpModel(device, i, ctrl = "setvar_DataAcq_BB", value = value, sendToAll = 0, selectAmp = 0)
+				AI_UpdateAmpModel(device, i, ctrl = "check_DatAcq_BBEnable", value = 1, sendToAll = 0, selectAmp = 0)
+				break
+			// no GUI controls
+			case MCC_RSCOMPBANDWIDTH_FUNC: // fallthrough
+			case MCC_OSCKILLERENABLE_FUNC: // fallthrough
+			case MCC_FASTCOMPCAP_FUNC: // fallthrough
+			case MCC_SLOWCOMPCAP_FUNC: // fallthrough
+			case MCC_FASTCOMPTAU_FUNC: // fallthrough
+			case MCC_SLOWCOMPTAU_FUNC: // fallthrough
+			case MCC_SLOWCOMPTAUX20ENAB_FUNC: // fallthrough
+			case MCC_SLOWCURRENTINJENABL_FUNC: // fallthrough
+			case MCC_PRIMARYSIGNALGAIN_FUNC: // fallthrough
+			case MCC_SLOWCURRENTINJLEVEL_FUNC: // fallthrough
+			case MCC_SLOWCURRENTINJSETLT_FUNC: // fallthrough
+			case MCC_SECONDARYSIGNALGAIN_FUNC: // fallthrough
+			case MCC_PRIMARYSIGNALHPF_FUNC: // fallthrough
+			case MCC_PRIMARYSIGNALLPF_FUNC: // fallthrough
+			case MCC_SECONDARYSIGNALLPF_FUNC:
+				AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				break
+			default:
+				FATAL_ERROR("Unknown func: " + num2str(func))
+				break
+		endswitch
+
+		if(GUIWrite)
+			AI_UpdateAmpView(device, i, func = func, clampMode = clampMode)
+		endif
+	endfor
+
+	TP_RestartTestPulse(device, runMode, fast = TP_FAST_NO_CONFIG)
+
+	return 0
+End
+
 /// @brief Write to the amplifier
 ///
 /// @param device           device
 /// @param headStage        MIES headstage number, must be in the range [0, NUM_HEADSTAGES[
 /// @param mode             One of V_CLAMP_MODE, I_CLAMP_MODE or I_EQUAL_ZERO_MODE
 /// @param func             Function to call, see @ref AI_SendToAmpConstants
-/// @param value            value to set. values is in MIES units, see AIMCC_SendToAmp() and there the description of `usePrefixes`
+/// @param value            value to set. values is in MIES units, see AI_SendToAmp() and there the description of `usePrefixes`
 /// @param sendToAll        [optional: defaults to the state of the checkbox] should the value be send
 ///                         to all active headstages (true) or just to the given one (false)
 /// @param checkBeforeWrite [optional, defaults to false] (ignored for getter functions)
@@ -967,7 +1362,11 @@ Function AI_WriteToAmplifier(string device, variable headStage, variable mode, v
 		GUIWrite = !!GUIWrite
 	endif
 
-	return AIMCC_WriteToAmplifier(device, headStage, mode, func, value, sendToAll, checkBeforeWrite, selectAmp, GUIWrite)
+	if(IsNaN(sendToAll))
+		return AI_UpdateAmpModel(device, headStage, clampMode = mode, func = func, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = selectAmp, GUIWrite = GUIWrite)
+	endif
+
+	return AI_UpdateAmpModel(device, headStage, clampMode = mode, func = func, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = selectAmp, GUIWrite = GUIWrite, sendToAll = sendToAll)
 End
 
 /// @brief Read from amplifier
@@ -997,7 +1396,7 @@ Function AI_ReadFromAmplifier(string device, variable headStage, variable mode, 
 		selectAmp = !!selectAmp
 	endif
 
-	return AIMCC_ReadFromAmplifier(device, headStage, mode, func, usePrefixes, selectAmp)
+	return AI_SendToAmp(device, headStage, mode, func, MCC_READ, usePrefixes = usePrefixes, selectAmp = selectAmp)
 End
 
 /// @brief Set the clamp mode in the amplifier to the
