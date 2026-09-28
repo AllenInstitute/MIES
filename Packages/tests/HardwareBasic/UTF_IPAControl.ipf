@@ -60,6 +60,9 @@ static Function RestoreIPA_IGNORE(string state)
 		else
 			IPA_SetValue(probe, IPA_SET_CC_MODE, 1)
 		endif
+
+		IPA_SetValue(probe, IPA_SET_AUX_OUT1, IPA_GetValue(probe, IPA_SET_AUX_OUT1))
+		IPA_SetValue(probe, IPA_SET_AUX_OUT2, IPA_GetValue(probe, IPA_SET_AUX_OUT2))
 	endfor
 
 	KillDataFolder $IPA_PACKAGE_FOLDER
@@ -171,6 +174,20 @@ static Function IPAInvalidProbe()
 		CHECK_EQUAL_VAR(IPA_GetValue(probe, IPA_SET_V_HOLD), 0)
 		CHECK_NO_RTE()
 	endfor
+
+	RestoreIPA_IGNORE(state)
+End
+
+static Function IPAAuxOutputs()
+
+	string state = InitIPA_IGNORE()
+
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_AUX_OUT1, 0.5), 1)
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_AUX_OUT2, 0.25), 1)
+	CHECK_NO_RTE()
+
+	CHECK_CLOSE_VAR(IPA_GetValue(IPA_PROBE, IPA_SET_AUX_OUT1), 0.5, tol = 1e-6)
+	CHECK_CLOSE_VAR(IPA_GetValue(IPA_PROBE, IPA_SET_AUX_OUT2), 0.25, tol = 1e-6)
 
 	RestoreIPA_IGNORE(state)
 End
