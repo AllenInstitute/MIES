@@ -3899,11 +3899,11 @@ Function/WAVE GetSutterAmplifierSettingsKeyWave()
 	SetDimLabel ROWS, 2, Tolerance, wv
 
 	wv[0][0] = "V-Clamp Output Gain"
-	wv[1][0] = "mV/pA"
+	wv[1][0] = ""
 	wv[2][0] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[0][1] = "I-Clamp Output Gain"
-	wv[1][1] = "mV/mV"
+	wv[1][1] = ""
 	wv[2][1] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[0][2] = "RsComp Lag"
