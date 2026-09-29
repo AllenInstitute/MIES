@@ -1220,7 +1220,7 @@ End
 /// @param tagList              [optional] list of tags, one per experiment
 Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, [variable loadSweeps, variable loadStimsets, variable absolutePaths, variable multipleSweepBrowser, WAVE/T tagList])
 
-	variable idx, val
+	variable idx
 	string filePath, fullFilePath
 
 	absolutePaths = ParamIsDefault(absolutePaths) ? 0 : !!absolutePaths
@@ -1264,28 +1264,26 @@ Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, 
 
 	sweepBrowsers = ""
 	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
-	WAVE   expBrowserSel  = GetExperimentBrowserGUISel()
 
 	if(loadSweeps)
 		if(multipleSweepBrowser)
 			WAVE/Z indizes = FindIndizes(expBrowserList, colLabel = "file", prop = PROP_EMPTY | PROP_NOT)
 			for(idx : indizes)
-				val                      = expBrowserSel[idx][0][0]
-				expBrowserSel[idx][0][0] = val | LISTBOX_SELECTED
+				PGC_SetAndActivateControl(abWin, "list_experiment_contents", val = LISTBOX_CLEAR_SELECTION, eventCode = EVENT_LISTBOXACTION_CELL_SELECTION)
+				PGC_SetAndActivateControl(abWin, "list_experiment_contents", val = idx, eventCode = EVENT_LISTBOXACTION_CELL_SELECTION)
 				PGC_SetAndActivateControl(abWin, "button_load_sweeps")
-				expBrowserSel[idx][0][0] = val
 			endfor
 			sweepBrowsers = WinList("*", ";", "WIN:" + num2istr(WINTYPE_GRAPH))
 		else
 			sweepBrowsers = LoadSweepsFromAllExperimentsFromAB(abWin)
 		endif
-
 	endif
 
 	if(loadStimsets)
 		WAVE/Z indizes = FindIndizes(expBrowserList, colLabel = "file", prop = PROP_EMPTY | PROP_NOT)
 		for(idx : indizes)
-			expBrowserSel[idx][0][0] = expBrowserSel[idx][0][0] | LISTBOX_SELECTED
+			PGC_SetAndActivateControl(abWin, "list_experiment_contents", val = LISTBOX_CLEAR_SELECTION, eventCode = EVENT_LISTBOXACTION_CELL_SELECTION)
+			PGC_SetAndActivateControl(abWin, "list_experiment_contents", val = idx, eventCode = EVENT_LISTBOXACTION_CELL_SELECTION)
 			PGC_SetAndActivateControl(abWin, "button_load_stimsets")
 		endfor
 	endif
