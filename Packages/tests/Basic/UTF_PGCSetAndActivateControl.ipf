@@ -152,14 +152,23 @@ Function PGCT_ListBoxProc(STRUCT WMListboxAction &lba) : ListBoxControl
 
 			variable/G row = lba.row
 
-			if(lba.eventCode != EVENT_LISTBOXACTION_BEING_KILLED)
-				CHECK_EQUAL_VAR(lba.col, -1)
-			endif
+			switch(lba.eventCode)
+				case EVENT_LISTBOXACTION_TOP_ROW_COL_SET:
+					CHECK_EQUAL_VAR(lba.col, -1)
+					break
+				default:
+					CHECK_EQUAL_VAR(lba.col, 0)
+					break
+			endswitch
 
 			CHECK_WAVE(lba.listWave, TEXT_WAVE)
 			CHECK_WAVE(lba.selWave, NUMERIC_WAVE)
 			CHECK_WAVE(lba.colorWave, NUMERIC_WAVE)
 			CHECK_WAVE(lba.titleWave, TEXT_WAVE)
+
+			if(lba.eventCode == EVENT_LISTBOXACTION_CELL_SELECTION)
+				CHECK_EQUAL_VAR(lba.selWave[lba.row][0] & LISTBOX_SELECTED, LISTBOX_SELECTED)
+			endif
 			break
 	endswitch
 
