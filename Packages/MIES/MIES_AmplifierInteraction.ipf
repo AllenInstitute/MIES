@@ -834,6 +834,8 @@ End
 
 /// @brief Opens the amplifier control software
 ///
+/// Only MCC amplifiers have a separate control software, for Sutter amplifiers this is a no-op.
+///
 /// @param device           device
 /// @param ampSerialNumList A text list of amplifier serial numbers without leading zeroes
 /// Ex. "834001;435003;836059", "0;" starts the MCC in Demo mode
@@ -855,7 +857,8 @@ Function AI_OpenMCCs(string device, string ampSerialNumList, [string ampTitleLis
 		case AMPLIFIER_TYPE_MCC:
 			return AI_MCC_OpenMCCs(ampSerialNumList, ampTitleList)
 		case AMPLIFIER_TYPE_SUTTER:
-			// @todo implement
+			// nothing to open, the Sutter amplifier is controlled directly via the XOP and
+			// connected when the device is locked
 			return 1
 		default:
 			FATAL_ERROR("Invalid amplifier type")
