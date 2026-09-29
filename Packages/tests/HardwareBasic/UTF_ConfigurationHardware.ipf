@@ -429,3 +429,100 @@ static Function CheckIfConfigurationSavesAndRestores([string str])
 
 	CHECK_NO_RTE()
 End
+
+/// @brief Save the configuration of the device and apply `modifications` to the amplifier block of headstage 0
+///
+/// The device panel is killed afterwards.
+///
+/// @param device        device
+/// @param name          test case name, used for the file name
+/// @param modifications key/value pairs of the amplifier block, e.g. "Type:MCC;", numeric values are stored as number
+///
+/// @returns file path of the modified configuration
+static Function/S CreateModifiedConfiguration_IGNORE(string device, string name, string modifications)
+
+	string rewrittenConfig, fName, key, value, jsonPath
+	variable jsonID, i, numEntries
+
+	fName = PrependExperimentFolder_IGNORE(name + ".json")
+
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_DAQ0_TP0"                 \
+	                                                           + "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:")
+	ACD_AcquireData(s, device)
+
+	CONF_SaveWindow(fName)
+
+	[jsonID, rewrittenConfig] = FixupJSONConfig_IGNORE(fName, device)
+
+	numEntries = ItemsInList(modifications)
+	for(i = 0; i < numEntries; i += 1)
+		key      = StringFromList(0, StringFromList(i, modifications), ":")
+		value    = StringFromList(1, StringFromList(i, modifications), ":")
+		jsonPath = "/Common configuration data/Headstage Association/0/Amplifier/" + key
+		CHECK_EQUAL_VAR(JSON_Exists(jsonID, jsonPath), 1)
+
+		if(IsFinite(str2numSafe(value)))
+			JSON_SetVariable(jsonID, jsonPath, str2numSafe(value))
+		else
+			JSON_SetString(jsonID, jsonPath, value)
+		endif
+	endfor
+
+	SaveTextFile(JSON_Dump(jsonID), rewrittenConfig)
+	JSON_Release(jsonID)
+
+	KillWindow $device
+
+	return rewrittenConfig
+End
+
+/// @brief Save the configuration of the device, apply `modifications` to the amplifier block of headstage 0
+///        and check that restoring it fails
+///
+/// @param device        device
+/// @param name          test case name, used for the file name
+/// @param modifications key/value pairs of the amplifier block, e.g. "Type:MCC;", numeric values are stored as number
+static Function CheckIfConfigurationRestoreFails_IGNORE(string device, string name, string modifications)
+
+	string rewrittenConfig
+
+	rewrittenConfig = CreateModifiedConfiguration_IGNORE(device, name, modifications)
+
+	try
+		CONF_RestoreWindow(rewrittenConfig)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+End
+
+/// An amplifier type of the configuration which the device does not support is restored as no amplifier
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
+static Function CheckIfConfigurationIgnoresUnsupportedAmplifier([string str])
+
+	string rewrittenConfig
+	variable isSutter, expectedType
+
+	isSutter = GetHardwareType(str) == HARDWARE_SUTTER_DAC
+
+	rewrittenConfig = CreateModifiedConfiguration_IGNORE(str, "CheckIfConfigurationIgnoresUnsupportedAmplifier", "Type:" + SelectString(isSutter, "Sutter", "MCC") + ";")
+
+	CONF_RestoreWindow(rewrittenConfig)
+	CHECK_NO_RTE()
+
+	// devices with integrated amplifiers keep their fixed amplifier
+	expectedType = isSutter ? AMPLIFIER_TYPE_SUTTER : AMPLIFIER_TYPE_NONE
+	CHECK_EQUAL_VAR(AI_GetAmplifierType(str, 0), expectedType)
+End
+
+/// The Sutter amplifier of the configuration must match the connected IPA devices
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
+static Function CheckIfConfigurationRejectsWrongSutterAmplifier([string str])
+
+	if(GetHardwareType(str) != HARDWARE_SUTTER_DAC)
+		INFO("Requires Sutter hardware")
+		SKIP_TESTCASE()
+	endif
+
+	CheckIfConfigurationRestoreFails_IGNORE(str, "CheckIfConfigurationRejectsWrongSutterAmplifier", "Channel:" + num2istr(NUM_HEADSTAGES) + ";")
+End
