@@ -389,3 +389,70 @@ static Function CheckRestoreSettings()
 	WAVE/T list = GetExperimentBrowserGUIList()
 	CHECK_EQUAL_VAR(DimSize(list, ROWS), 0)
 End
+
+static Function TestTagControl()
+
+	string abWin, sweepBrowsers, sweepBrowser, title, tagControlWin
+
+	Make/FREE/T files = {PXP_FILENAME, PXP2_FILENAME}
+	DownloadFilesIfRequired(files)
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser(files)
+	CHECK(WindowExists(abWin))
+
+	ControlInfo/W=$abWin button_show_tagcontrol
+	title = GetTitle(S_recreation)
+	CHECK_EQUAL_STR(title, "Open tag control")
+
+	PGC_SetAndActivateControl(abWin, "button_show_tagcontrol")
+
+	ControlInfo/W=$abWin button_show_tagcontrol
+	title = GetTitle(S_recreation)
+	CHECK_EQUAL_STR(title, "Hide tag control")
+
+	// select experiment 0
+	PGC_SetAndActivateControl(abWin, "list_experiment_contents", val = 0, eventCode = EVENT_LISTBOXACTION_CELL_SELECTION)
+
+	tagControlWin = MIES_AB#AB_GetTagControlName()
+
+	PGC_SetAndActivateControl(tagControlWin, "setvar_tagcontrol_tagname", str = "abcd")
+	PGC_SetAndActivateControl(tagControlWin, "button_tagcontrol_addtag")
+
+	// select experiment 1
+	PGC_SetAndActivateControl(abWin, "list_experiment_contents", val = LISTBOX_CLEAR_SELECTION, eventCode = EVENT_LISTBOXACTION_CELL_SELECTION)
+	PGC_SetAndActivateControl(abWin, "list_experiment_contents", val = 1, eventCode = EVENT_LISTBOXACTION_CELL_SELECTION)
+
+	PGC_SetAndActivateControl(tagControlWin, "setvar_tagcontrol_tagname", str = "efgh")
+	PGC_SetAndActivateControl(tagControlWin, "button_tagcontrol_addtag")
+
+	// open sweepbrowser with all data
+	PGC_SetAndActivateControl(abWin, "list_experiment_contents", val = 0, eventCode = EVENT_LISTBOXACTION_CELL_SELECTION)
+	PGC_SetAndActivateControl(abWin, "list_experiment_contents", val = 1, eventCode = EVENT_LISTBOXACTION_CELL_SELECTION)
+
+	PGC_SetAndActivateControl(abWin, "button_load_sweeps")
+	sweepBrowser = GetCurrentWindow()
+
+	WAVE/Z experiments = SB_GetExperimentsFromTags(sweepBrowser, {"abcd"})
+	CHECK_EQUAL_TEXTWAVES(experiments, {GetFile(PXP_FILENAME)})
+
+	WAVE/Z experiments = SB_GetExperimentsFromTags(sweepBrowser, {"efgh"})
+	CHECK_EQUAL_TEXTWAVES(experiments, {GetFile(PXP2_FILENAME)})
+
+	// no untagged experiments
+	WAVE/Z experiments = SB_GetExperimentsFromTags(sweepBrowser, {""})
+	CHECK_WAVE(experiments, NULL_WAVE)
+
+	KillWindow/Z sweepBrowser
+
+	// remove all tags
+	PGC_SetAndActivateControl(tagControlWin, "button_tagcontrol_removetag")
+
+	// new sweepbrowser
+	PGC_SetAndActivateControl(abWin, "button_load_sweeps")
+	sweepBrowser = GetCurrentWindow()
+
+	// and now all files match
+	WAVE/Z experiments = SB_GetExperimentsFromTags(sweepBrowser, {""})
+	CHECK_EQUAL_TEXTWAVES(experiments, {GetFile(PXP_FILENAME), GetFile(PXP2_FILENAME)})
+
+	KillWindow/Z sweepBrowser
+End
