@@ -2913,6 +2913,7 @@ static Function DAP_CheckAnalysisFunctionAndParameter(string device, string setN
 		STRUCT CheckParametersStruct s
 		s.params  = WB_ExtractAnalysisFunctionParams(stimSet)
 		s.setName = setName
+		s.device  = device
 
 		[errorMessage, WAVE errorTypes] = AFH_CheckAnalysisParameter(func, s)
 		if(!IsEmpty(errorMessage) && !IsConstant(errorTypes, CAP_SUPERFLUOUS))
