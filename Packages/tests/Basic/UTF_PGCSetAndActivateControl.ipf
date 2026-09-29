@@ -5,6 +5,11 @@
 
 static Function TEST_CASE_BEGIN_OVERRIDE(string testCase)
 
+	SVAR/Z/SDFR=root: panel
+	if(SVAR_Exists(panel))
+		KillWindow/Z $panel
+	endif
+
 	TestCaseBeginCommon(testCase)
 
 	CreatePGCTestPanel_IGNORE()
@@ -13,11 +18,6 @@ static Function TEST_CASE_BEGIN_OVERRIDE(string testCase)
 End
 
 static Function TEST_CASE_END_OVERRIDE(string testCase)
-
-	SVAR/Z/SDFR=root: panel
-	if(SVAR_Exists(panel))
-		KillWindow/Z $panel
-	endif
 
 	TestCaseEndCommon(testCase, emptyFolderCheck = 0)
 End
@@ -53,7 +53,7 @@ Function CreatePGCTestPanel_IGNORE()
 	TabControl tab_ctrl, tabLabel(0)="Tab 0", tabLabel(1)="Tab 1", value=0
 
 	KillVariables/Z popNum, checked
-	KillStrings/Z popStr, called, curval, dval, sval, tab
+	KillStrings/Z popStr, called, curval, dval, sval, tab, eventCode
 
 	Make/T/O listWave = {"elem A", "elem B"}
 	Make/N=2/O selWave
@@ -67,12 +67,11 @@ End
 Function PGCT_PopMenuProc(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	switch(pa.eventCode)
-		case 2: // mouse up
+		default:
 			variable/G popNum = pa.popNum
 			string/G   popStr = pa.popStr
+			variable/G eventCode = pa.eventCode
 			variable/G called = 1
-			break
-		default:
 			break
 	endswitch
 
@@ -82,11 +81,10 @@ End
 Function PGCT_CheckProc(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	switch(cba.eventCode)
-		case 2: // mouse up
-			variable/G checked = cba.checked
-			variable/G called  = 1
-			break
 		default:
+			variable/G checked = cba.checked
+			variable/G eventCode = cba.eventCode
+			variable/G called  = 1
 			break
 	endswitch
 
@@ -97,10 +95,9 @@ Function PGCT_SliderProc(STRUCT WMSliderAction &sa) : SliderControl
 
 	switch(sa.eventCode)
 		default:
-			if(sa.eventCode & 1) // value set
-				variable/G curval = sa.curval
-				variable/G called = 1
-			endif
+			variable/G curval = sa.curval
+			variable/G eventCode = sa.eventCode
+			variable/G called = 1
 			break
 	endswitch
 
@@ -110,14 +107,11 @@ End
 Function PGCT_SetVarProc(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
-		case 1: // fallthrough, mouse up
-		case 2: // fallthrough, Enter key
-		case 3: // Live update
+		default:
 			variable/G dval   = sva.dval
 			string/G   sval   = sva.sval
+			variable/G eventCode = sva.eventCode
 			variable/G called = 1
-			break
-		default:
 			break
 	endswitch
 
@@ -127,10 +121,9 @@ End
 Function PGCT_ButtonProc(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventCode)
-		case 2: // mouse up
-			variable/G called = 1
-			break
 		default:
+			variable/G eventCode = ba.eventCode
+			variable/G called = 1
 			break
 	endswitch
 
@@ -140,11 +133,10 @@ End
 Function PGCT_TabProc(STRUCT WMTabControlAction &tca) : TabControl
 
 	switch(tca.eventCode)
-		case 2: // mouse up
-			variable/G tab    = tca.tab
-			variable/G called = 1
-			break
 		default:
+			variable/G tab    = tca.tab
+			variable/G eventCode = tca.eventCode
+			variable/G called = 1
 			break
 	endswitch
 
@@ -154,18 +146,20 @@ End
 Function PGCT_ListBoxProc(STRUCT WMListboxAction &lba) : ListBoxControl
 
 	switch(lba.eventCode)
-		case 3: // double click
+		default:
+			variable/G eventCode = lba.eventCode
 			variable/G called = 1
 
 			variable/G row = lba.row
-			CHECK_EQUAL_VAR(lba.col, -1)
+			
+			if(lba.eventCode != EVENT_LISTBOXACTION_BEING_KILLED)
+				CHECK_EQUAL_VAR(lba.col, -1)
+			endif
 
 			CHECK_WAVE(lba.listWave, TEXT_WAVE)
 			CHECK_WAVE(lba.selWave, NUMERIC_WAVE)
 			CHECK_WAVE(lba.colorWave, NUMERIC_WAVE)
 			CHECK_WAVE(lba.titleWave, TEXT_WAVE)
-			break
-		default:
 			break
 	endswitch
 
@@ -210,6 +204,26 @@ static Function PGCT_SettingVarWorks([string str])
 		NVAR/Z called
 		CHECK(NVAR_Exists(called))
 	endif
+
+	NVAR/Z eventCode
+
+	switch(GetControlType(panel, str))
+		case CONTROL_TYPE_VALDISPLAY:
+			CHECK(!NVAR_Exists(eventCode))
+			break
+		case CONTROL_TYPE_LISTBOX:
+			CHECK(NVAR_Exists(eventCode))
+			CHECK_EQUAL_VAR(eventCode, 3)
+			break
+		case CONTROL_TYPE_SLIDER:
+			CHECK(NVAR_Exists(eventCode))
+			CHECK_EQUAL_VAR(eventCode, 1)
+			break
+		default:
+			CHECK(NVAR_Exists(eventCode))
+			CHECK_EQUAL_VAR(eventCode, 2)
+			break
+	endswitch
 End
 
 // UTF_TD_GENERATOR DataGenerators#ControlTypesWhichRequireOneParameter
@@ -276,7 +290,7 @@ End
 
 static Function PGCT_PopupMenuStrWorks1()
 
-	variable refValue, popNum, i
+	variable refValue, popNum, i, eventCode
 	string refString, popStr
 
 	SVAR/SDFR=root: panel
@@ -304,9 +318,12 @@ static Function PGCT_PopupMenuStrWorks1()
 		popNum = popNumSVAR
 		SVAR popStrSVAR = popStr
 		popStr = popStrSVAR
+		NVAR eventCodeSVAR = eventCode
+		eventCode = eventCodeSVAR
 
 		CHECK_EQUAL_VAR(refValue, popNum)
 		CHECK_EQUAL_STR(refString, popStr)
+		CHECK_EQUAL_VAR(eventCode, 2)
 	endfor
 End
 
@@ -618,7 +635,7 @@ End
 
 static Function PGCT_SetVariableVarWorks()
 
-	variable refValue, setVarNum
+	variable refValue, setVarNum, eventCode
 	string refString, setVarStr
 
 	SVAR/SDFR=root: panel
@@ -655,13 +672,17 @@ static Function PGCT_SetVariableVarWorks()
 	setVarStr = setVarStrSVAR
 	refString = num2str(setVarNum)
 
+	NVAR eventCodeSVAR = eventCode
+	eventCode = eventCodeSVAR
+
 	CHECK_EQUAL_VAR(refValue, setVarNum)
 	CHECK_EQUAL_STR(refString, setVarStr)
+	CHECK_EQUAL_VAR(eventCode, 2)
 End
 
 static Function PGCT_SetVariableStrWorks()
 
-	variable refValue, setVarNum
+	variable refValue, setVarNum, eventCode
 	string refString, setVarStr
 
 	SVAR/SDFR=root: panel
@@ -698,8 +719,12 @@ static Function PGCT_SetVariableStrWorks()
 
 	refString = num2str(refValue)
 
+	NVAR eventCodeSVAR = eventCode
+	eventCode = eventCodeSVAR
+
 	CHECK_EQUAL_VAR(0, setVarNum)
 	CHECK_EQUAL_STR(refString, setVarStr)
+	CHECK_EQUAL_VAR(eventCode, 2)
 End
 
 static Function PGCT_SetVariableChecksNoEdit()
@@ -763,6 +788,8 @@ End
 
 static Function PGCT_ListboxWorks()
 
+	variable eventCode
+
 	SVAR/SDFR=root: panel
 
 	PGC_SetAndActivateControl(panel, "listbox_ctrl", val = 0)
@@ -773,6 +800,10 @@ static Function PGCT_ListboxWorks()
 
 	PGC_SetAndActivateControl(panel, "listbox_ctrl", val = 1)
 	CHECK_EQUAL_VAR(row, 1)
+
+	NVAR eventCodeSVAR = eventCode
+	eventCode = eventCodeSVAR
+	CHECK_EQUAL_VAR(eventCode, 3)
 
 	try
 		PGC_SetAndActivateControl(panel, "listbox_ctrl", val = 2)

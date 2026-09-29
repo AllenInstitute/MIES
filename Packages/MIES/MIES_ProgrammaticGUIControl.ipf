@@ -437,6 +437,7 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 					ListBox $control, win=$win, row=val, selRow=val
 					if(WaveExists(selWave))
 						if(val >= 0)
+							ASSERT(val >= 0 && val < DimSize(listWave, ROWS), "val is out of range")
 							// workaround WM bug #8733 and use fixed indices on the RHS
 							selWave[val][0] = selWave[val][0] | LISTBOX_SELECTED
 						elseif(val == LISTBOX_CLEAR_SELECTION)
