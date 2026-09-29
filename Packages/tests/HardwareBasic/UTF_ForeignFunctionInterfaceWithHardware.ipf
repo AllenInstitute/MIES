@@ -400,8 +400,18 @@ static Function FFITriggerAutoClampControlWorks_REENTRY([STRUCT IUTF_MDATA &md])
 	// auto pipette offset works regardless of the current clamp mode
 	FFI_TriggerAutoClampControl(device, headstage, AUTO_PIPETTE)
 
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	// auto bridge balance is not supported by Sutter amplifiers
+	try
+		FFI_TriggerAutoClampControl(device, headstage, AUTO_BRIDGEBALANCE)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+#else
 	// auto bridge balance works in IC, per setup above
 	FFI_TriggerAutoClampControl(device, headstage, AUTO_BRIDGEBALANCE)
+#endif // TESTS_WITH_SUTTER_HARDWARE
 
 	// auto bridge balance aborts outside of IC
 	FFI_SetClampMode(device, headstage, V_CLAMP_MODE)
