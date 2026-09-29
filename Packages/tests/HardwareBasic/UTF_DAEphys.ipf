@@ -449,10 +449,18 @@ static Function SyncMIESMccWorksOutoftheBox([STRUCT IUTF_MDATA &md])
 	CHECK_EQUAL_VAR(expected, actual)
 End
 
+/// @brief Return the amplifier functions which have no Sutter counterpart
+static Function/WAVE GetUnsupportedSutterFuncs()
+
+	Make/FREE/D unsupported = {MCC_AUTOBRIDGEBALANCE_FUNC, MCC_RSCOMPBANDWIDTH_FUNC, MCC_OSCKILLERENABLE_FUNC, MCC_SLOWCOMPCAP_FUNC, MCC_SLOWCOMPTAU_FUNC, MCC_SLOWCOMPTAUX20ENAB_FUNC, MCC_AUTOSLOWCOMP_FUNC, MCC_SLOWCURRENTINJENABL_FUNC, MCC_SLOWCURRENTINJLEVEL_FUNC, MCC_SLOWCURRENTINJSETLT_FUNC, MCC_PRIMARYSIGNALGAIN_FUNC, MCC_SECONDARYSIGNALGAIN_FUNC, MCC_PRIMARYSIGNALHPF_FUNC, MCC_SECONDARYSIGNALLPF_FUNC}
+
+	return unsupported
+End
+
 /// @brief Return true if the amplifier function has no Sutter counterpart
 static Function IsUnsupportedSutterFunc(variable func)
 
-	Make/FREE unsupported = {MCC_AUTOBRIDGEBALANCE_FUNC, MCC_RSCOMPBANDWIDTH_FUNC, MCC_OSCKILLERENABLE_FUNC, MCC_SLOWCOMPCAP_FUNC, MCC_SLOWCOMPTAU_FUNC, MCC_SLOWCOMPTAUX20ENAB_FUNC, MCC_AUTOSLOWCOMP_FUNC, MCC_SLOWCURRENTINJENABL_FUNC, MCC_SLOWCURRENTINJLEVEL_FUNC, MCC_SLOWCURRENTINJSETLT_FUNC, MCC_PRIMARYSIGNALGAIN_FUNC, MCC_SECONDARYSIGNALGAIN_FUNC, MCC_PRIMARYSIGNALHPF_FUNC, MCC_SECONDARYSIGNALLPF_FUNC}
+	WAVE unsupported = GetUnsupportedSutterFuncs()
 
 	return IsFinite(GetRowIndex(unsupported, val = func))
 End
@@ -1191,3 +1199,99 @@ static Function CheckEnsureCorrectMode([STRUCT IUTF_MDATA &md])
 	CHECK_EQUAL_VAR(ret, 0)
 	CHECK_EQUAL_VAR(AI_GetMode(device, headstage), V_CLAMP_MODE)
 End
+
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+
+/// Behaviour specific to Sutter amplifiers
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+static Function CheckSutterAmplifierSpecialCases([STRUCT IUTF_MDATA &md])
+
+	variable ret, headstage, headstageWithoutAmp, prefixScale, unitScale, deviceHeadstage
+	variable DAGain, ADGain
+	string device, rowLabel, serial, setting, DAUnit, ADUnit
+
+	device    = md.s0
+	headstage = 0
+
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP0_DAQ0"                 \
+	                                                           + "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:")
+	ACD_AcquireData(s, device)
+
+	// I=0 is not supported
+	try
+		AI_SetClampMode(device, headstage, I_EQUAL_ZERO_MODE)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+	CHECK_EQUAL_VAR(AI_GetMode(device, headstage), V_CLAMP_MODE)
+
+	// functions without Sutter counterpart
+	WAVE unsupported = GetUnsupportedSutterFuncs()
+	for(func : unsupported)
+		INFO("func: %d", n0 = func)
+		CHECK_EQUAL_VAR(AI_SendToAmp(device, headstage, V_CLAMP_MODE, func, MCC_READ), NaN)
+	endfor
+
+	// writing the current value again is skipped with checkBeforeWrite
+	ret = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_HOLDING_FUNC, 10)
+	CHECK_EQUAL_VAR(ret, 0)
+	ret = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_HOLDING_FUNC, 10, checkBeforeWrite = 1)
+	CHECK_EQUAL_VAR(ret, 0)
+	CHECK_CLOSE_VAR(AI_ReadFromAmplifier(device, headstage, V_CLAMP_MODE, MCC_HOLDING_FUNC), 10, tol = 1e-3)
+
+	ret = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_HOLDING_FUNC, 0)
+	CHECK_EQUAL_VAR(ret, 0)
+	ret = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_HOLDING_FUNC, 0, checkBeforeWrite = 1)
+	CHECK_EQUAL_VAR(ret, 0)
+	CHECK_SMALL_VAR(AI_ReadFromAmplifier(device, headstage, V_CLAMP_MODE, MCC_HOLDING_FUNC))
+
+	// the fast capacitance compensation is the capacitance neutralization in current clamp
+	ret = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_FASTCOMPCAP_FUNC, 5e-12)
+	CHECK_EQUAL_VAR(ret, 0)
+	WAVE ampStorageWave = GetAmplifierParamStorageWave(device)
+	rowLabel = AI_MapFunctionConstantToName(MCC_NEUTRALIZATIONCAP_FUNC, I_CLAMP_MODE)
+	CHECK_CLOSE_VAR(ampStorageWave[%$rowLabel][0][headstage], 5, tol = 1e-3)
+	ret = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_FASTCOMPCAP_FUNC, 0)
+	CHECK_EQUAL_VAR(ret, 0)
+
+	// headstage without amplifier
+	WAVE/T deviceInfo = GetSUDeviceInfo()
+	headstageWithoutAmp = str2num(deviceInfo[%SUMHEADSTAGES])
+	if(headstageWithoutAmp < NUM_HEADSTAGES)
+		CHECK_EQUAL_VAR(AI_SU_SelectMultiClamp(device, headstageWithoutAmp), AMPLIFIER_CONNECTION_INVAL_SER)
+		CHECK_EQUAL_VAR(AI_SU_GetMode(device, headstageWithoutAmp), NaN)
+		CHECK_EQUAL_VAR(AI_SU_GetHoldingCommand(device, headstageWithoutAmp), NaN)
+	endif
+
+	// invalid arguments
+	try
+		[serial, deviceHeadstage] = MIES_AI_SU#AI_SU_GetDeviceHeadstageFromProbe(NUM_HEADSTAGES)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	try
+		MIES_AI_SU#AI_SU_GetProbeFromDeviceHeadstage("UNKNOWN", 1)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	try
+		[setting, prefixScale, unitScale] = MIES_AI_SU#AI_SU_GetSetting(MCC_BEGIN_INVALID_FUNC, V_CLAMP_MODE)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	try
+		[DAGain, ADGain, DAUnit, ADUnit] = AI_SU_QueryGainsUnitsForClampMode(device, headstage, I_EQUAL_ZERO_MODE)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+End
+
+#endif // TESTS_WITH_SUTTER_HARDWARE
