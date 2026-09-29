@@ -1129,3 +1129,41 @@ static Function CheckSendToAllAutoWholeCellComp([STRUCT IUTF_MDATA &md])
 	ret = AI_WriteToAmplifier(device, 0, V_CLAMP_MODE, MCC_WHOLECELLCOMPENABLE_FUNC, 0)
 	CHECK_EQUAL_VAR(ret, 0)
 End
+
+static Function CheckHoldingCommand_preAcq(string device)
+
+	PGC_SetAndActivateControl(device, "check_Settings_SyncMiesToMCC", val = 1)
+End
+
+/// The holding command of the amplifier is returned in mV (VC) or pA (IC) and zero if disabled
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR v0:DataGenerators#GetClampModesWithoutIZero
+static Function CheckHoldingCommand([STRUCT IUTF_MDATA &md])
+
+	variable ret, value, clampMode, headstage
+	string device, clampModeStr
+
+	device    = md.s0
+	clampMode = md.v0
+	headstage = 0
+
+	clampModeStr = SelectString(clampMode == V_CLAMP_MODE, "IC", "VC")
+
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP0_DAQ0"                                                        + \
+	                                                           "__HS" + num2str(headstage) + "_DA0_AD0_CM:" + clampModeStr + ":_ST:StimulusSetA_DA_0:")
+	ACD_AcquireData(s, device)
+
+	value = (clampMode == V_CLAMP_MODE) ? -20 : 50
+
+	ret = AI_WriteToAmplifier(device, headstage, clampMode, MCC_HOLDING_FUNC, value)
+	CHECK_EQUAL_VAR(ret, 0)
+	ret = AI_WriteToAmplifier(device, headstage, clampMode, MCC_HOLDINGENABLE_FUNC, 1)
+	CHECK_EQUAL_VAR(ret, 0)
+
+	CHECK_CLOSE_VAR(AI_GetHoldingCommand(device, headstage), value, tol = 1e-2)
+
+	ret = AI_WriteToAmplifier(device, headstage, clampMode, MCC_HOLDINGENABLE_FUNC, 0)
+	CHECK_EQUAL_VAR(ret, 0)
+
+	CHECK_SMALL_VAR(AI_GetHoldingCommand(device, headstage))
+End
