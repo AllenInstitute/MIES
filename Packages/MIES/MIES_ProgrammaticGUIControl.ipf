@@ -172,7 +172,7 @@ End
 ///
 /// ListBox:
 /// - Event code: 3
-/// - Setting the column is not supported
+/// - Column is fixed to 0
 ///
 /// @return 1 if the numeric value was modified by control limits, 0 if not (only relevant for SetVariable controls)
 ///
@@ -182,7 +182,7 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 
 	string procedure, popupMenuList, popupMenuValue
 	variable paramType, controlType, variableType, inputWasModified, limitedVal
-	variable isCheckbox, checkBoxMode, popupMenuType, index
+	variable isCheckbox, checkBoxMode, popupMenuType, index, listboxMode
 
 	PerformSubsystemEntry()
 
@@ -419,14 +419,43 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 			WAVE/Z/T listWave = $GetValueFromRecMacro("listWave", S_recreation)
 			ASSERT(WaveExists(listWave), "Can't call ListBox without list wave")
 
+			listBoxMode = str2num(GetValueFromRecMacro("mode", S_recreation))
+
 			// all optional
 			WAVE/Z   selWave   = $GetValueFromRecMacro("selWave", S_recreation)
 			WAVE/Z   colorWave = $GetValueFromRecMacro("colorWave", S_recreation)
 			WAVE/Z/T titleWave = $GetValueFromRecMacro("titleWave", S_recreation)
 
-			ASSERT(val >= 0 && val < DimSize(listWave, ROWS), "val is out of range")
-
-			ListBox $control, win=$win, row=val, selRow=val
+			switch(listBoxMode)
+				case 0:
+					break
+				case 1: // fallthrough
+				case 2: // fallthrough
+				case 3: // fallthrough
+				case 4: // fallthrough
+				case 9:
+					ListBox $control, win=$win, row=val, selRow=val
+					if(WaveExists(selWave))
+						if(val >= 0)
+							// workaround WM bug #8733 and use fixed indices on the RHS
+							selWave[val][0] = selWave[val][0] | LISTBOX_SELECTED
+						elseif(val == LISTBOX_CLEAR_SELECTION)
+							selWave[][0] = selWave[p][0] & ~LISTBOX_SELECTED
+						else
+							FATAL_ERROR("Unsupported value")
+						endif
+					endif
+					break
+				case 5: // fallthrough
+				case 6:
+					if(!WaveExists(selWave))
+						ListBox $control, win=$win, row=val, selRow=val
+					endif
+					break
+				default:
+					ListBox $control, win=$win, row=val, selRow=val
+					break
+			endswitch
 
 			if(IsEmpty(procedure))
 				break
