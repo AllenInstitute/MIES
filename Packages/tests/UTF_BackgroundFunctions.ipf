@@ -229,6 +229,44 @@ Function ZeroAmpsAndStopTP_IGNORE(STRUCT WMBackgroundStruct &s)
 	return 1
 End
 
+Function ChangeHoldingAndStopTP_IGNORE(STRUCT WMBackgroundStruct &s)
+
+	variable index, numCycles
+	string device
+
+	numCycles = 10
+
+	SVAR devices = $GetLockedDevices()
+	device = StringFromList(0, devices)
+
+	if(!TP_CheckIfTestpulseIsRunning(device))
+		return 1
+	endif
+
+	WAVE settings  = holdingChangeDuringTP
+	WAVE TPStorage = GetTPStorage(device)
+	index = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
+
+	if(IsNaN(settings[%IndexAtChange]))
+		if(!TP_TestPulseHasCycled(device, numCycles))
+			return 0
+		endif
+
+		settings[%IndexAtChange] = index
+		AI_WriteToAmplifier(device, settings[%Headstage], settings[%ClampMode], MCC_HOLDING_FUNC, settings[%Holding], sendToAll = 0)
+
+		return 0
+	endif
+
+	if((index - settings[%IndexAtChange]) <= numCycles)
+		return 0
+	endif
+
+	PGC_SetAndActivateControl(device, "StartTestPulseButton")
+
+	return 1
+End
+
 Function StopTP_IGNORE(STRUCT WMBackgroundStruct &s)
 
 	SVAR   devices = $GetLockedDevices()
