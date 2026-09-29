@@ -237,6 +237,50 @@ Function ZeroAmpsAndStopTP_IGNORE(STRUCT WMBackgroundStruct &s)
 	return 1
 End
 
+/// Change the holding command during a running test pulse and stop the test pulse afterwards
+///
+/// Reads the headstage, clamp mode and new holding command from `root:holdingChangeDuringTP`, waits until
+/// the test pulse has cycled a few times, changes the holding command and stores the TPStorage index at the
+/// time of the change in `root:holdingChangeDuringTP[%IndexAtChange]`. The test pulse is stopped after it
+/// has cycled a few more times.
+Function ChangeHoldingAndStopTP_IGNORE(STRUCT WMBackgroundStruct &s)
+
+	variable index, numCycles
+	string device
+
+	numCycles = 10
+
+	SVAR devices = $GetLockedDevices()
+	device = StringFromList(0, devices)
+
+	if(!TP_CheckIfTestpulseIsRunning(device))
+		return 1
+	endif
+
+	WAVE settings  = root:holdingChangeDuringTP
+	WAVE TPStorage = GetTPStorage(device)
+	index = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
+
+	if(IsNaN(settings[%IndexAtChange]))
+		if(!TP_TestPulseHasCycled(device, numCycles))
+			return 0
+		endif
+
+		settings[%IndexAtChange] = index
+		AI_WriteToAmplifier(device, settings[%Headstage], settings[%ClampMode], MCC_HOLDING_FUNC, settings[%Holding], sendToAll = 0)
+
+		return 0
+	endif
+
+	if((index - settings[%IndexAtChange]) <= numCycles)
+		return 0
+	endif
+
+	PGC_SetAndActivateControl(device, "StartTestPulseButton")
+
+	return 1
+End
+
 Function StopTP_IGNORE(STRUCT WMBackgroundStruct &s)
 
 	SVAR   devices = $GetLockedDevices()

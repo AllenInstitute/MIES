@@ -3,6 +3,14 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = TestPulseAndTPDuringDAQ
 
+/// @name Holding commands for CheckTPStorageHoldingCmd
+///@{
+static Constant HOLDING_TP_START_VC   = 5
+static Constant HOLDING_TP_CHANGED_VC = -7
+static Constant HOLDING_TP_START_IC   = 20
+static Constant HOLDING_TP_CHANGED_IC = -30
+///@}
+
 static Function GlobalPreInit(string device)
 
 	PASS()
@@ -575,6 +583,123 @@ End
 static Function CheckTPStorage3_REENTRY([string str])
 
 	CheckTPStorage(str)
+End
+
+/// @brief Return the holding command before and during the test pulse for the given clamp mode
+static Function [variable holdingStart, variable holdingChanged] GetHoldingCommandsForTP_IGNORE(variable clampMode)
+
+	switch(clampMode)
+		case V_CLAMP_MODE:
+			holdingStart   = HOLDING_TP_START_VC
+			holdingChanged = HOLDING_TP_CHANGED_VC
+			break
+		case I_CLAMP_MODE:
+			holdingStart   = HOLDING_TP_START_IC
+			holdingChanged = HOLDING_TP_CHANGED_IC
+			break
+		default:
+			FATAL_ERROR("Unsupported clamp mode")
+	endswitch
+
+	return [holdingStart, holdingChanged]
+End
+
+/// @brief Check that the rows [first, last] of the given headstage and TPStorage entry are all equal to `expected`
+static Function CheckHoldingCmdInTPStorage_IGNORE(WAVE TPStorage, variable headstage, string entry, variable first, variable last, variable expected)
+
+	variable col
+
+	col = FindDimLabel(TPStorage, LAYERS, entry)
+	REQUIRE_GE_VAR(col, 0)
+	REQUIRE_LE_VAR(first, last)
+
+	Duplicate/FREE/RMD=[first, last][headstage][col] TPStorage, slice
+	Redimension/E=1/N=(DimSize(slice, ROWS)) slice
+
+	WaveStats/Q/M=1 slice
+	CHECK_EQUAL_VAR(V_numNaNs, 0)
+	CHECK_CLOSE_VAR(V_min, expected, tol = 1e-2)
+	CHECK_CLOSE_VAR(V_max, expected, tol = 1e-2)
+End
+
+static Function CheckTPStorageHoldingCmd_PreAcq(string device)
+
+	variable clampMode, holdingStart, holdingChanged
+
+	clampMode = DAG_GetHeadstageMode(device, 0)
+
+	[holdingStart, holdingChanged] = GetHoldingCommandsForTP_IGNORE(clampMode)
+
+	AI_WriteToAmplifier(device, 0, clampMode, MCC_HOLDING_FUNC, holdingStart, sendToAll = 0)
+	AI_WriteToAmplifier(device, 0, clampMode, MCC_HOLDINGENABLE_FUNC, 1, sendToAll = 0)
+End
+
+/// Check that the holding command at TP start and after a change during the TP is stored in TPStorage
+///
+/// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+/// UTF_TD_GENERATOR v0:DataGenerators#GetClampModesWithoutIZero
+static Function CheckTPStorageHoldingCmd([STRUCT IUTF_MDATA &md])
+
+	variable clampMode, holdingStart, holdingChanged
+	string clampModeStr
+
+	clampMode    = md.v0
+	clampModeStr = SelectString(clampMode == V_CLAMP_MODE, "IC", "VC")
+
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP1_STP1"                               + \
+	                                                           "__HS0_DA0_AD0_CM:" + clampModeStr + ":_ST:StimulusSetA_DA_0:")
+
+	ACD_AcquireData(s, md.s0)
+
+	[holdingStart, holdingChanged] = GetHoldingCommandsForTP_IGNORE(clampMode)
+
+	Make/O/D/N=4 root:holdingChangeDuringTP/WAVE=settings
+	SetDimensionLabels(settings, "Headstage;ClampMode;Holding;IndexAtChange", ROWS)
+	settings[%Headstage]     = 0
+	settings[%ClampMode]     = clampMode
+	settings[%Holding]       = holdingChanged
+	settings[%IndexAtChange] = NaN
+
+	CtrlNamedBackGround ChangeHoldingAndStopTP, start, period=30, proc=ChangeHoldingAndStopTP_IGNORE
+End
+
+static Function CheckTPStorageHoldingCmd_REENTRY([STRUCT IUTF_MDATA &md])
+
+	variable clampMode, holdingStart, holdingChanged, index, indexOnTPStart, indexAtChange
+	string entry
+	string device = md.s0
+
+	clampMode = md.v0
+
+	[holdingStart, holdingChanged] = GetHoldingCommandsForTP_IGNORE(clampMode)
+
+	// reset the amplifier
+	AI_WriteToAmplifier(device, 0, clampMode, MCC_HOLDINGENABLE_FUNC, 0, sendToAll = 0)
+	AI_WriteToAmplifier(device, 0, clampMode, MCC_HOLDING_FUNC, 0, sendToAll = 0)
+
+	WAVE/Z settings = root:holdingChangeDuringTP
+	CHECK_WAVE(settings, NUMERIC_WAVE)
+	indexAtChange = settings[%IndexAtChange]
+	KillWaves/Z settings
+
+	WAVE/Z TPStorage = GetTPStorage(device)
+	CHECK_WAVE(TPStorage, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+
+	index          = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
+	indexOnTPStart = GetNumberFromWaveNote(TPStorage, INDEX_ON_TP_START)
+
+	INFO("indexOnTPStart = %d, indexAtChange = %d, index = %d", n0 = indexOnTPStart, n1 = indexAtChange, n2 = index)
+	REQUIRE_EQUAL_VAR(IsFinite(indexAtChange), 1)
+	REQUIRE_GT_VAR(indexAtChange, indexOnTPStart)
+	REQUIRE_GT_VAR(index, indexAtChange)
+
+	entry = SelectString(clampMode == V_CLAMP_MODE, "HoldingCmd_IC", "HoldingCmd_VC")
+
+	// holding command queried at TP start
+	CheckHoldingCmdInTPStorage_IGNORE(TPStorage, 0, entry, indexOnTPStart, indexAtChange - 1, holdingStart)
+
+	// holding command changed during TP
+	CheckHoldingCmdInTPStorage_IGNORE(TPStorage, 0, entry, indexAtChange, index - 1, holdingChanged)
 End
 
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
