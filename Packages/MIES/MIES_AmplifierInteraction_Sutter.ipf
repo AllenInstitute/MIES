@@ -13,6 +13,13 @@
 /// zero-based index of the headstage over all IPA devices in the order of
 /// `LISTOFDEVICES` from GetSUDeviceInfo(). The MIES headstage with the same
 /// index is fixed to that amplifier headstage.
+///
+/// @todo Add GUI controls to the DAEphys panel for the Sutter amplifier settings primary output
+///       low pass filter, gain and dynamic hold. Contrary to MCC amplifiers there is no amplifier control
+///       software for these settings. The filter can currently only be set via
+///       AI_WriteToAmplifier() with #MCC_PRIMARYSIGNALLPF_FUNC, gain and dynamic hold only via the IPA_Control API.
+///       All three are stored in the labnotebook. The controls require a DAEphys panel version bump
+///       and support in the configuration save/restore code.
 
 static StrConstant AMPLIFIER_DEF_FORMAT = "%s HS %d"
 
