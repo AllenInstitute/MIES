@@ -791,6 +791,8 @@ End
 
 /// @brief Triggers an auto clamp control
 ///
+/// Sutter amplifiers do not support the auto bridge balance.
+///
 /// @param[in] device    Device title, e.g. "Dev1"
 /// @param[in] headstage headstage number
 /// @param[in] autoCtrl  auto control number @ref FFI_AutoClampCtrls
@@ -810,6 +812,7 @@ Function FFI_TriggerAutoClampControl(string device, variable headstage, variable
 		err = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_AUTOWHOLECELLCOMP_FUNC, 1, GUIWrite = 1)
 		ASSERT(err == 0, "Failed to trigger auto capacitance for headstage " + num2istr(headstage))
 	elseif(autoCtrl == AUTO_BRIDGEBALANCE)
+		ASSERT(AI_GetAmplifierTypeOfDevice(device) != AMPLIFIER_TYPE_SUTTER, "Auto bridge balance is not supported by Sutter amplifiers")
 		ASSERT(clampMode == I_CLAMP_MODE, "MCC_AUTOBRIDGEBALANCE_FUNC works only in IC clampMode")
 		err = AI_WriteToAmplifier(device, headstage, I_CLAMP_MODE, MCC_AUTOBRIDGEBALANCE_FUNC, 1, GUIWrite = 1)
 		ASSERT(err == 0, "Failed to trigger auto bridge balance for headstage " + num2istr(headstage))
