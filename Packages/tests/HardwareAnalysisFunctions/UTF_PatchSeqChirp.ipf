@@ -134,7 +134,7 @@ static Function/WAVE GetExpectedLPF_IGNORE(string device, WAVE requested)
 		return requested
 	endif
 
-	Make/FREE/D sutterLPF = {500, 1000, 2000, 5000, 10000, 20000}
+	WAVE sutterLPF = ListToNumericWave(SUTTER_LPF_VALUES, ";")
 	Make/FREE/D upperLimits = {550, 1100, 2200, 5500, 11000}
 
 	Duplicate/FREE requested, expected
@@ -152,6 +152,18 @@ static Function/WAVE GetExpectedLPF_IGNORE(string device, WAVE requested)
 	endfor
 
 	return expected
+End
+
+/// @brief Return a supported low pass filter value which differs from the default and bypass
+///
+/// The expected values for the checks are the ones for MCC amplifiers, see GetExpectedLPF_IGNORE().
+static Function GetNonDefaultLPF_IGNORE(string device)
+
+	if(GetHardwareType(device) == HARDWARE_SUTTER_DAC)
+		return 500
+	endif
+
+	return 14
 End
 
 static Function CheckMCCLPF(string device, variable expectedValue)
@@ -507,7 +519,7 @@ static Function PS_CR3_preAcq(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Symmetric")
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AmpBesselFilter", var = 14)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AmpBesselFilter", var = GetNonDefaultLPF_IGNORE(device))
 	// AmpBesselFilterRestore defaults
 
 	Make/FREE asyncChannels = {2, 3}
@@ -589,7 +601,7 @@ static Function PS_CR4_preAcq(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Symmetric")
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AmpBesselFilter", var = 14)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AmpBesselFilter", var = GetNonDefaultLPF_IGNORE(device))
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AmpBesselFilterRestore", var = 0)
 
 	Make/FREE asyncChannels = {2, 3}
@@ -2673,4 +2685,45 @@ static Function PS_CR18_REENTRY([string str])
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
 	CheckChirpUserEpochs(str, empty, empty, empty, incomplete = 1)
+End
+
+static Function PS_CR_UnsupportedLPF_preAcq(string device)
+
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var = 20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var = 40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
+	// not supported by Sutter amplifiers
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AmpBesselFilter", var = 14)
+
+	Make/FREE/D asyncChannels = {2, 3}
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
+static Function PS_CR_UnsupportedLPF([string str])
+
+	if(GetHardwareType(str) != HARDWARE_SUTTER_DAC)
+		INFO("Only Sutter amplifiers support a restricted set of low pass filter values")
+		SKIP_TESTCASE()
+	endif
+
+	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
+
+	try
+		ACD_AcquireData(s, str)
+	catch
+		PASS()
+	endtry
+End
+
+static Function PS_CR_UnsupportedLPF_REENTRY([string str])
+
+	// the analysis parameter check prevents the start of DAQ
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
+	CHECK_EQUAL_VAR(AFH_GetLastSweepAcquired(str), NaN)
 End
