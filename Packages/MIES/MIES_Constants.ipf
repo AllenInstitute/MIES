@@ -507,6 +507,9 @@ Constant MCC_WRITE = 0x2
 /// Magic value for selecting "Bypass" in the bessel filter for the primary output
 Constant LPF_BYPASS = 100e3
 
+/// Supported values of the low pass filter for the primary output of Sutter amplifiers in Hz, there is no "Bypass"
+StrConstant SUTTER_LPF_VALUES = "500;1000;2000;5000;10000;20000"
+
 Constant CHECKBOX_SELECTED   = 1
 Constant CHECKBOX_UNSELECTED = 0
 
