@@ -2663,6 +2663,12 @@ static Function PS_DS_AD19_preAcq(string device)
 
 	Make/FREE/D apFrequenciesFromRhSuAd = {1, 2, 3, 4}
 	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
+
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	// the Sutter amplifier has a five times larger current clamp output range, scale the pulse
+	// so that the future DAScale value is out-of-range as with the other hardware
+	ST_SetStimsetParameter("PSQ_DaScale_Adapt_DA_0", "Amplitude", epochIndex = 1, var = 5)
+#endif // TESTS_WITH_SUTTER_HARDWARE
 End
 
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
@@ -2736,7 +2742,6 @@ static Function PS_DS_AD19_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%oorDAScale], {1}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-
 End
 
 static Function PS_DS_AD20_preAcq(string device)
