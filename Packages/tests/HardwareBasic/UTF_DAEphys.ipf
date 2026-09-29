@@ -1167,3 +1167,27 @@ static Function CheckHoldingCommand([STRUCT IUTF_MDATA &md])
 
 	CHECK_SMALL_VAR(AI_GetHoldingCommand(device, headstage))
 End
+
+/// A different clamp mode of the amplifier is switched back to the one of MIES
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+static Function CheckEnsureCorrectMode([STRUCT IUTF_MDATA &md])
+
+	variable ret, headstage
+	string device
+
+	device    = md.s0
+	headstage = 0
+
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP0_DAQ0"                 \
+	                                                           + "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:")
+	ACD_AcquireData(s, device)
+
+	// only switch the amplifier
+	AI_SetClampMode(device, headstage, I_CLAMP_MODE)
+	CHECK_EQUAL_VAR(AI_GetMode(device, headstage), I_CLAMP_MODE)
+	CHECK_EQUAL_VAR(DAG_GetHeadstageMode(device, headstage), V_CLAMP_MODE)
+
+	ret = AI_EnsureCorrectMode(device, headstage, selectAmp = 1)
+	CHECK_EQUAL_VAR(ret, 0)
+	CHECK_EQUAL_VAR(AI_GetMode(device, headstage), V_CLAMP_MODE)
+End
