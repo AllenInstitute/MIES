@@ -78,7 +78,7 @@ Function TestAnalysisBrowserAddingFiles()
 	holeIndex   = 1
 	fileToReadd = map[holeIndex]
 
-	SetListBoxSelection(abWin, "listbox_AB_Folders", LISTBOX_SELECTED, holeIndex)
+	PGC_SetAndActivateControl(abWin, "listbox_AB_Folders", val = holeIndex, eventCode = EVENT_LISTBOXACTION_CELL_SELECTION)
 	PGC_SetAndActivateControl(abWin, "button_AB_Remove")
 	CHECK_EQUAL_VAR(GetNumberFromWaveNote(map, NOTE_INDEX), DimSize(files, ROWS))
 
@@ -136,9 +136,9 @@ static Function CheckNumberOfSelectedRows(string bsPanel)
 
 	DFREF dfr            = BSP_GetFolder(bsPanel, MIES_BSP_PANEL_FOLDER)
 	WAVE  listBoxSelWave = GetAnaFuncDashboardselWave(dfr)
-	Duplicate/FREE/RMD=[][][0] listBoxSelWave, listBoxSelWaveFirstLayer
+	Duplicate/FREE/RMD=[][0][0] listBoxSelWave, listBoxSelWaveFirstLayer
 
-	return Sum(listBoxSelWaveFirstLayer) / DimSize(listBoxSelWave, COLS)
+	return Sum(listBoxSelWaveFirstLayer)
 End
 
 Function TestDashboardSelections()
@@ -163,17 +163,15 @@ Function TestDashboardSelections()
 	CHECK_EQUAL_VAR(CheckNumberOfSelectedRows(bsPanel), 0)
 
 	// 0th SCI
-	SetListBoxSelection(bsPanel, "list_dashboard", LISTBOX_SELECTED, 1)
-	PGC_SetAndActivateControl(bsPanel, "list_dashboard", val = 1)
+	PGC_SetAndActivateControl(bsPanel, "list_dashboard", val = 1, eventCode = EVENT_LISTBOXACTION_CELL_SELECTION)
 
 	CHECK_EQUAL_VAR(CheckNumberOfSelectedRows(bsPanel), 1)
 	WAVE/Z sweeps = OVS_GetSelectedSweeps(bsPanel, OVS_SWEEP_SELECTION_SWEEPNO)
 	CHECK_EQUAL_WAVES(sweeps, {1}, mode = WAVE_DATA)
 
 	// 4th SCI
-	SetListBoxSelection(bsPanel, "list_dashboard", 0, 1)
-	SetListBoxSelection(bsPanel, "list_dashboard", LISTBOX_SELECTED, 4)
-	PGC_SetAndActivateControl(bsPanel, "list_dashboard", val = 4)
+	PGC_SetAndActivateControl(bsPanel, "list_dashboard", val = LISTBOX_CLEAR_SELECTION, eventCode = EVENT_LISTBOXACTION_CELL_SELECTION)
+	PGC_SetAndActivateControl(bsPanel, "list_dashboard", val = 4, eventCode = EVENT_LISTBOXACTION_CELL_SELECTION)
 
 	// Passed & Failed
 	CHECK_EQUAL_VAR(CheckNumberOfSelectedRows(bsPanel), 1)
@@ -195,8 +193,7 @@ Function TestDashboardSelections()
 	CHECK_EQUAL_WAVES(sweeps, {4, 8, 9, 10, 11}, mode = WAVE_DATA)
 
 	// and the 6th in addition
-	SetListBoxSelection(bsPanel, "list_dashboard", LISTBOX_SELECTED, 6)
-	PGC_SetAndActivateControl(bsPanel, "list_dashboard", val = 6)
+	PGC_SetAndActivateControl(bsPanel, "list_dashboard", val = 6, eventCode = EVENT_LISTBOXACTION_CELL_SELECTION)
 	CHECK_EQUAL_VAR(CheckNumberOfSelectedRows(bsPanel), 2)
 	WAVE/Z sweeps = OVS_GetSelectedSweeps(bsPanel, OVS_SWEEP_SELECTION_SWEEPNO)
 	CHECK_EQUAL_WAVES(sweeps, {4, 8, 9, 10, 11, 20, 21}, mode = WAVE_DATA)
