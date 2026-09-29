@@ -19,10 +19,10 @@ static Function TestSelectWithSeltag()
 	tagControlWin = MIES_AB#AB_GetTagControlName()
 
 	expBrowserSel[0][0][0] = expBrowserSel[0][0][0] | LISTBOX_SELECTED
-	SetSetVariableString(tagControlWin, "setvar_tagcontrol_tagname", "myTag1")
+	PGC_SetAndActivateControl(tagControlWin, "setvar_tagcontrol_tagname", str = "myTag1")
 	PGC_SetAndActivateControl(tagControlWin, "button_tagcontrol_addtag")
 	expBrowserSel[0][0][0] = expBrowserSel[0][0][0] | LISTBOX_SELECTED
-	SetSetVariableString(tagControlWin, "setvar_tagcontrol_tagname", "myTag2")
+	PGC_SetAndActivateControl(tagControlWin, "setvar_tagcontrol_tagname", str = "myTag2")
 	PGC_SetAndActivateControl(tagControlWin, "button_tagcontrol_addtag")
 
 	sweepBrowser = LoadSweepsFromAllExperimentsFromAB(abWin)
