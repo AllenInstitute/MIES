@@ -13,15 +13,15 @@ static Function TestSelectWithSeltag()
 
 	[abWin, sweepBrowsers] = OpenAnalysisBrowser(files, loadSweeps = 0)
 
-	WAVE expBrowserSel = GetExperimentBrowserGUISel()
 	PGC_SetAndActivateControl(abWin, "button_show_tagcontrol")
+
+	PGC_SetAndActivateControl(abWin, "list_experiment_contents", val = 0, eventCode = EVENT_LISTBOXACTION_CELL_SELECTION)
 
 	tagControlWin = MIES_AB#AB_GetTagControlName()
 
-	expBrowserSel[0][0][0] = expBrowserSel[0][0][0] | LISTBOX_SELECTED
 	PGC_SetAndActivateControl(tagControlWin, "setvar_tagcontrol_tagname", str = "myTag1")
 	PGC_SetAndActivateControl(tagControlWin, "button_tagcontrol_addtag")
-	expBrowserSel[0][0][0] = expBrowserSel[0][0][0] | LISTBOX_SELECTED
+
 	PGC_SetAndActivateControl(tagControlWin, "setvar_tagcontrol_tagname", str = "myTag2")
 	PGC_SetAndActivateControl(tagControlWin, "button_tagcontrol_addtag")
 
