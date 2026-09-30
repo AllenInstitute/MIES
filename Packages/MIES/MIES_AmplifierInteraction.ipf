@@ -640,7 +640,7 @@ Function AI_ZeroAmps(string device, [variable headStage])
 			endif
 		else
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
-				if(abs(TPResults[%BaselineSteadyState][headstage]) >= ZERO_TOLERANCE)
+				if(abs(TPResults[%BaselineSteadyState][i]) >= ZERO_TOLERANCE)
 					AI_MIESAutoPipetteOffset(device, i)
 				endif
 			endfor
