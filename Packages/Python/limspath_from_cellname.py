@@ -37,6 +37,7 @@ def limspath_from_cellname(
             result = cur.fetchone()
 
             if result is None:
+                # append an empty string as None can not be converted to an igor type
                 paths.append("")
             else:
                 paths.append(result[0])
