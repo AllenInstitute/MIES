@@ -166,7 +166,7 @@ Function/WAVE PY_FetchFilesFromLims(WAVE/T cellnames)
 
 	// forward slashes to backward slashes
 	// and UNC server prefix
-	results[] = "\\" + ReplaceRegexInString("/", results[p], "\\")
+	results[] = SelectString(IsEmpty(results[p]), "\\" + ReplaceRegexInString("/", results[p], "\\"), "")
 
 	return results
 End
